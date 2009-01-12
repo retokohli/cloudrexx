@@ -1,6 +1,7 @@
     <?php
 
     require_once dirname(__FILE__).'/Category.class.php';
+    require_once dirname(__FILE__).'/Download.class.php';
 /**
  * Downloads library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -14,6 +15,7 @@ class DownloadsLibrary
 {
 
     protected $defaultCategoryImage = array();
+    protected $defaultDownloadImage = array();
     protected $arrPermissionTypes = array(
         'getReadAccessId'                   => 'read',
         'getAddSubcategoriesAccessId'       => 'add_subcategories',
@@ -34,6 +36,7 @@ class DownloadsLibrary
     {
         $this->_init();
         $this->initDefaultCategoryImage();
+        $this->initDefaultDownloadImage();
     }
 
     protected function initDefaultCategoryImage()
@@ -44,6 +47,11 @@ class DownloadsLibrary
 
         $this->defaultCategoryImage['width'] = $imageSize[0];
         $this->defaultCategoryImage['height'] = $imageSize[1];
+    }
+
+    protected function initDefaultDownloadImage()
+    {
+        $this->defaultDownloadImage = $this->defaultCategoryImage;
     }
 
     function _init()
@@ -495,6 +503,7 @@ class DownloadsLibrary
         $arrCategories = array();
 
         while (!$objCategory->EOF) {
+            // TODO: getVisibility() < should only be checked if the user isn't an admin or so
             if ($objCategory->getVisibility()) {
                 $arrCategories[$objCategory->getParentId()][] = array(
                     'id'        => $objCategory->getId(),
@@ -510,20 +519,24 @@ class DownloadsLibrary
         $menu = '<select name="downloads_category_parent_id" onchange="window.location.href=\'index.php?cmd=downloads&act=categories&parent_id=\'+this.value">';
         $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').' style="border-bottom:1px solid #000;">'.$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'].'</option>';
 
-        $menu .= $this->parseCategoryTree($arrCategories, $selectedCategory);
+        $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory);
 
         while (count($arrCategories)) {
             reset($arrCategories);
-            $menu .= $this->parseCategoryTree($arrCategories, $selectedCategory, key($arrCategories));
+            $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, key($arrCategories));
         }
         $menu .= '</select>';
 
         return $menu;
     }
 
-    private function parseCategoryTree(&$arrCategories, $selectedCategory, $parentId = 0, $level = 0)
+    private function parseCategoryTreeForMenu(&$arrCategories, $selectedCategory, $parentId = 0, $level = 0)
     {
         $options = '';
+
+        if (!isset($arrCategories[$parentId])) {
+            return $options;
+        }
 
         $length = count($arrCategories[$parentId]);
         for ($i = 0; $i < $length; $i++) {
@@ -541,7 +554,7 @@ class DownloadsLibrary
                     .str_repeat('&nbsp;', $level * 4).htmlentities($arrCategories[$parentId][$i]['name'], ENT_QUOTES, CONTREXX_CHARSET)
                 .'</option>';
             if (isset($arrCategories[$arrCategories[$parentId][$i]['id']])) {
-                $options .= $this->parseCategoryTree($arrCategories, $selectedCategory, $arrCategories[$parentId][$i]['id'], $level + 1);
+                $options .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, $arrCategories[$parentId][$i]['id'], $level + 1);
             }
         }
 
@@ -550,6 +563,55 @@ class DownloadsLibrary
         return $options;
     }
 
+    protected function getParsedCategoryListForDownloadAssociation( )
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $arrCategories = array();
+
+        while (!$objCategory->EOF) {
+                $arrCategories[$objCategory->getParentId()][] = array(
+                    'id'                    => $objCategory->getId(),
+                    'name'                  => $objCategory->getName($_LANGID),
+                    'owner_id'              => $objCategory->getOwnerId(),
+                    'add_files_access_id'     => $objCategory->getAddFilesAccessId(),
+                    'manage_files_access_id'  => $objCategory->getManageFilesAccessId()
+                );
+
+            $objCategory->next();
+        }
+
+       $arrParsedCategories = $this->parseCategoryTreeForDownloadAssociation($arrCategories);
+
+        while (count($arrCategories)) {
+            reset($arrCategories);
+            $arrParsedCategories = array_merge($arrParsedCategories, $this->parseCategoryTreeForDownloadAssociation($arrCategories, key($arrCategories)));
+        }
+
+        return $arrParsedCategories;
+    }
+
+    private function parseCategoryTreeForDownloadAssociation(&$arrCategories, $parentId = 0, $level = 0)
+    {
+        $arrParsedCategories = array();
+
+        if (!isset($arrCategories[$parentId])) {
+            return $arrParsedCategories;
+        }
+
+        $length = count($arrCategories[$parentId]);
+        for ($i = 0; $i < $length; $i++) {
+            $arrParsedCategories[] = array_merge($arrCategories[$parentId][$i], array('level' => $level));
+            if (isset($arrCategories[$arrCategories[$parentId][$i]['id']])) {
+                $arrParsedCategories = array_merge($arrParsedCategories, $this->parseCategoryTreeForDownloadAssociation($arrCategories, $arrCategories[$parentId][$i]['id'], $level + 1));
+            }
+        }
+
+        unset($arrCategories[$parentId]);
+
+        return $arrParsedCategories;
+    }
 
 
     protected function getParsedUsername($userId)
@@ -581,6 +643,19 @@ class DownloadsLibrary
             $objUser->next();
         }
         $menu .= '</select>';
+
+        return $menu;
+    }
+
+    protected function getDownloadMimeTypeMenu($selectedType)
+    {
+        global $_ARRAYLANG;
+
+        $menu = '<select name="downloads_download_mime_type" style="width:300px;">';
+        $arrMimeTypes = Download::$arrMimeTypes;
+        foreach ($arrMimeTypes as $type => $description) {
+            $menu .= '<option value="'.$type.'"'.($type == $selectedType ? ' selected="selected"' : '').'>'.$_ARRAYLANG[$description].'</option>';
+        }
 
         return $menu;
     }

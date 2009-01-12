@@ -26,86 +26,7 @@ if (0) {
 
 require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
 
-$_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
-$_ARRAYLANG['TXT_ADD_CATEGORY'] = "Kategorie hinzufügen";
-$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
-$_ARRAYLANG['TXT_PLACEHOLDER'] = "Platzhalter";
-$_ARRAYLANG['TXT_MANAGE_FILES'] = "Dateien verwalten";
-$_ARRAYLANG['TXT_ADD_FILE'] = "Dateie hinzufügen";
-$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'] = "Downloads verwalten";
-$_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'] = "Download hinzufügen";
-$_ARRAYLANG['TXT_LANGUAGES'] = "Sprachen";
-$_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'] = "Sprache";
-$_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_DESCRIPTION'] = "Beschreibung";
-$_ARRAYLANG['TXT_IMAGE'] = "Bild";
-$_ARRAYLANG['TXT_BROWSE'] = "Durchsuchen";
-$_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'] = "Erfolgreich hinzugefügt";
-$_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'] = "Fehler beim speichern";
-$_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'] = "Autor";
-$_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'] = "Zugriffsberechtigungen";
-$_ARRAYLANG['TXT_REMOVE_SELECTION'] = "Auswahl entfernen";
-$_ARRAYLANG['TXT_SELECT_ACTION'] = "Aktion auswählen";
-$_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] = "Kategorie bearbeiten";
-$_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'] = "Erfolgreich aktualisiert";
-$_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FAILED'] = "Fehler beim Speichern";
-$_ARRAYLANG['TXT_DOWNLOADS_ORDER'] = "Reihenfolge";
-$_ARRAYLANG['TXT_DOWNLOADS_FILE'] = "Datei";
-$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Kategorien";
-$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'] = "Kategorie";
-$_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'] = "Hinzugefügte Kategorien";
-$_ARRAYLANG['TXT_DOWNLOADS_FILES'] = "Dateien";
-$_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE'] = "Typ";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'] = "Undefiniert";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'] = "Bild";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'] = "Text";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'] = "Media";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'] = "Archiv";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'] = "Applikation";
-$_ARRAYLANG['TXT_DOWNLOADS_FILEINFO'] = "Info";
-$_ARRAYLANG['TXT_DOWNLOADS_SIZE'] = "Grösse";
-$_ARRAYLANG['TXT_DOWNLOADS_LICENSE'] = "Lizenz";
-$_ARRAYLANG['TXT_DOWNLOADS_VERSION'] = "Version";
-$_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'] = "Verwandte Downloads";
-$_ARRAYLANG['TXT_DOWNLOADS_PROTECTED_DOWNLOAD'] = "Geschützter Download";
-$_ARRAYLANG['TXT_DOWNLOADS_YES'] = "Ja";
-$_ARRAYLANG['TXT_DOWNLOADS_NO'] = "Nein";
-$_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'] = "Erfolgreich gelöscht";
-$_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'] = "Fehler beim löschen";
-$_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] = "Download bearbeiten";
-$_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'] = "Verfügbare Benutzergruppen";
-$_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'] = "Zugewiesene Benutzergruppen";
-$_ARRAYLANG['TXT_DOWNLOADS_SOURCE'] = "Source";
-$_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'] = "Verfügbare Downloads";
-$_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'] = "Zugewiesene Downloads";
-$_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
-$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'] = "Downloads";
-$_ARRAYLANG['TXT_DOWNLOADS_ICONS'] = "Icons";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_ID'] = "Eindeutige ID";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_NAME'] = "Name des Downloads";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_DESC'] = "Beschreibung";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_TYPE'] = "Download-Typ (image, text, media, archive, applikation)";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_SIZE'] = "Grösse (KB)";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_IMG'] = "Screenshot/Vorschaubild";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_AUTHOR'] = "Autor";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_CREATED'] = "Datum der Erstellung";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_LICENSE'] = "Lizenz";
-$_ARRAYLANG['TXT_PLACEHOLDER_FILE_VERSION'] = "Version";
-$_ARRAYLANG['TXT_PLACEHOLDER_CATEGORY_ID'] = "Eindeutige ID";
-$_ARRAYLANG['TXT_PLACEHOLDER_CATEGORY_NAME'] = "Name der Kategorie";
-$_ARRAYLANG['TXT_PLACEHOLDER_CATEGORY_DESC'] = "Beschreibung";
-$_ARRAYLANG['TXT_PLACEHOLDER_ICON_DISPLAY'] = "Ausgabe: block oder none. Je nach Einstellung: Icons oder keine Icons";
-$_ARRAYLANG['TXT_PLACEHOLDER_ICON_FILTERS'] = "Filter/Suche-Icon (filter.gif)";
-$_ARRAYLANG['TXT_PLACEHOLDER_ICON_INFO'] = "Information-Icon (info.gif)";
-$_ARRAYLANG['TXT_PLACEHOLDER_ICON_CATEGORY'] = "Kategorie-Icon (category.gif oder das Kategoriebild)";
-$_ARRAYLANG['TXT_PLACEHOLDER_ICON_FILE'] = "Datei/File-Icon. Je nach Downlaodtyp: file.gif, archive.gif, image.gif, media.gif, text.gif";
-$_ARRAYLANG['TXT_PLACEHOLDER_ICON_DOWNLOAD'] = "Download-Icon/Button. Je nach Anmeldung: download.gif oder lock.gif";
 
-$_ARRAYLANG['TXT_DOWNLOADS_FILTER'] = "Suche";
-$_ARRAYLANG['TXT_DOWNLOADS_DESIGN'] = "Design / Icon-Sets";
-$_ARRAYLANG['TXT_DOWNLOADS_NO_ICONS'] = "Keine Icons";
-$_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
 
 
 class downloads extends DownloadsLibrary
@@ -172,12 +93,145 @@ class downloads extends DownloadsLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
+
+// new placeholders
+$_ARRAYLANG['TXT_DOWNLOADS_NEW'] = 'Neu';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ALL_ACCESS_DESC'] = 'Jeder der auf eine der zugeordneten Kategorien Zugriff hat, ist berechtigt auf diesen Download zuzugreifen.';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_SELECTED_ACCESS_DESC'] = 'Nur ausgewählte Gruppen dürfen auf diesen Download zugreifen.';
+$_ARRAYLANG['TXT_DOWNLOADS_LOCAL_FILE'] = 'Lokale Datei';
+$_ARRAYLANG['TXT_DOWNLOADS_URL'] = 'URL';
+$_ARRAYLANG['TXT_DOWNLOADS_BYTES'] = 'Bytes';
+$_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_CATEGORIES'] = 'Verfügbare Kategorien';
+$_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_CATEGORIES'] = 'Zugewiesene Kategorien';
+$_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_DOWNLOAD'] = 'Beim Aktualisieren des Downloads trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_CATEGORY'] = 'Beim Aktualisieren der Kategorie trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_DOWNLOAD'] = 'Beim Hinzufügen des Downloads trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_CATEGORY'] = 'Beim Hinzufügen der Kategorie trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_LOCALES'] = 'Beim Speichern des Beschreibung trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Zugriffsberechtigungen trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_CATEGORY_ASSOCIATIONS'] = 'Beim Speichern der Kategoriezugehörigkeiten trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_RELATIONS'] = 'Beim Speichern der Verwanten Downloads trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_DOWNLOAD_DESC'] = 'Klicken Sie hier, um diesen Download zu deaktivieren. ';
+$_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_DOWNLOAD_DESC'] = 'Klicken Sie hier, um diesen Download zu aktivieren. ';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'] = 'Herunter laden';
+$_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD'] = 'Möchten Sie den Download %s wirklich löschen?';
+$_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOADS'] = 'Möchten Sie die ausgewählten Downloads wirklich löschen?';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_SUCCESS'] = 'Der Download <strong>%s</strong> wurde erfolgreich gelöscht. ';
+$_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_DOWNLOAD'] = 'Sie sind nicht berechtigt den Download %s zu löschen!';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_FAILED'] = 'Beim Löschen des Downloads <strong>%s</strong> trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_FAILED'] = 'Die Reihenfolge der Downloads <strong>%s</strong> konnte nicht geändert werden!';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_SUCCESS'] = 'Die Reihenfolge der Downloads wurde erfolgreich geändert.';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_DELETE_SUCCESS'] = 'Die Downloads wurden erfolgreich gelöscht.';
+$_ARRAYLANG['TXT_DOWNLOADS_CHANGE_SORT_DIRECTION'] = 'Sortierreihenfolge ändern';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'] = 'Diesen Download immer auflisten, auch wenn der aktuelle Benutzer keine Zugriffsberechtigung darauf hat.';
+
+
+
+
+
+// those might exist already
+$_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'] = "Undefiniert";
+$_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'] = "Bild";
+$_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'] = "Text";
+$_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'] = "Archiv";
+$_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'] = "Applikation";
+
+
+
+
+
+$_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
+$_ARRAYLANG['TXT_ADD_CATEGORY'] = "Kategorie hinzufügen";
+$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_PLACEHOLDER'] = "Platzhalter";
+$_ARRAYLANG['TXT_MANAGE_FILES'] = "Dateien verwalten";
+$_ARRAYLANG['TXT_ADD_FILE'] = "Dateie hinzufügen";
+$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'] = "Downloads verwalten";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'] = "Download hinzufügen";
+$_ARRAYLANG['TXT_LANGUAGES'] = "Sprachen";
+$_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'] = "Sprache";
+$_ARRAYLANG['TXT_NAME'] = "Name";
+$_ARRAYLANG['TXT_DESCRIPTION'] = "Beschreibung";
+$_ARRAYLANG['TXT_IMAGE'] = "Bild";
+$_ARRAYLANG['TXT_BROWSE'] = "Durchsuchen";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'] = "Erfolgreich hinzugefügt";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'] = "Fehler beim speichern";
+$_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'] = "Autor";
+$_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'] = "Zugriffsberechtigungen";
+$_ARRAYLANG['TXT_REMOVE_SELECTION'] = "Auswahl entfernen";
+$_ARRAYLANG['TXT_SELECT_ACTION'] = "Aktion auswählen";
+$_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] = "Kategorie bearbeiten";
+$_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'] = "Erfolgreich aktualisiert";
+$_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FAILED'] = "Fehler beim Speichern";
+$_ARRAYLANG['TXT_DOWNLOADS_ORDER'] = "Reihenfolge";
+$_ARRAYLANG['TXT_DOWNLOADS_FILE'] = "Datei";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Kategorien";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'] = "Kategorie";
+$_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'] = "Hinzugefügte Kategorien";
+$_ARRAYLANG['TXT_DOWNLOADS_FILES'] = "Dateien";
+$_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
+$_ARRAYLANG['TXT_DOWNLOADS_TYPE'] = "Typ";
+
+$_ARRAYLANG['TXT_DOWNLOADS_FILEINFO'] = "Info";
+$_ARRAYLANG['TXT_DOWNLOADS_SIZE'] = "Grösse";
+$_ARRAYLANG['TXT_DOWNLOADS_LICENSE'] = "Lizenz";
+$_ARRAYLANG['TXT_DOWNLOADS_VERSION'] = "Version";
+$_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'] = "Verwandte Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_PROTECTED_DOWNLOAD'] = "Geschützter Download";
+$_ARRAYLANG['TXT_DOWNLOADS_YES'] = "Ja";
+$_ARRAYLANG['TXT_DOWNLOADS_NO'] = "Nein";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'] = "Erfolgreich gelöscht";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'] = "Fehler beim löschen";
+$_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] = "Download bearbeiten";
+$_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'] = "Verfügbare Benutzergruppen";
+$_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'] = "Zugewiesene Benutzergruppen";
+$_ARRAYLANG['TXT_DOWNLOADS_SOURCE'] = "Source";
+$_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'] = "Verfügbare Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'] = "Zugewiesene Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'] = "Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_ICONS'] = "Icons";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_ID'] = "Eindeutige ID";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_NAME'] = "Name des Downloads";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_DESC'] = "Beschreibung";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_TYPE'] = "Download-Typ (image, text, media, archive, applikation)";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_SIZE'] = "Grösse (KB)";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_IMG'] = "Screenshot/Vorschaubild";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_AUTHOR'] = "Autor";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_CREATED'] = "Datum der Erstellung";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_LICENSE'] = "Lizenz";
+$_ARRAYLANG['TXT_PLACEHOLDER_FILE_VERSION'] = "Version";
+$_ARRAYLANG['TXT_PLACEHOLDER_CATEGORY_ID'] = "Eindeutige ID";
+$_ARRAYLANG['TXT_PLACEHOLDER_CATEGORY_NAME'] = "Name der Kategorie";
+$_ARRAYLANG['TXT_PLACEHOLDER_CATEGORY_DESC'] = "Beschreibung";
+$_ARRAYLANG['TXT_PLACEHOLDER_ICON_DISPLAY'] = "Ausgabe: block oder none. Je nach Einstellung: Icons oder keine Icons";
+$_ARRAYLANG['TXT_PLACEHOLDER_ICON_FILTERS'] = "Filter/Suche-Icon (filter.gif)";
+$_ARRAYLANG['TXT_PLACEHOLDER_ICON_INFO'] = "Information-Icon (info.gif)";
+$_ARRAYLANG['TXT_PLACEHOLDER_ICON_CATEGORY'] = "Kategorie-Icon (category.gif oder das Kategoriebild)";
+$_ARRAYLANG['TXT_PLACEHOLDER_ICON_FILE'] = "Datei/File-Icon. Je nach Downlaodtyp: file.gif, archive.gif, image.gif, media.gif, text.gif";
+$_ARRAYLANG['TXT_PLACEHOLDER_ICON_DOWNLOAD'] = "Download-Icon/Button. Je nach Anmeldung: download.gif oder lock.gif";
+
+$_ARRAYLANG['TXT_DOWNLOADS_FILTER'] = "Suche";
+$_ARRAYLANG['TXT_DOWNLOADS_DESIGN'] = "Design / Icon-Sets";
+$_ARRAYLANG['TXT_DOWNLOADS_NO_ICONS'] = "Keine Icons";
+$_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
+
+
+
+
+
+
+
+
+
+
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/downloads/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=downloads&act=categories'>".$_ARRAYLANG['TXT_MANAGE_CATEGORIES']."</a>
-                                                        <a href='index.php?cmd=downloads&act=files'>".$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS']."</a>
-                                                        <a href='index.php?cmd=downloads&act=placeholder'>".$_ARRAYLANG['TXT_PLACEHOLDER']."</a>
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=downloads'>".$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW']."</a>
+                                                        <a href='index.php?cmd=downloads&act=categories'>".$_ARRAYLANG['TXT_MANAGE_CATEGORIES']."</a>
+                                                        <a href='index.php?cmd=downloads&act=download'>".$_ARRAYLANG['TXT_DOWNLOADS_NEW']."</a>
                                                         <a href='index.php?cmd=downloads&act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>
                                                         ");
         parent::__construct();
@@ -199,37 +253,56 @@ class downloads extends DownloadsLibrary
         }
 
         switch ($_REQUEST['act']) {
-            case 'files':
-                $this->_files();
-                break;
+//            case 'files':
+//                $this->_files();
+//                break;
 
             case 'delete_category':
+                $this->parseCategoryNavigation();
                 $this->deleteCategory();
                 $this->categories();
                 break;
 
             case 'switch_category_status':
+                $this->parseCategoryNavigation();
                 $this->switchCategoryStatus();
                 $this->categories();
                 break;
 
             case 'categories':
+                $this->parseCategoryNavigation();
                 $this->categories();
                 break;
             case 'category':
+                $this->parseCategoryNavigation();
                 $this->category();
                 break;
-            case 'placeholder':
-                $this->_placeholder();
+
+            case 'download':
+                $this->download();
                 break;
+
+            case 'delete_download':
+                $this->deleteDownload();
+                $this->downloads();
+                break;
+
+            case 'switch_download_status':
+                $this->switchDownloadStatus();
+                $this->downloads();
+                break;
+
+//            case 'placeholder':
+//                $this->_placeholder();
+//                break;
             case 'settings':
                 $this->_settings();
                 break;
-            case 'download':
-                $this->_download();
-                break;
+//            case 'download_old':
+//                $this->_download();
+//                break;
             default:
-                $this->categories();
+                $this->downloads();
                 break;
         }
 
@@ -339,24 +412,12 @@ class downloads extends DownloadsLibrary
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
             }
-
-                // TODO: add store methode
-
-//                foreach ($arrCategory['tmp_permissions'] as $permission => $arrPermission) {
-//                    //$this->setProtection($arrPermission['protected'], $arrCategory[$permission.'_access_id'], $arrPermission['groups']);
-//                }
-
-
-
-
-
-
         } else {
             $objCategory->setParentId(isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0);
         }
 
-        $this->_pageTitle = $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'];
-        $this->_objTpl->loadTemplateFile('module_downloads_category_modify.html');
+        $this->_pageTitle = $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'];
+        $this->_objTpl->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_category_modify', 'module_downloads_category_modify.html');
 
         /*
 TXT_DOWNLOADS_GENERAL
@@ -437,7 +498,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
         $this->_objTpl->setVariable(array(
             'DOWNLOADS_CATEGORY_ID'                         => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_PARENT_ID'                  => $objCategory->getParentId(),
-            'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'],
+            'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'],
             'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
             'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(142, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
             'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $objCategory->getDeletableByOwner() ? 'checked="checked"' : '',
@@ -635,6 +696,7 @@ $this->_objTpl->setVariable(array(
 //            'VALUE_ID' => $category,
 //        ));
 
+        $this->_objTpl->parse('module_downloads_category_modify');
     }
 
 
@@ -682,514 +744,970 @@ $this->_objTpl->setVariable(array(
 //        return $arrPermissions;
 //    }
 
-
-    /**
-     * download edit
-     *
-     * @global object $objDatabase
-     * @global array $_ARRAYLANG
-     */
-    function _download()
+    private function downloads()
     {
-        global $_ARRAYLANG, $objDatabase;
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'];
-        $this->_objTpl->loadTemplateFile('download.html');
+        global $_ARRAYLANG, $_LANGID, $_CONFIG;
 
-        $download_id = intval($_REQUEST["id"]);
-        $DownloadInfo = $this->_FileInfo($download_id);
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'];
+        $this->_objTpl->loadTemplateFile('module_downloads_downloads.html');
 
-        if ($DownloadInfo["file_name"]!="") {
-            $RadioFile_1 = "checked";
-        } else {
-            $RadioFile_2 = "checked";
-        }
+        $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $orderDirection = !empty($_GET['sort']) ? $_GET['sort'] : 'asc';
+        $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'order';
+        $arrOrder[$orderBy] = $orderDirection;
 
-        $languageTabsSource = '';
-        $languageTabsNavi = '';
-        $fieldsArray = array();
-        $LiClass = 'active';
-        $StyleDisplay = 'block';
-        foreach ($this->_arrLang as $langId => $LangInfo) {
-            $fieldsArray = array('file_name_'.$langId => array('name' => $_ARRAYLANG['TXT_NAME'], 'value' => $DownloadInfo['file_loc']['lang'][$langId]['name'], 'rte' => 0), 'file_desc_'.$langId => array('name' => $_ARRAYLANG['TXT_DESCRIPTION'], 'value' => $DownloadInfo['file_loc']['lang'][$langId]['desc'], 'rte' => 2));
-            $languageTabsSource .= $this->_LangTabHTML($LangInfo['name'], 'display: '.$StyleDisplay.';', $LangInfo['name'], $fieldsArray);
-            $languageTabsNavi .= '<li><a id="addEntry_'.$LangInfo['name'].'" class="'.$LiClass.'" href="javascript:{}" onclick="selectTab(\''.$LangInfo['name'].'\')" title="'.$LangInfo['name'].'" style="display: inline;">'.$LangInfo['name'].'</a></li>';
-            $LiClass = 'inactive';
-            $StyleDisplay = 'none';
-// TODO: Never used
-//            $js_arr .= 'arrTabToDiv["addEntry_'.$LangInfo['name'].'"] = "'.$LangInfo['name'].'"; ';
-        }
-        $languageTabsNavi = '<ul id="tabmenu">'.$languageTabsNavi.'</ul>';
+        if (isset($_POST['downloads_download_select_action'])) {
+            switch ($_POST['downloads_download_select_action']) {
+                case 'order':
+                    $this->updateDownloadOrder(isset($_POST['downloads_download_order']) && is_array($_POST['downloads_download_order']) ? $_POST['downloads_download_order'] : array());
+                    break;
 
-        $TypeSelected_1 = '';
-        $TypeSelected_2 = '';
-        $TypeSelected_3 = '';
-        $TypeSelected_4 = '';
-        switch ($DownloadInfo["file_type"]) {
-            case "image":
-                $TypeSelected_1 = 'selected';
-                break;
-            case "text":
-                $TypeSelected_2 = 'selected';
-                break;
-            case "media":
-                $TypeSelected_3 = 'selected';
-                break;
-            case "archive":
-                $TypeSelected_4 = 'selected';
-                break;
-        }
-
-        $ValueCategories = '';
-        $ValueAddedCategories = '';
-
-        $query = "
-            SELECT category_id
-            FROM ".DBPREFIX."module_downloads_categories
-            ORDER BY category_order";
-        $objResult = $objDatabase->Execute($query);
-
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $CategoryInfo = $this->_CategoryInfo($objResult->fields["category_id"]);
-                $added = false;
-                for($xx=0; $xx<count($DownloadInfo['file_categories']); $xx++) {
-                    if ($DownloadInfo['file_categories'][$xx]['id']==$objResult->fields["category_id"]) {
-                        $added = true;
-                    }
-                }
-                if ($added) {
-                    $ValueAddedCategories .= '<option value="'.$objResult->fields["category_id"].'">'.$CategoryInfo['category_loc'][0]['name'].'</option>\n';
-                } else {
-                    $ValueCategories .= '<option value="'.$objResult->fields["category_id"].'">'.$CategoryInfo['category_loc'][0]['name'].'</option>\n';
-                }
-                $objResult->MoveNext();
+                case 'delete':
+                    $this->deleteDownloads(isset($_POST['downloads_download_id']) && is_array($_POST['downloads_download_id']) ? $_POST['downloads_download_id'] : array());
+                    break;
             }
         }
 
-        $protected_yes = '';
-        $protected_no = '';
-        if ($DownloadInfo["file_protected"]==1) {
-            $protected_yes = 'checked';
-        } else {
-            $protected_no = 'checked';
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
+            'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
+        ));
+
+        // parse sorting
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_SORT_DIRECTION'      => $orderDirection,
+            'DOWNLOADS_SORT_BY'             => $orderBy,
+            'DOWNLOADS_SORT_ID'             => ($orderBy == 'id' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_SORT_STATUS'         => ($orderBy == 'is_active' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_SORT_ORDER'          => ($orderBy == 'order' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_SORT_NAME'           => ($orderBy == 'name' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_SORT_DESCRIPTION'    => ($orderBy == 'description' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_SORT_AUTHOR'         => ($orderBy == 'author' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_SORT_SOURCE'         => ($orderBy == 'source' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_ID'                  => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($orderBy == 'id' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_STATUS'              => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($orderBy == 'is_active' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_ORDER'               => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'].($orderBy == 'order' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_NAME'                => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($orderBy == 'name' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_DESCRIPTION'         => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'].($orderBy == 'description' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'].($orderBy == 'author' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_SOURCE'              => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'].($orderBy == 'source' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : '')
+        ));
+
+        $this->_objTpl->setVariable(array(
+            'TXT_DOWNLOADS_CHANGE_SORT_DIRECTION'   => $_ARRAYLANG['TXT_DOWNLOADS_CHANGE_SORT_DIRECTION'],
+            'TXT_DOWNLOADS_DOWNLOADS'               => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
+            'TXT_DOWNLOADS_ORDER'                   => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+            'TXT_DOWNLOADS_FUNCTIONS'               => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
+            'TXT_DOWNLOADS_DOWNLOAD'                => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
+            'TXT_DOWNLOADS_CHECK_ALL'               => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+            'TXT_DOWNLOADS_UNCHECK_ALL'             => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+            'TXT_DOWNLOADS_SELECT_ACTION'           => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
+            'DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT' => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD'])),
+            'DOWNLOADS_CONFIRM_DELETE_DOWNLOADS_TXT'    => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOADS'])),
+            'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'  => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE']
+        ));
+
+
+        //$this->parseLetterIndexList('index.php?cmd=access&amp;act=user&amp;groupId='.$groupId.'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter='.$userRoleFilter, 'username_filter', $usernameFilter);
+
+        $objDownload = new Download();
+        $objDownload->loadDownloads($filter = null, $search = null, $arrOrder, $arrAttributes = null, $_CONFIG['corePagingLimit'], $limitOffset);
+        $downloadCount = $objDownload->getFilteredSearchDownloadCount();
+        if ($downloadCount > $_CONFIG['corePagingLimit']) {
+            $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&amp;cmd=downloads&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
         }
 
-        // --------------
-        // Frontend Groups
-        $valueGroups = '';
-        $valueAddedGroups = '';
-        //$arrAssignedFrontendGroups=$this->_getAssignedGroups($groupType="frontend",$pageId);
+        $nr = 0;
+        while (!$objDownload->EOF)
+        {
+            $description = $objDownload->getDescription($_LANGID);
+            if (strlen($description) > 200) {
+                $description = substr($description, 0, 197).'...';
+            }
+
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_ROW_CLASS'          => $nr++ % 2 ? 'row1' : 'row2',
+                'DOWNLOADS_DOWNLOAD_ID'                 => $objDownload->getId(),
+                'DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC' => $objDownload->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_DOWNLOAD_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_DOWNLOAD_DESC'],
+                'DOWNLOADS_DOWNLOAD_STATUS_LED'         => $objDownload->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                'DOWNLOADS_DOWNLOAD_ORDER'              => $objDownload->getOrder(),
+                'DOWNLOADS_DOWNLOAD_ICON'               => $objDownload->getIcon(),
+                'DOWNLOADS_DOWNLOAD_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_NAME_JS'            => htmlspecialchars($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_DESCRIPTION'        => htmlentities($description),
+                'DOWNLOADS_DOWNLOAD_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_SOURCE'             => htmlentities($objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET),
+            ));
+
+            $this->_objTpl->parse('downloads_download_list');
+
+            $objDownload->next();
+        }
+
+    }
+
+    private function deleteDownload()
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $objDownload = new Download();
+        $objDownload->load(isset($_GET['id']) ? $_GET['id'] : 0);
+
+        if (!$objDownload->EOF) {
+            $name = '<strong>'.htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
+            if ($objDownload->delete()) {
+                $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_SUCCESS'], $name);
+            } else {
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
+            }
+        }
+    }
+
+    private function deleteDownloads($arrDownloadIds)
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $succeded = true;
+
+        $objDownload = new Download();
+        foreach ($arrDownloadIds as $downloadId) {
+            $objDownload->load($downloadId);
+
+            if (!$objDownload->EOF) {
+                if (!$objDownload->delete()) {
+                    $succeded = false;
+                    $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
+                }
+            }
+        }
+
+        if ($succeded) {
+            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_DELETE_SUCCESS'];
+        }
+    }
+
+    private function switchDownloadStatus()
+    {
+        $objDownload = new Download();
+        $objDownload->load(isset($_GET['id']) ? intval($_GET['id']) : 0);
+        if (!$objDownload->EOF) {
+            $objDownload->setActiveStatus(!$objDownload->getActiveStatus());
+            $objDownload->store();
+        }
+    }
+
+    private function updateDownloadOrder($arrDownloadOrder)
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $arrFailedDownloads = array();
+
+        $objDownload = new Download();
+        foreach ($arrDownloadOrder as $downloadId => $orderNr) {
+            $objDownload->load($downloadId);
+            if (!$objDownload->EOF) {
+                $objDownload->setOrder($orderNr);
+                if (!$objDownload->store()) {
+                    $arrFailedDownloads[] = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                }
+            }
+        }
+
+        if (count($arrFailedDownloads)) {
+            $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_FAILED'], implode(', ', $arrFailedDownloads));
+        } else {
+            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_SUCCESS'];
+        }
+    }
+
+    private function download()
+    {
+        global $_ARRAYLANG, $objLanguage, $_LANGID;
 
         $objFWUser = FWUser::getFWUserObject();
-        $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend'));
-        while (!$objGroup->EOF) {
-            $added = false;
-            for($xx=0; $xx<count($DownloadInfo['file_access_groups']); $xx++) {
-                if ($DownloadInfo['file_access_groups'][$xx]['id']==$objGroup->getId()) {
-                    $added = true;
-                }
-            }
-            if ($added) {
-                $valueAddedGroups .="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+        $objDownload = new Download();
+        $objDownload->load(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+        $categoryId = isset($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
+
+        $arrAssociatedGroupOptions = array();
+        $arrNotAssociatedGroupOptions = array();
+        $arrAssociatedGroups = array();
+        $arrAssociatedCategoryOptions = array();
+        $arrNotAssociatedCategoryOptions = array();
+        $arrAssociatedCategories = array();
+        $arrAssociatedDownloadOptions = array();
+        $arrNotAssociatedDownloadOptions = array();
+        $arrAssociatedDownloads = array();
+
+
+        if (!isset($objLanguages)) {
+            $objLanguages = new FWLanguage();
+        }
+
+        if (isset($_POST['downloads_download_save'])) {
+            $objDownload->setNames(isset($_POST['downloads_download_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name'])) : array());
+            $objDownload->setDescriptions(isset($_POST['downloads_download_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_description'])) : array());
+            $objDownload->setType(isset($_POST['downloads_download_type']) ? contrexx_stripslashes($_POST['downloads_download_type']) : '');
+            $objDownload->setSource(isset($_POST['downloads_download_'.$objDownload->getType().'_source']) ? contrexx_stripslashes($_POST['downloads_download_'.$objDownload->getType().'_source']) : '');
+            $objDownload->setActiveStatus(!empty($_POST['downloads_download_is_active']));
+            $objDownload->setMimeType(isset($_POST['downloads_download_mime_type']) ? contrexx_stripslashes($_POST['downloads_download_mime_type']) : '');
+            $objDownload->setSize(isset($_POST['downloads_download_size']) ? intval($_POST['downloads_download_size']) : '');
+            $objDownload->setLicense(isset($_POST['downloads_download_license']) ? contrexx_stripslashes($_POST['downloads_download_license']) : '');
+            $objDownload->setVersion(isset($_POST['downloads_download_version']) ? contrexx_stripslashes($_POST['downloads_download_version']) : '');
+            $objDownload->setAuthor(isset($_POST['downloads_download_author']) ? contrexx_stripslashes($_POST['downloads_download_author']) : '');
+            $objDownload->setImage(isset($_POST['downloads_download_image']) ? contrexx_stripslashes($_POST['downloads_download_image']) : '');
+            $objDownload->setVisibility(!empty($_POST['downloads_download_visibility']));
+            $objDownload->setProtection(!empty($_POST['downloads_download_access']));
+            $objDownload->setGroups($objDownload->getProtection() && !empty($_POST['downloads_download_access_associated_groups']) ? array_map('intval', $_POST['downloads_download_access_associated_groups']) : array());
+            $objDownload->setCategories(!empty($_POST['downloads_download_associated_categories']) ? array_map('intval', $_POST['downloads_download_associated_categories']) : array());
+
+            if ($objDownload->store()) {
+                return $this->downloads();
             } else {
-                $valueGroups .="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
+            }
+        }
+
+        $this->_pageTitle = $objDownload->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'] : $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'];
+        $this->_objTpl->loadTemplateFile('module_downloads_download_modify.html');
+
+        $this->_objTpl->setVariable(array(
+            'TXT_DOWNLOADS_GENERAL' => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
+            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
+            'TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'        => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'],
+            'TXT_DOWNLOADS_NAME'                            => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            'TXT_DOWNLOADS_DESCRIPTION'                     => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            'TXT_DOWNLOADS_SOURCE'                          => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'],
+            'TXT_DOWNLOADS_LOCAL_FILE'                      => $_ARRAYLANG['TXT_DOWNLOADS_LOCAL_FILE'],
+            'TXT_DOWNLOADS_URL'                             => $_ARRAYLANG['TXT_DOWNLOADS_URL'],
+            'TXT_DOWNLOADS_BROWSE'                          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
+            'TXT_DOWNLOADS_ACTIVE'                          => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
+            'TXT_DOWNLOADS_TYPE'                            => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
+            'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
+            'TXT_DOWNLOADS_BYTES'                           => $_ARRAYLANG['TXT_DOWNLOADS_BYTES'],
+            'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
+            'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
+            'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_IMAGE'                           => $_ARRAYLANG['TXT_DOWNLOADS_IMAGE'],
+            'TXT_DOWNLOADS_CATEGORIES'                      => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
+            'TXT_DOWNLOADS_AVAILABLE_CATEGORIES'            => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_CATEGORIES'],
+            'TXT_DOWNLOADS_ASSIGNED_CATEGORIES'             => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_CATEGORIES'],
+            'TXT_DOWNLOADS_RELATED_DOWNLOADS'               => $_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'],
+            'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'             => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
+            'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'              => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
+            'TXT_DOWNLOADS_DOWNLOAD_ALL_ACCESS_DESC'        => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ALL_ACCESS_DESC'],
+            'TXT_DOWNLOADS_DOWNLOAD_SELECTED_ACCESS_DESC'   => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_SELECTED_ACCESS_DESC'],
+            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'           => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
+            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'            => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
+            'TXT_DOWNLOADS_CHECK_ALL'                       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+            'TXT_DOWNLOADS_UNCHECK_ALL'                     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+            'TXT_DOWNLOADS_CANCEL'                          => $_ARRAYLANG['TXT_DOWNLOADS_CANCEL'],
+            'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE']
+        ));
+
+
+        // parse id
+        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
+
+        // parse name and description attributres
+        if (!isset($arrLanguages)) {
+            $arrLanguages = $objLanguage->getLanguageArray();
+        }
+        foreach ($arrLanguages as $langId => $arrLanguage) {
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_NAME'       => htmlentities($objDownload->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_LANG_ID'    => $langId,
+                'DOWNLOADS_DOWNLOAD_LANG_NAME'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_download_name_list');
+
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_DESCRIPTION'        => htmlentities($objDownload->getDescription($langId), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_LANG_ID'            => $langId,
+                'DOWNLOADS_DOWNLOAD_LANG_DESCRIPTION'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_download_description_list');
+        }
+
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_NAME'   => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DOWNLOADS_EXTENDED'    => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
+        ));
+        $this->_objTpl->parse('downloads_download_name');
+
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($objDownload->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
+        ));
+        $this->_objTpl->parse('downloads_download_description');
+
+
+        // parse type
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_TYPE_FILE_CHECKED'          => $objDownload->getType() == 'file' ? 'checked="checked"' : '',
+            'DOWNLOADS_DOWNLOAD_TYPE_URL_CHECKED'           => $objDownload->getType() == 'url' ? 'checked="checked"' : '',
+            'DOWNLOADS_DOWNLOAD_FILE_SOURCE'                => $objDownload->getType() == 'file' ? htmlentities($objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET) : '',
+            'DOWNLOADS_DOWNLOAD_URL_SOURCE'                 => $objDownload->getType() == 'url' ? htmlentities($objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET) : 'http://',
+            'DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY'   => $objDownload->getType() == 'file' ? '' : 'none',
+            'DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY'    => $objDownload->getType() == 'url' ? '' : 'none'
+        ));
+
+
+        // parse active status
+        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED', $objDownload->getActiveStatus() ? 'checked="checked"' : '');
+
+
+        // parse mime type
+        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_MIME_TYPE_MENU', $this->getDownloadMimeTypeMenu($objDownload->getMimeType()));
+
+
+        // parse size
+        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_SIZE', $objDownload->getSize());
+
+
+        // parse license
+        $this->_objTpl->setVariable('DOWNLOADs_DOWNLOAD_LICENSE', htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET));
+
+
+        // parse version
+        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_VERSION', htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET));
+
+
+        // parse author
+        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_AUTHOR', htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET));
+
+
+        // parse image attribute
+        $image = $objDownload->getImage();
+        if (!empty($image) && file_exists(ASCMS_PATH.$image)) {
+            if (file_exists(ASCMS_PATH.$image.'.thumb')) {
+                $imageSrc = $image.'.thumb';
+            } else {
+                $imageSrc = $image;
+            }
+        } else {
+            $image = '';
+            $imageSrc = $this->defaultDownloadImage['src'];
+        }
+
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_IMAGE'                  => $image,
+            'DOWNLOADS_DOWNLOAD_IMAGE_SRC'              => $imageSrc,
+            'DOWNLOADS_DEFAULT_DOWNLOAD_IMAGE'          => $this->defaultDownloadImage['src'],
+            'DOWNLOADS_DEFAULT_DOWNLOAD_IMAGE_WIDTH'    => $this->defaultDownloadImage['width'].'px',
+            'DOWNLOADS_DEFAULT_DOWNLOAD_IMAGE_HEIGHT'   => $this->defaultDownloadImage['height'].'px',
+            'DOWNLOADS_DOWNLOAD_IMAGE_REMOVE_DISPLAY'   => empty($image) ? 'none' : ''
+        ));
+
+
+        // parse associated categories
+        $arrCategories = $this->getParsedCategoryListForDownloadAssociation();
+        $arrAssociatedCategories = $objDownload->getAssociatedCategoryIds();
+        $length = count($arrCategories);
+        for ($i = 0; $i < $length; $i++) {
+            if (// managers are allowed to change the category association
+                Permission::checkAccess(142, 'static', true)
+                // the download isn't associated with the category
+                || !in_array($arrCategories[$i]['id'], $arrAssociatedCategories) && (
+                    // everyone is allowed to associate new files with this category
+                    !$arrCategories[$i]['add_files_access_id']
+                    // only those who have the sufficent permissions are allowed to add new files to this category
+                    || Permission::checkAccess($arrCategories[$i]['add_files_access_id'], 'dynamic', true)
+                )
+                // the download is associated with the category
+                || in_array($arrCategories[$i]['id'], $arrAssociatedCategories) && (
+                    // every body is allowd to delete file associations of this category
+                    !$arrCategories[$i]['manage_files_access_id']
+                    // only those with sufficent permissions are allowed to delete file associations of this category
+                    || Permission::checkAccess($arrCategories[$i]['manage_files_access_id'], 'dynamic', true)
+                )
+                // the owner is allowed to change the file associations of the category
+                || $objFWUser->objUser->login() && $arrCategories[$i]['owner_id'] == $objFWUser->objUser->getId()
+            ) {
+                $disabled = false;
+            } else {
+                $disabled = true;
+            }
+            $option = '<option value="'.$arrCategories[$i]['id'].'"'.($disabled ? ' disabled="disabled"' : '').'>'.str_repeat('&nbsp;', $arrCategories[$i]['level'] * 4).htmlentities($arrCategories[$i]['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+
+            if (in_array($arrCategories[$i]['id'], $arrAssociatedCategories)) {
+                $arrAssociatedCategoryOptions[] = $option;
+            } else {
+                $arrNotAssociatedCategoryOptions[] = $option;
+            }
+        }
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrAssociatedCategoryOptions),
+            'DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions)
+        ));
+
+
+        // parse related downloads
+        //DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_DOWNLOADS
+        //DOWNLOADS_DOWNLOAD_ASSOCIATED_DOWNLOADS
+
+        // parse access permissions
+        if ($objDownload->getAccessId()) {
+            $objGroup = $objFWUser->objGroup->getGroups(array('dynamic', $objDownload->getAccessId()));
+            $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
+        } elseif ($objDownload->getProtection()) {
+            $arrAssociatedGroups = $objDownload->getAccessGroupIds();
+            print_r($arrAssociatedGroups);
+        } else {
+            //$arrAssociatedCategories = $objDownload->getAssociatedCategoryIds();
+            if (count($arrAssociatedCategories)) {
+                $objCategory = Category::getCategories(array('id' => $arrAssociatedCategories), null, null, array('id', 'read_access_id'));
+                while (!$objCategory->EOF) {
+                    if ($objCategory->getReadAccessId()) {
+                        $objGroup = $objFWUser->objGroup->getGroups(array('dynamic', $objCategory->getReadAccessId()));
+                        $arrAssociatedGroups = array_merge($arrAssociatedGroups, $objGroup->getLoadedGroupIds());
+                    }
+                    $objCategory->next();
+                }
+            } else {
+                // TODO: WHY THAT?
+                $objGroup = $objFWUser->objGroup->getGroups();
+                $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
+            }
+        }
+
+        $objGroup = $objFWUser->objGroup->getGroups();
+        while (!$objGroup->EOF) {
+            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+
+            if (/*$objDownload->getProtection() || */in_array($objGroup->getId(), $arrAssociatedGroups)) {
+                $arrAssociatedGroupOptions[] = $option;
+            } else {
+                $arrNotAssociatedGroupOptions[] = $option;
             }
 
             $objGroup->next();
         }
 
-        // related downloads
-        // ------------------------
-        $query = "
-                SELECT file_id, file_name
-                FROM ".DBPREFIX."module_downloads_files
-                ORDER BY file_name";
-        $objResult = $objDatabase->Execute($query);
-        $ValueDownloads = '';
-        $ValueAddedDownloads = '';
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $fileInfo = $this->_FileInfo($objResult->fields["file_id"]);
-                $added = false;
-                for($xx=0; $xx<count($DownloadInfo['file_related_files']); $xx++) {
-                    if ($DownloadInfo['file_related_files'][$xx]['id']==$objResult->fields["file_id"]) {
-                        $added = true;
-                    }
-                }
-
-                $fileName = $fileInfo["file_name"];
-                if ($fileName=="") {
-                    $fileName = $fileInfo["file_url"];
-                }
-
-                if ($added) {
-                    $ValueAddedDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].'</option>';
-                } else {
-                    if ($fileInfo["file_id"]!=$DownloadInfo["file_id"]) {
-                        $ValueDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].'</option>';
-                    }
-                }
-                $objResult->MoveNext();
-            }
-        }
-
-        if ($DownloadInfo["file_name"]=="") {
-            $js_fileswitch = "FileSwitch('DIVfile_url', 'DIVfile_source');";
-        }
-
-        if ($DownloadInfo["file_protected"]==0) {
-            $js_groupselect = 'HideGroupSelect();';
-        }
-
-        if ($DownloadInfo["file_state"]==1) {
-            $state_checked = 'checked';
-        } else {
-            $state_checked = '';
-        }
-
         $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_EDIT_DOWNLOAD' => $_ARRAYLANG["TXT_DOWNLOADS_EDIT_DOWNLOAD"],
-            'TXT_MANAGE_FILES' => $_ARRAYLANG['TXT_MANAGE_FILES'],
-            'TXT_ADD_FILE' => $_ARRAYLANG['TXT_ADD_FILE'],
-            'TXT_DOWNLOADS_MANAGE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'],
-            'TXT_DOWNLOADS_ADD_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'],
-            'TXT_AUTHOR' => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_FILE' => $_ARRAYLANG['TXT_DOWNLOADS_FILE'],
-            'TXT_IMAGE' => $_ARRAYLANG['TXT_IMAGE'],
-            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
-            'TXT_LANGUAGES' => $_ARRAYLANG['TXT_LANGUAGES'],
-            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_SEARCH' => $_ARRAYLANG['TXT_SEARCH'],
-            'TXT_DOWNLOADS_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
-            'TXT_DOWNLOADS_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
-            'TXT_DOWNLOADS_ADDED_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'],
-            'TXT_DOWNLOADS_FILES' => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
-            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
-            'TXT_DOWNLOADS_TYPE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
-            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
-            'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
-            'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-            'TXT_SELECT_ACTION' => $_ARRAYLANG['TXT_SELECT_ACTION'],
-            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
-            'TXT_CONFIRM_DELETE' => $_ARRAYLANG['TXT_CONFIRM_DELETE'],
-            'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            'TXT_DOWNLOADS_TYPE_IMAGE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'],
-            'TXT_DOWNLOADS_TYPE_TEXT' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'],
-            'TXT_DOWNLOADS_TYPE_MEDIA' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'],
-            'TXT_DOWNLOADS_TYPE_ARCHIVE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'],
-            'TXT_DOWNLOADS_TYPE_APPLICATION'=> $_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'],
-            'TXT_DOWNLOADS_FILEINFO' => $_ARRAYLANG['TXT_DOWNLOADS_FILEINFO'],
-            'TXT_DOWNLOADS_SIZE' => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
-            'TXT_DOWNLOADS_LICENSE' => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
-            'TXT_DOWNLOADS_VERSION' => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
-            'TXT_DOWNLOADS_TYPE_UNDEFINED' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'],
-            'TXT_DOWNLOADS_RELATED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'],
-            'TXT_DOWNLOADS_PROTECTED_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_PROTECTED_DOWNLOAD'],
-            'TXT_DOWNLOADS_YES' => $_ARRAYLANG['TXT_DOWNLOADS_YES'],
-            'TXT_DOWNLOADS_NO' => $_ARRAYLANG['TXT_DOWNLOADS_NO'],
-            'DOWNLOAD_ID' => $download_id,
-            'RADIO_FILE_1' => $RadioFile_1,
-            'RADIO_FILE_2' => $RadioFile_2,
-            'DOWNLOAD_FILENAME' => $DownloadInfo["file_name"],
-            'DOWNLOAD_URL' => $DownloadInfo["file_url"],
-            'LANG_TABS' => $languageTabsSource,
-            'LANG_TAB_NAVI' => $languageTabsNavi,
-            'DOWNLOAD_TYPE_SELECTED_1' => $TypeSelected_1,
-            'DOWNLOAD_TYPE_SELECTED_2' => $TypeSelected_2,
-            'DOWNLOAD_TYPE_SELECTED_3' => $TypeSelected_3,
-            'DOWNLOAD_TYPE_SELECTED_4' => $TypeSelected_4,
-            'DOWNLOAD_FILE_SIZE' => $DownloadInfo["file_size"],
-            'DOWNLOAD_FILE_LICENSE' => $DownloadInfo["file_license"],
-            'DOWNLOAD_FILE_VERSION' => $DownloadInfo["file_version"],
-            'DOWNLOAD_FILE_AUTOR' => $DownloadInfo["file_autor"],
-            'DOWNLOAD_FILE_IMG' => $DownloadInfo["file_img"],
-            'VALUE_CATEGORIES' => $ValueCategories,
-            'VALUE_ADDED_CATEGORIES' => $ValueAddedCategories,
-            'DOWNLOAD_FILE_PROTECTED_YES' => $protected_yes,
-            'DOWNLOAD_FILE_PROTECTED_NO' => $protected_no,
-            'VALUE_GROUPS' => $valueGroups,
-            'VALUE_ADDED_GROUPS' => $valueAddedGroups,
-            'VALUE_DOWNLOADS' => $ValueDownloads,
-            'VALUE_ADDED_DOWNLOADS' => $ValueAddedDownloads,
-            'JS_FILESWITCH' => $js_fileswitch,
-            'JS_GROUPSELECT' => $js_groupselect,
-            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
-            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
-            'TXT_DOWNLOADS_SOURCE' => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'],
-            'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
-            'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
-            'STATE_CHECKED' => $state_checked,
+            'DOWNLOADS_DOWNLOAD_ACCESS_ALL_CHECKED'              => !$objDownload->getProtection() ? 'checked="checked"' : '',
+            'DOWNLOADS_DOWNLOAD_ACCESS_SELECTED_CHECKED'         => $objDownload->getProtection() ? 'checked="checked"' : '',
+            'DOWNLOADS_DOWNLOAD_ACCESS_DISPLAY'                  => $objDownload->getProtection() ? '' : 'none',
+            'DOWNLOADS_DOWNLOAD_ACCESS_ASSOCIATED_GROUPS'        => implode("\n", $arrAssociatedGroupOptions),
+            'DOWNLOADS_DOWNLOAD_ACCESS_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupOptions),
+            'DOWNLOADS_DOWNLOAD_VISIBILITY_CHECKED'              => $objDownload->getVisibility() ? 'checked="checked"' : ''
+        ));
+
+
+        // parse cancel link
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_CANCEL_LINK_SECITON'    => $categoryId ? 'categories' : 'downloads',
+            'DOWNLOADS_PARENT_CATEGORY_ID'              => $categoryId
         ));
     }
 
-
-    /**
-     * files
-     *
-     * @global object $objDatabase
-     * @global array $_ARRAYLANG
-     */
-    function _files()
-    {
-        global $_ARRAYLANG, $objDatabase;
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'];
-        $this->_objTpl->loadTemplateFile('files.html');
-
-        if ($_REQUEST["deletefiles"]=="exe") {
-            $Deleted = true;
-            for($i=0; $i<=count($_REQUEST["selectedFileId"]); $i++) {
-                if (intval($_REQUEST["selectedFileId"][$i])>0) {
-                    if (!$this->_DeleteDownload(intval($_REQUEST["selectedFileId"][$i]))) {
-                        $Deleted = false;
-                    }
-                }
-            }
-            if ($Deleted) {
-                $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
-            } else {
-                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
-            }
-        }
-
-        if (isset($_REQUEST["mode"])) {
-
-            // INSERT
-            // ---------------------------------
-            if ($_REQUEST["mode"] == "insert") {
-                $InserFile = $this->InsertFile();
-                if ($InserFile) {
-                    $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'];
-                } else {
-                    $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'];
-                }
-            }
-
-            // UPDATE
-            // ---------------------------------
-            if ($_REQUEST["mode"] == "update") {
-                $UpdateDownload = $this->UpdateDownload();
-                if ($UpdateDownload) {
-                    $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
-                } else {
-                    $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FAILED'];
-                }
-            }
-
-            // DELETE
-            // ---------------------------------
-            if ($_REQUEST["mode"] == "delete") {
-                if (intval($_REQUEST["download"])>0) {
-                    if ($this->_DeleteDownload(intval($_REQUEST["download"]))) {
-                        $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
-                    } else {
-                        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
-                    }
-                }
-            }
-        }
-
-        $checkboxesSource = '';
-        $languageTabsSource = '';
-        $languageTabsNavi = '';
-        $fieldsArray = array();
-        $LiClass = 'active';
-        $StyleDisplay = 'block';
-        $LangSelectValue = '';
-        foreach ($this->_arrLang as $langId => $LangInfo) {
-            $fieldsArray = array('file_name_'.$langId => array('name' => $_ARRAYLANG['TXT_NAME'], 'value' => '', 'rte' => 0), 'file_desc_'.$langId => array('name' => $_ARRAYLANG['TXT_DESCRIPTION'], 'value' => '', 'rte' => 2));
-            $languageTabsSource .= $this->_LangTabHTML($LangInfo['name'], 'display: '.$StyleDisplay.';', $LangInfo['name'], $fieldsArray);
-            $languageTabsNavi .= '<li><a id="addEntry_'.$LangInfo['name'].'" class="'.$LiClass.'" href="javascript:{}" onclick="selectTab(\''.$LangInfo['name'].'\')" title="'.$LangInfo['name'].'" style="display: inline;">'.$LangInfo['name'].'</a></li>';
-            $checkboxesSource .= '<td><input checked="checked" name="frmEditEntry_Languages[]" value="'.$langId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$LangInfo['name'].'\');" type="checkbox" />'.$LangInfo['name'].' ['.$LangInfo['lang'].']</td>';
-            $LiClass = 'inactive';
-            $StyleDisplay = 'none';
-// TODO: Never used
-//            $js_arr .= 'arrTabToDiv["addEntry_'.$LangInfo['name'].'"] = "'.$LangInfo['name'].'"; ';
-
-            $LangSelectValue .= '<option value="'.$langId.'">'.$LangInfo['name'].'</option>';
-
-        }
-        $languageTabsNavi = '<ul id="tabmenu">'.$languageTabsNavi.'</ul>';
-        $GroupsSelect = $this->_permissionsSelect('AddFileForm');
-
-        $ValueCategories = '';
-
-        $query = "
-            SELECT category_id
-            FROM ".DBPREFIX."module_downloads_categories
-            ORDER BY category_order";
-        $objResult = $objDatabase->Execute($query);
-
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $CategoryInfo = $this->_CategoryInfo($objResult->fields["category_id"]);
-
-                if (intval($_REQUEST["category"])==$objResult->fields["category_id"]) {
-                    $selectedtext = 'selected';
-                } else {
-                    $selectedtext = '';
-                }
-
-                $ValueCategories .= '<option value="'.$objResult->fields["category_id"].'" '.$selectedtext.'>'.$CategoryInfo['category_loc'][0]['name'].'</option>\n';
-                $objResult->MoveNext();
-            }
-        }
-
-        $CategoriesSelect = '<select name="category" style="width: 300px;">';
-        $CategoriesSelect .= '<option value=""> --- '.$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'].' --- </option>';
-        $CategoriesSelect .= $ValueCategories;
-        $CategoriesSelect .= '</select>';
-
-        $LangSelect = '<select name="lang" style="width: 300px;">';
-        $LangSelect .= '<option value=""> --- '.$_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'].' --- </option>';
-        $LangSelect .= $LangSelectValue;
-        $LangSelect .= '</select>';
-
-        // Files list
-        // ---------------------------------
-        if (intval($_REQUEST["category"])>0) {
-            $query = "
-                SELECT rel_file, rel_category, file_id, file_name
-                FROM ".DBPREFIX."module_downloads_rel_files_cat
-                JOIN ".DBPREFIX."module_downloads_files ON ".DBPREFIX."module_downloads_rel_files_cat.rel_file=".DBPREFIX."module_downloads_files.file_id
-                WHERE rel_category=".intval($_REQUEST["category"])."
-                ORDER BY file_name";
-        } else {
-            $query = "
-                SELECT file_id, file_name, rel_file
-                FROM ".DBPREFIX."module_downloads_files
-                LEFT JOIN ".DBPREFIX."module_downloads_rel_files_cat ON ".DBPREFIX."module_downloads_files.file_id=".DBPREFIX."module_downloads_rel_files_cat.rel_file
-                WHERE rel_file is NULL
-                ORDER BY file_name";
-        }
-
-        $objResult = $objDatabase->Execute($query);
-        $ValueDownloads = '';
-        if ($objResult) {
-            $this->_objTpl->setCurrentBlock('filesList');
-            $i = 0;
-            while (!$objResult->EOF) {
-
-                $fileInfo = $this->_FileInfo($objResult->fields["file_id"]);
-
-                $ValueDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].' ('.$fileInfo["file_name"].')</option>';
-
-                $fileName = $fileInfo["file_name"];
-                if ($fileInfo["file_name"]=="") {
-                    $fileName = $fileInfo["file_url"];
-                }
-
-                if ($fileInfo["file_state"]==1) {
-                    $file_state = '<img src="/cadmin/images/icons/status_green.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATUS'].'" />';
-                } else {
-                    $file_state = '<img src="/cadmin/images/icons/status_red.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATUS'].'" />';
-                }
-
-                $this->_objTpl->setVariable(array(
-                        'ROWCLASS' =>($i % 2) ? 'row1' : 'row2',
-                        'FILE_ID' => $fileInfo["file_id"],
-                        'FILE_NAME' => $fileInfo["file_loc"][0]["name"]."",
-                        'FILE_TYPE' => $fileInfo["file_type"],
-                        'FILE_AUTOR' => $fileInfo["file_autor"],
-                        'FILE_SOURCE' => $fileName,
-                        'FILE_STATE' => $file_state,
-                ));
-                $this->_objTpl->parse('filesList');
-                $i++;
-                $objResult->MoveNext();
-            }
-        }
-
-        // Value Downloads
-        // ---------------------------------
-         $ValueDownloads = '';
-         $query = "
-                SELECT file_id, file_name
-                FROM ".DBPREFIX."module_downloads_files WHERE file_state=1
-                ORDER BY file_name, file_type";
-        $objResult = $objDatabase->Execute($query);
-         if ($objResult) {
-             while (!$objResult->EOF) {
-                 $fileInfo = $this->_FileInfo($objResult->fields["file_id"]);
-                 $ValueDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].'</option>';
-                 $objResult->MoveNext();
-             }
-         }
-
-        // Frontend Groups
-        $valueGroups = '';
-        //$arrAssignedFrontendGroups=$this->_getAssignedGroups($groupType="frontend",$pageId);
-        $objFWUser = FWUser::getFWUserObject();
-        $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend'));
-        while (!$objGroup->EOF) {
-            $valueGroups.="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
-            $objGroup->next();
-        }
-
-        $this->_objTpl->setVariable(array(
-            'TXT_MANAGE_FILES' => $_ARRAYLANG['TXT_MANAGE_FILES'],
-            'TXT_ADD_FILE' => $_ARRAYLANG['TXT_ADD_FILE'],
-            'TXT_DOWNLOADS_MANAGE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'],
-            'TXT_DOWNLOADS_ADD_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'],
-            'TXT_AUTHOR' => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_FILE' => $_ARRAYLANG['TXT_DOWNLOADS_FILE'],
-            'TXT_IMAGE' => $_ARRAYLANG['TXT_IMAGE'],
-            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
-            'TXT_LANGUAGES' => $_ARRAYLANG['TXT_LANGUAGES'],
-            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_SEARCH' => $_ARRAYLANG['TXT_SEARCH'],
-            'TXT_DOWNLOADS_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
-            'TXT_DOWNLOADS_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
-            'TXT_DOWNLOADS_ADDED_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'],
-            'TXT_DOWNLOADS_FILES' => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
-            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
-            'TXT_DOWNLOADS_TYPE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
-            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
-            'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
-            'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-            'TXT_SELECT_ACTION' => $_ARRAYLANG['TXT_SELECT_ACTION'],
-            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
-            'TXT_CONFIRM_DELETE' => $_ARRAYLANG['TXT_CONFIRM_DELETE'],
-            'TXT_ACTION_IS_IRREVERSIBLE'=> $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            'TXT_DOWNLOADS_TYPE_IMAGE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'],
-            'TXT_DOWNLOADS_TYPE_TEXT' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'],
-            'TXT_DOWNLOADS_TYPE_MEDIA' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'],
-            'TXT_DOWNLOADS_TYPE_ARCHIVE'=> $_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'],
-            'TXT_DOWNLOADS_TYPE_APPLICATION'=> $_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'],
-            'TXT_DOWNLOADS_FILEINFO' => $_ARRAYLANG['TXT_DOWNLOADS_FILEINFO'],
-            'TXT_DOWNLOADS_SIZE' => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
-            'TXT_DOWNLOADS_LICENSE' => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
-            'TXT_DOWNLOADS_VERSION' => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
-            'TXT_DOWNLOADS_TYPE_UNDEFINED' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'],
-            'TXT_DOWNLOADS_RELATED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'],
-            'TXT_DOWNLOADS_PROTECTED_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_PROTECTED_DOWNLOAD'],
-            'TXT_DOWNLOADS_YES' => $_ARRAYLANG['TXT_DOWNLOADS_YES'],
-            'TXT_DOWNLOADS_NO' => $_ARRAYLANG['TXT_DOWNLOADS_NO'],
-            'LANG_SELECT' => $checkboxesSource,
-            'LANG_TABS' => $languageTabsSource,
-            'LANG_TAB_NAVI' => $languageTabsNavi,
-            'GROUP_SELECT' => $GroupsSelect,
-            'VALUE_CATEGORIES' => $ValueCategories,
-// TODO: Undefined
+//    /**
+//     * download edit
+//     *
+//     * @global object $objDatabase
+//     * @global array $_ARRAYLANG
+//     */
+//    function _download()
+//    {
+//        global $_ARRAYLANG, $objDatabase;
+//        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'];
+//        $this->_objTpl->loadTemplateFile('download.html');
+//
+//        $download_id = intval($_REQUEST["id"]);
+//        $DownloadInfo = $this->_FileInfo($download_id);
+//
+//        if ($DownloadInfo["file_name"]!="") {
+//            $RadioFile_1 = "checked";
+//        } else {
+//            $RadioFile_2 = "checked";
+//        }
+//
+//        $languageTabsSource = '';
+//        $languageTabsNavi = '';
+//        $fieldsArray = array();
+//        $LiClass = 'active';
+//        $StyleDisplay = 'block';
+//        foreach ($this->_arrLang as $langId => $LangInfo) {
+//            $fieldsArray = array('file_name_'.$langId => array('name' => $_ARRAYLANG['TXT_NAME'], 'value' => $DownloadInfo['file_loc']['lang'][$langId]['name'], 'rte' => 0), 'file_desc_'.$langId => array('name' => $_ARRAYLANG['TXT_DESCRIPTION'], 'value' => $DownloadInfo['file_loc']['lang'][$langId]['desc'], 'rte' => 2));
+//            $languageTabsSource .= $this->_LangTabHTML($LangInfo['name'], 'display: '.$StyleDisplay.';', $LangInfo['name'], $fieldsArray);
+//            $languageTabsNavi .= '<li><a id="addEntry_'.$LangInfo['name'].'" class="'.$LiClass.'" href="javascript:{}" onclick="selectTab(\''.$LangInfo['name'].'\')" title="'.$LangInfo['name'].'" style="display: inline;">'.$LangInfo['name'].'</a></li>';
+//            $LiClass = 'inactive';
+//            $StyleDisplay = 'none';
+//// TODO: Never used
+////            $js_arr .= 'arrTabToDiv["addEntry_'.$LangInfo['name'].'"] = "'.$LangInfo['name'].'"; ';
+//        }
+//        $languageTabsNavi = '<ul id="tabmenu">'.$languageTabsNavi.'</ul>';
+//
+//        $TypeSelected_1 = '';
+//        $TypeSelected_2 = '';
+//        $TypeSelected_3 = '';
+//        $TypeSelected_4 = '';
+//        switch ($DownloadInfo["file_type"]) {
+//            case "image":
+//                $TypeSelected_1 = 'selected';
+//                break;
+//            case "text":
+//                $TypeSelected_2 = 'selected';
+//                break;
+//            case "media":
+//                $TypeSelected_3 = 'selected';
+//                break;
+//            case "archive":
+//                $TypeSelected_4 = 'selected';
+//                break;
+//        }
+//
+//        $ValueCategories = '';
+//        $ValueAddedCategories = '';
+//
+//        $query = "
+//            SELECT category_id
+//            FROM ".DBPREFIX."module_downloads_categories
+//            ORDER BY category_order";
+//        $objResult = $objDatabase->Execute($query);
+//
+//        if ($objResult) {
+//            while (!$objResult->EOF) {
+//                $CategoryInfo = $this->_CategoryInfo($objResult->fields["category_id"]);
+//                $added = false;
+//                for($xx=0; $xx<count($DownloadInfo['file_categories']); $xx++) {
+//                    if ($DownloadInfo['file_categories'][$xx]['id']==$objResult->fields["category_id"]) {
+//                        $added = true;
+//                    }
+//                }
+//                if ($added) {
+//                    $ValueAddedCategories .= '<option value="'.$objResult->fields["category_id"].'">'.$CategoryInfo['category_loc'][0]['name'].'</option>\n';
+//                } else {
+//                    $ValueCategories .= '<option value="'.$objResult->fields["category_id"].'">'.$CategoryInfo['category_loc'][0]['name'].'</option>\n';
+//                }
+//                $objResult->MoveNext();
+//            }
+//        }
+//
+//        $protected_yes = '';
+//        $protected_no = '';
+//        if ($DownloadInfo["file_protected"]==1) {
+//            $protected_yes = 'checked';
+//        } else {
+//            $protected_no = 'checked';
+//        }
+//
+//        // --------------
+//        // Frontend Groups
+//        $valueGroups = '';
+//        $valueAddedGroups = '';
+//        //$arrAssignedFrontendGroups=$this->_getAssignedGroups($groupType="frontend",$pageId);
+//
+//        $objFWUser = FWUser::getFWUserObject();
+//        $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend'));
+//        while (!$objGroup->EOF) {
+//            $added = false;
+//            for($xx=0; $xx<count($DownloadInfo['file_access_groups']); $xx++) {
+//                if ($DownloadInfo['file_access_groups'][$xx]['id']==$objGroup->getId()) {
+//                    $added = true;
+//                }
+//            }
+//            if ($added) {
+//                $valueAddedGroups .="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+//            } else {
+//                $valueGroups .="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+//            }
+//
+//            $objGroup->next();
+//        }
+//
+//        // related downloads
+//        // ------------------------
+//        $query = "
+//                SELECT file_id, file_name
+//                FROM ".DBPREFIX."module_downloads_files
+//                ORDER BY file_name";
+//        $objResult = $objDatabase->Execute($query);
+//        $ValueDownloads = '';
+//        $ValueAddedDownloads = '';
+//        if ($objResult) {
+//            while (!$objResult->EOF) {
+//                $fileInfo = $this->_FileInfo($objResult->fields["file_id"]);
+//                $added = false;
+//                for($xx=0; $xx<count($DownloadInfo['file_related_files']); $xx++) {
+//                    if ($DownloadInfo['file_related_files'][$xx]['id']==$objResult->fields["file_id"]) {
+//                        $added = true;
+//                    }
+//                }
+//
+//                $fileName = $fileInfo["file_name"];
+//                if ($fileName=="") {
+//                    $fileName = $fileInfo["file_url"];
+//                }
+//
+//                if ($added) {
+//                    $ValueAddedDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].'</option>';
+//                } else {
+//                    if ($fileInfo["file_id"]!=$DownloadInfo["file_id"]) {
+//                        $ValueDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].'</option>';
+//                    }
+//                }
+//                $objResult->MoveNext();
+//            }
+//        }
+//
+//        if ($DownloadInfo["file_name"]=="") {
+//            $js_fileswitch = "FileSwitch('DIVfile_url', 'DIVfile_source');";
+//        }
+//
+//        if ($DownloadInfo["file_protected"]==0) {
+//            $js_groupselect = 'HideGroupSelect();';
+//        }
+//
+//        if ($DownloadInfo["file_state"]==1) {
+//            $state_checked = 'checked';
+//        } else {
+//            $state_checked = '';
+//        }
+//
+//        $this->_objTpl->setVariable(array(
+//            'TXT_DOWNLOADS_EDIT_DOWNLOAD' => $_ARRAYLANG["TXT_DOWNLOADS_EDIT_DOWNLOAD"],
+//            'TXT_MANAGE_FILES' => $_ARRAYLANG['TXT_MANAGE_FILES'],
+//            'TXT_ADD_FILE' => $_ARRAYLANG['TXT_ADD_FILE'],
+//            'TXT_DOWNLOADS_MANAGE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'],
+//            'TXT_DOWNLOADS_ADD_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'],
+//            'TXT_AUTHOR' => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+//            'TXT_DOWNLOADS_FILE' => $_ARRAYLANG['TXT_DOWNLOADS_FILE'],
+//            'TXT_IMAGE' => $_ARRAYLANG['TXT_IMAGE'],
+//            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
+//            'TXT_LANGUAGES' => $_ARRAYLANG['TXT_LANGUAGES'],
+//            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
+//            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
+//            'TXT_SEARCH' => $_ARRAYLANG['TXT_SEARCH'],
+//            'TXT_DOWNLOADS_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
+//            'TXT_DOWNLOADS_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
+//            'TXT_DOWNLOADS_ADDED_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'],
+//            'TXT_DOWNLOADS_FILES' => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
+//            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+//            'TXT_DOWNLOADS_TYPE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
+//            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
+//            'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
+//            'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
+//            'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+//            'TXT_SELECT_ACTION' => $_ARRAYLANG['TXT_SELECT_ACTION'],
+//            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+//            'TXT_CONFIRM_DELETE' => $_ARRAYLANG['TXT_CONFIRM_DELETE'],
+//            'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+//            'TXT_DOWNLOADS_TYPE_IMAGE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'],
+//            'TXT_DOWNLOADS_TYPE_TEXT' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'],
+//            'TXT_DOWNLOADS_TYPE_MEDIA' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'],
+//            'TXT_DOWNLOADS_TYPE_ARCHIVE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'],
+//            'TXT_DOWNLOADS_TYPE_APPLICATION'=> $_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'],
+//            'TXT_DOWNLOADS_FILEINFO' => $_ARRAYLANG['TXT_DOWNLOADS_FILEINFO'],
+//            'TXT_DOWNLOADS_SIZE' => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
+//            'TXT_DOWNLOADS_LICENSE' => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
+//            'TXT_DOWNLOADS_VERSION' => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
+//            'TXT_DOWNLOADS_TYPE_UNDEFINED' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'],
+//            'TXT_DOWNLOADS_RELATED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'],
+//            'TXT_DOWNLOADS_PROTECTED_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_PROTECTED_DOWNLOAD'],
+//            'TXT_DOWNLOADS_YES' => $_ARRAYLANG['TXT_DOWNLOADS_YES'],
+//            'TXT_DOWNLOADS_NO' => $_ARRAYLANG['TXT_DOWNLOADS_NO'],
+//            'DOWNLOAD_ID' => $download_id,
+//            'RADIO_FILE_1' => $RadioFile_1,
+//            'RADIO_FILE_2' => $RadioFile_2,
+//            'DOWNLOAD_FILENAME' => $DownloadInfo["file_name"],
+//            'DOWNLOAD_URL' => $DownloadInfo["file_url"],
+//            'LANG_TABS' => $languageTabsSource,
+//            'LANG_TAB_NAVI' => $languageTabsNavi,
+//            'DOWNLOAD_TYPE_SELECTED_1' => $TypeSelected_1,
+//            'DOWNLOAD_TYPE_SELECTED_2' => $TypeSelected_2,
+//            'DOWNLOAD_TYPE_SELECTED_3' => $TypeSelected_3,
+//            'DOWNLOAD_TYPE_SELECTED_4' => $TypeSelected_4,
+//            'DOWNLOAD_FILE_SIZE' => $DownloadInfo["file_size"],
+//            'DOWNLOAD_FILE_LICENSE' => $DownloadInfo["file_license"],
+//            'DOWNLOAD_FILE_VERSION' => $DownloadInfo["file_version"],
+//            'DOWNLOAD_FILE_AUTOR' => $DownloadInfo["file_autor"],
+//            'DOWNLOAD_FILE_IMG' => $DownloadInfo["file_img"],
+//            'VALUE_CATEGORIES' => $ValueCategories,
 //            'VALUE_ADDED_CATEGORIES' => $ValueAddedCategories,
-            'CATEGORY_SELECT' => $CategoriesSelect,
-            'LANGUAGE_SELECT' => $LangSelect,
-            'VALUE_DOWNLOADS' => $ValueDownloads,
-            'VALUE_GROUPS' => $valueGroups,
-            'VALUE_ADDED_GROUPS' => '',
-            'VALUE_USER' => $_SESSION['auth']['username'],
-            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
-            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
-            'TXT_DOWNLOADS_SOURCE' => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'],
-            'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
-            'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
-            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
-        ));
-    }
+//            'DOWNLOAD_FILE_PROTECTED_YES' => $protected_yes,
+//            'DOWNLOAD_FILE_PROTECTED_NO' => $protected_no,
+//            'VALUE_GROUPS' => $valueGroups,
+//            'VALUE_ADDED_GROUPS' => $valueAddedGroups,
+//            'VALUE_DOWNLOADS' => $ValueDownloads,
+//            'VALUE_ADDED_DOWNLOADS' => $ValueAddedDownloads,
+//            'JS_FILESWITCH' => $js_fileswitch,
+//            'JS_GROUPSELECT' => $js_groupselect,
+//            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
+//            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
+//            'TXT_DOWNLOADS_SOURCE' => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'],
+//            'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
+//            'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
+//            'STATE_CHECKED' => $state_checked,
+//        ));
+//    }
+
+
+//    /**
+//     * files
+//     *
+//     * @global object $objDatabase
+//     * @global array $_ARRAYLANG
+//     */
+//    function _files()
+//    {
+//        global $_ARRAYLANG, $objDatabase;
+//
+//        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'];
+//        $this->_objTpl->loadTemplateFile('files.html');
+//
+//        if ($_REQUEST["deletefiles"]=="exe") {
+//            $Deleted = true;
+//            for($i=0; $i<=count($_REQUEST["selectedFileId"]); $i++) {
+//                if (intval($_REQUEST["selectedFileId"][$i])>0) {
+//                    if (!$this->_DeleteDownload(intval($_REQUEST["selectedFileId"][$i]))) {
+//                        $Deleted = false;
+//                    }
+//                }
+//            }
+//            if ($Deleted) {
+//                $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
+//            } else {
+//                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
+//            }
+//        }
+//
+//        if (isset($_REQUEST["mode"])) {
+//
+//            // INSERT
+//            // ---------------------------------
+//            if ($_REQUEST["mode"] == "insert") {
+//                $InserFile = $this->InsertFile();
+//                if ($InserFile) {
+//                    $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'];
+//                } else {
+//                    $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'];
+//                }
+//            }
+//
+//            // UPDATE
+//            // ---------------------------------
+//            if ($_REQUEST["mode"] == "update") {
+//                $UpdateDownload = $this->UpdateDownload();
+//                if ($UpdateDownload) {
+//                    $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
+//                } else {
+//                    $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FAILED'];
+//                }
+//            }
+//
+//            // DELETE
+//            // ---------------------------------
+//            if ($_REQUEST["mode"] == "delete") {
+//                if (intval($_REQUEST["download"])>0) {
+//                    if ($this->_DeleteDownload(intval($_REQUEST["download"]))) {
+//                        $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
+//                    } else {
+//                        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
+//                    }
+//                }
+//            }
+//        }
+//
+//        $checkboxesSource = '';
+//        $languageTabsSource = '';
+//        $languageTabsNavi = '';
+//        $fieldsArray = array();
+//        $LiClass = 'active';
+//        $StyleDisplay = 'block';
+//        $LangSelectValue = '';
+//        foreach ($this->_arrLang as $langId => $LangInfo) {
+//            $fieldsArray = array('file_name_'.$langId => array('name' => $_ARRAYLANG['TXT_NAME'], 'value' => '', 'rte' => 0), 'file_desc_'.$langId => array('name' => $_ARRAYLANG['TXT_DESCRIPTION'], 'value' => '', 'rte' => 2));
+//            $languageTabsSource .= $this->_LangTabHTML($LangInfo['name'], 'display: '.$StyleDisplay.';', $LangInfo['name'], $fieldsArray);
+//            $languageTabsNavi .= '<li><a id="addEntry_'.$LangInfo['name'].'" class="'.$LiClass.'" href="javascript:{}" onclick="selectTab(\''.$LangInfo['name'].'\')" title="'.$LangInfo['name'].'" style="display: inline;">'.$LangInfo['name'].'</a></li>';
+//            $checkboxesSource .= '<td><input checked="checked" name="frmEditEntry_Languages[]" value="'.$langId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$LangInfo['name'].'\');" type="checkbox" />'.$LangInfo['name'].' ['.$LangInfo['lang'].']</td>';
+//            $LiClass = 'inactive';
+//            $StyleDisplay = 'none';
+//// TODO: Never used
+////            $js_arr .= 'arrTabToDiv["addEntry_'.$LangInfo['name'].'"] = "'.$LangInfo['name'].'"; ';
+//
+//            $LangSelectValue .= '<option value="'.$langId.'">'.$LangInfo['name'].'</option>';
+//
+//        }
+//        $languageTabsNavi = '<ul id="tabmenu">'.$languageTabsNavi.'</ul>';
+//        $GroupsSelect = $this->_permissionsSelect('AddFileForm');
+//
+//        $ValueCategories = '';
+//
+//        $query = "
+//            SELECT category_id
+//            FROM ".DBPREFIX."module_downloads_categories
+//            ORDER BY category_order";
+//        $objResult = $objDatabase->Execute($query);
+//
+//        if ($objResult) {
+//            while (!$objResult->EOF) {
+//                $CategoryInfo = $this->_CategoryInfo($objResult->fields["category_id"]);
+//
+//                if (intval($_REQUEST["category"])==$objResult->fields["category_id"]) {
+//                    $selectedtext = 'selected';
+//                } else {
+//                    $selectedtext = '';
+//                }
+//
+//                $ValueCategories .= '<option value="'.$objResult->fields["category_id"].'" '.$selectedtext.'>'.$CategoryInfo['category_loc'][0]['name'].'</option>\n';
+//                $objResult->MoveNext();
+//            }
+//        }
+//
+//        $CategoriesSelect = '<select name="category" style="width: 300px;">';
+//        $CategoriesSelect .= '<option value=""> --- '.$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'].' --- </option>';
+//        $CategoriesSelect .= $ValueCategories;
+//        $CategoriesSelect .= '</select>';
+//
+//        $LangSelect = '<select name="lang" style="width: 300px;">';
+//        $LangSelect .= '<option value=""> --- '.$_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'].' --- </option>';
+//        $LangSelect .= $LangSelectValue;
+//        $LangSelect .= '</select>';
+//
+//        // Files list
+//        // ---------------------------------
+//        if (intval($_REQUEST["category"])>0) {
+//            $query = "
+//                SELECT rel_file, rel_category, file_id, file_name
+//                FROM ".DBPREFIX."module_downloads_rel_files_cat
+//                JOIN ".DBPREFIX."module_downloads_files ON ".DBPREFIX."module_downloads_rel_files_cat.rel_file=".DBPREFIX."module_downloads_files.file_id
+//                WHERE rel_category=".intval($_REQUEST["category"])."
+//                ORDER BY file_name";
+//        } else {
+//            $query = "
+//                SELECT file_id, file_name, rel_file
+//                FROM ".DBPREFIX."module_downloads_files
+//                LEFT JOIN ".DBPREFIX."module_downloads_rel_files_cat ON ".DBPREFIX."module_downloads_files.file_id=".DBPREFIX."module_downloads_rel_files_cat.rel_file
+//                WHERE rel_file is NULL
+//                ORDER BY file_name";
+//        }
+//
+//        $objResult = $objDatabase->Execute($query);
+//        $ValueDownloads = '';
+//        if ($objResult) {
+//            $this->_objTpl->setCurrentBlock('filesList');
+//            $i = 0;
+//            while (!$objResult->EOF) {
+//
+//                $fileInfo = $this->_FileInfo($objResult->fields["file_id"]);
+//
+//                $ValueDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].' ('.$fileInfo["file_name"].')</option>';
+//
+//                $fileName = $fileInfo["file_name"];
+//                if ($fileInfo["file_name"]=="") {
+//                    $fileName = $fileInfo["file_url"];
+//                }
+//
+//                if ($fileInfo["file_state"]==1) {
+//                    $file_state = '<img src="/cadmin/images/icons/status_green.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATUS'].'" />';
+//                } else {
+//                    $file_state = '<img src="/cadmin/images/icons/status_red.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATUS'].'" />';
+//                }
+//
+//                $this->_objTpl->setVariable(array(
+//                        'ROWCLASS' =>($i % 2) ? 'row1' : 'row2',
+//                        'FILE_ID' => $fileInfo["file_id"],
+//                        'FILE_NAME' => $fileInfo["file_loc"][0]["name"]."",
+//                        'FILE_TYPE' => $fileInfo["file_type"],
+//                        'FILE_AUTOR' => $fileInfo["file_autor"],
+//                        'FILE_SOURCE' => $fileName,
+//                        'FILE_STATE' => $file_state,
+//                ));
+//                $this->_objTpl->parse('filesList');
+//                $i++;
+//                $objResult->MoveNext();
+//            }
+//        }
+//
+//        // Value Downloads
+//        // ---------------------------------
+//         $ValueDownloads = '';
+//         $query = "
+//                SELECT file_id, file_name
+//                FROM ".DBPREFIX."module_downloads_files WHERE file_state=1
+//                ORDER BY file_name, file_type";
+//        $objResult = $objDatabase->Execute($query);
+//         if ($objResult) {
+//             while (!$objResult->EOF) {
+//                 $fileInfo = $this->_FileInfo($objResult->fields["file_id"]);
+//                 $ValueDownloads .= '<option value="'.$fileInfo["file_id"].'">'.$fileInfo["file_loc"][0]["name"].'</option>';
+//                 $objResult->MoveNext();
+//             }
+//         }
+//
+//        // Frontend Groups
+//        $valueGroups = '';
+//        //$arrAssignedFrontendGroups=$this->_getAssignedGroups($groupType="frontend",$pageId);
+//        $objFWUser = FWUser::getFWUserObject();
+//        $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend'));
+//        while (!$objGroup->EOF) {
+//            $valueGroups.="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+//            $objGroup->next();
+//        }
+//
+//        $this->_objTpl->setVariable(array(
+//            'TXT_MANAGE_FILES' => $_ARRAYLANG['TXT_MANAGE_FILES'],
+//            'TXT_ADD_FILE' => $_ARRAYLANG['TXT_ADD_FILE'],
+//            'TXT_DOWNLOADS_MANAGE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS'],
+//            'TXT_DOWNLOADS_ADD_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'],
+//            'TXT_AUTHOR' => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+//            'TXT_DOWNLOADS_FILE' => $_ARRAYLANG['TXT_DOWNLOADS_FILE'],
+//            'TXT_IMAGE' => $_ARRAYLANG['TXT_IMAGE'],
+//            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
+//            'TXT_LANGUAGES' => $_ARRAYLANG['TXT_LANGUAGES'],
+//            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
+//            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
+//            'TXT_SEARCH' => $_ARRAYLANG['TXT_SEARCH'],
+//            'TXT_DOWNLOADS_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
+//            'TXT_DOWNLOADS_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
+//            'TXT_DOWNLOADS_ADDED_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'],
+//            'TXT_DOWNLOADS_FILES' => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
+//            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+//            'TXT_DOWNLOADS_TYPE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
+//            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
+//            'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
+//            'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
+//            'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+//            'TXT_SELECT_ACTION' => $_ARRAYLANG['TXT_SELECT_ACTION'],
+//            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+//            'TXT_CONFIRM_DELETE' => $_ARRAYLANG['TXT_CONFIRM_DELETE'],
+//            'TXT_ACTION_IS_IRREVERSIBLE'=> $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+//            'TXT_DOWNLOADS_TYPE_IMAGE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'],
+//            'TXT_DOWNLOADS_TYPE_TEXT' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'],
+//            'TXT_DOWNLOADS_TYPE_MEDIA' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'],
+//            'TXT_DOWNLOADS_TYPE_ARCHIVE'=> $_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'],
+//            'TXT_DOWNLOADS_TYPE_APPLICATION'=> $_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'],
+//            'TXT_DOWNLOADS_FILEINFO' => $_ARRAYLANG['TXT_DOWNLOADS_FILEINFO'],
+//            'TXT_DOWNLOADS_SIZE' => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
+//            'TXT_DOWNLOADS_LICENSE' => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
+//            'TXT_DOWNLOADS_VERSION' => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
+//            'TXT_DOWNLOADS_TYPE_UNDEFINED' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'],
+//            'TXT_DOWNLOADS_RELATED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'],
+//            'TXT_DOWNLOADS_PROTECTED_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_PROTECTED_DOWNLOAD'],
+//            'TXT_DOWNLOADS_YES' => $_ARRAYLANG['TXT_DOWNLOADS_YES'],
+//            'TXT_DOWNLOADS_NO' => $_ARRAYLANG['TXT_DOWNLOADS_NO'],
+//            'LANG_SELECT' => $checkboxesSource,
+//            'LANG_TABS' => $languageTabsSource,
+//            'LANG_TAB_NAVI' => $languageTabsNavi,
+//            'GROUP_SELECT' => $GroupsSelect,
+//            'VALUE_CATEGORIES' => $ValueCategories,
+//// TODO: Undefined
+////            'VALUE_ADDED_CATEGORIES' => $ValueAddedCategories,
+//            'CATEGORY_SELECT' => $CategoriesSelect,
+//            'LANGUAGE_SELECT' => $LangSelect,
+//            'VALUE_DOWNLOADS' => $ValueDownloads,
+//            'VALUE_GROUPS' => $valueGroups,
+//            'VALUE_ADDED_GROUPS' => '',
+//            'VALUE_USER' => $_SESSION['auth']['username'],
+//            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
+//            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
+//            'TXT_DOWNLOADS_SOURCE' => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'],
+//            'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
+//            'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
+//            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+//        ));
+//    }
 
 
     private function updateCategoryOrder($parentCategoryId, $arrCategoryOrder)
@@ -1215,6 +1733,16 @@ $this->_objTpl->setVariable(array(
         }
     }
 
+    private function parseCategoryNavigation()
+    {
+        global $_ARRAYLANG;
+
+        $this->_objTpl->loadTemplateFile('module_downloads_category.html');
+        $this->_objTpl->setVariable(array(
+            'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],
+            'TXT_ADD_CATEGORY'      => $_ARRAYLANG['TXT_ADD_CATEGORY']
+        ));
+    }
     /**
      * categories list
      *
@@ -1227,7 +1755,7 @@ $this->_objTpl->setVariable(array(
 
         // TODO: clean up
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'];
-        $this->_objTpl->loadTemplateFile('module_downloads_categories.html');
+        $this->_objTpl->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_categories.html');
 
 
         $parentCategoryId = isset($_REQUEST["parent_id"]) ? intval($_REQUEST["parent_id"]) : 0;
@@ -1261,29 +1789,29 @@ $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
         ));
 
-        // check if user is allowed to add a subcategory
-        if (// managers are allowed to add subcategories
-            Permission::checkAccess(142, 'static', true)
-            // the selected category must be valid to proceed future permission checks.
-            // this is required to protect the overview section from non-admins
-            || $objCategory->getId() && (
-                // the category isn't protected => everyone is allowed to add subcategories
-                !$objCategory->getAddSubcategoriesAccessId()
-                // the category is protected => only those who have the sufficent permissions are allowed to add subcategories
-                || Permission::checkAccess($objCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
-                // the owner is allowed to add subcategories
-                || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
-            )
-        ) {
-            $this->_objTpl->setVariable(array(
-                'DOWNLOADS_CATEGORY_ID' => $objCategory->getId(),
-                // TODO: rename
-                'TXT_ADD_CATEGORY'      => $_ARRAYLANG['TXT_ADD_CATEGORY']
-            ));
-            $this->_objTpl->parse('downloads_category_add_buttom');
-        } else {
-            $this->_objTpl->hideBlock('downloads_category_add_buttom');
-        }
+//        // check if user is allowed to add a subcategory
+//        if (// managers are allowed to add subcategories
+//            Permission::checkAccess(142, 'static', true)
+//            // the selected category must be valid to proceed future permission checks.
+//            // this is required to protect the overview section from non-admins
+//            || $objCategory->getId() && (
+//                // the category isn't protected => everyone is allowed to add subcategories
+//                !$objCategory->getAddSubcategoriesAccessId()
+//                // the category is protected => only those who have the sufficent permissions are allowed to add subcategories
+//                || Permission::checkAccess($objCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
+//                // the owner is allowed to add subcategories
+//                || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+//            )
+//        ) {
+//            $this->_objTpl->setVariable(array(
+//                'DOWNLOADS_CATEGORY_ID' => $objCategory->getId(),
+//                // TODO: rename
+//                //'TXT_ADD_CATEGORY'      => $_ARRAYLANG['TXT_ADD_CATEGORY']
+//            ));
+//            $this->_objTpl->parse('downloads_category_add_buttom');
+//        } else {
+//            $this->_objTpl->hideBlock('downloads_category_add_buttom');
+//        }
 
         // check of it is allowed to change the sort order
         if (// managers are allowed to manage every subcategory
@@ -1335,25 +1863,12 @@ $this->_objTpl->setVariable(array(
             $operateOnSubcategories = false;
         }
 
-        // TODO: clean up
-        $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_STATUS'                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
-            'TXT_DOWNLOADS_ID'                          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
-            'TXT_DOWNLOADS_NAME'                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
-            'TXT_DOWNLOADS_DESCRIPTION'                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
-            'TXT_DOWNLOADS_AUTHOR'                      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_FUNCTIONS'                   => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
-            'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'],
-            'TXT_DOWNLOADS_DELETE_SUBCATEGORIES'        => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'],
-            'TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'],
-            'DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT'     => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'])),
-            'DOWNLOADS_CONFIRM_DELETE_CATEGORIES_TXT'   => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'])),
-            'DOWNLOADS_CATEGORY_COLSPAN'                => $minColspan + $operateOnSubcategories + $changeSortOrder,
+
 
             // rename
-            'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],
+            //'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],
 
-        ));
+
 
         $nr = 0;
         while (!$objSubcategory->EOF) {
@@ -1472,7 +1987,7 @@ $this->_objTpl->setVariable(array(
             }
 
 
-            $description = htmlentities($objSubcategory->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+            $description = $objSubcategory->getDescription($_LANGID);
             if (strlen($description) > 200) {
                 $description = substr($description, 0, 197).'...';
             }
@@ -1483,7 +1998,7 @@ $this->_objTpl->setVariable(array(
                 'DOWNLOADS_CATEGORY_STATUS_LED'     => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
                 'DOWNLOADS_OPEN_CATEGORY_DESC'      => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_CATEGORY_NAME'           => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_CATEGORY_DESCRIPTION'    => $description,
+                'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_CATEGORY_AUTHOR'         => $this->getParsedUsername($objSubcategory->getOwnerId())
             ));
 
@@ -1510,207 +2025,301 @@ $this->_objTpl->setVariable(array(
 
 
 
+
+//        $this->_objTpl->setVariable(array(
+//            'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],
+//            'TXT_ADD_CATEGORY'      => $_ARRAYLANG['TXT_ADD_CATEGORY']
+//        ));
         // TODO: Add file list
 
-        /*
-        // -----------------------------------------
-        // checkboxes & languagetabs 4 languages
-        // -----------------------------------------
-        $checkboxesSource = '';
-        $languageTabsNavi = '';
-        $languageTabsSource = '';
-        $js_arr = '';
-        $fieldsArray = array();
-        $LiClass = 'active';
-        $StyleDisplay = 'block';
-        foreach ($this->_arrLang as $langId => $LangInfo) {
-            if ($category == 0) {
-                $checkboxesSource .= '<td><input checked="checked" name="frmEditEntry_Languages[]" value="'.$langId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$LangInfo['name'].'\');" type="checkbox" />'.$LangInfo['name'].' ['.$LangInfo['lang'].']</td>';
-                $fieldsArray = array('category_name_'.$langId => array('name' => $_ARRAYLANG['TXT_NAME'], 'value' => '', 'rte' => 0), 'category_desc_'.$langId => array('name' => $_ARRAYLANG['TXT_DESCRIPTION'], 'value' => '', 'rte' => 2));
-            } else {
-                // mode==update
-                if ($this->_CatLang($category, $langId)) {
-                    $checked = ' checked="checked"';
-                } else {
-                    $checked = '';
-                }
-                //$checkboxesSource .= '<td><input'.$checked.' name="frmEditEntry_Languages[]" value="'.$langId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$LangInfo['name'].'\');" type="checkbox" />'.$LangInfo['name'].' ['.$LangInfo['lang'].']</td>';
-                $checkboxesSource .= '<td><input checked="checked" name="frmEditEntry_Languages[]" value="'.$langId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$LangInfo['name'].'\');" type="checkbox" />'.$LangInfo['name'].' ['.$LangInfo['lang'].']</td>';
-
-            }
-            $languageTabsNavi .= '<li><a id="addEntry_'.$LangInfo['name'].'" class="'.$LiClass.'" href="javascript:{}" onclick="selectTab(\''.$LangInfo['name'].'\')" title="'.$LangInfo['name'].'" style="display: inline;">'.$LangInfo['name'].'</a></li>';
-            $LiClass = 'inactive';
-            $languageTabsSource .= $this->_LangTabHTML($LangInfo['name'], 'display: '.$StyleDisplay.';', $LangInfo['name'], $fieldsArray);
-            $StyleDisplay = 'none';
-            $js_arr .= 'arrTabToDiv["addEntry_'.$LangInfo['name'].'"] = "'.$LangInfo['name'].'"; ';
+        if ($objCategory->getId() && $objCategory->getAssociatedDownloadsCount()) {
+            $this->parseCategoryDownloads($objCategory);
+            $this->_objTpl->parse('downloads_category_downloads');
+        } else {
+            $this->_objTpl->hideBlock('downloads_category_downloads');
         }
-        $languageTabsNavi = '<ul id="tabmenu">'.$languageTabsNavi.'</ul>';
 
-        // --------------------------------------------
-        // Users / Dropdown-Select
-        // --------------------------------------------
-
-//        $objFWUser = new FWUser();
-//        $objFWUser->objGroup->loadGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null);
-//        while (!$objFWUser->objGroup->EOF) {
-//            $GroupsSelect .= '';
-//
-//            $groupId = $objFWUser->objGroup->getId();
-//            $groupName = $objFWUser->objGroup->getName();
-//
-//            $objFWUser->objGroup->next();
-//        }
-
-
-        $GroupsSelect = $this->_permissionsSelect('AddCategory');
-
+        // TODO: clean up
         $this->_objTpl->setVariable(array(
-            'TXT_LANGUAGES' => $_ARRAYLANG['TXT_LANGUAGES'],
-            'TXT_IMAGE' => $_ARRAYLANG['TXT_IMAGE'],
-            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_AUTHOR' => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
-            'TXT_CONFIRM_DELETE' => $_ARRAYLANG['TXT_CONFIRM_DELETE'],
-            'TXT_ACTION_IS_IRREVERSIBLE'=> $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            'GROUP_SELECT' => $GroupsSelect,
-            'LANG_SELECT' => $checkboxesSource,
-            'LANG_TABS' => $languageTabsSource,
-            'LANG_TAB_NAVI' => $languageTabsNavi,
-            'JS_ARR' => $js_arr,
-            'VALUE_USER' => $_SESSION['auth']['username'],
+            'TXT_DOWNLOADS_STATUS'                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            'TXT_DOWNLOADS_ID'                          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
+            'TXT_DOWNLOADS_NAME'                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            'TXT_DOWNLOADS_DESCRIPTION'                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            'TXT_DOWNLOADS_AUTHOR'                      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_FUNCTIONS'                   => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
+            'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'],
+            'TXT_DOWNLOADS_DELETE_SUBCATEGORIES'        => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'],
+            'TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'],
+            'DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT'     => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'])),
+            'DOWNLOADS_CONFIRM_DELETE_CATEGORIES_TXT'   => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'])),
+            'DOWNLOADS_CATEGORY_COLSPAN'                => $minColspan + $operateOnSubcategories + $changeSortOrder,
         ));
 
-
-*/
+        $this->_objTpl->parse('module_downloads_categories');
     }
 
-    /**
-     * add new file
-     *
-     * @global object $objDatabase
-     * @global array $_CONFIG
-     */
-    function InsertFile()
+    private function parseCategoryDownloads($objCategory)
     {
-        global $objDatabase, $_CONFIG;
+        global $_ARRAYLANG, $_LANGID;
 
-        if ($_REQUEST["file_select"]=="1") {
-            if ($_REQUEST["file_source"]!='') {
-                $FileName = addslashes(strip_tags($_REQUEST["file_source"]));
+        $objDownload = new Download();
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'visibility' => 1));
+
+        $nr = 0;
+        while (!$objDownload->EOF) {
+
+            // parse select checkbox
+            if (true) {
+                $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
+                $this->_objTpl->parse('downloads_download_checkbox');
+            } else {
+                $this->_objTpl->hideBlock('downloads_download_checkbox');
             }
-        } elseif ($_REQUEST["file_select"]=="2") {
-            if ($_REQUEST["file_url"]!='') {
-                $FileName = addslashes(strip_tags($_REQUEST["file_url"]));
-                if (substr($FileName, 0, 7)!='http://' && substr($FileName, 0, 8)!='https://') {
-                    $FileName = 'http://'.$FileName;
-                }
+
+
+            // parse order box
+            if (true) {
+                // TODO: should we use an own order id, just for this category relation
+                $this->_objTpl->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_ID'     => $objDownload->getId(),
+                    'DOWNLOADS_DOWNLOAD_ORDER'  => $objDownload->getOrder()
+                ));
+                $this->_objTpl->parse('downloads_download_orderbox');
+            } else {
+                $this->_objTpl->hideBlock('downloads_download_orderbox');
             }
-        }
 
-        $FileType = addslashes(strip_tags($_REQUEST["file_type"]));
-        $FileSize = addslashes(strip_tags($_REQUEST["file_size"]));
-        $FileLicense = addslashes(strip_tags($_REQUEST["file_license"]));
-        $FileVersion = addslashes(strip_tags($_REQUEST["file_version"]));
-        $FileAuthor = addslashes(strip_tags($_REQUEST["file_author"]));
-        $FileImage = addslashes(strip_tags($_POST['file_image']));
-        $FileAccessID = $_CONFIG['lastAccessId']+1;
+            // parse status link and modify button
+            if (// managers are allowed to manage every download
+                Permission::checkAccess(142, 'static', true)
+                // the selected category must be valid to proceed future permission checks.
+                // this is required to protect the overview section from non-admins
+                || $objCategory->getId() && (
+                    // the category isn't protected => everyone is allowed to modify downloads
+                    !$objCategory->getManageFilesAccessId()
+                    // the category is protected => only those who have the sufficent permissions are allowed to modify downloads
+                    || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                    // the owner of the category is allowed to manage its downloads
+                    || $objCategory->getModifyAccessByOwner() && ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+                )
+                // the owner of the download is allowed to manage it
+                || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objDownload->getOwnerId() == $objFWUser->objUser->getId()
+            ) {
+                $this->_objTpl->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_ID'                     => $objDownload->getId(),
+                    'DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID'     => $objCategory->getId(),
+                    'DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC'     => $objDownload->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_DOWNLOAD_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_DOWNLOAD_DESC'],
+                    'DOWNLOADS_DOWNLOAD_SWITCH_STATUS_IMG_DESC' => $objDownload->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_DOWNLOAD_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_DOWNLOAD_DESC']
+                ));
+                $this->_objTpl->parse('downloads_download_status_link_open');
+                $this->_objTpl->parse('downloads_download_status_link_close');
 
-        srand(microtime()*100000000);
-        $zufall = rand(1000000,9999999);
-        $SourceName = md5($zufall.$FileName);
+                // parse modify icon
+                $this->_objTpl->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_ID'                 => $objDownload->getId(),
+                    'DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID' => $objCategory->getId()
+                ));
+                $this->_objTpl->parse('downloads_download_function_modify_link');
+                $this->_objTpl->hideBlock('downloads_download_function_no_modify_link');
+            } else {
+                $this->_objTpl->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC'     => $objDownload->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE'],
+                    'DOWNLOADS_DOWNLOAD_SWITCH_STATUS_IMG_DESC' => $objDownload->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE']
+                ));
+                $this->_objTpl->hideBlock('downloads_download_status_link_open');
+                $this->_objTpl->hideBlock('downloads_download_status_link_close');
 
-        if ($_REQUEST["protected"]=="1") {
-            $FileProtected = 1;
-        } else {
-            $FileProtected = 0;
-        }
-
-        if ($_REQUEST["file_state"]=="1") {
-            $file_state = 1;
-        } else {
-            $file_state = 0;
-        }
-
-
-        // File
-        // -----------------------------------------------------------------
-        $query = "
-            INSERT INTO ".DBPREFIX."module_downloads_files
-            (`file_name`, `file_type`, `file_size`, `file_img`, `file_autor`, `file_created`, `file_source`, `file_protected`, `file_access_id`, `file_license`, `file_version`, `file_state`) VALUES
-            ('".$FileName."', '".$FileType."', '".$FileSize."', '".$FileImage."', '".$FileAuthor."', now(), '".$SourceName."', '".$FileProtected."', '".$FileAccessID."', '".$FileLicense."', '".$FileVersion."', '".$file_state."')
-        ";
-
-        $objDatabase->Execute($query);
-
-        $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue=".$FileAccessID." WHERE setname='lastAccessId'");
-        require_once(ASCMS_CORE_PATH.'/settings.class.php');
-        $objSettings = new settingsManager();
-        $objSettings->writeSettingsFile();
-
-        $FileId = $objDatabase->Insert_Id();
-
-        // Categories
-        // -----------------------------------------------------------------
-        for($i=0; $i<=count($_REQUEST["assignedCategories"]); $i++) {
-            if (intval($_REQUEST["assignedCategories"][$i])>0) {
-                $query = "
-                        INSERT INTO ".DBPREFIX."module_downloads_rel_files_cat
-                            (`rel_file`, `rel_category`) VALUES
-                            ('".$FileId."', '".$_REQUEST["assignedCategories"][$i]."')
-                ";
-                $objDatabase->Execute($query);
+                // hide modify icon
+                $this->_objTpl->touchBlock('downloads_download_function_no_modify_link');
+                $this->_objTpl->hideBlock('downloads_download_function_modify_link');
             }
-        }
 
-        // Name & Description
-        // -----------------------------------------------------------------
-        //for($i=0; $i<=count($_REQUEST["frmEditEntry_Languages"]); $i++) {
-        foreach (array_keys($this->_arrLang) as $langId) {
-            //$langId = $_REQUEST["frmEditEntry_Languages"][$i];
-            if (intval($langId)>0) {
-                // insert lang
-                // ------------------------------------------------
-                $query = "INSERT INTO ".DBPREFIX."module_downloads_files_lang
-                            SET file='".$FileId."',
-                            language='".$langId."'";
-                $objDatabase->Execute($query);
+            // TODO: parse delete link
 
-                // insert loclaes
-                // ------------------------------------------------
-                $query = "INSERT INTO ".DBPREFIX."module_downloads_files_locales
-                            SET loc_lang='".$langId."',
-                            loc_file='".$FileId."',
-                            loc_name='".addslashes(strip_tags($_POST['file_name_'.$langId]))."',
-                            loc_desc='".addslashes(strip_tags($_POST['file_desc_'.$langId]))."'";
-                $objDatabase->Execute($query);
+            // parse download id
+            $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
+
+
+            // parse download link
+            if (// managers are allowed to delete every download
+                Permission::checkAccess(142, 'static', true)
+                // the selected category must be valid to proceed future permission checks.
+                // this is required to protect the overview section from non-admins
+                || $objCategory->getId() && (
+                    // the category isn't protected => everyone is allowed to delete downloads
+                    !$objCategory->getManageFilesAccessId()
+                    // the category is protected => only those who have the sufficent permissions are allowed to delete downloads
+                    || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                    // the owner of the category is allowed to download its downloads
+                    || $objCategory->getModifyAccessByOwner() && ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+                )
+                // the owner of the download is allowed to delete it
+                || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objDownload->getOwnerId() == $objFWUser->objUser->getId()
+            ) {
+                $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
+                //$this->_objTpl->parse('downloads_download_name_link_open');
+                $this->_objTpl->touchBlock('downloads_download_name_link_close');
+            } else {
+                $this->_objTpl->hideBlock('downloads_download_name_link_open');
+                $this->_objTpl->hideBlock('downloads_download_name_link_close');
             }
-        }
 
-        // Access ID
-        // -----------------------------------------------------------------
-        if ($FileProtected==1) {
-            for($i=0; $i<=count($_REQUEST["assignedGroups"]); $i++) {
-                if (intval($_REQUEST["assignedGroups"][$i])>0) {
-                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."access_group_dynamic_ids
-                    (`access_id`,`group_id`) VALUES
-                    (".$FileAccessID.", ".intval($_REQUEST["assignedGroups"][$i]).")");
-                }
+
+            $description = $objDownload->getDescription($_LANGID);
+            if (strlen($description) > 200) {
+                $description = substr($description, 0, 197).'...';
             }
+
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_NAME'           => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_AUTHOR'         => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_STATUS_LED'     => $objDownload->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                'DOWNLOADS_DOWNLOAD_ROW_CLASS'      => $nr++ % 2 ? 'row1' : 'row2'
+            ));
+
+            $this->_objTpl->parse('downloads_download_list');
+
+            $objDownload->next();
         }
 
-        // Related downloads
-        // -----------------------------------------------------------------
-        for($i=0; $i<=count($_REQUEST["assignedDownloads"]); $i++) {
-            if (intval($_REQUEST["assignedDownloads"][$i])>0) {
-                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_downloads_rel_files_files
-                (`rel_file`,`rel_related`) VALUES
-                (".$FileId.", ".intval($_REQUEST["assignedDownloads"][$i]).")");
-            }
-        }
-
-        return true;
+        $this->_objTpl->setVariable(array(
+            'TXT_DOWNLOADS_ID'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
+            'TXT_DOWNLOADS_STATUS'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            'TXT_DOWNLOADS_ORDER'       => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+            'TXT_DOWNLOADS_NAME'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            'TXT_DOWNLOADS_DESCRIPTION' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            'TXT_DOWNLOADS_AUTHOR'      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_FUNCTIONS'   => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS']
+        ));
     }
+
+//    /**
+//     * add new file
+//     *
+//     * @global object $objDatabase
+//     * @global array $_CONFIG
+//     */
+//    function InsertFile()
+//    {
+//        global $objDatabase, $_CONFIG;
+//
+//        if ($_REQUEST["file_select"]=="1") {
+//            if ($_REQUEST["file_source"]!='') {
+//                $FileName = addslashes(strip_tags($_REQUEST["file_source"]));
+//            }
+//        } elseif ($_REQUEST["file_select"]=="2") {
+//            if ($_REQUEST["file_url"]!='') {
+//                $FileName = addslashes(strip_tags($_REQUEST["file_url"]));
+//                if (substr($FileName, 0, 7)!='http://' && substr($FileName, 0, 8)!='https://') {
+//                    $FileName = 'http://'.$FileName;
+//                }
+//            }
+//        }
+//
+//        $FileType = addslashes(strip_tags($_REQUEST["file_type"]));
+//        $FileSize = addslashes(strip_tags($_REQUEST["file_size"]));
+//        $FileLicense = addslashes(strip_tags($_REQUEST["file_license"]));
+//        $FileVersion = addslashes(strip_tags($_REQUEST["file_version"]));
+//        $FileAuthor = addslashes(strip_tags($_REQUEST["file_author"]));
+//        $FileImage = addslashes(strip_tags($_POST['file_image']));
+//        $FileAccessID = $_CONFIG['lastAccessId']+1;
+//
+//        srand(microtime()*100000000);
+//        $zufall = rand(1000000,9999999);
+//        $SourceName = md5($zufall.$FileName);
+//
+//        if ($_REQUEST["protected"]=="1") {
+//            $FileProtected = 1;
+//        } else {
+//            $FileProtected = 0;
+//        }
+//
+//        if ($_REQUEST["file_state"]=="1") {
+//            $file_state = 1;
+//        } else {
+//            $file_state = 0;
+//        }
+//
+//
+//        // File
+//        // -----------------------------------------------------------------
+//        $query = "
+//            INSERT INTO ".DBPREFIX."module_downloads_files
+//            (`file_name`, `file_type`, `file_size`, `file_img`, `file_autor`, `file_created`, `file_source`, `file_protected`, `file_access_id`, `file_license`, `file_version`, `file_state`) VALUES
+//            ('".$FileName."', '".$FileType."', '".$FileSize."', '".$FileImage."', '".$FileAuthor."', now(), '".$SourceName."', '".$FileProtected."', '".$FileAccessID."', '".$FileLicense."', '".$FileVersion."', '".$file_state."')
+//        ";
+//
+//        $objDatabase->Execute($query);
+//
+//        $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue=".$FileAccessID." WHERE setname='lastAccessId'");
+//        require_once(ASCMS_CORE_PATH.'/settings.class.php');
+//        $objSettings = new settingsManager();
+//        $objSettings->writeSettingsFile();
+//
+//        $FileId = $objDatabase->Insert_Id();
+//
+//        // Categories
+//        // -----------------------------------------------------------------
+//        for($i=0; $i<=count($_REQUEST["assignedCategories"]); $i++) {
+//            if (intval($_REQUEST["assignedCategories"][$i])>0) {
+//                $query = "
+//                        INSERT INTO ".DBPREFIX."module_downloads_rel_files_cat
+//                            (`rel_file`, `rel_category`) VALUES
+//                            ('".$FileId."', '".$_REQUEST["assignedCategories"][$i]."')
+//                ";
+//                $objDatabase->Execute($query);
+//            }
+//        }
+//
+//        // Name & Description
+//        // -----------------------------------------------------------------
+//        //for($i=0; $i<=count($_REQUEST["frmEditEntry_Languages"]); $i++) {
+//        foreach (array_keys($this->_arrLang) as $langId) {
+//            //$langId = $_REQUEST["frmEditEntry_Languages"][$i];
+//            if (intval($langId)>0) {
+//                // insert lang
+//                // ------------------------------------------------
+//                $query = "INSERT INTO ".DBPREFIX."module_downloads_files_lang
+//                            SET file='".$FileId."',
+//                            language='".$langId."'";
+//                $objDatabase->Execute($query);
+//
+//                // insert loclaes
+//                // ------------------------------------------------
+//                $query = "INSERT INTO ".DBPREFIX."module_downloads_files_locales
+//                            SET loc_lang='".$langId."',
+//                            loc_file='".$FileId."',
+//                            loc_name='".addslashes(strip_tags($_POST['file_name_'.$langId]))."',
+//                            loc_desc='".addslashes(strip_tags($_POST['file_desc_'.$langId]))."'";
+//                $objDatabase->Execute($query);
+//            }
+//        }
+//
+//        // Access ID
+//        // -----------------------------------------------------------------
+//        if ($FileProtected==1) {
+//            for($i=0; $i<=count($_REQUEST["assignedGroups"]); $i++) {
+//                if (intval($_REQUEST["assignedGroups"][$i])>0) {
+//                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."access_group_dynamic_ids
+//                    (`access_id`,`group_id`) VALUES
+//                    (".$FileAccessID.", ".intval($_REQUEST["assignedGroups"][$i]).")");
+//                }
+//            }
+//        }
+//
+//        // Related downloads
+//        // -----------------------------------------------------------------
+//        for($i=0; $i<=count($_REQUEST["assignedDownloads"]); $i++) {
+//            if (intval($_REQUEST["assignedDownloads"][$i])>0) {
+//                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_downloads_rel_files_files
+//                (`rel_file`,`rel_related`) VALUES
+//                (".$FileId.", ".intval($_REQUEST["assignedDownloads"][$i]).")");
+//            }
+//        }
+//
+//        return true;
+//    }
 
     /**
      * module settings
@@ -1831,169 +2440,169 @@ $this->_objTpl->setVariable(array(
      */
 
 
-    /**
-     * _DeleteDownload
-     *
-     * @var int    $id
-     * @global object $objDatabase
-     */
-    function _DeleteDownload($id)
-    {
-        global $objDatabase;
-        if (intval($id)>0) {
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_files WHERE file_id=".$id;
-            $objDatabase->Execute($query);
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_files_lang WHERE file=".$id;
-            $objDatabase->Execute($query);
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_files_locales WHERE loc_file=".$id;
-            $objDatabase->Execute($query);
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_cat WHERE rel_file=".$id;
-            $objDatabase->Execute($query);
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_files WHERE rel_file=".$id;
-            $objDatabase->Execute($query);
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    /**
+//     * _DeleteDownload
+//     *
+//     * @var int    $id
+//     * @global object $objDatabase
+//     */
+//    function _DeleteDownload($id)
+//    {
+//        global $objDatabase;
+//        if (intval($id)>0) {
+//            $query = "DELETE FROM ".DBPREFIX."module_downloads_files WHERE file_id=".$id;
+//            $objDatabase->Execute($query);
+//            $query = "DELETE FROM ".DBPREFIX."module_downloads_files_lang WHERE file=".$id;
+//            $objDatabase->Execute($query);
+//            $query = "DELETE FROM ".DBPREFIX."module_downloads_files_locales WHERE loc_file=".$id;
+//            $objDatabase->Execute($query);
+//            $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_cat WHERE rel_file=".$id;
+//            $objDatabase->Execute($query);
+//            $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_files WHERE rel_file=".$id;
+//            $objDatabase->Execute($query);
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
 
-    /**
-     * Update Download
-     *
-     * @global object $objDatabase
-     */
-    function UpdateDownload()
-    {
-        global $objDatabase;
-
-        $FileName = '';
-        $FileUrl = '';
-        $FileId = intval($_REQUEST["id"]);
-        $DownlaodInfo = $this->_FileInfo($FileId);
-
-        if ($_REQUEST["file_select"]=="1") {
-            if ($_REQUEST["file_source"]!='') {
-                $FileName = addslashes(strip_tags($_REQUEST["file_source"]));
-            }
-        } elseif ($_REQUEST["file_select"]=="2") {
-            if ($_REQUEST["file_url"]!='') {
-                $FileUrl = addslashes(strip_tags($_REQUEST["file_url"]));
-                if (substr($FileUrl, 0, 7)!='http://' && substr($FileUrl, 0, 8)!='https://') {
-                    $FileUrl = 'http://'.$FileUrl;
-                }
-            }
-        }
-
-        $FileType = addslashes(strip_tags($_REQUEST["file_type"]));
-        $FileSize = addslashes(strip_tags($_REQUEST["file_size"]));
-        $FileLicense = addslashes(strip_tags($_REQUEST["file_license"]));
-        $FileVersion = addslashes(strip_tags($_REQUEST["file_version"]));
-        $FileAuthor = addslashes(strip_tags($_REQUEST["file_author"]));
-        $FileImage = addslashes(strip_tags($_POST['file_image']));
-
-        if ($_REQUEST["protected"]=="1") {
-            $FileProtected = 1;
-        } else {
-            $FileProtected = 0;
-        }
-
-        if ($_REQUEST["file_state"]=="1") {
-            $file_state = 1;
-        } else {
-            $file_state = 0;
-        }
-
-        // File
-        // -----------------------------------------------------------------
-        $query = "
-              UPDATE ".DBPREFIX."module_downloads_files SET
-                `file_name`='".$FileName."',
-                `file_url`='".$FileUrl."',
-                `file_type`='".$FileType."',
-                `file_size`='".$FileSize."',
-                `file_img`='".$FileImage."',
-                `file_autor`='".$FileAuthor."',
-                `file_protected`='".$FileProtected."',
-                `file_license`='".$FileLicense."',
-                `file_version`='".$FileVersion."',
-                `file_state`='".$file_state."'
-                where file_id=".$FileId."
-        ";
-        $objDatabase->Execute($query);
-
-        // Categories
-        // -----------------------------------------------------------------
-
-        $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_cat WHERE `rel_file`=".$FileId." ";
-        $objDatabase->Execute($query);
-
-        for($i=0; $i<=count($_REQUEST["assignedCategories"]); $i++) {
-            if (intval($_REQUEST["assignedCategories"][$i])>0) {
-                $query = "
-                        INSERT INTO ".DBPREFIX."module_downloads_rel_files_cat
-                            (`rel_file`, `rel_category`) VALUES
-                            ('".$FileId."', '".$_REQUEST["assignedCategories"][$i]."')
-                ";
-                $objDatabase->Execute($query);
-            }
-        }
-
-        // Name & Description
-        // -----------------------------------------------------------------
-        foreach (array_keys($this->_arrLang) as $langId) {
-            if (intval($langId)>0) {
+//    /**
+//     * Update Download
+//     *
+//     * @global object $objDatabase
+//     */
+//    function UpdateDownload()
+//    {
+//        global $objDatabase;
 //
-//                // insert lang
-//                // ------------------------------------------------
-//                $query = "INSERT INTO ".DBPREFIX."module_downloads_files_lang
-//                            SET file='".$FileId."',
-//                            language='".$langId."'";
+//        $FileName = '';
+//        $FileUrl = '';
+//        $FileId = intval($_REQUEST["id"]);
+//        $DownlaodInfo = $this->_FileInfo($FileId);
+//
+//        if ($_REQUEST["file_select"]=="1") {
+//            if ($_REQUEST["file_source"]!='') {
+//                $FileName = addslashes(strip_tags($_REQUEST["file_source"]));
+//            }
+//        } elseif ($_REQUEST["file_select"]=="2") {
+//            if ($_REQUEST["file_url"]!='') {
+//                $FileUrl = addslashes(strip_tags($_REQUEST["file_url"]));
+//                if (substr($FileUrl, 0, 7)!='http://' && substr($FileUrl, 0, 8)!='https://') {
+//                    $FileUrl = 'http://'.$FileUrl;
+//                }
+//            }
+//        }
+//
+//        $FileType = addslashes(strip_tags($_REQUEST["file_type"]));
+//        $FileSize = addslashes(strip_tags($_REQUEST["file_size"]));
+//        $FileLicense = addslashes(strip_tags($_REQUEST["file_license"]));
+//        $FileVersion = addslashes(strip_tags($_REQUEST["file_version"]));
+//        $FileAuthor = addslashes(strip_tags($_REQUEST["file_author"]));
+//        $FileImage = addslashes(strip_tags($_POST['file_image']));
+//
+//        if ($_REQUEST["protected"]=="1") {
+//            $FileProtected = 1;
+//        } else {
+//            $FileProtected = 0;
+//        }
+//
+//        if ($_REQUEST["file_state"]=="1") {
+//            $file_state = 1;
+//        } else {
+//            $file_state = 0;
+//        }
+//
+//        // File
+//        // -----------------------------------------------------------------
+//        $query = "
+//              UPDATE ".DBPREFIX."module_downloads_files SET
+//                `file_name`='".$FileName."',
+//                `file_url`='".$FileUrl."',
+//                `file_type`='".$FileType."',
+//                `file_size`='".$FileSize."',
+//                `file_img`='".$FileImage."',
+//                `file_autor`='".$FileAuthor."',
+//                `file_protected`='".$FileProtected."',
+//                `file_license`='".$FileLicense."',
+//                `file_version`='".$FileVersion."',
+//                `file_state`='".$file_state."'
+//                where file_id=".$FileId."
+//        ";
+//        $objDatabase->Execute($query);
+//
+//        // Categories
+//        // -----------------------------------------------------------------
+//
+//        $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_cat WHERE `rel_file`=".$FileId." ";
+//        $objDatabase->Execute($query);
+//
+//        for($i=0; $i<=count($_REQUEST["assignedCategories"]); $i++) {
+//            if (intval($_REQUEST["assignedCategories"][$i])>0) {
+//                $query = "
+//                        INSERT INTO ".DBPREFIX."module_downloads_rel_files_cat
+//                            (`rel_file`, `rel_category`) VALUES
+//                            ('".$FileId."', '".$_REQUEST["assignedCategories"][$i]."')
+//                ";
 //                $objDatabase->Execute($query);
-
-
-                $query = "UPDATE ".DBPREFIX."module_downloads_files_locales SET
-                            `loc_name`='".addslashes(strip_tags($_POST['file_name_'.$langId]))."',
-                            `loc_desc`='".addslashes(strip_tags($_POST['file_desc_'.$langId]))."'
-                            WHERE `loc_file`=".$FileId." AND `loc_lang`=".$langId."
-                ";
-//                echo($query."<br />");
-                $objDatabase->Execute($query);
-            }
-        }
-
-        // Access ID
-        // -----------------------------------------------------------------
-
-        $query = "DELETE FROM ".DBPREFIX."access_group_dynamic_ids WHERE `access_id`=".$DownlaodInfo["file_access_id"]." ";
-        $objDatabase->Execute($query);
-
-        if ($FileProtected==1) {
-            for($i=0; $i<=count($_REQUEST["assignedGroups"]); $i++) {
-                if (intval($_REQUEST["assignedGroups"][$i])>0) {
-                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."access_group_dynamic_ids
-                    (`access_id`,`group_id`) VALUES
-                    (".$DownlaodInfo["file_access_id"].", ".intval($_REQUEST["assignedGroups"][$i]).")");
-                }
-            }
-        }
-
-        // Related downloads
-        // -----------------------------------------------------------------
-
-        $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_files WHERE `rel_file`=".$FileId." ";
-        $objDatabase->Execute($query);
-
-        for($i=0; $i<=count($_REQUEST["assignedDownloads"]); $i++) {
-            if (intval($_REQUEST["assignedDownloads"][$i])>0) {
-                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_downloads_rel_files_files
-                (`rel_file`,`rel_related`) VALUES
-                (".$FileId.", ".intval($_REQUEST["assignedDownloads"][$i]).")");
-            }
-        }
-
-        return true;
-    }
+//            }
+//        }
+//
+//        // Name & Description
+//        // -----------------------------------------------------------------
+//        foreach (array_keys($this->_arrLang) as $langId) {
+//            if (intval($langId)>0) {
+////
+////                // insert lang
+////                // ------------------------------------------------
+////                $query = "INSERT INTO ".DBPREFIX."module_downloads_files_lang
+////                            SET file='".$FileId."',
+////                            language='".$langId."'";
+////                $objDatabase->Execute($query);
+//
+//
+//                $query = "UPDATE ".DBPREFIX."module_downloads_files_locales SET
+//                            `loc_name`='".addslashes(strip_tags($_POST['file_name_'.$langId]))."',
+//                            `loc_desc`='".addslashes(strip_tags($_POST['file_desc_'.$langId]))."'
+//                            WHERE `loc_file`=".$FileId." AND `loc_lang`=".$langId."
+//                ";
+////                echo($query."<br />");
+//                $objDatabase->Execute($query);
+//            }
+//        }
+//
+//        // Access ID
+//        // -----------------------------------------------------------------
+//
+//        $query = "DELETE FROM ".DBPREFIX."access_group_dynamic_ids WHERE `access_id`=".$DownlaodInfo["file_access_id"]." ";
+//        $objDatabase->Execute($query);
+//
+//        if ($FileProtected==1) {
+//            for($i=0; $i<=count($_REQUEST["assignedGroups"]); $i++) {
+//                if (intval($_REQUEST["assignedGroups"][$i])>0) {
+//                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."access_group_dynamic_ids
+//                    (`access_id`,`group_id`) VALUES
+//                    (".$DownlaodInfo["file_access_id"].", ".intval($_REQUEST["assignedGroups"][$i]).")");
+//                }
+//            }
+//        }
+//
+//        // Related downloads
+//        // -----------------------------------------------------------------
+//
+//        $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_files WHERE `rel_file`=".$FileId." ";
+//        $objDatabase->Execute($query);
+//
+//        for($i=0; $i<=count($_REQUEST["assignedDownloads"]); $i++) {
+//            if (intval($_REQUEST["assignedDownloads"][$i])>0) {
+//                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_downloads_rel_files_files
+//                (`rel_file`,`rel_related`) VALUES
+//                (".$FileId.", ".intval($_REQUEST["assignedDownloads"][$i]).")");
+//            }
+//        }
+//
+//        return true;
+//    }
 
 }
 

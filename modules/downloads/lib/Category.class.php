@@ -125,13 +125,9 @@ class Category {
     }
 
     /**
-     * Clean user metadata
+     * Clean category metadata
      *
-     * Reset all user metadata for a new user.
-     * The metadata includes the ID of the user, the username, e-mail address,
-     * password, language ID, active and administration status, registration date,
-     * restore key and restore key timeout and the ID's of the associated groups.
-     *
+     * Reset all category metadata for a new category.
      */
     private function clean()
     {
@@ -217,7 +213,7 @@ class Category {
             'DELETE tblC, tblL, tblR
             FROM `'.DBPREFIX.'module_downloads_category` AS tblC
             LEFT JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblL ON tblL.`category_id` = tblC.`id`
-            LEFT JOIN `'.DBPREFIX.'module_downloads_rel_files_cat` AS tblR ON tblR.`rel_category` = tblC.`id`
+            LEFT JOIN `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR ON tblR.`category_id` = tblC.`id`
             WHERE tblC.`id` = '.$this->id) !== false
         ) {
             return true;
@@ -289,6 +285,17 @@ class Category {
     }
 
 
+    public function getAssociatedDownloadsCount()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->SelectLimit('SELECT COUNT(1) AS `count` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id.' GROUP BY `category_id`', 1);
+        if ($objResult) {
+            return $objResult->fields['count'];
+        } else {
+            return false;
+        }
+    }
     public function hasSubcategories()
     {
         global $objDatabase;
@@ -754,12 +761,9 @@ class Category {
     }
 
     /**
-     * Store user account
+     * Store category
      *
-     * This stores the metadata of the user, which includes the username,
-     * password, email, language ID, activ status and the administration status,
-     * to the database.
-     * If it is a new user, it also sets the registration time to the current time.
+     * This stores the metadata of the category to the database.
      *
      * @global ADONewConnection
      * @global array
@@ -821,14 +825,13 @@ class Category {
         }
 
         if (isset($this->names) && !$this->storeLocales()) {
-            // TODO: add lang var
-            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_STORE_LOCALES'];
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_LOCALES'];
             return false;
         }
 
         if (!$this->storePermissions()) {
             // TODO: add lang var
-            $this->error_msg[] = $_ARRAYLANG['TXT_ARRAY_COULD_NOT_SET_GROUP_ASSOCIATIONS'];
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'];
             return false;
         }
 

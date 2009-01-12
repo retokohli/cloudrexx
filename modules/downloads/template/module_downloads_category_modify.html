@@ -1,10 +1,6 @@
 <!-- start module_downloads_modify_category.html -->
-
-
 <script type="text/javascript">
 // <![CDATA[
-
-
     function downloadsSyncNameFields(value, type, name) {
         for (i=0; i < document.getElementById('downloads_category_form').getElementsByTagName(type).length;i++) {
             if (typeof(document.getElementById('downloads_category_form').getElementsByTagName(type)[i].name) != 'undefined'
@@ -87,8 +83,6 @@
 
         downloadsAdjustAccessConfig(trigger)
     }
-
-
 
     var downloadsPermissionDependencies = {
         'read':{
@@ -181,19 +175,21 @@
 
 
 
+
+//		function downloadsGetFileBrowser(elInsertBox)
+//		{
+//			downloadsElInsertBox = elInsertBox;
+//			downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+//		}
+//		
+
+	function downloadsOpenWindow(theURL,winName,features)
+	{
+	    downloadsPopup = window.open(theURL,"Downloads",features);
+	    downloadsPopup.focus();
+	}
+
     
-		
-		function downloadsGetFileBrowser(elInsertBox)
-		{
-			downloadsElInsertBox = elInsertBox;
-			openWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-		}
-		
-		function openWindow(theURL,winName,features){
-			downloadsPopup = window.open(theURL,"Downloads",features);
-			downloadsPopup.focus();
-		}
-		
     function SetUrl(url, width, height, alt)
     {
         document.getElementById('downloads_category_image').value = url;
@@ -203,12 +199,8 @@
         //document.getElementById('downloads_category_image_preview').style.width = thumb_width;
         //document.getElementById('downloads_category_image_preview').style.height = thumb_height;
     }
-
-
-
-	// ]]>
+// ]]>
 </script>
-
 
 <ul id="tabmenu">
     <li><a id="downloadsTab_categoryGeneral" class="active" href="javascript:void(0)" onclick="selectTab('categoryGeneral')" title="{TXT_DOWNLOADS_GENERAL}">{TXT_DOWNLOADS_GENERAL}</a></li>
@@ -285,7 +277,7 @@
                             height="17"
                         />
                         </a>
-                        <br /><input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="openWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes')" />
+                        <br /><input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes')" />
                     </td>
                 </tr>
                 <tr class="row1">
