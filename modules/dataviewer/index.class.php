@@ -41,7 +41,11 @@ class  Dataviewer
 	function show($projectname) {
 		global $objDatabase, $_ARRAYLANG;
 		$this->_objTpl->setTemplate($this->pageContent);
-			
+		
+		if (!$this->isActive($projectname)) {
+			header("Location: index.php");
+		}			
+		
 		//prepare $GET filter
 		$selectedFilters = !empty($_GET['filter']) ? $_GET['filter'] : "";
 		$where           = "";
@@ -93,7 +97,7 @@ class  Dataviewer
 			foreach ($placeholders as $id => $placeholder) {
 				$id++;	//because we dont want placeholder_0
 				$this->_objTpl->setVariable(array(
-					'DATAVIEWER_PLACEHOLDER_' . $id => $objRecordsResult->fields[$placeholder]
+					'DATAVIEWER_PLACEHOLDER_' . $id => htmlspecialchars($objRecordsResult->fields[$placeholder])
 //					'DATAVIEWER_PLACEHOLDER_' . $id => $firstRun == true && $objRecordsResult->fields['distributor'] == 1 ? "<b>".$objRecordsResult->fields[$placeholder]."</b>" : $objRecordsResult->fields[$placeholder] //diamir
 				));	
 			}
@@ -112,7 +116,6 @@ class  Dataviewer
 				'DATAVIEWER_FILTER' => $mainFilter . $subFilters
 			));		
 		}
-		
 	}
 	
 	
@@ -127,6 +130,7 @@ class  Dataviewer
 			return true;
 		}
 	}
+	
 	
 	
 	/**
@@ -146,6 +150,20 @@ class  Dataviewer
 			return 00;
 		}
 	}
+	
+	
+	function isActive($projectname) {
+		global $objDatabase;
+		$query     = "SELECT status FROM ".DBPREFIX."module_dataviewer_projects WHERE name = '" . $projectname . "';";
+		$objResult = $objDatabase->Execute($query);
+		
+		if($objResult->fields['status'] == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	
 	
 	/**
@@ -171,6 +189,8 @@ class  Dataviewer
 				$selectedFilters[$value[0]] = $value[1];
 			}	
 		}
+		
+	
 						
 		//get filters string from projecttable
 		$queryFilters = "SELECT filters FROM " . DBPREFIX . "module_dataviewer_projects WHERE name = '" . $projectname . "'";
@@ -180,8 +200,7 @@ class  Dataviewer
 		//explode string to array
 		$filtersArray = explode(";", $filters);
 		$xhtml = "";
-		
-		
+				
 		/******************************
 		* build main filter drop down
 		*******************************/
@@ -199,38 +218,63 @@ class  Dataviewer
 				$objResult->MoveNext();
 			}
 			
+			
+			foreach ($selectedFilters as $first) {
+				$firstFilter = $first;
+				break;
+			}
+						
 			//create xhtml dropdown
-			$xhtml .= '<select size="1" name="placeholders[]" onchange="location.href=\'index.php?section=dataviewer&cmd=' . $projectname . '&filter=' . $filtersArray[0] . '=\' + this.value + \'\'" style="width: 200px;">
-					<option value="0">Bitte wählen Sie ' . $filtersArray[0] . '</option>';
+			$xhtml .= '<select size="1" name="placeholders[]" id="' . $filtersArray[0] . '" style="float:left;" onchange="location.href=\'index.php?section=dataviewer&amp;cmd=' . $projectname . '&amp;filter=' . $filtersArray[0] . '=\' + this.value + \'\'">
+					<option value="0">' . $filtersArray[0] . '</option>';
 			
 			foreach ($valuesArray as $content) {
-				$xhtml .= '<option value="' . $content . '">' . $content . '</option>';	
+				if ($content == $firstFilter) {
+					$selected = 'selected="selected"';
+				} else {
+					$selected = "";
+				}
+				$content = htmlspecialchars($content);
+				$xhtml .= '<option value="' . $content . '" ' . $selected . '>' . $content . '</option>';	
 			}
-			$xhtml .= "</select><br />";	
+			$xhtml .= "</select>";	
 			
 			return $xhtml;
 		} else {
 			//delete main filter from array (this is allways the first one)
 			unset($filtersArray[0]);
 			
-			//build WHERE clause for subquery
-			$where = " WHERE ";
-			$whereForDropDown = "";
-			foreach ($selectedFilters as $name => $value) {
-				$where .= $name . " = '" . $value . "' AND "; 
-				$whereForDropDown .= $name . "=" . $value .",";
-			}
-			
-			$where = substr($where, 0, strlen($where)-5);
-			
 			//create menue for each filter
 			$xhtml = "";
+			
+			$i = 0;
 			foreach ($filtersArray as $filter) {
 				if ($filter !== "") {
 					$valuesArray = "";
 					
+					
+					//build WHERE clause for $query
+					$where = " WHERE ";
+					$whereForDropDown = "";
+					
+					$z = 0;
+					foreach ($selectedFilters as $name => $value) {
+						$where .= $name . " = '" . $value . "' AND "; 	
+						$whereForDropDown .= $name . "=" . $value .",";
+						if ($z == $i) {
+							break;
+						}
+						$z++;
+					}
+					
+					//delete last "AND"
+					$where = substr($where, 0, strlen($where)-5);
+					if($where == " W") {
+						$where = "";
+					}
+					
 					//select all values in column		
-					$query     = "SELECT DISTINCT " . $filter . " FROM " . DBPREFIX . "module_dataviewer_" . $projectname . $where;
+					$query     = "SELECT DISTINCT " . $filter . " FROM " . DBPREFIX . "module_dataviewer_" . $projectname . $where . " ORDER BY " . $filter . " ASC";
 					$objResult = $objDatabase->Execute($query);
 					
 					//create array with values from filters
@@ -240,18 +284,30 @@ class  Dataviewer
 					}
 					
 					//create xhtml dropdown
-					$xhtml .= '<select size="1" name="placeholders[]" onchange="location.href=\'index.php?section=dataviewer&cmd=' . $projectname . '&filter=' . $whereForDropDown . $filter . '=\' + this.value + \'\'" style="width: 200px;">
-							<option value="0">Bitte wählen Sie ' . $filter . '</option>';
-					
+					$xhtml .= '<select size="1" name="placeholders[]" id="dd_'.$filter.'" style="float:left; margin-left:10px;" onchange="location.href=\'index.php?section=dataviewer&amp;cmd=' . $projectname . '&amp;filter=' . $whereForDropDown . $filter . '=\' + this.value + \'\'">
+							<option value="0">' . $filter . '</option>';
+										
+									
 					foreach ($valuesArray as $content) {
-						$xhtml .= '<option value="' . $content . '">' . $content . '</option>';	
+						//make selected
+						if (str_replace(" ", "", $content) == str_replace(" ", "", $selectedFilters[$filter])) {
+							$selected = 'selected="selected"';
+						} else {
+							$selected = "";
+						}
+						$content = htmlspecialchars($content);					
+						$xhtml .= '<option value="' . $content . '" ' . $selected . '>' . $content . '</option>';	
 					}
-					$xhtml .= "</select><br />";	
+					$xhtml .= "</select>";	
+					$i++;
 				}
 			}
 			
 		return $xhtml;
-	}
+		}
+	
 	}
 }
+
+
 ?>

@@ -388,24 +388,24 @@ class Dataviewer {
 	 * @param  int $countryBased
 	 * @return string $xhtml
 	 */
-	function getLanguagesDropDown($countryBased) {
-		global $objDatabase;
-		
-		if ($countryBased == 1) {
-			$query     = "SELECT * FROM " . DBPREFIX . "lib_country";
-			$objResult = $objDatabase->Execute($query);
-			
-			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_CHOOSE_COUNTRY'].'</option>';
-			while (!$objResult->EOF) {
-				$xhtml .= '<option value="' . $objResult->fields['iso_code_2'] . '">' . $objResult->fields['name'] . '</option>';
-				$objResult->MoveNext();
-			}	
-		} else {
-			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_PROJECT_IS_NOT_COUNTRYBASED'].'</option>';
-		}
-		
-		return $xhtml;
-	}
+//	function getLanguagesDropDown($countryBased) {
+//		global $objDatabase;
+//		
+//		if ($countryBased == 1) {
+//			$query     = "SELECT * FROM " . DBPREFIX . "lib_country";
+//			$objResult = $objDatabase->Execute($query);
+//			
+//			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_CHOOSE_COUNTRY'].'</option>';
+//			while (!$objResult->EOF) {
+//				$xhtml .= '<option value="' . $objResult->fields['iso_code_2'] . '">' . $objResult->fields['name'] . '</option>';
+//				$objResult->MoveNext();
+//			}	
+//		} else {
+//			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_PROJECT_IS_NOT_COUNTRYBASED'].'</option>';
+//		}
+//		
+//		return $xhtml;
+//	}
 	
 	
 	/**
@@ -682,8 +682,6 @@ class Dataviewer {
 				$this->_objTpl->parse('countryRow');
 				$objResult->MoveNext();
 			}
-			
-		
 		}
 
 		$this->_objTpl->setVariable(array(
@@ -822,7 +820,7 @@ class Dataviewer {
 				
 				$columnsValuesString .= "(";
 				foreach ($columnsCSV as $column) {
-					$columnsValuesString .= "'" . $row[$column] . "',";
+					$columnsValuesString .= "'" . utf8_encode(mysql_escape_string($row[$column])) . "',";
 				}
 				$columnsValuesString  = substr($columnsValuesString, 0, strlen($columnsValuesString)-1);
 				$columnsValuesString .= "), ";
@@ -841,6 +839,9 @@ class Dataviewer {
 					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_ERROR_AT_IMPORT'] . $insertDataQuery
 				));	
 			}
+			
+			//delete file from temp folder
+			unlink(ASCMS_DATAVIEWER_TEMP_PATH . $hiddenFilename);
 		}
 	}
 	

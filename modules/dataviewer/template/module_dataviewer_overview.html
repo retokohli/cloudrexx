@@ -18,25 +18,25 @@
 			location.href = "index.php?cmd=dataviewer&delete="+ID;
 		}
 	}
+	
 /* ]]> */
 </script>
 
 <form name="project" action="index.php?cmd=dataviewer&amp;act=new" method="post">
 	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 		<tr>
-			<th valign="top" colspan="8">
+			<th valign="top" colspan="7">
 			{TXT_ADMINISTRATE_PROJECTS}
 			</th>
 		</tr>
 		<tr>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PROJECTSTATUS}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PROJECTNAME}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PROJECTDESCRIPTION}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_LANGUAGE}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_COUNTRY_BASED}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
-			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">{TXT_PREVIEW}</span></td>
-			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_PROJECTSTATUS}</span></td>
+			<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_PROJECTNAME}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_PROJECTDESCRIPTION}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_LANGUAGE}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_COUNTRY_BASED}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
+			<td nowrap="nowrap" width="5%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
 		</tr>
 		<!-- BEGIN projectRow -->
 		<tr class="{ROWCLASS}">
@@ -47,11 +47,7 @@
 			<td width="10%" valign="top">{COUNTRYBASED}</td>
 			<td width="10%" valign="top">{FILTER}</td>
 			<td width="30%" valign="top">
-				<a href="javascript:showPreview('{ID}');">{TXT_SHOW_PREVIEW}</a>
-				<div id="preview_{ID}" style="display:none; background:#cfcfcf; padding:5px; margin-right:5px; margin-top:5px; margin-bottom:5px; border:1px solid #000000;">{PREVIEW}</div>
-			</td>
-			<td width="30%" valign="top">
-				<a href="index.php?cmd=dataviewer&act=edit&id={ID}"><img border="0" src="../images/modules/dataviewer/edit.gif" alt="edit" /></a>
+<!--				<a href="index.php?cmd=dataviewer&act=edit&id={ID}"><img border="0" src="../images/modules/dataviewer/edit.gif" alt="edit" /></a>-->
 				<a href="index.php?cmd=dataviewer&act=import&id={ID}"><img border="0" src="../images/modules/dataviewer/csv.gif" alt="import" /></a>
 				<a href="index.php?cmd=dataviewer&act=filter&id={ID}"><img border="0" src="../images/modules/dataviewer/question_mark.gif" alt="filter" /></a>
 				<a href="index.php?cmd=dataviewer&act=placeholder&id={ID}"><img border="0" src="../images/modules/dataviewer/placeholder.gif" alt="placeholder" /></a>
