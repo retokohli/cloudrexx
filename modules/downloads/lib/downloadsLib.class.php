@@ -635,7 +635,7 @@ class DownloadsLibrary
 
     protected function getUserDropDownMenu($selectedUserId, $userId)
     {
-        $menu = '<select name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$userId.' ? \'none\' : \'\'">';
+        $menu = '<select name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$userId.' ? \'none\' : \'\'" style="width:300px;">';
         $objFWUser = FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser->getUsers();
         while (!$objUser->EOF) {

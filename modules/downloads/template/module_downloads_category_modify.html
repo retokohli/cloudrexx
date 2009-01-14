@@ -235,10 +235,10 @@
                     <td>{TXT_DOWNLOADS_DESCRIPTION}</td>
                     <td>
                         <!-- BEGIN downloads_category_description -->
-                        <textarea id="downloads_category_description_0" onchange="downloadsSyncNameFields(this.value,'textarea','downloads_category_description')" style="width:300px;">{DOWNLOADS_CATEGORY_DESCRIPTION}</textarea> <a href="javascript:void(0);" onclick="document.getElementById('downloads_category_description_lang_div').style.display = (document.getElementById('downloads_category_description_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
+                        <textarea id="downloads_category_description_0" cols="10" rows="5" onchange="downloadsSyncNameFields(this.value,'textarea','downloads_category_description')" style="width:300px;">{DOWNLOADS_CATEGORY_DESCRIPTION}</textarea> <a href="javascript:void(0);" onclick="document.getElementById('downloads_category_description_lang_div').style.display = (document.getElementById('downloads_category_description_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
                         <div id="downloads_category_description_lang_div" style="display:none;">
                         <!-- BEGIN downloads_category_description_list -->
-                            <textarea name="downloads_category_description[{DOWNLOADS_CATEGORY_LANG_ID}]" id="downloads_category_description_{DOWNLOADS_CATEGORY_LANG_ID}" style="margin-top:1px; width:300px;" />{DOWNLOADS_CATEGORY_DESCRIPTION}</textarea> {DOWNLOADS_CATEGORY_LANG_DESCRIPTION}<br />
+                            <textarea name="downloads_category_description[{DOWNLOADS_CATEGORY_LANG_ID}]" id="downloads_category_description_{DOWNLOADS_CATEGORY_LANG_ID}" cols="10" rows="5" style="margin-top:1px; width:300px;">{DOWNLOADS_CATEGORY_DESCRIPTION}</textarea> {DOWNLOADS_CATEGORY_LANG_DESCRIPTION}<br />
                         <!-- END downloads_category_description_list -->
                         </div>
                         <!-- END downloads_category_description -->
@@ -248,10 +248,11 @@
                     <td>{TXT_DOWNLOADS_OWNER}</td>
                     <td>
                         {DOWNLOADS_CATEGORY_OWNER}
-                        <div id="downloads_category_owner_config" style="display:{DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY}" />
+                        <div id="downloads_category_owner_config" style="display:{DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY}">
                             <input type="checkbox" name="downloads_category_deletable_by_owner" id="downloads_category_deletable_by_owner" value="1" {DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED} /><label for="downloads_category_deletable_by_owner">{TXT_DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER}</label><br />
                             <input type="checkbox" name="downloads_category_manage_by_owner" id="downloads_category_manage_by_owner" value="1" {DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED} /><label for="downloads_category_manage_by_owner">{TXT_DOWNLOADS_CATEGORY_MANAGE_BY_OWNER}</label>
                         </div>
+                        <br />
                     </td>
                 </tr>
                 <tr class="row2">
@@ -277,12 +278,13 @@
                             height="17"
                         />
                         </a>
-                        <br /><input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes')" />
+                        <br /><input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsOpenWindow('index.php?cmd=fileBrowser&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes')" />
+                        <br />
                     </td>
                 </tr>
                 <tr class="row1">
-                    <td>{TXT_DOWNLOADS_ACTIVE}</td>
-                    <td><input type="checkbox" name="downloads_category_active" value="1" {DOWNLOADS_CATEGORY_ACTIVE_CHECKED} /></td>
+                    <td>{TXT_DOWNLOADS_STATUS}</td>
+                    <td><input type="checkbox" name="downloads_category_active" id="downloads_category_active" value="1" {DOWNLOADS_CATEGORY_ACTIVE_CHECKED} /> <label for="downloads_category_active">{TXT_DOWNLOADS_ACTIVE}</label></td>
                 </tr>
             </tbody>
         </table>
@@ -563,21 +565,10 @@
         </table>
     </div>
 <!-- end div downloadsPermissionFilesMenu_manageFilesTab -->
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                
-            </tbody>
-            </table>
-    </div>
+</div>
 <!-- end div downloadsTab_categoryPermissions -->
 <br />
-<input type="button" name="downloads_category_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&act=categories&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}'" />
+<input type="button" name="downloads_category_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}'" />
 <input type="submit" name="downloads_category_save" value="{TXT_DOWNLOADS_SAVE}" />
 </form>
 <!-- end module_downloads_modify_category.html -->
