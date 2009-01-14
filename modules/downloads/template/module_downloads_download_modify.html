@@ -359,10 +359,10 @@ function downloadsAdjustSourceConfig()
                     <td>{TXT_DOWNLOADS_DESCRIPTION}</td>
                     <td>
                         <!-- BEGIN downloads_download_description -->
-                        <textarea id="downloads_download_description_0" onchange="downloadsSyncNameFields(this.value,'textarea','downloads_download_description')" style="width:300px;">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</textarea> <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_description_lang_div').style.display = (document.getElementById('downloads_download_description_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
+                        <textarea id="downloads_download_description_0" cols="10" rows="5" onchange="downloadsSyncNameFields(this.value,'textarea','downloads_download_description')" style="width:300px;">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</textarea> <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_description_lang_div').style.display = (document.getElementById('downloads_download_description_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
                         <div id="downloads_download_description_lang_div" style="display:none;">
                         <!-- BEGIN downloads_download_description_list -->
-                            <textarea name="downloads_download_description[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_description_{DOWNLOADS_DOWNLOAD_LANG_ID}" style="margin-top:1px; width:300px;" />{DOWNLOADS_DOWNLOAD_DESCRIPTION}</textarea> {DOWNLOADS_DOWNLOAD_LANG_DESCRIPTION}<br />
+                            <textarea name="downloads_download_description[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_description_{DOWNLOADS_DOWNLOAD_LANG_ID}" cols="10" rows="5" style="margin-top:1px; width:300px;">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</textarea> {DOWNLOADS_DOWNLOAD_LANG_DESCRIPTION}<br />
                         <!-- END downloads_download_description_list -->
                         </div>
                         <!-- END downloads_download_description -->
@@ -383,8 +383,8 @@ function downloadsAdjustSourceConfig()
                     </td>
                 </tr>
                 <tr class="row2">
-                    <td>{TXT_DOWNLOADS_ACTIVE} </td>
-                    <td><input type="checkbox" name="downloads_download_is_active" value="1" {DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED} /></td>
+                    <td>{TXT_DOWNLOADS_STATUS}</td>
+                    <td><input type="checkbox" name="downloads_download_is_active" id="downloads_download_is_active" value="1" {DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED} /> <label for="downloads_download_is_active">{TXT_DOWNLOADS_ACTIVE}</label></td>
                 </tr>
                 <tr class="row1">
                     <td>{TXT_DOWNLOADS_TYPE}</td>
@@ -406,8 +406,17 @@ function downloadsAdjustSourceConfig()
                     <td>{TXT_DOWNLOADS_AUTHOR}</td>
                     <td><input type="text" name="downloads_download_author" value="{DOWNLOADS_DOWNLOAD_AUTHOR}" style="width:300px;" /></td>
                 </tr>
+            </tbody>
+        </table>
+        <br />
+        <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+            <thead>
+                <tr>
+                    <th>{TXT_DOWNLOADS_IMAGE}</th>
+                </tr>
+            </thead>
+            <tbody style="vertical-align:top;">
                 <tr class="row2">
-                    <td>{TXT_DOWNLOADS_IMAGE}</td>
                     <td>
                         <input type="hidden" name="downloads_download_image" id="downloads_download_image" value="{DOWNLOADS_DOWNLOAD_IMAGE}" />
                         <img src="{DOWNLOADS_DOWNLOAD_IMAGE_SRC}" id="downloads_download_image_preview" alt="{TXT_DOWNLOADS_DOWNLOAD_IMAGE}" border="0" style="padding-bottom:4px;" /><a
@@ -432,8 +441,17 @@ function downloadsAdjustSourceConfig()
                         <br /><input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_image'),document.getElementById('downloads_download_image_preview'),document.getElementById('downloads_download_image_remove_button'))" />
                     </td>
                 </tr>
-                <tr class="row1">
-                    <td>{TXT_DOWNLOADS_CATEGORIES}</td>
+            </tbody>
+        </table>
+        <br />
+        <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+            <thead>
+                <tr>
+                    <th>{TXT_DOWNLOADS_CATEGORIES}</th>
+                </tr>
+            </thead>
+            <tbody style="vertical-align:top;">
+                <tr class="row2">
                     <td>
 	                    <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
 	                        <tbody style="vertical-align:top;">
@@ -465,10 +483,20 @@ function downloadsAdjustSourceConfig()
 	                            </tr>
 	                       </tbody>
 	                    </table>
+	                    <br />
                     </td>
                 </tr>
+            </tbody>
+        </table>
+        <br />
+        <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+            <thead>
+                <tr>
+                    <th>{TXT_DOWNLOADS_RELATED_DOWNLOADS}</th>
+                </tr>
+            </thead>
+            <tbody style="vertical-align:top;">
                 <tr class="row2">
-                    <td>{TXT_DOWNLOADS_RELATED_DOWNLOADS}</td>
                     <td>
                         <table cellspacing="0" cellpadding="3" border="0" summary="related download assignements">
                             <tbody style="vertical-align:top;">
@@ -518,7 +546,7 @@ function downloadsAdjustSourceConfig()
                 <tr class="row1">
                     <td>
                         <input type="radio" name="downloads_download_access" id="downloads_download_access_all" value="0" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_DOWNLOAD_ACCESS_ALL_CHECKED} /><label for="downloads_download_access_all">{TXT_DOWNLOADS_DOWNLOAD_ALL_ACCESS_DESC}</label><br />
-                        <input type="radio" name="downloads_download_access" id="downloads_download_access_selected" value="1" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_DOWNLOAD_ACCESS_SELECTED_CHECKED} /><label for="downloads_download_acces_selected">{TXT_DOWNLOADS_DOWNLOAD_SELECTED_ACCESS_DESC}</label><br />
+                        <input type="radio" name="downloads_download_access" id="downloads_download_access_selected" value="1" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_DOWNLOAD_ACCESS_SELECTED_CHECKED} /><label for="downloads_download_access_selected">{TXT_DOWNLOADS_DOWNLOAD_SELECTED_ACCESS_DESC}</label><br />
                         <div id="downloads_download_access_config" style="display:{DOWNLOADS_DOWNLOAD_ACCESS_DISPLAY}">
                             <br />
                             <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">

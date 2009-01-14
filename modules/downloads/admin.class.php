@@ -136,7 +136,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'] = "Text";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'] = "Media";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'] = "Archiv";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'] = "Applikation";
-
+$_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
 
 
 
@@ -230,9 +230,9 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=downloads'>".$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW']."</a>
-                                                        <a href='index.php?cmd=downloads&act=categories'>".$_ARRAYLANG['TXT_MANAGE_CATEGORIES']."</a>
-                                                        <a href='index.php?cmd=downloads&act=download'>".$_ARRAYLANG['TXT_DOWNLOADS_NEW']."</a>
-                                                        <a href='index.php?cmd=downloads&act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>
+                                                        <a href='index.php?cmd=downloads&amp;act=download'>".$_ARRAYLANG['TXT_DOWNLOADS_NEW']."</a>
+                                                        <a href='index.php?cmd=downloads&amp;act=categories'>".$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES']."</a>
+                                                        <a href='index.php?cmd=downloads&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>
                                                         ");
         parent::__construct();
     }
@@ -458,6 +458,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'TXT_DOWNLOADS_NAME'                                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
             'TXT_DOWNLOADS_DESCRIPTION'                                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
             'TXT_DOWNLOADS_ACTIVE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
+            'TXT_DOWNLOADS_STATUS'                                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_OWNER'                                       => $_ARRAYLANG['TXT_DOWNLOADS_OWNER'],
             'TXT_DOWNLOADS_IMAGE'                                       => $_ARRAYLANG['TXT_DOWNLOADS_IMAGE'],
             'TXT_DOWNLOADS_CATEGORY_IMAGE'                              => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_IMAGE'],
@@ -981,6 +982,7 @@ $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_LOCAL_FILE'                      => $_ARRAYLANG['TXT_DOWNLOADS_LOCAL_FILE'],
             'TXT_DOWNLOADS_URL'                             => $_ARRAYLANG['TXT_DOWNLOADS_URL'],
             'TXT_DOWNLOADS_BROWSE'                          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
+            'TXT_DOWNLOADS_STATUS'                          => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_ACTIVE'                          => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
             'TXT_DOWNLOADS_TYPE'                            => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
             'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
@@ -1739,8 +1741,8 @@ $this->_objTpl->setVariable(array(
 
         $this->_objTpl->loadTemplateFile('module_downloads_category.html');
         $this->_objTpl->setVariable(array(
-            'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],
-            'TXT_ADD_CATEGORY'      => $_ARRAYLANG['TXT_ADD_CATEGORY']
+            'TXT_DOWNLOADS_OVERVIEW'  => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'],
+            'TXT_ADD_CATEGORY'          => $_ARRAYLANG['TXT_ADD_CATEGORY']
         ));
     }
     /**
@@ -1754,7 +1756,7 @@ $this->_objTpl->setVariable(array(
         global $_ARRAYLANG, $_LANGID;
 
         // TODO: clean up
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
         $this->_objTpl->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_categories.html');
 
 
