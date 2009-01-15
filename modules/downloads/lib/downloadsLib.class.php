@@ -495,7 +495,7 @@ class DownloadsLibrary
         }
     }*/
 
-    protected function getCategoryMenu($selectedCategory)
+    protected function getCategoryMenu($selectedCategory, $selectionText, $attrs = null)
     {
         global $_LANGID, $_ARRAYLANG;
 
@@ -516,8 +516,8 @@ class DownloadsLibrary
             $objCategory->next();
         }
 
-        $menu = '<select name="downloads_category_parent_id" onchange="window.location.href=\'index.php?cmd=downloads&act=categories&parent_id=\'+this.value">';
-        $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').' style="border-bottom:1px solid #000;">'.$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'].'</option>';
+        $menu = '<select name="downloads_category_parent_id"'.(!empty($attrs) ? ' '.$attrs : '').'>';
+        $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').' style="border-bottom:1px solid #000;">'.$selectionText.'</option>';
 
         $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory);
 
