@@ -903,7 +903,7 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `visibility` tinyint(1) unsigned NOT NULL default '1',
   `order` int(3) unsigned NOT NULL default '0',
   `views` int(10) unsigned NOT NULL default '0',
-  `downloads` int(10) unsigned NOT NULL default '0',
+  `download_count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_download_locale` (
