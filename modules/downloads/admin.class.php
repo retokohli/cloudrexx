@@ -1,5 +1,5 @@
 <?php
-if (0) {
+if (1) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     $objDatabase->debug = 1;
@@ -82,6 +82,7 @@ class downloads extends DownloadsLibrary
         )
     );
 
+    private $parentCategoryId = 0;
 
     /**
      * PHP5 constructor
@@ -124,7 +125,12 @@ $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_SUCCESS'] = 'Die Reihenfolge der D
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_DELETE_SUCCESS'] = 'Die Downloads wurden erfolgreich gelöscht.';
 $_ARRAYLANG['TXT_DOWNLOADS_CHANGE_SORT_DIRECTION'] = 'Sortierreihenfolge ändern';
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'] = 'Diesen Download immer auflisten, auch wenn der aktuelle Benutzer keine Zugriffsberechtigung darauf hat.';
-
+$_ARRAYLANG['TXT_DOWNLOADS_PARENT_CATEGORY'] = 'Übergeordnete Kategorie';
+$_ARRAYLANG['TXT_DOWNLOADS_MAIN_CATEGORY'] = 'Haupt Kategorie';
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_MAIN_CATEGORY_PROHIBITED'] = 'Sie sind nicht berechtigt eine neue Haupt Kategorie zu erstellen!';
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORY_TO_CATEGORY_PROHIBITED'] = 'Sie sind nicht berechtigt in der Kategorie <strong>%s</strong> eine neue Unterkategorie anzulegen!';
+$_ARRAYLANG['TXT_DOWNLOADS_CHANGE_PARENT_CATEGORY_PROHIBITED'] = 'Sie sind nicht berechtigt, die Übergeordnete Kategorie zu ändern!';
+$_ARRAYLANG['TXT_DOWNLOADS_UPDATE_CATEGORY_PROHIBITED'] = 'Sie sind nicht berechtigt die Kategorie <strong>%s</strong> zu aktualisieren!';
 
 
 
@@ -252,30 +258,37 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
             $_REQUEST['act'] = '';
         }
 
+        $this->parentCategoryId = isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0;
+
+
         switch ($_REQUEST['act']) {
 //            case 'files':
 //                $this->_files();
 //                break;
 
             case 'delete_category':
-                $this->parseCategoryNavigation();
                 $this->deleteCategory();
+                $this->loadCategoryNavigation();
                 $this->categories();
+                $this->parseCategoryNavigation();
                 break;
 
             case 'switch_category_status':
-                $this->parseCategoryNavigation();
                 $this->switchCategoryStatus();
+                $this->loadCategoryNavigation();
                 $this->categories();
+                $this->parseCategoryNavigation();
                 break;
 
             case 'categories':
-                $this->parseCategoryNavigation();
+                $this->loadCategoryNavigation();
                 $this->categories();
+                $this->parseCategoryNavigation();
                 break;
             case 'category':
-                $this->parseCategoryNavigation();
+                $this->loadCategoryNavigation();
                 $this->category();
+                $this->parseCategoryNavigation();
                 break;
 
             case 'download':
@@ -371,6 +384,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
     {
         global $_ARRAYLANG, $objLanguage, $_LANGID;
 
+        $status = true;
 
 
         $objFWUser = FWUser::getFWUserObject();
@@ -386,7 +400,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
         if (isset($_POST['downloads_category_save'])) {
             // check if user is allowed to change that stuff
             // check if the user is allowed to create a category within the selected parentId
-            $objCategory->setParentId(isset($_POST['downloads_category_parent_id']) ? intval($_POST['downloads_category_parent_id']) : 0);
+            $status = $objCategory->setParentId(isset($_POST['downloads_category_parent_id']) ? intval($_POST['downloads_category_parent_id']) : 0);
             $objCategory->setActiveStatus(isset($_POST['downloads_category_active']) && $_POST['downloads_category_active']);
             $objCategory->setImage(isset($_POST['downloads_category_image']) ? contrexx_stripslashes($_POST['downloads_category_image']) : '');
             $objCategory->setVisibility((!isset($_POST['downloads_category_read']) || !$_POST['downloads_category_read']) || isset($_POST['downloads_category_visibility']) && $_POST['downloads_category_visibility']);
@@ -407,17 +421,18 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
 
             $objCategory->setPermissions($arrCategoryPermissions);
 
-            if ($objCategory->store()) {
+            if ($status && $objCategory->store()) {
+                $this->parentCategoryId = $objCategory->getParentId();
                 return $this->categories();
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
             }
         } else {
-            $objCategory->setParentId(isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0);
+            $objCategory->setParentId($this->parentCategoryId);
         }
 
         $this->_pageTitle = $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'];
-        $this->_objTpl->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_category_modify', 'module_downloads_category_modify.html');
+        $this->_objTpl->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_category_modify.html');
 
         /*
 TXT_DOWNLOADS_GENERAL
@@ -457,6 +472,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'TXT_DOWNLOADS_PERMISSIONS'                                 => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
             'TXT_DOWNLOADS_NAME'                                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
             'TXT_DOWNLOADS_DESCRIPTION'                                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            'TXT_DOWNLOADS_PARENT_CATEGORY'                             => $_ARRAYLANG['TXT_DOWNLOADS_PARENT_CATEGORY'],
             'TXT_DOWNLOADS_ACTIVE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
             'TXT_DOWNLOADS_STATUS'                                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_OWNER'                                       => $_ARRAYLANG['TXT_DOWNLOADS_OWNER'],
@@ -563,6 +579,10 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->_objTpl->parse('downloads_category_description');
+
+
+        // parse parent category menu
+        $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_PARENT_CATEGORY_MENU', $this->getCategoryMenu($objCategory->getParentId(), $_ARRAYLANG['TXT_DOWNLOADS_MAIN_CATEGORY']));
 
 
         // parse access permissions
@@ -696,8 +716,6 @@ $this->_objTpl->setVariable(array(
 //            'VALUE_IMG' => $CategoriyInfo["category_img"],
 //            'VALUE_ID' => $category,
 //        ));
-
-        $this->_objTpl->parse('module_downloads_category_modify');
     }
 
 
@@ -961,6 +979,7 @@ $this->_objTpl->setVariable(array(
             $objDownload->setProtection(!empty($_POST['downloads_download_access']));
             $objDownload->setGroups($objDownload->getProtection() && !empty($_POST['downloads_download_access_associated_groups']) ? array_map('intval', $_POST['downloads_download_access_associated_groups']) : array());
             $objDownload->setCategories(!empty($_POST['downloads_download_associated_categories']) ? array_map('intval', $_POST['downloads_download_associated_categories']) : array());
+            $objDownload->setDownloads(!empty($_POST['downloads_download_associated_downloads']) ? array_map('intval', $_POST['downloads_download_associated_downloads']) : array());
 
             if ($objDownload->store()) {
                 return $this->downloads();
@@ -1138,15 +1157,39 @@ $this->_objTpl->setVariable(array(
                 $arrNotAssociatedCategoryOptions[] = $option;
             }
         }
+
         $this->_objTpl->setVariable(array(
-            'DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrAssociatedCategoryOptions),
+            'DOWNLOADS_DOWNLOAD_ASSOCIATED_CATEGORIES'  => implode("\n", $arrAssociatedCategoryOptions),
             'DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions)
         ));
 
 
         // parse related downloads
-        //DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_DOWNLOADS
-        //DOWNLOADS_DOWNLOAD_ASSOCIATED_DOWNLOADS
+        $arrRelatedDownloads = $objDownload->getRelatedDownloadIds();
+        $objAvailableDownload = new Download();
+        $objAvailableDownload->loadDownloads(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        while (!$objAvailableDownload->EOF) {
+            if ($objAvailableDownload->getId() == $objDownload->getId()) {
+                $objAvailableDownload->next();
+                continue;
+            }
+
+            $option = '<option value="'.$objAvailableDownload->getId().'">'.htmlentities($objAvailableDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ('.htmlentities($objAvailableDownload->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).')</option>';
+
+            if (in_array($objAvailableDownload->getId(), $arrRelatedDownloads)) {
+                $arrAssociatedDownloadOptions[] = $option;
+            } else {
+                $arrNotAssociatedDownloadOptions[] = $option;
+            }
+
+            $objAvailableDownload->next();
+        }
+
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_ASSOCIATED_DOWNLOADS'  => implode("\n", $arrAssociatedDownloadOptions),
+            'DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_DOWNLOADS'  => implode("\n", $arrNotAssociatedDownloadOptions)
+        ));
+
 
         // parse access permissions
         if ($objDownload->getAccessId()) {
@@ -1735,15 +1778,22 @@ $this->_objTpl->setVariable(array(
         }
     }
 
+    private function loadCategoryNavigation()
+    {
+        $this->_objTpl->loadTemplateFile('module_downloads_category.html');
+    }
+
     private function parseCategoryNavigation()
     {
         global $_ARRAYLANG;
 
-        $this->_objTpl->loadTemplateFile('module_downloads_category.html');
         $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_OVERVIEW'  => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'],
-            'TXT_ADD_CATEGORY'          => $_ARRAYLANG['TXT_ADD_CATEGORY']
+            'TXT_DOWNLOADS_OVERVIEW'    => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'],
+            'TXT_ADD_CATEGORY'          => $_ARRAYLANG['TXT_ADD_CATEGORY'],
+            'DOWNLOADS_NAV_CATEGORY_ID' => $this->parentCategoryId
         ));
+
+        $this->_objTpl->parse('module_downloads_categories');
     }
     /**
      * categories list
@@ -1755,17 +1805,25 @@ $this->_objTpl->setVariable(array(
     {
         global $_ARRAYLANG, $_LANGID;
 
+        $objCategory = Category::getCategory($this->parentCategoryId);
+
+        // check access permission
+        if (// managers are allowed to see the content of every category
+            !Permission::checkAccess(142, 'static', true)
+            && $objCategory->getReadAccessId()
+            && !Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
+            && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objCategory->getOwnerId() != $objFWUser->objUser->getId())
+        ) {
+            return Permission::noAccess();
+        }
+
+
         // TODO: clean up
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
         $this->_objTpl->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_categories.html');
 
-
-        $parentCategoryId = isset($_REQUEST["parent_id"]) ? intval($_REQUEST["parent_id"]) : 0;
         $filter = array();
         $minColspan = 6;
-
-        // TODO: check category access
-        $objCategory = Category::getCategory($parentCategoryId);
 
         if (isset($_POST['downloads_category_select_action'])) {
             switch ($_POST['downloads_category_select_action']) {
@@ -2014,7 +2072,7 @@ $this->_objTpl->setVariable(array(
         // parse category id (will be used as the parent_id when creating a new directory
         $this->_objTpl->setVariable(array(
             'DOWNLOADS_CATEGORY_ID'     => $objCategory->getId(),
-            'DOWNLOADS_CATEGORY_MENU'   => $this->getCategoryMenu($objCategory->getId())
+            'DOWNLOADS_CATEGORY_MENU'   => $this->getCategoryMenu($objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\'index.php?cmd=downloads&act=categories&parent_id=\'+this.value"')
         ));
 
         // TODO: clean up
@@ -2056,8 +2114,6 @@ $this->_objTpl->setVariable(array(
             'DOWNLOADS_CONFIRM_DELETE_CATEGORIES_TXT'   => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'])),
             'DOWNLOADS_CATEGORY_COLSPAN'                => $minColspan + $operateOnSubcategories + $changeSortOrder,
         ));
-
-        $this->_objTpl->parse('module_downloads_categories');
     }
 
     private function parseCategoryDownloads($objCategory)

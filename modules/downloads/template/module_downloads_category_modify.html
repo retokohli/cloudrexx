@@ -207,8 +207,7 @@
     <li><a id="downloadsTab_categoryPermissions" href="javascript:void(0)" onclick="selectTab('categoryPermissions')" title="{TXT_DOWNLOADS_PERMISSIONS}">{TXT_DOWNLOADS_PERMISSIONS}</a></li>
 </ul>
 
-<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=category&amp;id={DOWNLOADS_CATEGORY_ID}&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}" onsubmit="downloadsSelectAll()" method="post">
-<input type="hidden" name="downloads_category_parent_id" value="{DOWNLOADS_CATEGORY_PARENT_ID}" />
+<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=category&amp;id={DOWNLOADS_CATEGORY_ID}" onsubmit="downloadsSelectAll()" method="post">
 <!-- start div downloadsTab_categoryGeneral -->
     <div id="categoryGeneral" class="downloadsTab">
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -243,6 +242,10 @@
                         </div>
                         <!-- END downloads_category_description -->
                     </td>
+                </tr>
+                <tr>
+                    <td>{TXT_DOWNLOADS_PARENT_CATEGORY}</td>
+                    <td>{DOWNLOADS_CATEGORY_PARENT_CATEGORY_MENU}</td>
                 </tr>
                 <tr class="row1">
                     <td>{TXT_DOWNLOADS_OWNER}</td>

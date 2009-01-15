@@ -58,12 +58,12 @@ function downloadsAddOptionToList(from, dest, trigger)
         return false;
     } else {
         for (var i=0; i<from.length; i++) {
-            if (from.options[i].selected) {
+            if (from.options[i].selected && !from.options[i].disabled) {
                 dest.options[dest.length] = new Option(from.options[i].text, from.options[i].value, false, false);
                }
         }
         for (var i=from.length-1; i>=0; i--) {
-            if (from.options[i].selected) {
+            if (from.options[i].selected && !from.options[i].disabled) {
                from.options[i] = null;
                }
         }
@@ -80,12 +80,12 @@ function downloadsRemoveOptionFromList(from,dest, trigger)
         return false;
     } else {
         for (var i=0; i<dest.options.length; i++) {
-            if (dest.options[i].selected) {
+            if (dest.options[i].selected && !dest.options[i].disabled) {
                 from.options[from.options.length] = new Option(dest.options[i].text, dest.options[i].value, false, false);
                }
         }
         for (var i=dest.options.length-1; i>=0; i--) {
-            if (dest.options[i].selected) {
+            if (dest.options[i].selected && !dest.options[i].disabled) {
                dest.options[i] = null;
                }
         }

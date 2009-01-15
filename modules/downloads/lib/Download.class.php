@@ -19,6 +19,7 @@ class Download {
     private $visibility;
     private $order;
     private $views;
+    private $download_count;
     private $downloads;
     private $categories;
 
@@ -46,7 +47,7 @@ class Download {
             'visibility'                        => 'int',
             'order'                             => 'int',
             'views'                             => 'int',
-            'downloads'                         => 'int'
+            'download_count'                    => 'int'
            ),
         'locale' => array(
             'name'                              => 'string',
@@ -173,7 +174,8 @@ class Download {
         $this->visibility = 1;
         $this->order = 0;
         $this->views = 0;
-        $this->downloads = 0;
+        $this->download_count = 0;
+        $this->downloads = null;
         $this->categories = null;
         $this->names = array();
         $this->descriptions = array();
@@ -359,7 +361,8 @@ class Download {
                 $this->visibility = isset($this->arrLoadedDownloads[$id]['visibility']) ? $this->arrLoadedDownloads[$id]['visibility'] : 1;
                 $this->order = isset($this->arrLoadedDownloads[$id]['order']) ? $this->arrLoadedDownloads[$id]['order'] : 0;
                 $this->views = isset($this->arrLoadedDownloads[$id]['views']) ? $this->arrLoadedDownloads[$id]['views'] : 0;
-                $this->downloads = isset($this->arrLoadedDownloads[$id]['downloads']) ? $this->arrLoadedDownloads[$id]['downloads'] : 0;
+                $this->download_count = isset($this->arrLoadedDownloads[$id]['download_count']) ? $this->arrLoadedDownloads[$id]['download_count'] : 0;
+                $this->downloads = isset($this->arrLoadedDownloads[$id]['downloads']) ? $this->arrLoadedDownloads[$id]['downloads'] : null;
                 $this->categories = isset($this->arrLoadedDownloads[$id]['categories']) ? $this->arrLoadedDownloads[$id]['categories'] : null;
                 $this->names = isset($this->arrLoadedDownloads[$id]['names']) ? $this->arrLoadedDownloads[$id]['names'] : null;
                 $this->descriptions = isset($this->arrLoadedDownloads[$id]['descriptions']) ? $this->arrLoadedDownloads[$id]['descriptions'] : null;
@@ -889,6 +892,40 @@ class Download {
         $arrNewCategories = array_diff($this->categories, $arrOldCategories);
         $arrRemovedCategories = array_diff($arrOldCategories, $this->categories);
 
+        if (!Permission::checkAccess(142, 'static', true)) {
+            // we have to check if all associations are within the users permissions
+            $objFWUser = FWUser::getFWUserObject();
+            $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+
+            while (!$objCategory->EOF) {
+                if ($objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()) {
+                    // the owner of the category is allowed to associated with it whatever he wants
+                    $objCategory->next();
+                    continue;
+                }
+
+                if (in_array($objCategory->getId(), $arrNewCategories)) {
+                    // the download has been added to this category
+                    if ($objCategory->getAddFilesAccessId()
+                        && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true)
+                    ) {
+                        // we won't store this association, because the user doesn't have the permission to
+                        unset($arrNewCategories[array_search($objCategory->getId(), $arrNewCategories)]);
+                    }
+                } elseif (in_array($objCategory->getId(), $arrRemovedCategories)) {
+                    // the download has been removed from this category
+                    if ($objCategory->getManageFilesAccessId()
+                        && !Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                    ) {
+                        // we won't store this association, because the user doesn't have the permission to
+                        unset($arrRemovedCategories[array_search($objCategory->getId(), $arrRemovedCategories)]);
+                    }
+                }
+
+                $objCategory->next();
+            }
+        }
+
         foreach ($arrNewCategories as $categoryId) {
             if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_download_category` (`download_id`, `category_id`) VALUES (".$this->id.", ".$categoryId.")") === false) {
                 $status = false;
@@ -907,6 +944,41 @@ class Download {
 
     private function storeDownloadRelations()
     {
+        global $objDatabase;
+
+        $arrOldRelations = array();
+        $status = true;
+
+        if (!isset($this->downloads)) {
+            $this->loadRelatedDownloads();
+        }
+
+        $objResult = $objDatabase->Execute('SELECT `id1`, `id2` FROM `'.DBPREFIX.'module_downloads_rel_download_download` WHERE `id1` = '.$this->id.' OR `id2` = '.$this->id);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $arrOldRelations[] = $objResult->fields['id1'] == $this->id ? $objResult->fields['id2'] : $objResult->fields['id1'];
+                $objResult->MoveNext();
+            }
+        } else {
+            return false;
+        }
+
+        $arrNewRelations = array_diff($this->downloads, $arrOldRelations);
+        $arrRemovedRelations = array_diff($arrOldRelations, $this->downloads);
+
+        foreach ($arrNewRelations as $downloadId) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_download_download` (`id1`, `id2`) VALUES (".$this->id.", ".$downloadId.")") === false) {
+                $status = false;
+            }
+        }
+
+        foreach ($arrRemovedRelations as $downloadId) {
+            if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_downloads_rel_download_download` WHERE (`id1` = '.$this->id.' AND `id2` = '.$downloadId.') OR (`id2` = '.$this->id.' AND `id1` = '.$downloadId.')') === false) {
+                $status = false;
+            }
+        }
+        return $status;
+
         return true;
     }
 
@@ -1056,7 +1128,7 @@ class Download {
 
     public function getDownloadCount()
     {
-        return $this->downloads;
+        return $this->download_count;
     }
 
     public function getAssociatedCategoryIds()
@@ -1065,6 +1137,15 @@ class Download {
             $this->loadCategoryAssociations();
         }
         return $this->categories;
+    }
+
+
+    public function getRelatedDownloadIds()
+    {
+        if (!isset($this->downloads)) {
+            $this->loadRelatedDownloads();
+        }
+        return $this->downloads;
     }
 
     public function getAccessGroupIds()
@@ -1081,6 +1162,20 @@ class Download {
         if ($objResult) {
             while (!$objResult->EOF) {
                 $this->categories[] = $objResult->fields['category_id'];
+                $objResult->MoveNext();
+            }
+        }
+    }
+
+    private function loadRelatedDownloads()
+    {
+        global $objDatabase;
+
+        $this->downloads = array();
+        $objResult = $objDatabase->Execute('SELECT `id1`, `id2` FROM `'.DBPREFIX.'module_downloads_rel_download_download` WHERE `id1` = '.$this->id.' OR `id2` = '.$this->id);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->downloads[] = $objResult->fields['id1'] == $this->id ? $objResult->fields['id2'] : $objResult->fields['id1'];
                 $objResult->MoveNext();
             }
         }
@@ -1197,6 +1292,11 @@ class Download {
     public function setCategories($arrCategories)
     {
         $this->categories = $arrCategories;
+    }
+
+    public function setDownloads($arrDownloads)
+    {
+        $this->downloads = $arrDownloads;
     }
 
 
