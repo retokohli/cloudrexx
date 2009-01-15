@@ -60,7 +60,7 @@
 /**
  * Debug level
  */
-define('_DEBUG', 99);
+define('_DEBUG', 0);
 
 //-------------------------------------------------------
 // Set error reporting
@@ -138,7 +138,7 @@ if ($objDatabase === false) {
     );
 }
 if (_DEBUG) {
-    $objDatabase->debug = 0;
+    $objDatabase->debug = 1;
 } else {
     $objDatabase->debug = 0;
 }
@@ -605,6 +605,7 @@ if (file_exists($modulespath)) {
     $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
     $page_content = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_content);
     $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['index']);
+    $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['sidebar']);
     $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['home']);
     $page_template = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_template);
 }
@@ -1220,6 +1221,21 @@ switch ($plainSection) {
         $objEcard = new Ecard($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
         break;
+
+        
+//-------------------------------------------------------
+// Tools
+//-------------------------------------------------------
+    case "tools":
+        $modulespath = "modules/tools/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objTools = new Tools($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objTools->getPage());
+        break;
         
 //-------------------------------------------------------
 // Dataviewer
@@ -1234,6 +1250,22 @@ switch ($plainSection) {
         $objDataviewer = new Dataviewer($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
         break;
+
+        
+//-------------------------------------------------------
+// Dataviewer
+//-------------------------------------------------------
+    case "dataviewer":
+        $modulespath = "modules/dataviewer/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objDataviewer = new Dataviewer($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
+        break;
+
 
 //-------------------------------------------------------
 // DocumentSystem module
@@ -1732,19 +1764,19 @@ if ($_CONFIG['bannerStatus'] == '1') {
 // Frontend Editing: prepare needed code-fragments
 //-------------------------------------------------------
 $strFeInclude = $strFeLink = $strFeContent = null;
-if ($_CONFIG['frontendEditingStatus'] == 'on') {
-    $modulespath = "core_modules/frontendEditing/frontendEditingLib.class.php";
-    if (file_exists($modulespath)) {
-        /**
-         * @ignore
-         */
-        include_once($modulespath);
-        $strFeInclude   = frontendEditingLib::getIncludeCode();
-        $strFeLink      = frontendEditingLib::getLinkCode();
-        $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
-    }
-}
-
+//if ($_CONFIG['frontendEditingStatus'] == 'on') {
+//    $modulespath = "core_modules/frontendEditing/frontendEditingLib.class.php";
+//    if (file_exists($modulespath)) {
+//        /**
+//         * @ignore
+//         */
+//        include_once($modulespath);
+//        $strFeInclude   = frontendEditingLib::getIncludeCode();
+//        $strFeLink      = frontendEditingLib::getLinkCode();
+//        $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
+//    }
+//}
+//
 
 //-------------------------------------------------------
 // set global template variables
