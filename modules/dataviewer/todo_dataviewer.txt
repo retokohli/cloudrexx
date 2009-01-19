@@ -2,16 +2,14 @@
 new project
 -----------
 * alles replacen ausser A-Z a-z und umlaute
-* prüfen ob prjekt schon vorhanden
 * bei der spalteneingabe spaltenzahl hochzählen
-* automatisches anlegen von inhaltsseite
+
 
 
 -----------
 import
 -----------
-* benachrichtung das inhalte gelöscht werden,
-wenn einträge für land bereits bestehen
+
 
 
 -----------

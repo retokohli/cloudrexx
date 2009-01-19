@@ -80,10 +80,7 @@ class Dataviewer {
 	 * handles the overview view and actions
 	 *
 	 */
-    function overview() {
-    	
-    	$this->createContentpage("laenderbasiert");
-    	
+    function overview() {   	
         global $_ARRAYLANG, $objDatabase;
         $this->_objTpl->loadTemplateFile('module_dataviewer_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_DATAVIEWER_ADMINISTRATION'];
@@ -121,19 +118,27 @@ class Dataviewer {
 			$filtersString = "";
 			foreach (explode(";", $objResultProjects->fields['filters']) as $filter) {
 				if ($filter !== "") {
-					$filtersString .= $filter . "<br />";	
+					$filtersString .= $filter . ", ";	
 				}
 			}
+			$filtersString = substr($filtersString, 0, strlen($filtersString)-2);
+			
+			//format language
+			$langExplode = explode(";", $objResultProjects->fields['language']);
+			$languages = "";
+			foreach ($langExplode as $lang) {
+				$languages .= $this->getLanguageName($lang) . ", ";
+			}
+			$languages = substr($languages,0,strlen($languages)-2);
 						
 			$this->_objTpl->setVariable(array(
 				'ID'				=> $objResultProjects->fields['id'],
 				'STATUS'			=> $objResultProjects->fields['status'] == 1 ? '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=n"><img border="0" src="images/icons/led_green.gif" /></a>' : '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=y"><img border="0" src="images/icons/led_red.gif" /></a>',
 				'NAME'				=> $objResultProjects->fields['name'],
 				'DESCRIPTION' 		=> $objResultProjects->fields['description'],
-				'LANGUAGE' 			=> $objResultProjects->fields['language'],
-				'COUNTRYBASED' 		=> $objResultProjects->fields['countrybased'] == 1 ? '<img src="../images/modules/dataviewer/thumb_up.gif" alt="countrybasedY">' : '<img src="../images/modules/dataviewer/thumb_down.gif" alt="countrybasedN">',
+				'LANGUAGE' 			=> $languages,
+				'COUNTRYBASED' 		=> $objResultProjects->fields['countrybased'] == 1 ? $_ARRAYLANG['TXT_YES'] : $_ARRAYLANG['TXT_NO'],
 				'FILTER' 			=> $filtersString,
-				'PREVIEW' 			=> $this->createPreview($this->makeInputDBvalid($objResultProjects->fields['name'])),
 				'ROWCLASS' 			=> ($i % 2 == 0) ? 'row1' : 'row2',
 				'TXT_SHOW_PREVIEW'  => $_ARRAYLANG['TXT_SHOW_PREVIEW']
 			));
@@ -154,44 +159,26 @@ class Dataviewer {
             'TXT_FILTER'        		=> $_ARRAYLANG['TXT_FILTER'],
             'TXT_PREVIEW'        		=> $_ARRAYLANG['TXT_PREVIEW'],
             'TXT_SAVE'        			=> $_ARRAYLANG['TXT_SAVE'],
-            'TXT_DELETE_CONFIRMATION'   => $_ARRAYLANG['TXT_DELETE_CONFIRMATION']
+            'TXT_DELETE_CONFIRMATION'   => $_ARRAYLANG['TXT_DELETE_CONFIRMATION'],
         ));
 	}
 		
-
-	/**
-	 * creates the preview in the overview mask
-	 *
-	 * @param string $name
-	 * @return string $xhtml
-	 */
-	function createPreview($name) {
-		global $objDatabase;
-		
-		//get all columns in table
-		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$name);
-		
-		//select first record in table
-		$query     = "SELECT * FROM " . DBPREFIX."module_dataviewer_".$name . " LIMIT 1";
-		$objResult = $objDatabase->Execute($query);
-		
-		//create xhtml
-		$xhtml       = '<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>';
-		$firstRecord = "";
-		
-		foreach ($columns as $column) {
-			if ($column !== "country") {
-				$xhtml       .= '<td><b>' . $column . '</b></td>';	
-				$firstRecord .= '<td>' . $objResult->fields[$column] . '</td>';	
-			}
-		}
-		
-		$xhtml .= '<tr>' . $firstRecord . '</tr>';
-		$xhtml .= '</tr></table>';
 	
-		return $xhtml;
+	/**
+	 * gets language name of activated languages
+	 *
+	 * @param  int $id;
+	 * @return string name;
+	 */
+	function getLanguageName($id) {
+		global $objDatabase;
+		$query     = "SELECT name FROM ".DBPREFIX."languages WHERE id = '".$id."'";
+		$objResult = $objDatabase->Execute($query);
+		return $objResult->fields['name'];
 	}
 
+	
+	
 
 	/**
 	* handles the view and actions for a new project
@@ -201,6 +188,7 @@ class Dataviewer {
 	function newProject() {
 		global $_ARRAYLANG, $objDatabase;			
 		$this->_objTpl->loadTemplateFile('module_dataviewer_new_project.html');
+		$this->_pageTitle = $_ARRAYLANG['TXT_DATAVIEWER_NEW_PROJECT'];
 		
 		$_POST['save'] = !empty($_POST['save']) ? $_POST['save'] : "";
 		
@@ -228,105 +216,86 @@ class Dataviewer {
 			}
 			$columnsString = implode(";", $columns);
 						
-			//input check
-			$error = false;
-			$errorMessage = "";
 			
-			if ($name == "") {
-				$errorMessage = "Name, ";
-				$error = true;
+			//create query for dataviewer_projects
+			$insertProjectQuery = "	INSERT INTO ".DBPREFIX."module_dataviewer_projects 
+										(name, 
+										description, 
+										status, 
+										language,
+										countrybased,
+										filters)
+									VALUES
+										('" . $name . "',
+										'" . $description . "',
+										'" . $status . "',
+										'" . $languageString . "',
+										'" . $countryBased  . "',
+										'" . $columnsString  . "');";
+			
+			
+			//insert record in dataviewer_projects
+			if($objDatabase->Execute($insertProjectQuery)) {
+				$insertProjectQueryOK = true;
 			}
+						
+			//create query for dataviewer_projects_placeholders
+			$insertPlaceholderQuery = "	INSERT INTO ".DBPREFIX."module_dataviewer_placeholders 
+											(`id`, 
+											`projectid`, 
+											`column`)
+										VALUES ";
 			
-			if ($language == "") {
-				$errorMessage .= "Frontend Sprache, ";
-				$error = true;
+			$valuesString = "";
+			foreach ($columns as $key => $column) {
+				$valuesString .= 	"('$key', '" . ($objDatabase->Insert_ID(DBPREFIX."module_dataviewer_projects", "id")) . "', '$column'), ";
 			}
+							
+			//delete last ","
+			$valuesString       = substr($valuesString, 0, strlen($valuesString)-2);
+			$insertPlaceholderQuery = $insertPlaceholderQuery . $valuesString;
 			
-			if ($description == "") {
-				$errorMessage .= "Beschreibung, ";
-				$error = true;
-			}						
+			
+			//create query for dataviewer_projects_$name
+			$createProjectQuery = "CREATE TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($name) ." (";
+			
+			$columnsString = "";
+			foreach ($columns as $column) {
+				$columnsString .= $column . " VARCHAR(250), ";
+			}
 			
 			//delete last ","
-			$errorMessage = substr($errorMessage, 0, strlen($errorMessage)-2);
+			$columnsString       = substr($columnsString, 0, strlen($columnsString)-2);
+			$createProjectQuery .= $columnsString . ")";
 			
-			if ($error) {
+			
+			//create query for contentpage
+			
+							
+			//execute queries
+			if($insertProjectQueryOK &&
+			   $objDatabase->Execute($insertPlaceholderQuery) &&
+			   $objDatabase->Execute($createProjectQuery) &&
+			   $this->insertPages($name) == true) {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' 			=> $this->strErrMessage = "Bitte kontrollieren Sie folgende Felder:<br />" . $errorMessage,
-					'POST_NAME' 						=> $name,
-					'POST_DESCRIPTION' 					=> $description,
-					'POST_DESCRIPTION_COUNTRYBASED_Y' 	=> $countryBased == 1 ? 'checked="checked"' : "",
-					'POST_DESCRIPTION_COUNTRYBASED_N' 	=> $countryBased == 0 ? 'checked="checked"' : "",
-					'POST_DESCRIPTION_STATUS_Y' 		=> $status == 1 ? 'checked="checked"' : "",
-					'POST_DESCRIPTION_STATUS_N' 		=> $status == 0 ? 'checked="checked"' : ""
+					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich erstellt."
+				));	
+			} else {
+				$this->_objTpl->setVariable(array(
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht erstellt werden!<br />" . $insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery
 				));	
 			}
-			
-			if (!$error) {
-				//create query for dataviewer_projects
-				$insertProjectQuery = "	INSERT INTO ".DBPREFIX."module_dataviewer_projects 
-											(name, 
-											description, 
-											status, 
-											language,
-											countrybased,
-											filters)
-										VALUES
-											('" . $name . "',
-											'" . $description . "',
-											'" . $status . "',
-											'" . $languageString . "',
-											'" . $countryBased  . "',
-											'" . $columnsString  . "');";
-				
-				
-				//insert record in dataviewer_projects
-				if($objDatabase->Execute($insertProjectQuery)) {
-					$insertProjectQueryOK = true;
-				}
-							
-				//create query for dataviewer_projects_placeholders
-				$insertPlaceholderQuery = "	INSERT INTO ".DBPREFIX."module_dataviewer_placeholders 
-												(`id`, 
-												`projectid`, 
-												`column`)
-											VALUES ";
-				
-				$valuesString = "";
-				foreach ($columns as $key => $column) {
-					$valuesString .= 	"('$key', '" . ($objDatabase->Insert_ID(DBPREFIX."module_dataviewer_projects", "id")) . "', '$column'), ";
-				}
-								
-				//delete last ","
-				$valuesString       = substr($valuesString, 0, strlen($valuesString)-2);
-				$insertPlaceholderQuery = $insertPlaceholderQuery . $valuesString;
-				
-				
-				//create query for dataviewer_projects_$name
-				$createProjectQuery = "CREATE TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($name) ." (";
-				
-				$columnsString = "";
-				foreach ($columns as $column) {
-					$columnsString .= $column . " VARCHAR(250), ";
-				}
-				
-				//delete last ","
-				$columnsString       = substr($columnsString, 0, strlen($columnsString)-2);
-				$createProjectQuery .= $columnsString . ")";
-				
-				
-				//execute queries
-				if($insertProjectQueryOK && $objDatabase->Execute($insertPlaceholderQuery) && $objDatabase->Execute($createProjectQuery)) {
-					$this->_objTpl->setVariable(array(
-						'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich erstellt."
-					));	
-				} else {
-					$this->_objTpl->setVariable(array(
-						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht erstellt werden!<br />" . $insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery
-					));	
-				}
-			}
 		}
+		
+		//projectstring for JS check
+		$query     = "SELECT * FROM " . DBPREFIX . "module_dataviewer_projects";
+		$objResult = $objDatabase->Execute($query);
+		$projectsString = "";
+		while (!$objResult->EOF) {
+			$projectsString .= $objResult->fields['name']." ";
+			$objResult->MoveNext();
+		}
+		$projectsString = substr($projectsString, 0, strlen($projectsString)-1);
 			
 		$this->_objTpl->setVariable(array(
 			'AVAILABLE_FRONTENT_LANGUAGES'	=> $this->getFrontentLangCheckboxes(),
@@ -350,6 +319,7 @@ class Dataviewer {
 			'TXT_ENTER_DESCRIPTION' 		=> $_ARRAYLANG['TXT_ENTER_DESCRIPTION'],
 			'TXT_CHOOSE_COUNTRYBASED' 		=> $_ARRAYLANG['TXT_CHOOSE_COUNTRYBASED'],
 			'TXT_CHOOSE_STATUS' 			=> $_ARRAYLANG['TXT_CHOOSE_STATUS'],
+			'PROJECTSSTRING' 				=> $projectsString,
 			'TIP_PROJECTNAME'				=> $_ARRAYLANG['TIP_PROJECTNAME'],
 			'TIP_FRONTEND_LANG' 			=> $_ARRAYLANG['TIP_FRONTEND_LANG'],
 			'TIP_COUNTRYBASED' 				=> $_ARRAYLANG['TIP_COUNTRYBASED'],
@@ -357,6 +327,110 @@ class Dataviewer {
 			'TIP_STATUS' 					=> $_ARRAYLANG['TIP_STATUS'],
 			'TIP_COLUMN_NAME' 				=> $_ARRAYLANG['TIP_COLUMN_NAME']
 		));	
+	}
+	
+	
+	/**
+	 * inserts content and navigation page for a new project
+	 * 
+	 * @param  string $projectname
+	 * @return boolean
+	 */
+	function insertPages($projectname) {
+		global $objDatabase;
+		
+		//get module id
+		$query     = "SELECT id from " .DBPREFIX. "modules WHERE name = 'dataviewer'";
+		$objResult = $objDatabase->Execute($query);
+		$moduleID  = $objResult->fields['id']; 
+		
+		//get parent id
+		$query     = "SELECT catid from " .DBPREFIX. "content_navigation WHERE module = '".$moduleID."' AND parcat = '0'";
+		$objResult = $objDatabase->Execute($query);
+		$parentID  = $objResult->fields['catid']; 
+		
+		//get last id 
+		$query     = "SELECT catid from " .DBPREFIX. "content_navigation ORDER BY catid DESC LIMIT 1";
+		$objResult = $objDatabase->Execute($query);
+		$lastID    = $objResult->fields['catid']; 
+		
+		
+		//insert navigation page
+		$queryNavi = "	INSERT INTO ".DBPREFIX."content_navigation (
+							catid,
+							is_validated,
+							parcat,
+							catname,
+							target,
+							displayorder,
+							displaystatus,
+							activestatus,
+							cachingstatus,
+							username,
+							changelog,
+							cmd,
+							lang,
+							module,
+							startdate,
+							enddate,
+							protected,
+							frontend_access_id,
+							backend_access_id,
+							themes_id,
+							css_name)
+						VALUES (
+							'" . ($lastID+1) . "',
+							'1',
+							'" . $parentID . "',
+							'" . $projectname . "',
+							'_self',
+							'1',
+							'on',
+							'1',
+							'1',
+							'system',
+							'" . mktime() . "',
+							'" . $projectname . "',
+							'1',
+							'" . $moduleID . "',
+							'0000-00-00',
+							'0000-00-00',
+							'0',
+							'0',
+							'0',
+							'0',
+							'')";
+		
+		
+		//insert content page
+		$queryContent = "	INSERT INTO ".DBPREFIX."content (
+							id,
+							content,
+							title,
+							metatitle,
+							metadesc,
+							metakeys,
+							metarobots,
+							css_name,
+							redirect,
+							expertmode)
+						VALUES (
+							'" . ($lastID+1) . "',
+							'" . $this->createContentpage($projectname) . "',
+							'" . $projectname . "',
+							'" . $projectname . "',
+							'" . $projectname . "',
+							'" . $projectname . "',
+							'" . $projectname . "',
+							'',
+							'',
+							'n')";
+		
+		if ($objDatabase->Execute($queryContent) && $objDatabase->Execute($queryNavi)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	
@@ -374,38 +448,12 @@ class Dataviewer {
 		//create xhtml
 		$xhtml = "";
 		while (!$objResult->EOF) {
-			$xhtml .= '<input type="checkbox" name="language[]" value="' . $objResult->fields['id'] . '" /> ' . $objResult->fields['name'];
+			$xhtml .= '<input type="checkbox" name="language[]" id="language" value="' . $objResult->fields['id'] . '" /> ' . $objResult->fields['name'];
 			$objResult->MoveNext();
 		}
 		
 		return $xhtml;
 	}
-	
-	
-	/**
-	 * creates languages dropdown based on "lib_country"
-	 * 
-	 * @param  int $countryBased
-	 * @return string $xhtml
-	 */
-//	function getLanguagesDropDown($countryBased) {
-//		global $objDatabase;
-//		
-//		if ($countryBased == 1) {
-//			$query     = "SELECT * FROM " . DBPREFIX . "lib_country";
-//			$objResult = $objDatabase->Execute($query);
-//			
-//			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_CHOOSE_COUNTRY'].'</option>';
-//			while (!$objResult->EOF) {
-//				$xhtml .= '<option value="' . $objResult->fields['iso_code_2'] . '">' . $objResult->fields['name'] . '</option>';
-//				$objResult->MoveNext();
-//			}	
-//		} else {
-//			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_PROJECT_IS_NOT_COUNTRYBASED'].'</option>';
-//		}
-//		
-//		return $xhtml;
-//	}
 	
 	
 	/**
@@ -466,6 +514,7 @@ class Dataviewer {
 	function filter($id) {
 		global $_ARRAYLANG, $objDatabase;			
 		$this->_objTpl->loadTemplateFile('module_dataviewer_filters.html');
+		$this->_pageTitle = $_ARRAYLANG['TXT_FILTER'];
 		
 		$_POST['save'] = !empty($_POST['save']) ? $_POST['save'] : "";
 				
@@ -514,9 +563,11 @@ class Dataviewer {
 		$objResult = $objDatabase->Execute($currentFilterQuery);
 		$filters   = explode(";", $objResult->fields['filters']);
 		
+		//fill up that there are as many filters as columns
+		$filters = array_pad($filters, $numberOfColumns, "");
+		
 		//set template variables
-		$i = 0;
-		while ($i < $numberOfColumns) {
+		for($i = 0; $i < $numberOfColumns; $i++) {
 			foreach ($columns as $column) {
 				$this->_objTpl->setVariable(array(
 					'COLUMN' 		=> $column,
@@ -531,7 +582,6 @@ class Dataviewer {
 				'ROWCLASS' 	=> ($i % 2 == 0) ? 'row1' : 'row2'
 			));		
 			$this->_objTpl->parse('filterRow');
-			$i++;
 		}	
 		
 		$this->_objTpl->setVariable(array(
@@ -553,6 +603,7 @@ class Dataviewer {
 	function placeholder($id) {
 		global $_ARRAYLANG, $objDatabase;			
 		$this->_objTpl->loadTemplateFile('module_dataviewer_placeholders.html');
+		$this->_pageTitle = $_ARRAYLANG['TXT_PLACEHOLDER'];
 		
 		$_POST['save'] = !empty($_POST['save']) ? $_POST['save'] : "";
 				
@@ -626,7 +677,8 @@ class Dataviewer {
 			
 		
 	/**
-	* deletes the record in dataviewer_projects and the project table
+	* deletes the record in dataviewer_projects, the project table,
+	* content & navigation pages and the placeholder
 	* 
 	* @param int $id
 	* @return boolean
@@ -634,11 +686,22 @@ class Dataviewer {
 	function deleteProject($id) {
 		global $objDatabase;
 		
+		//get catid from navigation page
+		$query 						   = "SELECT catid FROM " .DBPREFIX. "content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "'";
+		$objResult 					   = $objDatabase->Execute($query);
+		$catID 						   = $objResult->fields['catid'];
+		
 		$deleteProjectTableQuery       = "DROP TABLE ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($this->getProjectName($id));
 		$deleteProjectRecordQuery      = "DELETE FROM ".DBPREFIX."module_dataviewer_projects WHERE id = '" . $id . "'";
 		$deletePlaceholdersRecordQuery = "DELETE FROM ".DBPREFIX."module_dataviewer_placeholders WHERE projectid = '" . $id . "'";
-		
-		if ($objDatabase->Execute($deleteProjectTableQuery) && $objDatabase->Execute($deleteProjectRecordQuery) && $objDatabase->Execute($deletePlaceholdersRecordQuery)) {
+		$deleteNavigationPageQuery     = "DELETE FROM ".DBPREFIX."content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "'";
+		$deleteContentPageQuery        = "DELETE FROM ".DBPREFIX."content WHERE id = '" . $catID . "'";
+						
+		if ($objDatabase->Execute($deleteProjectTableQuery) && 
+			$objDatabase->Execute($deleteProjectRecordQuery) && 
+			$objDatabase->Execute($deletePlaceholdersRecordQuery) && 
+			$objDatabase->Execute($deleteNavigationPageQuery) && 
+			$objDatabase->Execute($deleteContentPageQuery)) {
 			return true;
 		} else {
 			return false;
@@ -646,14 +709,18 @@ class Dataviewer {
 	}
 	
 	
-		
+	/**
+	 * checks if project is countrybased
+	 *
+	 * @param  int $id
+	 * @return boolean
+	 */
 	function isCountryBased($id) {
 		global $objDatabase;			
 		$query 		  = "SELECT countrybased FROM ".DBPREFIX."module_dataviewer_projects WHERE id = '" . $id . "'";
 		$objResult    = $objDatabase->Execute($query);
-		$countrybased = $objResult->fields['countrybased'] == 1 ? true : false;
 		
-		return $countrybased;
+		return $objResult->fields['countrybased'] == 1 ? true : false;
 	}
 	
 	
@@ -664,6 +731,7 @@ class Dataviewer {
 	function import($id) {
 		global $_ARRAYLANG, $objDatabase;			
 		$this->_objTpl->loadTemplateFile('module_dataviewer_import.html');
+		$this->_pageTitle = $_ARRAYLANG['TXT_DATAVIEWER_IMPORT_DATA'];
 		require_once("lib/CSVHandler.class.php");
 		
 		$_POST['continue'] = !empty($_POST['continue']) ? $_POST['continue'] : "";
@@ -682,30 +750,40 @@ class Dataviewer {
 				$this->_objTpl->parse('countryRow');
 				$objResult->MoveNext();
 			}
-		}
-
+		}		
+		
 		$this->_objTpl->setVariable(array(
-			'ID' => $id,
-			'COUNTRY_STATEMENT' => $this->isCountryBased($id) ? $_ARRAYLANG['TXT_CHOOSE_COUNTRY'] : $_ARRAYLANG['TXT_PROJECT_IS_NOT_COUNTRYBASED']
+			'DISPLAY' 							=> "none",
 		));	
 		
-		
-		
-			
 		
 		//CONTINUE button
 		if ($_POST['continue']) {
 			$file     		 = $_FILES['csvFile'];
 			$selectedCountry = $_POST['country'];
+			$error = false;
 			
 			if ($selectedCountry == "null" && $this->isCountryBased($id)) {
 				$this->_objTpl->setVariable(array(
 					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_CHOOSE_COUNTRY_WHICH_DATA_FOR']
 				));	
+				$error = true;
+			}
+			
+			
+			//show warning, if country allready exists in db
+			if ($this->isCountryBased($id)) {
+				//if records for country allready exists,
+				//delete it
+				if($this->countryExistsInDB($id, $selectedCountry)) {
+					$this->_objTpl->setVariable(array(
+						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_RECORDS_FOR_COUNTRY_EXISTS']
+					));	
+				}	
 			}
 			
 			$this->_objTpl->setVariable(array(
-				'FILENAME' 				 => $file['name']
+				'FILENAME' 				 	=> $file['name']
 			));	
 			
 			//generate dropdown for country list
@@ -725,6 +803,7 @@ class Dataviewer {
 				$objResult->MoveNext();
 			}
 			
+			if(!$error){
 			//generate selection stuff
 			//filetype check		
 			if ($file['type'] == "text/comma-separated-values") {
@@ -734,7 +813,7 @@ class Dataviewer {
 					$objCSV = new CSVHandler($file, ";", "");
 			
 					//get all columns
-					$columnsDB  = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->getProjectName($id));
+					$columnsDB  = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id)));
 					$columnsCSV = $objCSV->ListAllHeader();
 					
 					//dont display country column
@@ -760,17 +839,27 @@ class Dataviewer {
 						$i++;
 						$this->_objTpl->parse('columnRow');
 					}
+					
+					$this->_objTpl->setVariable(array(
+						'DISPLAY' => $error ? "none" : "block"
+					));
+			
 				} else {
 					$this->_objTpl->setVariable(array(
 						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_FILE_COULDNT_BE_UPLOADED']
 					));	
 				}
+			} else if($file['type'] == "") {
+				$this->_objTpl->setVariable(array(
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_NO_FILE_SELECTED']
+				));	
 			} else {
 				$this->_objTpl->setVariable(array(
 					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_WRONG_FILETYPE']
 				));	
 			}
-		}
+		}}
+		
 		
 		//IMPORT
 		if ($_POST['import']) {
@@ -779,70 +868,100 @@ class Dataviewer {
 			$hiddenFilename = $_POST['fileName'];	
 			$country 		= $_POST['country'];	
 			
-			if ($this->isCountryBased($id)) {
-				//if records for country allready exists,
-				//delete it
-				if($this->countryExistsInDB($id, $country)) {
-					$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_dataviewer_" . $this->getProjectName($id) . " WHERE country = '" . $country . "'");
-				}	
-			}
-			
-			$objCSV = new CSVHandler(ASCMS_DATAVIEWER_TEMP_PATH . $hiddenFilename, ";", "");
-
-			//create query for insert
-			$insertDataQuery = "INSERT INTO ".DBPREFIX."module_dataviewer_" . $this->getProjectName($id) . " (";
-		
-			//add columns manually, if project is countrybased
-			if ($this->isCountryBased($id)) {
-				$columnsDB[] = "country";
-				$columnsCSV[] = "country";
-			}
-			
-			//fields
-			$columnsNameString = "";
-			foreach ($columnsDB as $column) {
-				$columnsNameString .= "`" . $column . "`,";
-			}
-			
-			//delete last ","
-			$columnsNameString  = substr($columnsNameString, 0, strlen($columnsNameString)-1);
-			$columnsNameString .= ") VALUES ";
-
-			//values
-			$csvData 			 = $objCSV->ReadCSV();
-			$columnsValuesString = "";
-			
-			//write all values to query string
-			foreach ($csvData as $row) {
-				if ($this->isCountryBased($id)) {
-					$row['country'] = $country;
-				}	
-				
-				$columnsValuesString .= "(";
-				foreach ($columnsCSV as $column) {
-					$columnsValuesString .= "'" . utf8_encode(mysql_escape_string($row[$column])) . "',";
+			//check if at least one column from CSV is selected
+			$csvSelected = false;
+			foreach ($columnsCSV as $column) {
+				if ($column !== "0") {
+					$csvSelected = true;
 				}
-				$columnsValuesString  = substr($columnsValuesString, 0, strlen($columnsValuesString)-1);
-				$columnsValuesString .= "), ";
 			}
 			
-			$columnsValuesString  = substr($columnsValuesString, 0, strlen($columnsValuesString)-3);			
-			$columnsValuesString .= ")";
-			$insertDataQuery = $insertDataQuery . $columnsNameString . $columnsValuesString;
 			
-			if ($objDatabase->Execute($insertDataQuery)) {
-				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORTED']
-				));	
+			if ($csvSelected) {
+				if ($this->isCountryBased($id)) {
+					//if records for country allready exists,
+					//delete it
+					if($this->countryExistsInDB($id, $country)) {
+						$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($this->getProjectName($id)) . " WHERE country = '" . $country . "'");
+					}	
+				}
+				
+				$objCSV = new CSVHandler(ASCMS_DATAVIEWER_TEMP_PATH . $hiddenFilename, ";", "");
+	
+				//create query for insert
+				$insertDataQuery = "INSERT INTO ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($this->getProjectName($id)) . " (";
+			
+				//add columns manually, if project is countrybased
+				if ($this->isCountryBased($id)) {
+					$columnsDB[] = "country";
+					$columnsCSV[] = "country";
+				}
+				
+				//fields
+				$columnsNameString = "";
+				foreach ($columnsDB as $column) {
+					$columnsNameString .= "`" . $column . "`,";
+				}
+				
+				//delete last ","
+				$columnsNameString  = substr($columnsNameString, 0, strlen($columnsNameString)-1);
+				$columnsNameString .= ") VALUES ";
+	
+				//values
+				$csvData 			 = $objCSV->ReadCSV();
+				$columnsValuesString = "";
+				
+				//write all values to query string
+				foreach ($csvData as $row) {
+					if ($this->isCountryBased($id)) {
+						$row['country'] = $country;
+					}	
+					
+					$columnsValuesString .= "(";
+					foreach ($columnsCSV as $column) {
+						$columnsValuesString .= "'" . utf8_encode(mysql_escape_string($row[$column])) . "',";
+					}
+					$columnsValuesString  = substr($columnsValuesString, 0, strlen($columnsValuesString)-1);
+					$columnsValuesString .= "), ";
+				}
+				
+				$columnsValuesString  = substr($columnsValuesString, 0, strlen($columnsValuesString)-3);			
+				$columnsValuesString .= ")";
+				$insertDataQuery = $insertDataQuery . $columnsNameString . $columnsValuesString;
+				
+				if ($objDatabase->Execute($insertDataQuery)) {
+					$this->_objTpl->setVariable(array(
+						'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORTED']
+					));	
+				} else {
+					$this->_objTpl->setVariable(array(
+						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_ERROR_AT_IMPORT'] . $insertDataQuery
+					));	
+				}
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_ERROR_AT_IMPORT'] . $insertDataQuery
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_NO_DATA_IMPORTED_NO_SELECTION']
 				));	
 			}
-			
 			//delete file from temp folder
 			unlink(ASCMS_DATAVIEWER_TEMP_PATH . $hiddenFilename);
 		}
+		
+		$this->_objTpl->setVariable(array(
+			'ID' 								=> $id,
+			'COUNTRY_STATEMENT' 				=> $this->isCountryBased($id) ? $_ARRAYLANG['TXT_CHOOSE_COUNTRY'] : $_ARRAYLANG['TXT_PROJECT_IS_NOT_COUNTRYBASED'],
+			'TXT_PROJECT_COLUMNS' 				=> $_ARRAYLANG['TXT_PROJECT_COLUMNS'],
+			'TXT_IMPORT_FROM_CSV' 				=> $_ARRAYLANG['TXT_IMPORT_FROM_CSV'],
+			'TXT_COUNTRY' 						=> $_ARRAYLANG['TXT_COUNTRY'],
+			'TXT_CSV_FILE' 						=> $_ARRAYLANG['TXT_CSV_FILE'],
+			'TXT_CONTINUE' 						=> $_ARRAYLANG['TXT_CONTINUE'],
+			'TXT_AVAILABLE_IN_DATABASE' 		=> $_ARRAYLANG['TXT_AVAILABLE_IN_DATABASE'],
+			'TXT_AVAILABLE_IN_CSV' 				=> $_ARRAYLANG['TXT_AVAILABLE_IN_CSV'],
+			'TXT_START_IMPORT' 					=> $_ARRAYLANG['TXT_START_IMPORT'],
+			'TIP_CHOOSE_FILE' 					=> $_ARRAYLANG['TIP_CHOOSE_FILE'],
+			'TIP_AVAILABLE_FIELDS_IN_DATABASE' 	=> $_ARRAYLANG['TIP_AVAILABLE_FIELDS_IN_DATABASE'],
+			'TIP_AVAILABLE_FIELDS_IN_CSV' 		=> $_ARRAYLANG['TIP_AVAILABLE_FIELDS_IN_CSV']
+		));	
 	}
 	
 	
@@ -863,9 +982,16 @@ class Dataviewer {
 	}
 		
 	
+	/**
+	 * checks if country allready exists in table
+	 *
+	 * @param  int $id
+	 * @param  string $country
+	 * @return boolean
+	 */
 	function countryExistsInDB($id, $country) {
 		global $objDatabase;			
-		$query 		  = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->getProjectName($id) . " WHERE country = '" . $country . "'";
+		$query 		  = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($this->getProjectName($id)) . " WHERE country = '" . $country . "'";
 		$objResult    = $objDatabase->Execute($query);
 		
 		if($objResult->_numOfRows > 0) {
@@ -874,33 +1000,37 @@ class Dataviewer {
 			return false;
 		}
 	}
-	
-	
-	
+		
 	
 	/**
 	 * creates content page for project
+	 * 
+	 * @param  string $projectname
+	 * @return string $xhtml;
 	 */
 	function createContentpage($projectname) {
-		global $objDatabase;
+		global $objDatabase, $_ARRAYLANG;
 		
-		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$projectname);
+		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($projectname));
 		
+		$xhtml  		= " {DATAVIEWER_FILTER}\n{DATAVIEWER_JS}<br /><br />";
 		$tableHeadlines = "";
 		$tableContent   = "";
 		$i = 1;
 		foreach ($columns as $column) {
 			$tableHeadlines .= '<td><strong>' . $column  . '</strong></td>';
-			$tableContent   .= '<td>[[DATAVIEWER_PLACEHOLDER_' . $i . ']]</td>';
+			$tableContent   .= '<td>{DATAVIEWER_PLACEHOLDER_' . $i . '}</td>';
 			$i++;
 		}
 		
-		$tableHeadlines = "<tr>" . $tableHeadlines . "</tr>" ;
-		$tableContent   = "<tr>" . $tableContent . "</tr>" ;
-		$tableStart     = '<table border="1" width="100">';
+		$tableHeadlines = "<tr>" . str_replace("country", $_ARRAYLANG['TXT_COUNTRY'], $tableHeadlines) . "</tr>" ;
+		$tableContent   = "<!-- BEGIN dataviewer_row --><tr>" . $tableContent . "</tr><!-- END dataviewer_row -->" ;
+		$tableStart     = '<table border="0" width="100%" id="dataviewer_Table">';
 		$tableEnd       = '</table>';
 		
-		$xhtml = $tableStart . $tableHeadlines . $tableContent;
+		$xhtml .= $tableStart . $tableHeadlines . $tableContent . $tableEnd;
+		
+		return html_entity_decode($xhtml);
 	}
 }
 ?>
