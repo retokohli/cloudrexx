@@ -27,9 +27,9 @@
 	
 	
 	Text[0] = ["", 'Gibt an, für welches Land Sie die Daten bereit stellen wollen.'];
-	Text[1] = ["", 'Bitte wählen Sie die Datei aus. Erlaubtes Format: CSV'];
-	Text[2] = ["", 'Verfügbare Felder in Datenbank'];
-	Text[3] = ["", 'Dies sind die verfügbaren Felder in der CSV-Datei.<br />Weisen Sie den Feldern in der Datenbank, Felder aus der CSV-Datei zu.'];
+	Text[1] = ["", '{TIP_CHOOSE_FILE}'];
+	Text[2] = ["", '{TIP_AVAILABLE_FIELDS_IN_DATABASE}'];
+	Text[3] = ["", '{TIP_AVAILABLE_FIELDS_IN_CSV}'];
 	
 	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 /* ]]> */
@@ -40,13 +40,13 @@
 			<thead>
 				<tr>
 					<th valign="top" colspan="2">
-						Daten aus CSV Importieren
+					{TXT_IMPORT_FROM_CSV}
 					</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr class="row1">
-					<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">Land</td>
+					<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_COUNTRY}</td>
 					<td width="88%">
 						<select size="1" name="country" style="width: 200px;">
 									<option value="null">{COUNTRY_STATEMENT}</option>
@@ -57,31 +57,31 @@
 					</td>
 				</tr>
 				<tr class="row2">
-					<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])">CSV-Datei</td>
+					<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])">{TXT_CSV_FILE}</td>
 					<td width="88%"><input type="file" name="csvFile" /></td>
 				</tr>
 			</tbody>
 	</table>
 	<br />
-	<input type="submit" name="continue" value="weiter" />
+	<input type="submit" name="continue" value="{TXT_CONTINUE}" />
 	<br />
 	<br />
-	<div class="dataviewerImport2" style="display:block;">
+	<div class="dataviewerImport2" style="display:{DISPLAY};">
 		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 			<thead>
 				<tr>
-					<th valign="top" colspan="2">Projektspalten</th>
+					<th valign="top" colspan="2">{TXT_PROJECT_COLUMNS}</th>
 				</tr>
 			</thead>
 			<tbody>
 			<tr class="row3">
-				<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">Verfügbar in Datenbank</span></td>
-				<td nowrap="nowrap" width="88%"><span style="font-weight:bold;">Verfügbar in CSV</span></td>
+				<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{TXT_AVAILABLE_IN_DATABASE}</span></td>
+				<td nowrap="nowrap" width="88%"><span style="font-weight:bold;">{TXT_AVAILABLE_IN_CSV}</span></td>
 			</tr>
 			<!-- BEGIN columnRow -->
 			<tr class="{ROWCLASS}">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])">
-					<input type="text" name="dbColumn[]" value="{COLUMN_NAME_DB}" />
+					<input type="text" name="dbColumn[]" value="{COLUMN_NAME_DB}" readonly />
 				</td>
 				<td width="88%" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])">
 					<select size="1" name="csvColumn[]" id="csvColumn" style="width: 200px;">
@@ -94,7 +94,7 @@
 		</table>
 		<br />
 		<input type="hidden" name="fileName" value="{FILENAME}" />
-		<input type="submit" name="import" value="importieren" />
+		<input type="submit" name="import" value="{TXT_START_IMPORT}" />
 	</div>
 </form>
 

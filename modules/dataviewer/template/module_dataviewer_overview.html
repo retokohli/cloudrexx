@@ -2,23 +2,12 @@
 <!-- START  module_dataviewer_overview.html -->
 <script type="text/javascript">
 /* <![CDATA[ */
-	function showPreview(ID) {
-	    if (document.getElementById('preview_'+ID)) {
-	        if (document.getElementById('preview_'+ID).style.display == 'none') {
-	            document.getElementById('preview_'+ID).style.display = 'block';
-	        } else {
-	            document.getElementById('preview_'+ID).style.display = 'none';
-	        }
-	    }
-	}
-	
 	function deleteConfirm(ID) {
 	    check = confirm("{TXT_DELETE_CONFIRMATION}")
 		if(check == true) {
 			location.href = "index.php?cmd=dataviewer&delete="+ID;
 		}
 	}
-	
 /* ]]> */
 </script>
 
@@ -30,13 +19,13 @@
 			</th>
 		</tr>
 		<tr>
-			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_PROJECTSTATUS}</span></td>
-			<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_PROJECTNAME}</span></td>
-			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_PROJECTDESCRIPTION}</span></td>
+			<td nowrap="nowrap" width="5%"><span style="font-weight:bold;">{TXT_PROJECTSTATUS}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_PROJECTNAME}</span></td>
+			<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_PROJECTDESCRIPTION}</span></td>
 			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_LANGUAGE}</span></td>
 			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_COUNTRY_BASED}</span></td>
-			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
-			<td nowrap="nowrap" width="5%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
+			<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
 		</tr>
 		<!-- BEGIN projectRow -->
 		<tr class="{ROWCLASS}">
@@ -47,7 +36,6 @@
 			<td width="10%" valign="top">{COUNTRYBASED}</td>
 			<td width="10%" valign="top">{FILTER}</td>
 			<td width="30%" valign="top">
-<!--				<a href="index.php?cmd=dataviewer&act=edit&id={ID}"><img border="0" src="../images/modules/dataviewer/edit.gif" alt="edit" /></a>-->
 				<a href="index.php?cmd=dataviewer&act=import&id={ID}"><img border="0" src="../images/modules/dataviewer/csv.gif" alt="import" /></a>
 				<a href="index.php?cmd=dataviewer&act=filter&id={ID}"><img border="0" src="../images/modules/dataviewer/question_mark.gif" alt="filter" /></a>
 				<a href="index.php?cmd=dataviewer&act=placeholder&id={ID}"><img border="0" src="../images/modules/dataviewer/placeholder.gif" alt="placeholder" /></a>

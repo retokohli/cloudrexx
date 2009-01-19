@@ -20,6 +20,7 @@
 		div.innerHTML = tableStart + rows + '<tr>' + blindText + '<\/tr>' + tableEnd;
 	}
 	
+	
 	function validateInput(input) {
 		var expression = 	/\W/;
 		input = input.replace(expression, "_");
@@ -47,6 +48,8 @@
 		
 		projectTable = document.getElementById("projectTable");
 		rowTemplate.id = "projectRow_"+rowId++;
+//		columnCounter.id = "columnCounter_"+rowId++;
+		document.getElementById("columnCounter").value = rowId;
 		rowTemplate.style.display = "table-row";
 		projectTable.insertBefore(rowTemplate, foo);
  	}
@@ -55,6 +58,7 @@
 		var tr = obj.parentNode.parentNode;
 		tr.parentNode.removeChild(tr);
 	}
+	
 	
 	function checkColumns() {
 		numberOfElements = document.project.column.length;
@@ -80,28 +84,30 @@
 		var errorMessage = "";
 		var wrongFieldsArray = new Array();
 		
-		//columns
-		var checkColumnsReturn = checkColumns();
-		if(checkColumnsReturn == "NO_COLUMN") {
-			errorMessage = "{TXT_ONE_COLUMN_OR_MORE}\n"
-		}
-
-		if(checkColumnsReturn == "EMPTY_COLUMN") {
-			errorMessage = "{TXT_COLUMNS_MUSTNT_BE_EMPTY}\n"
-		}
-
 		//name
 		if(document.project.name.value == "") {
 			wrongFieldsArray.push("name");
 			errorMessage += "{TXT_ENTER_A_NAME}\n";
 		}
 		
-		//language
-//		if(document.project.language.value == "") {
-//			wrongFieldsArray.push("language");
-//			errorMessage += "{TXT_CHOOSE_FRONTENT_LANG}\n";
-//		}
+		//name exists
+		if(checkName(document.project.name.value) == false) {
+			wrongFieldsArray.push("name");
+			errorMessage += "Es exisistiert bereits ein Projekt mit diesem Namen!\n";
+		}		
 		
+		//language
+		var languageSelected = false;
+		for(var i=0; i<document.getElementsByName('language[]').length; i++) {
+			if(document.getElementsByName('language[]')[i].checked == true) {
+				var languageSelected = true;
+			}
+		}		
+		if(languageSelected == false) {
+			wrongFieldsArray.push("language");
+			errorMessage += "{TXT_CHOOSE_FRONTENT_LANG}\n";
+		}
+
 		//description
 		if(document.project.description.value == "") {
 			wrongFieldsArray.push("description");
@@ -120,12 +126,17 @@
 			errorMessage += "{TXT_CHOOSE_STATUS}\n";
 		}
 		
-		
-		//highlight the fields
-		for (var i=0; i < wrongFieldsArray.length; i++) {
-//			alert(wrongFieldsArray[i]);
+		//columns
+		var checkColumnsReturn = checkColumns();
+		if(checkColumnsReturn == "NO_COLUMN") {
+			errorMessage += "{TXT_ONE_COLUMN_OR_MORE}\n"
 		}
-				
+
+		if(checkColumnsReturn == "EMPTY_COLUMN") {
+			errorMessage += "{TXT_COLUMNS_MUSTNT_BE_EMPTY}\n"
+		}
+		
+						
 		if(errorMessage !== "") {
 			alert(errorMessage);
 			return false; 
@@ -133,16 +144,30 @@
 			return true; 
 		}		
 	}
+	
+	
+	function checkName(name) {
+		name = name.toUpperCase();
+		var projects = "{PROJECTSSTRING}".toUpperCase();
+		if(name !== "") {
+			if(projects.match(RegExp('\\b'+name+'\\b'))) {
+				document.project.name.focus();
+				return false;
+			}
+			return true;
+		}		
+	}
 
 	
 	Text[0] = ["", '{TIP_PROJECTNAME}'];
 	Text[1] = ["", '{TIP_FRONTEND_LANG}'];
-	Text[2] = ["", '{TIP_COUNTRYBASED}'];
-	Text[3] = ["", '{TIP_DESCRIPTION}'];
+	Text[2] = ["", '{TIP_DESCRIPTION}'];
+	Text[3] = ["", '{TIP_COUNTRYBASED}'];
 	Text[4] = ["", '{TIP_STATUS}'];
 	Text[5] = ["", '{TIP_COLUMN_NAME}'];
 	
 	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+	
 /* ]]> */
 </script>
 
@@ -188,7 +213,9 @@
 				</th>
 			</tr>
 			<tr class="row1" id="rowTemplate" style="display: none;">
-				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])">Spalte 1</td>
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])">
+					Spalte <input id="columnCounter" name="columnCounter[]" type="text" value="" style="border:0px; background:transparent; width:20px;" />
+				</td>
 				<td width="88%"><input type="text" name="column[]" id="column" onkeypress="this.value=validateInput(this.value); preview();" onblur="this.value=validateInput(this.value); preview();" style="width: 400px;" value="" maxlength="250" />&nbsp;<a href="javascript:void;" onclick="deleteRow(this); preview();"><img border="0" src="../cadmin/images/icons/delete.gif" alt="delete" /></a><br /></td>
 			</tr>
 			<tr class="row2">
@@ -208,7 +235,11 @@
 		</tbody>
 	</table>
 	<br />
-	<input type="submit" name="save" value="{TXT_SAVE}" />
+	<input type="submit" onclick="checkName(document.project.name.value)" name="save" value="{TXT_SAVE}" />
 </form>
+
+<script type="text/javascript">
+
+</script>
 
 <!-- END module_dataviewer_new_project.html -->
