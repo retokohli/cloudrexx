@@ -1251,22 +1251,6 @@ switch ($plainSection) {
         $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
         break;
 
-        
-//-------------------------------------------------------
-// Dataviewer
-//-------------------------------------------------------
-    case "dataviewer":
-        $modulespath = "modules/dataviewer/index.class.php";
-        /**
-         * @ignore
-         */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objDataviewer = new Dataviewer($page_content);
-        $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
-        break;
-
-
 //-------------------------------------------------------
 // DocumentSystem module
 //-------------------------------------------------------
