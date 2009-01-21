@@ -41,6 +41,8 @@ class InitCMS
     var $templates = array();
     var $arrModulePath = array();
 
+    private $themesPath;
+
     /**
     * string $mode
     * frontend or backend
@@ -368,6 +370,8 @@ class InitCMS
             }
         }
 
+        $this->themesPath = $themesPath;
+
         $this->templates['index'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html');
         $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
         $this->templates['home'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html');
@@ -390,6 +394,18 @@ class InitCMS
 
         return $this->templates;
     }
+
+    /**
+     * Return the current themes path
+     *
+     * @access public
+     * @author Stefan Heinemann
+     * @return string
+     */
+    public function getCurrentThemesPath()
+    {
+        return $this->themesPath;
+    } 
 
 
     function loadModulePaths()
