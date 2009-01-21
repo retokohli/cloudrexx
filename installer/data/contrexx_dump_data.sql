@@ -1388,6 +1388,7 @@ INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_acti
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_feed_image','');
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_ticker_filename','newsticker.txt');
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_message_protection','0');
+INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_message_protection_restricted','0');
 INSERT INTO `contrexx_module_news_teaser_frame` (`id`, `lang_id`, `frame_template_id`, `name`) VALUES (1,1,1,'Beispiel1');
 INSERT INTO `contrexx_module_news_teaser_frame` (`id`, `lang_id`, `frame_template_id`, `name`) VALUES (2,1,2,'Beispiel2');
 INSERT INTO `contrexx_module_news_teaser_frame` (`id`, `lang_id`, `frame_template_id`, `name`) VALUES (3,1,3,'Beispiel3');
