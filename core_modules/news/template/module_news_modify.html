@@ -41,9 +41,9 @@ function newsGetFileBrowser(elInsertBox, sType)
 function newsInsertLink(elInsertBox, sLink) {
 	elInsertBox.focus();
 
-	/* für Internet Explorer */
+	/* fï¿½r Internet Explorer */
 	if (typeof document.selection != 'undefined') {
-		/* Einfügen des Formatierungscodes */
+		/* Einfï¿½gen des Formatierungscodes */
 		var range = document.selection.createRange();
 		var insText = range.text;
 		range.text = sLink;
@@ -58,9 +58,9 @@ function newsInsertLink(elInsertBox, sLink) {
 		*/
 	}
 
-	/* für neuere auf Gecko basierende Browser */
+	/* fï¿½r neuere auf Gecko basierende Browser */
 	else if (typeof elInsertBox.selectionStart != 'undefined') {
-		/* Einfügen des Formatierungscodes */
+		/* Einfï¿½gen des Formatierungscodes */
 		var start = elInsertBox.selectionStart;
 		var end = elInsertBox.selectionEnd;
 
@@ -77,18 +77,18 @@ function newsInsertLink(elInsertBox, sLink) {
 		*/
 	}
 
-	/* für die übrigen Browser */
+	/* fï¿½r die ï¿½brigen Browser */
 	else {
-		/* Abfrage der Einfügeposition */
+		/* Abfrage der Einfï¿½geposition */
 		var pos;
 		var re = new RegExp('^[0-9]{0,3}$');
 		while(!re.test(pos)) {
-			pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
+			pos = prompt("Einfï¿½gen an Position (0.." + elInsertBox.value.length + "):", "0");
 		}
 		if (pos > elInsertBox.value.length) {
 			pos = elInsertBox.value.length;
 		}
-		/* Einfügen des Formatierungscodes */
+		/* Einfï¿½gen des Formatierungscodes */
 		elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
 	}
 }
@@ -129,12 +129,12 @@ function AddToTheList(from,dest,add,remove) {
 		return false;
 	}else{
 		for (var i=0; i<from.length; i++) {
-			if (from.options[i].selected) {
+			if (from.options[i].selected && !from.options[i].disabled) {
 		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
    			}
 		}
 	    for (var i=from.length-1; i>=0; i--) {
-			if (from.options[i].selected) {
+			if (from.options[i].selected && !from.options[i].disabled) {
 		       from.options[i] = null;
    			}
 		}
@@ -151,12 +151,12 @@ function RemoveFromTheList(from,dest,add,remove) {
 		return false;
 	}else{
 		for (var i=0; i<dest.options.length; i++) {
-			if (dest.options[i].selected) {
+			if (dest.options[i].selected && !dest.options[i].disabled) {
 		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
    			}
 		}
 	    for (var i=dest.options.length-1; i>=0; i--) {
-			if (dest.options[i].selected) {
+			if (dest.options[i].selected && !dest.options[i].disabled) {
 		       dest.options[i] = null;
    			}
 		}
@@ -181,6 +181,7 @@ function disapleButtons(from,dest,add,remove)
 }
 
 function SelectAllList(CONTROL){
+	if (CONTROL == undefined) return;
 	for(var i = 0;i < CONTROL.length;i++){
 		CONTROL.options[i].selected = true;
 	}
@@ -208,14 +209,20 @@ function modusSelection(strAction) {
 	}
 }
 
+function newsAdjustAccessConfig(elLayer,elDisplay)
+{
+    elLayer.style.display = elDisplay ? 'none' : 'block';
+}
+
 //-->
 </script>
 <ul id="tabmenu">
 <li><a id="messageTab_news1" class="active" href="javascript:{}" onclick="selectTab('news1')" title="{TXT_NEWS_SITE}">{TXT_NEWS_BASIC_DATA}</a></li>
 <li><a id="messageTab_news2" href="javascript:{}" onclick="selectTab('news2')" title="{TXT_NEWS_MESSAGE}">{TXT_NEWS_MORE_OPTIONS}</a></li>
 <li><a id="messageTab_news3" href="javascript:{}" onclick="selectTab('news3')" title="{NEWS_HEADLINES_TEASERS_TXT}">{NEWS_HEADLINES_TEASERS_TXT}</a></li>
+<li><a id="messageTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_NEWS_PERMISSIONS}">{TXT_NEWS_PERMISSIONS}</a></li>
 </ul>
-<form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}&amp;newsId={NEWS_ID}" onSubmit="javascript:SelectAllList(document.news.elements['newsTeaserFramesAsso[]'])">
+<form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}&amp;newsId={NEWS_ID}" onSubmit="SelectAllList(document.news.elements['newsTeaserFramesAsso[]']);SelectAllList(document.news.elements['news_read_access_associated_groups[]']);SelectAllList(document.news.elements['news_modify_access_associated_groups[]']);">
 <!-- start news1 div -->
 <div id="news1" class="messageTab" style="display:block">
 	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -382,6 +389,98 @@ function modusSelection(strAction) {
 	<br />
 </div>
 <!-- end news3 div -->
+<!-- start news4 div -->
+<div id="news4" class="messageTab" style="display:none;">
+    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+        <tr>
+            <th colspan="4">{TXT_NEWS_PERMISSIONS}</th>
+        </tr>
+        <tr class="row1">
+            <td width="12%" nowrap="nowrap" style="vertical-align: top;">{TXT_NEWS_READ_ACCESS}</td>
+            <td width="88%">
+                <input type="radio" name="news_read_access" id="news_read_access_all" value="0" onchange="newsAdjustAccessConfig(document.getElementById('news_read_access_config'),document.getElementById('news_read_access_all').checked)" {NEWS_READ_ACCESS_ALL_CHECKED} /><label for="news_read_access_all">{TXT_NEWS_READ_ALL_ACCESS_DESC}</label><br />
+                <input type="radio" name="news_read_access" id="news_read_access_selected" value="1" onchange="newsAdjustAccessConfig(document.getElementById('news_read_access_config'),document.getElementById('news_read_access_all').checked)" {NEWS_READ_ACCESS_SELECTED_CHECKED} /><label for="news_read_access_selected">{TXT_NEWS_READ_SELECTED_ACCESS_DESC}</label><br />
+                <div id="news_read_access_config" style="display:{NEWS_READ_ACCESS_DISPLAY}">
+                    <br />
+	                <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
+	                    <tbody style="vertical-align:top;">
+	                        <tr>
+	                            <td width="300" style="border-bottom:0px;">{TXT_NEWS_AVAILABLE_USER_GROUPS}<br />
+	                                <select name="news_read_access_not_associated_groups[]" id="news_read_access_not_associated_groups" size="15" style="width:300px;" multiple="multiple">
+	                                {NEWS_READ_ACCESS_NOT_ASSOCIATED_GROUPS}
+	                                </select>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="SelectAllList(document.getElementById('news_read_access_not_associated_groups'))" title="{TXT_NEWS_CHECK_ALL}" style="color:blue;">{TXT_NEWS_CHECK_ALL}</a>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="DeselectAllList(document.getElementById('news_read_access_not_associated_groups'))" title="{TXT_NEWS_UNCHECK_ALL}" style="color:blue;">{TXT_NEWS_UNCHECK_ALL}</a>
+	                            </td>
+	                            <td width="45" style="border-bottom:0px; text-align:center;">
+	                                <br />
+	                                <input type="button" value="&gt;&gt;" name="addModifyOption" onclick="AddToTheList(document.getElementById('news_read_access_not_associated_groups'), document.getElementById('news_read_access_associated_groups'), 'addReadOption', 'removeReadOption')" style="margin-bottom:2px;" />
+	                                <br />
+	                                <input type="button" value="&lt;&lt;" name="removeModifyOption" onclick="RemoveFromTheList(document.getElementById('news_read_access_not_associated_groups'), document.getElementById('news_read_access_associated_groups'), 'addReadOption', 'removeReadOption')" />
+	                            </td>
+	                           <td width="100%" style="border-bottom:0px;">{TXT_NEWS_ASSIGNED_USER_GROUPS}<br />
+	                                <select name="news_read_access_associated_groups[]" id="news_read_access_associated_groups" size="15" style="width:300px;" multiple="multiple">
+	                                {NEWS_READ_ACCESS_ASSOCIATED_GROUPS}
+	                                </select>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="SelectAllList(document.getElementById('news_read_access_associated_groups'))" title="{TXT_NEWS_CHECK_ALL}" style="color:blue;">{TXT_NEWS_CHECK_ALL}</a>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="DeselectAllList(document.getElementById('news_read_access_associated_groups'))" title="{TXT_NEWS_UNCHECK_ALL}" style="color:blue;">{TXT_NEWS_UNCHECK_ALL}</a>
+	                             </td>
+	                        </tr>
+	                   </tbody>
+	                </table>
+                </div>
+            </td>
+        </tr>
+        <!-- BEGIN news_modify_access -->
+        <tr class="row2">
+            <td width="12%" nowrap="nowrap" style="vertical-align: top;">{TXT_NEWS_MODIFY_ACCESS}</td>
+            <td width="88%">
+                <input type="radio" name="news_modify_access" id="news_modify_access_all" value="0" onchange="newsAdjustAccessConfig(document.getElementById('news_modify_access_config'),document.getElementById('news_modify_access_all').checked)" {NEWS_MODIFY_ACCESS_ALL_CHECKED} /><label for="news_modify_access_all">{TXT_NEWS_MODIFY_ALL_ACCESS_DESC}</label><br />
+                <input type="radio" name="news_modify_access" id="news_modify_access_selected" value="1" onchange="newsAdjustAccessConfig(document.getElementById('news_modify_access_config'),document.getElementById('news_modify_access_all').checked)" {NEWS_MODIFY_ACCESS_SELECTED_CHECKED} /><label for="news_modify_access_selected">{TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC}</label><br />
+                <div id="news_modify_access_config" style="display:{NEWS_MODIFY_ACCESS_DISPLAY}">
+	                <br />
+	                <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
+	                    <tbody style="vertical-align:top;">
+	                        <tr>
+	                            <td width="300" style="border-bottom:0px;">{TXT_NEWS_AVAILABLE_USER_GROUPS}<br />
+	                                <select name="news_modify_access_not_associated_groups[]" id="news_modify_access_not_associated_groups" size="15" style="width:300px;" multiple="multiple">
+	                                {NEWS_MODIFY_ACCESS_NOT_ASSOCIATED_GROUPS}
+	                                </select>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="SelectAllList(document.getElementById('news_modify_access_not_associated_groups'))" title="{TXT_NEWS_CHECK_ALL}" style="color:blue;">{TXT_NEWS_CHECK_ALL}</a>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="DeselectAllList(document.getElementById('news_modify_access_not_associated_groups'))" title="{TXT_NEWS_UNCHECK_ALL}" style="color:blue;">{TXT_NEWS_UNCHECK_ALL}</a>
+	                            </td>
+	                            <td width="45" style="border-bottom:0px; text-align:center;">
+	                                <br />
+	                                <input type="button" value="&gt;&gt;" name="addModifyOption" onclick="AddToTheList(document.getElementById('news_modify_access_not_associated_groups'), document.getElementById('news_modify_access_associated_groups'), 'addModifyOption', 'removeModifyOption')" style="margin-bottom:2px;" />
+	                                <br />
+	                                <input type="button" value="&lt;&lt;" name="removeModifyOption" onclick="RemoveFromTheList(document.getElementById('news_modify_access_not_associated_groups'), document.getElementById('news_modify_access_associated_groups'), 'addModifyOption', 'removeModifyOption')" />
+	                            </td>
+	                           <td width="100%" style="border-bottom:0px;">{TXT_NEWS_ASSIGNED_USER_GROUPS}<br />
+	                                <select name="news_modify_access_associated_groups[]" id="news_modify_access_associated_groups" size="15" style="width:300px;" multiple="multiple">
+	                                {NEWS_MODIFY_ACCESS_ASSOCIATED_GROUPS}
+	                                </select>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="SelectAllList(document.getElementById('news_modify_access_associated_groups'))" title="{TXT_NEWS_CHECK_ALL}" style="color:blue;">{TXT_NEWS_CHECK_ALL}</a>
+	                                <br />
+	                                <a href="javascript:void(0);" onclick="DeselectAllList(document.getElementById('news_modify_access_associated_groups'))" title="{TXT_NEWS_UNCHECK_ALL}" style="color:blue;">{TXT_NEWS_UNCHECK_ALL}</a>
+	                             </td>
+	                        </tr>
+	                   </tbody>
+	                </table>
+                </div>
+            </td>
+        </tr>
+        <!-- END news_modify_access -->
+    </table>
+    <br />
+</div>
+<!-- end news4 div -->
 <input type="submit" name="{NEWS_SUBMIT_NAME}" value="{NEWS_SUBMIT_NAME_TEXT}" />
 <br />
 <br />
