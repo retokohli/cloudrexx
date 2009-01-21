@@ -1728,6 +1728,8 @@ CREATE TABLE `contrexx_module_news` (
   `enddate` date NOT NULL default '0000-00-00',
   `status` tinyint(4) NOT NULL default '1',
   `validated` enum('0','1') NOT NULL default '0',
+  `frontend_access_id` int(10) unsigned NOT NULL default '0',
+  `backend_access_id` int(10) unsigned NOT NULL default '0',
   `teaser_only` enum('0','1') NOT NULL default '0',
   `teaser_frames` text NOT NULL,
   `teaser_text` text NOT NULL,
