@@ -22,18 +22,13 @@ define('_DEBUG', 0);
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-/*
 if (_DEBUG) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
     error_reporting(0);
     ini_set('display_errors', 0);
-}*/
-
-//error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
-error_reporting(E_ALL);
-ini_set('display_error', '1');
+}
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
