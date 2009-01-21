@@ -262,6 +262,8 @@ $objCounter = new statsLibrary();
 $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
 
+require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
+
 //-------------------------------------------------------
 // Frontend Editing: Collect parameters
 //-------------------------------------------------------
@@ -1802,6 +1804,7 @@ $objTemplate->setVariable(array(
     'LOGIN_INCLUDE'        => (isset($strFeInclude) ? $strFeInclude : ''),
     'LOGIN_URL'            => (isset($strFeLink) ? $strFeLink : ''),
     'LOGIN_CONTENT'        => (isset($strFeContent) ? $strFeContent : ''),
+    'JAVASCRIPT'            => JS::getCode()
 ));
 
 

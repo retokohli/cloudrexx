@@ -22,14 +22,18 @@ define('_DEBUG', 0);
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
+/*
 if (_DEBUG) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
     error_reporting(0);
     ini_set('display_errors', 0);
-}
+}*/
 
+//error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+error_reporting(E_ALL);
+ini_set('display_error', '1');
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -107,8 +111,11 @@ $_CORELANG = $objInit->loadLanguageData('core');
 $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
 
 //-------------------------------------------------------
-// Provide mandate functionality
+// Load the JS helper class and set the offset
 //-------------------------------------------------------
+require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
+JS::setOffset('../');
+
 
 // To clone any module, use an optional integer cmd suffix.
 // E.g.: "shop2", "gallery5", etc.
@@ -1007,6 +1014,7 @@ $objTemplate->setVariable(array(
     // Mind: The module index is not used in any non-module template
     // for the time being, but is provided for future use and convenience.
     'MODULE_INDEX'         => MODULE_INDEX,
+    'JAVASCRIPT'            => JS::getCode()
 ));
 
 if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
