@@ -56,6 +56,10 @@ function SetUrl(url, width, height, alt) {
 			<td width="15%" nowrap="nowrap">{TXT_USE_TEASERS}</td>
 			<td width="85%" nowrap="nowrap"><input type="checkbox" name="newsUseTeasers" {NEWS_USE_TEASERS_CHECKED} value="1" /></td>
 		</tr>
+        <tr class="row2">
+            <td nowrap="nowrap">{TXT_NEWS_MESSAGE_PROTECTION}</td>
+            <td nowrap="nowrap"><input type="checkbox" name="newsMessageProtection" id="newsMessageProtection" {NEWS_MESSAGE_PROTECTION_CHECKED} value="1" /><label for="newsMessageProtection">{TXT_NEWS_MESSAGE_PROTECTION_DESC}</label></td>
+        </tr>
 	</table>
 	<br />
 	<input type="submit" name="store" value="{TXT_STORE}" />
