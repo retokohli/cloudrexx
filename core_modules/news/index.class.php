@@ -127,6 +127,11 @@ class news extends newsLibrary {
                                                             news.lang ='.$this->langId.' AND
                                                             (news.startdate <= CURDATE() OR news.startdate="0000-00-00") AND
                                                             (news.enddate >= CURDATE() OR news.enddate="0000-00-00")'
+                                                           .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                                                ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                                                    " AND frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
+                                                                    :   " AND frontend_access_id=0 ")
+                                                                :   '')
                                                     , 1);
 
             if ($objResult !== false) {
@@ -272,8 +277,13 @@ class news extends newsLibrary {
                                 AND n.lang='.$this->langId.'
                                 AND (n.startdate<=CURDATE() OR n.startdate="0000-00-00")
                                 AND (n.enddate>=CURDATE() OR n.enddate="0000-00-00")
-                                '.$newsfilter.'
-                    ORDER BY    newsdate DESC';
+                                '.$newsfilter
+                               .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                        " AND frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
+                                        :   " AND frontend_access_id=0 ")
+                                    :   '')
+                    .'ORDER BY    newsdate DESC';
 
         /***start paging ****/
         $objResult = $objDatabase->Execute($query);
@@ -499,10 +509,10 @@ class news extends newsLibrary {
         $newsUrl1 = "http://";
         $newsUrl2 = "http://";
         $insertStatus = false;
-        
+
         require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
 		$captcha = new Captcha();
-		
+
 		$offset = $captcha->getOffset();
 		$alt = $captcha->getAlt();
 		$url = $captcha->getUrl();
@@ -523,7 +533,7 @@ class news extends newsLibrary {
             if(!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
             	$this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
-            
+
 	        if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
 	                $insertStatus = $this->_insert();
 	                if (!$insertStatus) {
@@ -548,7 +558,7 @@ class news extends newsLibrary {
 	                $newsUrl2 = $_POST['newsUrl2'];
 	                $newsCat = $_POST['newsCat'];
 	                $newsText = $_POST['newsText'];
-	
+
 	                $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
 	            }
         }
@@ -565,7 +575,7 @@ class news extends newsLibrary {
             global $wysiwygEditor, $FCKeditorBasePath;
             $wysiwygEditor = "FCKeditor";
             $FCKeditorBasePath = "/editor/fckeditor/";
-            
+
 
 
             $this->_objTpl->setVariable(array(

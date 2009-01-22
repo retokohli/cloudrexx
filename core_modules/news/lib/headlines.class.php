@@ -71,8 +71,13 @@ class newsHeadlines {
 											           AND teaser_only='0'
 											           AND lang=".$_LANGID."
 											           AND (startdate<=CURDATE() OR startdate='0000-00-00')
-											           AND (enddate>=CURDATE() OR enddate='0000-00-00')
-									          ORDER BY date DESC", $newsLimit);
+											           AND (enddate>=CURDATE() OR enddate='0000-00-00')"
+                                                       .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                                            ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                                                " AND frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
+                                                                :   " AND frontend_access_id=0 ")
+                                                            :   '')
+                                                       ."ORDER BY date DESC", $newsLimit);
 
 		if ($objResult !== false && $objResult->RecordCount()>=0) {
 			while (!$objResult->EOF) {
@@ -81,8 +86,8 @@ class newsHeadlines {
                 $newsid    = $objResult->fields['id'];
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
                 $newsparam = 'section=news&amp;cmd=details';
-                $news_link = (empty($objResult->fields['redirect'])) 
-                    ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>' 
+                $news_link = (empty($objResult->fields['redirect']))
+                    ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>'
                     : '<a class="headlineLink" href="'.$objResult->fields['redirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>';
 
 			    $this->_objTemplate->setVariable("HEADLINE_DATE", date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']));

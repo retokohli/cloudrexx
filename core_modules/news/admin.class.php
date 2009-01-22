@@ -176,8 +176,13 @@ $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC'] = 'Jeder ist berechtigt diese Newsm
 $_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'] = 'Nur Benutzer von ausgewählten Gruppen dürfen diese Newsmeldung lesen.';
 $_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'] = 'Jeder darf diese Newsmeldung bearbeiten';
 $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'] = 'Nur Benutzer von ausgewählten Gruppen dürfen diese Newsmeldung bearbeiten.';
-$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION'] = 'Zugriffschutz bei Newsmeldungen';
-$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine Newsmeldung, so kann er nur den Mitgliedern seiner Gruppen den Zugriff erlauben.';
+$_ARRAYLANG['TXT_NEWS_PROTECTION'] = 'Zugriffsschutz';
+$_ARRAYLANG['TXT_NEWS_ACTIVE'] = 'Aktiv';
+//$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION'] = 'Zugriffschutz bei Newsmeldungen';
+$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = 'Schütz ein Benutzer eine Newsmeldung, so kann er nur den Mitgliedern seiner Gruppen den Zugriff erlauben.';
+$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = 'Diese Newsmeldung dürfen nur bestimmte Benutzer ansehen.';
+$_ARRAYLANG['TXT_NEWS_MESSAGE_PUBLIC'] = 'Diese Newsmeldung darf jeder ansehen.';
+
 
 
 
@@ -354,7 +359,9 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ARCHIVE'                => $_ARRAYLANG['TXT_ARCHIVE'],
             'TXT_EDIT'                   => $_ARRAYLANG['TXT_EDIT'],
-            'TXT_DELETE'                 => $_ARRAYLANG['TXT_DELETE']
+            'TXT_DELETE'                 => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_NEWS_MESSAGE_PROTECTED' => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
+            'TXT_NEWS_MESSAGE_PUBLIC'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PUBLIC']
         ));
 
         // set archive list
@@ -364,6 +371,7 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
                          n.title AS title,
                          n.status AS status,
                          n.validated AS validated,
+                         n.frontend_access_id,
                          n.userid,
                          l.name AS name,
                          nc.name AS catname
@@ -373,8 +381,9 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
                    WHERE n.lang=l.id
                      AND n.lang=".$this->langId."
                      AND nc.catid=n.catid
-                     AND n.validated='1'
-                ORDER BY date DESC";
+                     AND n.validated='1'"
+                     .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") " : '')
+                ."ORDER BY date DESC";
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             $count = $objResult->RecordCount();
@@ -425,6 +434,14 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
                         'NEWS_ACTIVATE'         =>  $_ARRAYLANG['TXT_ACTIVATE'],
                         'NEWS_DEACTIVATE'       =>  $_ARRAYLANG['TXT_DEACTIVATE']
                     ));
+
+                    if ($this->arrSettings['news_message_protection'] == '1' && $objResult->fields['frontend_access_id']) {
+                        $this->_objTpl->touchBlock('news_message_protected_icon');
+                        $this->_objTpl->hideBlock('news_message_not_protected_icon');
+                    } else {
+                        $this->_objTpl->touchBlock('news_message_not_protected_icon');
+                        $this->_objTpl->hideBlock('news_message_protected_icon');
+                    }
 
                     $this->_objTpl->parse('newsrow');
                     $objResult->MoveNext();
@@ -591,8 +608,8 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
             $endDate = "0000-00-00";
         }
 
-        if ($newsFrontendAccess) {
-            if ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()) {
+        if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
+            if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
                 $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                 $newsFrontendGroups = array_intersect($newsFrontendGroups, $arrUserGroupIds);
@@ -606,8 +623,8 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
             $newsFrontendAccessId = 0;
         }
 
-        if ($newsBackendAccess) {
-            if ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()) {
+        if ($this->arrSettings['news_message_protection'] == '1' && $newsBackendAccess) {
+            if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
                 $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                 $newsBackendGroups = array_intersect($newsBackendGroups, $arrUserGroupIds);
@@ -760,30 +777,35 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
         }
 
         if ($this->arrSettings['news_message_protection'] == '1') {
-            $userGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
-        }
-
-        $readAccessGroups = '';
-        $modifyAccessGroups = '';
-        $objGroup = $objFWUser->objGroup->getGroups();
-        while (!$objGroup->EOF) {
-            if (Permission::hasAllAccess() || $this->arrSettings['news_message_protection'] != '1' || in_array($objGroup->getId(), $userGroupIds)) {
-                ${$objGroup->getType() == 'frontend' ? 'readAccessGroups' : 'modifyAccessGroups'} .= '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+            if ($this->arrSettings['news_message_protection_restriected'] == '1') {
+                $userGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
             }
-            $objGroup->next();
+
+            $readAccessGroups = '';
+            $modifyAccessGroups = '';
+            $objGroup = $objFWUser->objGroup->getGroups();
+            while (!$objGroup->EOF) {
+                if (Permission::hasAllAccess() || $this->arrSettings['news_message_protection_restriected'] != '1' || in_array($objGroup->getId(), $userGroupIds)) {
+                    ${$objGroup->getType() == 'frontend' ? 'readAccessGroups' : 'modifyAccessGroups'} .= '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+                }
+                $objGroup->next();
+            }
+
+            $this->_objTpl->setVariable(array(
+                'NEWS_READ_ACCESS_NOT_ASSOCIATED_GROUPS'    => $readAccessGroups,
+                'NEWS_READ_ACCESS_ASSOCIATED_GROUPS'        => '',
+                'NEWS_READ_ACCESS_ALL_CHECKED'              => 'checked="checked"',
+                'NEWS_READ_ACCESS_DISPLAY'                  => 'none',
+                'NEWS_MODIFY_ACCESS_NOT_ASSOCIATED_GROUPS'  => $modifyAccessGroups,
+                'NEWS_MODIFY_ACCESS_ASSOCIATED_GROUPS'      => '',
+                'NEWS_MODIFY_ACCESS_ALL_CHECKED'            => 'checked="checked"',
+                'NEWS_MODIFY_ACCESS_DISPLAY'                => 'none'
+            ));
+
+            $this->_objTpl->parse('news_permission_tab');
+        } else {
+            $this->_objTpl->hideBlock('news_permission_tab');
         }
-
-        $this->_objTpl->setVariable(array(
-            'NEWS_READ_ACCESS_NOT_ASSOCIATED_GROUPS'    => $readAccessGroups,
-            'NEWS_READ_ACCESS_ASSOCIATED_GROUPS'        => '',
-            'NEWS_READ_ACCESS_ALL_CHECKED'              => 'checked="checked"',
-            'NEWS_READ_ACCESS_DISPLAY'                  => 'none',
-            'NEWS_MODIFY_ACCESS_NOT_ASSOCIATED_GROUPS'  => $modifyAccessGroups,
-            'NEWS_MODIFY_ACCESS_ASSOCIATED_GROUPS'      => '',
-            'NEWS_MODIFY_ACCESS_ALL_CHECKED'            => 'checked="checked"',
-            'NEWS_MODIFY_ACCESS_DISPLAY'                => 'none',
-
-        ));
     }
 
     /**
@@ -900,6 +922,10 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
             'TXT_NEWS_UNCHECK_ALL'          => $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'],
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC'],
             'TXT_NEWS_READ_SELECTED_ACCESS_DESC'    => $_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'],
+            'TXT_NEWS_AVAILABLE_USER_GROUPS'        => $_ARRAYLANG['TXT_NEWS_AVAILABLE_USER_GROUPS'],
+            'TXT_NEWS_ASSIGNED_USER_GROUPS'         => $_ARRAYLANG['TXT_NEWS_ASSIGNED_USER_GROUPS'],
+            'TXT_NEWS_MODIFY_ALL_ACCESS_DESC'       => $_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'],
+            'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'],
         ));
 
         $newsid = intval($_REQUEST['newsId']);
@@ -924,7 +950,7 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
                                                         teaser_image_path
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
-        if ($objResult !== false && !$objResult->EOF) {
+        if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true))) {
             $newsCat=$objResult->fields['catid'];
             $id = $objResult->fields['id'];
             $newsText = stripslashes($objResult->fields['text']);
@@ -998,60 +1024,57 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
             ));
 
             if ($this->arrSettings['news_message_protection'] == '1') {
-                $userGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
-            }
+                if ($this->arrSettings['news_message_protection_restriected'] == '1') {
+                    $userGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
+                }
 
-            if ($objResult->fields['frontend_access_id']) {
-                $objFrontendGroups = $objFWUser->objGroup->getGroups(array('dynamic' => $objResult->fields['frontend_access_id']));
-                $arrFrontendGroups = $objFrontendGroups->getLoadedGroupIds();
-            } else {
-                $arrFrontendGroups = array();
-            }
+                if ($objResult->fields['frontend_access_id']) {
+                    $objFrontendGroups = $objFWUser->objGroup->getGroups(array('dynamic' => $objResult->fields['frontend_access_id']));
+                    $arrFrontendGroups = $objFrontendGroups->getLoadedGroupIds();
+                } else {
+                    $arrFrontendGroups = array();
+                }
 
-            if ($objResult->fields['backend_access_id']) {
-                $objBackendGroups = $objFWUser->objGroup->getGroups(array('dynamic' => $objResult->fields['backend_access_id']));
-                $arrBackendGroups = $objBackendGroups->getLoadedGroupIds();
-            } else {
-                $arrBackendGroups = array();
-            }
+                if ($objResult->fields['backend_access_id']) {
+                    $objBackendGroups = $objFWUser->objGroup->getGroups(array('dynamic' => $objResult->fields['backend_access_id']));
+                    $arrBackendGroups = $objBackendGroups->getLoadedGroupIds();
+                } else {
+                    $arrBackendGroups = array();
+                }
 
-            $readAccessGroups = '';
-            $modifyAccessGroups = '';
-            $objGroup = $objFWUser->objGroup->getGroups();
-            while (!$objGroup->EOF) {
-                ${$objGroup->getType() == 'frontend' ?
-                    (in_array($objGroup->getId(), $arrFrontendGroups) ? 'readAccessGroups' : 'readNotAccessGroups')
-                  : (in_array($objGroup->getId(), $arrBackendGroups) ? 'modifyAccessGroups' : 'modifyNotAccessGroups')}
-                  .= '<option value="'.$objGroup->getId().'"'.(!Permission::hasAllAccess() && $this->arrSettings['news_message_protection'] == '1' && !in_array($objGroup->getId(), $userGroupIds) ? ' disabled="disabled"' : '').'>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
-                $objGroup->next();
-            }
-
-            $this->_objTpl->setVariable(array(
-                'NEWS_READ_ACCESS_NOT_ASSOCIATED_GROUPS'    => $readNotAccessGroups,
-                'NEWS_READ_ACCESS_ASSOCIATED_GROUPS'        => $readAccessGroups,
-                'NEWS_READ_ACCESS_ALL_CHECKED'              => $objResult->fields['frontend_access_id'] ? '' : 'checked="checked"',
-                'NEWS_READ_ACCESS_SELECTED_CHECKED'         => $objResult->fields['frontend_access_id'] ? 'checked="checked"' : '',
-                'NEWS_READ_ACCESS_DISPLAY'                  => $objResult->fields['frontend_access_id'] ? '' : 'none'
-            ));
-
-            if (true) {
+                $readAccessGroups = '';
+                $modifyAccessGroups = '';
+                $objGroup = $objFWUser->objGroup->getGroups();
+                while (!$objGroup->EOF) {
+                    ${$objGroup->getType() == 'frontend' ?
+                        (in_array($objGroup->getId(), $arrFrontendGroups) ? 'readAccessGroups' : 'readNotAccessGroups')
+                      : (in_array($objGroup->getId(), $arrBackendGroups) ? 'modifyAccessGroups' : 'modifyNotAccessGroups')}
+                      .= '<option value="'.$objGroup->getId().'"'.(!Permission::hasAllAccess() && $this->arrSettings['news_message_protection_restriected'] == '1' && !in_array($objGroup->getId(), $userGroupIds) ? ' disabled="disabled"' : '').'>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+                    $objGroup->next();
+                }
 
                 $this->_objTpl->setVariable(array(
+                    'NEWS_READ_ACCESS_NOT_ASSOCIATED_GROUPS'    => $readNotAccessGroups,
+                    'NEWS_READ_ACCESS_ASSOCIATED_GROUPS'        => $readAccessGroups,
+                    'NEWS_READ_ACCESS_ALL_CHECKED'              => $objResult->fields['frontend_access_id'] ? '' : 'checked="checked"',
+                    'NEWS_READ_ACCESS_SELECTED_CHECKED'         => $objResult->fields['frontend_access_id'] ? 'checked="checked"' : '',
+                    'NEWS_READ_ACCESS_DISPLAY'                  => $objResult->fields['frontend_access_id'] ? '' : 'none',
                     'NEWS_MODIFY_ACCESS_NOT_ASSOCIATED_GROUPS'  => $modifyNotAccessGroups,
                     'NEWS_MODIFY_ACCESS_ASSOCIATED_GROUPS'      => $modifyAccessGroups,
                     'NEWS_MODIFY_ACCESS_ALL_CHECKED'            => $objResult->fields['backend_access_id'] ? '' : 'checked="checked"',
                     'NEWS_MODIFY_ACCESS_SELECTED_CHECKED'       => $objResult->fields['backend_access_id'] ? 'checked="checked"' : '',
                     'NEWS_MODIFY_ACCESS_DISPLAY'                => $objResult->fields['backend_access_id'] ? '' : 'none',
-                    'TXT_NEWS_AVAILABLE_USER_GROUPS'    => $_ARRAYLANG['TXT_NEWS_AVAILABLE_USER_GROUPS'],
-                    'TXT_NEWS_ASSIGNED_USER_GROUPS' => $_ARRAYLANG['TXT_NEWS_ASSIGNED_USER_GROUPS'],
-                    'TXT_NEWS_MODIFY_ALL_ACCESS_DESC'       => $_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'],
-                    'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'],
+                ));
+
+                $this->_objTpl->setVariable(array(
+
+
 
                 ));
 
-                $this->_objTpl->parse('news_modify_access');
+                $this->_objTpl->parse('news_permission_tab');
             } else {
-                $this->_objTpl->hideBlock('news_modify_access');
+                $this->_objTpl->hideBlock('news_permission_tab');
             }
 
         }
@@ -1155,106 +1178,112 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
                 $newsBackendAccessId = 0;
             }
 
-            if ($newsFrontendAccess) {
-                if ($newsFrontendAccessId) {
-                    $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $newsFrontendAccessId));
-                    $arrFormerFrontendGroupIds = $objGroup->getLoadedGroupIds();
+            if ($this->arrSettings['news_message_protection'] == '1') {
+                if ($newsBackendAccessId && !Permission::hasAllAccess() && !Permission::checkAccess($newsBackendAccessId, 'dynamic', true)) {
+                    return false;
+                }
 
-                    $arrNewGroups = array_diff($newsFrontendGroups, $arrFormerFrontendGroupIds);
-                    $arrRemovedGroups = array_diff($arrFormerFrontendGroupIds, $newsFrontendGroups);
+                if ($newsFrontendAccess) {
+                    if ($newsFrontendAccessId) {
+                        $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $newsFrontendAccessId));
+                        $arrFormerFrontendGroupIds = $objGroup->getLoadedGroupIds();
 
-                    if ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()) {
-                        $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
+                        $arrNewGroups = array_diff($newsFrontendGroups, $arrFormerFrontendGroupIds);
+                        $arrRemovedGroups = array_diff($arrFormerFrontendGroupIds, $newsFrontendGroups);
 
-                        $arrUnknownNewGroups = array_diff($arrNewGroups, $arrUserGroupIds);
-                        foreach ($arrUnknownNewGroups as $groupId) {
-                            if (!in_array($groupId, $arrFormerFrontendGroupIds)) {
-                                unset($arrNewGroups[array_search($groupId, $arrNewGroups)]);
+                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                            $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
+
+                            $arrUnknownNewGroups = array_diff($arrNewGroups, $arrUserGroupIds);
+                            foreach ($arrUnknownNewGroups as $groupId) {
+                                if (!in_array($groupId, $arrFormerFrontendGroupIds)) {
+                                    unset($arrNewGroups[array_search($groupId, $arrNewGroups)]);
+                                }
+                            }
+
+                            $arrUnknownRemovedGroups = array_diff($arrRemovedGroups, $arrUserGroupIds);
+                            foreach ($arrUnknownRemovedGroups as $groupId) {
+                                if (in_array($groupId, $arrFormerFrontendGroupIds)) {
+                                    unset($arrRemovedGroups[array_search($groupId, $arrRemovedGroups)]);
+                                }
                             }
                         }
 
-                        $arrUnknownRemovedGroups = array_diff($arrRemovedGroups, $arrUserGroupIds);
-                        foreach ($arrUnknownRemovedGroups as $groupId) {
-                            if (in_array($groupId, $arrFormerFrontendGroupIds)) {
-                                unset($arrRemovedGroups[array_search($groupId, $arrRemovedGroups)]);
-                            }
+                        if (count($arrRemovedGroups)) {
+                            Permission::removeAccess($newsFrontendAccessId, 'dynamic', $arrRemovedGroups);
                         }
-                    }
+                        if (count($arrNewGroups)) {
+                            Permission::setAccess($newsFrontendAccessId, 'dynamic', $arrNewGroups);
+                        }
+                    } else {
+                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                            $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
-                    if (count($arrRemovedGroups)) {
-                        Permission::removeAccess($newsFrontendAccessId, 'dynamic', $arrRemovedGroups);
-                    }
-                    if (count($arrNewGroups)) {
-                        Permission::setAccess($newsFrontendAccessId, 'dynamic', $arrNewGroups);
+                            $newsFrontendGroups = array_intersect($newsFrontendGroups, $arrUserGroupIds);
+                        }
+
+                        $newsFrontendAccessId = Permission::createNewDynamicAccessId();
+                        if (count($newsFrontendGroups)) {
+                            Permission::setAccess($newsFrontendAccessId, 'dynamic', $newsFrontendGroups);
+                        }
                     }
                 } else {
-                    if ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()) {
-                        $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
-
-                        $newsFrontendGroups = array_intersect($newsFrontendGroups, $arrUserGroupIds);
+                    if ($newsFrontendAccessId) {
+                        Permission::removeAccess($newsFrontendAccessId, 'dynamic');
                     }
-
-                    $newsFrontendAccessId = Permission::createNewDynamicAccessId();
-                    if (count($newsFrontendGroups)) {
-                        Permission::setAccess($newsFrontendAccessId, 'dynamic', $newsFrontendGroups);
-                    }
+                    $newsFrontendAccessId = 0;
                 }
-            } else {
-                if ($newsFrontendAccessId) {
-                    Permission::removeAccess($newsFrontendAccessId, 'dynamic');
-                }
-                $newsFrontendAccessId = 0;
-            }
 
-            if ($newsBackendAccess) {
-                if ($newsBackendAccessId) {
-                    $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $newsBackendAccessId));
-                    $arrFormerBackendGroupIds = $objGroup->getLoadedGroupIds();
+                if ($newsBackendAccess) {
+                    if ($newsBackendAccessId) {
+                        $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $newsBackendAccessId));
+                        $arrFormerBackendGroupIds = $objGroup->getLoadedGroupIds();
 
-                    $arrNewGroups = array_diff($newsBackendGroups, $arrFormerBackendGroupIds);
-                    $arrRemovedGroups = array_diff($arrFormerBackendGroupIds, $newsBackendGroups);
+                        $arrNewGroups = array_diff($newsBackendGroups, $arrFormerBackendGroupIds);
+                        $arrRemovedGroups = array_diff($arrFormerBackendGroupIds, $newsBackendGroups);
 
-                    if ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()) {
-                        $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
+                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                            $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
-                        $arrUnknownNewGroups = array_diff($arrNewGroups, $arrUserGroupIds);
-                        foreach ($arrUnknownNewGroups as $groupId) {
-                            if (!in_array($groupId, $arrFormerBackendGroupIds)) {
-                                unset($arrNewGroups[array_search($groupId, $arrNewGroups)]);
+                            $arrUnknownNewGroups = array_diff($arrNewGroups, $arrUserGroupIds);
+                            foreach ($arrUnknownNewGroups as $groupId) {
+                                if (!in_array($groupId, $arrFormerBackendGroupIds)) {
+                                    unset($arrNewGroups[array_search($groupId, $arrNewGroups)]);
+                                }
+                            }
+
+                            $arrUnknownRemovedGroups = array_diff($arrRemovedGroups, $arrUserGroupIds);
+                            foreach ($arrUnknownRemovedGroups as $groupId) {
+                                if (in_array($groupId, $arrFormerBackendGroupIds)) {
+                                    unset($arrRemovedGroups[array_search($groupId, $arrRemovedGroups)]);
+                                }
                             }
                         }
 
-                        $arrUnknownRemovedGroups = array_diff($arrRemovedGroups, $arrUserGroupIds);
-                        foreach ($arrUnknownRemovedGroups as $groupId) {
-                            if (in_array($groupId, $arrFormerBackendGroupIds)) {
-                                unset($arrRemovedGroups[array_search($groupId, $arrRemovedGroups)]);
-                            }
+                        if (count($arrRemovedGroups)) {
+                            Permission::removeAccess($newsBackendAccessId, 'dynamic', $arrRemovedGroups);
                         }
-                    }
+                        if (count($arrNewGroups)) {
+                            Permission::setAccess($newsBackendAccessId, 'dynamic', $arrNewGroups);
+                        }
+                    } else {
+                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                            $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
-                    if (count($arrRemovedGroups)) {
-                        Permission::removeAccess($newsBackendAccessId, 'dynamic', $arrRemovedGroups);
-                    }
-                    if (count($arrNewGroups)) {
-                        Permission::setAccess($newsBackendAccessId, 'dynamic', $arrNewGroups);
+                            $newsBackendGroups = array_intersect($newsBackendGroups, $arrUserGroupIds);
+                        }
+
+                        $newsBackendAccessId = Permission::createNewDynamicAccessId();
+                        if (count($newsBackendGroups)) {
+                            Permission::setAccess($newsBackendAccessId, 'dynamic', $newsBackendGroups);
+                        }
                     }
                 } else {
-                    if ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()) {
-                        $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
-
-                        $newsBackendGroups = array_intersect($newsBackendGroups, $arrUserGroupIds);
+                    if ($newsBackendAccessId) {
+                        Permission::removeAccess($newsBackendAccessId, 'dynamic');
                     }
-
-                    $newsBackendAccessId = Permission::createNewDynamicAccessId();
-                    if (count($newsBackendGroups)) {
-                        Permission::setAccess($newsBackendAccessId, 'dynamic', $newsBackendGroups);
-                    }
+                    $newsBackendAccessId = 0;
                 }
-            } else {
-                if ($newsBackendAccessId) {
-                    Permission::removeAccess($newsBackendAccessId, 'dynamic');
-                }
-                $newsBackendAccessId = 0;
             }
 
             // $finishednewstext = $newstext."<br>".$_ARRAYLANG['TXT_LAST_EDIT'].": ".$date;
@@ -1532,8 +1561,9 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
                 WHERE       tblNews.status=1
                     AND     tblNews.lang = ".$_FRONTEND_LANGID."
                     AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00')
-                    AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00')
-                            ORDER BY tblNews.date DESC";
+                    AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00')"
+                    .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
+                            ."ORDER BY tblNews.date DESC";
 
             if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {
                 while (!$objResult->EOF) {
@@ -1660,6 +1690,7 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$submitNewsCommunity."' WHERE name='news_submit_only_community'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$activateSubmittedNews."' WHERE name='news_activate_submitted_news'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsMessageProtection'])."' WHERE name='news_message_protection'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsMessageProtectionRestricted'])."' WHERE name='news_message_protection_restricted'");
 
             $_CONFIG['newsTeasersStatus'] = isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0;
             $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$_CONFIG['newsTeasersStatus']."' WHERE setname='newsTeasersStatus'");
@@ -1746,9 +1777,12 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'] = 'Schütz ein Benutzer eine New
             'TXT_DEACTIVATE'                        => $_ARRAYLANG['TXT_DEACTIVATE'],
             'NEWS_NOTIFY_GROUP_LIST'                => $this->_generate_notify_group_list(),
             'NEWS_NOTIFY_USER_LIST'                 => $this->_generate_notify_user_list(),
-            'TXT_NEWS_MESSAGE_PROTECTION'           => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION'],
-            'TXT_NEWS_MESSAGE_PROTECTION_DESC'      => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_DESC'],
-            'NEWS_MESSAGE_PROTECTION_CHECKED'       => $this->arrSettings['news_message_protection'] == '1' ? 'checked="checked"' : ''
+            'TXT_NEWS_PROTECTION'                   => $_ARRAYLANG['TXT_NEWS_PROTECTION'],
+            'TXT_NEWS_ACTIVE'                       => $_ARRAYLANG['TXT_NEWS_ACTIVE'],
+            'TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'],
+            'NEWS_MESSAGE_PROTECTION_CHECKED'       => $this->arrSettings['news_message_protection'] == '1' ? 'checked="checked"' : '',
+            'NEWS_MESSAGE_PROTECTION_RESTRICTED_DISPLAY'    => $this->arrSettings['news_message_protection'] == '1' ? '' : 'none',
+            'NEWS_MESSAGE_PROTECTION_RESTRICTED_CHECKED'    => $this->arrSettings['news_message_protection_restricted'] == '1' ? 'checked="checked"' : ''
         ));
     }
     function _generate_notify_group_list() {

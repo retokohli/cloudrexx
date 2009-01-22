@@ -220,7 +220,7 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
 <li><a id="messageTab_news1" class="active" href="javascript:{}" onclick="selectTab('news1')" title="{TXT_NEWS_SITE}">{TXT_NEWS_BASIC_DATA}</a></li>
 <li><a id="messageTab_news2" href="javascript:{}" onclick="selectTab('news2')" title="{TXT_NEWS_MESSAGE}">{TXT_NEWS_MORE_OPTIONS}</a></li>
 <li><a id="messageTab_news3" href="javascript:{}" onclick="selectTab('news3')" title="{NEWS_HEADLINES_TEASERS_TXT}">{NEWS_HEADLINES_TEASERS_TXT}</a></li>
-<li><a id="messageTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_NEWS_PERMISSIONS}">{TXT_NEWS_PERMISSIONS}</a></li>
+<!-- BEGIN news_permission_tab --><li><a id="messageTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_NEWS_PERMISSIONS}">{TXT_NEWS_PERMISSIONS}</a></li><!-- END news_permission_tab -->
 </ul>
 <form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}&amp;newsId={NEWS_ID}" onSubmit="SelectAllList(document.news.elements['newsTeaserFramesAsso[]']);SelectAllList(document.news.elements['news_read_access_associated_groups[]']);SelectAllList(document.news.elements['news_modify_access_associated_groups[]']);">
 <!-- start news1 div -->
@@ -435,7 +435,6 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
                 </div>
             </td>
         </tr>
-        <!-- BEGIN news_modify_access -->
         <tr class="row2">
             <td width="12%" nowrap="nowrap" style="vertical-align: top;">{TXT_NEWS_MODIFY_ACCESS}</td>
             <td width="88%">
@@ -476,7 +475,6 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
                 </div>
             </td>
         </tr>
-        <!-- END news_modify_access -->
     </table>
     <br />
 </div>
