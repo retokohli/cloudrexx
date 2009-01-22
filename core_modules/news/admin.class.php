@@ -167,26 +167,6 @@ class newsManager extends newsLibrary {
     function __construct()
     {
         global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
-$_ARRAYLANG['TXT_NEWS_PERMISSIONS'] = 'Berechtigungen';
-$_ARRAYLANG['TXT_NEWS_READ_ACCESS'] = 'Lese Zugriff (Frontend)';
-$_ARRAYLANG['TXT_NEWS_MODIFY_ACCESS'] = 'Bearbeitungs Zugriff (Backend)';
-$_ARRAYLANG['TXT_NEWS_AVAILABLE_USER_GROUPS'] = 'Vorhandene Gruppen';
-$_ARRAYLANG['TXT_NEWS_ASSIGNED_USER_GROUPS'] = 'Zugeordnete Gruppen';
-$_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC'] = 'Jeder ist berechtigt diese Newsmeldung zu lesen.';
-$_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'] = 'Nur Benutzer von ausgewählten Gruppen dürfen diese Newsmeldung lesen.';
-$_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'] = 'Jeder darf diese Newsmeldung bearbeiten';
-$_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'] = 'Nur Benutzer von ausgewählten Gruppen dürfen diese Newsmeldung bearbeiten.';
-$_ARRAYLANG['TXT_NEWS_PROTECTION'] = 'Zugriffsschutz';
-$_ARRAYLANG['TXT_NEWS_ACTIVE'] = 'Aktiv';
-//$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION'] = 'Zugriffschutz bei Newsmeldungen';
-$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = 'Schütz ein Benutzer eine Newsmeldung, so kann er nur den Mitgliedern seiner Gruppen den Zugriff erlauben.';
-$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = 'Diese Newsmeldung dürfen nur bestimmte Benutzer ansehen.';
-$_ARRAYLANG['TXT_NEWS_MESSAGE_PUBLIC'] = 'Diese Newsmeldung darf jeder ansehen.';
-
-
-
-
-
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -357,11 +337,11 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PUBLIC'] = 'Diese Newsmeldung darf jeder ansehen.'
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_ARCHIVE'                => $_ARRAYLANG['TXT_ARCHIVE'],
-            'TXT_EDIT'                   => $_ARRAYLANG['TXT_EDIT'],
-            'TXT_DELETE'                 => $_ARRAYLANG['TXT_DELETE'],
-            'TXT_NEWS_MESSAGE_PROTECTED' => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
-            'TXT_NEWS_MESSAGE_PUBLIC'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PUBLIC']
+            'TXT_ARCHIVE'                   => $_ARRAYLANG['TXT_ARCHIVE'],
+            'TXT_EDIT'                      => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_DELETE'                    => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_NEWS_MESSAGE_PROTECTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
+            'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC']
         ));
 
         // set archive list
