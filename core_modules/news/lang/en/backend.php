@@ -193,4 +193,17 @@ $_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_HEADLINE_ID_DESCRIPTION'] = "ID of the news entry";
 $_ARRAYLANG['TXT_NOTIFY_GROUP'] = "Notify group:";
 $_ARRAYLANG['TXT_NOTIFY_USER'] = "Notify user:";
+$_ARRAYLANG['TXT_NEWS_PERMISSIONS'] = "Permissions";
+$_ARRAYLANG['TXT_NEWS_READ_ACCESS'] = "Read access (frontend)";
+$_ARRAYLANG['TXT_NEWS_MODIFY_ACCESS'] = "Modify access (backend)";
+$_ARRAYLANG['TXT_NEWS_AVAILABLE_USER_GROUPS'] = "Available user groups";
+$_ARRAYLANG['TXT_NEWS_ASSIGNED_USER_GROUPS'] = "Assigned user groups";
+$_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC'] = "Everyone is allowed to read this news message.";
+$_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'] = "Only members of selected groups are allowed to read this news message.";
+$_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'] = "Everyone is allowed to modify this message.";
+$_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'] = "Only members of selected groups are allowed to modify this news message.";
+$_ARRAYLANG['TXT_NEWS_PROTECTION'] = "Access protection";
+$_ARRAYLANG['TXT_NEWS_ACTIVE'] = "Active";
+$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = "If a user protects a news message he is then only allowed to allow the access to his group members.";
+$_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "Only selected users are allowed to read this news message.";
 ?>

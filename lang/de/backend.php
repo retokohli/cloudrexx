@@ -960,4 +960,6 @@ $_ARRAYLANG['TXT_FILEUPLOADER_MODULE_DESCRIPTION'] = "Erlaubt das Hinaufladen vo
 $_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = "Auf die Datei <strong>%s</strong> besteht kein Schreibzugriff!<br />Ohne Schreibzugriff auf diese Datei können keine Einstellungen vorgenommen werden!";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "User to User Nachrichten";
 $_ARRAYLANG['TXT_DOWNLOADS_ADMINISTER'] = "Verwalten";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "Geschützte Seiten auflisten";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Dies definiert, ob bei der Navigation, Volltextsuche, Sitemap und XML-Sitemap auch geschützte Seiten aufgelistet werden sollen, wenn der Benutzer nicht authentifiziert ist - Status (on | off)";
 ?>
