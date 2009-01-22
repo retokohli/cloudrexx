@@ -92,6 +92,7 @@ class Teasers extends newsLibrary
         global $objDatabase, $objInit, $_LANGID, $_CORELANG;
 
         $this->arrTeasers = array();
+        $this->getSettings();
 
         if ($this->administrate) {
             $langId = $objInit->userFrontendLangId;
@@ -116,7 +117,12 @@ class Teasers extends newsLibrary
                                                  ".($this->administrate == false ? "
                                                  AND news.validated='1'
                                                  AND news.status='1'
-                                                 AND (news.startdate<=CURDATE() OR news.startdate='0000-00-00') AND (news.enddate>=CURDATE() OR news.enddate='0000-00-00')" : "" )."
+                                                 AND (news.startdate<=CURDATE() OR news.startdate='0000-00-00') AND (news.enddate>=CURDATE() OR news.enddate='0000-00-00')" : "" )
+                                                   .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                                        ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                                            " AND news.frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
+                                                            :   " AND news.frontend_access_id=0 ")
+                                                        :   '')."
                                             ORDER BY date DESC");
 
         if ($objResult !== false) {

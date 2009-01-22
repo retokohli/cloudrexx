@@ -57,8 +57,11 @@ function SetUrl(url, width, height, alt) {
 			<td width="85%" nowrap="nowrap"><input type="checkbox" name="newsUseTeasers" {NEWS_USE_TEASERS_CHECKED} value="1" /></td>
 		</tr>
         <tr class="row2">
-            <td nowrap="nowrap">{TXT_NEWS_MESSAGE_PROTECTION}</td>
-            <td nowrap="nowrap"><input type="checkbox" name="newsMessageProtection" id="newsMessageProtection" {NEWS_MESSAGE_PROTECTION_CHECKED} value="1" /><label for="newsMessageProtection">{TXT_NEWS_MESSAGE_PROTECTION_DESC}</label></td>
+            <td nowrap="nowrap" style="vertical-align:top;">{TXT_NEWS_PROTECTION}</td>
+            <td nowrap="nowrap">
+                <input type="checkbox" name="newsMessageProtection" id="newsMessageProtection" {NEWS_MESSAGE_PROTECTION_CHECKED} value="1" onchange="document.getElementById('newsMessageProtectionRestrictedConfig').style.display=this.checked?'':'none';" /><label for="newsMessageProtection">{TXT_NEWS_ACTIVE}</label><br >
+                <div id="newsMessageProtectionRestrictedConfig" style="display:{NEWS_MESSAGE_PROTECTION_RESTRICTED_DISPLAY};"><input type="checkbox" name="newsMessageProtectionRestricted" id="newsMessageProtectionRestricted" {NEWS_MESSAGE_PROTECTION_RESTRICTED_CHECKED} value="1" /><label for="newsMessageProtectionRestricted">{TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED}</label></div>
+            </td>
         </tr>
 	</table>
 	<br />

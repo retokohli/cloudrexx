@@ -69,6 +69,8 @@ function deletePages(form)
 					<a href="?cmd=news&amp;act=invertStatus&amp;newsId={NEWS_ID}" title="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}">
 					<img src="images/icons/{NEWS_STATUS_PICTURE}" border="0" alt="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}" title="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}"/>
 					</a>
+					<!-- BEGIN news_message_protected_icon --><img src="images/icons/lock_closed.gif" width="12" height="13" alt="{TXT_NEWS_MESSAGE_PROTECTED}" /><!-- END news_message_protected_icon -->
+					<!-- BEGIN news_message_not_protected_icon --><img src="images/icons/pixel.gif" width="12" height="13" alt="{TXT_NEWS_MESSAGE_PUBLIC}" /><!-- END news_message_not_protected_icon -->
 				</td>  
 				<td nowrap="nowrap">{NEWS_DATE}&nbsp;</td>
 				<td><a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}">{NEWS_TITLE}</a>&nbsp;</td>
