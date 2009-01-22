@@ -234,7 +234,7 @@ function search_searchQuery($section, $searchTerm)
                         ".(
 						!$objFWUser->objUser->login() ?
 							// user is not authenticated
-							'AND (n.protected=0)' :
+							($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND n.protected=0' : '') :
 							// user is authenticated
 							(
 								!$objFWUser->objUser->getAdminStatus() ?
@@ -493,7 +493,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 
 	        $searchcontent = eregi_replace("\{[a-z0-9_]+\}","",strip_tags($objResult->fields['content']));
 	        $searchcontent = stripslashes($searchcontent);
-	        $searchcontent = preg_replace("#\[[^\]]+\]#", "", $searchcontent);	        
+	        $searchcontent = preg_replace("#\[[^\]]+\]#", "", $searchcontent);
 	        $shortcontent = substr(ltrim($searchcontent), 0,intval($_CONFIG['searchDescriptionLength']));
 	        $arrayShortContent = explode(" ",$shortcontent);
 	        $arrelem= array_pop($arrayShortContent);

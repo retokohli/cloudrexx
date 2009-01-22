@@ -69,7 +69,7 @@ class sitemap
 
     function _initialize()
     {
-    	global $objDatabase, $_LANGID;
+    	global $objDatabase, $_LANGID, $_CONFIG;
 
     	$objFWUser = FWUser::getFWUserObject();
 		$query = "SELECT n.cmd AS cmd,
@@ -83,7 +83,7 @@ class sitemap
 						 settings.setvalue AS alias_enable
 		            FROM ".DBPREFIX."content_navigation AS n
 						LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-						LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+						LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
 							ON settings.setmodule = 41
 						   AND settings.setname   = 'aliasStatus'
 						LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
@@ -95,7 +95,7 @@ class sitemap
 		             ".(
 						!$objFWUser->objUser->login() ?
 							// user is not authenticated
-							'AND (n.protected=0)' :
+							($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND n.protected=0' : '') :
 							// user is authenticated
 							(
 								!$objFWUser->objUser->getAdminStatus() ?

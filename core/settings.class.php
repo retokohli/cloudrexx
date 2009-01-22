@@ -185,7 +185,9 @@ class settingsManager
             'TXT_GOOGLE_MAPS_API_KEY_HELP'      => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
             'TXT_GOOGLE_MAPS_API_KEY'           => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
             'TXT_FRONTEND_EDITING_STATUS'        => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
-            'TXT_FRONTEND_EDITING_STATUS_HELP'    => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP']
+            'TXT_FRONTEND_EDITING_STATUS_HELP'    => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'],
+            'TXT_CORE_LIST_PROTECTED_PAGES'         => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
+            'TXT_CORE_LIST_PROTECTED_PAGES_HELP'    => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP']
         ));
 
         if ($this->isWritable()) {
@@ -234,6 +236,8 @@ class settingsManager
             'SETTINGS_FRONTEND_EDITING_ON'        => ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_FRONTEND_EDITING_OFF'       => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_GOOGLE_MAPS_API_KEY'        => ($arrSettings['googleMapsAPIKey']),
+            'SETTINGS_LIST_PROTECTED_PAGES_ON'    => ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_LIST_PROTECTED_PAGES_OFF'    => ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : ''
         ));
 
         $objModuleChecker = new ModuleChecker();
@@ -269,7 +273,8 @@ class settingsManager
                 intval($intId) == 56 ||
                 intval($intId) == 63 ||
                 intval($intId) == 69 ||
-                intval($intId) == 70) {
+                intval($intId) == 70 ||
+                intval($intId) == 71) {
                 $strValue = ($strValue == 'on') ? 'on' : 'off';
             }
 
@@ -277,6 +282,19 @@ class settingsManager
                 if (substr($strValue,0,7) == 'http://') {
                     $strValue = substr($strValue,7);
                 }
+                $_CONFIG['domainUrl'] = htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET);
+            }
+
+            switch (intval($intId)) {
+                case 54:
+                    $_CONFIG['xmlSitemapStatus'] = $strValue;
+                    break;
+                case 71:
+                    $_CONFIG['coreListProtectedPages'] = $strValue;
+                    break;
+                case 67:
+                    $_CONFIG['useVirtualLanguagePath'] = $strValue;
+                    break;
             }
 
             $val = contrexx_addslashes(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
@@ -285,8 +303,7 @@ class settingsManager
                                     WHERE setid='.intval($intId));
         }
 
-        if ($_POST['setvalue']['54'] == 'on') {
-            $_CONFIG['xmlSitemapStatus'] = 'on';
+        if ($_CONFIG['xmlSitemapStatus'] == 'on') {
             XMLSitemap::write();
         }
 
