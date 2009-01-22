@@ -107,6 +107,7 @@ class XMLSitemap {
             }
 
             $strActiveLanguages = implode(',', $arrLang);
+            $objFWUser = FWUser::getFWUserObject();
 
             $objResult = $objDatabase->Execute('SELECT     	cn.catid 		AS catid,
                                                             cn.changelog 	AS changelog,
@@ -123,8 +124,10 @@ class XMLSitemap {
                                                 WHERE       cn.is_validated="1" 	AND
                                                             cn.activestatus="1" 	AND
                                                             cn.displaystatus="on" 	AND
-                                                            cn.protected=0			AND
+                                                            (cn.startdate<=CURDATE() OR cn.startdate=\'0000-00-00\') AND
+                                                            (cn.enddate>=CURDATE() OR cn.enddate=\'0000-00-00\') AND
                                                             cn.lang IN ('.$strActiveLanguages.')
+                                                            '.($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND cn.protected=0 ' : '').'
                                                 ORDER BY    cn.catid ASC
                                             ');
 

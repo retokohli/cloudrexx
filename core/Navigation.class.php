@@ -72,7 +72,7 @@ class Navigation
     */
     function _initialize()
     {
-        global $objDatabase;
+        global $objDatabase, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
         $query = "SELECT n.cmd AS cmd,
@@ -113,7 +113,7 @@ class Navigation
                                         // user is administrator
                                         ''
                                 )
-                                : ''
+                                : ($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND n.protected=0' : '')
                             )."
                         GROUP BY n.catid
                         ORDER BY n.parcat DESC, n.displayorder ASC";
