@@ -961,4 +961,6 @@ $_ARRAYLANG['TXT_FILEUPLOADER_MODULE_DESCRIPTION'] = "Permet le transfert de gro
 $_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = "Impossible d'enregistrer les paramètres, car le fichier <strong>%s</strong> est protégé contre l'écriture!<br />Veuillez recommencer après avoir modifié ces droits d'accès!";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 $_ARRAYLANG['TXT_DOWNLOADS_ADMINISTER'] = "Gérer";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "List protected pages";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Defines if protected pages should be listed/included in the navigation, full text search, sitemap and XML-Sitemap if the user isn't authenticated - Status  (on | off)";
 ?>
