@@ -589,7 +589,7 @@ class newsManager extends newsLibrary {
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
-            if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+            if ($this->arrSettings['news_message_protection_restricted'] == '1' && !Permission::hasAllAccess()) {
                 $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                 $newsFrontendGroups = array_intersect($newsFrontendGroups, $arrUserGroupIds);
@@ -604,7 +604,7 @@ class newsManager extends newsLibrary {
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsBackendAccess) {
-            if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+            if ($this->arrSettings['news_message_protection_restricted'] == '1' && !Permission::hasAllAccess()) {
                 $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                 $newsBackendGroups = array_intersect($newsBackendGroups, $arrUserGroupIds);
@@ -757,7 +757,7 @@ class newsManager extends newsLibrary {
         }
 
         if ($this->arrSettings['news_message_protection'] == '1') {
-            if ($this->arrSettings['news_message_protection_restriected'] == '1') {
+            if ($this->arrSettings['news_message_protection_restricted'] == '1') {
                 $userGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
             }
 
@@ -765,7 +765,7 @@ class newsManager extends newsLibrary {
             $modifyAccessGroups = '';
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
-                if (Permission::hasAllAccess() || $this->arrSettings['news_message_protection_restriected'] != '1' || in_array($objGroup->getId(), $userGroupIds)) {
+                if (Permission::hasAllAccess() || $this->arrSettings['news_message_protection_restricted'] != '1' || in_array($objGroup->getId(), $userGroupIds)) {
                     ${$objGroup->getType() == 'frontend' ? 'readAccessGroups' : 'modifyAccessGroups'} .= '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
                 }
                 $objGroup->next();
@@ -1004,7 +1004,7 @@ class newsManager extends newsLibrary {
             ));
 
             if ($this->arrSettings['news_message_protection'] == '1') {
-                if ($this->arrSettings['news_message_protection_restriected'] == '1') {
+                if ($this->arrSettings['news_message_protection_restricted'] == '1') {
                     $userGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
                 }
 
@@ -1023,13 +1023,15 @@ class newsManager extends newsLibrary {
                 }
 
                 $readAccessGroups = '';
+                $readNotAccessGroups = '';
                 $modifyAccessGroups = '';
+                $modifyNotAccessGroups = '';
                 $objGroup = $objFWUser->objGroup->getGroups();
                 while (!$objGroup->EOF) {
                     ${$objGroup->getType() == 'frontend' ?
                         (in_array($objGroup->getId(), $arrFrontendGroups) ? 'readAccessGroups' : 'readNotAccessGroups')
                       : (in_array($objGroup->getId(), $arrBackendGroups) ? 'modifyAccessGroups' : 'modifyNotAccessGroups')}
-                      .= '<option value="'.$objGroup->getId().'"'.(!Permission::hasAllAccess() && $this->arrSettings['news_message_protection_restriected'] == '1' && !in_array($objGroup->getId(), $userGroupIds) ? ' disabled="disabled"' : '').'>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+                      .= '<option value="'.$objGroup->getId().'"'.(!Permission::hasAllAccess() && $this->arrSettings['news_message_protection_restricted'] == '1' && !in_array($objGroup->getId(), $userGroupIds) ? ' disabled="disabled"' : '').'>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
                     $objGroup->next();
                 }
 
@@ -1171,7 +1173,7 @@ class newsManager extends newsLibrary {
                         $arrNewGroups = array_diff($newsFrontendGroups, $arrFormerFrontendGroupIds);
                         $arrRemovedGroups = array_diff($arrFormerFrontendGroupIds, $newsFrontendGroups);
 
-                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                        if ($this->arrSettings['news_message_protection_restricted'] == '1' && !Permission::hasAllAccess()) {
                             $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                             $arrUnknownNewGroups = array_diff($arrNewGroups, $arrUserGroupIds);
@@ -1196,7 +1198,7 @@ class newsManager extends newsLibrary {
                             Permission::setAccess($newsFrontendAccessId, 'dynamic', $arrNewGroups);
                         }
                     } else {
-                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                        if ($this->arrSettings['news_message_protection_restricted'] == '1' && !Permission::hasAllAccess()) {
                             $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                             $newsFrontendGroups = array_intersect($newsFrontendGroups, $arrUserGroupIds);
@@ -1222,7 +1224,7 @@ class newsManager extends newsLibrary {
                         $arrNewGroups = array_diff($newsBackendGroups, $arrFormerBackendGroupIds);
                         $arrRemovedGroups = array_diff($arrFormerBackendGroupIds, $newsBackendGroups);
 
-                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                        if ($this->arrSettings['news_message_protection_restricted'] == '1' && !Permission::hasAllAccess()) {
                             $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                             $arrUnknownNewGroups = array_diff($arrNewGroups, $arrUserGroupIds);
@@ -1247,7 +1249,7 @@ class newsManager extends newsLibrary {
                             Permission::setAccess($newsBackendAccessId, 'dynamic', $arrNewGroups);
                         }
                     } else {
-                        if ($this->arrSettings['news_message_protection_restriected'] == '1' && !Permission::hasAllAccess()) {
+                        if ($this->arrSettings['news_message_protection_restricted'] == '1' && !Permission::hasAllAccess()) {
                             $arrUserGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
 
                             $newsBackendGroups = array_intersect($newsBackendGroups, $arrUserGroupIds);
