@@ -131,7 +131,11 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADD_MAIN_CATEGORY_PROHIBITED'] = 'Sie sind nicht bere
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORY_TO_CATEGORY_PROHIBITED'] = 'Sie sind nicht berechtigt in der Kategorie <strong>%s</strong> eine neue Unterkategorie anzulegen!';
 $_ARRAYLANG['TXT_DOWNLOADS_CHANGE_PARENT_CATEGORY_PROHIBITED'] = 'Sie sind nicht berechtigt, die Übergeordnete Kategorie zu ändern!';
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_CATEGORY_PROHIBITED'] = 'Sie sind nicht berechtigt die Kategorie <strong>%s</strong> zu aktualisieren!';
-
+$_ARRAYLANG['TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ'] = 'Diese Berechtigungen für alle Unterkategorien übernehmen.';
+$_ARRAYLANG['TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE'] = 'Es sind keine Kategorien vorhanden.';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'] = 'Downloads der Kategory %s';
+$_ARRAYLANG['TXT_DOWNLOADS_UNLINK'] = 'Den Download aus der Kategorie entfernen.';
+$_ARRAYLANG['TXT_DOWNLOADS_INACTIVE'] = 'Inaktiv';
 
 
 
@@ -302,7 +306,13 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
 
             case 'switch_download_status':
                 $this->switchDownloadStatus();
-                $this->downloads();
+                if (!empty($_GET['parent_id'])) {
+                    $this->loadCategoryNavigation();
+                    $this->categories();
+                    $this->parseCategoryNavigation();
+                } else {
+                    $this->downloads();
+                }
                 break;
 
 //            case 'placeholder':
@@ -418,7 +428,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
                 $arrCategoryPermissions[$protectionType]['groups'] = !empty($_POST['downloads_category_'.$protectionType.'_associated_groups']) ? array_map('intval', $_POST['downloads_category_'.$protectionType.'_associated_groups']) : array();
             }
 
-
+            $objCategory->setPermissionsRecursive(!empty($_POST['downloads_category_apply_recursive']));
             $objCategory->setPermissions($arrCategoryPermissions);
 
             if ($status && $objCategory->store()) {
@@ -507,7 +517,8 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'TXT_DOWNLOADS_ADD_FILES_ALL_ACCESS_DESC'                   => $_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES_ALL_ACCESS_DESC'],
             'TXT_DOWNLOADS_ADD_FILES_SELECTED_ACCESS_DESC'              => $_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES_SELECTED_ACCESS_DESC'],
             'TXT_DOWNLOADS_MANAGE_FILES_ALL_ACCESS_DESC'                => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES_ALL_ACCESS_DESC'],
-            'TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC'           => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC']
+            'TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC'           => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC'],
+            'TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ'                => $_ARRAYLANG['TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ']
         ));
 
 
@@ -582,7 +593,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
 
 
         // parse parent category menu
-        $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_PARENT_CATEGORY_MENU', $this->getCategoryMenu($objCategory->getParentId(), $_ARRAYLANG['TXT_DOWNLOADS_MAIN_CATEGORY']));
+        $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_PARENT_CATEGORY_MENU', $this->getCategoryMenu('add_subcategory', $objCategory->getParentId(), $_ARRAYLANG['TXT_DOWNLOADS_MAIN_CATEGORY']));
 
 
         // parse access permissions
@@ -613,6 +624,8 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                 'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_ASSOCIATED_GROUPS'        => implode("\n", $arrPermissionType['associated_groups'])
             ));
         }
+
+        $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_APPLY_RECURSIVE_CHECKED', $objCategory->hasToSetPermissionsRecursive() ? 'checked="checked"' : '');
 
 
 
@@ -1907,19 +1920,8 @@ $this->_objTpl->setVariable(array(
                 || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
             )
         ) {
-            $this->_objTpl->setVariable(array(
-                'TXT_DOWNLOADS_CHECK_ALL'       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
-                'TXT_DOWNLOADS_UNCHECK_ALL'     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
-                'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
-                'TXT_DOWNLOADS_ORDER'           => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
-                'TXT_DOWNLOADS_DELETE'          => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
-            ));
-            $this->_objTpl->parse('downloads_category_action_dropdown');
-            $this->_objTpl->touchBlock('downloads_category_select_label');
             $operateOnSubcategories = true;
         } else {
-            $this->_objTpl->hideBlock('downloads_category_action_dropdown');
-            $this->_objTpl->hideBlock('downloads_category_select_label');
             $operateOnSubcategories = false;
         }
 
@@ -1931,148 +1933,171 @@ $this->_objTpl->setVariable(array(
 
 
         $nr = 0;
-        while (!$objSubcategory->EOF) {
-
-
-
-            // parse order input box
-            if ($changeSortOrder) {
-                $this->_objTpl->setVariable(array(
-                    'DOWNLOADS_CATEGORY_ID'     => $objSubcategory->getId(),
-                    'DOWNLOADS_CATEGORY_ORDER'  => $objSubcategory->getOrder()
-                ));
-                $this->_objTpl->parse('downloads_category_orderbox');
-            } else {
-                $this->_objTpl->hideBlock('downloads_category_orderbox');
-            }
-
-            // parse status link and modify button
-            if (// managers are allowed to manage every subcategory
-                Permission::checkAccess(142, 'static', true)
-                // the selected category must be valid to proceed future permission checks.
-                // this is required to protect the overview section from non-admins
-                || $objCategory->getId() && (
-                    // the category isn't protected => everyone is allowed to modify subcategories
-                    !$objCategory->getManageSubcategoriesAccessId()
-                    // the category is protected => only those who have the sufficent permissions are allowed to modify subcategories
-                    || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
-                    // the owner is allowed to manage its subcategories
-                    || $objSubcategory->getModifyAccessByOwner() && ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objSubcategory->getOwnerId() == $objFWUser->objUser->getId()
-                )
-            ) {
-                $this->_objTpl->setVariable(array(
-                    'DOWNLOADS_CATEGORY_ID'                     => $objSubcategory->getId(),
-                    'DOWNLOADS_CATEGORY_PARENT_ID'              => $objCategory->getId(),
-                    //'DOWNLOADS_CATEGORY_STATUS_JS'           => $objSubcategory->getActiveStatus(),
-                    //'DOWNLOADS_CATEGORY_NAME_JS'             => htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'     => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'],
-                    'DOWNLOADS_CATEGORY_SWITCH_STATUS_IMG_DESC' => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC']
-                ));
-                $this->_objTpl->parse('downloads_category_status_link_open');
-                $this->_objTpl->parse('downloads_category_status_link_close');
-
-                // parse modify icon
-                $this->_objTpl->setVariable(array(
-                    'DOWNLOADS_CATEGORY_ID'         => $objSubcategory->getId(),
-                    'DOWNLOADS_CATEGORY_PARENT_ID'  => $objCategory->getId()
-                ));
-                $this->_objTpl->parse('downloads_category_function_modify_link');
-                $this->_objTpl->hideBlock('downloads_category_function_no_modify_link');
-            } else {
-                $this->_objTpl->setVariable(array(
-                    'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'     => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE'],
-                    'DOWNLOADS_CATEGORY_SWITCH_STATUS_IMG_DESC' => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE']
-                ));
-                $this->_objTpl->hideBlock('downloads_category_status_link_open');
-                $this->_objTpl->hideBlock('downloads_category_status_link_close');
-
-                // hide modify icon
-                $this->_objTpl->touchBlock('downloads_category_function_no_modify_link');
-                $this->_objTpl->hideBlock('downloads_category_function_modify_link');
-            }
-
-            // parse delete button
-            if (// managers are allowed to see delete every category
-                Permission::checkAccess(142, 'static', true)
-                // the selected category must be valid to proceed future permission checks.
-                // this is required to protect the overview section from non-admins
-                || $objCategory->getId() && (
-                    // the category isn't protected => everyone is allowed to delete its subcategories
-                    !$objCategory->getManageSubcategoriesAccessId()
-                    // the category is protected => only those who have the sufficent permissions are allowed to delete its subcategories
-                    || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
-                    // the owner is allowed to delete the subcategory
-                    || $objSubcategory->getDeletableByOwner() && ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objSubcategory->getOwnerId() == $objFWUser->objUser->getId()
-                )
-            ) {
-                $this->_objTpl->setVariable(array(
-                    'TXT_DOWNLOADS_DELETE'                  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE'],
-                    'DOWNLOADS_CATEGORY_NAME_JS'            => htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_CATEGORY_HAS_SUBCATEGORIES'  => $objSubcategory->hasSubcategories()
-                ));
-
-                // parse delete icon
-                $this->_objTpl->parse('downloads_category_function_delete_link');
-                $this->_objTpl->hideBlock('downloads_category_function_no_delete_link');
-            } else {
-                // hide delete icon
-                $this->_objTpl->touchBlock('downloads_category_function_no_delete_link');
-                $this->_objTpl->hideBlock('downloads_category_function_delete_link');
-            }
-
-            //parse select checkbox
+        if ($objSubcategory->EOF) {
+            $this->_objTpl->setVariable('TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE', $_ARRAYLANG['TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE']);
+            $this->_objTpl->parse('downloads_category_no_data');
+            $this->_objTpl->hideBlock('downloads_category_data');
+        } else {
             if ($operateOnSubcategories) {
-                $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_ID', $objSubcategory->getId());
-                $this->_objTpl->parse('downloads_category_checkbox');
+                $this->_objTpl->setVariable(array(
+                    'TXT_DOWNLOADS_CHECK_ALL'       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+                    'TXT_DOWNLOADS_UNCHECK_ALL'     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+                    'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
+                    'TXT_DOWNLOADS_ORDER'           => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+                    'TXT_DOWNLOADS_DELETE'          => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
+                ));
+                $this->_objTpl->parse('downloads_category_action_dropdown');
+                $this->_objTpl->touchBlock('downloads_category_select_label');
             } else {
-                $this->_objTpl->hideBlock('downloads_category_checkbox');
+                $this->_objTpl->hideBlock('downloads_category_action_dropdown');
+                $this->_objTpl->hideBlock('downloads_category_select_label');
+            }
+            while (!$objSubcategory->EOF) {
+
+
+
+                // parse order input box
+                if ($changeSortOrder) {
+                    $this->_objTpl->setVariable(array(
+                        'DOWNLOADS_CATEGORY_ID'     => $objSubcategory->getId(),
+                        'DOWNLOADS_CATEGORY_ORDER'  => $objSubcategory->getOrder()
+                    ));
+                    $this->_objTpl->parse('downloads_category_orderbox');
+                } else {
+                    $this->_objTpl->hideBlock('downloads_category_orderbox');
+                }
+
+                // parse status link and modify button
+                if (// managers are allowed to manage every subcategory
+                    Permission::checkAccess(142, 'static', true)
+                    // the selected category must be valid to proceed future permission checks.
+                    // this is required to protect the overview section from non-admins
+                    || $objCategory->getId() && (
+                        // the category isn't protected => everyone is allowed to modify subcategories
+                        !$objCategory->getManageSubcategoriesAccessId()
+                        // the category is protected => only those who have the sufficent permissions are allowed to modify subcategories
+                        || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
+                    )
+                    // the owner is allowed to manage its subcategories
+                    || $objSubcategory->getOwnerId() && $objSubcategory->getModifyAccessByOwner() && ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objSubcategory->getOwnerId() == $objFWUser->objUser->getId()
+                ) {
+                    $this->_objTpl->setVariable(array(
+                        'DOWNLOADS_CATEGORY_ID'                     => $objSubcategory->getId(),
+                        'DOWNLOADS_CATEGORY_PARENT_ID'              => $objCategory->getId(),
+                        //'DOWNLOADS_CATEGORY_STATUS_JS'           => $objSubcategory->getActiveStatus(),
+                        //'DOWNLOADS_CATEGORY_NAME_JS'             => htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'     => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'],
+                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_IMG_DESC' => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC']
+                    ));
+                    $this->_objTpl->parse('downloads_category_status_link_open');
+                    $this->_objTpl->parse('downloads_category_status_link_close');
+
+                    // parse modify icon
+                    $this->_objTpl->setVariable(array(
+                        'DOWNLOADS_CATEGORY_ID'         => $objSubcategory->getId(),
+                        'DOWNLOADS_CATEGORY_PARENT_ID'  => $objCategory->getId()
+                    ));
+                    $this->_objTpl->parse('downloads_category_function_modify_link');
+                    $this->_objTpl->hideBlock('downloads_category_function_no_modify_link');
+                } else {
+                    $this->_objTpl->setVariable(array(
+                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'     => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE'],
+                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_IMG_DESC' => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE']
+                    ));
+                    $this->_objTpl->hideBlock('downloads_category_status_link_open');
+                    $this->_objTpl->hideBlock('downloads_category_status_link_close');
+
+                    // hide modify icon
+                    $this->_objTpl->touchBlock('downloads_category_function_no_modify_link');
+                    $this->_objTpl->hideBlock('downloads_category_function_modify_link');
+                }
+
+                // parse delete button
+                if (// managers are allowed to see delete every category
+                    Permission::checkAccess(142, 'static', true)
+                    // the selected category must be valid to proceed future permission checks.
+                    // this is required to protect the overview section from non-admins
+                    || $objCategory->getId() && (
+                        // the category isn't protected => everyone is allowed to delete its subcategories
+                        !$objCategory->getManageSubcategoriesAccessId()
+                        // the category is protected => only those who have the sufficent permissions are allowed to delete its subcategories
+                        || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
+                        // the owner is allowed to delete the subcategory
+                        || $objSubcategory->getDeletableByOwner() && ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objSubcategory->getOwnerId() == $objFWUser->objUser->getId()
+                    )
+                ) {
+                    $this->_objTpl->setVariable(array(
+                        'TXT_DOWNLOADS_DELETE'                  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE'],
+                        'DOWNLOADS_CATEGORY_NAME_JS'            => htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                        'DOWNLOADS_CATEGORY_HAS_SUBCATEGORIES'  => $objSubcategory->hasSubcategories()
+                    ));
+
+                    // parse delete icon
+                    $this->_objTpl->parse('downloads_category_function_delete_link');
+                    $this->_objTpl->hideBlock('downloads_category_function_no_delete_link');
+                } else {
+                    // hide delete icon
+                    $this->_objTpl->touchBlock('downloads_category_function_no_delete_link');
+                    $this->_objTpl->hideBlock('downloads_category_function_delete_link');
+                }
+
+                //parse select checkbox
+                if ($operateOnSubcategories) {
+                    $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_ID', $objSubcategory->getId());
+                    $this->_objTpl->parse('downloads_category_checkbox');
+                } else {
+                    $this->_objTpl->hideBlock('downloads_category_checkbox');
+                }
+
+                // parse detail link
+                if (// managers are allowed to see the content of every category
+                    Permission::checkAccess(142, 'static', true)
+                    // the category isn't protected => everyone is allowed to the it's content
+                    || !$objSubcategory->getReadAccessId()
+                    // the category is protected => only those who have the sufficent permissions are allowed to see it's content
+                    || Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
+                    // the owner is allowed to see the content of the category
+                    || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objSubcategory->getOwnerId() == $objFWUser->objUser->getId()
+                ) {
+                    $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_ID', $objSubcategory->getId());
+                    //$this->_objTpl->parse('downloads_category_name_link_open');
+                    $this->_objTpl->touchBlock('downloads_category_name_link_close');
+                } else {
+                    $this->_objTpl->hideBlock('downloads_category_name_link_open');
+                    $this->_objTpl->hideBlock('downloads_category_name_link_close');
+                }
+
+
+                $description = $objSubcategory->getDescription($_LANGID);
+                if (strlen($description) > 200) {
+                    $description = substr($description, 0, 197).'...';
+                }
+
+                $this->_objTpl->setVariable(array(
+                    'DOWNLOADS_CATEGORY_ROW_CLASS'      => $nr++ % 2 ? 'row1' : 'row2',
+                    'DOWNLOADS_CATEGORY_ID'             => $objSubcategory->getId(),
+                    'DOWNLOADS_CATEGORY_STATUS_LED'     => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                    'DOWNLOADS_OPEN_CATEGORY_DESC'      => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_CATEGORY_NAME'           => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_CATEGORY_AUTHOR'         => $this->getParsedUsername($objSubcategory->getOwnerId())
+                ));
+
+                $this->_objTpl->parse('downloads_category_list');
+
+
+
+                $objSubcategory->next();
             }
 
-            // parse detail link
-            if (// managers are allowed to see the content of every category
-                Permission::checkAccess(142, 'static', true)
-                // the category isn't protected => everyone is allowed to the it's content
-                || !$objSubcategory->getReadAccessId()
-                // the category is protected => only those who have the sufficent permissions are allowed to see it's content
-                || Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
-                // the owner is allowed to see the content of the category
-                || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objSubcategory->getOwnerId() == $objFWUser->objUser->getId()
-            ) {
-                $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_ID', $objSubcategory->getId());
-                //$this->_objTpl->parse('downloads_category_name_link_open');
-                $this->_objTpl->touchBlock('downloads_category_name_link_close');
-            } else {
-                $this->_objTpl->hideBlock('downloads_category_name_link_open');
-                $this->_objTpl->hideBlock('downloads_category_name_link_close');
-            }
-
-
-            $description = $objSubcategory->getDescription($_LANGID);
-            if (strlen($description) > 200) {
-                $description = substr($description, 0, 197).'...';
-            }
-
-            $this->_objTpl->setVariable(array(
-                'DOWNLOADS_CATEGORY_ROW_CLASS'      => $nr++ % 2 ? 'row1' : 'row2',
-                'DOWNLOADS_CATEGORY_ID'             => $objSubcategory->getId(),
-                'DOWNLOADS_CATEGORY_STATUS_LED'     => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
-                'DOWNLOADS_OPEN_CATEGORY_DESC'      => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOWNLOADS_CATEGORY_NAME'           => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_CATEGORY_AUTHOR'         => $this->getParsedUsername($objSubcategory->getOwnerId())
-            ));
-
-            $this->_objTpl->parse('downloads_category_list');
-
-
-
-            $objSubcategory->next();
+            $this->_objTpl->touchBlock('downloads_category_data');
+            $this->_objTpl->hideBlock('downloads_category_no_data');
         }
 
         // parse category id (will be used as the parent_id when creating a new directory
         $this->_objTpl->setVariable(array(
             'DOWNLOADS_CATEGORY_ID'     => $objCategory->getId(),
-            'DOWNLOADS_CATEGORY_MENU'   => $this->getCategoryMenu($objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\'index.php?cmd=downloads&act=categories&parent_id=\'+this.value"')
+            'DOWNLOADS_CATEGORY_MENU'   => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\'index.php?cmd=downloads&act=categories&parent_id=\'+this.value"')
         ));
 
         // TODO: clean up
@@ -2125,7 +2150,6 @@ $this->_objTpl->setVariable(array(
 
         $nr = 0;
         while (!$objDownload->EOF) {
-
             // parse select checkbox
             if (true) {
                 $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
@@ -2223,6 +2247,37 @@ $this->_objTpl->setVariable(array(
             }
 
 
+            // parse unlink button
+            if (// managers are allowed to unlink every download
+                Permission::checkAccess(142, 'static', true)
+                // the selected category must be valid to proceed future permission checks.
+                // this is required to protect the overview section from non-admins
+                || $objCategory->getId() && (
+                    // the category isn't protected => everyone is allowed to unlink downloads
+                    !$objCategory->getManageFilesAccessId()
+                    // the category is protected => only those who have the sufficent permissions are allowed to unlink downloads
+                    || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                    // the owner of the category is allowed to unlink all downloads
+                    || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+                )
+                // the owner of the download is allowed to unlink it
+                || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objDownload->getOwnerId() == $objFWUser->objUser->getId()
+            ) {
+                $this->_objTpl->setVariable(array(
+                    'TXT_DOWNLOADS_UNLINK'                  => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK'],
+                    'DOWNLOADS_DOWNLOAD_NAME_JS'            => htmlspecialchars($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                ));
+
+                // parse delete icon
+                $this->_objTpl->parse('downloads_download_function_unlink_link');
+                $this->_objTpl->hideBlock('downloads_download_function_no_unlink_link');
+            } else {
+                // hide delete icon
+                $this->_objTpl->touchBlock('downloads_download_function_no_unlink_link');
+                $this->_objTpl->hideBlock('downloads_download_function_unlink_link');
+            }
+
+
             $description = $objDownload->getDescription($_LANGID);
             if (strlen($description) > 200) {
                 $description = substr($description, 0, 197).'...';
@@ -2233,6 +2288,7 @@ $this->_objTpl->setVariable(array(
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_AUTHOR'         => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_STATUS_LED'     => $objDownload->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                'DOWNLOADS_DOWNLOAD_ICON'           => $objDownload->getIcon(),
                 'DOWNLOADS_DOWNLOAD_ROW_CLASS'      => $nr++ % 2 ? 'row1' : 'row2'
             ));
 
@@ -2240,6 +2296,8 @@ $this->_objTpl->setVariable(array(
 
             $objDownload->next();
         }
+
+        $this->_objTpl->setVariable('DOWNLOADS_OF_CATEGORY_TXT', sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)));
 
         $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_ID'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],

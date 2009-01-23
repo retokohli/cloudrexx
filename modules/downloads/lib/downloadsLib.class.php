@@ -495,21 +495,31 @@ class DownloadsLibrary
         }
     }*/
 
-    protected function getCategoryMenu($selectedCategory, $selectionText, $attrs = null)
+    protected function getCategoryMenu($accessType, $selectedCategory, $selectionText, $attrs = null)
     {
         global $_LANGID, $_ARRAYLANG;
 
         $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
         $arrCategories = array();
 
+        switch ($accessType) {
+            case 'read':
+                $accessCheckFunction = 'getReadAccessId';
+                break;
+
+            case 'add_subcategory':
+                $accessCheckFunction = 'getAddSubcategoriesAccessId';
+                break;
+        }
+
         while (!$objCategory->EOF) {
             // TODO: getVisibility() < should only be checked if the user isn't an admin or so
-            if ($objCategory->getVisibility()) {
+            if ($objCategory->getVisibility() || Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)) {
                 $arrCategories[$objCategory->getParentId()][] = array(
                     'id'        => $objCategory->getId(),
                     'name'      => $objCategory->getName($_LANGID),
                     'owner_id'  => $objCategory->getOwnerId(),
-                    'access_id' => $objCategory->getReadAccessId()
+                    'access_id' => $objCategory->{$accessCheckFunction}()
                 );
             }
 
@@ -517,7 +527,7 @@ class DownloadsLibrary
         }
 
         $menu = '<select name="downloads_category_parent_id"'.(!empty($attrs) ? ' '.$attrs : '').'>';
-        $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').' style="border-bottom:1px solid #000;">'.$selectionText.'</option>';
+        $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').($accessType != 'read' && !Permission::checkAccess(142, 'static', true) ? ' disabled="disabled"' : '').' style="border-bottom:1px solid #000;">'.$selectionText.'</option>';
 
         $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory);
 
