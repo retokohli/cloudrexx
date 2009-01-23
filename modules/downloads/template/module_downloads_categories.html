@@ -32,6 +32,7 @@ function downloadsCategoryDoAction(action)
     <tr>
         <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}" style="padding:3px;">{DOWNLOADS_CATEGORY_MENU}</th>
     </tr> 
+<!-- BEGIN downloads_category_data -->
     <tr class="row3" style="font-weight: bold;">
         <!-- BEGIN downloads_category_select_label -->
         <td width="1%" style="text-align: center;">#</td>
@@ -91,7 +92,7 @@ function downloadsCategoryDoAction(action)
 		    <a href="javascript:void(0);" onclick="downloadsDeleteCategory({DOWNLOADS_CATEGORY_ID},'{DOWNLOADS_CATEGORY_NAME_JS}',{DOWNLOADS_CATEGORY_HAS_SUBCATEGORIES})" title="{TXT_DOWNLOADS_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DOWNLOADS_DELETE}" width="17" height="17" border="0" /></a>
             <!-- END downloads_category_function_delete_link -->
             <!-- BEGIN downloads_category_function_no_delete_link -->
-            <img src="images/icons/pixel.gif" alt="f" width="16" height="16" border="0" />
+            <img src="images/icons/pixel.gif" alt="no permission to delete this category" width="16" height="16" border="0" />
             <!-- END downloads_category_function_no_delete_link -->
 		</td>
     </tr>
@@ -109,13 +110,21 @@ function downloadsCategoryDoAction(action)
 </select>
 <form>
 <!-- END downloads_category_action_dropdown -->
+<!-- END downloads_category_data -->
+<!-- BEGIN downloads_category_no_data -->
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+    <tr class="row3">
+        <td>{TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE}</td>
+    </tr>
+</table>
+<!-- END downloads_category_no_data -->
 <br />
 <br />
 <!-- BEGIN downloads_category_downloads -->
 <form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=categories" method="post">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
     <tr>
-        <th colspan="8" style="padding:3px;">Downloads der Kategory blabla</th>
+        <th colspan="8" style="padding:3px;">{DOWNLOADS_OF_CATEGORY_TXT}</th>
     </tr> 
     <tr class="row3" style="font-weight: bold;">
         <td width="1%" style="text-align: center;">#</td>
@@ -150,6 +159,7 @@ function downloadsCategoryDoAction(action)
             <!-- END downloads_download_orderbox -->
         </td>
         <td nowrap="nowrap">
+            <img src="{DOWNLOADS_DOWNLOAD_ICON}" width="15" height="13" />
           <!-- BEGIN downloads_download_name_link_open -->
             <a href="index.php?cmd=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_DOWNLOAD}">
           <!-- END downloads_download_name_link_open -->
@@ -167,12 +177,12 @@ function downloadsCategoryDoAction(action)
             <!-- BEGIN downloads_download_function_no_modify_link -->
             <img src="images/icons/pixel.gif" alt="{TXT_DOWNLOADS_EDIT}" width="16" height="16" border="0" />
             <!-- END downloads_download_function_no_modify_link -->
-            <!-- BEGIN downloads_download_function_delete_link -->
-            <a href="javascript:void(0);" onclick="downloadsDeleteDownload({DOWNLOADS_DOWNLOAD_ID},'{DOWNLOADS_DOWNLOAD_NAME_JS}')" title="{TXT_DOWNLOADS_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DOWNLOADS_DELETE}" width="17" height="17" border="0" /></a>
-            <!-- END downloads_download_function_delete_link -->
-            <!-- BEGIN downloads_download_function_no_delete_link -->
-            <img src="images/icons/pixel.gif" alt="f" width="16" height="16" border="0" />
-            <!-- END downloads_download_function_no_delete_link -->
+            <!-- BEGIN downloads_download_function_unlink_link -->
+            <a href="javascript:void(0);" onclick="downloadsUnlinkDownload({DOWNLOADS_DOWNLOAD_ID},'{DOWNLOADS_DOWNLOAD_NAME_JS}')" title="{TXT_DOWNLOADS_UNLINK}"><img src="images/icons/delete.gif" alt="{TXT_DOWNLOADS_UNLINK}" width="17" height="17" border="0" /></a>
+            <!-- END downloads_download_function_unlink_link -->
+            <!-- BEGIN downloads_download_function_no_unlink_link -->
+            <img src="images/icons/pixel.gif" alt="no permission to unlink this download from the category" width="16" height="16" border="0" />
+            <!-- END downloads_download_function_no_unlink_link -->
         </td>
     </tr>
 <!-- END downloads_download_list -->

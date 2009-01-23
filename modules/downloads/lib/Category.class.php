@@ -64,6 +64,7 @@ class Category {
         'manage_files'
     );
 
+    protected $set_permissions_recursive;
     private $names;
     private $descriptions;
 
@@ -157,6 +158,7 @@ class Category {
         $this->manage_files_access_id = 0;
         $this->manage_files_protected = false;
         $this->manage_files_groups = null;
+        $this->set_permissions_recursive = false;
         $this->names = array();
         $this->descriptions = array();
         $this->EOF = true;
@@ -284,6 +286,10 @@ class Category {
         return $this->modify_access_by_owner;
     }
 
+    public function hasToSetPermissionsRecursive()
+    {
+        return $this->set_permissions_recursive;
+    }
 
     public function getAssociatedDownloadsCount()
     {
@@ -404,6 +410,7 @@ class Category {
                 $this->manage_files_access_id = isset($this->arrLoadedCategories[$id]['manage_files_access_id']) ? $this->arrLoadedCategories[$id]['manage_files_access_id'] : 0;
                 $this->manage_files_protected = (bool) $this->manage_files_access_id;
                 $this->manage_files_groups = null;
+                $this->set_permissions_recursive = false;
                 $this->names = isset($this->arrLoadedCategories[$id]['names']) ? $this->arrLoadedCategories[$id]['names'] : null;
                 $this->descriptions = isset($this->arrLoadedCategories[$id]['descriptions']) ? $this->arrLoadedCategories[$id]['descriptions'] : null;
                 $this->EOF = false;
@@ -964,6 +971,25 @@ class Category {
         ) === false) {
             return false;
         } else {
+            if ($this->set_permissions_recursive) {
+                foreach ($this->arrPermissionTypes as $type) {
+                    $arrPermissions[$type] = array(
+                        'protected' => $this->{$type.'_protected'},
+                        'groups'    => $this->{$type.'_groups'}
+                    );
+                }
+
+                $objSubcategory = Category::getCategories(array('parent_id' => $this->getId()));
+                while (!$objSubcategory->EOF) {
+                    $objSubcategory->setPermissionsRecursive(true);
+                    $objSubcategory->setPermissions($arrPermissions);
+                    $objSubcategory->setVisibility($this->visibility);
+                    $objSubcategory->store();
+                    $objSubcategory->next();
+                }
+            }
+
+
             return true;
         }
     }
@@ -1107,6 +1133,11 @@ class Category {
             $this->{$permission.'_protected'} = $arrPermission['protected'];
             $this->{$permission.'_groups'} = $this->{$permission.'_protected'} ? $arrPermission['groups'] : array();
         }
+    }
+
+    public function setPermissionsRecursive($recursive)
+    {
+        $this->set_permissions_recursive = $recursive;
     }
 
     public function getPermissions()
