@@ -793,6 +793,7 @@ class skins
             'TXT_SAVE'    => $_CORELANG['TXT_SAVE'],
             'TXT_THEME_ACTIVATE_INFO'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO'],
             'TXT_THEME_ACTIVATE_INFO_BODY'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO_BODY'],
+            'TXT_ACTIVE_MOBILE_TEMPLATE' => $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE']
         ));
         $i=0;
 
@@ -806,9 +807,18 @@ class skins
             foreach ($_POST['pdfThemesId'] as $langid => $pdfThemesId) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET pdf_themes_id='".intval($pdfThemesId)."' WHERE id=".intval($langid));
             }
+            foreach ($_POST['mobileThemesId'] as $langid => $mobileThemesId) {
+                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET mobile_themes_id='".intval($mobileThemesId)."' WHERE id=".intval($langid));
+            }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         }
-        $objResult = $objDatabase->Execute("SELECT id,lang,name,frontend,themesid,print_themes_id,pdf_themes_id FROM ".DBPREFIX."languages ORDER BY id");
+        $objResult = $objDatabase->Execute("
+           SELECT   id,lang,name,frontend,
+                    themesid,mobile_themes_id,print_themes_id,pdf_themes_id 
+           FROM     ".DBPREFIX."languages 
+           ORDER BY id
+        ");
+
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 if (($i % 2) == 0) {
@@ -827,6 +837,7 @@ class skins
                     'THEMES_LANG_NAME'          => $objResult->fields['name'],
                     'THEMES_TEMPLATE_MENU'      => $this->_getDropdownActivated($objResult->fields['themesid']),
                     'THEMES_PRINT_TEMPLATE_MENU' => $this->_getDropdownActivated($objResult->fields['print_themes_id']),
+                    'THEMES_MOBILE_TEMPLATE_MENU' => $this->_getDropdownActivated($objResult->fields['mobile_themes_id']),
                     'THEMES_PDF_TEMPLATE_MENU' => $this->_getDropdownActivated($objResult->fields['pdf_themes_id']),
                 ));
                 $objTemplate->parse('themesLangRow');

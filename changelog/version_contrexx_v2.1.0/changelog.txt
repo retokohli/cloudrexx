@@ -1,10 +1,17 @@
 ////////////////////////////////////////
-// CHANGELOG 2.0.1-2.0.2 ///////////////
+// CHANGELOG 2.0.2-2.1.0 ///////////////
 ////////////////////////////////////////
 
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Design-Manager
+- Es kann neu ein Design für Mobile Geräte festgelegt werden. Dies wird 
+  dann automatisch aktiviert, wenn ein Smartphone, PDA oder ähnliches die
+  Seite aufruft. Es kann auch "händisch" aktiviert werden, entweder mittels
+  Query-Parameter smallscreen=1, oder via Javascript 
+  (Platzhalter JAVASCRIPT_MOBILE_DETECTOR)
+
 
 ****************************************
 * Behobene Fehler **********************
