@@ -964,4 +964,5 @@ $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 $_ARRAYLANG['TXT_DOWNLOADS_ADMINISTER'] = "Administer";
 $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "List protected pages";
 $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Defines if protected pages should be listed/included in the navigation, full text search, sitemap and XML-Sitemap if the user isn't authenticated - Status  (on | off)";
+$_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = "Template for mobile devices";
 ?>
