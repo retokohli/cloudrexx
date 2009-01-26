@@ -62,7 +62,7 @@ class InitCMS
         $this->mode=$mode;
 
         $objResult = $objDatabase->Execute("
-            SELECT id, themesid, print_themes_id, pdf_themes_id,
+            SELECT id, themesid, print_themes_id, pdf_themes_id,mobile_themes_id,
                    lang, name, charset, backend, frontend, is_default
               FROM ".DBPREFIX."languages
         ");
@@ -73,6 +73,7 @@ class InitCMS
                     'themesid'   => $objResult->fields['themesid'],
                     'print_themes_id' => $objResult->fields['print_themes_id'],
                     'pdf_themes_id' => $objResult->fields['pdf_themes_id'],
+                    'mobile_themes_id' => $objResult->fields['mobile_themes_id'],
                     'lang'       => $objResult->fields['lang'],
                     'name'       => $objResult->fields['name'],
                     'charset'    => $objResult->fields['charset'],
@@ -152,11 +153,57 @@ class InitCMS
             exit;
         }
 
+        // small screen view (mobile etc). use index.php?smallscreen=1 to 
+        // enable, ?smallscreen=0 to disable.
+        //
+        // only set the smallscreen environment if there's actually a mobile theme defined.
+        if(isset($_GET['smallscreen']) ) {
+            // user wants to enable/disable smallscreen mode.
+            if ($_GET['smallscreen'] && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+                // enable
+                setcookie('smallscreen', 1);
+                $is_small_screen = 1;
+            }
+            else {
+                // now: either smallscreen=1 requested, but no smallscreen theme 
+                // available, or disabling requested. Both cases require the 
+                // cookie to be set to zero, so the javascript doesn't redirect 
+                // all the time!
+                setcookie('smallscreen', 0);
+                $is_small_screen = 0;
+            }
+        }
+        elseif(isset($_COOKIE['smallscreen'])) {
+            // no need to check mobile_themes_id here: it's been checked
+            // when the cookie was set.
+            $is_small_screen =intval($_COOKIE['smallscreen']); 
+        }
+        else {
+            // auto detection
+            if($this->_is_mobile_phone() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+                // same here: only set smallscreen mode if there IS a smallscreen theme
+                setcookie('smallscreen', 1);
+                $is_small_screen = 1; 
+            }
+            else {
+                // Don't even think about setting the cookie 
+                // to 0 in this case: 0 means the user disabled
+                // smallscreen mode INTENTIONALLY! The friendly javascript
+                // detector only enables smallscreen mode if the user
+                // didn't decide by himself.
+            }
+        }
+
         $this->frontendLangId = $frontendLangId;
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
+            
         }elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
             $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
+            
+        }elseif ($is_small_screen and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+            $this->currentThemesId = $this->arrLang[$frontendLangId]['mobile_themes_id'];
+
         } else {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
         }
@@ -369,6 +416,7 @@ class InitCMS
                 $objResult->MoveNext();
             }
         }
+        #die ("themesid={$this->currentThemesId}, name = $themesPath");
 
         $this->themesPath = $themesPath;
 
@@ -705,5 +753,67 @@ class InitCMS
     {
         return htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, CONTREXX_CHARSET);
     }
+
+    /**
+     * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
+     *
+     * TODO: maybe put this in a separate class
+     */
+    function _is_mobile_phone() {
+        $isMobile = false;
+
+        $op = strtolower($_SERVER['HTTP_X_OPERAMINI_PHONE']);
+        $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
+        $ac = strtolower($_SERVER['HTTP_ACCEPT']);
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        $isMobile = strpos($ac, 'application/vnd.wap.xhtml+xml') !== false
+            || $op != ''
+            || strpos($ua, 'sony') !== false 
+            || strpos($ua, 'symbian') !== false 
+            || strpos($ua, 'nokia') !== false 
+            || strpos($ua, 'samsung') !== false 
+            || strpos($ua, 'mobile') !== false
+            || strpos($ua, 'windows ce') !== false
+            || strpos($ua, 'epoc') !== false
+            || strpos($ua, 'opera mini') !== false
+            || strpos($ua, 'nitro') !== false
+            || strpos($ua, 'j2me') !== false
+            || strpos($ua, 'midp-') !== false
+            || strpos($ua, 'cldc-') !== false
+            || strpos($ua, 'netfront') !== false
+            || strpos($ua, 'mot') !== false
+            || strpos($ua, 'up.browser') !== false
+            || strpos($ua, 'up.link') !== false
+            || strpos($ua, 'audiovox') !== false
+            || strpos($ua, 'blackberry') !== false
+            || strpos($ua, 'ericsson,') !== false
+            || strpos($ua, 'panasonic') !== false
+            || strpos($ua, 'philips') !== false
+            || strpos($ua, 'sanyo') !== false
+            || strpos($ua, 'sharp') !== false
+            || strpos($ua, 'sie-') !== false
+            || strpos($ua, 'portalmmm') !== false
+            || strpos($ua, 'blazer') !== false
+            || strpos($ua, 'avantgo') !== false
+            || strpos($ua, 'danger') !== false
+            || strpos($ua, 'palm') !== false
+            || strpos($ua, 'series60') !== false
+            || strpos($ua, 'palmsource') !== false
+            || strpos($ua, 'pocketpc') !== false
+            || strpos($ua, 'smartphone') !== false
+            || strpos($ua, 'rover') !== false
+            || strpos($ua, 'ipaq') !== false
+            || strpos($ua, 'au-mic,') !== false
+            || strpos($ua, 'alcatel') !== false
+            || strpos($ua, 'ericy') !== false
+            || strpos($ua, 'up.link') !== false
+            || strpos($ua, 'vodafone/') !== false
+            || strpos($ua, 'wap1.') !== false
+            || strpos($ua, 'wap2.') !== false;
+        return $isMobile; 
+    }
+
+
 }
 ?>
