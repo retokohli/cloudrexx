@@ -667,6 +667,10 @@ class CommonFunctions
 
 			foreach ($arrAllFiles as $checkFile) {
 				if (!is_writable($path.$checkFile)) {
+                    $re = $this->isWindows() ? '#\\\.svn\\#' : '#/\.svn/#';
+                    if (preg_match($re, $checkFile)) {
+                        continue;
+                    }
 					if ($this->isWindows()) {
 						if (empty($statusMessage)) {
 							$statusMessage = $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES']."<br />";
