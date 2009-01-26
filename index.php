@@ -2006,6 +2006,9 @@ $objTemplate->setVariable(array(
     'JAVASCRIPT_LIGHTBOX' => '<script type="text/javascript" src="lib/lightbox/javascript/mootools.js"></script>
                             <script type="text/javascript" src="lib/lightbox/javascript/slimbox.js"></script>'
 ));
+$objTemplate->setVariable(array(
+    'JAVASCRIPT_MOBILE_DETECTOR' => '<script type="text/javascript" src="lib/mobiledetector.js"></script>'
+));
 
 if (!empty($moduleStyleFile)) {
     $objTemplate->setVariable(array(

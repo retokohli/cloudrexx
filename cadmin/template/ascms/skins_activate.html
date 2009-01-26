@@ -18,7 +18,7 @@ function reloadThemesPage()
 <form name="themesFormAssign" method="post" action="index.php?cmd=skins&amp;act=activate">
   <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
     <tr>
-      <th colspan="5">
+      <th colspan="6">
         <div align="left">{TXT_ACTIVATE_DESIGN}</div>
         </th>
     </tr>
@@ -27,6 +27,7 @@ function reloadThemesPage()
       <td nowrap="nowrap" width="65%"><b>{TXT_LANGUAGE}</b></td>
       <td nowrap="nowrap" width="15%"><b>{TXT_ACTIVE_PDF_TEMPLATE}</b></td>
       <td nowrap="nowrap" width="15%"><b>{TXT_ACTIVE_PRINT_TEMPLATE}</b></td>
+      <td nowrap="nowrap" width="15%"><b>{TXT_ACTIVE_MOBILE_TEMPLATE}</b></td>
       <td nowrap="nowrap" width="15%"><b>{TXT_ACTIVE_TEMPLATE}</b></td>
     </tr>
     <!-- BEGIN themesLangRow -->
@@ -43,6 +44,11 @@ function reloadThemesPage()
 		{THEMES_PRINT_TEMPLATE_MENU}
           </select>
         </td>
+      <td nowrap="nowrap">
+          <select name="mobileThemesId[{THEMES_LANG_ID}]" size="1" style="WIDTH: 150px">
+		{THEMES_MOBILE_TEMPLATE_MENU}
+          </select>
+	     </td>
       <td nowrap="nowrap">
           <select name="themesId[{THEMES_LANG_ID}]" size="1" style="WIDTH: 150px">
 		{THEMES_TEMPLATE_MENU}
