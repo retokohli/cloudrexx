@@ -959,9 +959,9 @@ $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partenaires";
 $_ARRAYLANG['TXT_SETTINGS_FILE_UPLOADER'] = "Téléchargeur de fichier";
 $_ARRAYLANG['TXT_FILEUPLOADER_MODULE_DESCRIPTION'] = "Permet le transfert de gros fichiers";
 $_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = "Impossible d'enregistrer les paramètres, car le fichier <strong>%s</strong> est protégé contre l'écriture!<br />Veuillez recommencer après avoir modifié ces droits d'accès!";
-$_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
+$_ARRAYLANG['TXT_U2U_MODULE'] = "Messages U2U";
 $_ARRAYLANG['TXT_DOWNLOADS_ADMINISTER'] = "Gérer";
-$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "List protected pages";
-$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Defines if protected pages should be listed/included in the navigation, full text search, sitemap and XML-Sitemap if the user isn't authenticated - Status  (on | off)";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "Inclure pages à accès limité";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Inclus les pages à accès limités dans la Navigation, la recherche plein texte et le plan du site (Sitemap et XML-Sitemap) pour les utilisateurs non authentifiés - Status  (on | off)";
 $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = "Template for mobile devices";
 ?>
