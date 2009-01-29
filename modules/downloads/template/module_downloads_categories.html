@@ -22,6 +22,14 @@ function downloadsCategoryDoAction(action)
     }
     document.getElementById('downloads_category_select_action').value=0;
 }
+
+function downloadsUnlinkDownload(id,name)
+{
+    strMsg = '{DOWNLOADS_CONFIRM_UNLINK_DOWNLOAD_TXT}';
+    if (confirm(strMsg.replace('%s', name))) {
+        window.location.href = 'index.php?cmd=downloads&act=unlink_download&parent_id={DOWNLOADS_CATEGORY_ID}&id='+id;
+    }
+}
 // ]]>
 </script>
 
@@ -189,4 +197,8 @@ function downloadsCategoryDoAction(action)
 </table>
 <form>
 <!-- END downloads_category_downloads -->
+<!-- BEGIN downloads_add_downloads_button -->
+<br />
+<input type="button" name="downloads_category_add_downloads" value="{TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&amp;act=add_downloads_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}'" />
+<!-- END downloads_add_downloads_button -->
 <!-- end module_downloads_categories.html -->
