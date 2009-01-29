@@ -26,3 +26,13 @@ Grundeinstellungen
   Schreibzugriff zu vergeben.
 - Es können keine Änderungen getätigt werden, solange auf die
   Konfigurationsdatei kein Schreibzugriff besteht.
+
+
+****************************************
+* Neue Module **************************
+****************************************
+E-Card-Modul
+- Ermöglicht das Versenden von E-Cards mit Grusstext. Es können bis zu 9 
+  verschiedene Motive festgelegt werden. Die Karte wird nicht direkt verschickt, 
+  es wird eine URL generiert, die das Betrachten der Karte auf dem Server 
+  ermöglicht.
