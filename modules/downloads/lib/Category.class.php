@@ -65,8 +65,11 @@ class Category {
     );
 
     protected $set_permissions_recursive;
+    private $permission_set;
     private $names;
     private $descriptions;
+
+    private $downloads;
 
     private $arrAttributes = array(
         'core' => array(
@@ -161,6 +164,8 @@ class Category {
         $this->set_permissions_recursive = false;
         $this->names = array();
         $this->descriptions = array();
+        $this->downloads = null;
+        $this->permission_set = false;
         $this->EOF = true;
     }
 
@@ -302,6 +307,29 @@ class Category {
             return false;
         }
     }
+
+    public function getAssociatedDownloadIds()
+    {
+        if (!isset($this->downloads)) {
+            $this->loadDownloadAssociations();
+        }
+        return $this->downloads;
+    }
+
+    private function loadDownloadAssociations()
+    {
+        global $objDatabase;
+
+        $this->downloads = array();
+        $objResult = $objDatabase->Execute('SELECT `download_id` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->downloads[] = $objResult->fields['download_id'];
+                $objResult->MoveNext();
+            }
+        }
+    }
+
     public function hasSubcategories()
     {
         global $objDatabase;
@@ -413,6 +441,8 @@ class Category {
                 $this->set_permissions_recursive = false;
                 $this->names = isset($this->arrLoadedCategories[$id]['names']) ? $this->arrLoadedCategories[$id]['names'] : null;
                 $this->descriptions = isset($this->arrLoadedCategories[$id]['descriptions']) ? $this->arrLoadedCategories[$id]['descriptions'] : null;
+                $this->downloads = isset($this->arrLoadedCategories[$id]['downloads']) ? $this->arrLoadedCategories[$id]['downloads'] : null;
+                $this->permission_set = false;
                 $this->EOF = false;
                 return true;
             }
@@ -875,6 +905,11 @@ class Category {
             return false;
         }
 
+        if (!$this->storeDownloadAssociations()) {
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_ASSOCIATIONS'];
+            return false;
+        }
+
         if (!$this->storePermissions()) {
             // TODO: add lang var
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'];
@@ -936,9 +971,53 @@ class Category {
         return $status;
     }
 
+    private function storeDownloadAssociations()
+    {
+        global $objDatabase;
+
+        $arrOldDownloads = array();
+        $status = true;
+
+        if (!isset($this->downloads)) {
+            $this->loadDownloadAssociations();
+        }
+
+        $objOldDownloads = $objDatabase->Execute('SELECT `download_id` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id);
+        if ($objOldDownloads !== false) {
+            while (!$objOldDownloads->EOF) {
+                $arrOldDownloads[] = $objOldDownloads->fields['download_id'];
+                $objOldDownloads->MoveNext();
+            }
+        } else {
+            return false;
+        }
+
+        $arrNewDownloads = array_diff($this->downloads, $arrOldDownloads);
+        $arrRemovedDownloads = array_diff($arrOldDownloads, $this->downloads);
+
+        foreach ($arrNewDownloads as $downloadId) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_download_category` (`category_id`, `download_id`) VALUES (".$this->id.", ".$downloadId.")") === false) {
+                $status = false;
+            }
+        }
+
+        foreach ($arrRemovedDownloads as $downloadId) {
+            if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_downloads_rel_download_category` WHERE `category_id` = ".$this->id." AND `download_id` = ".$downloadId) === false) {
+                $status = false;
+            }
+        }
+        return $status;
+
+        return true;
+    }
+
     private function storePermissions()
     {
         global $objDatabase;
+
+        if (!$this->permission_set) {
+            return true;
+        }
 
         foreach ($this->arrPermissionTypes as $type) {
             if ($this->{$type.'_protected'}) {
@@ -988,7 +1067,6 @@ class Category {
                     $objSubcategory->next();
                 }
             }
-
 
             return true;
         }
@@ -1105,6 +1183,11 @@ class Category {
         $this->descriptions = $arrDescriptions;
     }
 
+    public function setDownloads($arrDownloads)
+    {
+        $this->downloads = $arrDownloads;
+    }
+
     public function getErrorMsg()
     {
         return $this->error_msg;
@@ -1133,6 +1216,8 @@ class Category {
             $this->{$permission.'_protected'} = $arrPermission['protected'];
             $this->{$permission.'_groups'} = $this->{$permission.'_protected'} ? $arrPermission['groups'] : array();
         }
+
+        $this->permission_set = true;
     }
 
     public function setPermissionsRecursive($recursive)

@@ -48,7 +48,7 @@ function downloadsDeselectAllOptions(CONTROL)
     }
 }
 
-function downloadsAddOptionToList(from, dest, trigger)
+function downloadsAddOptionToList(from, dest)
 {
     if (from.selectedIndex < 0) {
         if (from.options[0] != null) {
@@ -70,7 +70,7 @@ function downloadsAddOptionToList(from, dest, trigger)
     }
 }
 
-function downloadsRemoveOptionFromList(from,dest, trigger)
+function downloadsRemoveOptionFromList(from,dest)
 {
     if (dest.selectedIndex < 0) {
         if (dest.options[0] != null) {
@@ -467,9 +467,9 @@ function downloadsAdjustSourceConfig()
 	                                </td>
 	                                <td width="45" style="border-bottom:0px; text-align:center;">
 	                                    <br />
-	                                    <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_download_not_associated_categories'), document.getElementById('downloads_download_associated_categories'), 'read')" style="margin-bottom:2px;" />
+	                                    <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_download_not_associated_categories'), document.getElementById('downloads_download_associated_categories'))" style="margin-bottom:2px;" />
 	                                    <br />
-	                                    <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_download_not_associated_categories'), document.getElementById('downloads_download_associated_categories'), 'read')" />
+	                                    <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_download_not_associated_categories'), document.getElementById('downloads_download_associated_categories'))" />
 	                                </td>
 	                               <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_CATEGORIES}<br />
 	                                    <select name="downloads_download_associated_categories[]" id="downloads_download_associated_categories" size="15" style="width:300px;" multiple="multiple">
@@ -512,9 +512,9 @@ function downloadsAdjustSourceConfig()
                                     </td>
                                     <td width="45" style="border-bottom:0px; text-align:center;">
                                         <br />
-                                        <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_download_not_associated_downloads'), document.getElementById('downloads_download_associated_downloads'), 'read')" style="margin-bottom:2px;" />
+                                        <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_download_not_associated_downloads'), document.getElementById('downloads_download_associated_downloads'))" style="margin-bottom:2px;" />
                                         <br />
-                                        <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_download_not_associated_downloads'), document.getElementById('downloads_download_associated_downloads'), 'read')" />
+                                        <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_download_not_associated_downloads'), document.getElementById('downloads_download_associated_downloads'))" />
                                     </td>
                                    <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_DOWNLOADS}<br />
                                         <select name="downloads_download_associated_downloads[]" id="downloads_download_associated_downloads" size="15" style="width:300px;" multiple="multiple">
@@ -563,9 +563,9 @@ function downloadsAdjustSourceConfig()
                                         </td>
                                         <td width="45" style="border-bottom:0px; text-align:center;">
                                             <br />
-                                            <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_download_access_not_associated_groups'), document.getElementById('downloads_download_access_associated_groups'), 'read')" style="margin-bottom:2px;" />
+                                            <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_download_access_not_associated_groups'), document.getElementById('downloads_download_access_associated_groups'))" style="margin-bottom:2px;" />
                                             <br />
-                                            <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_download_access_not_associated_groups'), document.getElementById('downloads_download_access_associated_groups'), 'read')" />
+                                            <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_download_access_not_associated_groups'), document.getElementById('downloads_download_access_associated_groups'))" />
                                         </td>
                                        <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
                                             <select name="downloads_download_access_associated_groups[]" id="downloads_download_access_associated_groups" size="15" style="width:300px;" multiple="multiple">

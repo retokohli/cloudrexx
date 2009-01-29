@@ -11,7 +11,7 @@
         }
     }
 
-    function downloadsSelectAllGroups(CONTROL)
+    function downloadsSelectAllOptions(CONTROL)
     {
         for(var i = 0;i < CONTROL.length;i++)
         {
@@ -19,16 +19,7 @@
         }
     }
 
-    function downloadsSelectAll()
-    {
-        downloadsSelectAllGroups(document.getElementById('downloads_category_read_associated_groups'))
-        downloadsSelectAllGroups(document.getElementById('downloads_category_add_subcategories_associated_groups'))
-        downloadsSelectAllGroups(document.getElementById('downloads_category_manage_subcategories_associated_groups'))
-        downloadsSelectAllGroups(document.getElementById('downloads_category_add_files_associated_groups'))
-        downloadsSelectAllGroups(document.getElementById('downloads_category_manage_files_associated_groups'))
-    }
-
-    function downloadsDeselectAllGroups(CONTROL)
+    function downloadsDeselectAllOptions(CONTROL)
     {
         for(var i = 0;i < CONTROL.length;i++)
         {
@@ -36,7 +27,17 @@
         }
     }
 
-    function downloadsAddGroupToList(from, dest, trigger)
+    function downloadsSelectAll()
+    {
+    	downloadsSelectAllOptions(document.getElementById('downloads_category_read_associated_groups'))
+        downloadsSelectAllOptions(document.getElementById('downloads_category_add_subcategories_associated_groups'))
+        downloadsSelectAllOptions(document.getElementById('downloads_category_manage_subcategories_associated_groups'))
+        downloadsSelectAllOptions(document.getElementById('downloads_category_add_files_associated_groups'))
+        downloadsSelectAllOptions(document.getElementById('downloads_category_manage_files_associated_groups'))
+        downloadsSelectAllOptions(document.getElementById('downloads_category_associated_downloads'))
+    }
+
+    function downloadsAddOptionToList(from, dest)
     {
         if (from.selectedIndex < 0) {
             if (from.options[0] != null) {
@@ -46,21 +47,19 @@
             return false;
         } else {
             for (var i=0; i<from.length; i++) {
-                if (from.options[i].selected) {
+                if (from.options[i].selected && !from.options[i].disabled) {
                     dest.options[dest.length] = new Option(from.options[i].text, from.options[i].value, false, false);
-                   }
+                }
             }
             for (var i=from.length-1; i>=0; i--) {
-                if (from.options[i].selected) {
+                if (from.options[i].selected && !from.options[i].disabled) {
                    from.options[i] = null;
-                   }
+                }
             }
         }
-
-        downloadsAdjustAccessConfig(trigger)
     }
 
-    function downloadsRemoveGroupFromList(from,dest, trigger)
+    function downloadsRemoveOptionFromList(from,dest)
     {
         if (dest.selectedIndex < 0) {
             if (dest.options[0] != null) {
@@ -70,19 +69,18 @@
             return false;
         } else {
             for (var i=0; i<dest.options.length; i++) {
-                if (dest.options[i].selected) {
+                if (dest.options[i].selected && !dest.options[i].disabled) {
                     from.options[from.options.length] = new Option(dest.options[i].text, dest.options[i].value, false, false);
-                   }
+                }
             }
             for (var i=dest.options.length-1; i>=0; i--) {
-                if (dest.options[i].selected) {
+                if (dest.options[i].selected && !dest.options[i].disabled) {
                    dest.options[i] = null;
-                   }
+                }
             }
         }
-
-        downloadsAdjustAccessConfig(trigger)
     }
+    
 
     var downloadsPermissionDependencies = {
         'read':{
@@ -289,6 +287,41 @@
                     <td>{TXT_DOWNLOADS_STATUS}</td>
                     <td><input type="checkbox" name="downloads_category_active" id="downloads_category_active" value="1" {DOWNLOADS_CATEGORY_ACTIVE_CHECKED} /> <label for="downloads_category_active">{TXT_DOWNLOADS_ACTIVE}</label></td>
                 </tr>
+                <tr class="row2">
+                    <td>{TXT_DOWNLOADS_DOWNLOADS}</td>
+                    <td>
+                        <table cellspacing="0" cellpadding="3" border="0" summary="download assignements">
+                            <tbody style="vertical-align:top;">
+                                <tr>
+                                    <td width="300" style="border-bottom:0px;">{TXT_DOWNLOADS_AVAILABLE_DOWNLOADS}<br />
+                                        <select name="downloads_category_not_associated_downloads[]" id="downloads_category_not_associated_downloads" size="15" style="width:300px;" multiple="multiple">
+                                        {DOWNLOADS_CATEGORY_NOT_ASSOCIATED_DOWNLOADS}
+                                        </select>
+                                        <br />
+                                        <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_not_associated_downloads'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                        <br />
+                                        <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_not_associated_downloads'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                    </td>
+                                    <td width="45" style="border-bottom:0px; text-align:center;">
+                                        <br />
+                                        <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_category_not_associated_downloads'), document.getElementById('downloads_category_associated_downloads'))" style="margin-bottom:2px;" />
+                                        <br />
+                                        <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_category_not_associated_downloads'), document.getElementById('downloads_category_associated_downloads'))" />
+                                    </td>
+                                   <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_DOWNLOADS}<br />
+                                        <select name="downloads_category_associated_downloads[]" id="downloads_category_associated_downloads" size="15" style="width:300px;" multiple="multiple">
+                                        {DOWNLOADS_CATEGORY_ASSOCIATED_DOWNLOADS}
+                                        </select>
+                                        <br />
+                                        <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_associated_downloads'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                        <br />
+                                        <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_associated_downloads'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                     </td>
+                                </tr>
+                           </tbody>
+                        </table>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -319,24 +352,24 @@
                                             {DOWNLOADS_CATEGORY_READ_NOT_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_read_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_read_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_read_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_read_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                         </td>
                                         <td width="45" style="border-bottom:0px; text-align:center;">
                                             <br />
-                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddGroupToList(document.getElementById('downloads_category_read_not_associated_groups'), document.getElementById('downloads_category_read_associated_groups'), 'read')" style="margin-bottom:2px;" />
+                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddOptionToList(document.getElementById('downloads_category_read_not_associated_groups'), document.getElementById('downloads_category_read_associated_groups'));downloadsAdjustAccessConfig('read')" style="margin-bottom:2px;" />
                                             <br />
-                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveGroupFromList(document.getElementById('downloads_category_read_not_associated_groups'), document.getElementById('downloads_category_read_associated_groups'), 'read')" />
+                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_category_read_not_associated_groups'), document.getElementById('downloads_category_read_associated_groups'));downloadsAdjustAccessConfig('read')" />
                                         </td>
                                        <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
                                             <select name="downloads_category_read_associated_groups[]" id="downloads_category_read_associated_groups" size="15" style="width:300px;" multiple="multiple">
                                             {DOWNLOADS_CATEGORY_READ_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_read_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_read_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_read_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_read_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                          </td>
                                     </tr>
                                </tbody>
@@ -377,24 +410,24 @@
                                             {DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_NOT_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_add_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_add_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_add_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_add_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                         </td>
                                         <td width="45" style="border-bottom:0px; text-align:center;">
                                             <br />
-                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddGroupToList(document.getElementById('downloads_category_add_subcategories_not_associated_groups'), document.getElementById('downloads_category_add_subcategories_associated_groups'), 'add_subcategories')" style="margin-bottom:2px;" />
+                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddOptionToList(document.getElementById('downloads_category_add_subcategories_not_associated_groups'), document.getElementById('downloads_category_add_subcategories_associated_groups'));downloadsAdjustAccessConfig('add_subcategories')" style="margin-bottom:2px;" />
                                             <br />
-                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveGroupFromList(document.getElementById('downloads_category_add_subcategories_not_associated_groups'), document.getElementById('downloads_category_add_subcategories_associated_groups'), 'add_subcategories')" />
+                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_category_add_subcategories_not_associated_groups'), document.getElementById('downloads_category_add_subcategories_associated_groups'));downloadsAdjustAccessConfig('add_subcategories')" />
                                         </td>
                                        <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
                                             <select name="downloads_category_add_subcategories_associated_groups[]" id="downloads_category_add_subcategories_associated_groups" size="15" style="width:300px;" multiple="multiple">
                                             {DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_add_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_add_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_add_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_add_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                          </td>
                                     </tr>
                                 </tbody>
@@ -429,24 +462,24 @@
                                             {DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_NOT_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                         </td>
                                         <td width="45" style="border-bottom:0px; text-align:center;">
                                             <br />
-                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddGroupToList(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'), document.getElementById('downloads_category_manage_subcategories_associated_groups'), 'manage_subcategories')" style="margin-bottom:2px;" />
+                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddOptionToList(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'), document.getElementById('downloads_category_manage_subcategories_associated_groups'));downloadsAdjustAccessConfig('manage_subcategories')" style="margin-bottom:2px;" />
                                             <br />
-                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveGroupFromList(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'), document.getElementById('downloads_category_manage_subcategories_associated_groups'), 'manage_subcategories')" />
+                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_category_manage_subcategories_not_associated_groups'), document.getElementById('downloads_category_manage_subcategories_associated_groups'));downloadsAdjustAccessConfig('manage_subcategories')" />
                                         </td>
                                        <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
                                             <select name="downloads_category_manage_subcategories_associated_groups[]" id="downloads_category_manage_subcategories_associated_groups" size="15" style="width:300px;" multiple="multiple">
                                             {DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_manage_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_manage_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_manage_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_manage_subcategories_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                          </td>
                                     </tr>
                                 </tbody>
@@ -487,24 +520,24 @@
                                             {DOWNLOADS_CATEGORY_ADD_FILES_NOT_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_add_files_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_add_files_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_add_files_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_add_files_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                         </td>
                                         <td width="45" style="border-bottom:0px; text-align:center;">
                                             <br />
-                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddGroupToList(document.getElementById('downloads_category_add_files_not_associated_groups'), document.getElementById('downloads_category_add_files_associated_groups'), 'add_files')" style="margin-bottom:2px;" />
+                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddOptionToList(document.getElementById('downloads_category_add_files_not_associated_groups'), document.getElementById('downloads_category_add_files_associated_groups'));downloadsAdjustAccessConfig('add_files')" style="margin-bottom:2px;" />
                                             <br />
-                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveGroupFromList(document.getElementById('downloads_category_add_files_not_associated_groups'), document.getElementById('downloads_category_add_files_associated_groups'), 'add_files')" />
+                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_category_add_files_not_associated_groups'), document.getElementById('downloads_category_add_files_associated_groups'));downloadsAdjustAccessConfig('add_files')" />
                                         </td>
                                        <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
                                             <select name="downloads_category_add_files_associated_groups[]" id="downloads_category_add_files_associated_groups" size="15" style="width:300px;" multiple="multiple">
                                             {DOWNLOADS_CATEGORY_ADD_FILES_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_add_files_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_add_files_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_add_files_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_add_files_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                          </td>
                                     </tr>
                                 </tbody>
@@ -539,24 +572,24 @@
                                             {DOWNLOADS_CATEGORY_MANAGE_FILES_NOT_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_manage_files_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_manage_files_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_manage_files_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_manage_files_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                         </td>
                                         <td width="45" style="border-bottom:0px; text-align:center;">
                                             <br />
-                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddGroupToList(document.getElementById('downloads_category_manage_files_not_associated_groups'), document.getElementById('downloads_category_manage_files_associated_groups'), 'manage_files')" style="margin-bottom:2px;" />
+                                            <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddOptionToList(document.getElementById('downloads_category_manage_files_not_associated_groups'), document.getElementById('downloads_category_manage_files_associated_groups'));downloadsAdjustAccessConfig('manage_files')" style="margin-bottom:2px;" />
                                             <br />
-                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveGroupFromList(document.getElementById('downloads_category_manage_files_not_associated_groups'), document.getElementById('downloads_category_manage_files_associated_groups'), 'manage_files')" />
+                                            <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_category_manage_files_not_associated_groups'), document.getElementById('downloads_category_manage_files_associated_groups'));downloadsAdjustAccessConfig('manage_files')" />
                                         </td>
                                        <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
                                             <select name="downloads_category_manage_files_associated_groups[]" id="downloads_category_manage_files_associated_groups" size="15" style="width:300px;" multiple="multiple">
                                             {DOWNLOADS_CATEGORY_MANAGE_FILES_ASSOCIATED_GROUPS}
                                             </select>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsSelectAllGroups(document.getElementById('downloads_category_manage_files_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_manage_files_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                             <br />
-                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllGroups(document.getElementById('downloads_category_manage_files_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+                                            <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_manage_files_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
                                          </td>
                                     </tr>
                                 </tbody>
