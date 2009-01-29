@@ -6,24 +6,13 @@ new project
 
 
 
------------
-import
------------
-
-
-
------------
-filter
------------
-hinweis das reihenfolge angepassat wurde, 
-kontrolleren. wenn das letze element nicht zugewiesen
-ist, erscheint trotzdem "reihenfolge wurde geändert"
 
 
 -----------
 edit project
 -----------
-* komplett
+* bei update werden placeholder nicht richtig generiert.
+
 
 
 -----------

@@ -42,7 +42,9 @@ class CSVHandler {
 		reset ($this->HeaderData);
 		
 		while(list($HKey,$HVal)=each($this->HeaderData)) {			//Create Headers Line
-			$HHeaders[] = $HVal;
+			if ($HVal !== "") {
+				$HHeaders[] = $HVal;	
+			}
 		}
 		
 		return $HHeaders;

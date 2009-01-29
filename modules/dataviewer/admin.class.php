@@ -298,7 +298,7 @@ class Dataviewer {
 		$projectsString = substr($projectsString, 0, strlen($projectsString)-1);
 			
 		$this->_objTpl->setVariable(array(
-			'AVAILABLE_FRONTENT_LANGUAGES'	=> $this->getFrontentLangCheckboxes(),
+			'AVAILABLE_FRONTENT_LANGUAGES'	=> $this->getFrontentLangCheckboxes(""),
 			'TXT_FRONTEND_LANGUAGE' 		=> $_ARRAYLANG['TXT_FRONTEND_LANGUAGE'],
 			'TXT_YES' 						=> $_ARRAYLANG['TXT_YES'],
 			'TXT_NO' 						=> $_ARRAYLANG['TXT_NO'],
@@ -328,6 +328,207 @@ class Dataviewer {
 			'TIP_COLUMN_NAME' 				=> $_ARRAYLANG['TIP_COLUMN_NAME']
 		));	
 	}
+	
+	
+	
+	/**
+	* handles the view and actions for editing a project
+	* @param no param
+	* @return no return
+	*/
+	function editProject() {
+		global $_ARRAYLANG, $objDatabase;			
+		$this->_objTpl->loadTemplateFile('module_dataviewer_edit_project.html');
+		$this->_pageTitle = $_ARRAYLANG['TXT_DATAVIEWER_NEW_PROJECT'];
+		
+		$_POST['save'] = !empty($_POST['save']) ? $_POST['save'] : "";
+		$id            = !empty($_GET['id']) ? $_GET['id'] : "";
+		
+		//SAVE
+		if ($_POST['save']) {
+			$id 			= !empty($_POST['id']) ? $_POST['id'] : "";
+			$name 			= !empty($_POST['name']) ? $_POST['name'] : "";
+			
+			$language 		= !empty($_POST['language']) ? $_POST['language'] : "";
+			$languageString = implode(";", $language);
+			
+			$description 	= !empty($_POST['description']) ? $_POST['description'] : "";
+			
+			$columns 		= !empty($_POST['column']) ? $_POST['column'] : "";
+			array_pop($columns); //deletes last element, this one is empty because of the JS used to create dynamics input fields
+			
+			
+			$columnsString = implode(";", $columns);
+						
+			
+			//create query for dataviewer_projects
+			$updateProjectQuery = "	UPDATE ".DBPREFIX."module_dataviewer_projects SET
+										name = '" . $name . "', 
+										description = '" . $description . "', 
+										language = '" . $languageString . "',
+										filters = '" . $columnsString . "'
+									WHERE
+										id = '".$id."';";
+			
+			//rename table
+			$renameTableQuery = "RENAME TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))."  TO ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($name).";";
+			
+			
+			$columnsDB = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id)));
+			unset($columnsDB['COUNTRY']);
+			
+			$alterQuery = "";
+			
+			$i = 0;
+			foreach ($columnsDB as $column) {
+				//RENAME
+				if($column !== $columns[$i] && key_exists($i, $columns)) {
+					$alterQuery .= "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." CHANGE ".$column." ".$columns[$i]." VARCHAR( 250 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL; ";
+				}
+				
+				//DELETE
+				if (!key_exists($i, $columns)) {
+					$alterQuery .= "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." DROP ".$column."; ";
+				}	
+						
+				unset($columns[$i]);	
+				$i++;
+			}
+			
+			//ADD
+			if (count($columns) > 0) {
+				foreach ($columns as $column) {
+					$alterQuery .= "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." ADD ".$column." VARCHAR(250) NOT NULL; ";
+				}
+			}
+			
+			
+			$columns 		= !empty($_POST['column']) ? $_POST['column'] : "";
+			array_pop($columns); //deletes last element, this one is empty because of the JS used to create dynamics input fields
+
+			//create query for dataviewer_projects_placeholders
+			$insertPlaceholderQuery = "	DELETE FROM "
+											.DBPREFIX."module_dataviewer_placeholders
+										WHERE
+											projectid = '".$id."'; 
+										INSERT INTO ".DBPREFIX."module_dataviewer_placeholders 
+											(`id`, 
+											`projectid`, 
+											`column`)
+										VALUES ";
+			
+			$valuesString = "";
+			
+			foreach ($columns as $key => $column) {
+				$valuesString .= 	"('$key', '".$id."', '$column'), ";
+			}
+							
+//			delete last ","
+			$valuesString = substr($valuesString, 0, strlen($valuesString)-2);
+			$insertPlaceholderQuery = $insertPlaceholderQuery . $valuesString;
+			
+			
+			$projectnameOld = $this->makeInputDBvalid($this->getProjectName($id));
+			
+			
+			if($objDatabase->Execute($updateProjectQuery)) {
+				
+			}
+			
+			if($objDatabase->Execute($alterQuery)) {
+				
+			}
+			
+			if($objDatabase->Execute($renameTableQuery)) {
+				
+			}
+			
+			if ($this->updateContentPage($this->getProjectName($id), $projectnameOld)) {
+				$foo = true;
+			}
+			
+			if($objDatabase->Execute($insertPlaceholderQuery)) {
+				
+			}
+			
+			
+							
+							
+			//execute queries
+			if($foo) {
+				$this->_objTpl->setVariable(array(
+					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich geupdatet."
+				));	
+			} else {
+				$this->_objTpl->setVariable(array(
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht geupdatet werden!<br />" . $updateProjectQuery . "<br />" . $alterQuery . "<br />" . $renameTableQuery . "<br />" . $insertPlaceholderQuery
+				));	
+			}
+		}
+		
+		//projectstring for JS check
+		$query     = "SELECT * FROM " . DBPREFIX . "module_dataviewer_projects";
+		$objResult = $objDatabase->Execute($query);
+		$projectsString = "";
+		while (!$objResult->EOF) {
+			$projectsString .= $objResult->fields['name']." ";
+			$objResult->MoveNext();
+		}
+		$projectsString = substr($projectsString, 0, strlen($projectsString)-1);
+		
+		
+		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id)));
+		$i = 0;
+		foreach ($columns as $column) {
+			if ($column !== "country") {
+				$this->_objTpl->setVariable(array(
+					'COLUMN_NAME'	=> $column,
+					'i'				=> $i,
+				));		
+				$this->_objTpl->parse('columnsRow');	
+				$i++;	
+			}
+		}
+		
+			
+		$query     = "SELECT * FROM " . DBPREFIX . "module_dataviewer_projects WHERE id = '".$id."';";
+		$objResult = $objDatabase->Execute($query);
+		
+		$this->_objTpl->setVariable(array(
+			'POST_NAME'						=> $objResult->fields['name'],
+			'POST_DESCRIPTION'				=> $objResult->fields['description'],
+			'AVAILABLE_FRONTENT_LANGUAGES'	=> $this->getFrontentLangCheckboxes($id),
+			'ID'							=> $id,
+			'TXT_FRONTEND_LANGUAGE' 		=> $_ARRAYLANG['TXT_FRONTEND_LANGUAGE'],
+			'TXT_YES' 						=> $_ARRAYLANG['TXT_YES'],
+			'TXT_NO' 						=> $_ARRAYLANG['TXT_NO'],
+			'TXT_ACTIVE' 					=> $_ARRAYLANG['TXT_ACTIVE'],
+			'TXT_INACTIVE' 					=> $_ARRAYLANG['TXT_INACTIVE'],
+			'TXT_ADD_COLUMN' 				=> $_ARRAYLANG['TXT_ADD_COLUMN'],
+			'TXT_PROJECT_COLUMNS' 			=> $_ARRAYLANG['TXT_PROJECT_COLUMNS'],
+			'TXT_COUNTRY_BASED' 			=> $_ARRAYLANG['TXT_COUNTRY_BASED'],
+			'TXT_PROJECTNAME' 				=> $_ARRAYLANG['TXT_PROJECTNAME'],
+			'TXT_PROJECTDESCRIPTION'		=> $_ARRAYLANG['TXT_PROJECTDESCRIPTION'],
+			'TXT_PROJECTSTATUS' 			=> $_ARRAYLANG['TXT_PROJECTSTATUS'],
+			'TXT_PREVIEW' 					=> $_ARRAYLANG['TXT_PREVIEW'],
+			'TXT_SAVE' 						=> $_ARRAYLANG['TXT_SAVE'],	
+			'TXT_ONE_COLUMN_OR_MORE' 		=> $_ARRAYLANG['TXT_ONE_COLUMN_OR_MORE'],
+			'TXT_COLUMNS_MUSTNT_BE_EMPTY' 	=> $_ARRAYLANG['TXT_COLUMNS_MUSTNT_BE_EMPTY'],
+			'TXT_ENTER_A_NAME' 				=> $_ARRAYLANG['TXT_ENTER_A_NAME'],
+			'TXT_CHOOSE_FRONTENT_LANG' 		=> $_ARRAYLANG['TXT_CHOOSE_FRONTENT_LANG'],
+			'TXT_ENTER_DESCRIPTION' 		=> $_ARRAYLANG['TXT_ENTER_DESCRIPTION'],
+			'TXT_CHOOSE_COUNTRYBASED' 		=> $_ARRAYLANG['TXT_CHOOSE_COUNTRYBASED'],
+			'TXT_CHOOSE_STATUS' 			=> $_ARRAYLANG['TXT_CHOOSE_STATUS'],
+			'PROJECTSSTRING' 				=> $projectsString,
+			'TIP_PROJECTNAME'				=> $_ARRAYLANG['TIP_PROJECTNAME'],
+			'TIP_FRONTEND_LANG' 			=> $_ARRAYLANG['TIP_FRONTEND_LANG'],
+			'TIP_COUNTRYBASED' 				=> $_ARRAYLANG['TIP_COUNTRYBASED'],
+			'TIP_DESCRIPTION' 				=> $_ARRAYLANG['TIP_DESCRIPTION'],
+			'TIP_STATUS' 					=> $_ARRAYLANG['TIP_STATUS'],
+			'TIP_COLUMN_NAME' 				=> $_ARRAYLANG['TIP_COLUMN_NAME']
+		));	
+	}
+	
 	
 	
 	/**
@@ -434,21 +635,65 @@ class Dataviewer {
 	}
 	
 	
+	
+	/**
+	 * inserts content and navigation page for a new project
+	 * 
+	 * @param  string $projectname
+	 * @return boolean
+	 */
+	function updateContentPage($projectname, $projectnameOld) {
+		global $objDatabase;
+		
+		//get page id
+		$query     = "SELECT catid from " .DBPREFIX. "content_navigation WHERE cmd = '".$projectnameOld."';";
+		$objResult = $objDatabase->Execute($query);
+		$pageID  = $objResult->fields['catid']; 
+		
+		//insert content page
+		$queryContent     = "UPDATE ".DBPREFIX."content SET content = '".$this->createContentpage($projectname)."' WHERE id = '".$pageID."';";
+		$queryContentNavi = "UPDATE ".DBPREFIX."content_navigation SET cmd = '".$projectname."' WHERE catid = '".$pageID."';";
+		
+		if ($objDatabase->Execute($queryContent) && $objDatabase->Execute($queryContentNavi)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	
 	/**
 	 * creates the current activated frontend languages as checkboxes
 	 * 
 	 * @return string $xhtml
 	 */
-	function getFrontentLangCheckboxes() {
+	function getFrontentLangCheckboxes($id) {
 		global $objDatabase;
 		//select current frontend languages
 		$query     = "SELECT * FROM " . DBPREFIX . "languages WHERE frontend = '1'";
 		$objResult = $objDatabase->Execute($query);
 		
+		//select frontend languages from project
+		if ($id !== "") {
+			$queryLang     = "SELECT * FROM " . DBPREFIX . "module_dataviewer_projects WHERE id = '".$id."'";
+			$objResultLang = $objDatabase->Execute($queryLang);
+			$langString = $objResultLang->fields['language'];
+		}
+		
+		
 		//create xhtml
 		$xhtml = "";
 		while (!$objResult->EOF) {
-			$xhtml .= '<input type="checkbox" name="language[]" id="language" value="' . $objResult->fields['id'] . '" /> ' . $objResult->fields['name'];
+			$checked = "";
+			
+			if ($id !== "") {
+				if(strchr($langString, $objResult->fields['id'])) {
+					$checked = "checked";
+				}	
+			}
+			
+			
+			$xhtml .= '<input type="checkbox" name="language[]" id="language" value="' . $objResult->fields['id'] . '" ' .$checked. ' /> ' . $objResult->fields['name'];
 			$objResult->MoveNext();
 		}
 		
@@ -1002,6 +1247,9 @@ class Dataviewer {
 	}
 		
 	
+	
+//	functino updateContentPage
+	
 	/**
 	 * creates content page for project
 	 * 
@@ -1013,7 +1261,7 @@ class Dataviewer {
 		
 		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($projectname));
 		
-		$xhtml  		= " {DATAVIEWER_FILTER}\n{DATAVIEWER_JS}<br /><br />";
+		$xhtml  		= "{DATAVIEWER_FILTER}\n{DATAVIEWER_JS}<br /><br />";
 		$tableHeadlines = "";
 		$tableContent   = "";
 		$i = 1;
