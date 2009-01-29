@@ -96,23 +96,26 @@ class  Dataviewer {
 		$objRecordsResult   = $objDatabase->Execute($selectRecordsQuery);
 		
 		
+		
 		//*****************DIAMIR
-		if ($selectedFilters['country'] !== "" && (count($selectedFilters) == 1)) {
-			$selectRecordsQuery 		   = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . " WHERE country = '9999'";	//we dont wanna display all records => at beginning just the distributors
-			$selectRecordsQueryDistributor = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . $where . " AND Distributor = '1' ORDER BY name ASC";
-			$objRecordsResultDistributor   = $objDatabase->Execute($selectRecordsQueryDistributor);
-			$objRecordsResult  			   = $objDatabase->Execute($selectRecordsQuery);
-			
-			while (!$objRecordsResultDistributor->EOF) {			
-				foreach ($placeholders as $id => $placeholder) {
-					$id++;	//because we dont want placeholder_0
-					$this->_objTpl->setVariable(array(
-						'DATAVIEWER_PLACEHOLDER_' . $id => htmlspecialchars($objRecordsResultDistributor->fields[$placeholder])
-					));	
-				}
+		if (in_array("Distributor", $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$projectname))) {
+			if ($selectedFilters['country'] !== "" && (count($selectedFilters) == 1)) {
+				$selectRecordsQuery 		   = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . " WHERE country = '9999'";	//we dont wanna display all records => at beginning just the distributors
+				$selectRecordsQueryDistributor = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . $where . " AND Distributor = '1' ORDER BY name ASC";
+				$objRecordsResultDistributor   = $objDatabase->Execute($selectRecordsQueryDistributor);
+				$objRecordsResult  			   = $objDatabase->Execute($selectRecordsQuery);
 				
-				$this->_objTpl->parse('dataviewer_distributor_row');		
-				$objRecordsResultDistributor->MoveNext();
+				while (!$objRecordsResultDistributor->EOF) {			
+					foreach ($placeholders as $id => $placeholder) {
+						$id++;	//because we dont want placeholder_0
+						$this->_objTpl->setVariable(array(
+							'DATAVIEWER_PLACEHOLDER_' . $id => htmlspecialchars($objRecordsResultDistributor->fields[$placeholder])
+						));	
+					}
+					
+					$this->_objTpl->parse('dataviewer_distributor_row');		
+					$objRecordsResultDistributor->MoveNext();
+				}	
 			}	
 		}
 		//*****************DIAMIR

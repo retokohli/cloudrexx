@@ -24,18 +24,19 @@
 			<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_PROJECTDESCRIPTION}</span></td>
 			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_LANGUAGE}</span></td>
 			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_COUNTRY_BASED}</span></td>
-			<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
+			<td nowrap="nowrap" width="24%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
+			<td nowrap="nowrap" width="6%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
 		</tr>
 		<!-- BEGIN projectRow -->
 		<tr class="{ROWCLASS}">
-			<td width="10%" valign="top">{STATUS}</td>
-			<td width="10%" valign="top">{NAME}</td>
-			<td width="10%" valign="top">{DESCRIPTION}</td>
-			<td width="10%" valign="top">{LANGUAGE}</td>
-			<td width="10%" valign="top">{COUNTRYBASED}</td>
-			<td width="10%" valign="top">{FILTER}</td>
-			<td width="30%" valign="top">
+			<td valign="top">{STATUS}</td>
+			<td valign="top">{NAME}</td>
+			<td valign="top">{DESCRIPTION}</td>
+			<td valign="top">{LANGUAGE}</td>
+			<td valign="top">{COUNTRYBASED}</td>
+			<td valign="top">{FILTER}</td>
+			<td valign="top">
+				<a href="index.php?cmd=dataviewer&act=edit&id={ID}"><img border="0" src="images/icons/edit.gif" alt="import" /></a>
 				<a href="index.php?cmd=dataviewer&act=import&id={ID}"><img border="0" src="../images/modules/dataviewer/csv.gif" alt="import" /></a>
 				<a href="index.php?cmd=dataviewer&act=filter&id={ID}"><img border="0" src="../images/modules/dataviewer/question_mark.gif" alt="filter" /></a>
 				<a href="index.php?cmd=dataviewer&act=placeholder&id={ID}"><img border="0" src="../images/modules/dataviewer/placeholder.gif" alt="placeholder" /></a>
