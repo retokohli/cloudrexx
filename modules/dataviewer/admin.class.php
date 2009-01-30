@@ -360,6 +360,7 @@ class Dataviewer {
 			
 			$columnsString = implode(";", $columns);
 						
+			$projectnameOld = $this->makeInputDBvalid($this->getProjectName($id));
 			
 			//create query for dataviewer_projects
 			$updateProjectQuery = "	UPDATE ".DBPREFIX."module_dataviewer_projects SET
@@ -371,12 +372,16 @@ class Dataviewer {
 										id = '".$id."';";
 			
 			//rename table
-			$renameTableQuery = "RENAME TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))."  TO ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($name).";";
+			$renameTableQuery = "";
+			if ($this->makeInputDBvalid($this->getProjectName($id)) <> $this->makeInputDBvalid($name)) {
+				$renameTableQuery = "RENAME TABLE ".DBPREFIX."module_dataviewer_".$projectnameOld."  TO ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($name).";";	
+			}
 			
-			
-			$columnsDB = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id)));
+			$columnsDB = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$projectnameOld);
 			unset($columnsDB['COUNTRY']);
-			
+
+					
+			//ALTER
 			$alterQuery = "";
 			
 			$i = 0;
@@ -401,17 +406,16 @@ class Dataviewer {
 					$alterQuery .= "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." ADD ".$column." VARCHAR(250) NOT NULL; ";
 				}
 			}
-			
+						
 			
 			$columns 		= !empty($_POST['column']) ? $_POST['column'] : "";
 			array_pop($columns); //deletes last element, this one is empty because of the JS used to create dynamics input fields
 
+
 			//create query for dataviewer_projects_placeholders
-			$insertPlaceholderQuery = "	DELETE FROM "
-											.DBPREFIX."module_dataviewer_placeholders
-										WHERE
-											projectid = '".$id."'; 
-										INSERT INTO ".DBPREFIX."module_dataviewer_placeholders 
+			$deletePlaceholderQuery = "DELETE FROM ".DBPREFIX."module_dataviewer_placeholders WHERE projectid = '".$id."';";
+											
+			$insertPlaceholderQuery = "	INSERT INTO ".DBPREFIX."module_dataviewer_placeholders 
 											(`id`, 
 											`projectid`, 
 											`column`)
@@ -427,41 +431,32 @@ class Dataviewer {
 			$valuesString = substr($valuesString, 0, strlen($valuesString)-2);
 			$insertPlaceholderQuery = $insertPlaceholderQuery . $valuesString;
 			
-			
-			$projectnameOld = $this->makeInputDBvalid($this->getProjectName($id));
-			
-			
-			if($objDatabase->Execute($updateProjectQuery)) {
-				
+						
+			$error = false;
+			if ($alterQuery !== "") {
+				if(!$objDatabase->Execute($alterQuery)) {
+					$error = true;
+				}	
 			}
 			
-			if($objDatabase->Execute($alterQuery)) {
-				
+			if ($renameTableQuery !== "") {
+				if(!$objDatabase->Execute($renameTableQuery)) {
+					$error = true;
+				}	
 			}
 			
-			if($objDatabase->Execute($renameTableQuery)) {
-				
-			}
-			
-			if ($this->updateContentPage($this->getProjectName($id), $projectnameOld)) {
-				$foo = true;
-			}
-			
-			if($objDatabase->Execute($insertPlaceholderQuery)) {
-				
-			}
-			
-			
-							
-							
 			//execute queries
-			if($foo) {
-				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich geupdatet."
-				));	
+			if(	$objDatabase->Execute($updateProjectQuery)&&
+				$objDatabase->Execute($deletePlaceholderQuery)&&
+				$objDatabase->Execute($insertPlaceholderQuery)&&
+				$this->updateContentPage($this->getProjectName($id), $projectnameOld)&&
+				!$error) {
+					$this->_objTpl->setVariable(array(
+						'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich geupdatet."
+					));	
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht geupdatet werden!<br />" . $updateProjectQuery . "<br />" . $alterQuery . "<br />" . $renameTableQuery . "<br />" . $insertPlaceholderQuery
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht geupdatet werden!<br />" . $updateProjectQuery . "<br />" . $alterQuery . "<br />" . $renameTableQuery . "<br />" . $deletePlaceholderQuery . "<br />" . $insertPlaceholderQuery
 				));	
 			}
 		}

@@ -6,12 +6,10 @@ new project
 
 
 
-
-
 -----------
 edit project
 -----------
-* bei update werden placeholder nicht richtig generiert.
+spalten hinzufügen ändern funktioniert noch nicht komplett richtig
 
 
 
