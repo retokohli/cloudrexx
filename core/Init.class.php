@@ -155,7 +155,7 @@ class InitCMS
 
         // small screen view (mobile etc). use index.php?smallscreen=1 to 
         // enable, ?smallscreen=0 to disable.
-        //
+        $is_small_screen = 0;
         // only set the smallscreen environment if there's actually a mobile theme defined.
         if(isset($_GET['smallscreen']) ) {
             // user wants to enable/disable smallscreen mode.
