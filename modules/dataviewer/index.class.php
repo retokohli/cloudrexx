@@ -182,26 +182,32 @@ class  Dataviewer {
 		$JS = '
 				<script type="text/javascript">
 					var url      = document.URL.split("&")[2];
-					var url      = url.replace("filter=", "");
-					var splitAll = url.split(",");
+										
+					if(url > ""){
+						var url      = url.replace("filter=", "");
+						var splitAll = url.split(",");
 						
-					var filtersSelected = new Array();
-					for (i=0; i<splitAll.length; i++) {
-						filtersSelected.push(splitAll[i].split("=")[0]);
-					}
-					
-					var filters      = "'.$filters.'";
-					var filtersSplit = filters.split(";");
-					var filtersTotal = new Array();
-					for (i=0; i<filtersSplit.length; i++) {
-						filtersTotal.push(filtersSplit[i]);
-					}
-					
-					currentFiltersCount = filtersSelected.length;
-					filtersTotalCount   = filtersTotal.length;
-					
-					for (i=0; i<=currentFiltersCount; i++) {
-						document.getElementById("dd_"+filtersTotal[i]).style.display = "block";	
+							
+						var filtersSelected = new Array();
+						for (i=0; i<splitAll.length; i++) {
+							filtersSelected.push(splitAll[i].split("=")[0]);
+						}
+						
+						var filters      = "'.$filters.'";
+						var filtersSplit = filters.split(";");
+						var filtersTotal = new Array();
+						for (i=0; i<filtersSplit.length; i++) {
+							filtersTotal.push(filtersSplit[i]);
+						}
+						
+						currentFiltersCount = filtersSelected.length;
+						filtersTotalCount   = filtersTotal.length;
+						
+						for (i=0; i<=currentFiltersCount; i++) {
+							if(filtersTotal[i] > "") {
+								document.getElementById("dd_"+filtersTotal[i]).style.display = "block";	
+							}
+						}
 					}
 				</script>
 		';
