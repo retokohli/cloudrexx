@@ -3,18 +3,26 @@ new project
 -----------
 * alles replacen ausser A-Z a-z und umlaute
 * bei der spalteneingabe spaltenzahl hochzählen
+* keine doppelten spaltennamen zulassen
 
 
 
 -----------
 edit project
 -----------
-spalten hinzufügen ändern funktioniert noch nicht komplett richtig
+spaltenzahlen hochzählen
+js überprüfung
+
+
+-----------
+import
+-----------
+leere datensätze nicht importieren...
 
 
 
 -----------
 show
 -----------
-sortiergeiehnfole angeben (nach welchem feld sortiert werden soll)
+sortierreihnfole angeben (nach welchem feld sortiert werden soll)
 (projetsettings))

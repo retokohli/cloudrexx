@@ -147,6 +147,13 @@ class Dataviewer {
 			$this->_objTpl->parse('projectRow');
 			$objResultProjects->MoveNext();
 		}
+		
+		
+		if (substr($_SERVER['HTTP_REFERER'],-3) == "new") {
+    		$this->_objTpl->setVariable(array(
+				'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich erstellt."
+			));
+    	}
 
         $this->_objTpl->setVariable(array(
             'TXT_PROJECTNAME'        	=> $_ARRAYLANG['TXT_PROJECTNAME'],
@@ -280,6 +287,7 @@ class Dataviewer {
 				$this->_objTpl->setVariable(array(
 					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich erstellt."
 				));	
+				header("location:index.php?cmd=dataviewer");
 			} else {
 				$this->_objTpl->setVariable(array(
 					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht erstellt werden!<br />" . $insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery
@@ -388,12 +396,12 @@ class Dataviewer {
 			foreach ($columnsDB as $column) {
 				//RENAME
 				if($column !== $columns[$i] && key_exists($i, $columns)) {
-					$alterQuery .= "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." CHANGE ".$column." ".$columns[$i]." VARCHAR( 250 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL; ";
+					$alterQuery[] = "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." CHANGE ".$column." ".$columns[$i]." VARCHAR( 250 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL; ";
 				}
 				
 				//DELETE
 				if (!key_exists($i, $columns)) {
-					$alterQuery .= "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." DROP ".$column."; ";
+					$alterQuery[] = "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." DROP ".$column."; ";
 				}	
 						
 				unset($columns[$i]);	
@@ -403,7 +411,7 @@ class Dataviewer {
 			//ADD
 			if (count($columns) > 0) {
 				foreach ($columns as $column) {
-					$alterQuery .= "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." ADD ".$column." VARCHAR(250) NOT NULL; ";
+					$alterQuery[] = "ALTER TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id))." ADD ".$column." VARCHAR(250) NOT NULL; ";
 				}
 			}
 						
@@ -434,29 +442,28 @@ class Dataviewer {
 						
 			$error = false;
 			if ($alterQuery !== "") {
-				if(!$objDatabase->Execute($alterQuery)) {
-					$error = true;
-				}	
-			}
+				foreach ($alterQuery as $singelQuery) {
+					if(!$objDatabase->Execute($singelQuery)) {
+						$error = true;
+					}	
+				}
+			}			
 			
+			if(!$objDatabase->Execute($updateProjectQuery)) {$error = true;}
+			if(!$objDatabase->Execute($deletePlaceholderQuery)) {$error = true;}
+			if(!$objDatabase->Execute($insertPlaceholderQuery)) {$error = true;}
 			if ($renameTableQuery !== "") {
-				if(!$objDatabase->Execute($renameTableQuery)) {
-					$error = true;
-				}	
-			}
+				if(!$objDatabase->Execute($renameTableQuery)) {$error = true;}	
+			}			
 			
-			//execute queries
-			if(	$objDatabase->Execute($updateProjectQuery)&&
-				$objDatabase->Execute($deletePlaceholderQuery)&&
-				$objDatabase->Execute($insertPlaceholderQuery)&&
-				$this->updateContentPage($this->getProjectName($id), $projectnameOld)&&
-				!$error) {
-					$this->_objTpl->setVariable(array(
-						'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich geupdatet."
-					));	
+			//check queries
+			if($this->updateContentPage($this->getProjectName($id), $projectnameOld) && !$error) {
+				$this->_objTpl->setVariable(array(
+					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich geupdatet."
+				));	
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht geupdatet werden!<br />" . $updateProjectQuery . "<br />" . $alterQuery . "<br />" . $renameTableQuery . "<br />" . $deletePlaceholderQuery . "<br />" . $insertPlaceholderQuery
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht geupdatet werden!<br />" . $updateProjectQuery . "<br />" . implode("<br />", $alterQuery) . "<br />" . $renameTableQuery . "<br />" . $deletePlaceholderQuery . "<br />" . $insertPlaceholderQuery
 				));	
 			}
 		}
@@ -724,9 +731,17 @@ class Dataviewer {
 	 * @return no return
 	 */
 	function changeStatus($id, $status) {
-		global $objDatabase;
+		global $objDatabase, $_ARRAYLANG;
 		$query = "UPDATE ".DBPREFIX."module_dataviewer_projects SET status = '" . $status . "' WHERE id = '" . $id . "'";
-		$objDatabase->Execute($query);
+		if ($objDatabase->Execute($query)) {
+			$this->_objTpl->setVariable(array(
+				'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_STATUS_UPDATED']
+			));
+		} else {
+			$this->_objTpl->setVariable(array(
+				'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_STATUS_COULDNT_BE_UPDATED']
+			));
+		}
 	}
 	
 	
@@ -927,21 +942,24 @@ class Dataviewer {
 		global $objDatabase;
 		
 		//get catid from navigation page
-		$query 						   = "SELECT catid FROM " .DBPREFIX. "content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "'";
+		$query 						   = "SELECT catid FROM " .DBPREFIX. "content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "';";
 		$objResult 					   = $objDatabase->Execute($query);
 		$catID 						   = $objResult->fields['catid'];
 		
-		$deleteProjectTableQuery       = "DROP TABLE ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($this->getProjectName($id));
-		$deleteProjectRecordQuery      = "DELETE FROM ".DBPREFIX."module_dataviewer_projects WHERE id = '" . $id . "'";
-		$deletePlaceholdersRecordQuery = "DELETE FROM ".DBPREFIX."module_dataviewer_placeholders WHERE projectid = '" . $id . "'";
-		$deleteNavigationPageQuery     = "DELETE FROM ".DBPREFIX."content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "'";
-		$deleteContentPageQuery        = "DELETE FROM ".DBPREFIX."content WHERE id = '" . $catID . "'";
-						
-		if ($objDatabase->Execute($deleteProjectTableQuery) && 
-			$objDatabase->Execute($deleteProjectRecordQuery) && 
-			$objDatabase->Execute($deletePlaceholdersRecordQuery) && 
-			$objDatabase->Execute($deleteNavigationPageQuery) && 
-			$objDatabase->Execute($deleteContentPageQuery)) {
+		$deleteProjectTableQuery       = "DROP TABLE ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($this->getProjectName($id)).";";
+		$deleteProjectRecordQuery      = "DELETE FROM ".DBPREFIX."module_dataviewer_projects WHERE id = '" . $id . "';";
+		$deletePlaceholdersRecordQuery = "DELETE FROM ".DBPREFIX."module_dataviewer_placeholders WHERE projectid = '" . $id . "';";
+		$deleteNavigationPageQuery     = "DELETE FROM ".DBPREFIX."content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "';";
+		$deleteContentPageQuery        = "DELETE FROM ".DBPREFIX."content WHERE id = '" . $catID . "';";
+
+		$error = false;
+		if(!$objDatabase->Execute($deleteProjectTableQuery)) {$error = true;}
+		if(!$objDatabase->Execute($deleteProjectRecordQuery)) {$error = true;}
+		if(!$objDatabase->Execute($deletePlaceholdersRecordQuery)) {$error = true;}
+		if(!$objDatabase->Execute($deleteNavigationPageQuery)) {$error = true;}
+		if(!$objDatabase->Execute($deleteContentPageQuery)) {$error = true;}
+		
+		if (!$error){
 			return true;
 		} else {
 			return false;
@@ -1243,7 +1261,6 @@ class Dataviewer {
 		
 	
 	
-//	functino updateContentPage
 	
 	/**
 	 * creates content page for project
@@ -1255,18 +1272,20 @@ class Dataviewer {
 		global $objDatabase, $_ARRAYLANG;
 		
 		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($projectname));
+		unset($columns['COUNTRY']);
 		
 		$xhtml  		= "{DATAVIEWER_FILTER}\n{DATAVIEWER_JS}<br /><br />";
 		$tableHeadlines = "";
 		$tableContent   = "";
 		$i = 1;
+		
 		foreach ($columns as $column) {
 			$tableHeadlines .= '<td><strong>' . $column  . '</strong></td>';
 			$tableContent   .= '<td>{DATAVIEWER_PLACEHOLDER_' . $i . '}</td>';
 			$i++;
 		}
 		
-		$tableHeadlines = "<tr>" . str_replace("country", $_ARRAYLANG['TXT_COUNTRY'], $tableHeadlines) . "</tr>" ;
+		$tableHeadlines = "<tr>" . $tableHeadlines . "</tr>" ;
 		$tableContent   = "<!-- BEGIN dataviewer_row --><tr>" . $tableContent . "</tr><!-- END dataviewer_row -->" ;
 		$tableStart     = '<table border="0" width="100%" id="dataviewer_Table">';
 		$tableEnd       = '</table>';

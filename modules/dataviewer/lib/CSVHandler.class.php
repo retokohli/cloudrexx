@@ -22,7 +22,8 @@ class CSVHandler {
 		$this->ItemsList=array();
 		$Item=array();
 		$fp = fopen ($this->DataFile,"r");
-		$this->HeaderData = fgetcsv ($fp, 3000, $this->Separator);
+		$this->HeaderData = fgetcsv ($fp, 3000, ";");
+	
 		while ($DataLine = fgetcsv ($fp, 3000, $this->Separator)) {
 			for($i=0;$i<count($this->HeaderData);$i++){
 				$Item[$this->HeaderData[$i]]=$DataLine[$i];
