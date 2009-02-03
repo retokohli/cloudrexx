@@ -20,7 +20,7 @@ $_ARRAYLANG['TXT_USER_DEFINED'] = "Benutzerdefiniert";
 $_ARRAYLANG['TXT_IMAGE_NAME'] = "Bildname";
 $_ARRAYLANG['TXT_IMAGE_COUNT'] = "Anzahl Bilder";
 $_ARRAYLANG['TXT_CATEGORY'] = "Kategorie";
-$_ARRAYLANG['TXT_GALLERY'] = "Galerie";
+$_ARRAYLANG['TXT_GALLERY'] = "Bildergalerie";
 $_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Bildbewertungen";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Aktuelle Bewertung";
@@ -40,5 +40,5 @@ $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] = "Sie haben dieses Bild bereits bewerte
 $_ARRAYLANG['TXT_VOTING_SCORE'] = "Bewertung";
 $_ARRAYLANG['TXT_GALLERY_IMAGE_DESCRIPTION'] = "Beschreibung: ";
 $_ARRAYLANG['TXT_IMAGES'] = "Bilder";
-$_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "You are here:";
+$_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "Sie sind hier:";
 ?>

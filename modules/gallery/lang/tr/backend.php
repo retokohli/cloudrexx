@@ -165,7 +165,7 @@ $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_DIR'] = "Dieses Verzeichnis ist leer.";
 $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_SAFEMODE'] = "PHP Safemode restriction.";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_RESET'] = "Markierte zurücksetzen";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_MOVE'] = "Markierte verschieben";
-$_ARRAYLANG['TXT_GALLERY_SETTINGS_POPUP_ENABLED'] = "Bilder in seperatem Fenster öffnen (Popup)";
+$_ARRAYLANG['TXT_GALLERY_SETTINGS_POPUP_ENABLED'] = "Bilder in mit ShadowBox öffnen";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'] = "Maximale Bildbreite (in Pixel)";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DE_ACTIVATE'] = "Bild aktivieren / deaktivieren";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SET_CATIMG'] = "Als Kategoriebild festlegen";
@@ -196,4 +196,8 @@ $_ARRAYLANG['TXT_RESTRICTED_ACCESS_BACKEND'] = "Rechte einschränken";
 $_ARRAYLANG['TXT_NO_RESTRICTIONS'] = "Freigeben für alle Backend Gruppen";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'] = "Sortierung";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_ACCESS_ERROR'] = "Sie haben keinen Zugriff auf diese Kategorie!";
+$_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW'] = "Diavorführung";
+$_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'] = "Zahl der Sekunden für einzelnes Bild.";
+$_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] = "Einzelne Bild-Ansicht";
+$_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'] = "Zeigen Sie Dateinamen";
 ?>
