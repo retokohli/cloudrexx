@@ -1039,9 +1039,21 @@ class Forum extends ForumLibrary {
             $this->_objTpl->touchBlock('previewEditPost');
         }
 
+        $hasAccess = false;
         foreach (array('STICKY', 'MOVE', 'CLOSE', 'DELETE') as $action){
-            if(!$this->_checkAuth($intCatId, $action)){
+            if(!$this->_checkAuth($intCatId, strtolower($action))){
                 $this->_objTpl->setVariable('FORUM_THREAD_ACTIONS_DISABLED_'.$action, 'disabled="disabled"');
+            }else{
+               $hasAccess = true;
+            }
+        }
+
+
+        if($this->_objTpl->blockExists('threadActionsSelect')){
+            if($userId < 1 && !$hasAccess){
+                $this->_objTpl->hideBlock('threadActionsSelect');
+            }else{
+                $this->_objTpl->touchBlock('threadActionsSelect');
             }
         }
 
@@ -1101,6 +1113,7 @@ class Forum extends ForumLibrary {
                         ));
                         $success = true;
                         $suffix = '';
+                        $page_title = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE'];
                     break;
                     case 'close':
                         $query = "UPDATE `".DBPREFIX."module_forum_postings` SET `is_locked` = IF(`is_locked` = '0' OR `is_locked` = '', '1', '0') WHERE thread_id = ".intval($_REQUEST['id']);

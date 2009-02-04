@@ -1450,6 +1450,8 @@ class galleryManager extends GalleryLibrary
                     return;
                 }
 
+                $imageNameChopped = substr($strOutputName, 0, strrpos($strOutputName, '.'));
+
                 $this->_objTpl->setVariable(array(
                     'IMAGES_ID'                     =>    $intOutputId,
                     'IMAGES_THUMB_PATH'             =>    $strOutputThumbpath,
@@ -1458,7 +1460,8 @@ class galleryManager extends GalleryLibrary
                     'IMAGES_CATIMG_ICON'            =>    $outputCatimgIcon,
                     'IMAGES_HIDE_LINKICON_S'        =>    $outputLinkIconS,
                     'IMAGES_HIDE_LINKICON_E'        =>    $outputLinkIconE,
-                    'IMAGES_NAME'                   =>    $strOutputName,
+//                    'IMAGES_NAME'                   =>    $strOutputName,
+                    'IMAGES_NAME'                   =>    $imageNameChopped,
                     'IMAGES_LASTEDIT'               =>    $strOutputLastedit,
                     'IMAGES_ORIG_RESO'              =>    $strOutputOrigReso,
                     'IMAGES_ORIG_WIDTH'             =>    $strOutputOrigWidth,

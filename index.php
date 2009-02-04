@@ -1224,7 +1224,7 @@ switch ($plainSection) {
         $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
         break;
 
-        
+
 //-------------------------------------------------------
 // Tools
 //-------------------------------------------------------
@@ -1238,7 +1238,7 @@ switch ($plainSection) {
         $objTools = new Tools($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objTools->getPage());
         break;
-        
+
 //-------------------------------------------------------
 // Dataviewer
 //-------------------------------------------------------
@@ -1598,6 +1598,7 @@ break;
 		$objAccess = new u2u($page_content);
 		$objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
 	break;
+
 
 //-------------------------------------------------------
 // Download Module

@@ -156,6 +156,7 @@ class UserGroup {
 
                 case 'type':
                     $arrConditions['conditions'][] = "tblG.`".$attribute."` = '".addslashes($condition)."'";
+                   break;
 
                 case 'static':
                 case 'dynamic':

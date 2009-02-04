@@ -16,6 +16,12 @@ WYSIWYG-Editor
 - Neue Version 2.6.4 des FCKeditors. Weitere Informationen unter:
   http://www.fckeditor.net/whatsnew/
 
+Galerie
+- Shadowbox wird nun anstelle des alten Pop-Ups verwendet.
+  
+Forum
+- Thread Aktionen werden nur noch angezeigt, wenn man Berechtigungen hat.   
+ 
 
 ****************************************
 * Behobene Fehler **********************
@@ -44,3 +50,5 @@ E-Card-Modul
   verschiedene Motive festgelegt werden. Die Karte wird nicht direkt verschickt,
   es wird eine URL generiert, die das Betrachten der Karte auf dem Server
   ermöglicht.
+  
+  
