@@ -1,7 +1,15 @@
 <!-- START gallery_category_details.html -->
+<script language="javascript" type="text/javascript">
+Shadowbox.loadSkin('classic','../lib/javascript/shadowbox/src/skin/');
+Shadowbox.loadLanguage('en', '../lib/javascript/shadowbox/src/lang');
+Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], '../lib/javascript/shadowbox/src/player');
+window.onload = function(){
+   Shadowbox.init();
+};
+</script>
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
-	function resetPicture(picId) {
+    function resetPicture(picId) {
 	    if(confirm('{TXT_RESET_PICTURE}')) {
 	        window.location.replace("?cmd=gallery&act=reset_picture&gid={CATEGORY_ID}&id="+picId);
 	    }
@@ -83,7 +91,7 @@
 			</td>
 			<td nowrap="nowrap" align="center" valign="middle">
 				{IMAGES_NAME},&nbsp;{IMAGES_LASTEDIT}<br />
-				<a href="javascript:openWindow('{IMAGE_ORIG_PATH}','','width={IMAGES_ORIG_WIDTH},height={IMAGES_ORIG_HEIGHT}')"><img src="{IMAGES_THUMB_PATH}" border="0" alt="{IMAGES_NAME}" title="{IMAGES_NAME}" /></a>
+                <a rel="shadowbox[{CATEGORY_ID}];options={{SLIDE_SHOW_OPTION_VALUE}}" title="{IMAGES_TITLE_LINE_NAME}" description="{IMAGES_DESCRIPTION_SHADOWBOX}" href="{IMAGE_ORIG_PATH}"><img src="{IMAGES_THUMB_PATH}" border="0" alt="{IMAGES_NAME}" title="{IMAGES_NAME}" /></a>
 			</td>
 			<td nowrap="nowrap" valign="top">
 				{TXT_ORIG_CAPT}: {IMAGES_ORIG_RESO}, {IMAGES_ORIG_SIZE}kb<br />
@@ -106,9 +114,9 @@
 					{IMAGES_HIDE_LINKICON_S}
 						<img src="images/icons/link.gif" border="0" alt="Link" title="Link" />&nbsp;
 					{IMAGES_HIDE_LINKICON_E}
-					<a href="?cmd=gallery&amp;act=rotate_picture&amp;catid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_ROTATE_ALT}" title="{TXT_IMG_ROTATE_ALT}" src="images/icons/rotate.gif" border="0" /></a>&nbsp;
+					<a href="index.php?cmd=gallery&amp;act=rotate_picture&amp;catid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_ROTATE_ALT}" title="{TXT_IMG_ROTATE_ALT}" src="images/icons/rotate.gif" border="0" /></a>&nbsp;
 					<a href="javascript:resetPicture({IMAGES_ID})" target="_self"><img alt="{TXT_IMG_RESET_ALT}" title="{TXT_IMG_RESET_ALT}" src="images/icons/refresh.gif" border="0" /></a>&nbsp;
-					<a href="?cmd=gallery&amp;act=edit_picture&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="images/icons/edit.gif" border="0" /></a>&nbsp;
+					<a href="index.php?cmd=gallery&amp;act=edit_picture&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="images/icons/edit.gif" border="0" /></a>&nbsp;
 					<a href="javascript:deletePicture({IMAGES_ID})" target="_self"><img alt="{TXT_IMG_DELETE_ALT}" title="{TXT_IMG_DELETE_ALT}" src="images/icons/delete.gif" border="0" /></a>
 			    </div>
 			</td>

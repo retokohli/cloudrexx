@@ -121,7 +121,7 @@ class Gallery {
      */
     function showPictureNoPop($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
@@ -224,6 +224,21 @@ class Gallery {
         if ($this->arrSettings['show_ext'] == 'off') {
             $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
         }
+
+        if ($this->arrSettings['show_file_name'] == 'off') {
+            $strImageTitle = "";
+            $imageSize="";
+            $kB="";
+            $openBracket="";
+            $closeBracket="";
+            //substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
+        }
+        else {
+            $openBracket="(";
+            $closeBracket=")";
+            $kB=" kB";
+        }
+
         // set variables
         $this->_objTpl->setVariable(array(
             'GALLERY_PICTURE_ID'        => $intPicId,
@@ -237,7 +252,7 @@ class Gallery {
             'GALLERY_IMAGE_LINK'        => $strImageWebPath,
             'GALLERY_IMAGE_NAME'        => $imageName,
             'GALLERY_IMAGE_DESCRIPTION' => $imageDesc,
-            'GALLERY_IMAGE_FILESIZE'    => $imageSize.'kB',
+            'GALLERY_IMAGE_FILESIZE'    => $openBracket.$imageSize.$kB.$closeBracket,
         ));
 
         if ($this->arrSettings['header_type'] == 'hierarchy') {
@@ -365,6 +380,9 @@ class Gallery {
             $this->_objTpl->hideBlock('commentTab');
         }
 
+        if($_CONFIG['corePagingLimit'] < $count) {
+          $this->_objTpl->setVariable("GALLERY_FRONTEND_PAGING", $paging);
+        }
         //$this->_objTpl->parse('galleryImage');
     }
 
@@ -377,7 +395,7 @@ class Gallery {
     */
     function showPicture($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
@@ -888,8 +906,8 @@ class Gallery {
             "ORDER BY sorting");
         $intCount = $objResult->RecordCount();
         $this->_objTpl->setVariable(array(
-            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&amp;section=gallery&amp;cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>',false,intval($this->arrSettings['paging']))
-            ));
+            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&amp;section=gallery&amp;cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>', false, intval($this->arrSettings["paging"]))
+        ));
         // end paging
 
         $objResult = $objDatabase->SelectLimit(
@@ -915,7 +933,7 @@ class Gallery {
                 $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
                 $imageThumbPath = $this->strThumbnailWebPath.$objResult->fields['path'];
-                $imageName = $objSubResult->fields['name'];
+                $imageName = $this->arrSettings['show_file_name'] == 'on' ? $objSubResult->fields['name'] : '';
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
                 $imageSizeShow = $objResult->fields['size_show'];
@@ -927,17 +945,36 @@ class Gallery {
                     $imageName = substr($imageName, 0, strrpos($imageName, '.'));
                 }
 
+                  if ($this->arrSettings['slide_show'] == 'on') {
+                    $optionValue="slideshowDelay:".$this->arrSettings['slide_show_seconds'];
+                }
+                else {
+                    $optionValue="counterType:'skip',continuous:true,animSequence:'sync'";
+                }
+                //calculation starts here
+                $numberOfChars="60";
+                if($imageLinkName!="") {
+                    if(strlen($imageLinkName) > $numberOfChars) {
+                        $descriptionString="&nbsp;&nbsp;&nbsp;".substr($imageLinkName,0,$numberOfChars);
+                        $descriptionString.=" ...";
+                    }
+                    else {
+                        $descriptionString="&nbsp;&nbsp;&nbsp;".$imageLinkName;
+                    }
+                }
+                else {
+                    $descriptionString="";
+                }
+
+                //Ends here
+
+                $titleLink="<a href='$strImagePath' target='_blank' ><b>$imageName</b></a><span><font size='-1'>$descriptionString<font></span>";
+
+
                 if ($this->arrSettings['enable_popups'] == "on") {
-                    $strImageOutput = '<a href="javascript:openWindow(\'';
-                    $strImageOutput .= CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'];
-                    $strImageOutput .= '\',\'\',\'width=';
-                    $strImageOutput .= $imageReso[0]+25;
-                    $strImageOutput .= ',height=';
-                    $strImageOutput .= $imageReso[1]+25;
-                    $strImageOutput .= ',resizable=yes';
-                    $strImageOutput .= ',status=no';
-                    $strImageOutput .= ',scrollbars=yes';
-                    $strImageOutput .= '\')"><img border="0" title="'.$imageName.'" src="';
+                    $strImageOutput = '<a rel ="shadowbox['.$intParentId.'];options={'.$optionValue.'}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="';
+                    $strImageOutput .= $strImagePath;
+                    $strImageOutput .= '"><img border="2" title="'.$imageName.'" src="';
                     $strImageOutput .= $imageThumbPath;
                     $strImageOutput .= '" alt="';
                     $strImageOutput .= $imageName;

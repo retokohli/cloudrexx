@@ -189,11 +189,10 @@ class MediaManager extends MediaLibrary {
     	$i       = 0;
     	$dirTree = $this->_dirTree($this->path);
     	$dirTree = $this->_sortDirTree($dirTree);
-
     	foreach(array_keys($dirTree) as $key){
     		if(is_array($dirTree[$key]['icon'])){
     		    for($x = 0; $x < count($dirTree[$key]['icon']); $x++){
-		    	    $class = ($i % 2) ? 'row2' : 'row1';
+   		    	    $class = ($i % 2) ? 'row2' : 'row1';
 
 		    	    $this->_objTpl->setVariable(array(  // file
 		    	        'MEDIA_DIR_TREE_ROW'  => $class,
