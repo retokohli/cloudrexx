@@ -2,9 +2,31 @@
 
 
 <script language="JavaScript" type="text/JavaScript">
-	function swapVisibility(id) {
-		container=document.getElementById(id);
+	function swapVisibility(id1,id2) {
+
+        if(document.getElementById('slide_settings').style.display == "block") {
+
+            document.getElementById('slide_settings').style.display = "none";
+        }
+        else {
+
+            document.getElementById('slide_settings').style.display = "block";
+        }
+
+		container=document.getElementById(id1);
 		container.style.display = ( container.style.display == 'none' ) ? 'block' : 'none';
+
+	}
+	function slideSeconds() {
+
+        if(document.getElementById('slide_seconds_settings').style.display == "block") {
+
+            document.getElementById('slide_seconds_settings').style.display = "none";
+        }
+        else {
+
+            document.getElementById('slide_seconds_settings').style.display = "block";
+        }
 	}
 
 
@@ -109,7 +131,18 @@
 	<tr class="row2">
 		<td nowrap="nowrap" valign="top">{TXT_GALLERY_SETTINGS_POPUP_ENABLED}</td>
 		<td>
-			<input type="checkbox" onclick="swapVisibility('image_width_settings_container');" name="enable_popups" value="on" {SETTINGS_VALUE_ENABLE_POPUPS} />
+			<input type="checkbox" onchange="javascript:swapVisibility('image_width_settings_container,slide_settings');" name="enable_popups" value="on" {SETTINGS_VALUE_ENABLE_POPUPS} />
+			<div style="display:{SLIDE_SHOW_BLOCK};" id="slide_settings"><div style="padding-left:20px;">
+                <input type="radio" name="slide_show" value="slideshow" {SETTINGS_VALUE_SLIDE_SHOW} onclick="slideSeconds();"/><label for="slide_show">{TXT_GALLERY_SLIDE_SHOW}</label><br />
+                <div style="padding-left:20px;display:{SLIDE_SHOW_SECONDS_BLOCK}" id="slide_seconds_settings" >
+                <input type="text" name="slide_show_seconds" value="{SETTINGS_VALUE_SLIDE_SHOW_SECONDS}" style="width:50px" >&nbsp;<label for="slide_show_seconds">{TXT_GALLERY_SLIDE_SHOW_SECONDS}</label><br />
+                </div>
+
+			</div>
+			<div style="padding-left:20px;">
+                <input type="radio" name="slide_show" value="normal" {SETTINGS_VALUE_NORMAL_VIEW} onclick="slideSeconds();"/><label for="slide_show">{TXT_GALLERY_SINGLE_IMAGE_VIEW}</label><br />
+
+			</div></div>
 		</td>
 	</tr>
 	<tr class="row1">
@@ -126,6 +159,15 @@
 			<input type="text" size="2" name="paging" value="{SETTINGS_VALUE_PAGING}"  />
 		</td>
 	</tr>
+	<tr class="row1">
+		<td nowrap="nowrap" valign="top">{TXT_GALLERY_SHOW_FILE_NAME}</td>
+  <td>
+			<input type="checkbox" name="show_file_name" value="on" {SETTINGS_VALUE_SHOW_FILE_NAME} />
+
+
+		</td>
+	</tr>
+
 	</table>
 	<br />
 <input type="submit" value="{TXT_BUTTON_SUBMIT}" />
