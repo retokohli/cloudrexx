@@ -149,9 +149,9 @@ class Dataviewer {
 		}
 		
 		
-		if (substr($_SERVER['HTTP_REFERER'],-3) == "new") {
+		if (substr($_SERVER['REQUEST_URI'],-5) == "added") {
     		$this->_objTpl->setVariable(array(
-				'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich erstellt."
+				'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_PROJECT_CREATED']
 			));
     	}
 
@@ -285,12 +285,12 @@ class Dataviewer {
 			   $objDatabase->Execute($createProjectQuery) &&
 			   $this->insertPages($name) == true) {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich erstellt."
+					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_PROJECT_CREATED']
 				));	
-				header("location:index.php?cmd=dataviewer");
+				header("location:index.php?cmd=dataviewer&act=added");
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht erstellt werden!<br />" . $insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_PROJECT_COULDNT_BE_CREATED']."<br />".$insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery
 				));	
 			}
 		}
@@ -459,11 +459,11 @@ class Dataviewer {
 			//check queries
 			if($this->updateContentPage($this->getProjectName($id), $projectnameOld) && !$error) {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich geupdatet."
+					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_PROJECT_UPDATED']
 				));	
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht geupdatet werden!<br />" . $updateProjectQuery . "<br />" . implode("<br />", $alterQuery) . "<br />" . $renameTableQuery . "<br />" . $deletePlaceholderQuery . "<br />" . $insertPlaceholderQuery
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_PROJECT_COULDNT_BE_UPDATED']."<br />".$updateProjectQuery . "<br />" . implode("<br />", $alterQuery) . "<br />" . $renameTableQuery . "<br />" . $deletePlaceholderQuery . "<br />" . $insertPlaceholderQuery
 				));	
 			}
 		}
