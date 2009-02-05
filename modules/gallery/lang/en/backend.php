@@ -196,8 +196,8 @@ $_ARRAYLANG['TXT_RESTRICTED_ACCESS_BACKEND'] = "Rechte einschränken";
 $_ARRAYLANG['TXT_NO_RESTRICTIONS'] = "Freigeben für alle Backend Gruppen";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'] = "Sortierung";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_ACCESS_ERROR'] = "Sie haben keinen Zugriff auf diese Kategorie!";
-$_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW'] = "Slideshow";
-$_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'] = "Zahl der Sekunden für einzelnes Bild.";
+$_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW'] = "Diavorführung";
+$_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'] = "Anzahl Sekunden pro Bild.";
 $_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] = "Einzelne Bild-Ansicht";
-$_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'] = "Show filename";
+$_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'] = "Dateinamen anzeigen";
 ?>
