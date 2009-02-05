@@ -1952,6 +1952,14 @@ class galleryManager extends GalleryLibrary
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
                 break;
 
+                case 'slide_show':
+                    if ($objResult->fields['value'] == 'slideshow') {
+                        $this->_objTpl->SetVariable('SETTINGS_VALUE_SLIDE_SHOW', 'checked="checked"');
+                    }else{
+                        $this->_objTpl->SetVariable('SETTINGS_VALUE_NORMAL_VIEW', 'checked="checked"');
+                    }
+                break;
+
                 case 'enable_popups':
                 if ($objResult->fields['value'] == 'on') {
                         $strValue = 'checked';
