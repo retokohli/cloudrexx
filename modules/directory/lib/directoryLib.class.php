@@ -1009,101 +1009,96 @@ class directoryLibrary
         $objResult = $objDatabase->Execute("SELECT addedby, title, language FROM ".DBPREFIX."module_directory_dir WHERE id='".$feedId."' LIMIT 1");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $userId            = $objResult->fields['addedby'];
-                $feedTitle        = $objResult->fields['title'];
-                $languageId        = $objResult->fields['language'];
+                $userId             = $objResult->fields['addedby'];
+                $feedTitle          = $objResult->fields['title'];
+                $languageId         = $objResult->fields['language'];
                 $objResult->MoveNext();
             };
         }
 
         //get user data
         if(is_numeric($userId)){
-             $objFWUser = new FWUser();
-                if ($objFWUser->objUser->getUser($userId)) {
-                    $userMail           = $objFWUser->objUser->getEmail();
-                    $userFirstname      = $objFWUser->objUser->getProfileAttribute('firstname');
-                    $userLastname       = $objFWUser->objUser->getProfileAttribute('lastname');
-                    $userUsername       = $objFWUser->objUser->getUsername();
+            $objFWUser = new FWUser();
+            if ($objFWUser->objUser->getUser($userId)) {
+                $userMail           = $objFWUser->objUser->getEmail();
+                $userFirstname      = $objFWUser->objUser->getProfileAttribute('firstname');
+                $userLastname       = $objFWUser->objUser->getProfileAttribute('lastname');
+                $userUsername       = $objFWUser->objUser->getUsername();
+            }
+        }
+
+        if(!empty($email)){
+            $sendTo     = $email;
+            $mailId     = 2;
+        }else{
+            $sendTo     = $userMail;
+            $mailId     = 1;
+        }
+
+        //get mail content n title
+        $objResult = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id='".$mailId."' LIMIT 1");
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $mailTitle        = $objResult->fields['title'];
+                $mailContent    = $objResult->fields['content'];
+                $objResult->MoveNext();
+            };
+        }
+
+        if ($objInit->mode == 'frontend') {
+            $link    = "http://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=directory&cmd=detail&id=".$feedId;
+        } else {
+            $link    = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
+        }
+
+        $now = date(ASCMS_DATE_FORMAT);
+
+        //replase placeholder
+        $array_1 = array('[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[LINK]]', '[[URL]]', '[[DATE]]');
+        $array_2 = array($userUsername, $userFirstname, $userLastname, $feedTitle, $link, $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, $now);
+
+        for($x = 0; $x < 7; $x++){
+          $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
+        }
+
+        for($x = 0; $x < 7; $x++){
+          $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
+        }
+
+        //create mail
+        $subject = $mailTitle;
+
+        //Email message
+        $message    = $mailContent;
+        $sendTo     = explode(';', $sendTo);
+
+        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+            $objMail = new phpmailer();
+
+            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
+                if ($arrSmtp !== false) {
+                    $objMail->IsSMTP();
+                    $objMail->Host = $arrSmtp['hostname'];
+                    $objMail->Port = $arrSmtp['port'];
+                    $objMail->SMTPAuth = true;
+                    $objMail->Username = $arrSmtp['username'];
+                    $objMail->Password = $arrSmtp['password'];
                 }
-
-            if(!empty($email)){
-// TODO: Never used
-//                $to         = $email;
-                $sendTo        = $email;
-                $mailId     = 2;
-            }else{
-// TODO: Never used
-//                $to         = $userMail;
-                $sendTo        = $userMail;
-                $mailId     = 1;
             }
 
-            //get mail content n title
-            $objResult = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id='".$mailId."' LIMIT 1");
-            if ($objResult !== false) {
-                while (!$objResult->EOF) {
-                    $mailTitle        = $objResult->fields['title'];
-                    $mailContent    = $objResult->fields['content'];
-                    $objResult->MoveNext();
-                };
-            }
+            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail->From = $_CONFIG['coreAdminEmail'];
+            $objMail->FromName = $_CONFIG['coreAdminName'];
+            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+            $objMail->Subject = $subject;
+            $objMail->IsHTML(false);
+            $objMail->Body = $message;
 
-            if ($objInit->mode == 'frontend') {
-                $link    = "http://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=directory&cmd=detail&id=".$feedId;
-            } else {
-                $link    = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
-            }
-
-            $now     = date(ASCMS_DATE_FORMAT);
-
-            //replase placeholder
-            $array_1 = array('[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[LINK]]', '[[URL]]', '[[DATE]]');
-            $array_2 = array($userUsername, $userFirstname, $userLastname, $feedTitle, $link, $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, $now);
-
-            for($x = 0; $x < 7; $x++){
-              $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-            }
-
-            for($x = 0; $x < 7; $x++){
-              $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
-            }
-
-            //create mail
-            $subject     = $mailTitle;
-
-           // Email message
-            $message      = $mailContent;
-
-            $sendTo     = explode(';', $sendTo);
-
-            if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                $objMail = new phpmailer();
-
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                    if ($arrSmtp !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
-                }
-
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $_CONFIG['coreAdminEmail'];
-                $objMail->FromName = $_CONFIG['coreAdminName'];
-                $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
-                $objMail->Subject = $subject;
-                $objMail->IsHTML(false);
-                $objMail->Body = $message;
-
-                foreach($sendTo as $x => $mailAdress){
-                    $objMail->AddAddress($mailAdress);
-                    $objMail->Send();
-                    $objMail->ClearAddresses();
-                }
+            foreach($sendTo as $x => $mailAdress){
+                $objMail->AddAddress($mailAdress);
+                $objMail->Send();
+                $objMail->ClearAddresses();
             }
         }
     }
