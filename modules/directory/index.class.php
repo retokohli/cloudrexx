@@ -1799,7 +1799,7 @@ $this->arrRows[2] = '';
             $query = "
                 SELECT files.id, files.title, files.description, files.link,
                  MATCH (files.description) AGAINST ('%$searchTerm%') AS score
-                  FROM ".DBPREFIX."module_directory_dir AS files
+                  FROM ".$db." ".DBPREFIX."module_directory_dir AS files
                  WHERE ((files.title LIKE ('%$searchTerm%') OR files.description LIKE ('%$searchTerm%') OR files.searchkeys LIKE ('%$searchTerm%'))
                         $query_search)
                    AND files.status != 0
@@ -1812,10 +1812,11 @@ $this->arrRows[2] = '';
             $objResult   = $objDatabase->Execute($query);
             $count       = $objResult->RecordCount();
             $pos         = intval($_GET['pos']);
+
 // TODO: $term is not defined, possibly $searchTerm?
 // TODO: $check is not defined
 //            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$term."&amp;check=".$check.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
-            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$searchTerm.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$searchTerm.$searchTermExp."&amp;check=".$_GET['check'], "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
             ////// paging end /////////
             $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
 
@@ -2287,23 +2288,32 @@ $this->arrRows[2] = '';
 
     function getPageTitle()
     {
-        global $objDatabase, $_ARRAYLANG;
+         global $objDatabase, $_ARRAYLANG;
 
         $lid = (isset($_GET['lid']) ? intval($_GET['lid']) : 0);
         $cid = (isset($_GET['cid']) ? intval($_GET['cid']) : 0);
         $this->getNavtreeLevels($lid);
         $this->getNavtreeCategories($cid);
-        $navtree = '';
-        foreach ($this->navtreeCategories as $catName) {
-// TODO: $levelLink is never used
-//            if ($lid != 0) {
-//                $levelLink = "&amp;lid=".$lid;
-//            }
-            $navtree = $catName.$navtree."&nbsp;-&nbsp;";
+        $navtree =  '';
+
+        $arr_levels = $this->navtreeLevels;
+        $arr_cats = $this->navtreeCategories;
+        ksort($arr_levels);
+        ksort($arr_cats);
+
+        $page_title_level = join(" - ", $arr_levels);
+        $page_title_cat = join(" - ", $arr_cats);
+
+        if(!empty($arr_levels) && !empty($this->navtreeCategories)) {
+            $navtree = $page_title_level." - ".$page_title_cat;
+        } else {
+            $navtree = $page_title_level.$page_title_cat;
         }
-        foreach ($this->navtreeLevels as $levelName) {
-            $navtree = $levelName.$navtree."&nbsp;-&nbsp;";
+
+        if(!empty($navtree) && !empty($this->pageTitle)) {
+            $navtree .= "&nbsp;-&nbsp;";
         }
+
         $this->pageTitle = $navtree.$this->pageTitle;
         return $this->pageTitle;
     }
