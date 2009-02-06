@@ -18,10 +18,13 @@ WYSIWYG-Editor
 
 Galerie
 - Shadowbox wird nun anstelle des alten Pop-Ups verwendet.
-  
+
 Forum
-- Thread Aktionen werden nur noch angezeigt, wenn man Berechtigungen hat.   
- 
+- Thread Aktionen werden nur noch angezeigt, wenn man Berechtigungen hat.
+
+Directory
+- Neuer Feldtyp YouTube wurde hinzugef�gt.
+
 
 ****************************************
 * Behobene Fehler **********************
@@ -41,6 +44,12 @@ Validator-Class
 - E-Mails die folgendem Muster entsprechen xxx.x@example.com werden nun
   bei Prüfungen nicht mehr als ungültig zurückgegeben.
 
+Directory
+- Seitentitel wird korrekt ausgegeben
+- Fehler beim Paging bei der Suche wurde behoben
+- Der Navigationsbaum wurd korrekt zusamengestellt.
+- Fehler beim verschicken der E-Mails wurde behoben
+
 
 ****************************************
 * Neue Module **************************
@@ -50,5 +59,5 @@ E-Card-Modul
   verschiedene Motive festgelegt werden. Die Karte wird nicht direkt verschickt,
   es wird eine URL generiert, die das Betrachten der Karte auf dem Server
   ermöglicht.
-  
-  
+
+
