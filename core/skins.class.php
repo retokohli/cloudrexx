@@ -690,7 +690,7 @@ class skins
                 return false;
             }
             $tmpfilename = basename($URL['path']);
-            if (strlen($tmpfilename) < 3) $tmpfilename = '_unknown_upload_'; 
+            if (strlen($tmpfilename) < 3) $tmpfilename = '_unknown_upload_';
             $tempFile = ASCMS_TEMP_PATH.DIRECTORY_SEPARATOR.$tmpfilename.microtime().'.zip';
             $fh = fopen($tempFile,'w');
             fputs($fh, $archive);
@@ -793,7 +793,7 @@ class skins
             'TXT_SAVE'    => $_CORELANG['TXT_SAVE'],
             'TXT_THEME_ACTIVATE_INFO'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO'],
             'TXT_THEME_ACTIVATE_INFO_BODY'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO_BODY'],
-            'TXT_ACTIVE_MOBILE_TEMPLATE' => $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE']
+            'TXT_ACTIVE_MOBILE_TEMPLATE' => $_CORELANG['TXT_ACTIVE_MOBILE_TEMPLATE']
         ));
         $i=0;
 
@@ -814,8 +814,8 @@ class skins
         }
         $objResult = $objDatabase->Execute("
            SELECT   id,lang,name,frontend,
-                    themesid,mobile_themes_id,print_themes_id,pdf_themes_id 
-           FROM     ".DBPREFIX."languages 
+                    themesid,mobile_themes_id,print_themes_id,pdf_themes_id
+           FROM     ".DBPREFIX."languages
            ORDER BY id
         ");
 
