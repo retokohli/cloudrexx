@@ -1458,7 +1458,11 @@ break;
         $directory = new rssDirectory($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $directory->getPage());
 
-        $page_metatitle = $directory->getPageTitle();
+        $directory_pagetitle = $directory->getPageTitle();
+
+        if(!empty($directory_pagetitle)) {
+            $page_metatitle = $directory_pagetitle;
+        }
 
         break;
 
