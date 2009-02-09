@@ -1260,7 +1260,7 @@ class ContactManager extends ContactLib
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
         $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText --><br /><br />";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
-        $sourcecode[] = $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
+        $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
         $sourcecode[] = "<br />";
         $sourcecode[] = "<!-- BEGIN contact_form -->";
@@ -1387,7 +1387,7 @@ class ContactManager extends ContactLib
         }
 
         $sourcecode[] = "<p>";
-        $sourcecode[] = '<input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.$_ARRAYLANG['TXT_CONTACT_SUBMIT'].'" /><input class="contactFormClass_button" type="reset" value="'.$_ARRAYLANG['TXT_CONTACT_RESET'].'" />';
+        $sourcecode[] = '<input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
         $sourcecode[] = "</p>";
         $sourcecode[] = "</form>";
         $sourcecode[] = "</fieldset>";
