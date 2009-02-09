@@ -25,6 +25,11 @@ define('_DEBUG', 0);
 if (_DEBUG) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
+    if(include_once('../lib/DBG.php')){
+        $objDBG = new DBG(true); //pass false to disable firephp and enable logging to a file (see following DBG::setup)
+        $objDBG->setup('dbg.log', 'w');
+        $objDBG->enable_all();
+    }
 } else {
     error_reporting(0);
     ini_set('display_errors', 0);
@@ -73,10 +78,23 @@ $objDatabase = getDatabaseObject($strErrMessage);
 if ($objDatabase === false) {
     die('Database error: '.$strErrMessage);
 }
-if (_DEBUG) {
-    $objDatabase->debug = 1;
-} else {
+
+if (_DEBUG == 1){
     $objDatabase->debug = 0;
+} else {
+    $objDatabase->debug = _DEBUG;
+}
+
+if($objDBG instanceof DBG){ //see: http://www.firephp.org/HQ/Use.htm for firephp usage examples
+    //here's some basic stuff
+    $objDBG->log("this is a test");
+    $objDBG->log(array(
+                    array('1','2'), array('a','b'),
+                    array('c','d'), array('e','f')
+                 ), 'table', 'myExampleTable');
+    $objDBG->trace();
+    $objDBG->stack();
+    $objDBG->log('what teh trace: '.serialize($_REQUEST), 'trace');
 }
 
 //-------------------------------------------------------
@@ -921,6 +939,20 @@ switch ($plainCmd) {
         $objBlog = new BlogAdmin();
         $objBlog->getPage();
         break;
+
+    //-------------------------------------------------------
+    // U2U Messenger
+    //-------------------------------------------------------
+    case 'u2u':
+    	//Permission::checkAccess(119, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/u2u/admin.class.php';
+        if (file_exists($modulespath)) include($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle  = $_CORELANG['TXT_U2U_MODULE'];
+        $objU2u = new u2uAdmin();
+        $objU2u->getPage();
+        break;
+
 
     /**
      * Partners Module
