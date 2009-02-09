@@ -60,6 +60,7 @@
 /**
  * Debug level
  */
+
 define('_DEBUG', 0);
 
 //-------------------------------------------------------
@@ -68,6 +69,11 @@ define('_DEBUG', 0);
 if (_DEBUG) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
+    if(include_once('lib/DBG.php')){
+        $objDBG = new DBG(true); //pass false to disable firephp and enable logging to a file (see following DBG::setup)
+        $objDBG->setup('dbg.log', 'w');
+        $objDBG->enable_all();
+    }
 } else {
     error_reporting(0);
     ini_set('display_errors', 0);
@@ -137,11 +143,25 @@ if ($objDatabase === false) {
         ($errorMsg != '' ? "<br />Message: $errorMsg" : '')
     );
 }
-if (_DEBUG) {
-    $objDatabase->debug = 1;
-} else {
+
+if (_DEBUG == 1){
     $objDatabase->debug = 0;
+} else {
+    $objDatabase->debug = _DEBUG;
 }
+
+if($objDBG instanceof DBG){ //see: http://www.firephp.org/HQ/Use.htm for firephp usage examples
+    //here's some basic stuff
+    $objDBG->log("this is a test");
+    $objDBG->log(array(
+                    array('1','2'), array('a','b'),
+                    array('c','d'), array('e','f')
+                 ), 'table', 'myExampleTable');
+    $objDBG->trace();
+    $objDBG->stack();
+    $objDBG->log('what teh trace: '.serialize($_REQUEST), 'trace');
+}
+
 
 //-------------------------------------------------------
 // Caching-System

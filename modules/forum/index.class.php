@@ -1050,7 +1050,7 @@ class Forum extends ForumLibrary {
 
 
         if($this->_objTpl->blockExists('threadActionsSelect')){
-            if($userId < 1 && !$hasAccess){
+            if($userId < 1 || !$hasAccess){
                 $this->_objTpl->hideBlock('threadActionsSelect');
             }else{
                 $this->_objTpl->touchBlock('threadActionsSelect');
