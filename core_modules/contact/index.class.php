@@ -107,8 +107,16 @@ class Contact extends ContactLib
      */
     function getContactPage()
     {
+        global $_ARRAYLANG;
+
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
+
+        $this->objTemplate->setVariable(array(
+            'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
+            'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
+            'TXT_CONTACT_RESET'     => $_ARRAYLANG['TXT_CONTACT_RESET']
+        ));
 
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
