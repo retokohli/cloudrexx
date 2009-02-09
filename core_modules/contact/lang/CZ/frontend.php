@@ -13,6 +13,7 @@ $_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Rechnername";
 $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "IP Adresse";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Browser Sprache ";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Browser Version ";
+$_ARRAYLANG['TXT_CONTACT_SUBMIT'] = "Absenden";
 $_ARRAYLANG['TXT_CONTACT_YES'] = "Ja";
 $_ARRAYLANG['TXT_CONTACT_NO'] = "Nein";
 $_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Uploads";
@@ -30,5 +31,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hina
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Eine Datei wurde nicht hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist Notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "The specified character string was wrong!";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 ?>
