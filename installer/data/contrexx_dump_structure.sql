@@ -878,7 +878,7 @@ CREATE TABLE `contrexx_module_downloads_category` (
   `manage_files_access_id` int(11) unsigned NOT NULL default '0',
   `image` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_downloads_category_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `category_id` int(11) unsigned NOT NULL default '0',
@@ -906,7 +906,7 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `views` int(10) unsigned NOT NULL default '0',
   `download_count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_downloads_download_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `download_id` int(11) unsigned NOT NULL default '0',
