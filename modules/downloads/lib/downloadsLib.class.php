@@ -495,7 +495,7 @@ class DownloadsLibrary
         }
     }*/
 
-    protected function getCategoryMenu($accessType, $selectedCategory, $selectionText, $attrs = null)
+    protected function getCategoryMenu($accessType, $selectedCategory, $selectionText, $attrs = null, $categoryId = null)
     {
         global $_LANGID, $_ARRAYLANG;
 
@@ -529,18 +529,18 @@ class DownloadsLibrary
         $menu = '<select name="downloads_category_parent_id"'.(!empty($attrs) ? ' '.$attrs : '').'>';
         $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').($accessType != 'read' && !Permission::checkAccess(142, 'static', true) ? ' disabled="disabled"' : '').' style="border-bottom:1px solid #000;">'.$selectionText.'</option>';
 
-        $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory);
+        $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, $categoryId);
 
         while (count($arrCategories)) {
             reset($arrCategories);
-            $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, key($arrCategories));
+            $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, $categoryId, key($arrCategories));
         }
         $menu .= '</select>';
 
         return $menu;
     }
 
-    private function parseCategoryTreeForMenu(&$arrCategories, $selectedCategory, $parentId = 0, $level = 0)
+    private function parseCategoryTreeForMenu(&$arrCategories, $selectedCategory, $categoryId = null, $parentId = 0, $level = 0)
     {
         $options = '';
 
@@ -552,7 +552,8 @@ class DownloadsLibrary
         for ($i = 0; $i < $length; $i++) {
             $options .= '<option value="'.$arrCategories[$parentId][$i]['id'].'"'
                     .($arrCategories[$parentId][$i]['id'] == $selectedCategory ? ' selected="selected"' : '')
-                    .(  // managers are allowed to see the content of every category
+                    .($arrCategories[$parentId][$i]['id'] == $categoryId ? ' disabled="disabled"' : (
+                        // managers are allowed to see the content of every category
                         Permission::checkAccess(142, 'static', true)
                         // the category isn't protected => everyone is allowed to the it's content
                         || !$arrCategories[$parentId][$i]['access_id']
@@ -560,11 +561,12 @@ class DownloadsLibrary
                         || Permission::checkAccess($arrCategories[$parentId][$i]['access_id'], 'dynamic', true)
                         // the owner is allowed to see the content of the category
                         || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $arrCategories[$parentId][$i]['owner_id'] == $objFWUser->objUser->getId() ? '' : ' disabled="disabled"')
+                    )
                 .'>'
                     .str_repeat('&nbsp;', $level * 4).htmlentities($arrCategories[$parentId][$i]['name'], ENT_QUOTES, CONTREXX_CHARSET)
                 .'</option>';
             if (isset($arrCategories[$arrCategories[$parentId][$i]['id']])) {
-                $options .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, $arrCategories[$parentId][$i]['id'], $level + 1);
+                $options .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, $categoryId, $arrCategories[$parentId][$i]['id'], $level + 1);
             }
         }
 

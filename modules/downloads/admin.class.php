@@ -1,5 +1,5 @@
 <?php
-if (1) {
+if ($_COOKIE['debug']) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     $objDatabase->debug = 1;
@@ -134,12 +134,14 @@ $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_CATEGORY_PROHIBITED'] = 'Sie sind nicht berech
 $_ARRAYLANG['TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ'] = 'Diese Berechtigungen für alle Unterkategorien übernehmen.';
 $_ARRAYLANG['TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE'] = 'Es sind keine Kategorien vorhanden.';
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'] = 'Downloads der Kategory %s';
-$_ARRAYLANG['TXT_DOWNLOADS_UNLINK'] = 'Den Download aus der Kategorie entfernen.';
+$_ARRAYLANG['TXT_DOWNLOADS_UNLINK'] = 'Den Download aus dieser Kategorie entfernen.';
 $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE'] = 'Inaktiv';
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOAD'] = 'Möchten Sie den Download %s aus dieser Kategorie entfernen?';
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_ASSOCIATIONS'] = 'Beim Speichern der Download Zuweisungen trat ein Fehler aus!';
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'] = 'Downloads zu dieser Kategorie hinzufügen';
 $_ARRAYLANG['TXt_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'] = 'Downloads zur Kategorie %s hinzufügen';
+$_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_ENTERED'] = 'Es sind keine Downloads erfasst.';
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD'] = 'Neuen Download hinzufügen';
 
 
 // those might exist already
@@ -615,7 +617,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
 
 
         // parse parent category menu
-        $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_PARENT_CATEGORY_MENU', $this->getCategoryMenu('add_subcategory', $objCategory->getParentId(), $_ARRAYLANG['TXT_DOWNLOADS_MAIN_CATEGORY']));
+        $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_PARENT_CATEGORY_MENU', $this->getCategoryMenu('add_subcategory', $objCategory->getParentId(), $_ARRAYLANG['TXT_DOWNLOADS_MAIN_CATEGORY'], null, $objCategory->getId()));
 
 
         // parse download associations
@@ -844,6 +846,21 @@ $this->_objTpl->setVariable(array(
             }
         }
 
+        $objDownload = new Download();
+        $objDownload->loadDownloads($filter = null, $search = null, $arrOrder, $arrAttributes = null, $_CONFIG['corePagingLimit'], $limitOffset);
+        if ($objDownload->EOF) {
+            $this->_objTpl->setVariable(array(
+                'TXT_DOWNLOADS_DOWNLOADS'               => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
+                'TXT_DOWNLOADS_NO_DOWNLOADS_ENTERED'    => $_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_ENTERED'],
+                'TXT_DOWNLOADS_ADD_NEW_DOWNLOAD'        => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD']
+            ));
+            $this->_objTpl->parse('downloads_download_no_data');
+            $this->_objTpl->hideBlock('downloads_download_data');
+            return;
+        } else {
+            $this->_objTpl->hideBlock('downloads_download_no_data');
+        }
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
             'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
@@ -886,8 +903,6 @@ $this->_objTpl->setVariable(array(
 
         //$this->parseLetterIndexList('index.php?cmd=access&amp;act=user&amp;groupId='.$groupId.'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter='.$userRoleFilter, 'username_filter', $usernameFilter);
 
-        $objDownload = new Download();
-        $objDownload->loadDownloads($filter = null, $search = null, $arrOrder, $arrAttributes = null, $_CONFIG['corePagingLimit'], $limitOffset);
         $downloadCount = $objDownload->getFilteredSearchDownloadCount();
         if ($downloadCount > $_CONFIG['corePagingLimit']) {
             $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&amp;cmd=downloads&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
@@ -897,8 +912,13 @@ $this->_objTpl->setVariable(array(
         while (!$objDownload->EOF)
         {
             $description = $objDownload->getDescription($_LANGID);
-            if (strlen($description) > 200) {
-                $description = substr($description, 0, 197).'...';
+            if (strlen($description) > 100) {
+                $description = substr($description, 0, 97).'...';
+            }
+
+            $source = $objDownload->getSource();
+            if (strlen($source) > 100) {
+                $source = substr($source, 0, 97).'...';
             }
 
             $this->_objTpl->setVariable(array(
@@ -910,9 +930,9 @@ $this->_objTpl->setVariable(array(
                 'DOWNLOADS_DOWNLOAD_ICON'               => $objDownload->getIcon(),
                 'DOWNLOADS_DOWNLOAD_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_NAME_JS'            => htmlspecialchars($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_DESCRIPTION'        => htmlentities($description),
+                'DOWNLOADS_DOWNLOAD_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_SOURCE'             => htmlentities($objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_SOURCE'             => htmlentities($source, ENT_QUOTES, CONTREXX_CHARSET),
             ));
 
             $this->_objTpl->parse('downloads_download_list');
@@ -997,14 +1017,14 @@ $this->_objTpl->setVariable(array(
         if (isset($_POST['downloads_category_save_downloads'])) {
             $objCategory->setDownloads(isset($_POST['downloads_category_associated_downloads']) ? array_map('intval', $_POST['downloads_category_associated_downloads']) : array());
 
-            if ($objCategory->store()) {
+            if ($objCategory->storeDownloadAssociations()) {
                 return true;
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
             }
         }
 
-        $pageTitle = sprintf($_ARRAYLANG['TXt_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'], htmlentities($objCategory->getName($_LANGID, ENT_QUOTES, CONTREXX_CHARSET)));
+        $pageTitle = sprintf($_ARRAYLANG['TXt_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
         $this->_pageTitle = $pageTitle;
         $this->_objTpl->loadTemplateFile('module_downloads_category_add_downloads.html');
 
@@ -1890,6 +1910,8 @@ $this->_objTpl->setVariable(array(
     {
         global $_LANGID, $_ARRAYLANG;
 
+        // TODO: check subcategory manage access permission of $parentCategoryId
+
         $arrFailedCategories = array();
 
         foreach ($arrCategoryOrder as $categoryId => $orderNr) {
@@ -1903,7 +1925,7 @@ $this->_objTpl->setVariable(array(
         }
 
         if (count($arrFailedCategories)) {
-            $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'], implode(', ', $arrFailedCategories));
+            $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'], '<strong>'.implode(', ', $arrFailedCategories).'</strong>');
         } else {
             $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'];
         }
@@ -1934,7 +1956,7 @@ $this->_objTpl->setVariable(array(
      */
     private function categories()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         $objCategory = Category::getCategory($this->parentCategoryId);
 
@@ -1959,7 +1981,7 @@ $this->_objTpl->setVariable(array(
         if (isset($_POST['downloads_category_select_action'])) {
             switch ($_POST['downloads_category_select_action']) {
                 case 'order':
-                    $this->updateCategoryOrder($parentCategoryId, isset($_POST['downloads_category_order']) && is_array($_POST['downloads_category_order']) ? $_POST['downloads_category_order'] : array());
+                    $this->updateCategoryOrder($this->parentCategoryId, isset($_POST['downloads_category_order']) && is_array($_POST['downloads_category_order']) ? $_POST['downloads_category_order'] : array());
                     break;
 
                 case 'delete':
@@ -1968,7 +1990,29 @@ $this->_objTpl->setVariable(array(
             }
         }
 
-        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()), null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+
+        $categoryLimitOffset = isset($_GET['category_pos']) ? intval($_GET['category_pos']) : $pos;
+        $categoryOrderDirection = !empty($_GET['category_sort']) ? $_GET['category_sort'] : 'asc';
+        $categoryOrderBy = !empty($_GET['category_by']) ? $_GET['category_by'] : 'order';
+        $arrCategoryOrder[$categoryOrderBy] = $categoryOrderDirection;
+
+        if ($categoryOrderBy != 'order') {
+            $arrCategoryOrder['order'] = 'asc';
+        }
+        if ($categoryOrderBy != 'name') {
+            $arrCategoryOrder['name'] = 'asc';
+        }
+        if ($categoryOrderBy != 'id') {
+            $arrCategoryOrder['id'] = 'asc';
+        }
+
+        $downloadLimitOffset = isset($_GET['download_pos']) ? intval($_GET['download_pos']) : $pos;
+        $downloadOrderDirection = !empty($_GET['download_sort']) ? $_GET['download_sort'] : 'asc';
+        $downloadOrderBy = !empty($_GET['download_by']) ? $_GET['download_by'] : 'order';
+
+
+        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()), null, $arrCategoryOrder, null, $_CONFIG['corePagingLimit'], $categoryLimitOffset);
 
 
 
@@ -2018,7 +2062,10 @@ $this->_objTpl->setVariable(array(
                 || $objSubcategory->getModifyAccessByOwner() && ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
             )
         ) {
-            $this->_objTpl->setVariable('TXT_DOWNLOADS_ORDER', $_ARRAYLANG['TXT_DOWNLOADS_ORDER']);
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_CATEGORY_SORT_ORDER'          => ($categoryOrderBy == 'order' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_CATEGORY_SORT_ORDER_LABEL'    => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'].($categoryOrderBy == 'order' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : '')
+            ));
             $this->_objTpl->parse('downloads_category_order_label');
             $changeSortOrder = true;
         } else {
@@ -2045,13 +2092,12 @@ $this->_objTpl->setVariable(array(
 
 
         // parse add downloads button
-        if (// managers are allowed to add new downloads
-            Permission::checkAccess(142, 'static', true)
-            // the selected category must be valid to proceed future permission checks.
-            // this is required to protect the overview section from non-admins
-            || $objCategory->getId() && (
+        if (// we can only add downloads to a category
+            $objCategory->getId() && (
+                // managers are allowed to add new downloads
+                Permission::checkAccess(142, 'static', true)
                 // the category isn't protected => everyone is allowed to add new downloads
-                !$objCategory->getAddFilesAccessId()
+                || !$objCategory->getAddFilesAccessId()
                 // the category is protected => only those who have the sufficent permissions are allowed to add new downloads
                 || Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true)
             )
@@ -2092,6 +2138,39 @@ $this->_objTpl->setVariable(array(
                 $this->_objTpl->hideBlock('downloads_category_action_dropdown');
                 $this->_objTpl->hideBlock('downloads_category_select_label');
             }
+
+            // parse sorting
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_CATEGORY_SORT_PARENT_ID'         => $objCategory->getId(),
+                'DOWNLOADS_CATEGORY_SORT_DIRECTION'         => $categoryOrderDirection,
+                'DOWNLOADS_CATEGORY_SORT_BY'                => $categoryOrderBy,
+                'DOWNLOADS_CATEGORY_SORT_ID'                => ($categoryOrderBy == 'id' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_CATEGORY_SORT_STATUS'            => ($categoryOrderBy == 'is_active' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_CATEGORY_SORT_NAME'              => ($categoryOrderBy == 'name' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_CATEGORY_SORT_DESCRIPTION'       => ($categoryOrderBy == 'description' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_CATEGORY_SORT_OWNER'             => ($categoryOrderBy == 'author' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_CATEGORY_SORT_ID_LABEL'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($categoryOrderBy == 'id' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_CATEGORY_SORT_STATUS_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($categoryOrderBy == 'is_active' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_CATEGORY_SORT_NAME_LABEL'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($categoryOrderBy == 'name' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_CATEGORY_SORT_DESCRIPTION_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'].($categoryOrderBy == 'description' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_CATEGORY_SORT_OWNER_LABEL'       => $_ARRAYLANG['TXT_DOWNLOADS_OWNER'].($categoryOrderBy == 'owner_id' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_CATEGORY_DOWNLOAD_SORT'          => $downloadOrderDirection,
+                'DOWNLOADS_CATEGORY_DOWNLOAD_BY'            => $downloadOrderBy,
+                'DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET'        => $downloadLimitOffset
+            ));
+
+            // parse paging
+            $categoryCount = $objSubcategory->getFilteredSearchCategoryCount();
+            if ($categoryCount > $_CONFIG['corePagingLimit']) {
+                $pagingLink = "&amp;cmd=downloads&amp;act=categories&amp;parent_id=".$objCategory->getId()
+                    ."&amp;category_sort=".htmlspecialchars($categoryOrderDirection)
+                    ."&amp;category_by=".htmlspecialchars($categoryOrderBy)
+                    ."&amp;download_sort=".htmlspecialchars($downloadOrderDirection)
+                    ."&amp;download_by=".htmlspecialchars($downloadOrderBy)
+                    ."&amp;download_pos=".$downloadLimitOffset;
+                $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_PAGING', getPaging($categoryCount, $categoryLimitOffset, $pagingLink, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES']."</b>"));
+            }
+
             while (!$objSubcategory->EOF) {
 
 
@@ -2130,7 +2209,7 @@ $this->_objTpl->setVariable(array(
                         'DOWNLOADS_CATEGORY_SWITCH_STATUS_IMG_DESC' => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC']
                     ));
                     $this->_objTpl->parse('downloads_category_status_link_open');
-                    $this->_objTpl->parse('downloads_category_status_link_close');
+                    $this->_objTpl->touchBlock('downloads_category_status_link_close');
 
                     // parse modify icon
                     $this->_objTpl->setVariable(array(
@@ -2209,8 +2288,8 @@ $this->_objTpl->setVariable(array(
 
 
                 $description = $objSubcategory->getDescription($_LANGID);
-                if (strlen($description) > 200) {
-                    $description = substr($description, 0, 197).'...';
+                if (strlen($description) > 100) {
+                    $description = substr($description, 0, 97).'...';
                 }
 
                 $this->_objTpl->setVariable(array(
@@ -2237,7 +2316,7 @@ $this->_objTpl->setVariable(array(
         // parse category id (will be used as the parent_id when creating a new directory
         $this->_objTpl->setVariable(array(
             'DOWNLOADS_CATEGORY_ID'     => $objCategory->getId(),
-            'DOWNLOADS_CATEGORY_MENU'   => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\'index.php?cmd=downloads&act=categories&parent_id=\'+this.value"')
+            'DOWNLOADS_CATEGORY_MENU'   => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\'index.php?cmd=downloads&amp;act=categories&amp;parent_id=\'+this.value"')
         ));
 
         // TODO: clean up
@@ -2258,7 +2337,7 @@ $this->_objTpl->setVariable(array(
         // TODO: Add file list
 
         if ($objCategory->getId() && $objCategory->getAssociatedDownloadsCount()) {
-            $this->parseCategoryDownloads($objCategory);
+            $this->parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset);
             $this->_objTpl->parse('downloads_category_downloads');
         } else {
             $this->_objTpl->hideBlock('downloads_category_downloads');
@@ -2266,11 +2345,11 @@ $this->_objTpl->setVariable(array(
 
         // TODO: clean up
         $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_STATUS'                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
-            'TXT_DOWNLOADS_ID'                          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
-            'TXT_DOWNLOADS_NAME'                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
-            'TXT_DOWNLOADS_DESCRIPTION'                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
-            'TXT_DOWNLOADS_AUTHOR'                      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            //'TXT_DOWNLOADS_STATUS'                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            //'TXT_DOWNLOADS_ID'                          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
+            //'TXT_DOWNLOADS_NAME'                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            //'TXT_DOWNLOADS_DESCRIPTION'                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            //'TXT_DOWNLOADS_AUTHOR'                      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
             'TXT_DOWNLOADS_FUNCTIONS'                   => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
             'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'],
             'TXT_DOWNLOADS_DELETE_SUBCATEGORIES'        => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'],
@@ -2282,12 +2361,59 @@ $this->_objTpl->setVariable(array(
         ));
     }
 
-    private function parseCategoryDownloads($objCategory)
+    private function parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset)
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         $objDownload = new Download();
-        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'visibility' => 1));
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'visibility' => 1), null, array($downloadOrderBy => $downloadOrderDirection), null, $_CONFIG['corePagingLimit'], $downloadLimitOffset);
+
+        if ($objDownload->EOF) {
+            $this->_objTpl->hideBlock('downloads_download_action_dropdown');
+        } else {
+            $this->_objTpl->setVariable(array(
+                'TXT_DOWNLOADS_CHECK_ALL'   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+                'TXT_DOWNLOADS_UNCHECK_ALL' => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+                'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
+                'TXT_DOWNLOADS_ORDER'           => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+                'TXT_DOWNLOADS_UNLINK'          => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK']
+            ));
+            $this->_objTpl->parse('downloads_download_action_dropdown');
+
+            // parse sorting
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_SORT_PARENT_ID'         => $objCategory->getId(),
+                'DOWNLOADS_DOWNLOAD_SORT_DIRECTION'         => $downloadOrderDirection,
+                'DOWNLOADS_DOWNLOAD_SORT_BY'                => $downloadOrderBy,
+                'DOWNLOADS_DOWNLOAD_SORT_ID'                => ($downloadOrderBy == 'id' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_DOWNLOAD_SORT_STATUS'            => ($downloadOrderBy == 'is_active' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_DOWNLOAD_SORT_ORDER'             => ($downloadOrderBy == 'order' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_DOWNLOAD_SORT_NAME'              => ($downloadOrderBy == 'name' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION'       => ($downloadOrderBy == 'description' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_DOWNLOAD_SORT_AUTHOR'            => ($downloadOrderBy == 'author' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_DOWNLOAD_SORT_ID_LABEL'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($downloadOrderBy == 'id' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_SORT_STATUS_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($downloadOrderBy == 'is_active' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_SORT_ORDER_LABEL'       => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'].($downloadOrderBy == 'order' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_SORT_NAME_LABEL'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($downloadOrderBy == 'name' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'].($downloadOrderBy == 'description' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_SORT_AUTHOR_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'].($downloadOrderBy == 'author' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_CATEGORY_SORT'          => $categoryOrderDirection,
+                'DOWNLOADS_DOWNLOAD_CATEGORY_BY'            => $categoryOrderBy,
+                'DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET'        => $categoryLimitOffset
+            ));
+
+            // parse paging
+            $downloadCount = $objDownload->getFilteredSearchDownloadCount();
+            if ($downloadCount > $_CONFIG['corePagingLimit']) {
+                $pagingLink = "&amp;cmd=downloads&amp;act=categories&amp;parent_id=".$objCategory->getId()
+                    ."&amp;category_sort=".htmlspecialchars($categoryOrderDirection)
+                    ."&amp;category_by=".htmlspecialchars($categoryOrderBy)
+                    ."&amp;download_sort=".htmlspecialchars($downloadOrderDirection)
+                    ."&amp;download_by=".htmlspecialchars($downloadOrderBy)
+                    ."&amp;category_pos=".$categoryLimitOffset;
+                $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $downloadLimitOffset, $pagingLink, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>").'<br />');
+            }
+        }
 
         $nr = 0;
         while (!$objDownload->EOF) {
@@ -2415,8 +2541,8 @@ $this->_objTpl->setVariable(array(
 
 
             $description = $objDownload->getDescription($_LANGID);
-            if (strlen($description) > 200) {
-                $description = substr($description, 0, 197).'...';
+            if (strlen($description) > 100) {
+                $description = substr($description, 0, 97).'...';
             }
 
             $this->_objTpl->setVariable(array(
@@ -2438,12 +2564,12 @@ $this->_objTpl->setVariable(array(
         $this->_objTpl->setVariable('DOWNLOADS_OF_CATEGORY_TXT', sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)));
 
         $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_ID'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
-            'TXT_DOWNLOADS_STATUS'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
-            'TXT_DOWNLOADS_ORDER'       => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
-            'TXT_DOWNLOADS_NAME'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
-            'TXT_DOWNLOADS_DESCRIPTION' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
-            'TXT_DOWNLOADS_AUTHOR'      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            //'TXT_DOWNLOADS_ID'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
+            //'TXT_DOWNLOADS_STATUS'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            //'TXT_DOWNLOADS_ORDER'       => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+            //'TXT_DOWNLOADS_NAME'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            //'TXT_DOWNLOADS_DESCRIPTION' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            //'TXT_DOWNLOADS_AUTHOR'      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
             'TXT_DOWNLOADS_FUNCTIONS'   => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS']
         ));
     }

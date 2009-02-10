@@ -22,10 +22,11 @@ function downloadsDownloadDoAction(action)
 // ]]>
 </script>
 <form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=downloads" method="post">
-<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
         <th colspan="9">{TXT_DOWNLOADS_DOWNLOADS}</th>
-    </tr> 
+    </tr>
+<!-- BEGIN downloads_download_data -->
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
         <td width="1%" style="text-align: center;">#</td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_ID}&amp;by=id" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ID}</a></td>
@@ -52,7 +53,7 @@ function downloadsDownloadDoAction(action)
             <input name="downloads_download_order[{DOWNLOADS_DOWNLOAD_ID}]" size="5" maxlength="5" value="{DOWNLOADS_DOWNLOAD_ORDER}" type="text" />
         </td>
         <td nowrap="nowrap">
-            <img src="{DOWNLOADS_DOWNLOAD_ICON}" width="15" height="13" />
+            <img src="{DOWNLOADS_DOWNLOAD_ICON}" width="15" height="13" alt="{DOWNLOADS_DOWNLOAD_NAME}" />
             <a href="index.php?cmd=downloads&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_DOWNLOAD}">
             {DOWNLOADS_DOWNLOAD_NAME}
             </a>
@@ -79,4 +80,15 @@ function downloadsDownloadDoAction(action)
 <br />
 <br />
 {DOWNLOADS_DOWNLOAD_PAGING}
+<!-- END downloads_download_data -->
+<!-- BEGIN downloads_download_no_data -->
+    <tr class="row3">
+        <td>{TXT_DOWNLOADS_NO_DOWNLOADS_ENTERED}</td>
+    </tr>
+</table>
+<br />
+<br />
+<input type="button" name="downloads_add_new_download" value="{TXT_DOWNLOADS_ADD_NEW_DOWNLOAD}" onclick="window.location.href='index.php?cmd=downloads&amp;act=download'" />
+<!-- END downloads_download_no_data -->
+</form>
 <!-- end module_downloads_downloads.html -->
