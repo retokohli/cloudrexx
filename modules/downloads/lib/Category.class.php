@@ -225,7 +225,7 @@ class Category {
         ) {
             return true;
         } else {
-            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_FAILED'], htmlentities($this->name, ENT_QUOTES, CONTREXX_CHARSET));
+            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_FAILED'], '<strong>'.htmlentities($this->name, ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
         }
 
         return false;
@@ -374,6 +374,11 @@ class Category {
             $this->loadLocales();
         }
         return isset($this->descriptions[$langId]) ? $this->descriptions[$langId] : '';
+    }
+
+    public function getFilteredSearchCategoryCount()
+    {
+        return $this->filtered_search_count;
     }
 
     public static function getCategory($id)
@@ -834,7 +839,7 @@ class Category {
                     )
                 )
                 // adding a new category
-                || (
+                || !$this->id && (
                    // trying to add a new main category -> this is prohibited
                     !$objParentCategory->getId()
                     // trying to add a subcategory
@@ -906,7 +911,6 @@ class Category {
         }
 
         if (!$this->storeDownloadAssociations()) {
-            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_ASSOCIATIONS'];
             return false;
         }
 
@@ -971,7 +975,7 @@ class Category {
         return $status;
     }
 
-    private function storeDownloadAssociations()
+    public function storeDownloadAssociations()
     {
         global $objDatabase;
 
@@ -989,11 +993,29 @@ class Category {
                 $objOldDownloads->MoveNext();
             }
         } else {
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_ASSOCIATIONS'];
             return false;
         }
 
-        $arrNewDownloads = array_diff($this->downloads, $arrOldDownloads);
-        $arrRemovedDownloads = array_diff($arrOldDownloads, $this->downloads);
+        if (Permission::checkAccess(142, 'static', true)
+            || !$this->getAddFilesAccessId()
+            || Permission::checkAccess($this->getAddFilesAccessId(), 'dynamic', true)
+            || (($objFWUser = FWUser::getFWUserObject()) == true && $objFWUser->objUser->login() && $this->getOwnerId() == $objFWUser->objUser->getId())
+        ) {
+            $arrNewDownloads = array_diff($this->downloads, $arrOldDownloads);
+        } else {
+            $arrNewDownloads = array();
+        }
+
+        if (Permission::checkAccess(142, 'static', true)
+            || !$this->getManageFilesAccessId()
+            || Permission::checkAccess($this->getManageFilesAccessId(), 'dynamic', true)
+            || (($objFWUser = FWUser::getFWUserObject()) == true && $objFWUser->objUser->login() && $this->getOwnerId() == $objFWUser->objUser->getId())
+        ) {
+            $arrRemovedDownloads = array_diff($arrOldDownloads, $this->downloads);
+        } else {
+            $arrRemovedDownloads = array();
+        }
 
         foreach ($arrNewDownloads as $downloadId) {
             if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_download_category` (`category_id`, `download_id`) VALUES (".$this->id.", ".$downloadId.")") === false) {
@@ -1006,9 +1028,11 @@ class Category {
                 $status = false;
             }
         }
-        return $status;
+        if (!$status) {
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_ASSOCIATIONS'];
+        }
 
-        return true;
+        return $status;
     }
 
     private function storePermissions()
