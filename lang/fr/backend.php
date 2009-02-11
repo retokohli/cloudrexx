@@ -964,4 +964,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADMINISTER'] = "Gérer";
 $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "Inclure pages à accès limité";
 $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Inclus les pages à accès limités dans la Navigation, la recherche plein texte et le plan du site (Sitemap et XML-Sitemap) pour les utilisateurs non authentifiés - Status  (on | off)";
 $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = "Template for mobile devices";
+$_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
 ?>

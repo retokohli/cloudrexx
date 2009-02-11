@@ -247,5 +247,5 @@ $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "You have already voted or the
 $_ARRAYLANG['TXT_SHOP_MAKE_ORDER'] = "Continue to order &gt;&gt;";
 $_ARRAYLANG['TXT_SHOP_NEW_ORDER'] = "New order...";
 $_ARRAYLANG['TXT_SHOP_LOGIN_INFO'] = "Informations";
-$_ARRAYLANG['TXT_SHOP_CONTINUE_ARROW'] = "Continue &gt;&gt;";
+$_ARRAYLANG['TXT_SHOP_CONTINUE_ARROW'] = "Weiter &gt;&gt;";
 ?>
