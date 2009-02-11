@@ -135,6 +135,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ'] = 'Diese Berechtigunge
 $_ARRAYLANG['TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE'] = 'Es sind keine Kategorien vorhanden.';
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'] = 'Downloads der Kategory %s';
 $_ARRAYLANG['TXT_DOWNLOADS_UNLINK'] = 'Den Download aus dieser Kategorie entfernen.';
+$_ARRAYLANG['TXT_DOWNLOADS_UNLINK_MULTI'] = 'Downloads aus dieser Kategorie entfernen';
 $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE'] = 'Inaktiv';
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOAD'] = 'Möchten Sie den Download %s aus dieser Kategorie entfernen?';
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_ASSOCIATIONS'] = 'Beim Speichern der Download Zuweisungen trat ein Fehler aus!';
@@ -142,6 +143,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'] = 'Downloads zu dieser Ka
 $_ARRAYLANG['TXt_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'] = 'Downloads zur Kategorie %s hinzufügen';
 $_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_ENTERED'] = 'Es sind keine Downloads erfasst.';
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD'] = 'Neuen Download hinzufügen';
+$_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS'] = 'Möchten Sie die ausgewählten Downloads wirklich aus dieser Kategorie entfernen?';
 
 
 // those might exist already
@@ -1002,6 +1004,19 @@ $this->_objTpl->setVariable(array(
             unset($arrCategoryAssociations[array_search($categoryId, $arrCategoryAssociations)]);
             $objDownload->setCategories($arrCategoryAssociations);
             $objDownload->store();
+        }
+    }
+
+    private function unlinkDownloadsFromCategory($objCategory, $arrUnlinkDownloadIds)
+    {
+        $arrDownloadIds = $objCategory->getAssociatedDownloadIds();
+        $objCategory->setDownloads(array_diff($arrDownloadIds, $arrUnlinkDownloadIds));
+
+        if ($objCategory->storeDownloadAssociations()) {
+            return true;
+        } else {
+            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
+            return false;
         }
     }
 
@@ -1978,6 +1993,7 @@ $this->_objTpl->setVariable(array(
         $filter = array();
         $minColspan = 6;
 
+        // parse categories multi action
         if (isset($_POST['downloads_category_select_action'])) {
             switch ($_POST['downloads_category_select_action']) {
                 case 'order':
@@ -1986,6 +2002,19 @@ $this->_objTpl->setVariable(array(
 
                 case 'delete':
                     $this->deleteCategories(isset($_POST['downloads_category_id']) && is_array($_POST['downloads_category_id']) ? $_POST['downloads_category_id'] : array(), isset($_POST['downloads_category_delete_recursive']) && $_POST['downloads_category_delete_recursive']);
+                    break;
+            }
+        }
+
+        // process downloads multi action
+        if (isset($_POST['downloads_download_select_action'])) {
+            switch ($_POST['downloads_download_select_action']) {
+                case 'order':
+                    $this->updateDownloadOrder(isset($_POST['downloads_download_order']) && is_array($_POST['downloads_download_order']) ? $_POST['downloads_download_order'] : array());
+                    break;
+
+                case 'unlink':
+                    $this->unlinkDownloadsFromCategory($objCategory, isset($_POST['downloads_download_id']) && is_array($_POST['downloads_download_id']) ? $_POST['downloads_download_id'] : array());
                     break;
             }
         }
@@ -2139,8 +2168,8 @@ $this->_objTpl->setVariable(array(
                 $this->_objTpl->hideBlock('downloads_category_select_label');
             }
 
-            // parse sorting
             $this->_objTpl->setVariable(array(
+                // parse sorting
                 'DOWNLOADS_CATEGORY_SORT_PARENT_ID'         => $objCategory->getId(),
                 'DOWNLOADS_CATEGORY_SORT_DIRECTION'         => $categoryOrderDirection,
                 'DOWNLOADS_CATEGORY_SORT_BY'                => $categoryOrderBy,
@@ -2148,15 +2177,16 @@ $this->_objTpl->setVariable(array(
                 'DOWNLOADS_CATEGORY_SORT_STATUS'            => ($categoryOrderBy == 'is_active' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_CATEGORY_SORT_NAME'              => ($categoryOrderBy == 'name' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_CATEGORY_SORT_DESCRIPTION'       => ($categoryOrderBy == 'description' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
-                'DOWNLOADS_CATEGORY_SORT_OWNER'             => ($categoryOrderBy == 'author' && $categoryOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_CATEGORY_SORT_ID_LABEL'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($categoryOrderBy == 'id' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_CATEGORY_SORT_STATUS_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($categoryOrderBy == 'is_active' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_CATEGORY_SORT_NAME_LABEL'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($categoryOrderBy == 'name' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_CATEGORY_SORT_DESCRIPTION_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'].($categoryOrderBy == 'description' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
-                'DOWNLOADS_CATEGORY_SORT_OWNER_LABEL'       => $_ARRAYLANG['TXT_DOWNLOADS_OWNER'].($categoryOrderBy == 'owner_id' ? $categoryOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_CATEGORY_DOWNLOAD_SORT'          => $downloadOrderDirection,
                 'DOWNLOADS_CATEGORY_DOWNLOAD_BY'            => $downloadOrderBy,
-                'DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET'        => $downloadLimitOffset
+                'DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET'        => $downloadLimitOffset,
+
+                // parse table header
+                'TXT_DOWNLOADS_OWNER'                       => $_ARRAYLANG['TXT_DOWNLOADS_OWNER']
             ));
 
             // parse paging
@@ -2372,17 +2402,21 @@ $this->_objTpl->setVariable(array(
             $this->_objTpl->hideBlock('downloads_download_action_dropdown');
         } else {
             $this->_objTpl->setVariable(array(
-                'TXT_DOWNLOADS_CHECK_ALL'   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
-                'TXT_DOWNLOADS_UNCHECK_ALL' => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
-                'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
-                'TXT_DOWNLOADS_ORDER'           => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
-                'TXT_DOWNLOADS_UNLINK'          => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK']
+                'DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS_TXT'    => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS'])),
+                'TXT_DOWNLOADS_CHECK_ALL'                   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+                'TXT_DOWNLOADS_UNCHECK_ALL'                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+                'TXT_DOWNLOADS_SELECT_ACTION'               => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
+                'TXT_DOWNLOADS_ORDER'                       => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+                'TXT_DOWNLOADS_UNLINK_MULTI'                => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK_MULTI']
             ));
             $this->_objTpl->parse('downloads_download_action_dropdown');
 
-            // parse sorting
             $this->_objTpl->setVariable(array(
-                'DOWNLOADS_DOWNLOAD_SORT_PARENT_ID'         => $objCategory->getId(),
+                 // parse table header
+                'TXT_DOWNLOADS_AUTHOR'                      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+                'DOWNLOADS_DOWNLOAD_CATEGORY_ID'            => $objCategory->getId(),
+
+                // parse sorting
                 'DOWNLOADS_DOWNLOAD_SORT_DIRECTION'         => $downloadOrderDirection,
                 'DOWNLOADS_DOWNLOAD_SORT_BY'                => $downloadOrderBy,
                 'DOWNLOADS_DOWNLOAD_SORT_ID'                => ($downloadOrderBy == 'id' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
@@ -2390,13 +2424,11 @@ $this->_objTpl->setVariable(array(
                 'DOWNLOADS_DOWNLOAD_SORT_ORDER'             => ($downloadOrderBy == 'order' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_DOWNLOAD_SORT_NAME'              => ($downloadOrderBy == 'name' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION'       => ($downloadOrderBy == 'description' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
-                'DOWNLOADS_DOWNLOAD_SORT_AUTHOR'            => ($downloadOrderBy == 'author' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_DOWNLOAD_SORT_ID_LABEL'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($downloadOrderBy == 'id' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_STATUS_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($downloadOrderBy == 'is_active' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_ORDER_LABEL'       => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'].($downloadOrderBy == 'order' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_NAME_LABEL'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($downloadOrderBy == 'name' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'].($downloadOrderBy == 'description' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
-                'DOWNLOADS_DOWNLOAD_SORT_AUTHOR_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'].($downloadOrderBy == 'author' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_CATEGORY_SORT'          => $categoryOrderDirection,
                 'DOWNLOADS_DOWNLOAD_CATEGORY_BY'            => $categoryOrderBy,
                 'DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET'        => $categoryLimitOffset
