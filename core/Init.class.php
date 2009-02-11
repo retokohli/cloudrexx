@@ -103,7 +103,7 @@ class InitCMS
     function _initBackendLanguage()
     {
         $objFWUser = FWUser::getFWUserObject();
-        if ($objFWUser->objUser->login()) {
+        if ($objFWUser->objUser->login(true)) {
             $backendLangId = $objFWUser->objUser->getBackendLanguage();
         } elseif (!empty($_COOKIE['backendLangId'])) {
             $backendLangId = intval($_COOKIE['backendLangId']);
@@ -153,7 +153,7 @@ class InitCMS
             exit;
         }
 
-        // small screen view (mobile etc). use index.php?smallscreen=1 to 
+        // small screen view (mobile etc). use index.php?smallscreen=1 to
         // enable, ?smallscreen=0 to disable.
         $is_small_screen = 0;
         // only set the smallscreen environment if there's actually a mobile theme defined.
@@ -165,9 +165,9 @@ class InitCMS
                 $is_small_screen = 1;
             }
             else {
-                // now: either smallscreen=1 requested, but no smallscreen theme 
-                // available, or disabling requested. Both cases require the 
-                // cookie to be set to zero, so the javascript doesn't redirect 
+                // now: either smallscreen=1 requested, but no smallscreen theme
+                // available, or disabling requested. Both cases require the
+                // cookie to be set to zero, so the javascript doesn't redirect
                 // all the time!
                 setcookie('smallscreen', 0);
                 $is_small_screen = 0;
@@ -176,17 +176,17 @@ class InitCMS
         elseif(isset($_COOKIE['smallscreen'])) {
             // no need to check mobile_themes_id here: it's been checked
             // when the cookie was set.
-            $is_small_screen =intval($_COOKIE['smallscreen']); 
+            $is_small_screen =intval($_COOKIE['smallscreen']);
         }
         else {
             // auto detection
             if($this->_is_mobile_phone() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
                 // same here: only set smallscreen mode if there IS a smallscreen theme
                 setcookie('smallscreen', 1);
-                $is_small_screen = 1; 
+                $is_small_screen = 1;
             }
             else {
-                // Don't even think about setting the cookie 
+                // Don't even think about setting the cookie
                 // to 0 in this case: 0 means the user disabled
                 // smallscreen mode INTENTIONALLY! The friendly javascript
                 // detector only enables smallscreen mode if the user
@@ -197,10 +197,10 @@ class InitCMS
         $this->frontendLangId = $frontendLangId;
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
-            
+
         }elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
             $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
-            
+
         }elseif ($is_small_screen and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['mobile_themes_id'];
 
@@ -453,7 +453,7 @@ class InitCMS
     public function getCurrentThemesPath()
     {
         return $this->themesPath;
-    } 
+    }
 
 
     function loadModulePaths()
@@ -770,10 +770,10 @@ class InitCMS
 
         $isMobile = strpos($ac, 'application/vnd.wap.xhtml+xml') !== false
             || $op != ''
-            || strpos($ua, 'sony') !== false 
-            || strpos($ua, 'symbian') !== false 
-            || strpos($ua, 'nokia') !== false 
-            || strpos($ua, 'samsung') !== false 
+            || strpos($ua, 'sony') !== false
+            || strpos($ua, 'symbian') !== false
+            || strpos($ua, 'nokia') !== false
+            || strpos($ua, 'samsung') !== false
             || strpos($ua, 'mobile') !== false
             || strpos($ua, 'windows ce') !== false
             || strpos($ua, 'epoc') !== false
@@ -812,7 +812,7 @@ class InitCMS
             || strpos($ua, 'vodafone/') !== false
             || strpos($ua, 'wap1.') !== false
             || strpos($ua, 'wap2.') !== false;
-        return $isMobile; 
+        return $isMobile;
     }
 
 
