@@ -19,6 +19,14 @@ function downloadsDownloadDoAction(action)
     }
     document.getElementById('downloads_download_select_action').value=0;
 }
+
+function downloadsUpdateSortOrder(event,elForm,idMultiAction)
+{
+    if (event.which && event.which ==13 || event.keyCode == 13) {
+        document.getElementById(idMultiAction).value='order';
+        elForm.submit();
+    }
+}
 // ]]>
 </script>
 <form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=downloads" method="post">
@@ -50,7 +58,7 @@ function downloadsDownloadDoAction(action)
             </a>
         </td>
         <td style="text-align: center;">
-            <input name="downloads_download_order[{DOWNLOADS_DOWNLOAD_ID}]" size="5" maxlength="5" value="{DOWNLOADS_DOWNLOAD_ORDER}" type="text" />
+            <input name="downloads_download_order[{DOWNLOADS_DOWNLOAD_ID}]" size="5" maxlength="5" value="{DOWNLOADS_DOWNLOAD_ORDER}" type="text" onkeypress="downloadsUpdateSortOrder(event,this.form,'downloads_download_select_action')" />
         </td>
         <td nowrap="nowrap">
             <img src="{DOWNLOADS_DOWNLOAD_ICON}" width="15" height="13" alt="{DOWNLOADS_DOWNLOAD_NAME}" />
