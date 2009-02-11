@@ -969,7 +969,7 @@ class AccessLib
                     $code .= '<br />
                         <input
                             type="button"
-                            value="Neuen Eintrag hinzufügen"
+                            value="'.$_CORELANG['TXT_ACCESS_ADD_NEW_ENTRY'].'"
                             onclick="
                                 newEntry=document.getElementById(\''.$this->attributeNamePrefix.'_'.$attributeId.'_history_new\').cloneNode(true);
                                 newEntry.removeAttribute(\'id\');
