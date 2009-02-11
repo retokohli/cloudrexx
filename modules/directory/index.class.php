@@ -2169,7 +2169,7 @@ $this->arrRows[2] = '';
             'DIRECTORY_CATEGORY_NAVI' => $this->navtree,
             'DIRECTORY_VOTE_TITLE'    => $title,
             'DIRECTORY_VOTE_TEXT'     => $text,
-            'DIRECTORY_BACK'          => '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&lid='.$lid.'&cid='.$cid.'" target="_self">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+            'DIRECTORY_BACK'          => '<a href="javascript:history.go(-1);">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
             'TXT_DIRECTORY_DIR'       => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
         ));
     }
