@@ -171,6 +171,7 @@ class rssDirectory extends directoryLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
+
         if (isset($_GET['lid'])) {
             $lId = intval($_GET['lid']);
         } else {
