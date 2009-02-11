@@ -33,6 +33,10 @@ Kalender
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Benutzerverwaltung
+- Benutzer welche keiner Backend-Gruppe zugeordnet sind, können sich nicht
+  mehr im Backend anmelden.
+
 Datenbank Manager
 - Die mySQL Syntax der Sicherungen wurde gefixt, so dass die erzeugten .sql
   Dateien auch über myPhpAdmin oder mySQL Clients fehlerfrei importiert werden
