@@ -205,18 +205,20 @@ class ProductAttributes  // friend Product
         // No Product ID, and the array has not been initialized yet,
         // or some Product ID, and the array element has not been initialized yet
         if (   (   empty($product_id)
-                && empty(self::$arrProduct))
+                && empty(self::$arrRelation))
             || (   $product_id
-                && empty(self::$arrProduct[$product_id]))) {
+                && empty(self::$arrRelation[$product_id]))) {
             // Initialize the array with all the values of the
             // Product Attribute selected, if any, or all
             if (!self::initRelationArray($product_id)) return false;
         }
         // No Product ID:  Return the entire array
-        if (empty($product_id)) return self::$arrProduct;
+        if (empty($product_id)) return self::$arrRelation;
         // Otherwise, there is some Product ID:  Return the selected array element
-        return self::$arrProduct[$product_id];
-
+        return (isset(self::$arrRelation[$product_id])
+            ? self::$arrRelation[$product_id]
+            : false
+        );
     }
 
 
@@ -230,7 +232,7 @@ class ProductAttributes  // friend Product
         $query = "
             SELECT `product_id`, `attributes_value_id`, `sort_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`".
-            ($product_id ? " WHERE `product_id`=$productId" : '')."
+            ($product_id ? " WHERE `product_id`=$product_id" : '')."
              ORDER BY `sort_id` ASC
         ";
         $objResult = $objDatabase->Execute($query);
@@ -241,7 +243,7 @@ class ProductAttributes  // friend Product
             $value_id = $objResult->fields['attributes_value_id'];
             if (!isset(self::$arrRelation[$product_id]))
                 self::$arrRelation[$product_id] = array();
-            $arrRelation[$product_id][$value_id] = $objResult->fields['sort_id'];
+            self::$arrRelation[$product_id][$value_id] = $objResult->fields['sort_id'];
             $objResult->MoveNext();
         }
         return true;
@@ -487,7 +489,7 @@ class ProductAttributes  // friend Product
         global $_ARRAYLANG;
 
         $arrValues = self::getValueArray($name_id);
-echo("PAs::getAttributeValueMenu($name_id, $name, $selectedId, $onchange, $style):  Values: ".var_export($arrValues, true)."<br />");
+//echo("PAs::getAttributeValueMenu($name_id, $name, $selectedId, $onchange, $style):  Values: ".var_export($arrValues, true)."<br />");
         // No options, or an error occurred
         if (!$arrValues) return '';
         $menu =

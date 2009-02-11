@@ -233,15 +233,13 @@ class Zones
 
     function getMenu($selectedId='', $menuName='zone_id', $onchange='')
     {
-        global $objDatabase;
-
         if (empty(self::$arrZone)) self::init();
+        $menu = '';
         foreach (self::$arrZone as $zone_id => $arrZone) {
             $menu .=
                 '<option value="'.$zone_id.'"'.
                 ($selectedId == $zone_id ? ' selected="selected"' : '').
                 '>'.$arrZone['name'].'</option>'."\n";
-            $objResult->MoveNext();
         }
         // Add select tag and hidden input if the menu name is non-empty
         if ($menuName)
@@ -254,8 +252,6 @@ class Zones
                 "</select>\n";
         return $menu;
     }
-
-
 
 }
 

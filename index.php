@@ -63,7 +63,7 @@
  * 2  Show Database queries and errors
  * 3  All of the above
  */
-define('_DEBUG', 3);
+define('_DEBUG', 0);
 
 // Enable error reporting
 if (_DEBUG & 1) {

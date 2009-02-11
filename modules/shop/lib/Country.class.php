@@ -242,7 +242,7 @@ class Country
                 ($objResult->fields['country_id'] === null
                     ? 'out' : 'in'
                 );
-echo("Country::getArraysByZoneId($zone_id): Country ID $id, name /$strName/, relation is $flagInZone<br />");
+//echo("Country::getArraysByZoneId($zone_id): Country ID $id, name /$strName/, relation is $flagInZone<br />");
             $arrCountries[$flagInZone][$id] = array(
                 'id' => $id,
                 'name' => $strName,

@@ -800,7 +800,7 @@ class ShopCategories
 
         $arrSqlName = Text::getSqlSnippets('text_name_id', FRONTEND_LANG_ID);
         $query = "
-           SELECT ".$arrSqlName['field']."
+           SELECT 1".$arrSqlName['field']."
              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             ".$arrSqlName['join']."
             WHERE flags LIKE '%__VIRTUAL__%'

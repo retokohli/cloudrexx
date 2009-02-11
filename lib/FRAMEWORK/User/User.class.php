@@ -338,7 +338,7 @@ class User extends User_Profile
         $this->email_access = $this->defaultEmailAccessType;
         $this->password = '';
         $this->frontend_language = FRONTEND_LANG_ID;
-        $this->backend_language = BACKEND_LANG_ID;
+        $this->backend_language = LANG_ID;
         $this->is_active = false;
         $this->is_admin = false;
         $this->profile_access = $this->defaultProfileAccessTyp;

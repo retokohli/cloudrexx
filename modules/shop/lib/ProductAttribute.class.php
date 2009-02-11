@@ -404,7 +404,7 @@ class ProductAttribute
             $this->text_name_id, FRONTEND_LANG_ID, $this->name,
             MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_NAME
         );
-echo("replaced text: ".var_export($objText, true)."<br />");
+//echo("replaced text: ".var_export($objText, true)."<br />");
         if (!$objText) return false;
         $this->text_name_id = $objText->getId();
         if ($this->id && $this->recordExists()) {
@@ -505,7 +505,7 @@ echo("replaced text: ".var_export($objText, true)."<br />");
                 (empty($arrValue['text_value_id'])
                     ? 0 : $arrValue['text_value_id']
                 );
-echo("storing value: ".var_export($arrValue, true)."<br />");
+//echo("storing value: ".var_export($arrValue, true)."<br />");
 
             // Store Text
             $objText = Text::replace(
