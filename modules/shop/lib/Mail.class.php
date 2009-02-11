@@ -35,7 +35,7 @@ class Mail
         self::$lang_id = false;
         // Use the current language if none is specified
         if (empty($lang_id)) $lang_id = LANG_ID;
-echo("Mail::init($lang_id): init()ing<br />");
+//echo("Mail::init($lang_id): init()ing<br />");
         self::$arrTemplate = array();
         $arrSqlName = Text::getSqlSnippets(
             '`mail`.`text_name_id`', $lang_id,
@@ -57,7 +57,7 @@ echo("Mail::init($lang_id): init()ing<br />");
             '`mail`.`text_message_id`', $lang_id,
             MODULE_ID, TEXT_SHOP_MAIL_MESSAGE
         );
-echo("Mail::init($lang_id): arrSqlName: ".var_export($arrSqlName, true)."<br />");
+//echo("Mail::init($lang_id): arrSqlName: ".var_export($arrSqlName, true)."<br />");
 
         $objResult = $objDatabase->Execute("
             SELECT `mail`.`id`, `mail`.`protected`".
@@ -143,9 +143,9 @@ echo("Mail::init($lang_id): arrSqlName: ".var_export($arrSqlName, true)."<br />"
             // If a language is specified, only init() if it is different
             // from the last one used.
             if ($lang_id != self::$lang_id) self::init($lang_id);
-echo("getTemplateArray($lang_id): init()ed with language ID $lang_id<br />");
+//echo("getTemplateArray($lang_id): init()ed with language ID $lang_id<br />");
         } else {
-echo("getTemplateArray($lang_id): init()ed without language ID<br />");
+//echo("getTemplateArray($lang_id): init()ed without language ID<br />");
         }
 */
 //echo("getTemplateArray($lang_id): returning ".var_export(self::$arrTemplate, true)."<br />");

@@ -18,16 +18,16 @@
  */
 class UserGroup {
 
-    var $id;
-    var $name;
-    var $description;
-    var $is_active;
-    var $type;
+    public $id;
+    public $name;
+    public $description;
+    public $is_active;
+    public $type;
 
-    var $arrLoadedGroups = array();
-    var $arrCache = array();
+    public $arrLoadedGroups = array();
+    public $arrCache = array();
 
-    var $arrAttributes = array(
+    public $arrAttributes = array(
         'group_id',
         'group_name',
         'group_description',
@@ -35,25 +35,25 @@ class UserGroup {
         'type'
     );
 
-    var $arrTypes = array(
+    public $arrTypes = array(
         'frontend',
         'backend'
     );
 
-    var $arrUsers;
-    var $arrStaticPermissions;
-    var $arrDynamicPermissions;
+    public $arrUsers;
+    public $arrStaticPermissions;
+    public $arrDynamicPermissions;
 
-    var $defaultType = 'frontend';
+    public $defaultType = 'frontend';
 
-    var $EOF;
+    public $EOF;
 
     /**
      * Contains the message if an error occurs
      *
      * @var unknown_type
      */
-    var $error_msg;
+    public $error_msg;
 
     function UserGroup()
     {
@@ -179,25 +179,22 @@ class UserGroup {
 
     function load($id)
     {
-        if ($id) {
-            if (!isset($this->arrCache[$id])) {
-                return $this->loadGroups($id);
-            } else {
-                $this->id = $this->arrCache[$id]['group_id'];
-                $this->name = isset($this->arrCache[$id]['group_name']) ? $this->arrCache[$id]['group_name'] : '';
-                $this->description = isset($this->arrCache[$id]['group_description']) ? $this->arrCache[$id]['group_description'] : '';
-                $this->is_active = isset($this->arrCache[$id]['is_active']) ? (bool)$this->arrCache[$id]['is_active'] : false;
-                $this->type = isset($this->arrCache[$id]['type']) ? $this->arrCache[$id]['type'] : $this->defaultType;
-                $this->arrDynamicPermissions = null;
-                $this->arrStaticPermissions = null;
-                $this->arrUsers = null;
-                $this->EOF = false;
-                return true;
-            }
-        } else {
-            $this->clean();
+        if (empty($id)) return $this->clean();
+        if (isset($this->arrCache[$id])) {
+            $this->id = $this->arrCache[$id]['group_id'];
+            $this->name = isset($this->arrCache[$id]['group_name']) ? $this->arrCache[$id]['group_name'] : '';
+            $this->description = isset($this->arrCache[$id]['group_description']) ? $this->arrCache[$id]['group_description'] : '';
+            $this->is_active = isset($this->arrCache[$id]['is_active']) ? (bool)$this->arrCache[$id]['is_active'] : false;
+            $this->type = isset($this->arrCache[$id]['type']) ? $this->arrCache[$id]['type'] : $this->defaultType;
+            $this->arrDynamicPermissions = null;
+            $this->arrStaticPermissions = null;
+            $this->arrUsers = null;
+            $this->EOF = false;
+            return true;
         }
+        return $this->loadGroups($id);
     }
+
 
     function loadUsers()
     {
@@ -454,17 +451,15 @@ class UserGroup {
 
     /**
      * Set ID's of users which should belong to this group
-     *
      * @param array $arrUsers
      * @see User, User::getUser()
      * @return void
      */
     function setUsers($arrUsers)
     {
-        $objFWUser = FWUser::getFWUserObject();
+        //$objFWUser = FWUser::getFWUserObject();
         $this->arrUsers = array();
-        foreach ($arrUsers as $userId)
-        {
+        foreach ($arrUsers as $userId) {
             //if ($objFWUser->objUser->getUser($userId)) {
                 $this->arrUsers[] = $userId;
             //}

@@ -21,7 +21,7 @@
  * Debug level
  * @ignore
  */
-define('_SHOP_DEBUG', 3);
+define('_SHOP_DEBUG', 0);
 
 /**
  * @ignore
@@ -1291,8 +1291,6 @@ class shopmanager extends ShopLibrary
 
 
     /**
-     * Add a new attribute option
-     *
      * Inserts the ProductAttribute with name and values into the database.
      * @access    private
      * @return    string    $statusMessage    Status message
@@ -1301,7 +1299,7 @@ class shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG;
 
-echo("Skipping _storeNewAttributeOption()<br />");
+//echo("Skipping _storeNewAttributeOption()<br />");
 
         $arrAttributeList = array();
         $arrAttributeValue = array();
@@ -1351,7 +1349,7 @@ echo("Skipping _storeNewAttributeOption()<br />");
         $arrAttributePrice = $_POST['attributePrice'];
 
         foreach ($arrAttributeName as $name_id => $name) {
-echo("updating name id $name_id, name $name<br />");
+//echo("updating name id $name_id, name $name<br />");
 
             $flagChanged = false;
 
@@ -1368,38 +1366,36 @@ echo("updating name id $name_id, name $name<br />");
                 $flagChanged = true;
             }
 
-echo("List ".var_export($arrAttributeList, true)."<br />");
+//echo("List ".var_export($arrAttributeList, true)."<br />");
 //continue;
 
             $arrValueObj = $objAttribute->getValueArray();
             foreach ($arrAttributeList[$name_id] as $value_id) {   //echo("looping name id $name_id, value ids ".join(',', $arrAttributeValueIds)."<br />");
-echo("updating:  value id $value_id, arrValueObj[$value_id] ".var_export($arrValueObj[$value_id], true)."<br />");
-echo("arrAttributeValue[$value_id] ".var_export($arrAttributeValue[$value_id], true)."<br />arrAttributePrice[$value_id] ".var_export($arrAttributePrice[$value_id], true)."<br />");
+//echo("updating:  value id $value_id, arrValueObj[$value_id] ".var_export($arrValueObj[$value_id], true)."<br />");
+//echo("arrAttributeValue[$value_id] ".var_export($arrAttributeValue[$value_id], true)."<br />arrAttributePrice[$value_id] ".var_export($arrAttributePrice[$value_id], true)."<br />");
                 if (isset($arrValueObj[$value_id])) {                           //echo("updating value ".$arrAttributeValue[$value_id].", id $value_id<br />");
                     if (   $arrAttributeValue[$value_id] != $arrValueObj[$value_id]['value']
                         || $arrAttributePrice[$value_id] != $arrValueObj[$value_id]['price']) {
                         $objAttribute->updateValue($value_id, $arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
                         $flagChanged = true;
-echo("updated: ".var_export($objAttribute, true)."<br />");
+//echo("updated: ".var_export($objAttribute, true)."<br />");
                         }
                 } else {
                     // insert new attribute value
                     $objAttribute->addValue($arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
-                    $flagChanged = true;
-echo("added: ".var_export($objAttribute, true)."<br />");
+//echo("added: ".var_export($objAttribute, true)."<br />");
                 }
             }
 
             // Delete values that are no longer present in the post
             foreach (array_keys($arrValueObj) as $value_id) {
-echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_id], true)."<br />");
+//echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_id], true)."<br />");
                 if (!in_array($value_id, $arrAttributeList[$name_id]))
                     $objAttribute->deleteValueById($value_id);
             }
 
             if (!$objAttribute->store())
                 return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
-
         }
 
         // Delete Product Attributes with no values
@@ -2498,7 +2494,7 @@ echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_i
             // Update existing ShopCategory
             $objShopCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
             if (!$objShopCategory) {
-echo("no category<br />");
+//echo("no category<br />");
                 return false;
             }
             // Check validity of the IDs of the category and its parent.
@@ -2535,7 +2531,7 @@ echo("no category<br />");
         $objShopCategory->setPicture(basename($picture));
         $objShopCategory->setVirtual($virtual);
         if (!$objShopCategory->store()) {
-echo("Failed storing category:<br />".var_export($objShopCategory, true)."<hr />");
+//echo("Failed storing category:<br />".var_export($objShopCategory, true)."<hr />");
             self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             return false;
         }

@@ -15,7 +15,7 @@
 /**
  * Debug level
  */
-define('_SHOP_DEBUG', 3);
+define('_SHOP_DEBUG', 0);
 
 /**
  * Text objects
@@ -957,7 +957,7 @@ class Shop extends ShopLibrary
         global $_ARRAYLANG, $_CONFIG;
 
         $flagSpecialoffer = intval($this->arrConfig['shop_show_products_default']['value']);
-echo("special: $flagSpecialoffer<br />");
+//echo("special: $flagSpecialoffer<br />");
         $flagLastFive = (isset($_REQUEST['lastFive']) ? true : false);
         $productId = (isset($_REQUEST['productId'])
             ? $_REQUEST['productId'] : 0);
@@ -1045,7 +1045,7 @@ echo("special: $flagSpecialoffer<br />");
             self::$arrProductOrder[$this->arrConfig['product_sorting']['value']],
             ($this->objCustomer ? $this->objCustomer->isReseller() : false)
         );
-echo("Products: ".var_export($arrProduct, true)."<br />");
+//echo("Products: ".var_export($arrProduct, true)."<br />");
         $paging     = '';
         $detailLink = '';
         if ($count == 0) {
@@ -1204,7 +1204,7 @@ echo("Products: ".var_export($arrProduct, true)."<br />");
             }
             $shopProductFormName = "shopProductForm$formId";
 
-echo("Product ID ".$objProduct->getId()."<br />");
+//echo("Product ID ".$objProduct->getId()."<br />");
             $this->objTemplate->setVariable(array(
                 'SHOP_ROWCLASS'                   => (++$formId % 2 ? 'row2' : 'row1'),
                 'SHOP_PRODUCT_ID'                 => $objProduct->getId(),
@@ -1584,7 +1584,6 @@ echo("Product ID ".$objProduct->getId()."<br />");
                 $this->objTemplate->parse('shopProductOptionsRow');
             }
         }
-echo("XXX<br />");
         return
             "return checkProductOption('shopProductForm$formName', ".
             "$product_Id, '".

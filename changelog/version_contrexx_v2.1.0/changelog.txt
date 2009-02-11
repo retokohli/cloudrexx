@@ -14,7 +14,6 @@ Modul: Shop
   Mögliche Optionen:  Keine, markierte, Sonderangebote, neuste fünf.
   Die bei der Einstellung "markierte" anzuzeigenden Produkte können im Backend
   mittels eines Häkchens gekennzeichnet werden.
-- Test
 
 ****************************************
 * Behobene Fehler **********************
