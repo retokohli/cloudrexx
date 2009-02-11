@@ -102,7 +102,7 @@ class rssDirectory extends directoryLibrary
     /**
     * Do the requested newsaction
     *
-    * @global    ADONewConnection 
+    * @global    ADONewConnection
     * @global    HTML_Template_Sigma
     * @return    string    parsed content
     */
@@ -1861,29 +1861,29 @@ class rssDirectory extends directoryLibrary
         ));
 
         // Sort
-        if ($_GET['sort']){
+        if(isset($_GET['sort']) || empty($_SESSION['order'])) {
             switch ($_GET['sort'])
             {
                 case 'date':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.date desc")? "files.date asc" : "files.date desc";
+                $_SESSION['order']=($_SESSION['order']=="files.date desc")? "files.date asc" : "files.date desc";
                 break;
                 case 'name':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.title desc")? "files.title asc" : "files.title desc";
+                $_SESSION['order']=($_SESSION['order']=="files.title desc")? "files.title asc" : "files.title desc";
                 break;
                 case 'hits':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.hits desc")? "files.hits asc" : "files.hits desc";
+                $_SESSION['order']=($_SESSION['order']=="files.hits desc")? "files.hits asc" : "files.hits desc";
                 break;
                 case 'spez':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.spezial desc")? "files.spezial asc" : "files.spezial desc";
+                $_SESSION['order']=($_SESSION['order']=="files.spezial desc")? "files.spezial asc" : "files.spezial desc";
                 break;
                 case 'addedby':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.addedby desc")? "files.addedby asc" : "files.addedby desc";
+                $_SESSION['order']=($_SESSION['order']=="files.addedby desc")? "files.addedby asc" : "files.addedby desc";
+                break;
+                default:
+                $_SESSION['order'] = "files.id desc";
                 break;
             }
-        }else{
-            $_SESSION['directory']['sort']= "files.id desc";
         }
-
 
         if ($catId != '') {
             $where  = " AND files.id = rel_cat.dir_id AND rel_cat.cat_id = '".$catId."'";
@@ -1911,7 +1911,7 @@ class rssDirectory extends directoryLibrary
                     FROM ".$db." ".DBPREFIX."module_directory_dir AS files
                    WHERE files.status = 1 ".$where."
                    GROUP BY files.id
-                   ORDER BY ".$_SESSION['directory']['sort']."";
+                   ORDER BY ".$_SESSION['order']."";
 
         ////// paging start /////////
         $pagingLimit    = intval($this->settings['pagingLimit']['value']);
@@ -2188,27 +2188,24 @@ class rssDirectory extends directoryLibrary
             'TXT_IMPORT_MAKE_SELECTION'     => $_ARRAYLANG['TXT_DIR_MAKE_SELECTION']
         ));
 
+
         // Sort
-        if ($_GET['sort']){
-            switch ($_GET['sort']){
+        if(isset($_GET['sort']) || empty($_SESSION['order'])) {
+            switch ($_GET['sort'])
+            {
                 case 'date':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="date desc")? "date asc" : "date desc";
+                $_SESSION['order']=($_SESSION['order']=="files.date desc")? "files.date asc" : "files.date desc";
                 break;
                 case 'name':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="title desc")? "title asc" : "title desc";
+                $_SESSION['order']=($_SESSION['order']=="files.title desc")? "files.title asc" : "files.title desc";
                 break;
                 case 'addedby':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="addedby desc")? "addedby asc" : "addedby desc";
+                $_SESSION['order']=($_SESSION['order']=="files.addedby desc")? "files.addedby asc" : "files.addedby desc";
                 break;
-                case 'platform':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="platform desc")? "platform asc" : "platform desc";
-                break;
-                case 'language':
-                $_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="language desc")? "language asc" : "language desc";
+                default:
+                $_SESSION['order'] = "files.id desc";
                 break;
             }
-        }else{
-            $_SESSION['directory']['sort']= "date desc";
         }
 
         $pos= intval($_GET['pos']);
@@ -2225,7 +2222,7 @@ class rssDirectory extends directoryLibrary
         }
 
         //create query
-        $query="SELECT * FROM ".DBPREFIX."module_directory_dir WHERE status=0 $where ORDER BY ".$_SESSION['directory']['sort'];
+        $query="SELECT * FROM ".DBPREFIX."module_directory_dir AS files WHERE status='0' ".$where." ORDER BY ".$_SESSION['order'];
 
         ////// paging start /////////
         $objResult = $objDatabase->Execute($query);

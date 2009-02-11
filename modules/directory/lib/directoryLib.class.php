@@ -1538,8 +1538,8 @@ EOF;
                     break;
                 case '4':
                     if ($action !== "add"){
-                        if(!file_exists($this->mediaPath."images/".$arrInputfieldsValue[$inputName]) || $arrInputfieldsValue[$inputName] == ""){
-                            $inputValueField = "<img src='".$this->mediaWebPath."/images/no_picture.gif' alt='' /><br /><br />";
+                        if(!file_exists($this->mediaPath."images/".$arrInputfieldsValue[$inputName]) || $arrInputfieldsValue[$inputName] == "" || $arrInputfieldsValue[$inputName] == "no_picture.gif"){
+                            $inputValueField = "<img src='".$this->mediaWebPath."images/no_picture.gif' alt='' /><br /><br />";
                         }else{
                             if ($action !== "confirm"){
                                 $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
@@ -1550,7 +1550,12 @@ EOF;
                     }
                     if ($action !== "confirm"){
                         $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
-                         $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+
+                        if(empty($arrInputfieldsValue[$inputName])) {
+                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
+                        }
+
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
                     }
                     break;
                 case '5':
@@ -1564,7 +1569,7 @@ EOF;
                 case '7':
                     if ($action !== "add"){
                         if(!file_exists($this->mediaPath."images/".$arrInputfieldsValue[$inputName]) || $arrInputfieldsValue[$inputName] == ""){
-                            $inputValueField = "<img src='".$this->mediaWebPath."/images/no_picture.gif' alt='' /><br /><br />";
+                            $inputValueField = "<img src='".$this->mediaWebPath."images/no_picture.gif' alt='' /><br /><br />";
                         }else{
                             if ($action !== "confirm"){
                                 $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
@@ -1575,7 +1580,12 @@ EOF;
                     }
                     if ($action !== "confirm"){
                         $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
-                         $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+
+                        if(empty($arrInputfieldsValue[$inputName])) {
+                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
+                        }
+
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
                     }
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
                     break;
@@ -1601,7 +1611,12 @@ EOF;
                     }
                     if ($action !== "confirm"){
                         $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
-                         $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+
+                        if(empty($arrInputfieldsValue[$inputName])) {
+                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
+                        }
+
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
                     }
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
                     break;
@@ -1620,7 +1635,12 @@ EOF;
 
                     if ($action !== "confirm"){
                         $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
-                         $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+
+                        if(empty($arrInputfieldsValue[$inputName])) {
+                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
+                        }
+
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
                     }
                      break;
                 case '12':
@@ -1957,9 +1977,11 @@ EOF;
                         }
 
                         //picture
-                        if (file_exists($this->mediaPath."images/".$_POST["inputValue"][$inputName])){
+                        if (file_exists($this->mediaPath."images/".$_POST["inputValue"][$inputName]) && $_POST["inputValue"][$inputName] != 'no_picture.gif'){
                             $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"][$inputName]);
                         }
+
+
 
                         if($_POST["deleteMedia"][$inputName] != 1){
                             $inputValue = $this->uploadMedia($inputName, "images/");
@@ -1970,6 +1992,8 @@ EOF;
                         } else {
                             $inputValue     = "";
                         }
+                    } else {
+                        $inputValue = "";
                     }
                 }
 
@@ -1981,9 +2005,7 @@ EOF;
                     $inputName == "spez_field_28" ||
                     $inputName == "spez_field_29"){
 
-
                     if(!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1){
-
                         $obj_file = new File();
 
                         //upload
@@ -2000,6 +2022,8 @@ EOF;
                         } else {
                             $inputValue     = "";
                         }
+                    } else {
+                        $inputValue = "";
                     }
                 }
 
