@@ -1,0 +1,40 @@
+<div id="shopnavbar">
+	<!-- start shopnavbar.html -->
+	<span class="shopnavi">Produkte</span>
+	
+	<!-- BEGIN shopNavbar -->
+	<a href="index.php?section=shop&amp;catId={SHOP_CATEGORY_ID}" class="kategorie"> {SHOP_CATEGORY_NAME}</a>
+	<!-- END shopNavbar -->
+	
+	<br />
+	<span class="shopnavi">Information</span><br />
+	<span class="userinfo">{SHOP_LOGIN_STATUS}</span><br />
+	{SHOP_LOGIN_INFO}<br />
+	
+	<span class="shopnavi">{TXT_CURRENCIES}</span>
+	
+	<!-- BEGIN shopCurrencies -->
+	<div class="curencies">{SHOP_CURRENCIES}</div>
+	<!-- END shopCurrencies -->
+	
+	<br />
+	<!-- BEGIN shopJsCart -->
+	<p id="shopJsCart">
+		<span id="shopnaviCart">Warenkorb</span>
+		<div class="korbinhalt">
+			<span id="warenkorbinhalt">Warenkorbinhalt</span>
+			<br /><br />
+			<!-- BEGIN shopJsCartProducts -->
+			<a href="index.php?section=shop&amp;cmd=details&amp;referer=cart&amp;productId={SHOP_JS_PRODUCT_ID}">({SHOP_JS_PRODUCT_QUANTITY}) {SHOP_JS_PRODUCT_TITLE}<br />
+			({SHOP_JS_PRODUCT_PRICE} {SHOP_JS_TOTAL_PRICE_UNIT})<br /></a>
+			<!-- END shopJsCartProducts -->
+			<br />
+			<strong>Total {SHOP_JS_PRDOCUT_COUNT} Artikel im Wert von {SHOP_JS_TOTAL_PRICE} {SHOP_JS_TOTAL_PRICE_UNIT}</strong><br />
+			<br />
+			<a href="index.php?section=shop&amp;cmd=cart" title="weiter zur Bestellung..." id="warenkorbanzeige">Warenkorb anzeigen</a>
+			<a href="index.php?section=shop&amp;act=destroy" title="{TXT_EMPTY_CART}" id="warenkorbleeren">Warenkorb leeren</a>
+		</div>
+	</p>
+	<!-- END shopJsCart -->
+	<!-- end shopnavbar.html -->
+</div>

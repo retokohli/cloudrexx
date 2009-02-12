@@ -1511,6 +1511,7 @@ class newsManager extends newsLibrary {
             $objRSSWriter = new RSSWriter();
 
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
+			print "<!-- setting rss encoding of feed: " . CONTREXX_CHARSET . " -->";
             $objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
             $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
             $objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];

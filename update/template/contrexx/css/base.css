@@ -1,0 +1,208 @@
+/*
+   Base Style Sheet for the Contrexx Web Installer.
+
+   Copyright 2007 COMVATION AG.
+   All Rights Reserved.
+
+*/
+html, body {
+  color:  black;
+  background: #ffffff;
+  font-weight: normal;
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: normal;
+  font-size: 12px;
+  text-decoration: none;
+  padding: 0px;
+  border:  0px;
+  margin: 0px;
+}
+
+body {
+	SCROLLBAR-FACE-COLOR: #dadada;
+	SCROLLBAR-HIGHLIGHT-COLOR: #dadada;
+	SCROLLBAR-SHADOW-COLOR: #dadada;
+	SCROLLBAR-3DLIGHT-COLOR: #dadada;
+	SCROLLBAR-ARROW-COLOR: #000000;
+	SCROLLBAR-TRACK-COLOR: #dadada;
+	SCROLLBAR-DARKSHADOW-COLOR: #2f4f4f;
+	SCROLLBAR-BASE-COLOR: #dadada
+}
+
+form {
+	margin: 0px;
+}
+
+textarea,
+input,
+object,
+select {
+	border-right: 1px solid;
+	border-top: 1px solid;
+	font-size: 12px;
+	border-left: 1px solid;
+	color: black;
+	border-bottom: 1px solid;
+	background-color: white;
+	border-color: #0A50A1
+}
+
+A {
+	FONT-SIZE: 11px;
+	COLOR: #000099;
+	TEXT-DECORATION: none
+}
+A:link {
+	COLOR: #000099;
+	TEXT-DECORATION: none
+}
+A:visited {
+	COLOR: #000099;
+	TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: #000099;
+	BACKGROUND-COLOR: #ffffcc;
+	TEXT-DECORATION: none
+}
+A:active {
+	COLOR: #000099;
+	TEXT-DECORATION: none
+}
+
+.textBox {
+	width: 200px;
+}
+
+.status_message div {
+	padding: 3px 3px 3px 3px;
+}
+
+.status_message .success {
+	border: 1px solid green;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #green;
+	color: #green;
+	background: #CCFFCC;
+}
+
+.status_message .failed {
+	border: 1px solid #ff0000;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #ff0000;
+	color: #ff0000;
+	background: #FFCCCC;
+}
+
+.border-top {
+	border-top: 1px solid rgb(221, 228, 255);
+}
+
+.lang {
+	height:17px;
+}
+
+#body {
+	clear:both;
+	background-color: #ecf2fa;
+	text-align:center;
+	padding-top:17px;
+	padding-bottom:17px;
+}
+
+#body .installer {
+	margin-right:auto;
+	margin-left:auto;
+	text-align:left;
+	border: 1px solid rgb(220, 228, 255);
+	width:530px;
+}
+
+#body .installer .content {
+	padding: 10px;
+	background-color: #ffffff;
+	min-height:370px;
+	height: auto !important;
+	height:370px;
+	font-size: 11px;
+	text-align: left;
+}
+
+#body .installer .content .title {
+	border:1px solid #DCE4FF;
+	background-color:#DCE4FF;
+	font-weight:bold;
+	margin-bottom:5px;
+	padding:2px;
+}
+
+#body .installer .content .loginForm {
+	float:right;
+	margin-right:20px;
+	margin-top:60px;
+}
+
+#body .installer .content .loginForm .status_message {
+	height:20px;
+	clear:both;
+	width:250px;
+	margin-bottom:10px;
+}
+
+#body .installer .content .loginForm .inputBox {
+	height:20px;
+	clear:both;
+	width:250px;
+}
+
+#body .installer .content .loginForm .inputBox .inputLbl {
+	float:left;
+	width:100px;
+}
+
+#body .installer .content .loginForm .inputBox .inputField {
+	float:right;
+	width:150px;
+	text-align:right;
+}
+
+#body .installer .content .loginForm .inputBox .inputField input {
+	width:140px;
+}
+
+#body .installer .navigation {
+	padding: 10px;
+	background-color: #ffffff;
+	height:30px;
+	font-size: 11px;
+	text-align: right;
+}
+
+#body .installer .header {
+	height:20px;
+	background-color: #DCE4FF;
+}
+
+#body .installer .content .updateStatusScreen {
+	height:300px;
+	min-height:300px;
+}
+
+#footer .copyright {
+  font-size: 11px;
+  margin-right: 4px;
+  text-align: right;
+}
+
+.text:link, .text:visited, .text:hover, .text:active {
+	color:  black;
+	background-color: transparent;
+}
+
+.text-selected:link, .text-selected:visited, .text-selected:hover, .text-selected:active {
+	color:  black;
+	font-weight: bold;
+	background-color: transparent;
+}

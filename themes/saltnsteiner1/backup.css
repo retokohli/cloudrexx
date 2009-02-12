@@ -1,0 +1,143 @@
+#navigation {
+	float: left;
+	width: 160px;
+	height:auto !important;
+	color: #000000;
+	font-size:11px;
+	padding: 0px 30px 0px 0px;
+        margin-left: 25px;
+}
+
+#navbar ul {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	border-top: 1px solid #cccccc;
+}
+
+#navbar ul li {
+	border-bottom: 1px solid #cccccc;
+}
+
+#navbar ul li a {
+	display:block;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
+	padding: 5px 3px 5px 25px;
+	background-color: #ffffff;
+	background-image:url(images/unterrubrik_rot.jpg);
+	background-position:left;
+	background-repeat:no-repeat;
+        text-transform: uppercase;
+}
+
+#navbar ul li.level_2 a {
+	display:block;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
+	padding: 4px -5px 4px 46px;
+	background-color: #ffffff;
+	text-transform:none;
+        background-image: none;
+}
+
+
+/*--------- LEVEL 3 ------------- */
+#navbar ul li.level_3 a {
+	display:block;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
+	padding: 2px 2px 2px 35px;
+	background-color: #ffffff;
+	text-transform:none;
+        background-image: none;
+}
+
+#navbar ul li a.active {
+	display:block;
+	font-weight: normal;
+	padding: 5px 3px 5px 25px;
+	color: #000000;
+	background-image:url(images/unterrubrik_grau.jpg);
+	background-position:left;
+	background-repeat:no-repeat;
+}
+
+#navbar ul li a:hover {
+	display:block;
+	font-weight: normal;
+	padding: 5px 3px 5px 25px;
+	color: #000000;
+	
+	background-image:url(images/unterrubrik_grau.jpg);
+	background-position:left;
+	background-repeat:no-repeat;
+}
+
+#navbar ul li a.active:hover {
+	display:block;
+	font-weight: normal;
+	padding: 5px 3px 5px 25px;
+	color: #000000;
+	background-image:url(images/unterrubrik_grau.jpg);
+	background-position:left;
+	background-repeat:no-repeat;
+}
+
+#navbar ul li.level_2 a.active {
+	display:block;
+	font-weight: normal;
+	padding: 4px -5px 4px 46px;
+	color: #006EB6;
+        background-image: none;
+}
+
+#navbar ul li.level_2 a:hover {
+	display:block;
+	font-weight: normal;
+	padding: 4px -5px 4px 46px;
+	color: #006EB6;
+        background-image: none;
+	
+}
+
+#navbar ul li.level_2 a.active:hover {
+	display:block;
+	font-weight: normal;
+	padding: 4px -5px 4px 46px;
+	color: #006EB6;
+	background-image: none;
+	
+}
+
+/* ----------- LEVEL 3 -------------*/
+#navbar ul li.level_3 a.active{
+	display:block;
+	font-weight: normal;
+	padding: 2px 2px 2px 35px;
+	color: #006EB6;
+	background-image: none;
+	
+}
+
+#navbar ul li.level_3 a:hover {
+	display:block;
+	font-weight: normal;
+	padding: 2px 2px 2px 35px;
+	color: #006EB6;
+        background-image: none;
+	
+}
+
+#navbar ul li.level_3 a.active:hover {
+	display:block;
+	font-weight: normal;
+	padding: 2px 2px 2px 35px;
+	color: #006EB6;
+	background-image: none;
+	
+}
+

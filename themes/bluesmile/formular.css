@@ -1,0 +1,155 @@
+/*
+    FORMULAR STYLE
+*/
+
+
+/*#person label {
+	display: block;
+	font-weight: normal;
+	font-size:11px;
+}*/
+
+
+legend {
+	font-weight: bold;
+	font-size: 12px;
+	color: #bcbcbc;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+}
+
+fieldset {
+	border: solid 1px #bcbcbc;
+}
+
+input:hover, textarea:hover, select:hover, input:focus, textarea:focus, select:focus { 
+    border: 1px solid #CCCCCC; 
+    margin-bottom: 0px; 
+}
+
+select { 
+    border:solid 1px #bcbcbc; 
+    color: #000000; 
+}
+
+input, textarea { 
+    background: #fff top left repeat-x; 
+    font: 1em/1.6em Arial, "Lucida Grande","Lucida Sans Unicode",geneva,verdana,sans-serif; 
+    border: 1px solid #000000 padding: 2px; 
+    margin-bottom: 0px;
+}
+
+.searchbutton, .searchinput_suche {
+
+}
+
+.searchinput_suche:hover {
+margin: 0px 0px 2px 0px;
+}
+
+.searchinput, .searchinput:hover, .searchinput:focus {
+margin: 0px 0px 1px 0px;
+}
+
+
+.form {
+	width: 20px;
+}
+
+.shopbutton {
+	width: 80px;
+	cursor: pointer;
+}
+
+/*
+
+    CONTACT FORM STUFF
+
+*/
+form.contactForm p {
+    width: 300px;
+    clear: left;
+    margin: 0;
+    padding: 2px 0 3px 0;
+    padding-left: 155px;
+    _padding-left: 165px;
+    height: 1%;
+}
+
+form.contactForm p label.noCaption {
+    float: left;
+    width: 150px;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+form.contactForm .contactFormGroup {
+    float: left;
+    margin-top: -15px !important;
+}
+
+form.contactForm p input.contactFormClass_checkbox {
+    float: left;
+}
+
+form.contactForm p input.contactFormClass_checkboxGroup {
+    clear: left;
+    float: left;
+}
+
+form.contactForm p input.contactFormClass_radio {
+    clear: left;
+    float: left;
+}
+
+form.contactForm p label, .contactForm p span {
+    font-weight: bold;
+    float: left;
+    margin-left: -155px;
+    width: 150px;
+}
+
+form.contactForm input[type="text"] {
+    width: 250px;
+}
+
+form.contactForm input{
+    overflow: hidden;
+}
+
+form.contactForm img.captcha {
+    float: left;
+}
+
+form.contactForm .is_required {
+    color: red;
+}
+
+form.contactForm textarea {
+    width: 250px;
+    height: 150px;
+}
+
+form.contactForm #contactFormCaptcha {
+    margin-left: 147px;
+}
+
+
+form.contactForm .contactFormClass_button {
+    margin-left: 0px;
+	width: 60px;
+	cursor: pointer;
+	color: #bcbcbc;
+	margin: 2px;
+}
+
+.contactFormClass_button:hover, .contactFormClass_button:focus  {
+	width: 60px;
+	cursor: pointer;
+	color: #bcbcbc;
+	margin: 2px;
+}
+
+form.contactForm  #contactFormCaptcha {
+    margin-left: 3px !important;
+    margin-top: 5px !important;
+}
