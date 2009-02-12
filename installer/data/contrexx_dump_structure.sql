@@ -958,6 +958,7 @@ CREATE TABLE `contrexx_module_downloads_files_stat` (
 CREATE TABLE `contrexx_module_downloads_rel_download_category` (
   `download_id` int(10) unsigned NOT NULL default '0',
   `category_id` int(10) unsigned NOT NULL default '0',
+  `order` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`download_id`,`category_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_rel_download_download` (

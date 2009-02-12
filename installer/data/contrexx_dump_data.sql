@@ -1134,8 +1134,8 @@ INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id
 INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`) VALUES (4,2,'Contrexx® OpenSource Update','');
 INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`) VALUES (5,2,'Contrexx® OpenSource Update','');
 INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`) VALUES (6,2,'Contrexx® OpenSource Update','');
-INSERT INTO `contrexx_module_downloads_rel_download_category` (`download_id`, `category_id`) VALUES (1,1);
-INSERT INTO `contrexx_module_downloads_rel_download_category` (`download_id`, `category_id`) VALUES (2,1);
+INSERT INTO `contrexx_module_downloads_rel_download_category` (`download_id`, `category_id`, `order`) VALUES (1,1,0);
+INSERT INTO `contrexx_module_downloads_rel_download_category` (`download_id`, `category_id`, `order`) VALUES (2,1,0);
 INSERT INTO `contrexx_module_downloads_rel_download_download` (`id1`, `id2`) VALUES (1,2);
 INSERT INTO `contrexx_module_downloads_settings` (`setting_id`, `setting_name`, `setting_value`) VALUES (1,'filter','1');
 INSERT INTO `contrexx_module_downloads_settings` (`setting_id`, `setting_name`, `setting_value`) VALUES (2,'design','1');
