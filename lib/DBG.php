@@ -1,6 +1,11 @@
 <?PHP
 
-error_reporting(E_ALL);ini_set('display_errors',1);
+define('DBG_PHP'           , 1);
+define('DBG_ADODB'         , 2);
+define('DBG_ADODB_TRACE'   , 4);
+define('DBG_LOG_FILE'      , 8);
+define('DBG_LOG_FIREPHP'   , 16);
+define('DBG_ALL'           , 31);
 
 class DBG {
 	private static $dbg_fh = null;
@@ -99,6 +104,7 @@ class DBG {
 			self::_log("TRACE:  $f : $l");
 		}
 	}
+
     static function calltrace() {
 		if (self::$enable_trace) {
 			$level = 1;
