@@ -60,8 +60,12 @@
 /**
  * Debug level
  */
+define('DBG_NONE',  0); # -> Debugging ausgeschaltet
+define('DBG_ENABLE',1); # -> PHP Meldungen aktiviert (E_ALL)
+define('DBG_MORE',  2); # -> PHP Meldungen + simples ADODB logging aktiviert
+define('DBG_FULL', 99); # -> PHP Meldungen + erweitertes ADODB logging aktiviert (backtrace style)
 
-define('_DEBUG', 0);
+define('_DEBUG', DBG_NONE);
 
 //-------------------------------------------------------
 // Set error reporting
