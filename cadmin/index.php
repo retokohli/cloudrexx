@@ -13,30 +13,42 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+include_once('../lib/DBG.php');
 /**
- * Debug level
+ * Debug level, see lib/DBG.pho
+ *
+ *   DBG_PHP             - show PHP errors/warnings/notices
+ *   DBG_ADODB           - show ADODB queries
+ *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
+ *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
+ *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
+ *   DBG_ALL             - sets all debug flags
  */
-define('DBG_NONE',  0); # -> Debugging ausgeschaltet
-define('DBG_ENABLE',1); # -> PHP Meldungen aktiviert (E_ALL)
-define('DBG_MORE',  2); # -> PHP Meldungen + simples ADODB logging aktiviert
-define('DBG_FULL', 99); # -> PHP Meldungen + erweitertes ADODB logging aktiviert (backtrace style)
-
-define('_DEBUG', DBG_NONE);
+define('_DEBUG', DBG_ADODB_TRACE | DBG_LOG_FIREPHP);
 
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
 if (_DEBUG) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    if(include_once('../lib/DBG.php')){
-        $objDBG = new DBG(true); //pass false to disable firephp and enable logging to a file (see following DBG::setup)
-        $objDBG->setup('dbg.log', 'w');
+    $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP)           == 0 ? false : true;
+    $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB)         == 0 ? false : true;
+    $_DBG['dbgADODBTrace']  = (_DEBUG & DBDBG_ADODB_TRACE) == 0 ? false : true;
+    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE)      == 0 ? false : true;
+    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP)   == 0 ? false : true;
+
+    if ($_DBG['dbgPHP']) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+    }else{
+        error_reporting(0);
+        ini_set('display_errors', 0);
+    }
+
+    if ($_DBG['dbgLogFile'] || $_DBG['dbgLogFirePHP']) {
+        $objDBG = new DBG($_DBG['dbgLogFirePHP']);
+        $objDBG->setup('dbg.log', 'a');
         $objDBG->enable_all();
     }
-} else {
-    error_reporting(0);
-    ini_set('display_errors', 0);
 }
 
 $startTime = explode(' ', microtime());
@@ -83,22 +95,12 @@ if ($objDatabase === false) {
     die('Database error: '.$strErrMessage);
 }
 
-if (_DEBUG == 1){
-    $objDatabase->debug = 0;
+if($_DBG['dbgADODBTrace']) {
+    $objDatabase->debug = 99;
+} elseif ($_DBG['dbgADODB']) {
+    $objDatabase->debug = 1;
 } else {
-    $objDatabase->debug = _DEBUG;
-}
-
-if($objDBG instanceof DBG){ //see: http://www.firephp.org/HQ/Use.htm for firephp usage examples
-    //here's some basic stuff
-    $objDBG->log("this is a test");
-    $objDBG->log(array(
-                    array('1','2'), array('a','b'),
-                    array('c','d'), array('e','f')
-                 ), 'table', 'myExampleTable');
-    $objDBG->trace();
-    $objDBG->stack();
-    $objDBG->log('what teh trace: '.serialize($_REQUEST), 'trace');
+    $objDatabase->debug = 0;
 }
 
 //-------------------------------------------------------
