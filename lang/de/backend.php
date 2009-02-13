@@ -964,4 +964,5 @@ $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "Geschützte Seiten auflisten";
 $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Dies definiert, ob bei der Navigation, Volltextsuche, Sitemap und XML-Sitemap auch geschützte Seiten aufgelistet werden sollen, wenn der Benutzer nicht authentifiziert ist - Status (on | off)";
 $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = "Template für Mobilgeräte";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Neuen Eintrag hinzufügen";
+$_ARRAYLANG['TXT_U2U_MODULE_DESCRIPTION'] = "User to User Nachrichten";
 ?>
