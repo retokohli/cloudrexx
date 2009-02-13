@@ -27,12 +27,7 @@ class DownloadsLibrary
     var $_arrConfig = array();
     var $_arrLang   = array();
 
-    function DownloadsLibrary()
-    {
-        $this->__constructor();
-    }
-
-    function __constructor()
+    function __construct()
     {
         $this->_init();
         $this->initDefaultCategoryImage();
@@ -686,7 +681,7 @@ class DownloadsLibrary
     }
 
     function _GetCategoriesOption($Category='', $width='150px')
-    {
+    {print_debug_backtrace();
         global $objDatabase, $_LANGID, $_ARRAYLANG;
 
         if($Category!=''){

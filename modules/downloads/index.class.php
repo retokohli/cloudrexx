@@ -1,5 +1,5 @@
 <?php
-if (0) {
+if ($_COOKIE['debug']) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     $objDatabase->debug = 1;
@@ -20,7 +20,7 @@ if (0) {
 /**
  * Includes
  */
-require_once ASCMS_MODULE_PATH.'/downloads/downloadsLib.class.php';
+require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
 
 $_ARRAYLANG['TXT_DOWNLOADS']            = "Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_SEARCH']     = "Suche";
@@ -39,7 +39,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ALL']        = "Alle";
 //error_reporting(E_ALL);
 //ini_set('display_errors', 1);
 
-class Downloads extends DownloadsLibrary
+class downloads extends DownloadsLibrary
 {
     /**
      * @var HTML_Template_Sigma
@@ -48,23 +48,17 @@ class Downloads extends DownloadsLibrary
     var $_strStatusMessage = '';
     var $_strErrorMessage = '';
 
-    /**
-    * Constructor-Fix for non PHP5-Servers
-    */
-    function Downloads($strPageContent) {
-        $this->__constructor($strPageContent);
-    }
 
 
     /**
     * Constructor    -> Call parent-constructor, set language id and create local template-object
     * @global    integer        $_LANGID
     */
-    function __constructor($strPageContent)
+    function __construct($strPageContent)
     {
         global $_LANGID;
 
-        DownloadsLibrary::__constructor();
+        parent::__construct();
 
         $this->_intLanguageId = intval($_LANGID);
 
@@ -83,8 +77,16 @@ class Downloads extends DownloadsLibrary
         if (!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         }
+        if (isset($_GET['download'])) {
+            $_GET['cmd'] = 'download_file';
+        }
 
         switch ($_GET['cmd']) {
+            case 'download_file':
+                $this->download();
+                exit;
+                break;
+
             case "file":
                 $this->GetFile();
                 break;
@@ -95,13 +97,199 @@ class Downloads extends DownloadsLibrary
                 $this->checkUser();
                 break;*/
             default:
-                $this->listDownloads();
+                //$this->listDownloads();
+                $this->overview();
                 break;
         }
 
         return $this->objTemplate->get();
     }
 
+    function overview()
+    {
+        global $_LANGID;
+
+        $objCategory = Category::getCategory(!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
+        if ($objCategory->getId()) {
+            $description = $objCategory->getDescription($_LANGID);
+            if (strlen($description) > 100) {
+                $shortDescription = substr($description, 0, 97).'...';
+            } else {
+                $shortDescription = $description;
+            }
+
+            $imageSrc = $objCategory->getImage();
+            if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+                if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
+                    $thumbnailSrc = $imageSrc.'.thumb';
+                } else {
+                    $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                }
+            } else {
+                $imageSrc = $this->defaultCategoryImage['src'];
+                $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            }
+
+            $this->objTemplate->setVariable(array(
+                'DOWNLOADS_CATEGORY_ID'                 =>  $objCategory->getId(),
+                'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_IMAGE'              => '<img src="'.$imageSrc.'" alt="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+                'DOWNLOADS_CATEGORY_IMAGE_SRC'          => $imageSrc,
+                'DOWNLOADS_CATEGORY_THUMBNAIL'          => '<img src="'.$thumbnailSrc.'" alt="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+                'DOWNLOADS_CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc
+            ));
+            $this->objTemplate->parse('downloads_category');
+
+
+
+            $this->parseDownloads($objCategory);
+        }
+
+        $this->parseSubcategories($objCategory);
+    }
+
+    private function parseSubcategories($objCategory)
+    {
+        global $_LANGID;
+
+        $objSubCategory = Category::getCategories(array('parent_id' => $objCategory->getId()));
+
+        if ($objSubCategory->EOF) {
+            $this->objTemplate->hideBlock('downloads_subcategory_list');
+        } else {
+            while (!$objSubCategory->EOF) {
+                $description = $objSubCategory->getDescription($_LANGID);
+                if (strlen($description) > 100) {
+                    $shortDescription = substr($description, 0, 97).'...';
+                } else {
+                    $shortDescription = $description;
+                }
+
+                $imageSrc = $objSubCategory->getImage();
+                if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+                    if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
+                        $thumbnailSrc = $imageSrc.'.thumb';
+                    } else {
+                        $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                    }
+                } else {
+                    $imageSrc = $this->defaultCategoryImage['src'];
+                    $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                }
+print $objSubCategory->getId();
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_SUBCATEGORY_ID'                 =>  $objSubCategory->getId(),
+                    'DOWNLOADS_SUBCATEGORY_NAME'               => htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_SUBCATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_SUBCATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_SUBCATEGORY_IMAGE'              => '<img src="'.$imageSrc.'" alt="'.htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+                    'DOWNLOADS_SUBCATEGORY_IMAGE_SRC'          => $imageSrc,
+                    'DOWNLOADS_SUBCATEGORY_THUMBNAIL'          => '<img src="'.$thumbnailSrc.'" alt="'.htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+                    'DOWNLOADS_SUBCATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc
+                ));
+                $this->objTemplate->parse('downloads_subcategory');
+
+
+                $objSubCategory->next();
+            }
+
+            $this->objTemplate->touchBlock('downloads_subcategory_list');
+        }
+    }
+
+    private function parseDownloads($objCategory)
+    {
+        global $_LANGID;
+
+        $objDownload = new Download();
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()));
+
+
+        if ($objDownload->EOF) {
+            $this->objTemplate->hideBlock('downloads_file_list');
+        } else {
+            while (!$objDownload->EOF) {
+                $description = $objDownload->getDescription($_LANGID);
+                if (strlen($description) > 100) {
+                    $shortDescription = substr($description, 0, 97).'...';
+                } else {
+                    $shortDescription = $description;
+                }
+
+                $imageSrc = $objDownload->getImage();
+                if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+                    if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
+                        $thumbnailSrc = $imageSrc.'.thumb';
+                    } else {
+                        $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                    }
+                } else {
+                    $imageSrc = $this->defaultCategoryImage['src'];
+                    $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                }
+
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_FILE_ID'                 =>  $objDownload->getId(),
+                    'DOWNLOADS_FILE_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_FILE_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_FILE_IMAGE'              => '<img src="'.$imageSrc.'" alt="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+                    'DOWNLOADS_FILE_IMAGE_SRC'          => $imageSrc,
+                    'DOWNLOADS_FILE_THUMBNAIL'          => '<img src="'.$thumbnailSrc.'" alt="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+                    'DOWNLOADS_FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
+                    'DOWNLOADS_FILE_ICON'               => '<img src="'.$objDownload->getIcon().'" alt="'.htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'" />'
+                ));
+                $this->objTemplate->parse('downloads_file');
+
+
+                $objDownload->next();
+            }
+
+            $this->objTemplate->touchBlock('downloads_file_list');
+        }
+    }
+
+
+//    <form action="index.php?section=downloads" method="get" name="downloads_search">
+//    <input type="text" value="[[DOWNLOADS_SEARCH_KEYWORD]]" name="downloads_search_keyword" />  <input type="submit" value="[[TXT_DOWNLOADS_SEARCH]]" />
+//</form>
+//<!-- BEGIN downloads_category_list -->
+//<div id="#downloads_category_list"><!-- BEGIN downloads_category -->
+//<div class="downloads_category">[[DOWNLOADS_CATEGORY_NAME]] [[DOWNLOADS_CATEGORY_DESCRIPTION]] [[DOWNLOADS_CATEGORY_SHORT_DESCRIPTION]] [[DOWNLOADS_CATEGORY_IMAGE]] [[DOWNLOADS_CATEGORY_THUMBNAIL]]</div>
+//<!-- END downloads_category --></div>
+//<!-- END downloads_file_list -->  <!-- BEGIN downloads_file_list -->
+//<div id="#downloads_file_list"><!-- BEGIN downloads_file -->
+//<div class="downloads_file">[[DOWNLOADS_FILE_NAME]] [[DOWNLOADS_FILE_DESCRIPTION]] [[DOWNLOADS_FILE_SHORT_DESCRIPTION]] [[DOWNLOADS_FILE_IMAGE]] [[DOWNLOADS_FILE_THUMBNAIL]]</div>
+//<!-- END downloads_file --></div>
+//<!-- END downloads_file_list -->  <br />
+//<br />
+
+    private function parseSearchForm()
+    {
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_SEARCH_KEYWORD'  => '',
+            'TXT_DOWNLOADS_SEARCH'  => ''
+        ));
+    }
+
+    private function download()
+    {
+        $objDownload = new Download();
+        $objDownload->load(!empty($_GET['download']) ? intval($_GET['download']) : 0);
+        if (!$objDownload->EOF) {
+            if ($objDownload->getType() == 'file') {
+                header("Content-Type: application/force-download");
+                header("Content-Disposition: attachment; filename=". htmlspecialchars(basename($objDownload->getSource())));
+                header("Content-Length: ".filesize(ASCMS_PATH.$objDownload->getSource()));
+                readfile(ASCMS_PATH.$objDownload->getSource());
+            } else {
+                // add socket -> prevent to hide the source from the customer
+                header('Location: '.$objDownload->getSource());
+            }
+        }
+    }
 
     /**
      * Shows all existing entries of the blog in descending order.
@@ -525,4 +713,3 @@ function GetFile()
 
 }
 ?>
-
