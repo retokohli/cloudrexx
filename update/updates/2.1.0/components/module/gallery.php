@@ -38,6 +38,33 @@ function _galleryUpdate()
 		}
 	}
 
+	$arrSettings = array(
+					'22' => array(
+						'name' 	=> 'show_file_name',
+						'value' => 'off'),
+					'23' => array(
+						'name' 	=> 'slide_show',
+						'value' => 'off'),
+					'24' => array(
+						'name' 	=> 'slide_show_seconds',
+						'value' => '3'),
+					);
+
+	foreach ($arrSettings as $id => $arrSetting) {
+		$query = "SELECT 1 FROM `".DBPREFIX."module_gallery_settings` WHERE `name`= '".$arrSetting['name']."'" ;
+		if (($objRS = $objDatabase->Execute($query)) === false) {
+			return _databaseError($query, $objDatabase->ErrorMsg());
+		}
+		if($objRS->RecordCount() == 0){
+			$query = "INSERT INTO `".DBPREFIX."module_gallery_settings`
+							 (`id`, `name`, `value`)
+					  VALUES (".$id.", '".$arrSetting['name']."', '".$arrSetting['value']."')" ;
+			if ($objDatabase->Execute($query) === false) {
+				return _databaseError($query, $objDatabase->ErrorMsg());
+			}
+		}
+	}
+
     return true;
 }
 ?>
