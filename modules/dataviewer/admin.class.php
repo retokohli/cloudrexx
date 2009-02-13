@@ -260,7 +260,7 @@ class Dataviewer {
 							
 			//delete last ","
 			$valuesString       = substr($valuesString, 0, strlen($valuesString)-2);
-			$insertPlaceholderQuery = $insertPlaceholderQuery . $valuesString;
+			$insertPlaceholderQuery = $insertPlaceholderQuery . $valuesString . ";";
 			
 			
 			//create query for dataviewer_projects_$name
@@ -273,12 +273,9 @@ class Dataviewer {
 			
 			//delete last ","
 			$columnsString       = substr($columnsString, 0, strlen($columnsString)-2);
-			$createProjectQuery .= $columnsString . ")";
+			$createProjectQuery .= $columnsString . ");";
 			
 			
-			//create query for contentpage
-			
-							
 			//execute queries
 			if($insertProjectQueryOK &&
 			   $objDatabase->Execute($insertPlaceholderQuery) &&
@@ -593,7 +590,7 @@ class Dataviewer {
 							'1',
 							'system',
 							'" . mktime() . "',
-							'" . $projectname . "',
+							'" . $this->makeInputDBvalid($projectname) . "',
 							'1',
 							'" . $moduleID . "',
 							'0000-00-00',
@@ -648,13 +645,13 @@ class Dataviewer {
 		global $objDatabase;
 		
 		//get page id
-		$query     = "SELECT catid from " .DBPREFIX. "content_navigation WHERE cmd = '".$projectnameOld."';";
+		$query     = "SELECT catid from " .DBPREFIX. "content_navigation WHERE cmd = '".makeInputDBvalid($projectnameOld)."';";
 		$objResult = $objDatabase->Execute($query);
 		$pageID  = $objResult->fields['catid']; 
 		
 		//insert content page
 		$queryContent     = "UPDATE ".DBPREFIX."content SET content = '".$this->createContentpage($projectname)."' WHERE id = '".$pageID."';";
-		$queryContentNavi = "UPDATE ".DBPREFIX."content_navigation SET cmd = '".$projectname."' WHERE catid = '".$pageID."';";
+		$queryContentNavi = "UPDATE ".DBPREFIX."content_navigation SET cmd = '".$this->makeInputDBvalid($projectname)."' WHERE catid = '".$pageID."';";
 		
 		if ($objDatabase->Execute($queryContent) && $objDatabase->Execute($queryContentNavi)) {
 			return true;
@@ -952,6 +949,14 @@ class Dataviewer {
 		$deleteNavigationPageQuery     = "DELETE FROM ".DBPREFIX."content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "';";
 		$deleteContentPageQuery        = "DELETE FROM ".DBPREFIX."content WHERE id = '" . $catID . "';";
 
+//		echo $query . "<br>";
+//		echo $catID . "<br>";
+//		echo $deleteProjectTableQuery . "<br>";
+//		echo $deleteProjectRecordQuery . "<br>";
+//		echo $deletePlaceholdersRecordQuery . "<br>";
+//		echo $deleteNavigationPageQuery . "<br>";
+//		echo $deleteContentPageQuery . "<br>";
+		
 		$error = false;
 		if(!$objDatabase->Execute($deleteProjectTableQuery)) {$error = true;}
 		if(!$objDatabase->Execute($deleteProjectRecordQuery)) {$error = true;}
