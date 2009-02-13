@@ -2555,5 +2555,6 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_zip` tinyint(1) NOT NULL default '0',
   `additional_email` tinyint(1) NOT NULL default '0',
   `additional_city` tinyint(1) NOT NULL default '0',
+  `additional_comment` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
