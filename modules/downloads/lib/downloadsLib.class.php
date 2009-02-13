@@ -1,7 +1,7 @@
-    <?php
+<?php
 
-    require_once dirname(__FILE__).'/Category.class.php';
-    require_once dirname(__FILE__).'/Download.class.php';
+require_once dirname(__FILE__).'/Category.class.php';
+require_once dirname(__FILE__).'/Download.class.php';
 /**
  * Downloads library
  * @copyright   CONTREXX CMS - COMVATION AG

@@ -72,7 +72,7 @@
     }
 // ]]>
 </script>
-<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=add_downloads_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}" onsubmit="downloadsSelectAllOptions(document.getElementById('downloads_category_associated_downloads'))" method="post">
+<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=add_downloads_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_OFFSET}" onsubmit="downloadsSelectAllOptions(document.getElementById('downloads_category_associated_downloads'))" method="post">
     <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
         <thead>
             <tr>
@@ -117,7 +117,7 @@
         </tbody>
     </table>
 <br />
-<input type="button" name="downloads_category_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_ID}'" />
+<input type="button" name="downloads_category_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_OFFSET}'" />
 <input type="submit" name="downloads_category_save_downloads" value="{TXT_DOWNLOADS_SAVE}" />
 </form>
 <!-- end module_downloads_category_add_downloads.html -->

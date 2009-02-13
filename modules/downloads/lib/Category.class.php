@@ -321,10 +321,10 @@ class Category {
         global $objDatabase;
 
         $this->downloads = array();
-        $objResult = $objDatabase->Execute('SELECT `download_id` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id);
+        $objResult = $objDatabase->Execute('SELECT `download_id`, `order` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id);
         if ($objResult) {
             while (!$objResult->EOF) {
-                $this->downloads[] = $objResult->fields['download_id'];
+                $this->downloads[$objResult->fields['download_id']] = $objResult->fields['order'];
                 $objResult->MoveNext();
             }
         }
@@ -981,10 +981,13 @@ class Category {
 
         $arrOldDownloads = array();
         $status = true;
+        $userId = ($objFWUser = FWUser::getFWUserObject()) == true && $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
+        $objDownload = new Download();
 
         if (!isset($this->downloads)) {
             $this->loadDownloadAssociations();
         }
+        $arrDownloads  = array_keys($this->downloads);
 
         $objOldDownloads = $objDatabase->Execute('SELECT `download_id` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id);
         if ($objOldDownloads !== false) {
@@ -1000,25 +1003,28 @@ class Category {
         if (Permission::checkAccess(142, 'static', true)
             || !$this->getAddFilesAccessId()
             || Permission::checkAccess($this->getAddFilesAccessId(), 'dynamic', true)
-            || (($objFWUser = FWUser::getFWUserObject()) == true && $objFWUser->objUser->login() && $this->getOwnerId() == $objFWUser->objUser->getId())
+            || $this->getOwnerId() == $userId
         ) {
-            $arrNewDownloads = array_diff($this->downloads, $arrOldDownloads);
+            $arrNewDownloads = array_diff($arrDownloads, $arrOldDownloads);
         } else {
             $arrNewDownloads = array();
         }
 
-        if (Permission::checkAccess(142, 'static', true)
+        $removePermission = Permission::checkAccess(142, 'static', true)
             || !$this->getManageFilesAccessId()
             || Permission::checkAccess($this->getManageFilesAccessId(), 'dynamic', true)
-            || (($objFWUser = FWUser::getFWUserObject()) == true && $objFWUser->objUser->login() && $this->getOwnerId() == $objFWUser->objUser->getId())
-        ) {
-            $arrRemovedDownloads = array_diff($arrOldDownloads, $this->downloads);
-        } else {
-            $arrRemovedDownloads = array();
+            || $this->getOwnerId() == $userId;
+        $arrRemovedDownloads = array_diff($arrOldDownloads, $arrDownloads);
+
+        foreach ($arrRemovedDownloads as $downloadId) {
+            $objDownload->load($downloadId);
+            if (!$removePermission && !$objDownload->EOF && $objDownload->getOwnerId() != $userId) {
+                unset($arrRemovedDownloads[array_search($downloadId, $arrRemovedDownloads)]);
+            }
         }
 
         foreach ($arrNewDownloads as $downloadId) {
-            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_download_category` (`category_id`, `download_id`) VALUES (".$this->id.", ".$downloadId.")") === false) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_download_category` (`category_id`, `download_id`, `order`) VALUES (".$this->id.", ".$downloadId.", ( SELECT `order` FROM `".DBPREFIX."module_downloads_download` WHERE `id` = ".$downloadId."))") === false) {
                 $status = false;
             }
         }
@@ -1209,7 +1215,7 @@ class Category {
 
     public function setDownloads($arrDownloads)
     {
-        $this->downloads = $arrDownloads;
+        $this->downloads = count($arrDownloads) ? array_combine($arrDownloads, array_pad(array(), count($arrDownloads), 0)) : array();
     }
 
     public function getErrorMsg()
@@ -1272,6 +1278,30 @@ class Category {
         }
 
         return $arrPermissions;
+    }
+
+    public function updateDownloadOrder($arrDownloadOrder)
+    {
+        global $objDatabase, $_LANGID, $_ARRAYLANG;
+
+        $arrFailedDownloads = array();
+        $objDownload = new Download();
+
+        foreach ($arrDownloadOrder as $downloadId => $order) {
+            if ($objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_rel_download_category` SET `order` = '.intval($order).' WHERE `category_id` = '.$this->id.' AND `download_id` = '.$downloadId) === false) {
+                $objDownload->load($downloadId);
+                if (!$objDownload->EOF) {
+                    $arrFailedDownloads[] = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                }
+            }
+        }
+
+        if (count($arrFailedDownloads)) {
+            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_FAILED'], implode(', ', $arrFailedDownloads));
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public function getReadAccessId()
