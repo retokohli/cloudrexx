@@ -3,7 +3,7 @@
 ////////////////////////////////////////
 
 ****************************************
-* Neue Funktionen / änderungen *********
+* Neue Funktionen / Änderungen *********
 ****************************************
 Design-Manager
 - Es kann neu ein Design für Mobile Geräte festgelegt werden. Dies wird
@@ -68,5 +68,14 @@ E-Card-Modul
   verschiedene Motive festgelegt werden. Die Karte wird nicht direkt verschickt,
   es wird eine URL generiert, die das Betrachten der Karte auf dem Server
   ermöglicht.
+  
+Private Nachrichten (u2u Messaging)
+- Erlaubt das Versenden von privaten Nachrichten zwischen Benutzern (user to user messaging)
+- Buddylist und Versenden an mehrere Empfänger gleichzeitig
+- Benachrichtigung bei neuen Nachrichten
+
+Wissensdatenbank (knowledge)
+
+
 
 
