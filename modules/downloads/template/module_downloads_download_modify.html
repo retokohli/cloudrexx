@@ -331,8 +331,7 @@ function downloadsAdjustSourceConfig()
     <li><a id="downloadsTab_downloadPermissions" href="javascript:void(0)" onclick="selectTab('downloadPermissions')" title="{TXT_DOWNLOADS_PERMISSIONS}">{TXT_DOWNLOADS_PERMISSIONS}</a></li>
 </ul>
 
-<form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID}" onsubmit="downloadsSelectAll()" method="post">
-<input type="hidden" name="downloads_download_category_parent_id" value="{DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID}" />
+<form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" onsubmit="downloadsSelectAll()" method="post">
 <!-- start div downloadsTab_downloadGeneral -->
     <div id="downloadGeneral" class="downloadsTab">
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -589,7 +588,7 @@ function downloadsAdjustSourceConfig()
     </div>
 <!-- end div downloadsTab_downloadPermissions -->
 <br />
-<input type="button" name="downloads_download_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&act={DOWNLOADS_DOWNLOAD_CANCEL_LINK_SECITON}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}'" />
+<input type="button" name="downloads_download_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&act={DOWNLOADS_DOWNLOAD_CANCEL_LINK_SECITON}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
 <input type="submit" name="downloads_download_save" value="{TXT_DOWNLOADS_SAVE}" />
 </form>
 <!-- end module_downloads_download_modify.html -->

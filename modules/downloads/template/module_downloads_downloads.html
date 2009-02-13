@@ -42,36 +42,51 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_ORDER}&amp;by=order" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ORDER}</a></td>
         <td width="15%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_NAME}&amp;by=name" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_NAME}</a></td>
         <td width="40%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_DESCRIPTION}&amp;by=description" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DESCRIPTION}</a></td>
-        <td width="15%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_AUTHOR}&amp;by=author" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_AUTHOR}</a></td>
+        <td width="15%">{TXT_DOWNLOADS_OWNER}</td>
         <td width="25%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_SOURCE}&amp;by=source" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_SOURCE}</a></td>
         <td width="1%">{TXT_DOWNLOADS_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN downloads_download_list -->
-    <tr class="{DOWNLOADS_DOWNLOAD_ROW_CLASS}">
+    <tr class="{DOWNLOADS_DOWNLOAD_ROW_CLASS}" style="white-space:nowrap;">
         <td style="text-align: center;">
-            <input type="checkbox" name="downloads_download_id[]" value="{DOWNLOADS_DOWNLOAD_ID}" />
+            <!-- BEGIN downloads_download_checkbox --><input type="checkbox" name="downloads_download_id[]" value="{DOWNLOADS_DOWNLOAD_ID}" /><!-- END downloads_download_checkbox -->&nbsp;
         </td>
-        <td nowrap="nowrap" style="text-align: center;">{DOWNLOADS_DOWNLOAD_ID}</td>
+        <td style="text-align: center;">{DOWNLOADS_DOWNLOAD_ID}</td>
         <td style="text-align: center;">
+            <!-- BEGIN downloads_download_status_link_open -->
             <a href="index.php?cmd=downloads&amp;act=switch_download_status&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC}">
-                <img src="images/icons/{DOWNLOADS_DOWNLOAD_STATUS_LED}" alt="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC}" border="0" width="13" height="13" />
+            <!-- END downloads_download_status_link_open -->
+                <img src="images/icons/{DOWNLOADS_DOWNLOAD_STATUS_LED}" alt="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_IMG_DESC}" border="0" width="13" height="13" />
+            <!-- BEGIN downloads_download_status_link_close -->
             </a>
+            <!-- END downloads_download_status_link_close -->
         </td>
         <td style="text-align: center;">
+            <!-- BEGIN downloads_download_order_modify -->
             <input name="downloads_download_order[{DOWNLOADS_DOWNLOAD_ID}]" size="5" maxlength="5" value="{DOWNLOADS_DOWNLOAD_ORDER}" type="text" onkeypress="downloadsUpdateSortOrder(event,this.form,'downloads_download_select_action')" />
-        </td>
-        <td nowrap="nowrap">
+            <!-- END downloads_download_order_modify -->
+            <!-- BEGIN downloads_download_order_no_modify -->
+            {DOWNLOADS_DOWNLOAD_ORDER}
+            <!-- END downloads_download_order_no_modify -->
+        </td>        
+        <td>
             <img src="{DOWNLOADS_DOWNLOAD_ICON}" width="15" height="13" alt="{DOWNLOADS_DOWNLOAD_NAME}" />
             <a href="index.php?cmd=downloads&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_DOWNLOAD}">
             {DOWNLOADS_DOWNLOAD_NAME}
             </a>
         </td>
-        <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
-        <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_AUTHOR}</td>
-        <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_SOURCE}</td>
-        <td nowrap="nowrap" style="text-align: right;">
+        <td>{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
+        <td>{DOWNLOADS_DOWNLOAD_OWNER}</td>
+        <td>{DOWNLOADS_DOWNLOAD_SOURCE}</td>
+        <td style="text-align: right;">
+            <!-- BEGIN downloads_download_functions -->
             <a href="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_DOWNLOADS_EDIT}" width="16" height="16" border="0" /></a>
             <a href="javascript:void(0);" onclick="downloadsDeleteDownload({DOWNLOADS_DOWNLOAD_ID},'{DOWNLOADS_DOWNLOAD_NAME_JS}')" title="{TXT_DOWNLOADS_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DOWNLOADS_DELETE}" width="17" height="17" border="0" /></a>
+            <!-- END downloads_download_functions -->
+            <!-- BEGIN downloads_download_no_functions -->
+            <img src="images/icons/pixel.gif" alt="no permission to modify this download" width="16" height="16" border="0" /></a>
+            <img src="images/icons/pixel.gif" alt="no permission to delete this download" width="17" height="17" border="0" /></a>
+            <!-- END downloads_download_no_functions -->
         </td>
     </tr>
 <!-- END downloads_download_list -->
@@ -81,8 +96,8 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
 <img src="images/icons/strike.gif" width="34" height="22" alt="design" />
 <select name="downloads_download_select_action" id="downloads_download_select_action" onchange="downloadsDownloadDoAction(this.value)">
-    <option value="0" selected="selected">{TXT_DOWNLOADS_SELECT_ACTION}</option>
-    <option value="order">{TXT_DOWNLOADS_ORDER}</option>
+    <option value="0" selected="selected" style="border-bottom: 1px solid #000;">{TXT_DOWNLOADS_SELECT_ACTION}</option>
+    <!-- BEGIN downloads_download_change_order_action --><option value="order">{TXT_DOWNLOADS_ORDER}</option><!-- END downloads_download_change_order_action -->
     <option value="delete">{TXT_DOWNLOADS_DELETE}</option>
 </select>
 <br />

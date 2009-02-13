@@ -725,6 +725,14 @@ class Download {
     {
         global $objDatabase, $_ARRAYLANG;
 
+        if (!Permission::checkAccess(142, 'static', true)
+            && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
+        ) {
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_MODIFY_DOWNLOAD_PROHIBITED'];
+            return false;
+        }
+
+
         if (isset($this->names) && !$this->validateName()) {
             return false;
         }
@@ -916,9 +924,12 @@ class Download {
                     // the download has been removed from this category
                     if ($objCategory->getManageFilesAccessId()
                         && !Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                        // the owner of the download is allowed to unlink it
+                        && (!$objFWUser->objUser->login() || $this->owner_id == $objFWUser->objUser->getId())
                     ) {
                         // we won't store this association, because the user doesn't have the permission to
                         unset($arrRemovedCategories[array_search($objCategory->getId(), $arrRemovedCategories)]);
+                        print 's';
                     }
                 }
 
