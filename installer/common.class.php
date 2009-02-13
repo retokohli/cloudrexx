@@ -667,10 +667,6 @@ class CommonFunctions
 
 			foreach ($arrAllFiles as $checkFile) {
 				if (!is_writable($path.$checkFile)) {
-                    $re = $this->isWindows() ? '#\\\.svn\\#' : '#/\.svn/#';
-                    if (preg_match($re, $checkFile)) {
-                        continue;
-                    }
 					if ($this->isWindows()) {
 						if (empty($statusMessage)) {
 							$statusMessage = $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES']."<br />";
@@ -755,7 +751,7 @@ class CommonFunctions
 			while ($file = readdir($fp)) {
 				$path = $directoryPath.DIRECTORY_SEPARATOR.$file;
 
-				if ($file != "." && $file != "..") {
+				if ($file != "." && $file != ".." && $file != ".svn") {
 					array_push($arrDirectories, $directory.DIRECTORY_SEPARATOR.$file);
 
 					if (is_dir(realpath($path))) {
