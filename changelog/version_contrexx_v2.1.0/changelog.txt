@@ -75,7 +75,7 @@ Private Nachrichten (u2u Messaging)
 - Benachrichtigung bei neuen Nachrichten
 
 Wissensdatenbank (knowledge)
-
-
-
+- Ermöglicht das Erfassen von häufig gestellten Fragen
+- Die Fragen lassen sich Kategorien undendlichen Levels zuordnen
+- Überall auf der Seite können die beliebtesten Fragen aufgelistet werden
 
