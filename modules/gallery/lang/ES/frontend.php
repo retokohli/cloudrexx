@@ -6,22 +6,22 @@
  * @package     contrexx
  * @subpackage  module_gallery
  */
-$_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Unterkategorien";
-$_ARRAYLANG['TXT_CLOSE_WINDOW'] = "Fenster schliessen";
-$_ARRAYLANG['TXT_ZOOM_OUT'] = "Wegzoomen";
-$_ARRAYLANG['TXT_ZOOM_IN'] = "Heranzoomen";
-$_ARRAYLANG['TXT_CHANGE_BG_COLOR'] = "Hintergrundfarbe ändern";
-$_ARRAYLANG['TXT_PRINT'] = "Drucken";
-$_ARRAYLANG['TXT_PREVIOUS_IMAGE'] = "Vorheriges Bild";
-$_ARRAYLANG['TXT_NEXT_IMAGE'] = "Nächstes Bild";
-$_ARRAYLANG['TXT_FILESIZE'] = "Dateigrösse";
-$_ARRAYLANG['TXT_RESOLUTION'] = "Auflösung";
-$_ARRAYLANG['TXT_USER_DEFINED'] = "Benutzerdefiniert";
-$_ARRAYLANG['TXT_IMAGE_NAME'] = "Bildname";
-$_ARRAYLANG['TXT_IMAGE_COUNT'] = "Anzahl Bilder";
-$_ARRAYLANG['TXT_CATEGORY'] = "Kategorie";
-$_ARRAYLANG['TXT_GALLERY'] = "Bildergalerie";
-$_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
+$_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Subcategories";
+$_ARRAYLANG['TXT_CLOSE_WINDOW'] = "Close Window";
+$_ARRAYLANG['TXT_ZOOM_OUT'] = "Zoom Out";
+$_ARRAYLANG['TXT_ZOOM_IN'] = "Zoom In";
+$_ARRAYLANG['TXT_CHANGE_BG_COLOR'] = "Change Background Color";
+$_ARRAYLANG['TXT_PRINT'] = "Print";
+$_ARRAYLANG['TXT_PREVIOUS_IMAGE'] = "Previous image";
+$_ARRAYLANG['TXT_NEXT_IMAGE'] = "Next image";
+$_ARRAYLANG['TXT_FILESIZE'] = "Filesize";
+$_ARRAYLANG['TXT_RESOLUTION'] = "Resolution";
+$_ARRAYLANG['TXT_USER_DEFINED'] = "User Definied";
+$_ARRAYLANG['TXT_IMAGE_NAME'] = "Image name";
+$_ARRAYLANG['TXT_IMAGE_COUNT'] = "Number Of Images";
+$_ARRAYLANG['TXT_CATEGORY'] = "Category";
+$_ARRAYLANG['TXT_GALLERY'] = "Gallery";
+$_ARRAYLANG['TXT_SIZE'] = "Filesize";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Bildbewertungen";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Aktuelle Bewertung";
 $_ARRAYLANG['TXT_VOTING_STATS_WITH'] = "bei";

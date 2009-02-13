@@ -966,4 +966,5 @@ $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "List protected pages";
 $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Defines if protected pages should be listed/included in the navigation, full text search, sitemap and XML-Sitemap if the user isn't authenticated - Status  (on | off)";
 $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = "Template for mobile devices";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
+$_ARRAYLANG['TXT_U2U_MODULE_DESCRIPTION'] = "User to user messaging";
 ?>
