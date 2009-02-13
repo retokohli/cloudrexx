@@ -1,23 +1,21 @@
------------
+------------
+edit project
+------------
+*JS preview funktion checken
+
+
+
 new project
------------
-* alles replacen ausser A-Z a-z und umlaute
+------------
 * bei der spalteneingabe spaltenzahl hochzählen
 * keine doppelten spaltennamen zulassen
+* js überprüfung checken
 
-
-
------------
-edit project
------------
-spaltenzahlen hochzählen
-js überprüfung
 
 
 -----------
 import
 -----------
-leere datensätze nicht importieren...
 
 
 
@@ -25,4 +23,11 @@ leere datensätze nicht importieren...
 show
 -----------
 sortierreihnfole angeben (nach welchem feld sortiert werden soll)
-(projetsettings))
+
+
+
+
+-----------
+makeInputDBvalid()
+-----------
+regex kontrollieren
