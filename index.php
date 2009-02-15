@@ -668,7 +668,6 @@ if (file_exists($modulespath)) {
 }
 
 
-
 //-------------------------------------------------------
 // get Newsletter
 //-------------------------------------------------------
@@ -694,9 +693,29 @@ if (file_exists($modulespath)) {
 
 
 //-------------------------------------------------------
+// get knowledge content
+//-------------------------------------------------------
+if ($_CONFIG['useKnowledgePlaceholders'] == '1') {
+    $modulespath = "modules/knowledge/interface.class.php";
+    if (file_exists($modulespath)) {
+        require_once($modulespath);
+        $knowledgeInterface = &new KnowledgeInterface();
+        if (preg_match("/{KNOWLEDGE_[A-Za-z0-9_]+}/i", $page_content)) {
+            $knowledgeInterface->parse($page_content);
+        }
+        if (preg_match("/{KNOWLEDGE_[A-Za-z0-9_]+}/i", $page_template)) {
+            $knowledgeInterface->parse($page_template);
+        }
+        if (preg_match("/{KNOWLEDGE_[A-Za-z0-9_]+}/i", $themesPages['index'])) {
+            $knowledgeInterface->parse($themesPages['index']);
+        }
+    }
+}
+
+
+//-------------------------------------------------------
 // get Directory Homecontent
 //-------------------------------------------------------
-
 if ($_CONFIG['directoryHomeContent'] == '1') {
     $modulespath = "modules/directory/homeContent.class.php";
     if (file_exists($modulespath)) {
@@ -1203,9 +1222,9 @@ switch ($plainSection) {
         $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
     break;
 
-        //-------------------------------------------------------
-        // Data Module
-        //-------------------------------------------------------
+//-------------------------------------------------------
+// Data Module
+//-------------------------------------------------------
     case "data":
         $modulespath = "modules/data/index.class.php";
         /**
@@ -1216,9 +1235,9 @@ switch ($plainSection) {
         if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
-        $objBlog = new Data($page_content);
-        $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
-        break;
+        $objData = new Data($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objData->getPage());
+    break;
 
 //-------------------------------------------------------
 // Download
@@ -1559,7 +1578,24 @@ break;
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objBlog = new Blog($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
-        break;
+  break;
+
+//-------------------------------------------------------
+// Knowledge Module
+//-------------------------------------------------------
+    case "knowledge":
+        $modulespath = "modules/knowledge/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objKnowledge = &new Knowledge($page_content);
+        $objTemplate->setVariable("CONTENT_TEXT", $objKnowledge->getPage());
+        if (!empty($objKnowledge->pageTitle)) {
+            $page_title = $objKnowledge->pageTitle;
+        }
+   break;
 
 //-------------------------------------------------------
 // logout
