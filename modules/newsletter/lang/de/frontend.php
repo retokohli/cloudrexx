@@ -80,5 +80,5 @@ $_ARRAYLANG['TXT_ACCESS_MESSAGE'] = "Nachricht";
 $_ARRAYLANG['TXT_ACCESS_SITE'] = "Site";
 $_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Send Message";
 $_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Add to address book";
-$_ARRAYLANG['TXT_ADD_ADDRESS'] = "Add to address book";
+$_ARRAYLANG['TXT_ADD_ADDRESS'] = "Zum Addressbuch hinzufügen";
 ?>
