@@ -196,6 +196,14 @@ function _updateSettings()
             'setvalue'    => 'on',
             'setmodule'    => 1
         ),
+        72    => array(
+            'setname'    => 'useKnowledgePlaceholders',
+            'setvalue'    => '1',
+            'setmodule'    => 56
+        ),
+
+        useKnowledgePlaceholders
+
     );
 
     $arrSettingsByName = array(
@@ -234,6 +242,7 @@ function _updateSettings()
         'podcastHomeContent'        => 64,
         'googleMapsAPIKey'            => 65,
         'forumTagContent'            => 66,
+        'useKnowledgePlaceholders'   => 70,
     );
 
     // add coreGlobalPageTitle

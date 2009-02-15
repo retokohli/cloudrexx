@@ -1012,6 +1012,18 @@ switch ($plainCmd) {
         $objDownloadsModule->getPage();
     break;
 
+   	//-----------------------------------------------------------------------------------------------
+    // knowledge
+    //-----------------------------------------------------------------------------------------------
+    case "knowledge":
+        $modulespath = ASCMS_MODULE_PATH . "/knowledge/admin.class.php";
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
+        $objDemoModule = &new KnowledgeAdmin();
+        $objDemoModule->getPage();
+    break;
+
     //-------------------------------------------------------
     // show default admin page
     //-------------------------------------------------------
