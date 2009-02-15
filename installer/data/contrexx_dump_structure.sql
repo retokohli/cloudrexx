@@ -1577,6 +1577,58 @@ CREATE TABLE `contrexx_module_immo_statistics` (
   `hits` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_knowledge_article_content` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `article` int(10) unsigned NOT NULL default '0',
+  `lang` int(10) unsigned NOT NULL default '0',
+  `question` text NOT NULL,
+  `answer` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_knowledge_articles` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `category` int(10) unsigned NOT NULL default '0',
+  `active` tinyint(1) NOT NULL default '1',
+  `hits` int(11) NOT NULL default '0',
+  `votes` int(11) NOT NULL default '0',
+  `votevalue` int(11) NOT NULL default '0',
+  `sort` int(11) NOT NULL default '0',
+  `date_created` int(14) NOT NULL default '0',
+  `date_updated` int(14) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_knowledge_categories` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `active` tinyint(1) unsigned NOT NULL default '1',
+  `parent` int(10) unsigned NOT NULL default '0',
+  `sort` int(10) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_knowledge_categories_content` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `category` int(10) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  `lang` int(11) NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_knowledge_settings` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  `value` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_knowledge_tags` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  `lang` int(10) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_knowledge_tags_articles` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `article` int(10) unsigned NOT NULL default '0',
+  `tag` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_livecam` (
   `id` int(10) unsigned NOT NULL default '1',
   `currentImagePath` varchar(255) NOT NULL default '/webcam/cam1/current.jpg',
