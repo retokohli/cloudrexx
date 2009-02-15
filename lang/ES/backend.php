@@ -964,4 +964,8 @@ $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Defines if protected pages 
 $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = "Template for mobile devices";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
 $_ARRAYLANG['TXT_U2U_MODULE_DESCRIPTION'] = "User to user messaging";
+$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_TITLE'] = "Einstellungen";
+$_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'] = "Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'] = "Kategorien";
+$_ARRAYLANG['TXT_KNOWLEDGE_OVERVIEW'] = "Übersicht";
 ?>
