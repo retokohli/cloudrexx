@@ -29,6 +29,8 @@ Kalender
 - Es können im Frontend Termine angemeldet werden
 - Es kann ein Serietyp für einen Termin festgelegt werden.
 
+Benutzerverwaltung
+- Es kann eine CSV Datei aller Benutzer exportiert werden basierend auf Gruppenzugehörigkeit und Standardsprache.
 
 ****************************************
 * Behobene Fehler **********************
