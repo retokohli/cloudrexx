@@ -61,6 +61,109 @@ class AccessManager extends AccessLib
     }
 
 
+   /**
+    * export users of a group as CSV
+    *
+    * @param integer $groupId
+    */
+    function _exportUsers($groupId = 0, $langId = null)
+    {
+        global $objDatabase, $_CORELANG;
+        $csvSeparator = ";";
+        $groupId = intval($groupId);
+
+        $objRS = $objDatabase->Execute("SELECT `id`, `title` FROM `".DBPREFIX."access_user_title`");
+        if ($objRS !== false) {
+            while (!$objRS->EOF) {
+                $arrTitles[$objRS->fields['id']] = $objRS->fields['title'];
+                $objRS->MoveNext();
+            }
+        }
+
+
+        $objRS = $objDatabase->SelectLimit("SELECT group_name FROM ".DBPREFIX."access_user_groups WHERE group_id = $groupId", 1);
+        header("Content-Type: text/comma-separated-values", true);
+        header("Content-Disposition: attachment; filename=\"".str_replace(array(' ',',','.','\'','"'), '_', $objRS->fields['group_name']).'_'.($langId != null ? 'lang_'.$langId : '').'.csv"', true);
+
+        $value = '';
+        $arrFields = array ('gender', 'title', 'firstname', 'lastname', 'email', 'active');
+        foreach ($arrFields as $field) {
+            print $this->_escapeCsvValue($field).$csvSeparator;
+        }
+        print "\n";
+
+        $objRS = $objDatabase->Execute('
+            SELECT
+                tblProfile.gender, tblProfile.title, tblProfile.firstname, tblProfile.lastname, tblUser.email, tblUser.active
+            FROM
+                `'.DBPREFIX.'access_rel_user_group` AS tblRel
+            INNER JOIN `'.DBPREFIX.'access_users` AS tblUser
+            ON tblUser.`id` = tblRel.`user_id`
+            INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblProfile
+            ON tblProfile.`user_id` = tblRel.`user_id`
+            WHERE tblRel.`group_id` = '.$groupId.'
+            '.(!empty($langId) ? ' AND tblUser.frontend_lang_id = ' .$langId : '').'
+
+            ORDER BY tblUser.`username`' );
+
+        if ($objRS !== false) {
+            while (!$objRS->EOF) {
+                    foreach ($objRS->fields as $key => $value) {
+                        switch($key){
+                            case 'gender':
+                                switch ($value) {
+                                	case 'gender_male':
+                                	   $value = $_CORELANG['TXT_ACCESS_MALE'];
+                               		break;
+
+                               		case 'gender_female':
+                                	   $value = $_CORELANG['TXT_ACCESS_FEMALE'];
+                              	    break;
+
+                              	    default:
+                                	   $value = $_CORELANG['TXT_ACCESS_UNKNOWN'];
+                              	    break;
+                                }
+                            break;
+
+                            case 'title':
+                                $value = $arrTitles[$value];
+                            break;
+
+                            default:
+
+                            break;
+                        }
+                        print $this->_escapeCsvValue($value).$csvSeparator;
+                    }
+                    print "\n";
+                    $objRS->MoveNext();
+            }
+        }
+        exit();
+    }
+
+
+    /**
+     * Escape a value that it could be inserted into a csv file.
+     *
+     * @param string $value
+     * @return string
+     */
+    function _escapeCsvValue(&$value)
+    {
+        $csvSeparator = ";";
+        $value = in_array(strtolower(CONTREXX_CHARSET), array('utf8', 'utf-8')) ? utf8_decode($value) : $value;
+        $value = preg_replace('/\r\n/', "\n", $value);
+        $valueModified = str_replace('"', '""', $value);
+
+        if ($valueModified != $value || preg_match('/['.$csvSeparator.'\n]+/', $value)) {
+            $value = '"'.$valueModified.'"';
+        }
+        return $value;
+    }
+
+
     /**
     * Get page
     *
@@ -81,6 +184,10 @@ class AccessManager extends AccessLib
         $objFWUser = FWUser::getFWUserObject();
 
         switch ($_REQUEST['act']) {
+            case 'export':
+                $_GET['groupId'] = !empty($_GET['groupId']) ? intval($_GET['groupId']) : 0;
+                $this->_exportUsers($_GET['groupId'], $_GET['langId']);
+            break;
             case 'user':
                 if (Permission::checkAccess(18, 'static', true) || (isset($_REQUEST['id']) && $_REQUEST['id'] == $objFWUser->objUser->getId() && Permission::checkAccess(31, 'static', true))) {
                     $this->user();
@@ -213,8 +320,15 @@ class AccessManager extends AccessLib
      */
     function _groupList()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CORELANG, $_CONFIG, $obj;
 
+        /**
+         * @ignore
+         */
+        require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
+
+        $objLang = &new FWLanguage();
+        $arrLangs = $objLang->getLanguageArray();
 
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_list', 'module_access_group_list.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_GROUPS'];
@@ -234,6 +348,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_CONFIRM_DELETE_GROUP'   => $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_GROUP'],
             'TXT_ACCESS_OPERATION_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACCESS_OPERATION_IRREVERSIBLE'],
             'TXT_ACCESS_CHANGE_SORT_DIRECTION'  => $_ARRAYLANG['TXT_ACCESS_CHANGE_SORT_DIRECTION'],
+
             'ACCESS_SORT_ID'                    => ($orderBy == 'group_id' && $orderDirection == 'asc') ? 'desc' : 'asc',
             'ACCESS_SORT_STATUS'                => ($orderBy == 'is_active' && $orderDirection == 'asc') ? 'desc' : 'asc',
             'ACCESS_SORT_NAME'                  => ($orderBy == 'group_name' && $orderDirection == 'asc') ? 'desc' : 'asc',
@@ -250,14 +365,26 @@ class AccessManager extends AccessLib
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_ACCESS_MODIFY_GROUP'       => $_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'],
-
+            'TXT_ACCESS_MODIFY_GROUP'  => $_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'],
+            'TXT_USER_ALL'             => $_CORELANG['TXT_USER_ALL'],
+            'TXT_EXPORT'               => $_CORELANG['TXT_EXPORT'],
         ));
 
         $filter = empty($groupTypeFilter) ? array() : array('type' => $groupTypeFilter);
 
         $objGroup = $objFWUser->objGroup->getGroups($filter, array($orderBy => $orderDirection), null, $_CONFIG['corePagingLimit'], $limitOffset);
         while (!$objGroup->EOF) {
+            foreach ($arrLangs as $arrLang) {
+
+                $this->_objTpl->setVariable(array(
+                    'ACCESS_GROUP_ID'           => $objGroup->getId(),
+                    'ACCESS_LANG_ID'            => $arrLang['id'],
+                    'ACCESS_LANG_NAME'          => $arrLang['lang'],
+                ));
+
+			    $this->_objTpl->parse('languages');
+            }
+
             $this->_objTpl->setVariable(array(
                 'ACCESS_ROW_CLASS_ID'           => $rowNr % 2 ? 1 : 2,
                 'ACCESS_GROUP_STATUS_IMG'       => $objGroup->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
