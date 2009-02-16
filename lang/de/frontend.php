@@ -181,4 +181,5 @@ $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partner";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "User to User Nachrichten";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Neuen Eintrag hinzufügen";
+$_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
 ?>
