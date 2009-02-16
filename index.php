@@ -653,6 +653,7 @@ if (file_exists($modulespath)) {
     $page_template = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_template);
 }
 
+
 //-------------------------------------------------------
 // Get immo headline
 //-------------------------------------------------------
@@ -674,7 +675,6 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // get Newsletter
 //-------------------------------------------------------
-
 $modulespath = "modules/newsletter/index.class.php";
 if (file_exists($modulespath)) {
     /**
@@ -757,6 +757,7 @@ if ($_CONFIG['directoryHomeContent'] == '1') {
         }
     }
 }
+
 
 //-------------------------------------------------------
 // get + replace forum latest entries content
@@ -1567,7 +1568,7 @@ break;
         $objForum = new Forum($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
 //        $moduleStyleFile = "modules/forum/css/frontend_style.css";
-    break;
+        break;
 
 //-------------------------------------------------------
 // Blog Module

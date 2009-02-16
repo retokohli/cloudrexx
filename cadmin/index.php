@@ -15,7 +15,7 @@
 
 include_once('../lib/DBG.php');
 /**
- * Debug level, see lib/DBG.pho
+ * Debug level, see lib/DBG.php
  *
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
@@ -571,8 +571,8 @@ switch ($plainCmd) {
         $objGuestbook = new GuestbookManager();
         $objGuestbook->getPage();
         break;
-        
-        
+
+
     //-------------------------------------------------------
     // dataviewer
     //-------------------------------------------------------
@@ -585,7 +585,7 @@ switch ($plainCmd) {
         $objDataviewer = new Dataviewer();
         $objDataviewer->getPage();
         break;
-        
+
 
     //-------------------------------------------------------
     // Memberdir
@@ -963,9 +963,28 @@ switch ($plainCmd) {
         $objBlog->getPage();
         break;
 
-    //-------------------------------------------------------
-    // U2U Messenger
-    //-------------------------------------------------------
+    /**
+     * Knowledge Module
+     * @author  Stefan Heinemann <sh@comvation.com>
+     * @since   2.1.0
+     * @version 1.0
+     */
+    case "knowledge":
+        $modulespath = ASCMS_MODULE_PATH . "/knowledge/admin.class.php";
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
+        $objDemoModule = &new KnowledgeAdmin();
+        $objDemoModule->getPage();
+    break;
+
+
+    /**
+     * U2U Module
+     * @author  comvation <info@comvation.com>
+     * @since   2.1.0
+     * @version 1.0
+     */
     case 'u2u':
     	//Permission::checkAccess(119, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/u2u/admin.class.php';
@@ -975,7 +994,6 @@ switch ($plainCmd) {
         $objU2u = new u2uAdmin();
         $objU2u->getPage();
         break;
-
 
     /**
      * Partners Module
