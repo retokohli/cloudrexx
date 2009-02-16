@@ -2029,7 +2029,7 @@ CREATE TABLE `contrexx_module_shop_article_group` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_categories` (
   `catid` int(11) unsigned NOT NULL auto_increment,
   `parentid` int(11) unsigned NOT NULL default '0',
@@ -2072,7 +2072,7 @@ CREATE TABLE `contrexx_module_shop_customer_group` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_customers` (
   `customerid` int(11) unsigned NOT NULL auto_increment,
   `username` varchar(255) NOT NULL default '',
@@ -2104,7 +2104,7 @@ CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
   `name` varchar(255) NOT NULL default '',
   `unit` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
   `group_id` int(11) unsigned NOT NULL default '0',
   `count` int(11) unsigned NOT NULL default '1',
