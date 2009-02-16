@@ -24,7 +24,7 @@ include_once('../lib/DBG.php');
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
  */
-define('_DEBUG', DBG_ADODB_TRACE | DBG_LOG_FIREPHP);
+define('_DEBUG', /*DBG_ADODB_TRACE |*/ DBG_LOG_FIREPHP);
 
 //-------------------------------------------------------
 // Set error reporting
@@ -32,24 +32,26 @@ define('_DEBUG', DBG_ADODB_TRACE | DBG_LOG_FIREPHP);
 if (_DEBUG) {
     $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP)           == 0 ? false : true;
     $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB)         == 0 ? false : true;
-    $_DBG['dbgADODBTrace']  = (_DEBUG & DBDBG_ADODB_TRACE) == 0 ? false : true;
+    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE)   == 0 ? false : true;
     $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE)      == 0 ? false : true;
     $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP)   == 0 ? false : true;
 
-    if ($_DBG['dbgPHP']) {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-    }else{
-        error_reporting(0);
-        ini_set('display_errors', 0);
-    }
-
     if ($_DBG['dbgLogFile'] || $_DBG['dbgLogFirePHP']) {
         $objDBG = new DBG($_DBG['dbgLogFirePHP']);
-        $objDBG->setup('dbg.log', 'a');
+        $objDBG->setup('dbg.log', 'w');
         $objDBG->enable_all();
     }
 }
+
+if (!empty($_DBG['dbgPHP']) && $_DBG['dbgPHP']) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}else{
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
+
+
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -569,6 +571,21 @@ switch ($plainCmd) {
         $objGuestbook = new GuestbookManager();
         $objGuestbook->getPage();
         break;
+        
+        
+    //-------------------------------------------------------
+    // dataviewer
+    //-------------------------------------------------------
+    case 'dataviewer':
+        Permission::checkAccess(9, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/dataviewer/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_DATAVIEWER'];
+        $objDataviewer = new Dataviewer();
+        $objDataviewer->getPage();
+        break;
+        
 
     //-------------------------------------------------------
     // Memberdir

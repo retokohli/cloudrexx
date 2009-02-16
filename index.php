@@ -76,24 +76,27 @@ define('_DEBUG', DBG_LOG_FIREPHP);
 if (_DEBUG) {
     $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP)           == 0 ? false : true;
     $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB)         == 0 ? false : true;
-    $_DBG['dbgADODBTrace']  = (_DEBUG & DBDBG_ADODB_TRACE) == 0 ? false : true;
+    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE)   == 0 ? false : true;
     $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE)      == 0 ? false : true;
     $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP)   == 0 ? false : true;
 
-    if ($_DBG['dbgPHP']) {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-    }else{
-        error_reporting(0);
-        ini_set('display_errors', 0);
-    }
-
     if ($_DBG['dbgLogFile'] || $_DBG['dbgLogFirePHP']) {
-        $objDBG = new DBG($dbgLogFirePHP);
+        $objDBG = new DBG($_DBG['dbgLogFirePHP']);
         $objDBG->setup('dbg.log', 'w');
         $objDBG->enable_all();
     }
 }
+
+if (!empty($_DBG['dbgPHP']) && $_DBG['dbgPHP']) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}else{
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
+
+
+
 //iconv_set_encoding("output_encoding", "utf-8");
 //iconv_set_encoding("input_encoding", "utf-8");
 //iconv_set_encoding("internal_encoding", "utf-8");
