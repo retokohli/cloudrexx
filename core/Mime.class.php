@@ -21,9 +21,10 @@ class Mime
      * Known extensions and corresponding MIME types.
      *
      * Note that these associations are arbitrary!
+     * @access  private
      * @var     array
      */
-    static $arrExtensions2MimeTypes = array(
+    private static $arrExtensions2MimeTypes = array(
         '3dm' => 'x-world/x-3dmf',
         '3dmf' => 'x-world/x-3dmf',
         'ai' => 'application/postscript',
@@ -131,20 +132,22 @@ class Mime
 
     /**
      * The default MIME type used if nothing is known about the data
+     * @access  private
      * @var   string
      */
-    static $strDefaultType = 'application/octet-stream';
+    private static $strDefaultType = 'application/octet-stream';
 
 
     /**
+     * OBSOLETE -- All static here.
      * Create a Mime object
      *
-     * Usually not needed, as this class may currently be used statically.
+     * Usually not needed, as this class should be used statically.
      * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
     function __construct()
     {
     }
+     */
 
 
     /**
@@ -179,9 +182,8 @@ class Mime
         // Make sure only the extension is present.
         // Chop the file name up to and including  the last dot
         $strChoppedExtension = preg_replace('/^.*\./', '', $strExtension);
-        if (Mime::isKnownExtension($strChoppedExtension)) {
+        if (Mime::isKnownExtension($strChoppedExtension))
             return self::$arrExtensions2MimeTypes[$strChoppedExtension];
-        }
         return self::$strDefaultType;
     }
 

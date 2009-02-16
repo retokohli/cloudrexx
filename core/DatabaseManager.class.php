@@ -1,14 +1,21 @@
 <?php
 
 /**
+ * Error reporting level
+ * @ignore
+ */
+define('_DBM_DEBUG', 0);
+
+/**
  * Database Manager class
  *
  * CMS Database Manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @package     contrexx
  * @subpackage  core
- * @version     2.0.2
+ * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch> (Pre 2.1.0)
+ * @author      Reto Kohli <reto.kohli@comvation.com> (Version 2.1.0)
+ * @version     2.1.0
  */
 
 /**
@@ -21,10 +28,12 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
  *
  * CMS Database Manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @package     contrexx
  * @subpackage  core
- * @version     2.0.2
+ * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch> (Pre 2.1.0)
+ * @author      Reto Kohli <reto.kohli@comvation.com> (Version 2.1.0)
+ * @version     2.1.0
+ * @todo        Use the core Mime class to handle MIME types
  */
 class DatabaseManager
 {
@@ -38,13 +47,13 @@ class DatabaseManager
      * @var string
      * @desc status message (error message)
      */
-    public $_strErrMessage = '';
+    private static $strErrMessage = '';
 
     /**
      * @var string
      * @desc status message (okay message)
      */
-    public $_strOkMessage;
+    private static $strOkMessage = '';
 
     /**
      * @var string
@@ -64,7 +73,6 @@ class DatabaseManager
      */
     public $_arrMimeTypes;
 
-
     /**
      * Constructor
      * @global  HTML_Template_Sigma
@@ -72,46 +80,56 @@ class DatabaseManager
      */
     function __construct()
     {
-        global $objTemplate, $_CORELANG;
+        global $objDatabase, $objTemplate, $_CORELANG;
+
+        if (_DBM_DEBUG & 1) {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 1);
+        } else {
+            error_reporting(0);
+            ini_set('display_errors', 0);
+        }
+        if (_DBM_DEBUG & 2) {
+            $objDatabase->debug = 1;
+        } else {
+            $objDatabase->debug = 0;
+        }
 
         $this->_strBackupPath = ASCMS_BACKUP_PATH.'/';
-// TODO: There happens to be a MIME class that handles these!
         $this->_arrFileEndings = array(
             'sql' => '.sql',
             'csv' => '.csv',
-                                    );
+        );
         $this->_arrMimeTypes = array(
             'sql' => 'application/x-unknown',
             'csv' => 'text/comma-separated-values',
-                                    );
+        );
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
             '<a href="index.php?cmd=dbm">'.$_CORELANG['TXT_DBM_MAINTENANCE_TITLE'].'</a>'.
             (Permission::hasAllAccess()
               ? '<a href="index.php?cmd=dbm&amp;act=sql">'.$_CORELANG['TXT_DBM_SQL_TITLE'].'</a>'.
+                '<a href="index.php?cmd=dbm&amp;act=csv">'.$_CORELANG['TXT_DBM_CSV'].'</a>'.
                 '<a href="index.php?cmd=dbm&amp;act=status">'.$_CORELANG['TXT_DBM_STATUS_TITLE'].'</a>'.
                 '<a href="index.php?cmd=dbm&amp;act=ie">'.$_CORELANG['TXT_DBM_BACKUP_TITLE'].'</a>'
               : ''
             )
-                                );
+        );
     }
 
 
     /**
      * Dispatches to the desired function.
-     *
-     * @global    HTML_Template_Sigma
-     * @global    array
+     * @global  HTML_Template_Sigma $objTemplate
+     * @global  array               $_CORELANG
      */
     function getPage()
     {
-        global  $objTemplate, $_CORELANG;
+        global $objTemplate, $_CORELANG;
 
-        if(!isset($_GET['act'])){
-            $_GET['act'] = '';
-        }
+        if (!isset($_GET['act'])) $_GET['act'] = '';
 
-        //Check general permissions to access this module
+        // Check permission to access this module
         Permission::checkAccess(20, 'static');
 
         switch ($_GET['act']) {
@@ -200,15 +218,23 @@ class DatabaseManager
                     Permission::noAccess();
                 }
                 break;
+
+// Added 2.1.0
+            case 'csv':
+                // Kick unauthorised users out
+                if (!Permission::hasAllAccess()) Permission::noAccess();
+                $this->showCsv();
+                break;
+
             default:
                 Permission::checkAccess(41, 'static');
                 $this->showMaintenance();
                 break;
         }
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'             => $this->_strPageTitle,
-            'CONTENT_OK_MESSAGE'        => $this->_strOkMessage,
-            'CONTENT_STATUS_MESSAGE' => $this->_strErrMessage,
+            'CONTENT_TITLE' => $this->_strPageTitle,
+            'CONTENT_OK_MESSAGE' => self::$strOkMessage,
+            'CONTENT_STATUS_MESSAGE' => self::$strErrMessage,
         ));
     }
 
@@ -228,15 +254,15 @@ class DatabaseManager
         $this->_strPageTitle = $_CORELANG['TXT_DBM_STATUS_TITLE'];
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'status', 'dbm_status.html');
         $objTemplate->setVariable(array(
-            'TXT_STATUS_TITLE'                  =>  $_CORELANG['TXT_DBM_STATUS_TITLE'],
-            'TXT_STATUS_VERSION'                =>  $_CORELANG['TXT_DBM_STATUS_MYSQL_VERSION'],
-            'TXT_STATUS_TABLES'                 =>  $_CORELANG['TXT_DBM_STATUS_USED_TABLES'],
-            'TXT_STATUS_SIZE'                   =>  $_CORELANG['TXT_DBM_STATUS_USED_SPACE'],
-            'TXT_STATUS_BACKLOG'                =>  $_CORELANG['TXT_DBM_STATUS_BACKOG'],
-            'TXT_CONNECTION_TITLE'              =>  $_CORELANG['TXT_DBM_CONNECTION_TITLE'],
-            'TXT_CONNECTION_DBPREFIX'           =>  $_CORELANG['TXT_DBM_CONNECTION_DBPREFIX'],
-            'TXT_CONNECTION_DATABASE'           =>  $_CORELANG['TXT_DBM_CONNECTION_DATABASE'],
-            'TXT_CONNECTION_USERNAME'           =>  $_CORELANG['TXT_DBM_CONNECTION_USERNAME'],
+            'TXT_STATUS_TITLE' => $_CORELANG['TXT_DBM_STATUS_TITLE'],
+            'TXT_STATUS_VERSION' => $_CORELANG['TXT_DBM_STATUS_MYSQL_VERSION'],
+            'TXT_STATUS_TABLES' => $_CORELANG['TXT_DBM_STATUS_USED_TABLES'],
+            'TXT_STATUS_SIZE' => $_CORELANG['TXT_DBM_STATUS_USED_SPACE'],
+            'TXT_STATUS_BACKLOG' => $_CORELANG['TXT_DBM_STATUS_BACKOG'],
+            'TXT_CONNECTION_TITLE' => $_CORELANG['TXT_DBM_CONNECTION_TITLE'],
+            'TXT_CONNECTION_DBPREFIX' => $_CORELANG['TXT_DBM_CONNECTION_DBPREFIX'],
+            'TXT_CONNECTION_DATABASE' => $_CORELANG['TXT_DBM_CONNECTION_DATABASE'],
+            'TXT_CONNECTION_USERNAME' => $_CORELANG['TXT_DBM_CONNECTION_USERNAME'],
         ));
 
         // Get version
@@ -256,13 +282,13 @@ class DatabaseManager
         }
 
         $objTemplate->setVariable(array(
-            'STATUS_VERSION'        =>  $strVersion,
-            'STATUS_TABLES'         =>  $intTables,
-            'STATUS_SIZE'           =>  $this->convertBytesToKBytes($intSize),
-            'STATUS_BACKLOG'        =>  $this->convertBytesToKBytes($intBacklog),
-            'CONNECTION_DBPREFIX'   =>  DBPREFIX,
-            'CONNECTION_DATABASE'   =>  $_DBCONFIG['database'],
-            'CONNECTION_USERNAME'   =>  $_DBCONFIG['user'],
+            'STATUS_VERSION' => $strVersion,
+            'STATUS_TABLES' => $intTables,
+            'STATUS_SIZE' => $this->convertBytesToKBytes($intSize),
+            'STATUS_BACKLOG' => $this->convertBytesToKBytes($intBacklog),
+            'CONNECTION_DBPREFIX' => DBPREFIX,
+            'CONNECTION_DATABASE' => $_DBCONFIG['database'],
+            'CONNECTION_USERNAME' => $_DBCONFIG['user'],
         ));
 
         //Filter mySQL-Info
@@ -277,7 +303,7 @@ class DatabaseManager
         $arrRows = array();
 
         //Collect all blocks containing mysql-information
-        preg_match_all('/<h2><a name="module_mysql.*">mysql.*<\/a><\/h2>(.*<\/table><br \/>){2}\n/sU', $strPhpInfo, $arrBlocks);    //Modifier s = Use string as single-row, Modifier U = just be Ungreedy!
+        preg_match_all('/<h2><a name="module_mysql.*">mysql.*<\/a><\/h2>(.*<\/table><br \/>) {2}\n/sU', $strPhpInfo, $arrBlocks);    //Modifier s = Use string as single-row, Modifier U = just be Ungreedy!
         foreach ($arrBlocks[0] as $strBlock) {
             // Get title of the block
             $strTitle = preg_replace('/<h2>.*>(.*)<\/a><\/h2>.*/s', '$1', $strBlock);
@@ -295,8 +321,8 @@ class DatabaseManager
                 }
 
                 $objTemplate->setVariable(array(
-                    'TABLE_TITLES_CLASS'    => ($intTableKey == 0) ? 'row1' : 'row3',
-                    'TABLE_TITLES'          => $strColumnHeaders
+                    'TABLE_TITLES_CLASS' => ($intTableKey == 0) ? 'row1' : 'row3',
+                    'TABLE_TITLES' => $strColumnHeaders
                 ));
 
                 //Get content of this table
@@ -312,7 +338,7 @@ class DatabaseManager
             }
             $objTemplate->setVariable(array(
                 'TXT_PHPINFO_TITLE' => $_CORELANG['TXT_DBM_STATUS_PHPINFO'],
-                'BLOCK_TITLE'       => $strTitle
+                'BLOCK_TITLE' => $strTitle
             ));
             $objTemplate->parse('showPhpBlocks');
         }
@@ -334,23 +360,23 @@ class DatabaseManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'maintenance', 'dbm_maintenance.html');
         $objTemplate->setVariable(array(
-            'TXT_MAINTENANCE_OPTIMIZE_TITLE'            =>  $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DB'],
-            'TXT_MAINTENANCE_OPTIMIZE_BUTTON'           =>  $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_START'],
-            'TXT_MAINTENANCE_OPTIMIZE_DESC'             =>  $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DESC'],
-            'TXT_MAINTENANCE_REPAIR_TITLE'              =>  $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_DB'],
-            'TXT_MAINTENANCE_REPAIR_BUTTON'             =>  $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_START'],
-            'TXT_MAINTENANCE_REPAIR_DESC'               =>  $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_DESC'],
-            'TXT_MAINTENANCE_TITLE_TABLES'              =>  $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
-            'TXT_MAINTENANCE_TABLES_NAME'               =>  $_CORELANG['TXT_DBM_MAINTENANCE_TABLENAME'],
-            'TXT_MAINTENANCE_TABLES_ROWS'               =>  $_CORELANG['TXT_DBM_MAINTENANCE_ROWS'],
-            'TXT_MAINTENANCE_TABLES_DATA'               =>  $_CORELANG['TXT_DBM_MAINTENANCE_DATA_SIZE'],
-            'TXT_MAINTENANCE_TABLES_INDEXES'            =>  $_CORELANG['TXT_DBM_MAINTENANCE_INDEX_SIZE'],
-            'TXT_MAINTENANCE_TABLES_BACKLOG'            =>  $_CORELANG['TXT_DBM_STATUS_BACKOG'],
-            'TXT_MAINTENANCE_TABLES_SELECT_ALL'         =>  $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_MAINTENANCE_TABLES_DESELECT_ALL'       =>  $_CORELANG['TXT_DESELECT_ALL'],
-            'TXT_MAINTENANCE_TABLES_SUBMIT_SELECT'      =>  $_CORELANG['TXT_MULTISELECT_SELECT'],
-            'TXT_MAINTENANCE_TABLES_SUBMIT_OPTIMIZE'    =>  $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_START'],
-            'TXT_MAINTENANCE_TABLES_SUBMIT_REPAIR'      =>  $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_START'],
+            'TXT_MAINTENANCE_OPTIMIZE_TITLE' => $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DB'],
+            'TXT_MAINTENANCE_OPTIMIZE_BUTTON' => $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_START'],
+            'TXT_MAINTENANCE_OPTIMIZE_DESC' => $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DESC'],
+            'TXT_MAINTENANCE_REPAIR_TITLE' => $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_DB'],
+            'TXT_MAINTENANCE_REPAIR_BUTTON' => $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_START'],
+            'TXT_MAINTENANCE_REPAIR_DESC' => $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_DESC'],
+            'TXT_MAINTENANCE_TITLE_TABLES' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_MAINTENANCE_TABLES_NAME' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLENAME'],
+            'TXT_MAINTENANCE_TABLES_ROWS' => $_CORELANG['TXT_DBM_MAINTENANCE_ROWS'],
+            'TXT_MAINTENANCE_TABLES_DATA' => $_CORELANG['TXT_DBM_MAINTENANCE_DATA_SIZE'],
+            'TXT_MAINTENANCE_TABLES_INDEXES' => $_CORELANG['TXT_DBM_MAINTENANCE_INDEX_SIZE'],
+            'TXT_MAINTENANCE_TABLES_BACKLOG' => $_CORELANG['TXT_DBM_STATUS_BACKOG'],
+            'TXT_MAINTENANCE_TABLES_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_MAINTENANCE_TABLES_DESELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_MAINTENANCE_TABLES_SUBMIT_SELECT' => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_MAINTENANCE_TABLES_SUBMIT_OPTIMIZE' => $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_START'],
+            'TXT_MAINTENANCE_TABLES_SUBMIT_REPAIR' => $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_START'],
         ));
 
         //Get tables
@@ -360,16 +386,16 @@ class DatabaseManager
         //Iterate through tables
         while (!$objResult->EOF) {
             $objTemplate->setGlobalVariable(array(
-                'TXT_MAINTENANCE_SHOW_TABLE'    =>  $_CORELANG['TXT_DBM_SHOW_TABLE_TITLE'],
-                'MAINTENANCE_TABLES_NAME'       =>  $objResult->fields['Name']
+                'TXT_MAINTENANCE_SHOW_TABLE' => $_CORELANG['TXT_DBM_SHOW_TABLE_TITLE'],
+                'MAINTENANCE_TABLES_NAME' => $objResult->fields['Name']
             ));
 
             $objTemplate->setVariable(array(
-                'MAINTENANCE_TABLES_ROW'        =>  ($objResult->fields['Data_free'] != 0) ? 'Warn' : (($intRowCounter % 2 == 0) ? 2 : 1),
-                'MAINTENANCE_TABLES_ROWS'       =>  $objResult->fields['Rows'],
-                'MAINTENANCE_TABLES_DATA'       =>  $this->convertBytesToKBytes($objResult->fields['Data_length']),
-                'MAINTENANCE_TABLES_INDEXES'    =>  $this->convertBytesToKBytes($objResult->fields['Index_length']),
-                'MAINTENANCE_TABLES_BACKLOG'    =>  $this->convertBytesToKBytes($objResult->fields['Data_free']),
+                'MAINTENANCE_TABLES_ROW' => ($objResult->fields['Data_free'] != 0) ? 'Warn' : (($intRowCounter % 2 == 0) ? 2 : 1),
+                'MAINTENANCE_TABLES_ROWS' => $objResult->fields['Rows'],
+                'MAINTENANCE_TABLES_DATA' => $this->convertBytesToKBytes($objResult->fields['Data_length']),
+                'MAINTENANCE_TABLES_INDEXES' => $this->convertBytesToKBytes($objResult->fields['Index_length']),
+                'MAINTENANCE_TABLES_BACKLOG' => $this->convertBytesToKBytes($objResult->fields['Data_free']),
             ));
 
             if (Permission::hasAllAccess()) {
@@ -404,17 +430,17 @@ class DatabaseManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'show_table', 'dbm_show_table.html');
         $objTemplate->setVariable(array(
-            'TXT_SHOW_TABLE_HTML_MENU'          =>  $_CORELANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'],
-            'TXT_SHOW_TABLE_HTML_TITLE'         =>  $_CORELANG['TXT_DBM_MAINTENANCE_TABLENAME'].':&nbsp;'.$strTableName,
-            'TXT_SHOW_TABLE_DUMP_MENU'          =>  $_CORELANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'],
-            'TXT_SHOW_TABLE_DUMP_TITLE'         =>  $_CORELANG['TXT_DBM_MAINTENANCE_TABLENAME'].':&nbsp;'.$strTableName,
-            'TXT_SHOW_TABLE_DUMP_BUTTON_SELECT' =>  $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_SHOW_TABLE_BUTTON_BACK'        =>  ucfirst($_CORELANG['TXT_BACK'])
+            'TXT_SHOW_TABLE_HTML_MENU' => $_CORELANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'],
+            'TXT_SHOW_TABLE_HTML_TITLE' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLENAME'].':&nbsp;'.$strTableName,
+            'TXT_SHOW_TABLE_DUMP_MENU' => $_CORELANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'],
+            'TXT_SHOW_TABLE_DUMP_TITLE' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLENAME'].':&nbsp;'.$strTableName,
+            'TXT_SHOW_TABLE_DUMP_BUTTON_SELECT' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_SHOW_TABLE_BUTTON_BACK' => ucfirst($_CORELANG['TXT_BACK'])
         ));
 
         //Check for contrexx-table
         if (DBPREFIX != substr($strTableName, 0, strpos($strTableName,'_') + 1)) {
-            $this->_strErrMessage = $_CORELANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'];
+            self::addError($_CORELANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX']);
             $objTemplate->hideBlock('showTable');
             return;
         }
@@ -468,9 +494,9 @@ class DatabaseManager
         $strSqlDump .= $objBackup->getTableContent($strTableName);
 
         $objTemplate->setVariable(array(
-            'SHOW_TABLE_HTML_HEADERS'   =>  $strColumnNames,
-            'SHOW_TABLE_HTML_CONTENT'   =>  $strTableContent,
-            'SHOW_TABLE_SQL_DUMP'       =>  str_replace(array('{', '}'), array('&#123;', '&#125;'), htmlentities($strSqlDump, ENT_QUOTES, CONTREXX_CHARSET))
+            'SHOW_TABLE_HTML_HEADERS' => $strColumnNames,
+            'SHOW_TABLE_HTML_CONTENT' => $strTableContent,
+            'SHOW_TABLE_SQL_DUMP' => str_replace(array('{', '}'), array('&#123;', '&#125;'), htmlentities($strSqlDump, ENT_QUOTES, CONTREXX_CHARSET))
         ));
 
     }
@@ -500,7 +526,7 @@ class DatabaseManager
             }
         }
 
-        $this->_strOkMessage = $_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DONE'];
+        self::addMessage($_CORELANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DONE']);
     }
 
     /**
@@ -528,7 +554,7 @@ class DatabaseManager
             }
         }
 
-        $this->_strOkMessage = $_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_DONE'];
+        self::addMessage($_CORELANG['TXT_DBM_MAINTENANCE_REPAIR_DONE']);
     }
 
 
@@ -547,20 +573,20 @@ class DatabaseManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'sql', 'dbm_sql.html');
         $objTemplate->setVariable(array(
-            'TXT_SQL_CODE_TITLE'            =>  $_CORELANG['TXT_DBM_SQL_CODE'],
-            'TXT_SQL_CODE_HINT'             =>  $_CORELANG['TXT_DBM_SQL_HINT'],
-            'TXT_SQL_FILE_TITLE'            =>  $_CORELANG['TXT_DBM_SQL_FILE'],
-            'TXT_SQL_FILE_FILE'             =>  $_CORELANG['TXT_SELECT_FILE'],
-            'TXT_SQL_FILE_ALLOWED_TYPES'    =>  $_CORELANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'],
-            'TXT_SQL_FILE_ALLOWED_SIZE'     =>  $_CORELANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'],
-            'TXT_SQL_SUBMIT'                =>  $_CORELANG['TXT_EXECUTE']
+            'TXT_SQL_CODE_TITLE' => $_CORELANG['TXT_DBM_SQL_CODE'],
+            'TXT_SQL_CODE_HINT' => $_CORELANG['TXT_DBM_SQL_HINT'],
+            'TXT_SQL_FILE_TITLE' => $_CORELANG['TXT_DBM_SQL_FILE'],
+            'TXT_SQL_FILE_FILE' => $_CORELANG['TXT_SELECT_FILE'],
+            'TXT_SQL_FILE_ALLOWED_TYPES' => $_CORELANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'],
+            'TXT_SQL_FILE_ALLOWED_SIZE' => $_CORELANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'],
+            'TXT_SQL_SUBMIT' => $_CORELANG['TXT_EXECUTE']
         ));
 
         $objFWSystem = new FWSystem();
 
         $objTemplate->setVariable(array(
-            'FILE_TYPES'    =>  $this->_arrFileEndings['sql'],
-            'FILE_SIZE'     =>  $this->convertBytesToKBytes($objFWSystem->getMaxUploadFileSize()),
+            'FILE_TYPES' => $this->_arrFileEndings['sql'],
+            'FILE_SIZE' => $this->convertBytesToKBytes($objFWSystem->getMaxUploadFileSize()),
         ));
 
         if (isset($_POST['frmDatabaseQuery_Submited']) && count($arrSqlQueries = $this->parseInput())) {
@@ -570,8 +596,8 @@ class DatabaseManager
             }
 
             $objTemplate->setVariable(array(
-                'TXT_SQL_PERFOMED'  => $_CORELANG['TXT_DBM_SQL_EXECUTED'],
-                'PERFOMED_QUERY'    => implode('<hr />', $output)
+                'TXT_SQL_PERFOMED' => $_CORELANG['TXT_DBM_SQL_EXECUTED'],
+                'PERFOMED_QUERY' => implode('<hr />', $output)
             ));
             $objTemplate->parse('performedQuery');
         } else {
@@ -714,22 +740,22 @@ class DatabaseManager
         if (isset($_FILES['frmDatabaseQuery_File']) && $_FILES['frmDatabaseQuery_File']['error'] == 0) {
             //Check for right file-type
             if (!preg_match('/(\.[^.]+)$/', $_FILES['frmDatabaseQuery_File']['name'], $extension) || !in_array($extension[1], $this->_arrFileEndings)) {
-                $this->_strErrMessage = sprintf($_CORELANG['TXT_DBM_SQL_ERROR_TYPE'], $_FILES['frmDatabaseQuery_File']['type']);
+                self::addError(sprintf($_CORELANG['TXT_DBM_SQL_ERROR_TYPE'], $_FILES['frmDatabaseQuery_File']['type']));
                 return '';
             }
 
             $input = @file_get_contents($_FILES['frmDatabaseQuery_File']['tmp_name']);
             if (!$input) {
-                $this->_strErrMessage = $_CORELANG['TXT_ERRORS_WHILE_READING_THE_FILE'];
+                self::addError($_CORELANG['TXT_ERRORS_WHILE_READING_THE_FILE']);
                 return '';
             }
         } else {
             //Check for empty queries
             if (empty($_POST['frmDatabaseQuery_Code'])) {
-                $this->_strErrMessage = $_CORELANG['TXT_DBM_SQL_ERROR_EMPTY'];
+                self::addError($_CORELANG['TXT_DBM_SQL_ERROR_EMPTY']);
                 return '';
             } elseif (!strpos($_POST['frmDatabaseQuery_Code'], ';')) {
-                $this->_strErrMessage = $_CORELANG['TXT_DBM_SQL_ERROR_EMPTY'];
+                self::addError($_CORELANG['TXT_DBM_SQL_ERROR_EMPTY']);
             }
             $input = get_magic_quotes_gpc() ? stripslashes($_POST['frmDatabaseQuery_Code']) : $_POST['frmDatabaseQuery_Code'];
             $objTemplate->setVariable('PARSED_QUERY', htmlentities($input, ENT_QUOTES, CONTREXX_CHARSET));
@@ -842,27 +868,27 @@ class DatabaseManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'import_export', 'dbm_import_export.html');
         $objTemplate->setVariable(array(
-            'TXT_EXPORT_TITLE'              =>  $_CORELANG['TXT_DBM_EXPORT_TITLE'],
-            'TXT_EXPORT_DESCRIPTION'        =>  $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
-            'TXT_EXPORT_TYPE'               =>  $_CORELANG['TXT_DBM_EXPORT_TYPE'],
-            'TXT_EXPORT_TABLES'             =>  $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
-            'TXT_EXPORT_SELECT_ALL'         =>  $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_EXPORT_UNSELECT_ALL'       =>  $_CORELANG['TXT_DESELECT_ALL'],
-            'TXT_EXPORT_SUBMIT'             =>  $_CORELANG['TXT_DBM_EXPORT_TITLE'],
-            'TXT_EXISTING_BACKUPS_TITLE'    =>  $_CORELANG['TXT_DBM_EXPORT_BACKUPS'],
-            'TXT_EXISTING_BACKUP_DATE'      =>  $_CORELANG['TXT_DBM_EXPORT_DATE'],
-            'TXT_EXISTING_BACKUP_TYPE'      =>  $_CORELANG['TXT_DBM_EXPORT_TYPE'],
-            'TXT_EXISTING_BACKUP_VERSION'   =>  $_CORELANG['TXT_DBM_EXPORT_VERSION'],
-            'TXT_EXISTING_BACKUP_EDITION'   =>  $_CORELANG['TXT_DBM_EXPORT_EDITION'],
-            'TXT_EXISTING_BACKUP_DESC'      =>  $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
-            'TXT_EXISTING_BACKUP_TABLES'    =>  $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
-            'TXT_EXISTING_BACKUP_SIZE'      =>  $_CORELANG['TXT_DBM_EXPORT_SIZE'],
-            'TXT_EXISTING_BACKUP_DELETE'    =>  $_CORELANG['TXT_CONFIRM_DELETE_DATA'].' '.$_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            'TXT_EXISTING_BACKUP_COMMENTS'  =>  $_CORELANG['TXT_DBM_EXPORT_COMMENTS'],
-            'TXT_IMPORT_TITLE'              =>  $_CORELANG['TXT_DBM_IMPORT'],
-            'TXT_IMPORT_DESCRIPTION'        =>  $_CORELANG['TXT_DBM_IMPORT_DESCRIPTION'],
-            'TXT_IMPORT_FILE'               =>  $_CORELANG['TXT_DBM_IMPORT_FILE'],
-            'TXT_IMPORT_SUBMIT'             =>  $_CORELANG['TXT_DBM_IMPORT_SUBMIT']
+            'TXT_EXPORT_TITLE' => $_CORELANG['TXT_DBM_EXPORT_TITLE'],
+            'TXT_EXPORT_DESCRIPTION' => $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
+            'TXT_EXPORT_TYPE' => $_CORELANG['TXT_DBM_EXPORT_TYPE'],
+            'TXT_EXPORT_TABLES' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_EXPORT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_EXPORT_UNSELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_EXPORT_SUBMIT' => $_CORELANG['TXT_DBM_EXPORT_TITLE'],
+            'TXT_EXISTING_BACKUPS_TITLE' => $_CORELANG['TXT_DBM_EXPORT_BACKUPS'],
+            'TXT_EXISTING_BACKUP_DATE' => $_CORELANG['TXT_DBM_EXPORT_DATE'],
+            'TXT_EXISTING_BACKUP_TYPE' => $_CORELANG['TXT_DBM_EXPORT_TYPE'],
+            'TXT_EXISTING_BACKUP_VERSION' => $_CORELANG['TXT_DBM_EXPORT_VERSION'],
+            'TXT_EXISTING_BACKUP_EDITION' => $_CORELANG['TXT_DBM_EXPORT_EDITION'],
+            'TXT_EXISTING_BACKUP_DESC' => $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
+            'TXT_EXISTING_BACKUP_TABLES' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_EXISTING_BACKUP_SIZE' => $_CORELANG['TXT_DBM_EXPORT_SIZE'],
+            'TXT_EXISTING_BACKUP_DELETE' => $_CORELANG['TXT_CONFIRM_DELETE_DATA'].' '.$_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_EXISTING_BACKUP_COMMENTS' => $_CORELANG['TXT_DBM_EXPORT_COMMENTS'],
+            'TXT_IMPORT_TITLE' => $_CORELANG['TXT_DBM_IMPORT'],
+            'TXT_IMPORT_DESCRIPTION' => $_CORELANG['TXT_DBM_IMPORT_DESCRIPTION'],
+            'TXT_IMPORT_FILE' => $_CORELANG['TXT_DBM_IMPORT_FILE'],
+            'TXT_IMPORT_SUBMIT' => $_CORELANG['TXT_DBM_IMPORT_SUBMIT']
         ));
 
         //Show tables
@@ -899,22 +925,22 @@ class DatabaseManager
             }
 
             $objTemplate->setVariable(array(
-                'TXT_BACKUP_RESTORE'    => $_CORELANG['TXT_DBM_EXPORT_RESTORE'],
-                'TXT_DETAILS'           => $_CORELANG['TXT_DBM_DETAILS_TITLE'],
-                'TXT_BACKUP_DOWNLOAD'   => $_CORELANG['TXT_DOWNLOAD'],
-                'TXT_BACKUP_DELETE'     => $_CORELANG['TXT_DELETE']
+                'TXT_BACKUP_RESTORE' => $_CORELANG['TXT_DBM_EXPORT_RESTORE'],
+                'TXT_DETAILS' => $_CORELANG['TXT_DBM_DETAILS_TITLE'],
+                'TXT_BACKUP_DOWNLOAD' => $_CORELANG['TXT_DOWNLOAD'],
+                'TXT_BACKUP_DELETE' => $_CORELANG['TXT_DELETE']
             ));
 
             $objTemplate->setVariable(array(
-                'BACKUP_CLASS'          => $strClassRow,
-                'BACKUP_ID'             => $objResult->fields['id'],
-                'BACKUP_DATE'           => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
-                'BACKUP_DESC'           => ($objResult->fields['description'] != '') ? $objResult->fields['description'] : '-',
-                'BACKUP_TYPE'           => strtoupper($objResult->fields['type']),
-                'BACKUP_VERSION'        => htmlentities($objResult->fields['version'], ENT_QUOTES, CONTREXX_CHARSET),
-                'BACKUP_EDITION'        => htmlentities($objResult->fields['edition'], ENT_QUOTES, CONTREXX_CHARSET),
-                'BACKUP_TABLES'         => count(explode(';',$objResult->fields['usedtables'])),
-                'BACKUP_SIZE'           => $this->convertBytesToKBytes($objResult->fields['size']),
+                'BACKUP_CLASS' => $strClassRow,
+                'BACKUP_ID' => $objResult->fields['id'],
+                'BACKUP_DATE' => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
+                'BACKUP_DESC' => ($objResult->fields['description'] != '') ? $objResult->fields['description'] : '-',
+                'BACKUP_TYPE' => strtoupper($objResult->fields['type']),
+                'BACKUP_VERSION' => htmlentities($objResult->fields['version'], ENT_QUOTES, CONTREXX_CHARSET),
+                'BACKUP_EDITION' => htmlentities($objResult->fields['edition'], ENT_QUOTES, CONTREXX_CHARSET),
+                'BACKUP_TABLES' => count(explode(';',$objResult->fields['usedtables'])),
+                'BACKUP_SIZE' => $this->convertBytesToKBytes($objResult->fields['size']),
             ));
 
             $objTemplate->parse('showBackups');
@@ -946,7 +972,7 @@ class DatabaseManager
         }
 
         if (! isset($_POST['frmDatabaseExport_Tables'])) {
-            $this->_strErrMessage = $_CORELANG['TXT_DBM_EXPORT_ERROR_SELECTION'];
+            self::addError($_CORELANG['TXT_DBM_EXPORT_ERROR_SELECTION']);
             return;
         }
 
@@ -1001,10 +1027,10 @@ class DatabaseManager
                                         `size`          = '.filesize($this->_strBackupPath.$strFileName).'
                                 ');
 
-            $this->_strOkMessage = str_replace('{PATH}',$this->_strBackupPath.$strFileName, $_CORELANG['TXT_DBM_EXPORT_SUCCESS']);
+            self::addMessage(str_replace('{PATH}',$this->_strBackupPath.$strFileName, $_CORELANG['TXT_DBM_EXPORT_SUCCESS']));
         } else {
             //Directory is not writable, show error
-            $this->_strErrMessage = str_replace('{PATH}',$this->_strBackupPath, $_CORELANG['TXT_DBM_EXPORT_ERROR']);
+            self::addError(str_replace('{PATH}',$this->_strBackupPath, $_CORELANG['TXT_DBM_EXPORT_ERROR']));
         }
     }
 
@@ -1022,7 +1048,7 @@ class DatabaseManager
         $intBackupId = intval($intBackupId);
 
         if ($intBackupId == 0) {
-            $this->_strErrMessage = $_CORELANG['TXT_DBM_EXPORT_DELETE_ERROR'];
+            self::addError($_CORELANG['TXT_DBM_EXPORT_DELETE_ERROR']);
             return;
         }
 
@@ -1035,7 +1061,7 @@ class DatabaseManager
                                         ');
 
         if ($objResult->RecordCount() != 1) {
-            $this->_strErrMessage = $_CORELANG['TXT_DBM_EXPORT_DELETE_ERROR'];
+            self::addError($_CORELANG['TXT_DBM_EXPORT_DELETE_ERROR']);
             return;
         }
 
@@ -1048,7 +1074,7 @@ class DatabaseManager
                                 LIMIT   1
                             ');
 
-        $this->_strOkMessage = $_CORELANG['TXT_DBM_EXPORT_DELETE_SUCCESS'];
+        self::addMessage($_CORELANG['TXT_DBM_EXPORT_DELETE_SUCCESS']);
     }
 
 
@@ -1107,7 +1133,7 @@ class DatabaseManager
         //No check for mime-type or file-type necessary because of check for the contrexx-header
         //Check for Contrexx-File
         if (!preg_match('/# Version:.*/', $arrFileRows[2]) || !preg_match('/# Edition:.*/', $arrFileRows[3])) {
-            $this->_strErrMessage = $_CORELANG['TXT_DBM_IMPORT_ERROR_NO_CONTREXX'];
+            self::addError($_CORELANG['TXT_DBM_IMPORT_ERROR_NO_CONTREXX']);
             return;
         }
 
@@ -1139,8 +1165,7 @@ class DatabaseManager
                                     `usedtables`    = "'.$strTables.'",
                                     `size`          = '.filesize($this->_strBackupPath.$strFileName).'
                             ');
-
-        $this->_strOkMessage = $_CORELANG['TXT_DBM_IMPORT_SUCCESS'];
+        self::addMessage($_CORELANG['TXT_DBM_IMPORT_SUCCESS']);
     }
 
 
@@ -1159,16 +1184,16 @@ class DatabaseManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'status', 'dbm_details.html');
         $objTemplate->setVariable(array(
-            'TXT_DETAILS_TITLE'         =>  $_CORELANG['TXT_DBM_EXPORT_TITLE'],
-            'TXT_DETAILS_DATE'          =>  $_CORELANG['TXT_DBM_EXPORT_DATE'],
-            'TXT_DETAILS_COMMENT'       =>  $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
-            'TXT_DETAILS_TYPE'          =>  $_CORELANG['TXT_DBM_EXPORT_TYPE'],
-            'TXT_DETAILS_VERSION'       =>  $_CORELANG['TXT_DBM_EXPORT_VERSION'],
-            'TXT_DETAILS_SIZE'          =>  $_CORELANG['TXT_DBM_EXPORT_SIZE'],
-            'TXT_DETAILS_TABLES'        =>  $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
-            'TXT_DETAILS_CONTENT'       =>  $_CORELANG['TXT_DBM_DETAILS_CONTENT'],
-            'TXT_DETAILS_BUTTON_SELECT' =>  $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_DETAILS_BUTTON_BACK'   =>  ucfirst($_CORELANG['TXT_BACK'])
+            'TXT_DETAILS_TITLE' => $_CORELANG['TXT_DBM_EXPORT_TITLE'],
+            'TXT_DETAILS_DATE' => $_CORELANG['TXT_DBM_EXPORT_DATE'],
+            'TXT_DETAILS_COMMENT' => $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
+            'TXT_DETAILS_TYPE' => $_CORELANG['TXT_DBM_EXPORT_TYPE'],
+            'TXT_DETAILS_VERSION' => $_CORELANG['TXT_DBM_EXPORT_VERSION'],
+            'TXT_DETAILS_SIZE' => $_CORELANG['TXT_DBM_EXPORT_SIZE'],
+            'TXT_DETAILS_TABLES' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_DETAILS_CONTENT' => $_CORELANG['TXT_DBM_DETAILS_CONTENT'],
+            'TXT_DETAILS_BUTTON_SELECT' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DETAILS_BUTTON_BACK' => ucfirst($_CORELANG['TXT_BACK'])
         ));
 
         $intBackupId = intval($intBackupId);
@@ -1188,7 +1213,7 @@ class DatabaseManager
 
         if ($intBackupId < 1 || $objResult->RecordCount() == 0 || !is_file($strFile)) {
             //Wrong ID, show error
-            $this->_strErrMessage = $_CORELANG['TXT_DBM_DETAILS_ERROR_ID'];
+            self::addError($_CORELANG['TXT_DBM_DETAILS_ERROR_ID']);
         }
 
         //Read file
@@ -1200,13 +1225,13 @@ class DatabaseManager
         fclose ($handleFile);
 
         $objTemplate->setVariable(array(
-            'DETAILS_DATE'      =>  date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
-            'DETAILS_COMMENT'   =>  ($objResult->fields['description'] != '') ? $objResult->fields['description'] : '-',
-            'DETAILS_TYPE'      =>  strtoupper($objResult->fields['type']),
-            'DETAILS_VERSION'   =>  $objResult->fields['version'].' '.$objResult->fields['edition'],
-            'DETAILS_SIZE'      =>  $this->convertBytesToKBytes($objResult->fields['size']),
-            'DETAILS_TABLES'    =>  str_replace(';',', ', $objResult->fields['usedtables']),
-            'DETAILS_CONTENT'   =>  htmlentities($strFileContent, ENT_QUOTES, CONTREXX_CHARSET)
+            'DETAILS_DATE' => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
+            'DETAILS_COMMENT' => ($objResult->fields['description'] != '') ? $objResult->fields['description'] : '-',
+            'DETAILS_TYPE' => strtoupper($objResult->fields['type']),
+            'DETAILS_VERSION' => $objResult->fields['version'].' '.$objResult->fields['edition'],
+            'DETAILS_SIZE' => $this->convertBytesToKBytes($objResult->fields['size']),
+            'DETAILS_TABLES' => str_replace(';',', ', $objResult->fields['usedtables']),
+            'DETAILS_CONTENT' => htmlentities($strFileContent, ENT_QUOTES, CONTREXX_CHARSET)
         ));
     }
 
@@ -1219,6 +1244,172 @@ class DatabaseManager
     private function convertBytesToKBytes($intNumberOfBytes) {
         $intNumberOfBytes = intval($intNumberOfBytes);
         return round($intNumberOfBytes / 1024, 2);
+    }
+
+
+    /**
+     * Show the CSV import/export view
+     * @return  boolean       True on success, false otherwise
+     * @global  ADOConnection       $objDatabase
+     * @global  HTML_Template_Sigma $objTemplate
+     * @global  array               $_CORELANG
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     * @todo    Make the import/export path configurable
+     */
+    function showCsv()
+    {
+        global $objTemplate, $objDatabase, $_CORELANG;
+
+        $arrSuccess = array();
+        $arrFail = array();
+        if (   isset($_POST['multiaction'])
+            && $_POST['multiaction'] == 'import') {
+            if (   empty($_POST['source'])
+                || !is_array($_POST['source'])) {
+                self::addError($_CORELANG['TXT_DBM_ERROR_NO_SOURCE_FILES']);
+            } else {
+                $flagTruncate = !empty($_POST['truncate']);
+                foreach ($_POST['source'] as $strTablename) {
+                    $result = CSVBackup::import_csv($strTablename, $flagTruncate);
+                    if ($result) {
+                        $arrSuccess[] = $strTablename;
+                    } else {
+                        $arrFail[] = $strTablename;
+                    }
+                }
+                if ($arrSuccess)
+                    self::addMessage(sprintf(
+                        $_CORELANG['TXT_DBM_SUCCEEDED_IMPORTING_CSV_FILES'],
+                        join(', ', $arrSuccess)
+                    ));
+                if ($arrFail)
+                    self::addError(sprintf(
+                        $_CORELANG['TXT_DBM_FAILED_IMPORTING_CSV_FILES'],
+                        join(', ', $arrFail)
+                    ));
+            }
+        }
+        if (   isset($_POST['multiaction'])
+            && $_POST['multiaction'] == 'export') {
+/*
+  TODO - Accept a custom destination folder
+            if (empty($_POST['target'])) {
+                self::addError($_CORELANG['TXT_DBM_ERROR_NO_TARGET_FOLDER']);
+*/
+            if (   empty($_POST['source'])
+                || !is_array($_POST['source'])) {
+                self::addError($_CORELANG['TXT_DBM_ERROR_NO_SOURCE_TABLES']);
+            } else {
+                foreach ($_POST['source'] as $strTablename) {
+                    $result = CSVBackup::export_csv($strTablename);
+                    if ($result) {
+                        $arrSuccess[] = $strTablename;
+                    } else {
+                        $arrFail[] = $strTablename;
+                    }
+                }
+                if ($arrSuccess)
+                    self::addMessage(sprintf(
+                        $_CORELANG['TXT_DBM_SUCCEEDED_EXPORTING_TABLES'],
+                        join(', ', $arrSuccess)
+                    ));
+                if ($arrFail)
+                    self::addMessage(sprintf(
+                        $_CORELANG['TXT_DBM_FAILED_EXPORTING_TABLES'],
+                        join(', ', $arrFail)
+                    ));
+            }
+        }
+
+        // Set up the view
+        $this->_strPageTitle = $_CORELANG['TXT_DBM_CSV'];
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'csv', 'dbm_csv.html');
+        $objTemplate->setGlobalVariable(array(
+            'TXT_DBM_CSV_TITLE_TABLES'            => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_DBM_CSV_TABLES_NAME'             => $_CORELANG['TXT_DBM_MAINTENANCE_TABLENAME'],
+            'TXT_DBM_CSV_TABLES_ROWS'             => $_CORELANG['TXT_DBM_MAINTENANCE_ROWS'],
+            'TXT_DBM_CSV_TABLES_DATA'             => $_CORELANG['TXT_DBM_MAINTENANCE_DATA_SIZE'],
+            'TXT_DBM_CSV_TABLES_INDEXES'          => $_CORELANG['TXT_DBM_MAINTENANCE_INDEX_SIZE'],
+            'TXT_DBM_CSV_TABLES_BACKLOG'          => $_CORELANG['TXT_DBM_STATUS_BACKOG'],
+            'TXT_DBM_CSV_TABLES_SELECT_ALL'       => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DBM_CSV_TABLES_DESELECT_ALL'     => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_DBM_CSV_TABLES_SUBMIT_SELECT'    => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_DBM_CSV_EXPORT'                  => $_CORELANG['TXT_DBM_CSV_EXPORT'],
+            'TXT_DBM_CSV_IMPORT'                  => $_CORELANG['TXT_DBM_CSV_IMPORT'],
+            'TXT_DBM_CSV_SHOW_TABLE'              => $_CORELANG['TXT_DBM_SHOW_TABLE_TITLE'],
+            'TXT_DBM_CSV_IMPORT_TRUNCATE_TABLE'   => $_CORELANG['TXT_DBM_CSV_IMPORT_TRUNCATE_TABLE'],
+        ));
+        $objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'%"');
+        $i = 0;
+        while (!$objResult->EOF) {
+            $objTemplate->setVariable(array(
+                'DBM_CSV_TABLES_NAME' => $objResult->fields['Name'],
+                'DBM_CSV_TABLES_ROW' =>
+                    ($objResult->fields['Data_free']
+                      ? 'Warn' : (++$i % 2 ? 2 : 1)
+                    ),
+                'DBM_CSV_TABLES_ROWS' => $objResult->fields['Rows'],
+                'DBM_CSV_TABLES_DATA' => sprintf(
+                    $_CORELANG['TXT_CORE_KILOBYTE_ABBREV'],
+                    $this->convertBytesToKBytes($objResult->fields['Data_length'])
+                ),
+                'DBM_CSV_TABLES_INDEXES' => sprintf(
+                    $_CORELANG['TXT_CORE_KILOBYTE_ABBREV'],
+                    $this->convertBytesToKBytes($objResult->fields['Index_length'])
+                ),
+                'DBM_CSV_TABLES_BACKLOG' => sprintf(
+                    $_CORELANG['TXT_CORE_KILOBYTE_ABBREV'],
+                    $this->convertBytesToKBytes($objResult->fields['Data_free'])
+                ),
+            ));
+            if (Permission::hasAllAccess()) {
+                $objTemplate->touchblock('showTableContentLink');
+                $objTemplate->hideBlock('showTableContentNoLink');
+            } else {
+                $objTemplate->touchblock('showTableContentNoLink');
+                $objTemplate->hideBlock('showTableContentLink');
+            }
+            $objTemplate->parse('showTables');
+            $objResult->MoveNext();
+        }
+        return true;
+    }
+
+
+    /**
+     * Adds the string $strErrorMessage to the error messages.
+     *
+     * If necessary, inserts a line break tag (<br />) between
+     * error messages.
+     * @static
+     * @param   string  $strErrorMessage    The error message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function addError($strErrMessage)
+    {
+        self::$strErrMessage .=
+            (self::$strErrMessage != '' && $strErrMessage != ''
+                ? '<br />' : ''
+            ).$strErrMessage;
+    }
+
+
+    /**
+     * Adds the string $strOkMessage to the success messages.
+     *
+     * If necessary, inserts a line break tag (<br />) between
+     * messages.
+     * @static
+     * @param   string  $strOkMessage       The message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function addMessage($strOkMessage)
+    {
+        self::$strOkMessage .=
+            (self::$strOkMessage != '' && $strOkMessage != ''
+                ? '<br />' : ''
+            ).$strOkMessage;
     }
 
 }
@@ -1552,101 +1743,258 @@ final class SQLBackup extends BackupBase
 /**
  * CSVBackup
  *
- * This class extends the BackupBase and implements the functionality
- * for the CSV export.
- * @copyright    CONTREXX CMS - COMVATION AG
- * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
- * @access        public
- * @package      contrexx
- * @subpackage   core
- * @version        1.0
+ * This class extends the BackupBase and implements functionality for CSV
+ * import and export.
+ * There are some flaws in the CSV format that are not easy to
+ * circumvent.  Please note that there is no trivial way to represent
+ * the NULL value; it is exported as an empty string.
+ * Thus, when reimporting tables from CSV files, this will result in a
+ * value of 0 (zero) for integer, and the empty string for any kind of
+ * character type fields.  As a consequence, there *MUST* be no difference
+ * when handling empty (zero or '') and NULL results obtained from the
+ * database throughout the system!
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core
+ * @since       2.1.0
+ * @version     2.1.0
  */
 final class CSVBackup extends BackupBase
 {
-    /**
-     * Defines if the current language supports comments. Some languages (for Example CVS) don't have a comment-tag, so
-     * in this languages some information should not be printed.
-     *
-     * @return  boolean     true = Actual language supports comments
-     */
-    function hasCommentTags()
-    {
-        return false;
-    }
+    const csv_delimiter = ';';
+    const csv_quote = '"';
+    const csv_default_path = 'export/';
+    // OBSOLETE:  const csv_escape = '\\';
 
     /**
-     * Returns nothing (= ''), because CSV doesn't support comments.
-     *
-     * @return  string      An empty string ('')
+     * CSV does not support comments.
+     * @return  boolean     False.  Always.
+     */
+    function hasCommentTags() { return false; }
+
+
+    /**
+     * CSV does not support comments.
+     * @throws  Exception
      */
     function getCommentString()
     {
-        return '';
+        throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__.'() is not supported', 0);
     }
 
+
     /**
-     * Prints the CSV-definition of a table.
-     *
-     * @global       ADONewConnection
-     * @param        string        $strTable: This table-header will be printed.
-     * @return         string        The generated table-header.
+     * OBSOLETE.
+     * This method does not belong to the abstract base class at all.
+     * @throws  Exception
      */
     function getTableDefinition($strTable)
     {
-        global $objDatabase;
-
-        $strReturn = '';
-        // Write column names
-        $objResult = $objDatabase->Execute('SHOW FIELDS FROM '.$strTable);
-        while (!$objResult->EOF) {
-            $strReturn .= '"'.$objResult->fields['Field'].'";';
-            $objResult->MoveNext();
-        }
-        $strReturn = substr($strReturn,0,-1); //Cut last character (;)
-        return $strReturn;
+        throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__."($strTable) is not supported", 0);
     }
 
+
     /**
-     * Prints the CSV-contents of a table.
-     *
-     * @global       ADONewConnection
-     * @param        string        $strTable: This table-contents will be printed.
-     * @return         string        The generated table-content.
+     * OBSOLETE.
+     * This method does not belong to the abstract base class at all.
+     * @throws  Exception
      */
     function getTableContent($strTable)
     {
-        global $objDatabase;
+        throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__."($strTable) is not supported", 0);
+    }
 
-        $strReturn = '';
 
-        //Count lines first
-        $objTableContent = $objDatabase->Execute('SELECT * FROM '.$strTable);
+    /**
+     * Export the contents of the Shop tables to CSV
+     *
+     * Note that the table name *MUST* include the table prefix
+     * (i.e. "contrexx_").
+     * @param   string    $strTablename   Name of the table to be exported
+     * @return  boolean                   True on success, false otherwise
+     * @static
+     * @global  ADOConnection $objDatabase
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     */
+    static function export_csv($strTablename)
+    {
+        global $objDatabase, $_CORELANG;
 
-        if ($objTableContent->RecordCount() > 0) {
-            //Get column names
-            $arrColumnNames = array();
-            $objResult = $objDatabase->Execute('SHOW FIELDS FROM '.$strTable);
-            while (!$objResult->EOF) {
-                $arrColumnNames[count($arrColumnNames)] = $objResult->fields['Field'];
-                $objResult->MoveNext();
+        $arrColumns = $objDatabase->MetaColumns($strTablename);
+        if (!$arrColumns) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_GETTING_TABLE_INFO'],
+                $strTablename
+            ));
+            return false;
+        }
+        $arrFieldname = array();
+        foreach ($arrColumns as $field) {
+            $arrFieldname[] = strtolower($field->name);
+        }
+        $query = "
+            SELECT `".join('`, `', $arrFieldname)."`
+              FROM `$strTablename`
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
+                $strTablename
+            ));
+            return false;
+        }
+        $strPath = ASCMS_DOCUMENT_ROOT.'/'.self::csv_default_path."/$strTablename.csv";
+        $fh = @fopen($strPath, 'w');
+        if (!$fh) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_OPENING_FILE_FOR_WRITING'],
+                $strPath
+            ));
+        }
+        if (!fputcsv($fh, $arrFieldname, self::csv_delimiter, self::csv_quote)) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
+                $strTablename
+            ));
+            fclose($fh);
+            return false;
+        }
+        while (!$objResult->EOF) {
+            $arrLine = array();
+            foreach ($objResult->fields as $value) {
+                $arrLine[] = $value;
             }
+            if (!fputcsv($fh, $arrLine, self::csv_delimiter, self::csv_quote)) {
+                DatabaseManager::addError(sprintf(
+                    $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
+                    $strTablename
+                ));
+                fclose($fh);
+                return false;
+            }
+            $objResult->MoveNext();
+        }
+        fclose($fh);
+        return true;
+    }
 
-            //Add values
-            while (!$objTableContent->EOF) {
 
-                foreach($arrColumnNames as $strColumnName) {
-                    if (isset($objTableContent->fields[$strColumnName])) {
-                        $strReturn .= '"'.addslashes($objTableContent->fields[$strColumnName]).'";';
-                    } else {
-                        $strReturn .= '"NULL";';
-                    }
+    /**
+     * Import the contents of the CSV file into the table with the same name
+     *
+     * Note that the table prefix, i.e. "contrexx_", *MUST* be included
+     * in the table name.
+     * @param   string    $strTablename   The source table name
+     * @param   boolean   $flagTruncate   If true, truncates the destination
+     *                                    table before importing
+     * @return  boolean                   True on success, false otherwise
+     * @static
+     * @global  ADOConnection $objDatabase
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     */
+    static function import_csv($strTablename, $flagTruncate=false)
+    {
+        global $objDatabase, $_CORELANG;
+
+        $arrTables = $objDatabase->MetaTables('TABLES');
+        if (empty($arrTables)) {
+            DatabaseManager::addError($_CORELANG['TXT_DBM_ERROR_GETTING_TABLE_INFO']);
+            return false;
+        }
+        $strTablename = preg_replace('/\..+$/', '', $strTablename);
+        // Table exists?
+        if (!in_array($strTablename, $arrTables)) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_TABLE_DOES_NOT_EXIST'],
+                $strTablename
+            ));
+            return false;
+        }
+        $arrColumnsTable = $objDatabase->MetaColumns($strTablename);
+        if (!$arrColumnsTable) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
+                $strTablename
+            ));
+            return false;
+        }
+        foreach ($arrColumnsTable as $field) {
+            $arrFieldnameTable[] = strtolower($field->name);
+        }
+        $strPath = ASCMS_DOCUMENT_ROOT.'/'.self::csv_default_path.'/'.$strTablename.'.csv';
+        $fh = @fopen($strPath, 'r');
+        if (!$fh) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_OPENING_FILE_FOR_READING'],
+                $strPath
+            ));
+            return false;
+        }
+        $arrFieldnameCsv = fgetcsv($fh, null, self::csv_delimiter, self::csv_quote);
+        // Verify that both the database and the CSV contain
+        // the same number of fields with the same names
+        $flagEqual = true;
+        if (count($arrFieldnameTable) != count($arrFieldnameCsv)) {
+            $flagEqual = false;
+        }
+        if ($flagEqual) {
+            for ($i = 0; $i < count($arrFieldnameCsv); ++$i) {
+                if ($arrFieldnameTable[$i] != $arrFieldnameCsv[$i]) {
+                    $flagEqual = false;
+                    break;
                 }
-                $strReturn = substr($strReturn,0,-1); //Cut last character (;)
-                $strReturn .= "\n";
-                $objTableContent->MoveNext();
             }
         }
-        return $strReturn;
+        if (!$flagEqual) {
+            DatabaseManager::addError(sprintf(
+                $_CORELANG['TXT_DBM_ERROR_IMPORT_DIFFERING_TABLE'],
+                $strTablename, $strPath
+            ));
+            return false;
+        }
+        // Truncate the table if so desired
+        if ($flagTruncate) {
+            $query = "TRUNCATE TABLE `$strTablename`";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                DatabaseManager::addError(sprintf(
+                    $_CORELANG['TXT_DBM_ERROR_TRUNCATING_TABLE'],
+                    $strTablename
+                ));
+                return false;
+            }
+        }
+        // Do the import
+        // Join the database field names.  Part of the query below
+        $strFieldnames = '`'.join('`, `', $arrFieldnameCsv).'`';
+        // Values or EOF
+        $arrValue = fgetcsv($fh, null, self::csv_delimiter, self::csv_quote);
+        while ($arrValue) {
+            $arrValueFixed = array_map('mysql_escape_string', $arrValue);
+            $query = "
+                INSERT INTO `$strTablename` (
+                    $strFieldnames
+                ) VALUES (
+                    '".join("', '", $arrValueFixed)."'
+                )
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                DatabaseManager::addError(sprintf(
+                    $_CORELANG['TXT_DBM_ERROR_IMPORTING_TABLE_FROM_CSV_FILE'],
+                    $strTablename, $strPath
+                ));
+                return false;
+            }
+            $arrValue = fgetcsv($fh, null, self::csv_delimiter, self::csv_quote);
+        }
+        fclose($fh);
+        return true;
     }
 
 }
