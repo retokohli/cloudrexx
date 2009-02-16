@@ -1,20 +1,54 @@
 function Tags(id, lang)
 {
+    /**
+     * The input field with the tags
+     */ 
     this.tags = $(id);
+
+    /**
+     * The used language id
+     */
     this.lang = lang;
+
+    /**
+     * Get the tags
+     */
     this.getTags('popularity');
+
+    /**
+     * Highlight those that are in the input field
+     */
     this.typing();
     
-    this.availableTags = Array()
+    /**
+     * Array of available tags
+     *
+     * Not sure what's this for anymore
+     */
+    this.availableTags = Array();
+
+    /**
+     * The loading state
+     */
     this.loaded = false;
+
+    /**
+     * The typing state
+     */
     this.currently_tpying = false;
     
+    /**
+     * The event handler
+     */
     var ref = this;
     this.tags.onkeyup = function() {
         ref.typing();
     }
 }
 
+/**
+ * Get the tags through ajax
+ */
 Tags.prototype.getTags = function(sort)
 {
     var ref = this;
@@ -37,6 +71,22 @@ Tags.prototype.getTags = function(sort)
     
 }
 
+/**
+ * The event when an available tag was clicked
+ */
+Tags.prototype.tagClicked = function(id, name, obj)
+{
+    var pattern = new RegExp("\s*"+name+"\s*", "ig");
+    if (pattern.exec(this.tags.value)) {
+        this.removeTag(id, name, obj);
+    } else {
+        this.addTag(id, name, obj);
+    }
+}
+
+/**
+ * Add a tag to the input field
+ */
 Tags.prototype.addTag = function(id, name, caller)
 {
     if (this.tags.value == "") {
@@ -56,26 +106,36 @@ Tags.prototype.addTag = function(id, name, caller)
     }
     
     $('tag_'+id).addClassName("chosen");
+    /*
     var ref = this;
     caller.onclick = function() {
         ref.removeTag(id, name, caller);
         ref.typing();
     }
+    */
 };
 
+/**
+ * Remove a tag from the input field
+ */
 Tags.prototype.removeTag = function(id, name, caller)
 {
-    var pattern = new RegExp(name+',?\\s*', 'g');
+    var pattern = new RegExp(name+',?\\s*', 'gi');
     this.tags.value = this.tags.value.replace(pattern, "");
     this.tags.value = this.tags.value.replace(/,\s*$/, '');
-    
+   
+    /*
     var ref = this;
     caller.onclick = function() {
         ref.addTag(id, name, caller);
         ref.typing();
     }
+    */
 }
 
+/**
+ * The typin event
+ */
 Tags.prototype.typing = function()
 {
     if (this.loaded) {
@@ -88,8 +148,10 @@ Tags.prototype.typing = function()
                     tags[i] = this.trim(tags[i]);
                     var result = this.searchValue(tags[i]);
                     if (result.get('type') == 1) {
+                        // highlight it as chosen
                         this.highlight(result.get('id'), "chosen");
                     } else if (result.get('type') == 2) {
+                        // highlight is as typing
                         this.highlight(result.get('id'), "typing");
                         this.currently_typing = true;
                     }
@@ -99,12 +161,16 @@ Tags.prototype.typing = function()
     }
 };
  
+/**
+ * Documentation needed
+ */
 Tags.prototype.searchValue = function(val)
 {
+    console.log(val);
     var keys = this.availableTags.keys();
     var response = $H();
     for (var i = 0; i < keys.length; i++) {
-        if (this.availableTags.get(keys[i]) == val) {
+        if (this.availableTags.get(keys[i]).toUpperCase() == val.toUpperCase()) {
             response.set('id', keys[i]);
             response.set('type', 1);
             return response;
@@ -121,7 +187,9 @@ Tags.prototype.searchValue = function(val)
     return response;
 };
 
-
+/**
+ * Highlight an available tag
+ */
 Tags.prototype.highlight = function(id, type)
 {
     this.currently_typing = false;
@@ -140,6 +208,9 @@ Tags.prototype.highlight = function(id, type)
     }
 };
 
+/**
+ * Reset the highlights
+ */
 Tags.prototype.resetHighlights = function()
 {
     var ref = this;
@@ -148,6 +219,9 @@ Tags.prototype.resetHighlights = function()
     });
 };
 
+/**
+ * Remove trailing white spaces
+ */
 Tags.prototype.trim = function(str) { 
     str = str.replace(/^\s*/, '').replace(/\s*$/, ''); 
     return str;
