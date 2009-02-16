@@ -6,6 +6,9 @@
  * @package     contrexx
  * @subpackage  module_knowledge
  */
+$_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_TEMPLATE'] = "Template für die bestbewerteten Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_PLACEHOLDER'] = "Platzhalter für meistgelesene Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_PLACEHOLDER'] = "Platzhalter für bestbewertete Artikel";
 $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED'] = "Sie haben nicht genügend Berechtigungen um dies zu tun";
 $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_NO_ARTICLE'] = "Keinen Artikel gefunden";
 $_ARRAYLANG['TXT_KNOWLEDGE_JUMP_TO_ARTICLE'] = "Direkt zu Artikel springen";
@@ -253,8 +256,19 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_TITLE'] = "Kommentare";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "Dieser Wert legt die Anzahl der Zeichen im Einleitungstext fest. Wenn Sie immer den kompletten Text anzeigen lassen wollen, so setzen Sie hier die Zahl 0 ein.";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_INTRODUCTION'] = "Anzahl Zeichen in Einleitungstext";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_TITLE'] = "Allgemein";
-$_ARRAYLANG['TXT_KNOWLEDGE_HITS'] = "Aufrufe";
 $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'] = "Artikel";
 $_ARRAYLANG['TXT_KNOWLEDGE_RATING'] = "Bewertung";
 $_ARRAYLANG['TXT_KNOWLEDGE_LIB_POSTED_BY'] = "gepostet von [USER] um [DATE]";
+$_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_TEMPLATE_DESCRIPTION'] = "HTML-Vorlage für die seitliche Auflistung der bestbewerteten Artikel.<br />Dies kann überall auf der Seite als folgender Platzhalter eingesetzt werden: [[KNOWLEDGE_BEST_RATED]]";
+$_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_TEMPLATE'] = "Template für die meistgelesenen Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_TEMPLATE_DESCRIPTION'] = "HTML-Vorlage für die seitliche Auflistung der meistgelesenen Artikel.<br />Dies kann überall auf der Seite als folgender Platzhalter eingesetzt werden: [[KNOWLEDGE_MOST_READ]].";
+$_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_SIDEBAR_LENGTH'] = "Maximale Textlänge";
+$_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_SIDEBAR_LENGTH_DESCRIPTION'] = "Die maximale Anzahl von Zeichen, bevor der Text abgeschnitten wird";
+$_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_SIDEBAR_LENGTH'] = "Maximale Textlänge";
+$_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_SIDEBAR_LENGTH_DESCRIPTION'] = "Die maximale Anzahl von Zeichen, bevor der Text abgeschnitten wird";
+$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_EDIT_ARTICLE'] = "Artikel bearbeiten";
+$_ARRAYLANG['TXT_EDIT_CATEGORY'] = "Kategorie bearbeiten";
+$_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'] = "Kategorie wählen";
+$_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'] = "Bitte wählen Sie eine Kategorie aus";
 ?>

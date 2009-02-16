@@ -6,11 +6,15 @@
  * @package     contrexx
  * @subpackage  module_knowledge
  */
+$_ARRAYLANG['TXT_KNOWLEDGE_TAGS'] = "Stichworte";
+$_ARRAYLANG['TXT_KNOWLEDGE_HITS'] = "Views";
 $_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Mit dem Suchbegriff '%WORD%' wurden %AMOUNT% Resultate gefunden:";
 $_ARRAYLANG['TXT_TAG'] = "Stichwort";
 $_ARRAYLANG['TXT_TAGS'] = "Stichworte";
+$_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'] = "Artikel";
 $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'] = "Bestbewertete Artikel";
 $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'] = "Meistgelesene Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_RATING'] = "Bewertung";
 $_ARRAYLANG['TXT_START'] = "Start";
 $_ARRAYLANG['TXT_KNOWLEDGE_MORE'] = "mehr...";
 $_ARRAYLANG['TXT_KNOWLEDGE_FRONTEND_SEARCH_RESULTS_NONE'] = "Zur Ihrer Suche konnten keine passenden Einträge gefunden werden.";
@@ -51,4 +55,11 @@ $_ARRAYLANG['TXT_KNOWLEDGE_FRONTEND_DETAILS_VOTING_ACTUAL'] = "Aktuelle Bewertun
 $_ARRAYLANG['TXT_KNOWLEDGE_FRONTEND_OVERVIEW_COMMENTS'] = "Kommentare";
 $_ARRAYLANG['TXT_KNOWLEDGE_FRONTEND_OVERVIEW_VOTING_DO'] = "Bewertung abgeben";
 $_ARRAYLANG['TXT_KNOWLEDGE_FRONTEND_OVERVIEW_VOTING'] = "Bewertung";
+$_ARRAYLANG['TXT_KNOWLEDGE_SEARCH'] = "Suchen";
+$_ARRAYLANG['TXT_SEARCH_NONE'] = "keine";
+$_ARRAYLANG['TXT_KNOWLEDGE_INDICATOR'] = "%amount Bewertungen, &oslash; %rating";
+$_ARRAYLANG['TXT_KNOWLEDGE_CREATED'] = "Erstellt";
+$_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'] = "Geändert";
+$_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'] = "Anzahl Bewertungen";
+$_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'] = "Durchschnittliche Bewertung";
 ?>
