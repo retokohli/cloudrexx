@@ -69,6 +69,10 @@ Kontakte Manager
 - Die Liste der Eingabefelder wird bei Verwendung des Safari Browsers korrekt
   dargestellt.
 
+News
+- Die Einträge im RSS Feed enthalten den Text der Newsmeldung nur, wenn es
+  sich nicht um eine Weiterleitung handelt.
+
 
 ****************************************
 * Neue Module **************************

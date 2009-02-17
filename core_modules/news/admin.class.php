@@ -1556,7 +1556,7 @@ class newsManager extends newsLibrary {
                     $arrNews[$objResult->fields['id']] = array(
                         'date'          => $objResult->fields['date'],
                         'title'         => $objResult->fields['title'],
-                        'text'          => (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']).'<br /><br />' : '').$objResult->fields['text'],
+                        'text'          => empty($objResult->fields['redirect']) ? (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']).'<br /><br />' : '').$objResult->fields['text'] : (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']) : ''),
                         'redirect'      => $objResult->fields['redirect'],
                         'source'        => $objResult->fields['source'],
                         'category'      => $objResult->fields['category'],
