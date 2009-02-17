@@ -1,5 +1,4 @@
-<!-- START module_knowledge_articles_overview_articlelist.html -->
-
+<!-- START module_knowledge_articles_overview_articlelist.html --> 
 <!-- BEGIN content -->
 
 <!--
@@ -42,12 +41,10 @@
                         <div id="rating{ARTICLEID}"></div>
                         <script type="text/javascript">
                             /* <![CDATA[ */
-                            new Starbox('rating{ARTICLEID}', {VOTEVALUE}, { 
-                                total: 1,
-                            	stars: {MAX_RATING},
-                            	max: {MAX_RATING},
-                            	buttons: {MAX_RATING},
-                                locked: true
+                            var rating{ARTICLEID} = new Rating({ARTICLEID}, {VOTEVALUE}, {
+                                stars : {MAX_RATING},
+                                locked : true,
+                                starPath : '../images/modules/knowledge/'
                             });
                             /* ]]> */
                         </script>
