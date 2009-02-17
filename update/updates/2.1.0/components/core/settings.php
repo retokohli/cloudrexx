@@ -392,7 +392,7 @@ function _updateSettings()
 
     // write settings
     require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-    $objFile =& new File();
+    $objFile = new File();
 
     $strFooter = '';
     $arrModules = '';
@@ -495,7 +495,7 @@ function _updateSettings()
 
 function _updateSettingsTable($setId, $arrSetting)
 {
-    global $objDatabase, $_ARRAYLANG, $arrSettings, $arrSettingsByName, $arrCurrentSettingsTable;
+    global $objDatabase, $arrSettings, $arrSettingsByName, $arrCurrentSettingsTable;
 
     if (!isset($arrCurrentSettingsTable)) {
         $arrCurrentSettingsTable = array();
