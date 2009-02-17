@@ -68,7 +68,8 @@ class AccessManager extends AccessLib
     */
     function _exportUsers($groupId = 0, $langId = null)
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase, $_CORELANG, $objLanguage;
+
         $csvSeparator = ";";
         $groupId = intval($groupId);
 
@@ -80,30 +81,36 @@ class AccessManager extends AccessLib
             }
         }
 
-
-        $objRS = $objDatabase->SelectLimit("SELECT group_name FROM ".DBPREFIX."access_user_groups WHERE group_id = $groupId", 1);
+        if($groupId){
+            $objRS = $objDatabase->SelectLimit("SELECT group_name FROM ".DBPREFIX."access_user_groups WHERE group_id = $groupId", 1);
+            $groupName = $objRS->fields['group_name'];
+        }else{
+            $groupName = $_CORELANG['TXT_USER_ALL'];
+        }
         header("Content-Type: text/comma-separated-values", true);
-        header("Content-Disposition: attachment; filename=\"".str_replace(array(' ',',','.','\'','"'), '_', $objRS->fields['group_name']).'_'.($langId != null ? 'lang_'.$langId : '').'.csv"', true);
+        header("Content-Disposition: attachment; filename=\"".str_replace(array(' ',',','.','\'','"'), '_', $groupName).'_'.($langId != null ? 'lang_'.$langId : '').'.csv"', true);
 
         $value = '';
-        $arrFields = array ('gender', 'title', 'firstname', 'lastname', 'email', 'active');
+        $arrFields = array ('active', 'frontend lang', 'backend lang', 'gender', 'title', 'firstname', 'lastname', 'username', 'email');
         foreach ($arrFields as $field) {
             print $this->_escapeCsvValue($field).$csvSeparator;
         }
         print "\n";
+        $arrLangs = $objLanguage->getLanguageArray();
 
         $objRS = $objDatabase->Execute('
             SELECT
-                tblProfile.gender, tblProfile.title, tblProfile.firstname, tblProfile.lastname, tblUser.email, tblUser.active
+                tblUser.active, tblUser.frontend_lang_id, tblUser.backend_lang_id, tblProfile.gender, tblProfile.title, tblProfile.firstname, tblProfile.lastname, tblUser.`username`, tblUser.email
             FROM
                 `'.DBPREFIX.'access_rel_user_group` AS tblRel
             INNER JOIN `'.DBPREFIX.'access_users` AS tblUser
             ON tblUser.`id` = tblRel.`user_id`
             INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblProfile
             ON tblProfile.`user_id` = tblRel.`user_id`
-            WHERE tblRel.`group_id` = '.$groupId.'
+            WHERE TRUE
+            '.(!empty($groupId) ? ' AND tblRel.`group_id` = '.$groupId : '').'
             '.(!empty($langId) ? ' AND tblUser.frontend_lang_id = ' .$langId : '').'
-
+            GROUP BY tblUser.`username`
             ORDER BY tblUser.`username`' );
 
         if ($objRS !== false) {
@@ -126,12 +133,20 @@ class AccessManager extends AccessLib
                                 }
                             break;
 
+                            case 'frontend_lang_id':
+                            case 'backend_lang_id':
+                               $value = !empty($arrLangs[$value]['lang']) ? $arrLangs[$value]['name']." (".$arrLangs[$value]['lang'].")" : $_CORELANG['TXT_ACCESS_UNKNOWN'];
+                       		break;
+
                             case 'title':
                                 $value = $arrTitles[$value];
                             break;
 
-                            default:
+                            case 'active':
+                                $value = $value == 1 ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
+                            break;
 
+                            default:
                             break;
                         }
                         print $this->_escapeCsvValue($value).$csvSeparator;
@@ -320,15 +335,9 @@ class AccessManager extends AccessLib
      */
     function _groupList()
     {
-        global $_ARRAYLANG, $_CORELANG, $_CONFIG, $obj;
+        global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objLanguage;
 
-        /**
-         * @ignore
-         */
-        require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
-
-        $objLang = &new FWLanguage();
-        $arrLangs = $objLang->getLanguageArray();
+        $arrLangs = $objLanguage->getLanguageArray();
 
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_list', 'module_access_group_list.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_GROUPS'];
