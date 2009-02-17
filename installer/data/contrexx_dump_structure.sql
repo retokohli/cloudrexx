@@ -2578,6 +2578,7 @@ CREATE TABLE `contrexx_voting_additionaldata` (
   `zip` varchar(30) NOT NULL,
   `city` varchar(80) NOT NULL,
   `email` varchar(80) NOT NULL,
+  `comment` text NOT NULL,
   `voting_sytem_id` int(11) NOT NULL,
   `date_entered` timestamp NOT NULL,
   PRIMARY KEY  (`id`),
