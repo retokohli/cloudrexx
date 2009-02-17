@@ -483,19 +483,19 @@ function _shopUpdate()
     // Update Attribute price to signed.
     // This modification is consistent if run multiple times!
     $objResult = $objDatabase->Execute("
-        UPDATE `".DBPREFIX."module_shop_products_attributes_value
-           SET price=-price
-        WHERE price>0
-          AND price_prefix='-';
+        UPDATE `".DBPREFIX."module_shop_products_attributes_value`
+           SET `price`=-`price`
+        WHERE `price`>0
+          AND `price_prefix`='-';
     ");
     if (!$objResult)
         return _databaseError($query, $objDatabase->ErrorMsg());
 
     $objResult = $objDatabase->Execute("
-        UPDATE `".DBPREFIX."module_shop_order_items_attributes
-           SET product_option_values_price=-product_option_values_price
-        WHERE product_option_values_price>0
-          AND price_prefix='-';
+        UPDATE `".DBPREFIX."module_shop_order_items_attributes`
+           SET `product_option_values_price`=-`product_option_values_price`
+        WHERE `product_option_values_price`>0
+          AND `price_prefix`='-';
     ");
     if (!$objResult)
         return _databaseError($query, $objDatabase->ErrorMsg());
@@ -546,26 +546,26 @@ function _shopUpdate()
             ALTER TABLE `".DBPREFIX."module_shop_products_attributes_value`
             CHANGE `price` `price` DECIMAL(9, 2) NULL DEFAULT '0.00'
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_payment` (
-            CHANGE `costs` `costs` DECIMAL(9,2) NOT NULL default '0.00',
-            CHANGE `costs_free_sum` `costs_free_sum` decimal(9,2) NOT NULL default '0.00',
-            CHANGE `sort_order` `sort_order` int(5) unsigned default '0',
+            ALTER TABLE `".DBPREFIX."module_shop_payment`
+            CHANGE `costs` `costs` DECIMAL(9,2) NOT NULL DEFAULT '0.00',
+            CHANGE `costs_free_sum` `costs_free_sum` DECIMAL(9,2) NOT NULL DEFAULT '0.00',
+            CHANGE `sort_order` `sort_order` INT(5) UNSIGNED DEFAULT '0'
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_shipment_cost` (
+            ALTER TABLE `".DBPREFIX."module_shop_shipment_cost`
             CHANGE `cost` `cost` decimal(10,2) unsigned default NULL,
-            CHANGE `price_free` `price_free` decimal(10,2) unsigned default NULL,
+            CHANGE `price_free` `price_free` decimal(10,2) unsigned default NULL
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_currencies` (
-            CHANGE `sort_order` `sort_order` int(5) unsigned NOT NULL default '0',
+            ALTER TABLE `".DBPREFIX."module_shop_currencies`
+            CHANGE `sort_order` `sort_order` int(5) unsigned NOT NULL default '0'
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_importimg` (
+            ALTER TABLE `".DBPREFIX."module_shop_importimg`
             CHANGE `img_cats` `img_cats` text NOT NULL default '',
-            CHANGE `img_fields_file` `img_fields_file` text NOT NULL default '',
+            CHANGE `img_fields_file` `img_fields_file` text NOT NULL default ''
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_order_items` (
-            CHANGE `productid` `productid` varchar(100) NOT NULL default '',
+            ALTER TABLE `".DBPREFIX."module_shop_order_items`
+            CHANGE `productid` `productid` varchar(100) NOT NULL default ''
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products` (
+            ALTER TABLE `".DBPREFIX."module_shop_products`
             CHANGE `product_id` `product_id` varchar(100) NOT NULL,
             CHANGE `picture` `picture` text NOT NULL default '',
             CHANGE `title` `title` varchar(255) NOT NULL default '',
@@ -574,16 +574,16 @@ function _shopUpdate()
             CHANGE `stock` `stock` int(10) NOT NULL default '10',
             CHANGE `stock_visibility` `stock_visibility` tinyint(1) unsigned NOT NULL default '1',
             CHANGE `status` `status` tinyint(1) unsigned NOT NULL default '1',
-            CHANGE `sort_order` `sort_order` int(5) unsigned NOT NULL default '0',
+            CHANGE `sort_order` `sort_order` int(5) unsigned NOT NULL default '0'
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products_attributes` (
-            CHANGE `sort_id` `sort_id` int(5) unsigned NOT NULL default '0',
+            ALTER TABLE `".DBPREFIX."module_shop_products_attributes`
+            CHANGE `sort_id` `sort_id` int(5) unsigned NOT NULL default '0'
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products_attributes_name` (
-            CHANGE `display_type` `display_type` tinyint(3) unsigned NOT NULL default '0',
+            ALTER TABLE `".DBPREFIX."module_shop_products_attributes_name`
+            CHANGE `display_type` `display_type` tinyint(3) unsigned NOT NULL default '0'
         ", "
-            ALTER TABLE `".DBPREFIX."module_shop_shipper` (
-            CHANGE `status` `status` tinyint(1) unsigned NOT NULL default '0',
+            ALTER TABLE `".DBPREFIX."module_shop_shipper`
+            CHANGE `status` `status` tinyint(1) unsigned NOT NULL default '0'
         ",
     );
     foreach ($arrQuery as $query) {
@@ -592,6 +592,315 @@ function _shopUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     }
+
+
+/*
+NOT FOR VERSION 2.1
+    // Fix weird field names -- some are getting a bit long and/or inconsistent.
+    // The full force of this will be released in the next version only.
+    $arrAffectedShopTables = array(
+          'module_shop_article_group' => array(
+          'field' => array('name' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_categories' => array(
+          'field' => array('catname' => 'text_name_id', ),
+          'id' => array('catid' => 0, ),
+          'alter' => array(
+            'catid' => "`id` int(11) unsigned NOT NULL auto_increment",
+            'parentid' => "`parent_id` int(11) unsigned NOT NULL default '0'",
+            'catsorting' => "`sort_order` smallint(4) unsigned NOT NULL default '100'",
+            'catstatus' => "`status` tinyint(1) unsigned NOT NULL default '1'",
+          ),
+        ),
+        'module_shop_countries' => array(
+          'field' => array('countries_name' => 'text_name_id', ),
+          'id' => array('countries_id' => 0, ),
+          'alter' => array(
+            'countries_id' => "`id` int(11) unsigned NOT NULL auto_increment",
+            'countries_iso_code_2' => "`iso_code_2` char(2) collate utf8_unicode_ci NOT NULL default ''",
+            'countries_iso_code_3' => "`iso_code_3` char(3) collate utf8_unicode_ci NOT NULL default ''",
+            'activation_status' => "`status` tinyint(1) unsigned NOT NULL default '1'",
+          ),
+        ),
+        'module_shop_currencies' => array(
+          'field' => array('name' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_customer_group' => array(
+          'field' => array('name' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_discountgroup_count_name' => array(
+          'field' => array('name' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_mail' => array(
+          'field' => array('tplname' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_mail_content' => array(
+          'field' => array(
+            'xsender' => 'text_xsender_id',
+            'subject' => 'text_subject_id',
+            'message' => 'text_message_id',
+          ),
+          'id' => array('id' => 0, ),
+          // remove:  'lang_id' int(11) unsigned NOT NULL default '0',
+        ),
+        'module_shop_manufacturer' => array(
+          'field' => array(
+            'name' => 'text_name_id',
+            'url' => 'text_url_id',
+          ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_payment' => array(
+          'field' => array('name' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_payment_processors' => array(
+          'field' => array(
+            'name' => 'text_name_id',
+            'description' => 'text_description_id',
+            'company_url' => 'text_company_url_id',
+            'picture' => 'text_picture_id',
+            'text' => 'text_id',
+          ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_products' => array(
+          'field' => array(
+            'title' => 'text_title_id',
+            'shortdesc' => 'text_shortdesc_id',
+            'description' => 'text_description_id',
+            'keywords' => 'text_keywords_id',
+          ),
+          'id' => array('id' => 0, ),
+          // Fix:  FULLTEXT KEY 'shopindex' ('title','description'),
+          // Fix:  FULLTEXT KEY 'keywords' ('keywords')
+        ),
+        'module_shop_products_attributes_name' => array(
+          'field' => array('name' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_products_attributes_value' => array(
+          'field' => array('value' => 'text_value_id', ),
+          'id' => array('id' => 0, ),
+        ),
+//  This is used nowhere in the shop!
+//        'module_shop_products_downloads' => array(
+//          'field' => array('products_downloads_name', 'products_downloads_filename', ),
+//          'id' => array('products_downloads_id' => 0, ),
+//          'alter' => array(
+//            'products_downloads_id' => "`id` int(11) unsigned NOT NULL default '0'",
+//            'products_downloads_filename' => "`filename` varchar(255) collate utf8_unicode_ci NOT NULL default ''",
+//            'products_downloads_maxdays' => "`maxdays` int(11) unsigned default '0'",
+//            'products_downloads_maxcount' => "`maxcount` int(11) unsigned default '0'",
+//          ),
+//        ),
+          'module_shop_shipper' => array(
+          'field' => array('name' => 'text_name_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_vat' => array(
+          'field' => array('class' => 'text_class_id', ),
+          'id' => array('id' => 0, ),
+        ),
+        'module_shop_zones' => array(
+          'field' => array('zones_name' => 'text_name_id', ),
+          'id' => array('zones_id' => 0, ),
+          'alter' => array(
+            'zones_id' => "`id` int(11) unsigned NOT NULL auto_increment",
+            'activation_status' => "`status` tinyint(1) unsigned NOT NULL default '1'",
+          ),
+        ),
+        // Alter foreign keys referring to table names *only*
+        'module_shop_rel_countries' => array(
+          'alter' => array(
+            'zones_id' => "`zone_id` int(11) unsigned NOT NULL default '0'",
+            'countries_id' => "`country_id` int(11) unsigned NOT NULL default '0'",
+          ),
+        ),
+        'module_shop_rel_payment' => array(
+          'alter' => array(
+            'zones_id' => "`zone_id` int(11) unsigned NOT NULL default '0'",
+          ),
+        ),
+        'module_shop_rel_shipment' => array(
+          'alter' => array(
+            'zones_id' => "`zone_id` int(11) unsigned NOT NULL default '0'",
+          ),
+        ),
+    );
+
+    // Find all Shop modules' IDs
+    // Note that some custom installations do have more than one shop instance!
+    $query = "
+        SELECT `id`, `name` FROM `".DBPREFIX."modules` WHERE `name` LIKE 'shop%'
+    ";
+    $objResult = $objDatabase->Execute($query);
+    if (!$objResult)
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    while (!$objResult->EOF) {
+        $arrShop[$objResult->fields['id']] = $objResult->fields['name'];
+        $objResult->MoveNext();
+    }
+
+    // Determine the default language ID.
+    // Used below as the language ID for the text records created
+    $lang_id = 1;
+    $objLanguage = new FWLanguage();
+    $arrLanguages = $objLanguage->getLanguageArray();
+    if (empty($arrLanguages) || !is_array($arrLanguages)) {
+        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_shop_products'));
+        return false;
+    }
+    foreach ($arrLanguages as $arrLanguage) {
+        if ($arrLanguage['is_default']) {
+            $lang_id = $arrLanguage['id'];
+            break;
+        }
+    }
+
+    // Determine the next Text ID
+    $text_id = Text::nextId();
+//echo("Text ID: $text_id<br />");
+
+    // For all Shops
+    foreach ($arrShop as $module_shop_id => $module_shop_name) {
+        // Table index, starts at 1 for each module
+        $table_index = 0;
+        // For all tables affected
+        foreach ($arrAffectedShopTables as $table_name => $arrTableInfo) {
+            ++$table_index;
+
+//echo("Table info: ".var_export($arrTableInfo, true)."<br />");
+            // Build a reference base name from the table name
+//            $reference_base = preg_replace('^module_shop_', '', $table_name);
+            // The actual table name must also contain the shop module index
+            $table_name = preg_replace('/shop/', $module_shop_name, $table_name, 1);
+
+            // The fields of the current table
+            $arrTableColumns = $objDatabase->MetaColumns(DBPREFIX.$table_name);
+//echo("Table columns: ".var_export($arrTableColumns, true)."<br />");
+            if ($arrTableColumns === false) {
+                setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_shop_products'));
+                return false;
+            }
+
+/*
+            // The current tables' primary keys
+            if (isset($arrTableInfo['id'])) {
+                $arrPrimaryKey = $arrTableInfo['id'];
+//echo("Primary keys: ".var_export($arrPrimaryKey, true)."<br />");
+                // Field index, starts at 1 for each table
+                $field_index = 0;
+                // For all fields affected
+                foreach ($arrTableInfo['field'] as $field_name => $new_field_name) {
+                    ++$field_index;
+
+//echo("Field name: $field_name, looking for it in ".var_export($arrTableColumns, true)."<br />");
+                    // Skip fields that do not exist (they have probably been
+                    // converted already)
+                    if (!isset($arrTableColumns[strtoupper($field_name)])) {
+//echo("Field name $field_name NOT found, skipping<br />");
+                        continue;
+                    }
+//echo("Field name $field_name found, processing<br />");
+
+                    // Add the field name to the reference base
+                    // and make the reference name uppercase
+//                    $reference_name = strtoupper("$reference_base_$field_name");
+                    // The key ID for the current table and field
+                    $key_id = ((1<<16)*$table_index) + ((1<<0)*$field_index);
+                    // Pick the field values
+                    $query = "
+                        SELECT `".join('`, `', array_keys($arrPrimaryKey))."`, `$field_name`
+                          FROM ".DBPREFIX."$table_name
+                    ";
+                    $objResult = $objDatabase->Execute($query);
+                    if (!$objResult)
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    while (!$objResult->EOF) {
+                        // Primary key values
+                        foreach (array_keys($arrPrimaryKey) as $primary_key) {
+                            $arrPrimaryKey[$primary_key] =
+                                $objResult->fields[$primary_key];
+                        }
+                        // The actual text
+                        $text_value = $objResult->fields[$field_name];
+                        // Insert the field value into the text table.
+                        // The Text class insert() method is not used here
+                        // for speed reasons.
+                        $query = "
+                            INSERT INTO ".DBPREFIX."core_text (
+                            `id`, `lang_id`,
+                            `module_id`, `key_id`, `text`
+                        ) VALUES (
+                            $text_id, $lang_id,
+                            $module_shop_id, $key_id,
+                            '".addslashes($text_value)."'
+                        )";
+// Removed:
+// `reference`,
+// ".addslashes($reference_name).",
+                        $objResult2 = $objDatabase->Execute($query);
+                        if (!$objResult2)
+                            return _databaseError($query, $objDatabase->ErrorMsg());
+                        // Update the original field (remember the Text ID)
+                        $query = '';
+                        foreach ($arrPrimaryKey as $primary_key_name => $primary_key_value) {
+                            $query .=
+                                ($query ? ' AND ' : '').
+                                "`$primary_key_name`='".
+                                addslashes($primary_key_value)."'";
+                        }
+                        $query = "
+                            UPDATE ".DBPREFIX."$table_name
+                               SET `$field_name`='$text_id'
+                             WHERE ".$query;
+                        $objResult2 = $objDatabase->Execute($query);
+                        if (!$objResult2)
+                            return _databaseError($query, $objDatabase->ErrorMsg());
+                        ++$text_id;
+                        $objResult->MoveNext();
+                    }
+                    // Change the name of the original text field to the new
+                    // name given as the array value.
+                    $query = "
+                        ALTER TABLE ".DBPREFIX."$table_name
+                       CHANGE `$field_name` `$new_field_name` INT(11) unsigned NULL DEFAULT NULL
+                    ";
+                    $objResult = $objDatabase->Execute($query);
+                    if (!$objResult)
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
+
+            // Alter some weird column names
+            if (isset($arrTableInfo['alter'])) {
+                $arrAlterField = $arrTableInfo['alter'];
+                foreach ($arrAlterField as $field_name => $new_column_definition) {
+                    if (!isset($arrTableColumns[strtoupper($field_name)])) {
+//echo("Alter: field name $field_name NOT found, skipping<br />");
+                        continue;
+                    }
+                    // Alter the field name to the new name given
+                    // as the array value.
+                    $query = "
+                        ALTER TABLE ".DBPREFIX."$table_name
+                       CHANGE `$field_name` $new_column_definition
+                    ";
+                    $objResult = $objDatabase->Execute($query);
+                    if (!$objResult)
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+
+                }
+            }
+        }
+    }
+*/
 
 
     return true;
