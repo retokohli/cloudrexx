@@ -860,9 +860,13 @@ class User extends User_Profile
 
     private function parseAccountSearchConditions($search)
     {
+        $FWUser = FWUser::getFWUserObject();
 
         $arrConditions = array();
-        $arrAttribute = array('username', 'email');
+        $arrAttribute = array('username');
+        if ($FWUser->isBackendMode()) {
+            $arrAttribute[] = 'email';
+        }
         foreach ($arrAttribute as $attribute) {
             $arrConditions[] = "(tblU.`".$attribute."` LIKE '%".(is_array($search) ? implode("%' OR tblU.`".$attribute."` LIKE '%", array_map('addslashes', $search)) : addslashes($search))."%')";
         }
@@ -921,6 +925,9 @@ class User extends User_Profile
                     $arrSortExpressions[] = $direction;
                 }
             }
+        }
+        if (!is_array($arrSort) || !array_key_exists('id', $arrSort)) {
+            $arrSortExpressions[] = 'tblU.`id` ASC';
         }
 
         $query = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT tblU.`id`
