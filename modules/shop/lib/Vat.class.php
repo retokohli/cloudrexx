@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -7,6 +8,11 @@
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
 
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -19,73 +25,55 @@
 class Vat
 {
     /**
-     * @var     array   $arrVatClass    The Vat class array, entries look like
-     *                                  (ID => "Class") (string)
+     * entries look like
+     *  VAT ID => array(
+     *    'id' => VAT ID,
+     *    'rate' => VAT rate (in percent, double),
+     *    'class' => VAT class name,
+     *    'text_class_id' => VAT class Text ID,
+     *  )
+     * @var     array   $arrVat         The Vat rate and class array
+     * @static
      * @access  private
      */
-    var $arrVatClass = array();
+    private static $arrVat = false;
 
     /**
-     * @var     array   $arrVatRate     The Vat rate array, entries look
-     *                                  like (ID => rate) (in percent, double)
+     * @var     array   $arrVatEnabled
+     *                    Indicates whether VAT is enabled for
+     *                    customers or resellers, home or foreign countries
+     * Indexed as follows:
+     *  $arrVatEnabled[is_home_country ? 1 : 0][is_reseller ? 1 : 0] = is_enabled
+     * @static
      * @access  private
      */
-    var $arrVatRate  = array();
+    private static $arrVatEnabled = false;
 
     /**
-     * @var     boolean $vatEnabled     Indicates whether VAT is enabled (true), or not (false).
-     *                                  Determined by the tax_enabled entry in the shop_config table.
+     * @var     boolean $arrVatIncluded
+     *                    Indicates whether VAT is included for
+     *                    customers or resellers, home or foreign countries.
+     * Indexed as follows:
+     *  $arrVatIncluded[is_home_country ? 1 : 0][is_reseller ? 1 : 0] = is_included
+     * @static
      * @access  private
      */
-    var $vatEnabled;
+    private static $arrVatIncluded = false;
 
     /**
-     * @var     boolean $vatIncluded    Indicates whether VAT is included in the shop price (true),
-     *                                  or not (false).  Determined by the tax_included entry
-     *                                  in the shop_config table.
+     * @var     double  $vatDefaultId   The default VAT ID
+     * @static
      * @access  private
      */
-    var $vatIncluded;
+    private static $vatDefaultId = false;
 
     /**
-     * @var     double  $vatDefaultId   The default VAT ID, determined by the tax_default_id entry
-     *                                  in the shop_config table.  See {@see init()},
-     *                                  {@see  calculateDefaultTax()}.
+     * @var     double  $vatOtherId     The other VAT ID
+     *                                  for fees and post & package
+     * @static
      * @access  private
      */
-    var $vatDefaultId;
-    /**
-     * @var     double  $vatDefaultRate The default VAT rate, determined by the tax_default_id entry
-     *                                  in the shop_config table.  See {@see init()},
-     *                                  {@see  calculateDefaultTax()}.
-     * @access  private
-     */
-    var $vatDefaultRate;
-
-
-
-    /**
-     * Set up an initialized Vat object including ready-to-use
-     * arrays taken from the database. (PHP4)
-     *
-     * See {@link init()}.
-     * @access      public
-     */
-    function Vat()
-    {
-        $this->init();
-    }
-    /**
-     * Set up an initialized Vat object including ready-to-use
-     * arrays taken from the database. (PHP5)
-     *
-     * See {@link init()}.
-     * @access      public
-     */
-    function __construct()
-    {
-        $this->init();
-    }
+    private static $vatOtherId = false;
 
 
     /**
@@ -99,270 +87,368 @@ class Vat
      * May die() with a message if it fails to access its settings.
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  void
+     * @static
      */
-    function init()
+    static function init()
     {
         global $objDatabase;
 
         $query = "SELECT id, percent, class ".
                  "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat";
         $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $id = $objResult->fields['id'];
-                $this->arrVatClass[$id] = $objResult->fields['class'];
-                $this->arrVatRate[$id]  = $objResult->fields['percent'];
-                $objResult->MoveNext();
-            }
-        } else {
-            // no record found
-            die ("Failed to init VAT arrays<br />");
+        if (!$objResult) return false;
+//        $arrSqlClass = Text::getSqlSnippets('`vat`.`text_class_id`', FRONTEND_LANG_ID);
+//        $query = "
+//            SELECT `vat`.`id`, `percent`".$arrSqlClass['field']."
+//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat as `vat`
+//             ".$arrSqlClass['join'];
+//        $objResult = $objDatabase->Execute($query);
+//        if (!$objResult) return false;
+        self::$arrVat = array();
+        while (!$objResult->EOF) {
+            $id = $objResult->fields['id'];
+//            $text_class_id = $objResult->fields[$arrSqlClass['name']];
+//            $strClass = $objResult->fields[$arrSqlClass['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($text_class_id && $strClass === null) {
+//                $objText = Text::getById($text_class_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strClass = $objText->getText();
+//            }
+            self::$arrVat[$id] = array(
+                'id'    => $id,
+                'rate'  => $objResult->fields['percent'],
+                'class' => $objResult->fields['class'], //$strClass,
+//                'text_class_id' => $text_class_id,
+            );
+            $objResult->MoveNext();
         }
-
-        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config WHERE name='tax_enabled'";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $this->vatEnabled = $objResult->fields['value'];
-        } else { die ("Failed to get VAT enabled flag<br />"); }
-
-        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config WHERE name='tax_included'";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $this->vatIncluded = $objResult->fields['value'];
-        } else { die ("Failed to get VAT included flag<br />"); }
-
-        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config WHERE name='tax_default_id'";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $this->vatDefaultId = $objResult->fields['value'];
-        } else { die ("Failed to get default VAT ID<br />"); }
-
-        $this->vatDefaultRate = $this->getRate($this->vatDefaultId);
+        self::$arrVatEnabled = array(
+            // Country:
+            // Foreign
+            0 => array(
+                // Customer
+                0 => array(Settings::getValueByName('vat_enabled_foreign_customer')),
+                // Reseller
+                1 => array(Settings::getValueByName('vat_enabled_foreign_reseller')),
+            ),
+            // Home
+            1 => array(
+                // Customer
+                0 => array(Settings::getValueByName('vat_enabled_home_customer')),
+                // Reseller
+                1 => array(Settings::getValueByName('vat_enabled_home_reseller')),
+            ),
+        );
+        self::$arrVatIncluded = array(
+            // Country:
+            // Foreign
+            0 => array(
+                // Customer
+                0 => array(Settings::getValueByName('vat_included_foreign_customer')),
+                // Reseller
+                1 => array(Settings::getValueByName('vat_included_foreign_reseller')),
+            ),
+            // Home
+            1 => array(
+                // Customer
+                0 => array(Settings::getValueByName('vat_included_home_customer')),
+                // Reseller
+                1 => array(Settings::getValueByName('vat_included_home_reseller')),
+            ),
+        );
+        self::$vatDefaultId = Settings::getValueByName('vat_default_id');
+        self::$vatOtherId = Settings::getValueByName('vat_other_id');
         return true;
     }
 
 
     /**
-     * Returns the default VAT rate
+     * Returns an array with all VAT record data for the given VAT ID
      *
-     * @return  float   The default VAT rate
+     * The array returned contains the following elements:
+     *  array(
+     *    'id'    => VAT ID,
+     *    'class' => VAT class name
+     *    'text_class_id' => VAT class Text ID (for updating the record)
+     *    'rate'  => VAT rate in percent
+     *  )
+     * @param   integer   $vatId        The VAT ID
+     * @return  array                   The VAT data array on success,
+     *                                  false otherwise
      */
-    function getDefaultRate()
+    static function getArrayById($vatId)
     {
-        return $this->vatDefaultRate;
+        if (!is_array(self::$arrVat)) self::init();
+        return self::$arrVat[$vatId];
+    }
+
+
+    /**
+     * Returns the default VAT rate
+     * @return  float   The default VAT rate
+     * @static
+     */
+    static function getDefaultRate()
+    {
+        if (!is_array(self::$arrVat)) self::init();
+        return self::$arrVat[self::$vatDefaultId]['rate'];
     }
 
 
     /**
      * Returns the default VAT ID
-     *
      * @return  integer The default VAT ID
+     * @static
      */
-    function getDefaultId()
+    static function getDefaultId()
     {
-        return $this->vatDefaultId;
+        if (!is_array(self::$arrVat)) self::init();
+        return self::$vatDefaultId;
     }
 
 
     /**
-     * Returns the value of the $vatEnabled variable.
-     *
-     * Returns true if the VAT is enabled, false otherwise.
+     * Returns the other VAT rate
+     * @return  float   The other VAT rate
+     * @static
+     */
+    static function getOtherRate()
+    {
+        if (!is_array(self::$arrVat)) self::init();
+        return self::$arrVat[self::$vatOtherId]['rate'];
+    }
+
+
+    /**
+     * Returns the other VAT ID
+     * @return  integer The other VAT ID
+     * @static
+     */
+    static function getOtherId()
+    {
+        if (!is_array(self::$arrVat)) self::init();
+        return self::$vatOtherId;
+    }
+
+
+    /**
+     * Returns true if VAT is enabled, false otherwise
+     * @param   boolean     $is_home_country  True for the home country,
+     *                                        false otherwise
+     * @param   boolean     $is_reseller      True for resellers,
+     *                                        false otherwise
      * @return  boolean     True if VAT is enabled, false otherwise.
+     * @static
      */
-    function isEnabled()
+    static function isEnabled($is_home_country, $is_reseller)
     {
-        return $this->vatEnabled;
+        if (!is_array(self::$arrVat)) self::init();
+        return
+            (self::$arrVatEnabled[$is_home_country ? 1 : 0][$is_reseller ? 1 : 0]
+                ? true : false
+            );
     }
 
 
     /**
-     * Returns the value of the $vatIncluded variable.
-     *
-     * Returns true if the VAT is included in the products' prices, false otherwise.
+     * Returns true if VAT is included, false otherwise
+     * @param   boolean     $is_home_country  True for the home country,
+     *                                        false otherwise
+     * @param   boolean     $is_reseller      True for resellers,
+     *                                        false otherwise
      * @return  boolean     True if VAT is included, false otherwise.
+     * @static
      */
-    function isIncluded()
+    static function isIncluded($is_home_country, $is_reseller)
     {
-        return $this->vatIncluded;
+        if (!is_array(self::$arrVat)) self::init();
+        return
+            (self::$arrVatIncluded[$is_home_country ? 1 : 0][$is_reseller ? 1 : 0]
+                ? true : false
+            );
     }
 
 
     /**
-     * Return the array of IDs and rates
+     * Return the array of IDs, rates, and class names
      *
      * The ID keys correspond to the IDs used in the database.
      * Use these to get the respective VAT class.
      * @access  public
-     * @return  array           The ID array
+     * @return  array           The VAT array
+     * @static
      */
-    function getRateArray()
+    static function getArray()
     {
-        return $this->arrVatRate;
+        if (!is_array(self::$arrVat)) self::init();
+        return self::$arrVat;
     }
 
 
     /**
-     * Return dropdown menu options with IDs as names and VAT rates as values.
+     * Returns a HTML dropdown menu with IDs as values and
+     * VAT rates as text.
      *
-     * The default for the $selected parameter is '' (the empty string).
      * The <select>/</select> tags are only added if you also specify a name
      * for the menu as second argument. Otherwise you'll have to add them later.
-     * The $selectAttributes are added to the <select> tag if there is one.
-     * The ID keys used correspond to the IDs used in the database.
+     * The $attributes are added to the <select> tag if there is one.
      * @access  public
-     * @param   integer $selected   The default VAT ID to be preselected in the menu
-     * @param   string  $menuname   The name to use in the <select> tag
+     * @param   integer $selected   The optional preselected VAT ID
+     * @param   string  $menuname   The name attribute value for the <select> tag
+     * @param   string  $attributes Optional attributes for the <select> tag
      * @return  string              The dropdown menu (with or without <select>...</select>)
+     * @static
      */
-    function getShortMenuString($selected='', $menuname='', $selectAttributes='')
+    static function getShortMenuString($selected='', $menuname='', $attributes='')
     {
-        $string = '';
-        foreach ($this->arrVatRate as $id => $rate) {
-            $string .= "<option value='$id'";
-            if ($selected == $id) {
-                $string .= " selected='selected'";
-            }
-            $string .= ">$rate %</option>";
-        }
+        $string = self::getMenuoptions($selected, false);
         if ($menuname) {
-            $string = "<select name='$menuname'".
-                ($selectAttributes=='' ? '' : " $selectAttributes").
-                ">$string</select>";
+            $string =
+                '<select name="'.$menuname.'"'.
+                ($attributes ? ' '.$attributes : '').
+                '>'.$string.'</select>';
         }
         return $string;
     }
 
 
     /**
-     * Return dropdown menu options with IDs as names and VAT classes plus rates
-     * as values.
+     * Returns a HTML dropdown menu with IDs as values and
+     * VAT classes plus rates as text.
      *
-     * The default for the $selected parameter is '' (the empty string).
      * The <select>/</select> tags are only added if you also specify a name
      * for the menu as second argument. Otherwise you'll have to add them later.
      * The $selectAttributes are added to the <select> tag if there is one.
-     * The ID keys used correspond to the IDs used in the database.
      * @access  public
-     * @param   integer $selected   The default VAT ID to be preselected in the menu
-     * @param   string  $menuname   The name to use in the <select> tag
+     * @param   integer $selected   The optional preselected VAT ID
+     * @param   string  $menuname   The name attribute value for the <select> tag
+     * @param   string  $attributes Optional attributes for the <select> tag
      * @return  string              The dropdown menu (with or without <select>...</select>)
+     * @static
      */
-    function getLongMenuString($selected='', $menuname='', $selectAttributes='')
+    static function getLongMenuString($selected='', $menuname='', $attributes='')
     {
-        $string = '';
-        foreach ($this->arrVatRate as $id => $rate) {
-            $string .= "<option value='$id'";
-            if ($selected == $id) {
-                $string .= " selected='selected'";
-            }
-            $string .= ">".$this->arrVatClass[$id]." $rate %</option>";
-        }
+        $string = self::getMenuoptions($selected, true);
         if ($menuname) {
-            $string = "<select name='$menuname'".
-                ($selectAttributes == '' ? '' : " $selectAttributes").
-                ">$string</select>";
+            $string =
+                '<select name="'.$menuname.'"'.
+                ($attributes ? ' '.$attributes : '').
+                '>'.$string.'</select>';
         }
         return $string;
     }
 
 
     /**
-     * Return the tax rate for the given VAT ID, if available,
-     * or '0.00' if the entry could not be found.
+     * Return the HTML dropdown menu options code with IDs as values and
+     * VAT classes plus rates as text.
+     * @access  public
+     * @param   integer $selected   The optional preselected VAT ID
+     * @param   boolean $flagLong   Include the VAT class name if true
+     * @return  string              The dropdown menu options HTML code
+     * @static
+     */
+    static function getMenuoptions($selected='', $flagLong=false)
+    {
+        if (!is_array(self::$arrVat)) self::init();
+        $strMenuoptions = '';
+        foreach (self::$arrVat as $id => $arrVat) {
+            $strMenuoptions .=
+                '<option value="'.$id.'"'.
+                ($selected == $id ? ' selected="selected"' : '').'>'.
+                ($flagLong ? $arrVat['class'].' ' : '').
+                self::format($arrVat['rate']).'</option>';
+        }
+        return $strMenuoptions;
+    }
+
+
+    /**
+     * Return the vat rate for the given VAT ID, if available,
+     * or '0.0' if the entry could not be found.
      * @access  public
      * @param   integer $vatId  The VAT ID
-     * @return  double          The VAT rate, or '0.00'
+     * @return  double          The VAT rate, or '0.0'
+     * @static
      */
-    function getRate($vatId)
+    static function getRate($vatId)
     {
-        if (isset($this->arrVatRate[$vatId])) {
-            return $this->arrVatRate[$vatId];
-        }
+        if (!is_array(self::$arrVat)) self::init();
+        if (isset(self::$arrVat[$vatId]))
+            return self::$arrVat[$vatId]['rate'];
         // No entry found.  But some sensible value is required by the Shop.
-        return '0.00';
+        return '0.0';
     }
 
 
     /**
-     * Return the tax class for the given VAT ID, if available,
+     * Return the vat class for the given VAT ID, if available,
      * or a warning message if the entry could not be found.
      * @access  public
      * @param   integer $vatId  The VAT ID
-     * @global  array           Language array
+     * @global  array
      * @return  string          The VAT class, or a warning
+     * @static
      */
-    function getClass($vatId)
+    static function getClass($vatId)
     {
         global $_ARRAYLANG;
 
-        if (isset($this->arrVatClass[$vatId])) {
-            return $this->arrVatClass[$vatId];
-        }
+        if (!is_array(self::$arrVat)) self::init();
+        if (isset(self::$arrVat[$vatId]))
+            return self::$arrVat[$vatId]['class'];
         // no entry found
-        return $_ARRAYLANG['TXT_TAX_NOT_SET'];
+        return $_ARRAYLANG['TXT_SHOP_VAT_NOT_SET'];
     }
 
 
     /**
-     * Return the tax rate with a trailing percent sign
+     * Return the vat rate with a trailing percent sign
      * for the given percentage.
-     *
      * @static
      * @access  public
      * @param   float   $rate   The Vat rate in percent
      * @return  string          The resulting string
+     * @static
      */
-    //static
-    function format($rate)
+    static function format($rate)
     {
         return "$rate%";
     }
 
 
     /**
-     * Return the short tax rate with a trailing percent sign for the given
-     * Vat ID, if available, or a warning message if the entry could not be
-     * found.
-     *
+     * Return the short vat rate with a trailing percent sign for the given
+     * Vat ID, if available, or '0.0%' if the entry could not be found.
      * @access  public
      * @param   integer $vatId  The Vat ID
-     * @global  array           Language array
+     * @global  array
      * @return  string          The resulting string
+     * @static
      */
-    function getShort($vatId)
+    static function getShort($vatId)
     {
-        global $_ARRAYLANG;
-
-        $rate = 0;
-        if (isset($this->arrVatRate[$vatId])) {
-            $rate = $this->arrVatRate[$vatId];
-        }
-        return Vat::format($rate);
+        return self::format(self::getRate($vatId));
     }
 
 
     /**
-     * Return the long tax rate, including the class, rate and a trailing
+     * Return the long VAT rate, including the class, rate and a trailing
      * percent sign for the given Vat ID, if available, or a warning message
      * if the entry could not be found.
-     *
      * @access  public
      * @param   integer $vatId  The Vat ID
-     * @global  array           Language array
+     * @global  array
      * @return  string          The resulting string
+     * @static
      */
-    function getLong($vatId)
+    static function getLong($vatId)
     {
-        global $_ARRAYLANG;
-
-        if (isset($this->arrVatClass[$vatId]) &&
-            isset($this->arrVatRate[$vatId])) {
-            return $this->arrVatClass[$vatId] . '&nbsp;' .
-                   Vat::format($this->arrVatRate[$vatId]);
-        }
-        // no entry found
-        return $_ARRAYLANG['TXT_TAX_NOT_SET'];
+        if (!is_array(self::$arrVat)) self::init();
+        return
+            self::$arrVat[$vatId]['class'].'&nbsp;'.self::getShort($vatId);
     }
 
 
@@ -372,52 +458,52 @@ class Vat
      *
      * Check if the rates are non-negative decimal numbers, and only
      * updates records that have been changed.
+     * Remember to re-init() the Vat class after changing the database table.
      * @access  public
-     * @param   array   $vatIds     VAT IDs (index => ID)
-     * @param   array   $vatClasses VAT classes (ID => 'class')
+     * @param   array   $vatClasses VAT classes (ID => (string) class)
      * @param   array   $vatRates   VAT rates in percent (ID => rate)
      * @global  ADONewConnection
      * @return  boolean         True if *all* the values were accepted and
-     *                          successfully inserted into the database,
+     *                          successfully updated in the database,
      *                          false otherwise.
+     * @static
      */
-    function updateVat($vatIds, $vatClasses, $vatRates)
+    static function updateVat($vatClasses, $vatRates)
     {
         global $objDatabase;
-        $alright = true;
-        foreach ($vatIds as $index => $id) {
-            if (intval($id) && $id >= 0) {
-                $class  = $vatClasses[$index];
-                $rate   = $vatRates[$index];
-                if (isset($this->arrVatClass[$id]) &&
-                    isset($this->arrVatRate[$id]))
-                {
-                    if ($this->arrVatClass[$id] != $class ||
-                        $this->arrVatRate[$id]  != $rate  )
-                    {
-                        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_vat " .
-                            "SET class='$class', percent=$rate " .
-                            "WHERE id=$id";
-                        $objResult = $objDatabase->Execute($query);
-                        if (!$objResult) $alright = false;
-                    } else {
-                    }
-                } else {
-                    $alright = false;
-                }
-            } else {
-                    $alright = false;
+
+        if (!is_array(self::$arrVat)) self::init();
+        foreach ($vatClasses as $id => $class) {
+            $rate = $vatRates[$id];
+            if (   self::$arrVat[$id]['class'] != $class
+                || self::$arrVat[$id]['rate']  != $rate) {
+//                $objText = Text::replace(
+//                    $text_class_id, LANG_ID, $class,
+//                    MODULE_ID, TEXT_SHOP_VAT_CLASS
+//                );
+//                if (!$objText) return false;
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_vat
+                       SET `percent`=$rate,
+                           `class`='".addslashes($class)."'
+                     WHERE `id`=$id
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult) return false;
             }
         }
-        return $alright;
+        return true;
     }
 
 
     /**
      * Add the VAT class and rate to the database.
      *
-     * Check if the rate is a non-negative decimal number,
+     * Checks if the rate is a non-negative decimal number,
      * the class string may be empty.
+     * Note that VAT class names are only visible in the backend.  Thus,
+     * the backend language is used to display and store those Texts.
+     * Remember to re-init() the Vat class after changing the database table.
      * @static
      * @access  public
      * @param   string          Name of the VAT class
@@ -427,16 +513,34 @@ class Vat
      *                          successfully inserted into the database,
      *                          false otherwise.
      */
-    //static
-    function addVat($vatClass, $vatRate)
+    static function addVat($vatClass, $vatRate)
     {
         global $objDatabase;
+
         $vatRate = doubleval($vatRate);
         if ($vatRate >= 0) {
-            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat " .
-                "(class, percent) VALUES ('$vatClass', $vatRate)";
+//            $objText = Text::replace(
+//                0, BACKEND_LANG_ID, $vatClass, MODULE_ID, TEXT_SHOP_VAT_CLASS
+//            );
+//            if (!$objText) return false;
+//            $query = "
+//                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
+//                    text_class_id, percent
+//                ) VALUES (
+//                    ".$objText->getId().", $vatRate
+//                )
+//            ";
+            $query = "
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
+                    class, percent
+                ) VALUES (
+                    '".addslashes($vatClass)."', $vatRate
+                )
+            ";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) return true;
+//            // Rollback and delete the Text
+//            Text::deleteById($objText->getId(), BACKEND_LANG_ID);
         }
         return false;
     }
@@ -445,6 +549,9 @@ class Vat
     /**
      * Remove the VAT with the given ID from the database
      *
+     * Note that VAT class names are only visible in the backend.  Thus,
+     * the backend language is used to display and store those Texts.
+     * Remember to re-init() the Vat class after changing the database table.
      * @static
      * @access  public
      * @param   integer         The VAT ID
@@ -453,12 +560,15 @@ class Vat
      *                          successfully inserted into the database,
      *                          false otherwise.
      */
-    //static
-    function deleteVat($vatId)
+    static function deleteVat($vatId)
     {
         global $objDatabase;
+
+        if (!is_array(self::$arrVat)) self::init();
         $vatId = intval($vatId);
         if ($vatId > 0) {
+//            if (!Text::deleteById(self::$arrVat[$vatId]['text_class_id']))
+//                return false;
             $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat WHERE id=$vatId";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) return true;
@@ -468,7 +578,28 @@ class Vat
 
 
     /**
-     * Calculate the tax amount using the given rate (percentage) and price.
+     * post-2.1
+     * Returns the Text ID stored in the VAT record for the given VAT ID
+     * @param   integer   $vat_id       The VAT ID
+     * @return  integer                 The Text ID on success, false otherwise
+     */
+    static function getTextClassIdById($vat_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT `text_class_id`
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat
+             WHERE `id`=$vat_id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        return $objResult->fields['text_class_id'];
+    }
+
+
+    /**
+     * Calculate the VAT amount using the given rate (percentage) and price.
      *
      * Note: This function returns the correct amount depending on whether VAT is
      * enabled in the shop, and whether it's included or not.  It will not
@@ -482,51 +613,53 @@ class Vat
      * @return  double              Tax amount
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function amount($rate, $price)
+    static function amount($rate, $price, $is_home_country=false, $is_reseller=false)
     {
-        // is the tax enabled at all?
-        if ($this->isEnabled()) {
-            if ($this->isIncluded()) {
-                // gross price; calculate the included VAT amount, like
+        if (!is_array(self::$arrVat)) self::init();
+        // Is the vat enabled at all?
+        if (self::isEnabled($is_home_country, $is_reseller)) {
+            if (self::isIncluded($is_home_country, $is_reseller)) {
+                // Gross price; calculate the included VAT amount, like
                 // $amount = $price - 100 * $price / (100 + $rate)
                 return $price - 100*$price / (100+$rate);
-            } else {
-                // net price; $rate percent of $price
-                return $price * $rate * 0.01;
             }
-        } else {
-            // tax disabled. leave everything at '' (zero)
-            return '0.00';
+            // Net price; $rate percent of $price
+            return $price * $rate * 0.01;
         }
+        // VAT disabled.  Amount is zero
+        return '0.00';
     }
 
 
     /**
-     * Return the tax rate associated with the product.
+     * Return the VAT rate associated with the product.
      *
-     * If the product is associated with a tax rate, the rate is returned.
+     * If the product is associated with a VAT rate, the rate is returned.
      * Otherwise, returns -1.
      * Note: This function returns the VAT rate no matter whether it is
      * enabled in the shop or not.  Check this yourself!
      * @param   double  $productId  The product ID
      * @global  ADONewConnection
-     * @return  double              The (positive) associated tax rate
+     * @return  double              The (positive) associated vat rate
      *                              in percent, or -1 if the record could
      *                              not be found.
+     * @static
      */
-    function getAssociatedTaxRate($productId)
+    static function getAssociatedTaxRate($productId)
     {
         global $objDatabase;
-        $query = "SELECT percent FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat vat ".
-                 "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products products ".
-                 "ON vat.id = products.vat_id ".
-                 "WHERE products.id = ".$productId;
+
+        $query = "
+            SELECT percent FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat vat
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products products
+                ON vat.id=products.vat_id
+             WHERE products.id=$productId
+        ";
         $objResult = $objDatabase->Execute($query);
-        // there must be exactly one match
-        if ($objResult && $objResult->RecordCount() == 1) {
+        // There must be exactly one match
+        if ($objResult && $objResult->RecordCount() == 1)
             return $objResult->fields['percent'];
-        }
-        // no or more than one record found
+        // No or more than one record found
         return -1;
     }
 
@@ -534,17 +667,18 @@ class Vat
     /**
      * Returns the VAT amount using the default rate for the given net price.
      *
-     * Note that the amount returned is not formatted as a currency!
-     * See {@link Currency::formatPrice()} for a way to do this.
+     * Note that the amount returned is not formatted as a currency,
+     * nor are any checks performed on whether VAT is active or not!
      * @param   double  $price  The net price
      * @return  double          The VAT amount to add to the net price
+     * @static
      */
-    function calculateDefaultTax($price)
+    static function calculateDefaultTax($price)
     {
-        global $objDatabase;
-        $amount = $price * $this->vatDefaultRate / 100;
+        $amount = $price * self::$vatDefaultRate / 100;
         return $amount;
     }
+
 }
 
 ?>

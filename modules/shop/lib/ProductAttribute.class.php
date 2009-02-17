@@ -293,10 +293,7 @@ class ProductAttribute
 
 
     /**
-     * Remove the ProductAttribute value with the given ID from a Product.
-     *
-     * Note that this will not delete the value itself, but only clears the
-     * association with a Product.
+     * Remove the ProductAttribute value with the given ID.
      * @param   integer     $value_id       The Product Attribute value ID
      * @return  boolean                     True on success, false otherwise
      * @copyright   CONTREXX CMS - COMVATION AG
@@ -352,8 +349,6 @@ class ProductAttribute
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-
-        }
         // Delete values
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
@@ -361,8 +356,6 @@ class ProductAttribute
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-
-
         // Delete name
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
