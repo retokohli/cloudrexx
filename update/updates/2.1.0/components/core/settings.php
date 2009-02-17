@@ -206,44 +206,11 @@ function _updateSettings()
 
     );
 
-    $arrSettingsByName = array(
-        'dnsServer'                    => 3,
-        'bannerStatus'                => 4,
-        'spamKeywords'                => 5,
-        'coreAdminName'                => 11,
-        'corePagingLimit'            => 18,
-        'searchDescriptionLength'    => 19,
-        'coreIdsStatus'                => 23,
-        'coreAdminEmail'            => 24,
-        'contactFormEmail'            => 29,
-        'sessionLifeTime'            => 34,
-        'lastAccessId'                => 35,
-        'newsTeasersStatus'            => 37,
-        'feedNewsMLStatus'            => 39,
-        'calendarheadlines'            => 40,
-        'calendarheadlinescount'    => 41,
-        'blockStatus'                => 42,
-        'contentHistoryStatus'        => 43,
-        'calendarheadlinescat'        => 44,
-        'calendardefaultcount'        => 45,
-        'blockRandom'                => 48,
-        'directoryHomeContent'        => 49,
-        'cacheEnabled'                => 50,
-        'coreGlobalPageTitle'        => 51,
-        'cacheExpiration'            => 52,
-        'domainUrl'                    => 53,
-        'googleSitemapStatus'        => 54,
-        'systemStatus'                => 55,
-        'searchVisibleContentOnly'    => 56,
-        'forumHomeContent'            => 60,
-        'aliasStatus'                => 61,
-        'coreSmtpServer'            => 62,
-        'languageDetection'            => 63,
-        'podcastHomeContent'        => 64,
-        'googleMapsAPIKey'            => 65,
-        'forumTagContent'            => 66,
-        'useKnowledgePlaceholders'   => 70,
-    );
+    $arrSettingsByName = array();
+    foreach ($arrSettings as $setid => $data) {
+        $arrSettingsByName[$data['setname']] = $setid;
+    }
+
 
     // add coreGlobalPageTitle
     if (!empty($_POST['coreGlobalPageTitle'])) {
