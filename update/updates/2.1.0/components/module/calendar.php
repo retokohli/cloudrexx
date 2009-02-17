@@ -8,9 +8,9 @@ function _calendarUpdate()
 		return _databaseError($query, $objDatabase->ErrorMsg());
 	}
 
-	$arrColumns = $objDatabase->MetaColumns(DBPREFIX.'contrexx_module_calendar');
+	$arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_calendar');
 	if ($arrColumns === false) {
-		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'contrexx_module_calendar'));
+		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_calendar'));
 		return false;
 	}
 
@@ -68,7 +68,7 @@ function _calendarUpdate()
 
 	foreach ($arrNewCols as $col => $arrAttr) {
 		if (!array_key_exists(strtoupper($col), $arrColumns)) {
-		    $query = "ALTER TABLE `".DBPREFIX."contrexx_module_calendar` ADD `".$col."` ".$arrAttr['type']." NOT NULL AFTER `".$arrAttr['after']."`";
+		    $query = "ALTER TABLE `".DBPREFIX."module_calendar` ADD `".$col."` ".$arrAttr['type']." NOT NULL AFTER `".$arrAttr['after']."`";
 		    if ($objDatabase->Execute($query) === false) {
 				return _databaseError($query, $objDatabase->ErrorMsg());
 			}
