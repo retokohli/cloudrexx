@@ -40,7 +40,7 @@ $_ARRAYLANG['TXT_ENTRIES_SUBMIT_DELETE_JS'] = "Sind Sie sicher, dass die diesen 
 $_ARRAYLANG['TXT_PRIVATE_NOTIFICATION_LINK'] = "Ihre Benachrichtigungen:";
 $_ARRAYLANG['PRIVATE_MESSAGE_DELETE_SUCCESS'] = "Nachricht erfolgreich gelöscht";
 $_ARRAYLANG['PRIVATE_MESSAGE_NO_ENTRIES'] = "Keine Nachrichten";
-$_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'] = "Vorschau der nachricht";
+$_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'] = "Vorschau der Nachricht";
 $_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'] = "http://www.comvation.com";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_SUBJECT'] = "\\\"[USERNAME]\\\" hat Ihnen eine Nachricht gesendet.";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_BODY'] = "\\\"[USERNAME]\\\" hat Ihnen eine Nachricht gesendet. \n Folgen Sie diesem Link um die Nachricht zu lesen: /index.php?section=u2u&cmd=notification";
@@ -65,4 +65,5 @@ $_ARRAYLANG['TXT_ADDRESS_BOOK_PAGING'] = "Adressbuch Seitennummerierung";
 $_ARRAYLANG['TXT_U2U_RECEPIENTS_EXCEED_ERROR'] = "Es kann nicht an mehr als 10 Empfänger gleichzeitig geschrieben werden";
 $_ARRAYLANG['TXT_PLS_ENTER_USERNAME'] = "Geben Sie einen Benutzernamen ein";
 $_ARRAYLANG['TXT_MESSAGE_CONTENT'] = "Sie können Ihre Nachricht an bis zu 5 Benutzer gleichzeitig schicken.<br />Trennen Sie mehrere Benutzernamen mit einem Semikolon ';'";
+$_ARRAYLANG['TXT_U2U_ENTER_NAME'] = "Bitte geben Sie einen Namen ein!";
 ?>
