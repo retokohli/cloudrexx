@@ -113,7 +113,10 @@ class Navigation
                                         // user is administrator
                                         ''
                                 )
-                                : ($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND n.protected=0' : '')
+                                : (   empty($_CONFIG['coreListProtectedPages'])
+                                   || $_CONFIG['coreListProtectedPages'] == 'off'
+                                    ? 'AND n.protected=0' : ''
+                                  )
                             )."
                         GROUP BY n.catid
                         ORDER BY n.parcat DESC, n.displayorder ASC";
