@@ -190,14 +190,14 @@ class CSVimport
     {
         global $objDatabase;
         $query = "
-            SELECT catid
+            SELECT id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE catname='$catName'
-               ".($catParent === false ? '' : "AND parentid=$catParent");
+               ".($catParent === false ? '' : "AND parent_id=$catParent");
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             if ($objResult->RecordCount() > 0) {
-                return $objResult->fields['catid'];
+                return $objResult->fields['id'];
             }
             return CSVimport::InsertNewCat($catName, $catParent);
         }
@@ -219,10 +219,10 @@ class CSVimport
     function GetFirstCat()
     {
         global $objDatabase;
-        $query = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
+        $query = "SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult->RecordCount() > 0) {
-            return $objResult->fields["catid"];
+            return $objResult->fields["id"];
         } else {
             return CSVimport::InsertNewCat('Import', 0);
         }
@@ -246,7 +246,7 @@ class CSVimport
         global $objDatabase;
         $query =
             "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
-            "(catname, parentid) VALUES ('".$catName."','".$catParent."')";
+            "(catname, parent_id) VALUES ('".$catName."','".$catParent."')";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             return $objDatabase->Insert_ID();

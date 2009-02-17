@@ -5,8 +5,8 @@
  *
  * Optional calculation of discounts in the Shop.
  * Note: This is to be customized for individual online shops.
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Reto Kohli <reto.kohli@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     2.1.0
  * @package     contrexx
@@ -23,8 +23,8 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
  *
  * Processes many kinds of discounts - as long as you can express the
  * rules in the terms used here.
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Reto Kohli <reto.kohli@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     2.1.0
  * @package     contrexx

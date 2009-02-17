@@ -12,20 +12,13 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/*
-INSERT INTO `contrexx`.`contrexx_module_shop_config` (
-  `id`, `name`, `value`, `status`
-) VALUES (
-  NULL, 'yellowpay_accepted_payment_methods', '', '0'
-);
-*/
-
+require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 
 /**
  * Settings
  *
  * Stores Shop settings
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
@@ -73,9 +66,8 @@ class Settings
         // sets $flagChanged accordingly.
         $success &= $this->storeGeneral();
 
-        $this->_deleteCurrency();
-        $this->_storeNewCurrency();
-        $this->_storeCurrencies();
+        $result = Currency::store();
+        if ($result !== '') $success &= $result;
 
         $this->_deletePayment();
         $this->_storeNewPayments();
@@ -83,13 +75,11 @@ class Settings
 
         $this->_storeCountries();
 
-        $this->_deleteZone();
-        $this->_storeNewZone();
-        $this->_storeZones();
+        $result = Zones::store();
+        if ($result !== '') $success &= $result;
 
-        $this->_delMailTpl();
-        $this->_addMail();
-        $this->_storeMails();
+        $result = Mail::store();
+        if ($result !== '') $success &= $result;
 
         // new methods - these set $flagChanged accordingly.
         $success &= $this->_deleteShipper();
@@ -97,11 +87,7 @@ class Settings
         $success &= $this->_storeNewShipper();
         $success &= $this->_storeNewShipments();
         $success &= $this->_updateShipment();
-
-        $success &= $this->_deleteVat();
-        $success &= $this->_updateVat();
-        $success &= $this->_setProductsVat();
-
+        $success &= $this->storeVat();
         if ($this->flagChanged === true) {
             return $success;
         }
