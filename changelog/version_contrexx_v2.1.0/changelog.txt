@@ -31,6 +31,8 @@ Kalender
 
 Benutzerverwaltung
 - Es kann eine CSV Datei aller Benutzer exportiert werden basierend auf Gruppenzugehörigkeit und Standardsprache.
+- Die Profileigenschaft E-Mail Adresse wird bei der Suche im Backend auch mit
+  einbezogen.
 
 ****************************************
 * Behobene Fehler **********************
@@ -38,6 +40,8 @@ Benutzerverwaltung
 Benutzerverwaltung
 - Benutzer welche keiner Backend-Gruppe zugeordnet sind, können sich nicht
   mehr im Backend anmelden.
+- Die Auflistung der Benutzer erfolgt korrekt, egal nach welchem Merkmal
+  sortiert wird.
 
 Datenbank Manager
 - Die mySQL Syntax der Sicherungen wurde gefixt, so dass die erzeugten .sql
