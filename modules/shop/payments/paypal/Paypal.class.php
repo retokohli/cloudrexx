@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for the PayPal form
  *
@@ -41,13 +42,13 @@ define('_PAYPAL_DEBUG', 0);
 class PayPal
 {
     /**
-     * e-mail address for paypal paying
+     * e-mail address for paypal account
      * @var string
      * @see getForm()
      */
-    var $PayPalAcc;
+    private $PayPalAcc;
 
-    var $arrAcceptedCurrencyCodes = array(
+    private static $arrAcceptedCurrencyCode = array(
         'AUD', // Australian Dollar
         'CAD', // Canadian Dollar
         'CHF', // Swiss Franc
@@ -69,23 +70,11 @@ class PayPal
 
     /**
      * PHP 5 constructor
-     *
-     * Gets the main information for paypal
      */
     function __construct()
     {
-
     }
 
-    /**
-     * PHP 4.3 constructor
-     *
-     * calls the __construct() function
-     */
-    function PayPal()
-    {
-        $this->__construct();
-    }
 
     /**
      * Returns the form for PayPal accessing
@@ -97,7 +86,7 @@ class PayPal
         global $_ARRAYLANG;
 
         $orderid = $_SESSION['shop']['orderid'];
-        $business = $this->getBusiness();
+        $business = self::getBusiness();
         $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
         $currency_code = $this->getCurencyCode($_SESSION['shop']['currencyId']);
         $amount = $_SESSION['shop']['grand_total_price'];
@@ -125,15 +114,15 @@ class PayPal
                   // _PAYPAL_DEBUG == 2 or higher
                   : "\n<form name='paypal' action='$host/index.php?section=shop".MODULE_INDEX."&amp;act=testIpn' method='post'>\n"
             ));
-        $retval .= $this->getInput('cmd', '_xclick');
-        $retval .= $this->getInput('business', $business);
-        $retval .= $this->getInput('item_name', $item_name);
-        $retval .= $this->getInput('currency_code', $currency_code);
-        $retval .= $this->getInput('amount', $amount);
-        $retval .= $this->getInput('custom', $orderid);
-        $retval .= $this->getInput('notify_url', $notify_url);
-        $retval .= $this->getInput('return', $return);
-        $retval .= $this->getInput('cancel_return', $cancel_return);
+        $retval .= self::getInput('cmd', '_xclick');
+        $retval .= self::getInput('business', $business);
+        $retval .= self::getInput('item_name', $item_name);
+        $retval .= self::getInput('currency_code', $currency_code);
+        $retval .= self::getInput('amount', $amount);
+        $retval .= self::getInput('custom', $orderid);
+        $retval .= self::getInput('notify_url', $notify_url);
+        $retval .= self::getInput('return', $return);
+        $retval .= self::getInput('cancel_return', $cancel_return);
         $retval .= "{$_ARRAYLANG['TXT_PAYPAL_SUBMIT']}<br /><br />";
         $retval .= "<input type='submit' name='submitbutton' value=\"{$_ARRAYLANG['TXT_PAYPAL_SUBMIT_BUTTON']}\" />\n";
         $retval .= "</form>\n";
@@ -144,25 +133,20 @@ class PayPal
      * Generates a hidden input field
      * @param $field Array containing the name and the value of the field
      */
-    function getInput($name, $value)
+    static function getInput($name, $value)
     {
-        return "<input type='hidden' name=\"$name\" value=\"$value\" />\n";
+        return
+            '<input type="hidden" name="'.$name.'" value="'.$value.'" />'.
+            "\n";
     }
 
 
     /**
      * Reads the paypal email address from the database
      */
-    function getBusiness()
+    static function getBusiness()
     {
-        global $objDatabase;
-        $query = "
-            SELECT value FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE name='paypal_account_email'
-        ";
-        $objResult = $objDatabase->Execute($query);
-// TODO: What about this field being empty?
-        return $objResult->fields['value'];
+        return Settings::getValueByName('paypal_account_email');
     }
 
 
@@ -348,7 +332,7 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/testIpn.txt', 'w');
         $currencyCode = $objResult->fields['code'];
         // Create order entry
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_orders (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_orders (
             orderid, customerid, selected_currency_id, order_sum, currency_order_sum,
             order_date, order_status,
             ship_prefix, ship_company, ship_firstname, ship_lastname,
@@ -489,6 +473,21 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnValidateLog.txt', 'w');
 @fclose($log);
         die($reply);
     }
+
+
+    static function getAcceptedCurrencyCodeMenuoptions($selected=0)
+    {
+        $strMenuoptions = '';
+        foreach (self::$arrAcceptedCurrencyCode as $code) {
+            $strMenuoptions .=
+                '<option value="'.$code.'"'.
+                ($selected == $code ? ' selected="selected"' : '').">".
+                $code.
+                "</option>\n";
+        }
+        return $strMenuoptions;
+    }
+
 }
 
 ?>

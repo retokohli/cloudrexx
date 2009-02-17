@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface to Saferpay
  * @author Comvation Development Team <info@comvation.com>
@@ -23,14 +24,14 @@ class Saferpay
      * @access  public
      * @var     boolean
      */
-    var $isTest = false;
+    private $isTest = false;
 
     /**
      * Temporary data
      * @access  private
      * @var     array
      */
-    var $arrTemp = array();
+    private $arrTemp = array();
 
     /**
      * Attributes
@@ -38,14 +39,14 @@ class Saferpay
      * @var     string
      * @see     checkOut()
      */
-    var $attributes;
+    private $attributes;
 
     /**
      * Attributes
      * @access  public
      * @var     string
      */
-    var $testAccountId = '99867-94913159';
+    private $testAccountId = '99867-94913159';
 
     /**
      * The hosting gateways
@@ -53,7 +54,7 @@ class Saferpay
      * @var     array
      * @see     checkOut(), success()
      */
-    var $gateway = array(
+    private $gateway = array(
         'payInit'     => 'https://www.saferpay.com/hosting/CreatePayInit.asp',
         'payConfirm'  => 'https://www.saferpay.com/hosting/VerifyPayConfirm.asp',
         'payComplete' => 'https://www.saferpay.com/hosting/PayComplete.asp',
@@ -64,21 +65,21 @@ class Saferpay
      * @access  private
      * @var     array
      */
-    var $arrCurrency = array('CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'PLN', 'SEK', 'USD',);
+    private $arrCurrency = array('CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'PLN', 'SEK', 'USD',);
 
     /**
      * Language codes
      * @access  private
      * @var     array
      */
-    var $arrLangId = array('en', 'de', 'fr', 'it',);
+    private $arrLangId = array('en', 'de', 'fr', 'it',);
 
     /**
      * Keys needed for the respective operations
      * @access  private
      * @var     array
      */
-    var $arrKeys = array(
+    private $arrKeys = array(
         'payInit'     => array(
             'AMOUNT',
             'CURRENCY',
@@ -103,7 +104,7 @@ class Saferpay
      * @var     array
      * @see     checkOut()
      */
-    var $arrShopOrder = array();
+    private $arrShopOrder = array();
 
     /**
      * Error messages
@@ -111,7 +112,7 @@ class Saferpay
      * @var     array
      * @see
      */
-    var $arrError = array();
+    private $arrError = array();
 
     /**
      * Error messages
@@ -119,25 +120,14 @@ class Saferpay
      * @var     array
      * @see
      */
-    var $arrWarning = array();
-
-    /**
-     * Window options
-     * @access  public
-     * @var     array
-     */
-    var $arrWindowOption = array(
-//        0 => 'TXT_IFRAME',
-        1 => 'TXT_POPUP',
-        2 => 'TXT_NEW_WINDOW',
-    );
+    private $arrWarning = array();
 
     /**
      * Payment providers
      * @access  public
      * @var     array
      */
-    var $arrProviders = array(
+    private $arrProviders = array(
         'Airplus Corporate Card'         => 486,
         'American Express'               => 1,
         'AMEX DE'                        => 77,
@@ -294,15 +284,25 @@ class Saferpay
         'VISA UBS USD'                   => 13,
     );
 
+    /**
+     * Window options constants
+     * @access  public
+     */
+    // Iframes are disabled due to handling problems.
+    // After the payment is complete, the shop itself is displayed in the
+    // frame instead of its parent!
+    //const saferpay_windowoption_id_iframe = 0;
+    const saferpay_windowoption_id_popup  = 1;
+    const saferpay_windowoption_id_window = 2;
+    // keep this up to date!
+    // Note that the class method getWindowMenuoptions() has been
+    // adapted to skip the disabled option ID 0!
+    const saferpay_windowoption_id_count  = 3;
+
 
     /**
      * Constructor
      */
-    function Saferpay()
-    {
-        $this->__construct();
-    }
-
     function __construct()
     {
     }
@@ -365,6 +365,10 @@ class Saferpay
      */
     function payConfirm()
     {
+        // Predefine the variables parsed by parse_str() to avoid
+        // code analyzer warnings
+        $DATA = '';
+        $SIGNATURE = '';
         parse_str($_SERVER['QUERY_STRING']);
         $this->arrShopOrder['DATA']      = urlencode($DATA);
         $this->arrShopOrder['SIGNATURE'] = urlencode($SIGNATURE);
@@ -372,6 +376,8 @@ class Saferpay
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payConfirm'].'?'.$this->attributes);
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
+            $ID = '';
+            $TOKEN = '';
             parse_str(substr($this->arrTemp['result'], 3));
             $this->arrTemp['id'] = $ID;
             $this->arrTemp['token'] = $TOKEN;
@@ -588,6 +594,24 @@ class Saferpay
             $attribute.'='.$this->arrShopOrder[$attribute];
         unset($this->arrShopOrder[$attribute]);
     }
+
+
+    static function getWindowMenuoptions($selected=0)
+    {
+        global $_ARRAYLANG;
+
+        $strMenuoptions = '';
+        // Set $id to start at 0 (zero) to enable iframes!
+        for ($id = 1; $id < self::saferpay_windowoption_id_count; ++$id) {
+            $strMenuoptions .=
+                '<option value="'.$id.'"'.
+                ($id == $selected ? ' selected="selected"' : '').'>'.
+                $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_'.$id].
+                "</option>\n";
+        }
+        return $strMenuoptions;
+    }
+
 }
 
 ?>

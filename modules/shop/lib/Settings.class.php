@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Settings
  *
@@ -88,6 +89,7 @@ class Settings
         $success &= $this->_storeNewShipments();
         $success &= $this->_updateShipment();
         $success &= $this->storeVat();
+
         if ($this->flagChanged === true) {
             return $success;
         }
@@ -98,6 +100,28 @@ class Settings
     function _initCountries()
     {
         global $objDatabase;
+// post-2.1//        $arrSqlName = Text::getSqlSnippets(
+//            '`country`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
+//        );
+//        $query = "
+//            SELECT `country`.`id`, `country`.`status`,
+//                   `country`.`iso_code_2`, .`country`.`iso_code_3`".
+//                   $arrSqlName['field']."
+//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries as `country`
+//             ORDER BY `country`.`id`
+//        ";
+//        $objResult = $objDatabase->Execute($query);
+//        while(!$objResult->EOF) {
+//            $this->arrCountries[$objResult->fields['id']] = array(
+//                'id' => $objResult->fields['id'],
+//                'name' => $objResult->fields[$arrSqlName['name']],
+//                'iso_code_2' => $objResult->fields['iso_code_2'],
+//                'iso_code_3' => $objResult->fields['iso_code_3'],
+//                'status' => $objResult->fields['status']
+//            );
+//            $objResult->MoveNext();
+//        }
         $query = "
             SELECT countries_id, countries_name,
                    countries_iso_code_2, countries_iso_code_3,
@@ -151,11 +175,13 @@ class Settings
             Settings::storeSetting('saferpay_use_test_account', 0, (!empty($_POST['saferpay_use_test_account']) ? 1 : 0));
             Settings::storeSetting('saferpay_window_option', $_POST['saferpay_window_option']);
             Settings::storeSetting('paypal_account_email', $_POST['paypal_account_email'], (!empty($_POST['paypal_status']) ? 1 : 0));
-            Settings::storeSetting('tax_number', $_POST['tax_number']);
-            Settings::storeSetting('tax_enabled', $_POST['tax_enabled']);
-            // default vat rate
-            Settings::storeSetting('tax_default_id', $_POST['tax_default_id']);
-            Settings::storeSetting('tax_included', $_POST['tax_included']);
+
+            // Datatrans
+            Settings::storeSetting('datatrans_merchant_id', trim(contrexx_strip_tags($_POST['datatrans_merchant_id'])));
+            Settings::storeSetting('datatrans_status', (isset($_POST['datatrans_status']) ? 1 : 0));
+            Settings::storeSetting('datatrans_request_type', $_POST['datatrans_request_type']);
+            Settings::storeSetting('datatrans_use_testserver', ($_POST['datatrans_use_testserver'] ? 1 : 0));
+
             Settings::storeSetting('country_id', $_POST['country_id']);
             Settings::storeSetting('paypal_default_currency', $_POST['paypal_default_currency']);
             Settings::storeSetting('payment_lsv_status', '', (!empty($_POST['payment_lsv_status']) ? 1 : 0));
@@ -163,6 +189,9 @@ class Settings
             Settings::storeSetting('shop_thumbnail_max_height', $_POST['shop_thumbnail_max_height']);
             Settings::storeSetting('shop_thumbnail_quality', $_POST['shop_thumbnail_quality']);
             Settings::storeSetting('shop_weight_enable', (!empty($_POST['shop_weight_enable']) ? 1 : 0));
+            Settings::storeSetting('shop_show_products_default',
+                (!empty($_POST['shop_show_products_default'])
+                    ? $_POST['shop_show_products_default'] : 0));
 
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_config");
             return true;
@@ -426,20 +455,22 @@ class Settings
         $success = true;
         if (isset($_POST['shipment']) && !empty($_POST['shipment'])) {
             $this->flagChanged = true;
-            // update all shipment conditions.
-            // note: $cid is the shipment ID.
-            foreach ($_POST['shipmentMaxWeight'] as $cid => $cvalue) {
-                // note: we must use the (possibly changed) shipper id from $svalue as ID here!
-                // the old value is stored in the sid[$cid] field, use that to find the current
-                // $svalue from the shipperId array.
-                $svalue = $_POST['shipperId'][$_POST['sid'][$cid]];
-                $success &= Shipment::updateShipment(
-                    $cid,
-                    $svalue,
-                    $_POST['shipmentCost'][$cid],
-                    $_POST['shipmentPriceFree'][$cid],
-                    Weight::getWeight($cvalue)
-                );
+            // Update all shipment conditions
+            if (!empty($_POST['shipmentMaxWeight'])) {
+                // Note: $cid is the shipment ID.
+                foreach ($_POST['shipmentMaxWeight'] as $cid => $cvalue) {
+                    // Note: we must use the (possibly changed) shipper id from $svalue as ID here!
+                    // the old value is stored in the sid[$cid] field, use that to find the current
+                    // $svalue from the shipperId array.
+                    $svalue = $_POST['shipperId'][$_POST['sid'][$cid]];
+                    $success &= Shipment::updateShipment(
+                        $cid,
+                        $svalue,
+                        $_POST['shipmentCost'][$cid],
+                        $_POST['shipmentPriceFree'][$cid],
+                        Weight::getWeight($cvalue)
+                    );
+                }
             }
 
             // may be that $sid == $svalue, but may also have changed
@@ -517,6 +548,57 @@ class Settings
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
         }
+    }
+
+
+    /**
+     * Store any single shop setting in the database
+     *
+     * Inserts any setting whose name cannot be found, updates present ones.
+     * @param   string  $name     The name of the setting
+     * @param   string  $value    The value of the setting
+     * @param   string  $status   The status of the setting
+     * @return  boolean           True on success, false otherwise
+     * @global  ADONewConnection
+     */
+    function storeSetting($name, $value, $status=0)
+    {
+        global $objDatabase;
+
+        // Does the setting exist already?
+        $objResult = $objDatabase->Execute("
+            SELECT 1
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
+             WHERE name='$name'
+        ");
+        if (!$objResult) {
+            return false;
+        }
+        if ($objResult->RecordCount() > 0) {
+            // Exists, update it
+            $objDatabase->Execute("
+                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
+                   SET value='".contrexx_addslashes($value)."',
+                       status='".contrexx_addslashes($status)."'
+                 WHERE name='$name'
+            ");
+            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+        } else {
+            // Not present, insert it
+            $objResult = $objDatabase->Execute("
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_config (
+                    `name`, `value`, `status`
+                ) VALUES (
+                    '$name',
+                    '".contrexx_addslashes($value)."',
+                    '".contrexx_addslashes($status)."'
+                )
+            ");
+            if (!$objResult) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -748,6 +830,95 @@ class Settings
 
 
     /**
+     * Return any single Shop Setting value from the database
+     * @param   string  $name     The name of the setting
+     * @return  string            The Setting value on success, false otherwise
+     * @global  ADONewConnection  $objDatabase
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     * @version 0.9
+     * @todo    Test!
+     */
+    static function getValueByName($name)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT `value`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_config`
+             WHERE `name`='$name'
+        ");
+        if (!$objResult || $objResult->EOF) return false;
+        return $objResult->fields['value'];
+    }
+
+    /**
+     * Return any single Shop Setting status from the database
+     * @param   string  $name     The name of the setting
+     * @return  string            The Setting status on success, false otherwise
+     * @global  ADONewConnection  $objDatabase
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     * @version 0.9
+     * @todo    Test!
+     */
+    static function getStatusByName($name)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT `status`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_config`
+             WHERE `name`='$name'
+        ");
+        if (!$objResult || $objResult->EOF) return false;
+        return $objResult->fields['status'];
+    }
+
+
+    function storeVat()
+    {
+        $success = true;
+        if (isset($_POST['vat'])) {
+            $success &= Settings::storeSetting('vat_number', $_POST['vat_number']);
+            $success &= Settings::storeSetting('vat_default_id', $_POST['vat_default_id']);
+            $success &= Settings::storeSetting('vat_other_id', $_POST['vat_other_id']);
+
+            $vat_enabled_home_customer = (empty($_POST['vat_enabled_home_customer']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_home_customer', $vat_enabled_home_customer);
+            if ($vat_enabled_home_customer)
+                $success &= Settings::storeSetting('vat_included_home_customer',
+                    (empty($_POST['vat_included_home_customer']) ? 0 : 1));
+
+            $vat_enabled_home_reseller = (empty($_POST['vat_enabled_home_reseller']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_home_reseller', $vat_enabled_home_reseller);
+            if ($vat_enabled_home_reseller)
+                $success &= Settings::storeSetting('vat_included_home_reseller',
+                    (empty($_POST['vat_included_home_reseller']) ? 0 : 1));
+
+            $vat_enabled_foreign_customer = (empty($_POST['vat_enabled_foreign_customer']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_foreign_customer', $vat_enabled_foreign_customer);
+            if ($vat_enabled_foreign_customer)
+                $success &= Settings::storeSetting('vat_included_foreign_customer',
+                    (empty($_POST['vat_included_foreign_customer']) ? 0 : 1));
+
+            $vat_enabled_foreign_reseller = (empty($_POST['vat_enabled_foreign_reseller']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_foreign_reseller', $vat_enabled_foreign_reseller);
+            if ($vat_enabled_foreign_reseller)
+                $success &= Settings::storeSetting('vat_included_foreign_reseller',
+                    (empty($_POST['vat_included_foreign_reseller']) ? 0 : 1));
+
+            $success &= $this->_deleteVat();
+            $success &= $this->_updateVat();
+            $success &= $this->_setProductsVat();
+        }
+        return $success;
+    }
+
+
+    /**
      * delete VAT entry
      *
      * Takes the ID of the record to be deleted from $_GET['vatId']
@@ -768,36 +939,33 @@ class Settings
      * Add and/or update VAT entries
      *
      * Takes the class and rate of the VAT to be added from the $_POST array
-     * variable and passes them on to the {@link Vat::addVat()} static method.
+     * variable and passes them on to {@link addVat()}.
      * Takes the IDs, classes and rates of the records to be updated from the
-     * $_POST array variable and passes them on to the {@link Vat::updateVat()}
-     * object method.
+     * $_POST array variable and passes them on to {@link updateVat()}.
      * @return  boolean                     True on success, false otherwise.
      */
     function _updateVat()
     {
         $success = true;
-        // currently, *both* 'vatratenew' and 'vatids' fields *SHOULD* be set at the same time
-        if (isset($_POST['vatratenew']) && !empty($_POST['vatratenew'])) {
+        if (!empty($_POST['vatratenew'])) {
             $this->flagChanged = true;
             $success &= Vat::addVat($_POST['vatclassnew'], $_POST['vatratenew']);
         }
-        if (isset($_POST['vatids'])) {
+        if (isset($_POST['vatclass'])) {
             $this->flagChanged = true;
-            // arrConfig isn't available here!  luckily, Vat::updateVat() only
-            // dumps the arguments to the database and doesn't use any of the settings.
-            // thus, we fake this with an empty array.
-            $objVat = new Vat();
-            $success &= $objVat->updateVat($_POST['vatids'], $_POST['vatclasses'], $_POST['vatrates']);
+            $success &= Vat::updateVat($_POST['vatclass'], $_POST['vatrate']);
         }
         return $success;
     }
 
 
     /**
-     * If the $_GET field 'setVatAll is present, sets the VAT ID to the ID found
-     * therein for all the products.
+     * Apply default VAT rate
      *
+     * If the get request array field "setVatAll" is present, sets the VAT ID
+     * to the ID found therein for all the products.
+     * If the get request array field "setVatUnset" is present, sets the VAT ID
+     * to the ID found therein for all products having a zero or NULL VAT ID.
      * @todo    Add possibility to choose some products to change,
      *          and add a parameter for this list of IDs
      * @return  boolean                     True on success, false otherwise.
@@ -806,80 +974,24 @@ class Settings
     function _setProductsVat()
     {
         global $objDatabase;
+
         $vatId = '';
+        $query = '';
         if (isset($_GET['setVatAll'])) {
-            $vatId = $_GET['setVatAll'];
-            $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products SET vat_id=$vatId";
+            $vatId = intval($_GET['setVatAll']);
         }
         if (isset($_GET['setVatUnset'])) {
-            $vatId = $_GET['setVatUnset'];
-            $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products SET vat_id=$vatId ".
-                "WHERE vat_id IS NULL";
+            $vatId = intval($_GET['setVatUnset']);
+            $query = ' WHERE vat_id IS NULL OR vat_id=0';
         }
-        if ($vatId) {
+        if ($vatId !== '') {
             $this->flagChanged = true;
-            // add array of product IDs here
-            //if ($arrProdId) {
-            //    $keys = implode(',', $arrProdId);
-            //    $query .= " WHERE id IN ($keys)";
-            //}
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    /**
-     * Store any single shop setting in the database
-     *
-     * Inserts any setting whose name cannot be found, updates present ones.
-     * @param   string  $name     The name of the setting
-     * @param   string  $value    The value of the setting
-     * @param   string  $status   The status of the setting
-     * @return  boolean           True on success, false otherwise
-     * @global  ADONewConnection
-     */
-    function storeSetting($name, $value, $status=0)
-    {
-        global $objDatabase;
-
-        // Does the setting exist already?
-        $objResult = $objDatabase->Execute("
-            SELECT 1
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE name='$name'
-        ");
-        if (!$objResult) {
-            return false;
-        }
-        if ($objResult->RecordCount() > 0) {
-            // Exists, update it
-            $objDatabase->Execute("
-                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                   SET value='".contrexx_addslashes($value)."',
-                       status='".contrexx_addslashes($status)."'
-                 WHERE name='$name'
-            ");
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-        } else {
-            // Not present, insert it
             $objResult = $objDatabase->Execute("
-                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_config (
-                    `name`, `value`, `status`
-                ) VALUES (
-                    '$name',
-                    '".contrexx_addslashes($value)."',
-                    '".contrexx_addslashes($status)."'
-                )
-            ");
-            if (!$objResult) {
-                return false;
-            }
+                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
+                   SET vat_id=$vatId".$query
+            );
+            if ($objResult) return true;
+            return false;
         }
         return true;
     }

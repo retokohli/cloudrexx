@@ -1,44 +1,6 @@
 <!-- START module_shop_settings_general.html -->
 <script language="JavaScript" type="text/javascript">
 <!-- //
-function deleteVat(vatId)
-{
-  if (confirm("{TXT_TAX_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&vatid=" + vatId);
-  }
-}
-function setVatAll()
-{
-  if (confirm("{TXT_TAX_CONFIRM_SET_ALL}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-    var vatId = document.forms.shopForm.tax_default_id.value;
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatAll=" + vatId);
-  }
-}
-function setVatUnset()
-{
-  if (confirm("{TXT_TAX_CONFIRM_SET_UNSET}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-    var vatId = document.forms.shopForm.tax_default_id.value;
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatUnset=" + vatId);
-  }
-}
-//Text[0]=["","{}"];
-//Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
-//function getElementId(objFormName,objElementName) {
-//    for(var i=0;i<document.forms[objFormName].elements.length;i++) {
-//        if (document.forms[objFormName].elements[i].name == objElementName) {
-//            return i;
-//        }
-//    }
-//}
-//function validateForm(objFormName) {
-//    getElementId(objFormName,"general_yellowpay_id_status");
-//    if (document.forms[objFormName].elements[getElementId(objFormName,"general_yellowpay_id_status")].checked == true) {
-//        if (document.forms[objFormName].elements[getElementId(objFormName,"general_yellowpay_id")].value == "") {
-//            alert("ss");
-//        }
-//    }
-//    return false;
-//}
 // -->
 </script>
 <!-- BEGIN statusBar -->
@@ -47,7 +9,6 @@ function setVatUnset()
 <ul id="tabmenu">
 <li><a id="generalTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_GENERAL_SETTINGS}">{TXT_GENERAL_SETTINGS}</a></li>
 <li><a id="generalTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_PAYMENT_HANDLER}">{TXT_PAYMENT_HANDLER}</a></li>
-<li><a id="generalTab_shopContent3" href="javascript:{}" onclick="selectTab('shopContent3')" title="{TXT_TAXES}">{TXT_TAXES}</a></li>
 <li><a id="generalTab_shopContent4" href="javascript:{}" onclick="selectTab('shopContent4')" title="{TXT_SHOP_IMAGE_SETTINGS}">{TXT_SHOP_IMAGE_SETTINGS}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=general">
@@ -85,12 +46,17 @@ function setVatUnset()
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_COUNTRY}</td>
-      <td nowrap="nowrap">{SHOP_GENERAL_COUNTRY}</td>
+      <td nowrap="nowrap">
+        <select name="country_id" style="width: 270px;">
+          {SHOP_GENERAL_COUNTRY_MENUOPTIONS}
+        </select>
+      </td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_SHOP_SETTING_WEIGHT_ENABLE}</td>
       <td nowrap="nowrap"><input type="checkbox" name="shop_weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
-    <tr class="row2">
+    </tr>
+    <tr class="row1">
       <td nowrap="nowrap">{TXT_SHOP_PRODUCT_SORTING}</td>
       <td nowrap="nowrap">
         <select name="product_sorting">
@@ -98,10 +64,18 @@ function setVatUnset()
         </select>
       </td>
     </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE}</td>
+      <td nowrap="nowrap">
+        <select name="shop_show_products_default" style="width: 270px;">
+          {SHOP_SHOW_PRODUCTS_DEFAULT_OPTIONS}
+        </select>
+    </tr>
   </table>
   <br />
 </div>
 <!-- end shopContent1 div -->
+
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="generalTab" style="display:none;">
   <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
@@ -116,7 +90,7 @@ function setVatUnset()
     <tr valign="top" class="row2">
       <td width="15%" nowrap="nowrap">{TXT_YELLOWPAY_POSTFINANCE}</td>
       <td nowrap="nowrap">
-        <label for="yellowpay_swapper">{TXT_EDIT}&nbsp;</label>
+        <label for="yellowpay_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="yellowpay_swapper" id="yellowpay_swapper" type="checkbox" onclick="swapBlock('yellowpay');" value="1" />&nbsp;
         <div id="yellowpay" style="display:none;">
           <table width="100%" summary="">
@@ -171,9 +145,53 @@ function setVatUnset()
       </td>
       <td nowrap="nowrap"><div align="center"><input type="checkbox" name="yellowpay_status" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
     </tr>
+
+    <tr valign="top" class="row2">
+      <td width="15%" nowrap="nowrap">{TXT_SHOP_DATATRANS}</td>
+      <td nowrap="nowrap">
+        <label for="datatrans_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="datatrans_swapper" id="datatrans_swapper" type="checkbox" onclick="swapBlock('datatrans');" value="1" />&nbsp;
+        <div id="datatrans" style="display:none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">{TXT_SHOP_DATATRANS_MERCHANT_ID}</td>
+              <td width="80%">
+                <input type="text" name="datatrans_merchant_id" value="{SHOP_DATATRANS_MERCHANT_ID}" size="15" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_SHOP_AUTHORIZATION}</td>
+              <td>
+                <select name="datatrans_request_type">
+                  {SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS}
+                </select>
+              </td>
+            </tr>
+            <!--tr>
+              <td valign="top">{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
+              <td>{SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}</td>
+            </tr-->
+            <tr>
+              <td valign="top">{TXT_SHOP_DATATRANS_USE_TESTSERVER}</td>
+              <td>
+                <input id="datatrans_use_testserver_yes" type="radio"
+                  name="datatrans_use_testserver" value="1"{SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED} />
+                <label for="datatrans_use_testserver_yes">{TXT_SHOP_YES}</label>
+                <br />
+                <input id="datatrans_use_testserver_no" type="radio"
+                  name="datatrans_use_testserver" value="0"{SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED} />
+                <label for="datatrans_use_testserver_no">{TXT_SHOP_NO}</label>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="datatrans_status" value="1"{SHOP_DATATRANS_STATUS} /></div></td>
+    </tr>
+
     <tr valign="top" class="row1">
       <td width="15%" nowrap="nowrap">{TXT_SAFERPAY}</td>
-      <td nowrap="nowrap"><label for="safperpay_swapper">{TXT_EDIT}&nbsp;</label>
+      <td nowrap="nowrap"><label for="safperpay_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="safperpay_swapper" id="safperpay_swapper" type="checkbox" onclick="swapBlock('safperpay');" value="1" />&nbsp;
         <div id="safperpay" style="display:none;">
           <table width="100%" summary="">
@@ -197,7 +215,10 @@ function setVatUnset()
             </tr>
             <tr>
               <td>{TXT_INDICATE_PAYMENT_WINDOW_AS}</td>
-              <td>{SHOP_SAFERPAY_WINODW_OPTION_MENU}
+              <td>
+                <select name="saferpay_window_option" id="saferpay_window_option">
+                  {SHOP_SAFERPAY_WINDOW_MENUOPTIONS}
+                </select>
               </td>
             </tr>
           </table>
@@ -207,7 +228,7 @@ function setVatUnset()
     </tr>
     <tr valign="top" class="row2">
       <td width="15%">{TXT_PAYPAL}</td>
-      <td><label for="paypal_swapper">{TXT_EDIT}&nbsp;</label>
+      <td><label for="paypal_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="paypal_swapper" id="paypal_swapper" type="checkbox" onclick="swapBlock('paypal');" value="1" />&nbsp;
         <div id="paypal" style="display:none;">
           <table width="100%" summary="">
@@ -219,7 +240,12 @@ function setVatUnset()
             </tr>
             <tr>
               <td>{TXT_SHOP_PAYPAL_DEFAULT_CURRENCY}</td>
-              <td>{SHOP_PAYPAL_DEFAULT_CURRENCY_MENU}</td>
+              <td>
+                <select name="paypal_default_currency">
+                  {SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS}
+                </select>
+              </td>
+                  
             </tr>
           </table>
         </div>
@@ -235,92 +261,6 @@ function setVatUnset()
   <br />
 </div>
 <!-- end shopContent2 div -->
-<!-- start shopContent3 div -->
-<div id="shopContent3" class="generalTab" style="display:none;">
-    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
-      <tr>
-        <th>{TXT_TAXES}</th>
-      </tr>
-      <tr class="row1">
-        <td nowrap="nowrap">
-          {TXT_ACTIVATE_TAXES}
-          <input name="tax_enabled" type="checkbox" onclick="swapBlock('taxes');" value="1" {SHOP_TAX_STATUS} />
-        </td>
-      </tr>
-    </table>
-    <br />
-    <table summary="" id='taxes' style="display:{SHOP_TAX_DISPLAY_STATUS};" border="0" cellspacing="0" cellpadding="2" width='100%' class="adminlist">
-    <colgroup><col width="5%" /><col width="5%" /><col width="90%" /></colgroup>
-      <tr>
-        <th width='100%' colspan="3">{TXT_TAX_DETAILS}</th>
-      </tr>
-      <tr class="row1">
-        <td nowrap="nowrap" width='10%'>
-          {TXT_TAX_NUMBER}
-        </td>
-        <td colspan="2" width='91%'>
-          <input type="text" name="tax_number" value="{SHOP_TAX_NUMBER}" size="10" />
-        </td>
-      </tr>
-      <tr>
-        <td nowrap="nowrap"></td>
-        <td colspan="2" nowrap="nowrap">
-          {TXT_INCLUDED}
-          <input name="tax_included" type="radio" value="1" {SHOP_TAX_INCLUDED_STATUS} />
-          {TXT_EXCLUSIVE}
-          <input name="tax_included" type="radio" value="0" {SHOP_TAX_EXCLUDED_STATUS} />
-        </td>
-      </tr>
-      <tr class="row1">
-        <td nowrap="nowrap">
-          {TXT_TAX_DEFAULT}
-        </td>
-        <td nowrap="nowrap" colspan="2">
-          {SHOP_TAX_DEFAULT_MENU}
-          <input type='button' name='buttonSetVatUnset' value="{TXT_TAX_SET_UNSET}" onclick='javascript:setVatUnset()' />
-          <input type='button' name='buttonSetVatAll' value="{TXT_TAX_SET_ALL}" onclick='javascript:setVatAll()' />
-        </td>
-      </tr>
-      <tr><td colspan="3">&nbsp;</td></tr>
-      <tr>
-        <th colspan="3">{TXT_TAX_RATES}</th>
-      </tr>
-<!-- BEGIN taxRow -->
-      <tr class="{SHOP_ROWCLASS}">
-        <td nowrap="nowrap">
-          {TXT_TAX_CLASS}
-          <input type="hidden" name="vatids[]" value="{SHOP_TAX_ID}" />
-          <input type="text" name="vatclasses[]" value="{SHOP_TAX_CLASS}" size="30" maxlength="255" />
-        </td>
-        <td nowrap="nowrap">
-          {TXT_TAX_RATE}
-          <input type="text" name="vatrates[]" value="{SHOP_TAX_RATE}" size="10" maxlength="6" />%
-        </td>
-        <td>
-          <a href="javascript:deleteVat({SHOP_TAX_ID})" title="{TXT_DELETE}">
-            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
-          </a>
-        </td>
-      </tr>
-<!-- END taxRow -->
-      <tr><td colspan="3">&nbsp;</td></tr>
-      <tr>
-        <th colspan="3">{TXT_TAX_NEW}</th>
-      </tr>
-      <tr class="row1">
-        <td nowrap="nowrap">
-          {TXT_TAX_CLASS_NEW}
-          <input type="text" name="vatclassnew" value="" size="30" maxlength="255" />
-        </td>
-        <td nowrap="nowrap" colspan="2">
-          {TXT_TAX_RATE_NEW}
-          <input type="text" name="vatratenew" value="" size="10" maxlength="6" />%
-        </td>
-      </tr>
-    </table>
-  <br />
-</div>
-<!-- end shopContent3 div -->
 
 <!-- start shopContent4 div -->
 <div id="shopContent4" class="generalTab" style="display:none;">

@@ -206,15 +206,20 @@ class Products
                    $q2_category $q2_manufacturer $q_search
               ".($orderSetting ? "ORDER BY $orderSetting" : '');
         }
-        if ($count == 0) {
-            if ($_CONFIG['corePagingLimit'])
-                $count = $_CONFIG['corePagingLimit'];
-        }
-        if ($count) {
-            $objResult = $objDatabase->SelectLimit($querySelect.$queryTail, $count, $offset);
-        } else {
-            $objResult = $objDatabase->Execute($querySelect.$queryTail);
-        }
+        $limit =
+            ($count > 0
+                ? $count
+                : (!empty($_CONFIG['corePagingLimit'])
+                    ? $_CONFIG['corePagingLimit']
+                    : 10
+                  )
+            );
+        $count = 0;
+//        if ($limit) {
+        $objResult = $objDatabase->SelectLimit($querySelect.$queryTail, $limit, $offset);
+//        } else {
+//            $objResult = $objDatabase->Execute($querySelect.$queryTail);
+//        }
         if (!$objResult) return false;
         $arrProduct = array();
         while (!$objResult->EOF) {
