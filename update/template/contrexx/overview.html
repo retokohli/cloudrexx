@@ -17,6 +17,22 @@
 	<!-- END updateVersionList -->
 </div>
 <!-- END updateVersions -->
+<!-- BEGIN updateIncompatibleVersions -->
+<div style="border:1px solid #ECF2FA; background-color:#ECF2FA; margin-top:30px;">{TXT_UPDATE_INCOMPATIBLE_VERSIONS}</div>
+<div style="padding:10px; border:1px solid #ECF2FA;">
+{TXT_UPDATE_INCOMPATIBLE_VERSIONS_MSG}
+    <ul>
+	<!-- BEGIN updateIncompatibleVersionList -->
+	    <li>
+			<p>
+            	{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}<br />
+            	<em>{UPDATE_VERSION_INCOMPATIBLE_REASON}</em>
+			</p>
+        </li>
+	<!-- END updateIncompatibleVersionList -->
+    </ul>
+</div>
+<!-- END updateIncompatibleVersions -->
 <!-- BEGIN updateNoVersions -->
 {TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO}
 <!-- END updateNoVersions -->
