@@ -137,5 +137,28 @@ class ModuleChecker
 		} else
 			return (boolean) false;
 	}
+
+
+    /**
+     * Returns the ID for the module name given, if known.
+     * @return  integer       The module ID on success, 0 (zero) otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @global  ADOConnection   $objDatabase
+     * @since   2.1.0
+     */
+    static function getModuleIdByName($moduleName)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT `id`
+              FROM `".DBPREFIX."modules`
+             WHERE `name`='".addslashes($moduleName)."'
+        ");
+        if (!$objResult || $objResult->EOF) return 0;
+        return $objResult->fields['id'];
+    }
+
 }
 ?>
