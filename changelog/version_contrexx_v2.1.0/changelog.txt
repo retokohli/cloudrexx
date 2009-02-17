@@ -61,6 +61,10 @@ Directory
 - Fehler beim verschicken der E-Mails wurde behoben
 - Die Uploadfunktion wurde verbessert.
 
+Kontakte Manager
+- Die Liste der Eingabefelder wird bei Verwendung des Safari Browsers korrekt
+  dargestellt.
+
 
 ****************************************
 * Neue Module **************************
@@ -70,7 +74,7 @@ E-Card-Modul
   verschiedene Motive festgelegt werden. Die Karte wird nicht direkt verschickt,
   es wird eine URL generiert, die das Betrachten der Karte auf dem Server
   ermöglicht.
-  
+
 Private Nachrichten (u2u Messaging)
 - Erlaubt das Versenden von privaten Nachrichten zwischen Benutzern (user to user messaging)
 - Buddylist und Versenden an mehrere Empfänger gleichzeitig
