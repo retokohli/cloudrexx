@@ -119,6 +119,10 @@ $objInit->getUserFrontendLangId();
 
 $_LANGID = $objInit->getBackendLangId();
 $_FRONTEND_LANGID = $objInit->userFrontendLangId;
+// Post-2.1
+define('FRONTEND_LANG_ID', $_FRONTEND_LANGID);
+define('BACKEND_LANG_ID', $_LANGID);
+define('LANG_ID', $_LANGID);
 
 //-------------------------------------------------------
 // language array for the core system
@@ -158,10 +162,12 @@ if (preg_match('/^(\w+)(\d+)$/', $cmd, $arrMatch)) {
 // This guarantees full backward compatibility with old code, templates
 // and database tables for the default instance.
 $moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
+$moduleId = ModuleChecker::getModuleIdByName($plainCmd);
 /**
  * @ignore
  */
 define('MODULE_INDEX', (intval($moduleIndex) == 0) ? '' : intval($moduleIndex));
+define('MODULE_ID', $moduleId);
 // Simple way to distinguish any number of cloned modules
 // and apply individual access rights.  This offset is added
 // to any static access ID before checking it.
