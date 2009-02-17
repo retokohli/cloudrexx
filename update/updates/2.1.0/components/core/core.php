@@ -1,7 +1,7 @@
 <?php
 function _coreUpdate()
 {
-    global $objDatabase;
+    global $objDatabase, $_CORELANG;
 
     $query = "SELECT `id` FROM `".DBPREFIX."languages` WHERE `charset` != 'UTF-8'";
     $objLanguage = $objDatabase->Execute($query);
@@ -58,7 +58,7 @@ function _coreUpdate()
      **********************************************/
     $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX."backend_areas");
     if ($arrColumns === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'backend_areas'));
+        setUpdateMsg(sprintf($_CORELANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'backend_areas'));
         return false;
     }
 
@@ -1315,7 +1315,7 @@ function _coreUpdate()
      **********************************************/
     $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX."languages");
     if ($arrColumns === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'languages'));
+        setUpdateMsg(sprintf($_CORELANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'languages'));
         return false;
     }
 
