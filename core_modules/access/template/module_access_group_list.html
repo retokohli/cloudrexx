@@ -31,11 +31,11 @@ function accessChangeGroupStatus(id)
 		<tr class="row3" style="font-weight:bold; white-space:nowrap;">
 			<td width="1%"><a href="index.php?cmd=access&amp;act=group&amp;group_type_filter={ACCESS_GROUP_TYPE_FILTER}&amp;sort={ACCESS_SORT_ID}&amp;by=group_id" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_ID}</a></td>
 			<td width="4%"><a href="index.php?cmd=access&amp;act=group&amp;group_type_filter={ACCESS_GROUP_TYPE_FILTER}&amp;sort={ACCESS_SORT_STATUS}&amp;by=is_active" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_STATUS}</a></td>
-			<td width="20%"><a href="index.php?cmd=access&amp;act=group&amp;group_type_filter={ACCESS_GROUP_TYPE_FILTER}&amp;sort={ACCESS_SORT_NAME}&amp;by=group_name" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_NAME}</a></td>
-			<td width="40%%"><a href="index.php?cmd=access&amp;act=group&amp;group_type_filter={ACCESS_GROUP_TYPE_FILTER}&amp;sort={ACCESS_SORT_DESCRIPTION}&amp;by=group_description" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_DESCRIPTION}</a></td>
+			<td width="30%"><a href="index.php?cmd=access&amp;act=group&amp;group_type_filter={ACCESS_GROUP_TYPE_FILTER}&amp;sort={ACCESS_SORT_NAME}&amp;by=group_name" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_NAME}</a></td>
+			<td width="40%"><a href="index.php?cmd=access&amp;act=group&amp;group_type_filter={ACCESS_GROUP_TYPE_FILTER}&amp;sort={ACCESS_SORT_DESCRIPTION}&amp;by=group_description" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_DESCRIPTION}</a></td>
 			<td width="10%"><a href="index.php?cmd=access&amp;act=group&amp;group_type_filter={ACCESS_GROUP_TYPE_FILTER}&amp;sort={ACCESS_SORT_TYPE}&amp;by=type" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_TYPE}</a></td>
 			<td width="5%">{TXT_ACCESS_USERS}</td>
-			<td width="15%" style="white-space:nowrap;">
+			<td width="5%" style="white-space:nowrap;">
 			{TXT_EXPORT}
              (<a href="index.php?cmd=access&act=export"><img style="border: 0px;width:10px;" src="images/icons/icon_excel.gif" title="{TXT_EXPORT}" alt="{TXT_EXPORT}" align="absmiddle" /> {TXT_USER_ALL}</a>)</td>
 			<td width="5%" style="text-align:right;">{TXT_ACCESS_FUNCTIONS}</td>
@@ -48,7 +48,7 @@ function accessChangeGroupStatus(id)
 				<td>{ACCESS_GROUP_DESCRIPTION}</td>
 				<td>{ACCESS_GROUP_TYPE}</td>
 				<td><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}" title="{ACCESS_SHOW_USERS_OF_GROUP}">{ACCESS_GROUP_USER_COUNT}</a></td>
-				<td>
+				<td style="white-space: nowrap;">
 				   <img src="images/icons/icon_excel.gif" title="{TXT_EXPORT}" alt="{TXT_EXPORT}" align="absmiddle" />  <a href="index.php?cmd=access&act=export&groupId={ACCESS_GROUP_ID}">{TXT_USER_ALL}</a><!-- BEGIN languages -->, <a href="index.php?cmd=access&act=export&groupId={ACCESS_GROUP_ID}&langId={ACCESS_LANG_ID}">{ACCESS_LANG_NAME}</a><!-- END languages -->
 				</td>
 				<td style="text-align:right;">

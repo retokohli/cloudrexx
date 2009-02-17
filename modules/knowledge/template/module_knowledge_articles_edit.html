@@ -5,9 +5,8 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 
-var checkCategory = function() 
+var checkCategory = function()
 {
-    console.log("hallo");
     if ($('category').value == 0) {
         $('alertbox').show();
         return false;
@@ -41,13 +40,13 @@ var checkCategory = function()
                 <select name="category" id="category">
                     <option value="0">{TXT_CHOOSE_CATEGORY}</option>
                     {CATEGORIES}
-                </select>   
+                </select>
             </td>
         </tr>
         <tr class="row2">
             <td style="vertical-align: top;">{TXT_STATUS}:</td>
             <td colspan="2">
-                <input type="radio" name="state" value="1" id="active_1" {ACTIVE_CHECKED} /> <label for="active_1">{TXT_ACTIVE}</label> 
+                <input type="radio" name="state" value="1" id="active_1" {ACTIVE_CHECKED} /> <label for="active_1">{TXT_ACTIVE}</label>
                 <input type="radio" name="state" value="0" id="active_0" {INACTIVE_CHECKED}  /> <label for="active_0">{TXT_INACTIVE}</label>
             </td>
         </tr>
@@ -85,12 +84,12 @@ var checkCategory = function()
             <td style="vertical-align: top;">{TXT_AVAILABLE_TAGS}:</td>
             <td style="vertical-align: top;">
                 <div class="knowledge_taglist" id="taglist_{LANG_ID}">
-                
+
                 </div>
             </td>
             <td style="width: 200px;">
-                {TXT_SORT_BY}: 
-                    <a href="javascript: void(0);" onclick="Tags_{LANG_ID}.getTags('popularity')">{TXT_POPULARITY}</a>    
+                {TXT_SORT_BY}:
+                    <a href="javascript: void(0);" onclick="Tags_{LANG_ID}.getTags('popularity')">{TXT_POPULARITY}</a>
                     <a href="javascript: void(0);" onclick="Tags_{LANG_ID}.getTags('alphabetical')">{TXT_ALPHABETICAL}</a>
             </td>
         </tr>

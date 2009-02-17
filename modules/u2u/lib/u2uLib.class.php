@@ -29,9 +29,8 @@ class u2uLibrary {
     * Constructor
     *
     */
-    
     function __construct()  {
-    
+
         $this->setDatabaseEngine();
         $this->_arrSettings     = $this->createSettingsArray();
         $this->_arrLanguages    = $this->createLanguageArray();
@@ -42,9 +41,8 @@ class u2uLibrary {
      * Reads out the used database engine and sets the local variable.
      * @global      array       $objDatabase
      */
-     
     function setDatabaseEngine() {
-    
+
         global $objDatabase;
 
         $objMetaResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'module_u2u_settings"');
@@ -53,47 +51,45 @@ class u2uLibrary {
             $this->_boolInnoDb = true;
         }
     }
-    
+
     /**
      *
      * Selects the username with the id of the user who has loggged on.
      * @global      $objDatabase
      */
-     
     function getUserID($userName) {
-    
+
         global $objDatabase;
-    
+
         $selUserID  = 'SELECT id FROM '.DBPREFIX.'access_users
                        WHERE username="'.$userName.'" AND
                        active=1';
         $objResult = $objDatabase->Execute($selUserID);
-        
+
         while (!$objResult->EOF) {
-        
+
           $ID=$objResult->fields['id'];
           $objResult->MoveNext();
         }
         return $ID;
     }
-    
+
     /**
      *
      * creates the Array of messages for the users..
      * @global      $objDatabase
      */
-     
     function createEntryDetails($userID,$pos) {
-    
+
         global $objDatabase,$_CONFIG,$_ARRAYLANG;
-        
+
         /**
           *Checks the Messages is the notification or the Messages..
           *if it is a notification we have make the condition as the Messages should show (not opened only)
           */
-          
+
         if($_REQUEST["cmd"]=="inbox") {
-        
+
              $whereCondition ="";
              $pagingText="<b>".$_ARRAYLANG['TXT_INBOX_PAGING']."</b>";
 
@@ -103,7 +99,7 @@ class u2uLibrary {
             $whereCondition =' AND sentMsg.mesage_open_status="0"';
             $pagingText="<b>".$_ARRAYLANG['TXT_NOTIFICATION_PAGING']."</b>";
         }
-        
+
        $selMessage ='SELECT
                         Log.message_text,
                         Log.message_title,
@@ -115,7 +111,7 @@ class u2uLibrary {
                         '.DBPREFIX.'module_u2u_sent_messages sentMsg,
                         '.DBPREFIX.'module_u2u_message_log Log,
                         '.DBPREFIX.'access_users User
-                        
+
                         WHERE
                         sentMsg.receiver_id='.$userID.' AND
                         User.id=sentMsg.userid AND
@@ -128,7 +124,7 @@ class u2uLibrary {
       $this->counter=$count;
 
 	  $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=".$_REQUEST['cmd'],$pagingText, true);
-      
+
       $selMessage ='SELECT
                         Log.message_text,
                         Log.message_title,
@@ -147,10 +143,10 @@ class u2uLibrary {
                         User.active!=0 AND
                         Log.message_id=sentMsg.message_id'.$whereCondition.'
                         ORDER BY sentMsg.date_time DESC';
-                        
+
        $objResult = $objDatabase->SelectLimit($selMessage, $_CONFIG['corePagingLimit'], $pos);
        $this->paginationCount=$paging;
-      
+
        while (!$objResult->EOF) {
 
           $messageID=$objResult->fields['message_id'];
@@ -163,17 +159,16 @@ class u2uLibrary {
 
        return $arrMessage;
     }
-    
+
     /**
      *
      * creates the Array of messages for the users whom they sent...
      * @global      $objDatabase
      */
-    
     function createEntryDetailsOutbox($userID,$pos) {
-    
+
         global $objDatabase,$_CONFIG,$_ARRAYLANG;
-    
+
        $selMessage ='SELECT
                         Log.message_text,
                         Log.message_title,
@@ -224,7 +219,7 @@ class u2uLibrary {
       $this->paginationCount=$paging;
       //$objResult = $objDatabase->Execute($selMessage);
 
-      
+
 
        while (!$objResult->EOF) {
 
@@ -239,17 +234,16 @@ class u2uLibrary {
        return $arrMessage;
 
     }
-    
+
     /**
      *
      * Calculating the Total number of new messages for the Private notifications..
      * @global      $objDatabase
      */
-     
     function notificationEntryMessage($userID) {
-    
+
         global $objDatabase;
-        
+
         $selMessageCount='SELECT
                         COUNT(Log.message_id) AS numberofEntries
                         FROM
@@ -268,29 +262,28 @@ class u2uLibrary {
         $newMessages=$objResult->fields['numberofEntries'];
         return $newMessages;
     }
-    
+
     /**
      *
      * Returns the Messages with the array and updating the message open status
      * @global      $objDatabase
      */
-     
     function createEntryShowMessage($messageID) {
-    
-    
+
+
         global $objDatabase;
-        
+
        if($_REQUEST["status"]=="outboxmsg" || !empty($_REQUEST['send'])) {
-        
+
             $whereCondition=' AND User.id=sentMsg.receiver_id';
         }
         else {
-        
+
             $whereCondition=' AND User.id=sentMsg.userid';
         }
 
         /**Select the message from the Database... */
-        
+
        $selShowMessage ='SELECT
                         Log.message_text,
                         Log.message_title,
@@ -309,9 +302,9 @@ class u2uLibrary {
                         sentMsg.message_id=Log.message_id
                         AND User.active!=0'.$whereCondition.' ORDER BY sentMsg.date_time DESC';
       $objResult = $objDatabase->Execute($selShowMessage);
-      
+
       /**Updating the Message Open status.. */
-      
+
       if(empty($_REQUEST["status"]) && empty($_REQUEST['send'])) {
 
         $updateStatus ='UPDATE
@@ -334,77 +327,72 @@ class u2uLibrary {
         }
        return $arrShowMessage;
     }
-    
+
     /**
      *
      * Deletes the Messages from the table from the message log
      * @global      $objDatabase
      */
-     
     function deleteMsg($id) {
-    
+
         global $objDatabase;
-        
+
         $delMessage='DELETE  from '.DBPREFIX.'module_u2u_message_log WHERE message_id='.$id.'';
         $objUpdate = $objDatabase->Execute($delMessage);
         return $objUpdate;
 
     }
-    
+
     /**
      *
      * Gets the Maximum posting size
      * @global      $objDatabase
      */
-    
     function _getMaxPostingDetails()  {
-    
+
         global $objDatabase;
-        
+
         $settingQuery='SELECT value from '.DBPREFIX.'module_u2u_settings WHERE name="max_posting_size"';
         $objResult= $objDatabase->Execute($settingQuery);
         $arrShowSettings["max_posting_size"]           =   $objResult->fields['value'];
         return $arrShowSettings;
     }
-    
+
     /**
      *
      * Gets the Maximum Posting Chars on the Messages..
      * @global      $objDatabase
      */
-    
     function _getMaxCharDetails() {
-    
+
         global $objDatabase;
-        
+
         $settingQuery='SELECT value from '.DBPREFIX.'module_u2u_settings WHERE name="max_posting_chars"';
         $objResult=$objDatabase->Execute($settingQuery);
         $arrShowSettings['max_posting_chars']        =$objResult->fields['value'];
         return $arrShowSettings;
     }
-    
+
     /**
      *
      * Gets the Maximum posting Entries of the Users..
      * @global      $objDatabase
      */
-    
-   function _getMaxpostings($id)  {
-   
+    function _getMaxpostings($id)  {
+
         global $objDatabase;
-        
+
         $settingQuery        ='SELECT count(*) AS numberOfEntries from '.DBPREFIX.'module_u2u_sent_messages WHERE userid='.$id.'';
         $objResult           =$objDatabase->Execute($settingQuery);
         $arrShowSettings     =$objResult->fields['numberOfEntries'];
         return $arrShowSettings;
     }
-    
+
     /**
      *
      * Gets the Email subject Specified by the admin..
      * @global      $objDatabase
      */
-    
     function _getEmailSubjectDetails() {
         global $objDatabase;
 
@@ -413,13 +401,12 @@ class u2uLibrary {
         $arrShowSettings['subject']        =$objResult->fields['value'];
         return $arrShowSettings;
     }
-    
+
     /**
      *
      * Gets the Email From address details Specified by the admin..
      * @global      $objDatabase
      */
-    
     function _getEmailFromDetails() {
         global $objDatabase;
 
@@ -428,13 +415,12 @@ class u2uLibrary {
         $arrShowSettings['from']        =$objResult->fields['value'];
         return $arrShowSettings;
     }
-    
+
     /**
      *
      * Gets the Email Message content details Specified by the admin..
      * @global      $objDatabase
      */
-
     function _getEmailMessageDetails(){
         global $objDatabase;
 
@@ -443,31 +429,28 @@ class u2uLibrary {
         $arrShowSettings['email_message']        =$objResult->fields['value'];
         return $arrShowSettings;
     }
-    
 
     /**
      *
      * Gets the Status of the Users..
      * @global      $objDatabase
      */
-    
     function _getStatus($userID) {
-    
+
         global $objDatabase;
         $selStatusUser      = 'select u2u_active from '.DBPREFIX.'access_users
                               where id="'.$userID.'" and active="1"';
         $objResult          = $objDatabase->Execute($selStatusUser);
         $countStatus        = $objResult->RecordCount();
         return $countStatus;
-    
+
     }
-    
+
     /**
      *
      * Gets the Email of the Users..
      * @global      $objDatabase
      */
-    
     function _getEmail($id) {
         global $objDatabase;
 
@@ -476,13 +459,12 @@ class u2uLibrary {
         $arrShowEmail['email']        =$objResult->fields['email'];
         return $arrShowEmail;
     }
-    
+
      /**
      *
      * Gets the Name of the Users..
      * @global      $objDatabase
      */
-    
     function _getName($id) {
         global $objDatabase;
         $nameQuery='SELECT username from '.DBPREFIX.'access_users WHERE id='.$id.'';
@@ -490,13 +472,12 @@ class u2uLibrary {
         $arrShowname['username']        =$objResult->fields['username'];
         return $arrShowname;
     }
-    
+
      /**
      *
      * Gets the City of the Users..
      * @global      $objDatabase
      */
-    
     function _getCity($id) {
         global $objDatabase;
         $cityQuery='SELECT city from '.DBPREFIX.'access_user_profile WHERE user_id='.$id.'';
@@ -504,28 +485,26 @@ class u2uLibrary {
         $arrShowcity['city']        =$objResult->fields['city'];
         return $arrShowcity;
     }
-    
+
      /**
      *
      * Gets the Website Address of the Users..
      * @global      $objDatabase
      */
-    
     function _getSite($id) {
         global $objDatabase;
         $siteQuery='SELECT website from '.DBPREFIX.'access_user_profile WHERE user_id='.$id.'';
         $objResult=$objDatabase->Execute($siteQuery);
         $arrShowsite['website']        =$objResult->fields['website'];
         return $arrShowsite;
-    
+
     }
-    
+
      /**
      *
      * Gets the Address list members of the Users..
      * @global      $objDatabase
      */
-    
     function _getBuddyNames($id) {
         global $objDatabase;
         $buddiesQuery='SELECT buddies_id from '.DBPREFIX.'module_u2u_address_list WHERE user_id='.$id.'';
@@ -537,7 +516,7 @@ class u2uLibrary {
        //print_r($arrShowbuddies);
         return $arrShowbuddies;
     }
-    
+
 
 }
 ?>

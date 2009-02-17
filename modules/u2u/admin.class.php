@@ -45,7 +45,6 @@ class u2uAdmin extends u2uLibrary {
                                                         ');
     }
 
-
     /**
      * Perform the right operation depending on the $_GET-params
      *
