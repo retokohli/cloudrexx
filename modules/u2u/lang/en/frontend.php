@@ -65,4 +65,5 @@ $_ARRAYLANG['TXT_ADDRESS_BOOK_PAGING'] = "Address book paging";
 $_ARRAYLANG['TXT_U2U_RECEPIENTS_EXCEED_ERROR'] = "Recepients and BCCs should not exceed 10 users";
 $_ARRAYLANG['TXT_PLS_ENTER_USERNAME'] = "Please enter the username";
 $_ARRAYLANG['TXT_MESSAGE_CONTENT'] = "You may send your message to up to 5 people at a time.<br />Separate multiple user names with a semicolon ';'";
+$_ARRAYLANG['TXT_U2U_ENTER_NAME'] = "Please enter a name!";
 ?>
