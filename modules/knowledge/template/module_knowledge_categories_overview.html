@@ -12,7 +12,7 @@ var lastDragged = 0;
 var editAllowed = {EDIT_ALLOWED};
 var notAllowedMsg = "{NOT_ALLOWED_MSG}";
 
-function selectMultiAction() 
+function selectMultiAction()
 {
 	with (document.frmShowEntries) {
 		switch (frmShowEntries_MultiAction.value) {
@@ -22,7 +22,7 @@ function selectMultiAction()
 					submit();
 				}
 			break;
-			default: //do nothing			
+			default: //do nothing
 		}
 	}
 }
@@ -44,7 +44,7 @@ var setRows = function()
         } else {
             row.style.borderBottom = "";
         }
-        
+
         // only the visible rows
         if (Element.visible(row.parentNode)) {
             row.removeClassName("li_row1");
@@ -82,12 +82,11 @@ var switchActive = function(id, obj, action)
 /**
  * Delete an entry
  *
- * Delete a category via ajax and then remove the 
+ * Delete a category via ajax and then remove the
  * row
  */
 var deleteCategory = function(entryId, amount)
-{ 
-    console.log("requesting");
+{
     if (confirm("{TXT_CONFIRM_CATEGORY_DELETION}".replace(/%amount%/, amount))) {
         new Ajax.Request('index.php', {
             method: 'get',
@@ -97,7 +96,7 @@ var deleteCategory = function(entryId, amount)
             }
         });
     }
-    
+
 }
 
 /**
@@ -126,7 +125,7 @@ var catTree = {
         setRows();
     },
     /**
-     * Close a category 
+     * Close a category
      */
     closePart : function(obj)
     {
@@ -153,16 +152,16 @@ var catTree = {
     deleteRow : function(id)
     {
         new Effect.Highlight('category_'+id, {
-            startcolor  : '#ff9898', 
+            startcolor  : '#ff9898',
             endcolor    : '#ffffff',
             duration    : 1
         });
-        
+
         var obj = $('category_'+id);
         window.setTimeout(function() {
             obj.parentNode.removeChild(obj);
         }, 1000);
-        
+
         delete obj;
     },
     highlight : function(id)
@@ -184,7 +183,7 @@ var init = function()
     <!-- BEGIN highlight -->
     catTree.highlight({ID});
     <!-- END highlight -->
-    
+
     // make the scrollables
     <!-- BEGIN sortable -->
     if (editAllowed) {
@@ -197,12 +196,12 @@ var init = function()
          });
     }
     <!-- END sortable -->
-    
+
     setRows();
 }
 
 /**
- * Update the order 
+ * Update the order
  */
 var updateSort = function(id)
 {
@@ -214,7 +213,7 @@ var updateSort = function(id)
                     new Effect.Highlight('category_'+lastDragged, {duration: 1.5});
                 }
             }
-        }); 
+        });
 }
 
 //]]>
@@ -241,7 +240,7 @@ var updateSort = function(id)
     <div class="alertbox" id="error_box" style="display: none; position: absolute; top: 22px; left: 0px; z-index: 10; right: 0px; padding: 0px;">
     <div id="error_box_content" style="padding: 4px;">
     </div>
-    
+
     </div>
     <div id="catlist">
         <!-- BEGIN remove_area -->
@@ -264,14 +263,14 @@ var updateSort = function(id)
                                     <!-- BEGIN arrow -->
                                     <img src="images/icons/sub_arrow.gif" class="sub_arrow" />
                                     <!-- END arrow -->
-                                    
+
                                     <a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};">
                                         <img alt="" class="openClosePicture" src="images/icons/pluslink.gif" style="border: none;" />
                                     </a>
-                                    
+
                                     <img src="../images/modules/knowledge/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
-                                    
-                                    <!--<a href="index.php?cmd=knowledge&amp;section=articles&amp;cid={CATEGORY_ID}">-->{CATEGORY_SUBJECT}<!--</a>--> 
+
+                                    <!--<a href="index.php?cmd=knowledge&amp;section=articles&amp;cid={CATEGORY_ID}">-->{CATEGORY_SUBJECT}<!--</a>-->
                                 </td>
                                 <td style="width: 100px;">
                                     {ENTRIES_AMOUNT}
@@ -280,11 +279,11 @@ var updateSort = function(id)
                                     <a href="?cmd=knowledge{MODULE_INDEX}&amp;section=categories&amp;act=edit&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
                 					<a href="javascript:deleteCategory({CATEGORY_ID}, {ENTRIES_AMOUNT});" target="_self" title="{TXT_DELETE_CATEGORY}">
                 					   <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
-                				    </a> 
+                				    </a>
                                 </td>
                             </tr>
                         </table>
-    				    
+
     				    <div class="subcategories">
     				        {SUB}
     				    </div>
@@ -293,9 +292,9 @@ var updateSort = function(id)
                     {ROWS}
                 </ul>
             <!-- END list -->
-        <!-- END remove_area --> 
-        {CATLIST}      
-    </div> 
+        <!-- END remove_area -->
+        {CATLIST}
+    </div>
 </div>
 
 <script type="text/javascript">
