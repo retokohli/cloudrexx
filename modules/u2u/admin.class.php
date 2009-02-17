@@ -101,8 +101,8 @@ class u2uAdmin extends u2uLibrary {
 		$settingEmailSubject =$this->_getEmailSubjectDetails();
 		$settingEmailFrom    =$this->_getEmailFromDetails();
 		$settingEmailMessage =$this->_getEmailMessageDetails();
-		$this->strMessages   =$settingEmailMessage['email_message'];
-		$strEmailInputHTML = get_wysiwyg_editor('private_message',$this->strMessages,'news');
+		$this->strMessages   = contrexx_stripslashes($settingEmailMessage['email_message']);
+		$strEmailInputHTML = get_wysiwyg_editor('private_message',$this->strMessages,'default ');
 
        		$this->_objTpl->setVariable(array(
 			'TXT_U2U_MAX_POSTING_SIZE'	             => $settingMaxPosting['max_posting_size'],
@@ -144,7 +144,7 @@ class u2uAdmin extends u2uLibrary {
      		                   'max_chars' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_max_chars'])),
      		                   'mail_subject' 	=> contrexx_addslashes(strip_tags($_POST['frmSettings_subject'])),
      		                   'mail_from' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_from'])),
-     		                   'mail_message' 	=> $_POST['private_message']
+     		                   'mail_message' 	=> contrexx_addslashes($_POST['private_message']),
                                );
 
 
