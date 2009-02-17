@@ -171,8 +171,9 @@ if($_DBG['dbgADODBTrace']) {
     $objDatabase->debug = 0;
 }
 
-if($objDBG instanceof DBG){ //see: http://www.firephp.org/HQ/Use.htm for firephp usage examples
-    //here's some basic stuff
+if (isset($objDBG) && $objDBG instanceof DBG) {
+    // see: http://www.firephp.org/HQ/Use.htm for firephp usage examples.
+    // here's some basic stuff
     $objDBG->log("this is a test");
     $objDBG->log(array(
                     array('1','2'), array('a','b'),
@@ -252,8 +253,12 @@ $objInit = new InitCMS();
 /**
  * Frontend language ID
  * @global integer $_LANGID
+ * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
  */
 $_LANGID = $objInit->getFrontendLangId();
+// Post-2.1
+define('FRONTEND_LANG_ID', $_LANGID);
+define('LANG_ID', $_LANGID);
 /**
  * Core language data
  * @global array $_CORELANG
@@ -698,7 +703,7 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // get knowledge content
 //-------------------------------------------------------
-if ($_CONFIG['useKnowledgePlaceholders'] == '1') {
+if (!empty($_CONFIG['useKnowledgePlaceholders'])) {
     $modulespath = "modules/knowledge/interface.class.php";
     if (file_exists($modulespath)) {
         require_once($modulespath);
@@ -879,7 +884,7 @@ if (file_exists($modulespath)) {
 // get latest podcast entries
 //-------------------------------------------------------
 $podcastFirstBlock = false;
-if ($_CONFIG['podcastHomeContent'] == '1') {
+if (!empty($_CONFIG['podcastHomeContent'])) {
     $modulespath = "modules/podcast/homeContent.class.php";
     if (file_exists($modulespath)) {
         /**
