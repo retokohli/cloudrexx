@@ -52,7 +52,7 @@ class Payment
                 'costs'          => $objResult->fields['costs'],
                 'costs_free_sum' => $objResult->fields['costs_free_sum'],
                 'sort_order'     => $objResult->fields['sort_order'],
-                'status'         => $objResult->fields['status']
+                'status'         => $objResult->fields['status'],
             );
             $objResult->MoveNext();
         }
@@ -68,6 +68,7 @@ class Payment
      */
     static function getPaymentArray()
     {
+        if (empty(self::$arrPayment)) self::init();
         return self::$arrPayment;
     }
 
@@ -82,6 +83,7 @@ class Payment
      */
     static function getProperty($payment_id, $property_name)
     {
+        if (empty(self::$arrPayment)) self::init();
         return
             (   isset(self::$arrPayment[$payment_id])
              && isset(self::$arrPayment[$payment_id][$property_name])
@@ -118,14 +120,14 @@ class Payment
 
         $arrPaymentId = array();
         $query = "
-            SELECT p.payment_id as payment_id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries AS c,
-                   ".DBPREFIX."module_shop".MODULE_INDEX."_zones AS z,
-                   ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment AS p
-             WHERE c.countries_id=".intval($countryId)."
-               AND z.activation_status=1
-               AND (z.zones_id=c.zones_id
-               AND z.zones_id=p.zones_id)
+            SELECT `p`.`payment_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
+                ON `c`.`zone_id`=`z`.`id`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `p`
+                ON `z`.`id`=`p`.`zone_id`
+             WHERE `c`.`country_id`=".intval($countryId)."
+               AND `z`.`status`=1
         ";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
@@ -143,37 +145,59 @@ class Payment
 
 
     /**
-     * Return HTML code for the shipment dropdown menu
-     * @param   string  $selectedId     Optional pre-selected shipment ID
+     * Return HTML code for the payment dropdown menu
+     * @param   string  $selectedId     Optional preselected payment ID
      * @param   string  $onchange       Optional onchange function
      * @param   integer $countryId      Country ID
-     * @param   array   $arrCurrencies  Currencies array
      * @return  string                  HTML code for the dropdown menu
      * @global  array   $_ARRAYLANG     Language array
      */
-    static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0, $arrCurrencies='')
+    static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
+    {
+        $menu =
+            '<select name="paymentId"'.
+            ($onchange ? ' onchange="'.$onchange.'"' : '').'>'.
+            self::getPaymentMenuoptions($selectedId, $countryId).
+            "</select>\n";
+        return $menu;
+    }
+
+
+    /**
+     * Return HTML code for the payment dropdown menu options
+     * @param   string  $selectedId     Optional preselected payment ID
+     * @param   integer $countryId      Country ID
+     * @return  string                  HTML code for the dropdown menu options
+     * @global  array   $_ARRAYLANG     Language array
+     */
+    static function getPaymentMenuoptions($selectedId=0, $countryId=0)
     {
         global $_ARRAYLANG;
 
-        $arrPaymentId = self::getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies);
-        $onchange = !empty($onchange) ? 'onchange="'.$onchange.'"' : '';
-        $menu = "\n<select name='paymentId' $onchange>\n".
-            (intval($selectedId) == 0
-                ?   "<option value='0' selected='selected'>".
-                    $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
-                    "</option>\n"
-                :   ''
+        // Initialize if necessary
+        if (empty(self::$arrPayment)) self::init();
+        $arrPaymentId =
+            ($countryId
+                ? self::getCountriesRelatedPaymentIdArray(
+                    $countryId, Currency::getCurrencyArray()
+                  )
+                : array_keys(self::$arrPayment)
             );
-
+        $strMenuoptions =
+            (empty($selectedId)
+              ? '<option value="" selected="selected">'.
+                $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
+                "</option>\n"
+              : ''
+            );
         foreach($arrPaymentId as $id) {
-            $selected = ($id==intval($selectedId) ? "selected='selected'" : '');
-            $menu .=
-                "<option value='$id' $selected>".
+            $strMenuoptions .=
+                '<option value="'.$id.'"'.
+                ($id == $selectedId ? ' selected="selected"' : '').'>'.
                 self::$arrPayment[$id]['name'].
                 "</option>\n";
         }
-        $menu .= "</select>\n";
-        return $menu;
+        return $strMenuoptions;
     }
 
 
@@ -188,21 +212,14 @@ class Payment
      */
     static function getNameById($paymentId)
     {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
-             WHERE id=$paymentId
-        ");
-        if ($objResult && !$objResult->EOF) {
-            return $objResult->fields['name'];
-        }
-        return false;
+        // Initialize if necessary
+        if (empty(self::$arrPayment)) self::init();
+        return self::$arrPayment[$paymentId]['name'];
     }
 
 
     /**
+     * OBSOLETE
      * Returns the name of the payment processor with the given ID,
      * or '' if it couldn't be found, or if an error was encountered.
      * @return  string                  The name of the payment processor
@@ -210,7 +227,6 @@ class Payment
      * @todo    This method belongs to the PaymentProcessing class.  It's
      *          still here because the backend only uses this class, and not
      *          PaymentProcessing.
-     */
     static function getPaymentProcessorName($payment_id)
     {
         global $objDatabase;
@@ -228,6 +244,7 @@ class Payment
         }
         return $objResult->fields['name'];
     }
+     */
 
 
     /**
@@ -243,16 +260,16 @@ class Payment
         global $objDatabase;
 
         $query = "
-            SELECT processor_id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
-             WHERE id=$paymentId
+            SELECT `processor_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_payment`
+             WHERE `id`=$paymentId
         ";
         $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
+        if ($objResult && !$objResult->EOF)
             return $objResult->fields['processor_id'];
-        }
         return false;
     }
+
 }
 
 ?>

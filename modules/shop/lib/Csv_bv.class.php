@@ -1,83 +1,89 @@
 <?php
+
 /**
- * The Shop
+ * Read and write CSV files
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
+ * @version     2.1.0
+ * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
  */
 
 /**
- * The Shop
+ * CSV class for importing and exporting CSV files
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
+ * @version     2.1.0
+ * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
  */
 class Csv_bv
 {
     /**
-      * Seperator character
-      * @var char
+      * Separator character
+      * @var    string
       * @access private
       */
-    var $mFldSeperator;
+    private $mFldSeparator = ';';
 
     /**
-      * Enclose character
-      * @var char
+      * Quote character
+      * @var    string
       * @access private
       */
-    var $mFldEnclosure;
+    private $mFldQuote = '"';
 
     /**
       * Escape character
-      * @var char
+      * @var    string
       * @access private
       */
-    var $mFldEscapor;
+    private $mFldEscape = '\\';
 
     /**
-      * Length of the largest row in bytes.Default is 4096
-      * @var int
+      * Length of the largest row in bytes
+      * @var    integer
       * @access private
       */
-    var $mRowSize;
+    private $mRowSize = 4096;
 
     /**
-      * Holds the file pointer
-      * @var resource
+      * Holds the file handle
+      * @var    resource
       * @access private
       */
-    var $mHandle;
+    private $mHandle = null;
 
     /**
       * Counts the number of rows that have been returned
-      * @var int
+      * @var    integer
       * @access private
       */
-    var $mRowCount;
+    private $mRowCount = 0;
 
     /**
       * Counts the number of empty rows that have been skipped
-      * @var int
+      * @var    integer
       * @access private
       */
-    var $mSkippedRowCount;
+    private $mSkippedRowCount = 0;
 
     /**
-      * Determines whether empty rows should be skipped or not.
-      * By default empty rows are returned.
-      * @var boolean
+      * Determines whether empty rows should be skipped.
+      *
+      * By default empty rows are *NOT* skipped.
+      * @var    boolean
       * @access private
       */
-    var $mSkipEmptyRows;
+    private $mSkipEmptyRows = false;
 
     /**
-      * Specifies whether the fields leading and trailing \s and \t should be removed
-      * By default it is TRUE.
-      * @var boolean
+      * Specifies whether the fields leading and trailing \s and \t
+      * should be removed.
+      *
+      * Defaults to true.
+      * @var    boolean
       * @access private
       */
-    var $mTrimFields;
+    private $mTrimFields = true;
 
 
     /**
@@ -85,27 +91,20 @@ class Csv_bv
       *
       * Only initialises class settings variables.
       * @param str $file - file path
-      * @param str $seperator - Only one character is allowed (optional)
-      * @param str $enclose - Only one character is allowed (optional)
+      * @param str $separator - Only one character is allowed (optional)
+      * @param str $quote - Only one character is allowed (optional)
       * @param str $escape - Only one character is allowed (optional)
       * @access public
       */
-    function __construct($file, $seperator=';', $enclose='"', $escape='')
+    function __construct($file='', $separator=';', $quote='"', $escape='\\')
     {
-        $this->mFldSeperator = $seperator;
-        $this->mFldEnclosure = $enclose;
-        $this->mFldEscapor = $escape;
-
-        $this->mSkipEmptyRows = TRUE;
-        $this->mTrimFields =  TRUE;
-
-        $this->mRowCount = 0;
-        $this->mSkippedRowCount = 0;
-
-        $this->mRowSize = 4096;
-
-        // Open file
-        $this->mHandle = @fopen($file, "r") or trigger_error('Unable to open csv file', E_USER_ERROR);
+        $this->mFldSeparator = $separator;
+        $this->mFldQuote = $quote;
+        $this->mFldEscape = $escape;
+        if (empty($file)) return;
+        // Open file if the filename is non-empty
+        $this->mHandle = @fopen($file, 'r');
+        if (!$this->mHandle) trigger_error('Unable to open csv file', E_USER_ERROR);
     }
 
 
@@ -113,104 +112,123 @@ class Csv_bv
       * csv::NextLine() returns an array of fields from the next csv line.
       *
       * The position of the file pointer is stored in PHP internals.
-      *
-      * Empty rows can be skipped
-      * Leading and trailing \s and \t can be removed from each field
-      *
+      * Empty rows can be skipped.
+      * Leading and trailing \s and \t can be removed from each field.
       * @access public
       * @return array of fields
       */
     function NextLine()
     {
-
-        $arr_row = fgetcsv ($this->mHandle, $this->mRowSize, $this->mFldSeperator, $this->mFldEnclosure);
-
-        if (feof($this->mHandle)){
-            return False;
-        }
-
-        $this->mRowCount++;
-
-        //-------------------------
+        $arr_row = fgetcsv($this->mHandle, $this->mRowSize, $this->mFldSeparator, $this->mFldQuote);
+        if (feof($this->mHandle)) return false;
+        ++$this->mRowCount;
         // Skip empty rows if asked to
         if ($this->mSkipEmptyRows){
-
-
             if ($arr_row[0] === ''  && count($arr_row) === 1){
-
-                $this->mRowCount--;
-                $this->mSkippedRowCount++;
-
+                --$this->mRowCount;
+                ++$this->mSkippedRowCount;
                 $arr_row = $this->NextLine();
-
                 // This is to avoid a warning when empty lines are found at the bvery end of a file.
-                if (!is_array($arr_row)){ // This will only happen if we are at the end of a file.
-                    return FALSE;
-                }
+                if (!is_array($arr_row))
+                    // This will only happen if we are at the end of a file.
+                    return false;
             }
         }
-
-        //-------------------------
         // Remove leading and trailing spaces \s and \t
-        if ($this->mTrimFields){
+        if ($this->mTrimFields)
             array_walk($arr_row, array($this, 'ArrayTrim'));
-        }
-
-        //-------------------------
-        // Remove escape character if it is not empty and different from the enclose character
+        // Remove escape character if it is not empty and different from the quote character
         // otherwise fgetcsv removes it automatically and we don't have to worry about it.
-        if ($this->mFldEscapor !== '' && $this->mFldEscapor !== $this->mFldEnclosure){
-            array_walk($arr_row, array($this, 'ArrayRemoveEscapor'));
-        }
+        if (   $this->mFldEscape !== ''
+            && $this->mFldEscape !== $this->mFldQuote)
+            array_walk($arr_row, array($this, 'ArrayRemoveEscape'));
         return $arr_row;
     }
 
 
     /**
+      * Writes the array to the CSV file
+      * @access public
+      * @return array of fields
+      * @static
+      */
+    function write($filename, $arrCsv)
+    {
+        if (empty($filename) || !is_array($arrCsv)) return false;
+
+        $quotes = $this->mFldQuote;
+        $quotesDouble = "$quotes$quotes";
+        $separator = $this->mFldSeparator;
+        //$escape = $this->mFldEscape;
+
+        $fh = @fopen($filename, 'w');
+        if (!$fh) trigger_error('Unable to open CSV file', E_USER_ERROR);
+        foreach ($arrCsv as $arrLine) {
+            $strLine = '';
+            foreach ($arrLine as $value) {
+                $flagQuote = false;
+                if (preg_match('/'.$quotes.'/', $value)) {
+                    $value = preg_replace('/'.$quotes.'/', $quotesDouble, $value);
+                    $flagQuote = true;
+                }
+                if (preg_match('/'.$separator.'/', $value))
+                    $flagQuote = true;
+                if ($flagQuote)
+                    $value = $quotes.$value.$quotes;
+                $strLine .=
+                    ($strLine === '' ? '' : $separator).
+                    $value;
+            }
+            fwrite($fh, $strLine."\n");
+        }
+        fclose($fh);
+        return true;
+    }
+
+
+    /**
       * csv::Csv2Array will return the whole csv file as 2D array
-      *
       * @access public
       */
     function Csv2Array()
     {
-
         $arr_csv = array();
-
-        while ($arr_row = $this->NextLine()){
+        $arr_row = $this->NextLine();
+        while ($arr_row) {
             $arr_csv[] = $arr_row;
+            $arr_row = $this->NextLine();
         }
-
         return $arr_csv;
     }
 
 
     /**
-      * csv::ArrayTrim will remove \s and \t from an array
+      * Strip leading and trailing whitespace from the elements of an array
       *
-      * It is called from array_walk.
+      * Called by array_walk().
+      * Spaces and tabs are removed (\s and \t).
       * @access private
       */
-    function ArrayTrim(&$item, $key)
+    function ArrayTrim(&$item)
     {
-        $item = trim($item, " \t"); // space and tab
+        $item = trim($item, " \t");
     }
 
 
     /**
-      * csv::ArrayRemoveEscapor will escape the enclose character
+      * Escape the quote character
       *
-      * It is called from array_walk.
+      * Called by array_walk()
       * @access private
       */
-    function ArrayRemoveEscapor(&$item, $key)
+    function ArrayRemoveEscape(&$item)
     {
-        $item = str_replace($this->mFldEscapor.$this->mFldEnclosure, $this->mFldEnclosure, $item);
+        $item = str_replace($this->mFldEscape.$this->mFldQuote, $this->mFldQuote, $item);
     }
 
 
     /**
       * csv::RowCount return the current row count
-      *
       * @access public
       * @return int
       */
@@ -222,7 +240,6 @@ class Csv_bv
 
     /**
       * csv::RowCount return the current skipped row count
-      *
       * @access public
       * @return int
       */
@@ -234,12 +251,11 @@ class Csv_bv
 
     /**
       * csv::SkipEmptyRows, sets whether empty rows should be skipped or not
-      *
       * @access public
       * @param bool $bool
       * @return void
       */
-    function SkipEmptyRows($bool = TRUE)
+    function SkipEmptyRows($bool=true)
     {
         $this->mSkipEmptyRows = $bool;
     }
@@ -247,15 +263,15 @@ class Csv_bv
 
     /**
       * csv::TrimFields, sets whether fields should have their \s and \t removed.
-      *
       * @access public
       * @param bool $bool
       * @return void
       */
-    function TrimFields($bool = TRUE)
+    function TrimFields($bool=true)
     {
         $this->mTrimFields = $bool;
     }
+
 }
 
 ?>
