@@ -365,12 +365,16 @@ class Contrexx_Update
         if (!$installedVersion) {
             return false;
         }
-        return $this->_isNewerVersion($requiredVersion, $installedVersion);
+        return !$this->_isNewerVersion($installedVersion, $requiredVersion);
     }
 
     function checkPHPVersion($requiredVersion)
     {
-        return $this->_isNewerVersion($requiredVersion, phpversion());
+        if (preg_match('#(?:[0-9]+\.?)+#', phpversion(), $arrMatch)) {
+            return !$this->_isNewerVersion($arrMatch[0], $requiredVersion);
+        } else {
+            return false;
+        }
     }
 
     function getAvailabeVersions()

@@ -12,6 +12,8 @@ $arrUpdate = array(
 	'cmsCodeName'		=> 'None',
 	'cmsReleaseDate'	=> '10.05.2007',
 	'cmsFromVersion'	=> '1.2.0',
+    'cmsRequiredPHP'   => '5.2.0',
+    'cmsRequiredMySQL' => '4.1.2',
 	'lang'				=> array('de'),
 	'script'			=> 'update.php'
 );
