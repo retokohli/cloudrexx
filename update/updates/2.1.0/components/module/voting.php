@@ -12,20 +12,20 @@ function _votingUpdate()
 	$arrNewCols = array(
 		'additional_nickname'  => array( 'type' => 'TINYINT(1)', 'default' => '0'),
 		'additional_forename'  => array( 'type' => 'TINYINT(1)', 'default' => '0'),
-		'additional_surname'   => array( 'type' => 'TINYINT(1)', 'default' => '0'), 
+		'additional_surname'   => array( 'type' => 'TINYINT(1)', 'default' => '0'),
 		'additional_phone'     => array( 'type' => 'TINYINT(1)', 'default' => '0'),
-		'additional_street'    => array( 'type' => 'TINYINT(1)', 'default' => '0'),  
+		'additional_street'    => array( 'type' => 'TINYINT(1)', 'default' => '0'),
 		'additional_zip'       => array( 'type' => 'TINYINT(1)', 'default' => '0'),
-		'additional_city'      => array( 'type' => 'TINYINT(1)', 'default' => '0'),    
-		'additional_email'     => array( 'type' => 'TINYINT(1)', 'default' => '0')
-		'additional_comment'   => array( 'type' => 'TINYINT(1)', 'default' => '0')
+		'additional_city'      => array( 'type' => 'TINYINT(1)', 'default' => '0'),
+		'additional_email'     => array( 'type' => 'TINYINT(1)', 'default' => '0'),
+		'additional_comment'   => array( 'type' => 'TINYINT(1)', 'default' => '0'),
 	);
 	foreach ($arrNewCols as $col => $arrAttr) {
         if (!isset($arrColumns[strtoupper($col)])) {
 			$query = "
-				ALTER TABLE `".DBPREFIX."voting_system` 
-					ADD       `".strtolower($col)."` ".$arrAttr['type']." 
-					NOT NULL 
+				ALTER TABLE `".DBPREFIX."voting_system`
+					ADD       `".strtolower($col)."` ".$arrAttr['type']."
+					NOT NULL
 					DEFAULT   '".$arrAttr['default']."'";
 
 			if ($objDatabase->Execute($query) === false) {
@@ -41,7 +41,7 @@ function _votingUpdate()
 	}
 
     if (!in_array(DBPREFIX.'voting_additionaldata', $tableinfo)) {
-		$qry = " 
+		$qry = "
             CREATE TABLE `".DBPREFIX."voting_additionaldata` (
 				`id`               INT           NOT NULL AUTO_INCREMENT ,
 				`nickname`         VARCHAR( 80 ) NOT NULL ,
@@ -56,7 +56,7 @@ function _votingUpdate()
 				`date_entered`     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 				PRIMARY KEY(`id`) ,
 				INDEX      (`voting_system_id`)
-			) ENGINE = MYISAM 
+			) ENGINE = MYISAM
 		";
 		if ($objDatabase->Execute($qry) === false) {
 			return _databaseError($qry, $objDatabase->ErrorMsg());
@@ -65,8 +65,8 @@ function _votingUpdate()
     else {
         // typo fix from older updates.
         $query = "
-            ALTER TABLE `".DBPREFIX."voting_additionaldata` 
-            CHANGE   `voting_sytem_id` 
+            ALTER TABLE `".DBPREFIX."voting_additionaldata`
+            CHANGE   `voting_sytem_id`
             `voting_system_id` BIGINT NOT NULL DEFAULT 0
         ";
         if ($objDatabase->Execute($query) === false) {
@@ -75,7 +75,7 @@ function _votingUpdate()
 
         // Missing column
         $query = "
-            ALTER TABLE `".DBPREFIX."voting_additionaldata` 
+            ALTER TABLE `".DBPREFIX."voting_additionaldata`
             ADD   `forename` VARCHAR (80) NOT NULL
         ";
         if ($objDatabase->Execute($query) === false) {
@@ -85,15 +85,15 @@ function _votingUpdate()
 
     // comment field is new in 2.1
     $query = "
-        ALTER TABLE `".DBPREFIX."voting_additionaldata` 
+        ALTER TABLE `".DBPREFIX."voting_additionaldata`
             ADD       `comment` TEXT
-            NOT NULL 
+            NOT NULL
             DEFAULT   ''
     ";
     if ($objDatabase->Execute($query) === false) {
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
-	
+
     return true;
 }
 
