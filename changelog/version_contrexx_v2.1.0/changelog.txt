@@ -80,7 +80,8 @@ Modul: Bildergalerie
 Datenlisten
 - Wird bei der Option "Anzahl Zeichen in Einleitungstext" der Wert "0"
   definiert, so wird jeweils der komplette Einleitungstext ausgegeben.
-
+- Frontend-Seiten werden korrekt aufgelistet bei der Verwaltung einer
+  Kategorie.
 
 ****************************************
 * Neue Module **************************
