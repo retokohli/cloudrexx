@@ -211,138 +211,18 @@ function _updateSettings()
         $arrSettingsByName[$data['setname']] = $setid;
     }
 
-
-    // add coreGlobalPageTitle
-    if (!empty($_POST['coreGlobalPageTitle'])) {
-        $query = "SELECT setid FROM ".DBPREFIX."settings WHERE setname='coreGlobalPageTitle'";
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult) {
-            $coreGlobalPageTitle = contrexx_addslashes($_POST['coreGlobalPageTitle']);
-            if ($objResult->RecordCount() == 1) {
-                $query = "UPDATE ".DBPREFIX."settings SET setvalue='".$coreGlobalPageTitle."' WHERE setname='coreGlobalPageTitle'";
-                if ($objDatabase->Execute($query) === false) {
-                    return _databaseError($query, $objDatabase->ErrorMsg());
-                }
-            } else {
-                $query = "INSERT INTO ".DBPREFIX."settings ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (51, 'coreGlobalPageTitle', '".$coreGlobalPageTitle."', '1')";
-                if ($objDatabase->Execute($query) === false) {
-                    return _databaseError($query, $objDatabase->ErrorMsg());
-                }
-            }
-        } else {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    } else {
-        $query = "SELECT setvalue FROM ".DBPREFIX."settings WHERE setname = 'coreGlobalPageTitle'";
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult) {
-            if ($objResult->RecordCount() == 1) {
-                $coreGlobalPageTitle = $objResult->fields['setvalue'];
-            } else {
-                $coreGlobalPageTitle = 'Contrexx CMS Demo';
-            }
-        } else {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-
-        $setVars = true;
-    }
-
-    // add domainUrl
-    if (empty($_CONFIG['domainUrl']) || empty($_CONFIG['coreGlobalPageTitle'])) {
-        if (!empty($_POST['domainURL']) && strpos($_POST['domainURL'], 'http://') === false) {
-            if (substr($_POST['domainURL'], -1) == '/') {
-                $domainURL = substr($_POST['domainURL'], 0, -1);
-            } else {
-                $domainURL = $_POST['domainURL'];
-            }
-
-            $query = "SELECT setid from ".DBPREFIX."settings WHERE setname = 'domainUrl'";
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult) {
-                if ($objResult->RecordCount() == 0) {
-                    // check if the needed setid is already used
-                    $query = "SELECT setname FROM ".DBPREFIX."settings WHERE setid=53";
-                    $objResult = $objDatabase->SelectLimit($query, 1);
-                    if ($objResult) {
-                        if ($objResult->RecordCount() == 0) {
-                            // add domainUrl
-                            $query = "INSERT INTO ".DBPREFIX."settings ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (53, 'domainUrl', '".contrexx_addslashes($domainURL)."', '1')";
-                            if ($objDatabase->Execute($query) === false) {
-                                return _databaseError($query, $objDatabase->ErrorMsg());
-                            }
-                        } else {
-                            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SYSTEM_CONFIG_IN_USE_BY_ID'], 'domainUrl', 53));
-                            return false;
-                        }
-                    } else {
-                        return _databaseError($query, $objDatabase->ErrorMsg());
-                    }
-                } elseif ($objResult->fields['setid'] != 53) {
-                    $oldDomainUrlSetId = intval($objResult->fields['setid']);
-
-                    // check if the needed setid is already used
-                    $query = "SELECT setname FROM ".DBPREFIX."settings WHERE setid=53";
-                    $objResult = $objDatabase->SelectLimit($query, 1);
-                    if ($objResult) {
-                        if ($objResult->RecordCount() == 0) {
-                            // delete old domainUrl
-                            $query = "DELETE FROM ".DBPREFIX."settings WHERE setid=".$oldDomainUrlSetId;
-                            if ($objDatabase->Execute($query) === false) {
-                                return _databaseError($query, $objDatabase->ErrorMsg());
-                            }
-
-                            // add domainUrl
-                            $query = "INSERT INTO ".DBPREFIX."settings ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (53, 'domainUrl', '".contrexx_addslashes($domainURL)."', '1')";
-                            if ($objDatabase->Execute($query) === false) {
-                                return _databaseError($query, $objDatabase->ErrorMsg());
-                            }
-                        } else {
-                            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SYSTEM_CONFIG_IN_USE_BY_ID'], 'domainUrl', 53));
-                            return false;
-                        }
-                    } else {
-                        return _databaseError($query, $objDatabase->ErrorMsg());
-                    }
-                } else {
-                    // update domainUrl
-                    $query = "UPDATE ".DBPREFIX."settings SET setvalue='".contrexx_addslashes($domainURL)."' WHERE setid = 53";
-                    if ($objDatabase->Execute($query) === false) {
-                        return _databaseError($query, $objDatabase->ErrorMsg());
-                    }
-                }
-            } else {
+	// change googleSitemapStatus to xmlSitemapStatus
+    $query = "SELECT 1 FROM `".DBPREFIX."settings` WHERE `setname`='googleSitemapStatus'";
+    $objResult = $objDatabase->SelectLimit($query, 1);
+    if ($objResult) {
+        if ($objResult->RecordCount() == 1) {
+            $query = "UPDATE `".DBPREFIX."settings` SET `setname` = 'xmlSitemapStatus' WHERE `setname` = 'googleSitemapStatus'";
+            if ($objDatabase->Execute($query) === false) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
-        } else {
-            if (isset($_POST['domainURL'])) {
-                $domainURL = $_POST['domainURL'];
-            } else {
-                $query = "SELECT setvalue FROM ".DBPREFIX."settings WHERE setname = 'domainUrl'";
-                $objResult = $objDatabase->SelectLimit($query, 1);
-                if ($objResult) {
-                    if ($objResult->RecordCount() == 1) {
-                        $domainURL = $objResult->fields['setvalue'];
-                    } else {
-                        $domainURL = $_SERVER['SERVER_NAME'];
-                    }
-                } else {
-                    return _databaseError($query, $objDatabase->ErrorMsg());
-                }
-            }
-
-            $setVars = true;
         }
-
-        if ($setVars) {
-            setUpdateMsg($_ARRAYLANG['TXT_NEW_BASIC_ADMINISTRATION'], 'title');
-            setUpdateMsg($_ARRAYLANG['TXT_GLOBAL_PAGE_TITLE_TXT']."<br /><br />"
-                .'<input size="80" type="text" name="coreGlobalPageTitle" value="'.htmlentities($coreGlobalPageTitle).'" /><br /><br /><br />'
-                .$_ARRAYLANG['TXT_DOMAIN_URL_TXT']."<br /><br />"
-                .'<input size="80" type="text" name="domainURL" value="'.htmlentities($domainURL).'" /><br /><br />', 'msg');
-            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
-            return false;
-        }
+    } else {
+        return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
     foreach ($arrSettings as $setId => $arrSetting) {
@@ -456,7 +336,6 @@ function _updateSettings()
     if (!$objDatabase->Execute($query)) {
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
-
     return true;
 }
 

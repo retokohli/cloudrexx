@@ -27,14 +27,15 @@ if (!@include_once(UPDATE_PATH.'/../config/configuration.php')) {
 } elseif (!@include_once(UPDATE_PATH.'/config/configuration.php')) {
     die('Couldn\'t load contrexx update system configuration file <i>'.UPDATE_PATH.'/config/configuration.php'.'</i>!');
 } else {
+    $_SYSCONFIG = false;
     @include_once(ASCMS_DOCUMENT_ROOT.'/config/settings.php');
-    if (isset($_SYSCONFIG)) {
+    if (is_array($_SYSCONFIG)) {
         foreach ($_SYSCONFIG as $sysconfigKey => $sysconfValue) {
             $_CONFIG[$sysconfigKey] = $sysconfValue;
         }
     }
 
-    $sessionObj= new cmsSession();
+    $sessionObj = new cmsSession();
     $sessionObj->cmsSessionStatusUpdate('backend');
 
     $objUpdate = new Contrexx_Update();
