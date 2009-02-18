@@ -306,7 +306,6 @@ class feed extends feedLibrary{
 
 			//items
 			$x = 0;
-			print_r($rss->getItems());
 			foreach ($rss->getItems() as $value){
 				if($x < $objResult->fields['articles']){
 					$this->_objTpl->setVariable(array(
