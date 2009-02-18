@@ -77,6 +77,10 @@ Modul: Bildergalerie
 - Die Zugriffsrechte können bei bestehenden Kategorien verändert werden.
 - Das Erstellen von Unterkategorien ist nur auf der ersten Ebene möglich.
 
+Datenlisten
+- Wird bei der Option "Anzahl Zeichen in Einleitungstext" der Wert "0"
+  definiert, so wird jeweils der komplette Einleitungstext ausgegeben.
+
 
 ****************************************
 * Neue Module **************************
