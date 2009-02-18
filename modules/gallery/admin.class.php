@@ -650,7 +650,7 @@ class galleryManager extends GalleryLibrary
 
         // parse the category dropdown
         try {
-            $this->parseCategoryDropdown(-1, true);
+            $this->parseCategoryDropdown(-1, true,"showCategories",0,0, false);
         } catch (DatabaseError $e) {
             $this->_objTpl->hideBlock('showCategories');
             $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
@@ -667,7 +667,7 @@ class galleryManager extends GalleryLibrary
      * @param int $selected
      * @param int $disabled
      */
-    private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0)
+    private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0, $parseSubCategories = true)
     {
         global $_LANGID;
 
@@ -695,7 +695,9 @@ class galleryManager extends GalleryLibrary
             }
             $this->_objTpl->parse($name);
             // parse subcategories when available
-            $this->parseCategoryDropdown($selected, $disabled, $name, $cat['id'], $level+1);
+            if ($parseSubCategories) {
+                $this->parseCategoryDropdown($selected, $disabled, $name, $cat['id'], $level+1, true);
+            }
         }
     }
 
@@ -1134,7 +1136,7 @@ class galleryManager extends GalleryLibrary
         }
 
         try {
-            $this->parseCategoryDropdown($intCategoryPid, ($pid == 0) ? true : false);
+            $this->parseCategoryDropdown($intCategoryPid, ($pid == 0) ? true : false,"showCategories",0,0, false);
         } catch (DatabaseError $e) {
             $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
             $this->strErrMessage .= $e;
