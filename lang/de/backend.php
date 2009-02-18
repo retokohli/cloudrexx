@@ -1001,4 +1001,7 @@ $_ARRAYLANG['TXT_DBM_ERROR_NO_TARGET_FOLDER'] = "Fehler:  Kein Zielverzeichnis a
 $_ARRAYLANG['TXT_DBM_SUCCEEDED_EXPORTING_TABLES'] = "Erfolgreich exportierte Tabellen: %1\$s";
 $_ARRAYLANG['TXT_DBM_FAILED_EXPORTING_TABLES'] = "Nicht exportierte Tabellen: %1\$s";
 $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
+$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
+$_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
 ?>
