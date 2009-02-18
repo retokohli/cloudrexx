@@ -389,6 +389,19 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
+    // jobs Module
+    //-------------------------------------------------------
+    case 'jobs':
+        Permission::checkAccess(11, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/jobs/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_JOBS_MANAGER'];
+        $objJobs = new jobsManager();
+        $objJobs->getJobsPage();
+        break;
+
+    //-------------------------------------------------------
     // file browser
     //-------------------------------------------------------
     case 'fileBrowser':

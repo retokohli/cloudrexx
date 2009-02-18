@@ -116,6 +116,7 @@ class u2uAdmin extends u2uLibrary {
             'TXT_U2U_MESSAGE'                        => $_ARRAYLANG['TXT_U2U_MESSAGE'],
             'TXT_U2U_NOTE'                           => $_ARRAYLANG['TXT_U2U_NOTE'],
             'TXT_U2U_SENDER_NAME_CONTENT'            => $_ARRAYLANG['TXT_U2U_SENDER_NAME_CONTENT'],
+            'TXT_U2U_DOMAIN_NAME_CONTENT'            => $_ARRAYLANG['TXT_U2U_DOMAIN_NAME_CONTENT'],
             'TXT_U2U_RECEIVER_NAME_CONTENT'          => $_ARRAYLANG['TXT_U2U_RECEIVER_NAME_CONTENT'],
 			'TXT_U2U_EMAIL_CONTENT'                  => $strEmailInputHTML,
 			'TXT_U2U_MAX_POSTING_SIZE_INBOX'         => $_ARRAYLANG['TXT_U2U_MAX_POSTING_SIZE_INBOX'],

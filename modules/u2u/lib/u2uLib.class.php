@@ -412,7 +412,7 @@ class u2uLibrary {
 
         $settingQuery='SELECT value from '.DBPREFIX.'module_u2u_settings WHERE name="from"';
         $objResult=$objDatabase->Execute($settingQuery);
-        $arrShowSettings['from']        =$objResult->fields['value'];
+        $arrShowSettings['from'] = $objResult->fields['value'];
         return $arrShowSettings;
     }
 

@@ -789,21 +789,13 @@ class u2u extends u2uLibrary
             $subject         = $this->_getEmailSubjectDetails();
             $messageContent  = $this->_getEmailMessageDetails();
 
-            $strMailSubjectUsername = str_replace('[senderName]', $strName['username'], $subject['subject']);
-            $strMailSubject	       = str_replace('[receiverName]', $strReceiverName['username'], $strMailSubjectUsername);
+            $strMailSubject     = str_replace(  array('[senderName]',       '[receiverName]',             '[domainName]'),
+                                                array($strName['username'], $strReceiverName['username'], $_CONFIG['domainUrl']),
+                                                $subject['subject']);
 
-            $strMailSubject     = str_replace(array(
-                                            '[senderName]','[receiverName]' ),
-                                            array($strName['username'], $strReceiverName['username']),
-                                            $subject['subject']
-
-                                                );
-
-
-            $strMailUsername = str_replace('[senderName]', $strName['username'], $messageContent['email_message']);
-            $strMailBody	    = str_replace('[receiverName]', $strReceiverName['username'], $strMailUsername);
-
-
+            $strMailBody     = str_replace(  array('[senderName]',       '[receiverName]',             '[domainName]'),
+                                             array($strName['username'], $strReceiverName['username'], $_CONFIG['domainUrl']),
+                                             $messageContent['email_message']);
             $objMail->CharSet   = CONTREXX_CHARSET;
             $objMail->From      = $_CONFIG['coreAdminEmail'];
             $objMail->FromName  = $from['from'];//$_CONFIG['coreGlobalPageTitle'];

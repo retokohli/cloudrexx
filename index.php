@@ -1607,6 +1607,22 @@ break;
    break;
 
 //-------------------------------------------------------
+// jobs module
+//-------------------------------------------------------
+    case "jobs":
+        $modulespath = "modules/jobs/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $jobsObj= new jobs($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $jobsObj->getJobsPage());
+        $jobsObj->getPageTitle($page_title);
+        $page_title = $jobsObj->jobsTitle;
+    break;
+
+//-------------------------------------------------------
 // logout
 //-------------------------------------------------------
     case "logout":
