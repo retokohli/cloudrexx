@@ -1577,6 +1577,32 @@ CREATE TABLE `contrexx_module_immo_statistics` (
   `hits` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_jobs` (
+  `id` int(6) unsigned NOT NULL auto_increment,
+  `date` int(14) default NULL,
+  `title` varchar(250) NOT NULL default '',
+  `author` varchar(150) NOT NULL default '',
+  `text` mediumtext NOT NULL,
+  `source` varchar(250) NOT NULL default '',
+  `url1` varchar(250) NOT NULL default '',
+  `url2` varchar(250) NOT NULL default '',
+  `catid` int(2) unsigned NOT NULL default '0',
+  `lang` int(2) unsigned NOT NULL default '0',
+  `userid` int(6) unsigned NOT NULL default '0',
+  `startdate` date NOT NULL default '0000-00-00',
+  `enddate` date NOT NULL default '0000-00-00',
+  `status` tinyint(4) NOT NULL default '1',
+  `changelog` int(14) NOT NULL default '0',
+  KEY `ID` (`id`),
+  FULLTEXT KEY `newsindex` (`title`,`text`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_jobs_categories` (
+  `catid` int(2) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `lang` int(2) unsigned NOT NULL default '1',
+  `sort_style` enum('alpha','date','date_alpha') NOT NULL default 'alpha',
+  PRIMARY KEY  (`catid`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_knowledge_article_content` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `article` int(10) unsigned NOT NULL default '0',
