@@ -2395,7 +2395,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, 
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (53,'downloads','TXT_DOWNLOADS_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (54,'u2u','TXT_U2U_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (56,'knowledge','TXT_KNOWLEDGE_MODULE_DESCRIPTION','y',0,0);
-INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('8ce5141bc8f8dd8f0e58888659c92db3','1234958311','1234958320','frontend',0,'');
+INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('8ce5141bc8f8dd8f0e58888659c92db3','1234958311','1234959227','frontend',0,'');
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
