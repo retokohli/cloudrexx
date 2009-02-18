@@ -1179,26 +1179,50 @@ class galleryManager extends GalleryLibrary
                 }
             }
 
-            // Update the category
-            $this->sql->updateCategory($categoryId, $insertPid, $insertStatus, $insertComment, $insertVoting, $insertFrontendProtected, $insertBackendProtected);
-
-            // delete old privileges
             list($frontend_access_id) = $this->sql->getPrivileges($categoryId, "frontend");
             list($backend_access_id) = $this->sql->getPrivileges($categoryId, "backend");
-            $this->sql->deleteAccessIds($frontend_access_id);
-            $this->sql->deleteAccessIds($backend_access_id);
 
-            // set new privileges if wanted
-            if ($_POST['category_protected_frontend'] && isset($_POST['assignedFrontendGroups'])) {
-                foreach ($_POST['assignedFrontendGroups'] as $group) {
-                    $this->sql->insertAccessId($frontend_access_id, $group);
+            // set privileges
+            if ($insertFrontendProtected) {
+                if (empty($frontend_access_id)) {
+                    $frontend_access_id = ++$_CONFIG['lastAccessId'];
+                    $this->updateAccessId($_CONFIG['lastAccessId']);
+                } else {
+                    $this->sql->deleteAccessIds($frontend_access_id);
+                }
+                if (isset($_POST['assignedFrontendGroups'])) {
+                    foreach ($_POST['assignedFrontendGroups'] as $group) {
+                        $this->sql->insertAccessId($frontend_access_id, $group);
+                    }
+                }
+            } else {
+                if (!empty($frontend_access_id)) {
+                    $this->sql->deleteAccessIds($frontend_access_id);
+                    $frontend_access_id = 0;
                 }
             }
-            if ($_POST['category_protected_backend'] && isset($_POST['assignedBackendGroups'])) {
-                foreach ($_POST['assignedBackendGroups'] as $group) {
-                    $this->sql->insertAccessId($backend_access_id, $group);
+
+            if ($insertBackendProtected) {
+                if (empty($backend_access_id)) {
+                    $backend_access_id = ++$_CONFIG['lastAccessId'];
+                    $this->updateAccessId($_CONFIG['lastAccessId']);
+                } else {
+                    $this->sql->deleteAccessIds($backend_access_id);
+                }
+                if (isset($_POST['assignedBackendGroups'])) {
+                    foreach ($_POST['assignedBackendGroups'] as $group) {
+                        $this->sql->insertAccessId($backend_access_id, $group);
+                    }
+                }
+            } else {
+                if (!empty($backend_access_id)) {
+                    $this->sql->deleteAccessIds($backend_access_id);
+                    $backend_access_id = 0;
                 }
             }
+
+            // Update the category
+            $this->sql->updateCategory($categoryId, $insertPid, $insertStatus, $insertComment, $insertVoting, $insertFrontendProtected, $insertBackendProtected, $frontend_access_id, $backend_access_id);
 
             /*foreach ($arrValues as $langId => $values) {
                 if (empty($arrInner['name'])) {

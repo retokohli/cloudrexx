@@ -73,6 +73,9 @@ News
 - Die Einträge im RSS Feed enthalten den Text der Newsmeldung nur, wenn es
   sich nicht um eine Weiterleitung handelt.
 
+Modul: Bildergalerie
+- Die Zugriffsrechte können bei bestehenden Kategorien verändert werden.
+
 
 ****************************************
 * Neue Module **************************
