@@ -24,12 +24,12 @@ class GallerySql
 {
     public function __construct()
     {
-        
+
     }
-    
-        
+
+
     /**
-     * Insert a new Category 
+     * Insert a new Category
      *
      * @param int $pid
      * @param int $status
@@ -42,7 +42,7 @@ class GallerySql
     public function insertNewCategory($pid, $status, $comment, $voting, $frontendProtected, $backendProtected, $frontend_access_id, $backend_access_id)
     {
         global $objDatabase;
-        
+
         $query = "  INSERT
                     INTO     ".DBPREFIX."module_gallery_categories
                     SET     pid = ".intval($pid).",
@@ -53,13 +53,13 @@ class GallerySql
                             backendProtected = ".intval($backendProtected).",
                             frontend_access_id = ".intval($frontend_access_id).",
                             backend_access_id = ".intval($backend_access_id);
-        
+
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("Inserting a new category failed");
         }
         return $objDatabase->insert_id();
     }
-    
+
     /**
      * Delete all Access ids from the database
      *
@@ -73,7 +73,7 @@ class GallerySql
             throw new DatabaseError("Deletion of access ids failed");
         }
     }
-    
+
     /**
      * Update the category tables
      *
@@ -84,10 +84,10 @@ class GallerySql
      * @param int $voting
      * @param int $frontendProtected
      */
-    public function updateCategory($id, $pid, $status, $comment, $voting, $frontendProtected, $backendProtected)
+    public function updateCategory($id, $pid, $status, $comment, $voting, $frontendProtected, $backendProtected, $frontend_access_id, $backend_access_id)
     {
         global $objDatabase;
-        
+
         $id = intval($id);
         $pid = intval($pid);
         $status = intval($status);
@@ -95,14 +95,16 @@ class GallerySql
         $voting = intval($voting);
         $frontendProtected = intval($frontendProtected);
         $backendProtected = intval($backendProtected);
-       
+
         $query =    "  UPDATE  ".DBPREFIX."module_gallery_categories
                         SET     pid=".$pid.",
                                status='".$status."',
                                comment='".$comment."',
                                voting='".$voting."',
                                frontendProtected=".$frontendProtected.",
-                               backendProtected=".$backendProtected."
+                               backendProtected=".$backendProtected.",
+                                frontend_access_id = ".intval($frontend_access_id).",
+                                backend_access_id = ".intval($backend_access_id)."
                         WHERE   id=".$id;
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("Category update failed");
@@ -123,9 +125,9 @@ class GallerySql
             }
         }
     }
-    
-    
-        
+
+
+
     /**
      * @return array
      * @param string groupType
@@ -145,7 +147,7 @@ class GallerySql
         }
         return $arrGroups;
     }
-    
+
     /**
      * Select all group ids that are assigned to a category
      *
@@ -155,15 +157,15 @@ class GallerySql
     public function getAccessGroups($type="frontend", $access_id=false, $intCategoryId=false)
     {
         global $objDatabase;
-        
+
         if ($access_id === false) {
             list($access_id) = $this->getPrivileges($intCategoryId, $type);
         }
-        
+
         $query = "  SELECT group_id
-                    FROM `".DBPREFIX."access_group_dynamic_ids` 
+                    FROM `".DBPREFIX."access_group_dynamic_ids`
                     WHERE access_id = ".$access_id;
-        
+
         $groups = array();
         $objRs = $objDatabase->Execute($query);
         if ($objRs !== false) {
@@ -185,12 +187,12 @@ class GallerySql
     public function getPrivileges($id, $type="frontend")
     {
         global $objDatabase;
-        
+
         // prevent from misusing
         if (!($type == "frontend" || $type == "backend")) {
             die("_getAccessId(): ".$type." unknown");
         }
-        
+
         $id = intval($id);
         $query = "  SELECT  ".$type."_access_id as access_id,
                             ".$type."Protected as protected
@@ -203,7 +205,7 @@ class GallerySql
             throw new DatabaseError("Error getting access id");
         }
     }
-    
+
     /**
      * Insert an access id
      *
@@ -214,7 +216,7 @@ class GallerySql
     public function insertAccessId($access_id, $group_id)
     {
         global $objDatabase;
-        
+
         $access_id = intval($access_id);
         $group_id = intval($group_id);
         $query = "  INSERT INTO ".DBPREFIX."access_group_dynamic_ids
@@ -225,7 +227,7 @@ class GallerySql
             throw new DatabaseError("Error inserting access id");
         }
     }
-    
+
     /**
      * Update the value of the last access id
      *
@@ -234,13 +236,13 @@ class GallerySql
     public function updateAccessId($lastId)
     {
         global $_CONFIG, $objDatabase;
-        
+
         $query = "UPDATE ".DBPREFIX."settings SET setvalue=".$lastId." WHERE setname='lastAccessId'";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("Error updating the last access id value");
         }
     }
-    
+
     /**
      * Get an array with the categories
      *
@@ -250,12 +252,12 @@ class GallerySql
     public function getCategoriesArray($langId, $pid=-1)
     {
         global $objDatabase;
-        
+
         $langId = intval($langId);
         // if a pid is given, only get the categories with that pid
         $sqlPid  = ($pid > -1) ? "AND pid = ".intval($pid) : "";
-        $query = "  SELECT  cat.id AS id, 
-                            lang.value AS value, 
+        $query = "  SELECT  cat.id AS id,
+                            lang.value AS value,
                             cat.backendProtected backendProtected,
                             cat.backend_access_id as backend_access_id
                     FROM ".DBPREFIX."module_gallery_categories AS cat
@@ -281,7 +283,7 @@ class GallerySql
         }
         return $retArr;
     }
-    
+
     /**
      * Get the category id of a picture
      *
@@ -291,10 +293,10 @@ class GallerySql
     public function getPictureCategory($id)
     {
         global $objDatabase;
-        
+
         $id = intval($id);
-        
-        $query = "  SELECT catid 
+
+        $query = "  SELECT catid
                     FROM ".DBPREFIX."module_gallery_pictures
                     WHERE id = ".$id;
         $objRs = $objDatabase->Execute($query);
@@ -307,50 +309,51 @@ class GallerySql
 }
 
 if (!class_exists("DatabaseError")) {
-    /**
-     * Database Error
-     * @author Comvation Development Team <info@comvation.com>
-     * @author Stefan Heinemann
-     * @package contrexx
-     * @subpackage module_gallery
-     */
-    class DatabaseError extends Exception
+
+/**
+ * Database Error
+ * @author Comvation Development Team <info@comvation.com>
+ * @author Stefan Heinemann
+ * @package contrexx
+ * @subpackage module_gallery
+ */
+class DatabaseError extends Exception
+{
+    public function __construct($message)
     {
-        public function __construct($message)
-        {
-            parent::__construct($message);
-        }
-        
-        public function __toString()
-        {
-            global $objDatabase;
-            
-            $txt_details = "Details";
-           
-            return "<a style=\"margin-left: 1em;\" href=\"javascript:void(0);\" onclick=\"showErrDetails(this);\">$txt_details&gt;&gt;</a>
-            <div style=\"display:none;\" id=\"errDetails\">
-            ".$this->getMessage()."<br />
-            ".$objDatabase->ErrorMsg()."<br />
-            ".$this->getTraceAsString()."
-            </div>
-            <script type=\"text/javascript\">
-                /* <![CDATA[ */
-                    var showErrDetails = function(obj)
-                    {
-                        var childs = obj.childNodes;
-                        for (var i = 0; i < childs.length; ++i) {
-                            obj.removeChild(childs[i]);
-                        }
-                        if ($('errDetails').visible()) {
-                            $('errDetails').style.display = \"none\";
-                            obj.appendChild(document.createTextNode(\"$txt_details >>\"));
-                        } else {
-                            $('errDetails').style.display = \"block\";
-                            obj.appendChild(document.createTextNode(\"$txt_details <<\"));
-                        }
-                    }
-                /* ]]> */
-            </script>";
-        }
+        parent::__construct($message);
     }
+
+    public function __toString()
+    {
+        global $objDatabase;
+
+        $txt_details = "Details";
+
+        return "<a style=\"margin-left: 1em;\" href=\"javascript:void(0);\" onclick=\"showErrDetails(this);\">$txt_details&gt;&gt;</a>
+        <div style=\"display:none;\" id=\"errDetails\">
+        ".$this->getMessage()."<br />
+        ".$objDatabase->ErrorMsg()."<br />
+        ".$this->getTraceAsString()."
+        </div>
+        <script type=\"text/javascript\">
+            /* <![CDATA[ */
+                var showErrDetails = function(obj)
+                {
+                    var childs = obj.childNodes;
+                    for (var i = 0; i < childs.length; ++i) {
+                        obj.removeChild(childs[i]);
+                    }
+                    if ($('errDetails').visible()) {
+                        $('errDetails').style.display = \"none\";
+                        obj.appendChild(document.createTextNode(\"$txt_details >>\"));
+                    } else {
+                        $('errDetails').style.display = \"block\";
+                        obj.appendChild(document.createTextNode(\"$txt_details <<\"));
+                    }
+                }
+            /* ]]> */
+        </script>";
+    }
+}
 }
