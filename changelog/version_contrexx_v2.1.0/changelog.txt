@@ -75,6 +75,7 @@ News
 
 Modul: Bildergalerie
 - Die Zugriffsrechte können bei bestehenden Kategorien verändert werden.
+- Das Erstellen von Unterkategorien ist nur auf der ersten Ebene möglich.
 
 
 ****************************************
