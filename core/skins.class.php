@@ -1096,7 +1096,9 @@ class skins
         $themesFile = isset($_POST['themesDelFileName']) ? $_POST['themesDelFileName'] : '';
         $themes = isset($_POST['themes']) ? $_POST['themes'] : '';
         //path traversal security check
-        $themesFile = str_replace(array('..','/'), '', $themesFile);
+        if (strpos(realpath($this->path.'/'.$themes.'/'.$themesFile), realpath($this->path.'/'.$themes)) !== 0) {
+            $themesFile = '';
+        }
         $themes = str_replace(array('..','/'), '', $themes);
 
         if(($themesFile!="") AND ($themes!="")){
