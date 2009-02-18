@@ -241,7 +241,7 @@ class dataBlocks extends DataLibrary
 
 
                 $title = $entry['translation'][$_LANGID]['subject'];
-                $content = substr(strip_tags($entry['translation'][$_LANGID]['content']), 0, $this->_arrSettings['data_general_introduction']);
+                $content = $this->getIntroductionText($entry['translation'][$_LANGID]['content']);
                 $this->_objTpl->setVariable(array(
                     "TITLE"         => $title,
                     "IMAGE"         => $image,
@@ -283,7 +283,7 @@ class dataBlocks extends DataLibrary
 
         $entry = $this->entryArray[$id];
         $title = $entry['translation'][$_LANGID]['subject'];
-        $content = substr(strip_tags($entry['translation'][$_LANGID]['content']), 0, $this->_arrSettings['data_general_introduction']);
+        $content = $this->getIntroductionText($entry['translation'][$_LANGID]['content']);
 
         $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->_arrSettings['data_template_entry']));
 
