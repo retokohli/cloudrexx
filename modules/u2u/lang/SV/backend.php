@@ -34,4 +34,5 @@ $_ARRAYLANG['TXT_U2U_RECEIVER_NAME_CONTENT'] = "Use [receiverName] for print the
 $_ARRAYLANG['TXT_U2U_SUCCESS'] = "Success";
 $_ARRAYLANG['TXT_U2U_NOT_SUCCESS'] = "No Success";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U";
+$_ARRAYLANG['TXT_U2U_DOMAIN_NAME_CONTENT'] = "Use [domainName] to display the domain of your website in the E-Mail";
 ?>

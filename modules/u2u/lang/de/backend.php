@@ -34,4 +34,5 @@ $_ARRAYLANG['TXT_U2U_RECEIVER_NAME_CONTENT'] = "Verwenden Sie den Platzhalter [r
 $_ARRAYLANG['TXT_U2U_SUCCESS'] = "Erfolgreich";
 $_ARRAYLANG['TXT_U2U_NOT_SUCCESS'] = "Nicht erfolgreich";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U";
+$_ARRAYLANG['TXT_U2U_DOMAIN_NAME_CONTENT'] = "Verwenden Sie den Platzhalter [domainName] um den Domainnamen Ihrer Website anzuzeigen.";
 ?>

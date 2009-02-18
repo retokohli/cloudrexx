@@ -182,4 +182,7 @@ $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partenaires";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "Messages U2U";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
 $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
+$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
+$_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
 ?>
