@@ -1,7 +1,7 @@
 <?php
 function _utf8Update()
 {
-	global $objUpdate, $_CONFIG, $_DBCONFIG, $objDatabase, $_ARRAYLANG, $_CORELANG;
+	global $objUpdate, $_DBCONFIG, $objDatabase, $_ARRAYLANG, $_CORELANG;
 
 	if (!isset($_DBCONFIG['charset']) || $_DBCONFIG['charset'] != 'utf8') {
 		$preferedCollation = 'utf8_unicode_ci';
@@ -346,7 +346,7 @@ function _convertThemes2UTF()
 	}
 
 	if (count($arrThemes)) {
-		foreach ($arrThemes as $name => $path) {
+		foreach ($arrThemes as $path) {
 			if (!isset($_SESSION['contrexx_update']['update']['utf_themes'][$path])) {
 				$_SESSION['contrexx_update']['update']['utf_themes'][$path] = array();
 			}

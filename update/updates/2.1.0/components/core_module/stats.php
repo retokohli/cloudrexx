@@ -1,5 +1,6 @@
 <?php
-function _statsUpdate() {
+function _statsUpdate()
+{
 	global $objDatabase, $_ARRAYLANG;
 
 	// remove redundancies
@@ -80,7 +81,7 @@ function _statsUpdate() {
 			if (isset($arrUnique['change'])) {
 				$query = 'ALTER TABLE `'.DBPREFIX.$table.'` CHANGE '.$arrUnique['change'];
 				if ($objDatabase->Execute($query) === false) {
-					return $this->_databaseError($query, $objDatabase->ErrorMsg());
+                    return _databaseError($query, $objDatabase->ErrorMsg());
 				}
 			}
 
@@ -107,7 +108,6 @@ function _statsUpdate() {
 					if (!checkTimeoutLimit()) {
 						return false;
 					}
-
 					$lastRedundancyCount = $objEntry->fields['redundancy'];
 					if ($objEntry->fields['redundancy'] > 1) {
 						$where = array();
@@ -158,7 +158,6 @@ function _statsUpdate() {
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     }
-
 
 	return true;
 }

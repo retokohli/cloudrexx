@@ -2,7 +2,7 @@
 
 function _accessUpdate()
 {
-    global $objDatabase, $_CONFIG;
+    global $objDatabase, $_CONFIG, $_ARRAYLANG;
 
     $arrTables = $objDatabase->MetaTables('TABLES');
     if (!$arrTables) {
@@ -24,8 +24,8 @@ function _accessUpdate()
                 `sender_name` varchar(255) NOT NULL DEFAULT '',
                 `subject` varchar(255) NOT NULL DEFAULT '',
                 `format` ENUM( 'text', 'html', 'multipart' ) NOT NULL DEFAULT 'text',
-                `body_text` text NOT NULL DEFAULT '',
-                `body_html` text NOT NULL DEFAULT '',
+                `body_text` text NOT NULL,
+                `body_html` text NOT NULL,
                 UNIQUE KEY `mail` (`type`,`lang_id`)
             ) TYPE=InnoDB
         ";
@@ -711,7 +711,7 @@ function _accessUpdate()
                 `attribute_id` INT UNSIGNED NOT NULL DEFAULT '0',
                 `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
                 `history_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                `value` TEXT NOT NULL DEFAULT '',
+                `value` TEXT NOT NULL,
                 PRIMARY KEY ( `attribute_id` , `user_id` , `history_id` ),
                 FULLTEXT KEY `value` (`value`)
             ) TYPE = MYISAM
@@ -808,7 +808,10 @@ function _accessUpdate()
     }
 
     if (!in_array('user_id', $arrColumns)) {
-        $query = "ALTER TABLE `".DBPREFIX."sessions` CHANGE `username` `user_id` INT UNSIGNED NOT NULL DEFAULT '0'";
+         $query = "
+            ALTER TABLE `".DBPREFIX."sessions`
+             DROP `username`,
+              ADD `user_id` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `status`";
         if ($objDatabase->Execute($query) === false) {
             return _databaseError($query, $objDatabase->ErrorMsg());
         }

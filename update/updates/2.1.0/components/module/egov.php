@@ -15,7 +15,7 @@ function _egovUpdate()
         $query = "
             CREATE TABLE ".DBPREFIX."module_egov_configuration (
               `name` varchar(255) NOT NULL default '',
-              `value` text NOT NULL default '',
+              `value` text NOT NULL,
               UNIQUE KEY `name` (`name`)
             ) ENGINE=MyISAM;
         ";
@@ -182,7 +182,7 @@ function _egovUpdate()
     if (!isset($arrProductColumns['ALTERNATIVE_NAMES'])) {
         $query = "
             ALTER TABLE ".DBPREFIX."module_egov_products
-            ADD `alternative_names` TEXT NOT NULL default '';
+            ADD `alternative_names` TEXT NOT NULL;
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
