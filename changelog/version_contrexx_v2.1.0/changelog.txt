@@ -39,6 +39,16 @@ Statistik
   Seitenaufrufe auch wieder gezählt, auch wenn es sich um dieselbe letzte
   Seite handelt die er zuletzt aufgerufen hat.
 
+News
+- Bei der Auflistung der News Meldungen wurde der Platzhalter [[NEWS_LINK]]
+  durch den neuen Platzhalter [[NEWS_LINK_TITLE]] ersetzt. Der Platzhalter
+  [[NEWS_LINK]] gibt nun den Text "[mehr...]" anstatt den Titel der Newsmeldung
+  aus.
+- Zwei neue Platzhalter bei der Auflistung der News Meldungen
+    [[NEWS_LINK_TITLE]]    => Titel der Newsmeldung
+	[[NEWS_LINK_TEASER]]   => Teasertext der Newsmeldung
+
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
