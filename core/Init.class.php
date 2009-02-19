@@ -582,7 +582,6 @@ class InitCMS
         global $objDatabase;
 
         switch ($section) {
-            case '':
             case 'home':
                 $this->is_home = true;
                 $section = 'home';
@@ -596,7 +595,12 @@ class InitCMS
                 break;
         }
         if (empty($page_id)) {
-              $query = "
+            if (empty($section)) {
+                $this->is_home = true;
+                $section = 'home';
+                $command = '';
+            }
+            $query = "
                   SELECT n.catid, n.themes_id, n.module
                     FROM ".DBPREFIX."modules AS m
                    INNER JOIN ".DBPREFIX."content_navigation AS n
@@ -657,6 +661,7 @@ class InitCMS
         $langId = $this->getFrontendLangId();
         switch ($section) {
             case 'home':
+                DBG::trace();
                 $this->is_home = true;
                 break;
             case 'logout':
@@ -682,6 +687,7 @@ class InitCMS
                 if ($objResult !== false) {
                     $catID=$objResult->fields['catid'];
                     $this->_setCustomizedThemesId($objResult->fields['themes_id']);
+                DBG::trace();
                     $this->is_home=true;
                 } else {
                     header('Location: index.php?section=error');
