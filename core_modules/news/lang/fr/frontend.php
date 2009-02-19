@@ -43,4 +43,5 @@ $_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "Articles à valider";
 $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Un nouvel article a été soumis. Lien pour la validation:";
 $_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Caractères saisis inexacts!";
 $_ARRAYLANG['TXT_CAPTCHA'] = "Veuillez saisir les caractères dans l'illustration:";
+$_ARRAYLANG['TXT_NEWS_MORE'] = "plus";
 ?>
