@@ -1583,9 +1583,9 @@ CREATE TABLE `contrexx_module_jobs` (
   `title` varchar(250) NOT NULL default '',
   `author` varchar(150) NOT NULL default '',
   `text` mediumtext NOT NULL,
-  `source` varchar(250) NOT NULL default '',
-  `url1` varchar(250) NOT NULL default '',
-  `url2` varchar(250) NOT NULL default '',
+  `workloc` varchar(250) NOT NULL,
+  `workload` varchar(250) NOT NULL,
+  `work_start` int(14) NOT NULL,
   `catid` int(2) unsigned NOT NULL default '0',
   `lang` int(2) unsigned NOT NULL default '0',
   `userid` int(6) unsigned NOT NULL default '0',
@@ -1595,14 +1595,30 @@ CREATE TABLE `contrexx_module_jobs` (
   `changelog` int(14) NOT NULL default '0',
   KEY `ID` (`id`),
   FULLTEXT KEY `newsindex` (`title`,`text`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_jobs_categories` (
   `catid` int(2) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   `lang` int(2) unsigned NOT NULL default '1',
   `sort_style` enum('alpha','date','date_alpha') NOT NULL default 'alpha',
   PRIMARY KEY  (`catid`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_jobs_location` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_jobs_rel_loc_jobs` (
+  `job` int(10) unsigned NOT NULL,
+  `location` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`job`,`location`)
 ) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_jobs_settings` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(250) NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_knowledge_article_content` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `article` int(10) unsigned NOT NULL default '0',
