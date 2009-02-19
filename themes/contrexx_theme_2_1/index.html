@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+			<title>{GLOBAL_TITLE} | {METATITLE}</title>
+			<meta name="description" content="{METADESC}"/>
+			<meta name="keywords" content="{METAKEYS}"/>
+			<meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
+			<meta name="robots" content="{METAROBOTS}"/>
+			<meta name="generator" content="{VERSION}"/>
+			<link rel="SHORTCUT ICON" href="themes/contrexx_theme_2_1/images/favicon.ico" />
+			<meta http-equiv="pragma" content="no-cache"/>
+			<meta http-equiv="cache-control" content="no-cache"/>
+			<link rel="stylesheet" type="text/css" href="themes/contrexx_theme_2_1/style.css" />
+			<script type="text/javascript" src="themes/contrexx_theme_2_1/javascript/mootools.js"></script>
+			{STYLE_FILE}
+	</head>
+
+	<body>
+	<div id="wrapper_header">
+		<div id="header">
+			<div id="header_title"><a href="http://www.contrexx.com/" title="Contrexx WCMS">Contrexx Web Contentmanagement System</a></div>
+			<div id="header_links">
+				<form action="search.html" method="get">
+				  <ul>
+					  <li><a href="#" title="Sitemap">Sitemap</a></li>
+					  <li><a href="#" title="Kontakt">Kontakt</a></li>
+					  <li><a href="#" title="Druckansicht">Druckansicht</a></li>
+					  <li class="search">
+						  <div><input name="keywords" class="search_input" value="" type="text"/> <input src="themes/contrexx_theme_2_1/images/search.gif" alt="Search" class="search_button" type="image"/></div>
+					  </li>
+				  </ul>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div id="wrapper_navigation">
+		<div id="navigation">
+			{NAVBAR_FILE}
+		</div>
+	</div>
+
+	{CONTENT_FILE}
+
+	<div id="wrapper_footer" class="clear">
+		<div id="footer">
+			<div id="footer_inside">
+				Copyright ©2009 Your Company&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" title="AGB">AGB</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" title="Kontakt">Kontakt</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" title="Impressum">Impressum</a>&nbsp;&nbsp;|&nbsp;&nbsp;Powered by <a href="http://www.contrexx.com/" title="Contrexx&reg; WCMS">Contrexx&reg; WCMS</a>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	<!--//--><![CDATA[//><!--
+	window.addEvent('domready', function()
+	{
+		new Accordion($$('div.toggler'), $$('div.accordion'),
+		{
+			opacity: false
+		});
+	});
+	//--><!]]>
+	</script>
+
+	{COUNTER}
+	</body>
+</html>
