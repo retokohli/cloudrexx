@@ -107,8 +107,8 @@ class Products
         &$count, $offset=0,
         $productId=0, $shopCategoryId=0, $manufacturerId=0, $pattern='',
         $flagSpecialoffer=false, $flagLastFive=false,
-        $orderSetting='p.sort_order ASC, p.id DESC', // Default
-        $flagIsReseller=false,
+        $orderSetting='',
+        $flagIsReseller='',
         $flagShowInactive=false
     ) {
         global $objDatabase, $_CONFIG;
@@ -132,6 +132,8 @@ class Products
             $count = 0;
             return false;
         }
+        if (empty($orderSetting))
+            $orderSetting = 'p.sort_order ASC, p.id DESC';
 
         // Limit Products visible to resellers or non-resellers.
         $queryReseller =
@@ -173,10 +175,10 @@ class Products
             if ($shopCategoryId > 0) {
                 // select Products by ShopCategory ID
                 $q_special_offer = '';
-                $q1_category = 'INNER JOIN '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories AS c ON c.id=p.catid';
+                $q1_category = 'INNER JOIN '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories AS c ON c.catid=p.catid';
                 $q2_category =
                     "AND p.catid=$shopCategoryId".
-                    ($flagShowInactive ? '' : ' AND c.status=1');
+                    ($flagShowInactive ? '' : ' AND c.catstatus=1');
             }
             if ($manufacturerId > 0) {
                 // select Products by Manufacturer ID

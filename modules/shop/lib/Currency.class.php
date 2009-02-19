@@ -185,6 +185,20 @@ class Currency
 
 
     /**
+     * Set the active currency ID
+     * @param   integer     $currency_id    The active Currency ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @access  public
+     * @static
+     */
+    static function setActiveCurrencyId($currency_id)
+    {
+        if (!is_array(self::$arrCurrency)) self::init($currency_id);
+        self::$activeCurrencyId = $currency_id;
+    }
+
+
+    /**
      * Returns the active currency symbol
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @access  public
@@ -209,6 +223,34 @@ class Currency
     {
         if (!is_array(self::$arrCurrency)) self::init();
         return self::$arrCurrency[self::$activeCurrencyId]['code'];
+    }
+
+
+    /**
+     * Returns the currency symbol for the given ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @access  public
+     * @static
+     * @return  string      The string representing the active currency
+     */
+    static function getCurrencySymbolById($currency_id)
+    {
+        if (!is_array(self::$arrCurrency)) self::init();
+        return self::$arrCurrency[$currency_id]['symbol'];
+    }
+
+
+    /**
+     * Returns the currency code for the given ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @access  public
+     * @static
+     * @return  string      The string representing the active currency code
+     */
+    static function getCurrencyCodeById($currency_id)
+    {
+        if (!is_array(self::$arrCurrency)) self::init();
+        return self::$arrCurrency[$currency_id]['code'];
     }
 
 

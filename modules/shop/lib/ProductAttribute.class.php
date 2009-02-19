@@ -111,9 +111,10 @@ class ProductAttribute
         $this->id        = $id;
         $this->productId = $productId;
         if ($id)
-            $this->arrValue = ProductAttributes::getValueArray($id);
+            $this->arrValue = ProductAttributes::getValueArrayByNameId($id);
         if ($productId)
             $this->arrRelation = ProductAttributes::getRelationArray($productId);
+echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)."<br />");
     }
 
 
@@ -226,7 +227,7 @@ class ProductAttribute
     function getValueArray()
     {
         if (!is_array($this->arrValue))
-            $this->arrValue = ProductAttributes::getValueArray($this->id);
+            $this->arrValue = ProductAttributes::getValueArrayByNameId($this->id);
         return $this->arrValue;
     }
     /**
@@ -282,13 +283,13 @@ class ProductAttribute
      *                                when associated with a Product
      * @return  boolean               True on success, false otherwise
      */
-    function updateValue($value_id, $value, $price, $order=0)
+    function changeValue($value_id, $value, $price, $order=0)
     {
         $this->arrValue[$value_id]['value'] = $value;
         $this->arrValue[$value_id]['price'] = $price;
         $this->arrValue[$value_id]['order'] = $order;
         // Insert into database, and update ID
-        //return $this->_updateValue($this->arrValue[$value_id]);
+        //return $this->updateValue($this->arrValue[$value_id]);
     }
 
 
@@ -306,8 +307,6 @@ class ProductAttribute
         // Anything to be removed?
         if (empty($this->arrValue[$value_id])) return true;
 
-        $arrValue = $this->arrValue[$value_id];
-
         // Remove relations to Products
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
@@ -318,7 +317,7 @@ class ProductAttribute
 
         // Remove the value
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_values
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
             WHERE id=$value_id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -466,9 +465,10 @@ class ProductAttribute
      */
     function storeValues()
     {
-        // Mind: value entries in the array may be new and have to
+echo("storeValues(): this->arrvalue: ".var_export($this->arrValue, true)."<br />");
+    	// Mind: value entries in the array may be new and have to
         // be inserted, even though the object itself has got a valid ID!
-        foreach ($this->arrValue as $arrValue) { // $id is the key in the loop
+        foreach ($this->arrValue as $arrValue) {
 //            // The Text ID is not set for values that have been added
 //            $text_id =
 //                (empty($arrValue['text_value_id'])
@@ -487,14 +487,15 @@ class ProductAttribute
             // If the value was just added to the array, the $id is just
             // an array index, and its $arrValue['id'] is empty.
             $value_id = (isset($arrValue['id']) ? $arrValue['id'] : 0);
+echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true)."<br />");
             if ($value_id && $this->recordExistsValue($value_id)) {
-                if (!$this->_updateValue($value_id)) return false;
+                if (!$this->updateValue($value_id)) return false;
             } else {
                 // This is a temporary dummy value used to find the
                 // value array in $this->arrValue.
-                // Updated in _insertValue().
+                // Updated in insertValue().
                 //$arrValue['id'] = $id; // $id is the key in the loop
-                if (!$this->_insertValue($arrValue)) return false;
+                if (!$this->insertValue($arrValue)) return false;
             }
         }
         return true;
@@ -505,12 +506,12 @@ class ProductAttribute
      * Update the Attibute value record in the database
      *
      * The value array is passed by reference, as the ID may be updated
-     * in case it had not been set and {@link _insertValue()} was called.
+     * in case it had not been set and {@link insertValue()} was called.
      * @param   array       $arrValue       The value array
      * @return  boolean                     True on success, false otherwise
      * @global  ADONewConnection  $objDatabase    Database connection object
      */
-    function _updateValue(&$arrValue)
+    function updateValue(&$arrValue)
     {
         global $objDatabase;
 
@@ -537,7 +538,7 @@ class ProductAttribute
      * @return  boolean                     True on success, false otherwise
      * @global  ADONewConnection  $objDatabase    Database connection object
      */
-    function _insertValue(&$arrValue)
+    function insertValue(&$arrValue)
     {
         global $objDatabase;
 
@@ -589,7 +590,7 @@ class ProductAttribute
      */
     static function getByNameId($name_id)
     {
-        $arrName = ProductAttributes::getNameArray($name_id);
+        $arrName = ProductAttributes::getNameArrayByNameId($name_id);
         if ($arrName === false) return false;
         $objProductAttribute = new ProductAttribute(
             $arrName['type'], $name_id

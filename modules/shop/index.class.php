@@ -16,7 +16,7 @@
 /**
  * Debug level
  */
-define('_SHOP_DEBUG', 0);
+define('_SHOP_DEBUG', 3);
 
 /**
  * Text objects
@@ -129,6 +129,9 @@ function shopUseSession()
  */
 class Shop extends ShopLibrary
 {
+    const noPictureName = 'no_picture.gif';
+    const thumbnailSuffix = '.thumb';
+
     private $pageContent;
 
     private $arrCategoriesTable = array();
@@ -136,15 +139,11 @@ class Shop extends ShopLibrary
     private $arrParentCategoriesTable = array();
 
     private $statusMessage = '';
-    private $thumbnailNameSuffix = '.thumb';
-    private $noPictureName = 'no_picture.gif';
-    private $shopImageWebPath;
-    private $shopImagePath;
-    private $inactiveStyleName = 'inactive';
-    private $activeStyleName = 'active';
     private $arrProductAttributes = array();
-    private $_defaultImage = '';
-    private $uploadDir = false;
+    private static $inactiveStyleName = 'inactive';
+    private static $activeStyleName = 'active';
+    private static $defaultImage = '';
+    private static $uploadDir = false;
 
     /**
      * Currency navbar indicator
@@ -208,9 +207,7 @@ class Shop extends ShopLibrary
         }
 
         $this->pageContent = $pageContent;
-        $this->shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/';
-        $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH.'/';
-        $this->_defaultImage = $this->shopImageWebPath.$this->noPictureName;
+        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.self::noPictureName;
         $this->uploadDir = ASCMS_PATH_OFFSET.'/upload';
 
         // PEAR Sigma template
@@ -220,17 +217,23 @@ class Shop extends ShopLibrary
         // Global module index for clones
         $this->objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 
-        Currency::init();
-        Shipment::init();
-        Vat::init();
+        $this->_initConfiguration();
 
         // Check session and user data, log in if present
         if (shopUseSession())
             $this->_authenticate();
 //        if (empty($_COOKIE['PHPSESSID'])) $this->_authenticate();
 
-        $this->_initConfiguration();
+        Vat::isReseller($this->objCustomer && $this->objCustomer->isReseller());
+        Vat::isHomeCountry(
+               empty($_SESSION['shop']['countryId2'])
+            || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
+        );
+        // May be omitted, those structures are initialized on usage
+        Vat::init();
+        Currency::init();
         Payment::init();
+        Shipment::init();
 
         // initialize the product options names and values array
         //$this->initProductAttributes();
@@ -646,7 +649,7 @@ class Shop extends ShopLibrary
 
     function _sendpass()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->objTemplate->setVariable(array(
             'SHOP_PASSWORD_ENTER_EMAIL' => $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'],
@@ -757,9 +760,9 @@ class Shop extends ShopLibrary
             $id        = $objShopCategory->getId();
             $catName   = $objShopCategory->getName();
             $imageName = $objShopCategory->getPicture();
-            $thumbnailPath = $this->_defaultImage;
+            $thumbnailPath = self::$defaultImage;
             if (empty($arrDefaultImageSize)) {
-                $arrDefaultImageSize = getimagesize(ASCMS_PATH.$this->_defaultImage);
+                $arrDefaultImageSize = getimagesize(ASCMS_PATH.self::$defaultImage);
                 $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
             }
             $arrSize = $arrDefaultImageSize;
@@ -776,8 +779,8 @@ class Shop extends ShopLibrary
             if ($imageName) {
                 // Image found!  Use that instead of the default.
                 $thumbnailPath =
-                    $this->shopImageWebPath.
-                    $imageName.$this->thumbnailNameSuffix;
+                    ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    $imageName.self::thumbnailSuffix;
                 $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
                 $this->scaleImageSizeToThumbnail($arrSize);
             }
@@ -847,7 +850,7 @@ class Shop extends ShopLibrary
             $arrImages = Products::getShopImagesFromBase64String(
                 $objResultProduct->fields['picture']
             );
-            $picturePath = $this->shopImageWebPath.$arrImages[1]['img'];
+            $picturePath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'];
             return $picturePath;
         }
         // no picture in that category, try its subcategories
@@ -926,11 +929,11 @@ class Shop extends ShopLibrary
                 // no product picture available
                 if (!$arrImages
                  || $arrImages[1]['img'] == ''
-                 || $arrImages[1]['img'] == $this->noPictureName) {
-                    $thumbnailPath = $this->_defaultImage;
+                 || $arrImages[1]['img'] == self::noPictureName) {
+                    $thumbnailPath = self::$defaultImage;
                 } else {
                     // path offset is saved WITHOUT the image path!
-                    $thumbnailPath = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
+                    $thumbnailPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix;
                 }
 
                 $this->objTemplate->setVariable(array(
@@ -1108,23 +1111,23 @@ class Shop extends ShopLibrary
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 if (   empty($image['img'])
-                    || $image['img'] == $this->noPictureName) {
+                    || $image['img'] == self::noPictureName) {
                     // We have at least one picture on display already.
                     // No need to show "no picture" three times!
                     if ($havePicture) { continue; }
-                    $thumbnailPath = $this->_defaultImage;
+                    $thumbnailPath = self::$defaultImage;
                     $pictureLink = ''; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     if (empty($arrDefaultImageSize)) {
-                        $arrDefaultImageSize = getimagesize(ASCMS_PATH.$this->_defaultImage);
+                        $arrDefaultImageSize = getimagesize(ASCMS_PATH.self::$defaultImage);
                         $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
                     }
                     $arrSize = $arrDefaultImageSize;
                 } else {
-                    $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
+                    $thumbnailPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'].self::thumbnailSuffix;
                     if ($image['width'] && $image['height']) {
                         $pictureLink =
                             "javascript:viewPicture('".
-                            $this->shopImageWebPath.$image['img'].
+                            ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'].
                             "','width=".($image['width']+25).
                             ",height=".($image['height']+25)."')";
                             // Thumbnail display size
@@ -1262,6 +1265,7 @@ class Shop extends ShopLibrary
                     $objProduct->getId(), $formId, false, $flagMultipart
                 );
             }
+            // Should be used by getJavaScript()
             if ($flagMultipart) $flagUpload = true;
             $shopProductFormName = "shopProductForm$formId";
 
@@ -1695,20 +1699,20 @@ class Shop extends ShopLibrary
             // no product picture available
             if (!$arrImages
              || $arrImages[1]['img'] == ''
-             || $arrImages[1]['img'] == $this->noPictureName) {
-                $arrThumbnailPath[$i] = $this->_defaultImage;
+             || $arrImages[1]['img'] == self::noPictureName) {
+                $arrThumbnailPath[$i] = self::$defaultImage;
                 if (empty($arrDefaultImageSize)) {
-                    $arrDefaultImageSize = getimagesize(ASCMS_PATH.$this->_defaultImage);
+                    $arrDefaultImageSize = getimagesize(ASCMS_SHOP_IMAGES_PATH.'/'.self::$defaultImage);
                     $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
                 }
                 $arrSize = $arrDefaultImageSize;
             } else {
                 if ($arrImages[1]['width'] && $arrImages[1]['height']) {
-                    $arrThumbnailPath[$i] = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
+                    $arrThumbnailPath[$i] = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix;
                     // Thumbnail display size
                     $arrSize = array($arrImages[1]['width'], $arrImages[1]['height']);
                 } else {
-                    $arrThumbnailPath[$i] = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
+                    $arrThumbnailPath[$i] = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix;
                     $arrSize = getimagesize(ASCMS_PATH.$arrThumbnailPath[$i]);
                 }
                 $this->scaleImageSizeToThumbnail($arrSize);
@@ -1868,8 +1872,6 @@ class Shop extends ShopLibrary
     function _getProductPrice(
         $productId, $priceOptions=0, $count=1, $flagIgnoreSpecialoffer=false)
     {
-        global $_ARRAYLANG;
-
         $objProduct = Product::getById($productId);
         if (!$objProduct) return false;
         $normalPrice = $objProduct->getPrice();
@@ -1905,7 +1907,7 @@ class Shop extends ShopLibrary
             $rateCount = Discount::getDiscountRateCount($groupCountId, $count);
             $price -= ($price * $rateCount * 0.01);
         }
-        return $this->objCurrency->getCurrencyPrice($price);
+        return Currency::getCurrencyPrice($price);
     }
 
 
@@ -2582,16 +2584,16 @@ sendReq('', 1);
                     }
                     if (   $type == SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL
                         || $type == SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY) {
-                        $valueId = $this->uploadFile($optionId);
-                        if ($valueId == '') {
+                        $value_id = $this->uploadFile($optionId);
+                        if ($value_id == '') {
                             continue;
                         }
                     }
                     if (!isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId])) {
                         $_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($optionId)] = array();
                     }
-                    if (is_array($valueId) && count($valueId) != 0) {
-                        foreach ($valueId as $id) {
+                    if (is_array($value_id) && count($value_id) != 0) {
+                        foreach ($value_id as $id) {
                             array_push($_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($optionId)], $id);
                         }
                     } elseif (!empty($value_id)) {
@@ -2679,19 +2681,19 @@ sendReq('', 1);
 // TODO: Do something!
 //                    if (!$objProductAttribute) {
 //                    }
-                    foreach ($arrValueIds as $valueId) {
+                    foreach ($arrValueIds as $value_id) {
                         // Note that the ProductAttribute values are indexed
                         // starting from 1!
                         // For types 4..7, the value entered in the text box is
-                        // stored in $valueId.  Overwrite the value taken from
+                        // stored in $value_id.  Overwrite the value taken from
                         // the database.
                         if ($objProductAttribute->getType() > 3) {
-                            $arrValues = $objProductAttribute->getValueArray();
-                            $arrValue = $arrValues[1];
+                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                            $arrValue = each($arrValues);
                             $arrValue['value'] = $value_id;
                         } else {
-                            $arrValues = ProductAttribute::getValueArrayById(0, $valueId);
-                            $arrValue = $arrValues[1];
+                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                            $arrValue = $arrValues[$value_id];
                         }
                         if (!is_array($arrValue)) continue;
                         $optionValue = ShopLibrary::stripUniqidFromFilename($arrValue['value']);
@@ -2702,9 +2704,7 @@ sendReq('', 1);
                                     '" target="uploadimage">'.$optionValue.'</a>';
                         }
                         $productOptions .= " [$optionValue]";
-                        $prefix = $arrValue['prefix'];
-                        $price = $arrValue['price'];
-                        $productOptionsPrice += ($prefix == '+' ? $price : -$price);
+                        $productOptionsPrice += $arrValue['price'];
                     }
                 }
                 if ($productOptionsPrice != 0) {
@@ -3631,7 +3631,7 @@ sendReq('', 1);
      */
     function einzug()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $shopAddress = ($this->arrConfig['shop_address']['value']
             ? $this->arrConfig['shop_address']['value']
@@ -3789,7 +3789,7 @@ right after the customer logs in!
      */
     function confirm()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         // if the cart is missing, return to the shop
         if (empty($_SESSION['shop']['cart'])) {
@@ -3990,17 +3990,17 @@ right after the customer logs in!
                             // There is no value ID stored for text and upload
                             // fields.  Thus, we use the name ID to get the
                             // values' values.
-                            $arrValues = ProductAttribute::getValueArrayById($optionId);
+                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
                             // There is exactly one value record for these
                             // types.  Use this and overwrite the "default"
                             // value with the text or file name.
-                            $arrValue = $arrValues[1];
+                            $arrValue = each($arrValues);
                             $arrValue['value'] = $value_id;
                         } else {
                             // There is exactly one value record for the value
                             // ID given.  Use this.
-                            $arrValues = ProductAttribute::getValueArrayById(0, $valueId);
-                            $arrValue = $arrValues[1];
+                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                            $arrValue = $arrValues[$value_id];
                         }
                         if (!is_array($arrValue)) {
                             continue;

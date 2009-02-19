@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -25,35 +26,14 @@ class Weight
     /**
      * The weight units in an array
      * @static
-     * @access      private
-     * @var     array   $arrUnits
+     * @access  private
+     * @var     array
      */
-    //static
-    var $arrUnits;
-
-
-    /**
-     * Set up a Weight object (PHP4)
-     *
-     * Does nothing.
-     * @access      public
-     * @return      Weight
-     */
-    function Weight()
-    {
-        $this->__construct();
-    }
-
-    /**
-     * Set up a Weight object (PHP5)
-     *
-     * Does nothing.
-     * @access      public
-     * @return      Weight
-     */
-    function __construct()
-    {
-    }
+    private static $arrUnits = array(
+        'g',    //$_ARRAYLANG['TXT_WEIGHT_UNIT_GRAM'],
+        'kg',   //$_ARRAYLANG['TXT_WEIGHT_UNIT_KILOGRAM'],
+        't',    //$_ARRAYLANG['TXT_WEIGHT_UNIT_TONNE'],
+    );
 
 
     /**
@@ -65,33 +45,24 @@ class Weight
      * - weight in  [1'000'000 .. 1'000'000'000[ -> 0 .. 999.999 tonnes.
      * If the weight argument is outside of the valid range as specified above,
      * '' (the empty string) is returned.
+     * @static
      * @access  public
      * @param   integer $grams  The weight in grams
      * @return  string          The weight in another unit, or ''
      */
-    //static
-    function getWeightString($grams)
+    static function getWeightString($grams)
     {
-        // move this to self::arrunits (class variable) from php5
-        $this->arrUnits = array(
-            'g',    //$_ARRAYLANG['TXT_WEIGHT_UNIT_GRAM'],
-            'kg',   //$_ARRAYLANG['TXT_WEIGHT_UNIT_KILOGRAM'],
-            't',    //$_ARRAYLANG['TXT_WEIGHT_UNIT_TONNE'],
-        );
-
         // weight too small, too big, or no integer
-        if ($grams < 1 || $grams >= 1000000000 || $grams != intval($grams)) {
+        if ($grams < 1 || $grams >= 1000000000 || $grams != intval($grams))
             return '0 g';
-        }
         $unit_index = intval(log10($grams)/3);
         // unit_index shouldn't be out of range, as the weight range
         // is verified above
-        if ($unit_index < 0 || $unit_index > count($this->arrUnits)) {
+        if ($unit_index < 0 || $unit_index > count(self::$arrUnits))
             return '';
-        }
         // scale weight and append unit
         $weight = $grams/pow(1000, $unit_index);
-        $unit   = $this->arrUnits[$unit_index];
+        $unit   = self::$arrUnits[$unit_index];
         return "$weight $unit";
     }
 
@@ -113,20 +84,12 @@ class Weight
      * @param   string  $weight The weight in another unit
      * @return  integer         The weight in grams, or 'NULL' on error.
      */
-    //static
-    function getWeight($weightString)
+    static function getWeight($weightString)
     {
-        // move this to self::arrunits (class variable) from php5
-        $this->arrUnits = array(
-            'g',    //$_ARRAYLANG['TXT_WEIGHT_UNIT_GRAM'],
-            'kg',   //$_ARRAYLANG['TXT_WEIGHT_UNIT_KILOGRAM'],
-            't',    //$_ARRAYLANG['TXT_WEIGHT_UNIT_TONNE'],
-        );
-
         // store regex matches here
         $arrMatch = array();
         // numeric result value
-        $grams    = 0;
+        $grams = 0;
 
         if (preg_match('/^(\d*\.?\d+)\s*(\w*)$/', $weightString, $arrMatch)) {
             $weight = $arrMatch[1];
@@ -140,7 +103,7 @@ class Weight
                 $grams = intval($weight+1e-8);
             } else {
                 // unit is set, look if it's known
-                $unit_index = array_search($unit, $this->arrUnits);
+                $unit_index = array_search($unit, self::$arrUnits);
                 // if the unit is set, but unknown, return NULL
                 if ($unit_index === false) {
                     return 'NULL';
@@ -156,10 +119,9 @@ class Weight
             }
             // return weight in grams
             return $grams;
-        } else {
-            // no match -- may be both invalid format or empty string
-            return 'NULL';
         }
+        // no match -- may be both invalid format or empty string
+        return 'NULL';
     }
 }
 

@@ -75,6 +75,41 @@ class Vat
      */
     private static $vatOtherId = false;
 
+    /**
+     * The current order goes to the shop country if true.
+     * Defaults to true.
+     * @var     boolean
+     */
+    private static $is_home_country = true;
+
+    /**
+     * The current user is a reseller if true
+     * Defaults to false.
+     * @var     boolean
+     */
+    private static $is_reseller = false;
+
+
+    /**
+     * Set the home country flag
+     * @param   boolean     True if the shop home country and the
+     *                      ship-to country are identical
+     */
+    static function isHomeCountry($is_home_country)
+    {
+        self::$is_home_country = $is_home_country;
+    }
+
+    /**
+     * Set the reseller flag
+     * @param   boolean     True if the current customer has the
+     *                      reseller flag set
+     */
+    static function isReseller($is_reseller)
+    {
+        self::$is_reseller = $is_reseller;
+    }
+
 
     /**
      * Initialize the Vat object with current values from the database.
@@ -125,37 +160,35 @@ class Vat
             $objResult->MoveNext();
         }
         self::$arrVatEnabled = array(
-            // Country:
-            // Foreign
+            // Foreign countries
             0 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_enabled_foreign_customer')),
+                0 => Settings::getValueByName('vat_enabled_foreign_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_enabled_foreign_reseller')),
+                1 => Settings::getValueByName('vat_enabled_foreign_reseller'),
             ),
-            // Home
+            // Home country
             1 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_enabled_home_customer')),
+                0 => Settings::getValueByName('vat_enabled_home_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_enabled_home_reseller')),
+                1 => Settings::getValueByName('vat_enabled_home_reseller'),
             ),
         );
         self::$arrVatIncluded = array(
-            // Country:
-            // Foreign
+            // Foreign country
             0 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_included_foreign_customer')),
+                0 => Settings::getValueByName('vat_included_foreign_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_included_foreign_reseller')),
+                1 => Settings::getValueByName('vat_included_foreign_reseller'),
             ),
-            // Home
+            // Home country
             1 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_included_home_customer')),
+                0 => Settings::getValueByName('vat_included_home_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_included_home_reseller')),
+                1 => Settings::getValueByName('vat_included_home_reseller'),
             ),
         );
         self::$vatDefaultId = Settings::getValueByName('vat_default_id');
@@ -242,11 +275,11 @@ class Vat
      * @return  boolean     True if VAT is enabled, false otherwise.
      * @static
      */
-    static function isEnabled($is_home_country, $is_reseller)
+    static function isEnabled()
     {
         if (!is_array(self::$arrVat)) self::init();
         return
-            (self::$arrVatEnabled[$is_home_country ? 1 : 0][$is_reseller ? 1 : 0]
+            (self::$arrVatEnabled[self::$is_home_country ? 1 : 0][self::$is_reseller ? 1 : 0]
                 ? true : false
             );
     }
@@ -261,11 +294,11 @@ class Vat
      * @return  boolean     True if VAT is included, false otherwise.
      * @static
      */
-    static function isIncluded($is_home_country, $is_reseller)
+    static function isIncluded()
     {
         if (!is_array(self::$arrVat)) self::init();
         return
-            (self::$arrVatIncluded[$is_home_country ? 1 : 0][$is_reseller ? 1 : 0]
+            (self::$arrVatIncluded[self::$is_home_country ? 1 : 0][self::$is_reseller ? 1 : 0]
                 ? true : false
             );
     }
@@ -613,12 +646,12 @@ class Vat
      * @return  double              Tax amount
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function amount($rate, $price, $is_home_country=false, $is_reseller=false)
+    static function amount($rate, $price)
     {
         if (!is_array(self::$arrVat)) self::init();
         // Is the vat enabled at all?
-        if (self::isEnabled($is_home_country, $is_reseller)) {
-            if (self::isIncluded($is_home_country, $is_reseller)) {
+        if (self::isEnabled(self::$is_home_country, self::$is_reseller)) {
+            if (self::isIncluded(self::$is_home_country, self::$is_reseller)) {
                 // Gross price; calculate the included VAT amount, like
                 // $amount = $price - 100 * $price / (100 + $rate)
                 return $price - 100*$price / (100+$rate);

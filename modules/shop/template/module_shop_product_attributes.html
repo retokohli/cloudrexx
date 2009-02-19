@@ -1,9 +1,15 @@
 <!-- START module_shop_product_attributes_options.html -->
 <script language="javascript" type="text/javascript">
-<!--
+// <![CDATA[
+// Selected Product Attribute value IDs 
 attributeValueId = new Array();
+{SHOP_PRODUCT_ATTRIBUTE_JS_VARS}
+
+// Event handlers
 onChangeHandler = new Array();
 arrElements = new Array();
+arrElements[0] = 'attributeValue';
+arrElements[1] = 'attributePrice';
 
 function storeNewOption()
 {
@@ -19,7 +25,8 @@ function storeNewOption()
   }
   document.getElementById('attributeValueList-0').setAttribute('multiple','multiple');
   document.getElementById('attributeValueList-0').focus();
-  for (var valueId = document.getElementById('attributeValueList-0').options.length-1; valueId >= 0; --valueId) {
+  for(valueId=document.getElementById('attributeValueList-0').options.length-1;valueId>=0;valueId--)
+  {
     document.getElementById('attributeValueList-0').options[valueId].selected = true;
   }
   return true;
@@ -27,13 +34,13 @@ function storeNewOption()
 
 function storeChanges()
 {
-  for (var selectboxNr = 0; selectboxNr < document.getElementsByTagName('select').length; ++selectboxNr) {
-    var strName = document.getElementsByTagName('select')[selectboxNr].getAttribute('id');
+  for (selectboxNr=0;selectboxNr<document.getElementsByTagName('select').length;selectboxNr++) {
+    strName = document.getElementsByTagName('select')[selectboxNr].getAttribute('id');
     if (strName) {
       if (strName.substring(0,18) == "attributeValueList") {
         document.getElementsByTagName('select')[selectboxNr].setAttribute('multiple','multiple');
         document.getElementsByTagName('select')[selectboxNr].focus();
-        for (valueId = document.getElementsByTagName('select')[selectboxNr].options.length-1; valueId >= 0; --valueId) {
+        for(valueId=document.getElementsByTagName('select')[selectboxNr].options.length-1;valueId>=0;valueId--) {
           document.getElementsByTagName('select')[selectboxNr].options[valueId].selected = true;
         }
       }
@@ -44,7 +51,7 @@ function storeChanges()
 
 function deleteOption(id)
 {
-  if (confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+  if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes&delId="+id);
 }
 
@@ -67,37 +74,40 @@ function setSelectedValue(id)
   updateAttributeValueList(id);
 
   // hide old elements
+//alert("(1) hiding name id "+id+", value id "+attributeValueId[id]);
   document.getElementById('attributeValue-'+attributeValueId[id]).style.display = "none";
   document.getElementById('attributePrice-'+attributeValueId[id]).style.display = "none";
-  document.getElementById('attributePricePrefix-'+attributeValueId[id]).style.display = "none";
 
   attributeValueId[id] = document.getElementById('attributeValueList-'+id).options[document.getElementById('attributeValueList-'+id).selectedIndex].value;
 
   // show selected elements
   document.getElementById('attributeValue-'+attributeValueId[id]).style.display = "inline";
   document.getElementById('attributePrice-'+attributeValueId[id]).style.display = "inline";
-  document.getElementById('attributePricePrefix-'+attributeValueId[id]).style.display = "inline";
 }
 
 function updateAttributeValueList(id)
 {
-  var typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
-  var type = typeMenu[0].selectedIndex;
-  var count = document.getElementById('attributeValueList-'+id).options.length;
-  var maxcount = count;
+// shirtprint
+  typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
+//alert("typeMenu "+typeMenu[0]+", name "+typeMenu[0].name);
+  type = typeMenu[0].selectedIndex;
+  count = document.getElementById('attributeValueList-'+id).options.length;
+  maxcount = count;
   if (type > 3) {
     if (maxcount > 1) maxcount = 1;
   }
+//alert("type "+type+", count "+count+", maxcount "+maxcount);
 
   // Remember the selected index
   selectedindex = document.getElementById('attributeValueList-'+id).selectedIndex;
   // Select the last value to make sure the right ones are removed, if any.
-  document.getElementById('attributeValueList-'+id).selectedIndex = count - 1;
+  document.getElementById('attributeValueList-'+id).selectedIndex = count-1;
 
   // update the content of the attributeValueList
-  for (var i = 0; i < count; ++i) {
+  for (i=0; i < count; ++i) {
+//alert("loop "+i+" of "+count+", max "+maxcount);
     if (i < maxcount) {
-      var valueId = document.getElementById('attributeValueList-'+id).options[i].value;
+      valueId = document.getElementById('attributeValueList-'+id).options[i].value;
       if (type > 3) {
         // Clear the value name for text and upload fields
         document.getElementById('attributeValue-'+valueId).value = '';
@@ -105,15 +115,16 @@ function updateAttributeValueList(id)
       } else {
         document.getElementById('attributeValue-'+valueId).disabled = '';
       }
-      var value = document.getElementById('attributeValue-'+valueId).value;
-      var prefix = document.getElementById('attributePricePrefix-'+valueId).value;
-      var price = document.getElementById('attributePrice-'+valueId).value;
+      value = document.getElementById('attributeValue-'+valueId).value;
+      price = document.getElementById('attributePrice-'+valueId).value;
+//alert("value "+value+", price "+price);
       document.getElementById('attributeValueList-'+id).options[i].childNodes[0].nodeValue =
-        value + ' (' + prefix + price + ' {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})';
+          value + ' (' + price + ' {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})';
     }
   }
+//alert("selectedindex "+selectedindex+", count "+count+", max "+maxcount);
   if (count > maxcount) {
-    for (var i = count-1; i >= maxcount; --i) {
+    for (i=count-1; i >= maxcount; --i) {
       document.getElementById('attributeValueList-'+id).selectedIndex = i;
       removeSelectedValues(id);
     }
@@ -124,28 +135,32 @@ function updateAttributeValueList(id)
 
 function removeSelectedValues(id)
 {
-  var selectedindex = document.getElementById('attributeValueList-'+id).selectedIndex;
+  selectedindex = document.getElementById('attributeValueList-'+id).selectedIndex;
   document.getElementById('attributeValueList-'+id).options[selectedindex] = null;
   if (selectedindex > 0) {
     --selectedindex;
   }
-  document.getElementById('attributeValueList-'+id).selectedIndex = selectedindex
+  document.getElementById('attributeValueList-'+id).selectedIndex = selectedindex;
   setSelectedValue(id);
 }
 
 function addValue(id)
 {
-  // Cannot add more than one option for text and upload fields
-  var typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
-  var type = typeMenu[0].selectedIndex;
-  var count = document.getElementById('attributeValueList-'+id).options.length;
+// shirtprint
+// Cannot add more than one option for text and upload fields
+  typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
+//alert("typeMenu "+typeMenu[0]+", name "+typeMenu[0].name);
+  type = typeMenu[0].selectedIndex;
+  count = document.getElementById('attributeValueList-'+id).options.length;
   if (type > 3) {
+//alert("type "+type+", count "+count);
     if (count > 0) {
-      alert("{TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE}")
+      alert("{TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE}");
       return;
     }
   }
-// TODO: Why isn't this declared first?
+//alert("type "+type+", count "+count+", adding");
+
   index++;
 
   // create new inputboxes
@@ -159,16 +174,11 @@ function addValue(id)
   elPrice.setAttribute('name','attributePrice['+index+']');
   elPrice.style.display = 'inline';
 
-  elPricePrefix = document.getElementById('attributePricePrefixTpl').cloneNode(true);
-  elPricePrefix.setAttribute('id','attributePricePrefix-'+index);
-  elPricePrefix.setAttribute('name','attributePricePrefix['+index+']');
-  elPricePrefix.style.display = 'inline';
-
   // hide old elements
+//alert("(2) hiding name id "+id+", value id "+attributeValueId[id]);
   if (document.getElementById('attributeValue-'+attributeValueId[id])) {
     document.getElementById('attributeValue-'+attributeValueId[id]).style.display = "none";
     document.getElementById('attributePrice-'+attributeValueId[id]).style.display = "none";
-    document.getElementById('attributePricePrefix-'+attributeValueId[id]).style.display = "none";
   }
 
   // set new index
@@ -177,11 +187,10 @@ function addValue(id)
   // add new elements
   document.getElementById('attributeValueInputboxes-'+id).appendChild(elValue);
   document.getElementById('attributePriceInputboxes-'+id).appendChild(elPrice);
-  document.getElementById('attributePricePrefixMenus-'+id).appendChild(elPricePrefix);
 
   // update the content of the attributeValueList
   document.getElementById('attributeValueList-'+id).options[document.getElementById('attributeValueList-'+id).options.length] = new Option('(+0.00 {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})',index,false,false);
-  for (var i = 0; i < document.getElementById('attributeValueList-'+id).options.length; ++i) {
+  for (i=0;i<document.getElementById('attributeValueList-'+id).options.length;i++) {
     if (document.getElementById('attributeValueList-'+id).options[i].value == index) {
       document.getElementById('attributeValueList-'+id).options[i].selected = true;
     } else {
@@ -191,35 +200,31 @@ function addValue(id)
   document.getElementById('attributeValue-'+index).focus();
   document.getElementById('attributeValue-'+index).onchange = "updateAttributeValueList('"+id+"')";
   document.getElementById('attributePrice-'+index).onchange = "updateAttributeValueList('"+id+"')";
-  document.getElementById('attributePricePrefix-'+index).onchange = "updateAttributeValueList('"+id+"')";
 
   // set event handlers
-  arrElements[0] = 'attributeValue';
-  arrElements[1] = 'attributePrice';
-  arrElements[2] = 'attributePricePrefix';
-
   for (i = 0; i < arrElements.length; ++i) {
     onChangeHandler[arrElements[i]+'-'+index] =
       new Function(document.getElementById(arrElements[i]+'-'+index).onchange);
 
     if (document.getElementById(arrElements[i]+'-'+index).addEventListener) {
-      document.getElementById(arrElements[i]+'-'+index).addEventListener('change', onChangeHandler[arrElements[i]+'-'+index], false);
+        document.getElementById(arrElements[i]+'-'+index).addEventListener('change', onChangeHandler[arrElements[i]+'-'+index], false);
     } else if (document.getElementById(arrElements[i]+'-'+index).attachEvent) {
-      document.getElementById(arrElements[i]+'-'+index).attachEvent('onchange', onChangeHandler[arrElements[i]+'-'+index]);
+        document.getElementById(arrElements[i]+'-'+index).attachEvent('onchange', onChangeHandler[arrElements[i]+'-'+index]);
     }
   }
 
   // update the content of the attributeValueList
   updateAttributeValueList(id);
+
 }
 
-function shopOptionDoAction(strForm, strCheckbox, objSelect, strAct)
+function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 {
-  if (checkboxIsChecked(strForm,strCheckbox) == true) {
-    switch (strAct) {
+  if(checkboxIsChecked(strForm,strCheckbox) == true){
+    switch(strAct){
       case 'del':
-        if (confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-          document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes&delProduct=1";
+        if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+          document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes";
           document.getElementById('shopSelectOptions').submit();
         }
         break;
@@ -229,9 +234,7 @@ function shopOptionDoAction(strForm, strCheckbox, objSelect, strAct)
   }
   objSelect.value = 0;
 }
-
-{SHOP_PRODUCT_ATTRIBUTE_JS_VARS}
-// -->
+// ]]>
 </script>
 <ul id="tabmenu">
 <li><a id="attributeTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_OPTIONS}">{TXT_OPTIONS}</a></li>
@@ -239,7 +242,6 @@ function shopOptionDoAction(strForm, strCheckbox, objSelect, strAct)
 </ul>
 <input name="attributeValueTpl" id="attributeValueTpl" value="" maxlength="32" style="display: none; width: 170px;" type="text" />
 <input name="attributePriceTpl" id="attributePriceTpl" value="0.00" maxlength="9" style="display: none; width: 170px; text-align: right;" type="text" />
-<select style="width:50px;display:none;" name="attributePricePrefixTpl" id="attributePricePrefixTpl" size="1"><option value="+" selected="selected">+</option><option value="-">-</option></select>
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="attributeTab" style="display:block">
 <form name="shopSelectOptions" id="shopSelectOptions" method="post" action="">
@@ -269,10 +271,6 @@ function shopOptionDoAction(strForm, strCheckbox, objSelect, strAct)
                 <td nowrap="nowrap"><div style="border-bottom:0px;text-align:right;display:inline;" id="attributePriceInputboxes-{SHOP_PRODUCT_ATTRIBUTE_ID}">{SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}</div></td>
               </tr>
               <tr>
-                <td><div style="border-bottom:0px;">{TXT_PRICE_PREFIX}</div></td>
-                <td id="attributePricePrefixMenus-{SHOP_PRODUCT_ATTRIBUTE_ID}"><div style="border-bottom:0px;text-align:right;">{SHOP_PRODUCT_ATTRIBUTE_PRICEPREFIX_MENUS}</div></td>
-              </tr>
-              <tr>
                 <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" id="newAttributeValue-{SHOP_PRODUCT_ATTRIBUTE_ID}" value="{TXT_ADD_NEW_VALUE}" onclick="addValue({SHOP_PRODUCT_ATTRIBUTE_ID})" /></div></td>
               </tr>
             </table>
@@ -295,7 +293,7 @@ function shopOptionDoAction(strForm, strCheckbox, objSelect, strAct)
 <!-- end shopContent1 div -->
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="attributeTab" style="display:none">
-  <form action="?cmd=shop&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
+  <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
     <table summary="" border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
       <tr>
         <th nowrap="nowrap" width="15%">&nbsp;{TXT_NAME}</th>
@@ -319,10 +317,6 @@ function shopOptionDoAction(strForm, strCheckbox, objSelect, strAct)
             <tr>
               <td><div style="border-bottom:0px;">{TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})</div></td>
               <td nowrap="nowrap"><div style="border-bottom:0px;" id="attributePriceInputboxes-0"></div></td>
-            </tr>
-            <tr>
-              <td><div style="border-bottom:0px;">{TXT_PRICE_PREFIX}</div></td>
-              <td id="attributePricePrefixMenus-0"><div style="border-bottom:0px;text-align:right;"></div></td>
             </tr>
             <tr>
               <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" value="{TXT_ADD_NEW_VALUE}" onclick="addValue(0)" /></div></td>

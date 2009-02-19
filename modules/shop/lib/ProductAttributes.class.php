@@ -62,29 +62,35 @@ class ProductAttributes  // friend Product
 
 
     /**
+     * Clear all static data
+     *
+     * You *SHOULD* call this after updating database records.
+     * @static
+     */
+    static function reset()
+    {
+        // These will be reinitialised the next time they are accessed
+        self::$arrName     = false;
+        self::$arrValue    = false;
+        self::$arrRelation = false;
+    }
+
+
+    /**
      * Returns an array of ProductAttribute names.
      *
-     * Set the $flagReuse parameter to false after any Attribute properties
-     * have been changed.
      * If the optional $productId argument is greater than zero,
      * only names associated with this Product are returned,
      * all names found in the database otherwise.
      * @static
      * @access  public
-     * @param   boolean     $flagReuse      If true, returns the previously
-     *                                      initialized array, if any.
-     *                                      Reinitializes the array otherwise.
      * @param   integer     $productId      The optional Product ID
      * @return  array                       Array of ProductAttribute names
      *                                      upon success, false otherwise.
      */
-    function getNameArray($flagReuse=true, $productId=0)
+    static function getNameArrayByProductId($productId=0)
     {
         global $objDatabase;
-
-        if ($flagReuse && $this->arrName) {
-            return $this->arrName;
-        }
 
         $query = "
             SELECT DISTINCT id, name, display_type
@@ -96,26 +102,252 @@ class ProductAttributes  // friend Product
                    ORDER BY sort_id ASC
             " : '');
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        $this->arrName      = array();
-        $this->arrNameIndex = array();
-        $index = 0;
+        if (!$objResult) return false;
+        self::$arrName      = array();
         while (!$objResult->EOF) {
             $arrName = array();
-            $arrName['id'] = $objResult->fields['id'];
+            $id = $objResult->fields['id'];
+            $arrName['id'] = $id;
             $arrName['name'] = $objResult->fields['name'];
             $arrName['type'] = $objResult->fields['display_type'];
-            $this->arrName[++$index] = $arrName;
-            $this->arrNameIndex[$arrName['id']] = $index;
+            self::$arrName[$id] = $arrName;
             $objResult->MoveNext();
         }
-        return $this->arrName;
+        return self::$arrName;
+    }
+
+
+    /** NEW **/
+    static function getNameArrayByNameId($name_id)
+    {
+        if (empty(self::$arrName) && !self::initNameArray()) return false;
+        if (empty(self::$arrName[$name_id])) return false;
+        return self::$arrName[$name_id];
+    }
+
+
+    /** NEW **/
+    static function getNameArray()
+    {
+        if (empty(self::$arrName) && !self::initNameArray()) return false;
+        return self::$arrName;
+    }
+
+
+    static function initNameArray($name_id=0)
+    {
+        global $objDatabase;
+
+        if (!isset(self::$arrName)) self::$arrName = array();
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`name`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_NAME
+//        );
+//        $query = "
+//            SELECT `name`.`id`, `name`.`display_type`".
+//                   $arrSqlName['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name` AS `name`".
+//                   $arrSqlName['join'].
+//            ($name_id ? " WHERE `name`.`id`=$name_id" : '');
+        $query = "
+            SELECT `name`.`id`, `name`.`display_type`,
+                   `name`.`name`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name` AS `name`".
+            ($name_id ? " WHERE `name`.`id`=$name_id" : '');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        while (!$objResult->EOF) {
+            $id = $objResult->fields['id'];
+//            $text_name_id = $objResult->fields[$arrSqlName['name']];
+//            $strName = $objResult->fields[$arrSqlName['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($strName === null) {
+//                $objText = Text::getById($text_name_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strName = $objText->getText();
+//            }
+            self::$arrName[$id] = array(
+                'id' => $id,
+                'name' => $objResult->fields['name'], //$strName,
+                'type' => $objResult->fields['display_type'],
+            );
+            $objResult->MoveNext();
+        }
+        return true;
+    }
+
+
+    static function getValueArray()
+    {
+        if (empty(self::$arrValue) && !self::initValueArray()) return false;
+        return self::$arrValue;
+    }
+
+
+    static function getValueArrayByNameId($name_id)
+    {
+        if (empty(self::$arrValue) && !self::initValueArray()) return false;
+    	if (empty(self::$arrValue[$name_id])) return array();
+        return self::$arrValue[$name_id];
+    }
+
+
+    static function initValueArray($name_id=0)
+    {
+        global $objDatabase;
+
+        if (!isset(self::$arrValue)) self::$arrValue = array();
+//        $arrSqlValue = Text::getSqlSnippets(
+//            '`value`.`text_value_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
+//        );
+//        $query = "
+//            SELECT `value`.`id`, `value`.`name_id`,
+//                   `value`.`price`".$arrSqlValue['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value` as `value`".
+//                   $arrSqlValue['join'].
+//            ($name_id ? " WHERE `value`.`name_id`=$name_id" : '');
+        $query = "
+            SELECT `value`.`id`, `value`.`name_id`,
+                   `value`.`price`, `value`.`value`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value` as `value`".
+            ($name_id ? " WHERE `value`.`name_id`=$name_id" : '');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        while (!$objResult->EOF) {
+            $value_id = $objResult->fields['id'];
+            $name_id = $objResult->fields['name_id'];
+//            $text_value_id = $objResult->fields[$arrSqlValue['name']];
+//            $strValue = $objResult->fields[$arrSqlValue['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($strValue === null) {
+//                $objText = Text::getById($text_value_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strValue = $objText->getText();
+//            }
+            if (!isset(self::$arrValue[$name_id]))
+                self::$arrValue[$name_id] = array();
+            self::$arrValue[$name_id][$value_id] = array(
+                'id' => $value_id,
+                'name_id' => $name_id,
+                'value' => $objResult->fields['price'], //$strValue,
+//                'text_value_id' => $text_value_id,
+                'price' => $objResult->fields['price'],
+            );
+            $objResult->MoveNext();
+        }
+        return true;
     }
 
 
     /**
+     * @todo
+     */
+    static function getRelationArray($product_id=0)
+    {
+        // No Product ID, and the array has not been initialized yet,
+        // or some Product ID, and the array element has not been initialized yet
+        if (   (   empty($product_id)
+                && empty(self::$arrRelation))
+            || (   $product_id
+                && empty(self::$arrRelation[$product_id]))) {
+            // Initialize the array with all the values of the
+            // Product Attribute selected, if any, or all
+            if (!self::initRelationArray($product_id)) return false;
+        }
+        // No Product ID:  Return the entire array
+        if (empty($product_id)) return self::$arrRelation;
+        // Otherwise, there is some Product ID:  Return the selected array element
+        return (isset(self::$arrRelation[$product_id])
+            ? self::$arrRelation[$product_id]
+            : false
+        );
+    }
+
+
+    /**
+     * @todo
+     */
+    static function initRelationArray($product_id=0)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT `product_id`, `attributes_value_id`, `sort_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`".
+            ($product_id ? " WHERE `product_id`=$product_id" : '')."
+             ORDER BY `sort_id` ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        if (!isset(self::$arrRelation)) self::$arrRelation = array();
+        while (!$objResult->EOF) {
+            $product_id = $objResult->fields['product_id'];
+            $value_id = $objResult->fields['attributes_value_id'];
+            if (!isset(self::$arrRelation[$product_id]))
+                self::$arrRelation[$product_id] = array();
+            self::$arrRelation[$product_id][$value_id] = $objResult->fields['sort_id'];
+            $objResult->MoveNext();
+        }
+        return true;
+
+    }
+
+
+    /**
+     * OLD
+     * Returns an array of ProductAttribute relations.
+     *
+     * Set the $flagReuse parameter to false after any Attribute properties
+     * have been changed.
+     * If the optional $productId argument is greater than zero,
+     * only relations associated with this Product are returned,
+     * all relations found in the database otherwise.
+     * @static
+     * @access  public
+     * @param   boolean     $flagReuse      If true, returns the previously
+     *                                      initialized array, if any.
+     *                                      Reinitializes the array otherwise.
+     * @param   integer     $productId      The optional Product ID
+     * @return  array                       Array of ProductAttribute relations
+     *                                      upon success, false otherwise.
+     */
+    function getRelationArray_200($flagReuse=true, $productId=0)
+    {
+        global $objDatabase;
+
+        if ($flagReuse && self::$arrRelation) {
+            return self::$arrRelation;
+        }
+
+        $query = "
+            SELECT *
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
+        ".($productId ? "WHERE product_id=$productId" : '')."
+          ORDER BY sort_id ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        self::$arrRelation = array();
+        while (!$objResult->EOF) {
+            $arrRelation = array();
+            $id = $objResult->fields['attribute_id'];
+            $arrRelation['id']        = $id;
+            $arrRelation['productId'] = $objResult->fields['product_id'];
+            $arrRelation['nameId']    = $objResult->fields['attributes_name_id'];
+            $arrRelation['valueId']   = $objResult->fields['attributes_value_id'];
+            $arrRelation['order']     = $objResult->fields['sort_id'];
+            self::$arrRelation[$id]   = $arrRelation;
+            $objResult->MoveNext();
+        }
+        return self::$arrRelation;
+    }
+
+
+    /**
+     * OBSOLETE
      * Returns an array of Attribute value IDs for the specified Product.
      *
      * The array has the form
@@ -129,7 +361,6 @@ class ProductAttributes  // friend Product
      * @param   integer     $productId      The Product ID
      * @return  array                       Array of ProductAttribute value IDs
      *                                      upon success, false otherwise.
-     */
     function getProductValueArray($productId)
     {
         global $objDatabase;
@@ -154,64 +385,13 @@ class ProductAttributes  // friend Product
         }
         return $arrValue;
     }
-
-
-    /**
-     * Returns an array of ProductAttribute relations.
-     *
-     * Set the $flagReuse parameter to false after any Attribute properties
-     * have been changed.
-     * If the optional $productId argument is greater than zero,
-     * only relations associated with this Product are returned,
-     * all relations found in the database otherwise.
-     * @static
-     * @access  public
-     * @param   boolean     $flagReuse      If true, returns the previously
-     *                                      initialized array, if any.
-     *                                      Reinitializes the array otherwise.
-     * @param   integer     $productId      The optional Product ID
-     * @return  array                       Array of ProductAttribute relations
-     *                                      upon success, false otherwise.
      */
-    function getRelationArray($flagReuse=true, $productId=0)
-    {
-        global $objDatabase;
-
-        if ($flagReuse && $this->arrRelation) {
-            return $this->arrRelation;
-        }
-
-        $query = "
-            SELECT *
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-        ".($productId ? "WHERE product_id=$productId" : '')."
-          ORDER BY name_id ASC, sort_id ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        $this->arrRelation      = array();
-        $this->arrRelationIndex = array();
-        $index = 0;
-        while (!$objResult->EOF) {
-            $arrRelation = array();
-            $arrRelation['id']        = $objResult->fields['attribute_id'];
-            $arrRelation['productId'] = $objResult->fields['product_id'];
-            $arrRelation['nameId']    = $objResult->fields['attributes_name_id'];
-            $arrRelation['valueId']   = $objResult->fields['attributes_value_id'];
-            $arrRelation['order']     = $objResult->fields['sort_id'];
-            $this->arrRelation[++$index] = $arrRelation;
-            $this->arrRelationIndex[$arrRelation['id']] = $index;
-            $objResult->MoveNext();
-        }
-        return $this->arrRelation;
-    }
 
 
     /**
      * Creates a relation between the Product Attribute value ID and the
-     * Product ID.     *
+     * Product ID.
+     *
      * The optional $order argument determines the order position of the value.
      * @static
      * @param   integer     $value_id        The ProductAttribute value ID
@@ -363,9 +543,9 @@ class ProductAttributes  // friend Product
     {
         $inputBoxes = '';
         $select = true;
-        $arrAttributeName = ProductAttributes::getNameArray($name_id);
+        $arrAttributeName = ProductAttributes::getNameArrayByNameId($name_id);
         $display_type = $arrAttributeName['type'];
-        foreach (ProductAttributes::getValueArray($name_id) as $value_id => $arrAttributeValue) {
+        foreach (ProductAttributes::getValueArrayByNameId($name_id) as $value_id => $arrAttributeValue) {
             $inputBoxes .=
                 '<input type="text" name="'.$name.'['.$value_id.']" '.
                 'id="'.$name.'-'.$value_id.'" '.
@@ -402,7 +582,7 @@ class ProductAttributes  // friend Product
     ) {
         global $_ARRAYLANG;
 
-        $arrValues = self::getValueArray($name_id);
+        $arrValues = self::getValueArrayByNameId($name_id);
 //echo("PAs::getAttributeValueMenu($name_id, $name, $selectedId, $onchange, $style):  Values: ".var_export($arrValues, true)."<br />");
         // No options, or an error occurred
         if (!$arrValues) return '';
@@ -440,10 +620,17 @@ class ProductAttributes  // friend Product
     static function getAttributeJSVars()
     {
         $jsVars = '';
+        $highestIndex = 0;
         foreach (ProductAttributes::getValueArray() as $name_id => $arrAttributeValue) {
-            list($value_id, $arrValue) = each($arrAttributeValue);
-            $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
+        	$first = true;
+        	foreach (array_keys($arrAttributeValue) as $value_id) {
+	            if ($first)
+	                $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
+	            $first = false;
+	            if ($value_id > $highestIndex) $highestIndex = $value_id;
+        	}
         }
+        $jsVars .= "\nindex = ".$highestIndex.";\n";
         return $jsVars;
     }
 

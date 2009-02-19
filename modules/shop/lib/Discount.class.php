@@ -508,8 +508,9 @@ class Discount
      */
     static function getCustomerGroupName($id)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
+        if (!is_numeric($id)) return $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'];
         $query = "
             SELECT `name`
               FROM `".DBPREFIX."module_shop_customer_group`
@@ -517,9 +518,7 @@ class Discount
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        if (!$objResult->EOF) {
-            return $objResult->fields['name'];
-        }
+        if (!$objResult->EOF) return $objResult->fields['name'];
         return '';
     }
 
