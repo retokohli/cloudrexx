@@ -105,15 +105,11 @@ class PaymentProcessing
 
 
     /**
-     * Constructor
-     * @param   array   $arrConfig    Shop configuration array
+     * Initialize known payment service providers
      */
-    function __construct($arrConfig)
+    static function init()
     {
         global $objDatabase;
-
-        $this->arrConfig = $arrConfig;
-        $this->_imagePath = ASCMS_PATH_OFFSET.'/modules/shop/images/payments/';
 
         $query = '
             SELECT id, type, name, description,
@@ -124,7 +120,6 @@ class PaymentProcessing
         $objResult = $objDatabase->Execute($query);
         while(!$objResult->EOF) {
             self::$arrPaymentProcessor[$objResult->fields['id']] = array(
-
                 'id'          => $objResult->fields['id'],
                 'type'        => $objResult->fields['type'],
                 'name'        => $objResult->fields['name'],
@@ -550,7 +545,7 @@ class PaymentProcessing
                 "</option>\n"
               : ''
             );
-        foreach (self::$arrPaymentProcessor as $id => $arrPaymentProcessor) {
+        foreach (array_keys(self::$arrPaymentProcessor) as $id) {
             $strMenuoptions .=
                 '<option value="'.$id.'"'.
                 ($id == $selected_id ? ' selected="selected"' : '').'>'.

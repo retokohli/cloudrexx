@@ -50,9 +50,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttributes.class.php';
  */
 class Product
 {
-    const defaultImage = 'no_image.gif';
-    const thumbnailSuffix = '.thumb';
-
     /**
      * @var     string          $code               Product code
      * @access  private
@@ -245,12 +242,12 @@ class Product
         $this->name         = strip_tags($name);
         $this->distribution = strip_tags($distribution);
         $this->price        = floatval($price);
-        $this->sortingOrder = intval($sortingOrder);
+        $this->order = intval($order);
         $this->weight       = intval($weight);
         $this->id           = intval($id);
         $this->setStatus($status);
 
-        if ($this->sortingOrder <= 0) { $this->sortingOrder = 0; }
+        if ($this->order <= 0) { $this->order = 0; }
         // Default values for everything else as stated above
 
         // Enable cloning of Products with ProductAttributes
@@ -456,7 +453,7 @@ class Product
      * @return  string                              Short description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getShortdesc()
+    function getshortdesc()
     {
         return $this->shortdesc;
     }
@@ -465,7 +462,7 @@ class Product
      * @param   string          $shortdesc          Short description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setShortdesc($shortdesc)
+    function setshortdesc($shortdesc)
     {
         $this->shortdesc = trim(strip_tags($shortdesc));
     }
@@ -1029,7 +1026,7 @@ class Product
                         // $arrPicture[0] contains the file name
                         $strFileName = base64_decode($arrPicture[0]);
                         // check whether it is the default image
-                        if (preg_match('/'.self::defaultImage.'$/', $strFileName))
+                        if (preg_match('/'.ShopLibrary::noPictureName.'$/', $strFileName))
                             continue;
                         // Delete the picture and thumbnail:
                         // Split file name and extension -- in case someone
@@ -1133,7 +1130,7 @@ class Product
                 handler='$this->distribution',
                 normalprice=$this->price,
                 resellerprice=$this->resellerPrice,
-                shortdesc='".addslashes($this->shortDesc)."',
+                shortdesc='".addslashes($this->shortdesc)."',
                 description='".addslashes($this->description)."',
                 stock=$this->stock,
                 stock_visibility=".($this->isStockVisible ? 1 : 0).",
@@ -1191,12 +1188,12 @@ class Product
                 $this->categoryId,
                 '$this->distribution',
                 $this->price, $this->resellerPrice, '".
-                addslashes($this->shortDesc)."', '".
+                addslashes($this->shortdesc)."', '".
                 addslashes($this->description)."',
                 $this->stock, ".
                 ($this->isStockVisible ? 1 : 0).",
                 $this->discountPrice, ".
-                ($this->isSpecialOffer ? 1 : 0).", '".
+                ($this->isSpecialOffer ? 1 : 0).", ".
                 ($this->status ? 1 : 0).", ".
                 ($this->isB2B ? 1 : 0).", ".
                 ($this->isB2C ? 1 : 0).",
@@ -1252,7 +1249,7 @@ class Product
         );
         $objProduct->pictures         = $objResult->fields['picture'];
         $objProduct->resellerPrice    = floatval($objResult->fields['resellerprice']);
-        $objProduct->shortDesc        = $objResult->fields['shortdesc'];
+        $objProduct->shortdesc        = $objResult->fields['shortdesc'];
         $objProduct->description      = $objResult->fields['description'];
         $objProduct->stock            = intval($objResult->fields['stock']);
         $objProduct->setStockVisible($objResult->fields['stock_visibility']);

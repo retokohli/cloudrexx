@@ -1,5 +1,7 @@
-<?PHP
+<?php
+
 /**
+ * Distribution class
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     2.1.0
@@ -8,8 +10,7 @@
  */
 
 /**
- * The Distribution class provides the different distribution methods.
- *
+ * Provides methods for handling different distribution types
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
@@ -21,38 +22,29 @@ class Distribution
 {
     /**
      * The types of distribution
-     *
      * @static
      * @access  private
-     * @var     array   $arrDistributionTypes
+     * @var     array
      */
-    //static
-    var $arrDistributionTypes;
-
+    private static $arrDistributionTypes = array(
+        'delivery',
+        'download',
+        'none',
+    );
 
     /**
      * The default distribution type
      *
+     * Must be set to one of the values of {@link $arrDistributionTypes}.
      * @static
      * @access  private
-     * @var     string  $defaultDistributionType
+     * @var     string
      */
-    //static
-    var $defaultDistributionType;
+    private static $defaultDistributionType = 'delivery';
 
 
     /**
-     * Set up a Distribution object (PHP4)
-     *
-     * @access      public
-     * @return      Distribution object
-     */
-    function Distribution()
-    {
-        $this->__construct();
-    }
-
-    /**
+     * OBSOLETE -- All is static now.
      * Set up a Distribution object (PHP5)
      *
      * Mind that there is one additional delivery type here, as compared to
@@ -61,80 +53,94 @@ class Distribution
      * the user actually chose a valid distribution type.
      * @access      public
      * @return      Distribution object
-     */
     function __construct()
     {
-        $this->arrDistributionTypes = array(
-            'delivery',
-            'download',
-            'none',
-        );
-        $this->defaultDistributionType = $this->arrDistributionTypes[0];
     }
+     */
 
 
     /**
      * Verifies whether the string argument is the name of a valid
      * Distribution type.
-     *
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      * @param   string      $string
-     * return   boolean                 True if it is valid, false otherwise
+     * @return  boolean                 True for valid distribution types,
+     *                                  false otherwise
+     * @static
      */
-    function isDistributionType($string)
+    static function isDistributionType($string)
     {
-        if (array_search($string, $this->arrDistributionTypes) !== false) {
+        if (array_search($string, self::$arrDistributionTypes) !== false)
             return true;
-        }
         return false;
     }
 
 
     /**
      * Returns the default distribution type as string
-     *
-     * @return  string  The default distribution type
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @return  string                  The default distribution type
+     * @static
      */
-    function getDefault()
+    static function getDefault()
     {
-        return $this->defaultDistributionType;
+        return self::$defaultDistributionType;
     }
 
 
     /**
      * Returns a string containing the HTML code for the distribution type
      * dropdown menu.
-     *
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      * @param   string  $selected   The distribution type to preselect
      * @param   string  $menuName   The name and ID for the select element
      * @param   string  $selectAttributes   Optional attributes for the select tag
      * @return  string              The dropdown menu code
-     *
+     * @static
      */
-    function getDistributionMenu(
+    static function getDistributionMenu(
         $selected='', $menuName='shopDistribution',
         $onChange='', $selectAttributes='')
     {
+        $menu =
+            "<select name='$menuName' id='$menuName'".
+            ($selectAttributes ? ' '.$selectAttributes : '').
+            ($onChange         ? ' onchange="'.$onChange.'"' : '').">".
+            self::getDistributionMenuoptions($selected).
+            "</select>\n";
+        return $menu;
+    }
+
+
+    /**
+     * Returns a string containing the HTML code for the distribution type
+     * dropdown menu options.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @param   string  $selected   The distribution type to preselect
+     * @return  string              The HTML dropdown menu options code
+     * @static
+     */
+    static function getDistributionMenuoptions($selected='')
+    {
         global $_ARRAYLANG;
 
-        $menu = "<select name='$menuName' id='$menuName'".
-            ($selectAttributes == '' ? '' : " $selectAttributes").
-            ($onChange         == '' ? '' : ' onchange="'.$onChange.'"').
-            ">".
-            ($selected == ''
-                ? "<option value='0' selected='selected'>".
-                  $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
-                  "</option>\n"
-                : ''
-            );
-        foreach ($this->arrDistributionTypes as $type) {
-            $menu .= "<option value='$type'".
-                ($selected == $type ? ' selected="selected"' : '').
-                '>'.
-                $_ARRAYLANG['TXT_DISTRIBUTION_'.strtoupper($type)].
+        $menuoptions = ($selected == ''
+            ? '<option value="" selected="selected">'.
+              $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
+              "</option>\n"
+            : ''
+        );
+        foreach (self::$arrDistributionTypes as $type) {
+            $menuoptions .=
+                '<option value="'.$type.'"'.
+                ($selected == $type
+                    ? ' selected="selected"' : ''
+                ).'>'.$_ARRAYLANG['TXT_DISTRIBUTION_'.strtoupper($type)].
                 "</option>\n";
         }
-        return $menu.'</select>';
+        return $menuoptions;
     }
+
 }
 
 ?>

@@ -1,5 +1,7 @@
 <?php
+
 /**
+ * Shipment class
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
@@ -8,8 +10,7 @@
  */
 
 /**
- * Useful methods to handle shipping related stuff
- *
+ * Useful methods to handle everything related to shipments
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
@@ -17,20 +18,38 @@
 class Shipment
 {
     /**
-     * Array of active shippers and shipment conditions
+     * Array of active shippers
+     * @static
      * @var     array
      * @access  private
      */
-    var $arrShippers  = array();
-    var $arrShipments = array();
+    private static $arrShippers  = array();
+
+    /**
+     * Array of active shipment conditions
+     * @static
+     * @var     array
+     * @access  private
+     */
+    private static $arrShipments = array();
 
 
     /**
-     * Construct a Shipment object
+     * OBSOLETE -- All static now.
+     * See {@link init()}.
      *
-     * Initialize the shipping options from the shipper (s) and shipment_cost (c)
-     * tables. For each shipper, create array entries like:
-     * arrShippers[s.id]        = array (
+     * Construct a Shipment object
+    function __construct($ignoreStatus=1)
+    {
+    }
+     */
+
+    /**
+     * Initialize shippers and shipment conditions
+     *
+     * Read the shipping options from the shipper (s) and shipment_cost (c)
+     * tables.  For each shipper, creates array entries like:
+     * arrShippers[s.id] = array (
      *      name       => s.name,
      *      status     => s.status
      * )
@@ -39,59 +58,79 @@ class Shipment
      *      price_free => c.price_free,
      *      cost       => c.cost
      * )
-     *
      * Note that the table module_shop_shipment has been replaced by
      * module_shop_shipper (id, name, status) and
      * module_shop_shipment_cost (id, shipper_id, max_weight, cost, price_free)
      * as of version 1.1.
-     *
-     * @global  ADONewConnection  $objDatabase    Database connection object
-     * @param   boolean         $ignoreStatus   If false, only records with status==1 are
-     *                                          returned, all records otherwise.
-     *                                          Use $ignoreStatus=1 for the settings (backend).
+     * @global  ADONewConnection
+     * @param   boolean   $ignoreStatus   If false, only records with status==1
+     *                                    are returned, all records otherwise.
+     *                                    Use $ignoreStatus=true for the
+     *                                    backend settings.
      * @return  void
-     * @since   v1.1
+     * @since   1.1
+     * @version 2.1.0
      */
-    function __construct($ignoreStatus=1)
+    static function init()
     {
         global $objDatabase;
-        // get the shippers first
-        $objResult = $objDatabase->Execute(
-            "SELECT id, name, status ".
-            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper ".
-            ($ignoreStatus ? '' : 'WHERE status=1 ').
-            "ORDER BY id ASC");
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $sid = $objResult->fields['id'];
-                $this->arrShippers[$sid] = array(
-                    'name'     => $objResult->fields['name'],
-                    'status'   => $objResult->fields['status'],
-                );
-                $objResult->MoveNext();
-            }
 
-            // now get the associated shipment conditions from shipment_cost
-            $objResult = $objDatabase->Execute(
-                "SELECT c.id, c.shipper_id, c.max_weight, c.cost, c.price_free ".
-                "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost c ".
-                "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_shipper s ".
-                "ON s.id=shipper_id ".
-                ($ignoreStatus ? '' : 'WHERE status=1'));
-            if ($objResult) {
-                while (!$objResult->EOF) {
-                    $sid = $objResult->fields['shipper_id'];
-                    $cid = $objResult->fields['id'];
-                    $this->arrShipments[$sid][$cid] =
-                        array(
-                            'max_weight' => Weight::getWeightString($objResult->fields['max_weight']),
-                            'price_free' => $objResult->fields['price_free'],
-                            'cost'       => $objResult->fields['cost'],
-                        );
-                    $objResult->MoveNext();
-                } // end while
-            }
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`shipper`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_SHIPPER_NAME
+//        );
+//        $objResult = $objDatabase->Execute("
+//            SELECT `shipper`.`id`, `shipper`.`status`".$arrSqlName['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`".
+//                   $arrSqlName['join']."
+//             ORDER BY `shipper`.`id` ASC
+//        ");
+        $objResult = $objDatabase->Execute("
+            SELECT `shipper`.`id`, `shipper`.`status`, `shipper`.`name`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`
+             ORDER BY `shipper`.`id` ASC
+        ");
+        if (!$objResult) return false;
+        while (!$objResult->EOF) {
+            $sid = $objResult->fields['id'];
+//            $text_name_id = $objResult->fields[$arrSqlName['name']];
+//            $strName = $objResult->fields[$arrSqlName['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($text_name_id && $strName === null) {
+//                $objText = Text::getById($text_name_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strName = $objText->getText();
+//            }
+            self::$arrShippers[$sid] = array(
+                'id' => $objResult->fields['id'],
+                'name' => $objResult->fields['name'], //$strName,
+//                'text_name_id' => $text_name_id,
+                'status' => $objResult->fields['status'],
+            );
+            $objResult->MoveNext();
         }
+        // Now get the associated shipment conditions from shipment_cost
+        $objResult = $objDatabase->Execute("
+            SELECT `c`.`id`, `c`.`shipper_id`,
+                   `c`.`max_weight`, `c`.`cost`, `c`.`price_free`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost` AS `c`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
+                ON `s`.`id`=`shipper_id`
+        ");
+        if (!$objResult) return false;
+        while (!$objResult->EOF) {
+            $sid = $objResult->fields['shipper_id'];
+            $cid = $objResult->fields['id'];
+            self::$arrShipments[$sid][$cid] =
+                array(
+                    'max_weight' => Weight::getWeightString($objResult->fields['max_weight']),
+                    'price_free' => $objResult->fields['price_free'],
+                    'cost'       => $objResult->fields['cost'],
+                );
+            $objResult->MoveNext();
+        }
+        return true;
     }
 
 
@@ -103,64 +142,66 @@ class Shipment
      */
     static function getShipperName($shipperId)
     {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper
-             WHERE id=$shipperId
-        ");
-        if (!$objResult || $objResult->EOF) return false;
-        return $objResult->fields['name'];
+    	if (empty($shipperId)) return '';
+        if (empty(self::$arrShippers)) self::init(true);
+        if (empty(self::$arrShippers[$shipperId])) return '';
+        return self::$arrShippers[$shipperId]['name'];
     }
 
 
     /**
      * Access method.  Returns the arrShippers array.
-     * See {@link Shipment()}.
+     * See {@link init()}.
+     * @return                The array of shippers
+     * @static
      */
-    function getShippersArray()
+    static function getShippersArray()
     {
-        return $this->arrShippers;
+        if (empty(self::$arrShippers)) self::init();
+        return self::$arrShippers;
     }
 
     /**
      * Access method.  Returns the arrShipments array.
      * See {@link Shipment()}.
+     * @return  array         The array of shipments
+     * @static
      */
-    function getShipmentsArray()
+    static function getShipmentsArray()
     {
-        return $this->arrShipments;
+        if (empty(self::$arrShippments)) self::init();
+    	return self::$arrShipments;
     }
 
 
     /**
      * Returns the shipment arrays (shippers and shipment costs) in JavaScript
      * syntax.
-     *
-     * @param   mixed   $objCurrency    Currency object, see {@link Currency.class.php}
+     * @static
+     * @return  string      The Shipment arrays definition in JavaScript
      */
-    function getJSArrays($objCurrency)
+    static function getJSArrays()
     {
+        if (empty(self::$arrShippers)) self::init();
         // Set up shipment cost javascript arrays
         // Shippers are not needed for calculating the shipment costs
         //$strJsArrays = "arrShippers = new Array();\narrShipments = new Array();\n";
         $strJsArrays = "arrShipments = new Array();\n";
         // Insert shippers by id
-        foreach (array_keys($this->arrShippers) as $sid) {
+        foreach (array_keys(self::$arrShippers) as $sid) {
             //$strJsArrays .= "arrShippers[$sid] = new Array('".
-            //    $this->arrShippers[$sid]['name']."', ".
-            //    $this->arrShippers[$sid]['status'].");\n";
+            //    self::$arrShippers[$sid]['name']."', ".
+            //    self::$arrShippers[$sid]['status'].");\n";
             // Insert shipments by shipper id
             $strJsArrays .= "arrShipments[$sid] = new Array();\n";
             $i = 0;
-            if (isset($this->arrShipments[$sid])) {
-                foreach ($this->arrShipments[$sid] as $cid => $arrShipment) {
+            if (isset(self::$arrShipments[$sid])) {
+                foreach (self::$arrShipments[$sid] as $cid => $arrShipment) {
                     $strJsArrays .=
                         "arrShipments[$sid][".$i++."] = new Array('$cid', '".
                         $arrShipment['max_weight']."', '".   // string
-                        $objCurrency->getCurrencyPrice($arrShipment['price_free'])."', '".
-                        $objCurrency->getCurrencyPrice($arrShipment['cost'])."');\n";
+                        Currency::getCurrencyPrice($arrShipment['price_free'])."', '".
+                        Currency::getCurrencyPrice($arrShipment['cost'])."');\n";
                 }
             }
         }
@@ -171,32 +212,35 @@ class Shipment
     /**
      * Returns an array of shipper ids relevant for the country specified by
      * the argument $countryId.
-     *
      * @internal Note that s.shipment_id below now associates with shipper.id (TODO)
-     * @param   string  $countryId      Country ID
-     * @return  array                   Array of shipment IDs
+     * @param   integer $countryId      The optional country ID
+     * @return  array                   Array of shipment IDs on success,
+     *                                  false otherwise
+     * @static
      * @todo    Rename shipment_id to shipper_id in all affected relations
      */
-    function getCountriesRelatedShippingIdArray($countryId)
+    static function getCountriesRelatedShippingIdArray($countryId=0)
     {
         global $objDatabase;
 
-        $arrShipperId = array();
-        // mind that s.shipper_id actually points to a shipper, not a shipment!
-        $query ="SELECT s.shipment_id as shipper_id ".
-                         "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries AS c, ".
-                                 DBPREFIX."module_shop".MODULE_INDEX."_zones AS z, ".
-                                 DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment AS s ".
-                        "WHERE c.countries_id=".intval($countryId).
-                          " AND z.activation_status=1 ".
-                          "AND z.zones_id=c.zones_id ".
-                          "AND z.zones_id=s.zones_id";
+        if (empty(self::$arrShippers)) self::init();
+        // Mind that s.shipment_id actually points to a shipper, not a shipment!
+        $query = "
+            SELECT `s`.`shipment_id` AS `shipper_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
+                ON `c`.`zones_id`=`z`.`zones_id`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `s`
+                ON `z`.`zones_id`=`s`.`zones_id`
+             WHERE `z`.`activation_status`=1".
+              ($countryId ? " AND `c`.`countries_id`=$countryId" : '');
         $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        $arrShipperId = array();
         while ($objResult && !$objResult->EOF) {
             $shipper = $objResult->fields['shipper_id'];
-            if(isset($this->arrShippers[$shipper])) {
-                $arrShipperId[]=$shipper;
-            }
+            if (isset(self::$arrShippers[$shipper]))
+                $arrShipperId[] = $shipper;
             $objResult->MoveNext();
         }
         return $arrShipperId;
@@ -217,40 +261,45 @@ class Shipment
      * @param   string  $selectedId     Optional preselected shipment ID
      * @param   string  $onchange       Optional onchange javascript callback
      * @return  string                  Dropdown menu string
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  array
+     * @static
      */
-    function getShipperMenu($countryId=0, $selectedId=0, $onchange="")
+    static function getShipperMenu($countryId=0, $selectedId=0, $onchange="")
     {
         global $_ARRAYLANG;
 
+        if (empty(self::$arrShippers)) self::init();
         $menu = (intval($selectedId) == 0
-            ? "<option value='0' selected='selected'>".$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT']."</option>\n"
+            ? '<option value="0" selected="selected">'.
+              $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
+              "</option>\n"
             : ''
         );
-        $arrId = $this->getCountriesRelatedShippingIdArray($countryId);
+        $arrId = self::getCountriesRelatedShippingIdArray($countryId);
         $haveShipper = false;
-        foreach (array_keys($this->arrShippers) as $sid) {
+        foreach (array_keys(self::$arrShippers) as $sid) {
             // only show suitable shipments in the menu if the user is on the payment page,
             // check the availability of the shipment in her country,
             // and verify that the shipper will be able to handle the freight.
             if (!($_REQUEST['cmd'] == 'payment') ||
                 ((!$countryId || in_array($sid, $arrId)) &&
-                $this->calculateShipmentPrice(
+                self::calculateShipmentPrice(
                     $sid,
                     $_SESSION['shop']['cart']['total_price'],
                     $_SESSION['shop']['cart']['total_weight']) != -1
             )) {
-                $selected = ($sid==intval($selectedId) ? 'selected="selected"' : '');
-                $menu .= '<option value="'.$sid.'" '.$selected.'>'.$this->arrShippers[$sid]['name']."</option>\n";
+                $menu .=
+                    '<option value="'.$sid.'"'.
+                    ($sid==intval($selectedId) ? ' selected="selected"' : '').
+                    '>'.self::$arrShippers[$sid]['name']."</option>\n";
                 $haveShipper = true;
             }
         }
-        if (!$haveShipper) {
-            return $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'];
-        }
-        if ($onchange) {
-            $menu = "\n<select name=\"shipperId\" onchange=\"$onchange\">\n$menu\n</select>\n";
-        }
+        if (!$haveShipper)
+            return $_ARRAYLANG['TXT_SHOP_SHIPMENT_TOO_HEAVY'];
+        if ($onchange)
+            $menu =
+                '<select name="shipperId" onchange="'.$onchange.'">'.$menu.'</select>';
         return $menu;
     }
 
@@ -258,109 +307,121 @@ class Shipment
     /**
      * Delete a Shipper from the database
      *
+     * Deletes related Text, shipment cost, and zone relation records as well.
      * @param   integer     $sid    The Shipper ID
      * @return  boolean             True on success, false otherwise.
+     * @static
      */
-    function deleteShipper($sid)
+    static function deleteShipper($sid)
     {
         global $objDatabase;
+
+        if (empty(self::$arrShippers)) self::init();
+        if (empty(self::$arrShippers[$sid])) return false;
+        if (!Text::deleteById(self::$arrShippers[$sid]['text_name_id'])) return false;
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper WHERE id=".$sid);
-        if ($objResult) {
-            $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE shipper_id=".$sid);
-            if ($objResult) {
-                $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment WHERE shipment_id=".$sid);
-                if ($objResult) {
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipper");
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost");
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
-                    return true;
-                } else {
-                }
-            } else {
-            }
-        } else {
-        }
-        return false;
+        if (!$objResult) return false;
+        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE shipper_id=".$sid);
+        if (!$objResult) return false;
+        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment WHERE shipment_id=".$sid);
+        if (!$objResult) return false;
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipper");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
+        return true;
     }
 
 
     /**
      * Delete a Shipment entry from the database
-     *
      * @param   integer     $cid    The Shipment ID
+     * @return  boolean             True on success, false otherwise
+     * @static
      */
-    function deleteShipment($cid)
+    static function deleteShipment($cid)
     {
         global $objDatabase;
-        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE id=$cid");
-        return $objResult;
+
+        $objResult = $objDatabase->Execute("
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost`
+             WHERE `id`=$cid
+        ");
+        return ($objResult ? true : false);
     }
 
 
     /**
      * Add a Shipper to the database
-     *
      * @param   string  $name       The Shipper name
      * @param   boolean $isActive   Marking the Shipper as active -- or not
      * @param   integer $zone       The zone the Shipper is in
-     * @return  boolean             The result of DB->Execute()
+     * @return  boolean             True on success, false otherwise
+     * @static
      * @todo    Add zone to database table and this class!
      */
     function addShipper($name, $isActive) // , $zone)
     {
         global $objDatabase;
 
+        $objText = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_SHIPPER_NAME);
+        if (!$objText->store()) return false;
         $objResult = $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_shipper (
-                name, status
+            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` (
+                `text_name_id`, `status`
             ) VALUES (
-                '".addslashes($name)."', $isActive
+                ".$objText->getId().", ".($isActive ? 1 : 0)."
             )
         ");
-        return $objResult;
+        return ($objResult ? true : false);
     }
 
 
     /**
      * Add a Shipment entry to the database
-     *
      * @param   integer $sid            The associated Shipper ID
      * @param   double  $cost           The cost of delivery
      * @param   double  $price_free     The minimum order value to get a free delivery
      * @param   integer $max_weight     The maximum weight of the delivery
+     * @return  boolean                 True on success, false otherwise
+     * @static
      */
-    function addShipment($sid, $cost, $price_free, $max_weight)
+    static function addShipment($sid, $cost, $price_free, $max_weight)
     {
         global $objDatabase;
-        $objResult = $objDatabase->Execute(
-            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost (shipper_id, cost, price_free, max_weight) ".
-            "VALUES ($sid, $cost, $price_free, $max_weight)"
-        );
-        return $objResult;
+
+        $objResult = $objDatabase->Execute("
+            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost` (
+                `shipper_id`, `cost`, `price_free`, `max_weight`
+            ) VALUES (
+                $sid, $cost, $price_free, $max_weight
+            )
+        ");
+        return ($objResult ? true : false);
     }
 
 
     /**
-     * Update the Shipment entry
-     *
+     * Update a Shipment entry
      * @param   integer $cid            The Shipment ID
      * @param   integer $sid            The associated Shipper ID
      * @param   double  $cost           The cost of delivery
      * @param   double  $price_free     The minimum order value to get a free delivery
      * @param   integer $max_weight     The maximum weight of the delivery
      * @return  boolean                 True on success, false otherwise
+     * @static
      */
-    function updateShipment($cid, $sid, $cost, $price_free, $max_weight)
+    static function updateShipment($cid, $sid, $cost, $price_free, $max_weight)
     {
         global $objDatabase;
-        $objResult = $objDatabase->Execute(
-            "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost SET ".
-                "shipper_id=$sid, ".
-                "cost=$cost, ".
-                "price_free=$price_free, ".
-                "max_weight=$max_weight ".
-            "WHERE id = $cid"
-        );
+
+        $objResult = $objDatabase->Execute("
+            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost`
+               SET `shipper_id`=$sid,
+                   `cost`=$cost,
+                   `price_free`=$price_free,
+                   `max_weight`=$max_weight
+             WHERE `id`=$cid
+        ");
         return ($objResult ? true : false);
     }
 
@@ -373,14 +434,18 @@ class Shipment
      * to the new one, and delete the old.
      * @param   integer $svalue     The ID of the Shipper
      * @param   boolean $isActive   Marking the Shipper as active -- or not
-     * @return  boolean                 True on success, false otherwise
+     * @return  boolean             True on success, false otherwise
+     * @static
      */
-    function updateShipper($sid, $isActive)
+    static function updateShipper($sid, $isActive)
     {
         global $objDatabase;
-        $objResult = $objDatabase->Execute(
-            "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_shipper SET status=$isActive WHERE id = $sid"
-        );
+
+        $objResult = $objDatabase->Execute("
+            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_shipper`
+               SET `status`=$isActive
+             WHERE `id`=$sid
+        ");
         return ($objResult ? true : false);
     }
 
@@ -398,133 +463,136 @@ class Shipment
      * @param   integer $shipperId  The Shipper ID
      * @param   double  $price      The total order price
      * @param   integer $weight     The total order weight in grams.
-     * @return  double              The cost for shipping in default currency, or -1.
+     * @return  double              The cost for shipping in the default
+     *                              currency, or -1.
+     * @static
      */
-    function calculateShipmentPrice($shipperId, $price, $weight)
+    static function calculateShipmentPrice($shipperId, $price, $weight)
     {
-        // are there conditions available from this shipper?
-        // otherwise, don't even try to find one. return
-        if (!isset($this->arrShipments[$shipperId])) return -1;
+        if (empty(self::$arrShippers)) self::init();
+        // Are there conditions available from this shipper?
+        // Otherwise, don't even try to find one. return
+        if (!isset(self::$arrShipments[$shipperId])) return -1;
         // check shipments available by this shipper
-
-        $arrShipment = $this->arrShipments[$shipperId];
-        // find the best match for the current order weight and shipment cost.
-        // arbitrary upper limit - we *SHOULD* be able to find one that's lower!
-        // we'll just try to find the cheapest way to handle the delivery.
+        $arrShipment = self::$arrShipments[$shipperId];
+        // Find the best match for the current order weight and shipment cost.
+        // Arbitrary upper limit - we *SHOULD* be able to find one that's lower!
+        // We'll just try to find the cheapest way to handle the delivery.
         $lowest_cost = 1e100;
-        // temporary shipment cost
+        // Temporary shipment cost
         $cost = 0;
-        // found flag is set to the index of a suitable shipment, if encountered below.
-        // if the flag stays at -1, there is no way to deliver it!
+        // Found flag is set to the index of a suitable shipment, if encountered below.
+        // If the flag stays at -1, there is no way to deliver it!
         $found = -1;
-        // try all the available shipments;
+        // Try all the available shipments
         // (see Shipment.class.php::getJSArrays())
         foreach ($arrShipment as $cid => $conditions) {
             $price_free = $conditions['price_free'];
             $max_weight = Weight::getWeight($conditions['max_weight']);
-            // get the shipment conditions that are closest to our order:
-            // we have to make sure the maximum weight is big enough for the order,
+            // Get the shipment conditions that are closest to our order:
+            // We have to make sure the maximum weight is big enough for the order,
             // or that it's unspecified (don't care)
             if (($max_weight > 0 && $weight <= $max_weight) || $max_weight == 0) {
-                // if price_free is set, the order amount has to be higher than that
+                // If price_free is set, the order amount has to be higher than that
                 // in order to get the shipping for free.
                 if ($price_free > 0 && $price >= $price_free) {
-                    // we're well within the weight limit, and the order is also expensive
+                    // We're well within the weight limit, and the order is also expensive
                     // enough to get a free shipping.
                     $cost = '0.00';
                 } else {
-                    // either the order amount is too low, or price_free is unset, or zero,
+                    // Either the order amount is too low, or price_free is unset, or zero,
                     // so the shipping has to be paid for in any case.
                     $cost = $conditions['cost'];
                 }
-                // we found a kind of shipment that can handle the order, but maybe
+                // We found a kind of shipment that can handle the order, but maybe
                 // it's too expensive. - keep the cheapest way to deliver it
                 if ($cost < $lowest_cost) {
-                    // found a cheaper one. keep the index.
+                    // Found a cheaper one. keep the index.
                     $found = $cid;
                     $lowest_cost = $cost;
                 }
             }
         }
         if ($found > 0) {
-            // after checking all the shipments, we found the lowest cost for the
+            // After checking all the shipments, we found the lowest cost for the
             // given weight and order price. - update the shipping cost
             return $lowest_cost;
-        } else {
-            // cannot find suitable shipment conditions for the selected shipper.
-            return -1;
         }
+        // Cannot find suitable shipment conditions for the selected shipper.
+        return -1;
     }
 
 
     /**
      * Returns an array containing all the active shipment conditions.
-     *
-     * @global  ADONewConnection  $objDatabase    Database connection object
-     * @global  array   $_ARRAYLANG     Language array
-     * @return  array           Countries and conditions array
+     * @global  ADONewConnection  $objDatabase
+     * @global  array   $_ARRAYLANG
+     * @return  array             Countries and conditions array on success,
+     *                            false otherwise
+     * @static
      */
-    function getShipmentConditions()
+    static function getShipmentConditions()
     {
-        global $objDatabase;
-        global $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
-        // get shippers and associated countries (via zones)
-        // make an array(shipper_name => array( array(country, ...), array(conditions) )
+        if (empty(self::$arrShippers)) self::init();
+
+        // Get shippers and associated countries (via zones).
+        // Make an array(shipper_name => array( array(country, ...), array(conditions) )
         // where the countries are listed as strings of their names,
         // and the conditions look like: array(max_weight, cost_free, cost)
 
-        // return this
+        // Return this
         $arrResult = array();
-        foreach ($this->arrShippers as $sid => $shipper) {
+        foreach (self::$arrShippers as $sid => $shipper) {
             // get countries covered by this shipper
-            $query ="SELECT DISTINCT c.countries_name FROM ".
-                DBPREFIX."module_shop".MODULE_INDEX."_countries AS c, ".
-                DBPREFIX."module_shop".MODULE_INDEX."_rel_countries AS rc, ".
-                DBPREFIX."module_shop".MODULE_INDEX."_zones AS z, ".
-                DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment AS rs, ".
-                DBPREFIX."module_shop".MODULE_INDEX."_shipper AS s ".
-                "WHERE rc.countries_id=c.countries_id ".
-                "AND z.zones_id=rc.zones_id ".
-                "AND rs.zones_id=z.zones_id ".
-                "AND z.activation_status=1 ".
-                "AND s.status=1 ".
-                "AND s.id=$sid ".
-                "ORDER BY countries_name ASC";
+            $query ="
+                SELECT DISTINCT `c`.`countries_name`
+                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `c`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `rc`
+                    ON `rc`.`country_id`=`c`.`id`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
+                    ON `z`.`id`=`rc`.`zone_id`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `rs`
+                    ON `rs`.`zone_id`=`z`.`id`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
+                    ON `s`.`id`=`rs`.`shipment_id`
+                 WHERE `s`.`shipment_id`=$sid
+                   AND `z`.`status`=1
+                   AND `s`.`status`=1
+                 ORDER BY `countries_name` ASC
+            ";
             $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-                // store in array
-                $arrCountries = array();
-                while (!$objResult->EOF) {
-                    $arrCountries[] = $objResult->fields['countries_name'];
-                    $objResult->MoveNext();
-                } // end while
-                // now add the conditions, ordered by weight
-                $arrConditions = array();
-                foreach ($this->arrShipments[$sid] as $arrCond) {
-                    $arrConditions[$arrCond['max_weight']] = array(
-                        'max_weight' => ($arrCond['max_weight'] > 0
-                            ? $arrCond['max_weight']
-                            : $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED']
-                        ),
-                        'price_free' => ($arrCond['price_free'] > 0
-                            ? $arrCond['price_free']
-                            : '-'
-                        ),
-                        'cost'       => ($arrCond['cost'] > 0
-                            ? $arrCond['cost']
-                            : $_ARRAYLANG['TXT_SHOP_COST_FREE']
-                        ),
-                    );
-                }
-                krsort($arrConditions);
-                $arrResult[$shipper['name']] = array(
-                    'countries'  => $arrCountries,
-                    'conditions' => $arrConditions,
+            if (!$objResult) return false;
+            $arrCountries = array();
+            while (!$objResult->EOF) {
+                $arrCountries[] = $objResult->fields['countries_name'];
+                $objResult->MoveNext();
+            }
+            // Now add the conditions, and order them by weight
+            $arrConditions = array();
+            foreach (self::$arrShipments[$sid] as $arrCond) {
+                $arrConditions[$arrCond['max_weight']] = array(
+                    'max_weight' => ($arrCond['max_weight'] > 0
+                        ? $arrCond['max_weight']
+                        : $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED']
+                    ),
+                    'price_free' => ($arrCond['price_free'] > 0
+                        ? $arrCond['price_free']
+                        : '-'
+                    ),
+                    'cost'       => ($arrCond['cost'] > 0
+                        ? $arrCond['cost']
+                        : $_ARRAYLANG['TXT_SHOP_COST_FREE']
+                    ),
                 );
-            } // if objresult
-            //else { // no countries!? }
-        } // foreach shipper
+            }
+            krsort($arrConditions);
+            $arrResult[$shipper['name']] = array(
+                'countries'  => $arrCountries,
+                'conditions' => $arrConditions,
+            );
+        }
         return $arrResult;
     }
 
@@ -532,7 +600,7 @@ class Shipment
     /**
      * Get the shipper name for the ID given
      * @static
-     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @global  ADONewConnection
      * @param   integer   $shipperId      The shipper ID
      * @return  mixed                     The shipper name on success,
      *                                    false otherwise
@@ -540,17 +608,8 @@ class Shipment
      */
     static function getNameById($shipperId)
     {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper
-             WHERE id=$shipperId
-        ");
-        if ($objResult && !$objResult->EOF) {
-            return $objResult->fields['name'];
-        }
-        return false;
+        if (empty(self::$arrShippers)) self::init();
+        return self::$arrShippers[$shipperId]['name'];
     }
 
 }

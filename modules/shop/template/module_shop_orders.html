@@ -66,10 +66,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <input type="text" name="shopSearchTerm" size="40" maxlength="255"
           value="{SHOP_SEARCH_TERM}" />
         <select name="shopCustomerType">
-          {SHOP_CUSTOMER_TYPE_MENU}
+          {SHOP_CUSTOMER_TYPE_MENUOPTIONS}
         </select>
         <select name="shopOrderStatus">
-          {SHOP_ORDER_STATUS_MENU}
+          {SHOP_ORDER_STATUS_MENUOPTIONS}
         </select>
         <input type="submit" name="shopSearchOrders" value="{TXT_SEARCH}" />
       </td>
@@ -78,7 +78,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <td>{TXT_SORT_ORDER}
         <select name="shopListSort"
           onchange="document.formSearchOrders.submit();">
-          {SHOP_CUSTOMER_SORT_MENU}
+          {SHOP_CUSTOMER_SORT_MENUOPTIONS}
         </select>
         &nbsp;&nbsp;&nbsp;
         <label for="shopShowPendingOrders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>

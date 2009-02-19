@@ -78,10 +78,10 @@ class ShopCategories
      *
      * See {@link ShopCategories::getTreeArray()} for a detailed explanation
      * of the array structure.
-     * @version 1.1
+     * @version 2.1.0
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
-     *                                      $selectedId otherwise.
+     *                                      $selected_id otherwise.
      *                                      Defaults to false.
      * @param   boolean $flagActiveOnly     Only return ShopCategories
      *                                      with status == true if true.
@@ -89,7 +89,7 @@ class ShopCategories
      * @param   boolean $flagVirtual        If true, also returns the virtual
      *                                      content of ShopCategories marked
      *                                      as virtual.  Defaults to false.
-     * @param   integer $selectedId         The optional selected ShopCategory
+     * @param   integer $selected_id        The optional selected ShopCategory
      *                                      ID.  If set and greater than zero,
      *                                      only the ShopCategories needed
      *                                      to display the Shop page are
@@ -106,28 +106,24 @@ class ShopCategories
      */
     static function getTreeArray(
         $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
-        $selectedId=0, $parentCategoryId=0, $maxlevel=0
+        $selected_id=0, $parentCategoryId=0, $maxlevel=0
     ) {
         // Return the same array if it's already been initialized
-        if (is_array(self::$arrShopCategory)) {
+        if (is_array(self::$arrShopCategory))
             return self::$arrShopCategory;
-        }
         // Otherwise, initialize it now
         if (self::buildTreeArray(
             $flagFull, $flagActiveOnly, $flagVirtual,
-            $selectedId, $parentCategoryId, $maxlevel
-        )) {
-            return self::$arrShopCategory;
-        }
-        // It failed, probably due to a value of $selectedId that doesn't
+            $selected_id, $parentCategoryId, $maxlevel
+        )) return self::$arrShopCategory;
+        // It failed, probably due to a value of $selected_id that doesn't
         // exist.  Retry without it.
-        if ($selectedId > 0) {
+        if ($selected_id > 0)
             return self::buildTreeArray(
                 $flagFull, $flagActiveOnly, $flagVirtual,
                 0, $parentCategoryId, $maxlevel
             );
-        }
-        // If that doesn't help...
+        // If that didn't help...
         return false;
     }
 
@@ -141,7 +137,7 @@ class ShopCategories
      * Note that you *MUST* call either {@link ShopCategories::getTreeArray()}
      * or {@link ShopCategories::buildTreeArray()} in order for the index
      * to be initialized.
-     * @version 1.1
+     * @version 2.1.0
      * @return  mixed                       The ShopCategoriy index array on
      *                                      success, false on failure.
      * @static
@@ -150,9 +146,8 @@ class ShopCategories
     static function getTreeIndexArray()
     {
         // Return the same array if it's already been initialized
-        if (is_array(self::$arrShopCategoryIndex)) {
+        if (is_array(self::$arrShopCategoryIndex))
             return self::$arrShopCategoryIndex;
-        }
         return false;
     }
 
@@ -176,18 +171,18 @@ class ShopCategories
      * ),
      * ... more parents
      * Note that this includes the virtual ShopCategories and their children.
-     * @version 1.1
+     * @version 2.1.0
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
-     *                                      $selectedId otherwise.
+     *                                      $selected_id otherwise.
      *                                      Defaults to false.
      * @param   boolean $flagActiveOnly     Only return ShopCategories
      *                                      with status == true if true.
-     *                                      Defaults to false.
+     *                                      Defaults to true.
      * @param   boolean $flagVirtual        If true, also returns the virtual
      *                                      content of ShopCategories marked
      *                                      as virtual.  Defaults to false.
-     * @param   integer $selectedId         The optional selected ShopCategory
+     * @param   integer $selected_id        The optional selected ShopCategory
      *                                      ID.  If set and greater than zero,
      *                                      only the ShopCategories needed
      *                                      to display the Shop page are
@@ -203,22 +198,16 @@ class ShopCategories
      */
     static function buildTreeArray(
         $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
-        $selectedId=0, $parentCategoryId=0, $maxlevel=0
+        $selected_id=0, $parentCategoryId=0, $maxlevel=0
     ) {
         self::$arrShopCategory = array();
         self::$arrShopCategoryIndex = array();
-
         // Set up the trail from the root (0, zero) to the selected ShopCategory
-        if (!self::buildTrailArray($selectedId)) {
-            return false;
-        }
-
+        if (!self::buildTrailArray($selected_id)) return false;
         if (!self::buildTreeArrayRecursive(
             $flagFull, $flagActiveOnly, $flagVirtual,
-            $selectedId, $parentCategoryId, $maxlevel
-        )) {
-            return false;
-        }
+            $selected_id, $parentCategoryId, $maxlevel
+        )) return false;
         return true;
     }
 
@@ -228,18 +217,18 @@ class ShopCategories
      * {@link ShopCategories::getTreeArray()}.
      *
      * See {@link buildTreeArray()} for details.
-     * @version 1.1
+     * @version 2.1.0
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
-     *                                      $selectedId otherwise.
+     *                                      $selected_id otherwise.
      *                                      Defaults to false.
      * @param   boolean $flagActiveOnly     Only return ShopCategories
      *                                      with status == true if true.
-     *                                      Defaults to false.
+     *                                      Defaults to true.
      * @param   boolean $flagVirtual        If true, also returns the virtual
      *                                      content of ShopCategories marked
      *                                      as virtual.  Defaults to false.
-     * @param   integer $selectedId         The optional selected ShopCategory
+     * @param   integer $selected_id        The optional selected ShopCategory
      *                                      ID.  If set and greater than zero,
      *                                      only the ShopCategories needed
      *                                      to display the Shop page are
@@ -258,7 +247,7 @@ class ShopCategories
      */
     static function buildTreeArrayRecursive(
         $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
-        $selectedId=0, $parentCategoryId=0, $maxlevel=0, $level=0
+        $selected_id=0, $parentCategoryId=0, $maxlevel=0, $level=0
     ) {
         // Get the ShopCategories's children
         $arrShopCategory =
@@ -266,9 +255,7 @@ class ShopCategories
                 $parentCategoryId, $flagActiveOnly, $flagVirtual
             );
         // Has there been an error?
-        if ($arrShopCategory === false) {
-            return false;
-        }
+        if ($arrShopCategory === false) return false;
         foreach ($arrShopCategory as $objShopCategory) {
             $id = $objShopCategory->getId();
             $index = count(self::$arrShopCategory);
@@ -288,12 +275,12 @@ class ShopCategories
             // - the maximum depth has not been exceeded and
             // - the full list has been requested, or the current ShopCategory
             //   is an ancestor of the selected one or the selected itself.
-            if (($maxlevel == 0 || $level < $maxlevel)
-             && ($flagFull || in_array($id, self::$arrTrail))
-             && (!$objShopCategory->isVirtual() || $flagVirtual)) {
+            if (   ($maxlevel == 0 || $level < $maxlevel)
+                && ($flagFull || in_array($id, self::$arrTrail))
+                && (!$objShopCategory->isVirtual() || $flagVirtual)) {
                 self::buildTreeArrayRecursive(
                     $flagFull, $flagActiveOnly, $flagVirtual,
-                    $selectedId, $id, $maxlevel, $level+1
+                    $selected_id, $id, $maxlevel, $level+1
                 );
             }
         }
@@ -359,23 +346,19 @@ class ShopCategories
      *
      * See {@link ShopCategories::getTrailArray()} for details on
      * the array structure.
-     * @version 1.1
-     * @param   integer $selectedId         The selected ShopCategory ID.
+     * @version 2.1.0
+     * @param   integer $selected_id        The selected ShopCategory ID.
      * @return  mixed                       The array of ShopCategory IDs
      *                                      on success, false on failure.
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getTrailArray($selectedId=0)
+    static function getTrailArray($selected_id=0)
     {
         // Return the same array if it's already been initialized
-        if (is_array(self::$arrTrail)) {
-            return self::$arrTrail;
-        }
+        if (is_array(self::$arrTrail)) return self::$arrTrail;
         // Otherwise, initialize it now
-        if (!self::buildTrailArray($selectedId)) {
-            return false;
-        }
+        if (!self::buildTrailArray($selected_id)) return false;
         return self::$arrShopCategory;
     }
 
@@ -402,10 +385,9 @@ class ShopCategories
                 // Use a dummy array so the work can go on anyway.
                 self::$arrTrail = array(0, $shopCategoryId);
                 return false;
-            } else {
-                $shopCategoryId = $objShopCategory->getParentId();
-                self::$arrTrail[] = $shopCategoryId;
             }
+            $shopCategoryId = $objShopCategory->getParentId();
+            self::$arrTrail[] = $shopCategoryId;
         }
         self::$arrTrail = array_reverse(self::$arrTrail);
         return true;
@@ -439,9 +421,7 @@ class ShopCategories
      */
     static function getTreeNodeCount()
     {
-        if (!is_array(self::$arrShopCategory)) {
-            return false;
-        }
+        if (!is_array(self::$arrShopCategory)) return false;
         return count(self::$arrShopCategory);
     }
 
@@ -458,9 +438,7 @@ class ShopCategories
      */
     static function getArrayById($id)
     {
-        if (!isset(self::$arrShopCategoryIndex[$id])) {
-            return false;
-        }
+        if (!isset(self::$arrShopCategoryIndex[$id])) return false;
         $index = self::$arrShopCategoryIndex[$id];
         return self::$arrShopCategory[$index];
     }
@@ -482,10 +460,9 @@ class ShopCategories
         $arrChildCategoryId = ShopCategories::getChildCategoryIdArray(0, false);
         foreach ($arrChildCategoryId as $id) {
             $objShopCategory = ShopCategory::getById($id);
-            // delete siblings, Products, and images if desired.
-            if (!$objShopCategory->delete($flagDeleteImages)) {
-                return false;
-            }
+            // delete siblings and Products as well; delete images if desired.
+// TODO: Add deleteById() method
+            if (!$objShopCategory->delete($flagDeleteImages)) return false;
         }
         return true;
     }
@@ -526,23 +503,18 @@ class ShopCategories
             $imageName = $objResult->fields['picture'];
             return $imageName;
         }
-
         // Otherwise, look for images in Products within the children
         $arrChildCategoryId =
             ShopCategories::getChildCategoryIdArray($catId, $flagActiveOnly);
         foreach ($arrChildCategoryId as $catId) {
             $imageName = Products::getPictureByCategoryId($catId);
-            if ($imageName) {
-                return $imageName;
-            }
+            if ($imageName) return $imageName;
         }
 
         // No picture there either, try the subcategories
         foreach ($arrChildCategoryId as $catId) {
             $imageName = ShopCategories::getPictureById($catId);
-            if ($imageName) {
-                return $imageName;
-            }
+            if ($imageName) return $imageName;
         }
         // No more subcategories, no picture -- give up
         return '';
@@ -566,19 +538,16 @@ class ShopCategories
     static function getChildCategoriesById(
         $parentCategoryId=0, $flagActiveOnly=true, $flagVirtual=true
     ) {
-        global $objDatabase;
-
         $arrChildShopCategoriesId =
             ShopCategories::getChildCategoryIdArray(
                 $parentCategoryId, $flagActiveOnly, $flagVirtual
             );
-        if (!is_array($arrChildShopCategoriesId)) {
-            return false;
-        }
+        if (!is_array($arrChildShopCategoriesId)) return false;
         $arrShopCategories = array();
         foreach ($arrChildShopCategoriesId as $id) {
-            $arrShopCategories[] =
-                ShopCategory::getById($id);
+            $objShopCategory = ShopCategory::getById($id);
+            if (!$objShopCategory) continue;
+            $arrShopCategories[] = $objShopCategory;
         }
         return $arrShopCategories;
     }
@@ -586,7 +555,6 @@ class ShopCategories
 
     /**
      * Returns the ShopCategory array for the given ID
-     *
      * @param   integer   $id       The ShopCategory ID
      * @return  array               The ShopCategory array
      * @static
@@ -605,6 +573,34 @@ class ShopCategories
      * The <select> tag pair
      * with the menu name will be included, plus an option for the root
      * ShopCategory.
+     * @global  array
+     * @param   integer     $selected_id    The selected ShopCategories ID
+     * @param   string      $name           The optional menu name,
+     *                                      defaults to 'catId'.
+     * @return  string                      The HTML dropdown menu code
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getShopCategoriesMenu(
+        $selected_id=0, $name='catId', $flagActiveOnly=true
+    ) {
+        global $_ARRAYLANG;
+
+        return
+            "<select name='$name'>".
+            "<option value='0'>{$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS']}</option>".
+            self::getShopCategoriesMenuoptions($selected_id, $flagActiveOnly).
+            "</select>";
+    }
+
+
+    /**
+     * OBSOLETE
+     * Returns the HTML code for a dropdown menu listing all ShopCategories.
+     *
+     * The <select> tag pair
+     * with the menu name will be included, plus an option for the root
+     * ShopCategory.
      * @global  array       $_ARRAYLANG     Language array
      * @param   integer     $selectedid     The selected ShopCategories ID
      * @param   string      $name           The optional menu name,
@@ -612,7 +608,6 @@ class ShopCategories
      * @return  string                      The HTML dropdown menu code
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
     static function getShopCategoriesMenuNamed($selectedId=0, $name='catId')
     {
         global $_ARRAYLANG;
@@ -627,6 +622,7 @@ class ShopCategories
         }
         return $result;
     }
+     */
 
 
     /**
@@ -635,7 +631,7 @@ class ShopCategories
      * The <select> tag pair is not included, nor the option for the root
      * ShopCategory.
      * @version 1.0     initial version
-     * @param   integer $selectedid     The optional selected ShopCategories ID.
+     * @param   integer $selected_id    The optional selected ShopCategories ID.
      * @param   boolean $flagActiveOnly If true, only active ShopCategories
      *                                  are included, all otherwise.
      * @param   integer $maxlevel       The maximum nesting level,
@@ -645,27 +641,27 @@ class ShopCategories
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getShopCategoriesMenu(
-        $selectedId=0, $flagActiveOnly=true, $maxlevel=0
+    static function getShopCategoriesMenuoptions(
+        $selected_id=0, $flagActiveOnly=true, $maxlevel=0
     ) {
 // TODO: Implement this in a way so that both the Shopnavbar and the Shopmenu
 // can be set up using only one call to buildTreeArray().
 // Unfortunately, the set of records used is not identical in both cases.
 //        if (!self::$arrShopCategory) {
         self::buildTreeArray(
-            true, $flagActiveOnly, true, $selectedId, 0, $maxlevel
+            true, $flagActiveOnly, true, $selected_id, 0, $maxlevel
         );
 //        }
 
         // Check whether the ShopCategory with the selected ID is missing
         // in the index (and thus in the tree as well)
         $trailIndex = count(self::$arrTrail);
-        while ($selectedId > 0
-            && $trailIndex > 0
-            && !isset(self::$arrShopCategoryIndex[$selectedId])
+        while (   $selected_id > 0
+               && $trailIndex > 0
+               && !isset(self::$arrShopCategoryIndex[$selected_id])
         ) {
             // So we choose its highest level ancestor present.
-            $selectedId = self::$arrTrail[--$trailIndex];
+            $selected_id = self::$arrTrail[--$trailIndex];
         }
         $strMenu = '';
         foreach (self::$arrShopCategory as $arrCategory) {
@@ -674,11 +670,15 @@ class ShopCategories
             $name  = $arrCategory['name'];
             $strMenu .=
                 "<option value='$id'".
-                ($selectedId == $id ? ' selected="selected"' : '').'>'.
+                // I dunno why, but the comparison "$selected_id == $id"
+                // fails for some reason here.
+                // A little arithmetic solves that, however.
+                ($selected_id-$id ? '' : ' selected="selected"').'>'.
                 str_repeat('...', $level).
-// TODO: This may f*** up when UTF8 is used
-//                htmlentities($name, ENV_QUOTE, CONTREXX_CHARSET).
-                $name.
+// TODO: This used to fail sometimes when UTF8 was used.
+// Should be thoroughly tested.
+// Alternative: $name
+                htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET).
                 "</option>\n";
         }
         return $strMenu;
@@ -707,16 +707,13 @@ class ShopCategories
 
         $query = "
            SELECT catid
-             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+             FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories`
             WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
                   parentid=$parentShopCategoryId
          ORDER BY catsorting ASC
         "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
-
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
+        if (!$objResult) return false;
         $arrChildShopCategoryId = array();
         while (!$objResult->EOF) {
             $arrChildShopCategoryId[] = $objResult->fields['catid'];
@@ -733,7 +730,7 @@ class ShopCategories
      * Returns false if the query fails, or if no child ShopCategory of
      * that name can be found.
      * Note that if there are two or more children of the same name (and with
-     * active status, if $flagActiveOnly is true), a warning will be echo()ed.
+     * active status, if $flagActiveOnly is true), this will fail.
      * This is by design.
      * @param   integer     $parentId       The parent ShopCategory Id,
      *                                      may be 0 (zero) to search the roots.
@@ -745,8 +742,9 @@ class ShopCategories
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getChildNamed($parentId, $strName, $flagActiveOnly=true)
-    {
+    static function getChildNamed(
+        $parentId, $strName, $flagActiveOnly=true
+    ) {
         global $objDatabase;
 
         $query = "
@@ -759,16 +757,9 @@ class ShopCategories
         "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
 
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
+        if (!$objResult || $objResult->EOF || $objResult->RecordCount() > 1)
             return false;
-        }
-        if (!$objResult->RecordCount() > 1) {
-            return false;
-        }
-        if (!$objResult->EOF) {
-            return ShopCategory::getById($objResult->fields['catid']);
-        }
-        return false;
+        return ShopCategory::getById($objResult->fields['id']);
     }
 
 
@@ -787,9 +778,7 @@ class ShopCategories
     static function getParentCategoryId($shopCategoryId)
     {
         $arrShopCategory = self::getArrayById($shopCategoryId);
-        if (!$arrShopCategory) {
-            return false;
-        }
+        if (!$arrShopCategory) return false;
         return $arrShopCategory['parentId'];
     }
 
@@ -844,9 +833,7 @@ class ShopCategories
          ORDER BY catsorting ASC
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
+        if (!$objResult) return false;
         $arrVirtual = array();
         while (!$objResult->EOF) {
             $arrVirtual[] = $objResult->fields['catname'];
@@ -885,9 +872,7 @@ class ShopCategories
          ORDER BY catsorting ASC
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
+        if (!$objResult) return false;
         $arrVirtual = array();
         while (!$objResult->EOF) {
             $arrVirtual[] = array(
@@ -912,18 +897,17 @@ class ShopCategories
     {
         $arrVirtualShopCategoryName =
             ShopCategories::getVirtualCategoryIdNameArray();
-
         $strSelection = '';
         foreach ($arrVirtualShopCategoryName as $arrShopCategory) {
             $id   = $arrShopCategory['id'];
             $name = $arrShopCategory['name'];
             $strSelection .=
-                '<input type="checkbox" name="shopFlags['.$id.']" '.
-                'value="'.$name.'" '.
+                '<input type="checkbox" value="'.$name.'" '.
+                'name="shopFlags['.$id.']" id="shopFlags_'.$id.'"'.
                 (preg_match("/$name/", $strFlags)
-                    ? 'checked="checked"' : ''
+                    ? ' checked="checked"' : ''
                 ).' />'.
-                '<label for="shopFlags['.$id.']">'.$name.'</label>&nbsp;';
+                '<label for="shopFlags_'.$id.'">'.$name.'</label>&nbsp;';
         }
         return $strSelection;
     }

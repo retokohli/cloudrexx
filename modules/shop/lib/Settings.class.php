@@ -189,10 +189,16 @@ class Settings
             Settings::storeSetting('shop_thumbnail_max_height', $_POST['shop_thumbnail_max_height']);
             Settings::storeSetting('shop_thumbnail_quality', $_POST['shop_thumbnail_quality']);
             Settings::storeSetting('shop_weight_enable', (!empty($_POST['shop_weight_enable']) ? 1 : 0));
-            Settings::storeSetting('shop_show_products_default',
-                (!empty($_POST['shop_show_products_default'])
-                    ? $_POST['shop_show_products_default'] : 0));
-
+            Settings::storeSetting(
+                'shop_show_products_default',
+	                (!empty($_POST['shop_show_products_default'])
+	                    ? $_POST['shop_show_products_default'] : 0)
+            );
+            // Mind that this defaults to 1.
+            Settings::storeSetting(
+                'product_sorting',
+                    (!empty($_POST['product_sorting']) ? $_POST['product_sorting'] : 1)
+            );
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_config");
             return true;
         }

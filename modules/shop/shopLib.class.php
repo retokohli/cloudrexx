@@ -57,6 +57,9 @@ define('SHOP_PAYMENT_RESULT_COUNT',           3);
  */
 class ShopLibrary
 {
+    const noPictureName = 'no_picture.gif';
+    const thumbnailSuffix = '.thumb';
+
     /**
      * @todo These class variable *SHOULD* be initialized in the constructor,
      * otherwise it makes no sense to have them as class variables
@@ -210,41 +213,6 @@ class ShopLibrary
             $menu .="<option value=\"".$id."\" $selected>".$data['name']."</option>\n";
         }
         $menu .= "</select>\n";
-        return $menu;
-    }
-
-
-    /**
-     * Returns a dropdown menu string with all available order status.
-     *
-     * @param   string  $selectedId     Optional preselected status ID
-     * @param   string  $menuName       Optional menu name
-     * @param   string  $onchange       Optional onchange callback function
-     * @return  string  $menu           The dropdown menu string
-     * @global  array   $_ARRAYLANG     Language array
-     */
-    function getOrderStatusMenu($selectedStatus=-1, $menuName='', $onchange='')
-    {
-        global $_ARRAYLANG;
-
-        $menu = '';
-        foreach ($this->arrOrderStatus as $status => $statusText) {
-            $menu .= '<option value="'.$status.'" '.
-            ($selectedStatus == $status ? 'selected="selected"' : '').
-            '>'.$statusText."</option>\n";
-        }
-        if ($menuName != '') {
-            $menu =
-                '<select name="'.$menuName.'" id="'.$menuName.'" '.
-                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
-                ">\n".$menu."</select>\n";
-        } else {
-            $menu =
-                '<option value="-1">-- '.
-                $_ARRAYLANG['TXT_STATUS'].
-                " --</option>\n".
-                $menu;
-        }
         return $menu;
     }
 
@@ -725,6 +693,63 @@ class ShopLibrary
         return true;
     }
 
+
+    /**
+     * Returns a dropdown menu string with all available order status.
+     *
+     * The enclosing <select> tag is only added if the $menuName argument
+     * is non-empty.  If that is empty, however, an additional header
+     * option is added.  See {@link getOrderStatusMenuoptions()} for details.
+     * @param   string  $selectedId     Optional preselected status ID
+     * @param   string  $menuName       Optional menu name
+     * @param   string  $onchange       Optional onchange callback function
+     * @return  string  $menu           The dropdown menu string
+     * @global  array
+     */
+    static function getOrderStatusMenu($selected='', $menuName='', $onchange='')
+    {
+        if ($menuName != '') {
+            $menu =
+                '<select name="'.$menuName.'" id="'.$menuName.'" '.
+                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
+                ">\n".
+                self::getOrderStatusMenuoptions(
+                    $selected, empty($menuName)
+                ).
+                "</select>\n";
+        }
+        return $menu;
+    }
+
+
+    /**
+     * Returns the HTML menu options for selecting an order status
+     *
+     * Adds a "-- Status --" header option with empty string value
+     * if the $flagFilter parameter is true.
+     * @param   string      $selected       The value of the preselected status
+     * @param   boolean     $flagFilter     If true, the header option is added
+     * @return  string                      The HTML menu options string
+     */
+    static function getOrderStatusMenuoptions($selected='', $flagFilter=false)
+    {
+   	    global $_ARRAYLANG;
+
+        $strMenuoptions =
+            ($flagFilter
+	            ? '<option value="">-- '.
+	              $_ARRAYLANG['TXT_STATUS'].
+	              " --</option>\n"
+                : ''
+            );
+        for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {
+            $strMenuoptions .=
+                '<option value="'.$i.'"'.
+                ($i === $selected ? ' selected="selected"' : '').'>'.
+                $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$i]."</option>\n";
+        }
+        return $strMenuoptions;
+    }
 
 }
 
