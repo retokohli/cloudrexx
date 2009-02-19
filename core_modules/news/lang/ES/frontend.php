@@ -43,4 +43,5 @@ $_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "Noticias esperando confirmaci&oacute;";
 $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Una entrada de noticias ha sido a&ntilde;adida. Puede revisar dicha entrada en la siguiente URL:";
 $_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Der eingegebene Captcha-Code ist nicht korrekt!";
 $_ARRAYLANG['TXT_CAPTCHA'] = "Bitte geben Sie die abgebildeten Zeichen ein:";
+$_ARRAYLANG['TXT_NEWS_MORE'] = "M&aacute;s";
 ?>
