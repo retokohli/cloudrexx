@@ -267,8 +267,10 @@ class news extends newsLibrary {
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
                                 n.title             AS newstitle,
+                                n.text              AS newscontent,
                                 n.teaser_image_path AS newsimage,
                                 n.redirect          AS newsredirect,
+                                n.teaser_text       AS teasertext,
                                 nc.name             AS name
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
@@ -327,9 +329,12 @@ class news extends newsLibrary {
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->_objTpl->setVariable(array(
                            'NEWS_CSS'           => $class,
+                           'NEWS_TEASER'        => $objResult->fields['teasertext'],
+                           'NEWS_TITLE'         => $newstitle,
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
-                           'NEWS_LINK'          => (empty($objResult->fields['newsredirect'])) ? '<a href="index.php?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                           'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                           'NEWS_LINK'         	=> (empty($objResult->fields['newsredirect'])) ? (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ? '' :'<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
                            'NEWS_AUTHOR'        => $author,
                            'NEWS_IMAGE'         => (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />'
