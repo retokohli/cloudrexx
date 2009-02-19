@@ -362,9 +362,9 @@ class counter
     *
     * extracts the search term of a query that was typed in at a search machine
     *
-    * @access   private
-    * @param    string  $referer
-    * @global   array   $arrReferers
+    * @access    private
+    * @param    string    $referer
+    * @global    array    $arrReferers
     */
     function _getExternalSearchQuery($referer) {
         global $arrReferers;
@@ -493,7 +493,7 @@ class counter
     *
     * Read out the browser name from the user agent and returns it
     *
-    * @return   string  browser name
+    * @return    string    browser name
     */
     function _getBrowser(){
         $userAgent = $this->arrClient['useragent'];
@@ -538,7 +538,7 @@ class counter
     *
     * Read out the operating sytem name from the user agent and returns it
     *
-    * @return   string  operating system name
+    * @return    string    operating system name
     */
     function _getOperatingSystem(){
         $operationgSystem = "";
@@ -599,7 +599,7 @@ class counter
     {
         global $objDb;
 
-        $query = "UPDATE `".DBPREFIX."stats_requests` SET `visits` = `visits` + 1, `sid` = '".$this->md5Id."', `timestamp` = '".$this->currentTime."' WHERE `page` = '".substr($this->requestedUrl,0,255)."' AND `sid` != '".$this->md5Id."'";
+        $query = "UPDATE `".DBPREFIX."stats_requests` SET `visits` = `visits` + 1, `sid` = '".$this->md5Id."', `timestamp` = '".$this->currentTime."' WHERE `page` = '".substr($this->requestedUrl,0,255)."' AND (`sid` != '".$this->md5Id."' OR `timestamp` <= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."')";
         $objDb->Execute($query);
         if ($objDb->Affected_Rows() == 0) {
             $query = "SELECT `id` FROM `".DBPREFIX."stats_requests` WHERE `page` = '".substr($this->requestedUrl,0,255)."'";
@@ -631,9 +631,9 @@ class counter
     *
     * Makes the requests and the visitors statistics, depending on what was specified in the $dbTable variable
     *
-    * @access   private
-    * @param    string  $dbTable    The table name which should be used (either DBPREFIX.'stats_visitors_summary' or DBPREFIX.'stats_requests_summary')
-    * @return   boolean false if the table $dbTable isn't valid, otherwise true
+    * @access    private
+    * @param    string    $dbTable    The table name which should be used (either DBPREFIX.'stats_visitors_summary' or DBPREFIX.'stats_requests_summary')
+    * @return    boolean    false if the table $dbTable isn't valid, otherwise true
     */
     function _makeStatistics($dbTable) {
         global $objDb;
@@ -645,21 +645,21 @@ class counter
         }
 
         $arrStats = array(
-            'hour'  => array(
+            'hour'    => array(
                 'id'        => 0,
-                'timestamp' => mktime(date('H'),0,0,date('m'),date('d'),date('Y'))
+                'timestamp'    => mktime(date('H'),0,0,date('m'),date('d'),date('Y'))
                 ),
-            'day'   => array(
+            'day'    => array(
                 'id'        => 0,
-                'timestamp' => mktime(0,0,0,date('m'),date('d'),date('Y'))
+                'timestamp'    => mktime(0,0,0,date('m'),date('d'),date('Y'))
                 ),
-            'month' => array(
+            'month'    => array(
                 'id'        => 0,
-                'timestamp' => mktime(0,0,0,date('m'),1,date('Y'))
+                'timestamp'    => mktime(0,0,0,date('m'),1,date('Y'))
                 ),
-            'year'  => array(
+            'year'    => array(
                 'id'        => 0,
-                'timestamp' => mktime(0,0,0,1,1,date('Y'))
+                'timestamp'    => mktime(0,0,0,1,1,date('Y'))
                 )
         );
 
