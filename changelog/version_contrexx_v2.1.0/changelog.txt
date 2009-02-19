@@ -34,6 +34,11 @@ Benutzerverwaltung
 - Die Profileigenschaft E-Mail Adresse wird bei der Suche im Backend auch mit
   einbezogen.
 
+Statistik
+- Wird ein bestehender Besucher wieder als neuer solcher gezählt, wird dessen
+  Seitenaufrufe auch wieder gezählt, auch wenn es sich um dieselbe letzte
+  Seite handelt die er zuletzt aufgerufen hat.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
