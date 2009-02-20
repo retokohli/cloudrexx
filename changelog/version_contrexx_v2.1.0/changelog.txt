@@ -52,6 +52,9 @@ News
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Allgemein
+- Skript Dateien können nicht mehr hoch geladen werden.
+
 Benutzerverwaltung
 - Benutzer welche keiner Backend-Gruppe zugeordnet sind, können sich nicht
   mehr im Backend anmelden.
