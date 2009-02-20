@@ -1,13 +1,4 @@
 <?php
-if ($_COOKIE['debug']) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    $objDatabase->debug = 1;
-} else {
-    error_reporting(0);
-    ini_set('display_errors', 0);
-    $objDatabase->debug = 0;
-}
 /**
  * Downloads module
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -46,22 +37,6 @@ class downloads extends DownloadsLibrary
      * @var string
      */
     var $_pageTitle;
-
-   /**
-     * Error status message
-     *
-     * @access private
-     * @var string
-     */
-    var $_strErrMessage = '';
-
-   /**
-     * Ok status message
-     *
-     * @access private
-     * @var string
-     */
-    var $_strOkMessage = '';
 
     /**
      * Contains the info messages about done operations
@@ -104,22 +79,22 @@ $_ARRAYLANG['TXT_DOWNLOADS_URL'] = 'URL';
 $_ARRAYLANG['TXT_DOWNLOADS_BYTES'] = 'Bytes';
 $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_CATEGORIES'] = 'Verfügbare Kategorien';
 $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_CATEGORIES'] = 'Zugewiesene Kategorien';
-$_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_DOWNLOAD'] = 'Beim Aktualisieren des Downloads trat ein Fehler auf!';
+
 $_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_CATEGORY'] = 'Beim Aktualisieren der Kategorie trat ein Fehler auf!';
-$_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_DOWNLOAD'] = 'Beim Hinzufügen des Downloads trat ein Fehler auf!';
+
 $_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_CATEGORY'] = 'Beim Hinzufügen der Kategorie trat ein Fehler auf!';
-$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_LOCALES'] = 'Beim Speichern des Beschreibung trat ein Fehler auf!';
-$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Zugriffsberechtigungen trat ein Fehler auf!';
-$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_CATEGORY_ASSOCIATIONS'] = 'Beim Speichern der Kategoriezugehörigkeiten trat ein Fehler auf!';
-$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_RELATIONS'] = 'Beim Speichern der Verwanten Downloads trat ein Fehler auf!';
+
+
+
+
 $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_DOWNLOAD_DESC'] = 'Klicken Sie hier, um diesen Download zu deaktivieren. ';
 $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_DOWNLOAD_DESC'] = 'Klicken Sie hier, um diesen Download zu aktivieren. ';
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'] = 'Herunter laden';
-$_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD'] = 'Möchten Sie den Download %s wirklich löschen?';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'] = "Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOADS'] = 'Möchten Sie die ausgewählten Downloads wirklich löschen?';
-$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_SUCCESS'] = 'Der Download <strong>%s</strong> wurde erfolgreich gelöscht. ';
-$_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_DOWNLOAD'] = 'Sie sind nicht berechtigt den Download %s zu löschen!';
-$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_FAILED'] = 'Beim Löschen des Downloads <strong>%s</strong> trat ein Fehler auf!';
+
+
+
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_FAILED'] = 'Die Reihenfolge der Downloads <strong>%s</strong> konnte nicht geändert werden!';
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_SUCCESS'] = 'Die Reihenfolge der Downloads wurde erfolgreich geändert.';
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_DELETE_SUCCESS'] = 'Die Downloads wurden erfolgreich gelöscht.';
@@ -144,7 +119,7 @@ $_ARRAYLANG['TXt_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'] = 'Downloads zur Kategori
 $_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_ENTERED'] = 'Es sind keine Downloads erfasst.';
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD'] = 'Neuen Download hinzufügen';
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS'] = 'Möchten Sie die ausgewählten Downloads wirklich aus dieser Kategorie entfernen?';
-$_ARRAYLANG['TXT_DOWNLOADS_MODIFY_DOWNLOAD_PROHIBITED'] = 'Sie sind nicht berechtigt diesen Download zu Bearbeiten!';
+
 
 
 // those might exist already
@@ -208,7 +183,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'] = "Source";
 $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'] = "Verfügbare Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'] = "Zugewiesene Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
-$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'] = "Downloads";
+
 $_ARRAYLANG['TXT_DOWNLOADS_ICONS'] = "Icons";
 $_ARRAYLANG['TXT_PLACEHOLDER_FILE_ID'] = "Eindeutige ID";
 $_ARRAYLANG['TXT_PLACEHOLDER_FILE_NAME'] = "Name des Downloads";
@@ -1483,7 +1458,7 @@ $this->_objTpl->setVariable(array(
 
         // parse access permissions
         if ($objDownload->getAccessId()) {
-            $objGroup = $objFWUser->objGroup->getGroups(array('dynamic', $objDownload->getAccessId()));
+            $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $objDownload->getAccessId()));
             $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
         } elseif ($objDownload->getProtection()) {
             $arrAssociatedGroups = $objDownload->getAccessGroupIds();
@@ -1494,7 +1469,7 @@ $this->_objTpl->setVariable(array(
                 $objCategory = Category::getCategories(array('id' => $arrAssociatedCategories), null, null, array('id', 'read_access_id'));
                 while (!$objCategory->EOF) {
                     if ($objCategory->getReadAccessId()) {
-                        $objGroup = $objFWUser->objGroup->getGroups(array('dynamic', $objCategory->getReadAccessId()));
+                        $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $objCategory->getReadAccessId()));
                         $arrAssociatedGroups = array_merge($arrAssociatedGroups, $objGroup->getLoadedGroupIds());
                     }
                     $objCategory->next();

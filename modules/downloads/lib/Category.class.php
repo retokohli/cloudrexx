@@ -1053,9 +1053,9 @@ class Category {
             if ($this->{$type.'_protected'}) {
                 // set protection
                 if ($this->{$type.'_access_id'} || $this->{$type.'_access_id'} = Permission::createNewDynamicAccessId()) {
-                    var_dump(Permission::removeAccess($this->{$type.'_access_id'}, 'dynamic'));
+                    Permission::removeAccess($this->{$type.'_access_id'}, 'dynamic');
                     if (count($this->{$type.'_groups'})) {
-                        var_dump(Permission::setAccess($this->{$type.'_access_id'}, 'dynamic', $this->{$type.'_groups'}));
+                        Permission::setAccess($this->{$type.'_access_id'}, 'dynamic', $this->{$type.'_groups'});
                     }
                 } else {
                     // remove protection due that no new access-ID could have been created
@@ -1063,7 +1063,7 @@ class Category {
                 }
             } elseif ($this->{$type.'_access_id'}) {
                 // remove protection
-                var_dump(Permission::removeAccess($this->{$type.'_access_id'}, 'dynamic'));
+                Permission::removeAccess($this->{$type.'_access_id'}, 'dynamic');
                 $this->{$type.'_access_id'} = 0;
             }
         }
