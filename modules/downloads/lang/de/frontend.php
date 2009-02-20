@@ -35,5 +35,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Kategorien";
 $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'] = "Lizenz";
 $_ARRAYLANG['TXT_DOWNLOADS_VERSION'] = "Version";
 $_ARRAYLANG['TXT_DOWNLOADS_SIZE'] = "Grösse";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE'] = "Löschen";
+$_ARRAYLANG['TXT_DOWNLOADS_EMPTY_NAME_ERROR'] = "Sie müssen zwingend einen Namen für die Kategorie definieren!";
 $_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'] = "Inhalt der Kategorie %s zeigen...";
 ?>
