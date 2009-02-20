@@ -29,6 +29,20 @@ class DownloadsLibrary
 
     function __construct()
     {
+global $_ARRAYLANG;
+
+$_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD'] = 'Möchten Sie den Download %s wirklich löschen?';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_SUCCESS'] = 'Der Download <strong>%s</strong> wurde erfolgreich gelöscht. ';
+$_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_DOWNLOAD'] = 'Sie sind nicht berechtigt den Download %s zu löschen!';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_FAILED'] = 'Beim Löschen des Downloads <strong>%s</strong> trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_MODIFY_DOWNLOAD_PROHIBITED'] = 'Sie sind nicht berechtigt diesen Download zu Bearbeiten!';
+$_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_DOWNLOAD'] = 'Beim Aktualisieren des Downloads trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_DOWNLOAD'] = 'Beim Hinzufügen des Downloads trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_LOCALES'] = 'Beim Speichern des Beschreibung trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_CATEGORY_ASSOCIATIONS'] = 'Beim Speichern der Kategoriezugehörigkeiten trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_RELATIONS'] = 'Beim Speichern der Verwanten Downloads trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Zugriffsberechtigungen trat ein Fehler auf!';
+
         $this->_init();
         $this->initDefaultCategoryImage();
         $this->initDefaultDownloadImage();

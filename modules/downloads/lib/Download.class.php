@@ -1000,9 +1000,9 @@ class Download {
         if ($this->protected) {
             // set protection
             if ($this->access_id || $this->access_id = Permission::createNewDynamicAccessId()) {
-                var_dump(Permission::removeAccess($this->access_id, 'dynamic'));
+                Permission::removeAccess($this->access_id, 'dynamic');
                 if (count($this->access_groups)) {
-                    var_dump(Permission::setAccess($this->access_id, 'dynamic', $this->access_groups));
+                    Permission::setAccess($this->access_id, 'dynamic', $this->access_groups);
                 }
             } else {
                 // remove protection due that no new access-ID could have been created
@@ -1010,7 +1010,7 @@ class Download {
             }
         } elseif ($this->access_id) {
             // remove protection
-            var_dump(Permission::removeAccess($this->access_id, 'dynamic'));
+            Permission::removeAccess($this->access_id, 'dynamic');
             $this->access_id = 0;
         }
 
