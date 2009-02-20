@@ -76,7 +76,9 @@ class Permission
      */
     public static function noAccess()
     {
-        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=noaccess');
+        global $objInit;
+
+        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&').'cmd=noaccess');
         exit;
     }
 
