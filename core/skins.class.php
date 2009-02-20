@@ -167,6 +167,29 @@ class skins
     var $oldTable;                         // old Theme-Table name
 
     /**
+     * File extensions that are allowed to upload
+     *
+     * This array contains all file extensions that are allowed
+     * to be uploaded. If a file's file extensions is not listed
+     * in this array then the contact request will be blocked and
+     * a error message will be return instead.
+     */
+    private $enabledUploadFileExtensions = array(
+        "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
+        "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
+        "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
+        "xlw","xlt","sdc","vor","sdc","cvs","slk","wk1","wks",
+        "123","odp","otp","sxi","sti","pps","pot","sxd","sda",
+        "sdd","sdp","cgm","odg","otg","sxd","std","dxf","emf",
+        "eps","met","pct","sgf","sgv","svm","wmf","bmp","jpeg",
+        "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
+        "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
+        "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
+        "html","shtml","css","js","tpl","thumb","ico"
+    );
+
+
+    /**
     * Constructor
     * @param  string
     * @access public
@@ -582,7 +605,7 @@ class skins
     function _extractArchive($archive)
     {
         global $_CORELANG;
-        if(($files = $archive->extract(PCLZIP_OPT_PATH, $this->path)) != 0){
+        if(($files = $archive->extract(PCLZIP_OPT_PATH, $this->path, PCLZIP_OPT_BY_EREG, '('.implode('|', $this->enabledUploadFileExtensions).')$')) != 0){
             //required files array
             $reqFiles = $this->filenames;
             foreach ($files as $file) {
@@ -1074,7 +1097,7 @@ class skins
 
         $themes = isset($_POST['themes']) ? $_POST['themes'] : '';
         $themesFile = isset($_POST['themesNewFileName']) ? $this->replaceCharacters($_POST['themesNewFileName']) : '';
-        if(($themesFile!="") AND ($themes!="")) {
+        if(($themesFile!="") AND ($themes!="") && (preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $themesFile, $arrMatch) && in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions))) {
             $fp = fopen ($this->path.$themes.DIRECTORY_SEPARATOR.$themesFile ,"w");
             fwrite($fp,"");
             fclose($fp);

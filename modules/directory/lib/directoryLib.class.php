@@ -39,6 +39,28 @@ class directoryLibrary
 
     var $googleMapStartPoint = array('lat' => 46, 'lon' => 8, 'zoom' => 1);
 
+	/**
+     * File extensions that are allowed to upload
+     *
+     * This array contains all file extensions that are allowed
+     * to be uploaded. If a file's file extensions is not listed
+     * in this array then the contact request will be blocked and
+     * a error message will be return instead.
+     */
+    private $enabledUploadFileExtensions = array(
+        "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
+        "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
+        "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
+        "xlw","xlt","sdc","vor","sdc","cvs","slk","wk1","wks",
+        "123","odp","otp","sxi","sti","pps","pot","sxd","sda",
+        "sdd","sdp","cgm","odg","otg","sxd","std","dxf","emf",
+        "eps","met","pct","sgf","sgv","svm","wmf","bmp","jpeg",
+        "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
+        "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
+        "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
+        "html","shtml","css","js","tpl","thumb","ico"
+    );
+
     /**
      * Constructor
      */
@@ -517,7 +539,7 @@ class directoryLibrary
             $fileType         = $_FILES[$name]['type'];
                $this->fileSize = $_FILES[$name]['size'];
 
-               if($fileName != ""){
+               if ($fileName != "" && preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $fileName, $arrMatch) && in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)) {
 
                 //check extension
                    $info             = pathinfo($fileName);

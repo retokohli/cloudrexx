@@ -55,6 +55,27 @@ class FileBrowser {
     var $_blogEnabled;
     var $_podcastEnabled;
 
+    /**
+     * File extensions that are allowed to upload
+     *
+     * This array contains all file extensions that are allowed
+     * to be uploaded. If a file's file extensions is not listed
+     * in this array then the contact request will be blocked and
+     * a error message will be return instead.
+     */
+    private $enabledUploadFileExtensions = array(
+        "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
+        "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
+        "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
+        "xlw","xlt","sdc","vor","sdc","cvs","slk","wk1","wks",
+        "123","odp","otp","sxi","sti","pps","pot","sxd","sda",
+        "sdd","sdp","cgm","odg","otg","sxd","std","dxf","emf",
+        "eps","met","pct","sgf","sgv","svm","wmf","bmp","jpeg",
+        "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
+        "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
+        "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
+        "html","shtml","css","js","tpl","thumb","ico"
+    );
 
 
     /**
@@ -418,6 +439,10 @@ class FileBrowser {
         }
 
         $nr = 1;
+
+		if (!preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $uploadFileName, $arrMatch) || !in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)) {
+            return false;
+        }
 
         if (@file_exists($strPath.$uploadFileName)) {
             if (preg_match('/.*\.(.*)$/', $uploadFileName, $arrSubPatterns)) {
