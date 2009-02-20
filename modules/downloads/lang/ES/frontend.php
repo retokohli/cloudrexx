@@ -35,5 +35,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Categor&iacute;as";
 $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'] = "Licencia";
 $_ARRAYLANG['TXT_DOWNLOADS_VERSION'] = "Versi&oacute;n";
 $_ARRAYLANG['TXT_DOWNLOADS_SIZE'] = "Tama&ntilde;o";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE'] = "Delete";
+$_ARRAYLANG['TXT_DOWNLOADS_EMPTY_NAME_ERROR'] = "You must set a name for the category.";
 $_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'] = "Show the content of the category %s...";
 ?>

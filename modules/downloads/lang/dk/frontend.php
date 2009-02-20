@@ -35,5 +35,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Kategorier";
 $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'] = "Licens";
 $_ARRAYLANG['TXT_DOWNLOADS_VERSION'] = "Version";
 $_ARRAYLANG['TXT_DOWNLOADS_SIZE'] = "størrelse";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE'] = "Slette";
+$_ARRAYLANG['TXT_DOWNLOADS_EMPTY_NAME_ERROR'] = "Du skal give kategorien et navn!";
 $_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'] = "Vis indholdet af kategorien %s...";
 ?>
