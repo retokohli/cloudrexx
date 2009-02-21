@@ -317,7 +317,7 @@ class aliasLib
                 $target = $arrAlias['url'];
             }
 
-            return $this->_activateRewriteEngine($arrRemovedAliases);
+            return $this->_activateRewriteEngine($arrRemovedAliases, $oldTarget);
         } else {
             return false;
         }
@@ -375,7 +375,7 @@ class aliasLib
         );
     }
 
-    function _activateRewriteEngine($arrRemoveAliases = array())
+    function _activateRewriteEngine($arrRemoveAliases = array(), $oldTarget = null)
     {
         require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
 
@@ -394,7 +394,9 @@ class aliasLib
             $arrDefinedAliases = $this->_getAliases();
 
             foreach ($arrAddition as $directive) {
-                if (preg_match('#^\s*RewriteRule.*$#i', $directive)) {
+				if (isset($oldTarget) && preg_match('#^\s*RewriteRule\s+\^.+\$\s+'.$oldTarget.'\s.*$#', $directive)) {
+                    continue;
+                } elseif (preg_match('#^\s*RewriteRule.*$#i', $directive)) {
                     if (count($arrRemoveAliases) == 0 || !preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+.+\s+.*$#', $directive, $arrSources) || !in_array($arrSources[1], $arrRemoveAliases)) {
                         $arrAdditionAlias[] = $directive;
                     } else {
@@ -503,57 +505,11 @@ class aliasLib
         }
     }
 
-    function _setRewriteRules($aliasId, $oldTarget)
-    {
-        if (($arrAlias = $this->_getAlias($aliasId)) !== false) {
-            $target = $arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'];
-
-            require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
-
-            $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
-            $objHtAccess->load();
-
-            $arrAddition = $objHtAccess->getAdditional('array');
-            $arrAdditionNew = array();
-            $rewriteEngine = false;
-
-            foreach ($arrAddition as $directive) {
-                if (!preg_match('#^\s*RewriteRule\s+\^.+\$\s+'.$oldTarget.'.*$#', $directive)) {
-                    if (preg_match('#^\s*RewriteEngine\s+(Off|On)?.*$#i', $directive)) {
-                        array_push($arrAdditionNew, 'RewriteEngine On');
-                        $rewriteEngine = true;
-                    } else {
-                        array_push($arrAdditionNew, $directive);
-                    }
-                }
-            }
-
-            if (!$rewriteEngine) {
-                $arrAdditionNew = array_merge(array('RewriteEngine On'), $arrAdditionNew);
-            }
-
-            foreach ($arrAlias['sources'] as $arrSource) {
-                if (!empty($arrSource['url'])) {
-                    array_push($arrAdditionNew, 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC]');
-                }
-            }
-
-            $objHtAccess->setAdditional($arrAdditionNew);
-            if ($objHtAccess->save() !== true) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    function _isUniqueAliasSource($url, $target, $sourceId = 0)
+    function _isUniqueAliasSource($url, $target, $oldTarget, $sourceId = 0)
     {
         global $objDatabase;
 
-        if (($arrUsedAliasesInHtaccessFile = $this->_getUsedAlisesInHtaccessFile()) === false || (isset($arrUsedAliasesInHtaccessFile[$url]) && $arrUsedAliasesInHtaccessFile[$url] != $target)) {
+        if (($arrUsedAliasesInHtaccessFile = $this->_getUsedAlisesInHtaccessFile()) === false || (isset($arrUsedAliasesInHtaccessFile[$url]) && $arrUsedAliasesInHtaccessFile[$url] != $target && $arrUsedAliasesInHtaccessFile[$url] != $oldTarget)) {
             return false;
         }
 
@@ -587,7 +543,7 @@ class aliasLib
                 $arrRemovedAliases[] = $arrSource['url'];
             }
 
-            if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_alias_source` WHERE `target_id` = ".intval($aliasId)) !== false && $this->_activateRewriteEngine($arrRemovedAliases) && $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_alias_target` WHERE `id` = ".intval($aliasId)) !== false) {
+            if ($objDatabase->Execute("DELETE s,t FROM `".DBPREFIX."module_alias_source` AS s INNER JOIN `".DBPREFIX."module_alias_target` AS t ON t.`id` = s.`target_id` WHERE s.`target_id` = ".intval($aliasId)) !== false && $this->_activateRewriteEngine($arrRemovedAliases))  {
             }
             return true;
         } else {

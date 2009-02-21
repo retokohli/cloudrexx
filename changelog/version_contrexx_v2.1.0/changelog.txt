@@ -101,6 +101,12 @@ Datenlisten
 - Frontend-Seiten werden korrekt aufgelistet bei der Verwaltung einer
   Kategorie.
 
+Alias Verwaltung
+- Die Zielseite kann geändert werden.
+- Die Synchronisation mit dem Content Manager funktioniert korrekt.
+- Gelöschte Aliase werden aus der .HTAccess Datei gelöscht.
+
+
 ****************************************
 * Neue Module **************************
 ****************************************
