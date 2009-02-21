@@ -215,6 +215,20 @@ class AliasAdmin extends aliasLib
         $aliasId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $arrSourceUrls = array();
 
+        if (($arrAlias = $this->_getAlias($aliasId))) {
+            $oldTarget = $arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'];
+        } else {
+            $oldTarget = '';
+            $arrAlias = array(
+                'type'        => 'local',
+                'url'        => '',
+                'pageUrl'    => '',
+                'sources'    => array()
+            );
+            $aliasId = 0;
+        }
+
+
         if (isset($_POST['alias_save'])) {
             $arrAlias['type'] = in_array($_POST['alias_source_type'], $this->_arrAliasTypes) ? $_POST['alias_source_type'] : $this->_arrAliasTypes[0];
 
@@ -268,7 +282,7 @@ class AliasAdmin extends aliasLib
 
                     foreach ($arrAlias['sources'] as $arrSource) {
                         $target = $arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'];
-                        if (in_array($arrSource['url'], $arrSourceUrls) || !$this->_isUniqueAliasSource($arrSource['url'], $target,(!empty($arrSource['id']) ? $arrSource['id'] : 0))) {
+                        if (in_array($arrSource['url'], $arrSourceUrls) || !$this->_isUniqueAliasSource($arrSource['url'], $target, $oldTarget,(!empty($arrSource['id']) ? $arrSource['id'] : 0))) {
                             $error = true;
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($arrSource['url'], ENT_QUOTES, CONTREXX_CHARSET));
                         } elseif (!$this->is_alias_valid($arrSource['url'])) {
@@ -298,14 +312,6 @@ class AliasAdmin extends aliasLib
                     $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_URL_REQUIRED_MSG'];
                 }
             }
-        } elseif (($arrAlias = $this->_getAlias($aliasId)) === false) {
-            $arrAlias = array(
-                'type'        => 'local',
-                'url'        => '',
-                'pageUrl'    => '',
-                'sources'    => array()
-            );
-            $aliasId = 0;
         }
 
         $this->_objTpl->loadTemplateFile('module_alias_modify.html');

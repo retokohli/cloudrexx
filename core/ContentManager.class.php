@@ -2642,7 +2642,7 @@ class ContentManager
 	 * @param alias   the alias to install for the page. if it is empty or null,
 	 *                no change will happen.
 	 */
-    function _set_default_alias($pageid, $alias) {
+    function _set_default_alias($pageId, $alias) {
         $alias    = $this->_fix_alias($alias);
 
 		//////////////////////////////////////////////////////////////
@@ -2651,121 +2651,70 @@ class ContentManager
 		require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
 		$util = new aliasLib;
 
-        // Do we already have a default alias? This means we probably have to
-        // delete it if the name changed..
-        $alias_src_id = $this->_has_default_alias($pageid);
-
-        // figure out old name of alias, if present.
-        $old_name = '';
-        if ($alias_src_id) {
-            $objResult = $objDatabase->SelectLimit("
-                SELECT id FROM ".DBPREFIX."module_alias_target
-                WHERE type = 'local' and url = '$pageid'",
-                1
+		// check if there is already an alias present for the page
+        $aliasId = intval($this->_has_default_alias($pageId));
+        if (($arrAlias = $util->_getAlias($aliasId)) == false) {
+            $arrAlias = array(
+                'type'      => 'local',
+                'url'       => $pageId,
+                'pageUrl'   => '',
+                'sources'   => array()
             );
-            $target_id = $objResult->fields['id'];
-            $oldname_res = $objDatabase->SelectLimit("
-                SELECT url FROM ".DBPREFIX."module_alias_source
-                WHERE target_id = $target_id "
-                , 1
-            );
-            $old_name = $oldname_res->fields['url'];
+            $aliasId = 0;
         }
 
-        //////////////////////////////////////////////////////////////
-        // Remove alias if it's empty. But only if it's a default alias!
         if ($alias == '') {
-			if ($alias_src_id) {
-                // We have a default alias, which needs to be
-                // deleted.
-				$objDatabase->Execute("
-					DELETE FROM ".DBPREFIX."module_alias_source
-					WHERE target_id = $target_id "
-				);
-
-				// reads alias table, rewrites the .htaccess.
-				$util->_activateRewriteEngine(array($old_name));
-			}
-            return false;
-        }
-
-
-		//////////////////////////////////////////////////////////////
-		// Is the alias breaking access to a file?
-		if (!$util->is_alias_valid($alias)) {
-			return $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'];
-		}
-
-		//////////////////////////////////////////////////////////////
-		// Check if there is already an alias with that
-		// name.. or for that page.
-		$query = "
-			SELECT target_id
-			FROM  ".DBPREFIX."module_alias_source AS s
-			WHERE s.url = '$alias'
-		";
-		$src = $objDatabase->SelectLimit($query, 1);
-		if ($src->RecordCount()) {
-			// There is already some alias with that name.
-			// This is only a problem if the alias points to another
-			// page. For this, we need to figure out where
-			// this alias points.
-			$t_id = $src->fields['target_id'];
-			$q_target = "
-				SELECT count(*) AS _count
-				FROM ".DBPREFIX."module_alias_target AS t
-				WHERE t.url = '$pageid'
-				  AND t.id  = $t_id
-			";
-			$cnt = $objDatabase->SelectLimit($q_target, 1);
-			if ($cnt->fields['_count'] == 0) {
-				// Alias points somewhere else.
-				return $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'];
-			}
-			return false;
-		}
-
-		//////////////////////////////////////////////////////////////
-		// If the page already has a default alias, we're just
-		// going to update it.
-        if ($alias_src_id){
-			$objDatabase->Execute("
-				UPDATE ".DBPREFIX."module_alias_source
-				SET    url = '$alias'
-				WHERE  id  = $alias_src_id
-				LIMIT  1"
-			);
-		}
-		else {
-		//////////////////////////////////////////////////////////////
-		// Okay. we're now ready to create the alias.
-
-            // check if the target already exists
-            $has_target = $objDatabase->SelectLimit("
-                 SELECT id FROM ".DBPREFIX."module_alias_target
-                 WHERE  url = '$pageid'", 1);
-            if ((!$has_target->RecordCount()) or !($target_id = $has_target->fields['id'])) {
-		$objDatabase->Execute("
-			INSERT INTO ".DBPREFIX."module_alias_target
-				(type, url)
-			VALUES
-				('local', '$pageid')"
-		);
-                $target_id = $objDatabase->Insert_ID();
+        	// Remove alias if it's empty.
+            $aliasRemoved = false;
+            for ($i = 0; $i < count($arrAlias['sources']); $i++) {
+                if ($arrAlias['sources'][$i]['isdefault']) {
+                    $aliasRemoved = true;
+                    unset($arrAlias['sources'][$i]);
+                    break;
+                }
             }
-		$objDatabase->Execute("
-			INSERT INTO ".DBPREFIX."module_alias_source
-				(target_id, url, isdefault)
-			VALUES
-					($target_id, '$alias', 1)"
-		);
-		}
+            if ($aliasRemoved) {
+                if (!count($arrAlias['sources'])) {
+                    // no other alias for this page are left, so let's remove the whole alias
+                    $util->_deleteAlias($aliasId);
+                } else {
+					// update the alias with the removed source entry
+                    $util->_updateAlias($aliasId, $arrAlias);
+                }
+            }
+            return false;
+        } elseif (!$util->is_alias_valid($alias)) {
+            return sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($alias, ENT_QUOTES, CONTREXX_CHARSET));
+        } else {
+            // check if we are going to update or add an alias source
+            $aliasNr = null;
+            for ($i = 0; $i < count($arrAlias['sources']); $i++) {
+                if ($arrAlias['sources'][$i]['isdefault']) {
+                    $aliasNr = $i;
+                    break;
+                }
+            }
 
-		// reads alias table, rewrites the .htaccess.
-        // delete old entry if the name changed.
-        $delete_old = ($alias != $old_name) ? array($old_name) : array();
-        $util->_activateRewriteEngine($delete_old);
-		return false;
+            // check if the defined alias source is unique
+            if (!$util->_isUniqueAliasSource($alias, $pageId, $arrAlias['pageUrl'], isset($aliasNr) ? $arrAlias['sources'][$aliasNr]['id'] : 0)) {
+                return sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($alias, ENT_QUOTES, CONTREXX_CHARSET));
+            }
+
+
+            if (isset($aliasNr)) {
+                // updating the current standard alias source
+                $arrAlias['sources'][$aliasNr]['url'] = $alias;
+            } else {
+                // adding a new alias source
+                $arrAlias['sources'][] = array('url' => $alias, 'isdefault' => 1);
+            }
+
+            if (($aliasId ? $util->_updateAlias($aliasId, $arrAlias) : $util->_addAlias($arrAlias))) {
+                return false;
+            } else {
+                return $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
+            }
+        }
 	}
 
 	/**
@@ -2775,7 +2724,7 @@ class ContentManager
 	function _has_default_alias($pageid) {
 		global $objDatabase;
 		$check_update = "
-			SELECT a_s.url, a_s.id
+			SELECT a_s.url, a_t.id
 			FROM            ".DBPREFIX."module_alias_target AS a_t
 			LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 				  ON  a_t.id        = a_s.target_id
