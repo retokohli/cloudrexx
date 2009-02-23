@@ -9,6 +9,31 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Setting_Mail.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Setting.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Profile_Attribute.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Profile.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/UserGroup.class.php';
+
+/**
  * Framework user
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
