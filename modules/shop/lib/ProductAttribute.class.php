@@ -227,7 +227,7 @@ echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)
     function getValueArray()
     {
         if (!is_array($this->arrValue))
-            $this->arrValue = ProductAttributes::getValueArrayByNameId($this->id);
+            $this->arrValue = ProductAttribute::getValueArrayByNameId($this->id);
         return $this->arrValue;
     }
     /**
@@ -322,6 +322,7 @@ echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
+        unset($this->arrValue[$value_id]);
         return true;
     }
 
@@ -482,19 +483,16 @@ echo("storeValues(): this->arrvalue: ".var_export($this->arrValue, true)."<br />
 //            );
 //            if (!$objText) return false;
 //            $arrValue['text_value_id'] = $objText->getId();
-            // Note that the $id is only identical to the value ID stored
-            // in $arrValue['id'] for value records already present.
-            // If the value was just added to the array, the $id is just
-            // an array index, and its $arrValue['id'] is empty.
-            $value_id = (isset($arrValue['id']) ? $arrValue['id'] : 0);
+            // Note that the array index and the value ID stored
+            // in $arrValue['id'] are only identical to for value
+            // records already present in the database.
+            // If the value was just added to the array, the array index
+            // is just that -- an array index, and its $arrValue['id'] is empty.
+            $value_id = (empty($arrValue['id']) ? 0 : $arrValue['id']);
 echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true)."<br />");
             if ($value_id && $this->recordExistsValue($value_id)) {
-                if (!$this->updateValue($value_id)) return false;
+                if (!$this->updateValue($arrValue)) return false;
             } else {
-                // This is a temporary dummy value used to find the
-                // value array in $this->arrValue.
-                // Updated in insertValue().
-                //$arrValue['id'] = $id; // $id is the key in the loop
                 if (!$this->insertValue($arrValue)) return false;
             }
         }
@@ -515,6 +513,7 @@ echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true
     {
         global $objDatabase;
 
+echo("updateValue():  Got value: ".var_export($arrValue, true)."<br />");
         // mind: value entries in the array may be *new* and have to
         // be inserted, even though the object itself has got a valid ID!
         $query = "
@@ -544,14 +543,13 @@ echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (
-                name_id,
-                value,
-                price
+                name_id, value, price
             ) VALUES (
                 $this->id,
                 '".addslashes($arrValue['value'])."',
                 ".floatval($arrValue['price'])."
-            )";
+            )
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrValue['id'] = $objDatabase->Insert_ID();
@@ -593,9 +591,8 @@ echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true
         $arrName = ProductAttributes::getNameArrayByNameId($name_id);
         if ($arrName === false) return false;
         $objProductAttribute = new ProductAttribute(
-            $arrName['type'], $name_id
+            $arrName['name'], $arrName['type'], $name_id
         );
-        $objProductAttribute->setName($arrName['name']);
         return $objProductAttribute;
     }
 

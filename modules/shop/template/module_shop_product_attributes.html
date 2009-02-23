@@ -111,9 +111,9 @@ function updateAttributeValueList(id)
       if (type > 3) {
         // Clear the value name for text and upload fields
         document.getElementById('attributeValue-'+valueId).value = '';
-        document.getElementById('attributeValue-'+valueId).disabled = 'disabled';
+        document.getElementById('attributeValue-'+valueId).disabled = true;
       } else {
-        document.getElementById('attributeValue-'+valueId).disabled = '';
+        document.getElementById('attributeValue-'+valueId).disabled = false;
       }
       value = document.getElementById('attributeValue-'+valueId).value;
       price = document.getElementById('attributePrice-'+valueId).value;

@@ -1463,18 +1463,22 @@ class Shop extends ShopLibrary
             if ($cartProdId !== false)
                 $product_Id =
                     $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
+            $arrAttributeNames = ProductAttributes::getNameArrayByProductId($product_Id);
+echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
             // When there are no ProductAttributes for this Product, hide the
             // options blocks
-            if (!isset($this->arrProductAttributes[$product_Id])) {
+            if (empty($arrAttributeNames)) {
                 $this->objTemplate->hideBlock('shopProductOptionsRow');
                 $this->objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
-                // Loop through the ProductAttribute Values for the Product
-                foreach ($this->arrProductAttributes[$product_Id]
-                            as $optionId => $arrOptionDetails) {
-                    $selectValues = '';
+//echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
+                // Loop through the ProductAttribute Names for the Product
+                foreach ($arrAttributeNames as $optionId => $arrAttributeName) {
+                	$arrAttributeValues = ProductAttributes::getValueArrayByNameId($optionId);
+echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($arrAttributeValues, true)."<hr />");
+                	$selectValues = '';
                     // create head of option menu/checkbox/radiobutton
-                    switch ($arrOptionDetails['type']) {
+                    switch ($arrAttributeName['type']) {
                       case '0': // Dropdown menu (optional attribute)
                       // There is no hidden input field here, as there is no
                       // mandatory choice, the status need not be verified.
@@ -1484,7 +1488,7 @@ class Shop extends ShopLibrary
                             $product_Id.'-'.$optionId.'-'.$domId.
                             '" style="width:180px;">'."\n".
                             '<option value="0">'.
-                            $arrOptionDetails['name'].'&nbsp;'.
+                            $arrAttributeName['name'].'&nbsp;'.
                             $_ARRAYLANG['TXT_CHOOSE']."</option>\n";
                         break;
                       case '1': // Radio buttons
@@ -1493,7 +1497,7 @@ class Shop extends ShopLibrary
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_Id.'-'.$optionId.
-                            '" value="'.$arrOptionDetails['name'].'" />'."\n";
+                            '" value="'.$arrAttributeName['name'].'" />'."\n";
                         $checkOptionIds .= "$optionId;";
                         break;
                       // No container for checkboxes (2), as there is no
@@ -1502,16 +1506,16 @@ class Shop extends ShopLibrary
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_Id.'-'.$optionId.
-                            '" value="'.$arrOptionDetails['name'].'" />'."\n".
+                            '" value="'.$arrAttributeName['name'].'" />'."\n".
                             '<select name="productOption['.$optionId.
                             ']" id="productOption-'.
                             $product_Id.'-'.$optionId.'-'.$domId.
                             '" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
-                            (count($arrOptionDetails['values']) > 1
+                            (count($arrAttributeValues) > 1
                                 ? '<option value="0">'.
-                                  $arrOptionDetails['name'].'&nbsp;'.
+                                  $arrAttributeName['name'].'&nbsp;'.
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
                                 : ''
                             );
@@ -1524,7 +1528,7 @@ class Shop extends ShopLibrary
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_Id.'-'.$optionId.
-                            '" value="'.$arrOptionDetails['name'].'" />'."\n";
+                            '" value="'.$arrAttributeName['name'].'" />'."\n";
                         $checkOptionIds .= "$optionId;";
                         break;
 
@@ -1534,19 +1538,19 @@ class Shop extends ShopLibrary
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_Id.'-'.$optionId.
-                            '" value="'.$arrOptionDetails['name'].'" />'."\n";
+                            '" value="'.$arrAttributeName['name'].'" />'."\n";
                         $checkOptionIds .= "$optionId;";
                         break;
                     }
 
                     $i = 0;
-                    foreach ($arrOptionDetails['values'] as $value_id => $arrValues) {
+                    foreach ($arrAttributeValues as $value_id => $arrValue) {
                         $valuePrice = '';
                         $selected   = false;
                         // Show the price only if non-zero
-                        if ($arrValues['price'] != 0) {
+                        if ($arrValue['price'] != 0) {
                             $valuePrice =
-                                '&nbsp;('.Currency::getCurrencyPrice($arrValues['price']).
+                                '&nbsp;('.Currency::getCurrencyPrice($arrValue['price']).
                                 '&nbsp;'.Currency::getActiveCurrencyCode().')';
                         }
                         // mark the option value as selected if it was before
@@ -1557,12 +1561,12 @@ class Shop extends ShopLibrary
                                 $selected = true;
                         }
                         // create option menu/checkbox/radiobutton
-                        switch ($arrOptionDetails['type']) {
+                        switch ($arrAttributeName['type']) {
                           case '0': // Dropdown menu (optional attribute)
                             $selectValues .=
                                 '<option value="'.$value_id.'" '.
                                 ($selected ? 'selected="selected"' : '').
-                                ' >'.$arrValues['value'].$valuePrice.
+                                ' >'.$arrValue['value'].$valuePrice.
                                 "</option>\n";
                             break;
                           case '1': // Radio buttons
@@ -1574,7 +1578,7 @@ class Shop extends ShopLibrary
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_Id.'-'.$optionId.'-'.$domId.
-                                '">&nbsp;'.$arrValues['value'].$valuePrice.
+                                '">&nbsp;'.$arrValue['value'].$valuePrice.
                                 "</label><br />\n";
                             break;
                           case '2': // Checkboxes
@@ -1586,14 +1590,14 @@ class Shop extends ShopLibrary
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_Id.'-'.$optionId.'-'.$domId.
-                                '">&nbsp;'.$arrValues['value'].$valuePrice.
+                                '">&nbsp;'.$arrValue['value'].$valuePrice.
                                 "</label><br />\n";
                             break;
                           case '3': // Dropdown menu (mandatory attribute)
                             $selectValues .=
                                 '<option value="'.$value_id.'"'.
                                 ($selected ? ' selected="selected"' : '').
-                                ' >'.$arrValues['value'].$valuePrice.
+                                ' >'.$arrValue['value'].$valuePrice.
                                 "</option>\n";
                             break;
                           case '4': // Text field, optional
@@ -1602,7 +1606,7 @@ class Shop extends ShopLibrary
                             $selectValues .=
                                 '<input type="text" name="productOption['.$optionId.
                                 ']" id="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.
-                                '" value="'.$arrValues['value'].'" style="width:180px;" />'.
+                                '" value="'.$arrValue['value'].'" style="width:180px;" />'.
                                 '<label for="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.'">'.
                                 $valuePrice."</label><br />\n";
                             break;
@@ -1621,7 +1625,7 @@ class Shop extends ShopLibrary
                         ++$domId;
                     }
                     // create foot of option menu/checkbox/radiobutton
-                    switch ($arrOptionDetails['type']) {
+                    switch ($arrAttributeName['type']) {
                         case '0':
                             $selectValues .= "</select><br />\n";
                             break;
@@ -1651,7 +1655,7 @@ class Shop extends ShopLibrary
                         // left old spelling for comatibility (obsolete)
                         'SHOP_PRODCUT_OPTION' => $selectValues,
                         'SHOP_PRODUCT_OPTION' => $selectValues,
-                        'SHOP_PRODUCT_OPTIONS_NAME'  => $arrOptionDetails['name'],
+                        'SHOP_PRODUCT_OPTIONS_NAME'  => $arrAttributeName['name'],
                         'SHOP_PRODUCT_OPTIONS_TITLE' =>
                             '<a href="javascript:{}" onclick="toggleOptions('.
                             $product_Id.')" title="'.
@@ -2681,20 +2685,24 @@ sendReq('', 1);
 // TODO: Do something!
 //                    if (!$objProductAttribute) {
 //                    }
+                      $arrValues = $objProductAttribute->getValueArray();
+echo("_parseCart(): Got Values ".var_export($arrValues, true)."<br />");
                     foreach ($arrValueIds as $value_id) {
-                        // Note that the ProductAttribute values are indexed
+echo("_parseCart(): processing value ID $value_id<br />");
+                    	// Note that the ProductAttribute values are indexed
                         // starting from 1!
                         // For types 4..7, the value entered in the text box is
                         // stored in $value_id.  Overwrite the value taken from
                         // the database.
                         if ($objProductAttribute->getType() > 3) {
-                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
-                            $arrValue = each($arrValues);
+                            //$arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                            $arrValue = current($arrValues);
                             $arrValue['value'] = $value_id;
                         } else {
-                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                        	//$arrValues = ProductAttributes::getValueArrayByNameId($optionId);
                             $arrValue = $arrValues[$value_id];
                         }
+echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                         if (!is_array($arrValue)) continue;
                         $optionValue = ShopLibrary::stripUniqidFromFilename($arrValue['value']);
                         if (   $optionValue != $arrValue['value']
@@ -3132,14 +3140,13 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_CITY'          => $this->objCustomer->getCity(),
                 // New template - since 2.1.0
                 'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
-                    self::getCountryMenuoptions($this->objCustomer->getCountryId()),
+                    Country::getMenuoptions($this->objCustomer->getCountryId()),
                 // Old template
                 // Compatibility with 2.0 and older versions
                 'SHOP_ACCOUNT_COUNTRY'       =>
                     $this->_getCountriesMenu(
                         'countryId', $this->objCustomer->getCountryId()
                     ),
-                    //$this->arrCountries[$this->objCustomer->getCountryId()]['countries_name'],
                 'SHOP_ACCOUNT_EMAIL'         => $this->objCustomer->getEmail(),
                 'SHOP_ACCOUNT_PHONE'         => $this->objCustomer->getPhone(),
                 'SHOP_ACCOUNT_FAX'           => $this->objCustomer->getFax(),
@@ -3158,7 +3165,7 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_CITY'          => (isset($_SESSION['shop']['city'])       ? stripslashes($_SESSION['shop']['city']) : ''),
                 // New template - since 2.1.0
                 'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
-                    self::getCountryMenuoptions(
+                    Country::getMenuoptions(
                         (isset($_SESSION['shop']['countryId']) ? $_SESSION['shop']['countryId'] : 0)
                     ),
                 // Old template
@@ -3188,16 +3195,14 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_ADDRESS2'      => (isset($_SESSION['shop']['address2'])   ? stripslashes($_SESSION['shop']['address2']) : ''),
                 'SHOP_ACCOUNT_ZIP2'          => (isset($_SESSION['shop']['zip2'])       ? stripslashes($_SESSION['shop']['zip2']) : ''),
                 'SHOP_ACCOUNT_CITY2'         => (isset($_SESSION['shop']['city2'])      ? stripslashes($_SESSION['shop']['city2']) : ''),
-                'SHOP_ACCOUNT_COUNTRY2'      => $this->arrCountries[$_SESSION['shop']['countryId2']]['countries_name'],
+                'SHOP_ACCOUNT_COUNTRY2'      => Country::getNameById($_SESSION['shop']['countryId2']),
                 'SHOP_ACCOUNT_PHONE2'        => (isset($_SESSION['shop']['phone2'])     ? stripslashes($_SESSION['shop']['phone2']) : ''),
                 'SHOP_ACCOUNT_EQUAL_ADDRESS' =>
-                    (isset($_SESSION['shop']['equalAddress'])
-                      ? $_SESSION['shop']['equalAddress'] : ''
+                    (empty($_SESSION['shop']['equalAddress'])
+                      ? '' : $_SESSION['shop']['equalAddress']
                     ),
-            ));
-            $this->objTemplate->setVariable(array(
                 'SHOP_SHIPPING_ADDRESS_DISPLAY' =>
-                    ($_SESSION['shop']['equalAddress'] ? 'none' : 'block'),
+                    (empty($_SESSION['shop']['equalAddress']) ? 'block' : 'none'),
             ));
         } else {
             $this->objTemplate->hideBlock('shopShipmentAddress');
@@ -3517,10 +3522,14 @@ sendReq('', 1);
         $status = '';
         $status_LSV = 1;
 
-        // added initializing of the payment processor below
+        // Added initializing of the payment processor below
         // in order to determine whether to show the LSV form.
-        $processorId = Payment::getPaymentProcessorId($_SESSION['shop']['paymentId']);
-        $processorName = Payment::getPaymentProcessorName($processorId);
+        $processorId = 0;
+        $processorName = '';
+        if (!empty($_SESSION['shop']['paymentId']))
+	        $processorId = Payment::getPaymentProcessorId($_SESSION['shop']['paymentId']);
+        if (!empty($processorId))
+	        $processorName = Payment::getPaymentProcessorName($processorId);
         if ($processorName == 'Internal_LSV') {
             $status_LSV = $this->showLSV();
         }
@@ -4221,7 +4230,7 @@ right after the customer logs in!
                 'SHOP_ADDRESS'          => stripslashes($_SESSION['shop']['address']),
                 'SHOP_ZIP'              => stripslashes($_SESSION['shop']['zip']),
                 'SHOP_CITY'             => stripslashes($_SESSION['shop']['city']),
-                'SHOP_COUNTRY'          => $this->arrCountries[$_SESSION['shop']['countryId']]['countries_name'],
+                'SHOP_COUNTRY'          => Country::getNameById($_SESSION['shop']['countryId']),
                 'SHOP_EMAIL'            => stripslashes($_SESSION['shop']['email']),
                 'SHOP_PHONE'            => stripslashes($_SESSION['shop']['phone']),
                 'SHOP_FAX'              => stripslashes($_SESSION['shop']['fax']),
@@ -4232,10 +4241,7 @@ right after the customer logs in!
                 'SHOP_ADDRESS2'         => stripslashes($_SESSION['shop']['address2']),
                 'SHOP_ZIP2'             => stripslashes($_SESSION['shop']['zip2']),
                 'SHOP_CITY2'            => stripslashes($_SESSION['shop']['city2']),
-// TODO:
-//                'SHOP_COUNTRY2'         =>
-//                    (isset($this->arrCountries[$_SESSION['shop']['countryId2']])
-                'SHOP_COUNTRY2'         => $this->arrCountries[$_SESSION['shop']['countryId2']]['countries_name'],
+                'SHOP_COUNTRY2'         => Country::getNameById($_SESSION['shop']['countryId2']),
                 'SHOP_PHONE2'           => stripslashes($_SESSION['shop']['phone2']),
                 'TXT_ORDER_INFOS'       => $_ARRAYLANG['TXT_ORDER_INFOS'],
                 'TXT_ID'                => $_ARRAYLANG['TXT_ID'],
