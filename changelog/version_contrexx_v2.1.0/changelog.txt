@@ -58,6 +58,7 @@ Webinstaller
 Allgemein
 - Skript Dateien können nicht mehr hoch geladen werden.
 - Die Unterstützung von HTTPS wurde verbessert.
+- Automatisch generierte Links sind kompatibel mit der Alias Verwaltung.
 
 Benutzerverwaltung
 - Benutzer welche keiner Backend-Gruppe zugeordnet sind, können sich nicht
