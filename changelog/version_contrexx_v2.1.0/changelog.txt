@@ -75,6 +75,9 @@ Datenbank Manager
   Dateien auch über myPhpAdmin oder mySQL Clients fehlerfrei importiert werden
   können.
 
+Newsletter
+- Die Regex-Syntax zur Überprüfung der E-Mail-Adresse wurde erweitert und korrigiert.
+
 Grundeinstellungen
 - Auf die Konfigurationsdatei /config/settings.php wird automatisch versucht
   Schreibzugriff zu vergeben.
