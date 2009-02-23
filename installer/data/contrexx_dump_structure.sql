@@ -511,7 +511,7 @@ CREATE TABLE `contrexx_module_calendar_registrations` (
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_settings` (
   `setid` int(7) NOT NULL auto_increment,
   `setname` varchar(255) NOT NULL,
