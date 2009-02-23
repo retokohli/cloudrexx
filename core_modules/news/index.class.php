@@ -120,13 +120,15 @@ class news extends newsLibrary {
                                                             news.changelog          AS changelog,
                                                             news.title              AS title,
                                                             news.teaser_image_path  AS newsimage,
-                                                            news.teaser_text        AS teasertext
+                                                            news.teaser_text        AS teasertext,
+															cat.name				AS catname
                                                     FROM    '.DBPREFIX.'module_news AS news
+			              							INNER JOIN '.DBPREFIX.'module_news_categories AS cat ON cat.catid = news.catid
                                                     WHERE   news.status = 1 AND
                                                             news.id = '.$newsid.' AND
                                                             news.lang ='.$this->langId.' AND
-                                                            (news.startdate <= CURDATE() OR news.startdate="0000-00-00") AND
-                                                            (news.enddate >= CURDATE() OR news.enddate="0000-00-00")'
+                                                            (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
+                                                            (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")'
                                                            .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                                                 ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                                                     " AND frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
@@ -191,7 +193,8 @@ class news extends newsLibrary {
                        'NEWS_SOURCE'        => $newsSource,
                        'NEWS_URL'           => $newsUrl,
                        'NEWS_AUTHOR'        => $author,
-                       'NEWS_IMAGE'         => (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />'
+                       'NEWS_IMAGE'         => (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />',
+					   'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
 
                     $objResult->MoveNext();
@@ -277,8 +280,8 @@ class news extends newsLibrary {
                     ON          n.catid=nc.catid
                     WHERE       status = 1
                                 AND n.lang='.$this->langId.'
-                                AND (n.startdate<=CURDATE() OR n.startdate="0000-00-00")
-                                AND (n.enddate>=CURDATE() OR n.enddate="0000-00-00")
+                                AND (n.startdate<=\''.date('Y-m-d H:i:s').'\' OR n.startdate="0000-00-00 00:00:00")
+                                AND (n.enddate>=\''.date('Y-m-d H:i:s').'\' OR n.enddate="0000-00-00 00:00:00")
                                 '.$newsfilter
                                .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                     ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?

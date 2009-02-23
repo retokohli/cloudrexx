@@ -561,8 +561,8 @@ class newsManager extends newsLibrary {
         $newsurl2               = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
         $newscat                = intval($_POST['newsCat']);
         $userid                 = $objFWUser->objUser->getId();
-        $startDate              = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startDate'])) ? '0000-00-00' : $_POST['startDate'];
-        $endDate                = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['endDate'])) ? '0000-00-00' : $_POST['endDate'];
+	    $startDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+		$endDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
@@ -584,8 +584,8 @@ class newsManager extends newsLibrary {
 
         if(empty($status)) {
             $status = 0;
-            $startDate = "0000-00-00";
-            $endDate = "0000-00-00";
+            $startDate = "0000-00-00 00:00:00";
+	        $endDate = "0000-00-00 00:00:00";
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
@@ -942,10 +942,10 @@ class newsManager extends newsLibrary {
             if($objResult->fields['status']==1){
                 $status = "checked=\"checked\"";
             }
-            if($objResult->fields['startdate']!="0000-00-00"){
+			if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
                 $startDate = $objResult->fields['startdate'];
             }
-            if($objResult->fields['enddate']!="0000-00-00"){
+			if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
                 $endDate = $objResult->fields['enddate'];
             }
 
@@ -1146,8 +1146,8 @@ class newsManager extends newsLibrary {
                 }
             }
 
-            $startDate      = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startDate'])) ? '0000-00-00' : $_POST['startDate'];
-            $endDate        = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['endDate'])) ? '0000-00-00' : $_POST['endDate'];
+            $startDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+			$endDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
 
             $newsFrontendAccess     = !empty($_POST['news_read_access']);
             $newsFrontendGroups     = $newsFrontendAccess && isset($_POST['news_read_access_associated_groups']) && is_array($_POST['news_read_access_associated_groups']) ? array_map('intval', $_POST['news_read_access_associated_groups']) : array();
@@ -1545,8 +1545,8 @@ class newsManager extends newsLibrary {
                 USING       (catid)
                 WHERE       tblNews.status=1
                     AND     tblNews.lang = ".$_FRONTEND_LANGID."
-                    AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00')
-                    AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00')"
+                    AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00 00:00:00')
+                    AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00 00:00:00')"
                     .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
                             ."ORDER BY tblNews.date DESC";
 
