@@ -107,12 +107,12 @@ class Payment
         global $objDatabase;
 
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-        $objPayPal = new PayPal();
         $arrAcceptedCurrencyCodes = array();
+        $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
         foreach ($arrCurrencies as $arrCurrency) {
             if (   $arrCurrency['status']
                 && in_array($arrCurrency['code'],
-                            $objPayPal->arrAcceptedCurrencyCodes)
+                            $arrPaypalAcceptedCurrencyCodes)
             ) {
                 array_push($arrAcceptedCurrencyCodes, $arrCurrency['code']);
             }

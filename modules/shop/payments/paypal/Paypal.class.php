@@ -405,13 +405,13 @@ die('
 <input type="submit" name="ipn" value="IPN senden" />
 </form>
 <a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;orderid='.$orderid.'">
-  Erfolgreiche Zahlung, zurück zum Shop
+  Erfolgreiche Zahlung, zurï¿½ck zum Shop
 </a><br />
 <a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid.'">
-  Zahlung annulieren, zurück zum Shop
+  Zahlung annulieren, zurï¿½ck zum Shop
 </a><br />
 <a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=0&amp;orderid='.$orderid.'">
-  Zahlung abbrechen, zurück zum Shop
+  Zahlung abbrechen, zurï¿½ck zum Shop
 </a><br />
 </body></html>
 ');
@@ -472,6 +472,12 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnValidateLog.txt', 'w');
 @fwrite($log, "sending reply $reply");
 @fclose($log);
         die($reply);
+    }
+
+
+    static function getAcceptedCurrencyCodeArray()
+    {
+    	return self::$arrAcceptedCurrencyCode;
     }
 
 
