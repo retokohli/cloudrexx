@@ -46,6 +46,14 @@ img {
 	border:0; 
 }
 
+table { 
+	width: 100%; 
+}
+
+table th { 
+	text-align: left; 
+}
+
 .clear { clear:both;}
 .block { overflow:hidden; }
 
@@ -198,17 +206,17 @@ img {
 }
 
 #frame_content_right input[type=submit], 
-#frame_content_right input[type=checkbox], 
-#frame_content_right input[type=radio],  
+#frame_content_right input[type=button], 
+#frame_content_right input[type=reset], 
 #frame_home input[type=submit], 
-#frame_home input[type=checkbox], 
-#frame_home input[type=radio],
+#frame_home input[type=button], 
+#frame_home input[type=reset], 
 #boxes_home input[type=submit], 
-#boxes_home input[type=checkbox], 
-#boxes_home input[type=radio]
+#boxes_home input[type=button], 
+#boxes_home input[type=reset], 
 input.submit,
-input.checkbox,
-nput.radio{
+input.button,
+input.reset{
 	width:auto;
 	margin:0.25em 0.25em 0.25em 0em;
 	padding:4px 15px 4px 15px;
@@ -216,12 +224,28 @@ nput.radio{
 	border:1px solid #c6c6c6;
 }
 
+#frame_content_right input[type=checkbox], 
+#frame_content_right input[type=radio],  
+#frame_home input[type=checkbox], 
+#frame_home input[type=radio],
+#boxes_home input[type=checkbox], 
+#boxes_home input[type=radio]
+input.checkbox,
+nput.radio{
+	width:auto;
+	margin:0.25em 0.25em 0.25em 0em;
+	padding:4px 15px 4px 15px;
+	background-color:#f6f6f6;
+	border:1px solid #c6c6c6;
+        float: left;
+}
+
 #frame_content_right select,
 #frame_home select,
 #boxes_home select {
 	width:270px;
 	margin:0.25em 0.25em 0.25em 0em;
-	padding:0px;
+	padding:4px 4px 4px 4px;
 	background-color:#f6f6f6;
 	border:1px solid #c6c6c6;
 }
