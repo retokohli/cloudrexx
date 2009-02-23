@@ -43,7 +43,7 @@ class Knowledge extends KnowledgeLibrary
 
 		$this->languageId = intval($_LANGID);
 
-	    $this->tpl = &new HTML_Template_Sigma('.');
+        $this->tpl = &new HTML_Template_Sigma('.');
 		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->tpl->setTemplate($pageContent);
 		$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
@@ -182,6 +182,12 @@ class Knowledge extends KnowledgeLibrary
 	    $counter = 0;
 	    $counter = $this->parseArticleList($mostRead, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=mostRead");
 	    $this->parseArticleList($bestRated, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=bestRated");
+
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
+        JS::registerJS('modules/knowledge/rating.js');
+        JS::registerJS('modules/knowledge/frontend/search.js');
+        JS::registerJS('modules/knowledge/frontend/slider.js');
 	}
 
 	/**
@@ -205,6 +211,8 @@ class Knowledge extends KnowledgeLibrary
 	    if (empty($id)) {
 	        $id = intval($_GET['id']);
 	    }
+
+      //JS::activate('prototype');
 
 	    $category = &$this->categories->categories[$id];
 	    $this->tpl->setVariable(array(
@@ -232,6 +240,12 @@ class Knowledge extends KnowledgeLibrary
         $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES']);
         
         $this->showCrumbtrail($id);
+
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
+        JS::registerJS('modules/knowledge/rating.js');
+        JS::registerJS('modules/knowledge/frontend/search.js');
+        JS::registerJS('modules/knowledge/frontend/slider.js');
 	}
 	
 	/**
@@ -302,7 +316,7 @@ class Knowledge extends KnowledgeLibrary
 	       "ARTICLEID"     => $id,
 	       "QUESTION"      => $article['content'][$_LANGID]['question'],
 	       "ANSWER"        => $article['content'][$_LANGID]['answer'],
-	       "AVERAGE"       => $average,
+	       "AVERAGE"       => round($average, 2),
 	       "AMOUNT_OF_RATING" => $amount,
 	       
 	       "MAX_RATING"    => $this->settings->get("max_rating"),
@@ -317,6 +331,10 @@ class Knowledge extends KnowledgeLibrary
         $this->parseTags($tags);
         
         $this->pageTitle = $article['content'][$_LANGID]['question'];
+
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
+        JS::registerJS('modules/knowledge/rating.js');
 	}
 	
 	/**
@@ -437,7 +455,8 @@ class Knowledge extends KnowledgeLibrary
 	{
 	    global $_ARRAYLANG, $_LANGID;
 	    
-	    include ASCMS_MODULE_PATH."/knowledge/lib/searchInterfaces/searchKnowledge.php";
+        require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterface.php";
+        require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterfaces/searchKnowledge.php";
 	    
 	    $searchterm = !empty($_GET['term']) ? $_GET['term'] : "";
 	    
@@ -500,6 +519,11 @@ class Knowledge extends KnowledgeLibrary
                 "TXT_SEARCH_INPUT"  => $searchterm
          ));
          
+        JS::activate("prototype");
+        JS::activate("scriptaculous");
+        JS::registerJS("modules/knowledge/rating.js");
+        JS::registerJS("modules/knowledge/frontend/search.js");
+        JS::registerJS("modules/knowledge/frontend/slider.js");
 	}
 	
 	/**
