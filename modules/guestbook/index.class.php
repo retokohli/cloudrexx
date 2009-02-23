@@ -251,7 +251,7 @@ class Guestbook extends GuestbookLibrary
         if (strlen($_POST['url']) > 7) {
             $url = $_POST['url'];
 
-            if (!preg_match("%^http://%", $url)) {
+            if (!preg_match("%^https?://%", $url)) {
                 $url = "http://" . $url;
             }
         }
@@ -363,7 +363,7 @@ class Guestbook extends GuestbookLibrary
         $message = $_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY']."\n\n";
         $message .= $_ARRAYLANG['TXT_ENTRY_READS']."\n".$nick."\n".$comment;
         $mailto = $_CONFIG['coreAdminEmail'];
-        $subject = $_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY']." ".$_SERVER['HTTP_HOST'];
+        $subject = $_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY']." ".$_CONFIG['domainUrl'];
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();

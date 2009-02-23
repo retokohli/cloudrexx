@@ -915,10 +915,10 @@ class Installer
 	function _getConfigurationPage() {
 		global $objTpl, $_ARRLANG, $objCommon, $templatePath, $arrDefaultConfig, $_CONFIG, $useUtf8;
 
-		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-			$protocol = "https://";
-		} else {
+		if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') {
 			$protocol = "http://";
+		} else {
+			$protocol = "https://";
 		}
 		$serverName = $protocol.$_SERVER['SERVER_NAME'];
 
@@ -1747,8 +1747,13 @@ class Installer
 				$port = '';
 			}
 
-			$webUrl = 'http://'.$_SERVER['SERVER_NAME'].$port.$_SESSION['installer']['config']['offsetPath'].'/';
-			$adminUrl = 'http://'.$_SERVER['SERVER_NAME'].$port.$_SESSION['installer']['config']['offsetPath'].'/cadmin/';
+            if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') {
+                $protocol = "http://";
+            } else {
+                $protocol = "https://";
+            }
+			$webUrl = $protocol.$_SESSION['installer']['sysConfig']['domainURL'].$port.$_SESSION['installer']['config']['offsetPath'].'/';
+			$adminUrl = $protocol.$_SESSION['installer']['sysConfig']['domainURL'].$port.$_SESSION['installer']['config']['offsetPath'].'/cadmin/';
 
 			$congratulationsMsg = $_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'];
 			$congratulationsMsg = str_replace("[VERSION]", $_CONFIG['coreCmsVersion'], $congratulationsMsg);

@@ -155,9 +155,9 @@ $_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE'] = "Konnte den RSS Titel nicht setzen!";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION'] = "Konnte die RSS Beschreibung nicht setzen!";
 $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Konnte die Kontaktformular E-Mail Adresse nicht setzen!";
 $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
-$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Geben Sie hier den Domainnamen an, auf welchem diese Installation durchgeführt wird, z.B. 'www.ihredomain.com' (ohne http:// oder zusätzliche Pfade)";
+$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Geben Sie hier den Domainnamen an, auf welchem diese Installation durchgeführt wird, z.B. 'www.ihredomain.com' (ohne http(s):// oder zusätzliche Pfade)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Konnte die Domain URL nicht setzen!";
-$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Geben Sie die Domain URL ohne 'http://' oder zusätzliche Pfade an!";
+$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Geben Sie die Domain URL ohne 'http(s)://' oder zusätzliche Pfade an!";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Die Datei %s konnte nicht geschrieben werden. Überprüfen Sie die Berechtigungen (666) der Datei.";
 
 // admin account

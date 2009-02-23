@@ -1192,7 +1192,9 @@ class CommonFunctions
 			}
 
 			// set domain url
-			if (strpos($_SESSION['installer']['sysConfig']['domainURL'], 'http://') === false) {
+			if (preg_match('#^https?://#', $_SESSION['installer']['sysConfig']['domainURL'])) {
+                $statusMsg .= $_ARRLANG['TXT_SET_VALID_DOMAIN_URL'];
+			} else {
 				if (substr($_SESSION['installer']['sysConfig']['domainURL'], -1) == '/') {
 					$_SESSION['installer']['sysConfig']['domainURL'] = substr($_SESSION['installer']['sysConfig']['domainURL'], 0, -1);
 				}
@@ -1203,8 +1205,6 @@ class CommonFunctions
 				if (!@$objDb->Execute($query)) {
 					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL']."<br />";
 				}
-			} else {
-				 $statusMsg .= $_ARRLANG['TXT_SET_VALID_DOMAIN_URL'];
 			}
 
 			if (in_array($_SESSION['installer']['config']['dbTablePrefix']."module_shop_config", $arrTables)) {

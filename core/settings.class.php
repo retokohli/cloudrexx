@@ -279,8 +279,8 @@ class settingsManager
             }
 
             if (intval($intId) == 53) {
-                if (substr($strValue,0,7) == 'http://') {
-                    $strValue = substr($strValue,7);
+                if (preg_match('#^https?://(.*)$#', $strValue, $arrMatch)) {
+                    $strValue = $arrMatch[1];
                 }
                 $_CONFIG['domainUrl'] = htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET);
             }

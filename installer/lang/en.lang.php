@@ -155,9 +155,9 @@ $_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE'] = "Could not set the RSS title!";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION'] = "Failed to set the RSS description!";
 $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Could not set the e-mail address of the contact forms!";
 $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
-$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Provide here the domain name for the installation steps, for example 'www.yourdomain.com' (without http: // or additional paths)";
+$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Provide here the domain name for the installation steps, for example 'www.yourdomain.com' (without http(s): // or additional paths)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Could not set the domain URL!";
-$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Provide the domain URL without 'http://' or additional path information!";
+$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Provide the domain URL without 'http(s)://' or additional path information!";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "The file %s could not be written.  Review you the file access premission (e.g. 666).";
 
 // admin account
