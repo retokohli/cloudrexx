@@ -13,8 +13,7 @@
 define('ASCMS_PATH',						$_PATHCONFIG['ascms_root']);
 define('ASCMS_PATH_OFFSET',					$_PATHCONFIG['ascms_root_offset']); // example '/cms'
 define('ASCMS_BACKEND_PATH',				'/cadmin');
-											$protocol = explode( "/", $_SERVER['SERVER_PROTOCOL'] );
-define('ASCMS_PROTOCOL',					strtolower($protocol[0]));
+define('ASCMS_PROTOCOL',					empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https');
 
 define('CONTREXX_ESCAPE_GPC',				get_magic_quotes_gpc());
 define('CONTREXX_CHARSET',					$_CONFIG['coreCharacterEncoding']);

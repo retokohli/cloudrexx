@@ -1540,7 +1540,7 @@ class ContentManager
 
     static function mkurl($absolute_local_path) {
         global $_CONFIG;
-        return "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
+        return ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
             ? ""
             : ":".intval($_SERVER['SERVER_PORT'])
         ).ASCMS_PATH_OFFSET.$absolute_local_path;

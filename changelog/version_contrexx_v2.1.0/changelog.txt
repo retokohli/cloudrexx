@@ -54,6 +54,7 @@ News
 ****************************************
 Allgemein
 - Skript Dateien können nicht mehr hoch geladen werden.
+- Die Unterstützung von HTTPS wurde verbessert.
 
 Benutzerverwaltung
 - Benutzer welche keiner Backend-Gruppe zugeordnet sind, können sich nicht

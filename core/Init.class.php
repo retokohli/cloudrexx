@@ -831,7 +831,9 @@ class InitCMS
 
     function getPageUri()
     {
-        return ASCMS_PROTOCOL."://". $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        global $_CONFIG;
+
+        return ASCMS_PROTOCOL."://". $_CONFIG['domainUrl']. $_SERVER['REQUEST_URI'];
         //return $_SERVER['SCRIPT_URI'];
     }
 
