@@ -107,7 +107,8 @@ class Guestbook extends GuestbookLibrary
         $this->_objTpl->setVariable("GUESTBOOK_TOTAL_ENTRIES", $count);
 
         $query = "    SELECT         id,
-                                nickname,
+								forename,
+								name,
                                 gender,
                                 url,
                                 email,
@@ -141,7 +142,8 @@ class Guestbook extends GuestbookLibrary
 
             $this->_objTpl->setVariable(array(
                        'GUESTBOOK_ROWCLASS'   => $class,
-                       'GUESTBOOK_NICK'          => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
+					   'GUESTBOOK_FORENAME'	  => htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
+					   'GUESTBOOK_NAME'	      => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
                        'GUESTBOOK_GENDER'      => $gender,
                        'GUESTBOOK_LOCATION'      => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
                        'GUESTBOOK_DATE'          => date(ASCMS_DATE_FORMAT, $objResult->fields["uTimestamp"]),
@@ -205,7 +207,8 @@ class Guestbook extends GuestbookLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                "NICKNAME"            => htmlentities($_POST['nickname'], ENT_QUOTES, CONTREXX_CHARSET),
+				"FORENAME"			=> htmlentities($_POST['forename'], ENT_QUOTES, CONTREXX_CHARSET),
+				"NAME"				=> htmlentities($_POST['name'], ENT_QUOTES, CONTREXX_CHARSET),
                 "COMMENT"            => $_POST['comment'],
                 "FEMALE_CHECKED"    => $female_checked,
                 "MALE_CHECKED"        => $male_checked,
@@ -242,7 +245,8 @@ class Guestbook extends GuestbookLibrary
 // TODO: Never used
 //        $objValidator = new FWValidator();
 
-        $nick     = $_POST['nickname'];
+		$name 	= $_POST['name'];
+		$forename 	= $_POST['forename'];
         $gender = $_POST['malefemale'];
         $mail     = isset($_POST['email']) ? $_POST['email'] : '';
         $comment = $this->addHyperlinking($_POST['comment']);
@@ -260,7 +264,8 @@ class Guestbook extends GuestbookLibrary
 
         $query = "INSERT INTO ".DBPREFIX."module_guestbook
                         (status,
-                         nickname,
+	                     forename,
+	                     name,
                          gender,
                          url,
                          datetime,
@@ -270,7 +275,8 @@ class Guestbook extends GuestbookLibrary
                          location,
                          lang_id)
                  VALUES ($status,
-                        '".addslashes($nick)."',
+						'".addslashes($name)."',
+						'".addslashes($forename)."',
                         '".addslashes($gender)."',
                         '".addslashes($url)."',
                         NOW(),
@@ -282,7 +288,7 @@ class Guestbook extends GuestbookLibrary
         $objDatabase->Execute($query);
 
         if ($this->arrSettings['guestbook_send_notification_email']==1) {
-            $this->sendNotificationEmail($nick, $comment);
+	    	$this->sendNotificationEmail($forename, $name, $comment);
         }
         $this->statusMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL']."<br />";
         if ($this->arrSettings['guestbook_activate_submitted_entries'] == 0) {
@@ -305,7 +311,8 @@ class Guestbook extends GuestbookLibrary
         $captcha = new Captcha();
         $objValidator = new FWValidator();
 
-        $_POST['nickname'] = strip_tags(contrexx_stripslashes($_POST['nickname']));
+		$_POST['forename'] = strip_tags(contrexx_stripslashes($_POST['forename']));
+		$_POST['name'] = strip_tags(contrexx_stripslashes($_POST['name']));
         $_POST['comment'] = htmlentities(strip_tags(contrexx_stripslashes($_POST['comment'])), ENT_QUOTES, CONTREXX_CHARSET);
         $_POST['location'] = strip_tags(contrexx_stripslashes($_POST['location']));
         $_POST['email'] = strip_tags(contrexx_stripslashes($_POST['email']));
@@ -315,7 +322,7 @@ class Guestbook extends GuestbookLibrary
             $this->error[] = $_ARRAYLANG['TXT_CAPTCHA_ERROR'];
         }
 
-        if (empty($_POST['nickname'])) {
+		if (empty($_POST['name']) || empty($_POST['forename'])) {
             $this->makeError($_ARRAYLANG['TXT_NAME']);
         }
 
@@ -356,12 +363,12 @@ class Guestbook extends GuestbookLibrary
     * @return void
     * @desc Sends a notification email to the administrator
     */
-    function sendNotificationEmail($nick,$comment)
+    function sendNotificationEmail($forename, $name, $comment)
     {
         global $_ARRAYLANG, $_CONFIG;
 
         $message = $_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY']."\n\n";
-        $message .= $_ARRAYLANG['TXT_ENTRY_READS']."\n".$nick."\n".$comment;
+        $message .= $_ARRAYLANG['TXT_ENTRY_READS']."\n".$forename." ".$name."\n".$comment;
         $mailto = $_CONFIG['coreAdminEmail'];
         $subject = $_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY']." ".$_CONFIG['domainUrl'];
 

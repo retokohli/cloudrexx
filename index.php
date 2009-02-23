@@ -4,7 +4,7 @@
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team
- * @version     v1.0.9.10.1 stable
+ * @version     v2.1.0 beta
  * @package     contrexx
  * @subpackage  core
  * @link        http://www.contrexx.com/ contrexx homepage
