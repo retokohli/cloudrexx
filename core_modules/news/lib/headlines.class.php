@@ -70,8 +70,8 @@ class newsHeadlines {
 									             	   ".($catId > 0 ? "AND catid = ".$catId : '')."
 											           AND teaser_only='0'
 											           AND lang=".$_LANGID."
-											           AND (startdate<=CURDATE() OR startdate='0000-00-00')
-											           AND (enddate>=CURDATE() OR enddate='0000-00-00')"
+											           AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
+											           AND (enddate>='".date('Y-m-d H:i:s')."' OR enddate='0000-00-00 00:00:00')"
                                                        .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                                             ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                                                 " AND frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "

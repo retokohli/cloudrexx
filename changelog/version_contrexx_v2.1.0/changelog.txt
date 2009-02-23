@@ -53,6 +53,8 @@ News
 	[[NEWS_LINK_TEASER]]   => Teasertext der Newsmeldung
 - Die Newsmeldungen können sowie im Frontend, wie auch im Backend vor
   unerlaubtem Zugriff/Modifikation geschützt werden.
+- Neuer Platzhalter [[NEWS_CATEGORY_NAME]] bei der Detailseite.
+- Die exakte Zeit des Veröffentlichungszeitraumes kann angegeben werden.
 
 Webinstaller
 - Französische Übersetzung
