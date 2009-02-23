@@ -16,6 +16,8 @@ class JS
      * This variable holds that offset.
      * @see setOffset($offset)
      * @access private
+     * @static
+     * @var string
      */
     private static $offset = "";
 
@@ -24,6 +26,7 @@ class JS
      *
      * @access private
      * @static
+     * @var array
      */
     private static $active = array();
 
@@ -32,12 +35,12 @@ class JS
      *
      * @access private
      * @static
+     * @var string
      */
     private static $error;
 
     /**
      * Available JS libs
-     
      * These JS files are per default available
      * in every Contrexx CMS.
      * The format is the following:
@@ -61,6 +64,7 @@ class JS
      * )
      * @access private
      * @static
+     * @var array
      */    
     private static $available = array(
         'prototype'     => array(
@@ -103,6 +107,7 @@ class JS
      *
      * @static
      * @access private
+     * @var array
      */
     private static $customJS = array();
 
@@ -111,6 +116,7 @@ class JS
      *
      * @static
      * @access private
+     * @var array
      */
     private static $customCSS = array();
 
@@ -119,6 +125,7 @@ class JS
      *
      * @static
      * @access private
+     * @var array
      */
     private static $customCode = array();
 
@@ -126,14 +133,16 @@ class JS
      * The players of the shadowbox
      * @access private
      * @static
+     * @var array
      */
-    private static $shadowBoxPlayers = array();
+    private static $shadowBoxPlayers = array('img', 'swf', 'flv', 'qt', 'wmp', 'iframe','html');
 
     /**
      * The language of the shadobox to be used
      * 
      * @access private
      * @static
+     * @var string
      */
     private static $shadowBoxLanguage = "en";
 
@@ -402,10 +411,10 @@ class JS
      * (everything is optional):
      * array(
      *      players => array(img, swf, flv, qt, wmp, iframe, html),
-     *      language => array(ar, ca, cs, de-CH, de-DE, en, es
+     *      language => [ar, ca, cs, de-CH, de-DE, en, es
      *                          et, fi, fr, gl, he, id, is, it,
      *                          ko, my, nl, no, pl, pt-BR, pt-PT,
-     *                          ro, ru, sk, svn, tr, zh-CN, zh-TW)
+     *                          ro, ru, sk, svn, tr, zh-CN, zh-TW])
      * )
      * @static
      * @access private
@@ -451,7 +460,7 @@ class JS
      * will be taken, otherwise the default skin under lib/javascript/shadowbox.
      * @static
      * @access private
-     * @global $objInit
+     * @global object $objInit
      */
     private static function makeShadowBoxOptions()
     {
