@@ -181,8 +181,8 @@ $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
-$_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
-$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
-$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
-$_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
+$_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text missing*";
+$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Manage job offers on your website";
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Job offers";
+$_ARRAYLANG['TXT_JOBS_MODULE'] = "Job offers";
 ?>

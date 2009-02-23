@@ -66,4 +66,5 @@ $_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Precio m&aacute;ximo";
 $_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "Todos los precios";
 $_ARRAYLANG['TXT_MARKET_LOCATION'] = "Ubicaci&oacute;n";
 $_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "Todas las ubicaciones";
+$_ARRAYLANG['TXT_TYPE'] = "Type";
 ?>
