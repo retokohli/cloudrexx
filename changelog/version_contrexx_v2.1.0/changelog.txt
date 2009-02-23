@@ -19,6 +19,9 @@ WYSIWYG-Editor
 Galerie
 - Shadowbox wird nun anstelle des alten Pop-Ups verwendet.
 
+Gästebuch
+- Name wird nun in zwei getrennten Feldern abgelegt: Vor- und Nachname.
+
 Forum
 - Thread Aktionen werden nur noch angezeigt, wenn man Berechtigungen hat.
 

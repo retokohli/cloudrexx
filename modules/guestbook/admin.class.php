@@ -189,6 +189,7 @@ class GuestbookManager extends GuestbookLibrary
 
         $this->_objTpl->setVariable(array(
             'TXT_ADD_ENTRY'     => $_ARRAYLANG['TXT_ADD_ENTRY'],
+            'TXT_FORENAME'      => $_ARRAYLANG['TXT_FORENAME'],
             'TXT_NAME'          => $_ARRAYLANG['TXT_NAME'],
             'TXT_COMMENT'       => $_ARRAYLANG['TXT_COMMENT'],
             'TXT_LOCATION'      => $_ARRAYLANG['TXT_LOCATION'],
@@ -222,8 +223,9 @@ class GuestbookManager extends GuestbookLibrary
 
         $error = "";
 
-        if (!empty($_POST['nickname']) AND !empty($_POST['comment'])) {
-            $nick  = contrexx_addslashes(strip_tags($_POST['nickname']));
+		if (!empty($_POST['forename']) AND !empty($_POST['name']) /*AND !empty($_POST['comment'])*/) {
+			$forename  = contrexx_addslashes(strip_tags($_POST['forename']));
+			$name  = contrexx_addslashes(strip_tags($_POST['name']));
             $gender  = contrexx_addslashes(strip_tags($_POST['malefemale']));
             $mail = isset($_POST['email']) ? contrexx_addslashes($_POST['email']) : '';
             $url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : '';
@@ -243,7 +245,8 @@ class GuestbookManager extends GuestbookLibrary
             }
             if (empty($error)) {
                 $query = "INSERT INTO ".DBPREFIX."module_guestbook
-                                       (nickname,
+			                           (forename,
+			                            name,
                                         gender,
                                         url,
                                         datetime,
@@ -252,7 +255,8 @@ class GuestbookManager extends GuestbookLibrary
                                         ip,
                                         location,
                                         lang_id)
-                                VALUES ('$nick',
+					            VALUES ('$forename',
+							            '$name',
                                         '$gender',
                                         '$url',
                                         NOW(),
@@ -311,7 +315,8 @@ class GuestbookManager extends GuestbookLibrary
         ));
 
         if(!empty($_GET['id'])){
-            $query = "SELECT nickname,
+			$query = "SELECT forename,
+							   name,
                                id,
                                gender,
                                url,
@@ -331,7 +336,8 @@ class GuestbookManager extends GuestbookLibrary
                     default  : $gender_m = ""; $gender_f = ""; break;
                 }
                 $this->_objTpl->setVariable(array(
-                    'GUESTBOOK_NICK'      => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_FORENAME'  => htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_NAME'      => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
                     'GUESTBOOK_CHECKED_M' => $gender_m,
                     'GUESTBOOK_CHECKED_F' => $gender_f,
                     'GUESTBOOK_URL'       => htmlentities($objResult->fields["url"], ENT_QUOTES, CONTREXX_CHARSET),
@@ -419,7 +425,8 @@ class GuestbookManager extends GuestbookLibrary
 
         $query = "  SELECT      id,
                                 status,
-                                nickname,
+								forename,
+								name,
                                 gender,
                                 url,
                                 email,
@@ -456,7 +463,8 @@ class GuestbookManager extends GuestbookLibrary
             $this->_objTpl->setVariable(array(
                        'GUESTBOOK_ROWCLASS' => $rowclass,
                        'GUESTBOOK_STATUS'   => $statusIcon,
-                       'GUESTBOOK_NICK'     => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
+					   'GUESTBOOK_FORENAME'	=> htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
+					   'GUESTBOOK_NAME'	    => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
                        'GUESTBOOK_GENDER'   => $gender,
                        'GUESTBOOK_URL'      => $url,
                        'GUESTBOOK_LOCATION' => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
@@ -491,7 +499,8 @@ class GuestbookManager extends GuestbookLibrary
         $error = "";
 
         if (!empty($guestbookId)) {
-            $nick     = contrexx_addslashes(strip_tags($_POST['nickname']));
+			$forename = contrexx_addslashes(strip_tags($_POST['forename']));
+			$name	  = contrexx_addslashes(strip_tags($_POST['name']));
             $gender   = contrexx_addslashes(strip_tags($_POST['malefemale']));
             $mail = isset($_POST['email']) ?  contrexx_addslashes(strip_tags($_POST['email'])) : '';
             $url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : "";
@@ -510,9 +519,10 @@ class GuestbookManager extends GuestbookLibrary
             if(!$objValidator->isEmail($mail)) {
                 $error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
             }
-            if(!empty($nick) && !empty($comment) && empty($error)) {
+			if(!empty($forename) && !empty($name) /*&& !empty($comment) && empty($error)*/) {
                 $query = "UPDATE ".DBPREFIX."module_guestbook
-                               SET nickname='$nick',
+							   SET forename='$forename',
+							   	   name='$name',
                                    gender='$gender',
                                    email='$mail',
                                    url='$url',
