@@ -2,6 +2,12 @@
 function _newsUpdate() {
 	global $objDatabase, $_CONFIG, $objUpdate, $_ARRAYLANG;
 
+
+	/************************************************
+	* EXTENSION:	Placeholder NEWS_LINK replaced	*
+	*				by NEWS_LINK_TITLE				*
+	* ADDED:		Contrexx v2.1.0					*
+	************************************************/
 	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.0')) {
 		$query = "
     		SELECT
@@ -122,6 +128,58 @@ function _newsUpdate() {
     		return _databaseError($query, $objDatabase->ErrorMsg());
     	}
 	}
+
+
+
+	/************************************************
+	* EXTENSION:	Front- and backend permissions  *
+	* ADDED:		Contrexx v2.1.0					*
+	************************************************/
+	$query = "SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'news_message_protection'";
+    $objResult = $objDatabase->SelectLimit($query, 1);
+    if ($objResult) {
+        if ($objResult->RecordCount() == 0) {
+            $query = "INSERT INTO `".DBPREFIX."module_news_settings` (`name`, `value`) VALUES ('news_message_protection', '1')";
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+        }
+    } else {
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
+
+    $query = "SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'news_message_protection_restricted'";
+    $objResult = $objDatabase->SelectLimit($query, 1);
+    if ($objResult) {
+        if ($objResult->RecordCount() == 0) {
+            $query = "INSERT INTO `".DBPREFIX."module_news_settings` (`name`, `value`) VALUES ('news_message_protection_restricted', '1')";
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+        }
+    } else {
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
+
+    $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_news');
+    if ($arrColumns === false) {
+        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news'));
+        return false;
+    }
+
+    if (!in_array('frontend_access_id', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_news` ADD `frontend_access_id` INT(10) UNSIGNED NOT NULL DEFAULT '0' AFTER `validated`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+    if (!in_array('backend_access_id', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_news` ADD `backend_access_id` INT(10) UNSIGNED NOT NULL DEFAULT '0' AFTER `frontend_access_id`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
 	return true;
 }
 

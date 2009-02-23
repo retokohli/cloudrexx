@@ -764,11 +764,13 @@ class newsManager extends newsLibrary {
             $readAccessGroups = '';
             $modifyAccessGroups = '';
             $objGroup = $objFWUser->objGroup->getGroups();
+            if ($objGroup) {
             while (!$objGroup->EOF) {
                 if (Permission::hasAllAccess() || $this->arrSettings['news_message_protection_restricted'] != '1' || in_array($objGroup->getId(), $userGroupIds)) {
                     ${$objGroup->getType() == 'frontend' ? 'readAccessGroups' : 'modifyAccessGroups'} .= '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
                 }
                 $objGroup->next();
+                }
             }
 
             $this->_objTpl->setVariable(array(
@@ -1010,14 +1012,14 @@ class newsManager extends newsLibrary {
 
                 if ($objResult->fields['frontend_access_id']) {
                     $objFrontendGroups = $objFWUser->objGroup->getGroups(array('dynamic' => $objResult->fields['frontend_access_id']));
-                    $arrFrontendGroups = $objFrontendGroups->getLoadedGroupIds();
+                    $arrFrontendGroups = $objFrontendGroups ? $objFrontendGroups->getLoadedGroupIds() : array();
                 } else {
                     $arrFrontendGroups = array();
                 }
 
                 if ($objResult->fields['backend_access_id']) {
                     $objBackendGroups = $objFWUser->objGroup->getGroups(array('dynamic' => $objResult->fields['backend_access_id']));
-                    $arrBackendGroups = $objBackendGroups->getLoadedGroupIds();
+                    $arrBackendGroups = $objBackendGroups ? $objBackendGroups->getLoadedGroupIds() : array();
                 } else {
                     $arrBackendGroups = array();
                 }
@@ -1027,12 +1029,14 @@ class newsManager extends newsLibrary {
                 $modifyAccessGroups = '';
                 $modifyNotAccessGroups = '';
                 $objGroup = $objFWUser->objGroup->getGroups();
+                if ($objGroup) {
                 while (!$objGroup->EOF) {
                     ${$objGroup->getType() == 'frontend' ?
                         (in_array($objGroup->getId(), $arrFrontendGroups) ? 'readAccessGroups' : 'readNotAccessGroups')
                       : (in_array($objGroup->getId(), $arrBackendGroups) ? 'modifyAccessGroups' : 'modifyNotAccessGroups')}
                       .= '<option value="'.$objGroup->getId().'"'.(!Permission::hasAllAccess() && $this->arrSettings['news_message_protection_restricted'] == '1' && !in_array($objGroup->getId(), $userGroupIds) ? ' disabled="disabled"' : '').'>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
                     $objGroup->next();
+                    }
                 }
 
                 $this->_objTpl->setVariable(array(
@@ -1058,7 +1062,6 @@ class newsManager extends newsLibrary {
             } else {
                 $this->_objTpl->hideBlock('news_permission_tab');
             }
-
         }
 
         if ($_CONFIG['newsTeasersStatus'] == '1') {
@@ -1168,7 +1171,7 @@ class newsManager extends newsLibrary {
                 if ($newsFrontendAccess) {
                     if ($newsFrontendAccessId) {
                         $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $newsFrontendAccessId));
-                        $arrFormerFrontendGroupIds = $objGroup->getLoadedGroupIds();
+                        $arrFormerFrontendGroupIds = $objGroup ? $objGroup->getLoadedGroupIds() : array();
 
                         $arrNewGroups = array_diff($newsFrontendGroups, $arrFormerFrontendGroupIds);
                         $arrRemovedGroups = array_diff($arrFormerFrontendGroupIds, $newsFrontendGroups);
@@ -1219,7 +1222,7 @@ class newsManager extends newsLibrary {
                 if ($newsBackendAccess) {
                     if ($newsBackendAccessId) {
                         $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $newsBackendAccessId));
-                        $arrFormerBackendGroupIds = $objGroup->getLoadedGroupIds();
+                        $arrFormerBackendGroupIds = $objGroup ? $objGroup->getLoadedGroupIds() : array();
 
                         $arrNewGroups = array_diff($newsBackendGroups, $arrFormerBackendGroupIds);
                         $arrRemovedGroups = array_diff($arrFormerBackendGroupIds, $newsBackendGroups);
@@ -1511,7 +1514,6 @@ class newsManager extends newsLibrary {
             $objRSSWriter = new RSSWriter();
 
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
-			print "<!-- setting rss encoding of feed: " . CONTREXX_CHARSET . " -->";
             $objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
             $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
             $objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
