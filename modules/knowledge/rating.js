@@ -3,17 +3,44 @@
  */
 var Rating = function(nr, currentRate, options) 
 {
+    /* the object number suffix */
     this.nr = nr;
+
+    /* the amount of stars */
     this.stars = 8;
+
+    /* the width of the div (calculated with the amount of stars) */
     this.width = 168;
+
+    /* the width of one star picture */
     this.starWidth = 21;
+
+    /* the heigth of the star picture */
     this.starHeight = 20;
+
+    /* if the rating is already done */
     this.rated = false;
+
+    /* the callback function when the user rates */
     this.onRate = function(nr, rating) {};
+
+    /* if the rating is locked */
     this.locked = false;
+
+    /* the picture in the background (grey) */
     this.bgStar = 'star_g.gif';
+
+    /* the picture for the foreground (yellow) */
     this.fgStar = 'star_y.gif';
+
+    /* the path to the star pictures */
     this.starPath = 'media/';
+
+    /* the prefix of the element id */
+    this.elemPrefix = 'rating';
+
+    /* the data to be passed to the callback function */
+    this.callbackData = {};
 
     if (options) {
         if (options.starWidth) {
@@ -48,10 +75,18 @@ var Rating = function(nr, currentRate, options)
         if (options.starPath) {
             this.starPath = options.starPath;
         }
+
+        if (options.elemPrefix) {
+            this.elemPrefix = options.elemPrefix;
+        }
+
+        if (options.callbackData) {
+            this.callbackData = options.callbackData;
+        }
     }
 
     this.currentSize = currentRate * (this.width / this.stars);
-    var obj = $('rating'+nr);
+    var obj = $(this.elemPrefix+nr);
 
     // add the events
     var ref = this;
@@ -88,9 +123,6 @@ var Rating = function(nr, currentRate, options)
     this.overlay.style.background = 'url('+this.starPath+this.fgStar+') repeat-x';
     this.overlay.style.zIndex = "2";
     this.overlay.style.width = this.currentSize+"px";
-
-    this.overlay.show();
-    this.bg.show();
 }
 
 /**
@@ -121,7 +153,7 @@ Rating.prototype.moving = function(event)
 Rating.prototype.blur = function(event) 
 {
     if (!this.rated) {
-        this.overlay.style.width = this.currentSize;
+        this.overlay.style.width = this.currentSize+'px';
     }
 }
 
@@ -169,5 +201,6 @@ Rating.prototype.click = function(event)
     }
 
     var rating = (X / this.width) * this.stars;
-    this.onRate(this.nr, rating);
+    this.onRate(this.callbackData, rating);
+    this.rated = true;
 }
