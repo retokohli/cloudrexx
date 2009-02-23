@@ -1,6 +1,8 @@
 <?php
 
-define("MODULE_INDEX", "");
+if (!defined("MODULE_INDEX")) {
+    define("MODULE_INDEX", "");
+}
 
 class searchKnowledge extends SearchInterface  {
     private $term;
