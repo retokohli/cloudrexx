@@ -137,7 +137,9 @@ class KnowledgeTags
      */
     public function getByArticle($id, $lang=0)
     {
-        global $objDatabase;    
+        global $objDatabase;   
+
+        $id = intval($id); 
         
         $query = "  SELECT  tags.id as id, 
                             tags.name as name,
