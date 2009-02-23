@@ -142,7 +142,7 @@ class Security
             $_SERVERlite[$serverVar] = $_SERVER[$serverVar];
         }
 
-        $httpheaders = getallheaders();
+        $httpheaders = function_exists('getallheaders') ? getallheaders() : null;
         $gpcs = "";
         $gpcs .= $this->getRequestInfo($httpheaders, "HTTP HEADER");
         $gpcs .= $this->getRequestInfo($_REQUEST, "REQUEST");
