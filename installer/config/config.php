@@ -59,6 +59,12 @@ $arrLanguages = array(
 		'lang'	=> 'en',
 		'name'	=> 'English',
 		'is_default'	=> false
+	),
+	3	=> array(
+		'id'	=> 2,
+		'lang'	=> 'fr',
+		'name'	=> 'Français',
+		'is_default'	=> false
 	)
 );
 

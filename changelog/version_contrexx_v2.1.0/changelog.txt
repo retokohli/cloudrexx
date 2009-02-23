@@ -48,6 +48,9 @@ News
     [[NEWS_LINK_TITLE]]    => Titel der Newsmeldung
 	[[NEWS_LINK_TEASER]]   => Teasertext der Newsmeldung
 
+Webinstaller
+- Französische Übersetzung
+
 
 ****************************************
 * Behobene Fehler **********************
