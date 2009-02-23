@@ -75,18 +75,11 @@ Datenbank Manager
   Dateien auch über myPhpAdmin oder mySQL Clients fehlerfrei importiert werden
   können.
 
-Newsletter
-- Die Regex-Syntax zur Überprüfung der E-Mail-Adresse wurde erweitert und korrigiert.
-
 Grundeinstellungen
 - Auf die Konfigurationsdatei /config/settings.php wird automatisch versucht
   Schreibzugriff zu vergeben.
 - Es können keine Änderungen getätigt werden, solange auf die
   Konfigurationsdatei kein Schreibzugriff besteht.
-
-Validator-Class
-- E-Mails die folgendem Muster entsprechen xxx.x@example.com werden nun
-  bei Prüfungen nicht mehr als ungültig zurückgegeben.
 
 Directory
 - Seitentitel wird korrekt ausgegeben
@@ -112,6 +105,13 @@ Datenlisten
   definiert, so wird jeweils der komplette Einleitungstext ausgegeben.
 - Frontend-Seiten werden korrekt aufgelistet bei der Verwaltung einer
   Kategorie.
+
+Seitentitel Tag
+- Der Seitentitel wird nun XHTML Konform mit htmlentities ausgegeben.
+
+Validator-Class
+- E-Mails die folgendem Muster entsprechen xxx.x@example.com werden nun
+  bei Prüfungen nicht mehr als ungültig zurückgegeben.
 
 Alias Verwaltung
 - Die Zielseite kann geändert werden.
