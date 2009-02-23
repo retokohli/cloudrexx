@@ -1003,7 +1003,7 @@ $_ARRAYLANG['TXT_DBM_ERROR_NO_TARGET_FOLDER'] = "Fejl:  Der er ikke blevet angiv
 $_ARRAYLANG['TXT_DBM_SUCCEEDED_EXPORTING_TABLES'] = "Tabeller eksporteret med success: %1\$s";
 $_ARRAYLANG['TXT_DBM_FAILED_EXPORTING_TABLES'] = "Ikke eksporterede tabeller: %1\$s";
 $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Texten mangler*";
-$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
-$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
-$_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
+$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Jobannoncer til administration af jobs";
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Jobannoncer";
+$_ARRAYLANG['TXT_JOBS_MODULE'] = "Jobannoncer";
 ?>

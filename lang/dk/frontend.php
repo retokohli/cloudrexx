@@ -182,7 +182,7 @@ $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partner";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Tilføj ny entry";
 $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Texten mangler*";
-$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
-$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
-$_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
+$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Jobannoncer til administration af jobs";
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Jobannoncer";
+$_ARRAYLANG['TXT_JOBS_MODULE'] = "Jobannoncer";
 ?>
