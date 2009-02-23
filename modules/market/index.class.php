@@ -259,8 +259,7 @@ class Market extends marketLibrary
 
         // set variables
         $this->_objTpl->setVariable(array(
-// TODO: $paging is never set!
-//            'MARKET_SEARCH_PAGING'            => $paging,
+            'MARKET_SEARCH_PAGING'            => $paging,
             'MARKET_CATEGORY_ROW_WIDTH'        => $categorieRowWidth,
             'MARKET_CATEGORY_ROW1'            => $categorieRows[1]."<br />",
             'MARKET_CATEGORY_ROW2'            => $categorieRows[2]."<br />",
@@ -331,7 +330,7 @@ class Market extends marketLibrary
                 $sortPaging            = "&sort=residence";
             break;
             default:
-                $sort                = "sort_id, enddate";
+                $sort                = "enddate";
                 $sortPaging            = "";
             break;
         }
@@ -356,7 +355,6 @@ class Market extends marketLibrary
         } else {
             $where = 'AND enddate >= "'.$today.'"';
         }
-
 
         /////// START PAGING ///////
         $pos= intval($_GET['pos']);
@@ -1114,17 +1112,16 @@ class Market extends marketLibrary
 
         //spez fields
         $objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
-          if ($objResult !== false) {
+        if ($objResult !== false) {
             while(!$objResult->EOF) {
                 $spezFields[$objResult->fields['id']] = $objResult->fields['value'];
                 $objResult->MoveNext();
             }
-          }
+        }
 
         // set variables
         $this->_objTpl->setVariable(array(
-// TODO: $paging is never set!
-//            'MARKET_SEARCH_PAGING'            => $paging,
+            'MARKET_SEARCH_PAGING'            => $paging,
             'TXT_MARKET_ENDDATE'            => $_CORELANG['TXT_END_DATE'],
             'TXT_MARKET_TITLE'                => $_ARRAYLANG['TXT_MARKET_TITLE'],
             'TXT_MARKET_PRICE'                => $_ARRAYLANG['TXT_MARKET_PRICE'],
@@ -1136,8 +1133,7 @@ class Market extends marketLibrary
             'TXT_MARKET_SPEZ_FIELD_5'        => $spezFields[5],
         ));
 
-// TODO: Never used
-//        $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
+        $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $searchTermOrg         = contrexx_addslashes($_GET['term']);
         $searchTerm         = contrexx_addslashes($_GET['term']);
         $array = explode(' ', $searchTerm);
@@ -1167,6 +1163,39 @@ class Market extends marketLibrary
             }
         }
 
+        switch ($_GET['sort']) {
+            case 'title':
+                $sort                = "title";
+                $sortPaging            = "&sort=title";
+            break;
+            case 'enddate':
+                $sort                = "enddate";
+                $sortPaging            = "&sort=enddate";
+            break;
+            case 'price':
+                $sort                = "price";
+                $sortPaging            = "&sort=price";
+            break;
+            default:
+                $sort                = "enddate";
+                $sortPaging            = "";
+            break;
+        }
+
+        if (isset($_GET['way'])) {
+            $way         = $_GET['way']=='ASC' ? 'DESC' : 'ASC';
+            $wayPaging     = '&way='.$_GET['way'];
+        }else{
+            $way         = 'ASC';
+            $wayPaging     = '';
+        }
+
+        $this->_objTpl->setVariable(array(
+            'MARKET_ENDDATE_SORT'            => "index.php?section=market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&sort=enddate&way=".$way,
+            'MARKET_TITLE_SORT'                => "index.php?section=market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&sort=title&way=".$way,
+            'MARKET_PRICE_SORT'                => "index.php?section=market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&sort=price&way=".$way,
+        ));
+
         if ($_GET['term'] != '') {
             $query="SELECT  id,
                             title,
@@ -1191,14 +1220,14 @@ class Market extends marketLibrary
                               OR spez_field_5 LIKE ('%$searchTerm%'))
                          ".$query_search."
                         AND status = '1'
-                   ORDER BY score DESC, enddate DESC";
+                   ORDER BY score DESC, ".$sort." ".$way."";
 
             /////// START PAGING ///////
             $pos= intval($_GET['pos']);
             $objResult = $objDatabase->Execute($query);
             $count = $objResult->RecordCount();
             if ($count > $this->settings['paging']) {
-                $paging = getPaging($count, $pos, "&amp;section=market&amp;cmd=search".$searchTermExp, "<b>Inserate</b>", true, $this->settings['paging']);
+                $paging = getPaging($count, $pos, "&amp;section=market&amp;cmd=search".$searchTermExp."&amp;sort=".$sort."&amp;way=".$way, "<b>Inserate</b>", true, $this->settings['paging']);
             }
             $this->_objTpl->setVariable('SEARCH_PAGING', $paging);
             $objResult = $objDatabase->SelectLimit($query, $this->settings['paging'], $pos);
