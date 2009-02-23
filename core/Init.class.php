@@ -661,7 +661,6 @@ class InitCMS
         $langId = $this->getFrontendLangId();
         switch ($section) {
             case 'home':
-                DBG::trace();
                 $this->is_home = true;
                 break;
             case 'logout':
@@ -687,7 +686,6 @@ class InitCMS
                 if ($objResult !== false) {
                     $catID=$objResult->fields['catid'];
                     $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-                DBG::trace();
                     $this->is_home=true;
                 } else {
                     header('Location: index.php?section=error');
