@@ -563,8 +563,8 @@ class Market extends marketLibrary
             }
         }
 
-         $inputs     = '<tr><td width="100" height="20">'.$_ARRAYLANG['TXT_MARKET_CATEGORY'].'</td><td><select name="catid" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'].'</option>'.$options.'</select></td></tr>';
-        $inputs     .= '<tr><td width="100" height="20">'.$_CORELANG['TXT_TYPE'].'</td><td><select name="type" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_TYPES'].'</option><option value="offer">'.$_ARRAYLANG['TXT_MARKET_OFFER'].'</option><option value="search">'.$_ARRAYLANG['TXT_MARKET_SEARCH'].'</option></select></td></tr>';
+        $inputs     .= '<p><label for="catid">'.$_ARRAYLANG['TXT_MARKET_CATEGORY'].'</label><select id="catid" name="catid"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'].'</option>'.$options.'</select></p>';
+        $inputs     .= '<p><label for="type">'.$_ARRAYLANG['TXT_TYPE'].'</label><select id="type" name="type"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_TYPES'].'</option><option value="offer">'.$_ARRAYLANG['TXT_MARKET_OFFER'].'</option><option value="search">'.$_ARRAYLANG['TXT_MARKET_SEARCH'].'</option></select></p>';
 
         $options = '';
 
@@ -574,7 +574,7 @@ class Market extends marketLibrary
             $options .= '<option value="'.$priceValue.'">'.$priceValue.' '.$this->settings['currency'].'</option>';
         }
 
-        $inputs     .= '<tr><td width="100" height="20">'.$_ARRAYLANG['TXT_MARKET_PRICE_MAX'].'</td><td><select name="price" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_PRICES'].'</option>'.$options.'</select></td></tr>';
+        $inputs     .= '<p><label for="cpricetid">'.$_ARRAYLANG['TXT_MARKET_PRICE_MAX'].'</label><select id="price" name="price"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_PRICES'].'</option>'.$options.'</select></p>';
 
 
         // set variables
