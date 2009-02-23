@@ -21,6 +21,8 @@ Galerie
 
 Gästebuch
 - Name wird nun in zwei getrennten Feldern abgelegt: Vor- und Nachname.
+- Das Benachrichtigungs-E-Mail enthält als Absender und Antwort Adresse die
+  E-Mail Adresse des Verfassers des Gästebucheintrages.
 
 Forum
 - Thread Aktionen werden nur noch angezeigt, wenn man Berechtigungen hat.

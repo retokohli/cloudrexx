@@ -288,7 +288,7 @@ class Guestbook extends GuestbookLibrary
         $objDatabase->Execute($query);
 
         if ($this->arrSettings['guestbook_send_notification_email']==1) {
-	    	$this->sendNotificationEmail($forename, $name, $comment);
+	    	$this->sendNotificationEmail($forename, $name, $comment, $mail);
         }
         $this->statusMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL']."<br />";
         if ($this->arrSettings['guestbook_activate_submitted_entries'] == 0) {
@@ -363,7 +363,7 @@ class Guestbook extends GuestbookLibrary
     * @return void
     * @desc Sends a notification email to the administrator
     */
-    function sendNotificationEmail($forename, $name, $comment)
+    function sendNotificationEmail($forename, $name, $comment, $email = null)
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -387,8 +387,12 @@ class Guestbook extends GuestbookLibrary
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $mailto;
-            $objMail->AddReplyTo($mailto);
+            if (isset($email)) {
+				$objMail->From = $email;
+                $objMail->AddReplyTo($email);
+		    } else {
+				$objMail->From = $mailto;
+            }
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);
             $objMail->Body = $message;
