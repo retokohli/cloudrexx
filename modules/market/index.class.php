@@ -1204,6 +1204,7 @@ class Market extends marketLibrary
                             picture,
                             userid,
                             enddate,
+                            premium,
                             spez_field_1,
                             spez_field_2,
                             spez_field_3,
@@ -1287,7 +1288,6 @@ class Market extends marketLibrary
                     if ($objUser) {
                         $city = $objUser->getProfileAttribute('city');
                     }
-
                        if ($objResult->fields['premium'] == 1) {
                            $row = "marketRow1";
                        }else{
@@ -1448,7 +1448,7 @@ class Market extends marketLibrary
 
                         //entry picture
                         if ($objResult->fields['picture'] != '') {
-                            $picture         = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" border="0" alt="" /><br /><br />';
+                            $picture         = '<img width="100" src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" border="0" alt="" /><br /><br />';
                         }else{
                             $picture         = '<img src="'.$this->mediaWebPath.'pictures/no_picture.gif" border="0" alt="" /><br /><br />';
                         }
