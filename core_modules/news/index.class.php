@@ -489,7 +489,7 @@ class news extends newsLibrary {
         }
 
         if (!$this->arrSettings['news_submit_news'] == '1' || (!$communityModul && $this->arrSettings['news_submit_only_community'] == '1')) {
-            header('Location: index.php?section=news');
+            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=news');
             exit;
         } elseif ($this->arrSettings['news_submit_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();

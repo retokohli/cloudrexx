@@ -121,9 +121,9 @@ class sitemap
 					$link = $alias;
 				}
 				elseif (!empty($s)) {
-				    $link = "?section=".$s.$cmd;
+				    $link = CONTREXX_SCRIPT_PATH."?section=".$s.$cmd;
 				} else {
-				    $link = "?page=".$objResult->fields['catid'].$section.$cmd;
+				    $link = CONTREXX_SCRIPT_PATH."?page=".$objResult->fields['catid'].$section.$cmd;
 				}
 				$this->_arrName[$objResult->fields['parcat']][$objResult->fields['catid']] = stripslashes($objResult->fields['catname']);
 				$this->_arrUrl[$objResult->fields['catid']] = $link;
