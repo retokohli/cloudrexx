@@ -33,6 +33,7 @@ Benutzerverwaltung
 - Es kann eine CSV Datei aller Benutzer exportiert werden basierend auf Gruppenzugehörigkeit und Standardsprache.
 - Die Profileigenschaft E-Mail Adresse wird bei der Suche im Backend auch mit
   einbezogen.
+- Neue Profileigenschaften vom Typ Kontrollkästchen können definiert werden.
 
 Statistik
 - Wird ein bestehender Besucher wieder als neuer solcher gezählt, wird dessen
