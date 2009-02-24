@@ -106,6 +106,8 @@ class Payment
     {
         global $objDatabase;
 
+//echo("getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies): Entered<br />");
+        if (empty(self::$arrPayment)) self::init();
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $arrAcceptedCurrencyCodes = array();
         $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
@@ -123,11 +125,11 @@ class Payment
             SELECT `p`.`payment_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                ON `c`.`zone_id`=`z`.`id`
+                ON `c`.`zones_id`=`z`.`zones_id`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `p`
-                ON `z`.`id`=`p`.`zone_id`
-             WHERE `c`.`country_id`=".intval($countryId)."
-               AND `z`.`status`=1
+                ON `z`.`zones_id`=`p`.`zones_id`
+             WHERE `c`.`countries_id`=".intval($countryId)."
+               AND `z`.`activation_status`=1
         ";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
@@ -140,6 +142,8 @@ class Payment
             }
             $objResult->MoveNext();
         }
+//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
+//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
         return $arrPaymentId;
     }
 
@@ -176,6 +180,7 @@ class Payment
 
         // Initialize if necessary
         if (empty(self::$arrPayment)) self::init();
+        // Get Payment IDs available in the selected country, if any, or all.
         $arrPaymentId =
             ($countryId
                 ? self::getCountriesRelatedPaymentIdArray(

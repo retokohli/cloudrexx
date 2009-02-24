@@ -928,11 +928,10 @@ class ShopCategory
 }
 
 
-/* test
-echo("TEST: getcategoryTree(): <br />");
-var_export(ShopCategory::getCategoryTree(0, 0, 0));
-echo("<br />");
+// Test
+//echo("TEST: getcategoryTree(): <br />");
+//var_export(ShopCategory::getCategoryTree(0, 0, 0));
+//echo("<br />");
 //die();
-*/
 
 ?>

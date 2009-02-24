@@ -774,7 +774,7 @@ class Customer
                    is_reseller=".($this->resellerStatus ? 1 : 0).",
                    register_date='".contrexx_addslashes($this->registerDate)."',
                    customer_status=".($this->activeStatus ? 1 : 0).",
-                   group_id=$this->groupId
+                   group_id=".intval($this->groupId)."
              WHERE customerid=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -825,7 +825,7 @@ class Customer
                 ".($this->resellerStatus ? 1 : 0).",
                 ".($this->activeStatus ? 1 : 0).",
                 NOW(),
-                $this->groupId
+                ".intval($this->groupId)."
             )
         ";
         $objResult = $objDatabase->Execute($query);

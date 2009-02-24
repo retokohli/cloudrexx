@@ -9,14 +9,13 @@
  * @access      public
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  * @version     2.1.0
  */
 
 /**
  * Debug level
  */
-define('_SHOP_DEBUG', 3);
+define('_SHOP_DEBUG', 0);
 
 /**
  * Text objects
@@ -114,9 +113,9 @@ function shopUseSession()
 
 /**
  * Shop
- * @todo        Extract code from this class and move it to other classes:
+ * @internal    Extract code from this class and move it to other classes:
  *              Customer, Product, Order, ...
- * @todo        It doesn't really make sense to extend ShopLibrary.
+ * @internal    It doesn't really make sense to extend ShopLibrary.
  *              Instead, dissolve ShopLibrary into classes like
  *              Shop, Zones, Country, Payment, etc.
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -124,7 +123,6 @@ function shopUseSession()
  * @access      public
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  * @version     2.1.0
  */
 class Shop extends ShopLibrary
@@ -879,85 +877,6 @@ class Shop extends ShopLibrary
 
 
     /**
-     * old version
-     *
-     * @param   integer $parentId
-     * @todo    Remove.
-     */
-    function getCategoriesOld($parentId)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        if ($parentId == '') {
-            $parentId = 0;
-        }
-
-        $query = "SELECT catid, catname
-                    FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-                   WHERE parentid=".$parentId.' AND catstatus != 0
-                   ORDER BY catsorting ASC, catname ASC';
-        $objResult = $objDatabase->Execute($query);
-
-        $this->objTemplate->setCurrentBlock('shopProductRow');
-        $cell = 1;
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                //$file          = '';
-                $thumbnailPath = '';
-                $catId_Pic     = $objResult->fields['catid'];
-                $catId_Link    = $objResult->fields['catid'];
-                $catName       = $objResult->fields['catname'];
-
-                if ($parentId == 0) {
-                    $querySubCat = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
-                                   "WHERE parentid=".$catId_Pic;
-                    $objResultSubCat = $objDatabase->SelectLimit($querySubCat, 1);
-                    if (!$objResultSubCat->EOF) {
-                        $catId_Pic = $objResultSubCat->fields['catid'];
-                    }
-                }
-
-                $queryProduct = "SELECT picture ".
-                    "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products ".
-                    "WHERE catid=".$catId_Pic." ORDER BY sort_order";
-                $objResultProduct = $objDatabase->SelectLimit($queryProduct, 1);
-                if ($objResultProduct) {
-                    $arrImages = Products::getShopImagesFromBase64String(
-                        $objResultProduct->fields['picture']
-                    );
-                }
-                // no product picture available
-                if (!$arrImages
-                 || $arrImages[1]['img'] == ''
-                 || $arrImages[1]['img'] == self::noPictureName) {
-                    $thumbnailPath = self::$defaultImage;
-                } else {
-                    // path offset is saved WITHOUT the image path!
-                    $thumbnailPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix;
-                }
-
-                $this->objTemplate->setVariable(array(
-                    'SHOP_PRODUCT_TITLE'            => str_replace('"', '&quot;', $catName),
-                    'SHOP_PRODUCT_THUMBNAIL'        => $thumbnailPath,
-                    'TXT_ADD_TO_CARD'               => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
-                    'SHOP_PRODUCT_DETAILLINK_IMAGE' => "index.php?section=shop".MODULE_INDEX."&amp;catId=".$catId_Link,
-                    'SHOP_PRODUCT_SUBMIT_FUNCTION'  => "location.replace('index.php?section=shop".MODULE_INDEX."&catId=".$catId_Link."')",
-                    'SHOP_PRODUCT_SUBMIT_TYPE'      => "button",
-                ));
-
-                if ($this->objTemplate->blockExists('subCategories')) {
-                    $this->objTemplate->parse('subCategories');
-                       if ($cell++ % 4 == 0) {
-                        $this->objTemplate->parse('subCategoriesRow');
-                    }
-                }
-                $objResult->MoveNext();
-            }
-        }
-    }
-
-
-    /**
      * Set up the shop page with products and discounts
      *
      * @return  boolean                      True on success, false otherwise
@@ -965,8 +884,6 @@ class Shop extends ShopLibrary
      * @global  array       $_ARRAYLANG     Language array
      * @global  array       $_CONFIG        Core configuration array, see {@link /config/settings.php}
      * @global  string(?)   $themesPages    Themes pages(?)
-     * @todo    Determine return type
-     * @todo    Documentation!
      */
     function products()
     {
@@ -1142,8 +1059,6 @@ class Shop extends ShopLibrary
                     'THUMBNAIL'       => $thumbnailPath,
                     'THUMBNAIL_SIZE'  => $arrSize[3],
                     'THUMBNAIL_LINK'  => $pictureLink,
-// TODO: Where are SHOP_PRODUCT_POPUP_LINK_x
-//             and SHOP_PRODUCT_POPUP_LINK_NAME_x used?
                     'POPUP_LINK'      => $pictureLink,
                     'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
                 );
@@ -1313,10 +1228,10 @@ class Shop extends ShopLibrary
                 ));
             }
 
-// TODO: This is the old Product field for the Manufacturer URI.
-// This is now extended by the Manufacturer table and should thus
-// get a new purpose.  As it is product specific, it could be
-// renamed and reused as a link to individual Products!
+			// This is the old Product field for the Manufacturer URI.
+			// This is now extended by the Manufacturer table and should thus
+			// get a new purpose.  As it is product specific, it could be
+			// renamed and reused as a link to individual Products!
             $externalLink = $objProduct->getExternalLink();
             if (!empty($externalLink)) {
                 $this->objTemplate->setVariable(array(
@@ -1343,7 +1258,8 @@ class Shop extends ShopLibrary
                 ));
             }
             // Special outlet ShopCategory with discounts varying daily.
-            // TODO: This should be implemented in a more generic way.
+            // This should be implemented in a more generic way, in the
+            // Discount class maybe.
             if ($objProduct->isOutlet()) {
                 $this->objTemplate->setVariable(array(
                     'TXT_SHOP_DISCOUNT_TODAY'   =>
@@ -1464,7 +1380,7 @@ class Shop extends ShopLibrary
                 $product_Id =
                     $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
             $arrAttributeNames = ProductAttributes::getNameArrayByProductId($product_Id);
-echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
+//echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
             // When there are no ProductAttributes for this Product, hide the
             // options blocks
             if (empty($arrAttributeNames)) {
@@ -1475,7 +1391,7 @@ echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export(
                 // Loop through the ProductAttribute Names for the Product
                 foreach ($arrAttributeNames as $optionId => $arrAttributeName) {
                 	$arrAttributeValues = ProductAttributes::getValueArrayByNameId($optionId);
-echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($arrAttributeValues, true)."<hr />");
+//echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($arrAttributeValues, true)."<hr />");
                 	$selectValues = '';
                     // create head of option menu/checkbox/radiobutton
                     switch ($arrAttributeName['type']) {
@@ -1810,9 +1726,7 @@ echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($
      */
     function destroyCart()
     {
-        if (isset($_SESSION['shop'])) {
-            unset($_SESSION['shop']);
-        }
+        if (isset($_SESSION['shop'])) unset($_SESSION['shop']);
         $this->objCustomer = false;
     }
 
@@ -1826,7 +1740,7 @@ echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($
     {
         global $objDatabase;
 
-        $price = 0.00;
+        $price = 0;
         if (is_array($cart['products']) && count($cart['products']) > 0) {
             foreach ($cart['products'] as $arrProduct) {
                 $objResult = $objDatabase->SelectLimit("SELECT normalprice,
@@ -1876,6 +1790,7 @@ echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($
     function _getProductPrice(
         $productId, $priceOptions=0, $count=1, $flagIgnoreSpecialoffer=false)
     {
+//echo("_getProductPrice($productId, $priceOptions, $count, $flagIgnoreSpecialoffer): Entered<br />");
         $objProduct = Product::getById($productId);
         if (!$objProduct) return false;
         $normalPrice = $objProduct->getPrice();
@@ -1936,11 +1851,11 @@ echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($
      * Returns the actual payment fee according to the payment ID and
      * the total order price.
      *
-     * @todo    A lot of this belongs to the Payment class.
-     * @param   integer     $paymentId  The payment ID
-     * @param   double      $totalPrice The total order price
-     * @return  string                  The payment fee, formatted by
-     *                                  {@link Currency::getCurrencyPrice()}
+     * @internal    A lot of this belongs to the Payment class.
+     * @param       integer     $paymentId  The payment ID
+     * @param       double      $totalPrice The total order price
+     * @return      string                  The payment fee, formatted by
+     *                                      {@link Currency::getCurrencyPrice()}
      */
     function _calculatePaymentPrice($paymentId, $totalPrice)
     {
@@ -1957,9 +1872,9 @@ echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($
     /**
      * Returns the total number of items in the cart
      *
-     * @param   array   $cart   The cart array
-     * @return  integer         Number of items present in the Cart
-     * @todo    Move to Cart class.
+     * @param       array   $cart   The cart array
+     * @return      integer         Number of items present in the Cart
+     * @internal    Move to Cart class.
      */
     function calculateItems($cart)
     {
@@ -2280,52 +2195,6 @@ sendReq('', 1);
 
 
     /**
-     * OBSOLETE
-     * Get dropdown menu
-     *
-     * Gets back a dropdown menu like  <option value='catid'>Catname</option>
-     *
-     * @param    integer  $selectedid
-     * @return   string   $result
-    function getCatMenu($selectedid=0)
-    {
-         $result = $this->doShopCatMenu(0, 0, $selectedid);
-         return $result;
-    }
-     */
-
-
-    /**
-     * Do shop categories menu
-     *
-     * @param    integer  $parcat
-     * @param    integer  $level
-     * @param    integer  $selectedid
-     * @return   string   $result
-    function doShopCatMenu($parcat=0, $level, $selectedid)
-    {
-        $strMenu = '';
-        $list = $this->arrCategoriesTable[$parcat];
-        if (is_array($list)) {
-            foreach ($list as $id => $name) {
-                $output = str_repeat('&nbsp;', $level*3);
-                $name   = htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET);
-                $strMenu .=
-                    '<option value="'.$id.'"'.
-                    ($selectedid == $id ? ' selected="selected"' : '').
-                    ">$output$name</option>\n";
-                if ( ($id != $parcat) &&
-                   (isset($this->arrCategoriesTable[$id])) ) {
-                    $strMenu .=
-                        $this->doShopCatMenu($id, $level+1, $selectedid);
-                }
-            }
-        }
-        return $strMenu;
-    }
-
-
-    /**
      * Authenticate a Customer
      *
      * @global  ADONewConnection  $objDatabase    Database connection object
@@ -2464,7 +2333,7 @@ sendReq('', 1);
      * @param   integer     $oldCartProdId  Cart product ID
      * @return  array                       Product array of the product that has been
      *                                      specified by the productId field in a (POST) request.
-     * @todo    Documentation: Be more elaborate about the meaning of $oldCartProdId
+     * @internal    Documentation: Be more elaborate about the meaning of $oldCartProdId
      */
     function _getPostProduct(&$oldCartProdId)
     {
@@ -2617,12 +2486,13 @@ sendReq('', 1);
             if (is_array($_SESSION['shop']['cart']['products']) && !empty($_SESSION['shop']['cart']['products'])) {
                 foreach (array_keys($_SESSION['shop']['cart']['products']) as $cartProdId) {
                     // Remove Products
-                    if (   isset($_REQUEST['quantity'][$cartProdId])
-                        && intval($_REQUEST['quantity'][$cartProdId] < 1)) {
-                        unset($_SESSION['shop']['cart']['products'][$cartProdId]);
-                    } else {
-                        $_SESSION['shop']['cart']['products'][$cartProdId]['quantity'] =
-                            intval($_REQUEST['quantity'][$cartProdId]);
+                    if (isset($_REQUEST['quantity'][$cartProdId])) {
+                        if (intval($_REQUEST['quantity'][$cartProdId] < 1)) {
+                            unset($_SESSION['shop']['cart']['products'][$cartProdId]);
+	                    } else {
+	                        $_SESSION['shop']['cart']['products'][$cartProdId]['quantity'] =
+	                            intval($_REQUEST['quantity'][$cartProdId]);
+	                    }
                     }
                 }
             }
@@ -2682,13 +2552,12 @@ sendReq('', 1);
                 // get option names
                 foreach ($_SESSION['shop']['cart']['products'][$cartProdId]['options'] as $optionId => $arrValueIds) {
                     $objProductAttribute = ProductAttribute::getByNameId($optionId);
-// TODO: Do something!
-//                    if (!$objProductAttribute) {
-//                    }
+                    // Should be tested!
+                    //if (!$objProductAttribute) { ... }
                       $arrValues = $objProductAttribute->getValueArray();
-echo("_parseCart(): Got Values ".var_export($arrValues, true)."<br />");
+//echo("_parseCart(): Got Values ".var_export($arrValues, true)."<br />");
                     foreach ($arrValueIds as $value_id) {
-echo("_parseCart(): processing value ID $value_id<br />");
+//echo("_parseCart(): processing value ID $value_id<br />");
                     	// Note that the ProductAttribute values are indexed
                         // starting from 1!
                         // For types 4..7, the value entered in the text box is
@@ -2702,7 +2571,7 @@ echo("_parseCart(): processing value ID $value_id<br />");
                         	//$arrValues = ProductAttributes::getValueArrayByNameId($optionId);
                             $arrValue = $arrValues[$value_id];
                         }
-echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
+//echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                         if (!is_array($arrValue)) continue;
                         $optionValue = ShopLibrary::stripUniqidFromFilename($arrValue['value']);
                         if (   $optionValue != $arrValue['value']
@@ -2787,6 +2656,7 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
         }
         $_SESSION['shop']['cart']['items']            = $this->calculateItems($_SESSION['shop']['cart']);
         $_SESSION['shop']['cart']['total_weight']     = $total_weight; // in grams!
+        $this->_setPaymentTaxes();
         return $arrProducts;
     }
 
@@ -2949,7 +2819,7 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
             'SHOP_LOGIN_ACTION'                  =>
                 'index.php?section=shop&amp;cmd=login'.
                 (!empty($redirect) ? "&amp;redirect=$redirect" : ''),
-// TODO: Change the name of this placeholder to SHOP_STATUS and remove this.
+            // Should be replaced by the global SHOP_STATUS placeholder.
             'SHOP_LOGIN_STATUS'                  => $this->statusMessage,
         ));
     }
@@ -2989,6 +2859,55 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
         if (empty($status)) $this->_gotoPaymentPage();
         $this->_parseAccountDetails();
         $this->_getAccountPage($status);
+    }
+
+
+    function _configAccount()
+    {
+        // hide currency navbar
+        $this->_hideCurrencyNavbar = true;
+
+        if (empty($_POST) || !is_array($_POST)) return;
+        foreach($_POST as $key => $value) {
+            $value = (get_magic_quotes_gpc()
+                ? strip_tags(trim($value))
+                : addslashes(strip_tags(trim($value))));
+            $_SESSION['shop'][$key] =
+                htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
+        }
+
+        if (isset($_POST['equalAddress'])) {
+            if (!empty($_POST['address2'])) {
+                $_SESSION['shop']['equalAddress'] = ' checked="checked"';
+            } else {
+                $_SESSION['shop']['equalAddress'] = '';
+            }
+        } else {
+            if (empty($_POST['address2']) ||
+                !isset($_SESSION['shop']['equalAddress'])) {
+                $_SESSION['shop']['equalAddress'] = '';
+            }
+        }
+
+        if (isset($_POST['countryId'])) {
+            $_SESSION['shop']['countryId'] = intval($_POST['countryId']);
+        } else {
+            if (!isset($_SESSION['shop']['countryId'])) {
+                // countryId2 is set in _initCart() already
+                $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
+            }
+        }
+
+        // Fill missing arguments with empty strings
+        if (empty($_SESSION['shop']['company2']))   $_SESSION['shop']['company2']   = '';
+        if (empty($_SESSION['shop']['prefix2']))    $_SESSION['shop']['prefix2']    = '';
+        if (empty($_SESSION['shop']['lastname2']))  $_SESSION['shop']['lastname2']  = '';
+        if (empty($_SESSION['shop']['firstname2'])) $_SESSION['shop']['firstname2'] = '';
+        if (empty($_SESSION['shop']['address2']))   $_SESSION['shop']['address2']   = '';
+        if (empty($_SESSION['shop']['zip2']))       $_SESSION['shop']['zip2']       = '';
+        if (empty($_SESSION['shop']['city2']))      $_SESSION['shop']['city2']      = '';
+        if (empty($_SESSION['shop']['phone2']))     $_SESSION['shop']['phone2']     = '';
+        if (empty($_SESSION['shop']['countryId2'])) $_SESSION['shop']['countryId2'] = 0;
     }
 
 
@@ -3046,11 +2965,12 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
     {
         global $objDatabase;
 
+/*
         foreach($_POST as $key => $value) {
             $value = contrexx_addslashes(strip_tags(trim($value)));
             $_SESSION['shop'][$key] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
         }
-
+*/
         if (!isset($_SESSION['shop']['customer_note'])) {
             $_SESSION['shop']['customer_note'] = '';
         }
@@ -3063,7 +2983,6 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
             "WHERE modules.name='shop' AND nav.module=modules.id ".
             "AND nav.cmd='payment' AND activestatus='1' AND lang=".FRONTEND_LANG_ID;
         $objResult = $objDatabase->SelectLimit($query, 1);
-
         if ($objResult) {
             if ($objResult->RecordCount() == 1) {
                 header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
@@ -3075,61 +2994,13 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
     }
 
 
-    function _configAccount()
-    {
-        // hide currency navbar
-        $this->_hideCurrencyNavbar = true;
-
-        if (empty($_POST) || !is_array($_POST)) {
-            return;
-        }
-        foreach($_POST as $key => $value) {
-            $value = (get_magic_quotes_gpc()
-                ? strip_tags(trim($value))
-                : addslashes(strip_tags(trim($value))));
-            $_SESSION['shop'][$key] =
-                htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-        }
-
-        if (isset($_POST['equalAddress'])) {
-            if (!empty($_POST['address2'])) {
-                $_SESSION['shop']['equalAddress'] = 'checked="checked"';
-            } else {
-                $_SESSION['shop']['equalAddress'] = '';
-            }
-        } else {
-            if (empty($_POST['address2']) ||
-                !isset($_SESSION['shop']['equalAddress'])) {
-                $_SESSION['shop']['equalAddress'] = '';
-            }
-        }
-
-        if (isset($_POST['countryId'])) {
-            $_SESSION['shop']['countryId'] = intval($_POST['countryId']);
-        } else {
-            if (!isset($_SESSION['shop']['countryId'])) {
-                // countryId2 is set in _initCart()
-                $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
-            }
-        }
-
-        // Fill missing arguments with empty strings
-        if (empty($_SESSION['shop']['company2']))   $_SESSION['shop']['company2']   = '';
-        if (empty($_SESSION['shop']['prefix2']))    $_SESSION['shop']['prefix2']    = '';
-        if (empty($_SESSION['shop']['lastname2']))  $_SESSION['shop']['lastname2']  = '';
-        if (empty($_SESSION['shop']['firstname2'])) $_SESSION['shop']['firstname2'] = '';
-        if (empty($_SESSION['shop']['address2']))   $_SESSION['shop']['address2']   = '';
-        if (empty($_SESSION['shop']['zip2']))       $_SESSION['shop']['zip2']       = '';
-        if (empty($_SESSION['shop']['city2']))      $_SESSION['shop']['city2']      = '';
-        if (empty($_SESSION['shop']['phone2']))     $_SESSION['shop']['phone2']     = '';
-        if (empty($_SESSION['shop']['countryId2'])) $_SESSION['shop']['countryId2'] = 0;
-    }
-
-
     function _parseAccountDetails()
     {
-        // customer already logged in
-        if ($this->objCustomer) {
+        // Customer already logged in.
+        // Show the details stored in the database as default values.
+        // Once the (changed) values are posted back, they are stored
+        // in the session!
+        if ($this->objCustomer && empty($_SESSION['shop']['address'])) {
             $this->objTemplate->setVariable(array(
                 'SHOP_ACCOUNT_COMPANY'       => $this->objCustomer->getCompany(),
                 'SHOP_ACCOUNT_PREFIX'        => $this->objCustomer->getPrefix(),
@@ -3150,7 +3021,7 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                 'SHOP_ACCOUNT_EMAIL'         => $this->objCustomer->getEmail(),
                 'SHOP_ACCOUNT_PHONE'         => $this->objCustomer->getPhone(),
                 'SHOP_ACCOUNT_FAX'           => $this->objCustomer->getFax(),
-                'SHOP_ACCOUNT_ACTION'        => "?section=shop".MODULE_INDEX."&amp;cmd=payment",
+                'SHOP_ACCOUNT_ACTION'        => "index.php?section=shop".MODULE_INDEX."&amp;cmd=account",
             ));
             $this->objTemplate->hideBlock('account_details');
         } else {
@@ -3180,10 +3051,7 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                 'SHOP_ACCOUNT_EMAIL'         => (isset($_SESSION['shop']['email'])      ? stripslashes($_SESSION['shop']['email']) : ''),
                 'SHOP_ACCOUNT_PHONE'         => (isset($_SESSION['shop']['phone'])      ? stripslashes($_SESSION['shop']['phone']) : ''),
                 'SHOP_ACCOUNT_FAX'           => (isset($_SESSION['shop']['fax'])        ? stripslashes($_SESSION['shop']['fax']) : ''),
-                'SHOP_ACCOUNT_EQUAL_ADDRESS' =>
-                    (isset($_SESSION['shop']['equalAddress'])
-                      ? $_SESSION['shop']['equalAddress'] : ''
-                    ),
+                'SHOP_ACCOUNT_ACTION'        => "index.php?section=shop".MODULE_INDEX."&amp;cmd=account",
             ));
         }
         if (!empty($_SESSION['shop']['shipment'])) {
@@ -3197,6 +3065,10 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                 'SHOP_ACCOUNT_CITY2'         => (isset($_SESSION['shop']['city2'])      ? stripslashes($_SESSION['shop']['city2']) : ''),
                 'SHOP_ACCOUNT_COUNTRY2'      => Country::getNameById($_SESSION['shop']['countryId2']),
                 'SHOP_ACCOUNT_PHONE2'        => (isset($_SESSION['shop']['phone2'])     ? stripslashes($_SESSION['shop']['phone2']) : ''),
+                'SHOP_ACCOUNT_EQUAL_ADDRESS' =>
+                    (empty($_SESSION['shop']['equalAddress'])
+                      ? '' : $_SESSION['shop']['equalAddress']
+                    ),
                 'SHOP_ACCOUNT_EQUAL_ADDRESS' =>
                     (empty($_SESSION['shop']['equalAddress'])
                       ? '' : $_SESSION['shop']['equalAddress']
@@ -3262,7 +3134,7 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
         // shipmentId which is stored in the session array by this.
         $this->_getShipperMenu();
         $this->_initPaymentDetails();
-        $this->_setPaymentTaxes();
+//        $this->_setPaymentTaxes();
         $paymentStatus = $this->_checkPaymentDetails();
         $this->_getPaymentPage($paymentStatus);
     }
@@ -3270,27 +3142,24 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
 
     function _initPaymentDetails()
     {
-        // Reloading or loading without sessions
+        $this->_parseCart();
+    	// Reloading or loading without sessions
         if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: index.php?section=shop".MODULE_INDEX."");
+            header("Location: index.php?section=shop".MODULE_INDEX);
             exit;
         }
 
         // hide currency navbar
         $this->_hideCurrencyNavbar = true;
 
-        $_SESSION['shop']['customer_note'] =
-            (isset($_POST['customer_note'])
-                ? htmlspecialchars($_POST['customer_note'], ENT_QUOTES, CONTREXX_CHARSET)
-                : ''
-            );
-        if (isset($_POST['check'])) {
-            $_SESSION['shop']['agb'] = (!empty($_POST['agb']) ? ' checked="checked"' : '');
-        }
+        if (isset($_POST['customer_note']))
+            $_SESSION['shop']['customer_note'] =
+                htmlspecialchars($_POST['customer_note'], ENT_QUOTES, CONTREXX_CHARSET);
 
-        // uses default currency
-// TODO: Is this needed?
-//        $_SESSION['shop']['total_price'] = $this->_calculatePrice($_SESSION['shop']['cart']);
+        if (isset($_POST['check']))
+            $_SESSION['shop']['agb'] = (!empty($_POST['agb']) ? ' checked="checked"' : '');
+
+        // Uses default currency
         $_SESSION['shop']['total_price'] = $_SESSION['shop']['cart']['total_price'];
         // if shipperId is not set, there is no use in trying to determine a shipment_price
         if (isset($_SESSION['shop']['shipperId'])) {
@@ -3312,42 +3181,49 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
 
         $_SESSION['shop']['items'] = $this->calculateItems($_SESSION['shop']['cart']);
 
-        if (isset($_POST['paymentId'])) {
+        if (isset($_POST['paymentId']))
             $_SESSION['shop']['paymentId'] = intval($_POST['paymentId']);
-        }
 
         // $_SESSION['shop']['paymentId'] may still be unset!
         // determine any valid value for it
-        if (!isset($_SESSION['shop']['paymentId'])) {
+        if (   $_SESSION['shop']['total_price']
+            && !isset($_SESSION['shop']['paymentId'])) {
             $arrPaymentId = Payment::getCountriesRelatedPaymentIdArray($_SESSION['shop']['countryId'], Currency::getCurrencyArray());
-            $_SESSION['shop']['paymentId'] = next($arrPaymentId);
+            $_SESSION['shop']['paymentId'] = current($arrPaymentId);
         }
 
-        if (   empty($_SESSION['shop']['paymentId'])
-            || Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id') != 2) {
-            // All payment processors except PayPal
-            if (isset($_SESSION['shop']['currencyIdPrev'])) {
-                $_SESSION['shop']['currencyId'] = $_SESSION['shop']['currencyIdPrev'];
-                unset($_SESSION['shop']['currencyIdPrev']);
-                header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
-                exit;
-            }
-        } else {
-            // PayPal payment processor (processor ID 2)
-            require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-            $objPaypal = new PayPal;
-            if (!in_array(Currency::getActiveCurrencyCode(), $objPaypal->arrAcceptedCurrencyCodes)) {
-                foreach (Currency::getCurrencyArray() as $arrCurrency) {
-                    if ($arrCurrency['status'] && $arrCurrency['code'] == $this->arrConfig['paypal_default_currency']['value']) {
-                        $_SESSION['shop']['currencyIdPrev'] = $_SESSION['shop']['currencyId'];
-                        $_SESSION['shop']['currencyId'] = $arrCurrency['id'];
-                        header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
-                        exit;
-                    }
-                }
-            }
+/*
+        if (empty($_SESSION['shop']['paymentId'])) {
+            if (empty($psp_id) || $psp_id != 2) {
+die("Z1");
+	            	// All payment processors except PayPal
+	            if (isset($_SESSION['shop']['currencyIdPrev'])) {
+	                $_SESSION['shop']['currencyId'] = $_SESSION['shop']['currencyIdPrev'];
+	                unset($_SESSION['shop']['currencyIdPrev']);
+	                header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
+	                exit;
+	            }
+	        } else {
+	            // PayPal payment processor (processor ID 2)
+die("Z2");
+	        	require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
+	            $objPaypal = new PayPal;
+	            if (!in_array(Currency::getActiveCurrencyCode(), Paypal::getAcceptedCurrencyCodeArray())) {
+	                foreach (Currency::getCurrencyArray() as $arrCurrency) {
+	                    if ($arrCurrency['status'] && $arrCurrency['code'] == $this->arrConfig['paypal_default_currency']['value']) {
+	                        $_SESSION['shop']['currencyIdPrev'] = $_SESSION['shop']['currencyId'];
+	                        $_SESSION['shop']['currencyId'] = $arrCurrency['id'];
+	                        header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
+	                        exit;
+	                    }
+	                }
+	            }
+	        }
         }
+die("YYY");
+*/
         $_SESSION['shop']['payment_price'] = $this->_calculatePaymentPrice($_SESSION['shop']['paymentId'], $_SESSION['shop']['total_price']);
+        $this->_setPaymentTaxes();
     }
 
 
@@ -3370,17 +3246,33 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
      */
     function _getShipperMenu()
     {
-        if (empty($_SESSION['shop']['shipment'])) {
-            return '';
+    	// Only show the menu if shipment is needed and the ship-to
+    	// country is known
+        if (   empty($_SESSION['shop']['shipment'])
+            || empty($_SESSION['shop']['countryId'])) return '';
+        // Choose a shipment in this order from
+        // - post, if present,
+        // - session, if present,
+        // - none.
+        if (empty($_SESSION['shop']['shipperId'])) {
+            $_SESSION['shop']['shipperId'] =
+                (isset($_POST['shipperId'])
+                  ? intval($_POST['shipperId'])
+                  : (isset($_SESSION['shop']['shipperId'])
+                      ? $_SESSION['shop']['shipperId'] : 0
+                    )
+                );
         }
-        // get shipment stuff
-        $arrShipmentId = Shipment::getCountriesRelatedShippingIdArray($_SESSION['shop']['countryId']);
-        if (!isset($_SESSION['shop']['shipperId']) || empty($_SESSION['shop']['shipperId'])) {
-            // get default shipment Id
+/*
+        // If no shipment has been chosen yet, set the default
+        // as the selected one.
+        if (empty($_SESSION['shop']['shipperId'])) {
+	        // Get available shipment IDs
+	        $arrShipmentId = Shipment::getCountriesRelatedShippingIdArray($_SESSION['shop']['countryId']);
+        	// First is the default shipment ID
             $_SESSION['shop']['shipperId'] = current($arrShipmentId);
-        } else {
-            $_SESSION['shop']['shipperId'] = isset($_POST['shipperId']) ? intval($_POST['shipperId']) : $_SESSION['shop']['shipperId'];
         }
+*/
         $menu = Shipment::getShipperMenu(
             $_SESSION['shop']['countryId'],
             $_SESSION['shop']['shipperId'],
@@ -3427,9 +3319,8 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                 $_SESSION['shop']['countryId'],
                 Currency::getCurrencyArray()
             );
-        } else {
-            return '';
         }
+        return '';
     }
 
 
@@ -3529,7 +3420,7 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
         if (!empty($_SESSION['shop']['paymentId']))
 	        $processorId = Payment::getPaymentProcessorId($_SESSION['shop']['paymentId']);
         if (!empty($processorId))
-	        $processorName = Payment::getPaymentProcessorName($processorId);
+	        $processorName = PaymentProcessing::getPaymentProcessorName($processorId);
         if ($processorName == 'Internal_LSV') {
             $status_LSV = $this->showLSV();
         }
@@ -3629,7 +3520,8 @@ echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
     /**
      * Set up the "einzug" page with the user information form for LSV
      *
-     * @todo Fill in the order summary automatically.
+     * @internal    Todo: Fill in the order summary automatically.
+     * @internal
      *  Problem: If the order is big enough, it may not fit into the
      *  visible text area, thus causing some order items to be cut off
      *  by printing.  This issue should be resolved by replacing the
@@ -3675,7 +3567,6 @@ right after the customer logs in!
             'SHOP_CUSTOMER_PHONE'      => (isset($_SESSION['shop']['phone'])     ? stripslashes($_SESSION['shop']['phone'])     : ''),
             'SHOP_CUSTOMER_FAX'        => (isset($_SESSION['shop']['fax'])       ? stripslashes($_SESSION['shop']['fax'])       : ''),
             'SHOP_CUSTOMER_EMAIL'      => (isset($_SESSION['shop']['email'])     ? stripslashes($_SESSION['shop']['email'])     : ''),
-            // TODO: automatically insert product list into products field
             //'SHOP_LSV_EE_PRODUCTS'     => '',
         ));
 
@@ -3844,8 +3735,7 @@ right after the customer logs in!
                 $this->objCustomer->setEmail($_SESSION['shop']['email']);
                 $this->objCustomer->setPassword($_SESSION['shop']['password']);
                 $this->objCustomer->setActiveStatus(1);
-
-// TODO: This might belong somewhere else
+                // Currently, the e-mail address is set as the user name
                 $_SESSION['shop']['username'] = trim($_SESSION['shop']['email'], " \t");
             } else {
                 // update the Customer object from the session array
@@ -3861,18 +3751,18 @@ right after the customer logs in!
                 $this->objCustomer->setPhone($_SESSION['shop']['phone']);
                 $this->objCustomer->setFax($_SESSION['shop']['fax']);
             }
-// TODO: This information definitely belongs to the order object!
+/*  Move to order class
             $this->objCustomer->setCcNumber(isset($_SESSION['shop']['ccnumber']) ? $_SESSION['shop']['ccnumber'] : '');
             $this->objCustomer->setCcDate  (isset($_SESSION['shop']['ccdate'])   ? $_SESSION['shop']['ccdate']   : '');
             $this->objCustomer->setCcName  (isset($_SESSION['shop']['ccname'])   ? $_SESSION['shop']['ccname']   : '');
             $this->objCustomer->setCcCode  (isset($_SESSION['shop']['cvcCode'])  ? $_SESSION['shop']['cvcCode']  : '');
+*/
             // insert or update the customer
-// TODO: Test the $result!
+            // The $result should be tested
 //            $result = $this->objCustomer->store();
             $this->objCustomer->store();
-
-// TODO: Is this really needed?
-            $_SESSION['shop']['customerid'] = $this->objCustomer->getId();
+            // Probably used nowhere
+            //$_SESSION['shop']['customerid'] = $this->objCustomer->getId();
 
             // Clear the ship-to country if there is no shipping
             if (empty($_SESSION['shop']['shipment'])) {
@@ -3891,33 +3781,34 @@ right after the customer logs in!
                     customer_ip, customer_host, customer_lang,
                     customer_browser, customer_note
                 ) VALUES (
-                ".$this->objCustomer->getId().",
-                '{$_SESSION['shop']['currencyId']}',
-                '{$_SESSION['shop']['grand_total_price']}',
-                NOW(),
-                '0',
-                '".trim($_SESSION['shop']['company2']," \t")."',
-                '".trim($_SESSION['shop']['prefix2']," \t")."',
-                '".trim($_SESSION['shop']['firstname2']," \t")."',
-                '".trim($_SESSION['shop']['lastname2']," \t")."',
-                '".trim($_SESSION['shop']['address2']," \t")."',
-                '".trim($_SESSION['shop']['city2']," \t")."',
-                '".trim($_SESSION['shop']['zip2']," \t")."',
-                '".intval($_SESSION['shop']['countryId2'])."',
-                '".trim($_SESSION['shop']['phone2']," \t")."',
-                '{$_SESSION['shop']['vat_price']}',
-                '{$_SESSION['shop']['shipment_price']}', ".
-                (   isset($_SESSION['shop']['shipperId'])
-                 && $_SESSION['shop']['shipperId']
-                    ? $_SESSION['shop']['shipperId'] : 0
-                ).",
-                {$_SESSION['shop']['paymentId']},
-                '{$_SESSION['shop']['payment_price']}',
-                '$customer_ip',
-                '$customer_host',
-                '$customer_lang',
-                '$customer_browser',
-                '{$_SESSION['shop']['customer_note']}')
+	                ".$this->objCustomer->getId().",
+	                '{$_SESSION['shop']['currencyId']}',
+	                '{$_SESSION['shop']['grand_total_price']}',
+	                NOW(),
+	                '0',
+	                '".trim($_SESSION['shop']['company2']," \t")."',
+	                '".trim($_SESSION['shop']['prefix2']," \t")."',
+	                '".trim($_SESSION['shop']['firstname2']," \t")."',
+	                '".trim($_SESSION['shop']['lastname2']," \t")."',
+	                '".trim($_SESSION['shop']['address2']," \t")."',
+	                '".trim($_SESSION['shop']['city2']," \t")."',
+	                '".trim($_SESSION['shop']['zip2']," \t")."',
+	                '".intval($_SESSION['shop']['countryId2'])."',
+	                '".trim($_SESSION['shop']['phone2']," \t")."',
+	                '{$_SESSION['shop']['vat_price']}',
+	                '{$_SESSION['shop']['shipment_price']}', ".
+	                (   isset($_SESSION['shop']['shipperId'])
+	                 && $_SESSION['shop']['shipperId']
+	                    ? $_SESSION['shop']['shipperId'] : 0
+	                ).",
+	                {$_SESSION['shop']['paymentId']},
+	                '{$_SESSION['shop']['payment_price']}',
+	                '$customer_ip',
+	                '$customer_host',
+	                '$customer_lang',
+	                '$customer_browser',
+	                '{$_SESSION['shop']['customer_note']}'
+                )
             ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
@@ -4003,7 +3894,7 @@ right after the customer logs in!
                             // There is exactly one value record for these
                             // types.  Use this and overwrite the "default"
                             // value with the text or file name.
-                            $arrValue = each($arrValues);
+                            $arrValue = current($arrValues);
                             $arrValue['value'] = $value_id;
                         } else {
                             // There is exactly one value record for the value
@@ -4017,13 +3908,12 @@ right after the customer logs in!
                         // add product attributes to order items attribute table
                         $query = "
                             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
-                               SET order_items_id=$orderItemsId, ".
-                                "order_id=$orderid, ".
-                                "product_id=$productId, ".
-                                "product_option_name='".addslashes($name)."', ".
-                                "product_option_value='".addslashes($arrValue['value'])."', ".
-                                "product_option_values_price='".$arrValue['price']."', ".
-                                "price_prefix='".$arrValue['prefix']."'";
+                               SET order_items_id=$orderItemsId,
+                                order_id=$orderid,
+                                product_id=$productId,
+                                product_option_name='".addslashes($name)."',
+                                product_option_value='".addslashes($arrValue['value'])."',
+                                product_option_values_price='".$arrValue['price']."'";
                         $objResult = $objDatabase->Execute($query);
                         if (!$objResult) {
                             unset($_SESSION['shop']['orderid']);
@@ -4106,6 +3996,9 @@ right after the customer logs in!
             // Show confirmation page.
             $this->objTemplate->hideBlock('shopProcess');
             $this->objTemplate->setCurrentBlock('shopCartRow');
+            // It may be necessary to refresh the cart here, as the customer
+            // may return to the cart, then press "Back".
+            $this->_initPaymentDetails();
             foreach ($_SESSION['shop']['cart']['products'] as $arrProduct) {
                 $objResult = $objDatabase->Execute("
                     SELECT product_id, title, catid,
@@ -4121,6 +4014,8 @@ right after the customer logs in!
                     } else {
                         $priceOptions = 0;
                     }
+                    // Note:  The ProductAttribute options' price is added
+                    // to the price here!
                     $price = $this->_getProductPrice(
                         $arrProduct['id'],
                         $priceOptions,
@@ -4133,9 +4028,8 @@ right after the customer logs in!
                         foreach ($arrProduct['options'] as $optionId => $arrValueIds) {
                             if (count($arrValueIds) > 0) {
                                 $objProductAttribute = ProductAttribute::getByNameId($optionId);
-// TODO: Do something!
-//                                if (!$objProductAttribute) {
-//                                }
+                                // Should be tested!
+                                //if (!$objProductAttribute) { ... }
                                 $productOptions .=
                                     ($productOptions ? '<br />' : '').'- '.
                                     ProductAttribute::getNameById($optionId).': ';
@@ -4193,9 +4087,9 @@ right after the customer logs in!
                                 $objResult->fields['title'].'<br /><i>'.$productOptions).'</i>',
                         'SHOP_PRODUCT_OPTIONS'      =>
                             '<i>'.$productOptions.'</i>',
-                        'SHOP_PRODUCT_PRICE'        => Currency::formatPrice(($price+$priceOptions)*$arrProduct['quantity']),
+                        'SHOP_PRODUCT_PRICE'        => Currency::formatPrice(($price)*$arrProduct['quantity']),
                         'SHOP_PRODUCT_QUANTITY'     => $arrProduct['quantity'],
-                        'SHOP_PRODUCT_ITEMPRICE'    => Currency::formatPrice($price+$priceOptions),
+                        'SHOP_PRODUCT_ITEMPRICE'    => Currency::formatPrice($price),
                         'SHOP_UNIT'                 => Currency::getActiveCurrencyCode(),
                     ));
                     if ($this->arrConfig['shop_weight_enable']['value']) {
@@ -4402,9 +4296,7 @@ right after the customer logs in!
         // clear backup ID, avoid success() from being run again
         unset($_SESSION['shop']['orderid_checkin']);
         // Avoid any output if the result is negative
-        if ($result < 0) {
-            die('');
-        }
+        if ($result < 0) die('');
     }
 
 
@@ -4532,7 +4424,7 @@ right after the customer logs in!
                 || $newOrderStatus == SHOP_ORDER_STATUS_SHIPPED
                 || $newOrderStatus == SHOP_ORDER_STATUS_COMPLETED) {
                 Shop::_sendProcessedMail($orderId);
-// TODO: Implement a way to show this when the template is available
+// Implement a way to show this when the template is available
 //                $this->addMessage('<br />'.$_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL']);
                 }
                 // The shopping cart *MUST* be flushed right after this method
@@ -4718,14 +4610,16 @@ right after the customer logs in!
             $orderItemName = substr($objResultItem->fields['product_name'], 0, 40);
             $orderItemPrice = $objResultItem->fields['price'];
             $orderItemQuantity = $objResultItem->fields['quantity'];
-// TODO:      $orderItemVatPercent = $objResultItem->fields['vat_percent'];
+// Add individual VAT rates for Products
+//            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
 
-            // Update Product stock
-// TODO: Only decrease the count for non-electronic products
+            // Decrease the Product stock count,
+            // applies to "real", shipped goods only
             $query = "
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
                    SET stock=stock-$orderItemQuantity
                  WHERE id=$productId
+                   AND handler='delivery'
             ";
             $objDatabase->Execute($query);
 

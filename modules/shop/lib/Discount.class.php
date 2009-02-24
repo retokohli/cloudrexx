@@ -481,6 +481,8 @@ class Discount
     {
         global $objDatabase;
 
+        if (empty($groupCustomerId) || empty($groupArticleId))
+            return 0;
         $query = "
             SELECT `rate`
               FROM `".DBPREFIX."module_shop_rel_discount_group`
@@ -488,11 +490,8 @@ class Discount
                AND `article_group_id`=$groupArticleId
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        if (!$objResult->EOF) {
-            return $objResult->fields['rate'];
-        }
-        return 0;
+        if (!$objResult || $objResult->EOF) return 0;
+        return $objResult->fields['rate'];
     }
 
 
