@@ -124,4 +124,13 @@ $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_TITLE'] = "A&ntilde;adir categor&iacute;a";
 $_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'] = "Configuraci&oacute;n";
 $_ARRAYLANG['TXT_DATA_BLOCK_TITLE'] = "Variable";
 $_ARRAYLANG['TXT_DATA_NETWORKS_TITLE'] = "Gesti&oacute;n de redes";
+$_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'] = "Copy message";
+$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'] = "Thumbnail";
+$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'] = "Browse";
+$_ARRAYLANG['TXT_DATA_THUMBNAIL_ORI_DESC'] = "Use tite image as thumbnail";
+$_ARRAYLANG['TXT_DATA_THUMBNAIL_DIFF_DESC'] = "Use a different image as thumbnail";
+$_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'] = "Maximum size of the thumbnail:";
+$_ARRAYLANG['TXT_DATA_WIDTH'] = "Width";
+$_ARRAYLANG['TXT_DATA_HEIGHT'] = "Height";
+$_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Attachment description";
 ?>
