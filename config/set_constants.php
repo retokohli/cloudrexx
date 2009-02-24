@@ -77,6 +77,8 @@ define('ASCMS_PODCAST_IMAGES_PATH',	        ASCMS_DOCUMENT_ROOT.'/images/podcast
 define('ASCMS_PODCAST_IMAGES_WEB_PATH',	    ASCMS_PATH_OFFSET.'/images/podcast');
 define('ASCMS_DOWNLOADS_IMAGES_PATH',       ASCMS_DOCUMENT_ROOT.'/images/downloads');
 define('ASCMS_DOWNLOADS_IMAGES_WEB_PATH',   ASCMS_PATH_OFFSET.'/images/downloads');
+define('ASCMS_DATA_IMAGES_PATH',	        ASCMS_DOCUMENT_ROOT.'/images/data');
+define('ASCMS_DATA_IMAGES_WEB_PATH',	    ASCMS_PATH_OFFSET.'/images/data');
 define('ASCMS_THEMES_WEB_PATH',	            ASCMS_PATH_OFFSET.'/themes');
 define('ASCMS_THEMES_PATH',	                ASCMS_DOCUMENT_ROOT.'/themes');
 define('ASCMS_ACCESS_PROFILE_IMG_WEB_PATH', ASCMS_PATH_OFFSET.'/images/access/profile');

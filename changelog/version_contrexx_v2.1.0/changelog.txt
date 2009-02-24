@@ -70,6 +70,12 @@ Inserate
   Platzhalder [[MARKET_COLOR]] im Frontend repräsentiert.
 - Inserate können kopieren und sortiert werden.
 
+Datenlisten
+- Volltextsuche
+- Als Thumbnail kann optional ein separates Bild ausgewählt werden.
+- Den Anhängen kann eine Beschreibung zugewiesen werden.
+- Inserate können kopieren werden.
+
 
 ****************************************
 * Behobene Fehler **********************

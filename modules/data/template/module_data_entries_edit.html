@@ -61,6 +61,16 @@ function activateAnyActiveDiv() {
 			document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
 			break;
 		}
+	}
+}
+
+function showSelectedThumbnailMethod(method, langId) {
+    if (method == 'original') {
+        document.getElementById('thumbnail_diff_'+langId).style.display = 'none';
+        document.getElementById('thumbnail_ori_'+langId).style.display = '';
+    } else {
+        document.getElementById('thumbnail_ori_'+langId).style.display = 'none';
+        document.getElementById('thumbnail_diff_'+langId).style.display = '';
 	}	
 }
 
@@ -194,11 +204,31 @@ var updateEndDate = function(obj)
     			<td colspan="3"><input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:30%;" value="{DIV_IMAGE}" />&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}', 'image')" /></td>
     		</tr>
     		<tr class="row2">
+    			<td style="vertical-align:top;">{TXT_DIV_THUMBNAIL}</td>
+    			<td colspan="3">
+                    <input type="radio" name="frmEditEntry_Thumbnail_Method_{DIV_LANGUAGE_ID}" id="frmEditEntry_Thumbnail_Method_Original_{DIV_LANGUAGE_ID}" value="original" onchange="showSelectedThumbnailMethod(this.value,{DIV_LANGUAGE_ID})" {THUMBNAIL_METHOD_ORI_CHECKED} /> <label for="frmEditEntry_Thumbnail_Method_Original_{DIV_LANGUAGE_ID}">{TXT_DATA_THUMBNAIL_ORI_DESC}</label><br />
+                    <input type="radio" name="frmEditEntry_Thumbnail_Method_{DIV_LANGUAGE_ID}" id="frmEditEntry_Thumbnail_Method_Different_{DIV_LANGUAGE_ID}" value="different" onchange="showSelectedThumbnailMethod(this.value,{DIV_LANGUAGE_ID})"  {THUMBNAIL_METHOD_DIFF_CHECKED} /> <label for="frmEditEntry_Thumbnail_Method_Different_{DIV_LANGUAGE_ID}">{TXT_DATA_THUMBNAIL_DIFF_DESC}</label><br />
+                    <div id="thumbnail_ori_{DIV_LANGUAGE_ID}" style="margin-top:15px; display:{DIV_THUMBNAIL_ORI_DISPLAY};">
+                        {TXT_DATA_THUMBNAIL_SIZE}<br />
+                        {TXT_DATA_WIDTH} <input type="text" name="frmEditEntry_Thumbnail_Width_{DIV_LANGUAGE_ID}" value="{THUMBNAIL_ORI_WIDTH}" /> {TXT_DATA_HEIGHT} <input type="text" name="frmEditEntry_Thumbnail_Height_{DIV_LANGUAGE_ID}" value="{THUMBNAIL_ORI_HEIGHT}" />
+                    </div>
+                    <div id="thumbnail_diff_{DIV_LANGUAGE_ID}" style="margin-top:15px; display:{DIV_THUMBNAIL_DIFF_DISPLAY};">
+                        <input type="text" name="frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}" id="frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}" style="width:30%;" value="{DIV_THUMBNAIL}" />&nbsp;<input type="button" value="{TXT_DIV_THUMBNAIL_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}', 'image')" /><br /><br />
+                    </div>
+                </td>
+    		</tr>
+    		<tr class="row1">
     		  <td>{TXT_DIV_ATTACHMENT}</td>
     		  <td colspan="3">
     		      <input type="text" name="frmEditEntry_Attachment_{DIV_LANGUAGE_ID}" id="frmEditEntry_Attachment_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_ATTACHMENT}" />&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Attachment_{DIV_LANGUAGE_ID}', 'image')" /></td>
     		  </td>
     		</tr>
+    		<tr class="row2">
+                <td>{TXT_DIV_ATTACHMENT_DESC}</td>
+                <td colspan="3">
+                    <input type="text" name="frmEditEntry_Attachment_Desc_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_ATTACHMENT_DESC}" />
+                </td>
+            </tr>
     		<tr class="row1">
                 <td>{TXT_DIV_CATEGORIES}</td>
                 <td colspan="3">
