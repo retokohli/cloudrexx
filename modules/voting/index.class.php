@@ -161,14 +161,13 @@ function votingShowCurrent($page_content){
 
 		while (!$objResult->EOF) {
 			if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
-				$votingResultText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
-			    $votingResultText .= stripslashes($objResult->fields['question'])."<br />";
+				$votingOptionText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
+			    $votingOptionText .= stripslashes($objResult->fields['question'])."<br />";
 			}
 			$objResult->MoveNext();
 		}
 
-		$votingResultText .= "<br />";
-		$votingResultText .= _vote_result_html($votingId);
+		$votingResultText = _vote_result_html($votingId);
 
 		if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
 			$votingVotes		= '';
@@ -218,6 +217,7 @@ function votingShowCurrent($page_content){
 			'VOTING_MSG'					=> $msg,
 			'VOTING_TITLE'					=> $votingTitle,
 		    'VOTING_DATE'					=> showFormattedDate($votingDate),
+			'VOTING_OPTIONS_TEXT'			=> $votingOptionText,
 			'VOTING_RESULTS_TEXT'			=> $votingResultText,
 			'VOTING_RESULTS_TOTAL_VOTES'	=> $votingVotes,
 			'VOTING_OLDER_TITLE'			=> $_ARRAYLANG['TXT_VOTING_OLDER'],
