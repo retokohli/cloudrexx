@@ -63,6 +63,7 @@ class newsHeadlines {
 									                   title,
 									                   date,
 									                   teaser_image_path,
+                                                       teaser_image_thumbnail_path,
 									                   teaser_text,
 									                   redirect
 									              FROM ".DBPREFIX."module_news
@@ -89,10 +90,20 @@ class newsHeadlines {
                 $news_link = (empty($objResult->fields['redirect']))
                     ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>'
                     : '<a class="headlineLink" href="'.$objResult->fields['redirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>';
-
+                if (!empty($objResult->fields['teaser_image_path'])) {
+                    if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
+                        $image = $objResult->fields['teaser_image_thumbnail_path'];
+                    } elseif (file_exists(ASCMS_PATH.$objResult->fields['teaser_image_path'].".thumb")) {
+                        $image = $objResult->fields['teaser_image_path'].".thumb";
+                    } else {
+                        $image = $objResult->fields['teaser_image_path'];
+                    }
+                } else {
+                    $image = "";
+                }
 			    $this->_objTemplate->setVariable("HEADLINE_DATE", date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']));
 				$this->_objTemplate->setVariable("HEADLINE_LINK", $news_link);
-				$this->_objTemplate->setVariable("HEADLINE_IMAGE_PATH", $objResult->fields['teaser_image_path']);
+				$this->_objTemplate->setVariable("HEADLINE_IMAGE_PATH", $image);
 				$this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br($objResult->fields['teaser_text']));
 				$this->_objTemplate->setVariable("HEADLINE_ID", intval($objResult->fields['id']));
 				$this->_objTemplate->parseCurrentBlock();
