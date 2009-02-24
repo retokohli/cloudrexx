@@ -114,7 +114,7 @@ class ProductAttribute
             $this->arrValue = ProductAttributes::getValueArrayByNameId($id);
         if ($productId)
             $this->arrRelation = ProductAttributes::getRelationArray($productId);
-echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)."<br />");
+//echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)."<br />");
     }
 
 
@@ -466,7 +466,7 @@ echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)
      */
     function storeValues()
     {
-echo("storeValues(): this->arrvalue: ".var_export($this->arrValue, true)."<br />");
+//echo("storeValues(): this->arrvalue: ".var_export($this->arrValue, true)."<br />");
     	// Mind: value entries in the array may be new and have to
         // be inserted, even though the object itself has got a valid ID!
         foreach ($this->arrValue as $arrValue) {
@@ -489,7 +489,7 @@ echo("storeValues(): this->arrvalue: ".var_export($this->arrValue, true)."<br />
             // If the value was just added to the array, the array index
             // is just that -- an array index, and its $arrValue['id'] is empty.
             $value_id = (empty($arrValue['id']) ? 0 : $arrValue['id']);
-echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true)."<br />");
+//echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true)."<br />");
             if ($value_id && $this->recordExistsValue($value_id)) {
                 if (!$this->updateValue($arrValue)) return false;
             } else {
@@ -513,7 +513,7 @@ echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true
     {
         global $objDatabase;
 
-echo("updateValue():  Got value: ".var_export($arrValue, true)."<br />");
+//echo("updateValue():  Got value: ".var_export($arrValue, true)."<br />");
         // mind: value entries in the array may be *new* and have to
         // be inserted, even though the object itself has got a valid ID!
         $query = "
@@ -628,21 +628,25 @@ echo("updateValue():  Got value: ".var_export($arrValue, true)."<br />");
     {
         global $objDatabase;
 
-        $arrSqlValue = Text::getSqlSnippets(
-            'text_value_id', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
-        );
+//        $arrSqlValue = Text::getSqlSnippets(
+//            'text_value_id', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
+//        );
+//        $query = "
+//            SELECT ".$arrSqlValue['field']."
+//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value".
+//                   $arrSqlValue['join']."
+//             WHERE id=$id
+//        ";
         $query = "
-            SELECT ".$arrSqlValue['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value".
-                   $arrSqlValue['join']."
+            SELECT `value`
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
              WHERE id=$id
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        if ($objResult->RecordCount() == 1)
-            return $objResult->fields[$arrSqlValue['text']];
-        return '';
+        if (!$objResult || $objResult->EOF) return false;
+//        return $objResult->fields[$arrSqlValue['text']];
+        return $objResult->fields['value'];
     }
 
 

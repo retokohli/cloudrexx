@@ -11,17 +11,13 @@
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
- * @todo        From time to time, do
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value");
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name");
  */
 
 /**
  * Debug level
  * @ignore
  */
-define('_SHOP_DEBUG', 3);
+define('_SHOP_DEBUG', 0);
 
 /**
  * @ignore
@@ -932,16 +928,10 @@ class shopmanager extends ShopLibrary
                     }
                     $fileContent .= '"'.join('";"', $arrReplaced)."\"\n";
                 }
-// TODO:
-// Fix output for UTF8
-// This is a workaround to be used until the utf8 functions
-// become available or MIME supports "original encoding".
+// TODO
+// Test the output for UTF8
                 if (strtoupper(CONTREXX_CHARSET) == 'UTF-8') {
-                    $fileContent = html_entity_decode(
-                        htmlentities($fileContent, ENT_QUOTES, CONTREXX_CHARSET),
-                        ENT_QUOTES,
-                        'iso-8859-1'
-                    );
+                    $fileContent = utf8_decode($fileContent);
                 }
                 // set content to filename and -type for download
                 header("Content-Disposition: inline; filename=$content_location");
@@ -1293,7 +1283,7 @@ class shopmanager extends ShopLibrary
             // associated with it
             if ($productId)
                 $arrRelation = ProductAttributes::getRelationArray($productId);
-echo("arrRelation: ".var_export($arrRelation, true)."<br />");
+//echo("arrRelation: ".var_export($arrRelation, true)."<br />");
             // All values available for this Product Attribute
             $arrAttributeValues = ProductAttributes::getValueArrayByNameId($name_id);
 //echo("PA values: ".var_export($arrAttributeValues, true)."<br />");
@@ -1301,7 +1291,7 @@ echo("arrRelation: ".var_export($arrRelation, true)."<br />");
             $nameSelected = false;
             $order = 0;
             foreach ($arrAttributeValues as $value_id => $arrAttributeValue) {
-echo("value ID: $value_id, arrValue: ".var_export($arrAttributeValue, true)."<br />");
+//echo("value ID: $value_id, arrValue: ".var_export($arrAttributeValue, true)."<br />");
                 if (in_array($value_id, array_keys($arrRelation))) {
                     $valueSelected = true;
                     $nameSelected  = true;
@@ -1458,12 +1448,12 @@ echo("value ID: $value_id, arrValue: ".var_export($arrAttributeValue, true)."<br
         foreach ($arrAttributeList as $name_id => $arrValueIds) {
             $flagChanged = false;
             $objAttribute = ProductAttribute::getByNameId($name_id);
-// TODO:  Add error message
-            if (!$objAttribute) continue;
+            if (!$objAttribute)
+                return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
 
             $name = $arrAttributeName[$name_id];
             $type = $arrAttributeType[$name_id];
-echo("_updateAttributeOptions(): updating name id $name_id, name $name<br />");
+//echo("_updateAttributeOptions(): updating name id $name_id, name $name<br />");
             if (   $name != $objAttribute->getName()
                 || $type != $objAttribute->getType()) {
                 $objAttribute->setName($name);
@@ -1471,7 +1461,7 @@ echo("_updateAttributeOptions(): updating name id $name_id, name $name<br />");
                 $flagChanged = true;
             }
 
-echo("_updateAttributeOptions(): List ".var_export($arrAttributeList, true)."<br />");
+//echo("_updateAttributeOptions(): List ".var_export($arrAttributeList, true)."<br />");
 //continue;
 
             $arrValueObj = $objAttribute->getValueArray();
@@ -1488,18 +1478,18 @@ echo("_updateAttributeOptions(): List ".var_export($arrAttributeList, true)."<br
                         || $arrAttributePrice[$value_id] != $arrValueObj[$value_id]['price']) {
                         $objAttribute->changeValue($value_id, $arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
                         $flagChanged = true;
-echo("changed: ".var_export($objAttribute, true)."<br />");
+//echo("changed: ".var_export($objAttribute, true)."<br />");
                     }
                 } else {
                     $objAttribute->addValue($arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
-echo("added: ".var_export($objAttribute, true)."<br />");
+//echo("added: ".var_export($objAttribute, true)."<br />");
                 }
             }
 
             // Delete values that are no longer present in the post
             foreach (array_keys($arrValueObj) as $value_id) {
                 if (!in_array($value_id, $arrAttributeList[$name_id])) {
-echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_id], true)."<br />");
+//echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_id], true)."<br />");
                 	$objAttribute->deleteValueById($value_id);
                 }
             }
@@ -1613,7 +1603,6 @@ echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_i
      * @param   string  $name           Name of the menus
      * @param   string  $pricePrefix    Price prefix of the option value
      * @return  string                  Contains the price prefix menu of the given attribute option
-     * @todo    Argument $attributeId is never used un this method.  Remove.
     function _getAttributePricePrefixMenu($attributeId, $name, $arrValues)
     {
         $select = true;
@@ -2058,7 +2047,7 @@ echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_i
                     'TXT_SHIPPING_ADDRESS' => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
                     'TXT_ORDER_DETAILS' => $_ARRAYLANG['TXT_ORDER_DETAILS'],
                     'TXT_ORDER_SUM' => $_ARRAYLANG['TXT_ORDER_SUM'],
-                    'TXT_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
+                    'TXT_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'],
                     'TXT_USERNAME' => $_ARRAYLANG['TXT_USERNAME'],
                     'TXT_PASSWORD' => $_ARRAYLANG['TXT_PASSWORD'],
                     'TXT_OTHER' => $_ARRAYLANG['TXT_OTHER'],
@@ -2074,14 +2063,14 @@ echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_i
                     'TXT_MESSAGE' => $_ARRAYLANG['TXT_MESSAGE'],
                     'TXT_STORE_AS_NEW_TEMPLATE' => $_ARRAYLANG['TXT_STORE_AS_NEW_TEMPLATE'],
                     'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
-                    'TXT_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_RECIPIENT_ADDRESS'],
+                    'TXT_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'],
                     'TXT_SEPARATED_WITH_COMMAS' => $_ARRAYLANG['TXT_SEPARATED_WITH_COMMAS'],
                     'TXT_SEND' => $_ARRAYLANG['TXT_SEND'],
                     'TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE' => $_ARRAYLANG['TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE'],
                     'TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE' => $_ARRAYLANG['TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE'],
                     'TXT_CONFIRM_DELETE_TEMPLATE' => $_ARRAYLANG['TXT_CONFIRM_DELETE_TEMPLATE'],
                     'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-                    'TXT_PLEASE_SET_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_PLEASE_SET_RECIPIENT_ADDRESS'],
+                    'TXT_PLEASE_SET_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'],
                     'TXT_SET_MAIL_FROM_ADDRESS' => $_ARRAYLANG['TXT_SET_MAIL_FROM_ADDRESS'],
                     'TXT_ADDRESS_CUSTOMER' => $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'],
                     'TXT_SHOP_COMPANY' => $_ARRAYLANG['TXT_SHOP_COMPANY'],
@@ -2132,6 +2121,9 @@ echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_i
                         self::addError($_ARRAYLANG['TXT_PLEASE_SET_RECIPIENT_ADDRESS']);
                     }
                 }
+
+//////////// TODO FROM HERE
+
                 // Generate title row of the template list
                 $arrAvailable = array();
                 foreach ($arrLanguage as $lang_id => $langValues) {
@@ -3215,7 +3207,7 @@ echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_i
                     && is_array($_POST['productOptionsValues'])) {
                     foreach ($_POST['productOptionsValues'] as $valueId => $nameId) {
                         $order = intval($_POST['productOptionsSortId'][$nameId]);
-echo("Adding option value ID $valueId with order $order<br />");
+//echo("Adding option value ID $valueId with order $order<br />");
                         $objProduct->addAttribute(intval($valueId), $order);
                     }
                 }
