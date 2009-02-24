@@ -319,6 +319,102 @@ CREATE TABLE `contrexx_module_alias_target` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `url` (`url`)
 ) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_auction` (
+  `id` int(9) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `email` varchar(100) NOT NULL default '',
+  `type` set('search','offer') NOT NULL default '',
+  `title` varchar(255) NOT NULL default '',
+  `description` mediumtext NOT NULL,
+  `premium` int(1) NOT NULL default '0',
+  `picture_1` varchar(255) NOT NULL,
+  `picture_2` varchar(255) NOT NULL,
+  `picture_3` varchar(255) NOT NULL,
+  `picture_4` varchar(255) NOT NULL,
+  `picture_5` varchar(255) NOT NULL,
+  `catid` int(4) NOT NULL default '0',
+  `startprice` decimal(11,2) NOT NULL,
+  `incr_step` decimal(11,2) NOT NULL,
+  `price` varchar(10) NOT NULL default '',
+  `regdate` varchar(20) NOT NULL default '',
+  `enddate` varchar(20) NOT NULL default '',
+  `userid` int(4) NOT NULL default '0',
+  `userdetails` int(1) NOT NULL default '0',
+  `status` int(1) NOT NULL default '0',
+  `regkey` varchar(50) NOT NULL default '',
+  `paypal` int(1) NOT NULL default '0',
+  `spez_field_1` varchar(255) NOT NULL,
+  `spez_field_2` varchar(255) NOT NULL,
+  `spez_field_3` varchar(255) NOT NULL,
+  `spez_field_4` varchar(255) NOT NULL,
+  `spez_field_5` varchar(255) NOT NULL,
+  `shipping` text NOT NULL,
+  `payment` text NOT NULL,
+  PRIMARY KEY  (`id`),
+  FULLTEXT KEY `description` (`description`),
+  FULLTEXT KEY `title` (`description`,`title`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_auction_access` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `access_id` int(11) unsigned NOT NULL default '0',
+  `type` enum('global','frontend','backend') NOT NULL default 'global',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_auction_bids` (
+  `bid_id` int(11) NOT NULL auto_increment,
+  `bid_auction` int(11) NOT NULL,
+  `bid_user` int(11) NOT NULL,
+  `bid_price` decimal(11,2) NOT NULL,
+  `bid_time` varchar(255) NOT NULL,
+  `bid_ip` varchar(255) NOT NULL,
+  PRIMARY KEY  (`bid_id`),
+  KEY `bid_auction` (`bid_auction`),
+  KEY `bid_user` (`bid_user`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_auction_categories` (
+  `id` int(6) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `displayorder` int(4) NOT NULL default '0',
+  `status` int(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_auction_mail` (
+  `id` int(4) unsigned NOT NULL auto_increment,
+  `title` varchar(255) NOT NULL default '',
+  `content` longtext NOT NULL,
+  `mailto` varchar(10) NOT NULL,
+  `mailcc` mediumtext NOT NULL,
+  `active` int(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_auction_paypal` (
+  `id` int(4) NOT NULL auto_increment,
+  `active` int(1) NOT NULL default '0',
+  `profile` varchar(255) NOT NULL default '',
+  `price` varchar(10) NOT NULL default '',
+  `price_premium` varchar(10) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_auction_settings` (
+  `id` int(6) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `value` varchar(255) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `type` int(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_auction_spez_fields` (
+  `id` int(5) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `value` varchar(100) NOT NULL,
+  `type` int(1) NOT NULL default '1',
+  `lang_id` int(2) NOT NULL,
+  `active` int(1) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_block_blocks` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `content` text NOT NULL,
@@ -1645,6 +1741,7 @@ CREATE TABLE `contrexx_module_market` (
   `type` set('search','offer') NOT NULL default '',
   `title` varchar(255) NOT NULL default '',
   `description` mediumtext NOT NULL,
+  `color` varchar(50) NOT NULL default '',
   `premium` int(1) NOT NULL default '0',
   `picture` varchar(255) NOT NULL default '',
   `catid` int(4) NOT NULL default '0',
