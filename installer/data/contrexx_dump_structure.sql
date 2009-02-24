@@ -1891,6 +1891,7 @@ CREATE TABLE `contrexx_module_news` (
   `teaser_text` text NOT NULL,
   `teaser_show_link` tinyint(1) unsigned NOT NULL default '1',
   `teaser_image_path` text NOT NULL,
+  `teaser_image_thumbnail_path` text NOT NULL,
   `changelog` int(14) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `ID` (`id`),
