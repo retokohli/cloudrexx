@@ -628,7 +628,7 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_0'] = "Keine";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_1'] = "Markierte";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_2'] = "Sonderangebote";
 $_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE'] = "Produkt auf der Shop Startseite anzeigen";
-$_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP'] = "Markierte Produkte werden auf der Startseite angezeigt, sofern in den allgemeinen Einstellungen unter \\\"Produkte auf der Shop Startseite anzeigen\\\" die Option \\\"Markierte\\\" ausgewählt ist.";
+$_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP'] = "Markierte Produkte werden auf der Startseite angezeigt, sofern in den allgemeinen Einstellungen unter \"Produkte auf der Shop Startseite anzeigen\" die Option \"Markierte\" ausgewählt ist.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_3'] = "Neuste fünf";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_0'] = "pendent";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_1'] = "bestätigt";
@@ -672,4 +672,7 @@ $_ARRAYLANG['TXT_SHOP_PRICES_VAT_INCLUDED'] = "Preise inklusive MwSt.";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_1'] = "Popup Fenster";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_2'] = "Neues Fenster";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "Bitte wählen";
+$_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "E-Mail Adresse";
+$_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "Empfänger E-Mail Adresse";
+$_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Bitte geben Sie eine E-Mail Adresse für den Empfänger an";
 ?>

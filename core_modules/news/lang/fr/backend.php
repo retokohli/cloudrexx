@@ -204,4 +204,5 @@ $_ARRAYLANG['TXT_NEWS_PROTECTION'] = "Droits d'accès";
 $_ARRAYLANG['TXT_NEWS_ACTIVE'] = "Actif";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = "Si un utilisateur protège un article, il ne peut alors y autoriser l'accès qu'aux membres de son groupe.";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "L'accès à cet article est restreint à aux utilisateurs sélectionnés.";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Vignette";
 ?>

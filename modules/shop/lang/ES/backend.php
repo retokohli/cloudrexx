@@ -673,4 +673,7 @@ $_ARRAYLANG['TXT_SHOP_PRICES_VAT_INCLUDED'] = "Preise inklusive MwSt.";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_1'] = "Popup Fenster";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_2'] = "Neues Fenster";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "Bitte wählen";
+$_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "E-Mail Adresse";
+$_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "Empfänger E-Mail Adresse";
+$_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Bitte geben Sie eine E-Mail Adresse für den Empfänger an";
 ?>

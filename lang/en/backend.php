@@ -1004,4 +1004,6 @@ $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text missing*";
 $_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Manage job offers on your website";
 $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Job offers";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Job offers";
+$_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auctions";
+$_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
 ?>

@@ -204,4 +204,5 @@ $_ARRAYLANG['TXT_NEWS_PROTECTION'] = "Access protection";
 $_ARRAYLANG['TXT_NEWS_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = "If a user protects a news message he is then only allowed to allow the access to his group members.";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "Only selected users are allowed to read this news message.";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Thumbnail";
 ?>

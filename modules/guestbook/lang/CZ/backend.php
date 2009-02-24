@@ -31,7 +31,6 @@ $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Fehler beim löschen des Datensat
 $_ARRAYLANG['TXT_MANAGE_ENTRIES'] = "Einträge verwalten";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Datensatz wirklich löschen?";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
-$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Gästebucheinträge";
 $_ARRAYLANG['TXT_SHOW_DETAILS'] = "Zeige Details";
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_AUTO_ACTIVATE_NEW_ENTRIES'] = "Neue Einträge automatisch aktivieren";
@@ -47,5 +46,6 @@ $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'] = "Wollen Sie wirklich alle markierten Ei
 $_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'] = "Fehler beim löschen eines oder mehreren Datensätzen";
 $_ARRAYLANG['TXT_REPLACE_AT'] = "Die @ in Email Adressen ersetzen";
 $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_OVERVIEW'] = "Template Übersicht";
-$_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES'] = "Only show entries of the current language";
+$_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES'] = "Nur Einträge der aktuellen Sprache anzeigen";
+$_ARRAYLANG['TXT_FORENAME'] = "Vorname";
 ?>
