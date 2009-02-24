@@ -71,7 +71,7 @@ class adminMenu
                       FROM  ".DBPREFIX."backend_areas AS areas
                       INNER JOIN ".DBPREFIX."modules AS modules
                       ON modules.id=areas.module_id
-                     WHERE is_active=1
+                     WHERE is_active=1 AND (type = 'group' OR type = 'navigation')
                        ".$sqlWhereString."
                   ORDER BY areas.order_id ASC");
         if ($objResult !== false) {
