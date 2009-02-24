@@ -57,7 +57,7 @@ function loadTpl(tplId, langId, strTab)
 <!-- END statusBar -->
 <ul id="tabmenu">
   <li><a id="mailTab_shopMailOverview" class="{SHOP_MAILTAB_OVERVIEW_CLASS}" href="javascript:{}" onclick="selectTab('shopMailOverview')" title="{TXT_MAIL_TEMPLATES}">{TXT_MAIL_TEMPLATES}</a></li>
-  <li><a id="mailTab_shopMailEdit" class="{SHOP_MAILTAB_EDIT_CLASS}" href="javascript:{}" onclick="selectTab('shopMailEdit')" title="{TXT_EDIT}/{TXT_ADD}">{TXT_EDIT}/{TXT_ADD}</a></li>
+  <li><a id="mailTab_shopMailEdit" class="{SHOP_MAILTAB_EDIT_CLASS}" href="javascript:{}" onclick="selectTab('shopMailEdit')" title="{TXT_SHOP_ADD_EDIT}">{TXT_SHOP_ADD_EDIT}</a></li>
   <li><a id="mailTab_shopMailReplacements" href="javascript:{}" onclick="selectTab('shopMailReplacements')" title="{TXT_REPLACEMENT_DIRECTORY}">{TXT_REPLACEMENT_DIRECTORY}</a></li>
   <li><a id="mailTab_shopMailSend" class="{SHOP_MAILTAB_SEND_CLASS}" href="javascript:{}" onclick="selectTab('shopMailSend')" title="{TXT_SEND_TEMPLATE}">{TXT_SEND_TEMPLATE}</a></li>
 </ul>
@@ -370,7 +370,7 @@ function loadTpl(tplId, langId, strTab)
         </td>
       </tr>
       <tr class="row1">
-        <td>{TXT_RECEIPTOR_ADDRESS}</td>
+        <td>{TXT_SHOP_RECIPIENT_ADDRESS}</td>
         <td>
           <input type="text" id="shopMailTo" name="shopMailTo" size="50" value="{SHOP_MAIL_TO}" />&nbsp;( {TXT_SEPARATED_WITH_COMMAS} )
         </td>

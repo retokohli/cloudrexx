@@ -5,8 +5,6 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
- * @todo        Make static as much as possible
  */
 
 /**
@@ -212,7 +210,7 @@ class Shipment
     /**
      * Returns an array of shipper ids relevant for the country specified by
      * the argument $countryId.
-     * @internal Note that s.shipment_id below now associates with shipper.id (TODO)
+     * @internal Note that s.shipment_id below now associates with shipper.id
      * @param   integer $countryId      The optional country ID
      * @return  array                   Array of shipment IDs on success,
      *                                  false otherwise
@@ -320,7 +318,7 @@ class Shipment
 
         if (empty(self::$arrShippers)) self::init();
         if (empty(self::$arrShippers[$sid])) return false;
-        if (!Text::deleteById(self::$arrShippers[$sid]['text_name_id'])) return false;
+//        if (!Text::deleteById(self::$arrShippers[$sid]['text_name_id'])) return false;
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper WHERE id=".$sid);
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE shipper_id=".$sid);
@@ -359,19 +357,25 @@ class Shipment
      * @param   integer $zone       The zone the Shipper is in
      * @return  boolean             True on success, false otherwise
      * @static
-     * @todo    Add zone to database table and this class!
      */
-    function addShipper($name, $isActive) // , $zone)
+    function addShipper($name, $isActive)
     {
         global $objDatabase;
 
-        $objText = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_SHIPPER_NAME);
-        if (!$objText->store()) return false;
+//        $objText = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_SHIPPER_NAME);
+//        if (!$objText->store()) return false;
+//        $objResult = $objDatabase->Execute("
+//            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` (
+//                `text_name_id`, `status`
+//            ) VALUES (
+//                ".$objText->getId().", ".($isActive ? 1 : 0)."
+//            )
+//        ");
         $objResult = $objDatabase->Execute("
             INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` (
-                `text_name_id`, `status`
+                `name`, `status`
             ) VALUES (
-                ".$objText->getId().", ".($isActive ? 1 : 0)."
+                '".addslashes($name)."', ".($isActive ? 1 : 0)."
             )
         ");
         return ($objResult ? true : false);

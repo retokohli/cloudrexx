@@ -6,7 +6,7 @@
  * Interface for the payment mask yellowpay
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Däppen <thomas.daeppen@comvation.com>
+ * @author      Thomas DÃ¤ppen <thomas.daeppen@comvation.com>
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
@@ -21,7 +21,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
 /**
  * Yellowpay plugin for online payment
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Däppen <thomas.daeppen@comvation.com>
+ * @author      Thomas DÃ¤ppen <thomas.daeppen@comvation.com>
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
@@ -139,7 +139,7 @@ class Yellowpay
         'Visa',
         'Amex',
         'Diners',
-        'yellowbill',
+//        'yellowbill',
     );
 
 
@@ -158,13 +158,14 @@ class Yellowpay
         'Visa' => array(),
         'Amex' => array(),
         'Diners' => array(),
-        'yellowbill' => array(
-            'txtESR_Member',
-            'txtBLastName',
-            'txtBAddr1',
-            'txtBZipCode',
-            'txtBCity',
-        ),
+// Not supported by the shop yet (missing some mandatory fields).
+//        'yellowbill' => array(
+//            'txtESR_Member',
+//            'txtBLastName',
+//            'txtBAddr1',
+//            'txtBZipCode',
+//            'txtBCity',
+//        ),
     );
 
 
@@ -186,10 +187,10 @@ class Yellowpay
             foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
                 // Remove payment methods not mentioned
                 if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
-                    unset ($this->arrAcceptedPaymentMethod[$strPaymentMethod]);
+                    unset($this->arrAcceptedPaymentMethod[$strPaymentMethod]);
                 }
             }
-        } else {
+//        } else {
         }
         if (in_array($strAuthorization, Yellowpay::$arrKnownAuthorization)) {
             $this->strAuthorization = $strAuthorization;
@@ -434,12 +435,14 @@ class Yellowpay
                     $this->arrWarning[] = "$key was set to '".Yellowpay::$arrKnownAuthorization['1']."'.";
                 }
                 break;
+// Note:  Mandatory for the yellowbill payment method
             case 'txtESR_Member':
                 if (!ereg('^[0-9]{1,2}-[0-9]{1,6}-[0-9]$', $this->arrShopOrder[$key])) {
                     $this->arrError[] = "$key isn't valid.";
                     return false;
                 }
                 break;
+// Note:  Mandatory for the yellowbill payment method
             case 'txtESR_Ref':
                 if (!strlen($this->arrShopOrder[$key]) == 16 or !strlen($this->arrShopOrder[$key]) == 27) {
                     $this->arrWarning[] = "$key isn't valid.";

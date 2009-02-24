@@ -1738,29 +1738,25 @@ class Shop extends ShopLibrary
      */
     function _calculatePrice($cart)
     {
-        global $objDatabase;
+//        global $objDatabase;
 
         $price = 0;
-        if (is_array($cart['products']) && count($cart['products']) > 0) {
+        if (!empty($cart['products'])) {
             foreach ($cart['products'] as $arrProduct) {
-                $objResult = $objDatabase->SelectLimit("SELECT normalprice,
-                                   resellerprice,
-                                   discountprice,
-                                   is_special_offer
-                              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                             WHERE id=".$arrProduct['id'], 1);
-                if ($objResult !== false && $objResult->RecordCount() == 1) {
-                    $optionPrice = (!empty($arrProduct['optionPrice'])
-                        ? $arrProduct['optionPrice'] : 0
-                    );
-                    $item_price =
-                        $this->_getProductPrice(
-                            $arrProduct['id'],
-                            $optionPrice,
-                            $arrProduct['quantity']
-                        );
-                    $price += $item_price * $arrProduct['quantity'];
-                }
+                $optionPrice = 0;
+            	foreach ($arrProduct['options'] as $arrValueIds) {
+            		foreach ($arrValueIds as $value_id) {
+            	       $productAttributeValuePrice = ProductAttribute::getValuePriceById($value_id);
+	                   $optionPrice += $productAttributeValuePrice;
+            		}
+            	}
+				$item_price =
+				    $this->_getProductPrice(
+				        $arrProduct['id'],
+				        $optionPrice,
+				        $arrProduct['quantity']
+				    );
+				$price += $item_price * $arrProduct['quantity'];
             }
         }
         return Currency::formatPrice($price);
@@ -1826,7 +1822,9 @@ class Shop extends ShopLibrary
             $rateCount = Discount::getDiscountRateCount($groupCountId, $count);
             $price -= ($price * $rateCount * 0.01);
         }
-        return Currency::getCurrencyPrice($price);
+        $price = Currency::getCurrencyPrice($price);
+//echo("_getProductPrice(): Made /$price/<br />");
+        return $price;
     }
 
 
@@ -2267,8 +2265,11 @@ sendReq('', 1);
         // check countries
         $_SESSION['shop']['countryId2'] =
             (isset($_POST['countryId2'])
-                ? intval($_POST['countryId2'])
-                : $this->arrConfig['country_id']['value']
+              ? intval($_POST['countryId2'])
+              : (empty($_SESSION['shop']['countryId2'])
+                  ? $this->arrConfig['country_id']['value']
+                  : $_SESSION['shop']['countryId2']
+                )
             );
     }
 
@@ -2585,17 +2586,13 @@ sendReq('', 1);
                     }
                 }
                 if ($productOptionsPrice != 0) {
-                    $_SESSION['shop']['cart']['products'][$cartProdId]['optionPrice'] = Currency::getCurrencyPrice($productOptionsPrice);
-                    $priceOptions = Currency::getCurrencyPrice($productOptionsPrice);
-                } else {
-                    $priceOptions = 0;
+                	$_SESSION['shop']['cart']['products'][$cartProdId]['optionPrice'] =
+                        $productOptionsPrice;
                 }
-// TODO: Needed?
-//                if ($productOptions) $productOptions .= ']';
                 $quantity = $_SESSION['shop']['cart']['products'][$cartProdId]['quantity'];
                 $itemprice = $this->_getProductPrice(
                     $arrProduct['id'],
-                    $priceOptions,
+                    $productOptionsPrice,
                     $quantity
                 );
                 $price      = $itemprice * $quantity;
@@ -2630,10 +2627,10 @@ sendReq('', 1);
                         ),
                     'options'        => $productOptions,
                     'price'          => Currency::formatPrice($price),
-                    'price_unit'     => Currency::getActiveCurrencyCode(),
+//                    'price_unit'     => Currency::getActiveCurrencyCode(),
                     'quantity'       => $quantity,
                     'itemprice'      => Currency::formatPrice($itemprice),
-                    'itemprice_unit' => Currency::getActiveCurrencyCode(),
+//                    'itemprice_unit' => Currency::getActiveCurrencyCode(),
                     'percent'        => $vat_rate,
                     'vat_amount'     => Currency::formatPrice($vat_amount),
                     'itemweight'     => $itemweight, // in grams!
@@ -2698,10 +2695,10 @@ sendReq('', 1);
                     'SHOP_PRODUCT_TITLE'          => str_replace('"', '&quot;', $arrProduct['title']).'<br />',
                     'SHOP_PRODUCT_OPTIONS'        => $arrProduct['options'],
                     'SHOP_PRODUCT_PRICE'          => $arrProduct['price'],  // items * qty
-                    'SHOP_PRODUCT_PRICE_UNIT'     => $arrProduct['price_unit'],
+                    'SHOP_PRODUCT_PRICE_UNIT'     => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_QUANTITY'       => $arrProduct['quantity'],
                     'SHOP_PRODUCT_ITEMPRICE'      => $arrProduct['itemprice'],
-                    'SHOP_PRODUCT_ITEMPRICE_UNIT' => $arrProduct['itemprice_unit'],
+                    'SHOP_PRODUCT_ITEMPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                 ));
                 if ($this->arrConfig['shop_weight_enable']['value']) {
                     $this->objTemplate->setVariable(array(
@@ -2719,7 +2716,7 @@ sendReq('', 1);
                             ),
                         'SHOP_PRODUCT_TAX_AMOUNT'     =>
                             '('.$arrProduct['vat_amount'].'&nbsp;'.
-                            $arrProduct['itemprice_unit'].')',
+                            Currency::getActiveCurrencySymbol().')',
                     ));
                 }
                 $this->objTemplate->parse('shopCartRow');
@@ -3178,9 +3175,7 @@ sendReq('', 1);
         } else {
             $_SESSION['shop']['shipment_price'] = '0.00';
         }
-
         $_SESSION['shop']['items'] = $this->calculateItems($_SESSION['shop']['cart']);
-
         if (isset($_POST['paymentId']))
             $_SESSION['shop']['paymentId'] = intval($_POST['paymentId']);
 
@@ -3239,7 +3234,7 @@ die("YYY");
      *     obtained by calling {@see Shipment::getCountriesRelatedShippingIdArray()}
      *     with the country ID found in $_SESSION['shop']['countryId'].
      *   - Returns the shipment dropdown menu as returned by
-     *     {@see Shipment::getShipmentMenu()}.
+     *     {@see Shipment::getShipperMenu()}.
      * - If $_SESSION['shop']['shipment'] evaluates to false, does nothing, but simply
      *   returns an empty string.
      * @return  string  Shipment dropdown menu, or an empty string
@@ -3311,13 +3306,12 @@ die("YYY");
                 $_SESSION['shop']['paymentId'] = isset($_POST['paymentId']) ? intval($_POST['paymentId']) : $_SESSION['shop']['paymentId'];
             } else {
                 // get default payment Id
-                $_SESSION['shop']['paymentId'] = next($arrPaymentId);
+                $_SESSION['shop']['paymentId'] = current($arrPaymentId);
             }
             return Payment::getPaymentMenu(
                 $_SESSION['shop']['paymentId'],
                 "document.forms['shopForm'].submit()",
-                $_SESSION['shop']['countryId'],
-                Currency::getCurrencyArray()
+                $_SESSION['shop']['countryId']
             );
         }
         return '';
@@ -3841,8 +3835,7 @@ right after the customer logs in!
                 $productId       = $arrProduct['id'];
                 $productName     = $objResult->fields['title'];
                 $priceOptions = (!empty($arrProduct['optionPrice'])
-                    ? $arrProduct['optionPrice']
-                    : 0
+                    ? $arrProduct['optionPrice'] : 0
                 );
                 $productQuantity = $arrProduct['quantity'];
                 $productPrice    = $this->_getProductPrice(
@@ -3852,7 +3845,10 @@ right after the customer logs in!
                 );
 
                 $productVatId    = $objResult->fields['vat_id'];
-                $productVatRate  = ($productVatId && Vat::getRate($productVatId) ? Vat::getRate($productVatId) : '0.00');
+                $productVatRate  =
+                    ($productVatId && Vat::getRate($productVatId)
+                        ? Vat::getRate($productVatId) : '0.00'
+                    );
                 // Test the distribution method for delivery
                 $productDistribution = $objResult->fields['handler'];
                 if ($productDistribution == 'delivery') {
@@ -4009,11 +4005,9 @@ right after the customer logs in!
                      WHERE status=1 AND id=".$arrProduct['id']
                 );
                 if ($objResult) {
-                    if (isset($arrProduct['optionPrice'])) {
-                        $priceOptions = $arrProduct['optionPrice'];
-                    } else {
-                        $priceOptions = 0;
-                    }
+                    $priceOptions = (empty($arrProduct['optionPrice'])
+                        ? 0 : $arrProduct['optionPrice']
+                    );
                     // Note:  The ProductAttribute options' price is added
                     // to the price here!
                     $price = $this->_getProductPrice(

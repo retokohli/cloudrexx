@@ -421,7 +421,7 @@ class Currency
      */
     static function store()
     {
-        if (!is_array(self::$arrCurrency)) self::init();
+        if (empty(self::$arrCurrency)) self::init();
         $total_result = true;
         $result = self::deleteCurrency();
         if ($result !== '') $total_result &= $result;
@@ -440,7 +440,6 @@ class Currency
      * @return  boolean             The empty string if nothing was changed,
      *                              boolean true upon deleting the currency
      *                              successfully, or false otherwise
-     *
      */
     static function deleteCurrency()
     {
@@ -467,35 +466,45 @@ class Currency
      * @return  boolean             The empty string if nothing was added,
      *                              boolean true upon adding the currency
      *                              successfully, or false otherwise
-     *
      */
     function addCurrency()
     {
         global $objDatabase;
 
-        if (empty($_POST['currency_add'])) return '';
+        if (empty($_POST['currencyNameNew'])) return '';
 
         $_POST['currencyActiveNew']  =
-            (isset($_POST['currencyActiveNew'])  ? 1 : 0);
+            (empty($_POST['currencyActiveNew'])  ? 0 : 1);
         $_POST['currencyDefaultNew'] =
-            (isset($_POST['currencyDefaultNew']) ? 1 : 0);
+            (empty($_POST['currencyDefaultNew']) ? 0 : 1);
 
-        $objText = new Text(
-            $_POST['currencyNameNew'], FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
-        );
-        if (!$objText->store()) return false;
-
+//        $objText = new Text(
+//            $_POST['currencyNameNew'], FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
+//        );
+//        if (!$objText->store()) return false;
+//        $query = "
+//            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_currencies (
+//                code, symbol, text_name_id, rate, status, is_default
+//            ) VALUES (
+//                '".addslashes($_POST['currencyCodeNew'])."',
+//                '".addslashes($_POST['currencySymbolNew'])."',
+//                ".$objText->getId().",
+//                '".addslashes($_POST['currencyRateNew'])."',
+//                ".intval($_POST['currencyActiveNew']).",
+//                ".intval($_POST['currencyDefaultNew'])."
+//            )
+//        ";
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_currencies (
-                code, symbol, text_name_id, rate, status, is_default
+                code, symbol, name, rate, status, is_default
             ) VALUES (
                 '".addslashes($_POST['currencyCodeNew'])."',
                 '".addslashes($_POST['currencySymbolNew'])."',
-                ".$objText->getId().",
+                '".addslashes($_POST['currencyNameNew'])."',
                 '".addslashes($_POST['currencyRateNew'])."',
-                ".intval($_POST['currencyActiveNew']).",
-                ".intval($_POST['currencyDefaultNew'])."
+                ".$_POST['currencyActiveNew'].",
+                ".$_POST['currencyDefaultNew']."
             )
         ";
         $objResult = $objDatabase->Execute($query);
@@ -559,8 +568,6 @@ class Currency
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
         return true;
     }
-
-
 
 }
 

@@ -199,15 +199,6 @@ class shopmanager extends ShopLibrary
 
         // Settings object
         $this->objSettings = new Settings();
-        // added return value. If empty, no error occurred
-        $success = $this->objSettings->storeSettings();
-        if ($success) {
-            self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
-        } elseif ($success === false) {
-            self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
-        }
-        // $success may also be '', in which case no changed setting has
-        // been detected.
 
         // Exchange object
         // OBSOLETE: $this->objExchange = new Exchange();
@@ -928,8 +919,7 @@ class shopmanager extends ShopLibrary
                     }
                     $fileContent .= '"'.join('";"', $arrReplaced)."\"\n";
                 }
-// TODO
-// Test the output for UTF8
+// Test the output for UTF8!
                 if (strtoupper(CONTREXX_CHARSET) == 'UTF-8') {
                     $fileContent = utf8_decode($fileContent);
                 }
@@ -1058,8 +1048,8 @@ class shopmanager extends ShopLibrary
      *                          Note that everything except an illegal
      *                          argument (a non-array) is considered a
      *                          success!
-     * @todo    Implement a simple and elegant way to notify the user when
-     *          errors occur while creating the thumbnails
+     * @internal    NTH: Implement a simple and elegant way to notify the user
+     *              when errors occur while creating the thumbnails
      */
     function makeProductThumbnailsById($arrId)
     {
@@ -1184,7 +1174,6 @@ class shopmanager extends ShopLibrary
             'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
             'TXT_VALUE' => $_ARRAYLANG['TXT_VALUE'],
             'TXT_PRICE' => $_ARRAYLANG['TXT_PRICE'],
-            'TXT_PRICE_PREFIX' => $_ARRAYLANG['TXT_PRICE_PREFIX'],
             'TXT_ADD_NEW_VALUE' => $_ARRAYLANG['TXT_ADD_NEW_VALUE'],
             'TXT_EDIT_OPTION' => $_ARRAYLANG['TXT_EDIT_OPTION'],
             'TXT_DELETE_OPTION' => $_ARRAYLANG['TXT_DELETE_OPTION'],
@@ -1320,68 +1309,6 @@ class shopmanager extends ShopLibrary
             self::$objTemplate->parse('attributeList');
         }
     }
-
-
-    /**
-     * Obsolete.  See {@link ProductAttributes::getAttributeDisplayTypeMenu()}.
-    function _getAttributeDisplayTypeMenu($attributeId, $displayTypeId = '0')
-    {
-        global $_ARRAYLANG;
-
-        $menu = "<select name=\"attributeDisplayType[".$attributeId."]\" size=\"1\" style=\"width:170px;\">\n";
-        $menu .= "<option value=\"0\" ".($displayTypeId == '0' ? "selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_MENU_OPTION']."</option>\n";
-        $menu .= "<option value=\"3\" ".($displayTypeId == '3' ? "selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY']."</option>\n";
-        $menu .= "<option value=\"1\" ".($displayTypeId == '1' ? "selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_RADIOBUTTON_OPTION']."</option>\n";
-        $menu .= "<option value=\"2\" ".($displayTypeId == '2' ? "selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_CHECKBOXES_OPTION']."</option>\n";
-        $menu .= "</select>\n";
-
-        return $menu;
-    }
-     */
-
-
-    /**
-     * Initialize attributes
-     *
-     * Initialize the array $this->arrAttributes
-     * @access    private
-    function _initAttributes()
-    {
-        global $objDatabase;
-
-        // get attributes
-        $query =
-            "SELECT name.id AS nameId, ".
-                "name.name AS nameTxt, ".
-                "name.display_type AS displayType, ".
-                "value.id AS valueId, ".
-                "value.name_id AS valueNameId, ".
-                "value.value AS valueTxt, ".
-                "value.price AS price, ".
-                "value.price_prefix AS price_prefix ".
-            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name AS name, ".
-                    DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value AS value ".
-            "WHERE value.name_id = name.id ".
-            "ORDER BY nameTxt, valueId ASC";
-
-        if (($objResult = $objDatabase->Execute($query)) !== false) {
-            while (!$objResult->EOF) {
-                if (!isset($this->arrAttributes[$objResult->fields['nameId']]['name'])) {
-                    $this->arrAttributes[$objResult->fields['nameId']]['name'] = $objResult->fields['nameTxt'];
-                    $this->arrAttributes[$objResult->fields['nameId']]['displayType'] = $objResult->fields['displayType'];
-                }
-                $this->arrAttributes[$objResult->fields['nameId']]['values'][$objResult->fields['valueId']] = array(
-                    'id' => $objResult->fields['valueId'],
-                    'value' => $objResult->fields['valueTxt'],
-                    'price' => $objResult->fields['price'],
-                    'price_prefix' => $objResult->fields['price_prefix'],
-                    'selected' => false
-                );
-                $objResult->MoveNext();
-            }
-        }
-    }
-     */
 
 
     /**
@@ -1557,80 +1484,6 @@ class shopmanager extends ShopLibrary
 
 
     /**
-     * OBSOLETE
-     * See {@link ProductAttributes::getAttributeInputBoxes()}.
-     * Get attribute inputboxes
-     *
-     * Generate a list of the inputboxes with the values of an attribute option
-     * @access    private
-     * @param    integer    $name_id    Id of the attribute option
-     * @param    string    $name    Name of the inputboxes
-     * @param    string    $content    Attribute value type
-     * @param    integer    $maxlength    Maxlength of the inputboxes
-     * @param    string    $style    CSS-Style declaration for the inputboxes
-     * @return    string    $inputBoxes    List with the generated inputboxes
-    function _getAttributeInputBoxes($name_id, $name, $content, $maxlength='', $style='')
-    {
-        $inputBoxes = '';
-        $select = true;
-        foreach ($this->arrAttributes[$name_id]['values'] as $value_id => $arrValue) {
-            $inputBoxes .=
-                '<input type="text" name="'.$name.'['.$value_id.
-                ']" id="'.$name.'-'.$value_id.'" value="'.$arrValue[$content].
-                '"'.
-                ($maxlength ? ' maxlength="'.$maxlength.'"' : '').
-                ' style="display: '.($select ? 'inline' : 'none').';'.
-                ($style ? " $style" : '').
-                '" onchange="updateAttributeValueList('.$name_id.','.$value_id.')"'.
-                // For text and file upload options, disable the value field
-                (   $content == 'value'
-                 && $this->arrAttributes[$name_id]['displayType'] > 3
-                    ? ' disabled="disabled"' : '').
-                ' />';
-            $select = false;
-        }
-        return $inputBoxes;
-    }
-
-
-    /**
-     * OBSOLETE
-     * Get attribute price prefix menu
-     *
-     * Generates the attribute price prefix menus
-     * @access  private
-     * @param   integer $attributeId    Id of the attribute option
-     * @param   string  $name           Name of the menus
-     * @param   string  $pricePrefix    Price prefix of the option value
-     * @return  string                  Contains the price prefix menu of the given attribute option
-    function _getAttributePricePrefixMenu($attributeId, $name, $arrValues)
-    {
-        $select = true;
-        $menu = "";
-
-        foreach ($arrValues as $id => $arrValue) {
-            $menu .=
-                "<select style=\"width:50px;display:".
-                ($select == true ? 'inline' : 'none').
-                ";\" name=\"".$name."[$id]\" id=\"".$name."-$id\" size=\"1\"".
-                "onchange='updateAttributeValueList($attributeId)'>\n".
-                "<option value=\"+\" ".
-                ($arrValue['price_prefix'] != "-" ? "selected=\"selected\"" : "").
-                ">+</option>\n".
-                "<option value=\"-\" ".
-                ($arrValue['price_prefix'] == "-" ? "selected=\"selected\"" : "").
-                ">-</option>\n".
-                "</select>\n";
-            if ($select) {
-                $select = false;
-            }
-        }
-        return $menu;
-    }
-     */
-
-
-    /**
      * Generate a javascript variables list of the attributes
      *
      * OBSOLETE.  Use ProductAttribute::getAttributeJSVars() instead.
@@ -1650,59 +1503,6 @@ class shopmanager extends ShopLibrary
 
 
     /**
-     * Get attribute value menu
-     *
-     * Generate the attribute value list of each option
-     *
-     * @access  private
-     * @param   integer $attributeId    Id of the attribute option
-     * @param   string  $name           Name of the menu
-     * @param   array   $arrValues      Value ids of the attribute option
-     * @param   integer $selectedId     Id of the selected value
-     * @param   string  $onchange       Javascript onchange event of the menu
-     * @param   string  $style          CSS-declaration of the menu
-     * @return  string  $menu           Contains the value menus
-    function _getAttributeValueMenu(
-        $attributeId, $name, $arrValues, $selectedId, $onchange, $style
-    ) {
-        global $_ARRAYLANG;
-
-        $selected = false;
-        $select = false;
-
-        $menu =
-            '<select name="'.$name.'['.$attributeId.'][]" '.
-            'id="'.$name.'-'.$attributeId.
-            '" size="1" onchange="'.$onchange.'" style="'.$style."\">\n";
-        foreach ($arrValues as $id => $arrValue) {
-            if ($selected == false) {
-                if ($selectedId == "" || $selectedId == $id) {
-                    $select = true;
-                    $selected = true;
-                }
-            } else {
-                $select = false;
-            }
-            $menu .=
-                "<option value=\"$id\" ".
-                ($select == true ? "selected=\"selected\"" : "").">".
-                $arrValue['value'].
-                " (".$arrValue['price_prefix'].$arrValue['price'].
-                " $this->defaultCurrency)</option>\n";
-        }
-        $menu .=
-            "</select>".
-            "<br /><a href=\"javascript:{}\" ".
-            "id=\"attributeValueMenuLink-$attributeId\" ".
-            "style=\"display:none;\" ".
-            "onclick=\"removeSelectedValues($attributeId)\" ".
-            "title=\"".$_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE']."\">".
-            $_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE']."</a>";
-        return $menu;
-    }
-*/
-
-    /**
      * Set up the common elements for various settings pages
      *
      * Includes VAT, shipping, countries, zones and more
@@ -1711,6 +1511,18 @@ class shopmanager extends ShopLibrary
     function _showSettings()
     {
         global $objDatabase, $_ARRAYLANG;
+
+        // added return value. If empty, no error occurred
+        $success = $this->objSettings->storeSettings();
+        if ($success) {
+            self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+        } elseif ($success === false) {
+            self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
+        }
+        // $success may also be '', in which case no changed setting has
+        // been detected.
+        // Refresh the Settings, so changes are made visible right away
+        $this->objSettings = new Settings();
 
         $i = 0;
         self::$pageTitle= $_ARRAYLANG['TXT_SETTINGS'];
@@ -1962,15 +1774,16 @@ class shopmanager extends ShopLibrary
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_countries.html');
                 $selected = '';
                 $notSelected = '';
-                foreach ($this->arrCountries as $cId => $data) {
-                    if ($data['activation_status'] == 1) {
+                $arrCountries = Country::getArray();
+                foreach ($arrCountries as $cId => $data) {
+                    if ($data['status'] == 1) {
                         $selected .=
                             '<option value="'.$cId.'">'.
-                            $data['countries_name']."</option>\n";
+                            $data['name']."</option>\n";
                     } else {
                         $notSelected .=
                             '<option value="'.$cId.'">'.
-                            $data['countries_name']."</option>\n";
+                            $data['name']."</option>\n";
                     }
                 }
                 self::$objTemplate->setVariable(array(
@@ -1994,6 +1807,7 @@ class shopmanager extends ShopLibrary
                         ($selectFirst ? '' : ' selected="selected"').
                         '>'.$arrZone['name']."</option>\n";
                     $arrCountryInZone = Country::getArraysByZoneId($zone_id);
+//echo("Countries: ".var_export($arrCountryInZone, true)."<br />");
                     $strSelectedCountries = '';
                     foreach ($arrCountryInZone['in'] as $country_id => $arrCountry) {
                         $strSelectedCountries .=
@@ -2035,7 +1849,9 @@ class shopmanager extends ShopLibrary
                 self::$objTemplate->setVariable(array(
                     'TXT_MAIL_TEMPLATES' => $_ARRAYLANG['TXT_MAIL_TEMPLATES'],
                     'TXT_REPLACEMENT_DIRECTORY' => $_ARRAYLANG['TXT_REPLACEMENT_DIRECTORY'],
-                    'TXT_ADD' => $_ARRAYLANG['TXT_ADD'],
+                    'TXT_SHOP_ADD_EDIT' => $_ARRAYLANG['TXT_ADD'],
+//                    'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+//                    'TXT_ADD' => $_ARRAYLANG['TXT_ADD'],
                     'TXT_SEND_TEMPLATE' => $_ARRAYLANG['TXT_SEND_TEMPLATE'],
                     'TXT_TEMPLATE' => $_ARRAYLANG['TXT_TEMPLATE'],
                     'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
@@ -2063,14 +1879,14 @@ class shopmanager extends ShopLibrary
                     'TXT_MESSAGE' => $_ARRAYLANG['TXT_MESSAGE'],
                     'TXT_STORE_AS_NEW_TEMPLATE' => $_ARRAYLANG['TXT_STORE_AS_NEW_TEMPLATE'],
                     'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
-                    'TXT_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'],
+                    'TXT_SHOP_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'],
                     'TXT_SEPARATED_WITH_COMMAS' => $_ARRAYLANG['TXT_SEPARATED_WITH_COMMAS'],
                     'TXT_SEND' => $_ARRAYLANG['TXT_SEND'],
                     'TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE' => $_ARRAYLANG['TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE'],
                     'TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE' => $_ARRAYLANG['TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE'],
                     'TXT_CONFIRM_DELETE_TEMPLATE' => $_ARRAYLANG['TXT_CONFIRM_DELETE_TEMPLATE'],
                     'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-                    'TXT_PLEASE_SET_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'],
+                    'TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'],
                     'TXT_SET_MAIL_FROM_ADDRESS' => $_ARRAYLANG['TXT_SET_MAIL_FROM_ADDRESS'],
                     'TXT_ADDRESS_CUSTOMER' => $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'],
                     'TXT_SHOP_COMPANY' => $_ARRAYLANG['TXT_SHOP_COMPANY'],
@@ -2118,16 +1934,15 @@ class shopmanager extends ShopLibrary
                             }
                         }
                     } else {
-                        self::addError($_ARRAYLANG['TXT_PLEASE_SET_RECIPIENT_ADDRESS']);
+                        self::addError($_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS']);
                     }
                 }
-
-//////////// TODO FROM HERE
 
                 // Generate title row of the template list
                 $arrAvailable = array();
                 foreach ($arrLanguage as $lang_id => $langValues) {
-                    if ($langValues['frontend']) {
+//echo("Language ID $lang_id<br />");
+                	if ($langValues['frontend']) {
                         self::$objTemplate->setVariable(array('SHOP_MAIL_LANGUAGE' => $langValues['name'],));
                         self::$objTemplate->parse('shopMailLanguages');
                         // Get the availability of all templates
@@ -2137,12 +1952,12 @@ class shopmanager extends ShopLibrary
                             $arrAvailable[$template_id][$lang_id] =
                                 $arrTemplate['available'];
                         }
+//echo("Availability array: ".var_export($arrAvailable, true)."<br />");
                     }
                     if ($langValues['is_default'] == 'true')
                         $defaultLang = $langValues['id'];
                 }
-                // Generate template rows of the template list with the language status
-                // Generate each row
+                // Generate rows of the template list with the availability icon
                 foreach ($arrAvailable as $template_id => $arrLangStatus) {
                     self::$objTemplate->setVariable(
                         'SHOP_MAIL_CLASS', (++$i % 2 ? 'row1' : 'row2')
@@ -2206,10 +2021,11 @@ class shopmanager extends ShopLibrary
                                 $template_id = $_GET['tplId'];
                                 // set the source template to load
                                 if (!empty($_GET['portLangId'])) {
-                                    $langId = $_GET['portLangId'];
+                                    $lang_id = $_GET['portLangId'];
                                 } else {
-                                    $langId = $_GET['langId'];
+                                    $lang_id = $_GET['langId'];
                                 }
+//echo("Template ID $template_id, Language ID $lang_id<br />");
                                 // Generate language menu
                                 $langMenu =
                                     '<select name="langId" size="1" '.
@@ -2228,7 +2044,9 @@ class shopmanager extends ShopLibrary
                                     '&nbsp;<input type="checkbox" id="portMail" name="portMail" value="1" />&nbsp;'.
                                     $_ARRAYLANG['TXT_COPY_TO_NEW_LANGUAGE'];
                                 // Get the content of the template
-                                $arrTemplate = Mail::getTemplate(intval($template_id), $langId);
+//echo("Getting Template array for template ID $template_id, language ID $lang_id<br />");
+                                    $arrTemplate = Mail::getTemplate(intval($template_id), $lang_id);
+//echo("Template array: ".var_export($arrTemplates, true)."<br />");
                                 self::$objTemplate->setVariable(array(
                                     'SHOP_MAIL_ID' => (isset($_GET['portLangId']) ? '' : $template_id),
                                     'SHOP_MAIL_NAME' => $arrTemplate['sender'],
@@ -2237,15 +2055,15 @@ class shopmanager extends ShopLibrary
                                     'SHOP_MAIL_FROM' => $arrTemplate['from'],
                                     'SHOP_LOADD_TEMPLATE_ID' => $_GET['tplId'],
                                     'SHOP_LOADD_LANGUAGE_ID' => $_GET['langId'],
+                                    'TXT_SHOP_ADD_EDIT' => $_ARRAYLANG['TXT_EDIT'],
                                 ));
                                 self::$objTemplate->touchBlock('saveToOther');
                             } else {
                                 self::$objTemplate->hideBlock('saveToOther');
                                 // set the default sender
-                                self::$objTemplate->setVariable(
-                                    'SHOP_MAIL_FROM',
-                                        $this->arrConfig['email']['value']
-                                );
+                                self::$objTemplate->setVariable(array(
+                                    'SHOP_MAIL_FROM' => $this->arrConfig['email']['value'],
+                                ));
                             }
                             break;
                         case 'shopMailSend':
@@ -2265,8 +2083,8 @@ class shopmanager extends ShopLibrary
                             $langMenu .= '</select>';
                             // Get the content of the template
                             $tplId = (isset($_GET['tplId']) ? intval($_GET['tplId']) : '');
-                            $langId = (isset($_GET['langId']) ? intval($_GET['langId']) : '');
-                            $arrTemplate = Mail::getTemplate($tplId, $langId);
+                            $lang_id = (isset($_GET['langId']) ? intval($_GET['langId']) : '');
+                            $arrTemplate = Mail::getTemplate($tplId, $lang_id);
                             if ($arrTemplate) {
                                 self::$objTemplate->setVariable(array(
                                     'SHOP_MAIL_ID_SEND' => $arrTemplate['id'],
@@ -2400,10 +2218,10 @@ class shopmanager extends ShopLibrary
                     'SHOP_VAT_SELECTED_FOREIGN_RESELLER_INCLUDED' => ($included_foreign_reseller ? ' selected="selected"' : ''),
                     'SHOP_VAT_SELECTED_FOREIGN_RESELLER_EXCLUDED' => ($included_foreign_reseller ? '' : ' selected="selected"'),
                     'SHOP_VAT_DEFAULT_MENUOPTIONS' => Vat::getMenuoptions(
-                            $this->arrConfig['vat_default_id']['value']
+                            $this->arrConfig['vat_default_id']['value'], true
                         ),
                     'SHOP_VAT_OTHER_MENUOPTIONS' => Vat::getMenuoptions(
-                            $this->arrConfig['vat_other_id']['value']
+                            $this->arrConfig['vat_other_id']['value'], true
                         ),
                 ));
                 break;
@@ -3039,12 +2857,12 @@ class shopmanager extends ShopLibrary
         $shopArticleId = 0;
         $shopKeywords  = '';
 
-// TODO: Is $shopTempThumbnailName, and its session equivalent,
+// Is $shopTempThumbnailName, and its session equivalent,
 // still in use anywhere?
-        if (isset($_SESSION['shopPM']['TempThumbnailName'])) {
-            $shopTempThumbnailName = $_SESSION['shopPM']['TempThumbnailName'];
-            unset($_SESSION['shopPM']['TempThumbnailName']);
-        }
+//        if (isset($_SESSION['shopPM']['TempThumbnailName'])) {
+//            $shopTempThumbnailName = $_SESSION['shopPM']['TempThumbnailName'];
+//            unset($_SESSION['shopPM']['TempThumbnailName']);
+//        }
 
         $shopProductId = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         $objProduct = false;
@@ -3170,7 +2988,7 @@ class shopmanager extends ShopLibrary
                 $objProduct = Product::getById($shopProductId);
 
                 $objProduct->setCode($shopProductIdentifier);
-// TODO: Only change the parent ShopCategory for a Product
+// NOTE: Only change the parent ShopCategory for a Product
 // that is in a real ShopCategory.
                 $objProduct->setShopCategoryId($shopCatMenu);
                 $objProduct->setName($shopProductName);
@@ -3228,10 +3046,10 @@ class shopmanager extends ShopLibrary
                 $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
             }
 
-            if (   !empty($shopTempThumbnailName)
-                && file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$shopTempThumbnailName)) {
-                @unlink(ASCMS_SHOP_IMAGES_PATH.'/'.$shopTempThumbnailName);
-            }
+//            if (   !empty($shopTempThumbnailName)
+//                && file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$shopTempThumbnailName)) {
+//                @unlink(ASCMS_SHOP_IMAGES_PATH.'/'.$shopTempThumbnailName);
+//            }
 
             $objImage = new ImageManager();
             $arrImages = Products::getShopImagesFromBase64String($shopImageName);
@@ -4231,9 +4049,9 @@ class shopmanager extends ShopLibrary
                     'SHOP_ACCOUNT_VALIDITY' => FWUser::getValidityString($weight),
                 ));
 
-                // get a product menu for each product if $type == 1 (edit)
-                // preselects the current product id
-                // TODO: move this to Product.class.php once it's available
+                // Get a product menu for each Product if $type == 1 (edit).
+                // Preselects the current Product ID.
+                // Move this to Product.class.php!
                 if ($type == 1) {
                     $menu = '';
                     foreach ($arrProducts as $arrProduct) {
@@ -4866,9 +4684,9 @@ class shopmanager extends ShopLibrary
                         if (!$objResult || $objResult->RecordCount() == 0) {
                             return false;
                         }
-                        $langId = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
+                        $lang_id = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
                         // Select template for sending login data
-                        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(3, $langId);
+                        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(3, $lang_id);
                         $shopMailTo = $_POST['shopEmail'];
                         $shopMailFrom = $arrShopMailtemplate['mail_from'];
                         $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
@@ -5220,12 +5038,12 @@ class shopmanager extends ShopLibrary
 
 
     /**
-     * Get dropdown menue
+     * Returns HTML code for a dropdown menu of ShopCategories
      *
-     * Gets backe a dropdown menu like  <option value='catid'>Catname</option>
-     *
-     * @param    integer  $selectedid
-     * @return   string   $result
+     * Obsolete.  Use {@link ShopCategories::getShopCategoriesMenu()} or
+     * {@link ShopCategories::getShopCategoriesMenuoptions()} instead.
+     * @param    integer  $selectedid   The optional selected category ID
+     * @return   string                 The HTML code of the menu
      */
     function getCatMenu($selectedid=0)
     {
@@ -5242,9 +5060,8 @@ class shopmanager extends ShopLibrary
      * @param    integer  $level
      * @param    integer  $selectedid
      * @return   string   $result
-     * @todo    Optional argument $parcat *MUST NOT* be the first argument!
      */
-    function doShopCatMenu($parcat=0, $level, $selectedid)
+    function doShopCatMenu($parcat, $level, $selectedid)
     {
         global $objDatabase;
 
@@ -6257,7 +6074,7 @@ class shopmanager extends ShopLibrary
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists
              WHERE id=$pricelistID
         ");
-        $langId = $objResult->fields['lang_id'];
+        $lang_id = $objResult->fields['lang_id'];
         self::$objTemplate->setVariable(array(
             'SHOP_PRICELIST_DETAILS_ACT' => 'pricelist_update&amp;id='.$objResult->fields['id'],
             'SHOP_PRICELIST_PDFLINK' => '<a href="'.ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.
@@ -6327,7 +6144,7 @@ class shopmanager extends ShopLibrary
         $query = "SELECT id, name, is_default FROM ".DBPREFIX."languages WHERE backend=1";
         if (($objResult = $objDatabase->Execute($query)) !== false) {
             while (!$objResult->EOF) {
-                $langMenu .= "<option value=\"".$objResult->fields['id']."\"".($objResult->fields['id'] == $langId ? " selected=\"selected\"" : "").">".$objResult->fields['name']."</option>\n";
+                $langMenu .= "<option value=\"".$objResult->fields['id']."\"".($objResult->fields['id'] == $lang_id ? " selected=\"selected\"" : "").">".$objResult->fields['name']."</option>\n";
                 $objResult->MoveNext();
             }
         }
@@ -6496,8 +6313,8 @@ class shopmanager extends ShopLibrary
         $shopLastModified = $objResult->fields['last_modified'];
         $customerLang = $objResult->fields['customer_lang'];
         $orderStatus = $objResult->fields['order_status'];
-        $langId = FWLanguage::getLangIdByIso639_1($customerLang);
-        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(2, $langId);
+        $lang_id = FWLanguage::getLangIdByIso639_1($customerLang);
+        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(2, $lang_id);
         $shopMailFrom = $arrShopMailtemplate['mail_from'];
         $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
         $shopMailSubject = $arrShopMailtemplate['mail_subject'];

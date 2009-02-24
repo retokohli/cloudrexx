@@ -46,7 +46,7 @@ class ProductAttributes  // friend Product
     /**
      * The array of ProductAttribute values
      *
-     * Includes the fields id, name_id, value, price, and price_prefix
+     * Includes the fields id, name_id, value, and price
      * @var array
      */
     private static $arrValue;

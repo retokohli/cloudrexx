@@ -396,24 +396,20 @@ class Settings
     function _storeNewShipper()
     {
         global $objDatabase; // remove this if you move the INSERT below!
-        if (isset($_POST['shipperNameNew']) && !empty($_POST['shipperNameNew'])) {
-            $this->flagChanged = true;
-            if (Shipment::addShipper(
-                $_POST['shipperNameNew'],
-                (isset($_POST['shipperActiveNew']) ? 1 : 0),
-                intval($_POST['shipmentZoneNew'])
-            )) {
-// This block belongs to some method in the Zones or Shipment class
-// -- not decided yet.
-                $sid = intval($objDatabase->Insert_ID());
-                $objResult = $objDatabase->Execute(
-                    "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment (zones_id, shipment_id) ".
-                    "VALUES (".intval($_POST['shipmentZoneNew']).", $sid)");
-                return $objResult;
-            }
-            return false;
-        }
-        return true;
+        if (empty($_POST['shipperNameNew'])) return true;
+        $this->flagChanged = true;
+        if (!Shipment::addShipper(
+            $_POST['shipperNameNew'],
+            (isset($_POST['shipperActiveNew']) ? 1 : 0),
+            intval($_POST['shipmentZoneNew'])
+        )) return false;
+
+        // This may belong both to the Zones or Shipment class
+        $sid = intval($objDatabase->Insert_ID());
+        $objResult = $objDatabase->Execute(
+            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment (zones_id, shipment_id) ".
+            "VALUES (".intval($_POST['shipmentZoneNew']).", $sid)");
+        return ($objResult ? true : false);
     }
 
 
@@ -527,30 +523,27 @@ class Settings
     function _storeCountries()
     {
         global $objDatabase;
+
         if (isset($_POST['countries']) && !empty($_POST['countries'])) {
             $this->_initCountries();
-            $updateList = count($_POST['list1']) < count($_POST['list2']) ? 'list1' : 'list2';
-            if (!isset($_POST[$updateList])) {
-                $_POST[$updateList] = array();
+            // "list1" contains active countries
+            $strCountryIdActive = join(',', $_POST['list1']);
+            $strCountryIdInactive = join(',', $_POST['list2']);
+            if ($strCountryIdActive) {
+	            $query = "
+	                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+	                   SET activation_status=1
+	                 WHERE countries_id IN ($strCountryIdActive)
+	            ";
+	            $objDatabase->Execute($query);
             }
-            // Set new list
-            foreach ($this->arrCountries as $cValues) {
-                if ($cValues['activation_status'] == ($updateList == 'list1' ? 1 : 0)) {
-                    if (!in_array($cValues['countries_id'],$_POST[$updateList])) {
-                        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-                                                    Set activation_status=".($updateList == 'list1' ? 0 : 1)."
-                                                    WHERE countries_id=".intval($cValues['countries_id']);
-                        $objDatabase->Execute($query);
-                    } else {
-                        unset($_POST[$updateList][array_search($cValues['countries_id'],$_POST[$updateList])]);
-                    }
-                }
-            }
-            foreach ($_POST[$updateList] as $cId) {
-                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-                                            Set activation_status=".($updateList == 'list1' ? 1 : 0)."
-                                            WHERE countries_id=".intval($cId);
-                $objDatabase->Execute($query);
+            if ($strCountryIdInactive) {
+	            $query = "
+	                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+	                   SET activation_status=0
+	                 WHERE countries_id IN ($strCountryIdInactive)
+	            ";
+	            $objDatabase->Execute($query);
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
         }
@@ -575,18 +568,16 @@ class Settings
         $objResult = $objDatabase->Execute("
             SELECT 1
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE name='$name'
+             WHERE name='".addslashes($name)."'
         ");
-        if (!$objResult) {
-            return false;
-        }
+        if (!$objResult) return false;
         if ($objResult->RecordCount() > 0) {
             // Exists, update it
             $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                   SET value='".contrexx_addslashes($value)."',
-                       status='".contrexx_addslashes($status)."'
-                 WHERE name='$name'
+                   SET value='".addslashes($value)."',
+                       status='".addslashes($status)."'
+                 WHERE name='".addslashes($name)."'
             ");
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
         } else {
@@ -595,14 +586,12 @@ class Settings
                 INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_config (
                     `name`, `value`, `status`
                 ) VALUES (
-                    '$name',
-                    '".contrexx_addslashes($value)."',
-                    '".contrexx_addslashes($status)."'
+                    '".addslashes($name)."',
+                    '".addslashes($value)."',
+                    '".addslashes($status)."'
                 )
             ");
-            if (!$objResult) {
-                return false;
-            }
+            if (!$objResult) return false;
         }
         return true;
     }
@@ -704,131 +693,6 @@ class Settings
                     }
                     $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
                     $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Delete template
-     */
-    function _delMailTpl()
-    {
-        global $objDatabase;
-        if (isset($_GET['delTplId']) && !empty($_GET['delTplId'])){
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail WHERE id=".intval($_GET['delTplId'])." AND protected!=1");
-            if ($objDatabase->affected_rows() == 1){
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content WHERE tpl_id=".intval($_GET['delTplId']));
-            }
-        }
-        if (isset($_GET['delMailId']) && !empty($_GET['delMailId'])){
-            $objLanguage = new FWLanguage();
-            $arrLanguage = $objLanguage->arrLanguage;
-            foreach ($arrLanguage as $langValues){
-                if ($langValues['is_default']){
-                    $defaultLang = $langValues['id'];
-                    break;
-                }
-            }
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content WHERE id=".intval($_GET['delMailId'])." AND lang_id!=".$defaultLang);
-        }
-        if ((isset($_GET['delTplId']) && !empty($_GET['delTplId'])) || (isset($_GET['delMailId']) && !empty($_GET['delMailId']))){
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
-        }
-    }
-
-
-    /**
-     * Add new template
-     */
-    function _addMail()
-    {
-        global $objDatabase;
-        if (isset($_POST['mails']) && !empty($_POST['mails'])){
-            if (   $_POST['tplId'] == 0
-                || (   isset($_POST['shopMailSaveNew']))) {
-                $query = "
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_mail (
-                        tplname, protected
-                    ) VALUES (
-                        '".contrexx_addslashes($_POST['shopMailTemplate'])."', 0)
-                ";
-                $objDatabase->Execute($query);
-                $tlpId = $objDatabase->Insert_ID();
-
-                $objLanguage = new FWLanguage();
-                $arrLanguage = $objLanguage->arrLanguage;
-                foreach ($arrLanguage as $langValues){
-                    if ($langValues['is_default']){
-                        $defaultLang = $langValues['id'];
-                        break;
-                    }
-                }
-
-                $query = "
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content (
-                        tpl_id, lang_id, from_mail, xsender, subject, message
-                    ) VALUES (
-                        ".intval($tlpId).", $defaultLang,
-                        '".contrexx_addslashes($_POST['shopMailFromAddress'])."',
-                        '".contrexx_addslashes($_POST['shopMailFromName'])."',
-                        '".contrexx_addslashes($_POST['shopMailSubject'])."',
-                        '".contrexx_addslashes($_POST['shopMailBody'])."'
-                    )";
-                $objDatabase->Execute($query);
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
-            }
-        }
-    }
-
-
-    /**
-     * Store mail template
-     */
-    function _storeMails()
-    {
-        global $objDatabase;
-
-        if (isset($_POST['mails'])) {
-            if (empty($_POST['shopMailSaveNew'])
-                && !empty($_POST['shopMailFromName'])
-                && !empty($_POST['shopMailSubject'])
-                && !empty($_POST['shopMailBody']))
-            {
-                if (!empty($_POST['mailId'])) {
-                    $query = "
-                        UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
-                           SET from_mail='".contrexx_addslashes($_POST['shopMailFromAddress'])."',
-                               xsender='".contrexx_addslashes($_POST['shopMailFromName'])."',
-                               subject='".contrexx_addslashes($_POST['shopMailSubject'])."',
-                               message='".contrexx_addslashes($_POST['shopMailBody'])."'
-                         WHERE id=".intval($_POST['mailId']);
-                    $objDatabase->Execute($query);
-                } else {
-                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content ".
-                    "(tpl_id, lang_id, from_mail, xsender, subject, message) VALUES (".
-                    intval($_POST['tplId']).", ".intval($_POST['langId']).", '".
-                    contrexx_addslashes($_POST['shopMailFromAddress'])."', '".
-                    contrexx_addslashes($_POST['shopMailFromName'])."', '".
-                    contrexx_addslashes($_POST['shopMailSubject'])."', '".
-                    contrexx_addslashes($_POST['shopMailBody'])."')");
-                }
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
-                $objResult = $objDatabase->Execute("
-                    SELECT protected
-                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail
-                     WHERE id=".intval($_POST['tplId']));
-                if (!$objResult->EOF) {
-                    if (!$objResult->fields['protected']) {
-                        $objDatabase->Execute("
-                            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_mail
-                               SET tplname='".contrexx_addslashes($_POST['shopMailTemplate'])."'
-                             WHERE id=".intval($_POST['tplId']));
-                        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
-                    }
                 }
             }
         }
