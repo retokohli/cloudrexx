@@ -57,6 +57,7 @@ News
   unerlaubtem Zugriff/Modifikation geschützt werden.
 - Neuer Platzhalter [[NEWS_CATEGORY_NAME]] bei der Detailseite.
 - Die exakte Zeit des Veröffentlichungszeitraumes kann angegeben werden.
+- Als Thumbnail kann optional ein separates Bild ausgewählt werden.
 
 Webinstaller
 - Französische Übersetzung

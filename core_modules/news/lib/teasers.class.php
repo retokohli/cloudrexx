@@ -110,7 +110,8 @@ class Teasers extends newsLibrary
                                                      cat.name AS category_name,
                                                      news.teaser_text AS teaser_text,
                                                      news.teaser_show_link AS teaser_show_link,
-                                                     news.teaser_image_path AS teaser_image_path
+                                                     news.teaser_image_path AS teaser_image_path,
+                                                     news.teaser_image_thumbnail_path AS teaser_image_thumbnail_path
                                                 FROM ".DBPREFIX."module_news AS news
                                         INNER JOIN   ".DBPREFIX."module_news_categories AS cat on cat.catid = news.catid
                                                  WHERE news.lang=".$langId."
@@ -161,6 +162,17 @@ class Teasers extends newsLibrary
                     $author = '';
                 }
 
+                if (!empty($objResult->fields['teaser_image_path'])) {
+                    if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
+                        $image = $objResult->fields['teaser_image_thumbnail_path'];
+                    } elseif (file_exists(ASCMS_PATH.$objResult->fields['teaser_image_path'].".thumb")) {
+                        $image = $objResult->fields['teaser_image_path'].".thumb";
+                    } else {
+                        $image = $objResult->fields['teaser_image_path'];
+                    }
+                } else {
+                    $image = ASCMS_MODULE_IMAGE_WEB_PATH.'/news/pixel.gif';
+                }
                 $this->arrTeasers[$objResult->fields['id']] = array(
                     'id'                    => $objResult->fields['id'],
                     'date'                  => $objResult->fields['date'],
@@ -172,7 +184,7 @@ class Teasers extends newsLibrary
                     'teaser_text'           => $objResult->fields['teaser_text'],
                     'teaser_show_link'      => $objResult->fields['teaser_show_link'],
                     'author'                => $author,
-                    'teaser_image_path'     => !empty($objResult->fields['teaser_image_path']) ? $objResult->fields['teaser_image_path'] : ''
+                    'teaser_image_path'     => $image
                 );
                 $objResult->MoveNext();
             }

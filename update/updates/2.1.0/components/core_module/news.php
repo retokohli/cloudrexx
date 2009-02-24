@@ -180,6 +180,25 @@ function _newsUpdate() {
         }
     }
 
+
+
+	/************************************************
+	* EXTENSION:	Thunbmail Image                 *
+	* ADDED:		Contrexx v2.1.0					*
+	************************************************/
+    $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_news');
+    if ($arrColumns === false) {
+        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news'));
+        return false;
+    }
+
+    if (!in_array('teaser_image_thumbnail_path', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_news` ADD `teaser_image_thumbnail_path` TEXT NOT NULL AFTER `teaser_image_path`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
 	return true;
 }
 

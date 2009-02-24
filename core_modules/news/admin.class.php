@@ -566,7 +566,8 @@ class newsManager extends newsLibrary {
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
-        $newsTeaserImagePath    = contrexx_strip_tags($_POST['newsTeaserImagePath']);
+        $newsTeaserImagePath    = contrexx_addslashes($_POST['newsTeaserImagePath']);
+        $newsTeaserImageThumbnailPath    = contrexx_addslashes($_POST['newsTeaserThumbnailImagePath']);
         $newsTeaserShowLink     = isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : intval(!count($_POST));
         $newsTeaserFrames       = '';
         $arrNewsTeaserFrames = array();
@@ -641,6 +642,7 @@ class newsManager extends newsLibrary {
                                                 teaser_text="'.$newsTeaserText.'",
                                                 teaser_show_link="'.$newsTeaserShowLink.'",
                                                 teaser_image_path="'.$newsTeaserImagePath.'",
+                                                teaser_image_thumbnail_path="'.$newsTeaserImageThumbnailPath.'",
                                                 userid='.$userid.',
                                                 changelog='.$date
                                         );
@@ -688,6 +690,7 @@ class newsManager extends newsLibrary {
             'TXT_TEASERS'                   => $_ARRAYLANG['TXT_TEASERS'],
             'TXT_NEWS_TEASER_TEXT'          => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
             'TXT_IMAGE'                     => $_ARRAYLANG['TXT_IMAGE'],
+            'TXT_NEWS_THUMBNAIL'            => $_ARRAYLANG['TXT_NEWS_THUMBNAIL'],
             'TXT_BROWSE'                    => $_ARRAYLANG['TXT_BROWSE'],
             'TXT_NUMBER_OF_CHARS'           => $_ARRAYLANG['TXT_NUMBER_OF_CHARS'],
             'TXT_TEASER_SHOW_NEWS_LINK'     => $_ARRAYLANG['TXT_TEASER_SHOW_NEWS_LINK'],
@@ -734,6 +737,7 @@ class newsManager extends newsLibrary {
             'NEWS_TYPE_CHECKED_CONTENT'     => empty($newsredirect) ? 'checked="checked"' : '',
             'NEWS_TYPE_CHECKED_REDIRECT'    => empty($newsredirect) ? '' : 'checked="checked"',
             'NEWS_TEASER_IMAGE_PATH'        => htmlentities($newsTeaserImagePath, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWS_TEASER_IMAGE_THUMBNAIL_PATH' => htmlentities($newsTeaserImageThumbnailPath, ENT_QUOTES, CONTREXX_CHARSET)
         ));
 
         if ($_CONFIG['newsTeasersStatus'] == '1') {
@@ -883,6 +887,7 @@ class newsManager extends newsLibrary {
             'TXT_TEASERS'                   => $_ARRAYLANG['TXT_TEASERS'],
             'TXT_NEWS_TEASER_TEXT'          => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
             'TXT_IMAGE'                     => $_ARRAYLANG['TXT_IMAGE'],
+            'TXT_NEWS_THUMBNAIL'            => $_ARRAYLANG['TXT_NEWS_THUMBNAIL'],
             'TXT_BROWSE'                    => $_ARRAYLANG['TXT_BROWSE'],
             'TXT_NUMBER_OF_CHARS'           => $_ARRAYLANG['TXT_NUMBER_OF_CHARS'],
             'TXT_TEASER_SHOW_NEWS_LINK'     => $_ARRAYLANG['TXT_TEASER_SHOW_NEWS_LINK'],
@@ -929,7 +934,8 @@ class newsManager extends newsLibrary {
                                                         teaser_only,
                                                         teaser_text,
                                                         teaser_show_link,
-                                                        teaser_image_path
+                                                        teaser_image_path,
+                                                        teaser_image_thumbnail_path
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
         if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true))) {
@@ -1000,6 +1006,7 @@ class newsManager extends newsLibrary {
                 'NEWS_TEASER_SHOW_LINK_CHECKED' => $teaserShowLink ? 'checked="checked"' : '',
                 'NEWS_TEASER_TEXT_LENGTH'       => strlen($teaserText),
                 'NEWS_TEASER_IMAGE_PATH'        => htmlentities($objResult->fields['teaser_image_path'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWS_TEASER_IMAGE_THUMBNAIL_PATH' => htmlentities($objResult->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_DATE'                     => date("Y-m-d"),
                 'NEWS_SUBMIT_NAME'              => isset($_GET['validate']) ? 'validate' : 'store',
                 'NEWS_SUBMIT_NAME_TEXT'         => isset($_GET['validate']) ? $_ARRAYLANG['TXT_CONFIRM'] : $_ARRAYLANG['TXT_STORE']
@@ -1137,7 +1144,8 @@ class newsManager extends newsLibrary {
             $newsTeaserText = contrexx_addslashes($_POST['newsTeaserText']);
             $newsTeaserShowLink = isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : 0;
 
-            $newsTeaserImagePath = contrexx_strip_tags($_POST['newsTeaserImagePath']);
+            $newsTeaserImagePath = contrexx_addslashes($_POST['newsTeaserImagePath']);
+            $newsTeaserImageThumbnailPath = contrexx_addslashes($_POST['newsTeaserImageThumbnailPath']);
             $newsTeaserFrames = '';
 
             if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
@@ -1294,6 +1302,7 @@ class newsManager extends newsLibrary {
                                                         teaser_text = '".$newsTeaserText."',
                                                         teaser_show_link = ".$newsTeaserShowLink.",
                                                         teaser_image_path = '".$newsTeaserImagePath."',
+                                                        teaser_image_thumbnail_path = '".$newsTeaserImageThumbnailPath."',
                                                         changelog = '".$changelog."'
                                                 WHERE   id = '".$id."'");
            if($objResult === false){
