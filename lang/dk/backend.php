@@ -1006,4 +1006,6 @@ $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Texten mangler*";
 $_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Jobannoncer til administration af jobs";
 $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Jobannoncer";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Jobannoncer";
+$_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
+$_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 ?>

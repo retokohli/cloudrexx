@@ -185,4 +185,6 @@ $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
 $_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
 $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
+$_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
+$_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 ?>
