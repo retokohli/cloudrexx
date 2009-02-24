@@ -53,7 +53,6 @@ function _statsUpdate()
 			'unique' => array('resolution')
 		),
 		'stats_search' => array(
-			'unique' => array('name', 'external'),
 			'change' => "`name` `name` VARCHAR(100) BINARY NOT NULL DEFAULT ''"
 		),
 		'stats_spiders' => array(
@@ -138,26 +137,45 @@ function _statsUpdate()
 		} while ($objEntry->RecordCount() > 1);
 	}
 
-	if(empty($_SESSION['contrexx_update']['update']['update_stats']['utf8'])){
-        $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL";
-        if($objDatabase->Execute($query)){
-            $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 1;
-            $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET binary NOT NULL";
-            if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 1 && $objDatabase->Execute($query)){
-                $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 2;
-                $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
-                if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 2 && $objDatabase->Execute($query)){
-                    $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 3;
+
+	$arrIndexes = $objDatabase->MetaIndexes(DBPREFIX.'stats_search');
+	if ($arrIndexes !== false) {
+		if (isset($arrIndexes['unique'])) {
+			$query = 'ALTER TABLE `'.DBPREFIX.'stats_search` DROP INDEX `unique`';
+			if ($objDatabase->Execute($query) === false) {
+				return _databaseError($query, $objDatabase->ErrorMsg());
+			}
+		}
+    	if(empty($_SESSION['contrexx_update']['update']['update_stats']['utf8'])){
+            $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL";
+            if($objDatabase->Execute($query)){
+                $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 1;
+                $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET binary NOT NULL";
+                if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 1 && $objDatabase->Execute($query)){
+                    $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 2;
+                    $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
+                    if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 2 && $objDatabase->Execute($query)){
+                        $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 3;
+                        if (!isset($arrIndexes['unique'])) {
+                			$query = 'ALTER TABLE `'.DBPREFIX.'stats_search` ADD UNIQUE `unique` (`name`, `external`)';
+                			if ($objDatabase->Execute($query) === false) {
+                				return _databaseError($query, $objDatabase->ErrorMsg());
+                			}
+                		}
+                    }else{
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
                 }else{
                     return _databaseError($query, $objDatabase->ErrorMsg());
                 }
             }else{
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
-        }else{
-            return _databaseError($query, $objDatabase->ErrorMsg());
         }
-    }
+	} else {
+		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'stats_search'));
+		return false;
+	}
 
 	return true;
 }
