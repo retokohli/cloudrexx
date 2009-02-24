@@ -147,7 +147,7 @@ Wissensdatenbank (knowledge)
 - Überall auf der Seite können die beliebtesten Fragen aufgelistet werden
 
 Auktions-Modul (auction)
-- Ermöglich Online-Aktionen
+- Ermöglicht Online-Auktionen
 
 
 
