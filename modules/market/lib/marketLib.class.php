@@ -93,6 +93,7 @@ class marketLibrary
                    $this->entries[$objResultEntries->fields['id']]['id']                 = $objResultEntries->fields['id'];
                    $this->entries[$objResultEntries->fields['id']]['type']             = $objResultEntries->fields['type'];
                    $this->entries[$objResultEntries->fields['id']]['title']             = $objResultEntries->fields['title'];
+                   $this->entries[$objResultEntries->fields['id']]['color']             = $objResultEntries->fields['color'];
                    $this->entries[$objResultEntries->fields['id']]['description']         = $objResultEntries->fields['description'];
                    $this->entries[$objResultEntries->fields['id']]['premium']             = $objResultEntries->fields['premium'];
                    $this->entries[$objResultEntries->fields['id']]['picture']             = $objResultEntries->fields['picture'];
@@ -194,6 +195,7 @@ class marketLibrary
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
+								  color='".contrexx_addslashes($_POST['color'])."',
                                   description='".contrexx_addslashes($_POST['description'])."',
                                 premium='".contrexx_addslashes($_POST['premium'])."',
                                   picture='".contrexx_addslashes($picture)."',

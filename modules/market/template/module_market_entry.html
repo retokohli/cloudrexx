@@ -78,44 +78,49 @@ function matchType(pattern, value) {
 		</td>
 		</tr>
 		<tr valign="top" class="row1">
+			<td nowrap="nowrap" width="150">{TXT_MARKET_COLOR}</font></td>
+			<td><input type="text" name="color" style="width: 300px;" maxlength="100" value="{ENTRY_COLOR}" ></td>
+		</td>
+		</tr>
+		<tr valign="top" class="row2">
 			<td nowrap="nowrap">{TXT_DESCRIPTION}<font color="red"> *</font></td>
 			<td><textarea name="description" rows="5"  style="width: 300px; overflow: auto;">{ENTRY_DESCRIPTION}</textarea></td>
 		</tr>
-		<tr valign="top" class="row2">
+		<tr valign="top" class="row1">
 			<td nowrap="nowrap" width="150">{TXT_PICTURE}</td>
 			<td>{ENTRY_PICTURE}<input type="file" name="pic" size="38" style="width: 304px;" maxlength="100"></td>
 		</td>
-		<tr valign="top" class="row1">
+		<tr valign="top" class="row2">
 			<td nowrap="nowrap" width="150">{TXT_CATEGORIE}<font color="red"> *</font></td>
 			<td><select name="cat"  style="width: 305px;">{CATEGORIES}</select></td>
 		</td>
-		<tr valign="top" class="row2">
+		<tr valign="top" class="row1">
 			<td nowrap="nowrap" width="150">{TXT_PRICE}<font color="red"> *</font></td>
 			<td><input type="text" name="price" style="width: 58px;" maxlength="100" value="{ENTRY_PRICE}">&nbsp;&nbsp;<input type="checkbox" name="forfree" value="1" {ENTRY_FOR_FREE}/>&nbsp;{TXT_FOR_FREE}&nbsp;<input type="checkbox" name="agreement" value="1" {ENTRY_AGREEMENT}/>&nbsp;{TXT_AGREEMENT}</td>
 		</td>
 		<!-- BEGIN end_date_dropdown -->
-		<tr valign="top" class="row1">
+		<tr valign="top" class="row2">
 			<td nowrap="nowrap" width="150">{TXT_END_DATE}<font color="red"> *</font></td>
 			<td><select name="days" style="width: 60px;">{DAYS_ONLINE}</select>&nbsp;&nbsp;{TXT_DAYS}</td>
 		</td>
 		<!-- END end_date_dropdown -->
-		<tr valign="top" class="row2">
+		<tr valign="top" class="row1">
 			<td nowrap="nowrap" width="150">{TXT_PREMIUM}</td>
 			<td><input type="checkbox" name="premium" value="1" {ENTRY_PREMIUM} /></td>
 		</td>
-		<tr valign="top" class="row1">
+		<tr valign="top" class="row2">
 			<td nowrap="nowrap" width="150">{TXT_ADDED_BY}<font color="red"> *</font></td>
 			<td><input type="text" name="addedby" style="width: 300px;" maxlength="100" value="{ENTRY_ADDEDBY}"></td>
 		</td>
-		<tr valign="top" class="row2">
+		<tr valign="top" class="row1">
 			<td nowrap="nowrap" width="150">{TXT_NAME}<font color="red"> *</font></td>
 			<td><input type="text" name="name" style="width: 300px;" maxlength="100" value="{ENTRY_NAME}"></td>
 		</td>
-		<tr valign="top" class="row1">
+		<tr valign="top" class="row2">
 			<td nowrap="nowrap" width="150">{TXT_E-MAIL}<font color="red"> *</font></td>
 			<td><input type="text" name="email" style="width: 300px;" maxlength="100" value="{ENTRY_E-MAIL}"></td>
 		</td>
-		<tr valign="top" class="row2">
+		<tr valign="top" class="row1">
 			<td nowrap="nowrap" width="150">{TXT_USER_DETAIL}<font color="red"> *</font></td>
 			<td>
 				<input type="radio" name="userdetails" value="1" {ENTRY_USERDETAILS_ON} />&nbsp;{TXT_DETAIL_SHOW}

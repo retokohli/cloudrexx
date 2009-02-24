@@ -61,6 +61,14 @@ News
 Webinstaller
 - Französische Übersetzung
 
+Inserate
+- Der Platzhalter [[MARKET_PICTURE]] kann nun mit dem Block market_picture
+  umschlossen werden. Dieser Block wird nur angezeigt, sofern das Inserat ein
+  Bild enthält.
+- Die Inserate verfügen über die neue Eigenschaft 'Farbe'. Diese wird durch den
+  Platzhalder [[MARKET_COLOR]] im Frontend repräsentiert.
+- Inserate können kopieren und sortiert werden.
+
 
 ****************************************
 * Behobene Fehler **********************

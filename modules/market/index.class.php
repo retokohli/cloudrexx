@@ -330,7 +330,7 @@ class Market extends marketLibrary
                 $sortPaging            = "&sort=residence";
             break;
             default:
-                $sort                = "enddate";
+                $sort                = "sort_id, enddate";
                 $sortPaging            = "";
             break;
         }
@@ -445,6 +445,7 @@ class Market extends marketLibrary
                    $this->_objTpl->setVariable(array(
                     'MARKET_ENDDATE'            => $enddate,
                     'MARKET_TITLE'                => $objResult->fields['title'],
+					'MARKET_COLOR'                => $objResult->fields['color'],
                     'MARKET_DESCRIPTION'        => substr($objResult->fields['description'], 0, 110)."<a href='index.php?section=market&cmd=detail&id=".$objResult->fields['id']."' target='_self'>[...]</a>",
                     'MARKET_PRICE'                => $price,
                     'MARKET_PICTURE'            => $image,
@@ -761,6 +762,7 @@ class Market extends marketLibrary
             // set variables
             $this->_objTpl->setVariable(array(
                 'MARKET_TITLE'                    => $this->entries[$id]['title'],
+                'MARKET_COLOR'                    => $this->entries[$id]['color'],
                 'MARKET_ID'                        => $id,
                 'MARKET_EDIT'                    => '<a href="index.php?section=market&amp;cmd=edit&amp;id='.$id.'">'.$_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'].'</a>',
                 'MARKET_DEL'                    => '<a href="index.php?section=market&amp;cmd=del&amp;id='.$id.'">'.$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'].'</a>',
@@ -1177,7 +1179,7 @@ class Market extends marketLibrary
                 $sortPaging            = "&sort=price";
             break;
             default:
-                $sort                = "enddate";
+                $sort                = "sort_id, enddate";
                 $sortPaging            = "";
             break;
         }

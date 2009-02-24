@@ -597,6 +597,7 @@ class Market extends marketLibrary
             'TXT_NAME'                        =>    $_CORELANG['TXT_NAME'],
             'TXT_E-MAIL'                    =>    $_CORELANG['TXT_EMAIL'],
             'TXT_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
+			'TXT_MARKET_COLOR'				 =>		$_ARRAYLANG['TXT_MARKET_COLOR'],
             'TXT_DESCRIPTION'                =>    $_CORELANG['TXT_DESCRIPTION'],
             'TXT_SAVE'                        =>    $_CORELANG['TXT_SAVE'],
             'TXT_FIELDS_REQUIRED'            =>    $_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'],
@@ -628,7 +629,7 @@ class Market extends marketLibrary
             while (!$objResult->EOF) {
                 $this->_objTpl->setCurrentBlock('spez_fields');
 
-                ($i % 2)? $class = "row2" : $class = "row1";
+                ($i % 2)? $class = "row1" : $class = "row2";
                 $input = '<input type="text" name="spez_'.$objResult->fields['id'].'" style="width: 300px;" maxlength="100">';
 
                 // initialize variables
@@ -759,6 +760,7 @@ class Market extends marketLibrary
             'TXT_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
             'TXT_NAME'                        =>    $_CORELANG['TXT_NAME'],
             'TXT_E-MAIL'                    =>    $_CORELANG['TXT_EMAIL'],
+			'TXT_MARKET_COLOR'				 =>		$_ARRAYLANG['TXT_MARKET_COLOR'],
             'TXT_DESCRIPTION'                =>    $_CORELANG['TXT_DESCRIPTION'],
             'TXT_SAVE'                        =>    $_CORELANG['TXT_SAVE'],
             'TXT_FIELDS_REQUIRED'            =>    $_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'],
@@ -784,7 +786,7 @@ class Market extends marketLibrary
 
         if (isset($_REQUEST['id'])) {
             $entryId = $_REQUEST['id'];
-            $objResult = $objDatabase->Execute('SELECT type, title, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5  FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
+            $objResult = $objDatabase->Execute('SELECT type, title, color, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5  FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     //entry type
@@ -871,7 +873,7 @@ class Market extends marketLibrary
                     if ($objSpezFields !== false) {
                         $i = 0;
                         while (!$objSpezFields->EOF) {
-                            ($i % 2)? $class = "row2" : $class = "row1";
+                            ($i % 2)? $class = "row1" : $class = "row2";
                             $input = '<input type="text" name="spez_'.$objSpezFields->fields['id'].'" value="'.$objResult->fields[$objSpezFields->fields['name']].'" style="width: 300px;" maxlength="100">';
                             // initialize variables
                             $this->_objTpl->setVariable(array(
@@ -890,6 +892,7 @@ class Market extends marketLibrary
                         'ENTRY_TYPE_OFFER'            =>    $offer,
                         'ENTRY_TYPE_SEARCH'            =>    $search,
                         'ENTRY_TITLE'                =>    $objResult->fields['title'],
+                        'ENTRY_COLOR'                =>    $objResult->fields['color'],
                         'ENTRY_DESCRIPTION'            =>    $objResult->fields['description'],
                         'ENTRY_PICTURE'                =>    $picture,
                         'ENTRY_PICTURE_OLD'            =>    $objResult->fields['picture'],
@@ -947,6 +950,7 @@ class Market extends marketLibrary
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET
                                     type='".contrexx_addslashes($_POST['type'])."',
                                       title='".contrexx_addslashes($_POST['title'])."',
+                                      color='".contrexx_addslashes($_POST['color'])."',
                                       description='".contrexx_addslashes($_POST['description'])."',
                                     premium='".contrexx_addslashes($_POST['premium'])."',
                                       picture='".$picture."',
