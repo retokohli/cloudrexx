@@ -81,12 +81,97 @@ class Data extends DataLibrary  {
     	    $this->showCategory($_GET['cid']);
     	} elseif (isset($_GET['id'])) {
     	    $this->showDetails($_GET['id']);
+    	} elseif ($this->curCmd == 'search') {
+            $this->showSearch(isset($_POST['term']) ? contrexx_stripslashes($_POST['term']) : '');
     	} else {
     	   $this->showCategoryOverview();
     	}
 
     	return $this->_objTpl->get();
 	}
+
+	function showSearch($keyword)
+    {
+        global $objDatabase, $_LANGID, $_ARRAYLANG;
+
+	if (!empty($keyword) &&
+        ($objResult = $objDatabase->Execute("Select
+            tblM.message_id,
+            tblL.subject,
+            tblL.content,
+            tblL.image,
+            tblL.thumbnail,
+            tblL.mode,
+            tblL.forward_url,
+            tblL.forward_target
+            FROM `".DBPREFIX."module_data_messages` AS tblM
+            INNER JOIN `".DBPREFIX."module_data_messages_lang` AS tblL
+            USING (message_id)
+            WHERE tblM.active = '1'
+            AND   (tblM.release_time = 0 or tblM.release_time <= ".time().")
+            AND   (tblM.release_time_end = 0 or tblM.release_time_end >= ".time().")
+            AND   tblL.is_active = '1'
+            AND   tblL.lang_id = ".$_LANGID."
+            AND   (tblL.subject LIKE '%".addslashes($keyword)."%'
+            OR    tblL.content LIKE '%".addslashes($keyword)."%'
+            OR    tblL.tags LIKE '%".addslashes($keyword)."%')"))
+        && $objResult != false && $objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+
+
+                if ($objResult->fields['image']) {
+                    if ($objResult->fields['thumbnail']) {
+                        if (file_exists(ASCMS_PATH.$objResult->fields['thumbnail'].".thumb")) {
+                            $image = "<img src=\"".$objResult->fields['thumbnail'].".thumb\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+                        } else {
+                            $image = "<img src=\"".$objResult->fields['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
+                        }
+                    } elseif (file_exists(ASCMS_DATA_IMAGES_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image']))) {
+                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+                    } elseif (file_exists(ASCMS_PATH.$objResult->fields['image'].".thumb")) {
+                        $image = "<img src=\"".$objResult->fields['image'].".thumb\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+                    } else {
+                        $image = "<img src=\"".$objResult->fields['image']."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
+                    }
+                } else {
+                    $image = "";
+                }
+
+
+                $lang = $_LANGID;
+                $width = $this->_arrSettings['data_thickbox_width'];
+                $height = $this->_arrSettings['data_thickbox_height'];
+                if ($objResult->fields['mode'] == "normal") {
+                    if ($this->_arrSettings['data_entry_action'] == "content") {
+                        $cmd = $this->_arrSettings['data_target_cmd'];
+                        $url = "index.php?section=data&amp;cmd=".$cmd;
+                    } else {
+                        $url = "index.php?section=data&amp;act=thickbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                    }
+                } else {
+                    $url = $objResult->fields['forward_url'];
+                }
+
+                $this->_objTpl->setVariable(array(
+                    'ENTRY_HREF'      => $url."&amp;id=".$objResult->fields['message_id'],
+                    'ENTRY_IMAGE'     => $image,
+                    'ENTRY_TITLE'     => $objResult->fields['subject'],
+                    'TXT_MORE'  => $this->langVars['TXT_DATA_MORE']
+                ));
+                $this->_objTpl->parse('single_entry');
+                $objResult->MoveNext();
+            }
+            $this->_objTpl->parse('datalist_single_category');
+        } else {
+            $this->_objTpl->hideBlock('datalist_single_category');
+        }
+
+
+        $this->_objTpl->setVariable(array(
+            'DATA_SEARCH_TERM'  => htmlentities($keyword, ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DATA_SEARCH'   => $_ARRAYLANG['TXT_DATA_SEARCH']
+        ));
+    }
 
 	/**
 	 * Show the list of categories
@@ -247,7 +332,7 @@ class Data extends DataLibrary  {
         if ($entry['translation'][$this->_intLanguageId]['attachment']) {
             $this->_objTpl->setVariable(array(
                 "HREF"          => $entry['translation'][$this->_intLanguageId]['attachment'],
-                "TXT_DOWNLOAD"  => $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT']
+                "TXT_DOWNLOAD"  => empty($entry['translation'][$this->_intLanguageId]['attachment_desc']) ? $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] : $entry['translation'][$this->_intLanguageId]['attachment_desc']
             ));
             $this->_objTpl->parse("attachment");
         }
@@ -299,7 +384,7 @@ class Data extends DataLibrary  {
         if ($entry['translation'][$lang]['attachment']) {
             $this->_objTpl->setVariable(array(
                 "HREF"          => $entry['translation'][$lang]['attachment'],
-                "TXT_DOWNLOAD"  => $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT']
+                "TXT_DOWNLOAD"  => empty($entry['translation'][$lang]['attachment_desc']) ? $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] : $entry['translation'][$lang]['attachment_desc']
             ));
             $this->_objTpl->parse("attachment");
         }

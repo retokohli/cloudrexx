@@ -44,7 +44,7 @@ class DataAdmin extends DataLibrary {
 	/**
 	* Constructor	-> Create the module-menu and an internal template-object
     *
-    * @global   InitCMS	
+    * @global   InitCMS
     * @global	HTML_Template_Sigma
     * @global	array
     */
@@ -334,7 +334,7 @@ class DataAdmin extends DataLibrary {
 					$strActivatedLanguages .= $this->_arrLanguages[$intLanguageId]['long'].' ['.$this->_arrLanguages[$intLanguageId]['short'].'], ';
 				}
 			}
-			
+
 			$strActivatedLanguages = substr($strActivatedLanguages,0,-2);
 
 			if ($arrCategories[$key]['action'] == "overlaybox") {
@@ -342,7 +342,7 @@ class DataAdmin extends DataLibrary {
 			} elseif ($arrCategories[$key]['action'] == "content") {
 			    $display = $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'];
 			} else {
-			    $display = $_ARRAYLANG['TXT_SUBCATEGORIES']; 
+			    $display = $_ARRAYLANG['TXT_SUBCATEGORIES'];
 			}
 			$this->_objTpl->setVariable(array(
 				'OVERVIEW_CATEGORY_ROWCLASS'	=>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
@@ -414,7 +414,7 @@ class DataAdmin extends DataLibrary {
 
 
     /**
-     * Adds a new category to the database. Collected 
+     * Adds a new category to the database. Collected
      * data in POST is checked for valid values.
      *
      * @global 	ADONewConnection
@@ -430,7 +430,7 @@ class DataAdmin extends DataLibrary {
     											ORDER BY	category_id DESC
     										');
     		$intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
-    		
+
     		//Collect data
     		$arrValues = array();
     		foreach ($_POST as $strKey => $strValue) {
@@ -579,7 +579,7 @@ class DataAdmin extends DataLibrary {
 
     		$intCounter = 0;
 	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
-	   		
+
 	   		$catTree = $this->buildCatTree($arrCategories, 0);
 
 	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
@@ -592,7 +592,7 @@ class DataAdmin extends DataLibrary {
 	    		));
 
 	    		$this->_objTpl->parse('editCategoryNameFields');
-	    		
+
 	    		$this->parseCategoryDropdown($catTree, $arrCategories, $intCategoryId, 0, $intLanguageId);
 
 	    		++$intCounter;
@@ -660,7 +660,7 @@ class DataAdmin extends DataLibrary {
             // also, we don't want sub-categories of our's to be shown.
             // this would require reordering of the categories to avoid
             // having a loop.
-            if ($this->current_cat_id and $key == $this->current_cat_id) 
+            if ($this->current_cat_id and $key == $this->current_cat_id)
                 continue;
 
             $this->_objTpl->setVariable(array(
@@ -788,8 +788,8 @@ class DataAdmin extends DataLibrary {
     	$this->_objTpl->loadTemplateFile('module_data_entries.html',true,true);
 
     	$this->arrEntries = $this->createEntryArray(0);
-    	
-    	
+
+
     	// show categories
     	$arrCategories = $this->createCategoryArray();
     	$catTree = $this->buildCatTree($arrCategories);
@@ -825,10 +825,10 @@ class DataAdmin extends DataLibrary {
     		'TXT_ENTRIES_SUBMIT_DELETE'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
    			'TXT_ENTRIES_SUBMIT_DELETE_JS'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
    			'TXT_ENTRIES_SUBTITLE_CATEGORY'     =>  $_ARRAYLANG['TXT_DATA_CATEGORY'],
-   			'TXT_ENTRIES_SUBTITLE_MODE'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE'] 
+   			'TXT_ENTRIES_SUBTITLE_MODE'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE']
    		));
-   		
-   		if ($intSelectedCategory == 0) { 
+
+   		if ($intSelectedCategory == 0) {
    		    $this->sortEntriesAlphabetical();
    		}
 
@@ -845,6 +845,7 @@ class DataAdmin extends DataLibrary {
 
 	   			$this->_objTpl->setVariable(array(
 	   				'TXT_IMGALT_EDIT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'],
+	   				'TXT_IMGALT_COPY'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'],
 	   				'TXT_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_DELETE_TITLE']
 	   			));
 
@@ -858,7 +859,7 @@ class DataAdmin extends DataLibrary {
 	   			$strActiveLanguages = substr($strActiveLanguages,0,-12);
 
 	   			$this->_objTpl->setGlobalVariable("ENTRY_ID", $intEntryId);
-	   			
+
                 $category_keys = array_keys($arrEntryValues['categories'][$this->_intLanguageId]);
                 if ($arrEntryValues['mode'] == "normal") {
                     $mode = $_ARRAYLANG['TXT_DATA_ENTRY_MODE_NORMAL'];
@@ -910,7 +911,7 @@ class DataAdmin extends DataLibrary {
    			$this->_objTpl->parse('noEntries');
    		}
     }
-    
+
     /**
      * Sort all entries in alphabetical order
      *
@@ -921,7 +922,7 @@ class DataAdmin extends DataLibrary {
         foreach ($this->arrEntries as $key => $entry ) {
             $assoc[$entry['translation'][$this->_intLanguageId]['subject']] = $key;
         }
-        
+
         ksort($assoc);
         $newEntries = array();
         foreach ($assoc as $key) {
@@ -1009,7 +1010,7 @@ class DataAdmin extends DataLibrary {
     		'TXT_DIV_MODE'          =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
 		    'TXT_DIV_MODE_NORMAL'   =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_NORMAL'],
             'TXT_DIV_MODE_FORWARD'  =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'],
-            'TXT_REDIRECT_HELP'     => $_ARRAYLANG['TXT_REDIRECT_HELP'],
+            'TXT_REDIRECT_HELP'     =>  htmlspecialchars($_ARRAYLANG['TXT_REDIRECT_HELP'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_DIV_ACTIVATE_RELEASE_TIME' =>  $_ARRAYLANG['TXT_ACTIVATE_RELEASE_TIME'],
             'TXT_DIV_RELEASE_TIME'          =>  $_ARRAYLANG['TXT_RELEASE_TIME'],
             'TXT_ENDDATE_ENDLESS'           =>  $_ARRAYLANG['TXT_ENDLESS'],
@@ -1059,9 +1060,21 @@ class DataAdmin extends DataLibrary {
 	    			'TXT_DIV_SUBJECT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
 	    			'TXT_DIV_IMAGE'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
 	    			'TXT_DIV_IMAGE_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
+	    			'TXT_DIV_THUMBNAIL'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
+	    			'TXT_DIV_THUMBNAIL_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
+                    'TXT_DATA_THUMBNAIL_ORI_DESC'   => $_ARRAYLANG['TXT_DATA_THUMBNAIL_ORI_DESC'],
+                    'TXT_DATA_THUMBNAIL_DIFF_DESC'  => $_ARRAYLANG['TXT_DATA_THUMBNAIL_DIFF_DESC'],
+                    'TXT_DATA_THUMBNAIL_SIZE'       => $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'],
+                    'THUMBNAIL_METHOD_ORI_CHECKED'  => 'checked="checked"',
+                    'THUMBNAIL_ORI_WIDTH' => 80,
+                    'THUMBNAIL_ORI_HEIGHT' => 80,
+                    'DIV_THUMBNAIL_DIFF_DISPLAY'    => 'none',
+                    'TXT_DATA_WIDTH'                => $_ARRAYLANG['TXT_DATA_WIDTH'],
+                    'TXT_DATA_HEIGHT'               => $_ARRAYLANG['TXT_DATA_HEIGHT'],
 	    			'TXT_DIV_CATEGORIES'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_CATEGORIES'],
 	    			'TXT_DIV_PLACEHOLDER'   =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
 	    			'TXT_DIV_ATTACHMENT'    =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT'],
+	    			'TXT_DIV_ATTACHMENT_DESC' =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'],
                     'TXT_FORWARD_URL'       =>  $_ARRAYLANG['TXT_FORWARD_URL'],
                     'DISPLAY_FORWARD_URL'   =>  "none",
                     'TXT_TARGET_WINDOW'     =>  $_ARRAYLANG['TXT_TARGET_WINDOW'],
@@ -1069,7 +1082,7 @@ class DataAdmin extends DataLibrary {
                     'TXT_TARGET_PARENT'     =>  $_ARRAYLANG['TXT_TARGET_PARENT'],
                     'TXT_TARGET_SELF'       =>  $_ARRAYLANG['TXT_TARGET_SELF'],
                     'TXT_TARGET_TOP'        =>  $_ARRAYLANG['TXT_TARGET_TOP']
-                    
+
 	    		));
 
 	    		//Filter out active categories for this language
@@ -1128,9 +1141,9 @@ class DataAdmin extends DataLibrary {
      */
     function insertEntry() {
     	global $_ARRAYLANG, $objDatabase;
-    	
+
     	if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages'])) {
-    	    
+
     	    $objRs = $objDatabase->Execute(" SELECT MAX(sort) AS sort FROM ".DBPREFIX."module_data_messages");
     	    $sort = $objRs->fields['sort']+1;
 
@@ -1150,7 +1163,7 @@ class DataAdmin extends DataLibrary {
     	            $year = intval($endDateParts[0]);
     	            $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
     	        }
-    	        
+
     	        $dateParts = split("-", $_POST['release_date']);
     	        $hour = intval($_POST['release_hour']);
     	        $minute = intval($_POST['release_minute']);
@@ -1163,7 +1176,7 @@ class DataAdmin extends DataLibrary {
     	        $release_time = 0;
     	        $release_time_end = 0;
     	    }
-    	    
+
     	    //Create entry with general-information for all languages
     		$objDatabase->Execute('	INSERT INTO '.DBPREFIX.'module_data_messages
     								SET `time_created` = '.time().',
@@ -1211,7 +1224,11 @@ class DataAdmin extends DataLibrary {
 													//'categories'	=> (isset($_POST['frmEditEntry_Categories_'.$intLanguageId])) ? $_POST['frmEditEntry_Categories_'.$intLanguageId] : array(),
 													'categories'    => (isset($_POST['frmcategory_'.$intLanguageId])) ? array($_POST['frmcategory_'.$intLanguageId]) : array(),
 													'image'			=> contrexx_addslashes(strip_tags($_POST['frmEditEntry_Image_'.$intLanguageId])),
+													'thumbnail'			=> isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'different' ? contrexx_addslashes(strip_tags($_POST['frmEditEntry_Thumbnail_'.$intLanguageId])) : '',
+                                                    'thumbnail_width' => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Width_'.$intLanguageId]) : 0,
+                                                    'thumbnail_height' => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Height_'.$intLanguageId]) : 0,
 													'attachment'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_'.$intLanguageId]),
+													'attachment_desc'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_Desc_'.$intLanguageId]),
 													'forward_url'   => contrexx_addslashes($_POST['frmEditEntry_ForwardUrl_'.$intLanguageId]),
 													'forward_target' => contrexx_addslashes($_POST['frmEditEntry_ForwardTarget_'.$intLanguageId]),
 												);
@@ -1247,7 +1264,11 @@ class DataAdmin extends DataLibrary {
 										`subject` = "'.$arrEntryValues['subject'].'",
 										`content` = "'.$arrEntryValues['content'].'",
 										`image` = "'.$arrEntryValues['image'].'",
+										`thumbnail` = "'.$arrEntryValues['thumbnail'].'",
+										`thumbnail_width` = "'.$arrEntryValues['thumbnail_width'].'",
+										`thumbnail_height` = "'.$arrEntryValues['thumbnail_height'].'",
 										`attachment` = "'.$arrEntryValues['attachment'].'",
+										`attachment_description` = "'.$arrEntryValues['attachment_desc'].'",
 										`forward_url` = "'.$arrEntryValues['forward_url'].'",
 										`forward_target` = "'.$arrEntryValues['forward_target'].'"
 								');
@@ -1265,6 +1286,18 @@ class DataAdmin extends DataLibrary {
 					}
 				}
 			}
+
+            // create thumbnail if required
+            if (empty($arrEntryValues['thumbnail'])) {
+                require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
+                if (!isset($objImage)) {
+                    $objImage = new ImageManager();
+                }
+                $strPath = dirname(ASCMS_DOCUMENT_ROOT.$arrEntryValues['image']).'/';
+                $strWebPath = substr($strPath, strlen(ASCMS_PATH_OFFSET));
+                $file = basename($arrEntryValues['image']);
+                $objImage->_createThumbWhq($strPath, $strWebPath, $file, $arrEntryValues['thumbnail_width'], $arrEntryValues['thumbnail_height'], 90, '', ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', $intMessageId.'_'.$intLanguageId.'_'.$file);
+            }
 		}
     }
 
@@ -1275,10 +1308,10 @@ class DataAdmin extends DataLibrary {
      * @global 	array
      * @param 	integer		$intEntryId: The values of this entry will be loaded into the form.
      */
-    function editEntry($intEntryId) {
+    function editEntry($intEntryId, $copy = false) {
     	global $_ARRAYLANG;
 
-    	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
+    	$this->_strPageTitle = $copy ? $_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'] : $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
 
     	$this->_objTpl->setVariable(array(
@@ -1302,8 +1335,8 @@ class DataAdmin extends DataLibrary {
     	$catKeys = array_keys($arrEntries[$intEntryId]['categories'][$this->_intLanguageId]);
     	$firstCat = $catKeys[0];
     	$ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
-    	
-    	
+
+
     	$release_date = $arrEntries[$intEntryId]['release_time'];
     	$release_date_end = $arrEntries[$intEntryId]['release_time_end'];
     	$this->_objTpl->setVariable(array(
@@ -1351,12 +1384,22 @@ class DataAdmin extends DataLibrary {
 		    		$this->_objTpl->setVariable(array(
 		    			'TXT_DIV_SUBJECT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
 	    				'TXT_DIV_IMAGE'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
+	    				'TXT_DIV_THUMBNAIL'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
 	    				'TXT_DIV_IMAGE_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
+	    				'TXT_DIV_THUMBNAIL_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
+                        'TXT_DATA_THUMBNAIL_ORI_DESC'   => $_ARRAYLANG['TXT_DATA_THUMBNAIL_ORI_DESC'],
+                        'TXT_DATA_THUMBNAIL_DIFF_DESC'  => $_ARRAYLANG['TXT_DATA_THUMBNAIL_DIFF_DESC'],
+                        'TXT_DATA_THUMBNAIL_SIZE'       => $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'],
+                        'THUMBNAIL_METHOD_ORI_CHECKED'  => 'checked="checked"',
+                        'DIV_THUMBNAIL_DIFF_DISPLAY'    => 'none',
+                        'TXT_DATA_WIDTH'                => $_ARRAYLANG['TXT_DATA_WIDTH'],
+                        'TXT_DATA_HEIGHT'               => $_ARRAYLANG['TXT_DATA_HEIGHT'],
 		    			'TXT_DIV_CATEGORIES'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_CATEGORIES'],
 		    			'TXT_DIV_PLACEHOLDER'   =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
 		    			'TXT_DIV_ATTACHMENT'    =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT'],
+                        'TXT_DIV_ATTACHMENT_DESC' =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'],
                         'TXT_FORWARD_URL'       =>  $_ARRAYLANG['TXT_FORWARD_URL'],
-                        'TXT_REDIRECT_HELP'     =>  $_ARRAYLANG['TXT_REDIRECT_HELP'],
+                        'TXT_REDIRECT_HELP'     =>  htmlspecialchars($_ARRAYLANG['TXT_REDIRECT_HELP'], ENT_QUOTES, CONTREXX_CHARSET),
                         'TXT_TARGET_WINDOW'     =>  $_ARRAYLANG['TXT_TARGET_WINDOW'],
                         'DISPLAY_FORWARD_URL'   => ($arrEntries[$intEntryId]['mode'] == "forward") ? (($ie) ? "block" : "table-row") : "none",
                         'TXT_TARGET_BLANK'      =>  $_ARRAYLANG['TXT_TARGET_BLANK'],
@@ -1374,9 +1417,9 @@ class DataAdmin extends DataLibrary {
 		    				++$intCategoriesCounter;
 		    			}
 		    		}
-		    		
+
 		    		$selected = "selected=\"selected\"";
-		    		
+
 		    		$this->_objTpl->setVariable(array(
 		    			'DIV_ID'			=>	$arrTranslations['long'],
 		    			'DIV_LANGUAGE_ID'	=>	$intLanguageId,
@@ -1384,12 +1427,21 @@ class DataAdmin extends DataLibrary {
 		    			'DIV_TITLE'			=>	$arrTranslations['long'],
 		    			'DIV_SUBJECT'		=>	$arrEntries[$intEntryId]['translation'][$intLanguageId]['subject'],
 		    			'DIV_IMAGE'			=>	$arrEntries[$intEntryId]['translation'][$intLanguageId]['image'],
+		    			'DIV_THUMBNAIL'		=>	$arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail'],
+                        'THUMBNAIL_ORI_WIDTH' => $arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail_width'],
+                        'THUMBNAIL_ORI_HEIGHT' => $arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail_height'],
+                        'THUMBNAIL_METHOD_ORI_CHECKED' => empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? 'checked="checked"' : '',
+                        'THUMBNAIL_METHOD_DIFF_CHECKED' => !empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? 'checked="checked"' : '',
+                        'DIV_THUMBNAIL_ORI_DISPLAY' => empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? '' : 'none',
+                        'DIV_THUMBNAIL_DIFF_DISPLAY' => !empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? '' : 'none',
+                        'DIV_THUMBNAIL_'.(!empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? 'DIFF' : 'ORI').'_DISPLAY' => '',
 		    			'DIV_CATEGORIES_1'	=>	$arrCategoriesContent[0],
 		    			'DIV_CATEGORIES_2'	=>	$arrCategoriesContent[1],
 		    			'DIV_CATEGORIES_3'	=>	$arrCategoriesContent[2],
 		    			'DIV_CONTENT'		=>	get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content']),
 		    			'DIV_PLACEHOLDER'   =>  $arrEntries[$intEntryId]['placeholder'],
 		    			'DIV_ATTACHMENT'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment'],
+		    			'DIV_ATTACHMENT_DESC'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment_desc'],
 		    			'DIV_FORWARD_URL'   =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_url'],
 		    			'TARGET_BLANK_SELECTED'    => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_blank") ? $selected : "",
 		    			'TARGET_PARENT_SELECTED'   => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_parent") ? $selected : "",
@@ -1408,8 +1460,8 @@ class DataAdmin extends DataLibrary {
 		    	}
 
 		   		$this->_objTpl->setVariable(array(
-		   			'EDIT_POST_ACTION'		=>	'?cmd=data&amp;act=updateEntry',
-		   			'EDIT_MESSAGE_ID'		=>	$intEntryId,
+		   			'EDIT_POST_ACTION'		=>	'?cmd=data&amp;act='.($copy ? 'insertEntry' : 'updateEntry'),
+		   			'EDIT_MESSAGE_ID'		=>	$copy ? 0 : $intEntryId,
 		   			'EDIT_LANGUAGES_1'		=>	$arrLanguages[0],
 		   			'EDIT_LANGUAGES_2'		=>	$arrLanguages[1],
 		   			'EDIT_LANGUAGES_3'		=>	$arrLanguages[2],
@@ -1437,7 +1489,7 @@ class DataAdmin extends DataLibrary {
     	if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages']) && $intMessageId > 0) {
 
     	    $mode = (isset($_POST['frmEditEntry_Mode'])) ? contrexx_addslashes($_POST['frmEditEntry_Mode']) : "normal";
-    	    
+
     	    // the release times
     	    if (isset($_POST['release_time_activated'])) {
     	        if (isset($_POST['endless'])) {
@@ -1452,7 +1504,7 @@ class DataAdmin extends DataLibrary {
     	            $year = intval($endDateParts[0]);
     	            $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
     	        }
-    	        
+
     	        $dateParts = split("-", $_POST['release_date']);
     	        $hour = intval($_POST['release_hour']);
     	        $minute = intval($_POST['release_minute']);
@@ -1465,7 +1517,7 @@ class DataAdmin extends DataLibrary {
     	        $release_time = 0;
     	        $release_time_end = 0;
     	    }
-    	    
+
     		//Update general info
     		$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_data_messages
     								SET 	`time_edited` = '.time().',
@@ -1601,6 +1653,12 @@ class DataAdmin extends DataLibrary {
     		$objDatabase->Execute("   DELETE FROM ".DBPREFIX."module_data_placeholders
     		                          WHERE ref_id = ".$intEntryId);
 
+			require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
+            $objFile = new File();
+            foreach (glob(ASCMS_DATA_IMAGES_PATH.'/'.$intEntryId.'_*') as $image) {
+                $objFile->delFile(ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', basename($image));
+            }
+
     		$this->writeMessageRSS();
     		$this->writeCategoryRSS();
     		$this->writeCommentRSS();
@@ -1628,7 +1686,7 @@ class DataAdmin extends DataLibrary {
     			//do nothing!
     	}
     }
-    
+
     /**
      * Shows the settings-page of the data-module.
      *
@@ -1882,8 +1940,8 @@ class DataAdmin extends DataLibrary {
             return;
         }
     }
-    
-    private function getTimeOptions($amount = 12, $select = 0) 
+
+    private function getTimeOptions($amount = 12, $select = 0)
     {
         $retval = "";
         for ($i = 0; $i <= $amount; $i++) {

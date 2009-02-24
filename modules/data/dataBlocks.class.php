@@ -218,10 +218,18 @@ class dataBlocks extends DataLibrary
             //if (array_key_exists($id, $entry['categories'][$_LANGID])) {
             if ($this->categoryMatches($id, $entry['categories'][$_LANGID])) {
                 if ($entry['translation'][$_LANGID]['image']) {
-                    if (file_exists(ASCMS_PATH.$entry['translation'][$_LANGID]['image'].".thumb")) {
-                        $image = "<img src=\"".$entry['translation'][$_LANGID]['image'].".thumb\" alt=\"\" style=\"float: left; margin-right: 5px;\"/>";
+                    if ($entry['translation'][$_LANGID]['thumbnail']) {
+                        if (file_exists(ASCMS_PATH.$entry['translation'][$_LANGID]['thumbnail'].".thumb")) {
+                            $image = "<img src=\"".$entry['translation'][$_LANGID]['thumbnail'].".thumb\" alt=\"\" style=\"float: left; margin-right: 15px;\"/>";
+                        } else {
+                            $image = "<img src=\"".$entry['translation'][$_LANGID]['thumbnail']."\" alt=\"\" style=\"float: left; margin-right: 15px; width: 80px;\" />";
+                        }
+                    } elseif (file_exists(ASCMS_DATA_IMAGES_PATH.'/'.$entryId.'_'.$_LANGID.'_'.basename($entry['translation'][$_LANGID]['image']))) {
+                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$entryId.'_'.$_LANGID.'_'.basename($entry['translation'][$_LANGID]['image'])."\" alt=\"\" style=\"float: left; margin-right: 15px;\"/>";
+                    } elseif (file_exists(ASCMS_PATH.$entry['translation'][$_LANGID]['image'].".thumb")) {
+                        $image = "<img src=\"".$entry['translation'][$_LANGID]['image'].".thumb\" alt=\"\" style=\"float: left; margin-right: 15px;\"/>";
                     } else {
-                        $image = "<img src=\"".$entry['translation'][$_LANGID]['image']."\" alt=\"\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
+                        $image = "<img src=\"".$entry['translation'][$_LANGID]['image']."\" alt=\"\" style=\"float: left; margin-right: 15px; width: 80px;\" />";
                     }
                 } else {
                     $image = "";
@@ -288,10 +296,18 @@ class dataBlocks extends DataLibrary
         $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->_arrSettings['data_template_entry']));
 
         if ($entry['translation'][$_LANGID]['image']) {
-            if (file_exists(ASCMS_PATH.$entry['translation'][$_LANGID]['image'].".thumb")) {
-                $image = "<img src=\"".$entry['translation'][$_LANGID]['image'].".thumb\" alt=\"\" style=\"float: left; margin-right: 5px;\"/>";
+            if ($entry['translation'][$_LANGID]['thumbnail']) {
+                if (file_exists(ASCMS_PATH.$entry['translation'][$_LANGID]['thumbnail'].".thumb")) {
+                    $image = "<img src=\"".$entry['translation'][$_LANGID]['thumbnail'].".thumb\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+                } else {
+                    $image = "<img src=\"".$entry['translation'][$_LANGID]['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
+                }
+            } elseif (file_exists(ASCMS_DATA_IMAGES_PATH.'/'.$id.'_'.$_LANGID.'_'.basename($entry['translation'][$_LANGID]['image']))) {
+                $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$id.'_'.$_LANGID.'_'.basename($entry['translation'][$_LANGID]['image'])."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+            } elseif (file_exists(ASCMS_PATH.$entry['translation'][$_LANGID]['image'].".thumb")) {
+                $image = "<img src=\"".$entry['translation'][$_LANGID]['image'].".thumb\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
             } else {
-                $image = "<img src=\"".$entry['translation'][$_LANGID]['image']."\" alt=\"\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
+                $image = "<img src=\"".$entry['translation'][$_LANGID]['image']."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
             }
         } else {
             $image = "";

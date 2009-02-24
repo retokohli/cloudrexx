@@ -283,6 +283,44 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
             return _databaseError($settings_query, $objDatabase->ErrorMsg());
         }
     }
+
+
+
+	/*********************************************************
+	* EXTENSION:	Thunbmail Image & Attachment description *
+	* ADDED:		Contrexx v2.1.0					         *
+	*********************************************************/
+    $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_data_messages_lang');
+    if ($arrColumns === false) {
+        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_data_messages_lang'));
+        return false;
+    }
+
+    if (!in_array('thumbnail', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail` VARCHAR( 250 ) NOT NULL AFTER `image`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+    if (!in_array('thumbnail_width', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail_width` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `thumbnail`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+    if (!in_array('thumbnail_height', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail_height` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `thumbnail_width`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+    if (!in_array('attachment_description', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `attachment_description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `attachment`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
     return true;
 }
 

@@ -324,6 +324,9 @@ class DataLibrary
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['content'] 	= '';
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['tags'] 		= '';
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['image'] 		= '';
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail'] 		= '';
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_width'] 		= 0;
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_height'] 		= 0;
 				}
 
 				//Get assigned categories for this entry
@@ -345,7 +348,11 @@ class DataLibrary
 																	content,
 																	tags,
 																	image,
+																	thumbnail,
+																	thumbnail_width,
+																	thumbnail_height,
 																	attachment,
+																	attachment_description,
 																	forward_url,
 																	forward_target
 															FROM	'.DBPREFIX.'module_data_messages_lang
@@ -365,7 +372,11 @@ class DataLibrary
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['content'] 	= $objLanguageResult->fields['content'];
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['tags'] 		= htmlentities(stripslashes($objLanguageResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['image'] 		= htmlentities(stripslashes($objLanguageResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail'] 		= htmlentities(stripslashes($objLanguageResult->fields['thumbnail']), ENT_QUOTES, CONTREXX_CHARSET);
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_width'] 		= empty($objLanguageResult->fields['thumbnail_width']) ? 80 : $objLanguageResult->fields['thumbnail_width'];
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_height'] 		= empty($objLanguageResult->fields['thumbnail_height']) ? 80 : $objLanguageResult->fields['thumbnail_height'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['attachment'] 	= htmlentities(stripslashes($objLanguageResult->fields['attachment']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['attachment_desc'] 	= htmlentities(stripslashes($objLanguageResult->fields['attachment_description']), ENT_QUOTES, CONTREXX_CHARSET);
 //                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['mode']        = $objLanguageResult->fields['mode'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_url'] = $objLanguageResult->fields['forward_url'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_target'] = $objLanguageResult->fields['forward_target'];
