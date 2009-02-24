@@ -68,7 +68,7 @@ include_once('lib/DBG.php');
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - set all debug flags
  */
-define('_DEBUG', DBG_LOG_FIREPHP);
+define('_DEBUG', false);
 
 //-------------------------------------------------------
 // Set error reporting
