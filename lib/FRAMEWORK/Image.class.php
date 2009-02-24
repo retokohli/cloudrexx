@@ -149,13 +149,20 @@ class ImageManager
      * @param   integer $maxWidth       The maximum width of the image
      * @param   integer $maxHeight      The maximum height of the image
      * @param   integer $quality        The desired jpeg thumbnail quality
+     * @param	string	$thumbNailSuffix	Suffix of the thumbnail. Default is 'thumb'
+	 * @param	string	$strPathNew		Image file store folder. Default is $strPath
+	 * @param	string	$strWebPathNew	Image file web store folder. Default is $strWebPath
+	 * @param	string	$fileNew		Image file store name. Default is $file
      * @return  bool                    True on success, false otherwise.
      */
     function _createThumbWhq(
-        $strPath, $strWebPath, $file, $maxWidth=80, $maxHeight=80, $quality=90
+        $strPath, $strWebPath, $file, $maxWidth=80, $maxHeight=80, $quality=90, $thumbNailSuffix = '.thumb', $strPathNew = null, $strWebPathNew = null, $fileNew = null
     ) {
         $objFile   = &new File();
         $file      = basename($file);
+        $fileNew   = empty($fileNew) ? $file : basename($fileNew);
+        empty($strPathNew) ? $strPathNew = $strPath : false;
+        empty($strWebPathNew) ? $strWebPathNew = $strWebPath : false;
         $tmpSize   = getimagesize($strPath.$file);
 
         // reset the ImageManager
@@ -182,15 +189,15 @@ class ImageManager
         if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) {
             return false;
         }
-        if (is_file("$strPath$file.thumb")) {
-            if (!unlink("$strPath$file.thumb")) {
+        if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
+            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) {
                 return false;
             }
         }
-        if (!$this->saveNewImage("$strPath$file.thumb")) {
+        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) {
             return false;
         }
-        if (!$objFile->setChmod($strPath, $strWebPath, "$file.thumb")) {
+        if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) {
             return false;
         }
         return true;
