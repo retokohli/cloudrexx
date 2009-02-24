@@ -1656,6 +1656,7 @@ CREATE TABLE `contrexx_module_market` (
   `status` int(1) NOT NULL default '0',
   `regkey` varchar(50) NOT NULL default '',
   `paypal` int(1) NOT NULL default '0',
+  `sort_id` int(4) NOT NULL default '0',
   `spez_field_1` varchar(255) NOT NULL,
   `spez_field_2` varchar(255) NOT NULL,
   `spez_field_3` varchar(255) NOT NULL,
