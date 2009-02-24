@@ -122,7 +122,7 @@ class Payment
 
         $arrPaymentId = array();
         $query = "
-            SELECT `p`.`payment_id`
+            SELECT DISTINCT `p`.`payment_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
                 ON `c`.`zones_id`=`z`.`zones_id`
@@ -158,9 +158,17 @@ class Payment
      */
     static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
     {
+   	    global $_ARRAYLANG;
+
         $menu =
             '<select name="paymentId"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').'>'.
+            (intval($selectedId) == 0 && $onchange
+	            ? '<option value="0" selected="selected">'.
+	              $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'].
+	              "</option>\n"
+	            : ''
+            ).
             self::getPaymentMenuoptions($selectedId, $countryId).
             "</select>\n";
         return $menu;
@@ -221,35 +229,6 @@ class Payment
         if (empty(self::$arrPayment)) self::init();
         return self::$arrPayment[$paymentId]['name'];
     }
-
-
-    /**
-     * OBSOLETE
-     * Returns the name of the payment processor with the given ID,
-     * or '' if it couldn't be found, or if an error was encountered.
-     * @return  string                  The name of the payment processor
-     * @global  ADONewConnection  $objDatabase    Database connection object
-     * @todo    This method belongs to the PaymentProcessing class.  It's
-     *          still here because the backend only uses this class, and not
-     *          PaymentProcessing.
-    static function getPaymentProcessorName($payment_id)
-    {
-        global $objDatabase;
-
-        if (empty($payment_id)) return '';
-        $processor_id = self::$arrPayment[$payment_id]['processor_id'];
-        $query = "
-            SELECT name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
-             WHERE id=$processor_id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return '';
-        }
-        return $objResult->fields['name'];
-    }
-     */
 
 
     /**

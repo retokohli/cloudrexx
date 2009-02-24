@@ -128,10 +128,6 @@ class Vat
     {
         global $objDatabase;
 
-        $query = "SELECT id, percent, class ".
-                 "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
 //        $arrSqlClass = Text::getSqlSnippets('`vat`.`text_class_id`', FRONTEND_LANG_ID);
 //        $query = "
 //            SELECT `vat`.`id`, `percent`".$arrSqlClass['field']."
@@ -139,6 +135,10 @@ class Vat
 //             ".$arrSqlClass['join'];
 //        $objResult = $objDatabase->Execute($query);
 //        if (!$objResult) return false;
+        $query = "SELECT id, percent, class ".
+                 "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
         self::$arrVat = array();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];

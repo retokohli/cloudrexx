@@ -654,12 +654,11 @@ class ProductAttribute
      * Return the price of the ProductAttribute value selected by its ID
      * from the database.
      *
-     * Returns false on error, or the empty string if the value cannot be
-     * found.
+     * Returns false on error, or 0 (zero) if the value cannot be found.
      * @param   integer   $id     The ProductAttribute value ID
-     * @return  mixed             The ProductAttribute value price on success,
-     *                            the empty string if it cannot be found,
-     *                            or false.
+     * @return  double            The ProductAttribute value price on success,
+     *                            0 (zero) if it cannot be found,
+     *                            or false on failure.
      * @static
      * @global  mixed     $objDatabase  Database object
      */
@@ -667,20 +666,17 @@ class ProductAttribute
     {
         global $objDatabase;
 
-        // id, name_id, value, price, price_prefix (enum('+', '-'))
+        // id, name_id, value, price
         $query = "
-            SELECT price, price_prefix
+            SELECT price
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
              WHERE id=$id
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        if ($objResult->RecordCount() == 1) {
-            return $objResult->fields['price_prefix'].$objResult->fields['price'];
-        }
-        return '';
+        if (!$objResult) return false;
+        if ($objResult->RecordCount() == 1)
+            return $objResult->fields['price'];
+        return 0;
     }
 
 
