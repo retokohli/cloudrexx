@@ -140,7 +140,7 @@ class Sorting
 
         $fieldIndex = array_search($fieldName, $this->arrFieldName);
         if ($fieldIndex === false) {
-echo("Sorting::getHeaderForField(fieldName=$fieldName): ERROR: unknown field name<br />");
+//echo("Sorting::getHeaderForField(fieldName=$fieldName): ERROR: unknown field name<br />");
             return '';
         }
         $orderDirectionString =
