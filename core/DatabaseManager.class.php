@@ -439,7 +439,7 @@ class DatabaseManager
         ));
 
         //Check for contrexx-table
-        if (DBPREFIX != substr($strTableName, 0, strpos($strTableName,'_') + 1)) {
+        if (strpos($strTableName, DBPREFIX) !== 0) {
             self::addError($_CORELANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX']);
             $objTemplate->hideBlock('showTable');
             return;
