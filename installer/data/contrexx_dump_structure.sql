@@ -2047,6 +2047,203 @@ CREATE TABLE `contrexx_module_newsletter_user_title` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `title` (`title`)
 ) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_partners_categories` (
+  `category_id` int(4) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  `is_active` enum('0','1') NOT NULL default '1',
+  `name` varchar(100) NOT NULL default '',
+  `imgpath` varchar(250) NOT NULL,
+  PRIMARY KEY  (`category_id`,`lang_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_categories_name` (
+  `id` int(11) NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `is_active` int(11) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`)
+) TYPE=InnoDB;
+CREATE TABLE `contrexx_module_partners_create` (
+  `message_id` int(6) unsigned NOT NULL auto_increment,
+  `user_id` int(5) unsigned NOT NULL,
+  `time_created` int(14) unsigned NOT NULL default '0',
+  `time_edited` int(14) unsigned NOT NULL default '0',
+  `hits` int(7) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`message_id`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_partners_create_lang` (
+  `message_id` int(6) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  `is_active` enum('0','1') NOT NULL,
+  `status` enum('0','1') NOT NULL,
+  `subject` varchar(250) binary NOT NULL,
+  `level` varchar(250) NOT NULL default '',
+  `profile` varchar(250) NOT NULL default '',
+  `country` varchar(250) NOT NULL default '',
+  `region` varchar(250) NOT NULL,
+  `vertical` varchar(250) NOT NULL default '',
+  `contactname` varchar(250) binary NOT NULL,
+  `email` varchar(250) NOT NULL,
+  `website` varchar(250) NOT NULL,
+  `address1` varchar(250) NOT NULL default '',
+  `address2` varchar(250) NOT NULL default '',
+  `city` varchar(250) NOT NULL,
+  `zipcode` varchar(250) NOT NULL,
+  `phone` varchar(250) NOT NULL default '',
+  `fax` varchar(250) NOT NULL,
+  `reference` varchar(250) NOT NULL,
+  `quote` text NOT NULL,
+  `content` text NOT NULL,
+  `image` varchar(250) NOT NULL default '',
+  PRIMARY KEY  (`message_id`,`lang_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_create_lang_backup` (
+  `message_id` int(6) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  `is_active` enum('0','1') NOT NULL,
+  `status` enum('0','1') NOT NULL,
+  `subject` varchar(250) NOT NULL default '',
+  `level` varchar(250) NOT NULL default '',
+  `profile` varchar(250) NOT NULL default '',
+  `country` varchar(250) NOT NULL default '',
+  `region` varchar(250) NOT NULL,
+  `vertical` varchar(250) NOT NULL default '',
+  `contactname` varchar(250) NOT NULL,
+  `email` varchar(250) NOT NULL,
+  `website` varchar(250) NOT NULL,
+  `address1` varchar(250) NOT NULL default '',
+  `address2` varchar(250) NOT NULL default '',
+  `city` varchar(250) NOT NULL,
+  `zipcode` varchar(250) NOT NULL,
+  `phone` varchar(250) NOT NULL default '',
+  `fax` varchar(250) NOT NULL,
+  `reference` varchar(250) NOT NULL,
+  `quote` text NOT NULL,
+  `content` text NOT NULL,
+  `image` varchar(250) NOT NULL default '',
+  PRIMARY KEY  (`message_id`,`lang_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_display` (
+  `display_id` int(11) NOT NULL auto_increment,
+  `display_level_id` int(11) NOT NULL,
+  `display_title` int(11) NOT NULL,
+  `display_content` int(11) NOT NULL,
+  `display_contactname` int(11) NOT NULL,
+  `display_country` int(11) NOT NULL,
+  `display_phone` int(11) NOT NULL,
+  `display_address1` int(11) NOT NULL,
+  `display_address2` int(11) NOT NULL,
+  `display_city` int(11) NOT NULL,
+  `display_zipcode` int(11) NOT NULL,
+  `display_certificate_logo` int(11) NOT NULL,
+  `display_logo` int(11) NOT NULL,
+  `display_level_logo` int(11) NOT NULL,
+  `display_level_text` int(11) NOT NULL,
+  `display_quote` int(11) NOT NULL,
+  PRIMARY KEY  (`display_id`)
+) TYPE=InnoDB;
+CREATE TABLE `contrexx_module_partners_message_to_category` (
+  `message_id` int(6) unsigned NOT NULL,
+  `category_id` int(4) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_message_to_country` (
+  `message_id` int(6) unsigned NOT NULL,
+  `category_id` int(4) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  `pos_id` int(10) NOT NULL,
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_message_to_level` (
+  `message_id` int(6) unsigned NOT NULL,
+  `category_id` int(4) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_message_to_profile` (
+  `message_id` int(6) unsigned NOT NULL,
+  `category_id` int(4) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_message_to_region` (
+  `message_id` int(6) unsigned NOT NULL,
+  `category_id` int(4) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_message_to_vertical` (
+  `message_id` int(6) unsigned NOT NULL,
+  `category_id` int(4) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_settings` (
+  `id` int(10) NOT NULL auto_increment,
+  `sortorder` varchar(100) NOT NULL,
+  `width` varchar(100) NOT NULL,
+  `height` varchar(100) NOT NULL,
+  `lwidth` varchar(100) NOT NULL,
+  `lheight` varchar(100) NOT NULL,
+  `cwidth` varchar(100) NOT NULL,
+  `cheight` varchar(100) NOT NULL,
+  `lis_active` varchar(100) NOT NULL,
+  `pis_active` varchar(100) NOT NULL,
+  `cis_active` varchar(100) NOT NULL,
+  `vis_active` varchar(100) NOT NULL,
+  `ctis_active` varchar(100) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=InnoDB;
+CREATE TABLE `contrexx_module_partners_user_country` (
+  `id` int(10) unsigned NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `is_active` int(11) NOT NULL,
+  `reg_id` int(10) NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  `country` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_user_level` (
+  `id` int(10) unsigned NOT NULL,
+  `lang_id` int(2) NOT NULL,
+  `is_active` int(2) NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  `imgpath` varchar(250) NOT NULL,
+  `level` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_user_profile` (
+  `id` int(10) unsigned NOT NULL,
+  `lang_id` int(2) NOT NULL,
+  `is_active` int(2) NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  `profile` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_user_region` (
+  `id` int(10) unsigned NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `is_active` int(11) NOT NULL,
+  `cat_id` int(10) NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_partners_user_vertical` (
+  `id` int(10) unsigned NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `is_active` int(11) NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  `vertical` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_podcast_category` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
