@@ -1413,98 +1413,56 @@ class directoryLibrary
         }
 
         $javascript = <<< EOF
-<script language="JavaScript">
+<script language="JavaScript" type="text/javascript">
 /* <![CDATA[ */
-function addCategoryLevel(from,dest,add,remove)
+function move(from, dest, add, remove)
 {
-    if ( from.selectedIndex < 0)
-    {
-        if (from.options[0] != null)
-            from.options[0].selected = true;
-        from.focus();
-        return false;
+  if (from.selectedIndex < 0) {
+    if (from.options[0] != null) from.options[0].selected = true;
+    from.focus();
+    return false;
+  } else {
+    for (i = 0; i < from.length; ++i) {
+      if (from.options[i].selected) {
+        dest.options[dest.options.length] = new Option(from.options[i].text, from.options[i].value, false, false);
+      }
     }
-    else
-    {
-        for (var i=0; i<from.length; i++)
-        {
-            if (from.options[i].selected)
-            {
-                dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-               }
-        }
-        for (var i=from.length-1; i>=0; i--)
-        {
-            if (from.options[i].selected)
-            {
-               from.options[i] = null;
-               }
-        }
+    for (i = from.options.length-1; i >= 0; --i) {
+      if (from.options[i].selected) {
+        from.options[i] = null;
+      }
     }
-    disableButtons(from,dest,add,remove);
+  }
+  disableButtons(from, dest, add, remove);
 }
 
-
-function removeCategoryLevel(from,dest,add,remove)
+function disableButtons(from, dest, add, remove)
 {
-    if ( dest.selectedIndex < 0)
-    {
-        if (dest.options[0] != null)
-            dest.options[0].selected = true;
-        dest.focus();
-        return false;
-    }
-    else
-    {
-        for (var i=0; i<dest.options.length; i++)
-        {
-            if (dest.options[i].selected)
-            {
-                from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-               }
-        }
-        for (var i=dest.options.length-1; i>=0; i--)
-        {
-            if (dest.options[i].selected)
-            {
-               dest.options[i] = null;
-               }
-        }
-    }
-    disableButtons(from,dest,add,remove);
+  if (from.options.length > 0) {
+    add.disabled = 0;
+  } else {
+    add.disabled = 1;
+  }
+  if (dest.options.length > 0) {
+    remove.disabled = 0;
+  } else {
+    remove.disabled = 1;
+  }
 }
 
-function disableButtons(from,dest,add,remove)
+function selectAll(control)
 {
-    if (from.options.length > 0 )
-    {
-        add.disabled = 0;
-    }
-    else
-        add.disabled = 1;
-
-    if (dest.options.length > 0)
-        remove.disabled = 0;
-    else
-        remove.disabled = 1;
+  for (i = 0; i < control.length; ++i) {
+    control.options[i].selected = true;
+  }
 }
 
-function selectAll(CONTROL)
+function deselectAll(control)
 {
-    for(var i = 0;i < CONTROL.length;i++)
-    {
-        CONTROL.options[i].selected = true;
-    }
+  for (i = 0; i < control.length; ++i) {
+    control.options[i].selected = false;
+  }
 }
-
-function deselectAll(CONTROL)
-{
-    for(var i = 0;i < CONTROL.length;i++)
-    {
-        CONTROL.options[i].selected = false;
-    }
-}
-
 EOF;
 
         //default required fields

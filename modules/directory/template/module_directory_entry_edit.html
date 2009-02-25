@@ -20,11 +20,10 @@
 		    </td>
 		    <td width="50">
 		      <div align="center">
-		        <input type="button" value=" &gt;&gt; " name="addCat" onclick="addCategoryLevel(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
-		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeCat" onclick="removeCategoryLevel(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
-		        <br /><br />
-		      </div>
+                <input type="button" value="&gt;&gt;" name="addCat" onclick="move(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
+                <br />
+                <input type="button" value="&lt;&lt;" name="removeCat" onclick="move(document.addForm.elements['selectedCat[]'],document.addForm.elements['notSelectedCat[]'],removeCat,addCat);" />
+              </div>
 		    </td>
 		    <td>
 		      <div align="left">
@@ -50,11 +49,10 @@
 		    </td>
 		    <td width="50">
 		      <div align="center">
-		        <input type="button" value=" &gt;&gt; " name="addLevel" onclick="addCategoryLevel(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
-		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="removeCategoryLevel(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
-		        <br /><br />
-		      </div>
+                <input type="button" value=" &gt;&gt; " name="addLevel" onclick="move(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+                <br />
+                <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="move(document.addForm.elements['selectedLevel[]'],document.addForm.elements['notSelectedLevel[]'],removeLevel,addLevel);" />
+              </div>
 		    </td>
 		    <td>
 		      <div align="left">
