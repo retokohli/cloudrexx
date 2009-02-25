@@ -2192,7 +2192,7 @@ CREATE TABLE `contrexx_module_shop_customers` (
   `customer_status` tinyint(1) unsigned NOT NULL default '0',
   `group_id` int(10) unsigned default NULL,
   PRIMARY KEY  (`customerid`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
@@ -2254,7 +2254,7 @@ CREATE TABLE `contrexx_module_shop_order_items` (
   `vat_percent` decimal(5,2) unsigned default NULL,
   `weight` int(10) unsigned default NULL,
   PRIMARY KEY  (`order_items_id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_order_items_attributes` (
   `orders_items_attributes_id` int(10) unsigned NOT NULL auto_increment,
   `order_items_id` int(10) unsigned NOT NULL default '0',
@@ -2296,7 +2296,7 @@ CREATE TABLE `contrexx_module_shop_orders` (
   `modified_by` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`orderid`),
   KEY `order_status` (`order_status`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_payment` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(50) default NULL,
