@@ -10,13 +10,13 @@ CREATE TABLE `contrexx_access_rel_user_group` (
   `user_id` int(10) unsigned NOT NULL default '0',
   `group_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`group_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_settings` (
   `key` varchar(32) NOT NULL default '',
   `value` varchar(255) NOT NULL default '',
   `status` tinyint(1) unsigned NOT NULL default '0',
   UNIQUE KEY `key` (`key`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_attribute` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `parent_id` int(10) unsigned NOT NULL default '0',
@@ -27,13 +27,13 @@ CREATE TABLE `contrexx_access_user_attribute` (
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL default '',
   `access_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_attribute_name` (
   `attribute_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`attribute_id`,`lang_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_attribute_value` (
   `attribute_id` int(10) unsigned NOT NULL default '0',
   `user_id` int(10) unsigned NOT NULL default '0',
@@ -50,7 +50,7 @@ CREATE TABLE `contrexx_access_user_core_attribute` (
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL default '',
   `access_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_groups` (
   `group_id` int(6) unsigned NOT NULL auto_increment,
   `group_name` varchar(100) NOT NULL default '',
@@ -69,7 +69,7 @@ CREATE TABLE `contrexx_access_user_mail` (
   `body_text` text NOT NULL,
   `body_html` text NOT NULL,
   UNIQUE KEY `mail` (`type`,`lang_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_profile` (
   `user_id` int(10) unsigned NOT NULL,
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL default 'gender_undefined',
@@ -93,18 +93,18 @@ CREATE TABLE `contrexx_access_user_profile` (
   `picture` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`user_id`),
   KEY `profile` (`firstname`(100),`lastname`(100),`company`(50))
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_title` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
   `order_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `title` (`title`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_validity` (
   `validity` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`validity`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_users` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `is_admin` tinyint(1) unsigned NOT NULL default '0',
@@ -126,7 +126,7 @@ CREATE TABLE `contrexx_access_users` (
   `u2u_active` enum('0','1') NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `username` (`username`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_backend_areas` (
   `area_id` int(6) unsigned NOT NULL auto_increment,
   `parent_area_id` int(6) unsigned NOT NULL default '0',
@@ -288,7 +288,7 @@ CREATE TABLE `contrexx_lib_country` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`iso_code_2`),
   KEY `INDEX_COUNTRIES_NAME` (`name`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_log` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `userid` int(6) unsigned default NULL,
@@ -701,14 +701,14 @@ CREATE TABLE `contrexx_module_data_categories` (
   `box_width` int(11) NOT NULL default '350',
   `template` text NOT NULL,
   PRIMARY KEY  (`category_id`,`lang_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_data_message_to_category` (
   `message_id` int(6) unsigned NOT NULL default '0',
   `category_id` int(4) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
   KEY `category_id` (`category_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_data_messages` (
   `message_id` int(6) unsigned NOT NULL auto_increment,
   `user_id` int(5) unsigned NOT NULL default '0',
@@ -721,7 +721,7 @@ CREATE TABLE `contrexx_module_data_messages` (
   `release_time` int(15) NOT NULL default '0',
   `release_time_end` int(15) NOT NULL default '0',
   PRIMARY KEY  (`message_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_data_messages_lang` (
   `message_id` int(6) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
@@ -739,7 +739,7 @@ CREATE TABLE `contrexx_module_data_messages_lang` (
   `forward_url` varchar(255) NOT NULL default '',
   `forward_target` varchar(40) default NULL,
   PRIMARY KEY  (`message_id`,`lang_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_data_placeholders` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` set('cat','entry') NOT NULL default '',
@@ -752,7 +752,7 @@ CREATE TABLE `contrexx_module_data_settings` (
   `name` varchar(50) NOT NULL default '',
   `value` text NOT NULL,
   PRIMARY KEY  (`name`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_directory_access` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
@@ -2141,7 +2141,7 @@ CREATE TABLE `contrexx_module_shop_config` (
   `value` varchar(255) NOT NULL default '',
   `status` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_countries` (
   `countries_id` int(10) unsigned NOT NULL auto_increment,
   `countries_name` varchar(64) NOT NULL default '',
@@ -2150,7 +2150,7 @@ CREATE TABLE `contrexx_module_shop_countries` (
   `activation_status` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`countries_id`),
   KEY `INDEX_COUNTRIES_NAME` (`countries_name`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_currencies` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `code` char(3) NOT NULL default '',
@@ -2161,7 +2161,12 @@ CREATE TABLE `contrexx_module_shop_currencies` (
   `status` tinyint(1) unsigned NOT NULL default '1',
   `is_default` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_customer_group` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_customers` (
   `customerid` int(10) unsigned NOT NULL auto_increment,
   `username` varchar(255) NOT NULL default '',
@@ -2188,17 +2193,12 @@ CREATE TABLE `contrexx_module_shop_customers` (
   `group_id` int(10) unsigned default NULL,
   PRIMARY KEY  (`customerid`)
 ) TYPE=MyISAM;
-CREATE TABLE `contrexx_module_shop_customer_group` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `unit` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
   `group_id` int(10) unsigned NOT NULL default '0',
   `count` int(10) unsigned NOT NULL default '1',
@@ -2227,7 +2227,7 @@ CREATE TABLE `contrexx_module_shop_mail` (
   `tplname` varchar(60) NOT NULL default '',
   `protected` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_mail_content` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `tpl_id` int(10) unsigned NOT NULL default '0',
@@ -2237,13 +2237,13 @@ CREATE TABLE `contrexx_module_shop_mail_content` (
   `subject` varchar(255) NOT NULL default '',
   `message` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_manufacturer` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `url` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_order_items` (
   `order_items_id` int(10) unsigned NOT NULL auto_increment,
   `orderid` int(10) unsigned NOT NULL default '0',
@@ -2306,7 +2306,7 @@ CREATE TABLE `contrexx_module_shop_payment` (
   `sort_order` int(10) unsigned default '0',
   `status` tinyint(1) unsigned default '1',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_payment_processors` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` enum('internal','external') NOT NULL default 'internal',
@@ -2317,7 +2317,7 @@ CREATE TABLE `contrexx_module_shop_payment_processors` (
   `picture` varchar(100) NOT NULL default '',
   `text` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_pricelists` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(25) NOT NULL default '',
@@ -2331,7 +2331,7 @@ CREATE TABLE `contrexx_module_shop_pricelists` (
   `footer_right` text,
   `categories` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `product_id` tinytext NOT NULL,
@@ -2372,7 +2372,7 @@ CREATE TABLE `contrexx_module_shop_products` (
   FULLTEXT KEY `shopindex` (`title`,`description`),
   FULLTEXT KEY `flags` (`flags`),
   FULLTEXT KEY `keywords` (`keywords`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products_attributes` (
   `attribute_id` int(10) unsigned NOT NULL auto_increment,
   `product_id` int(10) unsigned NOT NULL default '0',
@@ -2380,13 +2380,13 @@ CREATE TABLE `contrexx_module_shop_products_attributes` (
   `attributes_value_id` int(10) unsigned NOT NULL default '0',
   `sort_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`attribute_id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products_attributes_name` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `display_type` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products_attributes_value` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name_id` int(10) unsigned NOT NULL default '0',
@@ -2394,7 +2394,7 @@ CREATE TABLE `contrexx_module_shop_products_attributes_value` (
   `price` decimal(9,2) default '0.00',
   `price_prefix` enum('+','-') NOT NULL default '+',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products_downloads` (
   `products_downloads_id` int(10) unsigned NOT NULL default '0',
   `products_downloads_name` varchar(255) NOT NULL default '',
@@ -2408,7 +2408,7 @@ CREATE TABLE `contrexx_module_shop_rel_countries` (
   `zones_id` int(10) unsigned NOT NULL default '0',
   `countries_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_rel_discount_group` (
   `customer_group_id` int(10) unsigned NOT NULL default '0',
   `article_group_id` int(10) unsigned NOT NULL default '0',
@@ -2420,13 +2420,13 @@ CREATE TABLE `contrexx_module_shop_rel_payment` (
   `zones_id` int(10) unsigned NOT NULL default '0',
   `payment_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_rel_shipment` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `zones_id` int(10) unsigned NOT NULL default '0',
   `shipment_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_shipment_cost` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `shipper_id` int(10) unsigned NOT NULL,
@@ -2434,25 +2434,25 @@ CREATE TABLE `contrexx_module_shop_shipment_cost` (
   `cost` decimal(10,2) unsigned default NULL,
   `price_free` decimal(10,2) unsigned default NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_shipper` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` tinytext NOT NULL,
   `status` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_vat` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `class` tinytext NOT NULL,
   `percent` decimal(5,2) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_zones` (
   `zones_id` int(10) unsigned NOT NULL auto_increment,
   `zones_name` varchar(64) NOT NULL default '',
   `activation_status` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`zones_id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_u2u_address_list` (
   `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL,
@@ -2464,7 +2464,7 @@ CREATE TABLE `contrexx_module_u2u_message_log` (
   `message_text` text NOT NULL,
   `message_title` text NOT NULL,
   PRIMARY KEY  (`message_id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_u2u_sent_messages` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `userid` int(11) unsigned NOT NULL,
@@ -2473,13 +2473,13 @@ CREATE TABLE `contrexx_module_u2u_sent_messages` (
   `mesage_open_status` enum('0','1') NOT NULL default '0',
   `date_time` datetime NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_u2u_settings` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_u2u_user_log` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `userid` int(11) unsigned NOT NULL,
