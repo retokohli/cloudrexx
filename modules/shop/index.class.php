@@ -1246,7 +1246,7 @@ class Shop extends ShopLibrary
             if ($price) {
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_PRICE'      => $price,
-                    'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencyCode(),
+                    'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                 ));
             }
             // Only show the discount price if it's actually in use,
@@ -1254,7 +1254,7 @@ class Shop extends ShopLibrary
             if ($discountPrice) {
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_DISCOUNTPRICE'      => $discountPrice,
-                    'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencyCode(),
+                    'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                 ));
             }
             // Special outlet ShopCategory with discounts varying daily.
@@ -1273,7 +1273,7 @@ class Shop extends ShopLibrary
                             $objProduct->getDiscountedPrice()
                         ),
                     'SHOP_PRICE_TODAY_UNIT'     =>
-                        Currency::getActiveCurrencyCode(),
+                        Currency::getActiveCurrencySymbol(),
                 ));
             }
             if ($objProduct->isStockVisible()) {
@@ -1467,7 +1467,7 @@ class Shop extends ShopLibrary
                         if ($arrValue['price'] != 0) {
                             $valuePrice =
                                 '&nbsp;('.Currency::getCurrencyPrice($arrValue['price']).
-                                '&nbsp;'.Currency::getActiveCurrencyCode().')';
+                                '&nbsp;'.Currency::getActiveCurrencySymbol().')';
                         }
                         // mark the option value as selected if it was before
                         // and this page was requested from the cart
@@ -1713,7 +1713,7 @@ class Shop extends ShopLibrary
             if (isset($_SESSION['shop']['cart']) && $this->calculateItems($_SESSION['shop']['cart'])>0) {
                 $cartInfo = $_ARRAYLANG['TXT_SHOPPING_CART'].' '.$this->calculateItems($_SESSION['shop']['cart']).
                             " ".$_ARRAYLANG['TXT_SHOPPING_CART_VALUE'].' '.$this->_calculatePrice($_SESSION['shop']['cart']).
-                            " ".Currency::getActiveCurrencyCode();
+                            " ".Currency::getActiveCurrencySymbol();
                 $cartInfo = "<a href=\"index.php?section=shop".MODULE_INDEX."&amp;cmd=cart\" title=\"".$cartInfo."\">$cartInfo</a>";
             }
         }
@@ -2317,7 +2317,7 @@ sendReq('', 1);
                 'products'   => $arrProducts,
                 'totalprice' => $_SESSION['shop']['cart']['total_price'],
                 'itemcount'  => $_SESSION['shop']['cart']['items'],
-                'unit'       => Currency::getActiveCurrencyCode()
+                'unit'       => Currency::getActiveCurrencySymbol()
             );
             $objJson = new Services_JSON();
             die ($objJson->encode($arrCart));
@@ -2627,10 +2627,10 @@ sendReq('', 1);
                         ),
                     'options'        => $productOptions,
                     'price'          => Currency::formatPrice($price),
-//                    'price_unit'     => Currency::getActiveCurrencyCode(),
+//                    'price_unit'     => Currency::getActiveCurrencySymbol(),
                     'quantity'       => $quantity,
                     'itemprice'      => Currency::formatPrice($itemprice),
-//                    'itemprice_unit' => Currency::getActiveCurrencyCode(),
+//                    'itemprice_unit' => Currency::getActiveCurrencySymbol(),
                     'percent'        => $vat_rate,
                     'vat_amount'     => Currency::formatPrice($vat_amount),
                     'itemweight'     => $itemweight, // in grams!
@@ -2739,7 +2739,7 @@ sendReq('', 1);
             'TXT_CONTINUE_SHOPPING'        => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
             'SHOP_PRODUCT_TOTALITEM'       => $_SESSION['shop']['cart']['items'],
             'SHOP_PRODUCT_TOTALPRICE'      => $_SESSION['shop']['cart']['total_price'],
-            'SHOP_PRODUCT_TOTALPRICE_UNIT' => Currency::getActiveCurrencyCode(),
+            'SHOP_PRODUCT_TOTALPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTAL_WEIGHT'            => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
         ));
         if (Vat::isEnabled()) {
@@ -2753,7 +2753,7 @@ sendReq('', 1);
                 // Add them to the template if desired!
                 'SHOP_TOTAL_TAX_AMOUNT'        =>
                     $_SESSION['shop']['cart']['total_vat_amount']
-                    .'&nbsp;'.Currency::getActiveCurrencyCode(),
+                    .'&nbsp;'.Currency::getActiveCurrencySymbol(),
 
             ));
         }
@@ -3636,7 +3636,7 @@ right after the customer logs in!
         }
 
         $this->objTemplate->setVariable(array(
-            'SHOP_UNIT'               => Currency::getActiveCurrencyCode(),
+            'SHOP_UNIT'               => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTALITEM'          => $_SESSION['shop']['items'],
             'SHOP_TOTALPRICE'         => $_SESSION['shop']['total_price'],
             'SHOP_GRAND_TOTAL'        => $_SESSION['shop']['grand_total_price'],
@@ -3659,7 +3659,7 @@ right after the customer logs in!
             $this->objTemplate->setVariable(array(
                 'SHOP_TAX_PRICE'          =>
                     $_SESSION['shop']['vat_price'].
-                    '&nbsp;'.Currency::getActiveCurrencyCode(),
+                    '&nbsp;'.Currency::getActiveCurrencySymbol(),
                 'SHOP_TAX_PRODUCTS_TXT'   => $_SESSION['shop']['vat_products_txt'],
                 'SHOP_TAX_GRAND_TXT'      => $_SESSION['shop']['vat_grand_txt'],
                 'TXT_TAX_RATE'            => $_ARRAYLANG['TXT_SHOP_VAT_RATE'],
@@ -4084,7 +4084,7 @@ right after the customer logs in!
                         'SHOP_PRODUCT_PRICE'        => Currency::formatPrice(($price)*$arrProduct['quantity']),
                         'SHOP_PRODUCT_QUANTITY'     => $arrProduct['quantity'],
                         'SHOP_PRODUCT_ITEMPRICE'    => Currency::formatPrice($price),
-                        'SHOP_UNIT'                 => Currency::getActiveCurrencyCode(),
+                        'SHOP_UNIT'                 => Currency::getActiveCurrencySymbol(),
                     ));
                     if ($this->arrConfig['shop_weight_enable']['value']) {
                         $this->objTemplate->setVariable(array(
@@ -4097,14 +4097,14 @@ right after the customer logs in!
                             'SHOP_PRODUCT_TAX_RATE'   => $vatPercent,
                             'SHOP_PRODUCT_TAX_AMOUNT' =>
                                 Currency::formatPrice($vatAmount).
-                                '&nbsp;'.Currency::getActiveCurrencyCode(),
+                                '&nbsp;'.Currency::getActiveCurrencySymbol(),
                         ));
                     }
                     $this->objTemplate->parse("shopCartRow");
                 }
             }
             $this->objTemplate->setVariable(array(
-                'SHOP_UNIT'             => Currency::getActiveCurrencyCode(),
+                'SHOP_UNIT'             => Currency::getActiveCurrencySymbol(),
                 'SHOP_TOTALITEM'        => $_SESSION['shop']['items'],
                 'SHOP_PAYMENT_PRICE'    => $_SESSION['shop']['payment_price'],
                 'SHOP_TOTALPRICE'       => $_SESSION['shop']['total_price'],
@@ -4917,10 +4917,10 @@ right after the customer logs in!
                 'TXT_SHOP_CUSTOMER_DISCOUNT_AMOUNT'    => $_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT_AMOUNT'],
                 'TXT_SHOP_CUSTOMER_NEW_TOTAL_ORDER_AMOUNT' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_NEW_TOTAL_ORDER_AMOUNT'],
                 'TXT_SHOP_CUSTOMER_NEW_DISCOUNT_AMOUNT'    => $_ARRAYLANG['TXT_SHOP_CUSTOMER_NEW_DISCOUNT_AMOUNT'],
-                'SHOP_CUSTOMER_TOTAL_ORDER_AMOUNT'     => number_format($totalOrderAmount, 2, '.', '').' '.Currency::getActiveCurrencyCode(),
-                'SHOP_CUSTOMER_DISCOUNT_AMOUNT'        => number_format($discountAmount, 2, '.', '').' '.Currency::getActiveCurrencyCode(),
-                'SHOP_CUSTOMER_NEW_TOTAL_ORDER_AMOUNT' => number_format($newTotalOrderAmount, 2, '.', '').' '.Currency::getActiveCurrencyCode(),
-                'SHOP_CUSTOMER_NEW_DISCOUNT_AMOUNT'    => number_format($newDiscountAmount, 2, '.', '').' '.Currency::getActiveCurrencyCode(),
+                'SHOP_CUSTOMER_TOTAL_ORDER_AMOUNT'     => number_format($totalOrderAmount, 2, '.', '').' '.Currency::getActiveCurrencySymbol(),
+                'SHOP_CUSTOMER_DISCOUNT_AMOUNT'        => number_format($discountAmount, 2, '.', '').' '.Currency::getActiveCurrencySymbol(),
+                'SHOP_CUSTOMER_NEW_TOTAL_ORDER_AMOUNT' => number_format($newTotalOrderAmount, 2, '.', '').' '.Currency::getActiveCurrencySymbol(),
+                'SHOP_CUSTOMER_NEW_DISCOUNT_AMOUNT'    => number_format($newDiscountAmount, 2, '.', '').' '.Currency::getActiveCurrencySymbol(),
                 'TXT_SHOP_CUSTOMER_DISCOUNT_DETAILS'   => $_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT_DETAILS'],
             ));
         }
@@ -4952,7 +4952,7 @@ right after the customer logs in!
                         'SHOP_MAX_WEIGHT' => $arrData['max_weight'],
                         'SHOP_COST_FREE'  => $arrData['price_free'],
                         'SHOP_COST'       => $arrData['cost'],
-                        'SHOP_UNIT'       => Currency::getActiveCurrencyCode(),
+                        'SHOP_UNIT'       => Currency::getActiveCurrencySymbol(),
                     ));
                     $this->objTemplate->parseCurrentBlock();
                 }
