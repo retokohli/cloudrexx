@@ -600,6 +600,10 @@ class InitCMS
                 $section = 'home';
                 $command = '';
             }
+            // if the section is given, we need to search the command too,
+            // even if it's empty. Otherwise, on ?section=access it could be
+            // that another "access" page shows up as the cmd is not explicitly
+            // defined as empty.
             $query = "
                   SELECT n.catid, n.themes_id, n.module
                     FROM ".DBPREFIX."modules AS m
@@ -607,10 +611,10 @@ class InitCMS
                       ON n.module=m.id
                    WHERE 1
                    ".(empty($section) ? '' : " AND m.name='$section'")."
-                   ".(empty($command) ? '' : " AND n.cmd='$command'")."
+                   ".(empty($section) ? '' : " AND n.cmd ='$command'")."
                      AND n.lang=".FRONTEND_LANG_ID."
                    ORDER BY parcat ASC
-              ";
+            ";
             $objResult = $objDatabase->SelectLimit($query, 1);
             if ($objResult && !$objResult->EOF) {
                 $page_id = $objResult->fields['catid'];
