@@ -31,12 +31,12 @@ class FWLanguage
     {
         global $objDatabase;
 
-         $objResult = $objDatabase->Execute('
+         $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default
-              FROM '.DBPREFIX.'languages
+              FROM ".DBPREFIX."languages
              ORDER BY id
-         ');
+         ");
          if ($objResult) {
              while (!$objResult->EOF) {
                 $this->arrLanguage[$objResult->fields['id']] = array(
@@ -200,7 +200,7 @@ class FWLanguage
 
         $objResult = $objDatabase->Execute("
             SELECT lang
-              FROM '.DBPREFIX.'languages
+              FROM ".DBPREFIX."languages
              WHERE id=$langId
         ");
         if (!$objResult) {
