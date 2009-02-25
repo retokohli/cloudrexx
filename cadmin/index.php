@@ -25,7 +25,6 @@ include_once('../lib/DBG.php');
  *   DBG_ALL             - sets all debug flags
  */
 define('_DEBUG', false);
-
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
@@ -36,11 +35,9 @@ if (_DEBUG) {
     $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE)      == 0 ? false : true;
     $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP)   == 0 ? false : true;
 
-    if ($_DBG['dbgLogFile'] || $_DBG['dbgLogFirePHP']) {
-        $objDBG = new DBG($_DBG['dbgLogFirePHP']);
-        $objDBG->setup('dbg.log', 'w');
-        $objDBG->enable_all();
-    }
+    if ($_DBG['dbgLogFirePHP'])  DBG::enable_firephp();
+    if ($_DBG['dbgLogFile']   )  DBG::setup('dbg.log', 'w');
+    DBG::enable_all();
 }
 
 if (!empty($_DBG['dbgPHP']) && $_DBG['dbgPHP']) {
@@ -204,7 +201,7 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
 
     switch ($plainCmd) {
         case "secure":
-            $_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
+            $_SESSION['auth']['secid'] = FWUser::mkSECID();
             getSecurityImage($_SESSION['auth']['secid']);
             exit;
         case "lostpw":

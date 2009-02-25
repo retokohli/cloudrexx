@@ -474,6 +474,22 @@ class FWUser extends User_Setting
         }
         return "$validity $unit";
     }
+
+    /**
+     * Returns a SECID for logging in (Backend, Frontend editing)
+     * This is an uppercase four-letter string with no ambiguous
+     * characters (like 0/O, l/I etc.).
+     */
+    public static function mkSECID() {
+        $chars = 'ABCDEFGHJKLMNPQRTUVWXYZ23456789';
+        $max   = strlen($chars) -1;
+        $ret = '';
+        for ($i=0;$i<4;$i++) {
+
+            $ret .= $chars{rand(0,$max)};
+        }
+        return $ret;
+    }
 }
 
 ?>

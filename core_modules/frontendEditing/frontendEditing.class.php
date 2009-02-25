@@ -354,7 +354,7 @@ class frontendEditing extends frontendEditingLib {
 	 *
 	 */
 	private function getSecurityImage() {
-		$_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
+        $_SESSION['auth']['secid'] = FWUser::mkSECID();
 
 		getSecurityImage($_SESSION['auth']['secid']);
 	}
