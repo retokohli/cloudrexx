@@ -1100,9 +1100,68 @@ class rssDirectory extends directoryLibrary
                     $_SESSION['formSelected'] = $_POST["formSelected"];
                 }
 
+                                $java = <<< EOF
+<script language="JavaScript" type="text/javascript">
+/* <![CDATA[ */
+
+EOF;
+                $java .= <<< EOF
+
+function move(from, dest, add, remove)
+{
+  if (from.selectedIndex < 0) {
+    if (from.options[0] != null) from.options[0].selected = true;
+    from.focus();
+    return false;
+  } else {
+    for (i = 0; i < from.length; ++i) {
+      if (from.options[i].selected) {
+        dest.options[dest.options.length] = new Option(from.options[i].text, from.options[i].value, false, false);
+      }
+    }
+    for (i = from.options.length-1; i >= 0; --i) {
+      if (from.options[i].selected) {
+        from.options[i] = null;
+      }
+    }
+  }
+  disableButtons(from, dest, add, remove);
+}
+
+function disableButtons(from, dest, add, remove)
+{
+  if (from.options.length > 0) {
+    add.disabled = 0;
+  } else {
+    add.disabled = 1;
+  }
+  if (dest.options.length > 0) {
+    remove.disabled = 0;
+  } else {
+    remove.disabled = 1;
+  }
+}
+
+function selectAll(control)
+{
+  for (i = 0; i < control.length; ++i) {
+    control.options[i].selected = true;
+  }
+}
+
+function deselectAll(control)
+{
+  for (i = 0; i < control.length; ++i) {
+    control.options[i].selected = false;
+  }
+}
+
+EOF;
+
+
                 if($this->settings['levels']['value']=='1'){
                     $this->_objTpl->parse('levels');
-                    $java =    'function CheckFields() {
+                    $java .=    'function CheckFields() {
                                     var errorMsg = "";
                                     with( document.moveForm ) {
                                         if (document.getElementsByName(\'selectedCat[]\')[0].value == "" && document.getElementsByName(\'selectedLevel[]\')[0].value == "") {
@@ -1116,11 +1175,12 @@ class rssDirectory extends directoryLibrary
                                     }else{
                                         return true;
                                     }
-                                }';
+                                }
+                                ';
                     $action = 'selectAll(document.moveForm.elements[\'selectedCat[]\']); selectAll(document.moveForm.elements[\'selectedLevel[]\']); return CheckFields();';
                 }else{
                     $this->_objTpl->hideBlock('levels');
-                    $java =    'function CheckFields() {
+                    $java .=    'function CheckFields() {
                                     var errorMsg = "";
                                     with( document.moveForm ) {
                                         if (document.getElementsByName(\'selectedCat[]\')[0].value == "") {
@@ -1134,9 +1194,15 @@ class rssDirectory extends directoryLibrary
                                     }else{
                                         return true;
                                     }
-                                }';
+                                }
+                                ';
                     $action = 'selectAll(document.moveForm.elements[\'selectedCat[]\']); return CheckFields();';
                 }
+
+                $java .= <<< EOF
+/* ]]> */
+</script>
+EOF;
 
                 $this->_objTpl->setVariable(array(
                     'TXT_MOVE_ENTRY'            => $_ARRAYLANG['TXT_MOVE_ENTRIES'],
