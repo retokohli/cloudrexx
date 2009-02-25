@@ -1,38 +1,6 @@
 <!-- START module_directory_entry_move.html -->
-<script language="JavaScript">
-function disableButtons(from,dest,add,remove)
-{
-	if (from.options.length > 0 )
-	{
-		add.disabled = 0;
-	}
-	else
-		add.disabled = 1;
-
-	if (dest.options.length > 0)
-		remove.disabled = 0;
-	else
-		remove.disabled = 1;
-}
-
-function selectAll(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-    {
-		CONTROL.options[i].selected = true;
-	}
-}
-
-function deselectAll(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = false;
-	}
-}
-
 {DIRECTORY_JAVASCRIPT}
-</script>
+
 <form name="moveForm" enctype="multipart/form-data" method="post" action="?cmd=directory&act=movefile"  onSubmit="{DIRECTORY_FORM_ACTION}">
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
     <tr>
@@ -51,9 +19,9 @@ function deselectAll(CONTROL)
 		    </td>
 		    <td width="50">
 		      <div align="center">
-                <input type="button" value="&gt;&gt;" name="addCat" onclick="move(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
+                <input type="button" value="&gt;&gt;" name="addCat" onclick="move(document.moveForm.elements['notSelectedCat[]'],document.moveForm.elements['selectedCat[]'],addCat,removeCat);" />
                 <br />
-                <input type="button" value="&lt;&lt;" name="removeCat" onclick="move(document.addForm.elements['selectedCat[]'],document.addForm.elements['notSelectedCat[]'],removeCat,addCat);" />
+                <input type="button" value="&lt;&lt;" name="removeCat" onclick="move(document.moveForm.elements['selectedCat[]'],document.moveForm.elements['notSelectedCat[]'],removeCat,addCat);" />
               </div>
 		    </td>
 		    <td>
@@ -79,9 +47,9 @@ function deselectAll(CONTROL)
 		    </td>
 		    <td width="50">
 		      <div align="center">
-                <input type="button" value=" &gt;&gt; " name="addLevel" onclick="move(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+                <input type="button" value=" &gt;&gt; " name="addLevel" onclick="move(document.moveForm.elements['notSelectedLevel[]'],document.moveForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
                 <br />
-                <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="move(document.addForm.elements['selectedLevel[]'],document.addForm.elements['notSelectedLevel[]'],removeLevel,addLevel);" />
+                <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="move(document.moveForm.elements['selectedLevel[]'],document.moveForm.elements['notSelectedLevel[]'],removeLevel,addLevel);" />
               </div>
 		    </td>
 		    <td>
