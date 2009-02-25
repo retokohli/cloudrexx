@@ -1345,7 +1345,7 @@ class ContentManager
         $currentTime = time();
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
-        $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirect'])) : '';
+        $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirectUrl'])) : '';
 	    if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
             $redirect = 'mailto:'.$match[1];
             $_POST['redirectTarget'] = '_blank';
@@ -1579,7 +1579,7 @@ class ContentManager
         $contentdesc =     strip_tags(contrexx_addslashes($_POST['desc']));
         $contentkey =     strip_tags(contrexx_addslashes($_POST['key']));
 
-        $redirect = contrexx_addslashes(strip_tags($_POST['redirect']));
+        $redirect = contrexx_addslashes(strip_tags($_POST['redirectUrl']));
         $redirectTarget = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
