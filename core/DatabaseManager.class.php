@@ -33,7 +33,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch> (Pre 2.1.0)
  * @author      Reto Kohli <reto.kohli@comvation.com> (Version 2.1.0)
  * @version     2.1.0
- * @todo        Use the core Mime class to handle MIME types
+ * @internal    Use the core Mime class to handle MIME types
  */
 class DatabaseManager
 {
@@ -125,7 +125,7 @@ class DatabaseManager
      */
     function getPage()
     {
-        global $objTemplate, $_CORELANG;
+        global $objTemplate;
 
         if (!isset($_GET['act'])) $_GET['act'] = '';
 
@@ -490,7 +490,6 @@ class DatabaseManager
 
         $strSqlDump = '';
         $strSqlDump .= $objBackup->getTableDefinition($strTableName);
-        $strSqlDump .= "\n\n";
         $strSqlDump .= $objBackup->getTableContent($strTableName);
 
         $objTemplate->setVariable(array(
@@ -999,7 +998,6 @@ class DatabaseManager
                 $objBackup->getTableHeader($strTableName).
                 $objBackup->getSeparationLine().
                 $objBackup->getTableDefinition($strTableName).
-                "\n\n".
                 $objBackup->getTableContent($strTableName).
                 "\n\n";
         }
@@ -1042,7 +1040,8 @@ class DatabaseManager
      * @global     array        core language
      * @param         integer        $intBackupId: The backup with this id will be removed.
      */
-    function deleteBackup($intBackupId) {
+    function deleteBackup($intBackupId)
+    {
         global $objDatabase, $_CORELANG;
 
         $intBackupId = intval($intBackupId);
@@ -1123,7 +1122,7 @@ class DatabaseManager
      */
     function uploadBackup()
     {
-        global $objDatabase, $_CONFIG, $_CORELANG;
+        global $objDatabase, $_CORELANG;
 
         $intTimeStamp = time();
         $strFileName = $intTimeStamp.$this->_arrFileEndings['sql'];
@@ -1178,7 +1177,7 @@ class DatabaseManager
      * @global     array        system configuration
      */
     function showDetails($intBackupId) {
-        global  $objTemplate, $objDatabase, $_CORELANG, $_CONFIG;
+        global  $objTemplate, $objDatabase, $_CORELANG;
 
         $this->_strPageTitle = $_CORELANG['TXT_DBM_BACKUP_TITLE'];
 
@@ -1249,13 +1248,13 @@ class DatabaseManager
 
     /**
      * Show the CSV import/export view
-     * @return  boolean       True on success, false otherwise
-     * @global  ADOConnection       $objDatabase
-     * @global  HTML_Template_Sigma $objTemplate
-     * @global  array               $_CORELANG
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @since   2.1.0
-     * @todo    Make the import/export path configurable
+     * @return      boolean       True on success, false otherwise
+     * @global      ADOConnection       $objDatabase
+     * @global      HTML_Template_Sigma $objTemplate
+     * @global      array               $_CORELANG
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @since       2.1.0
+     * @internal    Make the import/export path configurable
      */
     function showCsv()
     {
@@ -1283,6 +1282,9 @@ class DatabaseManager
                         $_CORELANG['TXT_DBM_SUCCEEDED_IMPORTING_CSV_FILES'],
                         join(', ', $arrSuccess)
                     ));
+                    self::addMessage(sprintf(
+                        $_CORELANG['TXT_DBM_CSV_FOLDER'], CSVBackup::getPath()
+                    ));
                 if ($arrFail)
                     self::addError(sprintf(
                         $_CORELANG['TXT_DBM_FAILED_IMPORTING_CSV_FILES'],
@@ -1293,7 +1295,7 @@ class DatabaseManager
         if (   isset($_POST['multiaction'])
             && $_POST['multiaction'] == 'export') {
 /*
-  TODO - Accept a custom destination folder
+            // Accept a custom destination folder
             if (empty($_POST['target'])) {
                 self::addError($_CORELANG['TXT_DBM_ERROR_NO_TARGET_FOLDER']);
 */
@@ -1313,6 +1315,9 @@ class DatabaseManager
                     self::addMessage(sprintf(
                         $_CORELANG['TXT_DBM_SUCCEEDED_EXPORTING_TABLES'],
                         join(', ', $arrSuccess)
+                    ));
+                    self::addMessage(sprintf(
+                        $_CORELANG['TXT_DBM_CSV_FOLDER'], CSVBackup::getPath()
                     ));
                 if ($arrFail)
                     self::addMessage(sprintf(
@@ -1339,6 +1344,7 @@ class DatabaseManager
             'TXT_DBM_CSV_IMPORT'                  => $_CORELANG['TXT_DBM_CSV_IMPORT'],
             'TXT_DBM_CSV_SHOW_TABLE'              => $_CORELANG['TXT_DBM_SHOW_TABLE_TITLE'],
             'TXT_DBM_CSV_IMPORT_TRUNCATE_TABLE'   => $_CORELANG['TXT_DBM_CSV_IMPORT_TRUNCATE_TABLE'],
+            'TXT_DBM_CSV' => $_CORELANG['TXT_DBM_CSV'],
         ));
         $objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'%"');
         $i = 0;
@@ -1620,7 +1626,7 @@ final class SQLBackup extends BackupBase
         if (intval($objResult->fields['Auto_increment']) > 0) {
             $strReturn .= ' AUTO_INCREMENT='.intval($objResult->fields['Auto_increment']);
         }
-        $strReturn .= ';';
+        $strReturn .= ";\n\n";
         return $strReturn;
     }
 
@@ -1674,9 +1680,7 @@ final class SQLBackup extends BackupBase
 
             //Write closing tag
             $strReturn .= ';';
-
         }
-
         return $strReturn;
     }
 
@@ -1763,16 +1767,42 @@ final class SQLBackup extends BackupBase
  */
 final class CSVBackup extends BackupBase
 {
-    const csv_delimiter = ';';
-    const csv_quote = '"';
-    const csv_default_path = 'export/';
+    const default_delimiter = ';';
+    const default_quote = '"';
+    // Folder with trailing slash
+    const default_path = '';
     // OBSOLETE:  const csv_escape = '\\';
+
+    private static $delimiter = '';
+    private static $quote = '';
+    // Folder with trailing slash
+    private static $path = '';
+
+    function init($path='', $delimiter='', $quote='')
+    {
+    	self::$path =
+            (empty($path) ? ASCMS_BACKUP_PATH.'/'.self::default_path : $path);
+        self::$delimiter =
+            (empty($delimiter) ? self::default_delimiter : $delimiter);
+        self::$quote =
+            (empty($quote) ? self::default_quote : $quote);
+    }
+
+
+    static function getPath()
+    {
+      	return self::$path;
+    }
+
 
     /**
      * CSV does not support comments.
      * @return  boolean     False.  Always.
      */
-    function hasCommentTags() { return false; }
+    function hasCommentTags()
+    {
+    	return false;
+    }
 
 
     /**
@@ -1781,29 +1811,72 @@ final class CSVBackup extends BackupBase
      */
     function getCommentString()
     {
-        throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__.'() is not supported', 0);
+    	die('getCommentString():  Not implemented!');
+        //throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__.'() is not supported', 0);
     }
 
 
     /**
-     * OBSOLETE.
-     * This method does not belong to the abstract base class at all.
-     * @throws  Exception
+     * Returns the table definition as a string
      */
     function getTableDefinition($strTable)
     {
-        throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__."($strTable) is not supported", 0);
+        global $objDatabase;
+
+        $strReturn = '';
+        // Write column names
+        $objResult = $objDatabase->Execute('SHOW FIELDS FROM '.$strTable);
+        while (!$objResult->EOF) {
+            $strReturn .=
+                ($strReturn ? ';' : '').
+                '"'.$objResult->fields['Field'].'"';
+            $objResult->MoveNext();
+        }
+        return $strReturn."\n";
+    	//return "TRUNCATE TABLE `$strTable`\n";
     }
 
 
     /**
-     * OBSOLETE.
-     * This method does not belong to the abstract base class at all.
-     * @throws  Exception
+     * Returns the table contents as a string
      */
     function getTableContent($strTable)
     {
-        throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__."($strTable) is not supported", 0);
+        global $objDatabase;
+
+        // Get the column names
+        $arrColumnNames = array();
+        $objResult = $objDatabase->Execute('SHOW FIELDS FROM '.$strTable);
+        if (!$objResult || $objResult->EOF) return false;
+        while (!$objResult->EOF) {
+            $arrColumnNames[] = $objResult->fields['Field'];
+            $objResult->MoveNext();
+        }
+
+//        // Get the count of all rows
+//        $objResult = $objDatabase->Execute('SELECT COUNT(*) as numof_rows FROM '.$strTable);
+//        if (!$objResult || $objResult->EOF) return false;
+//        $numof_rows = $objResult->fields['numof_rows'];
+
+        // Get the contents and add them to the string
+        $strReturn = '';
+        $objResult = $objDatabase->Execute('SELECT * FROM '.$strTable);
+        if (!$objResult || $objResult->EOF) return false;
+        while (!$objResult->EOF) {
+        	$arrRow = array();
+            foreach($arrColumnNames as $strColumnName) {
+                if (isset($objResult->fields[$strColumnName])) {
+                	$strValue = $objResult->fields[$strColumnName];
+                	$strValue = '"'.preg_replace('/"/', '""', $strValue).'"';
+                    $arrRow[] = $strValue;
+                } else {
+                    $arrRow[] = 'NULL';
+                }
+            }
+            $strReturn .= join(';', $arrRow)."\n";
+            $objResult->MoveNext();
+        }
+        return $strReturn;
     }
 
 
@@ -1821,63 +1894,27 @@ final class CSVBackup extends BackupBase
      */
     static function export_csv($strTablename)
     {
-        global $objDatabase, $_CORELANG;
+        global $_CORELANG;
 
-        $arrColumns = $objDatabase->MetaColumns($strTablename);
-        if (!$arrColumns) {
-            DatabaseManager::addError(sprintf(
-                $_CORELANG['TXT_DBM_ERROR_GETTING_TABLE_INFO'],
-                $strTablename
-            ));
-            return false;
-        }
-        $arrFieldname = array();
-        foreach ($arrColumns as $field) {
-            $arrFieldname[] = strtolower($field->name);
-        }
-        $query = "
-            SELECT `".join('`, `', $arrFieldname)."`
-              FROM `$strTablename`
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            DatabaseManager::addError(sprintf(
-                $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
-                $strTablename
-            ));
-            return false;
-        }
-        $strPath = ASCMS_DOCUMENT_ROOT.'/'.self::csv_default_path."/$strTablename.csv";
+        if (empty(self::$delimiter)) self::init();
+        $strPath =
+            self::$path.$strTablename.
+            //'_'.date('YmdHis').
+            '.csv';
         $fh = @fopen($strPath, 'w');
         if (!$fh) {
             DatabaseManager::addError(sprintf(
                 $_CORELANG['TXT_DBM_ERROR_OPENING_FILE_FOR_WRITING'],
                 $strPath
             ));
-        }
-        if (!fputcsv($fh, $arrFieldname, self::csv_delimiter, self::csv_quote)) {
-            DatabaseManager::addError(sprintf(
-                $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
-                $strTablename
-            ));
-            fclose($fh);
             return false;
         }
-        while (!$objResult->EOF) {
-            $arrLine = array();
-            foreach ($objResult->fields as $value) {
-                $arrLine[] = $value;
-            }
-            if (!fputcsv($fh, $arrLine, self::csv_delimiter, self::csv_quote)) {
-                DatabaseManager::addError(sprintf(
-                    $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
-                    $strTablename
-                ));
-                fclose($fh);
-                return false;
-            }
-            $objResult->MoveNext();
-        }
+        $strTableDefinition = self::getTableDefinition($strTablename);
+//echo("Def: $strTableDefinition<br />");
+        fwrite($fh, $strTableDefinition);
+        $strTableContent = self::getTableContent($strTablename);
+//echo("Con: $strTableContent<br />");
+        fwrite($fh, $strTableContent);
         fclose($fh);
         return true;
     }
@@ -1901,12 +1938,13 @@ final class CSVBackup extends BackupBase
     {
         global $objDatabase, $_CORELANG;
 
+        if (empty(self::$delimiter)) self::init();
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (empty($arrTables)) {
-            DatabaseManager::addError($_CORELANG['TXT_DBM_ERROR_GETTING_TABLE_INFO']);
+            DatabaseManager::addError($_CORELANG['TXT_DBM_ERROR_GETTING_TABLES_INFO']);
             return false;
         }
-        $strTablename = preg_replace('/\..+$/', '', $strTablename);
+        //$strTablename = preg_replace('/^(.+)_\d+\.csv$/', '$1', $strTablename);
         // Table exists?
         if (!in_array($strTablename, $arrTables)) {
             DatabaseManager::addError(sprintf(
@@ -1918,7 +1956,7 @@ final class CSVBackup extends BackupBase
         $arrColumnsTable = $objDatabase->MetaColumns($strTablename);
         if (!$arrColumnsTable) {
             DatabaseManager::addError(sprintf(
-                $_CORELANG['TXT_DBM_ERROR_EXPORTING_TABLE'],
+                $_CORELANG['TXT_DBM_ERROR_GETTING_TABLE_INFO'],
                 $strTablename
             ));
             return false;
@@ -1926,7 +1964,10 @@ final class CSVBackup extends BackupBase
         foreach ($arrColumnsTable as $field) {
             $arrFieldnameTable[] = strtolower($field->name);
         }
-        $strPath = ASCMS_DOCUMENT_ROOT.'/'.self::csv_default_path.'/'.$strTablename.'.csv';
+        $strPath =
+            self::$path.$strTablename.
+            //'_'.date('YmdHis').
+            '.csv';
         $fh = @fopen($strPath, 'r');
         if (!$fh) {
             DatabaseManager::addError(sprintf(
@@ -1935,7 +1976,7 @@ final class CSVBackup extends BackupBase
             ));
             return false;
         }
-        $arrFieldnameCsv = fgetcsv($fh, null, self::csv_delimiter, self::csv_quote);
+        $arrFieldnameCsv = fgetcsv($fh, null, self::$delimiter, self::$quote);
         // Verify that both the database and the CSV contain
         // the same number of fields with the same names
         $flagEqual = true;
@@ -1973,16 +2014,20 @@ final class CSVBackup extends BackupBase
         // Join the database field names.  Part of the query below
         $strFieldnames = '`'.join('`, `', $arrFieldnameCsv).'`';
         // Values or EOF
-        $arrValue = fgetcsv($fh, null, self::csv_delimiter, self::csv_quote);
+        $arrValue = fgetcsv($fh, null, self::$delimiter, self::$quote);
         while ($arrValue) {
-            $arrValueFixed = array_map('mysql_escape_string', $arrValue);
+        	foreach ($arrValue as &$value) {
+        		if ($value !== 'NULL')
+  	                $value = "'".mysql_escape_string($value)."'";
+        	}
             $query = "
                 INSERT INTO `$strTablename` (
                     $strFieldnames
                 ) VALUES (
-                    '".join("', '", $arrValueFixed)."'
+                    ".join(', ', $arrValue)."
                 )
             ";
+//echo("Query: $query<br />");
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
                 DatabaseManager::addError(sprintf(
@@ -1991,11 +2036,13 @@ final class CSVBackup extends BackupBase
                 ));
                 return false;
             }
-            $arrValue = fgetcsv($fh, null, self::csv_delimiter, self::csv_quote);
+            $arrValue = fgetcsv($fh, null, self::$delimiter, self::$quote);
         }
         fclose($fh);
         return true;
     }
+
+
 
 }
 
