@@ -1376,6 +1376,8 @@ CREATE TABLE `contrexx_module_guestbook` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `status` tinyint(1) unsigned NOT NULL default '0',
   `nickname` tinytext NOT NULL,
+  `name` tinytext NOT NULL,
+  `forename` tinytext NOT NULL,
   `gender` char(1) NOT NULL default '',
   `url` tinytext NOT NULL,
   `email` tinytext NOT NULL,
