@@ -164,5 +164,8 @@ Wissensdatenbank (knowledge)
 Auktions-Modul (auction)
 - Ermöglicht Online-Auktionen
 
+Partner-Modul (partners)
+- Kategoriebasiertes Partner-Verwaltungssystem
+
 
 

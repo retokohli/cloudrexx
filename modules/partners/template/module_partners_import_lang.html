@@ -1,0 +1,85 @@
+<script language="JavaScript" type="text/javascript">
+function switchBoxAndTab(objElement, strTabId) {
+
+	if (countActiveLanguages() == 0) {
+		//We just "unchecked" the last language, disallow this
+		objElement.checked = true;
+	} else {
+		//There are more active languages, hide the tab
+		switchTabVisibility(strTabId);
+	}
+
+	//Now make sure that a possible div is shown
+	activateAnyActiveDiv();
+}
+
+function switchTabVisibility(strTabId) {
+	if (document.getElementById(strTabId).style.display == 'none') {
+  document.getElementById(strTabId).style.display = 'inline';
+	} else {
+		document.getElementById(strTabId).style.display = 'none';
+	}
+}
+
+
+function countActiveLanguages() {
+	var activeLanguages = 0;
+
+	for (var h=0; h < document.forms.length;h++) {
+		for (var i=0; i < document.forms[h].elements.length;i++) {
+			//read out all form-elements with the loop
+			if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
+				if(document.forms[h].elements[i].checked) {
+					activeLanguages++;
+				}
+			}
+		}
+	}
+
+	return activeLanguages;
+}
+
+function activateAnyActiveDiv() {
+	//Deactivate every div first first
+	for (var TabName in arrTabToDiv) {
+		document.getElementById(TabName).className = 'inactive';
+		document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
+	}
+
+	//Activate the first possible div with an acitvated checkbox
+	for (var TabName in arrTabToDiv) {
+		if (document.getElementById(TabName).style.display == 'inline') {
+			document.getElementById(TabName).className = 'active';
+			document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
+			break;
+		}
+	}
+}
+
+
+</script>
+
+
+
+<form name="frmEditEntry" method="post" action="index.php?cmd=partners&act=csvsubmit">
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="4">{IMPORT_PARTNERS_LANG}</th>  <!-- Languages -->
+		</tr>
+		<tr class="row1">
+		<td colspan="4">{TXT_IMPORT_PARTNERS_LANG}</td>
+		</tr>
+		<tr class="row2">
+			<td width="10%">{IMPORT_PARTNERS_LANG}</td>
+			<td width="10%" valign="top">{IMPORT_LANGUAGES_1}</td>
+			<td width="10%" valign="top">{IMPORT_LANGUAGES_2}</td>
+			<td width="50%" valign="top">{IMPORT_LANGUAGES_3}</td>
+		</tr>
+		<tr class="row1">
+		<td colspan="4"><input type="hidden" id="hidden_rkeys" name="hidden_rkeys" value="{HIDDEN_IMPORT_RIGHTKEYS}">
+		<input type="hidden" id="hidden_lkeys" name="hidden_lkeys" value="{HIDDEN_IMPORT_LEFTKEYS}">
+        <input type="hidden" id="hidden_csv" name="hidden_csv" value="{HIDDEN_IMPORT_PARTNERS_CSV}">
+        <input type="submit" name="importsubmit" value="{IMPORT_LANGUAGE_BUTTON}"></td>
+		</tr>
+</table>
+</form>
