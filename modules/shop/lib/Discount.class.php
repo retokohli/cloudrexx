@@ -123,6 +123,7 @@ class Discount
     {
         global $objDatabase;
 
+        if (empty($id)) return '';
         $query = "
             SELECT count, rate
               FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
@@ -158,6 +159,7 @@ class Discount
     {
         global $objDatabase;
 
+        if (empty($id)) return '';
         $query = "
             SELECT `count`, `rate`
               FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
@@ -180,19 +182,17 @@ class Discount
      */
     static function getUnit($id)
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $objDatabase;
 
+        if (empty($id)) return '';
         $query = "
             SELECT unit
               FROM `".DBPREFIX."module_shop_discountgroup_count_name`
              WHERE id=$id
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return '';
-        if (!$objResult->EOF) {
-            return $objResult->fields['unit'];
-        }
-        return '';
+        if (!$objResult || $objResult->EOF) return '';
+        return $objResult->fields['unit'];
     }
 
 
@@ -217,6 +217,7 @@ class Discount
     ) {
         global $objDatabase;
 
+        if (empty($id)) $id = 0;
         $query = "
             SELECT 1
               FROM `".DBPREFIX."module_shop_discountgroup_count_name`
@@ -288,6 +289,7 @@ class Discount
     {
         global $objDatabase;
 
+        if (empty($id)) return false;
         // Remove counts and rates
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
@@ -481,8 +483,7 @@ class Discount
     {
         global $objDatabase;
 
-        if (empty($groupCustomerId) || empty($groupArticleId))
-            return 0;
+        if (empty($groupCustomerId) || empty($groupArticleId)) return 0;
         $query = "
             SELECT `rate`
               FROM `".DBPREFIX."module_shop_rel_discount_group`
@@ -509,7 +510,8 @@ class Discount
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if (!is_numeric($id)) return $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'];
+        if (empty($id) || !is_numeric($id))
+            return $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'];
         $query = "
             SELECT `name`
               FROM `".DBPREFIX."module_shop_customer_group`
@@ -590,13 +592,13 @@ class Discount
             )
         ";
         // Maybe the record exists if the ID is not zero
-        if ($id != 0) {
-            $query = "
+        if ($id > 0) {
+            $query_exists = "
                 SELECT 1
                   FROM `".DBPREFIX."module_shop_customer_group`
                  WHERE id=$id
             ";
-            $objResult = $objDatabase->Execute($query);
+            $objResult = $objDatabase->Execute($query_exists);
             if (!$objResult) return false;
             if ($objResult->RecordCount() == 1) {
                 // Exists, update
@@ -635,13 +637,13 @@ class Discount
             )
         ";
         // Maybe the record exists if the ID is not zero
-        if ($id != 0) {
-            $query = "
+        if ($id > 0) {
+            $query_exists = "
                 SELECT 1
                   FROM `".DBPREFIX."module_shop_article_group`
                  WHERE id=$id
             ";
-            $objResult = $objDatabase->Execute($query);
+            $objResult = $objDatabase->Execute($query_exists);
             if (!$objResult) return false;
             if ($objResult->RecordCount() == 1) {
                 // Exists, update
@@ -671,6 +673,7 @@ class Discount
     {
         global $objDatabase;
 
+        if (empty($id)) return false;
         // Remove the group itself
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_customer_group`
@@ -702,6 +705,7 @@ class Discount
     {
         global $objDatabase;
 
+        if (empty($id)) return false;
         // Remove the group itself
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_article_group`
