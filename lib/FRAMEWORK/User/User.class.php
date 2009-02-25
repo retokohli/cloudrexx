@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -274,6 +275,7 @@ class User extends User_Profile
         parent::__construct();
 
         $arrSettings = FWUser::getSettings();
+        // TODO:  Provide default values here in case the settings are missing!
         $this->defaultProfileAccessTyp = $arrSettings['default_profile_access']['value'];
         $this->defaultEmailAccessType = $arrSettings['default_email_access']['value'];
 
@@ -496,7 +498,8 @@ class User extends User_Profile
 
     private function getFilteredUserIdList($arrFilter = null, $search = null)
     {
-        $arrUserIds = array();
+// TODO:  Never used
+//        $arrUserIds = array();
         $arrConditions = array();
         $arrSearchConditions = array();
         $tblCoreAttributes = false;
@@ -534,7 +537,8 @@ class User extends User_Profile
         if (!empty($search)) {
             if (count($arrAccountConditions = $this->parseAccountSearchConditions($search))) {
                 $arrSearchConditions[] = implode(' OR ', $arrAccountConditions);
-                $tblAccount = true;
+// TODO:  Never used
+//                $tblAccount = true;
             }
             if (count($arrCoreAttributeConditions = $this->parseAttributeSearchConditions($search, true))) {
                 $arrSearchConditions[] = implode(' OR ', $arrCoreAttributeConditions);
@@ -694,32 +698,32 @@ class User extends User_Profile
         if ($id) {
             if (!isset($this->arrCachedUsers[$id])) {
                 return $this->loadUsers($id);
-            } else {
-                $this->id = $id;
-                $this->username = isset($this->arrCachedUsers[$id]['username']) ? $this->arrCachedUsers[$id]['username'] : '';
-                $this->email = isset($this->arrCachedUsers[$id]['email']) ? $this->arrCachedUsers[$id]['email'] : '';
-                $this->email_access = isset($this->arrCachedUsers[$id]['email_access']) ? $this->arrCachedUsers[$id]['email_access'] : $this->defaultEmailAccessType;
-                $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
-                $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
-                $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
-                $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
-                $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
-                $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
-                $this->validity = isset($this->arrCachedUsers[$id]['validity']) ? $this->arrCachedUsers[$id]['validity'] : 0;
-                $this->last_auth = isset($this->arrCachedUsers[$id]['last_auth']) ? $this->arrCachedUsers[$id]['last_auth'] : 0;
-                $this->last_activity = isset($this->arrCachedUsers[$id]['last_activity']) ? $this->arrCachedUsers[$id]['last_activity'] : 0;
-                $this->profile_access = isset($this->arrCachedUsers[$id]['profile_access']) ? $this->arrCachedUsers[$id]['profile_access'] : $this->defaultProfileAccessTyp;
-                $this->restore_key = isset($this->arrCachedUsers[$id]['restore_key']) ? $this->arrCachedUsers[$id]['restore_key'] : '';
-                $this->restore_key_time = isset($this->arrCachedUsers[$id]['restore_key_time']) ? $this->arrCachedUsers[$id]['restore_key_time'] : 0;
-                $this->password = '';
-                $this->arrGroups = null;
-                $this->EOF = false;
-                $this->loggedIn = false;
-                return true;
             }
-        } else {
-            $this->clean();
+            $this->id = $id;
+            $this->username = isset($this->arrCachedUsers[$id]['username']) ? $this->arrCachedUsers[$id]['username'] : '';
+            $this->email = isset($this->arrCachedUsers[$id]['email']) ? $this->arrCachedUsers[$id]['email'] : '';
+            $this->email_access = isset($this->arrCachedUsers[$id]['email_access']) ? $this->arrCachedUsers[$id]['email_access'] : $this->defaultEmailAccessType;
+            $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
+            $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
+            $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
+            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
+            $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
+            $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
+            $this->validity = isset($this->arrCachedUsers[$id]['validity']) ? $this->arrCachedUsers[$id]['validity'] : 0;
+            $this->last_auth = isset($this->arrCachedUsers[$id]['last_auth']) ? $this->arrCachedUsers[$id]['last_auth'] : 0;
+            $this->last_activity = isset($this->arrCachedUsers[$id]['last_activity']) ? $this->arrCachedUsers[$id]['last_activity'] : 0;
+            $this->profile_access = isset($this->arrCachedUsers[$id]['profile_access']) ? $this->arrCachedUsers[$id]['profile_access'] : $this->defaultProfileAccessTyp;
+            $this->restore_key = isset($this->arrCachedUsers[$id]['restore_key']) ? $this->arrCachedUsers[$id]['restore_key'] : '';
+            $this->restore_key_time = isset($this->arrCachedUsers[$id]['restore_key_time']) ? $this->arrCachedUsers[$id]['restore_key_time'] : 0;
+            $this->password = '';
+            $this->arrGroups = null;
+            $this->EOF = false;
+            $this->loggedIn = false;
+            return true;
         }
+        $this->clean();
+// TODO:  I guess this is wrong, then.
+        return false;
     }
 
     private function loadUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
@@ -975,8 +979,8 @@ class User extends User_Profile
         foreach ($arrNotSortedUserIds as $userId) {
             $arrUserIds[$userId] = '';
         }*/
-
-        return $arrUserIds;
+// TODO:  Unreachable
+//        return $arrUserIds;
     }
 
     public function setRestoreKey()
