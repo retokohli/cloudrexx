@@ -353,7 +353,7 @@ CREATE TABLE `contrexx_module_auction` (
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`description`,`title`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_auction_access` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
@@ -380,7 +380,7 @@ CREATE TABLE `contrexx_module_auction_categories` (
   `displayorder` int(4) NOT NULL default '0',
   `status` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_auction_mail` (
   `id` int(4) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
