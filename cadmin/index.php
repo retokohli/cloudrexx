@@ -988,15 +988,15 @@ switch ($plainCmd) {
      * @since   2.1.0
      * @version 1.0
      */
-    case "knowledge":
-        $modulespath = ASCMS_MODULE_PATH . "/knowledge/admin.class.php";
+    case 'knowledge':
+        Permission::checkAccess(129, 'static');
+        $modulespath = ASCMS_MODULE_PATH . '/knowledge/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
-        $objDemoModule = &new KnowledgeAdmin();
-        $objDemoModule->getPage();
-    break;
-
+        $objKnowledge = &new KnowledgeAdmin();
+        $objKnowledge->getPage();
+        break;
 
     /**
      * U2U Module
@@ -1005,7 +1005,7 @@ switch ($plainCmd) {
      * @version 1.0
      */
     case 'u2u':
-    	//Permission::checkAccess(119, 'static');
+    	Permission::checkAccess(141, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/u2u/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1016,12 +1016,12 @@ switch ($plainCmd) {
 
     /**
      * Partners Module
-     * @author  Ivan Schmid <ivan.schmid@comvation.com>
+     * @author  comvation <info@comvation.com>
      * @since   2.0.1
      * @version 1.0
      */
     case 'partners':
-    	// Permission::checkAccess(119, 'static');
+    	Permission::checkAccess(140, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/partners/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1029,6 +1029,23 @@ switch ($plainCmd) {
         $objPartner = new PartnersAdmin();
         $objPartner->getPage();
         break;
+
+    /**
+     * Auction Module
+     * @author  comvation <info@comvation.com>
+     * @since   2.0.1
+     * @version 1.0
+     */
+    case 'auction':
+        Permission::checkAccess(143, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/auction/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_AUCTION_TITLE'];
+        $objAuction = new Auction();
+        $objAuction->getPage();
+        break;
+
 
     //-------------------------------------------------------
     // access denied
@@ -1064,18 +1081,6 @@ switch ($plainCmd) {
         $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
         $objDownloadsModule = new downloads();
         $objDownloadsModule->getPage();
-    break;
-
-   	//-----------------------------------------------------------------------------------------------
-    // knowledge
-    //-----------------------------------------------------------------------------------------------
-    case "knowledge":
-        $modulespath = ASCMS_MODULE_PATH . "/knowledge/admin.class.php";
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
-        $objDemoModule = &new KnowledgeAdmin();
-        $objDemoModule->getPage();
     break;
 
     //-------------------------------------------------------

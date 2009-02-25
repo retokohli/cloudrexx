@@ -1700,6 +1700,19 @@ break;
 		$objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
 	break;
 
+//-------------------------------------------------------
+// Auction Module
+//-------------------------------------------------------
+    case "auction":
+        $modulespath = "modules/auction/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $auction = new Auction($page_content);
+        $objTemplate->setVariable("CONTENT_TEXT", $auction->getPage());
+    break;
 
 //-------------------------------------------------------
 // Download Module
