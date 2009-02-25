@@ -57,9 +57,7 @@ class Knowledge extends KnowledgeLibrary
      */
 	public function getPage()
 	{	 	    
-	    global $_LANGID, $objDBG;
-	    
-	    $objDBG->time();
+	    global $_LANGID;
 	    
 	    if (!isset($_GET['act'])) {
 	        $_GET['act'] = "";
