@@ -6,7 +6,6 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -20,7 +19,6 @@ require_once ASCMS_CORE_PATH.'/Socket.class.php';
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  */
 class Saferpay
 {
@@ -627,6 +625,12 @@ class Saferpay
     }
 
 
+    /**
+     * Returns code for HTML menu options for choosing the window display
+     * option
+     * @param   integer     $selected       The selected option ID
+     * @return  string                      The HTML menu options
+     */
     static function getWindowMenuoptions($selected=0)
     {
         global $_ARRAYLANG;
