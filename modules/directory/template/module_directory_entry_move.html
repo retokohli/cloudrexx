@@ -3,8 +3,8 @@
 function disableButtons(from,dest,add,remove)
 {
 	if (from.options.length > 0 )
-	{		
-		add.disabled = 0;		
+	{
+		add.disabled = 0;
 	}
 	else
 		add.disabled = 1;
@@ -35,29 +35,28 @@ function deselectAll(CONTROL)
 </script>
 <form name="moveForm" enctype="multipart/form-data" method="post" action="?cmd=directory&act=movefile"  onSubmit="{DIRECTORY_FORM_ACTION}">
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
-    <tr> 
+    <tr>
       <th colspan="2">{TXT_MOVE_ENTRY}</th>
     </tr>
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
-    <tr class="row1"> 
+    <tr class="row1">
       <td width="150" valign="top">{TXT_CATEGORY}:<font color="red">*</font></td>
       <td>
         <table width="100%" border="0">
-		  <tr> 
+		  <tr>
 		    <td width="210">
 		      <select name="notSelectedCat[]" size="12" style="width:200px;" multiple="multiple">
 		          {CATEGORY}
 		      </select>
 		    </td>
-		    <td width="50"> 
-		      <div align="center"> 
-		        <input type="button" value=" &gt;&gt; " name="addCat" onclick="addCategoryLevel(document.moveForm.elements['notSelectedCat[]'],document.moveForm.elements['selectedCat[]'],addCat,removeCat);" />
-		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeCat" onclick="removeCategoryLevel(document.moveForm.elements['notSelectedCat[]'],document.moveForm.elements['selectedCat[]'],addCat,removeCat);" />
-		        <br /><br />
-		      </div>
+		    <td width="50">
+		      <div align="center">
+                <input type="button" value="&gt;&gt;" name="addCat" onclick="move(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
+                <br />
+                <input type="button" value="&lt;&lt;" name="removeCat" onclick="move(document.addForm.elements['selectedCat[]'],document.addForm.elements['notSelectedCat[]'],removeCat,addCat);" />
+              </div>
 		    </td>
-		    <td> 
+		    <td>
 		      <div align="left">
 		        <select name="selectedCat[]" size="12" style="width:200px;" multiple="multiple">
 		        </select>
@@ -68,25 +67,24 @@ function deselectAll(CONTROL)
       </td>
     </tr>
     <!-- BEGIN levels -->
-    <tr class="row2"> 
+    <tr class="row2">
       <td width="150" valign="top">{TXT_LEVEL}:<font color="red">*</font></td>
       <td>
         <table width="100%" border="0">
-		  <tr> 
+		  <tr>
 		    <td width="210">
 		      <select name="notSelectedLevel[]" size="12" style="width:200px;" multiple="multiple">
 		          {LEVELS}
 		      </select>
 		    </td>
-		    <td width="50"> 
-		      <div align="center"> 
-		        <input type="button" value=" &gt;&gt; " name="addLevel" onclick="addCategoryLevel(document.moveForm.elements['notSelectedLevel[]'],document.moveForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
-		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="removeCategoryLevel(document.moveForm.elements['notSelectedLevel[]'],document.moveForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
-		        <br /><br />
-		      </div>
+		    <td width="50">
+		      <div align="center">
+                <input type="button" value=" &gt;&gt; " name="addLevel" onclick="move(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+                <br />
+                <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="move(document.addForm.elements['selectedLevel[]'],document.addForm.elements['notSelectedLevel[]'],removeLevel,addLevel);" />
+              </div>
 		    </td>
-		    <td> 
+		    <td>
 		      <div align="left">
 		        <select name="selectedLevel[]" size="12" style="width:200px;" multiple="multiple">
 		        </select>
@@ -95,9 +93,9 @@ function deselectAll(CONTROL)
 		  </tr>
 		</table>
       </td>
-    </tr> 
+    </tr>
   <!-- END levels -->
-  </table> 
+  </table>
 <br />
 <input type="submit" name="move_submit" value="{TXT_MOVE}">&nbsp;<font color="red">*</font> = {TXT_REQUIRED_FIELDS}
 </form>
