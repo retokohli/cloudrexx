@@ -20,7 +20,11 @@ class DBG {
     private static $start_time   = null;
 
     public function __construct($enable_firephp = true) {
-        if($enable_firephp && require_once('firephp/FirePHP.class.php')){
+        throw new Exception('This is a static class! No need to create an object!');
+    }
+
+    static function enable_firephp() {
+        if (require_once('firephp/FirePHP.class.php')) {
             self::$firephp = FirePHP::getInstance(true);
         }
     }

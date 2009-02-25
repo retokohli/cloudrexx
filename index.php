@@ -80,11 +80,10 @@ if (_DEBUG) {
     $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE)      == 0 ? false : true;
     $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP)   == 0 ? false : true;
 
-    if ($_DBG['dbgLogFile'] || $_DBG['dbgLogFirePHP']) {
-        $objDBG = new DBG($_DBG['dbgLogFirePHP']);
-        $objDBG->setup('dbg.log', 'w');
-        $objDBG->enable_all();
-    }
+
+    if ($_DBG['dbgLogFirePHP'])  DBG::enable_firephp();
+    if ($_DBG['dbgLogFile']   )  DBG::setup('dbg.log', 'w');
+    DBG::enable_all();
 }
 
 if (!empty($_DBG['dbgPHP']) && $_DBG['dbgPHP']) {
@@ -1694,12 +1693,12 @@ break;
 // U2U Module
 //-------------------------------------------------------
     case "u2u":
-		$modulespath = "modules/u2u/index.class.php";
-		if (file_exists($modulespath)) require_once($modulespath);
-		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-		$objAccess = new u2u($page_content);
-		$objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
-	break;
+               $modulespath = "modules/u2u/index.class.php";
+               if (file_exists($modulespath)) require_once($modulespath);
+               else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+               $objAccess = new u2u($page_content);
+               $objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
+       break;
 
 //-------------------------------------------------------
 // Auction Module
