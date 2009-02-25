@@ -171,16 +171,17 @@ if($_DBG['dbgADODBTrace']) {
     $objDatabase->debug = 0;
 }
 
-if (isset($objDBG) && $objDBG instanceof DBG) {
-    // see: http://www.firephp.org/HQ/Use.htm for firephp usage examples.
-    // here's some basic stuff
-    $objDBG->log(array(
-                    array('1','2'), array('a','b'),
-                    array('c','d'), array('e','f')
-                 ), 'table', 'myExampleTable');
-    $objDBG->trace();
-    $objDBG->stack();
-}
+## Test stuff..
+#if (isset($objDBG) && $objDBG instanceof DBG) {
+#    // see: http://www.firephp.org/HQ/Use.htm for firephp usage examples.
+#    // here's some basic stuff
+#    $objDBG->log(array(
+#                    array('1','2'), array('a','b'),
+#                    array('c','d'), array('e','f')
+#                 ), 'table', 'myExampleTable');
+#    $objDBG->trace();
+#    $objDBG->stack();
+#}
 
 
 //-------------------------------------------------------
