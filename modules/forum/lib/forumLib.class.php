@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -6,7 +7,6 @@
  * @version     $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_forum
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -17,23 +17,23 @@
  * @package     contrexx
  * @subpackage  module_forum
  */
-class ForumLibrary {
-
-    var $_anonymousName         = "Anonym";
-    var $_intLangId;
-    var $_arrSettings           = array();
-    var $_arrLanguages          = array();
-    var $_arrTranslations       = array();
-    var $_arrIcons;
-    var $_threadCount           = 0;
-    var $_postCount             = 0;
-    var $_arrGroups             = array();
-    var $_communityUserGroupId  = array(0);
-    var $_anonymousGroupId      = array(0);
-    var $_maxStringLenght       = 50;
-    var $_minPostLenght         = 5;
-    var $_topListLimit          = 10;
-    var $_rateTimeout;
+class ForumLibrary
+{
+    public $_anonymousName         = "Anonym";
+    public $_intLangId;
+    public $_arrSettings           = array();
+    public $_arrLanguages          = array();
+    public $_arrTranslations       = array();
+    public $_arrIcons;
+    public $_threadCount           = 0;
+    public $_postCount             = 0;
+    public $_arrGroups             = array();
+    public $_communityUserGroupId  = array(0);
+    public $_anonymousGroupId      = array(0);
+    public $_maxStringLenght       = 50;
+    public $_minPostLenght         = 5;
+    public $_topListLimit          = 10;
+    public $_rateTimeout;
 
     /**
     * Constructor
@@ -53,18 +53,18 @@ class ForumLibrary {
      * @param integer $intThreadId
      * @return bool
      */
-    function _deleteThread($intThreadId, $intCatId = 0){
+    function _deleteThread($intThreadId, $intCatId = 0) {
         global $objDatabase, $_ARRAYLANG;
         $intThreadId = intval($intThreadId);
         $intCatId = intval($intCatId);
-        if($intThreadId < 1){ //something's fishy...
+        if ($intThreadId < 1) { //something's fishy...
             return false;
         }
-        if(!$intCatId){
+        if (!$intCatId) {
             $intCatId = $this->_getCategoryIdFromThread($intThreadId);
         }
 
-        if(!$this->_checkAuth($intCatId, 'delete')){ //check if the user has authorization to delete stuff in this category
+        if (!$this->_checkAuth($intCatId, 'delete')) { //check if the user has authorization to delete stuff in this category
             $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
             return false;
         }
@@ -73,7 +73,7 @@ class ForumLibrary {
         $query = '  SELECT last_post_id FROM '.DBPREFIX.'module_forum_statistics
                     WHERE category_id = '.$intCatId;
         $objRS = $objDatabase->SelectLimit($query, 1);
-        if($objRS === false){
+        if ($objRS === false) {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
         $last_post_id = $objRS->fields['last_post_id'];
@@ -82,57 +82,57 @@ class ForumLibrary {
         $query = '  SELECT id,attachment FROM '.DBPREFIX.'module_forum_postings
                     WHERE thread_id = '.$intThreadId;
         $objRS = $objDatabase->Execute($query);
-        if($objRS === false){
+        if ($objRS === false) {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
         $deletePostIds = array();
-        while(!$objRS->EOF){
+        while(!$objRS->EOF) {
             $deletePostIds[] = $objRS->fields['id'];
             $deleteAttachments[] = $objRS->fields['attachment'];
             $objRS->MoveNext();
         }
 
-        if(empty($deletePostIds)){
+        if (empty($deletePostIds)) {
             return false;
         }
 
         //now compare the fetched ids with the last_post_id from the stats table we retrieved before
-        if(in_array($last_post_id, $deletePostIds)){
+        if (in_array($last_post_id, $deletePostIds)) {
             //last_post_id in module_forum_statistics is going to be deleted, get new 'last post id'
             $query = '  SELECT `id` FROM '.DBPREFIX.'module_forum_postings
                         WHERE `category_id` = '.$intCatId.'
                         AND `thread_id` != '.$intThreadId.'
                         ORDER BY `thread_id` DESC, `id` DESC';
-            if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
-                if($objRS->RecordCount() == 1){ //another thread found, setting new 'last post id'
+            if (($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
+                if ($objRS->RecordCount() == 1) { //another thread found, setting new 'last post id'
                     $new_last_post_id = $objRS->fields['id'];
-                }else{ //no more threads, this category is empty now, hence we set the 'last post id' to 0
+                } else { //no more threads, this category is empty now, hence we set the 'last post id' to 0
                     $new_last_post_id = 0;
                 }
-            }else{
+            } else {
                 die('Database error: '.$objDatabase->ErrorMsg());
             }
         }
 
         $query = '  DELETE FROM '.DBPREFIX.'module_forum_postings
                     WHERE thread_id = '.$intThreadId;
-        if($objDatabase->Execute($query) === false){
+        if ($objDatabase->Execute($query) === false) {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
 
         foreach ($deleteAttachments as $file) {
-            if(!empty($file) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file)) {
+            if (!empty($file) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file)) {
                 unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.$file);
             }
         }
 
         $intAffectedRows = $objDatabase->Affected_Rows();
-        if(!isset($new_last_post_id)){
+        if (!isset($new_last_post_id)) {
             $query = '  UPDATE '.DBPREFIX.'module_forum_statistics
                         SET     `post_count` = `post_count` - '.$intAffectedRows.',
                                 `thread_count` = `thread_count` - 1
                         WHERE   category_id = '.$intCatId;
-        }else{
+        } else {
             $query = '  UPDATE '.DBPREFIX.'module_forum_statistics
                         SET     `last_post_id` = '.$new_last_post_id.',
                                 `post_count` = `post_count` - '.$intAffectedRows.',
@@ -140,13 +140,13 @@ class ForumLibrary {
                         WHERE   category_id = '.$intCatId;
         }
 
-        if($objDatabase->Execute($query) === false){
+        if ($objDatabase->Execute($query) === false) {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
 
         $query = '  DELETE FROM `'.DBPREFIX.'module_forum_notification`
                     WHERE `thread_id` = '.$intThreadId;
-        if($objDatabase->Execute($query) === false){
+        if ($objDatabase->Execute($query) === false) {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
 //      $objCache = &new Cache();
@@ -162,12 +162,12 @@ class ForumLibrary {
      * @param integer $intPostId
      * @return bool true on success
      */
-    function _deletePost($intCatId, $intThreadId, $intPostId){
+    function _deletePost($intCatId, $intThreadId, $intPostId) {
         global $objDatabase, $_ARRAYLANG;
-        if($intPostId < 1){
+        if ($intPostId < 1) {
             return false;
         }
-        if(!$this->_checkAuth($intCatId, 'delete')){
+        if (!$this->_checkAuth($intCatId, 'delete')) {
             $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
             return false;
         }
@@ -175,8 +175,8 @@ class ForumLibrary {
         //check if post exists
         $query = 'SELECT 1 FROM '.DBPREFIX.'module_forum_postings
                     WHERE id = '.$intPostId;
-        if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
-            if($objRS->RecordCount() == 0){
+        if (($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
+            if ($objRS->RecordCount() == 0) {
                 return false;
             }
         } else {
@@ -189,12 +189,12 @@ class ForumLibrary {
                     AND thread_id = '.$intThreadId.'
                     AND category_id = '.$intCatId.'
                     AND prev_post_id = 0';
-        if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
-            if($objRS->RecordCount() == 1){
+        if (($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
+            if ($objRS->RecordCount() == 1) {
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_FIRST_POST_IN_THREAD'].' '.$_ARRAYLANG['TXT_FORUM_DELETE_THREAD_INSTEAD']);
                 return false;
             }
-        }else{
+        } else {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
 
@@ -202,11 +202,11 @@ class ForumLibrary {
         $query = '  SELECT last_post_id FROM '.DBPREFIX.'module_forum_statistics
                     WHERE category_id = '.$intCatId;
         $objRS = $objDatabase->SelectLimit($query, 1);
-        if($objRS !== false){
+        if ($objRS !== false) {
             $last_post_id = !empty($objRS->fields['last_post_id']) ? $objRS->fields['last_post_id'] : 0;
         }
 
-        if($last_post_id == $intPostId){
+        if ($last_post_id == $intPostId) {
             $arrPosts = $this->createPostArray($intThreadId, -1);   //fetch all posts from this thread
             end($arrPosts);                         //get second last post, which is now the new last post
             $new_last_post_id = prev($arrPosts);    //and update the statistics table with the new values
@@ -215,14 +215,14 @@ class ForumLibrary {
                         SET     `last_post_id` = '.$new_last_post_id.',
                                 `post_count` = `post_count` - 1
                         WHERE category_id = '.$intCatId;
-            if($objDatabase->Execute($query) === false){
+            if ($objDatabase->Execute($query) === false) {
                 die('Database error: '.$objDatabase->ErrorMsg());
             }
-        }else{ //not last post, only update post_count
+        } else { //not last post, only update post_count
             $query = '  UPDATE '.DBPREFIX.'module_forum_statistics
                         SET     `post_count` = `post_count` - 1
                         WHERE category_id = '.$intCatId;
-            if($objDatabase->Execute($query) === false){
+            if ($objDatabase->Execute($query) === false) {
                 die('Database error: '.$objDatabase->ErrorMsg());
             }
         }
@@ -234,23 +234,23 @@ class ForumLibrary {
                     AND thread_id = '.$intThreadId.'
                     AND category_id = '.$intCatId.'
                     AND id != '.($intPostId+1);
-        if(($objRS = $objDatabase->Execute($query)) !== false){
-            if($objRS->RecordCount() > 0){
+        if (($objRS = $objDatabase->Execute($query)) !== false) {
+            if ($objRS->RecordCount() > 0) {
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_POST_STILL_ASSOCIATED'].' '.$_ARRAYLANG['TXT_FORUM_DELETE_ASSOCIATED_POSTS_FIRST']);
-            }else{
-                if(!empty($objRS->fields['attachment']) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$objRS->fields['attachment'])) {
+            } else {
+                if (!empty($objRS->fields['attachment']) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$objRS->fields['attachment'])) {
                     unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.$objRS->fields['attachment']);
                 }
                 $query = '  DELETE FROM '.DBPREFIX.'module_forum_postings
                             WHERE id='.$intPostId;
-                if($objDatabase->Execute($query) !== false){
+                if ($objDatabase->Execute($query) !== false) {
                     $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', $_ARRAYLANG['TXT_FORUM_ENTRY_SUCCESSFULLY_DELETED']);
                     return true;
-                }else{
+                } else {
                     die('Database error: '.$objDatabase->ErrorMsg());
                 }
             }
-        }else{
+        } else {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
 //      $objCache = &new Cache();
@@ -265,8 +265,8 @@ class ForumLibrary {
      * @return string $content
      * @see http://www.christian-seiler.de/projekte/php/bbcode/doc/phpdoc/earthli/index.html
      */
-    function BBCodeToHTML($content){
-        global $_ARRAYLANG;
+    function BBCodeToHTML($content)
+    {
         require_once ASCMS_LIBRARY_PATH.'/bbcode/stringparser_bbcode.class.php';
         $objBBCode = new StringParser_BBCode();
         $objBBCode->addFilter(STRINGPARSER_FILTER_PRE, array(&$this, 'convertlinebreaks')); //unify all linebreak variants from different systems
@@ -300,12 +300,12 @@ class ForumLibrary {
         return $content;
     }
 
-    function removeDoubleEscapes($text){
+    function removeDoubleEscapes($text) {
         return html_entity_decode($text, ENT_QUOTES, CONTREXX_CHARSET);
     }
 
-    function convertlinks($text){
-        if(preg_match('#^http://.*#', $text)){
+    function convertlinks($text) {
+        if (preg_match('#^http://.*#', $text)) {
             return preg_replace('#(http://)+(www\.)?([a-zA-Z0-9][a-zA-Z0-9-_/]+\.[a-zA-Z0-9][a-zA-Z0-9-_/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$1$2$3$4$5[/url]' , $text);
         }
         return preg_replace('#[\s]+(http://)+(www\.)?([a-zA-Z0-9][a-zA-Z0-9-_/]+\.[a-zA-Z0-9][a-zA-Z0-9-_/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$1$2$3$4$5[/url]' , $text);
@@ -317,8 +317,8 @@ class ForumLibrary {
      * @param string $text
      * @return unknown
      */
-    function stripBBtags($text){
-        return preg_replace ("#\[(.*[^\]])\](.*)\[/(.*[^\]])\]#", "$2", $text);
+    function stripBBtags($text) {
+        return preg_replace ('#\[(.*[^\]])\](.*)\[/(.*[^\]])\]#', '$2', $text);
     }
 
     /**
@@ -345,12 +345,13 @@ class ForumLibrary {
      * convert [quote] tags
      * @see http://www.christian-seiler.de/projekte/php/bbcode/doc/de
      */
-    function do_bbcode_quote($action, $attributes, $content, $params, $node_object){
+    function do_bbcode_quote($action, $attributes, $content, $params, $node_object)
+    {
         global $_ARRAYLANG;
-        if($action == 'validate'){
+        if ($action == 'validate') {
             return true;
         }
-        if(!isset($attributes['default'])){
+        if (!isset($attributes['default'])) {
             return '<span class="quote_from">'.$_ARRAYLANG['TXT_FORUM_SOMEONE_UNKNOWN'].' '.$_ARRAYLANG['TXT_FORUM_WROTE'].'</span><br /><div class="quote">'.$content.'</div>';
         }
         return '<span class="quote_from">'.$attributes['default'].' '.$_ARRAYLANG['TXT_FORUM_WROTE'].'</span><br /><div class="quote">'.$content.'</div>';
@@ -361,8 +362,8 @@ class ForumLibrary {
      * convert [code] tags
      * @see http://www.christian-seiler.de/projekte/php/bbcode/doc/de
      */
-    function do_bbcode_code($action, $attributes, $content, $params, $node_object){
-        if($action == 'validate'){
+    function do_bbcode_code($action, $attributes, $content, $params, $node_object) {
+        if ($action == 'validate') {
             return true;
         }
         return 'Code:<br /><div class="code">'.$content.'</div>';
@@ -375,14 +376,14 @@ class ForumLibrary {
     function do_bbcode_url ($action, $attributes, $content, $params, $node_object) {
 //      $urlRegex = '#([a-zA-Z]+://)?(.*)#';
         if ($action == 'validate') {
-            if(!isset ($attributes['default'])) {
+            if (!isset ($attributes['default'])) {
                 return $this->is_valid_url($content);
-            }else{
+            } else {
                 return $this->is_valid_url($attributes['default']);
             }
         }
         $httpRegex = '#^(http://)?(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.;%]+)+#i';
-        if(!isset ($attributes['default'])) {
+        if (!isset ($attributes['default'])) {
             $content = preg_replace($httpRegex, 'http://$2$3' ,$content);
             return '<a href="'.htmlspecialchars ($content, ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlspecialchars ($content, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
         }
@@ -401,7 +402,7 @@ class ForumLibrary {
 
         $content = $this->stripBBtags($content);
 
-        if(isset($attributes['w']) && isset($attributes['h'])){
+        if (isset($attributes['w']) && isset($attributes['h'])) {
             return '<img src="'.htmlspecialchars($content, ENT_QUOTES, CONTREXX_CHARSET).'" height="'.$attributes['h'].'" width="'.$attributes['w'].'" alt="user-posted image" border="0" />';
         }
         return '<img src="'.htmlspecialchars($content, ENT_QUOTES, CONTREXX_CHARSET).'" alt="user-posted image" border="0" />';
@@ -413,7 +414,7 @@ class ForumLibrary {
      * @param   string $url
      * @return  bool true
      */
-    function is_valid_url($url){
+    function is_valid_url($url) {
         return true;
     }
 
@@ -427,10 +428,10 @@ class ForumLibrary {
         global $_ARRAYLANG;
 
         $objFWUser = FWUser::getFWUserObject();
-        if(!$objFWUser->objUser->login()){
+        if (!$objFWUser->objUser->login()) {
             $strForumCommunityLinks = ' <a href="'.CONTREXX_SCRIPT_PATH.'?section=login&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? base64_encode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGIN'].'</a> |
                                         <a href="'.CONTREXX_SCRIPT_PATH.'?section=access&amp;cmd=signup">'.$_ARRAYLANG['TXT_FORUM_REGISTER'].'</a>';
-        }else{
+        } else {
             $strForumCommunityLinks = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=notification">'.$_ARRAYLANG['TXT_FORUM_NOTIFICATION'].'</a> | <a href="'.CONTREXX_SCRIPT_PATH.'?section=access&amp;cmd=settings">'.$_ARRAYLANG['TXT_FORUM_PROFILE'].'</a>
                                     | <a href="'.CONTREXX_SCRIPT_PATH.'?section=logout&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? urlencode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGOUT'].'</a>';
         }
@@ -447,17 +448,25 @@ class ForumLibrary {
         global $objDatabase;
         $arrReturn = array();
 
-        $objResult = $objDatabase->Execute('SELECT  name,
-                                                    value
-                                            FROM    '.DBPREFIX.'module_forum_settings
-                                        ');
+        $objResult = $objDatabase->Execute('
+            SELECT name, value
+              FROM '.DBPREFIX.'module_forum_settings
+        ');
         while (!$objResult->EOF) {
             $arrReturn[$objResult->fields['name']] = stripslashes(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
             $objResult->MoveNext();
         }
 
-        $arrReturn['banned_words'] = explode(',', $arrReturn['banned_words']);
-        $arrReturn['allowed_extensions'] = str_replace(array(' ', '\n', '\r'), '', $arrReturn['allowed_extensions']);
+        $arrReturn['banned_words'] =
+            (isset($arrReturn['banned_words'])
+                ? explode(',', $arrReturn['banned_words'])
+                : ''
+            );
+        $arrReturn['allowed_extensions'] =
+            (isset($arrReturn['allowed_extensions'])
+                ? str_replace(array(' ', '\n', '\r'), '', $arrReturn['allowed_extensions'])
+                : ''
+            );
         return $arrReturn;
     }
 
@@ -467,11 +476,13 @@ class ForumLibrary {
      * @param string $message
      * @return bool
      */
-    function _hasBadWords($message){
+    function _hasBadWords($message)
+    {
+        $arrMatch = array();
         foreach ($this->_arrSettings['banned_words'] as $regex) {
             $regex = trim($regex);
-            if(!empty($regex) && preg_match('#('.$regex.')#i', $message, $match)){
-                return $match;
+            if (!empty($regex) && preg_match('#('.$regex.')#i', $message, $arrMatch)) {
+                return $arrMatch;
             }
         }
         return false;
@@ -497,11 +508,11 @@ class ForumLibrary {
 
                 if ($intKeywordValue >= $intMinimum + $intRange * 1.0) {
                     $strCssClass = 'forumTagCloudLargest';
-                } else if($intKeywordValue >= $intMinimum + $intRange * 0.75) {
+                } else if ($intKeywordValue >= $intMinimum + $intRange * 0.75) {
                     $strCssClass = 'forumTagCloudLarge';
-                } else if($intKeywordValue >= $intMinimum + $intRange * 0.5) {
+                } else if ($intKeywordValue >= $intMinimum + $intRange * 0.5) {
                     $strCssClass = 'forumTagCloudMedium';
-                } else if($intKeywordValue >= $intMinimum + $intRange * 0.25) {
+                } else if ($intKeywordValue >= $intMinimum + $intRange * 0.25) {
                     $strCssClass = 'forumTagCloudSmall';
                 } else {
                     $strCssClass = 'forumTagCloudSmallest';
@@ -534,7 +545,7 @@ class ForumLibrary {
             $strReturn = '<ol class="forumTagHitlist">';
 
             $intTagCounter = 0;
-            foreach ($arrKeywords as $strTag => $intKeywordValue) {
+            foreach (array_keys($arrKeywords) as $strTag) {
                 $strReturn .= '<li class="forumTagHitlistItem"><a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=searchTags&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
                 ++$intTagCounter;
 
@@ -562,18 +573,17 @@ class ForumLibrary {
         if (count($arrEntries) > 0) {
             //Count total-values first
             $intTotalHits = 1;
-            $count = 0;
-            foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+// Unused
+//            $count = 0;
+            foreach ($arrEntries as $arrEntryValues) {
                 $intTotalHits += $arrEntryValues['views'];
                 $ratings[] = $arrEntryValues['rating'];
                 $minRating = min($ratings);
                 $maxRating = max($ratings);
             }
 
-
-
-            foreach ($arrEntries as $intEntryId => $arrEntryValues) {
-                if(trim($arrEntryValues['keywords']) == ''){
+            foreach ($arrEntries as $arrEntryValues) {
+                if (trim($arrEntryValues['keywords']) == '') {
                     continue;
                 }
                 //Calculate the keyword-value first
@@ -600,7 +610,7 @@ class ForumLibrary {
 
                 //Split tags
                 $arrEntryTags = split(',',$arrEntryValues['keywords']);
-                foreach($arrEntryTags as $intKey => $strTag) {
+                foreach($arrEntryTags as $strTag) {
                     $strTag = trim($strTag);
                     if (array_key_exists($strTag,$arrKeywords)) {
                         $arrKeywords[$strTag] += $intKeywordValue;
@@ -623,13 +633,13 @@ class ForumLibrary {
      * @param string $file
      * @return array $arrReturn 'path','webpath','extension', false if attachment doesn't exist in filesystem
      */
-    function _getAttachment($file){
+    function _getAttachment($file) {
         $file = addslashes($file);
-        if(!file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file) || empty($file)){
+        if (!file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file) || empty($file)) {
             return false;
         }
         $pathinfo = pathinfo($file);
-        if(file_exists(ASCMS_MODULE_IMAGE_PATH.'/filebrowser/'.$pathinfo['extension'].'.gif')){
+        if (file_exists(ASCMS_MODULE_IMAGE_PATH.'/filebrowser/'.$pathinfo['extension'].'.gif')) {
             $icon = ASCMS_MODULE_IMAGE_WEB_PATH.'/filebrowser/'.$pathinfo['extension'].'.gif';
         } else {
             $icon = ASCMS_ADMIN_WEB_PATH.'/images/icons/save.png';
@@ -650,23 +660,25 @@ class ForumLibrary {
      * @param string $inputName name of the HTML input element used to upload the file
      * @return array $uploadedFileInfo array containing the properties for the uploaded file, false when upload has failed
      */
-    function _handleUpload($inputName){
+    function _handleUpload($inputName)
+    {
         global $_ARRAYLANG;
-        switch($_FILES[$inputName]['error']){
+
+        switch($_FILES[$inputName]['error']) {
             case UPLOAD_ERR_OK:
                 $pathinfo = pathinfo($_FILES[$inputName]['name']);
                 $arrExtensions = explode(',', $this->_arrSettings['allowed_extensions']);
-                if(!in_array($pathinfo['extension'], $arrExtensions)){
+                if (!in_array($pathinfo['extension'], $arrExtensions)) {
                     $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_EXTENSION_NOT_ALLOWED'], $pathinfo['extension'], str_replace(',', ', ', $this->_arrSettings['allowed_extensions'])));
                     return false;
                 }
                 $newPath = ASCMS_FORUM_UPLOAD_PATH.'/';
                 $newName = $_FILES[$inputName]['name'];
                 $i=1;
-                while(file_exists($newPath.$newName)){
+                while(file_exists($newPath.$newName)) {
                     $newName = $pathinfo['filename'].'_'.$i++.'.'.$pathinfo['extension'];
                 }
-                if(!move_uploaded_file($_FILES[$inputName]['tmp_name'], $newPath.$newName)){
+                if (!move_uploaded_file($_FILES[$inputName]['tmp_name'], $newPath.$newName)) {
                     $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE']);
                     return false;
                 }
@@ -675,27 +687,21 @@ class ForumLibrary {
                     'path'      => $newPath,
                     'size'      => $_FILES[$inputName]['size'],
                 );
-            break;
-
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG']);
                 return false;
-            break;
-
             case UPLOAD_ERR_PARTIAL:
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL']);
                 return false;
-            break;
-
             case UPLOAD_ERR_NO_FILE:
-            default:
-                return array(
-                    'name'      => '',
-                    'path'      => '',
-                    'size'      => 0,
-                );
         }
+           // default:
+        return array(
+            'name'      => '',
+            'path'      => '',
+            'size'      => 0,
+        );
     }
 
     /**
@@ -764,18 +770,19 @@ class ForumLibrary {
         $arrReturn = array();
 
         $handleDir = dir(ASCMS_MODULE_IMAGE_PATH.'/forum/thread');
-        while ($strFile = $handleDir->read()) {
-            if ($strFile != '.' && $strFile != '..'){
-                $arrFileInfos = pathinfo(ASCMS_MODULE_IMAGE_PATH.'/forum/thread/'.$strFile);
-            }else{
-                continue;
-            }
+        while (true) {
+            $strFile = $handleDir->read();
+            if ($strFile === false) break;
+            if (preg_match('/\.\.?/', $strFile)) continue;
+            $arrFileInfos = pathinfo(ASCMS_MODULE_IMAGE_PATH.'/forum/thread/'.$strFile);
             if ($arrFileInfos['extension'] == 'gif') {
-                $arrReturn[basename($strFile,'.gif')] = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/thread/'.$strFile.'" border="0" alt="'.$strFile.'" title="'.$strFile.'" />';
+                $arrReturn[basename($strFile,'.gif')] =
+                    '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/thread/'.
+                    $strFile.'" border="0" alt="'.$strFile.
+                    '" title="'.$strFile.'" />';
             }
         }
         $handleDir->close();
-
         return $arrReturn;
     }
 
@@ -841,7 +848,8 @@ class ForumLibrary {
             //Last post information
             if ($intLangId == 0 || array_key_exists($intLangId,$this->_arrTranslations[$objResult->fields['cId']])) {
                 if ($intLevel == 0) {
-                    $strPostCount   = '';
+// Unused
+//                    $strPostCount   = '';
                     $strLastPost    = '';
                 } else {
                     $objSubResult = $objDatabase->Execute(' SELECT  thread_count    AS sThreadCount,
@@ -914,18 +922,18 @@ class ForumLibrary {
         $intThreadId = intval($intThreadId);
         $arrReturn = array();
 
-        if($intThreadId > 0){
+        if ($intThreadId > 0) {
             $WHERE = ' WHERE thread_id='.$intThreadId;
-        } elseif($pos < 0) {
+        } elseif ($pos < 0) {
             $WHERE = ' ';
         }
 
         $objRSCount = $objDatabase->SelectLimit('   SELECT count(1) AS `cnt` FROM '.DBPREFIX.'module_forum_postings '.$WHERE, 1);
 
-        if($objRSCount !== false){
+        if ($objRSCount !== false) {
             $this->_postCount = $objRSCount->fields['cnt'];
         }
-        if($pos == -1){
+        if ($pos == -1) {
             $this->_arrSettings['posting_paging'] = $this->_postCount+1;
             $pos = 0;
         }
@@ -991,13 +999,13 @@ class ForumLibrary {
      * @param integer $intPostId
      * @return assoc. array containig the post data
      */
-    function _getPostingData($intPostId){
+    function _getPostingData($intPostId) {
         global $objDatabase;
         $query = '  SELECT * FROM `'.DBPREFIX.'module_forum_postings`
                     WHERE `id` = '.$intPostId;
-        if( ($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
+        if ( ($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
             return $objRS->fields;
-        }else{
+        } else {
             die('DB error: '.$objDatabase->ErrorMsg());
         }
     }
@@ -1010,13 +1018,12 @@ class ForumLibrary {
      */
     function _getUserName($userId)
     {
-        global $objDatabase;
-        if($userId < 1){
+        if ($userId < 1) {
             return $this->_anonymousName;
         }
 
         $objFWUser = FWUser::getFWUserObject();
-        if(($objUser = $objFWUser->objUser->getUser($userId)) === false) {//no record found for thus $userid
+        if (($objUser = $objFWUser->objUser->getUser($userId)) === false) {//no record found for thus $userid
             return $this->_anonymousName;
         }
         return htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -1041,7 +1048,7 @@ class ForumLibrary {
         $objRSCount = $objDatabase->SelectLimit('SELECT count(1) AS `cnt` FROM '.DBPREFIX.'module_forum_postings
                                                 WHERE   prev_post_id=0
                                                 AND     category_id='.$intForumId, 1);
-        if($objRSCount !== false){
+        if ($objRSCount !== false) {
             $this->_threadCount = $objRSCount->fields['cnt'];
         }
 
@@ -1121,11 +1128,11 @@ class ForumLibrary {
      * @param integer $intThreadId
      * @return bool success
      */
-    function updateViews($intThreadId, $postId = 0){
+    function updateViews($intThreadId, $postId = 0) {
         global $objDatabase;
 
         $where = '';
-        if($postId > 0){
+        if ($postId > 0) {
             $where = ' AND id='.intval($postId);
         }
 
@@ -1136,9 +1143,10 @@ class ForumLibrary {
 
 
 
-        if($objDatabase->Execute($query) === false){
+        if ($objDatabase->Execute($query) === false) {
             return false;
-            echo "DB error in function: updateViews()";
+// Unreachable
+//            echo "DB error in function: updateViews()";
         }
         return true;
     }
@@ -1151,10 +1159,10 @@ class ForumLibrary {
      * @param bool  $updatePostOnly whether to update only the post count
      * @return bool success
      */
-    function updateViewsNewItem($intCatId, $last_post_id, $updatePostOnly = false){
+    function updateViewsNewItem($intCatId, $last_post_id, $updatePostOnly = false) {
         global $objDatabase;
 
-        if ($updatePostOnly){
+        if ($updatePostOnly) {
             $updateQueryStats = "UPDATE `".DBPREFIX."module_forum_statistics` SET `post_count` = `post_count`+1,
                                         `last_post_id` = ".$last_post_id."
                                         WHERE `category_id` = ".$intCatId." LIMIT 1";
@@ -1167,7 +1175,7 @@ class ForumLibrary {
 
         }
 
-        if($objDatabase->Execute($updateQueryStats)){
+        if ($objDatabase->Execute($updateQueryStats)) {
             return true;
         }
         return false;
@@ -1180,26 +1188,26 @@ class ForumLibrary {
      * @param array $arrForums
      * @return string HTML representation of the generated NavTree
      */
-    function _createNavTree($intForumId, $arrForums = null){
+    function _createNavTree($intForumId, $arrForums = null) {
         global $objDatabase, $_ARRAYLANG;
-        if(!$arrForums){
+        if (!$arrForums) {
             $arrForums = $this->createForumArray($this->_intLangId);
         }
         $strNavTree = '';
         $pId = $arrForums[$intForumId]['parent_id'];
 
         $query = "SELECT `id` FROM ".DBPREFIX."module_forum_categories WHERE `parent_id` = 0";
-        if(($objRS = $objDatabase->Execute($query)) !== false){
-            while(!$objRS->EOF){
+        if (($objRS = $objDatabase->Execute($query)) !== false) {
+            while(!$objRS->EOF) {
                 $parents[] = $objRS->fields['id'];
                 $objRS->MoveNext();
             }
         }
-        while($pId > 0){
+        while($pId > 0) {
             $intForumId = $pId;
-            if(in_array($intForumId, $parents)){
+            if (in_array($intForumId, $parents)) {
                 $strNavTree = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=cat&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
-            }else{
+            } else {
                 $strNavTree = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=board&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
             }
             $pId = $arrForums[$pId]['parent_id'];
@@ -1218,17 +1226,20 @@ class ForumLibrary {
      * @param   string      $strOptionAdds: Additional tags / styles for the <option>-tag
      * @return  string      $strSource: HTML-Source of the dropdown-menu
      */
-    function createForumDD($strSelectName,$intSelected=0,$strSelectAdds='', $strOptionAdds='', $useCat = true, $backend = false) {
-        global $objDatabase, $_ARRAYLANG;
-        $intSelected    = intval($intSelected);
-        $arrForums      = $this->createForumArray();
+    function createForumDD($strSelectName,$intSelected=0,$strSelectAdds='', $strOptionAdds='', $useCat = true, $backend = false)
+    {
+        global $_ARRAYLANG;
 
-        $strSource      = '<select name="'.$strSelectName.'" '.$strSelectAdds." >\n"
-                        . '<option value="0"> --'.$_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'].'-- </option>';
+        $intSelected = intval($intSelected);
+        $arrForums   = $this->createForumArray();
+        $strSource   =
+            '<select name="'.$strSelectName.'" '.$strSelectAdds." >\n".
+            '<option value="0"> --'.$_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'].
+            '-- </option>';
 
         if (count($arrForums) > 0) {
-            foreach ($arrForums as $intKey => $arrValues) {
-                if(!$arrValues['status'] && !$backend){//skip non-active
+            foreach ($arrForums as $arrValues) {
+                if (!$arrValues['status'] && !$backend) {//skip non-active
                     continue;
                 }
                 ($arrValues['id'] == $intSelected) ? $strSelected = ' selected="selected"' : $strSelected = '';
@@ -1237,12 +1248,12 @@ class ForumLibrary {
                 for($i=0; $i<$arrValues['level'];++$i) {
                     $strSpacer .= '&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
-                if($arrValues['parent_id'] != 0){
+                if ($arrValues['parent_id'] != 0) {
                     $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level'])).'</option>';
-                }else{
-                    if($useCat){
+                } else {
+                    if ($useCat) {
                         $strSource .= '<option value="'.$arrValues['id'].'_cat" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+($arrValues['level'])).'</option>';
-                    }else{
+                    } else {
                         $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level'])).'</option>';
                     }
                 }
@@ -1258,13 +1269,16 @@ class ForumLibrary {
      * @param integer $intCatId
      * @return array (name, description)
      */
-    function _getCategoryName($intCatId){
+    function _getCategoryName($intCatId)
+    {
         global $objDatabase;
+
         $query = 'SELECT `name`, `description` FROM ".DBPREFIX."module_forum_categories_lang WHERE category_id='.$intCatId
         .' AND lang_id='.$this->_intLangId;
-        if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
+        $objRS = $objDatabase->Execute($query);
+        if ($objRS && !$objRS->EOF)
             return array('name' => $objRS->fields['name'], 'description' => $objRS->fields['description']);
-        }
+        return array('name' => '', 'description' => '');
     }
 
     /**
@@ -1272,30 +1286,30 @@ class ForumLibrary {
      *
      * @return array $arrLatestEntries
      */
-    function _getLatestEntries(){
+    function _getLatestEntries()
+    {
         global $objDatabase, $_ARRAYLANG;
-        $index = 0;
-        if($this->_arrSettings['latest_post_per_thread'] == 0){
-            $query = "  SELECT `id` , `category_id` , `thread_id` , `subject` , `user_id` , `time_created`
-                        FROM `".DBPREFIX."module_forum_postings`
-                        ORDER BY IF( `time_edited`, `time_edited`, `time_created` ) DESC";
-        }else{
-            $query = "  SELECT `id`, `category_id`, `thread_id`, `subject`, `user_id`, `time_created`
-                        FROM `".DBPREFIX."module_forum_postings`
-                        WHERE `id`
-                        IN (
-                            SELECT max( `id` )
-                            FROM `".DBPREFIX."module_forum_postings`
-                            GROUP BY `thread_id`
-                            ORDER BY `time_created` DESC
-                        )
-                        ORDER BY `time_created` DESC";
-        }
 
-        if(($objRS = $objDatabase->SelectLimit($query, $this->_arrSettings['latest_entries_count'])) !== false){
+        $index = 0;
+        $query = (empty($this->_arrSettings['latest_post_per_thread'])
+            ? "SELECT `id` , `category_id` , `thread_id` , `subject` , `user_id` , `time_created`
+                 FROM `".DBPREFIX."module_forum_postings`
+                ORDER BY if ( `time_edited`, `time_edited`, `time_created` ) DESC"
+            : "SELECT `id`, `category_id`, `thread_id`, `subject`, `user_id`, `time_created`
+                 FROM `".DBPREFIX."module_forum_postings`
+                WHERE `id` IN (
+                     SELECT max( `id` )
+                     FROM `".DBPREFIX."module_forum_postings`
+                     GROUP BY `thread_id`
+                     ORDER BY `time_created` DESC
+                )
+                ORDER BY `time_created` DESC"
+        );
+
+        if (($objRS = $objDatabase->SelectLimit($query, $this->_arrSettings['latest_entries_count'])) !== false) {
             $objFWUser = FWUser::getFWUserObject();
 
-            while(!$objRS->EOF){
+            while(!$objRS->EOF) {
                 $arrLatestEntries[$index]['subject'] = !empty($objRS->fields['subject']) ? $objRS->fields['subject'] : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
                 $arrLatestEntries[$index]['post_id'] = $objRS->fields['id'];
                 $arrLatestEntries[$index]['thread_id'] = $objRS->fields['thread_id'];
@@ -1306,29 +1320,29 @@ class ForumLibrary {
                             FROM `".DBPREFIX."module_forum_categories_lang` AS `categories`
                             WHERE `category_id` = ".$objRS->fields['category_id']."
                             AND `lang_id` = ".$this->_intLangId;
-                if($objRS->fields['user_id'] > 0 && ($objUser = $objFWUser->objUser->getUser($objRS->fields['user_id']))) {
+                if ($objRS->fields['user_id'] > 0 && ($objUser = $objFWUser->objUser->getUser($objRS->fields['user_id']))) {
                     $arrLatestEntries[$index]['username'] = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-                }else{
+                } else {
                     $arrLatestEntries[$index]['username'] = $this->_anonymousName;
                 }
 
-                if(($objRSNames = $objDatabase->SelectLimit($query, 1)) !== false){
+                if (($objRSNames = $objDatabase->SelectLimit($query, 1)) !== false) {
                     $arrLatestEntries[$index]['category_name']  = $objRSNames->fields['cName'];
-                }else{
+                } else {
                     die('DB error: '.$objDatabase->ErrorMsg());
                 }
 
                 $query = "  SELECT 1 FROM `".DBPREFIX."module_forum_postings`
                             WHERE `thread_id` = ".$objRS->fields['thread_id'];
-                if(($objRSCount = $objDatabase->Execute($query)) !== false){
+                if (($objRSCount = $objDatabase->Execute($query)) !== false) {
                     $arrLatestEntries[$index]['postcount'] = $objRSCount->RecordCount();
-                }else{
+                } else {
                     die('DB error: '.$objDatabase->ErrorMsg());
                 }
                 $objRS->MoveNext();
                 $index++;
             }
-        }else{
+        } else {
             die('DB error: '.$objDatabase->ErrorMsg());
         }
         return $arrLatestEntries;
@@ -1342,10 +1356,10 @@ class ForumLibrary {
      * @param int timestamp $date
      * @return formatted date|time
      */
-    function _createLatestEntriesDate($date){
-        if(date('d.m.Y', time()) == date('d.m.Y', $date)){
+    function _createLatestEntriesDate($date) {
+        if (date('d.m.Y', time()) == date('d.m.Y', $date)) {
             return date('H:i:s', $date);
-        }else{
+        } else {
             return date('d.m.Y', $date);
         }
     }
@@ -1356,7 +1370,7 @@ class ForumLibrary {
      * @param array $arrLatestEntries latest entries
      * @return void
      */
-    function _showLatestEntries($arrLatestEntries){
+    function _showLatestEntries($arrLatestEntries) {
         global $_ARRAYLANG;
         $count = min(count($arrLatestEntries), $this->_arrSettings['latest_entries_count']);
         $this->_objTpl->setGlobalVariable(array(
@@ -1397,13 +1411,13 @@ class ForumLibrary {
 
         $arrAccess = $this->createAccessArray($intCatId);
 
-        if(is_array($mixedMode)){
-            foreach ($mixedMode as $mode){
-                if($this->_checkGroupAccess($arrAccess, $mode)){
+        if (is_array($mixedMode)) {
+            foreach ($mixedMode as $mode) {
+                if ($this->_checkGroupAccess($arrAccess, $mode)) {
                     return true;
                 }
             }
-        }elseif (is_string($mixedMode)){
+        } elseif (is_string($mixedMode)) {
             return $this->_checkGroupAccess($arrAccess, $mixedMode);
         }
         return false;
@@ -1420,7 +1434,7 @@ class ForumLibrary {
             $this->_arrGroups = array_intersect($arrGroups, array_keys($arrAccess));
         }
         foreach ($this->_arrGroups as $group) {
-            if(!empty($arrAccess[$group][$mode]) && $arrAccess[$group][$mode] == 1){ //has access
+            if (!empty($arrAccess[$group][$mode]) && $arrAccess[$group][$mode] == 1) { //has access
                 return true;
             }
         }
@@ -1507,20 +1521,20 @@ class ForumLibrary {
      * @param int $intThreadId
      * @return integer on succes, bool false on failure
      */
-    function _getCategoryIdFromThread($intThreadId){
+    function _getCategoryIdFromThread($intThreadId) {
         global $objDatabase;
         $query = '  SELECT category_id
                     FROM '.DBPREFIX.'module_forum_postings
                     WHERE thread_id = '.$intThreadId;
 
         $objRS = $objDatabase->SelectLimit($query, 1);
-        if($objRS !== false){
-            if($objRS->RecordCount() == 1){
+        if ($objRS !== false) {
+            if ($objRS->RecordCount() == 1) {
                 return $objRS->fields['category_id'];
-            }else{
+            } else {
                 return false;
             }
-        }else{
+        } else {
             echo "Database Error:".$objDatabase->ErrorMsg();
             return false;
         }
@@ -1533,8 +1547,8 @@ class ForumLibrary {
      * @param integer $maxLength desired maximum length
      * @return string $str shortened string, if longer than specified max lenght
      */
-    function _shortenString($str, $maxLength){
-        if(strlen($str) > $maxLength){
+    function _shortenString($str, $maxLength) {
+        if (strlen($str) > $maxLength) {
             return substr($str, 0, $maxLength-3).'...';
         }
         return $str;
@@ -1547,23 +1561,23 @@ class ForumLibrary {
      * @param int $intThreadId
      * @return int $pos
      */
-    function _getLastPos($intPostId, $intThreadId=0){
+    function _getLastPos($intPostId, $intThreadId=0) {
         global $objDatabase;
-        if($intThreadId < 1){ //thread ID not supplied, select from DB
+        if ($intThreadId < 1) { //thread ID not supplied, select from DB
             $query = "  SELECT `thread_id` FROM `".DBPREFIX."module_forum_postings`
                         WHERE `id` = ".$intPostId;
-            if( ($objRS = $objDatabase->SelectLimit($query,1)) !== false){
+            if ( ($objRS = $objDatabase->SelectLimit($query,1)) !== false) {
                 $intThreadId = $objRS->fields['thread_id'];
             }
         }
         $query = "  SELECT count(1) AS `cnt` FROM `".DBPREFIX."module_forum_postings`
                     WHERE `thread_id` = ".$intThreadId.'
                     ORDER BY `time_created` ASC';
-        if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
+        if (($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
             $pos = $objRS->fields['cnt']-1;
-            if($pos < $this->_arrSettings['thread_paging']){ //pos is in the first paging page, return 0
+            if ($pos < $this->_arrSettings['thread_paging']) { //pos is in the first paging page, return 0
                 return 0;
-            }else{ //not in first page, return position
+            } else { //not in first page, return position
                 $remain = $pos % $this->_arrSettings['thread_paging'];
                 $pos -= $remain;
                 return $pos;
@@ -1579,27 +1593,30 @@ class ForumLibrary {
      * @param integer $intThreadId
      * @return unknown
      */
-    function _getEditPos($intPostId, $intThreadId){
+    function _getEditPos($intPostId, $intThreadId)
+    {
         global $objDatabase;
+
         $count = 0;
         $query = "  SELECT `id` FROM `".DBPREFIX."module_forum_postings`
                     WHERE `thread_id` = ".$intThreadId.'
                     ORDER BY `time_created` ASC';
-        if(($objRS = $objDatabase->Execute($query)) !== false){
-            while(!$objRS->EOF){
-                if($objRS->fields['id'] == $intPostId){//id matched, return position of that post
+        if (($objRS = $objDatabase->Execute($query)) !== false) {
+            while(!$objRS->EOF) {
+                if ($objRS->fields['id'] == $intPostId) {//id matched, return position of that post
                     $remain = $count % $this->_arrSettings['thread_paging'];
                     $pos = $count - $remain;
-                    if($pos > 0){
+                    if ($pos > 0) {
                         return $pos;
-                    }else{
-                        return 0;
                     }
+                    return 0;
                 }
                 $count++;
                 $objRS->MoveNext();
             }
         }
     }
+
 }
+
 ?>
