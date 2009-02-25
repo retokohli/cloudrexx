@@ -122,7 +122,7 @@ class Guestbook extends GuestbookLibrary
                     ORDER BY     id DESC";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
-        while (!$objResult->EOF) {
+        while ($objResult !== false and !$objResult->EOF) {
             $class = ($i % 2) ? "row1" : "row2";
             $gender = ($objResult->fields["gender"]=="M") ? $_ARRAYLANG['guestbookGenderMale'] : $_ARRAYLANG['guestbookGenderFemale']; // N/A
 
