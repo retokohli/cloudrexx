@@ -179,7 +179,7 @@ class u2u extends u2uLibrary
                 'TXT_U2U_SEND_MESSAGE_USERS'         =>  $_ARRAYLANG['TXT_U2U_SEND_MESSAGE_USERS'],
                 'TXT_U2U_SUBMIT_MESSAGE'             =>  $_ARRAYLANG['TXT_U2U_SUBMIT_MESSAGE'],
                 'TXT_U2U_PREVIEW_MESSAGE'            =>  $_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'],
-                'TXT_U2U_BCC'                        =>  $_ARRAYLANG['TXT_U2U_BCC']
+                'TXT_U2U_BCC'                        =>  $_ARRAYLANG['TXT_U2U_BCC'],
                 'TXT_U2U_ENTER_NAME'                 =>  $_ARRAYLANG['TXT_U2U_ENTER_NAME']
             ));
 
