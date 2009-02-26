@@ -679,7 +679,7 @@ CREATE TABLE `contrexx_module_contact_recipient` (
   `email` varchar(250) NOT NULL default '',
   `sort` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_contact_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
