@@ -36,7 +36,6 @@ class MediaManager extends MediaLibrary {
 
 	var $getAct;                           // $_GET['act']
 	var $getPath;                          // $_GET['path']
-	var $getSort;                          // $_GET['sort']
 	var $getFile;                          // $_GET['file']
 	var $getData;                          // $_GET['data']
 
@@ -118,7 +117,8 @@ class MediaManager extends MediaLibrary {
     	$this->getPath = (isset($_GET['path']) and !empty($_GET['path']) AND !stristr($_GET['path'],'..')) ? trim($_GET['path']) : $this->arrWebPaths[$this->archive];
     	$this->getFile = (isset($_GET['file']) and !empty($_GET['file']) AND !stristr($_GET['file'],'..')) ? trim($_GET['file']) : '';
     	$this->getData = (isset($_GET['data']) and !empty($_GET['data'])) ? $_GET['data']       : '';
-    	$this->getSort = (isset($_GET['sort']) and !empty($_GET['sort'])) ? trim($_GET['sort']) : 'name_a';
+        $this->sortBy = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
+        $this->sortDesc = !empty($_GET['sort_desc']);
 
     	if($this->archive == 'themes') {
     		$_SESSION["skins"] = true;
@@ -172,7 +172,6 @@ class MediaManager extends MediaLibrary {
     	$this->webPath = $this->_pathCheck($this->getPath);
     	$this->path    = $this->docRoot . $this->webPath;
 
-    	(!isset($_SESSION['media']['sort'])) ? $_SESSION['media']['sort'] = 'name_a' : '';
     	$this->_objImage = &new ImageManager();
     }
 
@@ -203,10 +202,6 @@ class MediaManager extends MediaLibrary {
     	global $_ARRAYLANG, $objTemplate;
 
         switch($this->getAct){
-		    case 'sort':
-		        $this->_sortingSession();
-		        $this->_overviewMedia();
-		        break;
 		    case 'newDir':
 		        $this->_createNewDir($_POST['dirName']);
 		        $this->_overviewMedia();
@@ -510,7 +505,7 @@ class MediaManager extends MediaLibrary {
 	    }
 
     	// parse variables
-    	$tmpHref  = 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=sort&amp;path=' . $this->webPath;
+    	$tmpHref  = 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;path=' . $this->webPath;
     	$tmpIcon  = $this->_sortingIcons();
     	$tmpClass  = $this->_sortingClass();
 
@@ -538,11 +533,11 @@ class MediaManager extends MediaLibrary {
     	));
 
     	$this->_objTpl->setVariable(array(  // parse dir content
-    	    'MEDIA_NAME_HREF'           => $tmpHref . '&amp;sort=name',
-    	    'MEDIA_SIZE_HREF'           => $tmpHref . '&amp;sort=size',
-    	    'MEDIA_TYPE_HREF'           => $tmpHref . '&amp;sort=type',
-    	    'MEDIA_DATE_HREF'           => $tmpHref . '&amp;sort=date',
-    	    'MEDIA_PERM_HREF'           => $tmpHref . '&amp;sort=perm',
+    	    'MEDIA_NAME_HREF'           => $tmpHref . '&amp;sort=name&amp;sort_desc='. ($this->sortBy == 'name' && !$this->sortDesc),
+    	    'MEDIA_SIZE_HREF'           => $tmpHref . '&amp;sort=size&amp;sort_desc='. ($this->sortBy == 'size' && !$this->sortDesc),
+    	    'MEDIA_TYPE_HREF'           => $tmpHref . '&amp;sort=type&amp;sort_desc='. ($this->sortBy == 'type' && !$this->sortDesc),
+    	    'MEDIA_DATE_HREF'           => $tmpHref . '&amp;sort=date&amp;sort_desc='. ($this->sortBy == 'date' && !$this->sortDesc),
+    	    'MEDIA_PERM_HREF'           => $tmpHref . '&amp;sort=perm&amp;sort_desc='. ($this->sortBy == 'perm' && !$this->sortDesc),
     	    'TXT_MEDIA_FILE_NAME'       => $_ARRAYLANG['TXT_MEDIA_FILE_NAME'],
     	    'TXT_MEDIA_FILE_SIZE'       => $_ARRAYLANG['TXT_MEDIA_FILE_SIZE'],
     	    'TXT_MEDIA_FILE_TYPE'       => $_ARRAYLANG['TXT_MEDIA_FILE_TYPE'],

@@ -36,7 +36,6 @@ class MediaManager extends MediaLibrary {
 	var $getCmd;                        // $_GET['cmd']
 	var $getAct;                        // $_GET['act']
 	var $getPath;                       // $_GET['path']
-	var $getSort;                       // $_GET['sort']
 	var $getFile;                       // $_GET['file']
 
 	var $path;                          // current path
@@ -90,10 +89,8 @@ class MediaManager extends MediaLibrary {
 	    // get variables
     	$this->getAct  = (isset($_GET['act']) and !empty($_GET['act']))   ? trim($_GET['act'])  : '';
     	$this->getFile = (isset($_GET['file']) and !empty($_GET['file'])) ? trim($_GET['file']) : '';
-    	$this->getSort = (isset($_GET['sort']) and !empty($_GET['sort'])) ? trim($_GET['sort']) : 'name_a';
-
-    	// variables
-    	(!isset($_SESSION['media']['sort'])) ? $_SESSION['media']['sort'] = 'name_a' : '';
+        $this->sortBy = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
+        $this->sortDesc = !empty($_GET['sort_desc']);
     }
 
 
@@ -151,9 +148,6 @@ class MediaManager extends MediaLibrary {
         global $_ARRAYLANG;
 
         switch($this->getAct){
-		    case 'sort':
-		        $this->_sortingSession();
-		        break;
 		    case 'download':
 		        $this->_downloadMedia();
 		        break;
@@ -237,15 +231,15 @@ class MediaManager extends MediaLibrary {
     	}
 
         // parse variables
-    	$tmpHref  = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;act=sort&amp;path=' . $this->webPath;
+    	$tmpHref  = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . $this->webPath;
     	$tmpIcon  = $this->_sortingIcons();
 
     	$this->_objTpl->setVariable(array(  // parse dir content
-    	    'MEDIA_NAME_HREF'           => $tmpHref . '&amp;sort=name',
-    	    'MEDIA_SIZE_HREF'           => $tmpHref . '&amp;sort=size',
-    	    'MEDIA_TYPE_HREF'           => $tmpHref . '&amp;sort=type',
-    	    'MEDIA_DATE_HREF'           => $tmpHref . '&amp;sort=date',
-    	    'MEDIA_PERM_HREF'           => $tmpHref . '&amp;sort=perm',
+    	    'MEDIA_NAME_HREF'           => $tmpHref . '&amp;sort=name&amp;sort_desc='. ($this->sortBy == 'name' && !$this->sortDesc),
+    	    'MEDIA_SIZE_HREF'           => $tmpHref . '&amp;sort=size&amp;sort_desc='. ($this->sortBy == 'size' && !$this->sortDesc),
+    	    'MEDIA_TYPE_HREF'           => $tmpHref . '&amp;sort=type&amp;sort_desc='. ($this->sortBy == 'type' && !$this->sortDesc),
+    	    'MEDIA_DATE_HREF'           => $tmpHref . '&amp;sort=date&amp;sort_desc='. ($this->sortBy == 'date' && !$this->sortDesc),
+    	    'MEDIA_PERM_HREF'           => $tmpHref . '&amp;sort=perm&amp;sort_desc='. ($this->sortBy == 'perm' && !$this->sortDesc),
     	    'TXT_MEDIA_FILE_NAME'       => $_ARRAYLANG['TXT_MEDIA_FILE_NAME'],
     	    'TXT_MEDIA_FILE_SIZE'       => $_ARRAYLANG['TXT_MEDIA_FILE_SIZE'],
     	    'TXT_MEDIA_FILE_TYPE'       => $_ARRAYLANG['TXT_MEDIA_FILE_TYPE'],
