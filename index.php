@@ -1919,7 +1919,7 @@ $objTemplate->setVariable(array(
     'LOGIN_INCLUDE'        => (isset($strFeInclude) ? $strFeInclude : ''),
     'LOGIN_URL'            => (isset($strFeLink) ? $strFeLink : ''),
     'LOGIN_CONTENT'        => (isset($strFeContent) ? $strFeContent : ''),
-    'JAVASCRIPT'            => JS::getCode()
+    'JAVASCRIPT'           => "javascript_inserting_here"
 ));
 
 
@@ -2131,14 +2131,28 @@ if (!empty($moduleStyleFile)) {
     ));
 }
 
-if(isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1){
+if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     require_once ASCMS_CORE_PATH.'/pdf.class.php';
      $objPDF             = new PDF();
      $objPDF->title     = $page_title.(!empty($page_title) ? '.pdf' : null);
      $objPDF->content   = $objTemplate->get();
      $objPDF->Create();
-}else{
-    $objTemplate->show();
+} else {
+    /**
+     * Get all javascripts in the code, replace them with nothing, and register the js file
+     * to the javascript lib. This is because we don't want something twice, and there could be
+     * a theme that requires a javascript, which then could be used by a module too and therefore would
+     * be loaded twice.
+     */ 
+    $endcode = $objTemplate->get();
+    // we don't want the commented scripts. We could've used lookaround, but this is of performance reasons
+    $endcode = preg_replace("/<!--(.*?)<script(.*?)-->/i", "<!--$1<scrript$2-->", $endcode);     
+    $endcode = preg_replace_callback("/<script .*?src=(?:\"|')([^\"']*)(?:\"|').*?\/?>(?:<\/script>)?/i",
+        create_function('$matches', 'JS::registerJS($matches[1]); return;'), 
+        $endcode);
+    // i know this is ugly, but is there another way
+    $endcode = str_replace("javascript_inserting_here", JS::getCode(), $endcode);     
+    echo $endcode;
 }
 $objCache->endCache();
 
