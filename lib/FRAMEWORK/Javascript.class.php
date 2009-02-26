@@ -225,11 +225,12 @@ class JS
         }
 
         if (!file_exists(ASCMS_DOCUMENT_ROOT.'/'.$file)) {
-            self::$error = "The file ".$file." doesn't exist\n";
+            self::$error .= "The file ".$file." doesn't exist\n";
             return false;
         }
 
         if (array_search($file, self::$customJS) === false) {
+            
             self::$customJS[] = $file;
         }
 
@@ -501,6 +502,11 @@ class JS
 
         // make the code for loading the language
         self::$customCode[] = "Shadowbox.loadLanguage('".self::$shadowBoxLanguage."', '".self::$offset."lib/javascript/shadowbox/lang')"; 
+    }
+
+    public static function registerFromRegex($matchinfo) {
+        $script = $matchinfo[1];
+        self::registerJS($script);
     }
 }
 
