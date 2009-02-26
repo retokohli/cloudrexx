@@ -351,7 +351,7 @@ function calendar(
                   ? '?cmd=egov&amp;act=detail'
                   : '?section=egov&amp;cmd=detail'
                 ).
-                '&amp;productId='.$_REQUEST['productId'].'&amp;date='.$next_day.
+                '&amp;id='.$_REQUEST["id"].'&amp;date='.$next_day.
                 '" title="'.$calendar_txt[$param['lang']]['misc'][3].
                 '">'.$d.'</a>'."\n";
         }
@@ -367,7 +367,7 @@ function calendar(
                   ? '?cmd=egov&amp;act=detail'
                   : '?section=egov&amp;cmd=detail'
                 ).
-                '&amp;productId='.$_REQUEST['productId'].'&amp;date='.$previous_day.
+                '&amp;id='.$_REQUEST["id"].'&amp;date='.$previous_day.
                 '" title="'.$calendar_txt[$param['lang']]['misc'][2].
                 '">'.$g.'</a>'."\n";
         }
@@ -383,7 +383,7 @@ function calendar(
                   ? '?cmd=egov&amp;act=detail'
                   : '?section=egov&amp;cmd=detail'
                 ).
-                '&amp;productId='.$_REQUEST['productId'].'&amp;date='.$next_month.
+                '&amp;id='.$_REQUEST["id"].'&amp;date='.$next_month.
                 '" title="'.$calendar_txt[$param['lang']]['misc'][1].
                 '">'.$dd.'</a>'."\n";
         }
@@ -399,7 +399,7 @@ function calendar(
                   ? '?cmd=egov&amp;act=detail'
                   : '?section=egov&amp;cmd=detail'
                 ).
-                '&amp;productId='.$_REQUEST['productId'].'&amp;date='.$previous_month.
+                '&amp;id='.$_REQUEST["id"].'&amp;date='.$previous_month.
                 '" title="'.$calendar_txt[$param['lang']]['misc'][0].
                 '">'.$gg.'</a>'."\n";
         }

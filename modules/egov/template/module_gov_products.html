@@ -2,19 +2,18 @@
 <script language="JavaScript" type="text/javascript">
 <!-- //
 
-function deleteProduct(productId)
+function deleteProduct(ProductID)
 {
   with (document.frmProducts) {
   if (confirm('{TXT_DELETE_PRODUCT}')) {
-    action='index.php?cmd=egov&act=products&delete=yes&productId='+productId;
+    action='index.php?cmd=egov&act=products&delete=yes&id='+ProductID;
     submit();
   }
   }
 }
 
-function Position(productId, Direction)
-{
-  document.location.href = 'index.php?cmd=egov&act=products&productId='+productId+'&Direction='+Direction;
+function Position(ProductID, Direction){
+  document.location.href = 'index.php?cmd=egov&act=products&id='+ProductID+'&Direction='+Direction;
 }
 // -->
 </script>
@@ -42,14 +41,14 @@ function Position(productId, Direction)
           <a href="javascript:Position({PRODUCT_ID},'up');"><img src="images/icons/up.gif" width="14" height="12" border="0" alt="{TXT_EGOV_UP}" title="{TXT_EGOV_UP}" /></a>
           <a href="javascript:Position({PRODUCT_ID},'down');"><img src="images/icons/down.gif" width="14" height="12" border="0" alt="{TXT_EGOV_DOWN}" title="{TXT_EGOV_DOWN}" /></a>
         </td>
-        <td><a href="index.php?cmd=egov&amp;act=product_edit&amp;productId={PRODUCT_ID}" title="{TXT_IMGALT_EDIT}">{PRODUCT_NAME}</a></td>
+        <td><a href="index.php?cmd=egov&amp;act=product_edit&amp;id={PRODUCT_ID}" title="{TXT_IMGALT_EDIT}">{PRODUCT_NAME}</a></td>
         <td>{ORDERS_VALUE}&nbsp;&nbsp;<a href="index.php?cmd=egov&amp;product={PRODUCT_ID}">{TXT_EGOV_VIEW_ORDERS}</a></td>
         <td>{RESERVATIONS_VALUE}</td>
 
         <td style="text-align:right;" nowrap="nowrap">
-          <a href="index.php?cmd=egov&amp;act=detail&amp;productId={PRODUCT_ID}"><img src="images/icons/calendar_icon.png" border="0" alt="{TXT_EGOV_RESERVATION}" title="{TXT_EGOV_RESERVATION}" /></a>
-          <a href="index.php?cmd=egov&amp;act=product_copy&amp;productId={PRODUCT_ID}"><img src="images/icons/copy.gif" border="0" alt="{TXT_COPY}" title="{TXT_COPY}" /></a>
-          <a href="index.php?cmd=egov&amp;act=product_edit&amp;productId={PRODUCT_ID}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
+          <a href="index.php?cmd=egov&amp;act=detail&amp;id={PRODUCT_ID}"><img src="images/icons/calendar_icon.png" border="0" alt="{TXT_EGOV_RESERVATION}" title="{TXT_EGOV_RESERVATION}" /></a>
+          <a href="index.php?cmd=egov&amp;act=product_copy&amp;id={PRODUCT_ID}"><img src="images/icons/copy.gif" border="0" alt="{TXT_COPY}" title="{TXT_COPY}" /></a>
+          <a href="index.php?cmd=egov&amp;act=product_edit&amp;id={PRODUCT_ID}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
           <a href="javascript:deleteProduct({PRODUCT_ID});" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a>
         </td>
       </tr>
