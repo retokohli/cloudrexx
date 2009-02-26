@@ -85,6 +85,8 @@ class Gallery {
         	$this->strCmd = '&amp;cmd='.intval($_GET['cmd']);
         }
 
+        JS::activate("shadowbox");
+
         if (isset($_GET['pId']) && !empty($_GET['pId'])) {
         	if (isset($_POST['frmGalComAdd_PicId'])) {
                 $this->addComment();
