@@ -12,6 +12,14 @@
  * @ignore
  */
 require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_CORE_PATH.'/settings.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
 
 /**
  * AliasAdmin
@@ -48,6 +56,8 @@ class AliasAdmin extends aliasLib
     */
     var $arrStatusMsg = array('ok' => array(), 'error' => array());
 
+    private $objSettings;
+
     /**
     * PHP5 constructor
     *
@@ -61,7 +71,9 @@ class AliasAdmin extends aliasLib
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        if (isset($_REQUEST['act']) && $_REQUEST['act'] == 'settings' && isset($_POST['alias_save'])) {
+        $this->objSettings = new settingsManager();
+
+        if ($this->objSettings->isWritable() && isset($_REQUEST['act']) && $_REQUEST['act'] == 'settings' && isset($_POST['alias_save'])) {
             if ($this->_setAliasAdministrationStatus(isset($_POST['alias_status']) && $_POST['alias_status'])) {
                 $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'];
             } else {
@@ -295,6 +307,9 @@ class AliasAdmin extends aliasLib
 
                     if (!$error) {
                         if (($aliasId ? $this->_updateAlias($aliasId, $arrAlias) : $this->_addAlias($arrAlias))) {
+                            if ($_CONFIG['xmlSitemapStatus'] == 'on') {
+                                XMLSitemap::write();
+                            }
                             $this->arrStatusMsg['ok'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_UPDATED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_ADDED'];
                             return $this->_list();
                         } else {
@@ -397,8 +412,14 @@ class AliasAdmin extends aliasLib
                 'TXT_ALIAS_USE_ALIAS_ADMINISTRATION'    => $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'],
                 'ALIAS_STATUS_CHECKED'                    => $arrConfig['aliasStatus'] == '1' ? 'checked="checked"' : ''
             ));
+
             $this->_objTpl->parse('alias_status_form');
-            $this->_objTpl->parse('alias_status_form_submit');
+            if ($this->objSettings->isWritable()) {
+                $this->_objTpl->parse('alias_status_form_submit');
+            } else {
+                $this->arrStatusMsg['error'][] = $this->objSettings->strErrMessage;
+                $this->_objTpl->hideBlock('alias_status_form_submit');
+            }
         } else {
             $this->_objTpl->hideBlock('alias_status_form');
             $this->_objTpl->hideBlock('alias_status_form_submit');
@@ -407,7 +428,7 @@ class AliasAdmin extends aliasLib
 
     function _setAliasAdministrationStatus($active = false)
     {
-        global $objDatabase;
+        global $objDatabase, $_CONFIG;
 
         if ($active) {
             if (!$this->_activateRewriteEngine()) {
@@ -420,6 +441,16 @@ class AliasAdmin extends aliasLib
         }
 
         if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".($active ? '1' : '0')."' WHERE `setname` = 'aliasStatus' AND `setmodule` = 41") !== false) {
+            $_CONFIG['aliasStatus'] = $active;
+
+            // updagte settins.php
+            $this->objSettings->writeSettingsFile();
+
+            // update sitemap.xml
+            if ($_CONFIG['xmlSitemapStatus'] == 'on') {
+                XMLSitemap::write();
+            }
+
             return true;
         } else {
             return false;
