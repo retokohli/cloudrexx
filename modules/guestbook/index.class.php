@@ -245,6 +245,8 @@ class Guestbook extends GuestbookLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        $this->_objTpl->setTemplate($this->pageContent);
+
 // TODO: Never used
 //        $objValidator = new FWValidator();
 
