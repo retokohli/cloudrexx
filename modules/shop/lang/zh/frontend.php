@@ -247,6 +247,13 @@ $_ARRAYLANG['TXT_SHOP_MAKE_ORDER'] = "Weiter zur Bestellung...";
 $_ARRAYLANG['TXT_SHOP_NEW_ORDER'] = "Neue Bestellung...";
 $_ARRAYLANG['TXT_SHOP_LOGIN_INFO'] = "Informationen";
 $_ARRAYLANG['TXT_SHOP_CONTINUE_ARROW'] = "Weiter &gt;&gt;";
+$_ARRAYLANG['TXT_SHOP_VAT_EXCLUDED'] = "Exklusive MwSt.";
+$_ARRAYLANG['TXT_SHOP_VAT_INCLUDED'] = "Inklusive MwSt.";
+$_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL'] = "exkl. MwSt.";
+$_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL'] = "inkl. MwSt.";
+$_ARRAYLANG['TXT_SHOP_VAT_RATE'] = "Mehrwertsteuer Satz";
 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_SAFERPAY'] = "Fehler beim initialisieren von Saferpay";
 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'] = "Fehler beim initialisieren von Yellowpay";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
 ?>
