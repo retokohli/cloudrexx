@@ -47,6 +47,10 @@
 			errorMessage += "{TXT_COLUMNS_MUSTNT_BE_EMPTY}\n"
 		}
 		
+		if(checkColumnsReturn == "DOUBLE_NAMED") {
+			errorMessage += "{TXT_COLUMNS_DOUBLED_NAMED}\n"
+		}
+			
 						
 		if(errorMessage !== "") {
 			alert(errorMessage);
@@ -68,7 +72,34 @@
 			return true;
 		}		
 	}
-
+	
+	
+	
+	
+	function checkColumns() {
+		numberOfElements = document.project.column.length;
+		if(!numberOfElements) {
+			return "NO_COLUMN";
+		}
+		
+		var i = 1;
+		var z = 2;
+		var error = false;
+		while (i < numberOfElements) {
+			while (z < numberOfElements) {
+				if(document.project.column[i].value == document.project.column[z].value) {
+					return "DOUBLE_NAMED";
+				}
+				z++;
+			}
+			if(document.project.column[i].value == "") {
+				return "EMPTY_COLUMN";
+			}
+			i++;
+		}
+		return "OK";		
+	}
+	
 	
 	Text[0] = ["", '{TIP_PROJECTNAME}'];
 	Text[1] = ["", '{TIP_FRONTEND_LANG}'];
@@ -94,7 +125,7 @@
 		<tbody id="projectTable" >
 			<tr class="row1">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_PROJECTNAME}</td>
-				<td width="88%"><input type="text" name="name" style="width: 400px;" value="{POST_NAME}" maxlength="250" /></td>
+				<td width="88%"><input type="text" maxlength="25" name="name" style="width: 400px;" value="{POST_NAME}" maxlength="250" /></td>
 			</tr>
 			<tr class="row2">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])">{TXT_FRONTEND_LANGUAGE}</td>
@@ -104,13 +135,8 @@
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])">{TXT_PROJECTDESCRIPTION}</td>
 				<td width="88%"><input type="text" name="description" style="width: 400px;" value="{POST_DESCRIPTION}" maxlength="250" /></td>
 			</tr>
-			<tr class="row2">
-				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])">{TXT_COUNTRY_BASED}</td>
-				<td width="88%">
-					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_Y} value="y" />{TXT_YES}
-					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_N} value="n" />{TXT_NO}
-				</td>
-			</tr>
+			{TABLE_ROW_COUNTRYBASED}
+			
 			<tr class="row1">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])">Status</td>
 				<td width="88%">

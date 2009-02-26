@@ -9,25 +9,12 @@ new project
 ------------
 * bei der spalteneingabe spaltenzahl hochzählen
 * keine doppelten spaltennamen zulassen
-* js überprüfung checken
+
+
+*text anstatt icon (filter + platzhalter)
 
 
 
------------
-import
------------
+*einstellung ob DROP DOWN oder auflistung
 
-
-
------------
-show
------------
-sortierreihnfole angeben (nach welchem feld sortiert werden soll)
-
-
-
-
------------
-makeInputDBvalid()
------------
-regex kontrollieren
+*sprachsteuerung

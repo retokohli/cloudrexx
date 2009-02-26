@@ -52,29 +52,3 @@
 		
 		return input;
 	}
-	
-	
-	
-	
-	
-	function checkColumns() {
-		numberOfElements = document.project.column.length;
-		
-		if(!numberOfElements) {
-			return "NO_COLUMN";
-		}
-		
-		var i = 1;
-		var error = false;
-		while (i < numberOfElements) {
-			if(document.project.column[i].value == "") {
-				return "EMPTY_COLUMN";
-			}
-			i++;
-		}
-		
-		return "OK";		
-	}
-	
-	
-	
