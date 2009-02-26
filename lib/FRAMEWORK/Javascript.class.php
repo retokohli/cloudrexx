@@ -206,6 +206,9 @@ class JS
      *
      * Adds a new, individual JS file to the list.
      * The filename has to be relative to the document root.
+     * If a file is registered that already exists as a available
+     * JS lib, then this one will be activated instead of
+     * added.
      * @param mixed $file
      * @access public
      * @return bool Return true if successful 
@@ -213,6 +216,14 @@ class JS
      */
     public static function registerJS($file)
     {
+        // $basename = strtolower(preg_replace("/\.[^\.]+$/", "", basename($file)));
+        // we assume, every javascript files ends with .js
+        $basename = strtolower(str_replace(".js", "", basename($file)));         
+        if (array_search($basename, array_keys(self::$available)) !== false) {
+            self::activate($basename);
+            return true;
+        }
+
         if (!file_exists(ASCMS_DOCUMENT_ROOT.'/'.$file)) {
             self::$error = "The file ".$file." doesn't exist\n";
             return false;
