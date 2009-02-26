@@ -2147,9 +2147,7 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     $endcode = $objTemplate->get();
     // we don't want the commented scripts. We could've used lookaround, but this is of performance reasons
     $endcode = preg_replace("/<!--(.*?)<script(.*?)-->/i", "<!--$1<scrript$2-->", $endcode);     
-    $endcode = preg_replace_callback("/<script .*?src=(?:\"|')([^\"']*)(?:\"|').*?\/?>(?:<\/script>)?/i",
-        create_function('$matches', 'JS::registerJS($matches[1]); return;'), 
-        $endcode);
+    $endcode = preg_replace_callback("/<script .*?src=(?:\"|')([^\"']*)(?:\"|').*?\/?>(?:<\/script>)?/i", 'JS::registerFromRegex', $endcode);
     // i know this is ugly, but is there another way
     $endcode = str_replace("javascript_inserting_here", JS::getCode(), $endcode);     
     echo $endcode;
