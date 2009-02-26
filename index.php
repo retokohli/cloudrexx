@@ -1388,7 +1388,6 @@ switch ($plainSection) {
 // media Core
 //-------------------------------------------------------
     case "media":
-        if(!isset($sessionObj)|| !is_object($sessionObj)) $sessionObj = new cmsSession();
         $modulespath = ASCMS_CORE_MODULE_PATH . '/media/index.class.php';
         /**
          * @ignore
@@ -2143,13 +2142,13 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
      * to the javascript lib. This is because we don't want something twice, and there could be
      * a theme that requires a javascript, which then could be used by a module too and therefore would
      * be loaded twice.
-     */ 
+     */
     $endcode = $objTemplate->get();
     // we don't want the commented scripts. We could've used lookaround, but this is of performance reasons
-    $endcode = preg_replace("/<!--(.*?)<script(.*?)-->/i", "<!--$1<scrript$2-->", $endcode);     
+    $endcode = preg_replace("/<!--(.*?)<script(.*?)-->/i", "<!--$1<scrript$2-->", $endcode);
     $endcode = preg_replace_callback("/<script .*?src=(?:\"|')([^\"']*)(?:\"|').*?\/?>(?:<\/script>)?/i", 'JS::registerFromRegex', $endcode);
     // i know this is ugly, but is there another way
-    $endcode = str_replace("javascript_inserting_here", JS::getCode(), $endcode);     
+    $endcode = str_replace("javascript_inserting_here", JS::getCode(), $endcode);
     echo $endcode;
 }
 $objCache->endCache();
