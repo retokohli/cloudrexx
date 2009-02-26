@@ -1,3 +1,6 @@
+<script src="lib/javascript/prototype.js"></script>
+<script src="lib/javascript/scriptaculous/scriptaculous.js"></script>
+<script src="lib/javascript/accordion/javascript/accordion.js"></script>
 <div id="wrapper_banner">
 	<div id="banner">
 		<div id="banner_text">
@@ -42,27 +45,24 @@
 			<div id="frame_home_right">
 				<div class="box">
 					<h1>Neuste Einträge</h1>
-					<div class="accordion_content">
-						<div class="toggler"><h2>Newsmeldungen</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 91px;" class="accordion"><div>
+					<div id="accordion">
+						<h2 class="toggler">Newsmeldungen</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						{HEADLINES_FILE}
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Forum</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 91px;" class="accordion"><div>
+						<h2 class="toggler">Forum</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						{FORUM_FILE}
-					</div></div></div>
+					</div></div>
 	
-					<div class="accordion_content">
-						<div class="toggler"><h2>Podcast</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Podcast</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						{PODCAST_FILE}
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Blog</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Blog</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						{BLOG_FILE}
 						<div class="content" style="width:278px;">
 							{BLOG_TAG_CLOUD}
@@ -70,11 +70,10 @@
 						<div class="content clear">
 						<p class="more"><a href="index.php?section=blog">Weitere Beiträge</a></p>
 						</div>
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Verzeichnis</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Verzeichnis</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						<!-- BEGIN directoryLatest_row_1 -->
 						<div class="content">
 						<p class="date">Hinzugefügt am {DIRECTORY_DATE}</p>
@@ -84,30 +83,27 @@
 						<div class="content">
 						<p class="more"><a href="index.php?section=directory">Weitere Einträge</a></p>
 						</div>
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Bildergalerie</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Bildergalerie</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						<div class="content">
 							<div align="center">{GALLERY_RANDOM}</div>
 						</div>
 						<div class="content">
 						<p class="more"><a href="index.php?section=gallery">Weitere Bildergalerien</a></p>
 						</div>
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Newsletter</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Newsletter</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						<div class="content">
 							{NEWSLETTER_BLOCK}
 						</div>
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Inseratemarkt</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Inseratemarkt</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						<!-- BEGIN marketLatest -->
 						<div class="content">
 							<p class="date">Online bis {MARKET_DATE}</p>
@@ -117,11 +113,10 @@
 						<div class="content">
 						<p class="more"><a href="index.php?section=market">Weitere Inserate</a></p>
 						</div>
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Wissensdatenbank</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Wissensdatenbank</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						<div class="content">
 							{KNOWLEDGE_MOST_READ}
 						</div>
@@ -131,17 +126,15 @@
 						<div class="content">
 							<p class="more"><a href="index.php?section=knowledge">Weitere Einträge</a></p>
 						</div>
-					</div></div></div>
+					</div></div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Veranstaltungen</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Veranstaltungen</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;">
 						{EVENTS_FILE}
-					</div></div></div>
+						</div>
 					
-					<div class="accordion_content">
-						<div class="toggler"><h2>Umfragen</h2></div>
-						<div style="border-top: medium none; border-bottom: medium none; overflow: hidden; padding-top: 0px; padding-bottom: 0px; height: 0px;" class="accordion"><div>
+						<h2 class="toggler">Umfragen</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;">
 						<div class="content">
 							<p class="date">Mittwoch, 18. Juni 2008</p>
 							<h2>Wie finden Sie unsere neue Website?</h2>
@@ -159,7 +152,8 @@
 								</form>
 							</div>
 						</div>
-					</div></div></div>
+					</div>
+				</div>
 				</div>
 				
 				<!-- BEGIN access_latest_registered_member_list -->
@@ -190,3 +184,19 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var acc = new accordion(
+	'accordion',
+	{
+		classNames: {
+			toggle:       'toggler',
+			toggleActive: 'toggler_active',
+			content:      'accordion_content'
+		}
+	}
+);
+acc.activate($$('.toggler')[0]);
+//--><!]]>
+</script>
+
