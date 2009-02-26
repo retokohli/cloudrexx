@@ -82,12 +82,14 @@ class Navigation
                                n.parcat AS parcat,
                                n.css_name AS css_name,
                                n.displayorder AS displayorder,
+                               c.redirect,
                                m.name AS section,
                           n.displaystatus AS displaystatus,
                           a_s.url         AS alias_url,
                                min(a_s.id)       AS alias_id,
                                settings.setvalue AS alias_enable
                     FROM ".DBPREFIX."content_navigation                   AS n
+                          INNER JOIN ".DBPREFIX."content                  AS c   ON c.id=n.catid
                           INNER JOIN ".DBPREFIX."modules                  AS m   ON n.module=m.id
                           LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
                           LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
@@ -163,10 +165,11 @@ class Navigation
 
                 // Create alias link if alias is present for this page...
                 if ($objResult->fields['alias_url'] && $objResult->fields['alias_enable']) {
-                    $menu_url = self::mkurl('/'.$objResult->fields['alias_url']);
-                }
-                else {
-                $link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
+                    $menu_url = self::mkurl(CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.$objResult->fields['alias_url']);
+                } elseif (!empty($objResult->fields['redirect'])) {
+                    $menu_url = $objResult->fields['redirect'];
+                } else {
+                    $link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
                     $menu_url = CONTREXX_SCRIPT_PATH
                         .$link
                         .(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');
