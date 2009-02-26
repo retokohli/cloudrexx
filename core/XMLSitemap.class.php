@@ -158,19 +158,29 @@ class XMLSitemap {
                             $isRedirection = true;
                             if (preg_match('#^[a-z]+://#', $objResult->fields['redirect'])) {
                                 // the redirection points towards a web ressource
-                                if (!preg_match('#^https?://'.$_CONFIG['domainUrl'].'#', $objResult->fields['redirect'])) {
+                                if (!preg_match('#^https?://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'#', $objResult->fields['redirect'])) {
                                     // we won't include redirections to foreign ressources
                                     $objResult->MoveNext();
                                     continue;
                                 }
-                                $location = $objResult->fields['redirect'];
-                            } else {
+                                $location = htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET);
+                            } elseif (strpos($objResult->fields['redirect'], '/') === 0) {
+                                if (strpos($objResult->fields['redirect'], ASCMS_PATH_OFFSET) === false) {
+                                    // we won't include redirections to foreign ressources
+                                    $objResult->MoveNext();
+                                    continue;
+                                }
+                                $location = ASCMS_PROTOCOL.'://'
+                                    .$_CONFIG['domainUrl']
+                                    .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
+                                    .htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET);
+							} else {
                                 $location = ASCMS_PROTOCOL.'://'
                                     .$_CONFIG['domainUrl']
                                     .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                                     .ASCMS_PATH_OFFSET
                                     .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
-                                    .'/'.$objResult->fields['redirect'];
+                                    .'/'.htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET);
                             }
                         } elseif ($objResult->fields['module'] == 0) {
                             // regular page
