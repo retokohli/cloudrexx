@@ -1575,7 +1575,7 @@ INSERT INTO `contrexx_module_jobs_settings` (`id`, `name`, `value`) VALUES (2,'l
 INSERT INTO `contrexx_module_jobs_settings` (`id`, `name`, `value`) VALUES (3,'url','index.php?section=contact&cmd=5&44=%URL%&43=%TITLE%');
 INSERT INTO `contrexx_module_jobs_settings` (`id`, `name`, `value`) VALUES (4,'show_location_fe','1');
 INSERT INTO `contrexx_module_knowledge_article_content` (`id`, `article`, `lang`, `question`, `answer`) VALUES (1,1,1,'Was ist Contrexx?','Contrexx&reg; ist ein modernes, einzigartiges und modulares Web Content Management System (WCMS) f&uuml;r die komplette Verwaltung einer Webseite. Zudem kann Contrexx&reg; auch f&uuml;r andere&nbsp;Informationsangebote wie Intranet, Extranet, eShop, Portal und weiteres eingesetzt werden. Das Contrexx&reg; basiert auf neuster PHP und MySQL Technologie und besticht in der einfachen Bedienung.');
-INSERT INTO `contrexx_module_knowledge_articles` (`id`, `category`, `active`, `hits`, `votes`, `votevalue`, `sort`, `date_created`, `date_updated`) VALUES (1,1,1,8,3,14,0,1234791658,1234791658);
+INSERT INTO `contrexx_module_knowledge_articles` (`id`, `category`, `active`, `hits`, `votes`, `votevalue`, `sort`, `date_created`, `date_updated`) VALUES (1,1,1,8,4,19,0,1234791658,1234791658);
 INSERT INTO `contrexx_module_knowledge_categories` (`id`, `active`, `parent`, `sort`) VALUES (1,1,0,1);
 INSERT INTO `contrexx_module_knowledge_categories_content` (`id`, `category`, `name`, `lang`) VALUES (1,1,'Beispielkategorie',1);
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (1,'max_subcategories','5');
@@ -3178,6 +3178,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, 
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (58,'auction','TXT_AUCTION_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (59,'partners','TXT_PARTNERS_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('8f159be88f74904aec21e6a32509ef5d','1235631989','1235665648','frontend',1,'userFrontendLangId|i:1;auth|a:2:{s:5:\"secid\";s:4:\"HRRU\";s:3:\"log\";b:1;}content|a:2:{s:9:\"expandAll\";b:0;s:9:\"expandCat\";i:1150;}media|a:1:{s:4:\"sort\";s:6:\"name_a\";}shop|a:8:{s:10:\"currencyId\";s:1:\"4\";s:4:\"cart\";a:5:{s:8:\"products\";a:0:{}s:5:\"items\";i:0;s:11:\"total_price\";s:4:\"0.00\";s:16:\"total_vat_amount\";s:4:\"0.00\";s:12:\"total_weight\";i:0;}s:10:\"countryId2\";s:3:\"204\";s:8:\"shipment\";b:0;s:9:\"vat_price\";s:4:\"0.00\";s:16:\"vat_products_txt\";s:0:\"\";s:13:\"vat_grand_txt\";s:0:\"\";s:17:\"grand_total_price\";s:4:\"0.00\";}');
+INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('4845e69e0ed0e93865093c8854779f2e','1235666122','1235666135','frontend',0,'');
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
