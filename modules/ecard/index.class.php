@@ -388,7 +388,7 @@ class ecard {
 		/* Initialize variables */
 		/************************/
 		$code = substr(md5(rand(0,99999)), 1, 10);
-		$url = 'http://www.' . $_CONFIG['domainUrl'] . '/index.php?section=ecard&cmd=show&code=' . $code;
+		$url = 'http://' . $_CONFIG['domainUrl'] . '/index.php?section=ecard&cmd=show&code=' . $code;
 
 
 		/*****************************/

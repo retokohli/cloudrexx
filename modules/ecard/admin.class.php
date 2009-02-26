@@ -178,15 +178,15 @@
 			$_POST['saveSettings'] = isset($_POST['saveSettings']) ? $_POST['saveSettings'] : '';
 			$_POST['deleteEcards'] = isset($_POST['deleteEcards']) ? $_POST['deleteEcards'] : '';
 			
-			$maxHeight = 0;
-			$maxWidth = 0;
-			$maxWidthThumb = 0;
+			$maxHeight 		= 0;
+			$maxWidth 		= 0;
+			$maxWidthThumb 	= 0;
 			$maxHeightThumb = 0;
-			$validdays = 0;
-			$subject = '';
-			$emailText = '';
-			$maxCharacters = '';
-			$maxLines = '';
+			$validdays 		= 0;
+			$subject 		= '';
+			$emailText 		= '';
+			$maxCharacters 	= '';
+			$maxLines 		= '';
 			
 			
 			/*******************/
