@@ -32,7 +32,6 @@ $_ARRAYLANG['TXT_FIRSTNAME'] = "Vorname";
 $_ARRAYLANG['TXT_STREET'] = "Strasse";
 $_ARRAYLANG['TXT_ZIP'] = "PLZ";
 $_ARRAYLANG['TXT_CITY'] = "Ort";
-$_ARRAYLANG['TXT_COUNTRY'] = "Land";
 $_ARRAYLANG['TXT_PHONE'] = "Telefon";
 $_ARRAYLANG['TXT_BIRTHDAY'] = "Geburtstag";
 $_ARRAYLANG['TXT_UNSUBSCRIBE'] = "Newsletter Abmelden";
