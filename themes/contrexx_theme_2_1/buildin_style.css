@@ -2285,3 +2285,310 @@ shop select {
 #downloads div.message_ok {
 	color: #029202;
 }
+
+
+
+/***************************************
+KNOWLEDGE 
+***************************************/
+
+.cloud {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    border: none;
+}
+
+.cloud li {
+    margin: 0px !important;
+    padding: 0px 5px !important;
+    list-style: none !important;
+    /*display: inline;*/
+    float: left !important;
+    vertical-align: bottom !important;
+    border: none !important;
+    line-height: 1em !important;
+}
+
+.cloud li:hover {
+    background-color: #cdcdcd;
+}
+
+.cloud li a{
+    color: #646464;
+}
+
+.knowledge_sidebar {
+    margin: 0px;
+    padding: 0px;
+}
+
+.knowledge_sidebar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.knowledge_sidebar li {
+    border-bottom: #03AB3E 1px solid;
+    width: 100%;
+    display: block;
+    margin: 0px;
+}
+
+.knowledge_sidebar li:hover {
+    /*background-color: #CDE9C4;*/
+}
+
+#knowledge #content_search {
+    position: relative;
+}
+
+#knowledge .articlelist a {
+    /*float: left;*/ /* what's it for? */
+}
+
+#knowledge .articlelist li {
+    margin: 0px;
+    padding: 0px;
+    border-bottom: dotted 1px black;
+}
+
+#knowledge .articlelist .title_row {
+    /*width: 565px;*/
+    padding: 5px;
+    background-color: #eeeeee;
+}
+
+#knowledge .articlelist .opener {
+    float: left;
+    width: 40px;
+}
+
+#knowledge .articlelist .question {
+    /*float: right;*/
+    /*width: 525px;*/
+    /*margin-left:  45px;*/
+}
+
+#knowledge .articlelist .question a {
+    /*color: #646464;*/
+}
+
+#knowledge .articlelist .answer {
+    /*float: right;*/
+    /*width: 530px;*/
+    /*padding-top: 10px;*/
+    margin-left: 45px;
+    position: relative;
+}
+
+
+#knowledge .articlelist .question_active {
+    background-color: #E9E9E9;
+    font-weight: bold;
+}
+
+#knowledge ul {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+#knowledge li {
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+#knowledge dd {
+    margin: 0px;
+    padding: 0px;
+    padding-bottom: 20px;
+    padding-top: 5px;
+}
+
+#knowledge dt {
+    font-weight: bold;
+}
+
+#knowledge_search_results {
+    padding-left: 0px;
+}
+
+#knowledge_search_results ul {
+    margin-left: 0px;
+    padding-left: 0px;
+    list-style-type: none;
+}
+
+#knowledge_search_results ul li {
+    padding: 0px;
+    margin: 0px;
+    margin: 5px 5px;
+    list-style-type: none;
+}
+
+#knowledge #overview div.category {
+    float: left;
+    width: 50%;
+    /*margin-right: 1px;*/
+}
+
+#knowledge #overview div.row {
+    /*background-color: #eeeeee;*/
+}
+
+#knowledge #overview div.row:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    margin-bottom: 1em;
+}
+/* for ie */
+* html #knowledge #overview div.row {
+    height: 1%;
+}
+
+#knowledge #overview div div.title {
+    font-weight: bold;
+    /*padding: 3px;*/
+    /*background-color: #eeeeee;*/
+}
+
+#knowledge #overview div div.title a {
+    display: block;
+}
+
+#knowledge #overview div div.content {
+    /*padding: 3px;*/
+    background-color: white;
+}
+
+#knowledge #overview div div.content a {
+    color: black;
+}
+
+#knowledge #overview div div.content a:hover {
+    color: #C5252F;
+}
+
+#knowledge #overview div div.content a.more {
+    color: #8b9581;
+}
+
+
+#knowledge #overview div div.content a.more:hover {
+    color: #C5252F;
+}
+
+#knowledge h2.category_list_title {
+    /*background-color: #E2EA9F;*/
+    padding: 3px;
+    /*color: #63625e;*/
+    /*background-color: #01A93C;*/
+    /*color: white;*/
+}
+
+#knowledge h2.article_list_title {
+    /*background-color: #DAEDC6;*/
+    /*background-color: #01A93C;*/
+    /*background-color: #EEEEEE;*/
+    padding: 3px;
+}
+
+#knowledge h2.article_list_title a {
+    color: white;
+}
+
+#knowledge h2.category_title {
+   /*background-color: #eeeeee;*/
+   /*padding: 3px;*/
+}
+
+#knowledge .most_read {
+    background-color: #DAEDC6;
+    /*padding: 3px;*/
+    font-weight: bold;
+}
+
+#knowledge .tags, #knowledge .articlelist .tags {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: inline;
+    border: none;
+}
+
+#knowledge .tags li, #knowledge .articlelist .tags li {
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+    list-style: none;
+    border: none;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+#knowledge .searchinput_search {
+    width: 60%;
+    padding: 5px;
+}
+
+#knowledge .search_button {
+    padding: 4px;
+}
+
+/* IE */
+* html .clearfix { height: 1%; }
+
+#resultbox {
+    border: 1px solid #858585;
+    position: absolute;
+    /*min-width: 310px;
+    max-width: 700px;*/
+    width: 60%;
+    padding: 5px;
+    overflow: auto;
+    z-index: 10;
+    left: 0px;
+    top: 25px;
+    background-color: white;
+}
+
+#resultbox ul {
+    list-style-type: none;
+    padding: 2px;
+    margin: 0px;
+}
+
+#resultbox li {
+    list-style-type: none;
+    display: block;
+    /*padding: 2px 0 2px 2px;*/
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0px;
+}
+
+#resultbox li a {
+    display: block;
+}
+
+#resultbox li:hover {
+    background-color: #F0F8FA;
+}
+
+.cloud {
+    margin-bottom: 1em;
+}
