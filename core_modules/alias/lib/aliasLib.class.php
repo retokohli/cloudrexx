@@ -535,7 +535,7 @@ class aliasLib
 
     function _deleteAlias($aliasId)
     {
-        global $objDatabase;
+        global $objDatabase, $_CONFIG;
 
         $arrRemovedAliases = array();
         if (($arrAlias = $this->_getAlias($aliasId)) !== false) {
@@ -544,8 +544,12 @@ class aliasLib
             }
 
             if ($objDatabase->Execute("DELETE s,t FROM `".DBPREFIX."module_alias_source` AS s INNER JOIN `".DBPREFIX."module_alias_target` AS t ON t.`id` = s.`target_id` WHERE s.`target_id` = ".intval($aliasId)) !== false && $this->_activateRewriteEngine($arrRemovedAliases))  {
+                if ($_CONFIG['xmlSitemapStatus'] == 'on') {
+                    XMLSitemap::write();
+                }
+                return true;
             }
-            return true;
+            return false;
         } else {
             return false;
         }

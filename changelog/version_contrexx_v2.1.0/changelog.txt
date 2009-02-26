@@ -140,6 +140,9 @@ Alias Verwaltung
 - Die Zielseite kann geändert werden.
 - Die Synchronisation mit dem Content Manager funktioniert korrekt.
 - Gelöschte Aliase werden aus der .HTAccess Datei gelöscht.
+- Änderungen werden im XML-Sitemap (/sitemap.xml) übernommen.
+- Die Alias Verwaltung kann nur (de)aktiviert werden, sofern auf die
+  Konfigurationsdatei (/config/settings.php) Schreibzugriff besteht.
 
 
 ****************************************
