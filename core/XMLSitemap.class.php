@@ -4,7 +4,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
- * @version        2.0.2
+ * @version        2.1.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -97,10 +97,7 @@ class XMLSitemap {
             $strFooter =    "</urlset>";
 
             //Url
-            $objResult = $objDatabase->Execute('SELECT        id,
-                                                            name
-                                                FROM        '.DBPREFIX.'modules
-                                            ');
+            $objResult = $objDatabase->Execute('SELECT id, name FROM '.DBPREFIX.'modules');
             while (!$objResult->EOF) {
                 $arrModules[$objResult->fields['id']] = $objResult->fields['name'];
                 $objResult->MoveNext();
@@ -114,13 +111,19 @@ class XMLSitemap {
                                                             cn.cmd			AS cmd,
                                                             cn.module		AS module,
                                                             cn.lang			AS langid,
+                                                            cc.redirect     AS redirect,
+                                                '.($_CONFIG['aliasStatus'] ? '
                                                             mas.isdefault	AS aliasIsDefault,
-                                                            mas.url			AS aliasName
+                                                            mas.url			AS aliasName'
+                                                            : '0            AS aliasIsDefault').'
                                                 FROM        '.DBPREFIX.'content_navigation	AS cn
-                                                LEFT JOIN	'.DBPREFIX.'module_alias_target	AS mat
+                                                INNER JOIN  '.DBPREFIX.'content             AS cc
+                                                ON          cc.id = cn.catid
+                                                '.($_CONFIG['aliasStatus'] ?
+                                                'LEFT JOIN	'.DBPREFIX.'module_alias_target	AS mat
                                                 ON			cn.catid = mat.url
                                                 LEFT JOIN	'.DBPREFIX.'module_alias_source AS mas
-                                                ON			mat.id = mas.target_id
+                                                ON			mat.id = mas.target_id' : '').'
                                                 WHERE       cn.is_validated="1" 	AND
                                                             cn.activestatus="1" 	AND
                                                             cn.displaystatus="on" 	AND
@@ -128,67 +131,129 @@ class XMLSitemap {
                                                             (cn.enddate>=CURDATE() OR cn.enddate=\'0000-00-00\') AND
                                                             cn.lang IN ('.$strActiveLanguages.')
                                                             '.($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND cn.protected=0 ' : '').'
-                                                ORDER BY    cn.catid ASC
+                                                ORDER BY    cn.parcat, cn.displayorder
                                             ');
 
-            $strContent = '';
-            if ($objResult->RecordCount() > 0) {
+            if ($objResult && $objResult->RecordCount() > 0) {
+                $arrPages = array();
+                $arrLocations = array();
+                $arrRedundancies = array();
 
                 while (!$objResult->EOF) {
-
-                    $strContent .= "\t<url>\n";
-                    $strContent .= "\t\t<loc>";
+                    $isRedirection = false;
 
                     if (intval($objResult->fields['aliasIsDefault']) == 1) {
                         //Alias existing
-                        $strContent .= ASCMS_PROTOCOL.'://'
+                        $isRedirection = true;
+                        $location = ASCMS_PROTOCOL.'://'
+                            .$_CONFIG['domainUrl']
+                            .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
+                            .ASCMS_PATH_OFFSET
+                            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                            .'/'.$objResult->fields['aliasName'];
+                    } else {
+                        //No alias
+                        if (!empty($objResult->fields['redirect'])) {
+                            // redirection
+                            $isRedirection = true;
+                            if (preg_match('#^[a-z]+://#', $objResult->fields['redirect'])) {
+                                // the redirection points towards a web ressource
+                                if (!preg_match('#^https?://'.$_CONFIG['domainUrl'].'#', $objResult->fields['redirect'])) {
+                                    // we won't include redirections to foreign ressources
+                                    $objResult->MoveNext();
+                                    continue;
+                                }
+                                $location = $objResult->fields['redirect'];
+                            } else {
+                                $location = ASCMS_PROTOCOL.'://'
                                     .$_CONFIG['domainUrl']
                                     .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                                     .ASCMS_PATH_OFFSET
                                     .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
-                                    .'/'.$objResult->fields['aliasName'];
-                    } else {
-                        //No alias existing
-                        if ($objResult->fields['module'] == 0) {
+                                    .'/'.$objResult->fields['redirect'];
+                            }
+                        } elseif ($objResult->fields['module'] == 0) {
+                            // regular page
                             if (!empty($objResult->fields['cmd'])) {
-                                $strContent .= ASCMS_PROTOCOL.'://'
-                                            .$_CONFIG['domainUrl']
-                                            .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
-                                            .ASCMS_PATH_OFFSET
-                                            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
-                                            .'/'.CONTREXX_DIRECTORY_INDEX
-                                            .'?cmd='.$objResult->fields['cmd']
-                                            .($_CONFIG['useVirtualLanguagePath'] == 'off' ? '&amp;langId='.$objResult->fields['langid'] : '');
+                                $location = ASCMS_PROTOCOL.'://'
+                                    .$_CONFIG['domainUrl']
+                                    .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
+                                    .ASCMS_PATH_OFFSET
+                                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                                    .'/'.CONTREXX_DIRECTORY_INDEX
+                                    .'?cmd='.$objResult->fields['cmd']
+                                    .($_CONFIG['useVirtualLanguagePath'] == 'off' ? '&amp;langId='.$objResult->fields['langid'] : '');
                             } else {
-                                $strContent .= ASCMS_PROTOCOL.'://'
-                                            .$_CONFIG['domainUrl']
-                                            .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
-                                            .ASCMS_PATH_OFFSET
-                                            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
-                                            .'/'.CONTREXX_DIRECTORY_INDEX
-                                            .'?page='.$objResult->fields['catid'];
-                                            //No addition of language-id needed because a pageId is always unique!
+                                $location = ASCMS_PROTOCOL.'://'
+                                    .$_CONFIG['domainUrl']
+                                    .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
+                                    .ASCMS_PATH_OFFSET
+                                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                                    .'/'.CONTREXX_DIRECTORY_INDEX
+                                    .'?page='.$objResult->fields['catid'];
+                                    //No addition of language-id needed because a pageId is always unique!
                             }
                         } else {
-                            $strContent .= ASCMS_PROTOCOL.'://'
-                                        .$_CONFIG['domainUrl']
-                                        .ASCMS_PATH_OFFSET
-                                        .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
-                                        .'/'.CONTREXX_DIRECTORY_INDEX
-                                        .'?section='.$arrModules[$objResult->fields['module']]
-                                        .(!empty($objResult->fields['cmd']) ? '&amp;cmd='.$objResult->fields['cmd'] : '')
-                                        .($_CONFIG['useVirtualLanguagePath'] == 'off' ? '&amp;langId='.$objResult->fields['langid'] : '');
+                            // module page
+                            $location = ASCMS_PROTOCOL.'://'
+                                .$_CONFIG['domainUrl']
+                                .ASCMS_PATH_OFFSET
+                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                                .'/'.CONTREXX_DIRECTORY_INDEX
+                                .'?section='.$arrModules[$objResult->fields['module']]
+                                .(!empty($objResult->fields['cmd']) ? '&amp;cmd='.$objResult->fields['cmd'] : '')
+                                .($_CONFIG['useVirtualLanguagePath'] == 'off' ? '&amp;langId='.$objResult->fields['langid'] : '');
                         }
                     }
 
-                    $strContent .= "</loc>\n";
-                    $strContent .= "\t\t<lastmod>".XMLSitemap::getLastModificationDate($objResult->fields['module'], $objResult->fields['cmd'], $objResult->fields['changelog'])."</lastmod>\n";
-                    $strContent .= "\t\t<changefreq>".XMLSitemap::getChangingFrequency($objResult->fields['module'], $objResult->fields['cmd'])."</changefreq>\n";
-                    $strContent .= "\t\t<priority>0.5</priority>\n";
-                    $strContent .= "\t</url>\n";
+                    $arrPages[] = array(
+                        'location'      => $location,
+                        'redirection'   => $isRedirection,
+                        'module'        => $objResult->fields['module'],
+                        'cmd'           => $objResult->fields['cmd'],
+                        'changelog'     => $objResult->fields['changelog']
+                    );
+
+                    if (in_array($location, $arrLocations)) {
+                        $arrRedundancies[] = $location;
+                    }
+                    $arrLocations[] = $location;
 
                     $objResult->MoveNext();
                 }
+
+                // solve redundancies
+                foreach ($arrRedundancies as $redundancy) {
+                    $arrRedundancyLocations = array_keys($arrLocations, $redundancy);
+                    $arrRemovablePages = array();
+
+                    // find all pages that link to the page that has been listed more than once
+                    foreach ($arrRedundancyLocations as $page) {
+                        if  ($arrPages[$page]['redirection']) {
+                            $arrRemovablePages[] = $page;
+                        }
+                    }
+
+                    // if the target page itself isn't listed in the sitemap, we will use the one that occured as first
+                    if (count($arrRedundancyLocations) == count($arrRemovablePages)) {
+                        $arrRemovablePages = array_slice($arrRedundancyLocations, 1, null, true);
+                    }
+
+                    // remove redundancies
+                    foreach ($arrRemovablePages as $page) {
+                        unset($arrPages[$page]);
+                    }
+                }
+            }
+
+            $strContent = '';
+            foreach ($arrPages as $arrPage) {
+                $strContent .= "\t<url>\n";
+                $strContent .= "\t\t<loc>".$arrPage['location']."</loc>\n";
+                $strContent .= "\t\t<lastmod>".XMLSitemap::getLastModificationDate($arrPage['module'], $arrPage['cmd'], $arrPage['changelog'])."</lastmod>\n";
+                $strContent .= "\t\t<changefreq>".XMLSitemap::getChangingFrequency($arrPage['module'], $arrPage['cmd'])."</changefreq>\n";
+                $strContent .= "\t\t<priority>0.5</priority>\n";
+                $strContent .= "\t</url>\n";
             }
 
             //Write values

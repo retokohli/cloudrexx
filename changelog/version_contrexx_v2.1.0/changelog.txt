@@ -9,6 +9,8 @@ Allgemein
 - Navigationspunkte, welche als Weiterleitung dienen, zeigen auf die
   Ziel Adresse. Ausgenommen davon sind Navigationspunkte welche ein Alias
   verwenden.
+- Die Einträge im XML-Sitemap (/sitemap.xml) zeigen auf die Ziel Adresse
+  von Weiterleitungsseiten, sofern es sich um solche handelt.
 
 Design-Manager
 - Es kann neu ein Design für Mobile Geräte festgelegt werden. Dies wird
