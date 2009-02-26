@@ -43,29 +43,9 @@ class MediaLibrary {
         "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
         "html","shtml","css","js","tpl","thumb","ico"
     );
-	// act: sort
-	// sorting information $_SESSION['media']['sort']
-    function _sortingSession(){
-    	$session = explode('_', $_SESSION['media']['sort']);
 
-    	if($session[0] == $this->getSort){
-    		if($session[1] == 'a'){
-    			$session[1] = 'z';
-    		}else{
-    			$session[1] = 'a';
-    		}
-    	}else{
-    		if($this->getSort == 'name' || $this->getSort == 'size' || $this->getSort == 'type' || $this->getSort == 'date' || $this->getSort == 'perm'){
-    			$session[0] = $this->getSort;
-    		}else{
-    			$session[0] = 'name';
-    		}
-    		$session[1] = 'a';
-    	}
-
-    	$_SESSION['media']['sort'] = implode('_', $session);
-    }
-
+    protected $sortBy = 'name';
+    protected $sortDesc = false;
 
 
 	// act: newDir
@@ -645,61 +625,43 @@ class MediaLibrary {
 
 
 
-    // sorts the dir tree by the session $_SESSION['media']['sort']
     function _sortDirTree($tree){
-		$sort = explode('_', $_SESSION['media']['sort']);
 		$d    = $tree['dir'];
 		$f    = $tree['file'];
+        $direction = $this->sortDesc ? SORT_DESC : SORT_ASC;
 
-		// sort by size
-		if($sort[0] == 'size'){
-			if($sort[1] == 'z'){
-				@array_multisort($d['size'], SORT_DESC, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-				@array_multisort($f['size'], SORT_DESC, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon']);
-			}else{
-				@array_multisort($d['size'], SORT_ASC, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-				@array_multisort($f['size'], SORT_ASC, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon']);
-			}
-		}
-		// sort by type
-		elseif($sort[0] == 'type'){
-			if($sort[1] == 'z'){
-				@array_multisort($d['type'], SORT_DESC, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon']);
-				@array_multisort($f['type'], SORT_DESC, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon']);
-			}else{
-				@array_multisort($d['type'], SORT_ASC, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon']);
-				@array_multisort($f['type'], SORT_ASC, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon']);
-			}
-		}
-		//sort by date
-		elseif($sort[0] == 'date'){
-			if($sort[1] == 'z'){
-				@array_multisort($d['date'], SORT_DESC, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon']);
-				@array_multisort($f['date'], SORT_DESC, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon']);
-			}else{
-				@array_multisort($d['date'], SORT_ASC, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon']);
-				@array_multisort($f['date'], SORT_ASC, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon']);
-			}
-		}
-		//sort by perm
-		elseif($sort[0] == 'perm'){
-			if($sort[1] == 'a'){
-				@array_multisort($d['perm'], SORT_DESC, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon']);
-				@array_multisort($f['perm'], SORT_DESC, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon']);
-			}else{
-				@array_multisort($d['perm'], SORT_ASC, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon']);
-				@array_multisort($f['perm'], SORT_ASC, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon']);
-			}
-		}
-		// sort by name
-		else{
-			if($sort[1] == 'z'){
-				@array_multisort($d['name'], SORT_DESC, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-				@array_multisort($f['name'], SORT_DESC, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
-			}else{
-				@array_multisort($d['name'], SORT_ASC, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-				@array_multisort($f['name'], SORT_ASC, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
-			}
+        switch ($this->sortBy) {
+            // sort by size
+            case 'size':
+				@array_multisort($d['size'], $direction, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon']);
+				@array_multisort($f['size'], $direction, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                break;
+
+            // sort by type
+            case 'type':
+				@array_multisort($d['type'], $direction, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon']);
+				@array_multisort($f['type'], $direction, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon']);
+                break;
+
+            //sort by date
+		    case 'date':
+				@array_multisort($d['date'], $direction, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon']);
+				@array_multisort($f['date'], $direction, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon']);
+                break;
+
+            //sort by perm
+		    case 'perm':
+                $direction = !$this->sortDesc ? SORT_DESC : SORT_ASC;
+				@array_multisort($d['perm'], $direction, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon']);
+				@array_multisort($f['perm'], $direction, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon']);
+                break;
+
+            // sort by name
+		    case 'name':
+            default:
+				@array_multisort($d['name'], $direction, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
+				@array_multisort($f['name'], $direction, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                break;
 		}
 
 		$dirTree['dir']  = $d;
@@ -719,25 +681,24 @@ class MediaLibrary {
 			'perm'	=> null,
 			'name'	=> null
 		);
-		$icon1        = '&uarr;';     // sort by a   // &and;
-		$icon2        = '&darr;';     // sort by z   // &or;
-		$sort         = explode('_', $_SESSION['media']['sort']);
+		$icon1        = '&darr;';     // sort desc
+		$icon2        = '&uarr;';     // sort asc
 
-		switch($sort[0]){
+		switch($this->sortBy){
 		    case 'size':
-		        $icon['size'] = ($sort[1] != 'z') ? $icon1 : $icon2;
+		        $icon['size'] = $this->sortDesc ? $icon1 : $icon2;
 		        break;
 	    	case 'type':
-		        $icon['type'] = ($sort[1] != 'z') ? $icon1 : $icon2;
+		        $icon['type'] = $this->sortDesc ? $icon1 : $icon2;
 		        break;
 		    case 'date':
-		        $icon['date'] = ($sort[1] != 'z') ? $icon1 : $icon2;
+		        $icon['date'] = $this->sortDesc ? $icon1 : $icon2;
 		        break;
 		    case 'perm':
-		        $icon['perm'] = ($sort[1] != 'z') ? $icon1 : $icon2;
+		        $icon['perm'] = $this->sortDesc ? $icon1 : $icon2;
 		        break;
 		    default:
-		        $icon['name'] = ($sort[1] != 'z') ? $icon1 : $icon2;
+		        $icon['name'] = $this->sortDesc ? $icon1 : $icon2;
 	    }
 
 		return $icon;
@@ -753,25 +714,24 @@ class MediaLibrary {
 			'perm'	=> null,
 			'name'	=> null
 		);
-		$class1        = 'sort';     // sort by a   // &and;
-		$class2        = 'sort';     // sort by z   // &or;
-		$sort         = explode('_', $_SESSION['media']['sort']);
+		$class1        = 'sort';     // sort desc
+		$class2        = 'sort';     // sort asc
 
 		switch($sort[0]){
 		    case 'size':
-		        $class['size'] = ($sort[1] != 'z') ? $class1 : $class2;
+		        $class['size'] = $this->sortDesc ? $class1 : $class2;
 		        break;
 	    	case 'type':
-		        $class['type'] = ($sort[1] != 'z') ? $class1 : $class2;
+		        $class['type'] = $this->sortDesc ? $class1 : $class2;
 		        break;
 		    case 'date':
-		        $class['date'] = ($sort[1] != 'z') ? $class1 : $class2;
+		        $class['date'] = $this->sortDesc ? $class1 : $class2;
 		        break;
 		    case 'perm':
-		        $class['perm'] = ($sort[1] != 'z') ? $class1 : $class2;
+		        $class['perm'] = $this->sortDesc ? $class1 : $class2;
 		        break;
 		    default:
-		        $class['name'] = ($sort[1] != 'z') ? $class1 : $class2;
+		        $class['name'] = $this->sortDesc ? $class1 : $class2;
 	    }
 
 		return $class;

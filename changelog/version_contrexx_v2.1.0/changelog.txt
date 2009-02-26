@@ -86,6 +86,10 @@ Datenlisten
 - Den Anhängen kann eine Beschreibung zugewiesen werden.
 - Inserate können kopieren werden.
 
+Medien Archive
+- Die Medien Archive verwenden im Frontend keine PHP-Sitzung mehr.
+  Dies ermöglicht es Suchmaschinen den Inhalt der Archive zu Indexieren.
+
 
 ****************************************
 * Behobene Fehler **********************
