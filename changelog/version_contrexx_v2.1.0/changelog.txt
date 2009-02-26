@@ -11,6 +11,9 @@ Allgemein
   verwenden.
 - Die Einträge im XML-Sitemap (/sitemap.xml) zeigen auf die Ziel Adresse
   von Weiterleitungsseiten, sofern es sich um solche handelt.
+- Das XML-Sitemap enthält keine Einträge mehr, welche auf eine andere Webseite
+  zeigen. Das selbe trifft auch für Bereiche zu, welche sich ausserhalb des
+  Ablagepfades von Contrexx befinden.
 
 Design-Manager
 - Es kann neu ein Design für Mobile Geräte festgelegt werden. Dies wird
