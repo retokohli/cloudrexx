@@ -28,7 +28,8 @@ class Dataviewer {
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
             							"<a href='index.php?cmd=dataviewer'>".$_ARRAYLANG['TXT_DATAVIEWER_OVERVIEW']."</a>
-            							<a href='index.php?cmd=dataviewer&amp;act=new'>".$_ARRAYLANG['TXT_DATAVIEWER_NEW_PROJECT']."</a>");
+            							<a href='index.php?cmd=dataviewer&amp;act=new'>".$_ARRAYLANG['TXT_DATAVIEWER_NEW_PROJECT']."</a>
+            							<a href='index.php?cmd=dataviewer&amp;act=settings'>".$_ARRAYLANG['TXT_DATAVIEWER_SETTINGS']."</a>");
     }
 
     
@@ -59,6 +60,9 @@ class Dataviewer {
 				break;
 			case "import":
 				$this->import($_GET['id']);
+				break;
+			case "settings":
+				$this->settings();
 				break;
 			default:
 				$this->overview();
@@ -198,6 +202,7 @@ class Dataviewer {
 		$this->_pageTitle = $_ARRAYLANG['TXT_DATAVIEWER_NEW_PROJECT'];
 		
 		$_POST['save'] = !empty($_POST['save']) ? $_POST['save'] : "";
+		$arrSetting = $this->getSettings();
 		
 		//SAVE
 		if ($_POST['save']) {
@@ -210,7 +215,7 @@ class Dataviewer {
 			
 			$countryBased 	= !empty($_POST['countryBased']) ? $_POST['countryBased'] : "";
 			$countryBased   = $countryBased == "y" ? 1 : 0;
-						
+			
 			$status 		= !empty($_POST['status']) ? $_POST['status'] : "";
 			$status 		= $status == "y" ? 1 : 0;
 			
@@ -233,7 +238,7 @@ class Dataviewer {
 										countrybased,
 										filters)
 									VALUES
-										('" . $name . "',
+										('" . $this->makeInputDBvalid($name) . "',
 										'" . $description . "',
 										'" . $status . "',
 										'" . $languageString . "',
@@ -292,12 +297,29 @@ class Dataviewer {
 			}
 		}
 		
+		
+		$htmlCountrybased = "";
+		if ($arrSetting['use_countrybased'] == 1) {
+			$htmlCountrybased = '
+				<tr class="row2">
+					<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])">'.$_ARRAYLANG['TXT_COUNTRY_BASED'].'</td>
+					<td width="88%">
+						<input type="radio" name="countryBased" value="y" />'.$_ARRAYLANG['TXT_YES'].'
+						<input type="radio" name="countryBased" value="n" />'.$_ARRAYLANG['TXT_NO'].'
+					</td>
+				</tr>
+				';	
+		}
+			
+		
 		//projectstring for JS check
 		$query     = "SELECT * FROM " . DBPREFIX . "module_dataviewer_projects";
 		$objResult = $objDatabase->Execute($query);
 		$projectsString = "";
 		while (!$objResult->EOF) {
-			$projectsString .= $objResult->fields['name']." ";
+			if ($objResult->fields['id'] !== $_GET['id']) {
+				$projectsString .= $objResult->fields['name']." ";	
+			}
 			$objResult->MoveNext();
 		}
 		$projectsString = substr($projectsString, 0, strlen($projectsString)-1);
@@ -305,13 +327,10 @@ class Dataviewer {
 		$this->_objTpl->setVariable(array(
 			'AVAILABLE_FRONTENT_LANGUAGES'	=> $this->getFrontentLangCheckboxes(""),
 			'TXT_FRONTEND_LANGUAGE' 		=> $_ARRAYLANG['TXT_FRONTEND_LANGUAGE'],
-			'TXT_YES' 						=> $_ARRAYLANG['TXT_YES'],
-			'TXT_NO' 						=> $_ARRAYLANG['TXT_NO'],
 			'TXT_ACTIVE' 					=> $_ARRAYLANG['TXT_ACTIVE'],
 			'TXT_INACTIVE' 					=> $_ARRAYLANG['TXT_INACTIVE'],
 			'TXT_ADD_COLUMN' 				=> $_ARRAYLANG['TXT_ADD_COLUMN'],
 			'TXT_PROJECT_COLUMNS' 			=> $_ARRAYLANG['TXT_PROJECT_COLUMNS'],
-			'TXT_COUNTRY_BASED' 			=> $_ARRAYLANG['TXT_COUNTRY_BASED'],
 			'TXT_PROJECTNAME' 				=> $_ARRAYLANG['TXT_PROJECTNAME'],
 			'TXT_PROJECTDESCRIPTION'		=> $_ARRAYLANG['TXT_PROJECTDESCRIPTION'],
 			'TXT_PROJECTSTATUS' 			=> $_ARRAYLANG['TXT_PROJECTSTATUS'],
@@ -324,7 +343,10 @@ class Dataviewer {
 			'TXT_ENTER_DESCRIPTION' 		=> $_ARRAYLANG['TXT_ENTER_DESCRIPTION'],
 			'TXT_CHOOSE_COUNTRYBASED' 		=> $_ARRAYLANG['TXT_CHOOSE_COUNTRYBASED'],
 			'TXT_CHOOSE_STATUS' 			=> $_ARRAYLANG['TXT_CHOOSE_STATUS'],
+			'TXT_COLUMNS_DOUBLED_NAMED' 	=> $_ARRAYLANG['TXT_COLUMNS_DOUBLED_NAMED'],
+			'TABLE_ROW_COUNTRYBASED' 		=> $htmlCountrybased,
 			'PROJECTSSTRING' 				=> $projectsString,
+			'ID'			 				=> $_GET['id'],
 			'TIP_PROJECTNAME'				=> $_ARRAYLANG['TIP_PROJECTNAME'],
 			'TIP_FRONTEND_LANG' 			=> $_ARRAYLANG['TIP_FRONTEND_LANG'],
 			'TIP_COUNTRYBASED' 				=> $_ARRAYLANG['TIP_COUNTRYBASED'],
@@ -353,6 +375,7 @@ class Dataviewer {
 		if ($_POST['save']) {
 			$id 			= !empty($_POST['id']) ? $_POST['id'] : "";
 			$name 			= !empty($_POST['name']) ? $_POST['name'] : "";
+			$orderBy 		= !empty($_POST['orderby']) ? $_POST['orderby'] : "";
 			
 			$language 		= !empty($_POST['language']) ? $_POST['language'] : "";
 			$languageString = implode(";", $language);
@@ -372,7 +395,8 @@ class Dataviewer {
 										name = '" . $name . "', 
 										description = '" . $description . "', 
 										language = '" . $languageString . "',
-										filters = '" . $columnsString . "'
+										filters = '" . $columnsString . "',
+										order_by = '" . $orderBy . "'
 									WHERE
 										id = '".$id."';";
 			
@@ -470,7 +494,9 @@ class Dataviewer {
 		$objResult = $objDatabase->Execute($query);
 		$projectsString = "";
 		while (!$objResult->EOF) {
-			$projectsString .= $objResult->fields['name']." ";
+			if ($objResult->fields['id'] !== $_GET['id']) {
+				$projectsString .= $objResult->fields['name']." ";	
+			}
 			$objResult->MoveNext();
 		}
 		$projectsString = substr($projectsString, 0, strlen($projectsString)-1);
@@ -488,16 +514,28 @@ class Dataviewer {
 				$i++;	
 			}
 		}
+
 		
-			
 		$query     = "SELECT * FROM " . DBPREFIX . "module_dataviewer_projects WHERE id = '".$id."';";
 		$objResult = $objDatabase->Execute($query);
+		$columnsDB = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($this->getProjectName($id)));
 		
+		$orderByOptions = "";
+		foreach ($columnsDB as $column) {
+			$selected = "";
+			if($column == $objResult->fields['order_by']) {
+				$selected = "selected";
+			}
+			$orderByOptions .= '<option value="' . $column . '" ' .$selected. ' /> ' . $column;		
+		}
+			
 		$this->_objTpl->setVariable(array(
 			'POST_NAME'						=> $objResult->fields['name'],
 			'POST_DESCRIPTION'				=> $objResult->fields['description'],
 			'AVAILABLE_FRONTENT_LANGUAGES'	=> $this->getFrontentLangCheckboxes($id),
 			'ID'							=> $id,
+			'ORDER_BY_OPTIONS'				=> $orderByOptions,
+			'TXT_ORDER_BY'					=> $_ARRAYLANG['TXT_ORDER_BY'],
 			'TXT_FRONTEND_LANGUAGE' 		=> $_ARRAYLANG['TXT_FRONTEND_LANGUAGE'],
 			'TXT_YES' 						=> $_ARRAYLANG['TXT_YES'],
 			'TXT_NO' 						=> $_ARRAYLANG['TXT_NO'],
@@ -524,7 +562,8 @@ class Dataviewer {
 			'TIP_COUNTRYBASED' 				=> $_ARRAYLANG['TIP_COUNTRYBASED'],
 			'TIP_DESCRIPTION' 				=> $_ARRAYLANG['TIP_DESCRIPTION'],
 			'TIP_STATUS' 					=> $_ARRAYLANG['TIP_STATUS'],
-			'TIP_COLUMN_NAME' 				=> $_ARRAYLANG['TIP_COLUMN_NAME']
+			'TIP_COLUMN_NAME' 				=> $_ARRAYLANG['TIP_COLUMN_NAME'],
+			'TIP_ORDER_BY'					=> $_ARRAYLANG['TIP_ORDER_BY'],
 		));	
 	}
 	
@@ -645,7 +684,7 @@ class Dataviewer {
 		global $objDatabase;
 		
 		//get page id
-		$query     = "SELECT catid from " .DBPREFIX. "content_navigation WHERE cmd = '".makeInputDBvalid($projectnameOld)."';";
+		$query     = "SELECT catid from " .DBPREFIX. "content_navigation WHERE cmd = '".$this->makeInputDBvalid($projectnameOld)."';";
 		$objResult = $objDatabase->Execute($query);
 		$pageID  = $objResult->fields['catid']; 
 		
@@ -707,16 +746,37 @@ class Dataviewer {
 	 * @return string $input
 	 */
 	function makeInputDBvalid($input) {
-		$input = str_replace(" ", "_", $input);
-		$input = str_replace("Ä", "ae", $input);
-		$input = str_replace("ä", "ae", $input);
-		$input = str_replace("Ö", "oe", $input);
-		$input = str_replace("ö", "oe", $input);
-		$input = str_replace("Ü", "ue", $input);
-		$input = str_replace("ü", "ue", $input);
-		$input = strtolower($input);
-
-		return $input;
+//		$input = str_replace(" ", "_",  $input);
+//		$input = str_replace("Ä", "ae", $input);
+//		$input = str_replace("ä", "ae", $input);
+//		$input = str_replace("Ö", "oe", $input);
+//		$input = str_replace("ö", "oe", $input);
+//		$input = str_replace("Ü", "ue", $input);
+//		$input = str_replace("ü", "ue", $input);
+		$arrPattern["/[\+\/\(\)=,;%&]+/"] = "_"; // interpunction etc.
+		$arrPattern['/[\'<>\\\~$!\"]+/']  =  "'_'";  		 // quotes and other special characters
+		$arrPattern['/Ä/'] 				  = "ae";  
+		$arrPattern['/Ö/'] 				  = "oe";  
+		$arrPattern['/Ü/'] 				  = "ue";  
+		$arrPattern['/ä/'] 				  = "ae";  
+		$arrPattern['/ö/'] 				  = "oe";  
+		$arrPattern['/ü/'] 				  = "ue";  
+		$arrPattern['/à/'] 				  = "a";  
+		$arrPattern['/ç/'] 				  = "c";  
+		$arrPattern['/\s/'] 			  = "_";  
+		$arrPattern['/[èé]/'] 			  = "e";  
+		$arrPattern['/-/'] 				  = "_";  
+		
+		// Fallback for everything we didn't catch by now
+		$arrPattern['/[^\sa-z_-]+/i'] 	  = "_";
+		$arrPattern['/[_-]{2,}/']   	  = "_";  
+		$arrPattern['/^[_\.\/\-]+/'] 	  = "_";  
+		
+		foreach ($arrPattern as $pattern => $replacement) {
+			$input = preg_replace($pattern, $replacement, $input);
+		}
+		
+		return strtolower($input);	
 	}
 	
 			
@@ -946,8 +1006,14 @@ class Dataviewer {
 		$deleteProjectTableQuery       = "DROP TABLE ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($this->getProjectName($id)).";";
 		$deleteProjectRecordQuery      = "DELETE FROM ".DBPREFIX."module_dataviewer_projects WHERE id = '" . $id . "';";
 		$deletePlaceholdersRecordQuery = "DELETE FROM ".DBPREFIX."module_dataviewer_placeholders WHERE projectid = '" . $id . "';";
-		$deleteNavigationPageQuery     = "DELETE FROM ".DBPREFIX."content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "';";
-		$deleteContentPageQuery        = "DELETE FROM ".DBPREFIX."content WHERE id = '" . $catID . "';";
+		
+		if ($this->makeInputDBvalid($this->getProjectName($id) !== "")) {
+			$deleteNavigationPageQuery     = "DELETE FROM ".DBPREFIX."content_navigation WHERE cmd = '" . $this->makeInputDBvalid($this->getProjectName($id)) . "';";	
+		}
+		
+		if ($catID !== "") {
+			$deleteContentPageQuery        = "DELETE FROM ".DBPREFIX."content WHERE id = '" . $catID . "';";
+		}		
 
 //		echo $query . "<br>";
 //		echo $catID . "<br>";
@@ -1298,6 +1364,52 @@ class Dataviewer {
 		$xhtml .= $tableStart . $tableHeadlines . $tableContent . $tableEnd;
 		
 		return html_entity_decode($xhtml);
+	}
+	
+	
+	function settings() {
+		global $_ARRAYLANG, $objDatabase;
+        $this->_objTpl->loadTemplateFile('module_dataviewer_settings.html');
+        $this->_pageTitle = $_ARRAYLANG['TXT_DATAVIEWER_SETTINGS'];
+        $useCountrybased  = !empty($_POST['useCountrybased']) ? "1" : "0";
+                		        
+        if ($_POST['save']) {
+        	if($objDatabase->Execute("UPDATE ".DBPREFIX."module_dataviewer_settings SET setting_value = '".$useCountrybased."' WHERE setting_name = 'use_countrybased';")) {
+        		$this->_objTpl->setVariable(array(
+					'CONTENT_STATUS_MESSAGE' 	=> $this->strOkMessage = $_ARRAYLANG['TXT_SETTINGS_SAVED']
+				));	
+        	} else {
+        		$this->_objTpl->setVariable(array(
+					'CONTENT_STATUS_MESSAGE' 	=> $this->strErrMessage = $_ARRAYLANG['TXT_SETTINGS_NOT_SAVED']
+				));	
+        	}
+        }
+        
+        $arrSetting = $this->getSettings();
+        
+		$this->_objTpl->setVariable(array(			
+			'TXT_DATAVIEWER_SETTINGS' 	=> $_ARRAYLANG['TXT_DATAVIEWER_SETTINGS'],
+			'TXT_PLACEHOLDER' 			=> $_ARRAYLANG['TXT_PLACEHOLDER'],
+			'TXT_SAVE' 			   		=> $_ARRAYLANG['TXT_SAVE'],
+			'TXT_USE_COUNTRYBASED' 		=> $_ARRAYLANG['TXT_USE_COUNTRYBASED'],
+			'TIP_USE_COUNTRYBASED' 		=> $_ARRAYLANG['TIP_USE_COUNTRYBASED'],
+			'CHECKED' 			   		=> ($arrSetting['use_countrybased'] == 1) ? "checked" : ""
+			
+		));			
+	}
+	
+	
+	function getSettings() {
+		global $objDatabase;
+		$querySettings 	   = "SELECT * FROM ".DBPREFIX."module_dataviewer_settings";
+		$objResultSettings = $objDatabase->Execute($querySettings);
+		
+		while (!$objResultSettings->EOF) {
+			$arrSetting[$objResultSettings->fields['setting_name']] = $objResultSettings->fields['setting_value'];
+			$objResultSettings->MoveNext();
+		}
+		
+		return $arrSetting;
 	}
 }
 ?>
