@@ -233,6 +233,9 @@ class Guestbook extends GuestbookLibrary
             "IMAGE_ALT"                => $alt,
             "FEMALE_CHECKED"        => $checked
         ));
+
+        $this->_objTpl->hideBlock('guestbookStatus');
+        $this->_objTpl->parse('guestbookForm');
     }
 
     /**
@@ -295,8 +298,12 @@ class Guestbook extends GuestbookLibrary
             $this->statusMessage .= '<b>'.$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'].'</b>';
         }
 
-        header("Location: index.php?section=guestbook");
-        exit;
+        $this->_objTpl->setVariable(array(
+	        "GUESTBOOK_STATUS"       => $this->statusMessage
+	    ));
+
+        $this->_objTpl->parse('guestbookStatus');
+        $this->_objTpl->hideBlock('guestbookForm');
     }
 
     /**
