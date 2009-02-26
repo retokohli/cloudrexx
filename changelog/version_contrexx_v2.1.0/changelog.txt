@@ -5,6 +5,11 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Allgemein
+- Navigationspunkte, welche als Weiterleitung dienen, zeigen auf die
+  Ziel Adresse. Ausgenommen davon sind Navigationspunkte welche ein Alias
+  verwenden.
+
 Design-Manager
 - Es kann neu ein Design für Mobile Geräte festgelegt werden. Dies wird
   dann automatisch aktiviert, wenn ein Smartphone, PDA oder ähnliches die
