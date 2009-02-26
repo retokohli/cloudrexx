@@ -35,9 +35,12 @@
 
 #frame_content_right {
 	margin: 0;
-	padding: 0px 0px 0px 15px;
+	padding: 0px 0px 15px 15px;
 	width: 698px;
 	float: left;
+	min-height: 350px;
+	height: auto !important;
+	height: 350px;
 }
 
 #right_navtree {

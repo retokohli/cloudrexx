@@ -54,6 +54,10 @@ table th {
 	text-align: left; 
 }
 
+table td.none { 
+	border: 0px solid #000000;
+}
+
 .clear { clear:both;}
 .block { overflow:hidden; }
 
@@ -172,8 +176,8 @@ table th {
 	width: 290px;
 }
 
-.accordion_content .toggler{
-	padding:6px;
+h2.toggler{
+	padding:3px 6px 3px 6px;
 	margin:0;
 	background-color:#fdfeff;
 	background-image:url(images/toggler_accordeon_bg.jpg);
@@ -219,7 +223,7 @@ input.button,
 input.reset{
 	width:auto;
 	margin:0.25em 0.25em 0.25em 0em;
-	padding:4px 15px 4px 15px;
+	padding:4px 10px 4px 10px;
 	background-color:#f6f6f6;
 	border:1px solid #c6c6c6;
 }
@@ -227,11 +231,11 @@ input.reset{
 #frame_content_right input[type=checkbox], 
 #frame_content_right input[type=radio],  
 #frame_home input[type=checkbox], 
-#frame_home input[type=radio],
+#frame_home input[type=radio],  
 #boxes_home input[type=checkbox], 
-#boxes_home input[type=radio]
+#boxes_home input[type=radio],  
 input.checkbox,
-nput.radio{
+input.radio{
 	width:auto;
 	margin:0.25em 0.25em 0.25em 0em;
 	padding:4px 15px 4px 15px;
