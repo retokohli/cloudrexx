@@ -127,7 +127,7 @@ function votingShowCurrent($page_content){
 			$votingVotes=$objResult->fields['votes'];
 			$votingDate=$objResult->fields['datesec'];
 
-			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
+			if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
 			$objTpl->setVariable(array(
 				'VOTING_OLDER_TEXT'		=> '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
 				'VOTING_OLDER_DATE'		=> showFormattedDate($votingDate),
@@ -258,7 +258,7 @@ function votingShowCurrent($page_content){
 			$votingVotes=$objResult->fields['votes'];
 			$votingDate=$objResult->fields['datesec'];
 
-			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
+			if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
 			$objTpl->setVariable(array(
 				'VOTING_OLDER_TEXT'		=> '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
 				'VOTING_OLDER_DATE'		=> showFormattedDate($votingDate),
@@ -506,7 +506,7 @@ function _vote_result_html($votingId) {
 
 		$out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['question'])."</span><br />\n";
 		$out .= "<img src='images/modules/voting/$images.gif' width='".$imagewidth."%' height='10' />";
-		$out .= "&nbsp;<em>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</em><br /><br />";
+		$out .= "&nbsp;<em>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</em><br />";
 		$objResult->MoveNext();
 	}
 	return $out;
