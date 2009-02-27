@@ -219,11 +219,15 @@ class docSys extends docSysLibrary
         if ($count >= 1) {
             $row = 1;
             foreach ($entries as $entry) {
+                $cmd = $_REQUEST['cmd'] 
+                    ? $_REQUEST['cmd'] . '_details'
+                    : 'details';
+
                 $this->_objTpl->setVariable(array(
                     'DOCSYS_STYLE'      => ($row++) % 2 + 1,
                     'DOCSYS_LONG_DATE'  => date($this->dateLongFormat, $entry['date']),
                     'DOCSYS_DATE'       => date($this->dateFormat, $entry['date']),
-                    'DOCSYS_LINK'	    => "<a href=\"?section=docsys".MODULE_INDEX."&amp;cmd=".$_REQUEST['cmd']."_details&amp;id=".
+                    'DOCSYS_LINK'	    => "<a href=\"?section=docsys".MODULE_INDEX."&amp;cmd=$cmd&amp;id=".
                                             $entry['id']."\" title=\"".stripslashes($entry['title'])."\">".stripslashes($entry['title'])."</a>",
                     'DOCSYS_CATEGORY'   => stripslashes($entry['name']),
                     'DOCSYS_AUTHOR'     => stripslashes($entry['author']),               
