@@ -442,7 +442,12 @@ class JS
         $players = "";
         $options = (isset($options)) ? $options : array();
         if (!empty($options['players'])) {
+            $renewed = false;
             foreach ($options['players']  as $player) {
+                if (!$renewed) {
+                    self::$shadowBoxPlayers = array();
+                    $renewed = true;
+                }
                 if (array_search($player, $available_players) !== false) {
                     // valid player
                     if (array_search($player, self::$shadowBoxPlayers) === false) {
