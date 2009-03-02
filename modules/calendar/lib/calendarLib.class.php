@@ -67,7 +67,7 @@ class calendarLibrary
     var $uploadImgTypes = array('png', 'jpeg', 'jpg', 'gif');
     var $uploadFileTypes = array('doc', 'txt', 'pdf');
 
-
+	var $pageTitle;
 
     var $objEvent;
     var $settings;
@@ -97,14 +97,14 @@ class calendarLibrary
         } else {
             $this->mandateLink = $this->mandate;
         }
-        
+
         $this->uploadImgPath = ASCMS_PATH.ASCMS_IMAGE_PATH.'/calendar/';
         $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/calendar/';
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/calendar'.$this->mandateLink.'/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setGlobalVariable("CALENDAR_MANDATE", $this->mandateLink);
         $this->url = $url.$this->mandateLink;
-        
+
         $this->settings = new CalendarSettings($this->mandateLink);
         $this->objEvent = new CalendarEvent($this->mandateLink);
     }
@@ -1034,6 +1034,8 @@ class calendarLibrary
 		//count reg
 		$reg_signoff = $this->_countRegistrations($objResultNote->fields['id']);
 
+		$this->pageTitle = htmlentities($objResultNote->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
+
 		// parse to template
 		$this->_objTpl->setVariable(array(
 			'CALENDAR_ID' 					=> $objResultNote->fields['id'],
@@ -1898,7 +1900,7 @@ class calendarLibrary
 			}
 		}
 	}
-	
+
 /**
      * returns an option list for the settings page which will decide who can create new calendar entries in the frontend
      *
