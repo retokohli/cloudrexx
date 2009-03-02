@@ -91,15 +91,34 @@ class Download {
     private $iconPath;
 
     public static $arrMimeTypes = array(
-        'undefined'       => 'TXT_DOWNLOADS_TYPE_UNDEFINED',
-        'image'         => 'TXT_DOWNLOADS_TYPE_IMAGE',
-        'text'          => 'TXT_DOWNLOADS_TYPE_TEXT',
-        'media'         => 'TXT_DOWNLOADS_TYPE_MEDIA',
-        'archive'       => 'TXT_DOWNLOADS_TYPE_ARCHIVE',
-        'application'   => 'TXT_DOWNLOADS_TYPE_APPLICATION'
+        'image'         => array(
+            'description'   => 'TXT_DOWNLOADS_TYPE_IMAGE',
+            'extensions'    => array('jpg', 'jpeg', 'gif', 'png')
+        ),
+        'document'      => array(
+            'description'   => 'TXT_DOWNLOADS_TYPE_DOCUMENT',
+            'extensions'    => array('pdf', 'doc', 'xls', 'txt', 'ppt', 'xml', 'odt', 'ott', 'sxw', 'stw', 'dot', 'rtf', 'sdw', 'wpd', 'jtd', 'cvs')
+        ),
+        'media'         => array(
+            'description'   => 'TXT_DOWNLOADS_TYPE_MEDIA',
+            'extensions'    => array('avi', 'mp3', 'mpeg', 'wmv', 'mov', 'rm', 'wav', 'ogg')
+        ),
+        'archive'       => array(
+            'description'   => 'TXT_DOWNLOADS_TYPE_ARCHIVE',
+            'extensions'    => array('tar', 'tar.gz', 'tar.bz2', 'tbz2', 'tb2', 'tbz', 'tgz', 'taz', 'tar.Z', 'zip', 'rar', 'cab')
+        ),
+        'application'   => array(
+            'description'   => 'TXT_DOWNLOADS_TYPE_APPLICATION',
+            'extensions'    => array('exe', 'sh', 'bin', 'dmg', 'deb', 'rpm', 'msi', 'jar', 'pkg')
+        ),
+        'link'          => array(
+            'description'   => 'TXT_DOWNLOADS_TYPE_LINK',
+            'extensions'    => array()
+        )
     );
 
-    private $defaultMimeType = 'undefined';
+
+    private $defaultMimeType = 'document';
 
     /**
      * @access public

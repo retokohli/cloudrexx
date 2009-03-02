@@ -672,10 +672,10 @@ $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Z
     {
         global $_ARRAYLANG;
 
-        $menu = '<select name="downloads_download_mime_type" style="width:300px;">';
+        $menu = '<select name="downloads_download_mime_type" id="downloads_download_mime_type" style="width:300px;">';
         $arrMimeTypes = Download::$arrMimeTypes;
-        foreach ($arrMimeTypes as $type => $description) {
-            $menu .= '<option value="'.$type.'"'.($type == $selectedType ? ' selected="selected"' : '').'>'.$_ARRAYLANG[$description].'</option>';
+        foreach ($arrMimeTypes as $type => $arrMimeType) {
+            $menu .= '<option value="'.$type.'"'.($type == $selectedType ? ' selected="selected"' : '').'>'.$_ARRAYLANG[$arrMimeType['description']].'</option>';
         }
 
         return $menu;
