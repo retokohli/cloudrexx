@@ -7,6 +7,9 @@ define('DBG_LOG_FILE'      , 8);
 define('DBG_LOG_FIREPHP'   , 16);
 define('DBG_ALL'           , 31);
 
+// Redirect ADODB output to us instead of STDOUT.
+define('ADODB_OUTP', 'DBG_log_adodb');
+
 class DBG {
 	private static $dbg_fh = null;
     private static $fileskiplength = 0;
@@ -168,5 +171,9 @@ class DBG {
             }
         }
 	}
+}
+
+function DBG_log_adodb($msg, $newline) {
+    DBG::log(strip_tags($msg));
 }
 
