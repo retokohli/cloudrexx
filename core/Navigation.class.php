@@ -75,37 +75,26 @@ class Navigation
         global $objDatabase, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
-        $query = "SELECT n.cmd AS cmd,
-                               n.catid AS catid,
-                               n.catname AS catname,
-                               n.target AS target,
-                               n.parcat AS parcat,
-                               n.css_name AS css_name,
-                               n.displayorder AS displayorder,
-                               c.redirect,
-                               m.name AS section,
-                          n.displaystatus AS displaystatus,
-                          a_s.url         AS alias_url,
-                               min(a_s.id)       AS alias_id,
-                               settings.setvalue AS alias_enable
-                    FROM ".DBPREFIX."content_navigation                   AS n
-                          INNER JOIN ".DBPREFIX."content                  AS c   ON c.id=n.catid
-                          INNER JOIN ".DBPREFIX."modules                  AS m   ON n.module=m.id
-                          LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-                          LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
-                              ON settings.setmodule = 41
-                             AND settings.setname   = 'aliasStatus'
-                          LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-                              ON  a_t.id        = a_s.target_id
-                            AND a_s.isdefault = 1
-                         WHERE n.module=m.id
-                           AND (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
-                           AND n.lang='".$this->langId."'
-                           AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
-                              AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
-                              AND n.activestatus='1'
-                              AND n.is_validated='1'
-                              ".(
+        $query = "SELECT n.cmd,
+                         n.catid,
+                         n.catname,
+                         n.target,
+                         n.parcat,
+                         n.css_name,
+                         n.displaystatus,
+                         c.redirect,
+                         m.name AS section,
+                         a_s.url AS alias_url
+                    FROM ".DBPREFIX."content_navigation     AS n
+              INNER JOIN ".DBPREFIX."content                AS c    ON c.id = n.catid
+              INNER JOIN ".DBPREFIX."modules                AS m    ON m.id = n.module
+         LEFT OUTER JOIN ".DBPREFIX."module_alias_target    AS a_t  ON a_t.url = n.catid
+         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s  ON a_s.target_id = a_t.id AND a_s.isdefault = 1
+                   WHERE (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
+                     AND n.activestatus='1'
+                     AND n.is_validated='1'
+                     AND n.lang='".$this->langId."'
+                         ".(
                             $objFWUser->objUser->login() ?
                                 // user is authenticated
                                 (
@@ -120,8 +109,9 @@ class Navigation
                                     ? 'AND n.protected=0' : ''
                                   )
                             )."
-                        GROUP BY n.catid
-                        ORDER BY n.parcat DESC, n.displayorder ASC";
+                     AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
+                     AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
+                ORDER BY n.parcat DESC, n.displayorder";
         $objResult = $objDatabase->Execute($query);
 
         //check for preview and if theme exists in database
@@ -164,7 +154,7 @@ class Navigation
                 $cmd = ($c=="") ? "" : "&amp;cmd=$c";
 
                 // Create alias link if alias is present for this page...
-                if ($objResult->fields['alias_url'] && $objResult->fields['alias_enable']) {
+                if ($objResult->fields['alias_url'] && $_CONFIG['aliasStatus']) {
                     $menu_url = self::mkurl(CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.$objResult->fields['alias_url']);
                 } elseif (!empty($objResult->fields['redirect'])) {
                     $menu_url = $objResult->fields['redirect'];
