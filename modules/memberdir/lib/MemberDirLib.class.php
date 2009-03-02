@@ -51,15 +51,15 @@ class MemberDirLibrary
      */
     function _getCharList($link)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
-        $list = "<a href=\"".$link."&amp;sort=sc\">#?</a>&nbsp;&nbsp;";
+        $list = "<a href=\"".$link."&amp;sort=sc\">[&nbsp;#?&nbsp;]</a>&nbsp;&nbsp;";
 
         for ($i = 65; $i <= 90; $i++) {
-            $list .= "<a href=\"".$link."&amp;sort=".chr($i+32)."\">".chr($i)."</a>&nbsp;&nbsp;";
+            $list .= "<a href=\"".$link."&amp;sort=".chr($i+32)."\">[&nbsp;".chr($i)."&nbsp;]</a>&nbsp;&nbsp;";
         }
 
-        $list .= "<a href=\"".$link."&amp;sort=all\">".$_ARRAYLANG['TXT_ALL']."</a>";
+        $list .= "<a href=\"".$link."&amp;sort=all\"><b>[&nbsp;".$_CORELANG['TXT_ACCESS_ALL']."&nbsp;]</b></a>";
 
         return $list;
     }
