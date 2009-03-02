@@ -56,28 +56,20 @@ class u2u extends u2uLibrary
 	* @access public
 	*/
 	function getPage()	{
-
-
         if(isset($_GET['cmd'])) {
-
             $action=$_GET['cmd'];
-        }
-        elseif(isset($_GET['act'])) {
-
+        } elseif(isset($_GET['act'])) {
             $action=$_GET['act'];
-        }
-        else {
+        } else {
             $action='';
-
-
         }
+
         $objFWUser = FWUser::getFWUserObject();
         if (!$objFWUser->objUser->login()) {
-        $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-        header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
-        exit;
+            $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+            header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
+            exit;
         }
-
 
         switch ($action) {
             case 'message':
@@ -330,15 +322,21 @@ class u2u extends u2uLibrary
          global $_ARRAYLANG, $objDatabase, $_CORELANG;
          $objFWUser = FWUser::getFWUserObject();
          $id=$objFWUser->objUser->getId();
-         $buddies_id=$_REQUEST['id'];
-         $query='INSERT into '.DBPREFIX.'module_u2u_address_list  (
+         $buddies_id = intval($_REQUEST['id']);
+         $query = 'SELECT 1 FROM '.DBPREFIX.'module_u2u_address_list WHERE user_id="'.$id.'" AND buddies_id="'.$buddies_id.'"';
+         $objRS = $objDatabase->SelectLimit($query, 1);
+         if($objRS->RecordCount() > 0){
+            header("Location: ".CONTREXX_SCRIPT_PATH."?section=access&cmd=members");
+            die();
+         }
+         $query='REPLACE INTO '.DBPREFIX.'module_u2u_address_list  (
                                          user_id ,
                                          buddies_id
                                          )
                                          VALUES ('.$id.','.$buddies_id.')';
          $objDatabase->Execute($query);
          header("Location: ".CONTREXX_SCRIPT_PATH."?section=access&cmd=members");
-
+         die();
     }
 
     /**
