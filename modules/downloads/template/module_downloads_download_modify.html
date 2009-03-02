@@ -92,11 +92,12 @@ function downloadsRemoveOptionFromList(from,dest)
     }
 }
 
-function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton)
+function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMimeType)
 {
     downloadsElInsertBox = elInsertBox;
     downloadsElImagePreview = typeof(elImagePreview) == 'undefined' ? null : elImagePreview;
     downloadsElRemoveButton = typeof(elRemoveButton) == 'undefined' ? null : elRemoveButton;
+    downloadsElMimeType = typeof(elMimeType) == 'undefined' ? null : elMimeType;
     downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
@@ -108,6 +109,21 @@ function downloadsOpenWindow(theURL,winName,features)
 		
 function SetUrl(url, width, height, alt)
 {
+    fileExtRegExp = new Array();
+    <!-- BEGIN downloads_download_file_ext_regexp -->
+    fileExtRegExp[fileExtRegExp.length] = new Array('{DOWNLOADS_MIME_TYPE}', new RegExp("\.(?:{DOWNLOADS_FILE_EXTENSION_REGEXP})$", "i"));
+    <!-- END downloads_download_file_ext_regexp -->
+
+    if (downloadsElMimeType != null) {
+        for (i = 0; i < fileExtRegExp.length; i++) {
+            if ((extension = fileExtRegExp[i][1].exec(url)) !== null) {
+                downloadsElMimeType.value = fileExtRegExp[i][0];
+                break;
+            }
+        }
+    }
+    
+    
     downloadsElInsertBox.value = url;
 
     if (downloadsElImagePreview != null) {
@@ -374,7 +390,7 @@ function downloadsAdjustSourceConfig()
                         <input type="radio" name="downloads_download_type" id="downloads_download_type_url" value="url" {DOWNLOADS_DOWNLOAD_TYPE_URL_CHECKED} onchange="downloadsAdjustSourceConfig()" /><label for="downloads_download_type_url">{TXT_DOWNLOADS_URL}</label>
                         <br />
                         <div id="downloads_download_type_file_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY}">
-                            <input type="text" name="downloads_download_file_source" id="downloads_download_file_source" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source'))" />
+                            <input type="text" name="downloads_download_file_source" id="downloads_download_file_source" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source'),null,null,document.getElementById('downloads_download_mime_type'))" />
                         </div>
                         <div id="downloads_download_type_url_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY}">
                             <input type="text" name="downloads_download_url_source" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" />

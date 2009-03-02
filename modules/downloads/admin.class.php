@@ -123,12 +123,12 @@ $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS'] = 'Möchten Sie die ausgew
 
 
 // those might exist already
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'] = "Undefiniert";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'] = "Bild";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_TEXT'] = "Text";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'] = "Media";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'] = "Archiv";
-$_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'] = "Applikation";
+//$_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'] = "Undefiniert";
+//$_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'] = "Bild";
+//$_ARRAYLANG['TXT_DOWNLOADS_TYPE_DOCUMENT'] = "Text";
+//$_ARRAYLANG['TXT_DOWNLOADS_TYPE_MEDIA'] = "Media";
+//$_ARRAYLANG['TXT_DOWNLOADS_TYPE_ARCHIVE'] = "Archiv";
+//$_ARRAYLANG['TXT_DOWNLOADS_TYPE_APPLICATION'] = "Applikation";
 $_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
 
 
@@ -1246,8 +1246,8 @@ $this->_objTpl->setVariable(array(
         $this->_objTpl->loadTemplateFile('module_downloads_download_modify.html');
 
         $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_GENERAL' => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
-            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
+            'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
+            'TXT_DOWNLOADS_PERMISSIONS'                     => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
             'TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'        => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'],
             'TXT_DOWNLOADS_NAME'                            => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
             'TXT_DOWNLOADS_DESCRIPTION'                     => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
@@ -1337,6 +1337,17 @@ $this->_objTpl->setVariable(array(
             'DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY'   => $objDownload->getType() == 'file' ? '' : 'none',
             'DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY'    => $objDownload->getType() == 'url' ? '' : 'none'
         ));
+
+        foreach (Download::$arrMimeTypes as $mimeType => $arrMimeType) {
+            if (!count($arrMimeType['extensions'])) {
+                continue;
+            }
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_MIME_TYPE'               => $mimeType,
+                'DOWNLOADS_FILE_EXTENSION_REGEXP'   => implode('|', $arrMimeType['extensions'])
+            ));
+            $this->_objTpl->parse('downloads_download_file_ext_regexp');
+        }
 
 
         // parse active status
