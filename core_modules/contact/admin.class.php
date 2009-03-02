@@ -851,8 +851,15 @@ class ContactManager extends ContactLib
                             $formEmails = $_CONFIG['contactFormEmail'];
                         }
 
-                        $arrRecipients = $this->_getRecipientsFromPost();
-                        if($this->_invalidRecipients){
+                        $boolUsesRecipientField = false;
+                        foreach ($arrFields as $arrField) {
+                        	if($arrField['type'] == 'recipient'){
+                        	    $boolUsesRecipientField = true;
+                            }
+                        }
+
+                        $arrRecipients = $this->_getRecipientsFromPost($boolUsesRecipientField);
+                        if($this->_invalidRecipients && $boolUsesRecipientField){
                             return $this->_modifyForm();
                         }else{
                             $this->setRecipients($arrRecipients);

@@ -20,8 +20,8 @@
  */
 class ContactLib
 {
-    private $_arrRecipients = array();
-    private $_lastRecipientId;
+    protected $_arrRecipients = array();
+    protected $_lastRecipientId;
     var $arrForms;
     var $_arrSettings;
 
@@ -65,6 +65,7 @@ class ContactLib
     public function getRecipients($formId = 0, $refresh = false)
     {
         global $objDatabase;
+
         $formId = intval($formId);
         if ($formId > 0 && isset($this->_arrRecipients[$formId]) && !$refresh){
             return $this->_arrRecipients[$formId];
