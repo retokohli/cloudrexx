@@ -1489,8 +1489,14 @@ switch ($plainSection) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+
         $objCalendar = new Calendar($page_content, MODULE_INDEX);
         $objTemplate->setVariable('CONTENT_TEXT', $objCalendar->getCalendarPage());
+
+        if(!empty($objCalendar->pageTitle)) {
+            $page_metatitle = $objCalendar->pageTitle;
+            $page_title = $objCalendar->pageTitle;
+        }
     break;
 
 //-------------------------------------------------------
