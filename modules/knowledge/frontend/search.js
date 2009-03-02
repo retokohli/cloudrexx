@@ -145,5 +145,20 @@ var Search = {
         setTimeout(function() {
             Search.hideBox();
         }, 100);
-    }
+   }
 };
+
+
+/** knowledge specific **/
+
+
+function submitSearch(obj)
+{
+	var searchinput = $('searchinput');
+	var val = searchinput.value;
+	$('searchHidden').value = val;
+	searchinput.value = "";
+	searchinput.name = "";
+	return true;
+}
+
