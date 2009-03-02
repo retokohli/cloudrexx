@@ -1198,7 +1198,8 @@ switch ($plainSection) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLivecam = new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
-        $moduleStyleFile = "lib/lightbox/style/lightbox.css";
+        //$moduleStyleFile = 'modules/calendar'.MODULE_INDEX.'/frontend_style.css';
+        $moduleStyleFile = 'modules/livecam/datepicker/datepickercontrol.css';
     break;
 
 //-------------------------------------------------------
