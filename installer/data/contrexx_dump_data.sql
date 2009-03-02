@@ -3247,8 +3247,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, 
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (57,'jobs','TXT_JOBS_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (58,'auction','TXT_AUCTION_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (59,'partners','TXT_PARTNERS_MODULE_DESCRIPTION','y',0,0);
-INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('a4c9184180a5cd9549514800de65fac7','1235745770','1235748672','frontend',0,'');
-INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('7612c99dcc27192442e36fd0a6974964','1235751607','1235751607','backend',0,'userFrontendLangId|i:1;auth|a:1:{s:5:\"secid\";s:4:\"5LDZ\";}');
+INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('7b6cabfb6e7580d20147d6abb893bc22','1235977880','1235977889','backend',0,'userFrontendLangId|i:1;auth|a:1:{s:5:\"secid\";s:4:\"HMKP\";}');
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
