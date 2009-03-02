@@ -183,4 +183,5 @@ $_ARRLANG['TXT_INTERNET_SITE_FOR_VISITORS'] = "Internet site for visitors";
 $_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "The Web site is available immediately at the following address: <br /><b>[WEB_URL]</b>";
 $_ARRLANG['TXT_ADMIN_SITE'] = "Administrator area";
 $_ARRLANG['TXT_ADMIN_SITE_MESSAGE'] = "The site can be administered at the following address: <br /><b>[ADMIN_URL]</b>";
+$_ARRLANG['TXT_INVALID_USERNAME'] = "The username has invalid characters. You can only use the following: A-Z, 0-9, - and _";
 ?>
