@@ -1864,19 +1864,19 @@ if ($_CONFIG['bannerStatus'] == '1') {
 // Frontend Editing: prepare needed code-fragments
 //-------------------------------------------------------
 $strFeInclude = $strFeLink = $strFeContent = null;
-//if ($_CONFIG['frontendEditingStatus'] == 'on') {
-//    $modulespath = "core_modules/frontendEditing/frontendEditingLib.class.php";
-//    if (file_exists($modulespath)) {
-//        /**
-//         * @ignore
-//         */
-//        include_once($modulespath);
-//        $strFeInclude   = frontendEditingLib::getIncludeCode();
-//        $strFeLink      = frontendEditingLib::getLinkCode();
-//        $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
-//    }
-//}
-//
+if ($_CONFIG['frontendEditingStatus'] == 'on') {
+    $modulespath = "core_modules/frontendEditing/frontendEditingLib.class.php";
+    if (file_exists($modulespath)) {
+        /**
+         * @ignore
+         */
+        include_once($modulespath);
+        $strFeInclude   = frontendEditingLib::getIncludeCode();
+        $strFeLink      = frontendEditingLib::getLinkCode();
+        $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
+    }
+}
+
 
 //-------------------------------------------------------
 // set global template variables
