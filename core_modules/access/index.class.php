@@ -185,6 +185,13 @@ class Access extends AccessLib
                     $this->parseAttribute($objUser, 'gender', 0, false, false, false, false, false);
                 }
 
+                if($this->_objTpl->blockExists('u2u_addaddress')){
+                    if($objUser->getId() == $objFWUser->objUser->getId()){
+                        $this->_objTpl->hideBlock('u2u_addaddress');
+                    }else{
+                        $this->_objTpl->touchBlock('u2u_addaddress');
+                    }
+                }
                 $this->_objTpl->parse('access_user');
                 $objUser->next();
             }
