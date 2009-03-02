@@ -1,4 +1,9 @@
 <?php
+
+define('ASCMS_FRAMEWORK_PATH', dirname(dirname(__FILE__)) . '/lib/FRAMEWORK');
+require_once "../lib/FRAMEWORK/FWUser.class.php";
+require_once "../lib/FRAMEWORK/User/User.class.php";
+
 /**
  * Install Wizard Controller
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1642,6 +1647,9 @@ class Installer
 
 			if (!isset($_SESSION['installer']['account']['username']) || empty($_SESSION['installer']['account']['username'])) {
 				$this->arrStatusMsg['global'] .= $_ARRLANG['TXT_SET_USERNAME']."<br />";
+				$status = false;
+			} elseif (!User::isValidUsername($_SESSION['installer']['account']['username'])) {
+				$this->arrStatusMsg['global'] .= $_ARRLANG['TXT_INVALID_USERNAME']."<br />";
 				$status = false;
 			}
 			if (!isset($_SESSION['installer']['account']['password']) || empty($_SESSION['installer']['account']['password'])) {

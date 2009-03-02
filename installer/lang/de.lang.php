@@ -163,6 +163,7 @@ $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Die Datei %s konnte nicht geschriebe
 // admin account
 $_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Definieren Sie einen Benutzernamen mit Passwort, der als Administrator dienen soll.";
 $_ARRLANG['TXT_SET_USERNAME'] = "Sie müssen einen Benutzernamen definieren!";
+$_ARRLANG['TXT_INVALID_USERNAME'] = "Der Benutzername hat ungültige Zeichen. Es dürfen nur A-Z, 0-9, - und _ verwendet werden.";
 $_ARRLANG['TXT_SET_PASSWORD'] = "Sie müssen ein Passwort definieren!";
 $_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 Zeichen)";
 $_ARRLANG['TXT_PASSWORD_LENGTH'] = "Das Passwort muss mindestens 6 Zeichen lang sein!";

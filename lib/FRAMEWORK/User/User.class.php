@@ -1779,7 +1779,7 @@ class User extends User_Profile
      * @param string $username
      * @return boolean
      */
-    private function isValidUsername($username)
+    public static function isValidUsername($username)
     {
         if (preg_match('/^[a-zA-Z0-9-_]+$/', $username)) {
             return true;
