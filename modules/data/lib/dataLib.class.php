@@ -295,9 +295,9 @@ class DataLibrary
 													'time_edited'		=>	date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_edited']),
 													'time_edited_ts'	=>	$objResult->fields['time_edited'],
 													'hits'				=>	$objResult->fields['hits'],
-													'comments'			=>	$this->countComments($intMessageId),
-													'comments_active'	=>	$this->countComments($intMessageId,true),
-													'votes'				=>	$this->countVotings($intMessageId),
+													//'comments'			=>	$this->countComments($intMessageId),
+													//'comments_active'	=>	$this->countComments($intMessageId,true),
+													//'votes'				=>	$this->countVotings($intMessageId),
 													'votes_avg'			=>	0.0,
 													'subject'			=>	'',
 													'categories'		=>	array(),
@@ -314,7 +314,7 @@ class DataLibrary
 														FROM	'.DBPREFIX.'module_data_votes
 														WHERE	message_id='.$intMessageId.'
 													');
-				$arrReturn[$intMessageId]['votes_avg'] 	= number_format($objVoteResult->fields['avarageVote'], 2, '.', '');
+				//$arrReturn[$intMessageId]['votes_avg'] 	= number_format($objVoteResult->fields['avarageVote'], 2, '.', '');
 
 				//Fill the translation-part of the return-array with default values
 				foreach ($this->_arrLanguages as $intLanguageId => $arrTranslations) {
@@ -359,6 +359,7 @@ class DataLibrary
 															WHERE	message_id='.$intMessageId.'
 														');
 
+                /*
 				while (!$objLanguageResult->EOF) {
 					$intLanguageId = $objLanguageResult->fields['lang_id'];
 
@@ -382,7 +383,7 @@ class DataLibrary
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_target'] = $objLanguageResult->fields['forward_target'];
 					
 					$objLanguageResult->MoveNext();
-				}
+                }*/
 
 
 				$objResult->MoveNext();
@@ -668,6 +669,7 @@ class DataLibrary
 	 * @return 	integer		number of comments for the desired entry.
 	 */
 	function countComments($intMessageId, $boolOnlyActive=false) {
+        return 0;
 		global $objDatabase;
 
 		$intMessageId = intval($intMessageId);
