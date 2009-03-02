@@ -429,7 +429,7 @@ class memberDir extends MemberDirLibrary
 
     function _categoryList()
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $lastlevel = 0;
         $arrKeys = array_keys($this->directories);
@@ -487,6 +487,10 @@ class memberDir extends MemberDirLibrary
                 $this->_objTpl->parse("category");
             }
         }
+
+        $this->_objTpl->setVariable(array(
+            "MEMBERDIR_SEARCH"      => $_ARRAYLANG['TXT_SEARCH'],
+        ));
 
         $this->_objTpl->parse("category_list");
         $this->_objTpl->hideBlock("category_show");

@@ -53,10 +53,10 @@ class MemberDirLibrary
     {
         global $_CORELANG;
 
-        $list = "<a href=\"".$link."&amp;sort=sc\">[&nbsp;#?&nbsp;]</a>&nbsp;&nbsp;";
+        $list = "<a href=\"".$link."&amp;sort=sc\">[&nbsp;#?&nbsp;]</a>&nbsp;";
 
         for ($i = 65; $i <= 90; $i++) {
-            $list .= "<a href=\"".$link."&amp;sort=".chr($i+32)."\">[&nbsp;".chr($i)."&nbsp;]</a>&nbsp;&nbsp;";
+            $list .= "<a href=\"".$link."&amp;sort=".chr($i+32)."\">[&nbsp;".chr($i)."&nbsp;]</a>&nbsp;";
         }
 
         $list .= "<a href=\"".$link."&amp;sort=all\"><b>[&nbsp;".$_CORELANG['TXT_ACCESS_ALL']."&nbsp;]</b></a>";
