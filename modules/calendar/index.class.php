@@ -756,11 +756,11 @@ class Calendar extends calendarLibrary
 
         return $this->_objTpl->get();
 	}
-	
-	
+
+
 	/**
 	 * this function displays the form to add events from within the frontend
-	 * 
+	 *
 	 * @todo this function is way too huge. split it into subfunctions und make this file smaller
 	 *
 	 * @return boolean
@@ -831,11 +831,11 @@ class Calendar extends calendarLibrary
             'inputSeriesDouranceNotes'      => (isset($_POST['inputSeriesDouranceNotes']) ? $_POST['inputSeriesDouranceNotes'] : null ),
             'inputSeriesDouranceType'      => (isset($_POST['inputSeriesDouranceType']) ? $_POST['inputSeriesDouranceType'] : null ),
             'inputRepeatDouranceEnd'      => (isset($_POST['inputRepeatDouranceEnd']) ? $_POST['inputRepeatDouranceEnd'] : null ),
-            
-            
-            
-            
-            
+
+
+
+
+
         );
 
         if (!empty($form['organizerLink'])) {
@@ -863,7 +863,7 @@ class Calendar extends calendarLibrary
                     $_ARRAYLANG['TXT_CALENDAR_PICTUREUPLOAD_NOTE'] .= "<br />".$this->errorBox($_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE']);
                     $insertError = true;
                 }
-                
+
                 try {
                     $this->_checkUploadTypes('attachment', $this->uploadFileTypes);
                     $form['attachment'] = ($this->_uploadImageIfNot('attachment') ? $_SESSION['calendar']['uploadedimagerealname']['attachment'] : '');
@@ -872,11 +872,11 @@ class Calendar extends calendarLibrary
                     $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT_NOTE'] .= "<br />".$this->errorBox($_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE']);
                     $insertError = true;
                 }
-                
+
                 if($insertError) {
                     throw new Exception($_ARRAYLANG['TXT_CALENDAR_GENERAL_ERROR']);
                 }
-                
+
                 //these are the essentials
                 $boolHasOrganizer = ($form['organizerid'] or (!empty($form['organizer']) && !empty($form['organizermail'])));
                 if(empty($form['catid']) or empty($form['title']) or !$boolHasOrganizer) {
@@ -895,12 +895,12 @@ class Calendar extends calendarLibrary
                     $filename = $this->_moveUploadedImage('attachment');
                     $form['attachment'] = $this->uploadImgWebPath.$filename;
                 }
-                
+
                 //cleanup the upload directory
                 $this->_cleanupFileUploads();
 
-                
-                
+
+
                 /**
                  * @todo put this into a function.. same procedure is used in the backend.. uses way too much codespace
                  */
@@ -916,7 +916,7 @@ class Calendar extends calendarLibrary
         		$seriesPatternDouranceType	= 0;
         		$seriesPatternEnd			= 0;
         		$seriesPatternBegin			= 0;
-        
+
         		switch($seriesType) {
         			case 1;
         				if ($seriesStatus == 1) {
@@ -928,11 +928,11 @@ class Calendar extends calendarLibrary
         						$seriesPatternWeekday	= "1111100";
         						$seriesPatternDay		= 0;
         					}
-        
+
         					$seriesPatternWeek			= 0;
         					$seriesPatternMonth			= 0;
         					$seriesPatternCount			= 0;
-        
+
         					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
         					$dateparts 					= split("-", $startdate);
         					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
@@ -953,7 +953,7 @@ class Calendar extends calendarLibrary
         			case 2;
         				if ($seriesStatus == 1) {
         					$seriesPatternWeek			= intval($form['inputSeriesWeeklyWeeks']);
-        
+
         					for($i=1; $i <= 7; $i++) {
         						if (isset($form['inputSeriesWeeklyDays'][$i])) {
         							$weekdayPattern .= "1";
@@ -961,14 +961,14 @@ class Calendar extends calendarLibrary
         							$weekdayPattern .= "0";
         						}
         					}
-        
+
         					$seriesPatternWeekday		= $weekdayPattern;
-        
+
         					$seriesPatternCount			= 0;
         					$seriesPatternDay			= 0;
         					$seriesPatternMonth			= 0;
         					$seriesPatternType			= 0;
-        
+
         					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
         					$dateparts 					= split("-",$startdate);
         					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
@@ -999,9 +999,9 @@ class Calendar extends calendarLibrary
         						$seriesPatternWeekday	= $form['inputSeriesMonthlyWeekday'];
         						$seriesPatternDay		= 0;
         					}
-        
+
         					$seriesPatternWeek			= 0;
-        
+
         					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
         					$dateparts 					= split("-", $startdate);
         					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
@@ -1020,11 +1020,11 @@ class Calendar extends calendarLibrary
         				}
         			break;
         		}
-                
-                
-                
-                
-                
+
+
+
+
+
                 // sorry about this.. i didnt like the naming in the DB sheme
                 $eventValues = array(
                     'startdate'     => $form['startdateunix'],
@@ -1116,7 +1116,7 @@ class Calendar extends calendarLibrary
             $this->selectMinutes($form['minutes'], "minutes", "CALENDAR_MINUTES_SELECT", "CALENDAR_MINUTES");
             $this->selectHour($form['endhour'], "endhour", "CALENDAR_END_HOUR_SELECT", "CALENDAR_END_HOUR");
             $this->selectMinutes($form['endminutes'], "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
-            
+
 
 			$arrWeekdays = array(
 				"1000000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_MONDAY'],
@@ -1227,9 +1227,9 @@ class Calendar extends calendarLibrary
                 'CALENDAR_SERIES_PATTERN_DOURANCE_3'        => ($form['inputSeriesDouranceType'] == 3 ? "checked='checked'" : null),
                 'CALENDAR_SERIES_PATTERN_ENDS_AFTER'        => $form['inputSeriesDouranceNotes'],
                 'CALENDAR_SERIES_PATTERN_ENDS'              => $form['inputRepeatDouranceEnd'],
-                
-                
-                
+
+
+
             ));
 
 
@@ -1240,7 +1240,7 @@ class Calendar extends calendarLibrary
     			'TXT_CALENDAR_SERIES_PATTERN_DAILY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_DAILY'],
     			'TXT_CALENDAR_SERIES_PATTERN_WEEKLY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_WEEKLY'],
     			'TXT_CALENDAR_SERIES_PATTERN_MONTHLY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_MONTHLY'],
-    
+
     			'TXT_CALENDAR_DAYS' 				=> $_ARRAYLANG['TXT_CALENDAR_DAYS'],
     			'TXT_CALENDAR_DAYS_DAY' 			=> $_ARRAYLANG['TXT_CALENDAR_DAYS_DAY'],
     			'TXT_CALENDAR_DAYS_MONDAY' 			=> $_ARRAYLANG['TXT_CALENDAR_DAYS_MONDAY'],
@@ -1251,14 +1251,14 @@ class Calendar extends calendarLibrary
     			'TXT_CALENDAR_DAYS_SATURDAY' 		=> $_ARRAYLANG['TXT_CALENDAR_DAYS_SATURDAY'],
     			'TXT_CALENDAR_DAYS_SUNDAY' 			=> $_ARRAYLANG['TXT_CALENDAR_DAYS_SUNDAY'],
     			'TXT_CALENDAR_DAYS_WORKDAY' 		=> $_ARRAYLANG['TXT_CALENDAR_DAYS_WORKDAY'],
-    
+
     			'TXT_CALENDAR_AT' 					=> $_ARRAYLANG['TXT_CALENDAR_AT'],
     			'TXT_CALENDAR_EVERY_1' 				=> $_ARRAYLANG['TXT_CALENDAR_EVERY_1'],
     			'TXT_CALENDAR_ALL' 					=> $_ARRAYLANG['TXT_CALENDAR_ALL'],
     			'TXT_CALENDAR_EVERY_2' 				=> $_ARRAYLANG['TXT_CALENDAR_EVERY_2'],
     			'TXT_CALENDAR_WEEKS' 				=> $_ARRAYLANG['TXT_CALENDAR_WEEKS'],
     			'TXT_CALENDAR_MONTHS' 				=> $_ARRAYLANG['TXT_CALENDAR_MONTHS'],
-    
+
     			'TXT_CALENDAR_SERIES_PATTERN_BEGINS' 		=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_BEGINS'],
     			'TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE'],
     			'TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER'],
@@ -1434,7 +1434,7 @@ class Calendar extends calendarLibrary
             return trim($_SESSION['calendar']['uploadedimage'][$formfield]);
         }
     }
-    
+
     function _checkUploadTypes($formfield, $filetypes) {
         if($this->_hasUploadFile($formfield)) {
             $firstFile = $_FILES[$formfield];
@@ -1448,8 +1448,8 @@ class Calendar extends calendarLibrary
         }
         return false;
     }
-    
-    
+
+
     /**
      * checks if the user really uploaded a file through http fileupload
      *
@@ -1459,11 +1459,11 @@ class Calendar extends calendarLibrary
     function _hasUploadFile($formfield) {
         if(isset($_FILES[$formfield]) &&  $_FILES[$formfield]['name'] && !empty($_FILES[$formfield]['name'])) {
             return true;
-        } 
+        }
         return false;
     }
-    
-    
+
+
     /**
      * Enter description here...
      *
@@ -1477,7 +1477,7 @@ class Calendar extends calendarLibrary
             unset($_SESSION['calendar']['uploadedimageext'][$formfield]);
             unset($_SESSION['calendar']['uploadedimagerealname'][$formfield]);
             unset($_SESSION['calendar']['uploadedimagebasename'][$formfield]);
-            
+
         }
     }
 
@@ -1490,7 +1490,7 @@ class Calendar extends calendarLibrary
      */
     function _moveUploadedImage($formfield) {
         if($_SESSION['calendar']['uploadedimagepath'][$formfield] && file_exists($_SESSION['calendar']['uploadedimagepath'][$formfield])) {
-            
+
             $file = $_SESSION['calendar']['uploadedimagepath'][$formfield];
             $sessid = session_id();
 
@@ -1520,7 +1520,7 @@ class Calendar extends calendarLibrary
         }
         return true;
     }
-    
+
     /**
      * returns the string within errorbox
      *
