@@ -506,41 +506,28 @@ class skins
         global $_CORELANG;
 
         //check if archive is empty
-        if(empty($content[0])){
+        DBG::dump($content);
+        if(sizeof($content) == 0){
+            DBG::trace();
             $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
             return false;
         }
-        //check for directory structure in the archive top level
-        if($content[0]['folder'] == 1){
-            if(!empty($content[1]) && strpos($content[1]['stored_filename'], $content[0]['stored_filename']) != 0){
+
+        DBG::trace();
+        $first_item = $content[0];
+        $this->_themeDir  = substr($first_item['stored_filename'], 0, strpos($first_item['stored_filename'], '/'));
+        $this->_themeName = (!empty($_POST['theme_dbname'])) ? contrexx_addslashes($_POST['theme_dbname']) : $this->_themeDir ;
+
+        $this->_contentDirs[] = $this->_themeDir;
+
+        foreach ($content as $index => $item){
+            //check if current file/directory contains the base directory and abort when not true
+            if(strpos($item['stored_filename'], $this->_themeDir) !== 0){
+                DBG::trace();
                 $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
                 return false;
             }
-        }
 
-        foreach ($content as $index => $item){
-            switch($index){
-                //first array element has to be a directory (the base directory)
-                case 0:
-                    if(substr($item['stored_filename'], -1) == '/'){
-                        $this->_themeDir=substr($item['stored_filename'], 0, -1);
-                    }else{
-                        $this->_themeDir=$item['stored_filename'];
-                    }
-                    $this->_themeName = (!empty($_POST['theme_dbname'])) ? contrexx_addslashes($_POST['theme_dbname']) : $this->_themeDir ;
-                    if($item['folder'] != 1){
-                        $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
-                        return false;
-                    }
-                    break;
-                //all other files and directories in the archive
-                default:
-                    //check if current file/directory contains the base directory and abort when not true
-                    if(strpos($item['stored_filename'], $content[0]['stored_filename']) !== 0){
-                        $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
-                        return false;
-                    }
-            }
             //check if current archive item is a directory
             if($item['folder'] == 1){
                 //check if its the base directory
