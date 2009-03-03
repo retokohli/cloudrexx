@@ -129,6 +129,11 @@ class DBG {
     static function dump($val){
         if (!self::$enable_dump) return;
 
+        if(!is_null(self::$firephp)){
+            self::$firephp->log($val);
+            return;
+        }
+
         ob_start();
         print_r($val);
         $out = ob_get_clean();
