@@ -204,7 +204,7 @@ class File
                     }
                 }else{
                     if(!is_dir($path.$dirName."/".$file)) {
-                        $this->delFile($path, $webPath, $file);
+                        $this->delFile($path, $webPath, "$dirName/$file");
                     } else {
                         $this->delDir($path, $webPath, $dirName."/".$file);
                     }
