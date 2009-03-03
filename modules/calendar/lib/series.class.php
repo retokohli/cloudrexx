@@ -98,9 +98,9 @@ class seriesManager
 		} else {
 			$auth_where = " AND access='0' ";
 		}
-		
+
 		$active_where = ($this->eventList_active == true ? ' AND active=1' : '');
-		
+
 
 		if (isset($this->eventList_enddate) && $this->eventList_enddate != 0) {
 			$date_where = '((
@@ -147,6 +147,8 @@ class seriesManager
     				cal.id,
     				cal.catid,
     				cal.name,
+    				cal.comment,
+    				cal.pic,
     				cal.startdate,
     				cal.priority,
     				cal.enddate,
@@ -185,6 +187,8 @@ class seriesManager
 
 		    		$tmpArray['id'] 			= $objResult->fields['id'];
 		    		$tmpArray['name'] 			= $objResult->fields['name'];
+		    		$tmpArray['pic'] 		    = $objResult->fields['pic'];
+		    		$tmpArray['comment'] 		= $objResult->fields['comment'];
 		    		$tmpArray['priority'] 		= $objResult->fields['priority'];
 		    		$tmpArray['placeName'] 		= $objResult->fields['placeName'];
 		    		$tmpArray['startdate'] 		= $objResult->fields['startdate'];
@@ -540,6 +544,8 @@ class seriesManager
 		$tmpArray['priority'] 			= $this->eventList[$key]['priority'];
 		$tmpArray['placeName'] 			= $this->eventList[$key]['placeName'];
 		$tmpArray['name'] 				= $this->eventList[$key]['name'];
+		$tmpArray['comment'] 			= $this->eventList[$key]['comment'];
+		$tmpArray['pic'] 				= $this->eventList[$key]['pic'];
 		$tmpArray['access'] 			= $this->eventList[$key]['access'];
 
 
