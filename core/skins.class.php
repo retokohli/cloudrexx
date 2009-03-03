@@ -506,14 +506,11 @@ class skins
         global $_CORELANG;
 
         //check if archive is empty
-        DBG::dump($content);
         if(sizeof($content) == 0){
-            DBG::trace();
             $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
             return false;
         }
 
-        DBG::trace();
         $first_item = $content[0];
         $this->_themeDir  = substr($first_item['stored_filename'], 0, strpos($first_item['stored_filename'], '/'));
         $this->_themeName = (!empty($_POST['theme_dbname'])) ? contrexx_addslashes($_POST['theme_dbname']) : $this->_themeDir ;
@@ -523,7 +520,6 @@ class skins
         foreach ($content as $index => $item){
             //check if current file/directory contains the base directory and abort when not true
             if(strpos($item['stored_filename'], $this->_themeDir) !== 0){
-                DBG::trace();
                 $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
                 return false;
             }
