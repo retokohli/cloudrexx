@@ -1344,43 +1344,41 @@ class skins
      * @return array $this->subDirs
      */
     function _getDirListing($strDir, $arrAllowedFileExtensions, $level = 0, $boolRecursive = true, $boolIncludeDirs = true) {
-        $strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
-        $this->subDirs[$strDir] = array(
-		    'rel'  => preg_replace("/\/\//si", "/", $strFile),
-		    'file'  => basename($strFile),
-		    'level' => $level,
-		);
+        $dirs = array();
         if($hDir = opendir($strDir)) {
             $level++;
-        	while(false !== ($strFile = readdir($hDir))) {
-        		if(!in_array($strFile, array('.', '..', '.svn'))){
-                    $pathinfo = pathinfo($strDir. "/" . $strFile);
-        			if(is_dir($strDir. "/" . $strFile)) {
-        				if($boolRecursive)
-        					$this->subDirs = array_merge($this->subDirs, $this->_getDirListing($strDir .'/'. $strFile, $arrAllowedFileExtensions, $level, $boolRecursive, $boolIncludeDirs));
-        				if($boolIncludeDirs){
-        				    $strPath = $strDir .'/'. $strFile;
-            				$strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
-            				$this->subDirs[$strPath] = array(
-            				    'rel'  => preg_replace("/\/\//si", "/", $strFile),
-            				    'file'  => basename($strFile),
-            				    'level' => $level,
-            				);
-        				}
-        			} elseif(in_array($pathinfo['extension'], $arrAllowedFileExtensions)) {
-        				$strPath = $strDir .'/'. $strFile;
-            			$strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
-        				$this->subDirs[$strPath] = array(
-        				    'rel'  => preg_replace("/\/\//si", "/", $strFile),
-        				    'file'  => basename($strFile),
-        				    'level' => $level,
-        				);
-        			}
-        		}
+        	while($strFile = readdir($hDir)) {
+                // don't need ., .., .svn
+                if(in_array($strFile, array('.', '..', '.svn'))){
+                    continue;
+                }
+
+                if(is_dir($strDir. "/" . $strFile)) {
+                    if($boolRecursive)
+                        $dirs = array_merge($dirs, $this->_getDirListing($strDir .'/'. $strFile, $arrAllowedFileExtensions, $level, $boolRecursive, $boolIncludeDirs));
+                    if($boolIncludeDirs){
+                        $strPath = $strDir .'/'. $strFile;
+                        $strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
+                        $dirs[$strPath] = array(
+                            'rel'  => preg_replace("/\/\//si", "/", $strFile),
+                            'file'  => basename($strFile),
+                            'level' => $level,
+                        );
+                    }
+                }
+                elseif(!in_array(substr($strFile, strrchr($strFile, '.')), $arrAllowedFileExtensions)) {
+                    $strPath = $strDir .'/'. $strFile;
+                    $strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
+                    $dirs[$strPath] = array(
+                        'rel'  => preg_replace("/\/\//si", "/", $strFile),
+                        'file'  => basename($strFile),
+                        'level' => $level,
+                    );
+                }
         	}
         	closedir($hDir);
         }
-        return $this->subDirs;
+        return $dirs;
     }
 
     /**
@@ -1400,7 +1398,12 @@ class skins
         if(!isset($themesPage)) {
             $themesPage = "index.html";
         }
+        $fdm = '';
+        $special = '';
+        $default = '';
         $defaultFiles = array();
+        $selected = "";
+
         if($themes != "") {
             $file = $this->path.$themes;
             if(file_exists($file)) {
@@ -1421,9 +1424,6 @@ class skins
                             if($strPage != "." && $strPage != "..") {
                                 $selected="";
                                 if($themesPage==$strPage) $selected = 'selected="selected"';
-                                if (!isset($special)) {
-                                    $special = "";
-                                }
                                 $special .="<option value='".$strPage."' $selected>".$strPage."</option>\n";
                             }
                         }
@@ -1444,9 +1444,6 @@ class skins
                 foreach ($defaultFiles as $id => $strPage){
                     $selected="";
                     if($themesPage==$strPage) $selected = "selected";
-                    if (!isset($default)) {
-                        $default = "";
-                    }
                     $default .="<option value='".$strPage."' $selected>".$strPage."</option>\n";
                 }
                 //create dropdown
@@ -1455,13 +1452,8 @@ class skins
             } else {
                 $this->strErrMessage = $_CORELANG['TXT_STATUS_CANNOT_OPEN'];
             }
-        } else {
-            if (!isset($fdm)) {
-                $fdm = "";
-            }
-            if (!isset($selected)) {
-                $selected = "";
-            }
+        }
+        else {
             $fdm .="<option value='1' $selected>".$_CORELANG['TXT_CHOOSE_DESIGN']."</option>\n";
         }
         return $fdm;
@@ -1479,6 +1471,7 @@ class skins
         if(!isset($themes)) {
             $themes = $this->selectTheme();
         }
+        $fdmd = "";
 
         if($themes != "") {
             $file = $this->path.$themes;
@@ -1489,9 +1482,6 @@ class skins
                     $x = count($extension)-1;
                     if(in_array($extension[$x], $this->fileextensions)) {
                         if(($page != ".") && ($page != "..") && (!in_array($page, $this->filenames))) {
-                            if (!isset($fdmd)) {
-                                $fdmd = "";
-                            }
                             $fdmd .="<option value='".$page."'>".$page."</option>\n";
                         }
                     }
@@ -1499,9 +1489,6 @@ class skins
                 closedir($themesPage);
             }
         } else {
-            if (!isset($fdmd)) {
-                $fdmd = "";
-            }
             $fdmd .="<option value='1'>".$_CORELANG['TXT_CHOOSE_DESIGN']."</option>\n";
         }
         return $fdmd;
