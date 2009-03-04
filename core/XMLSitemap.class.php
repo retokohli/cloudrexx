@@ -32,7 +32,7 @@ class XMLSitemap {
 
     public static function write()
     {
-        global $_CONFIG, $objLanguage;
+        global $_CONFIG, $objLanguage, $_CORELANG;
 
         if ($_CONFIG['xmlSitemapStatus'] == 'on') {
             if (!isset($objLanguage)) {
@@ -46,13 +46,24 @@ class XMLSitemap {
             }
 
             if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                $arrFailed = array();
                 foreach ($arrActiveLanguages as $langId => $langCode) {
-                    XMLSitemap::writeXML(array($langId), $langCode);
+                    if (!XMLSitemap::writeXML(array($langId), $langCode)) {
+                        $arrFailed[] = sprintf($_CORELANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'], sprintf(XMLSitemap::$strFileNameWithLang, $langCode));
+                    }
+                }
+
+                if (count($arrFailed)) {
+                    return implode('<br />', $arrFailed);
                 }
             } else {
-               XMLSitemap::writeXML(array_keys($arrActiveLanguages));
+               if (!XMLSitemap::writeXML(array_keys($arrActiveLanguages))) {
+                   return sprintf($_CORELANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'], XMLSitemap::$strFileName);
+               }
             }
         }
+
+        return true;
     }
 
     private static function prepareFileAccess($filename)
@@ -102,6 +113,8 @@ class XMLSitemap {
                 $arrModules[$objResult->fields['id']] = $objResult->fields['name'];
                 $objResult->MoveNext();
             }
+
+            $strContent = '';
 
             $strActiveLanguages = implode(',', $arrLang);
             $objFWUser = FWUser::getFWUserObject();
@@ -224,46 +237,51 @@ class XMLSitemap {
                         'changelog'     => $objResult->fields['changelog']
                     );
 
-                    if (in_array($location, $arrLocations)) {
+                    if (!isset($arrLocations[$objResult->fields['langid']])) {
+                        $arrLocations[$objResult->fields['langid']] = array();
+                    }
+
+                    if (in_array($location, $arrLocations[$objResult->fields['langid']])) {
                         $arrRedundancies[] = $location;
                     }
-                    $arrLocations[] = $location;
+                    $arrLocations[$objResult->fields['langid']][] = $location;
 
                     $objResult->MoveNext();
                 }
 
                 // solve redundancies
-                foreach ($arrRedundancies as $redundancy) {
-                    $arrRedundancyLocations = array_keys($arrLocations, $redundancy);
-                    $arrRemovablePages = array();
+                foreach ($arrLocations as $arrLocationsByLangId) {
+                    foreach ($arrRedundancies as $redundancy) {
+                        $arrRedundancyLocations = array_keys($arrLocationsByLangId, $redundancy);
+                        $arrRemovablePages = array();
 
-                    // find all pages that link to the page that has been listed more than once
-                    foreach ($arrRedundancyLocations as $page) {
-                        if  ($arrPages[$page]['redirection']) {
-                            $arrRemovablePages[] = $page;
+                        // find all pages that link to the page that has been listed more than once
+                        foreach ($arrRedundancyLocations as $page) {
+                            if  ($arrPages[$page]['redirection']) {
+                                $arrRemovablePages[] = $page;
+                            }
+                        }
+
+                        // if the target page itself isn't listed in the sitemap, we will use the one that occured as first
+                        if (count($arrRedundancyLocations) == count($arrRemovablePages)) {
+                            $arrRemovablePages = array_slice($arrRedundancyLocations, 1, null, true);
+                        }
+
+                        // remove redundancies
+                        foreach ($arrRemovablePages as $page) {
+                            unset($arrPages[$page]);
                         }
                     }
-
-                    // if the target page itself isn't listed in the sitemap, we will use the one that occured as first
-                    if (count($arrRedundancyLocations) == count($arrRemovablePages)) {
-                        $arrRemovablePages = array_slice($arrRedundancyLocations, 1, null, true);
-                    }
-
-                    // remove redundancies
-                    foreach ($arrRemovablePages as $page) {
-                        unset($arrPages[$page]);
-                    }
                 }
-            }
 
-            $strContent = '';
-            foreach ($arrPages as $arrPage) {
-                $strContent .= "\t<url>\n";
-                $strContent .= "\t\t<loc>".$arrPage['location']."</loc>\n";
-                $strContent .= "\t\t<lastmod>".XMLSitemap::getLastModificationDate($arrPage['module'], $arrPage['cmd'], $arrPage['changelog'])."</lastmod>\n";
-                $strContent .= "\t\t<changefreq>".XMLSitemap::getChangingFrequency($arrPage['module'], $arrPage['cmd'])."</changefreq>\n";
-                $strContent .= "\t\t<priority>0.5</priority>\n";
-                $strContent .= "\t</url>\n";
+                foreach ($arrPages as $arrPage) {
+                    $strContent .= "\t<url>\n";
+                    $strContent .= "\t\t<loc>".$arrPage['location']."</loc>\n";
+                    $strContent .= "\t\t<lastmod>".XMLSitemap::getLastModificationDate($arrPage['module'], $arrPage['cmd'], $arrPage['changelog'])."</lastmod>\n";
+                    $strContent .= "\t\t<changefreq>".XMLSitemap::getChangingFrequency($arrPage['module'], $arrPage['cmd'])."</changefreq>\n";
+                    $strContent .= "\t\t<priority>0.5</priority>\n";
+                    $strContent .= "\t</url>\n";
+                }
             }
 
             //Write values
@@ -276,6 +294,8 @@ class XMLSitemap {
             flock($handleFile, LOCK_UN); //release semaphore
             fclose($handleFile);
         }
+
+        return true;
     }
 
     /**

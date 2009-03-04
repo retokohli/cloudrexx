@@ -115,7 +115,7 @@ class Cache extends cacheLib {
             $this->objTpl->parse('cache_submit_button');
         } else {
             $this->objTpl->hideBlock('cache_submit_button');
-            $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $this->objSettings->strErrMessage);
+            $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', implode("<br />\n", $this->objSettings->strErrMessage));
         }
 
 		$intFoldersize = 0;
@@ -180,10 +180,10 @@ class Cache extends cacheLib {
 
 		$this->objSettings->writeSettingsFile();
 
-		if (empty($this->objSettings->strErrMessage)) {
+		if (!count($this->objSettings->strErrMessage)) {
             $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_CORELANG['TXT_SETTINGS_UPDATED']);
 		} else {
-		    $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $this->objSettings->strErrMessage);
+		    $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', implode("<br />\n", $this->objSettings->strErrMessage));
 		}
 	}
 

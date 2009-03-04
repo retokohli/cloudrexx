@@ -51,7 +51,7 @@ class LanguageManager
         $this->filePath = ASCMS_LANGUAGE_PATH.'/';
         // get tables in database
         $objResult = $objDatabase->MetaTables('TABLES');
-        if ($objResult !== false && !$objResult->EOF) {
+        if ($objResult !== false) {
             $arrTables = $objResult;
         }
         if (in_array(DBPREFIX."language_variable_names",$arrTables) && in_array(DBPREFIX."language_variable_content",$arrTables)) {

@@ -9,9 +9,13 @@
  * @todo        Edit PHP DocBlocks!
  */
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/FWHtAccess.class.php';
 
 /**
  * Alias library
@@ -30,6 +34,16 @@ class aliasLib
     );
 
     var $_arrConfig = null;
+
+    var $objFWHtAccess;
+
+    function __construct()
+    {
+        $this->objFWHtAccess = new FWHtAccess();
+        if (($result = $this->objFWHtAccess->loadHtAccessFile('/.htaccess')) !== true) {;
+            $this->arrStatusMsg['error'][] = $result;
+        }
+    }
 
     function _getConfig()
     {
@@ -225,7 +239,7 @@ class aliasLib
     {
         global $objDatabase;
         if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_alias_target` (`type`, `url`) VALUES ('".addslashes($arrAlias['type'])."','".addslashes($arrAlias['url'])."')") !== false) {
-            return $this->_setAliasSources($objDatabase->Insert_ID(), $arrAlias, '');
+            return $this->_setAliasSources($objDatabase->Insert_ID(), $arrAlias);
         } else {
             return false;
         }
@@ -241,22 +255,18 @@ class aliasLib
                 `url`       = '".addslashes($arrAlias['url'])."'
             WHERE `id` =       ".intval    ($aliasId);
 
-        if (
-            ($arrOldAlias = $this->_getAlias($aliasId)) !== false
-            && $objDatabase->Execute($upd_query) !== false
-        ) {
+        if ($objDatabase->Execute($upd_query) !== false) {
 
-            return $this->_setAliasSources($aliasId, $arrAlias, ($arrOldAlias['type'] == 'local' ? $arrOldAlias['pageUrl'] : $arrOldAlias['url']));
+            return $this->_setAliasSources($aliasId, $arrAlias);
         } else {
             return false;
         }
     }
 
-    function _setAliasSources($aliasId, $arrAlias, $oldTarget)
+    function _setAliasSources($aliasId, $arrAlias)
     {
         global $objDatabase;
 
-        $arrRemovedAliases = array();
         $error = false;
 
         if (($arrOldAlias = $this->_getAlias($aliasId)) !== false) {
@@ -273,10 +283,7 @@ class aliasLib
                                     AND `target_id` = ".intval($aliasId)
                                 ;
 
-
-                            if ($objDatabase->Execute($qry_update) !== false) {
-                                $arrRemovedAliases[] = $arrOldSource['url'];
-                            } else {
+                            if ($objDatabase->Execute($qry_update) === false) {
                                 $error = true;
                             }
                         }
@@ -288,8 +295,6 @@ class aliasLib
                 if (!$stillPresent) {
                     if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_alias_source` WHERE `id` = ".intval($arrOldSource['id'])." AND `target_id` = ".intval($aliasId)) === false) {
                         $error = true;
-                    } else {
-                        $arrRemovedAliases[] = $arrOldSource['url'];
                     }
                 }
             }
@@ -317,7 +322,7 @@ class aliasLib
                 $target = $arrAlias['url'];
             }
 
-            return $this->_activateRewriteEngine($arrRemovedAliases, $oldTarget);
+            return $this->_activateRewriteEngine();
         } else {
             return false;
         }
@@ -325,45 +330,21 @@ class aliasLib
 
     function _getRewriteInfo()
     {
-        require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
+        $arrRewriteInfo = array();
+        $arrRules = $this->objFWHtAccess->getSection('core_modules__alias');
 
-        $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
-        if ($objHtAccess->load() !== true) {
-            return false;
-        } else {
-            $arrRewriteInfo = array('engine' => false, 'rules' => array());
-            $arrAddition = $objHtAccess->getAdditional('array');
-
-            foreach ($arrAddition as $directive) {
-                if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+(.+)\s+.*$#', $directive, $arrRewriteRule)) {
-                    $arrRewriteInfo['rules'][$arrRewriteRule[2]][] = $arrRewriteRule[1];
-                } elseif (preg_match('#^\s*RewriteEngine\s+(Off|On)?.*$#i', $directive, $arrEngineStatus)) {
-                    if (strtolower($arrEngineStatus[1]) == 'on') {
-                        $arrRewriteInfo['engine'] = true;
-                    }
-                }
+        foreach ($arrRules as $directive) {
+            if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+(.+)\s+.*$#', $directive, $arrRewriteRule)) {
+                $arrRewriteInfo[$arrRewriteRule[2]][] = $arrRewriteRule[1];
             }
-
-            return $arrRewriteInfo;
         }
+
+        return $arrRewriteInfo;
     }
 
     function _isModRewriteInUse()
     {
-        require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
-
-        $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
-        if ($objHtAccess->load() !== true) {
-            return false;
-        } else {
-            $arrAddition = $objHtAccess->getAdditional('array');
-
-            if (is_array($arrAddition) && count(preg_grep('#^\s*RewriteEngine\s+On.*$#mi', $arrAddition)) > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        return $this->objFWHtAccess->isRewriteEngineInUse();
     }
 
     function _escapeStringForRegex($string) {
@@ -375,134 +356,36 @@ class aliasLib
         );
     }
 
-    function _activateRewriteEngine($arrRemoveAliases = array(), $oldTarget = null)
+    function _activateRewriteEngine()
     {
-        require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
+        $arrRewriteRules = array();
 
-        if (!$this->_createHtAccessFile()) {
-            return false;
-        }
+        $arrDefinedAliases = $this->_getAliases();
 
-        $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
-        if ($objHtAccess->load() !== true) {
-            return false;
-        } else {
-            $arrAddition = $objHtAccess->getAdditional('array');
-            $arrAdditionNew = array();
-            $rewriteEngine = false;
-            $arrAdditionAlias = array();
-            $arrDefinedAliases = $this->_getAliases();
-
-            foreach ($arrAddition as $directive) {
-				if (isset($oldTarget) && preg_match('#^\s*RewriteRule\s+\^.+\$\s+'.$oldTarget.'\s.*$#', $directive)) {
+        foreach ($arrDefinedAliases as $arrDefinedAlias) {
+            if ($arrDefinedAlias['type'] == 'local') {
+                if (!empty($arrDefinedAlias['pageUrl'])) {
+                    $target = $arrDefinedAlias['pageUrl'];
+                } else {
                     continue;
-                } elseif (preg_match('#^\s*RewriteRule.*$#i', $directive)) {
-                    if (count($arrRemoveAliases) == 0 || !preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+.+\s+.*$#', $directive, $arrSources) || !in_array($arrSources[1], $arrRemoveAliases)) {
-                        $arrAdditionAlias[] = $directive;
-                    } else {
-                        continue;
-                    }
-                } elseif (preg_match('#^\s*RewriteEngine\s+(Off|On)?.*$#i', $directive)) {
-                    $directive = 'RewriteEngine On';
-                    $rewriteEngine = true;
-                }
-                $arrAdditionNew[] = $directive;
-            }
-
-            foreach ($arrDefinedAliases as $arrDefinedAlias) {
-                $arrAvailableRules = array();
-
-                if ($arrDefinedAlias['type'] == 'local') {
-                    if (!empty($arrDefinedAlias['pageUrl'])) {
-                        $target = $arrDefinedAlias['pageUrl'];
-                    } else {
-                        continue;
-                    }
-                } else {
-                    $target = $arrDefinedAlias['url'];
-                }
-
-                $targetEscaped = $this->_escapeStringForRegex($target);
-                $arrAliasesSet = preg_grep('#^\s*RewriteRule\s+\^.+\$\s+'.$targetEscaped.'.*$#', $arrAdditionAlias);
-                if (is_array($arrAliasesSet) && count($arrAliasesSet) > 0) {
-                    foreach ($arrAliasesSet as $settedAlias) {
-                        if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+'.$targetEscaped.'.*$#', $settedAlias, $arrSource)) {
-                            $arrAvailableRules[] = $arrSource[1];
-                        }
-                    }
-                }
-
-                // add missing rewriterules
-                foreach ($arrDefinedAlias['sources'] as $arrSource) {
-                    if (!in_array($arrSource['url'], $arrAvailableRules)) {
-                        $arrAdditionNew[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC]';
-                    }
-                }
-            }
-
-            if (!$rewriteEngine) {
-                $arrAdditionNew = array_merge(array('RewriteEngine On'), $arrAdditionNew);
-            }
-
-            if ($arrAddition !== $arrAdditionNew) {
-                $objHtAccess->setAdditional($arrAdditionNew);
-                if ($objHtAccess->save() !== true) {
-                    return false;
-                } else {
-                    return true;
                 }
             } else {
-                return true;
+                $target = $arrDefinedAlias['url'];
+            }
+
+            foreach ($arrDefinedAlias['sources'] as $arrSource) {
+                $arrRewriteRules[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC]';
             }
         }
+
+        $this->objFWHtAccess->setSection('core_modules__alias', $arrRewriteRules);
+        return $this->objFWHtAccess->write();
     }
 
     function _deactivateRewriteEngine()
     {
-        require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
-
-        if (file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess')) {
-            $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
-            if ($objHtAccess->load() !== true) {
-                return false;
-            } else {
-                $arrAddition = $objHtAccess->getAdditional('array');
-                $arrAdditionNew = array();
-                $rewriteEngineAddition = '';
-                $arrDefinedAliases = $this->_getAliases();
-
-                foreach ($arrAddition as $directive) {
-                    if (preg_match('#^\s*RewriteRule.*$#i', $directive)) {
-                        $arrAdditionAlias[] = $directive;
-                    } elseif (preg_match('#^\s*RewriteEngine\s+(Off|On)?.*$#i', $directive)) {
-                        $rewriteEngineAddition = $directive;
-                    }
-                }
-
-                foreach ($arrDefinedAliases as $arrDefinedAlias) {
-                    // remove aliases that have beed defined by the alias administration
-                    foreach ($arrDefinedAlias['sources'] as $arrSource) {
-                        $source = $this->_escapeStringForRegex($arrSource['url']);
-                        $arrAdditionAlias = preg_grep('#^\s*RewriteRule\s+\^'.$source.'\$\s+.*$#', $arrAdditionAlias, PREG_GREP_INVERT);
-                    }
-                }
-
-                if (count($arrAdditionAlias) > 0) {
-                    $arrAdditionNew = array_merge(array($rewriteEngineAddition), $arrAdditionAlias);
-                }
-
-                if ($arrAddition !== $arrAdditionNew) {
-                    $objHtAccess->setAdditional($arrAdditionNew);
-                    if ($objHtAccess->save() !== true) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                } else {
-                    return true;
-                }
-            }
-        }
+        $this->objFWHtAccess->removeSection('core_modules__alias');
+        return $this->objFWHtAccess->write();
     }
 
     function _isUniqueAliasSource($url, $target, $oldTarget, $sourceId = 0)
@@ -537,15 +420,10 @@ class aliasLib
     {
         global $objDatabase, $_CONFIG;
 
-        $arrRemovedAliases = array();
         if (($arrAlias = $this->_getAlias($aliasId)) !== false) {
-            foreach ($arrAlias['sources'] as $arrSource) {
-                $arrRemovedAliases[] = $arrSource['url'];
-            }
-
-            if ($objDatabase->Execute("DELETE s,t FROM `".DBPREFIX."module_alias_source` AS s INNER JOIN `".DBPREFIX."module_alias_target` AS t ON t.`id` = s.`target_id` WHERE s.`target_id` = ".intval($aliasId)) !== false && $this->_activateRewriteEngine($arrRemovedAliases))  {
-                if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-                    XMLSitemap::write();
+            if ($objDatabase->Execute("DELETE s,t FROM `".DBPREFIX."module_alias_source` AS s INNER JOIN `".DBPREFIX."module_alias_target` AS t ON t.`id` = s.`target_id` WHERE s.`target_id` = ".intval($aliasId)) !== false && $this->_activateRewriteEngine()) {
+                if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
+                    $this->arrStatusMsg['error'][] = $result;
                 }
                 return true;
             }
@@ -560,8 +438,6 @@ class aliasLib
         static $arrUsedAliases;
 
         if (!is_array($arrUsedAliases)) {
-            require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
-
             $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
             if ($objHtAccess->load() !== true) {
                 return false;
@@ -578,13 +454,6 @@ class aliasLib
         }
 
         return $arrUsedAliases;
-    }
-
-    function _createHtAccessFile()
-    {
-		$objFile = new File();
-
-        return (file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess') || touch(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->touchFile('/.htaccess')) && (is_writable(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->setChmod(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, '/.htaccess')) ;
     }
 }
 

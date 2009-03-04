@@ -68,6 +68,9 @@ class AliasAdmin extends aliasLib
     {
         global $objTemplate, $_ARRAYLANG;
 
+        // initialize FWHtAccess object
+        parent::__construct();
+
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -91,7 +94,7 @@ class AliasAdmin extends aliasLib
         }
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            ($arrConfig['aliasStatus'] == '1' ? "<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
+            ($arrConfig['aliasStatus'] == '1' && $this->objFWHtAccess->isHtAccessFileLoaded() ? "<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
             ."<a href='index.php?cmd=alias&amp;act=modify'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>" : '')
             ."<a href='index.php?cmd=alias&amp;act=settings'>".$_ARRAYLANG['TXT_ALIAS_SETTINGS']."</a>"
         );
@@ -109,7 +112,7 @@ class AliasAdmin extends aliasLib
         global $objTemplate, $_ARRAYLANG;
 
         $arrConfig = $this->_getConfig();
-        if (!$arrConfig['aliasStatus']) {
+        if (!$arrConfig['aliasStatus'] || !$this->objFWHtAccess->isHtAccessFileLoaded()) {
             $_REQUEST['act'] = 'settings';
         }
 
@@ -185,7 +188,7 @@ class AliasAdmin extends aliasLib
                         'ALIAS_SOURCE_URL'    => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'<strong>/'.stripslashes($arrAliasSource['url']).'</strong>',
                     ));
 
-                    if (!isset($arrRewriteInfo['rules'][($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])]) || !in_array($arrAliasSource['url'], $arrRewriteInfo['rules'][($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])])) {
+                    if (!is_array($arrRewriteInfo) || !isset($arrRewriteInfo[($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])]) || !in_array($arrAliasSource['url'], $arrRewriteInfo[($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])])) {
                         $this->_objTpl->setVariable('TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG', $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG']);
                         $this->_objTpl->touchBlock('alias_source_not_set');
                     } else {
@@ -206,7 +209,7 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->hideBlock('alias_no_data');
 
             if ($this->_getAliasesCount() > count($arrAliases)) {
-                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), intval($_GET['pos']), '&amp;cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
+                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&amp;cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {
             $this->_objTpl->setVariable('TXT_ALIAS_NO_ALIASES_MSG', $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG']);
@@ -219,10 +222,6 @@ class AliasAdmin extends aliasLib
     function _modifyAlias()
     {
         global $_ARRAYLANG, $_CONFIG;
-
-        if (!$this->_createHtAccessFile()) {
-            return $this->_list();
-        }
 
         $aliasId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $arrSourceUrls = array();
@@ -261,7 +260,7 @@ class AliasAdmin extends aliasLib
                         $arrAlias['sources'][] = array(
                             'id'        => intval($sourceId),
                             'url'        => $aliasSource,
-                            'isdefault' => $_POST['alias_use_default'] == "$sourceId" ? 1 : 0
+                            'isdefault' => isset($_POST['alias_use_default']) && $_POST['alias_use_default'] == "$sourceId" ? 1 : 0
                         );
                     }
                     $nr++;
@@ -307,8 +306,8 @@ class AliasAdmin extends aliasLib
 
                     if (!$error) {
                         if (($aliasId ? $this->_updateAlias($aliasId, $arrAlias) : $this->_addAlias($arrAlias))) {
-                            if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-                                XMLSitemap::write();
+                            if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
+                                $this->arrStatusMsg['error'][] = $result;
                             }
                             $this->arrStatusMsg['ok'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_UPDATED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_ADDED'];
                             return $this->_list();
@@ -385,14 +384,8 @@ class AliasAdmin extends aliasLib
 
         $this->_objTpl->loadTemplateFile('module_alias_settings.html');
 
-        $apacheEnv = preg_match('#apache#i', $_SERVER['SERVER_SOFTWARE']);
-
-        ob_start();
-        phpinfo(INFO_MODULES);
-        $phpinfo = ob_get_contents();
-        ob_end_clean();
-
-        $modRewriteLoaded = preg_match('#mod_rewrite#i', $phpinfo);
+        $apacheEnv = $this->objFWHtAccess->checkForApacheServer();
+        $modRewriteLoaded = $this->objFWHtAccess->checkForModRewriteModul();
 
         $this->_objTpl->setVariable(array(
             'TXT_ALIAS_SETTINGS'                    => $_ARRAYLANG['TXT_ALIAS_SETTINGS'],
@@ -417,7 +410,7 @@ class AliasAdmin extends aliasLib
             if ($this->objSettings->isWritable()) {
                 $this->_objTpl->parse('alias_status_form_submit');
             } else {
-                $this->arrStatusMsg['error'][] = $this->objSettings->strErrMessage;
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], implode('<br />', $this->objSettings->strErrMessage));
                 $this->_objTpl->hideBlock('alias_status_form_submit');
             }
         } else {
@@ -447,8 +440,8 @@ class AliasAdmin extends aliasLib
             $this->objSettings->writeSettingsFile();
 
             // update sitemap.xml
-            if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-                XMLSitemap::write();
+            if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
+                $this->arrStatusMsg['error'][] = $result;
             }
 
             return true;

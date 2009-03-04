@@ -37,7 +37,7 @@ class ContentManager
      * Error status message
     * @var string
     */
-    var $strErrMessage = '';
+    var $strErrMessage = array();
 
     /**
      * Status message (no error)
@@ -210,7 +210,9 @@ class ContentManager
 
         case 'changeActiveStatus':
             $this->changeActiveStatus($_GET['id']);
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
             $this->contentOverview();
         break;
 
@@ -223,7 +225,7 @@ class ContentManager
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'                => $this->pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
-            'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage
+            'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
     }
 
@@ -391,6 +393,10 @@ class ContentManager
             unset($arrQuery);
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."content_navigation");
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."content");
+
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
         }
     }
 
@@ -411,7 +417,7 @@ class ContentManager
         if (intval($langId) != 0) {
             // the default language site cannot be deleted
             if ($objLanguage->getLanguageParameter($langId, "is_default")=="true") {
-                $this->strErrMessage= $_CORELANG['TXT_STANDARD_SITE_NOT_DELETED'];
+                $this->strErrMessage[] = $_CORELANG['TXT_STANDARD_SITE_NOT_DELETED'];
             } else {
                 $arrQuery = array();
                 $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE lang=".intval($langId));
@@ -445,7 +451,9 @@ class ContentManager
                 $objCache->writeCacheablePagesFile();
 
                 // write xml sitemap
-                XMLSitemap::write();
+                if (($result = XMLSitemap::write()) !== true) {
+                    $this->strErrMessage[] = $result;
+                }
             }
         }
     }
@@ -537,7 +545,9 @@ class ContentManager
             }
 
             // write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
         }
         $objNavbar = new ContentSitemap(0);
         $objTemplate->setVariable('ADMIN_CONTENT', $objNavbar->getSiteMap());
@@ -1442,7 +1452,7 @@ class ContentManager
         if ($boolDirectUpdate) {
             $this->strOkMessage =$_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         } else {
-            $this->strErrMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'];
+            $this->strErrMessage[] = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'];
         }
 
         $protect = (empty($_POST['protection']) ? false : true);
@@ -1460,7 +1470,9 @@ class ContentManager
         $objCache->writeCacheablePagesFile();
 
         // write xml sitemap
-        XMLSitemap::write();
+        if (($result = XMLSitemap::write()) !== true) {
+            $this->strErrMessage[] = $result;
+        }
 
         if (empty($command) && intval($moduleId) == 0) {
             $objCache->deleteSingleFile($pageId);
@@ -1673,7 +1685,9 @@ class ContentManager
             $objCache->writeCacheablePagesFile();
 
             // write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
 
             // Create backup for history
             if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
@@ -1741,7 +1755,7 @@ class ContentManager
             }
             $this->modifyBlocks($_POST['assignedBlocks'], $pageId);
         } else {
-            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+            $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         }
         return $pageId;
     }
@@ -1786,11 +1800,11 @@ class ContentManager
                     $objResult->MoveNext();
                 }
                 if ($objResult->RecordCount()>1) {
-                    $this->strErrMessage =
+                    $this->strErrMessage[] =
                         $_CORELANG['TXT_PAGE_NOT_DELETED_DELETE_SUBCATEGORIES_FIRST'];
                 } else {
                     if (in_array($moduleId, $this->_requiredModules)) {
-                        $this->strErrMessage =
+                        $this->strErrMessage[] =
                             $_CORELANG['TXT_NOT_DELETE_REQUIRED_MODULES'];
                     } else {
                         if ($this->boolHistoryEnabled) {
@@ -1829,7 +1843,7 @@ class ContentManager
 
                             if ($objDatabase->Execute($q1) === false
                              || $objDatabase->Execute($q2) === false) {
-                                $this->strErrMessage =
+                                $this->strErrMessage[] =
                                     $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
                             } else {
                                  $this->strOkMessage =
@@ -1840,7 +1854,9 @@ class ContentManager
                                 $objCache->writeCacheablePagesFile();
 
                                 // write xml sitemap
-                                XMLSitemap::write();
+                                if (($result = XMLSitemap::write()) !== true) {
+                                    $this->strErrMessage[] = $result;
+                                }
                             }
                         }
                     }
@@ -1923,7 +1939,7 @@ class ContentManager
                                         lang ='".$repository['lang']."',
                                         parid ='".$repository['parid']."'";
                     if ($objDatabase->Execute($query) === false) {
-                        $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                        $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
                     }
                     $paridarray[$value] = $objDatabase->Insert_ID();
                 } else {
@@ -2028,7 +2044,7 @@ class ContentManager
         if ($objResult !== false && $objResult->RecordCount()>0) {
             $homeModuleId = intval($objResult->fields['id']);
         } else {
-            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+            $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             return false;
         }
 
@@ -2046,7 +2062,7 @@ class ContentManager
             if ($objResult !== false) {
                 if ($objResult->RecordCount()>0) {
                     $sectionName = $objResult->fields['m.name'];
-                    $this->strErrMessage = $_CORELANG['TXT_PAGE_WITH_SAME_MODULE_EXIST']." ".$sectionName." ".$cmd;
+                    $this->strErrMessage[] = $_CORELANG['TXT_PAGE_WITH_SAME_MODULE_EXIST']." ".$sectionName." ".$cmd;
                     $this->setModule=$section;
                     $this->setCmd=$cmd+1;
                     return false;
@@ -2061,7 +2077,7 @@ class ContentManager
                 return false;
             }
         }
-        $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+        $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         return  false;
     }
 
@@ -2163,10 +2179,12 @@ class ContentManager
                 $objCache->writeCacheablePagesFile();
 
                 // write xml sitemap
-                XMLSitemap::write();
+                if (($result = XMLSitemap::write()) !== true) {
+                    $this->strErrMessage[] = $result;
+                }
                 $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
-                $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
     }
@@ -2228,11 +2246,13 @@ class ContentManager
 //                }
 
                 // write xml sitemap
-                XMLSitemap::write();
+                if (($result = XMLSitemap::write()) !== true) {
+                    $this->strErrMessage[] = $result;
+                }
 
                 $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
-                $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
     }
