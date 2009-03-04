@@ -133,4 +133,5 @@ $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'] = "Maximum size of the thumbnail:";
 $_ARRAYLANG['TXT_DATA_WIDTH'] = "Width";
 $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Height";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Attachment description";
+$_ARRAYLANG['TXT_DATA_SETTINGS_THICKBOX_TEMPLATE'] = "Shadowbox-Template";
 ?>
