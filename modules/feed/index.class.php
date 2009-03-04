@@ -263,7 +263,7 @@ class feed extends feedLibrary{
 
 			$query = "SELECT name,
 		                       filename,
-		         FROM_UNIXTIME(time, '%d. %M %Y, %H:%i') AS time,
+                               time,
 		                       articles,
 		                       image
 			              FROM ".DBPREFIX."module_feed_news
@@ -287,7 +287,7 @@ class feed extends feedLibrary{
 			$rss->parse();
 			//channel info
 			$out_title = strip_tags($rss->channel['title']);
-			$out_time  = strip_tags($objResult->fields['time']);
+			$out_time  = date(ASCMS_DATE_FORMAT, $objResult->fields['time']);
 
 			//image
 			foreach ($rss->getImages() as $img) {
