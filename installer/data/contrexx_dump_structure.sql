@@ -311,14 +311,14 @@ CREATE TABLE `contrexx_module_alias_source` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `url` (`url`),
   KEY `isdefault` (`isdefault`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_alias_target` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` enum('url','local') NOT NULL,
   `url` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `url` (`url`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_auction` (
   `id` int(9) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
