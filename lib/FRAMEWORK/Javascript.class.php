@@ -96,7 +96,7 @@ class JS
             'dependencies'  => array(
                 'prototype'
             ),
-            'specialcode'  => 'window.onload = Shadowbox.init;',
+            'specialcode'  => 'var tmpOnLoad = window.onload; window.onload = function() { if(tmpOnLoad){tmpOnLoad();} Shadowbox.init(); }',
             'loadcallback' => 'parseShadowBoxOptions',
             'makecallback' => 'makeShadowBoxOptions'
         )
