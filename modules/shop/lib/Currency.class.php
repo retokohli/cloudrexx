@@ -358,7 +358,6 @@ class Currency
         foreach (self::$arrCurrency as $id => $arrCurrency) {
             if (!$arrCurrency['status']) continue;
             $strCurNavbar .=
-                ($strCurNavbar == '' ? '&nbsp;|&nbsp;' : '').
                 '<a class="'.($id == self::$activeCurrencyId
                     ? self::STYLE_NAME_ACTIVE : self::STYLE_NAME_INACTIVE
                 ).
@@ -367,7 +366,7 @@ class Currency
                 ).
                 '&amp;currency='.$id.'" title="'.$arrCurrency['code'].'">'.
                 $arrCurrency['code'].
-                '</a>'."\n";
+                '</a>';
         }
         return $strCurNavbar;
     }
