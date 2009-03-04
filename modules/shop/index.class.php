@@ -1676,8 +1676,8 @@ class Shop extends ShopLibrary
                     'SHOP_PRODUCT_THUMBNAIL_SIZE'     => $arrThumbnailSize[$i+1],
                     'SHOP_PRODUCT_PRICE'                => $arrPrice[$i+1],
                     'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i+1],
-                    'SHOP_PRODUCT_PRICE_UNIT'           => $this->aCurrencyUnitName,
-                    'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => $this->aCurrencyUnitName,
+                    'SHOP_PRODUCT_PRICE_UNIT'           => Currency::getActiveCurrencySymbol(),
+                    'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_DETAILLINK'           => $arrDetailLink[$i+1],
                     'SHOP_PRODUCT_DISCOUNT_COUNT'     =>
                         Shop::getDiscountCountString($objResult->fields['group_id']),
@@ -1691,8 +1691,8 @@ class Shop extends ShopLibrary
                 'SHOP_PRODUCT_THUMBNAIL_SIZE'     => $arrThumbnailSize[$i],
                 'SHOP_PRODUCT_PRICE'                => $arrPrice[$i],
                 'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i],
-                'SHOP_PRODUCT_PRICE_UNIT'           => $this->aCurrencyUnitName,
-                'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => $this->aCurrencyUnitName,
+                'SHOP_PRODUCT_PRICE_UNIT'           => Currency::getActiveCurrencySymbol(),
+                'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => Currency::getActiveCurrencySymbol(),
                 'SHOP_PRODUCT_DETAILLINK'           => $arrDetailLink[$i],
                 'SHOP_PRODUCT_DISCOUNT_COUNT'     =>
                     Shop::getDiscountCountString($objResult->fields['group_id']),
