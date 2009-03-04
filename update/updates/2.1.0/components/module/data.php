@@ -49,20 +49,24 @@ function _dataUpdate()
               PRIMARY KEY (`message_id`)
             ) ENGINE=MyISAM",
         #################################################################################
-        'module_data_messages_lang' => "CREATE TABLE `".DBPREFIX."module_data_messages_lang` (
+            'module_data_messages_lang' => "CREATE TABLE `contrexx_module_data_messages_lang` (
               `message_id` int(6) unsigned NOT NULL default '0',
               `lang_id` int(2) unsigned NOT NULL default '0',
-              `is_active` enum('0','1') NOT NULL default '1',
-              `subject` varchar(250) NOT NULL default '',
-              `content` text NOT NULL,
-              `tags` varchar(250) NOT NULL default '',
-              `image` varchar(250) NOT NULL default '',
-              `attachment` varchar(255) NOT NULL default '',
-              `mode` set('normal','forward') NOT NULL default 'normal',
-              `forward_url` varchar(255) NOT NULL default '',
-              `forward_target` varchar(40) NULL,
-              PRIMARY KEY (`message_id`,`lang_id`)
-            ) ENGINE=MyISAM",
+              `is_active` enum('0','1')  NOT NULL default '1',
+              `subject` varchar(250)  NOT NULL default '',
+              `content` text  NOT NULL,
+              `tags` varchar(250)  NOT NULL default '',
+              `image` varchar(250)  NOT NULL default '',
+              `thumbnail` varchar(250)  NOT NULL,
+              `thumbnail_width` tinyint(3) unsigned NOT NULL default '0',
+              `thumbnail_height` tinyint(3) unsigned NOT NULL default '0',
+              `attachment` varchar(255)  NOT NULL default '',
+              `attachment_description` varchar(255)  NOT NULL default 'normal',
+              `mode` set('normal','forward')  NOT NULL default 'normal',
+              `forward_url` varchar(255)  NOT NULL default '',
+              `forward_target` varchar(40)  default NULL,
+              PRIMARY KEY  (`message_id`,`lang_id`)
+            ) ENGINE=MyISAM ",
         #################################################################################
         'module_data_placeholders' => "CREATE TABLE `".DBPREFIX."module_data_placeholders` (
               `id` int(10) unsigned NOT NULL auto_increment,
