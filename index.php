@@ -731,33 +731,16 @@ if ($_CONFIG['directoryHomeContent'] == '1') {
          */
         require_once($modulespath);
 
-        $directoryHomeContentInPageContent = false;
-        $directoryHomeContentInPageTemplate = false;
-        $directoryHomeContentInThemesPage = false;
+        $dirc = $themesPages['directory_content'];
 
         if (preg_match_all('/{DIRECTORY_FILE}/ms', $page_content, $arrMatches)) {
-            $directoryHomeContentInPageContent = true;
+            $page_content = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $page_content);
         }
         if (preg_match_all('/{DIRECTORY_FILE}/ms', $page_template, $arrMatches)) {
-            $directoryHomeContentInPageTemplate = true;
+            $page_template = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $page_template);
         }
         if (preg_match_all('/{DIRECTORY_FILE}/ms', $themesPages['index'], $arrMatches)) {
-            $directoryHomeContentInThemesPage = true;
-        }
-
-        if ($directoryHomeContentInPageContent || $directoryHomeContentInPageTemplate || $directoryHomeContentInThemesPage) {
-            $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('directory'));
-            $dirObj = new dirHomeContent($themesPages['directory_content']);
-        }
-
-        if ($directoryHomeContentInPageContent) {
-            $page_content = str_replace('{DIRECTORY_FILE}', $dirObj->getContent(), $page_content);
-        }
-        if ($directoryHomeContentInPageTemplate) {
-            $page_template = str_replace('{DIRECTORY_FILE}', $dirObj->getContent(), $page_template);
-        }
-        if ($directoryHomeContentInThemesPage) {
-            $themesPages['index'] = str_replace('{DIRECTORY_FILE}', $dirObj->getContent(), $themesPages['index']);
+            $themesPages['index'] = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $themesPages['index']);
         }
     }
 }
