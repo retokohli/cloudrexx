@@ -49,7 +49,8 @@ function fe_checkForLogin() {
 		fe_loadToolbar(false);
 	}
 }
-window.onload = fe_checkForLogin;
+var tmpOnLoad = window.onload;
+window.onload = function() { if (tmpOnLoad) { tmpOnLoad(); } fe_checkForLogin(); };
 
 function fe_loadToolbar(showEditorAfterLoading) {
 	if (!fe_toolbarIsLoaded) {
