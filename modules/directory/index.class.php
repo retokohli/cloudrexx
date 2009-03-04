@@ -89,9 +89,11 @@ class rssDirectory extends directoryLibrary
         $this->folderImageLarge = "<img src='../../images/modules/directory/_folder_24.gif' alt='' />";
         $this->folderImageSmall = "<img src='../../images/modules/directory/_folder.gif' alt='' />";
 
-        //create latest xml
-        $this->createRSSlatest();
-
+        //create latest xml. (Dave, 2009-03-04: This sucks, as it causes the start
+        //                    page to break if the FTP server doesn't work. And why
+        //                    the hell do we need to re-create the RSS here anyhow?)
+        #$this->createRSSlatest();
+        
         //get settings
         $this->settings = $this->getSettings();
 
