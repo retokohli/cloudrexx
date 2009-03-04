@@ -40,7 +40,10 @@ class File
     var $is_php5;
 
 
-
+    /**
+     * Creates a new File helper object. Uses FTP if configured,
+     * direct file access otherwise.
+     */
     function __construct()
     {
         global  $_FTPCONFIG;
@@ -54,11 +57,17 @@ class File
         $this->is_php5 = (phpversion()<5) ? false : true;
 
         if($this->ftp_is_activated == true){
-            //crate baseconnection
-            $this->conn_id = @ftp_connect($this->ftpHost);
-
+            $this->conn_id = ftp_connect($this->ftpHost);
+        }
+        if ($this->conn_id) {
             //logon with user and password
             $this->login_result = @ftp_login($this->conn_id, $this->ftpUserName, $this->ftpUserPass);
+        }
+        else {
+            // We can't connect to FTP, so we try
+            // falling back to "normal" file mode.
+            //FIXME: notify user in a useful manner.
+            $this->ftp_is_activated = false;
         }
 
         $this->checkConnection();
