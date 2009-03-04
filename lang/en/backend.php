@@ -1006,4 +1006,6 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Job offers";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Job offers";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auctions";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
+$_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'] = "Use virtual language directories";
+$_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'] = "This will put each frontend language in a virtual sub folder (language folder). For instance the language %s will then be accessed through the URL %s.<br />This feature will allow search engines to index every language of your website.";
 ?>
