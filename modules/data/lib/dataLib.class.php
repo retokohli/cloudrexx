@@ -265,49 +265,60 @@ class DataLibrary
 			$strLanguageWhere = '';
 		}
 
+        /*
+         * this is crap... too much overhead
 		if ($intLimitIndex == 0) {
 			$intLimitIndex = $this->countEntries();
 		}
-		$objResult = $objDatabase->Execute("SELECT		dataMessages.message_id,
-														dataMessages.time_created,
-														dataMessages.time_edited,
-														dataMessages.hits,
-														dataMessages.active,
-														dataMessages.mode,
-														ph.placeholder,
-														dataMessages.release_time as release_time,
-														dataMessages.release_time_end as release_time_end
-											FROM		".DBPREFIX."module_data_messages		AS dataMessages
-											LEFT JOIN  ".DBPREFIX."module_data_placeholders    AS ph
-											ON          dataMessages.message_id = ph.ref_id
-											".$strLanguageJoin."
-											".$strLanguageWhere."
-											ORDER BY	sort ASC
-											LIMIT 		".$intStartingIndex.",".$intLimitIndex."
-										");
+         */
+        if ($intLimitIndex != 0) {
+            $limit = $intStartingIndex.", ".$intLimitIndex;
+        } else {
+            $limit = "";
+        }
+        $query = "  SELECT		dataMessages.message_id,
+                                dataMessages.time_created,
+                                dataMessages.time_edited,
+                                dataMessages.hits,
+                                dataMessages.active,
+                                dataMessages.mode,
+                                ph.placeholder,
+                                dataMessages.release_time as release_time,
+                                dataMessages.release_time_end as release_time_end
+                    FROM		".DBPREFIX."module_data_messages		AS dataMessages
+                    LEFT JOIN  ".DBPREFIX."module_data_placeholders    AS ph
+                    ON          dataMessages.message_id = ph.ref_id
+                    ".$strLanguageJoin."
+                    ".$strLanguageWhere."
+                    ORDER BY	sort ASC
+                    ".$limit;
+
+        //echo $query;
+		$objResult = $objDatabase->Execute($query);
 
 		if ($objResult->RecordCount() > 0) {
 			while (!$objResult->EOF) {
 				$intMessageId = $objResult->fields['message_id'];
 
-				$arrReturn[$intMessageId] = array(	'time_created'		=>	date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_created']),
-													'time_created_ts'	=>	$objResult->fields['time_created'],
-													'time_edited'		=>	date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_edited']),
-													'time_edited_ts'	=>	$objResult->fields['time_edited'],
-													'hits'				=>	$objResult->fields['hits'],
-													//'comments'			=>	$this->countComments($intMessageId),
-													//'comments_active'	=>	$this->countComments($intMessageId,true),
-													//'votes'				=>	$this->countVotings($intMessageId),
-													'votes_avg'			=>	0.0,
-													'subject'			=>	'',
-													'categories'		=>	array(),
-													'translation'		=>	array(),
-													'placeholder'       =>  $objResult->fields['placeholder'],
-													'active'            =>  $objResult->fields['active'],
-													'mode'              =>  $objResult->fields['mode'],
-													'release_time'      =>  $objResult->fields['release_time'],
-													'release_time_end'  =>  $objResult->fields['release_time_end']
-												);
+                $arrReturn[$intMessageId] = array(	
+                    'time_created'		=>	date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_created']),
+                    'time_created_ts'	=>	$objResult->fields['time_created'],
+                    'time_edited'		=>	date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_edited']),
+                    'time_edited_ts'	=>	$objResult->fields['time_edited'],
+                    'hits'				=>	$objResult->fields['hits'],
+                    //'comments'			=>	$this->countComments($intMessageId),
+                    //'comments_active'	=>	$this->countComments($intMessageId,true),
+                    //'votes'				=>	$this->countVotings($intMessageId),
+                    //'votes_avg'			=>	0.0,
+                    'subject'			=>	'',
+                    'categories'		=>	array(),
+                    'translation'		=>	array(),
+                    'placeholder'       =>  $objResult->fields['placeholder'],
+                    'active'            =>  $objResult->fields['active'],
+                    'mode'              =>  $objResult->fields['mode'],
+                    'release_time'      =>  $objResult->fields['release_time'],
+                    'release_time_end'  =>  $objResult->fields['release_time_end']
+				);
 
 				//Get vote-avarage for this entry
 				$objVoteResult = $objDatabase->Execute('SELECT	avg(vote)		AS avarageVote
@@ -359,7 +370,6 @@ class DataLibrary
 															WHERE	message_id='.$intMessageId.'
 														');
 
-                /*
 				while (!$objLanguageResult->EOF) {
 					$intLanguageId = $objLanguageResult->fields['lang_id'];
 
@@ -383,7 +393,7 @@ class DataLibrary
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_target'] = $objLanguageResult->fields['forward_target'];
 					
 					$objLanguageResult->MoveNext();
-                }*/
+                }
 
 
 				$objResult->MoveNext();
