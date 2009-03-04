@@ -171,7 +171,6 @@ class dataBlocks extends DataLibrary
     {
         global $_LANGID;
 
-
         if ($this->entryArray == 0) {
             $this->entryArray = $this->createEntryArray();
         }
@@ -236,6 +235,7 @@ class dataBlocks extends DataLibrary
                     $image = "";
                 }
 
+
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
                 } else {
@@ -257,8 +257,7 @@ class dataBlocks extends DataLibrary
                     "CONTENT"       => $content,
                     "HREF"          => $href,
                     "TARGET"        => $target,
-//                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"thickbox\"" : "",
-                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "rel=\"ibox\"" : "",
+                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "rel=\"shadowbox;width=".$width.";height=".$height."\"" : "",
                     "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
                 ));
                 if ($parcat) {
@@ -273,6 +272,7 @@ class dataBlocks extends DataLibrary
         } else {
             $this->_objTpl->parse("datalist_single_category");
         }
+
         return $this->_objTpl->get();
     }
 
@@ -333,8 +333,7 @@ class dataBlocks extends DataLibrary
             "IMAGE"         => $image,
             "CONTENT"       => $content,
             "HREF"          => $url."&amp;id=".$id,
-//            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"thickbox\"" : "",
-            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "rel=\"ibox\"" : "",
+            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "rel=\"shadowbox;width=".$width.";height=".$height."\"" : "",
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
         $this->_objTpl->setVariable($templateVars);
