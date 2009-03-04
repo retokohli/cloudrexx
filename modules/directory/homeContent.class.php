@@ -67,6 +67,17 @@ class dirHomeContent extends directoryLibrary
 		$this->settings = $this->getSettings();
 	}
 
+    public static function getObj($pageContent) {
+        global $objInit, $_ARRAYLANG;
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('directory'));
+
+        static $obj = null;
+        if (is_null($obj)) {
+            $obj = new dirHomeContent($pageContent);
+        }
+        return $obj;
+    }
+
 	function getContent()
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG;
