@@ -1008,4 +1008,8 @@ $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 $_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'] = "Virtuelle Sprachverzeichnisse verwenden";
 $_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'] = "Diese Eigenschaft bewirkt, dass jede Frontend Sprache in ein virtuelles Unterverzeichnis (Sprachverzeichnis) gesetzt wird.<br />Der Inhalt der Sprache %s wird dann z.B. über die URL %s angesprochen.<br />Das Verwenden von Virtuellen Sprachverzeichnisse erlaubt es Suchmaschinen jede Sprache Ihrer Webseite in deren Suchindex aufzunehmen.";
+$_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Das XML Sitemap %s konnte nicht aktualisiert werden, da die Datei nicht beschreibbar ist!";
+$_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "Die Datei %s ist nicht beschreibbar und kann daher nicht aktualisiert werden! Setzen Sie auf diese Datei Schreibzugriff, damit das System korrekt funktioniert!";
+$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Die HtAccess Datei %s konnte nicht ausgelesen werden, da die darin enthaltenen Contrexx spezifischen Anweisungen ungültig sind!";
+$_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "Diese Funktion setzt voraus, dass das System auf einem Apache Webserver betrieben wird. Zudem wird das Apache Modul mod_rewrite verwendet. Es konnte nicht sichergestellt werden, ob dieser Server diese Anforderungen erfüllt!";
 ?>
