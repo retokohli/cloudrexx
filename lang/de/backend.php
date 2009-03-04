@@ -1006,4 +1006,6 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
+$_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'] = "Virtuelle Sprachverzeichnisse verwenden";
+$_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'] = "Diese Eigenschaft bewirkt, dass jede Frontend Sprache in ein virtuelles Unterverzeichnis (Sprachverzeichnis) gesetzt wird.<br />Der Inhalt der Sprache %s wird dann z.B. über die URL %s angesprochen.<br />Das Verwenden von Virtuellen Sprachverzeichnisse erlaubt es Suchmaschinen jede Sprache Ihrer Webseite in deren Suchindex aufzunehmen.";
 ?>
