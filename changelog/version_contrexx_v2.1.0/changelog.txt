@@ -15,6 +15,9 @@ Allgemein
   zeigen. Das selbe trifft auch für Bereiche zu, welche sich ausserhalb des
   Ablagepfades von Contrexx befinden.
 
+Grundeinstellungen
+- Neue Konfigurationsoption 'Virtuelle Sprachverzeichnisse verwenden'.
+
 Design-Manager
 - Es kann neu ein Design für Mobile Geräte festgelegt werden. Dies wird
   dann automatisch aktiviert, wenn ein Smartphone, PDA oder ähnliches die

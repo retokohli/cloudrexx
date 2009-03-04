@@ -30,7 +30,7 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
  */
 class ContentWorkflow {
     var $strPageTitle;
-    var $strErrMessage = '';
+    var $strErrMessage = array();
     var $strOkMessage = '';
 
     /**
@@ -58,7 +58,7 @@ class ContentWorkflow {
                                 ');
 
         if ($_CONFIG['contentHistoryStatus'] == 'off') {
-            $this->strErrMessage = $_CORELANG['TXT_WORKFLOW_NOT_ACTIVE'];
+            $this->strErrMessage[] = $_CORELANG['TXT_WORKFLOW_NOT_ACTIVE'];
         }
     }
 
@@ -129,7 +129,7 @@ class ContentWorkflow {
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->strPageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
-            'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage
+            'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
     }
 
@@ -571,7 +571,9 @@ class ContentWorkflow {
             $objCache->writeCacheablePagesFile();
 
             //write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
 
             $this->strOkMessage = $_CORELANG['TXT_HISTORY_RESTORED'];
         }
@@ -621,7 +623,7 @@ class ContentWorkflow {
                 $this->strOkMessage = $_CORELANG['TXT_HISTORY_DELETE_DONE'];
             } else {
                 //this history-entry is currently active, don't allow to delete
-                $this->strErrMessage = $_CORELANG['TXT_HISTORY_DELETE_ACTIVE'];
+                $this->strErrMessage[] = $_CORELANG['TXT_HISTORY_DELETE_ACTIVE'];
             }
         }
 
@@ -789,7 +791,9 @@ class ContentWorkflow {
             $objCache->writeCacheablePagesFile();
 
             //write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
         }
     }
 
