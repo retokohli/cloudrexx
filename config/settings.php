@@ -12,20 +12,25 @@
 $_CONFIG['cacheEnabled']             = "off";
 $_CONFIG['cacheExpiration']          = 86400;
 $_CONFIG['contentHistoryStatus']     = "on";
-$_CONFIG['coreAdminEmail']           = "reto.kohli@comvation.com";
-$_CONFIG['coreAdminName']            = "Reto Kohli";
-$_CONFIG['coreGlobalPageTitle']      = "Contrexx Development";
-$_CONFIG['coreIdsStatus']            = "on";
+$_CONFIG['coreAdminEmail']           = "info@example.com";
+$_CONFIG['coreAdminName']            = "Administrator";
+$_CONFIG['coreGlobalPageTitle']      = "Contrexx Demo";
+$_CONFIG['coreIdsStatus']            = "off";
+$_CONFIG['coreListProtectedPages']   = "on";
 $_CONFIG['corePagingLimit']          = 30;
-$_CONFIG['dnsServer']                = "contrexxhosting.com";
-$_CONFIG['domainUrl']                = "localhost";
-$_CONFIG['googleSitemapStatus']      = "off";
-$_CONFIG['langDebugIds']             = "off";
-$_CONFIG['lastAccessId']             = 50;
-$_CONFIG['searchVisibleContentOnly'] = "off";
+$_CONFIG['coreSmtpServer']           = 0;
+$_CONFIG['dnsServer']                = "ns1.contrexxhosting.com";
+$_CONFIG['domainUrl']                = "pkg.contrexxlabs.com";
+$_CONFIG['frontendEditingStatus']    = "on";
+$_CONFIG['googleMapsAPIKey']         = "";
+$_CONFIG['languageDetection']        = "off";
+$_CONFIG['lastAccessId']             = 52;
+$_CONFIG['searchVisibleContentOnly'] = "on";
 $_CONFIG['sessionLifeTime']          = 3600;
 $_CONFIG['spamKeywords']             = "sex, viagra";
 $_CONFIG['systemStatus']             = "on";
+$_CONFIG['useVirtualLanguagePath']   = "off";
+$_CONFIG['xmlSitemapStatus']         = "on";
 
 /**
 * -------------------------------------------------------------------------
@@ -39,7 +44,7 @@ $_CONFIG['searchDescriptionLength']  = 150;
 * Contact
 * -------------------------------------------------------------------------
 */
-$_CONFIG['contactFormEmail']         = "reto.kohli@comvation.com";
+$_CONFIG['contactFormEmail']         = "info@example.com";
 
 /**
 * -------------------------------------------------------------------------
@@ -61,7 +66,7 @@ $_CONFIG['newsTeasersStatus']        = 1;
 * Directory
 * -------------------------------------------------------------------------
 */
-$_CONFIG['directoryHomeContent']     = 1;
+$_CONFIG['directoryHomeContent']     = 0;
 
 /**
 * -------------------------------------------------------------------------
@@ -69,6 +74,7 @@ $_CONFIG['directoryHomeContent']     = 1;
 * -------------------------------------------------------------------------
 */
 $_CONFIG['forumHomeContent']         = 1;
+$_CONFIG['forumTagContent']          = 0;
 
 /**
 * -------------------------------------------------------------------------
@@ -77,7 +83,7 @@ $_CONFIG['forumHomeContent']         = 1;
 */
 $_CONFIG['calendardefaultcount']     = 16;
 $_CONFIG['calendarheadlines']        = 1;
-$_CONFIG['calendarheadlinescat']     = "0";
+$_CONFIG['calendarheadlinescat']     = 0;
 $_CONFIG['calendarheadlinescount']   = 5;
 
 /**
@@ -85,21 +91,35 @@ $_CONFIG['calendarheadlinescount']   = 5;
 * Feed
 * -------------------------------------------------------------------------
 */
-$_CONFIG['feedNewsMLStatus']         = 1;
+$_CONFIG['feedNewsMLStatus']         = 0;
 
 /**
 * -------------------------------------------------------------------------
-* Banner
+* 
 * -------------------------------------------------------------------------
 */
-$_CONFIG['bannerStatus']             = 1;
+$_CONFIG['bannerStatus']             = 0;
+
+/**
+* -------------------------------------------------------------------------
+* Podcast
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['podcastHomeContent']       = 1;
 
 /**
 * -------------------------------------------------------------------------
 * Alias
 * -------------------------------------------------------------------------
 */
-$_CONFIG['aliasStatus']              = 1;
+$_CONFIG['aliasStatus']              = 0;
+
+/**
+* -------------------------------------------------------------------------
+* Data
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['dataUseModule']            = 1;
 
 /**
 * -------------------------------------------------------------------------
@@ -107,5 +127,12 @@ $_CONFIG['aliasStatus']              = 1;
 * -------------------------------------------------------------------------
 */
 $_CONFIG['fileUploaderStatus']       = "off";
+
+/**
+* -------------------------------------------------------------------------
+* Knowledge
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['useKnowledgePlaceholders'] = 1;
 
 ?>
