@@ -235,7 +235,8 @@ class u2u extends u2uLibrary
                                           'PRIVATE_MESSAGE_TEXT'         => $messageItem["message"],
                                           'PRIVATE_MESSAGE_ID'           => $MsgID,
                                           'MESSAGE_AUTHOR_NAME'          => $messageItem["username"],
-                                          'MESSAGE_SENT_DATE'            => $messageItem["date_time"]
+                                          'MESSAGE_SENT_DATE'            => $messageItem["date_time"],
+					                      'ROW_CLASS'	 				=> $i % 2 == 0 ? "row1" : "row2",
 
                  ));
             $this->_objTpl->parse('privatemessage');
@@ -243,7 +244,7 @@ class u2u extends u2uLibrary
                 $this->_objTpl->setVariable('INBOX_PAGING',$this->paginationCount);
            }
 
-
+            $i++;
 	   }
 
        $this->_objTpl->setVariable(array(
@@ -409,11 +410,15 @@ class u2u extends u2uLibrary
                            'TXT_U2U_BUDDY_SITE'             =>  $userSite['website'],
                            'TXT_U2U_HOME_SITE'              =>  $_ARRAYLANG['TXT_U2U_HOME_SITE'],
                            'TXT_SEND_PRIVATE_MESSAGE'       =>  $_ARRAYLANG['TXT_SEND_PRIVATE_MESSAGE'],
-                           'TXT_U2U_IMG_PATH'               =>  $imgPath
+                           'TXT_U2U_IMG_PATH'               =>  $imgPath,
+					       'ROW_CLASS'	 				=> $i % 2 == 0 ? "row1" : "row2",
 
 
                                                    ));
+
+
                 $this->_objTpl->parse('address_list');
+                $i++;
 
       }
 
