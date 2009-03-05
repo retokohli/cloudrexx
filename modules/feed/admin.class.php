@@ -3,7 +3,7 @@
 /**
  * Feed
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Paulo M. Santos <pmsantos@astalavista.net>
+ * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_feed
  * @todo        Edit PHP DocBlocks!
@@ -194,24 +194,19 @@ class feedManager extends feedLibrary
             $this->_newsMLOverview();
             break;
         }
-
-
     }
 
+
     /**
-    * NewsML delete category
-    *
-    * Delete a newsML category
-    *
-    * @access private
-    * @global object $_ARRAYLANG
-    */
+     * Delete a newsML category
+     * @access private
+     * @global object $_ARRAYLANG
+     */
     function _newsMLDeleteCategory()
     {
         global $_ARRAYLANG;
 
         $categoryId = isset($_GET['categoryId']) ? intval($_GET['categoryId']) : 0;
-
         if ($categoryId != 0) {
             if ($this->_objNewsML->deleteCategory($categoryId)) {
                 $_SESSION['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_SUCCESSFULLY_DELETED']."<br />";
@@ -222,6 +217,7 @@ class feedManager extends feedLibrary
             $_SESSION['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
         }
     }
+
 
     function _newsMLDeleteCategories()
     {
@@ -249,6 +245,7 @@ class feedManager extends feedLibrary
             $this->_objNewsML->initCategories();
         }
     }
+
 
     function _newsMLEditCategory()
     {
@@ -287,7 +284,6 @@ class feedManager extends feedLibrary
         ));
 
         $categoryId = intval($_REQUEST['categoryId']);
-
         if (isset($this->_objNewsML->arrCategories[$categoryId])) {
             $this->_objTpl->setVariable(array(
                 'FEED_NEWSML_CATEGORY_ID' => $categoryId,
@@ -316,13 +312,10 @@ class feedManager extends feedLibrary
     }
 
     /**
-    * Delete NewsML document
-    *
-    * Delete a NewsML document
-    *
-    * @access private
-    * @global $_ARRAYLANG
-    */
+     * Delete a NewsML document
+     * @access private
+     * @global $_ARRAYLANG
+     */
     function _newsMLDeleteDocument()
     {
         global $_ARRAYLANG;
@@ -444,14 +437,11 @@ class feedManager extends feedLibrary
     }
 
     /**
-    * NewsML save category
-    *
-    * Add or update a newsML category
-    *
-    * @access private
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    */
+     * Add or update a newsML category
+     * @access private
+     * @global object $objDatabase
+     * @global array $_ARRAYLANG
+     */
     function _newsMLSaveCategory()
     {
         global $_ARRAYLANG;
@@ -486,13 +476,10 @@ class feedManager extends feedLibrary
     }
 
     /**
-    * NewsML overview
-    *
-    * Show NewsML categories page
-    *
-    * @access private
-    * @global object $objDatabase
-    */
+     * Show NewsML categories page
+     * @access private
+     * @global object $objDatabase
+     */
     function _newsMLOverview()
     {
         global $_ARRAYLANG;
@@ -545,6 +532,7 @@ class feedManager extends feedLibrary
             $this->_objTpl->parse('feed_newsml_list');
         }
     }
+
 
     function showNews()
     {
