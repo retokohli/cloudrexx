@@ -205,9 +205,11 @@ class MemberDirLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        $dirid_where = $dirid ? "WHERE dirid = '$dirid'" : '';
+
         $query = "SELECT field, dirid, name, active FROM ".DBPREFIX."module_memberdir_name
-                  WHERE dirid = '$dirid'
-                  ORDER BY field ASC";
+                $dirid_where
+                ORDER BY field ASC";
         $objResult = $objDatabase->Execute($query);
 
         $names = $_ARRAYLANG['TXT_FIELD_DEFAULT_NAMES'];
