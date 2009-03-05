@@ -1,11 +1,12 @@
-<?PHP
+<?php
+
 /**
  * Banner management
  *
  * This module will get all the news pages
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @version 1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core_module_banner
  * @todo        Edit PHP DocBlocks!
@@ -16,26 +17,15 @@ require_once ASCMS_CORE_MODULE_PATH . '/banner/bannerLib.class.php';
 /**
  * Banner
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @access public
- * @version 1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core_module_banner
  */
 class Banner extends bannerLibrary
 {
-    var $arrGroups = array();
-
-    /**
-     * Constructor
-     *
-     * @param  string
-     * @access public
-     */
-    function Banner()
-    {
-        $this->__construct();
-    }
+    public $arrGroups = array();
 
     /**
      * PHP5 constructor
@@ -68,7 +58,6 @@ class Banner extends bannerLibrary
             }
         }
     }
-
 
 
     /**
@@ -208,5 +197,7 @@ function bannerClicks(bannerId)
 //-->
 </script>";
     }
+
 }
+
 ?>

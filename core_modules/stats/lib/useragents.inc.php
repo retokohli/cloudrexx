@@ -1,12 +1,12 @@
 <?php
+
 /**
  * Defines browser identification regular expressions and browser names
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @version 1.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0
  * @package     contrexx
  * @subpackage  core_module_stats
- * @todo        Edit PHP DocBlocks!
  */
 
 $arrBrowserRegExps = array(
@@ -26,4 +26,5 @@ $arrBrowserNames = array(
     'MSIE'  => 'Internet Explorer',
     'Netscape'  => 'Netscape Navigator',
 );
+
 ?>

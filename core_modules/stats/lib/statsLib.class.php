@@ -19,61 +19,42 @@
  */
 class statsLibrary
 {
-    var $totalVisitors = 0;
-    var $totalRequests = 0;
+    public $totalVisitors = 0;
+    public $totalRequests = 0;
+    public $arrBrowsers = array();
+    public $browserSum = 0;
+    public $arrSupportJavaScript = array();
+    public $supportJavaScriptSum = 0;
+    public $arrOperatingSystems = array();
+    public $operatingSystemsSum = 0;
+    public $arrScreenResolutions = array();
+    public $screenResolutionSum = 0;
+    public $arrColourDepths = array();
+    public $colourDepthSum = 0;
+    public $arrMostViewedPages = array();
+    public $mostViewedPagesSum = 0;
+    public $arrIndexedPages = array();
+    public $arrSpiders = array();
+    public $arrVisitorsDetails = array();
+    public $arrVisitors = array();
+    public $arrRequests = array();
+    public $arrLastReferer = array();
+    public $arrTopReferer = array();
+    public $arrHostnames = array();
+    public $hostnamesSum = 0;
+    public $arrCountries = array();
+    public $countriesSum = 0;
+    public $arrCountryNames = array();
+    public $arrConfig = array();
+    public $arrSearchTerms = array();
+    public $pagingLimit = "";
+    public $pagingLimitVisitorDetails = "";
+    public $spiderAgent = false;
+    public $arrClient = array();
+    public $arrProxy = array();
+    public $md5Id = 0;
+    public $currentTime = 0;
 
-    var $arrBrowsers = array();
-    var $browserSum = 0;
-
-    var $arrSupportJavaScript = array();
-    var $supportJavaScriptSum = 0;
-
-    var $arrOperatingSystems = array();
-    var $operatingSystemsSum = 0;
-
-    var $arrScreenResolutions = array();
-    var $screenResolutionSum = 0;
-
-    var $arrColourDepths = array();
-    var $colourDepthSum = 0;
-
-    var $arrMostViewedPages = array();
-    var $mostViewedPagesSum = 0;
-
-    var $arrIndexedPages = array();
-    var $arrSpiders = array();
-
-    var $arrVisitorsDetails = array();
-
-    var $arrVisitors = array();
-    var $arrRequests = array();
-
-    var $arrLastReferer = array();
-    var $arrTopReferer = array();
-
-    var $arrHostnames = array();
-    var $hostnamesSum = 0;
-    var $arrCountries = array();
-    var $countriesSum = 0;
-    var $arrCountryNames = array();
-
-    var $arrConfig = array();
-
-    var $arrSearchTerms = array();
-
-    var $pagingLimit = "";
-    var $pagingLimitVisitorDetails = "";
-
-    var $spiderAgent = false;
-
-    var $arrClient = array();
-    var $arrProxy = array();
-    var $md5Id = 0;
-    var $currentTime = 0;
-
-    function statsLibrary() {
-        $this->__construct();
-    }
 
     function __construct() {
         $this->_initConfiguration();
@@ -81,13 +62,11 @@ class statsLibrary
 
 
     /**
-    * Initialize configuration
-    *
     * Initialize the configuration for the counter and statistics
-    *
     * @global    ADONewConnection
     */
-    function _initConfiguration() {
+    function _initConfiguration()
+    {
         global $objDatabase;
 
         $query = "SELECT name, value, `status` FROM ".DBPREFIX."stats_config";
@@ -105,15 +84,13 @@ class statsLibrary
 
 
     /**
-    * Get counter tag
-    *
     * Creates the tag to call the counter
-    *
     * @access   public
     * @global   integer $pageId
     * @return   string  $counterTag The counter tag
     */
-    function getCounterTag() {
+    function getCounterTag()
+    {
         global $pageId;
 
         $searchTerm = "";
@@ -150,17 +127,17 @@ class statsLibrary
         return $counterTag;
     }
 
+
     /**
-    * Check for spider
-    *
     * Check if the user agent is a spider
     */
-    function checkForSpider() {
+    function checkForSpider()
+    {
         if ($this->arrConfig['count_spiders']['status']) {
+            $arrRobots = array();
             require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php';
             $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
              $spiderAgent = false;
-
             foreach ($arrRobots as $spider) {
                 $spiderName = trim($spider);
                 if (preg_match("=".$spiderName."=",$useragent)) {
@@ -168,18 +145,15 @@ class statsLibrary
                     break;
                 }
             }
-
             if ($spiderAgent) {
                 $this->_countSpider($useragent);
             }
         }
     }
 
+
     /**
-    * count spider visits
-    *
     * count every spider visit
-    *
     * @global   ADONewConnection
     * @global   integer
     * @return   boolean  result
@@ -256,7 +230,9 @@ class statsLibrary
     * and not in the uri
     *
     */
-    function _getRequestedUrl() {
+    function _getRequestedUrl()
+    {
+        $arrBannedWords = array();
         require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
 
         $uriString="";
@@ -274,7 +250,7 @@ class statsLibrary
             }
         }
 
-        if (count($arrBannedWords)>0) {
+        if (count($arrBannedWords)) {
             foreach ($arrBannedWords as $blockElem) {
                 $blockElem = trim($blockElem);
                 //some blocked words in get-Vars?
@@ -462,7 +438,9 @@ class statsLibrary
         }
     }
 
-    function _initStatisticsMonths() {
+
+    function _initStatisticsMonths()
+    {
         global $objDatabase;
 
         // remove outdated visitor and request entries in the summary

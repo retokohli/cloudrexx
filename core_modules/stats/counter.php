@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Statistics
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -18,13 +19,16 @@ ini_set('display_errors', 0);
 require_once dirname(__FILE__).'/../../config/configuration.php';
 
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
+
+$arrBannedWords = array();
+$arrRobots = array();
 require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php';
 require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/referers.inc.php';
 require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
 
 $objDb = ADONewConnection($_DBCONFIG['dbType']); # eg 'mysql' or 'postgres'
 $objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
-$counter = &new counter($arrRobots,$arrBannedWords);
+$counter = new counter($arrRobots, $arrBannedWords);
 
 /**
  * Counter
@@ -39,36 +43,36 @@ $counter = &new counter($arrRobots,$arrBannedWords);
  */
 class counter
 {
-    var $currentTime = 0;
-    var $md5Id = 0;
-    var $requestedUrl = "";
+    public $currentTime = 0;
+    public $md5Id = 0;
+    public $requestedUrl = "";
 
-    var $spiderAgent = false;
-    var $totUsersMonth=0;
-    var $totPageViewsMonth=0;
+    public $spiderAgent = false;
+    public $totUsersMonth=0;
+    public $totPageViewsMonth=0;
 
-    var $screenResolution = "";
-    var $colorDepth = 0;
-    var $javascriptEnabled = 0;
-    var $pageId = 0;
+    public $screenResolution = "";
+    public $colorDepth = 0;
+    public $javascriptEnabled = 0;
+    public $pageId = 0;
 
-    var $isNewVisitor = false;
+    public $isNewVisitor = false;
 
-    var $arrBannedWords = array();
-    var $arrSpider = array();
+    public $arrBannedWords = array();
+    public $arrSpider = array();
 
-    var $arrConfig = array();
-    var $arrClient = array();
-    var $arrProxy = array();
+    public $arrConfig = array();
+    public $arrClient = array();
+    public $arrProxy = array();
 
-    var $currentDate = 0;
+    public $currentDate = 0;
 
-    var $referer = "";
-    var $refererBlocked = false;
-    var $externalSearchTerm = "";
+    public $referer = "";
+    public $refererBlocked = false;
+    public $externalSearchTerm = "";
 
-    var $searchTerm = "";
-    var $mobilePhone = "";
+    public $searchTerm = "";
+    public $mobilePhone = "";
 
     /**
     * Constructor
@@ -176,7 +180,9 @@ class counter
         $query = "SELECT `name`, `value`, `status` FROM `".DBPREFIX."stats_config`";
         $result = $objDb->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            while (true) {
+                $arrResult = $result->FetchRow();
+                if (empty($arrResult)) break;
                 $this->arrConfig[$arrResult['name']] = array('value' => $arrResult['value'], 'status' => $arrResult['status']);
             }
         }
@@ -366,9 +372,11 @@ class counter
     * @param    string    $referer
     * @global    array    $arrReferers
     */
-    function _getExternalSearchQuery($referer) {
+    function _getExternalSearchQuery($referer)
+    {
         global $arrReferers;
 
+        $arrMatches = array();
         foreach ($arrReferers as $refererRegExp) {
             if (preg_match($refererRegExp, $referer, $arrMatches)) {
                 $this->externalSearchTerm = addslashes(urldecode($arrMatches[1]));
@@ -458,7 +466,9 @@ class counter
     function _checkMobilePhone() {
         // check for mobilephone
         $fp = fopen('lib/mobile-useragents.inc',"r");
-        while ($line = fgets($fp)) {
+        while (true) {
+        	$line = fgets($fp);
+        	if ($line === false) break;
             $arrUserAgent = explode("\t",$line);
             if (!strcasecmp(trim($this->arrClient['useragent']),trim($arrUserAgent[2]))) {
                 $this->mobilePhone = $arrUserAgent[0].' '.$arrUserAgent[1];
@@ -495,11 +505,14 @@ class counter
     *
     * @return    string    browser name
     */
-    function _getBrowser(){
+    function _getBrowser()
+    {
         $userAgent = $this->arrClient['useragent'];
-
+		$arrBrowserRegExps = array();
+		$arrBrowserNames = array();
+		$arrBrowser = array();
         include('lib/useragents.inc.php');
-        if (isset($arrBrowserRegExps)) {
+        if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
                 if (preg_match($browserRegExp, $userAgent, $arrBrowser)) {
                     if (isset($arrBrowserNames[$arrBrowser[1]])) {
@@ -537,16 +550,15 @@ class counter
     * Get operating system name
     *
     * Read out the operating sytem name from the user agent and returns it
-    *
     * @return    string    operating system name
     */
-    function _getOperatingSystem(){
-        $operationgSystem = "";
+    function _getOperatingSystem()
+    {
+        $operationgSystem = '';
         $userAgent = $this->arrClient['useragent'];
-
+        $arrOperatingSystems = array();
         include('lib/operatingsystems.inc.php');
-
-        if (isset($arrOperatingSystems)) {
+        if (!empty($arrOperatingSystems)) {
             foreach ($arrOperatingSystems as $arrOperatingSystem) {
                 if (preg_match($arrOperatingSystem['regExp'], $userAgent)) {
                     $operationgSystem = $arrOperatingSystem['name'];
@@ -675,7 +687,9 @@ class counter
                       OR (`type` = 'year' AND `timestamp` >= '".$arrStats['year']['timestamp']."')";
         $result = $objDb->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            while (true) {
+            	$arrResult = $result->FetchRow();
+            	if (empty($arrResult)) break;
                 $arrStats[$arrResult['type']]['id'] = $arrResult['id'];
             }
         }

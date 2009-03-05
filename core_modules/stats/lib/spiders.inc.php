@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Defines spiders and robots
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @version 1.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0
  * @package     contrexx
  * @subpackage  core_module_stats
  * @todo        Edit PHP DocBlocks!
@@ -18,4 +19,5 @@ $arrRobots=array("google", "msn","agent","bot","crawl","find","seek","seer","sea
 "nico","roach.smo.av.com-1.0","robozilla","rotondo","scooter","scoutAbout",
 "slurp","toutatis","validator","webclipping.com","webrank","wget","whizBang",
 "galaxy","webwombat","yandex","zeus","zippy","zyborg","Scooter","WSB WebCrawler","Xenu Link Sleuth","Acoon","Lycos");
+
 ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Defines referrers
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -10,7 +11,8 @@
  */
 
 $arrReferers = array(
-	'/^.*\..*\/.*[?&]q\=([^&]*)&?.*/i',
-	'/^.*yahoo\..*\/.*[?&]p\=([^&]*)&?.*/i'
+    '/^.*\..*\/.*[?&]q\=([^&]*)&?.*/i',
+    '/^.*yahoo\..*\/.*[?&]p\=([^&]*)&?.*/i'
 );
+
 ?>
