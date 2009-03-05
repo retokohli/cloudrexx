@@ -1012,4 +1012,6 @@ $_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Das XML Sitemap %s konnte ni
 $_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "Die Datei %s ist nicht beschreibbar und kann daher nicht aktualisiert werden! Setzen Sie auf diese Datei Schreibzugriff, damit das System korrekt funktioniert!";
 $_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Die HtAccess Datei %s konnte nicht ausgelesen werden, da die darin enthaltenen Contrexx spezifischen Anweisungen ungültig sind!";
 $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "Diese Funktion setzt voraus, dass das System auf einem Apache Webserver betrieben wird. Zudem wird das Apache Modul mod_rewrite verwendet. Es konnte nicht sichergestellt werden, ob dieser Server diese Anforderungen erfüllt!";
+$_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Fehler:  Konnte keine Informationen über vorhandene Tabellen lesen";
+$_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Verzeichnis: '%1\$s'";
 ?>

@@ -1015,4 +1015,6 @@ $_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Unable to update the XML sit
 $_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
 $_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
 $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "This function depends on a system running on an Apache web server. As well does it require the Apache module mod_rewrite. The system was unable to determine if those requirements are fulfilled!";
+$_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Fehler:  Konnte keine Informationen über vorhandene Tabellen lesen";
+$_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Verzeichnis: '%1\$s'";
 ?>
