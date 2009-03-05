@@ -10,13 +10,12 @@
  * @version       $Id:    Exp $
  * @package     contrexx
  * @subpackage  admin
- * @todo        Edit PHP DocBlocks!
  */
 
 include_once('../lib/DBG.php');
 /**
  * Debug level, see lib/DBG.php
- *
+ *   DBG_NONE            - Turn debugging off
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
@@ -24,7 +23,8 @@ include_once('../lib/DBG.php');
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
  */
-define('_DEBUG', false);
+define('_DEBUG', DBG_NONE); // i.e. DBG_PHP | DBG_ADODB
+
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
@@ -324,7 +324,7 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
             exit;
     }
 }
-if(isset($_POST['redirect']) && preg_match("/.*\.php.*/",($_POST['redirect']))) {
+if (isset($_POST['redirect']) && preg_match('/\.php/',($_POST['redirect']))) {
     $redirect = $_POST['redirect'];
     header("Location: $redirect");
 }
