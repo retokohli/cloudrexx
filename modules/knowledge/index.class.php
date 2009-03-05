@@ -458,56 +458,53 @@ class Knowledge extends KnowledgeLibrary
 	    
 	    $searchterm = !empty($_GET['term']) ? $_GET['term'] : "";
 	    
-	    
-	    if (empty($searchterm)) {
-	        return;
-	    }
-	    
-	    $search = new searchKnowledge();
-	    $results = $search->search($searchterm);
-	    
-	    try {
-	        $this->articles->readArticles();
-	    } catch (DatabaseError $e) {
-	        // nothing yet
-	    }
-	    
-	    //$this->parseArticleList($results, $_ARRAYLANG['TXT_SEARCH_RESULTS']);
-	    // this can currently not be done with the parseArticleList function because the
-	    // search engine only returns ids and not the whole content array
-	    foreach ($results as $article) {
-	        $articleid = $article['id'];
-            $article = $this->articles->articles[$articleid];
-            if ($article['active']) {
-	           $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
-	           $amount = $article['votes'];
-    	       $this->tpl->setVariable(array(
-    	           "ARTICLE_ID"    => $articleid,
-    	           "QUESTION"      => $article['content'][$_LANGID]['question'],
-    	           "ANSWER"        => $article['content'][$_LANGID]['answer'],
-            	   "AVERAGE"       => $average,
-            	   "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
-            	   "AMOUNT_OF_RATING" => $amount,
-            	   "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
-	               "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
-            	   "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
-        	       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
-        	       "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
-            	   "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
-            	   "MAX_RATING"    => $this->settings->get("max_rating"),
-            	   "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
-    	           "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
-    	       ));
-    	            
-    	       try {
-    	           $tags = $this->tags->getByArticle($articleid, $_LANGID);
-    	       } catch (DatabaseError $e) {
-    	               // nothing yet
-    	       }
-    	            
-    	       $this->parseTags($tags);
-    	            
-    	       $this->tpl->parse("article");
+        if (!empty($searchterm)) {
+            $search = new searchKnowledge();
+            $results = $search->search($searchterm);
+
+            try {
+                $this->articles->readArticles();
+            } catch (DatabaseError $e) {
+                // nothing yet
+            }
+            
+            //$this->parseArticleList($results, $_ARRAYLANG['TXT_SEARCH_RESULTS']);
+            // this can currently not be done with the parseArticleList function because the
+            // search engine only returns ids and not the whole content array
+            foreach ($results as $article) {
+                $articleid = $article['id'];
+                $article = $this->articles->articles[$articleid];
+                if ($article['active']) {
+                   $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
+                   $amount = $article['votes'];
+                   $this->tpl->setVariable(array(
+                       "ARTICLE_ID"    => $articleid,
+                       "QUESTION"      => $article['content'][$_LANGID]['question'],
+                       "ANSWER"        => $article['content'][$_LANGID]['answer'],
+                       "AVERAGE"       => $average,
+                       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
+                       "AMOUNT_OF_RATING" => $amount,
+                       "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
+                       "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
+                       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
+                       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
+                       "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
+                       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
+                       "MAX_RATING"    => $this->settings->get("max_rating"),
+                       "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
+                       "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
+                   ));
+                        
+                   try {
+                       $tags = $this->tags->getByArticle($articleid, $_LANGID);
+                   } catch (DatabaseError $e) {
+                           // nothing yet
+                   }
+                        
+                   $this->parseTags($tags);
+                        
+                   $this->tpl->parse("article");
+                }
             }
         }
         
