@@ -177,24 +177,25 @@ class DataLibrary
 		//Fill array if possible
 		foreach ($arrReturn as $intCategoryId => $arrLanguages) {
 			foreach ($arrLanguages as $intLanguageId => $arrLanguageTranslation) {
-				$objResult = $objDatabase->Execute('SELECT		is_active,
-																name,
-																parent_id,
-																ph.placeholder,
-																categories.active,
-																categories.cmd,
-																categories.action,
-																categories.sort,
-																categories.box_width,
-																categories.box_height,
-																categories.template
-													FROM		'.DBPREFIX.'module_data_categories as categories
-                                                    LEFT JOIN  '.DBPREFIX.'module_data_placeholders    AS ph
-                                                    ON          categories.category_id = ph.ref_id
-													WHERE		category_id='.$intCategoryId.' AND
-																lang_id='.$intLanguageId.'
-													LIMIT		1
-												');
+                $query = '  SELECT is_active,
+                                        name,
+                                        parent_id,
+                                        ph.placeholder,
+                                        categories.active,
+                                        categories.cmd,
+                                        categories.action,
+                                        categories.sort,
+                                        categories.box_width,
+                                        categories.box_height,
+                                        categories.template
+                            FROM		'.DBPREFIX.'module_data_categories as categories
+                            LEFT JOIN  '.DBPREFIX.'module_data_placeholders    AS ph
+                            ON          categories.category_id = ph.ref_id
+                            WHERE		category_id='.$intCategoryId.' AND
+                                        lang_id='.$intLanguageId.'
+                            AND         ph.type = "cat"
+                            LIMIT		1';
+				$objResult = $objDatabase->Execute($query);
 
 				if ($objResult->RecordCount() > 0) {
 					$arrReturn[$intCategoryId][$intLanguageId]['name'] = htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -256,7 +257,7 @@ class DataLibrary
 			$strLanguageJoin  = ' 	INNER JOIN	'.DBPREFIX.'module_data_messages_lang	AS dataMessagesLanguage
 									ON			dataMessages.message_id = dataMessagesLanguage.message_id
 								';
-			$strLanguageWhere = '	WHERE 	dataMessagesLanguage.lang_id='.$intLanguageId.' AND
+			$strLanguageWhere = '	AND 	dataMessagesLanguage.lang_id='.$intLanguageId.' AND
 											dataMessagesLanguage.is_active="1"
 								';
 
@@ -289,6 +290,7 @@ class DataLibrary
                     LEFT JOIN  ".DBPREFIX."module_data_placeholders    AS ph
                     ON          dataMessages.message_id = ph.ref_id
                     ".$strLanguageJoin."
+                    WHERE ph.type = 'entry'
                     ".$strLanguageWhere."
                     ORDER BY	sort ASC
                     ".$limit;
