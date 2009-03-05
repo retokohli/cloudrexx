@@ -39,17 +39,21 @@ if(ini_get('allow_url_fopen') != 1){
  * @package     contrexx
  * @subpackage  module_feed
  */
-class feed extends feedLibrary{
-    var $_objTpl;
-    var $pageTitle;
-    var $statusMessage;
-    var $feedpath;
+class feed extends feedLibrary
+{
+	/**
+	 * @var    HTML_Template_Sigma
+	 */
+    public $_objTpl;
+    public $pageTitle;
+    public $statusMessage;
+    public $feedpath;
 
     // CONSTRUCTOR
-    function __construct($pageContent) {
-        global  $_ARRAYLANG;
+    function __construct($pageContent)
+    {
         $this->pageContent = $pageContent;
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -283,7 +287,7 @@ class feed extends feedLibrary{
             $filename = $this->feedpath.$objResult->fields['filename'];
 
             //rss class
-            $rss =& new XML_RSS($filename);
+            $rss = new XML_RSS($filename);
             $rss->parse();
             //channel info
             $out_title = strip_tags($rss->channel['title']);

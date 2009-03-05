@@ -27,20 +27,19 @@ if (eregi('feedLib.class.php', $_SERVER['PHP_SELF']))
  */
 class feedLibrary
 {
-    var $_objTpl;
-    var $pageTitle;
-    var $statusMessage;
-    var $feedpath;
+    public $_objTpl;
+    public $pageTitle;
+    public $statusMessage;
+    public $feedpath;
 
     function __construct()
     {
     }
 
 
-    //FUNC refresh
     function showNewsRefresh($id, $time, $path)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase;
 
         //delete old #01
         $query = "SELECT link,
@@ -57,7 +56,7 @@ class feedLibrary
             @copy($old_link, $path.$filename);
 
             //rss class
-            $rss =& new XML_RSS($path.$filename);
+            $rss = new XML_RSS($path.$filename);
             $rss->parse();
             $content = '';
 
