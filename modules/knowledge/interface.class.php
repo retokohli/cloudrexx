@@ -92,7 +92,7 @@ class KnowledgeInterface extends KnowledgeLibrary
                 $question = substr($question, 0, $max_length-3)."...";
             }
             $objTemplate->setVariable(array(
-                "URL"        => "index.php?section=knowledge&cmd=article&id=".$key,
+                "URL"        => "index.php?section=knowledge&amp;cmd=article&amp;id=".$key,
                 "ARTICLE"   => $question
             ));
             $objTemplate->parse("article");
@@ -129,7 +129,7 @@ class KnowledgeInterface extends KnowledgeLibrary
                 $question = substr($question, 0, $max_length-3)."...";
             }
             $objTemplate->setVariable(array(
-                "URL"       => "index.php?section=knowledge&cmd=article&id=".$key,
+                "URL"       => "index.php?section=knowledge&amp;cmd=article&amp;id=".$key,
                 "ARTICLE"   => $question
             ));
             $objTemplate->parse("article");
