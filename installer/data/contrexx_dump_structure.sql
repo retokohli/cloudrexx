@@ -1195,7 +1195,7 @@ CREATE TABLE `contrexx_module_feed_newsml_categories` (
   `showPics` enum('0','1') NOT NULL default '1',
   `auto_update` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_feed_newsml_documents` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `publicIdentifier` varchar(255) NOT NULL default '',
