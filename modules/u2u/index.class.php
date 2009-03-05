@@ -295,9 +295,11 @@ class u2u extends u2uLibrary
                                           'PRIVATE_MESSAGE_TEXT'         => $messageItem["message"],
                                           'PRIVATE_MESSAGE_ID'           => $MsgID,
                                           'MESSAGE_AUTHOR_NAME'          => $messageItem["username"],
-                                          'MESSAGE_SENT_DATE'            => $messageItem["date_time"]
+                                          'MESSAGE_SENT_DATE'            => $messageItem["date_time"],
+					       'ROW_CLASS'	 				=> $i % 2 == 0 ? "row1" : "row2",
 
                                        ));
+            $i++;
             $this->_objTpl->parse('privatemessage');
        }
 
