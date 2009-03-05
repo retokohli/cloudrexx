@@ -23,31 +23,30 @@ include_once('../lib/DBG.php');
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
  */
-define('_DEBUG', DBG_NONE); // i.e. DBG_PHP | DBG_ADODB
+define('_DEBUG', DBG_PHP | DBG_ADODB);
 
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
 if (_DEBUG) {
-    $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP)           == 0 ? false : true;
-    $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB)         == 0 ? false : true;
-    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE)   == 0 ? false : true;
-    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE)      == 0 ? false : true;
-    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP)   == 0 ? false : true;
-
-    if ($_DBG['dbgLogFirePHP'])  DBG::enable_firephp();
-    if ($_DBG['dbgLogFile']   )  DBG::setup('dbg.log', 'w');
+// These globals are both unused and unnecessary.  Please use the constants.
+//    $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP         ? true : false);
+//    $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB       ? true : false);
+//    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE ? true : false);
+//    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE    ? true : false);
+//    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP ? true : false);
+    if (_DEBUG & DBG_LOG_FIREPHP) DBG::enable_firephp();
+    if (_DEBUG & DBG_LOG_FILE)    DBG::setup('dbg.log', 'w');
     DBG::enable_all();
 }
 
-if (!empty($_DBG['dbgPHP']) && $_DBG['dbgPHP']) {
+if (_DEBUG & DBG_PHP) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
-}else{
+} else {
     error_reporting(0);
     ini_set('display_errors', 0);
 }
-
 
 
 $startTime = explode(' ', microtime());
@@ -94,9 +93,9 @@ if ($objDatabase === false) {
     die('Database error: '.$strErrMessage);
 }
 
-if($_DBG['dbgADODBTrace']) {
+if (_DEBUG & DBG_ADODB_TRACE) {
     $objDatabase->debug = 99;
-} elseif ($_DBG['dbgADODB']) {
+} elseif (_DEBUG & DBG_ADODB) {
     $objDatabase->debug = 1;
 } else {
     $objDatabase->debug = 0;

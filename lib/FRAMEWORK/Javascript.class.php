@@ -1,10 +1,21 @@
 <?php
 
 /**
- * JS class
- *
- * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * Javascript
+ * @author      Stefan Heinemann <sh@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_feed
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
+ * Javascript
+ * @author      Stefan Heinemann <sh@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_feed
+ * @todo        Edit PHP DocBlocks!
  */
 class JS
 {
@@ -49,7 +60,7 @@ class JS
      *          jsfiles :   array of strings containing
      *                      all needed javascript files
      *          cssfiles :  array of strings containing
-     *                      all needed css files 
+     *                      all needed css files
      *          dependencies :  array of strings containing
      *                          all dependencies in the right
      *                          order
@@ -65,7 +76,7 @@ class JS
      * @access private
      * @static
      * @var array
-     */    
+     */
     private static $available = array(
         'prototype'     => array(
             'jsfiles'       => array(
@@ -75,7 +86,7 @@ class JS
         'scriptaculous' => array(
             'jsfiles'       => array(
                 'lib/javascript/scriptaculous/scriptaculous.js'
-            ), 
+            ),
             'dependencies'  => array(
                 'prototype'
             ),
@@ -92,7 +103,7 @@ class JS
             'jsfiles'       => array(
                 'lib/javascript/shadowbox/shadowbox-prototype.js',
                 'lib/javascript/shadowbox/shadowbox.js'
-            ),    
+            ),
             'dependencies'  => array(
                 'prototype'
             ),
@@ -139,7 +150,7 @@ class JS
 
     /**
      * The language of the shadobox to be used
-     * 
+     *
      * @access private
      * @static
      * @var string
@@ -148,14 +159,13 @@ class JS
 
     /**
      * Set the offset parameter
-     *
      * @param string
      * @static
      * @access public
      */
     public static function setOffset($offset)
     {
-        if (!preg_match("/\/$/", $offset)) {
+        if (!preg_match('/\/$/', $offset)) {
             $offset .= '/';
         }
 
@@ -168,7 +178,7 @@ class JS
      * The options parameter is specific for the chosen
      * library. The library must define callback methods for
      * the options to be used.
-     * @param string $name 
+     * @param string $name
      * @param array $options
      * @access public
      * @static
@@ -182,7 +192,7 @@ class JS
                 an available javascript type';
             return false;
         }
-    
+
         $data = self::$available[$name];
         if (!empty($data['dependencies'])) {
             foreach ($data['dependencies'] as $dep) {
@@ -193,7 +203,7 @@ class JS
         if (isset($data['loadcallback']) && isset($options)) {
             self::$data['loadcallback']($options);
         }
-        
+
         if (array_search($name, self::$active) === false) {
             self::$active[] = $name;
         }
@@ -211,14 +221,14 @@ class JS
      * added.
      * @param mixed $file
      * @access public
-     * @return bool Return true if successful 
+     * @return bool Return true if successful
      * @static
      */
     public static function registerJS($file)
     {
         // $basename = strtolower(preg_replace("/\.[^\.]+$/", "", basename($file)));
         // we assume, every javascript files ends with .js
-        $basename = strtolower(str_replace(".js", "", basename($file)));         
+        $basename = strtolower(str_replace(".js", "", basename($file)));
         if (array_search($basename, array_keys(self::$available)) !== false) {
             self::activate($basename);
             return true;
@@ -230,7 +240,7 @@ class JS
         }
 
         if (array_search($file, self::$customJS) === false) {
-            
+
             self::$customJS[] = $file;
         }
 
@@ -273,7 +283,7 @@ class JS
         // try to see if this code already exists
         $code = trim($code);
         if (array_search($code, self::$customCode) === false) {
-            self::$customCode[] = $file;
+            self::$customCode[] = $code;
         }
 
         return true;
@@ -300,7 +310,7 @@ class JS
                     self::$error = "A JS entry should at least contain
                         one js file...";
                     return false;
-                } 
+                }
                 $jsfiles = array_merge($jsfiles, $data['jsfiles']);
 
                 if (!empty($data['cssfiles'])) {
@@ -391,7 +401,7 @@ class JS
     }
 
     /**
-     * Make the code section for 
+     * Make the code section for
      *
      * @access private
      * @param array $code
@@ -402,7 +412,7 @@ class JS
     {
         $retcode = "";
         if (!empty($code)) {
-            $retcode .= "<script type=\"text/javascript\">\n/* <![CDATA[ */\n"; 
+            $retcode .= "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
 
             foreach ($code as $segment) {
                 $retcode .= $segment."\n\t";
@@ -418,7 +428,7 @@ class JS
      * Callback function for the shadowbox library
      *
      * Called when the shadowbox is loaded and when parameters are given.
-     * Add the the players to a list. Set the language. 
+     * Add the the players to a list. Set the language.
      * Format of the options passed through JS::activate
      * (everything is optional):
      * array(
@@ -435,11 +445,10 @@ class JS
     private static function parseShadowBoxOptions($options = null)
     {
         $available_players = array('img', 'swf', 'flv', 'qt', 'wmp', 'iframe','html');
-        $available_langs = array('ar', 'ca', 'cs', 'de-CH', 'de-DE', 'en', 
-            'es', 'et', 'fi', 'fr', 'gl', 'he', 'id', 'is', 'it', 'ko', 
-            'my', 'nl', 'no', 'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sv', 
+        $available_langs = array('ar', 'ca', 'cs', 'de-CH', 'de-DE', 'en',
+            'es', 'et', 'fi', 'fr', 'gl', 'he', 'id', 'is', 'it', 'ko',
+            'my', 'nl', 'no', 'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sv',
             'tr', 'zh-CN', 'zh-TW');
-        $players = "";
         $options = (isset($options)) ? $options : array();
         if (!empty($options['players'])) {
             $renewed = false;
@@ -463,14 +472,14 @@ class JS
         if (!empty($options['language'])) {
             if (array_search($options['language'], $available_langs) !== false) {
                 self::$shadowBoxLanguage = $options['language'];
-            } 
+            }
         }
     }
 
     /**
      * Callback function for the shadowbox library
      *
-     * Called when the shadowbox was loaded and the code is 
+     * Called when the shadowbox was loaded and the code is
      * generated. Makes the initial-lines to provide the chosen
      * players and to load the skin. If there is a directory
      * called 'shadowbox' in the current theme directory, this one
@@ -490,9 +499,9 @@ class JS
                 $players .= " '".$player."',";
             }
             $players = substr($players, 1, -1);
-            self::$customCode[] = "Shadowbox.loadPlayer([".$players."]," 
+            self::$customCode[] = "Shadowbox.loadPlayer([".$players."],"
                 ."'".self::$offset."lib/javascript/shadowbox/player/');";
-        } 
+        }
 
         // make the code for loading the skins
         $skindir = self::$offset."lib/javascript/shadowbox/skin";
@@ -506,12 +515,15 @@ class JS
         self::$customCode[] = "Shadowbox.loadSkin('".$skin."', '".self::$offset.$skindir."');";
 
         // make the code for loading the language
-        self::$customCode[] = "Shadowbox.loadLanguage('".self::$shadowBoxLanguage."', '".self::$offset."lib/javascript/shadowbox/lang')"; 
+        self::$customCode[] = "Shadowbox.loadLanguage('".self::$shadowBoxLanguage."', '".self::$offset."lib/javascript/shadowbox/lang')";
     }
 
-    public static function registerFromRegex($matchinfo) {
+
+    public static function registerFromRegex($matchinfo)
+    {
         $script = $matchinfo[1];
         self::registerJS($script);
     }
 }
 
+?>

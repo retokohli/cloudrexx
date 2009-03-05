@@ -1,6 +1,7 @@
-<?PHP
-error_reporting(0);
-ini_set('display_errors', 0);
+<?php
+
+//error_reporting(0);
+//ini_set('display_errors', 0);
 
 require_once("../config/version.php");
 if ($_SERVER['HTTP_X_PROTOTYPE_VERSION']) {
@@ -12,7 +13,7 @@ if ($_SERVER['HTTP_X_PROTOTYPE_VERSION']) {
         exit;
     }
     $r = $_SERVER['PHP_SELF'];
-    fwrite($link, 
+    fwrite($link,
         "GET /updatecenter/check.php?v=$version HTTP/1.1\n".
         "Host: www.contrexx.com\n".
         "Referer: $r\n".
@@ -20,18 +21,19 @@ if ($_SERVER['HTTP_X_PROTOTYPE_VERSION']) {
     );
 
     $r = array();
-
-    while ($l = fgets($link)) {
+    $l = fgets($link);
+    while ($l) {
         if (preg_match('#NVERSION=(\d+\.\d+\.\d+)#', $l, $r)) {
             $newversion = $r[1];
             echo '(New Version available: <a style="color:black;" href="http://www.contrexx.com" target="_new">'.$newversion.'</a>)';
             fclose($link);
             exit;
         }
+        $l = fgets($link);
     }
     fclose($link);
-}
-else {
+} else {
     echo $_CONFIG['coreCmsVersion']." ".$_CONFIG['coreCmsEdition'];
 }
 
+?>
