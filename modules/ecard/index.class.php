@@ -82,15 +82,13 @@ class ecard
         $this->_objTpl->setTemplate($this->pageContent);
         $i = 1;
         // Initialize POST variables
-// Never used
-//        $id = !empty($_POST['selectedEcard']) ? $_POST['selectedEcard'] : "";
+        $id = !empty($_POST['selectedEcard']) ? $_POST['selectedEcard'] : "";
         $message = !empty($_POST['ecardMessage']) ? strip_tags($_POST['ecardMessage']) : "";
-// Never used
-//        $receiverSalutaion = !empty($_POST['ecardReceiverSalutation']) ? $_POST['ecardReceiverSalutation'] : "";
+        $recipientSalutation = !empty($_POST['ecardRecipientSalutation']) ? $_POST['ecardRecipientSalutation'] : "";
         $senderName = !empty($_POST['ecardSenderName']) ? $_POST['ecardSenderName'] : "";
         $senderEmail = !empty($_POST['ecardSenderEmail']) ? $_POST['ecardSenderEmail'] : "";
-        $receiverName = !empty($_POST['ecardReceiverName']) ? $_POST['ecardReceiverName'] : "";
-        $receiverEmail = !empty($_POST['ecardReceiverEmail']) ? $_POST['ecardReceiverEmail'] : "";
+        $recipientName = !empty($_POST['ecardRecipientName']) ? $_POST['ecardRecipientName'] : "";
+        $recipientEmail = !empty($_POST['ecardRecipientEmail']) ? $_POST['ecardRecipientEmail'] : "";
 
         // Get max. number of characters and lines per message
         $query = "
@@ -112,9 +110,19 @@ class ecard
         $this->_objTpl->setVariable(array(
             'ECARD_MESSAGE' => $message,
             'ECARD_SENDERNAME' => $senderName,
+            'ECARD_RECIPIENTNAME' => $recipientName,
             'ECARD_SENDEREMAIL' => $senderEmail,
-            'ECARD_RECEIVERNAME' => $receiverName,
-            'ECARD_RECEIVEREMAIL' => $receiverEmail,
+            'ECARD_RECIPIENTEMAIL' => $recipientEmail,
+
+            'ECARD_SALUTATION_SELECTED_MALE' =>
+                ($recipientSalutation == $_ARRAYLANG['TXT_ECARD_TITLE_MALE']
+                    ? ' checked="checked"' : ''
+                ),
+	        'ECARD_SALUTATION_SELECTED_FEMALE' =>
+                ($recipientSalutation == $_ARRAYLANG['TXT_ECARD_TITLE_FEMALE']
+                    ? ' checked="checked"' : ''
+                ),
+
             'ECARD_JAVASCRIPT' =>
                 '<script language="javascript" type="text/javascript">
 				Shadowbox.loadSkin("classic","lib/javascript/shadowbox/src/skin/");
@@ -244,7 +252,7 @@ class ecard
             function checkInput() {
                 var ecardCount = 0;
                 var wrongFieldsArray = new Array();
-                var fieldsArray = new Array("motiveFieldset", "fieldDescription_salutation", "ecardMessage", "ecardSenderName", "ecardReceiverName", "ecardSenderName", "ecardSenderEmail", "ecardReceiverEmail");
+                var fieldsArray = new Array("motiveFieldset", "fieldDescription_salutation", "ecardMessage", "ecardSenderName", "ecardRecipientName", "ecardSenderName", "ecardSenderEmail", "ecardRecipientEmail");
 
                 for(var i = 0; i < document.getElementsByName("selectedEcard").length; i++) {
                     if(document.getElementsByName("selectedEcard")[i].checked == true) {
@@ -253,13 +261,13 @@ class ecard
                 }
 
                 if (ecardCount == 0) {wrongFieldsArray.push("motiveFieldset");}
-                if ((document.getElementsByName("ecardReceiverSalutation")[0].checked == false) && (document.getElementsByName("ecardReceiverSalutation")[1].checked == false)) {wrongFieldsArray.push("fieldDescription_salutation");}
+                if ((document.getElementsByName("ecardRecipientSalutation")[0].checked == false) && (document.getElementsByName("ecardRecipientSalutation")[1].checked == false)) {wrongFieldsArray.push("fieldDescription_salutation");}
                 if(document.getElementsByName("ecardMessage")[0].value    == "") {wrongFieldsArray.push("ecardMessage");}
                 if(document.getElementsByName("ecardSenderName")[0].value    == "") {wrongFieldsArray.push("ecardSenderName");}
-                if(document.getElementsByName("ecardReceiverName")[0].value    == "") {wrongFieldsArray.push("ecardReceiverName");}
+                if(document.getElementsByName("ecardRecipientName")[0].value    == "") {wrongFieldsArray.push("ecardRecipientName");}
                 if(document.getElementsByName("ecardSenderName")[0].value    == "") {wrongFieldsArray.push("ecardSenderName");}
                 if(checkEmail(document.getElementsByName("ecardSenderEmail")[0].value) == false) {wrongFieldsArray.push("ecardSenderEmail");}
-                if(checkEmail(document.getElementsByName("ecardReceiverEmail")[0].value) == false) {wrongFieldsArray.push("ecardReceiverEmail");}
+                if(checkEmail(document.getElementsByName("ecardRecipientEmail")[0].value) == false) {wrongFieldsArray.push("ecardRecipientEmail");}
 
                 for (var i=0; i < fieldsArray.length; i++) {
                     if (wrongFieldsArray.toString().indexOf(fieldsArray[i]) == -1) {
@@ -331,7 +339,9 @@ class ecard
                     'ECARD_MOTIVE_OPTIMIZED_PATH' => ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motiveFilename,
                     'ECARD_MOTIVE_ID' => $motiveID,
                     'ECARD_THUMBNAIL_PATH' => ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motiveFilename,
-                    'ECARD_CSSNUMBER' => $ii
+                    'ECARD_CSSNUMBER' => $ii,
+                    'ECARD_IMAGE_SELECTED' =>
+                        ($id == $motiveID ? ' checked="checked"' : ''),
                 ));
                 $this->_objTpl->parse('motiveBlock');
                 if ($i == 2) {
@@ -358,11 +368,11 @@ class ecard
         // Initialize POST variables
         $id = $_POST['selectedEcard'];
         $message = nl2br($_POST['ecardMessage']);
-        $receiverSalutaion = $_POST['ecardReceiverSalutation'];
+        $recipientSalutation = $_POST['ecardRecipientSalutation'];
         $senderName = $_POST['ecardSenderName'];
         $senderEmail = $_POST['ecardSenderEmail'];
-        $receiverName = $_POST['ecardReceiverName'];
-        $receiverEmail = $_POST['ecardReceiverEmail'];
+        $recipientName = $_POST['ecardRecipientName'];
+        $recipientEmail = $_POST['ecardRecipientEmail'];
 
         // Get path from choosen motive
         $query = "
@@ -384,9 +394,9 @@ class ecard
             'ECARD_MESSAGE' => $message,
             'ECARD_SENDER_NAME' => $senderName,
             'ECARD_SENDER_EMAIL' => $senderEmail,
-            'ECARD_RECEIVER_NAME' => $receiverName,
-            'ECARD_RECEIVER_EMAIL' => $receiverEmail,
-            'ECARD_RECEIVER_SALUTATION' => $receiverSalutaion,
+            'ECARD_RECIPIENT_NAME' => $recipientName,
+            'ECARD_RECIPIENT_EMAIL' => $recipientEmail,
+            'ECARD_RECIPIENT_SALUTATION' => $recipientSalutation,
 
 			'TXT_ECARD_LOOKS_LIKE' => $_ARRAYLANG['TXT_ECARD_LOOKS_LIKE'],
 			'TXT_ECARD_EDIT' => $_ARRAYLANG['TXT_ECARD_EDIT'],
@@ -408,11 +418,11 @@ class ecard
         // Initialize POST variables
         $id = $_POST['selectedEcard'];
         $message = $_POST['ecardMessage'];
-        $receiverSalutation = $_POST['ecardReceiverSalutation'];
+        $recipientSalutation = $_POST['ecardRecipientSalutation'];
         $senderName = $_POST['ecardSenderName'];
         $senderEmail = $_POST['ecardSenderEmail'];
-        $receiverName = $_POST['ecardReceiverName'];
-        $receiverEmail = $_POST['ecardReceiverEmail'];
+        $recipientName = $_POST['ecardRecipientName'];
+        $recipientEmail = $_POST['ecardRecipientEmail'];
 
         $query = "
             SELECT *
@@ -438,9 +448,9 @@ class ecard
         }
         $timeToLife = $validdays * 86400;
         // Replace placeholders with used in notification mail with user data
-        $emailText = str_replace('[[ECARD_RECEIVER_SALUTATION]]', $receiverSalutation, $emailText);
-        $emailText = str_replace('[[ECARD_RECEIVER_NAME]]', $receiverName, $emailText);
-        $emailText = str_replace('[[ECARD_RECEIVER_EMAIL]]', $receiverEmail, $emailText);
+        $emailText = str_replace('[[ECARD_RECIPIENT_SALUTATION]]', $recipientSalutation, $emailText);
+        $emailText = str_replace('[[ECARD_RECIPIENT_NAME]]', $recipientName, $emailText);
+        $emailText = str_replace('[[ECARD_RECIPIENT_EMAIL]]', $recipientEmail, $emailText);
         $emailText = str_replace('[[ECARD_SENDER_NAME]]', $senderName, $emailText);
         $emailText = str_replace('[[ECARD_SENDER_EMAIL]]', $senderEmail, $emailText);
         $emailText = str_replace('[[ECARD_VALID_DAYS]]', $validdays, $emailText);
@@ -454,11 +464,11 @@ class ecard
                 '".mktime()."',
                 '".$timeToLife."',
                 '".$code."',
-                '".$receiverSalutation."',
+                '".$recipientSalutation."',
                 '".$senderName."',
                 '".$senderEmail."',
-                '".$receiverName."',
-                '".$receiverEmail."',
+                '".$recipientName."',
+                '".$recipientEmail."',
                 '".$message."');";
         if ($objDatabase->Execute($query)) {
             $query = "SELECT setting_value FROM ".DBPREFIX."module_ecard_settings WHERE id = '".$id."'";
@@ -483,7 +493,7 @@ class ecard
                     }
                 }
 
-                // Send notification mail to ecard-receiver
+                // Send notification mail to ecard-recipient
                 $objMail = new phpmailer();
                 $objMail->CharSet = CONTREXX_CHARSET;
                 $objMail->From = $senderEmail;
@@ -492,7 +502,7 @@ class ecard
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
                 $objMail->Body = $body;
-                $objMail->AddAddress($receiverEmail);
+                $objMail->AddAddress($recipientEmail);
 
                 if ($objMail->Send()) {
                     $this->_objTpl->setVariable(array(
@@ -530,9 +540,9 @@ class ecard
             $message = $objResult->fields['message'];
             $senderName = $objResult->fields['senderName'];
             $senderEmail = $objResult->fields['senderEmail'];
-            $receiverName = $objResult->fields['receiverName'];
-            $receiverEmail = $objResult->fields['receiverEmail'];
-            $receiversalutation = $objResult->fields['salutation'];
+            $recipientName = $objResult->fields['receiverName'];
+            $recipientEmail = $objResult->fields['receiverEmail'];
+            $recipientsalutation = $objResult->fields['salutation'];
             // Get right file extension
             $globArray = glob(ASCMS_ECARD_SEND_ECARDS_PATH.$code.".*");
             $fileextension = substr($globArray[0], -4);
@@ -545,15 +555,14 @@ class ecard
                 'ECARD_MOTIVE' =>
                     '<img src="'.ASCMS_ECARD_SEND_ECARDS_WEB_PATH.$selectedMotive.
                     '" alt="'.$selectedMotive.'" />',
-                'ECARD_FROM' => 'E-Card von '.$senderName,
+                'ECARD_FROM' => $_ARRAYLANG['TXT_ECARD_FROM'].' '.$senderName,
                 'ECARD_MESSAGE' => $message,
                 'ECARD_SENDER_NAME' => $senderName,
                 'ECARD_SENDER_EMAIL' => $senderEmail,
-                'ECARD_RECEIVER_SALUTATION' => $receiversalutation,
-                'ECARD_RECEIVER_NAME' => $receiverName,
-                'ECARD_RECEIVER_EMAIL' => $receiverEmail,
+                'ECARD_RECIPIENT_SALUTATION' => $recipientsalutation,
+                'ECARD_RECIPIENT_NAME' => $recipientName,
+                'ECARD_RECIPIENT_EMAIL' => $recipientEmail,
             ));
-
         } else {
             // display error message
         	$this->_objTpl->setVariable(array(
