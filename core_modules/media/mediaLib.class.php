@@ -584,11 +584,12 @@ class MediaLibrary {
 	function _dirTree($path) {
 		$dir  = array();
 		$file = array();
+        $forbidden_files = array('.', '..', '.svn', '.htaccess', 'index.php');
 
 		if(is_dir($path)){
 			$fd = @opendir($path);
 			while($name = @readdir($fd)){
-				if($name != "." && $name != ".." && $name != "index.php"){
+				if(!in_array($name, $forbidden_files)){
 					if(is_dir($path . $name)){
 						$dir['icon'][] = $this->_getIcon($path.$name);
 						$dir['name'][] = $name;
