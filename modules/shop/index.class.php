@@ -889,6 +889,8 @@ class Shop extends ShopLibrary
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        JS::activate('shadowbox');
+
         $flagSpecialoffer = intval($this->arrConfig['shop_show_products_default']['value']);
 //echo("special: $flagSpecialoffer<br />");
         $flagLastFive =
@@ -1043,10 +1045,9 @@ class Shop extends ShopLibrary
                     $thumbnailPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'].self::thumbnailSuffix;
                     if ($image['width'] && $image['height']) {
                         $pictureLink =
-                            "javascript:viewPicture('".
                             ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'].
-                            "','width=".($image['width']+25).
-                            ",height=".($image['height']+25)."')";
+                            // Hack ahead!
+                            '" rel="shadowbox[1]';
                             // Thumbnail display size
                             $arrSize = array($image['width'], $image['height']);
                     } else {
@@ -1915,10 +1916,18 @@ class Shop extends ShopLibrary
         $javascriptCode =
 "<script language=\"JavaScript\" type=\"text/javascript\">
 // <![CDATA[
+// Obsolete
 function viewPicture(picture,features)
 {
     window.open(picture,'',features);
 }
+
+Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
+Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
+Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+window.onload = function(){
+    Shadowbox.init();
+};
 
 function toggleOptions(productId)
 {
