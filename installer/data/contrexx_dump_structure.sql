@@ -1040,11 +1040,11 @@ CREATE TABLE `contrexx_module_downloads_rel_download_download` (
   PRIMARY KEY  (`id1`,`id2`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_settings` (
-  `setting_id` int(11) NOT NULL,
-  `setting_name` varchar(255) NOT NULL default '',
-  `setting_value` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`setting_id`)
-) TYPE=MyISAM;
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(20) NOT NULL default '',
+  `value` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_ecard_ecards` (
   `date` int(14) NOT NULL,
   `TTL` int(14) NOT NULL,
