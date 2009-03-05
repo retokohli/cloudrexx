@@ -22,44 +22,33 @@
  * @subpackage  module_gallery
  * @todo        Edit PHP DocBlocks!
  */
-class Gallery {
-    var $_objTpl;
-    var $pageContent;
-    var $arrSettings;
-    var $strImagePath;
-    var $strImageWebPath;
-    var $strThumbnailPath;
-    var $strThumbnailWebPath;
-    var $langId;
-    var $strCmd = '';
+class Gallery
+{
+    public $_objTpl;
+    public $pageContent;
+    public $arrSettings;
+    public $strImagePath;
+    public $strImageWebPath;
+    public $strThumbnailPath;
+    public $strThumbnailWebPath;
+    public $langId;
+    public $strCmd = '';
 
 
     /**
-    * Constructor php4
-    *
-    * @param      string
-    * @access     public
-    */
-    function Gallery($pageContent)
-    {
-        $this->__construct($pageContent);
-    }
-
-    /**
-    * Constructor
-    *
-    * @global ADONewConnection
-    * @global array
-    * @global integer
-    */
+     * Constructor
+     * @global ADONewConnection
+     * @global array
+     * @global integer
+     */
     function __construct($pageContent)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_LANGID;
 
         $this->pageContent = $pageContent;
         $this->langId= $_LANGID;
 
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
@@ -82,13 +71,13 @@ class Gallery {
         if (!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         } else {
-        	$this->strCmd = '&amp;cmd='.intval($_GET['cmd']);
+            $this->strCmd = '&amp;cmd='.intval($_GET['cmd']);
         }
 
-        JS::activate("shadowbox");
+        JS::activate('shadowbox');
 
         if (isset($_GET['pId']) && !empty($_GET['pId'])) {
-        	if (isset($_POST['frmGalComAdd_PicId'])) {
+            if (isset($_POST['frmGalComAdd_PicId'])) {
                 $this->addComment();
                 header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
                     intval($_POST['frmGalComAdd_GalId']).'&pId='.
@@ -109,9 +98,9 @@ class Gallery {
                 $this->showPictureNoPop(intval($_GET['pId']));
             }
         } else {
-		    $_GET['cid'] = isset($_GET['cid']) ? intval($_GET['cid']) : intval($_GET['cmd']);
-		    $this->showCategoryOverview($_GET['cid']);
-		}
+            $_GET['cid'] = isset($_GET['cid']) ? intval($_GET['cid']) : intval($_GET['cmd']);
+            $this->showCategoryOverview($_GET['cid']);
+        }
         return $this->_objTpl->get();
     }
 
@@ -123,11 +112,12 @@ class Gallery {
      */
     function showPictureNoPop($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
-        $intCatId    = intval($_GET['cid']);
+// Never used
+//        $intCatId    = intval($_GET['cid']);
         $this->_objTpl->setTemplate($this->pageContent);
 
 
@@ -136,11 +126,11 @@ class Gallery {
         $categoryProtected = $this->categoryIsProtected($intCatId);
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
-    	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-    	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
-    	            exit;
-    	    }
-	    }
+                    $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    exit;
+            }
+        }
 
         // hide category list
         $this->_objTpl->hideBlock('galleryCategories');
@@ -150,7 +140,8 @@ class Gallery {
             "WHERE gallery_id=$intCatId AND lang_id=$this->langId AND name='desc' ".
             "LIMIT 1";
         $objResult = $objDatabase->Execute($query);
-        $strCategoryComment = $objResult->fields['value'];
+// Never used
+//        $strCategoryComment = $objResult->fields['value'];
 
         $objResult = $objDatabase->Execute(
             "SELECT comment, voting ".
@@ -271,60 +262,60 @@ class Gallery {
 
         //voting
         if ($this->_objTpl->blockExists('votingTab')) {
-	        if ($this->arrSettings['show_voting'] == 'on' && $boolVoting) {
-	            $this->_objTpl->setVariable(array(
-	                'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
-	                'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
-	                'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
-	                'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
-	            ));
-	            if (isset($_COOKIE['Gallery_Voting_'.$intPicId])) {
-	                $this->_objTpl->hideBlock('showVotingBar');
-	                $this->_objTpl->setVariable(array(
-	                    'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
-	                    'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
-	                ));
-	            } else {
-	                $this->_objTpl->setVariable(array(
-	                    'TXT_VOTING_ALREADY_VOTED'  => '',
-	                    'VOTING_ALREADY_VOTED_MARK' => ''
-	                ));
-	                for ($i=1;$i<=10;$i++) {
-	                    $this->_objTpl->setVariable(array(
-	                        'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
-	                        'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
-	                        'VOTING_BAR_MARK'  => $i,
-	                        'VOTING_BAR_CID'   => $intCatId,
-	                        'VOTING_BAR_PICID' => $intPicId
-	                    ));
-	                    $this->_objTpl->parse('showVotingBar');
-	                }
-	            }
+            if ($this->arrSettings['show_voting'] == 'on' && $boolVoting) {
+                $this->_objTpl->setVariable(array(
+                    'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
+                    'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
+                    'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
+                    'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
+                ));
+                if (isset($_COOKIE['Gallery_Voting_'.$intPicId])) {
+                    $this->_objTpl->hideBlock('showVotingBar');
+                    $this->_objTpl->setVariable(array(
+                        'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
+                        'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
+                    ));
+                } else {
+                    $this->_objTpl->setVariable(array(
+                        'TXT_VOTING_ALREADY_VOTED'  => '',
+                        'VOTING_ALREADY_VOTED_MARK' => ''
+                    ));
+                    for ($i=1;$i<=10;$i++) {
+                        $this->_objTpl->setVariable(array(
+                            'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
+                            'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
+                            'VOTING_BAR_MARK'  => $i,
+                            'VOTING_BAR_CID'   => $intCatId,
+                            'VOTING_BAR_PICID' => $intPicId
+                        ));
+                        $this->_objTpl->parse('showVotingBar');
+                    }
+                }
 
-	            $objResult = $objDatabase->Execute(
-	                "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
-	                "WHERE picid=$intPicId");
-	            if ($objResult->RecordCount() > 0) {
-	                $intCount = 0;
-	                $intMark  = 0;
-	                while (!$objResult->EOF) {
-	                    $intCount++;
-	                    $intMark = $intMark + intval($objResult->fields['mark']);
-	                    $objResult->MoveNext();
-	                }
-	                $this->_objTpl->setVariable(array(
-	                    'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
-	                    'VOTING_STATS_VOTES' => $intCount
-	                ));
-	            } else {
-	                $this->_objTpl->setVariable(array(
-	                    'VOTING_STATS_MARK'  => 0,
-	                    'VOTING_STATS_VOTES' => 0
-	                ));
-	            }
-	        } else {
-	            $this->_objTpl->hideBlock('votingTab');
-	        }
+                $objResult = $objDatabase->Execute(
+                    "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
+                    "WHERE picid=$intPicId");
+                if ($objResult->RecordCount() > 0) {
+                    $intCount = 0;
+                    $intMark  = 0;
+                    while (!$objResult->EOF) {
+                        $intCount++;
+                        $intMark = $intMark + intval($objResult->fields['mark']);
+                        $objResult->MoveNext();
+                    }
+                    $this->_objTpl->setVariable(array(
+                        'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
+                        'VOTING_STATS_VOTES' => $intCount
+                    ));
+                } else {
+                    $this->_objTpl->setVariable(array(
+                        'VOTING_STATS_MARK'  => 0,
+                        'VOTING_STATS_VOTES' => 0
+                    ));
+                }
+            } else {
+                $this->_objTpl->hideBlock('votingTab');
+            }
         }
 
         // comments
@@ -360,15 +351,15 @@ class Gallery {
                         $strWWW = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     if ($objResult->fields['email'] != '') {
-                        $strEMail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
+                        $strEmail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
                     } else {
-                        $strEMail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
+                        $strEmail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     $this->_objTpl->setVariable(array(
                         'COMMENTS_NAME'     => html_entity_decode($objResult->fields['name']),
                         'COMMENTS_DATE'     => date($_ARRAYLANG['TXT_COMMENTS_DATEFORMAT'],$objResult->fields['date']),
                         'COMMENTS_WWW'      => $strWWW,
-                        'COMMENTS_EMAIL'    => $strEMail,
+                        'COMMENTS_EMAIL'    => $strEmail,
                         'COMMENTS_TEXT'     => nl2br($objResult->fields['comment']),
                         'COMMENTS_ROWCLASS' => $intRowClass
                     ));
@@ -382,9 +373,10 @@ class Gallery {
             $this->_objTpl->hideBlock('commentTab');
         }
 
-        if($_CONFIG['corePagingLimit'] < $count) {
-          $this->_objTpl->setVariable("GALLERY_FRONTEND_PAGING", $paging);
-        }
+// Undefined
+//        if($_CONFIG['corePagingLimit'] < $count) {
+//          $this->_objTpl->setVariable("GALLERY_FRONTEND_PAGING", $paging);
+//        }
         //$this->_objTpl->parse('galleryImage');
     }
 
@@ -397,25 +389,26 @@ class Gallery {
     */
     function showPicture($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
-        $intCatId    = intval($_GET['cid']);
+// Never used
+//        $intCatId    = intval($_GET['cid']);
 
         // we need to read the category id out of the database to prevent abusement
         $intCatId = $this->getCategoryId($intPicId);
         $categoryProtected = $this->categoryIsProtected($intCatId);
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
-    	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-    	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
-    	            exit;
-    	    }
-	    }
+                    $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    exit;
+            }
+        }
 
         // POPUP Code
-        $objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+        $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         $objTpl->loadTemplateFile('module_gallery_show_picture.html',true,true);
 
         // get category description
@@ -493,7 +486,7 @@ class Gallery {
         ));
         // set variables
         $objTpl->setVariable(array(
-        	'CONTREXX_CHARSET'		=> CONTREXX_CHARSET,
+            'CONTREXX_CHARSET'        => CONTREXX_CHARSET,
             'GALLERY_WINDOW_WIDTH'  => $imageReso[0] < 420 ? 500 : $imageReso[0]+80,
             'GALLERY_WINDOW_HEIGHT' => $imageReso[1]+120,
             'GALLERY_PICTURE_ID'    => $intPicId,
@@ -514,60 +507,61 @@ class Gallery {
 
         //voting
         if ($objTpl->blockExists('votingTab')) {
-	        if ($this->arrSettings['show_voting'] == 'on'    && $boolVoting) {
-	            $objTpl->setVariable(array(
-	                'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
-	                'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
-	                'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
-	                'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
-	            ));
-	            if (isset($_COOKIE["Gallery_Voting_$intPicId"])) {
-	                $objTpl->hideBlock('showVotingBar');
+            if ($this->arrSettings['show_voting'] == 'on'    && $boolVoting) {
+                $objTpl->setVariable(array(
+                    'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
+                    'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
+                    'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
+                    'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
+                ));
+                if (isset($_COOKIE["Gallery_Voting_$intPicId"])) {
+                    $objTpl->hideBlock('showVotingBar');
 
-	                $objTpl->setVariable(array(
-	                    'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
-	                    'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
-	                ));
-	            } else {
-	                $objTpl->setVariable(array(
-	                    'TXT_VOTING_ALREADY_VOTED'  => '',
-	                    'VOTING_ALREADY_VOTED_MARK' => ''
-	                ));
-	                for ($i=1;$i<=10;$i++) {
-	                        $objTpl->setVariable(array(
-	                            'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
-	                            'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
-	                            'VOTING_BAR_MARK'  => $i,
-	                            'VOTING_BAR_CID'   => $intCatId,
-	                            'VOTING_BAR_PICID' => $intPicId
-	                        ));
-	                    $objTpl->parse('showVotingBar');
-	                }
-	            }
+                    $objTpl->setVariable(array(
+                        'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
+                        'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
+                    ));
+                } else {
+                    $objTpl->setVariable(array(
+                        'TXT_VOTING_ALREADY_VOTED'  => '',
+                        'VOTING_ALREADY_VOTED_MARK' => ''
+                    ));
+                    for ($i=1;$i<=10;$i++) {
+                            $objTpl->setVariable(array(
+                                'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
+                                'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
+                                'VOTING_BAR_MARK'  => $i,
+                                'VOTING_BAR_CID'   => $intCatId,
+                                'VOTING_BAR_PICID' => $intPicId
+                            ));
+                        $objTpl->parse('showVotingBar');
+                    }
+                }
 
-	            $objResult = $objDatabase->Execute(
-	                "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
-	                "WHERE picid=$intPicId");
-	            if ($objResult->RecordCount() > 0) {
-	                $intCount = 0;
-	                while (!$objResult->EOF) {
-	                    $intCount++;
-	                    $intMark = $intMark + intval($objResult->fields['mark']);
-	                    $objResult->MoveNext();
-	                }
-	                $objTpl->setVariable(array(
-	                    'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
-	                    'VOTING_STATS_VOTES' => $intCount
-	                ));
-	            } else {
-	                $objTpl->setVariable(array(
-	                    'VOTING_STATS_MARK'  => 0,
-	                    'VOTING_STATS_VOTES' => 0
-	                ));
-	            }
-	        } else {
-	            $objTpl->hideBlock('votingTab');
-	        }
+                $objResult = $objDatabase->Execute(
+                    "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
+                    "WHERE picid=$intPicId");
+                if ($objResult->RecordCount() > 0) {
+                    $intCount = 0;
+                    $intMark = 0;
+                    while (!$objResult->EOF) {
+                        $intCount++;
+                        $intMark = $intMark + intval($objResult->fields['mark']);
+                        $objResult->MoveNext();
+                    }
+                    $objTpl->setVariable(array(
+                        'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
+                        'VOTING_STATS_VOTES' => $intCount
+                    ));
+                } else {
+                    $objTpl->setVariable(array(
+                        'VOTING_STATS_MARK'  => 0,
+                        'VOTING_STATS_VOTES' => 0
+                    ));
+                }
+            } else {
+                $objTpl->hideBlock('votingTab');
+            }
         }
         //comments
         if ($this->arrSettings['show_comments'] == 'on' && $boolComment) {
@@ -602,15 +596,15 @@ class Gallery {
                         $strWWW = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     if ($objResult->fields['email'] != '') {
-                        $strEMail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
+                        $strEmail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
                     } else {
-                        $strEMail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
+                        $strEmail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     $objTpl->setVariable(array(
                         'COMMENTS_NAME'     => html_entity_decode($objResult->fields['name']),
                         'COMMENTS_DATE'     => date($_ARRAYLANG['TXT_COMMENTS_DATEFORMAT'],$objResult->fields['date']),
                         'COMMENTS_WWW'      => $strWWW,
-                        'COMMENTS_EMAIL'    => $strEMail,
+                        'COMMENTS_EMAIL'    => $strEmail,
                         'COMMENTS_TEXT'     => nl2br($objResult->fields['comment']),
                         'COMMENTS_ROWCLASS' => $intRowClass
                     ));
@@ -765,11 +759,11 @@ class Gallery {
         $categoryProtected = $this->categoryIsProtected($intParentId);
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
-    	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-    	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
-    	            exit;
-    	    }
-	    }
+                    $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    exit;
+            }
+        }
 
         // hide image detail block
         // $this->_objTpl->hideBlock('galleryImage');
@@ -798,14 +792,14 @@ class Gallery {
         if (isset($arrImageSizes) && isset($arrstrImagePaths)) {
             foreach ($arrImageSizes as $keyCat => $valueCat) {
                 $arrCategorySizes[$keyCat] = 0;
-                foreach ($valueCat as $keyImage => $valueImageSize) {
+                foreach ($valueCat as $valueImageSize) {
                     $arrCategorySizes[$keyCat] = $arrCategorySizes[$keyCat] + $valueImageSize;
                 }
             }
             foreach ($arrstrImagePaths as $keyCat => $valueCat) {
                 $arrCategoryImages[$keyCat] = 0;
                 $arrCategoryImageCounter[$keyCat] = 0;
-                foreach ($valueCat as $keyImage => $valuestrImagePath) {
+                foreach ($valueCat as $valuestrImagePath) {
                     $arrCategoryImages[$keyCat]    = $valuestrImagePath;
                     $arrCategoryImageCounter[$keyCat] = $arrCategoryImageCounter[$keyCat] + 1;
                 }
@@ -817,24 +811,24 @@ class Gallery {
 
         //begin category-paging
         $intPos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-        $objResult = $objDatabase->Execute('SELECT	count(id) AS countValue
-        									FROM 	'.DBPREFIX.'module_gallery_categories
-	            							WHERE 	pid='.$intParentId.' AND
-	            									status="1"
-	            						');
+        $objResult = $objDatabase->Execute('SELECT    count(id) AS countValue
+                                            FROM     '.DBPREFIX.'module_gallery_categories
+                                            WHERE     pid='.$intParentId.' AND
+                                                    status="1"
+                                        ');
         $this->_objTpl->setVariable(array(
             'GALLERY_CATEGORY_PAGING'     => getPaging($objResult->fields['countValue'], $intPos, '&amp;section=gallery&amp;cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_GALLERY'].'</b>',false,intval($_CONFIG['corePagingLimit']))
             ));
         //end category-paging
 
-        $objResult = $objDatabase->SelectLimit('SELECT 		*
-	        									FROM 		'.DBPREFIX.'module_gallery_categories
-	            								WHERE 		pid='.$intParentId.' AND
-	            											status="1"
-	            								ORDER BY	sorting ASC',
-	            								intval($_CONFIG['corePagingLimit']),
-	            								$intPos
-	            							);
+        $objResult = $objDatabase->SelectLimit('SELECT         *
+                                                FROM         '.DBPREFIX.'module_gallery_categories
+                                                WHERE         pid='.$intParentId.' AND
+                                                            status="1"
+                                                ORDER BY    sorting ASC',
+                                                intval($_CONFIG['corePagingLimit']),
+                                                $intPos
+                                            );
 
         if ($objResult->RecordCount() == 0) {
 
@@ -932,7 +926,8 @@ class Gallery {
                     "WHERE picture_id=".$objResult->fields['id']." AND lang_id=$this->langId LIMIT 1");
 
                 $imageFileSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
-                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
+// Never used
+//                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
                 $imageThumbPath = $this->strThumbnailWebPath.$objResult->fields['path'];
                 $imageName = $this->arrSettings['show_file_name'] == 'on' ? $objSubResult->fields['name'] : '';
@@ -967,25 +962,24 @@ class Gallery {
                 else {
                     $descriptionString="";
                 }
-
                 //Ends here
 
                 $titleLink="<a href='$strImagePath' target='_blank' ><b>$imageName</b></a><span><font size='-1'>$descriptionString<font></span>";
 
 
                 if ($this->arrSettings['enable_popups'] == "on") {
-                    $strImageOutput = '<a rel ="shadowbox['.$intParentId.'];options={'.$optionValue.'}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="';
-                    $strImageOutput .= $strImagePath;
-                    $strImageOutput .= '"><img border="2" title="'.$imageName.'" src="';
-                    $strImageOutput .= $imageThumbPath;
-                    $strImageOutput .= '" alt="';
-                    $strImageOutput .= $imageName;
-                    $strImageOutput .= '" /></a>';
+                    $strImageOutput =
+                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
+                        '}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="'.
+                        $strImagePath.'"><img border="2" title="'.$imageName.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageName.'" /></a>';
                 } else {
-                    $strImageOutput = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'].'">';
-                    $strImageOutput .= '<img border="0" title="'.$imageName.'" src="'.$imageThumbPath.'"';
-                    $strImageOutput .= 'alt="'.$imageName.'" /></a>';
-
+                    $strImageOutput =
+                        '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
+                        $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
+                        $objResult->fields['id'].'">'.'<img border="0" title="'.
+                        $imageName.'" src="'.$imageThumbPath.'"'.
+                        'alt="'.$imageName.'" /></a>';
                 }
 
                 if ($this->arrSettings['show_names'] == 'on') {
@@ -1157,7 +1151,7 @@ END;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $strName     = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Name']), ENT_QUOTES, CONTREXX_CHARSET);
-        $strEMail    = $_POST['frmGalComAdd_Email'];
+        $strEmail    = $_POST['frmGalComAdd_Email'];
         $strWWW        = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Homepage']), ENT_QUOTES, CONTREXX_CHARSET);
         $strComment = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Text']), ENT_QUOTES, CONTREXX_CHARSET);
 
@@ -1169,10 +1163,10 @@ END;
             $strWWW = '';
         }
 
-        if (!ereg("^.+@.+\\..+$", $strEMail)) {
-            $strEMail = '';
+        if (!ereg("^.+@.+\\..+$", $strEmail)) {
+            $strEmail = '';
         } else {
-            $strEmail = htmlspecialchars(strip_tags($strEMail), ENT_QUOTES, CONTREXX_CHARSET);
+            $strEmail = htmlspecialchars(strip_tags($strEmail), ENT_QUOTES, CONTREXX_CHARSET);
         }
 
         if ($this->arrSettings['show_comments'] == 'on' &&
@@ -1180,12 +1174,10 @@ END;
             !empty($strName) &&
             !empty($strComment))
         {
-            $strQuery = '
-                    ';
             $objDatabase->Execute(
                 'INSERT INTO '.DBPREFIX.'module_gallery_comments '.
                 'SET picid='.$intPicId.', date='.time().', ip="'.$_SERVER['REMOTE_ADDR'].'", '.
-                'name="'.$strName.'", email="'.$strEMail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
+                'name="'.$strName.'", email="'.$strEmail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
             $objCache->deleteAllFiles();
         }
     }
@@ -1278,4 +1270,5 @@ END;
         return $objRs->fields['catid'];
     }
 }
+
 ?>
