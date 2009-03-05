@@ -25,13 +25,14 @@ require_once ASCMS_MODULE_PATH.'/gallery/Lib.class.php';
  * @package     contrexx
  * @subpackage  module_gallery
  */
-class GalleryHomeContent extends GalleryLibrary {
-    var $_intLangId;
-    var $_strWebPath;
+class GalleryHomeContent extends GalleryLibrary
+{
+    public $_intLangId;
+    public $_strWebPath;
 
     /**
-    * Constructor php5
-    */
+     * Constructor php5
+     */
     function __construct() {
         global $_LANGID;
 
@@ -40,16 +41,9 @@ class GalleryHomeContent extends GalleryLibrary {
         $this->_strWebPath  = ASCMS_GALLERY_THUMBNAIL_WEB_PATH . '/';
     }
 
-    /**
-     * Constructor php4
-     */
-    function GalleryHomeContent() {
-        $this->__construct();
-    }
 
     /**
      * Check if the random-function is activated
-     *
      * @return boolean
      */
     function checkRandom() {
@@ -164,11 +158,11 @@ class GalleryHomeContent extends GalleryLibrary {
      * @global     array
      * @return     string     Complete <img>-tag for a randomized image
      */
-    function getLastImage() {
-        global $objDatabase, $_CONFIG, $_ARRAYLANG;
+    function getLastImage()
+    {
+        global $objDatabase;
 
         $picNr = 0;
-
         $objResult = $objDatabase->Execute('SELECT      pics.id,
                                                         pics.catid  AS CATID,
                                                         pics.path   AS PATH,
@@ -216,4 +210,5 @@ class GalleryHomeContent extends GalleryLibrary {
         }
     }
 }
+
 ?>
