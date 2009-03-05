@@ -122,16 +122,16 @@ class Data extends DataLibrary  {
                 if ($objResult->fields['image']) {
                     if ($objResult->fields['thumbnail']) {
                         if (file_exists(ASCMS_PATH.$objResult->fields['thumbnail'].".thumb")) {
-                            $image = "<img src=\"".$objResult->fields['thumbnail'].".thumb\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+                            $image = "<img src=\"".$objResult->fields['thumbnail'].".thumb\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
                         } else {
-                            $image = "<img src=\"".$objResult->fields['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
+                            $image = "<img src=\"".$objResult->fields['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left;  width: 80px;\" />";
                         }
                     } elseif (file_exists(ASCMS_DATA_IMAGES_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image']))) {
-                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
                     } elseif (file_exists(ASCMS_PATH.$objResult->fields['image'].".thumb")) {
-                        $image = "<img src=\"".$objResult->fields['image'].".thumb\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width:100px;\"/>";
+                        $image = "<img src=\"".$objResult->fields['image'].".thumb\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
                     } else {
-                        $image = "<img src=\"".$objResult->fields['image']."\" alt=\"\" border=\"1\" style=\"float: left; margin-right: 5px; width: 80px;\" />";
+                        $image = "<img src=\"".$objResult->fields['image']."\" alt=\"\" border=\"1\" style=\"float: left;  width: 80px;\" />";
                     }
                 } else {
                     $image = "";
@@ -324,7 +324,7 @@ class Data extends DataLibrary  {
 	    $entry = $arrEntries[$intMessageId];
 
 	    if ($entry['translation'][$this->_intLanguageId]['image']) {
-                $image = "<img src=\"".$entry['translation'][$this->_intLanguageId]['image']."\" alt=\"\" style=\"float: left; margin-right: 5px;\"/>";
+                $image = "<img src=\"".$entry['translation'][$this->_intLanguageId]['image']."\" alt=\"\" style=\"float: left; \"/>";
         } else {
             $image = "";
         }
