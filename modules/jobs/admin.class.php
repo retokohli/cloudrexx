@@ -31,12 +31,12 @@ error_reporting(E_STRICT);
 
 class jobsManager extends jobsLibrary
 {
-    var $_objTpl;
-    var $pageTitle;
-    var $pageContent;
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $langId;
+    public $_objTpl;
+    public $pageTitle;
+    public $pageContent;
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $langId;
 
 
     /**
@@ -49,7 +49,7 @@ class jobsManager extends jobsLibrary
     {
         global  $_ARRAYLANG, $objInit, $objTemplate;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/jobs/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/jobs/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=jobs'>".$_ARRAYLANG['TXT_JOBS_MENU_OVERVIEW']."</a>
@@ -57,7 +57,7 @@ class jobsManager extends jobsLibrary
                                                       <a href='?cmd=jobs&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
                                                       <a href='?cmd=jobs&amp;act=loc'>".$_ARRAYLANG['TXT_LOCATION_MANAGER']."</a>
                                                       <a href='?cmd=jobs&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
-        
+
 
         $this->pageTitle = $_ARRAYLANG['TXT_JOBS_MANAGER'];
         $this->langId=$objInit->userFrontendLangId;
@@ -100,7 +100,7 @@ class jobsManager extends jobsLibrary
             case "cat":
                 $this->manageCategories();
                 break;
-                
+
             case "loc":
                 $this->manageLocations();
                 break;
@@ -119,10 +119,10 @@ class jobsManager extends jobsLibrary
                 $this->changeStatus();
                 $this->overview();
                 break;
-            
+
             case "settings":
-            	$this->settings();
-            	break;
+                $this->settings();
+                break;
 
             default:
                 $this->overview();
@@ -150,14 +150,14 @@ class jobsManager extends jobsLibrary
 
         // initialize variables
         $i=0;
-        $jobslocationform;
-        $location;
-        $docFilter;
+        $jobslocationform = '';
+        $location = '';
+        $docFilter = '';
         $locationFilter = " WHERE ";
 
         $this->_objTpl->loadTemplateFile('module_jobs_list.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_JOBS_MANAGER'];
-        
+
 
 
         $this->_objTpl->setVariable(array(
@@ -183,8 +183,8 @@ class jobsManager extends jobsLibrary
             'TXT_AUTHOR'                 => $_ARRAYLANG['TXT_AUTHOR'],
             'TXT_JOBS_SEARCH'            => $_ARRAYLANG['TXT_JOBS_SEARCH']
         ));
-        
-        
+
+
         /* check if locations are activated */
         $query = "SELECT `value`
                       FROM `".DBPREFIX."module_jobs_settings`
@@ -193,48 +193,48 @@ class jobsManager extends jobsLibrary
         $objResult = $objDatabase->Execute($query);
 
         //return if location fields are not activated in the backend
-        if(!$objResult->EOF) 
+        if(!$objResult->EOF)
         {
-        	if(intval($objResult->fields['value']) == 1) 
-        	{
-        	    if(is_numeric($_REQUEST['location'])) {
-        	        $location = $_REQUEST['location'];
-        	        
-        	        $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE  rel.job = n.id AND rel.location = '".$location."' AND ";
-        	    }
-        	    
+            if(intval($objResult->fields['value']) == 1)
+            {
+                if(is_numeric($_REQUEST['location'])) {
+                    $location = $_REQUEST['location'];
+
+                    $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE  rel.job = n.id AND rel.location = '".$location."' AND ";
+                }
+
                 $jobslocationform ="
                     <select name=\"location\">
                     <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_LOCATION']."</option>
                     ".$this->getLocationMenu($location)."
                     </select>";
-        	}
-        }
-        
-        if(is_numeric($_REQUEST['category'])) {
-        	$category = $_REQUEST['category'];
-       
-	        $docFilter =" n.catid='$category' AND ";
+            }
         }
 
-        
+        if(is_numeric($_REQUEST['category'])) {
+            $category = $_REQUEST['category'];
+
+            $docFilter =" n.catid='$category' AND ";
+        }
+
+
         $jobscategoryform ="
             <select name=\"category\">
             <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_CATEGORY']."</option>
             ".$this->getCategoryMenu($this->langId, $category)."
             </select>";
-        
 
-        
-        
-        
+
+
+
+
         $this->_objTpl->setVariable(array(
             'JOBS_CATEGORY_FORM' => $jobscategoryform,
             'JOBS_LOCATION_FORM' => $jobslocationform,
             'TXT_SUBMIT' => $_ARRAYLANG['TXT_SUBMIT']
         ));
 
-        
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_DELETE'    => $_ARRAYLANG['TXT_DELETE']
         ));
@@ -309,9 +309,9 @@ class jobsManager extends jobsLibrary
             </select>
         ';
     }
-    
-    
-    function getLocationTable($jobID) 
+
+
+    function getLocationTable($jobID)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -322,68 +322,59 @@ class jobsManager extends jobsLibrary
         $objResult = $objDatabase->Execute($query);
 
         //return if location fields are not activated in the backend
-        if(!$objResult->EOF) 
+        if(!$objResult->EOF)
         {
-        	if(intval($objResult->fields['value']) == 0) 
-        	{
-        	    $this->_objTpl->hideBlock('modify_location');
-        		return ;
-        	}
+            if(intval($objResult->fields['value']) == 0)
+            {
+                $this->_objTpl->hideBlock('modify_location');
+                return ;
+            }
         }
-        
         $AssociatedLocations = '';
         $notAssociatedLocations = '';
-	            
-        
         $this->_objTpl->setVariable(array(
-            'TXT_GENERAL'	=> $_ARRAYLANG['TXT_JOBS_GENERAL'],
-            'TXT_LOCATION'	=> $_ARRAYLANG['TXT_LOCATION'],
-            'TXT_AVAILABLE_LOCATIONS'	=> $_ARRAYLANG['TXT_JOBS_AVAILABLE_LOCATIONS'],
-            'TXT_ASSOCIATED_LOCATIONS'	=> $_ARRAYLANG['TXT_JOBS_ASSOCIATED_LOCATIONS'],
+            'TXT_GENERAL'    => $_ARRAYLANG['TXT_JOBS_GENERAL'],
+            'TXT_LOCATION'    => $_ARRAYLANG['TXT_LOCATION'],
+            'TXT_AVAILABLE_LOCATIONS'    => $_ARRAYLANG['TXT_JOBS_AVAILABLE_LOCATIONS'],
+            'TXT_ASSOCIATED_LOCATIONS'    => $_ARRAYLANG['TXT_JOBS_ASSOCIATED_LOCATIONS'],
             'TXT_CHECK_ALL' => $_ARRAYLANG['TXT_CHECK_ALL'],
             'TXT_UNCHECK_ALL' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
             'FORM_ONSUBMIT' => "onsubmit=\"SelectAllLocations(document.getElementById('associated_locations'))\"",
         ));
-
-        if(empty($jobID)) 
+        if(empty($jobID))
         {
             $query = "SELECT DISTINCT l.name as name,
                       l.id as id
                       FROM `".DBPREFIX."module_jobs_location` l
                       WHERE 1;";
-            
         } else  {
             $query = "SELECT DISTINCT l.name as name,
                       l.id as id,
                       j.job as jobid ,
-                      j.location as location 
-                      FROM `".DBPREFIX."module_jobs_location` l 
-                      LEFT JOIN `".DBPREFIX."module_jobs_rel_loc_jobs` as j on j.location=l.id 
+                      j.location as location
+                      FROM `".DBPREFIX."module_jobs_location` l
+                      LEFT JOIN `".DBPREFIX."module_jobs_rel_loc_jobs` as j on j.location=l.id
                       AND j.job = $jobID";
-                        
         }
-
         $objResult = $objDatabase->Execute($query);
-        
-        while(!$objResult->EOF) 
+        while(!$objResult->EOF)
         {
-            if(empty($jobID) or $objResult->fields['jobid'] != $jobID) 
+            if(empty($jobID) or $objResult->fields['jobid'] != $jobID)
             {
                 $notAssociatedLocations .= "<option value=\"".$objResult->fields['id']."\">".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
             } else {
                 $AssociatedLocations .= "<option value=\"".$objResult->fields['id']."\">".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
-            }            
-            
+            }
+
             $objResult->MoveNext();
         }
         $this->_objTpl->setVariable('ASSOCIATED_LOCATIONS',$AssociatedLocations);
         $this->_objTpl->setVariable('NOT_ASSOCIATED_LOCATIONS',$notAssociatedLocations);
-        
     }
+
 
     /**
     * adds a news entry
-    *
     * @global     object    $objDatabase
     * @param     integer   $newsid -> the id of the news entry
     * @return    boolean   result
@@ -395,154 +386,147 @@ class jobsManager extends jobsLibrary
         $objFWUser = FWUser::getFWUserObject();
         $this->_objTpl->loadTemplateFile('module_jobs_modify.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_CREATE_DOCUMENT'];
-        
+
         /*
-        *
         * if $_REQUEST['id'] is not empty handle it as a copy. unset id and time
-        *
         */
 
         if(!empty($_REQUEST['id'])) {
-        	$id = intval($_REQUEST['id']);
-	        	
-	        $status = "";
-	        $startDate = "";
-	        $endDate = "";
-	        $catId;
-	
-	        $this->_objTpl->setVariable(array(
-	            'TXT_JOBS_MESSAGE'  => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
-	            'TXT_TITLE'           => $_ARRAYLANG['TXT_TITLE'],
-	            'TXT_CATEGORY'        => $_ARRAYLANG['TXT_CATEGORY'],
-	            'TXT_JOBS_SETTINGS'      => $_ARRAYLANG['TXT_JOBS_SETTINGS'],
-	            'TXT_LOCATION'        => $_ARRAYLANG['TXT_TXT_LOCATION'],
-	            'TXT_WORKLOC'         => $_ARRAYLANG['TXT_WORKLOC'],
-	            'TXT_WORKLOAD'        => $_ARRAYLANG['TXT_WORKLOAD'],
-	            'TXT_WORK_START'      => $_ARRAYLANG['TXT_WORK_START'],
-	            'TXT_JOBS_CONTENT'    => $_ARRAYLANG['TXT_CONTENT'],
-	            'TXT_STORE'           => $_ARRAYLANG['TXT_STORE'],
-	            'TXT_PUBLISHING'      => $_ARRAYLANG['TXT_PUBLISHING'],
-	            'TXT_STARTDATE'       => $_ARRAYLANG['TXT_STARTDATE'],
-	            'TXT_ENDDATE'         => $_ARRAYLANG['TXT_ENDDATE'],
-	            'TXT_OPTIONAL'        => $_ARRAYLANG['TXT_OPTIONAL'],
-	            'TXT_DATE'            => $_ARRAYLANG['TXT_DATE'],
-	            'TXT_ACTIVE'          => $_ARRAYLANG['TXT_ACTIVE'],
-	            'TXT_AUTHOR'          => $_ARRAYLANG['TXT_AUTHOR'],
-	            'TXT_JOBS_NO_CATEGORY'=> $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'],
-	            'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE']
-	        ));
-	        
-	        $this->getLocationTable($id);
-	
-	
-	        $query = "SELECT `catid`,
-	                           `lang`,
-	                           `date`,
-	                           `id`,
-	                           `title`,
-	                           `author`,
-	                           `text`,
-	                           `workloc`,
-	                           `workload`,
-	                           `work_start`,
-	                           `startdate`,
-	                           `enddate`,
-	                           `status`
-	                      FROM `".DBPREFIX."module_jobs`
-	                     WHERE id = '$id'
-	                     LIMIT 1";
-	        $objResult = $objDatabase->Execute($query);	        
-	
-	        if(!$objResult->EOF) {
-	            $jobsText = stripslashes($objResult->fields['text']);
-	            $catId = $objResult->fields['catid'];
-	            
-	
-	            if($objResult->fields['status']==1) {
-	                $status = "checked";
-	            }
-	            if($objResult->fields['startdate']!="0000-00-00") {
-	                $startDate = $objResult->fields['startdate'];
-	            }
-	            if($objResult->fields['enddate']!="0000-00-00") {
-	                $endDate = $objResult->fields['enddate'];
-	            }
-	            
-	            $work_start = $objResult->fields['work_start'];
-	            if(!empty($objResult->fields['work_start'])) {
-	                $work_start = date("Y-m-d", $objResult->fields['work_start']);
-	            }
-	
-	            $this->_objTpl->setVariable(array(
-	                'JOBS_ID'            => '',
-	                'JOBS_STORED_ID'    => '',
-	                'JOBS_TITLE'        => stripslashes(htmlspecialchars($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)),
-	                'JOBS_AUTHOR'        => stripslashes(htmlspecialchars($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET)),
-	                'JOBS_TEXT'        => get_wysiwyg_editor('jobsText', $jobsText),
-	                'JOBS_WORKLOC'        => $objResult->fields['workloc'],
-	                'JOBS_WORKLOAD'        => $objResult->fields['workload'],
-	                'JOBS_WORK_START'        => $work_start,
-	                'JOBS_STARTDATE'    => $startDate,
-	                'JOBS_ENDDATE'    => $endDate,
-	                'JOBS_STATUS'        => $status,
-	                'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-	                'JOBS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']),
-	            ));
-	        }
-	
-	        $this->_objTpl->setVariable("JOBS_CAT_MENU",$this->getCategoryMenu($this->langId, $catId));
-	        $this->_objTpl->setVariable('TXT_JOBS_CATEGORY_SELECT',$_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT']);
-	        $this->_objTpl->setVariable("JOBS_FORM_ACTION","add");
-	        $this->_objTpl->setVariable("JOBS_STORED_FORM_ACTION","add");
-	        $this->_objTpl->setVariable("JOBS_TOP_TITLE",$_ARRAYLANG['TXT_CREATE_DOCUMENT']);
-	        
+            $id = intval($_REQUEST['id']);
 
-        	
+            $status = '';
+            $startDate = '';
+            $endDate = '';
+            $catId = '';
+
+            $this->_objTpl->setVariable(array(
+                'TXT_JOBS_MESSAGE'  => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
+                'TXT_TITLE'           => $_ARRAYLANG['TXT_TITLE'],
+                'TXT_CATEGORY'        => $_ARRAYLANG['TXT_CATEGORY'],
+                'TXT_JOBS_SETTINGS'      => $_ARRAYLANG['TXT_JOBS_SETTINGS'],
+                'TXT_LOCATION'        => $_ARRAYLANG['TXT_TXT_LOCATION'],
+                'TXT_WORKLOC'         => $_ARRAYLANG['TXT_WORKLOC'],
+                'TXT_WORKLOAD'        => $_ARRAYLANG['TXT_WORKLOAD'],
+                'TXT_WORK_START'      => $_ARRAYLANG['TXT_WORK_START'],
+                'TXT_JOBS_CONTENT'    => $_ARRAYLANG['TXT_CONTENT'],
+                'TXT_STORE'           => $_ARRAYLANG['TXT_STORE'],
+                'TXT_PUBLISHING'      => $_ARRAYLANG['TXT_PUBLISHING'],
+                'TXT_STARTDATE'       => $_ARRAYLANG['TXT_STARTDATE'],
+                'TXT_ENDDATE'         => $_ARRAYLANG['TXT_ENDDATE'],
+                'TXT_OPTIONAL'        => $_ARRAYLANG['TXT_OPTIONAL'],
+                'TXT_DATE'            => $_ARRAYLANG['TXT_DATE'],
+                'TXT_ACTIVE'          => $_ARRAYLANG['TXT_ACTIVE'],
+                'TXT_AUTHOR'          => $_ARRAYLANG['TXT_AUTHOR'],
+                'TXT_JOBS_NO_CATEGORY'=> $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'],
+                'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE']
+            ));
+
+            $this->getLocationTable($id);
+
+
+            $query = "SELECT `catid`,
+                               `lang`,
+                               `date`,
+                               `id`,
+                               `title`,
+                               `author`,
+                               `text`,
+                               `workloc`,
+                               `workload`,
+                               `work_start`,
+                               `startdate`,
+                               `enddate`,
+                               `status`
+                          FROM `".DBPREFIX."module_jobs`
+                         WHERE id = '$id'
+                         LIMIT 1";
+            $objResult = $objDatabase->Execute($query);
+
+            if(!$objResult->EOF) {
+                $jobsText = stripslashes($objResult->fields['text']);
+                $catId = $objResult->fields['catid'];
+
+
+                if($objResult->fields['status']==1) {
+                    $status = "checked";
+                }
+                if($objResult->fields['startdate']!="0000-00-00") {
+                    $startDate = $objResult->fields['startdate'];
+                }
+                if($objResult->fields['enddate']!="0000-00-00") {
+                    $endDate = $objResult->fields['enddate'];
+                }
+
+                $work_start = $objResult->fields['work_start'];
+                if(!empty($objResult->fields['work_start'])) {
+                    $work_start = date("Y-m-d", $objResult->fields['work_start']);
+                }
+
+                $this->_objTpl->setVariable(array(
+                    'JOBS_ID'            => '',
+                    'JOBS_STORED_ID'    => '',
+                    'JOBS_TITLE'        => stripslashes(htmlspecialchars($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)),
+                    'JOBS_AUTHOR'        => stripslashes(htmlspecialchars($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET)),
+                    'JOBS_TEXT'        => get_wysiwyg_editor('jobsText', $jobsText),
+                    'JOBS_WORKLOC'        => $objResult->fields['workloc'],
+                    'JOBS_WORKLOAD'        => $objResult->fields['workload'],
+                    'JOBS_WORK_START'        => $work_start,
+                    'JOBS_STARTDATE'    => $startDate,
+                    'JOBS_ENDDATE'    => $endDate,
+                    'JOBS_STATUS'        => $status,
+                    'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+                    'JOBS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']),
+                ));
+            }
+
+            $this->_objTpl->setVariable("JOBS_CAT_MENU",$this->getCategoryMenu($this->langId, $catId));
+            $this->_objTpl->setVariable('TXT_JOBS_CATEGORY_SELECT',$_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT']);
+            $this->_objTpl->setVariable("JOBS_FORM_ACTION","add");
+            $this->_objTpl->setVariable("JOBS_STORED_FORM_ACTION","add");
+            $this->_objTpl->setVariable("JOBS_TOP_TITLE",$_ARRAYLANG['TXT_CREATE_DOCUMENT']);
         } else {
-	        $this->_objTpl->setVariable(array(
-	            'TXT_JOBS_MESSAGE'     => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
-	            'TXT_TITLE'                => $_ARRAYLANG['TXT_TITLE'],
-	            'TXT_LOCATION'       => $_ARRAYLANG['TXT_TXT_LOCATION'],
-	            'TXT_CATEGORY'             => $_ARRAYLANG['TXT_CATEGORY'],
-	            'TXT_JOBS_SETTINGS'           => $_ARRAYLANG['TXT_JOBS_SETTINGS'],
-	            'TXT_WORKLOC'         => $_ARRAYLANG['TXT_WORKLOC'],
-	            'TXT_WORKLOAD'        => $_ARRAYLANG['TXT_WORKLOAD'],
-	            'TXT_WORK_START'      => $_ARRAYLANG['TXT_WORK_START'],
-	            'TXT_JOBS_CONTENT'     => $_ARRAYLANG['TXT_CONTENT'],
-	            'TXT_STORE'                => $_ARRAYLANG['TXT_STORE'],
-	            'TXT_PUBLISHING'           => $_ARRAYLANG['TXT_PUBLISHING'],
-	            'TXT_STARTDATE'            => $_ARRAYLANG['TXT_STARTDATE'],
-	            'TXT_ENDDATE'              => $_ARRAYLANG['TXT_ENDDATE'],
-	            'TXT_OPTIONAL'           => $_ARRAYLANG['TXT_OPTIONAL'],
-	            'TXT_ACTIVE'             => $_ARRAYLANG['TXT_ACTIVE'],
-	            'TXT_DATE'                 => $_ARRAYLANG['TXT_DATE'],
-	            'JOBS_TEXT'            => get_wysiwyg_editor('jobsText'),
-	            'JOBS_FORM_ACTION'     => "add",
-	            'JOBS_STORED_FORM_ACTION' => "add",
-	            'JOBS_STATUS'          => "checked='checked'",
-	            'JOBS_ID'              => "",
-	            'JOBS_TOP_TITLE'       => $_ARRAYLANG['TXT_CREATE_DOCUMENT'],
-	            'JOBS_CAT_MENU'        => $this->getCategoryMenu($this->langId, $selectedOption=""),
-	            'TXT_JOBS_CATEGORY_SELECT'=> $_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT'],
-	            'TXT_JOBS_NO_CATEGORY'=> $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'],
-	            'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE'],
-	            'JOBS_STARTDATE'       => "",
-	            'JOBS_ENDDATE' => "",
-	            'JOBS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
-	            //'JOBS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']), // there is no result here....
-	            'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
-	            'JOBS_AUTHOR' => htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-	        ));
-	        $this->getLocationTable("");
-	        
-	        if (isset($_POST['jobsTitle']) AND !empty($_POST['jobsTitle'])) {
+            $this->_objTpl->setVariable(array(
+                'TXT_JOBS_MESSAGE'     => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
+                'TXT_TITLE'                => $_ARRAYLANG['TXT_TITLE'],
+                'TXT_LOCATION'       => $_ARRAYLANG['TXT_TXT_LOCATION'],
+                'TXT_CATEGORY'             => $_ARRAYLANG['TXT_CATEGORY'],
+                'TXT_JOBS_SETTINGS'           => $_ARRAYLANG['TXT_JOBS_SETTINGS'],
+                'TXT_WORKLOC'         => $_ARRAYLANG['TXT_WORKLOC'],
+                'TXT_WORKLOAD'        => $_ARRAYLANG['TXT_WORKLOAD'],
+                'TXT_WORK_START'      => $_ARRAYLANG['TXT_WORK_START'],
+                'TXT_JOBS_CONTENT'     => $_ARRAYLANG['TXT_CONTENT'],
+                'TXT_STORE'                => $_ARRAYLANG['TXT_STORE'],
+                'TXT_PUBLISHING'           => $_ARRAYLANG['TXT_PUBLISHING'],
+                'TXT_STARTDATE'            => $_ARRAYLANG['TXT_STARTDATE'],
+                'TXT_ENDDATE'              => $_ARRAYLANG['TXT_ENDDATE'],
+                'TXT_OPTIONAL'           => $_ARRAYLANG['TXT_OPTIONAL'],
+                'TXT_ACTIVE'             => $_ARRAYLANG['TXT_ACTIVE'],
+                'TXT_DATE'                 => $_ARRAYLANG['TXT_DATE'],
+                'JOBS_TEXT'            => get_wysiwyg_editor('jobsText'),
+                'JOBS_FORM_ACTION'     => "add",
+                'JOBS_STORED_FORM_ACTION' => "add",
+                'JOBS_STATUS'          => "checked='checked'",
+                'JOBS_ID'              => "",
+                'JOBS_TOP_TITLE'       => $_ARRAYLANG['TXT_CREATE_DOCUMENT'],
+                'JOBS_CAT_MENU'        => $this->getCategoryMenu($this->langId),
+                'TXT_JOBS_CATEGORY_SELECT'=> $_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT'],
+                'TXT_JOBS_NO_CATEGORY'=> $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'],
+                'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE'],
+                'JOBS_STARTDATE'       => "",
+                'JOBS_ENDDATE' => "",
+                'JOBS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
+                //'JOBS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']), // there is no result here....
+                'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
+                'JOBS_AUTHOR' => htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+            ));
+            $this->getLocationTable("");
+
+            if (isset($_POST['jobsTitle']) AND !empty($_POST['jobsTitle'])) {
             $this->insert();
             $this->createRSS();
         }
         }
     }
-
-
 
 
     /**
@@ -556,7 +540,6 @@ class jobsManager extends jobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $newsId = "";
         if(isset($_GET['id'])){
             $jobsId = intval($_GET['id']);
 
@@ -570,7 +553,7 @@ class jobsManager extends jobsLibrary
                 } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_LOCATION_NOT_DELETED'];
                 }
-                
+
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
@@ -596,15 +579,12 @@ class jobsManager extends jobsLibrary
     }
 
 
-
-
     /**
-    * Edit the news
-    *
-    * @global    object     $objDatabase
-    * @param     string     $pageContent
-    */
-    function edit($id = '')
+     * Edit the news
+     * @global    object     $objDatabase
+     * @param     string     $pageContent
+     */
+    function edit($id='')
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -640,9 +620,7 @@ class jobsManager extends jobsLibrary
         if(empty($id)) {
             $id = intval($_REQUEST['id']);
         }
-        
         $this->getLocationTable($id);
-
         $query = "SELECT `catid`,
                            `lang`,
                            `date`,
@@ -702,12 +680,7 @@ class jobsManager extends jobsLibrary
         $this->_objTpl->setVariable("JOBS_FORM_ACTION","update");
         $this->_objTpl->setVariable("JOBS_STORED_FORM_ACTION","update");
         $this->_objTpl->setVariable("JOBS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT']);
-        
-        
-        
     }
-
-
 
 
     /**
@@ -718,7 +691,7 @@ class jobsManager extends jobsLibrary
     */
     function update()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         if (isset($_GET['id'])) {
             $objFWUser = FWUser::getFWUserObject();
@@ -726,7 +699,8 @@ class jobsManager extends jobsLibrary
             $id = intval($_GET['id']);
             $userId = $objFWUser->objUser->getId();
             $changelog = mktime();
-            $date = date(ASCMS_DATE_FORMAT);
+// Unused
+//            $date = date(ASCMS_DATE_FORMAT);
             $title = get_magic_quotes_gpc() ? strip_tags($_POST['jobsTitle']) : addslashes(strip_tags($_POST['jobsTitle']));
             $text = get_magic_quotes_gpc() ? $_POST['jobsText'] : addslashes($_POST['jobsText']);
             $title= str_replace("ß","ss",$title);
@@ -736,41 +710,39 @@ class jobsManager extends jobsLibrary
             $workload = get_magic_quotes_gpc() ? strip_tags($_POST['workload']) : addslashes(strip_tags($_POST['workload']));
             if(empty($_POST['work_start']))
                  $work_start = "0000-00-00";
-            else 
+            else
                 $work_start = $_POST['work_start'];
             //start 'n' end
             $dateparts         = split("-", $work_start);
             $work_start        = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
 
-
-            
             $catId = intval($_POST['jobsCat']);
             $status = (!empty($_POST['status'])) ? intval($_POST['status']) : 0;
             $startDate = get_magic_quotes_gpc() ? strip_tags($_POST['startDate']) : addslashes(strip_tags($_POST['startDate']));
             $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
             $author =  get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
-            
+
             $dberr = false;
-            $locset;                //set of location that is associated with this job in the POST Data
-            $locset_indb;           //set of locations that is associated with this job in the db
-            $rel_loc_jobs = "";     //used to generate INSERT Statement
-            
-            foreach($_POST['associated_locations'] as $key => $value) {
+            $locset = '';                //set of location that is associated with this job in the POST Data
+            $locset_indb = '';           //set of locations that is associated with this job in the db
+            $rel_loc_jobs = '';     //used to generate INSERT Statement
+
+            foreach($_POST['associated_locations'] as $value) {
                 $locset[] = $value;
             }
-            
+
             $query = "SELECT DISTINCT l.name as name,
                       l.id as id
-                      FROM `".DBPREFIX."module_jobs_location` l 
-                      LEFT JOIN `".DBPREFIX."module_jobs_rel_loc_jobs` as j on j.location=l.id 
+                      FROM `".DBPREFIX."module_jobs_location` l
+                      LEFT JOIN `".DBPREFIX."module_jobs_rel_loc_jobs` as j on j.location=l.id
                       WHERE j.job = $id";
-            
+
             //Compare Post data and database
             $objResult = $objDatabase->Execute($query);
             if(!$objResult) {
                 $dberr = true;
             }
-            
+
             while(!$objResult->EOF && !$dberr) {
                 if(in_array($objResult->fields['id'],$locset)) {
                     $locset_indb[] = $objResult->fields['id'];
@@ -782,19 +754,16 @@ class jobsManager extends jobsLibrary
                 }
                 $objResult->MoveNext();
             }
-            
-            unset($key);
             unset($value);
-            
             if(count($locset)-count($locset_indb) > 0  && !$dberr) {
-                foreach($locset as $key => $value) {
+                foreach($locset as $value) {
                     if(!in_array($value,$locset_indb)) {
                         $rel_loc_jobs .= " ($id,$value),";
                     }
                 }
                 $rel_loc_jobs = substr_replace($rel_loc_jobs ,"",-1);
                 $query = "INSERT INTO `".DBPREFIX."module_jobs_rel_loc_jobs` (job,location) VALUES $rel_loc_jobs ";
-                
+
                 if(!$objDatabase->Execute($query)) {
                     $dberr = true;
                 }
@@ -819,16 +788,12 @@ class jobsManager extends jobsLibrary
            if(!$objDatabase->Execute($query) or $dberr) {
                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
            } else {
-                
+
                 $this->createRSS();
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
            }
         }
     }
-
-
-
-
 
 
     /**
@@ -841,7 +806,7 @@ class jobsManager extends jobsLibrary
     */
     function changeStatus()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         if(isset($_POST['deactivate']) AND !empty($_POST['deactivate'])){
             $status = 0;
@@ -864,21 +829,20 @@ class jobsManager extends jobsLibrary
             }
         }
     }
-    
+
+
     /**
     * change Settings
-    *
     * @global     object    $objDatabase
     * @return    boolean   result
     */
     function settings()
     {
-    	global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
-    	
-    	$this->_objTpl->loadTemplateFile('module_jobs_settings.html',true,true);
+        $this->_objTpl->loadTemplateFile('module_jobs_settings.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        
+
         $this->_objTpl->setVariable(array(
             'TXT_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
             'TXT_FOOTNOTE' => $_ARRAYLANG['TXT_JOBS_FOOTNOTE'],
@@ -891,99 +855,95 @@ class jobsManager extends jobsLibrary
             'TXT_URL_INFO' => $_ARRAYLANG['TXT_JOBS_URL_INFO'],
             'TXT_SHOW_LOCATION_FE' => $_ARRAYLANG['TXT_JOBS_SHOW_LOCATION_FE']
         ));
-        
-        
-        $updaterrr = false;
-        if($_POST['updateFootnote'] == "true" && !(preg_match("/^[A-Za-z0-9\.\/%&=\?\-_:#@;]+$/i",$_POST['url']) or empty($_POST['url']))) {
-        	$this->strErrMessage = $_ARRAYLANG['TXT_JOBS_URL_ERROR'];
-        	$updateerr = true;
+
+// Unused
+//        $updaterrr = false;
+        if($_POST['updateFootnote'] == "true" && !(preg_match('/^[A-Za-z0-9\.\/%&=\?\-_:#@;]+$/i', $_POST['url']) or empty($_POST['url']))) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_URL_ERROR'];
+            $updateerr = true;
         }
 
-        
+
         if($_POST['updateFootnote'] == "true" && !$updateerr) {
-        	$footnote = addslashes($_POST['footnote']);
-        	$url = addslashes($_POST['url']);
-        	$link = addslashes($_POST['link']);
-        	$show_location_fe = intval($_POST['show_location_fe']);
-        	
-	        $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$footnote' WHERE name='footnote';";
+            $footnote = addslashes($_POST['footnote']);
+            $url = addslashes($_POST['url']);
+            $link = addslashes($_POST['link']);
+            $show_location_fe = intval($_POST['show_location_fe']);
 
-	        if (!$objDatabase->Execute($query)){
-	            $updateerr = true;
-	        }
-	        $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$url' WHERE name='url';";	
-	        if (!$objDatabase->Execute($query)){
-	            $updateerr = true;
-	        }
-	        
-	        $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$link' WHERE name='link';";	
-	        if (!$objDatabase->Execute($query)){
-	            $updateerr = true;
-	        }
+            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$footnote' WHERE name='footnote';";
 
-	        $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$show_location_fe' WHERE name='show_location_fe';";	
+            if (!$objDatabase->Execute($query)){
+                $updateerr = true;
+            }
+            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$url' WHERE name='url';";
+            if (!$objDatabase->Execute($query)){
+                $updateerr = true;
+            }
 
-	        if (!$objDatabase->Execute($query)){
-	            $updateerr = true;
-	        }
-	        
-	        if(!$updateerr) {
+            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$link' WHERE name='link';";
+            if (!$objDatabase->Execute($query)){
+                $updateerr = true;
+            }
+
+            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$show_location_fe' WHERE name='show_location_fe';";
+
+            if (!$objDatabase->Execute($query)){
+                $updateerr = true;
+            }
+
+            if(!$updateerr) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
-        
+
         /*
         * just in case of a database or malformed URL Error, we put the POST Data back in the forms
         */
-        
-        if($_POST['updateFootnote'] == "true") {
-        	$footnote = $_POST['footnote'];
-        	$url = $_POST['url'];
-        	$link = $_POST['link'];
-        	$show_location_fe = (intval($_POST['show_location_fe']) == 1) ? "checked" : ""; 
-        } else {
-	        $query = "SELECT *
-	                     FROM `".DBPREFIX."module_jobs_settings`
-	                     WHERE 1
-	                     ";
-	        $objResult = $objDatabase->Execute($query);
-	        $footnote = "";
-	        $link = "";
-	        $url = "";
-	        $show_location_fe = "";
-	
-	        while(!$objResult->EOF) {
 
-	            if($objResult->fields['name']== "footnote") {
-	                $footnote = stripslashes($objResult->fields['value']);
-	            }
-	            elseif($objResult->fields['name']== "link") {
-	                $link = stripslashes($objResult->fields['value']);
-	            }
-	            elseif($objResult->fields['name']== "url") {
-	                $url = stripslashes($objResult->fields['value']);
-	            }
-	            elseif($objResult->fields['name']== "show_location_fe") {
-	                if(intval($objResult->fields['value']) == 1)
-	                   $show_location_fe = " checked ";
-	            }
-	            $objResult->movenext();
-	        }
+        if($_POST['updateFootnote'] == "true") {
+            $footnote = $_POST['footnote'];
+            $url = $_POST['url'];
+            $link = $_POST['link'];
+            $show_location_fe = (intval($_POST['show_location_fe']) == 1) ? "checked" : "";
+        } else {
+            $query = "SELECT *
+                         FROM `".DBPREFIX."module_jobs_settings`
+                         WHERE 1
+                         ";
+            $objResult = $objDatabase->Execute($query);
+            $footnote = "";
+            $link = "";
+            $url = "";
+            $show_location_fe = "";
+
+            while(!$objResult->EOF) {
+
+                if($objResult->fields['name']== "footnote") {
+                    $footnote = stripslashes($objResult->fields['value']);
+                }
+                elseif($objResult->fields['name']== "link") {
+                    $link = stripslashes($objResult->fields['value']);
+                }
+                elseif($objResult->fields['name']== "url") {
+                    $url = stripslashes($objResult->fields['value']);
+                }
+                elseif($objResult->fields['name']== "show_location_fe") {
+                    if(intval($objResult->fields['value']) == 1)
+                       $show_location_fe = " checked ";
+                }
+                $objResult->movenext();
+            }
         }
-        
+
         $this->_objTpl->setVariable(array(
             'FOOTNOTE'            => stripslashes($footnote),
             'LINK'                => stripslashes($link),
             'URL'                 => stripslashes($url),
             'SHOW_LOCATION_FE'    => $show_location_fe
         ));
-        
-        
-        
-    	return true;
-    	
+        return true;
     }
 
     /**
@@ -994,6 +954,7 @@ class jobsManager extends jobsLibrary
      */
     function _checkDate($date)
     {
+        $arrDate = array();
         if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $date, $arrDate)) {
             return mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
         } else {
@@ -1013,8 +974,9 @@ class jobsManager extends jobsLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = FWUser::getFWUserObject();
-        
-        $noerror = true;
+
+// Unused
+//        $noerror = true;
         $errorlist = "";
 
         $date = $this->_checkDate($_POST['creation_date']);
@@ -1028,15 +990,15 @@ class jobsManager extends jobsLibrary
 
         $workloc = get_magic_quotes_gpc() ? strip_tags($_POST['workloc']) : addslashes(strip_tags($_POST['workloc']));
         $workload = get_magic_quotes_gpc() ? strip_tags($_POST['workload']) : addslashes(strip_tags($_POST['workload']));
-        
+
         if(empty($_POST['work_start']))
              $work_start = "0000-00-00";
-        else 
+        else
             $work_start = $_POST['work_start'];
         //start 'n' end
         $dateparts         = split("-", $work_start);
         $work_start        = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-        
+
         $cat = intval($_POST['jobsCat']);
         $userid = $objFWUser->objUser->getId();
 
@@ -1044,12 +1006,12 @@ class jobsManager extends jobsLibrary
         $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
 
         $status = intval($_POST['status']);
-        
+
         if(empty($title) or empty($cat)) {
             $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_ERROR'];
             $this->edit();
         }
-        
+
         if($status == 0) {
             $startDate = "";
             $endDate = "";
@@ -1092,16 +1054,16 @@ class jobsManager extends jobsLibrary
         if ($objDatabase->Execute($query)){
             $id = $objDatabase->Insert_id();
             $rel_loc_jobs = "";
-            
+
             if(!isset($id)) {
-                 $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED'];               
+                 $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED'];
                  $this->overview();
                  return;
             }
-            
-            if(isset($_POST['associated_locations'])) 
+
+            if(isset($_POST['associated_locations']))
             {
-                foreach($_POST['associated_locations'] as $key => $value) {
+                foreach($_POST['associated_locations'] as $value) {
                     $rel_loc_jobs .= " ($id,$value),";
                 }
                 $rel_loc_jobs = substr_replace($rel_loc_jobs ,"",-1);
@@ -1110,9 +1072,9 @@ class jobsManager extends jobsLibrary
                 $this->overview();
                 return;
             }
-            
-    
-            
+
+
+
             $query = "INSERT INTO `".DBPREFIX."module_jobs_rel_loc_jobs` (job,location) VALUES $rel_loc_jobs ";
             if ($objDatabase->Execute($query))
             {
@@ -1120,16 +1082,16 @@ class jobsManager extends jobsLibrary
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED'];
             }
-            
+
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
         }
-        
-        
+
+
         if(!empty($errorlist)) {
             $this->strErrMessage .= "<br />" .$errorlist;
         }
-        
+
         if(!empty($this->strErrMessage)) {
             $this->edit($id);
         } else {
@@ -1256,10 +1218,10 @@ class jobsManager extends jobsLibrary
             }
         }
     }
-    
-    
-    
-    
+
+
+
+
 
     /**
     * Add or edit the jobs Locations
@@ -1314,11 +1276,8 @@ class jobsManager extends jobsLibrary
                 $name = get_magic_quotes_gpc() ? strip_tags($name) : addslashes(strip_tags($name));
                 $id=intval($id);
 
-                $sorting = !empty($_REQUEST['sortStyle'][$id]) ? contrexx_addslashes($_REQUEST['sortStyle'][$id]) : 'alpha';
-
-	
-//	              lang='$this->langId',
-//	              sort_style='$sorting'
+// Unused
+//                $sorting = !empty($_REQUEST['sortStyle'][$id]) ? contrexx_addslashes($_REQUEST['sortStyle'][$id]) : 'alpha';
                 if($objDatabase->Execute("UPDATE ".DBPREFIX."module_jobs_location
                                   SET name='$name'
                                 WHERE id=$id"))
@@ -1341,7 +1300,8 @@ class jobsManager extends jobsLibrary
 
         while (!$objResult->EOF) {
             $class = (($i % 2) == 0) ? "row1" : "row2";
-            $sorting = $objResult->fields['sort_style'];
+// Unused
+//            $sorting = $objResult->fields['sort_style'];
             $this->_objTpl->setVariable(array(
                 'JOBS_ROWCLASS'   => $class,
                 'JOBS_LOC_ID'      => $objResult->fields['id'],
@@ -1379,12 +1339,12 @@ class jobsManager extends jobsLibrary
         if(is_array($_POST['selectedId'])) {
             foreach ($_POST['selectedId'] as $value) {
                 $locId=intval($value);
-    
+
                 if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_jobs_rel_loc_jobs WHERE location=$locId") && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_jobs_location WHERE id=$locId")) {
                     $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 } else {
                     $this->strErrMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']."<br />";
-                }                
+                }
             }
         }
     }
@@ -1396,11 +1356,12 @@ class jobsManager extends jobsLibrary
     * @param     string     $fullContent      HTML-Content with more than BODY
     * @return    string     $content          HTML-Content between BODY-Tag
     */
-    function filterBodyTag($fullContent){
-        $res=false;
-        $posBody=0;
-        $posStartBodyContent=0;
-        $res=preg_match_all("/<body[^>]*>/i", $fullContent, $arrayMatches);
+    function filterBodyTag($fullContent)
+    {
+        $posBody = 0;
+        $posStartBodyContent = 0;
+        $arrayMatches = array();
+        $res = preg_match_all('/<body[^>]*>/i', $fullContent, $arrayMatches);
         if ($res==true) {
             $bodyStartTag = $arrayMatches[0][0];
             // Position des Start-Tags holen
@@ -1409,7 +1370,7 @@ class jobsManager extends jobsLibrary
             $posStartBodyContent = $posBody + strlen($bodyStartTag);
         }
         $posEndTag=strlen($fullContent);
-        $res=preg_match_all("/<\/body>/i",$fullContent, $arrayMatches);
+        $res=preg_match_all('/<\/body>/i', $fullContent, $arrayMatches);
         if($res==true){
             $bodyEndTag=$arrayMatches[0][0];
             // Position des End-Tags holen
@@ -1427,8 +1388,6 @@ class jobsManager extends jobsLibrary
     */
     function createRSS()
     {
-        global $_CONFIG;
-        
         $RSS = new rssFeed();
         //$RSS->channelTitle = $_CONFIG['backendXmlChannelTitle'];
         //$RSS->channelDescription = $_CONFIG['backendXmlChannelDescription'];
