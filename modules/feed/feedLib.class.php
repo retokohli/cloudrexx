@@ -27,71 +27,71 @@ if (eregi('feedLib.class.php', $_SERVER['PHP_SELF']))
  */
 class feedLibrary
 {
-	var $_objTpl;
-	var $pageTitle;
-	var $statusMessage;
-	var $feedpath;
+    var $_objTpl;
+    var $pageTitle;
+    var $statusMessage;
+    var $feedpath;
 
-	function __construct()
-	{
-	}
+    function __construct()
+    {
+    }
 
 
-	//FUNC refresh
-	function showNewsRefresh($id, $time, $path)
-	{
-		global $objDatabase, $_ARRAYLANG, $_LANGID;
+    //FUNC refresh
+    function showNewsRefresh($id, $time, $path)
+    {
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-		//delete old #01
-		$query = "SELECT link,
-		                   filename
-		              FROM ".DBPREFIX."module_feed_news
-		             WHERE id = '".$id."'";
-		$objResult = $objDatabase->Execute($query);
+        //delete old #01
+        $query = "SELECT link,
+                           filename
+                      FROM ".DBPREFIX."module_feed_news
+                     WHERE id = '".$id."'";
+        $objResult = $objDatabase->Execute($query);
 
-		$old_link     = $objResult->fields['link'];
-		$old_filename = $objResult->fields['filename'];
+        $old_link     = $objResult->fields['link'];
+        $old_filename = $objResult->fields['filename'];
 
-		if($old_link != '') {
-			$filename = "feed_".$time."_".$this->_replaceCharacters(basename($old_link));
-			@copy($old_link, $path.$filename);
+        if($old_link != '') {
+            $filename = "feed_".$time."_".$this->_replaceCharacters(basename($old_link));
+            @copy($old_link, $path.$filename);
 
-			//rss class
-			$rss =& new XML_RSS($path.$filename);
-			$rss->parse();
-			$content = '';
+            //rss class
+            $rss =& new XML_RSS($path.$filename);
+            $rss->parse();
+            $content = '';
 
-			foreach($rss->getStructure() as $array) {
-				$content .= $array;
-			}
-		}
+            foreach($rss->getStructure() as $array) {
+                $content .= $array;
+            }
+        }
 
-		if($old_link == '') {
-			$filename = $old_filename;
-		}
+        if($old_link == '') {
+            $filename = $old_filename;
+        }
 
-		$query = "UPDATE ".DBPREFIX."module_feed_news
-		               SET filename = '".$filename."',
-		                   time = '".$time."'
-		             WHERE id = '".$id."'";
-		$objDatabase->Execute($query);
+        $query = "UPDATE ".DBPREFIX."module_feed_news
+                       SET filename = '".$filename."',
+                           time = '".$time."'
+                     WHERE id = '".$id."'";
+        $objDatabase->Execute($query);
 
-		//delete old #02
-		if($old_link != '') {
-			@unlink($path.$old_filename);
-		}
-	}
+        //delete old #02
+        if($old_link != '') {
+            @unlink($path.$old_filename);
+        }
+    }
 
-	// replaces some characters
+    // replaces some characters
     function _replaceCharacters($string){
         // replace $change with ''
         $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|', '+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach($change as $str){
-		    $string = str_replace($str, '_', $string);
+            $string = str_replace($str, '_', $string);
         }
         for($x = 0; $x < count($signs1); $x++){
             $string = str_replace($signs1[$x], $signs2[$x], $string);
@@ -113,7 +113,7 @@ class feedLibrary
 
     function replaceChars ($string)
     {
-        $replace = array('Â€' => '€', 'Â?' => '?', 'Â‚' => '‚', 'Âƒ' => 'ƒ', 'Â„' => '„', 'Â…' => '…', 'Â†' => '†', 'Â‡' => '‡', 'Âˆ' => 'ˆ', 'Â‰' => '‰', 'ÂŠ' => 'Š', 'Â‹' => '‹', 'ÂŒ' => 'Œ', 'ÂŽ' => 'Ž', 'Â‘' => '‘', 'Â’' => '’', 'Â“' => '“', 'Â”' => '”', 'Â•' => '•', 'Â–' => '–', 'Â—' => '—', 'Â˜' => '˜', 'Â™' => '™', 'Âš' => 'š', 'Â›' => '›', 'Âœ' => 'œ', 'Âž' => 'ž', 'ÂŸ' => 'Ÿ', ' ' => ' ', 'Â¡' => '¡', 'Â¢' => '¢', 'Â£' => '£', 'Â¤' => '¤', 'Â¥' => '¥', 'Â¦' => '¦', 'Â§' => '§', 'Â¨' => '¨', 'Â©' => '©', 'Âª' => 'ª', 'Â«' => '«', 'Â¬' => '¬', 'Â­' => '­', 'Â®' => '®', 'Â¯' => '¯', 'Â°' => '°', 'Â±' => '±', 'Â²' => '²', 'Â³' => '³', 'Â´' => '´', 'Âµ' => 'µ', 'Â¶' => '¶', 'Â·' => '·', 'Â¸' => '¸', 'Â¹' => '¹', 'Âº' => 'º', 'Â»' => '»', 'Â¼' => '¼', 'Â½' => '½', 'Â¾' => '¾', 'Â¿' => '¿', 'Ã€' => 'À', 'Ã?' => 'Ý', 'Ã‚' => 'Â', 'Ãƒ' => 'Ã', 'Ã„' => 'Ä', 'Ã…' => 'Å', 'Ã†' => 'Æ', 'Ã‡' => 'Ç', 'Ãˆ' => 'È', 'Ã‰' => 'É', 'ÃŠ' => 'Ê', 'Ã‹' => 'Ë', 'ÃŒ' => 'Ì', 'ÃŽ' => 'Î', 'Ã‘' => 'Ñ', 'Ã’' => 'Ò', 'Ã“' => 'Ó', 'Ã”' => 'Ô', 'Ã•' => 'Õ', 'Ã–' => 'Ö', 'Ã—' => '×', 'Ã˜' => 'Ø', 'Ã™' => 'Ù', 'Ãš' => 'Ú', 'Ã›' => 'Û', 'Ãœ' => 'Ü', 'Ãž' => 'Þ', 'ÃŸ' => 'ß', 'Ã ' => 'à', 'Ã¡' => 'á', 'Ã¢' => 'â', 'Ã£' => 'ã', 'Ã¤' => 'ä', 'Ã¥' => 'å', 'Ã¦' => 'æ', 'Ã§' => 'ç', 'Ã¨' => 'è', 'Ã©' => 'é', 'Ãª' => 'ê', 'Ã«' => 'ë', 'Ã¬' => 'ì', 'Ã­' => 'í', 'Ã®' => 'î', 'Ã¯' => 'ï', 'Ã°' => 'ð', 'Ã±' => 'ñ', 'Ã²' => 'ò', 'Ã³' => 'ó', 'Ã´' => 'ô', 'Ãµ' => 'õ', 'Ã¶' => 'ö', 'Ã·' => '÷', 'Ã¸' => 'ø', 'Ã¹' => 'ù', 'Ãº' => 'ú', 'Ã»' => 'û', 'Ã¼' => 'ü', 'Ã½' => 'ý', 'Ã¾' => 'þ', 'Ã¿' => 'ÿ');
+        $replace = array('Â€' => 'ï¿½', 'ï¿½?' => '?', 'Â‚' => 'ï¿½', 'Âƒ' => 'ï¿½', 'Â„' => 'ï¿½', 'Â…' => 'ï¿½', 'Â†' => 'ï¿½', 'Â‡' => 'ï¿½', 'Âˆ' => 'ï¿½', 'Â‰' => 'ï¿½', 'ÂŠ' => 'ï¿½', 'Â‹' => 'ï¿½', 'ÂŒ' => 'ï¿½', 'ÂŽ' => 'ï¿½', 'Â‘' => 'ï¿½', 'Â’' => 'ï¿½', 'Â“' => 'ï¿½', 'Â”' => 'ï¿½', 'Â•' => 'ï¿½', 'Â–' => 'ï¿½', 'Â—' => 'ï¿½', 'Â˜' => 'ï¿½', 'Â™' => 'ï¿½', 'Âš' => 'ï¿½', 'Â›' => 'ï¿½', 'Âœ' => 'ï¿½', 'Âž' => 'ï¿½', 'ÂŸ' => 'ï¿½', ' ' => ' ', 'Â¡' => 'ï¿½', 'Â¢' => 'ï¿½', 'Â£' => 'ï¿½', 'Â¤' => 'ï¿½', 'Â¥' => 'ï¿½', 'Â¦' => 'ï¿½', 'Â§' => 'ï¿½', 'Â¨' => 'ï¿½', 'Â©' => 'ï¿½', 'Âª' => 'ï¿½', 'Â«' => 'ï¿½', 'Â¬' => 'ï¿½', 'Â­' => 'ï¿½', 'Â®' => 'ï¿½', 'Â¯' => 'ï¿½', 'Â°' => 'ï¿½', 'Â±' => 'ï¿½', 'Â²' => 'ï¿½', 'Â³' => 'ï¿½', 'Â´' => 'ï¿½', 'Âµ' => 'ï¿½', 'Â¶' => 'ï¿½', 'Â·' => 'ï¿½', 'Â¸' => 'ï¿½', 'Â¹' => 'ï¿½', 'Âº' => 'ï¿½', 'Â»' => 'ï¿½', 'Â¼' => 'ï¿½', 'Â½' => 'ï¿½', 'Â¾' => 'ï¿½', 'Â¿' => 'ï¿½', 'Ã€' => 'ï¿½', 'ï¿½?' => 'ï¿½', 'Ã‚' => 'ï¿½', 'Ãƒ' => 'ï¿½', 'Ã„' => 'ï¿½', 'Ã…' => 'ï¿½', 'Ã†' => 'ï¿½', 'Ã‡' => 'ï¿½', 'Ãˆ' => 'ï¿½', 'Ã‰' => 'ï¿½', 'ÃŠ' => 'ï¿½', 'Ã‹' => 'ï¿½', 'ÃŒ' => 'ï¿½', 'ÃŽ' => 'ï¿½', 'Ã‘' => 'ï¿½', 'Ã’' => 'ï¿½', 'Ã“' => 'ï¿½', 'Ã”' => 'ï¿½', 'Ã•' => 'ï¿½', 'Ã–' => 'ï¿½', 'Ã—' => 'ï¿½', 'Ã˜' => 'ï¿½', 'Ã™' => 'ï¿½', 'Ãš' => 'ï¿½', 'Ã›' => 'ï¿½', 'Ãœ' => 'ï¿½', 'Ãž' => 'ï¿½', 'ÃŸ' => 'ï¿½', 'ï¿½ ' => 'ï¿½', 'Ã¡' => 'ï¿½', 'Ã¢' => 'ï¿½', 'Ã£' => 'ï¿½', 'Ã¤' => 'ï¿½', 'Ã¥' => 'ï¿½', 'Ã¦' => 'ï¿½', 'Ã§' => 'ï¿½', 'Ã¨' => 'ï¿½', 'Ã©' => 'ï¿½', 'Ãª' => 'ï¿½', 'Ã«' => 'ï¿½', 'Ã¬' => 'ï¿½', 'Ã­' => 'ï¿½', 'Ã®' => 'ï¿½', 'Ã¯' => 'ï¿½', 'Ã°' => 'ï¿½', 'Ã±' => 'ï¿½', 'Ã²' => 'ï¿½', 'Ã³' => 'ï¿½', 'Ã´' => 'ï¿½', 'Ãµ' => 'ï¿½', 'Ã¶' => 'ï¿½', 'Ã·' => 'ï¿½', 'Ã¸' => 'ï¿½', 'Ã¹' => 'ï¿½', 'Ãº' => 'ï¿½', 'Ã»' => 'ï¿½', 'Ã¼' => 'ï¿½', 'Ã½' => 'ï¿½', 'Ã¾' => 'ï¿½', 'Ã¿' => 'ï¿½');
         foreach ($replace as $key => $val) {
             $string = str_replace($key, $val, $string);
         }
