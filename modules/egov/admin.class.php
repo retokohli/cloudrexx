@@ -1,4 +1,5 @@
 <?php
+
 /**
  * E-Government
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -9,11 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Debug mode
- * @ignore
- */
-define('_EGOV_DEBUG', 0);
 
 /*
 ALTER TABLE `contrexx_module_egov_products`
@@ -32,7 +28,7 @@ Changes to the database:
 
 UPDATE `contrexx_module_shop_payment_processors`
 SET `name` = 'yellowpay',
-    `description` = 'Yellowpay vereinfacht das Inkasso im Online-Shop. Ihre Kunden bezahlen die Einkäufe direkt mit dem Gelben Konto oder einer Kreditkarte. Ihr Plus: Mit den Zahlungsarten "PostFinance Debit Direct" und "PostFinance Yellownet" bieten Sie 2,4 Millionen Inhaberinnen und Inhabern eines Gelben Kontos eine kundenfreundliche und sichere Zahlungsmöglichkeit.'
+    `description` = 'Yellowpay vereinfacht das Inkasso im Online-Shop. Ihre Kunden bezahlen die Einkï¿½ufe direkt mit dem Gelben Konto oder einer Kreditkarte. Ihr Plus: Mit den Zahlungsarten "PostFinance Debit Direct" und "PostFinance Yellownet" bieten Sie 2,4 Millionen Inhaberinnen und Inhabern eines Gelben Kontos eine kundenfreundliche und sichere Zahlungsmï¿½glichkeit.'
 WHERE `contrexx_module_shop_payment_processors`.`id`=3;
 
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`)
@@ -93,16 +89,6 @@ class eGov extends eGovLibrary
     function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
-
-        if (_EGOV_DEBUG) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 1);
-            global $objDatabase; $objDatabase->debug = 1;
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-            global $objDatabase; $objDatabase->debug = 0;
-        }
 
         $this->_arrFormFieldTypes = array(
             'text' => $_ARRAYLANG['TXT_EGOV_TEXTBOX'],
@@ -235,7 +221,7 @@ class eGov extends eGovLibrary
 
     function _settings()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_gov_settings.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
@@ -352,7 +338,7 @@ class eGov extends eGovLibrary
 
     function _product_edit()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_gov_product_edit.html');
         if (intval($_REQUEST['id']) == 0) {
@@ -1124,8 +1110,6 @@ class eGov extends eGovLibrary
 
     function _getFormFieldRequiredCheckBox($name, $id, $type, $selected)
     {
-        global $_ARRAYLANG;
-
         switch ($type) {
             case 'hidden':
             case 'select':
@@ -1180,7 +1164,7 @@ class eGov extends eGovLibrary
      */
     function _saveForm()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_CONFIG;
 
         if (empty($_REQUEST['saveForm'])) {
             return true;
@@ -1785,7 +1769,7 @@ class eGov extends eGovLibrary
      */
     function updateOrder($order_id)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         $product_id = eGov::getOrderValue('order_product', $order_id);
         if (empty($product_id)) {
@@ -1815,7 +1799,7 @@ class eGov extends eGovLibrary
 
             $FormValue4Mail .= html_entity_decode($name).': '.html_entity_decode($value)."\n";
         }
-        // Bestelleingang-Benachrichtigung || Mail für den Administrator
+        // Bestelleingang-Benachrichtigung || Mail fï¿½r den Administrator
         $recipient = eGovLibrary::GetProduktValue('product_target_email', $product_id);
         if (empty($recipient)) {
             $recipient = eGovLibrary::GetSettings('set_orderentry_recipient');
