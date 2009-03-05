@@ -321,7 +321,7 @@ class calendarManager extends calendarLibrary
 				} else {
 					$series = '';
 				}
-				
+
                 if ($objResult->fields['active'] == "0") {
                     $status = "red";
                     $event_led = $_ARRAYLANG['TXT_CALENDAR_LED_INACTIVE'];
@@ -531,6 +531,7 @@ class calendarManager extends calendarLibrary
             'TXT_CALENDAR_VALUE'            => $_ARRAYLANG['TXT_CALENDAR_VALUE'],
             'TXT_CALENDAR_BACK'             => $_ARRAYLANG['TXT_CALENDAR_BACK'],
             'TXT_CALENDAR_DELETE'           => $_ARRAYLANG['TXT_CALENDAR_DELETE'],
+            'TXT_CALENDAR_DELETE_CONFIRM'   => addslashes($_ARRAYLANG['TXT_CALENDAR_DELETE_CONFIRM'])
         ));
     }
 
@@ -1943,9 +1944,9 @@ class calendarManager extends calendarLibrary
             $val = "1";
         }
 
-        
+
         (isset($_POST['fe_entries_ability'])) ? $this->settings->set('fe_entries_ability', $_POST['fe_entries_ability']) : null;
-        
+
         $query = "SELECT setvalue
                   FROM ".DBPREFIX."settings
                   WHERE setname = 'calendar".$this->mandateLink."headlines'";
@@ -2293,10 +2294,10 @@ class calendarManager extends calendarLibrary
         }
         return strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_decode($value) : $value;
     }
-    
+
     /**
      * toggles the active state of an event we got by $_GET
-     * 
+     *
      * @todo take event ID from other than $_GET (or maybe reset the location header
      *
      */

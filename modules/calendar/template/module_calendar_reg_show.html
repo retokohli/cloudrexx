@@ -1,4 +1,14 @@
 <!-- START calendar_reg_show.html -->
+<!-- START calendar_reg_ovreview.html -->
+<script language="JavaScript" type="text/javascript">
+<!--
+function confirmDeleteReg(Id)
+{
+	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_REG_NOTE_ID}&id="+Id);
+	}
+}
+</script>
 <table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
 	<tr>
 		<th colspan="2">
