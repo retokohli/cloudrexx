@@ -1059,7 +1059,7 @@ class DataLibrary
 		$intNumberOfChars 	= intval($this->_arrSettings['data_general_introduction']);
 
 		if ($intNumberOfChars > 0) {
-			$strIntroduction = (strlen($strIntroduction) > $intNumberOfChars) ? substr($strIntroduction, 0, $intNumberOfChars).' ...' : $strIntroduction;
+			$strIntroduction = (strlen($strIntroduction) > $intNumberOfChars) ? substr($strIntroduction, 0, $intNumberOfChars) : $strIntroduction;
 		}
 
 		return $strIntroduction;
