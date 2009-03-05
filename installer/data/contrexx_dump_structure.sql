@@ -746,7 +746,8 @@ CREATE TABLE `contrexx_module_data_placeholders` (
   `ref_id` int(11) NOT NULL default '0',
   `placeholder` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `placeholder` (`placeholder`)
+  UNIQUE KEY `placeholder` (`placeholder`),
+  UNIQUE KEY `type` (`type`,`ref_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_data_settings` (
   `name` varchar(50) NOT NULL default '',
