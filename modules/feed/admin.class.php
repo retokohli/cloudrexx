@@ -670,8 +670,9 @@ class feedManager extends feedLibrary
 
             if ($objResult2->RecordCount() != 0){
                 $selected = '';
-                if ($_SESSION['feedCategorySort'] == $objResult->fields['id']){
-                    $selected = ' selected';
+                if (   isset($_SESSION['feedCategorySort'])
+                    && $_SESSION['feedCategorySort'] == $objResult->fields['id']) {
+                    $selected = ' selected="selected"';
                 }
 
                 $this->_objTpl->setVariable(array(
@@ -1407,19 +1408,19 @@ class feedManager extends feedLibrary
         while(!$objResult->EOF) {
             ($i % 2)                ? $class  = 'row1'  : $class  = 'row2';
             ($objResult->fields['status'] == 1) ? $status = 'green' : $status = 'red';
-
             //records
-            $query = "SELECT subid
-                           FROM ".DBPREFIX."module_feed_news
-                          WHERE subid = '".$objResult->fields['id']."'";
+            $query = "
+                SELECT COUNT(*) AS `numof_records`
+                  FROM ".DBPREFIX."module_feed_news
+                 WHERE subid = '".$objResult->fields['id']."'";
             $objResult2 = $objDatabase->Execute($query);
-              $records = $objResult->RecordCount();
-
+            $records = $objResult2->fields['numof_records'];
               //lang
-              $query = "SELECT name
-                           FROM ".DBPREFIX."languages
-                          WHERE id = '".$objResult->fields['lang']."'";
-              $objResult2 = $objDatabase->Execute($query);
+            $query = "
+                SELECT name
+                  FROM ".DBPREFIX."languages
+                 WHERE id = '".$objResult->fields['lang']."'";
+            $objResult2 = $objDatabase->Execute($query);
 
             //parser
             $this->_objTpl->setVariable(array(
