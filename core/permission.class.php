@@ -74,11 +74,11 @@ class Permission
      *
      * @return void
      */
-    public static function noAccess()
+    public static function noAccess($redirect = null)
     {
         global $objInit;
 
-        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&').'cmd=noaccess');
+        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? '&redirect='.$redirect : '')).'cmd=noaccess');
         exit;
     }
 
