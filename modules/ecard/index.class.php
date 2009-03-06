@@ -277,7 +277,7 @@ class ecard
                 senderName, senderEmail,
                 recipientName, recipientEmail,
                 message
-            VALUES (
+            ) VALUES (
                 '".$code."',
                 '".time()."',
                 '".$timeToLife."',
