@@ -2464,7 +2464,7 @@ CREATE TABLE `contrexx_module_shop_order_items_attributes` (
   `product_option_value` varchar(32) NOT NULL default '',
   `product_option_values_price` decimal(9,2) NOT NULL default '0.00',
   PRIMARY KEY  (`orders_items_attributes_id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_orders` (
   `orderid` int(10) unsigned NOT NULL auto_increment,
   `customerid` int(10) unsigned NOT NULL default '0',
