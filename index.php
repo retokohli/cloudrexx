@@ -1085,7 +1085,7 @@ $boolShop = false;
 // set global content variables
 //-------------------------------------------------------
 
-$page_content = str_replace('{PAGE_URL}',  $objInit->getPageUri(), $page_content);
+$page_content = str_replace('{PAGE_URL}',  htmlspecialchars($objInit->getPageUri()), $page_content);
 $page_content = str_replace('{PRINT_URL}',  $objInit->getPrintUri(), $page_content);
 $page_content = str_replace('{PDF_URL}',  $objInit->getPDFUri(), $page_content);
 $page_content = str_replace('{TITLE}',  $page_title, $page_content);
@@ -1886,7 +1886,7 @@ $objTemplate->setVariable(array(
     'CSS_NAME'             => $pageCssName,
     'PRINT_URL'            => $objInit->getPrintUri(),
     'PDF_URL'              => $objInit->getPDFUri(),
-    'PAGE_URL'             => $objInit->getPageUri(),
+    'PAGE_URL'             => htmlspecialchars($objInit->getPageUri()),
     'CURRENT_URL'          => $objInit->getCurrentPageUri(),
     'DATE'                 => showFormattedDate(),
     'TIME'                 => date("H:i", time()),
