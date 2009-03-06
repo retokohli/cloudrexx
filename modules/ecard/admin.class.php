@@ -27,6 +27,9 @@
  */
 class ecard
 {
+    /**
+     * @var    HTML_Template_Sigma
+     */
     public $_objTpl;
     public $_pageTitle;
     public $strErrMessage = '';
@@ -87,6 +90,7 @@ class ecard
     {
         global $objDatabase, $_ARRAYLANG;
 
+        JS::activate('shadowbox');
         $this->_objTpl->loadTemplateFile('module_ecard_overview.html',true,true);
         $this->_pageTitle = $_ARRAYLANG['TXT_MOTIVE_SELECTION'];
 
@@ -95,67 +99,30 @@ class ecard
 
         /* Update progress */
         if ($_POST['saveMotives']) {
-            $i = 1;
-            $iArray = 0;
+            $i = 0;
             $motiveInputArray = $_POST['motiveInputArray'];
-
-            while ($i <= 9) {
+            while ($i < 9) {
+                $filepath = $motiveInputArray[$i];
+                $filename = basename($filepath);
                 $query = "
                     UPDATE ".DBPREFIX."module_ecard_settings
-                       SET setting_value = '" .$motiveInputArray[$iArray]."'
-                     WHERE setting_name = 'motive_".$i."';";
+                       SET setting_value='".contrexx_addslashes($filename)."'
+                     WHERE setting_name='motive_$i'";
                 $objResult = $objDatabase->Execute($query);
 
                 /* Create optimized picture for e-card dispatch */
-                $motiveInputArray[$iArray] = str_replace(ASCMS_PATH_OFFSET, "", $motiveInputArray[$iArray]);
-                if ($motiveInputArray[$iArray] != '' && (file_exists('..'.$motiveInputArray[$iArray]))) {
-                    $this->resizeMotive(2, $motiveInputArray[$iArray], ASCMS_ECARD_OPTIMIZED_PATH);
+                if ($filepath != '' && file_exists(ASCMS_PATH.$filepath)) {
+                    $this->resizeMotive(2, ASCMS_PATH.$filepath, ASCMS_ECARD_OPTIMIZED_PATH);
+                    $this->resizeMotive(1, ASCMS_PATH.$filepath, ASCMS_ECARD_THUMBNAIL_PATH);
                 }
-                $i++;
-                $iArray++;
+                ++$i;
             }
             $this->_objTpl->setVariable(array(
                 'CONTENT_OK_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_DATA_SAVED']
             ));
         }
 
-        /* Display progress */
-        $query = "
-            SELECT *
-              FROM ".DBPREFIX."module_ecard_settings
-             WHERE setting_name LIKE 'motive_%'
-             ORDER BY setting_name ASC";
-        $objResult = $objDatabase->Execute($query);
-        $i = 1;
-        /* Create thumbnails */
-        while (!$objResult->EOF) {
-            $motivePath = $objResult->fields['setting_value']; // returns this => /x/y/zz.jpg
-            $motivePath = str_replace(ASCMS_PATH_OFFSET, "", $motivePath);
-            $motiveFilename = str_replace('/', '', strrchr($motivePath, "/")); //returns this => xxx.jpg
-            $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motiveFilename;
-
-            if ($motivePath != "") {
-                if (file_exists("..".$motivePath)) {
-                    $this->resizeMotive(1, $motivePath, ASCMS_ECARD_THUMBNAIL_PATH);
-                    $motive = '<img style="border:1px solid #0A50A1;" src="'.$thumbnail.'" alt="'.$objResult->fields['setting_value'].'" />';
-                }
-            } else {
-                $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH."no_picture.gif";
-                $motive = '<img style="border:1px solid #0A50A1;" src="'.$thumbnail.'" alt="'.$thumbnail.'" />';
-            }
-
-            /* Initialize DATA placeholder */
-            $this->_objTpl->setVariable(array(
-                'MOTIVE_PATH' => $objResult->fields['setting_value'],
-                'MOTIVE_ID' => $objResult->fields['id'],
-                'MOTIVE' => $motive
-            ));
-            $this->_objTpl->parse('motiveBlock');
-            $objResult->MoveNext();
-        }
-
-        /* Initialize TEXT placeholder */
-        $this->_objTpl->setVariable(array(
+        $this->_objTpl->setGlobalVariable(array(
             'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
             'TXT_DELETE_MOTIVE' => $_ARRAYLANG['TXT_DELETE_MOTIVE'],
             'TXT_PICTURE' => $_ARRAYLANG['TXT_PICTURE'],
@@ -165,6 +132,35 @@ class ecard
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
             'TXT_ECARD_IMAGES' => $_ARRAYLANG['TXT_ECARD_IMAGES'],
         ));
+
+        /* Display progress */
+        $query = "
+            SELECT *
+              FROM ".DBPREFIX."module_ecard_settings
+             WHERE setting_name LIKE 'motive_%'
+             ORDER BY setting_name ASC";
+        $objResult = $objDatabase->Execute($query);
+        $i = 0;
+        /* Create thumbnails */
+        while (!$objResult->EOF) {
+            $motiveFilename = $objResult->fields['setting_value'];
+            $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH."no_picture.gif";
+            $sourcePath = '';
+            if ($motiveFilename != '') {
+                $sourcePath = ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motiveFilename;
+                $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motiveFilename;
+            }
+            /* Initialize DATA placeholder */
+            $this->_objTpl->setVariable(array(
+                'MOTIVE_PATH' => $sourcePath,
+                'MOTIVE_THUMB_PATH' => $thumbnail,
+                'MOTIVE_ID' => $i++,
+            ));
+            $this->_objTpl->parse('motiveBlock');
+            $objResult->MoveNext();
+        }
+        $this->_objTpl->replaceBlock('motiveBlock', '', true);
+
     }
 
 
@@ -349,16 +345,16 @@ class ecard
     }
 
 
-    function resizeMotive($type, $motivePath, $destinationPath)
+    function resizeMotive($type, $sourcePath, $destinationPath)
     {
         global $objDatabase;
 
         //$type == 1 => resize methode for creating thumbnails
         //$type == 2 => resize methode for creating optimized motives
 
+echo("resizeMotive($type, $sourcePath, $destinationPath):  Entered<br />");
         /* Initialize variables */
-        $motiveOriginal = "../".$motivePath;
-        $motiveFilename = strrchr($motiveOriginal, "/");
+        $motiveFilename = basename($sourcePath);
         $query = "
             SELECT *
               FROM ".DBPREFIX."module_ecard_settings";
@@ -387,7 +383,7 @@ class ecard
             $maxWidth = $maxWidthThumb;
         }
         /* Get file attributes */
-        $size = getimagesize($motiveOriginal);
+        $size = getimagesize($sourcePath);
         $width_org = $size[0];
         $height_org = $size[1];
         /* Set new height / width */
@@ -403,17 +399,17 @@ class ecard
         /* Save the new file */
         if ($size[2] == 1) {
             //GIF
-            $motiveOptimized = imagecreatefromgif($motiveOriginal);
+            $motiveOptimized = imagecreatefromgif($sourcePath);
             imagecopyresampled($motiveOptimizedFile, $motiveOptimized, 0, 0, 0, 0, $width_new, $height_new, $width_org, $height_org);
             imagegif($motiveOptimizedFile, $destinationPath.$motiveFilename);
         } elseif ($size[2] == 2) {
             //JPG
-            $motiveOptimized = imagecreatefromjpeg($motiveOriginal);
+            $motiveOptimized = imagecreatefromjpeg($sourcePath);
             imagecopyresampled($motiveOptimizedFile, $motiveOptimized, 0, 0, 0, 0, $width_new, $height_new, $width_org, $height_org);
             imagejpeg($motiveOptimizedFile, $destinationPath.$motiveFilename);
         } elseif ($size[2] == 3) {
             //PNG
-            $motiveOptimized = imagecreatefrompng($motiveOriginal);
+            $motiveOptimized = imagecreatefrompng($sourcePath);
             imagecopyresampled($motiveOptimizedFile, $motiveOptimized, 0, 0, 0, 0, $width_new, $height_new, $width_org, $height_org);
             imagepng($motiveOptimizedFile, $destinationPath.$motiveFilename);
         }
