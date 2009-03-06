@@ -98,7 +98,7 @@
 						<h2 class="toggler">Newsletter</h2>
 						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
 						<div class="content">
-							{NEWSLETTER_BLOCK}
+							<div id="newsletter_home">{NEWSLETTER_BLOCK}</div>
 						</div>
 					</div></div>
 					
@@ -117,7 +117,10 @@
 					
 						<h2 class="toggler">Wissensdatenbank</h2>
 						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<div class="content"><p class="date">Meistgelesene Artikel</p></div>
 						{KNOWLEDGE_MOST_READ}
+						<div class="content"><p class="date">Bestbewertete Artikel</p></div>
+						{KNOWLEDGE_BEST_RATED}
 						<div class="content">
 							{KNOWLEDGE_TAG_CLOUD}
 						</div>

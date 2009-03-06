@@ -137,3 +137,19 @@
 	color:#CFEDFF;
 }
 
+#wrapper_powered {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+#powered {
+	margin: 0 auto;
+	padding: 10px 0 15px 0;
+	width: 970px;
+	position:relative;
+        text-align: right;
+	color:#9F9F9F;
+	font-size: 11px;
+}
+
