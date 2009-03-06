@@ -258,6 +258,8 @@ class Livecam extends LivecamLibrary
      */
     function _showArchive($date)
     {
+		global $_ARRAYLANG;
+
         $this->camSettings = $this->getCamSettings($this->cam);
         $this->_getThumbs();
 
@@ -295,7 +297,7 @@ class Livecam extends LivecamLibrary
             }
             $this->_objTpl->parse('livecamArchive');
         } else {
-            $this->statusMessage = 'Von diesem Tag sind leider keine Bilder vorhanden.';
+            $this->statusMessage = $_ARRAYLANG['TXT_LIVECAM_NO_PICTURES_OF_SELECTED_DAY'];
             $this->_objTpl->hideBlock('livecamArchive');
         }
     }
