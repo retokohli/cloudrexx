@@ -1,12 +1,18 @@
 <?php
+
 /**
  * Database access function(s)
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
- * @version	    1.0.0
+ * @version        1.0.0
  */
+
+/**
+ * @ignore
+ */
+require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
 
 /**
  * Returns the database object.
@@ -16,54 +22,54 @@
  * In case of an error, the reference argument $errorMsg is set
  * to the error message.
  * @author  Comvation Development Team <info@comvation.com>
- * @access	public
- * @version	1.0.0
- * @param   string	$errorMsg     Error message
- * @param   boolean	$newInstance  Force new instance
- * @global  array	              Language array
- * @global  array	              Database configuration
+ * @access    public
+ * @version    1.0.0
+ * @param   string    $errorMsg     Error message
+ * @param   boolean    $newInstance  Force new instance
+ * @global  array                  Language array
+ * @global  array                  Database configuration
  * @global  ???                   ADODB fetch mode
  * @return  boolean               True on success, false on failure
  * @todo    What datatype is $ADODB_FETCH_MODE?
  */
 function getDatabaseObject(&$errorMsg, $newInstance = false)
 {
-	global $_DBCONFIG, $ADODB_FETCH_MODE;
+    global $_DBCONFIG, $ADODB_FETCH_MODE;
+    static $objDatabase;
 
-	static $objDatabase;
+    if (is_object($objDatabase) && !$newInstance) {
+        return $objDatabase;
+    } else {
+        // open db connection
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	if (is_object($objDatabase) && !$newInstance) {
-		return $objDatabase;
-	} else {
-		// open db connection
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        $objDb = ADONewConnection($_DBCONFIG['dbType']);
+        @$objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
 
-		$objDb = ADONewConnection($_DBCONFIG['dbType']);
-		@$objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
+        $errorNo = $objDb->ErrorNo();
+        if ($errorNo != 0) {
+            if ($errorNo == 1049) {
+                $errorMsg = 'The database is unavailable';
+            } else {
+                $errorMsg =  $objDb->ErrorMsg()."<br />";
+            }
+            unset($objDb);
+            return false;
+        }
 
-		$errorNo = $objDb->ErrorNo();
-		if ($errorNo != 0) {
-			if ($errorNo == 1049) {
-				$errorMsg = 'The database is unavailable';
-			} else {
-				$errorMsg =  $objDb->ErrorMsg()."<br />";
-			}
-			unset($objDb);
-			return false;
-		}
-
-		if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
-			if ($newInstance) {
-				return $objDb;
-			} else {
-				$objDatabase = $objDb;
-				return $objDb;
-			}
-		} else {
-			$errorMsg = 'Cannot connect to database server<i>&nbsp;('.$objDb->ErrorMsg().')</i>';
-			unset($objDb);
-		}
-		return false;
-	}
+        if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
+            if ($newInstance) {
+                return $objDb;
+            } else {
+                $objDatabase = $objDb;
+                return $objDb;
+            }
+        } else {
+            $errorMsg = 'Cannot connect to database server<i>&nbsp;('.$objDb->ErrorMsg().')</i>';
+            unset($objDb);
+        }
+        return false;
+    }
 }
+
 ?>
