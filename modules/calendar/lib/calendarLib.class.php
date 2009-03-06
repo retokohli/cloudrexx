@@ -473,7 +473,7 @@ class calendarLibrary
 	}
 
 
-	function getBoxes($boxes, $year, $month=0, $day=0, $catid)
+	function getBoxes($boxes, $year, $month=0, $day=0, $catid=0)
 	{
 		global $objDatabase, $_ARRAYLANG, $objInit;
 
@@ -493,6 +493,7 @@ class calendarLibrary
         $monthnames 	= explode(",", $_ARRAYLANG['TXT_CALENDAR_MONTH_ARRAY']);
         $daynames 		= explode(',', $_ARRAYLANG['TXT_CALENDAR_DAY_ARRAY']);
 
+        $calenderBoxes = '';
 		for ($i=0; $i<$boxes; $i++) {
 			$cal = new activeCalendar($year, $month, $day);
 
@@ -639,6 +640,63 @@ class calendarLibrary
 	function getNoteData($id, $type, $numBoxes)
 	{
 		global $objDatabase, $_ARRAYLANG, $_LANGID;
+
+
+
+        $access = '';
+        $priority = '';
+        $priorityImg = '';
+        $catName = '';
+        $seriesPatternDourance1 = '';
+        $seriesPatternDourance2 = '';
+        $seriesPatternDourance3 = '';
+        $seriesPatternDouranceEnds = '';
+
+
+        $seriesStatus = '';
+        $seriesTypeDaily = '';
+        $seriesTypeWeekly = '';
+        $seriesTypeMonthly = '';
+
+        $seriesPatternDailyType1 = '';
+        $seriesPatternDailyType2 = '';
+        $seriesPatternDailyDays  = '';
+
+        $seriesPatternWeeklyWeeks = '';
+        $seriesPatternWeeklyMon = '';
+        $seriesPatternWeeklyTue = '';
+        $seriesPatternWeeklyWed = '';
+        $seriesPatternWeeklyThu = '';
+        $seriesPatternWeeklyFri = '';
+        $seriesPatternWeeklySat = '';
+        $seriesPatternWeeklySun = '';
+ 
+        $seriesPatternMonthlyType1 = '';
+        $seriesPatternMonthlyType2 = '';
+        $seriesPatternMonthlyDay = '';
+        $seriesPatternMonthlyMonth1 = '';
+        $seriesPatternMonthlyMonth2 = '';
+        $count = '';
+        $weekdays = '';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		$query = "SELECT 	id,
 							active,
@@ -930,6 +988,7 @@ class calendarLibrary
 			5 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_LAST'],
 		);
 
+        $weekdays = '';
 		foreach ($arrWeekdays as $value => $name) {
 			if ($objResultNote->fields['series_pattern_weekday'] == $value) {
 				$checked = 'selected="selected"';
@@ -939,6 +998,7 @@ class calendarLibrary
 			$weekdays .= '<option value="'.$value.'" '.$checked.'>'.$name.'</option>';
 		}
 
+        $count = '';
 		foreach ($arrCount as $value => $name) {
 			if ($objResultNote->fields['series_pattern_count'] == $value) {
 				$checked = 'selected="selected"';
@@ -1396,6 +1456,7 @@ class calendarLibrary
 			'13'	=> $_ARRAYLANG['TXT_CALENDAR_REG_ESCORT'],
 		);
 
+        $options = '';
 		if ($frmType == "backend") {
 			for ($i=1; $i <= 20; $i++) {
 				$queryField 		= "SELECT `id`,`note_id`,`name`,`type`,`required`,`order`,`key`
