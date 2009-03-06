@@ -148,7 +148,7 @@ JS::setOffset('../');
 // clone any module.
 $arrMatch = array();
 $plainCmd = $cmd;
-if (preg_match('/^(\w+)(\d+)$/', $cmd, $arrMatch)) {
+if (preg_match('/^(\D+)(\d+)$/', $cmd, $arrMatch)) {
     // The plain section/module name, used below
     $plainCmd = $arrMatch[1];
 }
