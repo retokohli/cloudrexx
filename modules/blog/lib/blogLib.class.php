@@ -593,7 +593,7 @@ class BlogLibrary {
      *
      * @global  array
      * @param   string      $strUsername
-     * @param   integer     $intTimestamp
+     * @param   string		$strDate
      * @return  string
      */
     function getPostedByString($strUsername, $strDate) {
@@ -605,6 +605,16 @@ class BlogLibrary {
         return $strPostedString;
     }
 
+
+	/**
+     * Returns an img-Tag for the "posted by" string.
+     *
+	 * @param   string		$strDate
+     * @return  string
+     */
+    function getPostedByIcon($strDate) {
+    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/calendar.gif" alt="'.$strDate.'" />';
+    }
 
 
     /**
@@ -859,6 +869,16 @@ class BlogLibrary {
         return preg_replace($arrPatterns,$arrReplace,$strUnlinkedTags);
     }
 
+
+    /**
+     * Returns an img-Tag for the "tags"-icon.
+     *
+	 * @param   string		$strDate
+     * @return  string
+     */
+    function getTagsIcon() {
+    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/tags.gif" alt="Tags" />';
+    }
 
 
     /**

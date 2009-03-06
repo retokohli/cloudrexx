@@ -804,10 +804,30 @@ div.row2 {
 	color: #029202;
 }
 
-#blog div.posted_comment {
+
+#blog div.posted {
 	font-size: 0.9em;
 	color: #888888;
 	font-style: italic;
+	padding: 0px 0px 20px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#blog div.comment_posted {
+	font-size: 0.9em;
+	color: #888888;
+	font-style: italic;
+}
+
+#blog div.comment_avatar {
+	float:right;
+	padding: 0px 0px 5px 5px;
+	margin: 0px 0px 0px 0px;
+}
+
+#blog div.comment_text {
+	padding: 10px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
 }
 
 #blog div.text {
@@ -1727,18 +1747,18 @@ dl.data_module {
     font-family:"Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
     font-size:75%;
     line-height:1.5;
-    
+
 }
 
 dl.data_module dt {
-   font-weight: bold; 
+   font-weight: bold;
 }
 
 dl.data_module dd {
     margin: 5px 0;
 }
 
-dl.data_module img { 
+dl.data_module img {
     margin-right: 20px;
     margin-bottom: 10px;
 }
