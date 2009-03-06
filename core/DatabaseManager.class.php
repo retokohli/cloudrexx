@@ -80,20 +80,7 @@ class DatabaseManager
      */
     function __construct()
     {
-        global $objDatabase, $objTemplate, $_CORELANG;
-
-        if (_DBM_DEBUG & 1) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 1);
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-        }
-        if (_DBM_DEBUG & 2) {
-            $objDatabase->debug = 1;
-        } else {
-            $objDatabase->debug = 0;
-        }
+        global $objTemplate, $_CORELANG;
 
         $this->_strBackupPath = ASCMS_BACKUP_PATH.'/';
         $this->_arrFileEndings = array(
@@ -1024,11 +1011,16 @@ class DatabaseManager
                                         `usedtables`    = "'.$strTables.'",
                                         `size`          = '.filesize($this->_strBackupPath.$strFileName).'
                                 ');
-
-            self::addMessage(str_replace('{PATH}',$this->_strBackupPath.$strFileName, $_CORELANG['TXT_DBM_EXPORT_SUCCESS']));
+            self::addMessage(sprintf(
+                $_CORELANG['TXT_DBM_EXPORT_SUCCESS'],
+                $this->_strBackupPath.$strFileName
+            ));
         } else {
             //Directory is not writable, show error
-            self::addError(str_replace('{PATH}',$this->_strBackupPath, $_CORELANG['TXT_DBM_EXPORT_ERROR']));
+            self::addError(sprintf(
+                $_CORELANG['TXT_DBM_EXPORT_ERROR'],
+                $this->_strBackupPath
+            ));
         }
     }
 
@@ -1176,11 +1168,11 @@ class DatabaseManager
      * @global     array        core language
      * @global     array        system configuration
      */
-    function showDetails($intBackupId) {
+    function showDetails($intBackupId)
+    {
         global  $objTemplate, $objDatabase, $_CORELANG;
 
         $this->_strPageTitle = $_CORELANG['TXT_DBM_BACKUP_TITLE'];
-
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'status', 'dbm_details.html');
         $objTemplate->setVariable(array(
             'TXT_DETAILS_TITLE' => $_CORELANG['TXT_DBM_EXPORT_TITLE'],
@@ -1194,27 +1186,29 @@ class DatabaseManager
             'TXT_DETAILS_BUTTON_SELECT' => $_CORELANG['TXT_SELECT_ALL'],
             'TXT_DETAILS_BUTTON_BACK' => ucfirst($_CORELANG['TXT_BACK'])
         ));
-
         $intBackupId = intval($intBackupId);
-        $objResult = $objDatabase->Execute('SELECT  `date`,
-                                                    `version`,
-                                                    `edition`,
-                                                    `type`,
-                                                    `description`,
-                                                    `usedtables`,
-                                                    `size`
-                                            FROM    '.DBPREFIX.'backups
-                                            WHERE   id='.$intBackupId.'
-                                            LIMIT   1
-                                        ');
-
-        $strFile = $this->_strBackupPath.$objResult->fields['date'].$this->_arrFileEndings[$objResult->fields['type']];
-
-        if ($intBackupId < 1 || $objResult->RecordCount() == 0 || !is_file($strFile)) {
+        if (empty($intBackupId)) {
+            self::addError($_CORELANG['TXT_DBM_DETAILS_ERROR_ID']);
+            return false;
+        }
+           $objResult = $objDatabase->Execute("
+            SELECT  `date`, `version`, `edition`, `type`,
+                    `description`, `usedtables`, `size`
+              FROM  `".DBPREFIX."backups`
+              WHERE `id`=$intBackupId
+        ");
+        if (!$objResult || $objResult->EOF) {
+            self::addError($_CORELANG['TXT_DBM_DETAILS_ERROR_ID']);
+            return false;
+        }
+        $strFile =
+            $this->_strBackupPath.$objResult->fields['date'].
+            $this->_arrFileEndings[$objResult->fields['type']];
+        if (!is_file($strFile)) {
             //Wrong ID, show error
             self::addError($_CORELANG['TXT_DBM_DETAILS_ERROR_ID']);
+            return false;
         }
-
         //Read file
         $strFileContent = '';
         $handleFile = fopen ($strFile, 'r');
@@ -1222,7 +1216,6 @@ class DatabaseManager
             $strFileContent .= fgets($handleFile, 4096);
         }
         fclose ($handleFile);
-
         $objTemplate->setVariable(array(
             'DETAILS_DATE' => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
             'DETAILS_COMMENT' => ($objResult->fields['description'] != '') ? $objResult->fields['description'] : '-',
@@ -1232,6 +1225,7 @@ class DatabaseManager
             'DETAILS_TABLES' => str_replace(';',', ', $objResult->fields['usedtables']),
             'DETAILS_CONTENT' => htmlentities($strFileContent, ENT_QUOTES, CONTREXX_CHARSET)
         ));
+        return true;
     }
 
 
@@ -1567,7 +1561,6 @@ final class SQLBackup extends BackupBase
                 ).
                 ($objResult->fields['Extra'] == 'auto_increment' ? ' auto_increment' : '').
                 ",\n";
-
             $objResult->MoveNext();
         }
 
@@ -1780,7 +1773,7 @@ final class CSVBackup extends BackupBase
 
     function init($path='', $delimiter='', $quote='')
     {
-    	self::$path =
+        self::$path =
             (empty($path) ? ASCMS_BACKUP_PATH.'/'.self::default_path : $path);
         self::$delimiter =
             (empty($delimiter) ? self::default_delimiter : $delimiter);
@@ -1791,7 +1784,7 @@ final class CSVBackup extends BackupBase
 
     static function getPath()
     {
-      	return self::$path;
+          return self::$path;
     }
 
 
@@ -1801,7 +1794,7 @@ final class CSVBackup extends BackupBase
      */
     function hasCommentTags()
     {
-    	return false;
+        return false;
     }
 
 
@@ -1811,7 +1804,7 @@ final class CSVBackup extends BackupBase
      */
     function getCommentString()
     {
-    	die('getCommentString():  Not implemented!');
+        die('getCommentString():  Not implemented!');
         //throw new Exception('Error: '.__CLASS__.'::'.__FUNCTION__.'() is not supported', 0);
     }
 
@@ -1833,7 +1826,7 @@ final class CSVBackup extends BackupBase
             $objResult->MoveNext();
         }
         return $strReturn."\n";
-    	//return "TRUNCATE TABLE `$strTable`\n";
+        //return "TRUNCATE TABLE `$strTable`\n";
     }
 
 
@@ -1863,11 +1856,11 @@ final class CSVBackup extends BackupBase
         $objResult = $objDatabase->Execute('SELECT * FROM '.$strTable);
         if (!$objResult || $objResult->EOF) return false;
         while (!$objResult->EOF) {
-        	$arrRow = array();
+            $arrRow = array();
             foreach($arrColumnNames as $strColumnName) {
                 if (isset($objResult->fields[$strColumnName])) {
-                	$strValue = $objResult->fields[$strColumnName];
-                	$strValue = '"'.preg_replace('/"/', '""', $strValue).'"';
+                    $strValue = $objResult->fields[$strColumnName];
+                    $strValue = '"'.preg_replace('/"/', '""', $strValue).'"';
                     $arrRow[] = $strValue;
                 } else {
                     $arrRow[] = 'NULL';
@@ -2016,10 +2009,10 @@ final class CSVBackup extends BackupBase
         // Values or EOF
         $arrValue = fgetcsv($fh, null, self::$delimiter, self::$quote);
         while ($arrValue) {
-        	foreach ($arrValue as &$value) {
-        		if ($value !== 'NULL')
-  	                $value = "'".mysql_escape_string($value)."'";
-        	}
+            foreach ($arrValue as &$value) {
+                if ($value !== 'NULL')
+                      $value = "'".mysql_escape_string($value)."'";
+            }
             $query = "
                 INSERT INTO `$strTablename` (
                     $strFieldnames
@@ -2041,8 +2034,6 @@ final class CSVBackup extends BackupBase
         fclose($fh);
         return true;
     }
-
-
 
 }
 
