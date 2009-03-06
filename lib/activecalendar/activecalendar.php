@@ -118,6 +118,7 @@ var $cssPrefixTodayEvent="today"; //  prefix for the event class name if the eve
 var $cssEventContent="eventcontent"; // table tag: calendar event content. Multiple class names can be generated
 var $crSunClass=true; // true: creates a td class on every Sunday (set above)
 var $crSatClass=true; // true: creates a td class on every Saturday (set above)
+var $urlMonthNav;
 /*
 ********************************************************************************
 You can change below the GET VARS NAMES [url parameter names] (navigation + day links)

@@ -17,6 +17,7 @@ class seriesManager
 	var $eventList_category;
 	var $eventList_callback = true;
 	var $eventList_active;
+    var $mandateLink;
 
 	/**
 	 * PHP 5 Constructor
@@ -230,7 +231,7 @@ class seriesManager
     	$key = 0;
 
     	while ($this->eventList_callback) {
-    		if ($this->eventList[$key]['series_status'] == 1) {
+    		if (array_key_exists($key, $this->eventList) && $this->eventList[$key]['series_status'] == 1) {
     			$this->eventList[$key]['series_status'] = 0;
 
 
@@ -299,7 +300,7 @@ class seriesManager
 
 
 	function _cleanupEventList($key) {
-		if (isset($key) && isset($this->eventList_startdate) && $this->eventList_startdate != 0) {
+		if (isset($key) && isset($this->eventList_startdate) && $this->eventList_startdate != 0 && array_key_exists($key, $this->eventList)) {
 			if($this->eventList[$key]['startdate'] < $this->eventList_startdate) {
 				unset($this->eventList[$key]);
 			}

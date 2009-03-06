@@ -264,7 +264,7 @@ class calendarManager extends calendarLibrary
     	}
 
     	$this->objSeries 	= new seriesManager();
-		$this->eventList 	= $this->objSeries->getEventList($startdate,$enddate,999, 1, $_POST['search'], $category);
+		$this->eventList 	= $this->objSeries->getEventList($startdate,$enddate,999, 1, array_key_exists('search', $_POST) ? $_POST['search'] : '', $category);
 
 		$calendarbox 	= $this->getBoxes(3, $year, $month, $day, $catid);
 
@@ -423,7 +423,7 @@ class calendarManager extends calendarLibrary
 			'TXT_DESELECT_ALL'				=> $_ARRAYLANG['TXT_DESELECT_ALL'],
 			'TXT_CALENDAR_DELETE_CONFIRM' 	=> addslashes($_ARRAYLANG['TXT_CALENDAR_DELETE_CONFIRM']),
 			'CALENDAR'			   			=> $calendarbox,
-			'CALENDAR_DATE'		   			=> $titledate,
+			# 'CALENDAR_DATE'		   			=> $titledate,  // TODO: this variable is not defined!
 			'TXT_CALENDAR_ALL_CAT' 			=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
 			'CALENDAR_REQUEST_URI' 			=> $requestUri,
 			'CALENDAR_CATID'       			=> $catid,
@@ -1171,7 +1171,6 @@ class calendarManager extends calendarLibrary
 				$objResult = $objDatabase->Execute($query);
 
                 if ($objResult !== false) {
-
                     if ($registration == 1) {
 
                         $query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields WHERE note_id='".$id."'";
