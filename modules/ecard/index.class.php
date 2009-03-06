@@ -224,7 +224,9 @@ class ecard
 
         // Initialize variables
         $code = substr(md5(rand()), 1, 10);
-        $url = 'http://'.$_CONFIG['domainUrl'].'/index.php?section=ecard&cmd=show&code='.$code;
+        $url = 'http://'.$_CONFIG['domainUrl'].
+            ASCMS_PATH_OFFSET.
+            '/index.php?section=ecard&cmd=show&code='.$code;
 
         // Initialize POST variables
         $id = $_POST['selectedEcard'];
