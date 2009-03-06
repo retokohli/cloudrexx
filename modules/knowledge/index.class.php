@@ -58,6 +58,11 @@ class Knowledge extends KnowledgeLibrary
 	public function getPage()
 	{	 	    
 	    global $_LANGID;
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
+        JS::registerJS('modules/knowledge/rating.js');
+        JS::registerJS('modules/knowledge/frontend/search.js');
+        JS::registerJS('modules/knowledge/frontend/slider.js');
 	    
 	    if (!isset($_GET['act'])) {
 	        $_GET['act'] = "";
