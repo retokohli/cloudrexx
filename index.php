@@ -231,7 +231,7 @@ $section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section'
 // See the Shop module for an example.
 $arrMatch = array();
 $plainSection = $section;
-if (preg_match('/^(\w+)(\d+)$/', $section, $arrMatch)) {
+if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
     // The plain section/module name, used below
     $plainSection = $arrMatch[1];
 }
