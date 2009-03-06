@@ -272,11 +272,15 @@ class ecard
 
         // Insert ecard to DB
         $query = "
-            INSERT INTO `".DBPREFIX."module_ecard_ecards`
+            INSERT INTO `".DBPREFIX."module_ecard_ecards` (
+                code, date, TTL, salutation,
+                senderName, senderEmail,
+                recipientName, recipientEmail,
+                message
             VALUES (
-                '".mktime()."',
-                '".$timeToLife."',
                 '".$code."',
+                '".time()."',
+                '".$timeToLife."',
                 '".$recipientSalutation."',
                 '".$senderName."',
                 '".$senderEmail."',
