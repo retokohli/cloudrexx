@@ -1049,6 +1049,7 @@ class Category {
             return true;
         }
 
+        $status = true;
         foreach ($this->arrPermissionTypes as $type) {
             if ($this->{$type.'_protected'}) {
                 // set protection
@@ -1060,12 +1061,17 @@ class Category {
                 } else {
                     // remove protection due that no new access-ID could have been created
                     $this->{$type.'_access_id'} = 0;
+                    $status = false;
                 }
             } elseif ($this->{$type.'_access_id'}) {
                 // remove protection
                 Permission::removeAccess($this->{$type.'_access_id'}, 'dynamic');
                 $this->{$type.'_access_id'} = 0;
             }
+        }
+
+        if (!$status) {
+            return false;
         }
 
         if ($objDatabase->Execute("
