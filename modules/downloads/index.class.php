@@ -37,7 +37,7 @@ class downloads extends DownloadsLibrary
     /**
      * @var HTML_Template_Sigma
      */
-    var $objTemplate;
+    private $objTemplate;
 
 
     /**
@@ -56,6 +56,11 @@ class downloads extends DownloadsLibrary
     */
     function __construct($strPageContent)
     {
+global $_ARRAYLANG;
+
+$_ARRAYLANG['TXT_DOWNLOADS_START'] = 'Start';
+$_ARRAYLANG['TXT_DOWNLOADS_MORE'] = 'mehr';
+
         global $_LANGID;
 
         parent::__construct();
@@ -75,7 +80,7 @@ class downloads extends DownloadsLibrary
     * Reads $_GET['cmd'] and selects (depending on the value) an action
     *
     */
-    function getPage()
+    public function getPage()
     {
         if (!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
@@ -121,7 +126,7 @@ class downloads extends DownloadsLibrary
         }
 
         $this->parseMessages();
-
+error_reporting(0);ini_set('display_errors', 0);
         return $this->objTemplate->get();
     }
 
@@ -150,60 +155,160 @@ class downloads extends DownloadsLibrary
         }
     }
 
-    function overview()
+    private function overview()
     {
         global $_LANGID;
 
+        $objDownload = new Download();
         $objCategory = Category::getCategory(!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
         if ($objCategory->getId()) {
+            // check access permissions to selected category
             if (!Permission::checkAccess(142, 'static', true)
                 && $objCategory->getReadAccessId()
                 && !Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
                 && $objCategory->getOwnerId() != $this->userId
             ) {
-                Permission::noAccess();
+                Permission::noAccess(base64_encode(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId()));
             }
 
-            $description = $objCategory->getDescription($_LANGID);
-            if (strlen($description) > 100) {
-                $shortDescription = substr($description, 0, 97).'...';
-            } else {
-                $shortDescription = $description;
-            }
 
-            $imageSrc = $objCategory->getImage();
-            if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
-                if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
-                    $thumbnailSrc = $imageSrc.'.thumb';
-                } else {
-                    $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            // parse crumbtrail
+            $this->parseCrumbtrail($objCategory);
+
+            if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) {
+
+                $this->parseRelatedDownloads($objDownload);
+
+                $this->parseDownload($objDownload);
+
+
+
+                // hide unwanted blocks on the detail page
+                if ($this->objTemplate->blockExists('downloads_category')) {
+                    $this->objTemplate->hideBlock('downloads_category');
+                }
+                if ($this->objTemplate->blockExists('downloads_subcategory_list')) {
+                    $this->objTemplate->hideBlock('downloads_subcategory_list');
+                }
+                if ($this->objTemplate->blockExists('downloads_file_list')) {
+                    $this->objTemplate->hideBlock('downloads_file_list');
                 }
             } else {
-                $imageSrc = $this->defaultCategoryImage['src'];
-                $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                // parse selected category
+                $this->parseCategory($objCategory);
+
+                // parse subcategories
+                $this->parseCategories($objCategory, array('downloads_subcategory_list', 'downloads_subcategory'), null, 'SUB');
+
+                // parse downloads of selected category
+                $this->parseDownloads($objCategory);
+
+                // hide unwanted blocks on the category page
+                if ($this->objTemplate->blockExists('downloads_download')) {
+                    $this->objTemplate->hideBlock('downloads_download');
+                }
             }
 
-            $this->objTemplate->setVariable(array(
-                'DOWNLOADS_CATEGORY_ID'                 =>  $objCategory->getId(),
-                'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_CATEGORY_BREADCRUMB'         => $this->getCategoryBreadcrumb($objCategory),
-                'DOWNLOADS_CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOWNLOADS_CATEGORY_IMAGE_SRC'          => $imageSrc,
-                'DOWNLOADS_CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOWNLOADS_CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc
-            ));
-            $this->objTemplate->parse('downloads_category');
+            // hide unwanted blocks on the category/detail page
+            if ($this->objTemplate->blockExists('downloads_overview')) {
+                $this->objTemplate->hideBlock('downloads_overview');
+            }
+        } else {
+            // parse category overview
+            $this->parseCategories($objCategory, array('downloads_overview', 'downloads_overview_category'), null, null, 'downloads_overview_row', array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $this->arrConfig['overview_max_subcats']);
 
-
-
-            $this->parseDownloads($objCategory);
+            // hide unwanted blocks on the overview page
+            if ($this->objTemplate->blockExists('downloads_category')) {
+                $this->objTemplate->hideBlock('downloads_category');
+            }
+            if ($this->objTemplate->blockExists('downloads_crumbtrail')) {
+                $this->objTemplate->hideBlock('downloads_crumbtrail');
+            }
+            if ($this->objTemplate->blockExists('downloads_subcategory_list')) {
+                $this->objTemplate->hideBlock('downloads_subcategory_list');
+            }
+            if ($this->objTemplate->blockExists('downloads_file_list')) {
+                $this->objTemplate->hideBlock('downloads_file_list');
+            }
         }
 
-        $this->parseSubcategories($objCategory);
-
         $this->parseGlobalStuff($objCategory);
+    }
+
+    private function parseCategory($objCategory)
+    {
+        global $_LANGID;
+
+        if (!$this->objTemplate->blockExists('downloads_category')) {
+            return;
+        }
+
+        $description = $objCategory->getDescription($_LANGID);
+        if (strlen($description) > 100) {
+            $shortDescription = substr($description, 0, 97).'...';
+        } else {
+            $shortDescription = $description;
+        }
+
+        $imageSrc = $objCategory->getImage();
+        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+            if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
+                $thumbnailSrc = $imageSrc.'.thumb';
+            } else {
+                $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            }
+        } else {
+            $imageSrc = $this->defaultCategoryImage['src'];
+            $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+        }
+
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_CATEGORY_ID'                 =>  $objCategory->getId(),
+            'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+            //'DOWNLOADS_CATEGORY_BREADCRUMB'         => $this->getCategoryBreadcrumb($objCategory),
+            'DOWNLOADS_CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_CATEGORY_IMAGE_SRC'          => $imageSrc,
+            'DOWNLOADS_CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc
+        ));
+        $this->objTemplate->parse('downloads_category');
+    }
+
+
+
+    private function parseCrumbtrail($objParentCategory)
+    {
+        global $_ARRAYLANG, $_LANGID;
+
+        if (!$this->objTemplate->blockExists('downloads_crumbtrail')) {
+            return;
+        }
+
+        $arrCategories = array();
+
+        do {
+            $arrCategories[] = array(
+                'id'    => $objParentCategory->getId(),
+                'name'  => htmlentities($objParentCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)
+            );
+            $objParentCategory = Category::getCategory($objParentCategory->getParentId());
+        } while ($objParentCategory->getId());
+
+        krsort($arrCategories);
+
+        foreach ($arrCategories as $arrCategory) {
+            $this->objTemplate->setVariable(array(
+                'DOWNLOADS_CRUMB_ID'    => $arrCategory['id'],
+                'DOWNLOADS_CRUMB_NAME'  => $arrCategory['name']
+            ));
+            $this->objTemplate->parse('downloads_crumb');
+        }
+
+        $this->objTemplate->setVariable('TXT_DOWNLOADS_START', $_ARRAYLANG['TXT_DOWNLOADS_START']);
+
+        $this->objTemplate->parse('downloads_crumbtrail');
     }
 
     private function parseGlobalStuff($objCategory)
@@ -245,44 +350,61 @@ JS_CODE;
         return $javascript;
     }
 
-    private function getCategoryBreadcrumb($objParentCategory)
+//    private function getCategoryBreadcrumb($objParentCategory)
+//    {
+//        global $_ARRAYLANG, $_LANGID;
+//
+//        $arrCategories = array();
+//
+//        do {
+//            $objParentCategory = Category::getCategory($objParentCategory->getParentId());
+//            $arrCategories[] = $this->getHtmlFolderLinkTag(
+//                CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objParentCategory->getId(),
+//                sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objParentCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+//                htmlentities($objParentCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)
+//            );
+//        } while ($objParentCategory->getId());
+//
+//        krsort($arrCategories);
+//        return implode(' / ', $arrCategories);
+//    }
+
+    private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null)
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $arrCategories = array();
+        if (!$this->objTemplate->blockExists($arrCategoryBlocks[0])) {
+            return;
+        }
 
-        do {
-            $objParentCategory = Category::getCategory($objParentCategory->getParentId());
-            $arrCategories[] = $this->getHtmlFolderLinkTag(
-                CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objParentCategory->getId(),
-                sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objParentCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                htmlentities($objParentCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)
-            );
-        } while ($objParentCategory->getId());
+        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId(), 'is_active' => true), null, null, null, $categoryLimit);
 
-        krsort($arrCategories);
-        return implode(' / ', $arrCategories);
-    }
-
-    private function parseSubcategories($objCategory)
-    {
-        global $_ARRAYLANG, $_LANGID;
-
-        $objSubCategory = Category::getCategories(array('parent_id' => $objCategory->getId()));
-
-        if ($objSubCategory->EOF) {
-            $this->objTemplate->hideBlock('downloads_subcategory_list');
+        if ($objSubcategory->EOF) {
+            $this->objTemplate->hideBlock($arrCategoryBlocks[0]);
         } else {
-            $row = 0;
-            while (!$objSubCategory->EOF) {
-                $description = $objSubCategory->getDescription($_LANGID);
+            $row = 1;
+            while (!$objSubcategory->EOF) {
+                if (// subcategory is hidden -> check if the user is allowed to see it listed anyways
+                    !$objSubcategory->getVisibility()
+                    // non managers are not allowed to see hidden subcategories
+                    && !Permission::checkAccess(142, 'static', true)
+                    // those who have read access permission to the subcategory are allowed to see it listed
+                    && !Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
+                    // the owner is allowed to see its own categories
+                    && (!$objSubcategory->getOwnerId() || $objSubcategory->getOwnerId() != $this->userId)
+                ) {
+                    $objSubcategory->next();
+                    continue;
+                }
+
+                $description = $objSubcategory->getDescription($_LANGID);
                 if (strlen($description) > 100) {
                     $shortDescription = substr($description, 0, 97).'...';
                 } else {
                     $shortDescription = $description;
                 }
 
-                $imageSrc = $objSubCategory->getImage();
+                $imageSrc = $objSubcategory->getImage();
                 if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
                     if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
                         $thumbnailSrc = $imageSrc.'.thumb';
@@ -295,26 +417,37 @@ JS_CODE;
                 }
 
                 $this->objTemplate->setVariable(array(
-                    'DOWNLOADS_SUBCATEGORY_ID'                 =>  $objSubCategory->getId(),
-                    'DOWNLOADS_SUBCATEGORY_NAME'               => htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_SUBCATEGORY_NAME_LINK'          => $this->getHtmlLinkTag(CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objSubCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_SUBCATEGORY_FOLDER_LINK'        => $this->getHtmlFolderLinkTag(CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objSubCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_SUBCATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_SUBCATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_SUBCATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_SUBCATEGORY_IMAGE_SRC'          => $imageSrc,
-                    'DOWNLOADS_SUBCATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objSubCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_SUBCATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc,
-                    'DOWNLOADS_SUBCATEGORY_DELETE_ICON'        => '',
-                    'DOWNLOADS_SUBCATEGORY_ODD_ROW'            => $row++ % 2
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_ID'                 => $objSubcategory->getId(),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME'               => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME_LINK'          => $this->getHtmlLinkTag(CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objSubcategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_FOLDER_LINK'        => $this->getHtmlFolderLinkTag(CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objSubcategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE_SRC'          => $imageSrc,
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc,
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_DELETE_ICON'        => '',
+                    'DOWNLOADS_'.$variablePrefix.'CATEGORY_ROW_CLASS'          => 'row'.($row++ % 2 + 1),
+                    'TXT_DOWNLOADS_MORE'                       => $_ARRAYLANG['TXT_DOWNLOADS_MORE']
                 ));
-                $this->objTemplate->parse('downloads_subcategory');
 
+                // parse subcategories
+                if (isset($arrSubCategoryBlocks)) {
+                    $this->parseCategories($objSubcategory, array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $subCategoryLimit, 'SUB');
+                }
 
-                $objSubCategory->next();
+                $this->objTemplate->parse($arrCategoryBlocks[1]);
+
+                // parse row
+                if (isset($rowBlock) && $this->objTemplate->blockExists($rowBlock) && $row % $this->arrConfig['overview_cols_count'] == 0) {
+                    $this->objTemplate->parse($rowBlock);
+                }
+
+                $objSubcategory->next();
             }
 
-            $this->objTemplate->touchBlock('downloads_subcategory_list');
+            $this->objTemplate->touchBlock($arrCategoryBlocks[0]);
         }
     }
 
@@ -336,12 +469,16 @@ JS_CODE;
 
     private function getHtmlFolderLinkTag($href, $title, $value)
     {
-        return sprintf($this->htmlLinkTemplate, $href, $title, sprintf($this->htmlImgTemplate, 'cadmin/images/icons/folder.gif', $title).' '.$value);
+        return sprintf($this->htmlLinkTemplate, $href, $title, sprintf($this->htmlImgTemplate, 'images/modules/downloads/folder_front.gif', $title).' '.$value);
     }
 
     private function parseDownloads($objCategory)
     {
         global $_LANGID;
+
+        if (!$this->objTemplate->blockExists('downloads_file_list')) {
+            return;
+        }
 
         $objDownload = new Download();
         $objDownload->loadDownloads(array('category_id' => $objCategory->getId()));
@@ -350,7 +487,7 @@ JS_CODE;
         if ($objDownload->EOF) {
             $this->objTemplate->hideBlock('downloads_file_list');
         } else {
-            $row = 0;
+            $row = 1;
             while (!$objDownload->EOF) {
                 if (// download is protected
                     $objDownload->getAccessId()
@@ -382,23 +519,29 @@ JS_CODE;
                     } else {
                         $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
                     }
+
+                    $image = $this->getHtmlImageTag($imageSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+                    $thumbnail = $this->getHtmlImageTag($thumbnailSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
                 } else {
                     $imageSrc = $this->defaultCategoryImage['src'];
                     $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                    $image = '';
+                    $thumbnail = '';
                 }
 
                 $this->objTemplate->setVariable(array(
-                    'DOWNLOADS_FILE_ID'                 =>  $objDownload->getId(),
+                    'DOWNLOADS_FILE_ID'                 => $objDownload->getId(),
+                    'DOWNLOADS_FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId().'&amp;id='.$objDownload->getId(),
                     'DOWNLOADS_FILE_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_FILE_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_FILE_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_FILE_IMAGE'              => $image,
                     'DOWNLOADS_FILE_IMAGE_SRC'          => $imageSrc,
-                    'DOWNLOADS_FILE_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_FILE_THUMBNAIL'          => $thumbnail,
                     'DOWNLOADS_FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
                     'DOWNLOADS_FILE_ICON'               => $this->getHtmlImageTag($objDownload->getIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
                     'DOWNLOADS_FILE_DELETE_ICON'        => $this->getHtmlDeleteLinkIcon($objDownload->getId(), htmlspecialchars($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_FILE_ODD_ROW'            => $row++ % 2
+                    'DOWNLOADS_FILE_ROW_CLASS'          => 'row'.($row++ % 2 + 1)
                 ));
                 $this->objTemplate->parse('downloads_file');
 
@@ -408,6 +551,153 @@ JS_CODE;
 
             $this->objTemplate->touchBlock('downloads_file_list');
         }
+    }
+
+    private function parseRelatedDownloads($objDownload)
+    {
+        global $_LANGID;
+
+        if (!$this->objTemplate->blockExists('downloads_related_file_list')) {
+            return;
+        }
+
+        $objRelatedDownload = $objDownload->getDownloads(array('download_id' => $objDownload->getId()), null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+
+        if ($objRelatedDownload->EOF) {
+            $this->objTemplate->hideBlock('downloads_related_file');
+        } else {
+            $row = 1;
+            while (!$objRelatedDownload->EOF) {
+                if (// download is protected
+                    $objRelatedDownload->getAccessId()
+                    // download is not visible for unauthorized users
+                    && !$objRelatedDownload->getVisibility()
+                    // the user isn't a admin
+                    && !Permission::checkAccess(142, 'static', true)
+                    // the user doesn't has access to this download
+                    && !Permission::checkAccess($objRelatedDownload->getAccessId(), 'dynamic', true)
+                    // the user isn't the owner of the download
+                    && $objRelatedDownload->getOwnerId() != $this->userId
+                ) {
+                    $objRelatedDownload->next();
+                    continue;
+                }
+
+
+                $description = $objRelatedDownload->getDescription($_LANGID);
+                if (strlen($description) > 100) {
+                    $shortDescription = substr($description, 0, 97).'...';
+                } else {
+                    $shortDescription = $description;
+                }
+
+                $imageSrc = $objRelatedDownload->getImage();
+                if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+                    if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
+                        $thumbnailSrc = $imageSrc.'.thumb';
+                    } else {
+                        $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                    }
+
+                    $image = $this->getHtmlImageTag($imageSrc, htmlentities($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+                    $thumbnail = $this->getHtmlImageTag($thumbnailSrc, htmlentities($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+                } else {
+                    $imageSrc = $this->defaultCategoryImage['src'];
+                    $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                    $image = '';
+                    $thumbnail = '';
+                }
+
+                $arrAssociatedCategories = $objRelatedDownload->getAssociatedCategoryIds();
+
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_RELATED_FILE_ID'                 => $objRelatedDownload->getId(),
+                    'DOWNLOADS_RELATED_FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='./*in_array($objCategory->getId()/*$objCategory->getId().*/'&amp;id='.$objRelatedDownload->getId(),
+                    'DOWNLOADS_RELATED_FILE_NAME'               => htmlentities($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_RELATED_FILE_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_RELATED_FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_RELATED_FILE_IMAGE'              => $image,
+                    'DOWNLOADS_RELATED_FILE_IMAGE_SRC'          => $imageSrc,
+                    'DOWNLOADS_RELATED_FILE_THUMBNAIL'          => $thumbnail,
+                    'DOWNLOADS_RELATED_FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
+                    'DOWNLOADS_RELATED_FILE_ICON'               => $this->getHtmlImageTag($objRelatedDownload->getIcon(), htmlentities($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_RELATED_FILE_DELETE_ICON'        => $this->getHtmlDeleteLinkIcon($objRelatedDownload->getId(), htmlspecialchars($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_RELATED_FILE_ROW_CLASS'          => 'row'.($row++ % 2 + 1)
+                ));
+                $this->objTemplate->parse('downloads_related_file');
+
+
+                $objRelatedDownload->next();
+            }
+
+            $this->objTemplate->touchBlock('downloads_related_file_list');
+        }
+    }
+
+    private function parseDownload($objDownload)
+    {
+        global $_LANGID;
+
+        if (!$this->objTemplate->blockExists('downloads_file_detail')) {
+            return;
+        }
+
+
+//        if (// download is protected
+//            $objDownload->getAccessId()
+//            // download is not visible for unauthorized users
+//            && !$objDownload->getVisibility()
+//            // the user isn't a admin
+//            && !Permission::checkAccess(142, 'static', true)
+//            // the user doesn't has access to this download
+//            && !Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
+//            // the user isn't the owner of the download
+//            && $objDownload->getOwnerId() != $this->userId
+//        ) {
+//            $objDownload->next();
+//            return;
+//        }
+
+
+        $description = $objDownload->getDescription($_LANGID);
+        if (strlen($description) > 100) {
+            $shortDescription = substr($description, 0, 97).'...';
+        } else {
+            $shortDescription = $description;
+        }
+
+        $imageSrc = $objDownload->getImage();
+        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+            if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
+                $thumbnailSrc = $imageSrc.'.thumb';
+            } else {
+                $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            }
+
+            $image = $this->getHtmlImageTag($imageSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+            $thumbnail = $this->getHtmlImageTag($thumbnailSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+        } else {
+            $imageSrc = $this->defaultCategoryImage['src'];
+            $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            $image = '';
+            $thumbnail = '';
+        }
+
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_FILE_ID'                 => $objDownload->getId(),
+            'DOWNLOADS_FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;id='.$objDownload->getId(),
+            'DOWNLOADS_FILE_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_FILE_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_FILE_IMAGE'              => $image,
+            'DOWNLOADS_FILE_IMAGE_SRC'          => $imageSrc,
+            'DOWNLOADS_FILE_THUMBNAIL'          => $thumbnail,
+            'DOWNLOADS_FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
+            'DOWNLOADS_FILE_ICON'               => $this->getHtmlImageTag('images/modules/downloads/'.Download::$arrMimeTypes[$objDownload->getMimeType()]['icon']/*$objDownload->getIcon()*/, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_FILE_DELETE_ICON'        => $this->getHtmlDeleteLinkIcon($objDownload->getId(), htmlspecialchars($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;download='.$objDownload->getId()
+        ));
+        $this->objTemplate->parse('downloads_file_detail');
     }
 
     private function parseSearchForm()

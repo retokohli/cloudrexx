@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(E_ALL);ini_set('display_errors', 1);
 require_once dirname(__FILE__).'/Category.class.php';
 require_once dirname(__FILE__).'/Download.class.php';
 /**
@@ -24,8 +24,11 @@ class DownloadsLibrary
         'getManageFilesAccessId'            => 'manage_files'
     );
 
-    var $_arrConfig = array();
-    var $_arrLang   = array();
+    protected $arrConfig = array(
+        'overview_cols_count'   => 2
+    );
+
+//    var $_arrLang   = array();
 
     function __construct()
     {
@@ -43,11 +46,24 @@ $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_CATEGORY_ASSOCIATIONS'] = 'Beim Speic
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_RELATIONS'] = 'Beim Speichern der Verwanten Downloads trat ein Fehler auf!';
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Zugriffsberechtigungen trat ein Fehler auf!';
 
-        $this->_init();
+        //$this->_init();
+        $this->initSettings();
         $this->initDefaultCategoryImage();
         $this->initDefaultDownloadImage();
     }
 
+    private function initSettings()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute('SELECT `name`, `value` FROM `'.DBPREFIX.'module_downloads_settings`');
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrConfig[$objResult->fields['name']] = $objResult->fields['value'];
+                $objResult->MoveNext();
+            }
+        }
+    }
     protected function initDefaultCategoryImage()
     {
         $this->defaultCategoryImage['src'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/no_picture.gif';
@@ -63,29 +79,29 @@ $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Z
         $this->defaultDownloadImage = $this->defaultCategoryImage;
     }
 
-    function _init()
-    {
-        global $objDatabase;
-        $objResult = $objDatabase->Execute("SELECT `setting_name`, `setting_value` FROM ".DBPREFIX."module_downloads_settings");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $this->_arrConfig[$objResult->fields['setting_name']] = $objResult->fields['setting_value'];
-                $objResult->MoveNext();
-            }
-        }
-
-        $objResult = $objDatabase->Execute("SELECT `id`, `lang`, `name`, `frontend`, `is_default` FROM ".DBPREFIX."languages WHERE frontend=1 ORDER BY is_default");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $this->_arrLang[$objResult->fields['id']] = array(
-                    'lang'          => $objResult->fields['lang'],
-                    'name'          => $objResult->fields['name'],
-                    'frontend'      => $objResult->fields['frontend'],
-                    'is_default'    => $objResult->fields['is_default']);
-                $objResult->MoveNext();
-            }
-        }
-    }
+//    function _init()
+//    {
+//        global $objDatabase;
+//        $objResult = $objDatabase->Execute("SELECT `setting_name`, `setting_value` FROM ".DBPREFIX."module_downloads_settings");
+//        if ($objResult !== false) {
+//            while (!$objResult->EOF) {
+//                $this->_arrConfig[$objResult->fields['setting_name']] = $objResult->fields['setting_value'];
+//                $objResult->MoveNext();
+//            }
+//        }
+//
+//        $objResult = $objDatabase->Execute("SELECT `id`, `lang`, `name`, `frontend`, `is_default` FROM ".DBPREFIX."languages WHERE frontend=1 ORDER BY is_default");
+//        if ($objResult !== false) {
+//            while (!$objResult->EOF) {
+//                $this->_arrLang[$objResult->fields['id']] = array(
+//                    'lang'          => $objResult->fields['lang'],
+//                    'name'          => $objResult->fields['name'],
+//                    'frontend'      => $objResult->fields['frontend'],
+//                    'is_default'    => $objResult->fields['is_default']);
+//                $objResult->MoveNext();
+//            }
+//        }
+//    }
 
     /**
      * returns true if category exist

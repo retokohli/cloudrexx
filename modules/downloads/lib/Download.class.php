@@ -93,27 +93,33 @@ class Download {
     public static $arrMimeTypes = array(
         'image'         => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_IMAGE',
-            'extensions'    => array('jpg', 'jpeg', 'gif', 'png')
+            'extensions'    => array('jpg', 'jpeg', 'gif', 'png'),
+            'icon'          => 'picture.png'
         ),
         'document'      => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_DOCUMENT',
-            'extensions'    => array('pdf', 'doc', 'xls', 'txt', 'ppt', 'xml', 'odt', 'ott', 'sxw', 'stw', 'dot', 'rtf', 'sdw', 'wpd', 'jtd', 'cvs')
+            'extensions'    => array('pdf', 'doc', 'xls', 'txt', 'ppt', 'xml', 'odt', 'ott', 'sxw', 'stw', 'dot', 'rtf', 'sdw', 'wpd', 'jtd', 'cvs'),
+            'icon'          => 'document.png'
         ),
         'media'         => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_MEDIA',
-            'extensions'    => array('avi', 'mp3', 'mpeg', 'wmv', 'mov', 'rm', 'wav', 'ogg')
+            'extensions'    => array('avi', 'mp3', 'mpeg', 'wmv', 'mov', 'rm', 'wav', 'ogg'),
+            'icon'          => 'media.png'
         ),
         'archive'       => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_ARCHIVE',
-            'extensions'    => array('tar', 'tar.gz', 'tar.bz2', 'tbz2', 'tb2', 'tbz', 'tgz', 'taz', 'tar.Z', 'zip', 'rar', 'cab')
+            'extensions'    => array('tar', 'tar.gz', 'tar.bz2', 'tbz2', 'tb2', 'tbz', 'tgz', 'taz', 'tar.Z', 'zip', 'rar', 'cab'),
+            'icon'          => 'archive.jpg'
         ),
         'application'   => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_APPLICATION',
-            'extensions'    => array('exe', 'sh', 'bin', 'dmg', 'deb', 'rpm', 'msi', 'jar', 'pkg')
+            'extensions'    => array('exe', 'sh', 'bin', 'dmg', 'deb', 'rpm', 'msi', 'jar', 'pkg'),
+            'icon'          => 'software.png'
         ),
         'link'          => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_LINK',
-            'extensions'    => array()
+            'extensions'    => array(),
+            'icon'          => ''
         )
     );
 
@@ -446,6 +452,7 @@ class Download {
             .'FROM `'.DBPREFIX.'module_downloads_download` AS tblD'
             .(/*count($arrSelectLocaleExpressions) || */$arrQuery['tables']['locale'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id`' : '')
             .($arrQuery['tables']['category'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_category` AS tblC ON tblC.`download_id` = tblD.`id`' : '')
+            .($arrQuery['tables']['download'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_download` AS tblR ON (tblR.`id1` = tblD.`id` OR tblR.`id2` = tblD.`id`)' : '')
             .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
             .' GROUP BY tblD.`id`'
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
@@ -497,6 +504,12 @@ class Download {
             }
             $arrConditions[] = '('.implode(' OR ', $arrCategoryConditions).')';
             $arrTables[] = 'category';
+        }
+
+        if (in_array('download_id', array_keys($arrFilter)) && !empty($arrFilter['download_id'])) {
+            $arrConditions[] = '(tblR.`id1` = '.intval($arrFilter['download_id']).' OR tblR.`id2` = '.intval($arrFilter['download_id']).')';
+            $arrConditions[] = 'tblD.`id` != '.intval($arrFilter['download_id']);
+            $arrTables[] = 'download';
         }
 
         // parse search
@@ -572,6 +585,20 @@ class Download {
     private function parseFilterConditions($arrFilter)
     {
         $arrConditions = array();
+
+        $arrComparisonOperators = array(
+            'int'       => array('=','<','>'),
+            'string'    => array('!=','<','>', 'REGEXP')
+        );
+        $arrDefaultComparisonOperator = array(
+            'int'       => '=',
+            'string'    => 'LIKE'
+        );
+        $arrEscapeFunction = array(
+            'int'       => 'intval',
+            'string'    => 'addslashes'
+        );
+
         foreach ($arrFilter as $attribute => $condition) {
             /**
              * $attribute is the attribute like 'is_active' or 'name'
@@ -581,19 +608,6 @@ class Download {
                 $table = $type == 'core' ? 'tblD' : 'tblL';
 
                 if (isset($arrAttributes[$attribute])) {
-                    $arrComparisonOperators = array(
-                        'int'       => array('=','<','>'),
-                        'string'    => array('!=','<','>', 'REGEXP')
-                    );
-                    $arrDefaultComparisonOperator = array(
-                        'int'       => '=',
-                        'string'    => 'LIKE'
-                    );
-                    $arrEscapeFunction = array(
-                        'int'       => 'intval',
-                        'string'    => 'addslashes'
-                    );
-
                     if (is_array($condition)) {
                         $arrRestrictions = array();
                         foreach ($condition as $operator => $restriction) {
@@ -655,6 +669,7 @@ class Download {
         $arrCustomSelection = array();
         $joinLocaleTbl = false;
         $joinCategoryTbl = false;
+        $joinDownloadTbl = false;
         $arrIds = array();
         $arrSortExpressions = array();
         $nr = 0;
@@ -666,6 +681,9 @@ class Download {
                 }
                 if (in_array('category', $sqlCondition['tables'])) {
                     $joinCategoryTbl = true;
+                }
+                if (in_array('download', $sqlCondition['tables'])) {
+                    $joinDownloadTbl = true;
                 }
             }
 
@@ -693,6 +711,7 @@ class Download {
             FROM `'.DBPREFIX.'module_downloads_download` AS tblD'
             .($joinLocaleTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id`' : '')
             .($joinCategoryTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_category` AS tblC ON tblC.`download_id` = tblD.`id`' : '')
+            .($joinDownloadTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_download` AS tblR ON (tblR.`id1` = tblD.`id` OR tblR.`id2` = tblD.`id`)' : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
@@ -721,7 +740,8 @@ class Download {
         return array(
             'tables' => array(
                 'locale'    => $joinLocaleTbl,
-                'category'  => $joinCategoryTbl
+                'category'  => $joinCategoryTbl,
+                'download'  => $joinDownloadTbl
             ),
             'conditions'    => $arrCustomSelection,
             'sort'          => $arrSortExpressions
@@ -1016,6 +1036,7 @@ class Download {
     {
         global $objDatabase;
 
+        $status = true;
         if ($this->protected) {
             // set protection
             if ($this->access_id || $this->access_id = Permission::createNewDynamicAccessId()) {
@@ -1026,11 +1047,16 @@ class Download {
             } else {
                 // remove protection due that no new access-ID could have been created
                 $this->access_id = 0;
+                $status = false;
             }
         } elseif ($this->access_id) {
             // remove protection
             Permission::removeAccess($this->access_id, 'dynamic');
             $this->access_id = 0;
+        }
+
+        if (!$status) {
+            return false;
         }
 
         if ($objDatabase->Execute("
@@ -1187,14 +1213,15 @@ class Download {
     {
         global $objDatabase;
 
-        $this->categories = array();
-        $objResult = $objDatabase->Execute('SELECT `category_id` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `download_id` = '.$this->id);
+        $objResult = $objDatabase->Execute('SELECT `download_id`, `category_id` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `download_id` IN ('.implode(',', array_keys($this->arrLoadedDownloads)));
         if ($objResult) {
             while (!$objResult->EOF) {
-                $this->categories[] = $objResult->fields['category_id'];
+                $this->arrLoadedDownloads[$objResult->fields['download_id']]['categories'][] = $objResult->fields['category_id'];
                 $objResult->MoveNext();
             }
         }
+
+        $this->categories = isset($this->arrLoadedDownloads[$this->id]['categories']) ? $this->arrLoadedDownloads[$this->id]['categories'] : array();
     }
 
     private function loadRelatedDownloads()

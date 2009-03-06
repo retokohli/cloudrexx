@@ -1473,7 +1473,6 @@ $this->_objTpl->setVariable(array(
             $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
         } elseif ($objDownload->getProtection()) {
             $arrAssociatedGroups = $objDownload->getAccessGroupIds();
-            print_r($arrAssociatedGroups);
         } else {
             //$arrAssociatedCategories = $objDownload->getAssociatedCategoryIds();
             if (count($arrAssociatedCategories)) {
@@ -2318,6 +2317,19 @@ $this->_objTpl->setVariable(array(
             }
 
             while (!$objSubcategory->EOF) {
+                if (// subcategory is hidden -> check if the user is allowed to see it listed anyways
+                    !$objSubcategory->getVisibility()
+                    // non managers are not allowed to see hidden subcategories
+                    && !Permission::checkAccess(142, 'static', true)
+                    // those who have read access permission to the subcategory are allowed to see it listed
+                    && !Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
+                    // the owner is allowed to see its own categories
+                    && (!$objSubcategory->getOwnerId() || $objSubcategory->getOwnerId() != $objFWUser->objUser->getId())
+                ) {
+                    $objSubcategory->next();
+                    continue;
+                }
+
                 // parse order input box
                 if ($changeSortOrder) {
                     $this->_objTpl->setVariable(array(
