@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Backup
- *
+ * OBSOLETE
  * Functions to create and restore backups of the contrexx cms
  *
- * @copyright    CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @todo        This should be removed.
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
- * @version        1.0.0
+ * @version     1.0.0
  * @todo        Make this an actual class (as the file name suggests)
  * @todo        Document Backup structure, management, schedule(?)
  */
@@ -458,7 +458,7 @@ function backup_showList()
  */
 function backup_getDBTables($table)
 {
-    global $objDatabase,$_DBCONFIG;
+    global $objDatabase;
 
     $alltablesstructure = '';
     $fieldnames     = array();
@@ -485,7 +485,6 @@ function backup_getDBTables($table)
 //            $fieldnames[] = $objColumn->name;
 //        }
 //    }
-
 
     $objResult = $objDatabase->Execute("SHOW FIELDS FROM $table");
     if ($objResult !== false) {
