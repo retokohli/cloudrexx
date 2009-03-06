@@ -16,15 +16,25 @@ form p label.description {
     float: left;
     margin: 0px 0px 0px 10px;
     padding:  0px 0px 0px 0px;
+    width: 300px;
 }
 
 form p label.noCaption {
     float: left;
-    width: 180px;
+    width: 420px;
     margin-left: 2px;
     margin-top: 2px;
+    font-weight: normal;
 }
 
+form .contactFormGroup {
+    float: left;
+    margin-top: -15px !important;
+}
+
+form img.captcha {
+    padding-right: 200px;
+}
 
 form p label, form  p span {
     font-weight: bold;
@@ -289,31 +299,72 @@ div.row2 {
 	height:auto !important;
 }
 
-#calendar div.search {
+#calendar div.back,
+#calendar div.registration,
+#calendar div.categories,
+#calendar div.details,
+#calendar div.search  {
 	float: none;
 	width: 100%;
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 15px 0px;
 	height: auto !important;
+	text-align:left;
 }
 
-#calendar div.notes_list, #calendar div.logo, #calendar div.categories {
-	float: none;
-	width: 100%;
-	margin: 0px 0px 15px 0px;
-	padding: 0px 0px 0px 0px;
-	height: auto !important;
-}
-
-#calendar div.back, #calendar div.registration, #calendar div.export {
-	float: none;
-	width: 100%;
-	margin: 0px 0px 15px 0px;
-	padding: 0px 0px 0px 0px;
-	height: auto !important;
+#calendar div.registration  {
 	text-align:right;
 }
 
+
+#calendar div.note {
+	float: left;
+	width: 100%;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	height: auto !important;
+}
+
+#calendar div.logo {
+	float:left;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#calendar div.logo img {
+	margin: 0px 15px 5px 0px;
+}
+
+#calendar div.description {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	height:auto !important;
+}
+
+#calendar div.export {
+	float:right;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#calendar div.export img {
+	margin: 0px 0px 5px 15px;
+}
+
+#calendar div.adress,
+#calendar div.organizer {
+	float: left;
+	width: 50%;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 15px 0px;
+	height: auto !important;
+}
+
+#calendar div.adress address,
+#calendar div.organizer address {
+	font-style: normal;
+}
 
 
 /***************************************************/
@@ -588,7 +639,7 @@ div.row2 {
 }
 
 #forum div.paging {
-	text-align: center;
+	text-align: left;
 }
 
 
@@ -601,8 +652,9 @@ div.row2 {
 }
 
 #forum .posts h3 {
-	padding:3px 0px 0px 0px;
+	padding:3px 0px 3px 0px;
 	margin: 0px;
+	font-size:1.2em;
 }
 
 
@@ -640,6 +692,67 @@ div.row2 {
 	height: 281px;
 }
 
+.forumTagCloud {
+	padding: 0px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.forumTagCloud li {
+	padding: 0px 3px 0px 3px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.forumTagCloudSmallest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 10px;
+	list-style: none;
+	float: left;
+}
+
+.forumTagCloudSmall {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 12px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.forumTagCloudMedium {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 14px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.forumTagCloudLarge {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 16px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.forumTagCloudLargest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 18px;
+	font-weight: bold;
+	list-style: none;
+	padding: 0px;
+	float: left;
+}
+
 
 /***************************************************/
 /* CSS DEFINITIONS FOR BLOG MODULE                 */
@@ -663,6 +776,7 @@ div.row2 {
 #blog div.voting,
 #blog div.link,
 #blog div.addcomment,
+#blog div.networks,
 #blog div.searchform
 {
 	width: 100%;
@@ -673,17 +787,13 @@ div.row2 {
 }
 
 #blog div.comments,
-#blog div.networks,
 #blog div.code,
 #blog div.statistics {
-	float:left;
-	width: 95%;
-	padding: 0px 0px 0px 0px;
+	padding: 7px 7px 7px 7px;
 	margin: 0px 0px 15px 0px;
-	height:auto !important;
 	background-color: #f9f9f9;
-	padding: 7px;
 	border: 1px dotted #E6E6E6;
+	clear:both;
 }
 
 #blog div.message_error {
@@ -723,6 +833,67 @@ div.row2 {
 	padding: 0px 0px 0px 190px;
 	margin: -15px 0px 0px 0px;
 	height:auto !important;
+}
+
+.blogTagCloud {
+	padding: 0px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.blogTagCloud li {
+	padding: 0px 3px 0px 3px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.blogTagCloudSmallest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 10px;
+	list-style: none;
+	float: left;
+}
+
+.blogTagCloudSmall {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 12px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.blogTagCloudMedium {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 14px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.blogTagCloudLarge {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 16px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.blogTagCloudLargest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 18px;
+	font-weight: bold;
+	list-style: none;
+	padding: 0px;
+	float: left;
 }
 
 
@@ -820,14 +991,7 @@ div.row2 {
 	height:auto !important;
 }
 
-#memberdir div.category_tree {
-	width: 100%;
-	padding: 0px 0px 0px 0px;
-	margin: 0px 0px 25px 0px;
-	height: auto !important;
-}
-
-#memberdir div.description,
+#memberdir div.category_tree,
 #memberdir div.subcategories,
 #memberdir div.char_list,
 #memberdir div.search_form,
@@ -867,8 +1031,20 @@ div.row2 {
 }
 
 #sitemap ul li.sitemap_level_1 {
-	border-bottom: 1px dotted #solid;
 	font-weight: bold;
+}
+
+#sitemap ul li.sitemap_level_2 {
+    padding-left: 25px;
+}
+#sitemap ul li.sitemap_level_3 {
+    padding-left: 50px;
+}
+#sitemap ul li.sitemap_level_4 {
+    padding-left: 75px;
+}
+#sitemap ul li.sitemap_level_5 {
+    padding-left: 100px;
 }
 
 
@@ -946,6 +1122,27 @@ div.row2 {
 	height: auto !important;
 	min-height: 120px;
 	height: 120px;
+	width: 33%;
+}
+
+#shop div.category {
+	padding: 0px 0px 0px 0px;
+	margin: 15px 0px 0px 0px;
+	float:left;
+	height: auto !important;
+	min-height: 120px;
+	height: 120px;
+	width: 33%;
+}
+
+#shop div.discount {
+	padding: 0px 0px 0px 0px;
+	margin: 15px 0px 0px 0px;
+	float:left;
+	height: auto !important;
+	min-height: 120px;
+	height: 120px;
+	width: 50%;
 }
 
 #shop div.paging {
@@ -1013,7 +1210,7 @@ div.row2 {
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
 	height: auto !important;
-	width: 98%;
+	width: 100%;
 	float:left;
 	text-align:right;
 }
@@ -1025,16 +1222,165 @@ div.row2 {
 
 
 /***************************************************/
-/* CSS DEFINITIONS FOR KNOWLEGE MODULE             */
+/* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
 
-#knowlege {
+.ecardColumn1 {
+float:left;
+width:33%;
+}
+
+.ecardColumn2 {
+float:left;
+width:33%;
+}
+
+.ecardColumn3 {
+float:left;
+width:33%;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR NEWS MODULE                 */
+/***************************************************/
+
+table.news_meta td {
+    font-size: 11px;
+    border: 0px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR NEWSLETTER MODULE           */
+/***************************************************/
+
+#newsletter {
 	width: 100%;
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
 	float:left;
 	height:auto !important;
 }
+
+#newsletter div.errorMessage,
+#newsletter div.okMessage,
+#newsletter div.form  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#newsletter div.errorMessage {
+	color: #ff0000;
+}
+
+#newsletter_home input[type=radio],
+#newsletter_home input[type=checkbox]{
+        float: none;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR EGOV MODULE                 */
+/***************************************************/
+
+#egov {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#egov table tr td  {
+	border: 0px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR U2U MODULE                  */
+/***************************************************/
+
+#u2u {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#u2u div.inbox,
+#u2u div.functions,
+#u2u div.message,
+#u2u div.message_ok,
+#u2u div.message_error,
+#u2u div.preview,
+#u2u div.details,
+#u2u div.outbox,
+#u2u div.paging  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#u2u div.message_error {
+	color:#FF0000;
+}
+
+#u2u div.message_ok {
+	color: #029202;
+}
+
+
+/***************************************************/
+/* NEW CSS DEFINITIONS FOR KNOWLEGE MODULE         */
+/***************************************************/
+#knowledge_new {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#knowledge_new  div.crumbtrail,
+#knowledge_new  div.answer,
+#knowledge_new  div.informations  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#knowledge_new .tags,
+#knowledge_new .articlelist .tags {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: inline;
+    border: none;
+}
+
+#knowledge_new .tags li,
+#knowledge_new .articlelist .tags li {
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+    list-style: none;
+    border: none;
+}
+
+
+/***************************************************/
+/* OLD CSS DEFINITIONS FOR KNOWLEGE MODULE         */
+/***************************************************/
+
 
 .cloud {
     margin: 0px;
@@ -1095,13 +1441,13 @@ div.row2 {
 #knowledge .articlelist li {
     margin: 0px;
     padding: 0px;
-    border-bottom: dotted 1px black;
+    border-bottom: solid 1px #C6C6C6;
 }
 
 #knowledge .articlelist .title_row {
     /*width: 565px;*/
     padding: 5px;
-    background-color: #eeeeee;
+    background-color: #F6F6F6;
 }
 
 #knowledge .articlelist .opener {
@@ -1129,8 +1475,9 @@ div.row2 {
 
 
 #knowledge .articlelist .question_active {
-    background-color: #E9E9E9;
+    background-color: #F5F5F5;
     font-weight: bold;
+    border-bottom: solid 1px #C6C6C6;
 }
 
 #knowledge ul {
@@ -1284,11 +1631,6 @@ div.row2 {
     visibility: hidden;
 }
 
-#knowledge .searchinput_search {
-    width: 60%;
-    padding: 5px;
-}
-
 #knowledge .search_button {
     padding: 4px;
 }
@@ -1338,20 +1680,65 @@ div.row2 {
 }
 
 /***************************************************/
-/* CSS DEFINITIONS FOR E-CARD MODULE               */
+/* CSS DEFINITIONS FOR DATA MODULE                 */
 /***************************************************/
-
-.ecardColumn1 {
-float:left;
-width:33%;
+div.datalist_block dl dt {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    font-weight: bold;
+    display: block;
 }
 
-.ecardColumn2 {
-float:left;
-width:33%;
+div.datalist_block dl dd {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    border-top: 0px solid #cbb354;
 }
 
-.ecardColumn3 {
-float:left;
-width:33%;
+div.datalist_block dl dt.cattitle {
+    font-weight: bold;
+    margin: 0px;
+    padding: 2px;
+    display: block;
+    background-color: #EEEEEE;
+    border: 0px #bcbcbc solid;
+    margin-top: 11px;
+}
+
+div.datalist_block dl dd.catcontent {
+    padding: 0px;
+    border: 0px #bcbcbc solid;
+    border-top: none;
+    padding-top:5px;
+}
+
+div.datalist_block dl dd.catcontent2 p{
+    padding: 0px;
+}
+
+div.datalist_block img {
+    margin-right: 5px;
+}
+
+/** overlay stuff **/
+dl.data_module {
+    padding: 10px;
+    color: #EEEEEE;
+    font-family:"Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+    font-size:75%;
+    line-height:1.5;
+    
+}
+
+dl.data_module dt {
+   font-weight: bold; 
+}
+
+dl.data_module dd {
+    margin: 5px 0;
+}
+
+dl.data_module img { 
+    margin-right: 20px;
+    margin-bottom: 10px;
 }

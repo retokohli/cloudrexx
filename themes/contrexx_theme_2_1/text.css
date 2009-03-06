@@ -14,6 +14,11 @@ a {
 	text-decoration: none;
 }
 
+#powered a {
+	color: #9F9F9F;
+	text-decoration: none;
+}
+
 a:hover {
 	color: #148ED9;
 	text-decoration: none;
@@ -26,9 +31,9 @@ a.out {
 	background-repeat:no-repeat;
 }
 
-form  { 
-	margin:0; 
-	padding:0; 
+form  {
+	margin:0;
+	padding:0;
 }
 
 fieldset{
@@ -42,19 +47,19 @@ legend{
 	font-size:1.2em;
 }
 
-img { 
-	border:0; 
+img {
+	border:0;
 }
 
-table { 
-	width: 100%; 
+table {
+	width: 100%;
 }
 
-table th { 
-	text-align: left; 
+table th {
+	text-align: left;
 }
 
-table td.none { 
+table td.none {
 	border: 0px solid #000000;
 }
 
@@ -70,15 +75,17 @@ table td.none {
 }
 
 /* Header Search Style */
-#header_links li{ 
+#header_links li{
 	float:left;
 	padding:12px 9px;
 	list-style: none;
 }
-#header_links, #header_links a{ 
+
+#header_links, #header_links a{
 	text-decoration:none;
 	color:#CFEDFF;
 }
+
 #header_links a:hover{
 	color:#ffffff;
 }
@@ -88,18 +95,20 @@ table td.none {
 }
 
 #header_links .search input.search_input{
-	width:120px;
+	width:140px;
 	margin-top:0.3em;
 	margin-right:0.1em;
 	margin-bottom:0.3em;
 	padding:1px;
 	background-color:#f6f6f6;
 	border:1px solid #c6c6c6;
+	background:#f6f6f6 url(images/search_input_bg.gif) no-repeat 2px;
+	padding-left: 24px;
 }
 
 #header_links .search input.search_input:focus{
 	background-color:#ffffdd;
-	border:1px solid #ff8000;
+	border:1px solid #173A8B;
 }
 
 #header_links .search input.search_button{
@@ -110,7 +119,7 @@ table td.none {
 }
 
 /* Footer Inside Style */
-#footer_inside a{ 
+#footer_inside a{
 	text-decoration:none;
 	color:#CFEDFF;
 }
@@ -171,7 +180,7 @@ table td.none {
 }
 
 /* Accordeon style */
-.accordion_content{ 
+.accordion_content{
 	clear:both;
 	width: 290px;
 }
@@ -209,15 +218,27 @@ h2.toggler{
 	border:1px solid #c6c6c6;
 }
 
-#frame_content_right input[type=submit], 
-#frame_content_right input[type=button], 
-#frame_content_right input[type=reset], 
-#frame_home input[type=submit], 
-#frame_home input[type=button], 
-#frame_home input[type=reset], 
-#boxes_home input[type=submit], 
-#boxes_home input[type=button], 
-#boxes_home input[type=reset], 
+* html #frame_content_right input,
+#frame_home input,
+#boxes_home input {
+        width:auto;
+	margin:0.25em 0.25em 0.25em 0em;
+	padding:4px;
+	background-color:#f6f6f6;
+	border:1px solid #c6c6c6;
+        float: left;
+}
+
+
+#frame_content_right input[type=submit],
+#frame_content_right input[type=button],
+#frame_content_right input[type=reset],
+#frame_home input[type=submit],
+#frame_home input[type=button],
+#frame_home input[type=reset],
+#boxes_home input[type=submit],
+#boxes_home input[type=button],
+#boxes_home input[type=reset],
 input.submit,
 input.button,
 input.reset{
@@ -228,12 +249,12 @@ input.reset{
 	border:1px solid #c6c6c6;
 }
 
-#frame_content_right input[type=checkbox], 
-#frame_content_right input[type=radio],  
-#frame_home input[type=checkbox], 
-#frame_home input[type=radio],  
-#boxes_home input[type=checkbox], 
-#boxes_home input[type=radio],  
+#frame_content_right input[type=checkbox],
+#frame_content_right input[type=radio],
+#frame_home input[type=checkbox],
+#frame_home input[type=radio],
+#boxes_home input[type=checkbox],
+#boxes_home input[type=radio],
 input.checkbox,
 input.radio{
 	width:auto;
@@ -277,5 +298,5 @@ input.radio{
 #boxes_home select:focus,
 #boxes_home textarea:focus {
 	background-color:#ffffdd;
-	border:1px solid #ff8000;
+	border:1px solid #173A8B;
 }

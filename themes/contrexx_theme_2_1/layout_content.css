@@ -17,7 +17,7 @@
 	float: left;
 }
 
-#left_navigation { 
+#left_navigation {
 	width: 240px;
 	padding: 0 0 15px 0;
 	margin: 0;
@@ -25,7 +25,30 @@
 	float: left;
 }
 
-#left_sidebar { 
+#shop_navigation {
+	width: 240px;
+	padding: 0 0 15px 0;
+	margin: 0;
+	height: auto !important;
+	float: left;
+}
+
+#shopJsCart {
+	width: 240px;
+	padding: 0 0 15px 0;
+	margin: 0;
+	height: auto !important;
+	float: left;
+}
+
+#shop_currencies {
+	width: 240px;
+	padding: 0 0 15px 0;
+	margin: 0;
+	text-align: center;
+}
+
+#left_sidebar {
 	width: 218px;
 	padding: 0 13px 15px 9px;
 	margin: 0;
