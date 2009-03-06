@@ -14,12 +14,6 @@
  */
 
 /**
- * Debug level
- * @ignore
- */
-define('_SHOP_DEBUG', 0);
-
-/**
  * @ignore
  */
 // post-2.1
@@ -163,19 +157,6 @@ class shopmanager extends ShopLibrary
     function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objDatabase;
-
-        if (_SHOP_DEBUG & 1) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 1);
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-        }
-        if (_SHOP_DEBUG & 2) {
-            $objDatabase->debug = 1;
-        } else {
-            $objDatabase->debug = 0;
-        }
 
         // sigma template
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');

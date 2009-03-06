@@ -13,11 +13,6 @@
  */
 
 /**
- * Debug level
- */
-define('_SHOP_DEBUG', 0);
-
-/**
  * Text objects
  */
 // post-2.1
@@ -190,19 +185,6 @@ class Shop extends ShopLibrary
     function __construct($pageContent)
     {
         global $objDatabase;
-
-        if (_SHOP_DEBUG & 1) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 1);
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-        }
-        if (_SHOP_DEBUG & 2) {
-            $objDatabase->debug = 1;
-        } else {
-            $objDatabase->debug = 0;
-        }
 
         $this->pageContent = $pageContent;
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.self::noPictureName;
