@@ -286,17 +286,19 @@ class Blog extends BlogLibrary  {
             if ($objCommentsResult->RecordCount() > 0) {
                 while (!$objCommentsResult->EOF) {
 
-                	//Get user Name and Avatar
+                	//Get username and avatar
                 	$strUserName 	= '';
-                	$strUserAvatar 	= '';
+                	$strUserAvatar	= '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/no_avatar.gif" alt="'.$strUserName.'" />';
 					$objUser = $objFWUser->objUser->getUser($objCommentsResult->fields['user_id']);
 
                 	if ($objCommentsResult->fields['user_id'] == 0 || $objUser === false) {
 						$strUserName 	= $objCommentsResult->fields['user_name'];
-						$strUserAvatar	= '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/no_avatar.gif" alt="'.$strUserName.'" />';
                 	} else {
 						$strUserName 	= htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-						$strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
+
+						if ($objUser->getProfileAttribute('picture') != '') {
+							$strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
+						}
                 	}
 
 					//Parse comment
