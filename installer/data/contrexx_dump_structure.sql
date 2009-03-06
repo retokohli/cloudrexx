@@ -1046,23 +1046,22 @@ CREATE TABLE `contrexx_module_downloads_settings` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_ecard_ecards` (
-  `date` int(14) NOT NULL,
-  `TTL` int(14) NOT NULL,
-  `code` varchar(35) NOT NULL,
-  `salutation` varchar(100) NOT NULL,
-  `senderName` varchar(100) NOT NULL,
-  `senderEmail` varchar(100) NOT NULL,
-  `receiverName` varchar(100) NOT NULL,
-  `receiverEmail` varchar(100) NOT NULL,
-  `message` varchar(500) NOT NULL,
+  `code` varchar(35) NOT NULL default '',
+  `date` int(10) unsigned NOT NULL default '0',
+  `TTL` int(10) unsigned NOT NULL default '0',
+  `salutation` varchar(100) NOT NULL default '',
+  `senderName` varchar(100) NOT NULL default '',
+  `senderEmail` varchar(100) NOT NULL default '',
+  `recipientName` varchar(100) NOT NULL default '',
+  `recipientEmail` varchar(100) NOT NULL default '',
+  `message` varchar(500) NOT NULL default '',
   PRIMARY KEY  (`code`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_ecard_settings` (
-  `id` int(11) NOT NULL auto_increment,
-  `setting_name` varchar(100) NOT NULL,
-  `setting_value` varchar(500) NOT NULL,
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+  `setting_name` varchar(100) NOT NULL default '',
+  `setting_value` varchar(500) NOT NULL default '',
+  PRIMARY KEY  (`setting_name`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_egov_configuration` (
   `name` varchar(255) NOT NULL default '',
   `value` text NOT NULL,
