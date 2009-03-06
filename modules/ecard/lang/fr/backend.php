@@ -41,6 +41,8 @@ $_ARRAYLANG['TXT_MOTIVE_SELECTION'] = "Choix de motifs";
 $_ARRAYLANG['TXT_PATH'] = "Dossier";
 $_ARRAYLANG['TXT_PICTURE'] = "Image";
 $_ARRAYLANG['TXT_CHOOSE'] = "Choix";
-$_ARRAYLANG['TXT_ECARD_IMAGES'] = "Motive";
+$_ARRAYLANG['TXT_ECARD_IMAGES'] = "Bilder";
 $_ARRAYLANG['TXT_ECARD_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_ECARD_FROM'] = "E-Card von";
+$_ARRAYLANG['TXT_DELETE_MOTIVE '] = "Bild löschen";
 ?>
