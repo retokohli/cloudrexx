@@ -235,15 +235,24 @@ class docSys extends docSysLibrary
                 
                 $this->_objTpl->parse("row");
             }
+            $this->_objTpl->parse("table");
+            $this->_objTpl->hideBlock("nothing_found");
         } else {
+            /*
             $this->_objTpl->setVariable(array(
                 'DOCSYS_STYLE'      => 1,
                 'DOCSYS_DATE'       => "",
                 'DOCSYS_LINK'       => "",
                 'DOCSYS_CATEGORY'   => $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND']
             ));
+             */
 
-            $this->_objTpl->parse("row");
+            //$this->_objTpl->parse("row");
+            $this->_objTpl->setVariable(array(
+                "TXT_NO_DOCUMENTS_FOUND" => $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'],
+            ));
+            $this->_objTpl->parse("nothing_found");
+            $this->_objTpl->hideBlock("table");
         }
 
         return $this->_objTpl->get();
