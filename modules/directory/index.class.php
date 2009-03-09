@@ -93,7 +93,7 @@ class rssDirectory extends directoryLibrary
         //                    page to break if the FTP server doesn't work. And why
         //                    the hell do we need to re-create the RSS here anyhow?)
         #$this->createRSSlatest();
-        
+
         //get settings
         $this->settings = $this->getSettings();
 
@@ -856,6 +856,12 @@ $this->arrRows[2] = '';
 
         //get attributes
         $this->getAttributes($id);
+
+        //get voting
+        $this->getVoting($id, $cid, $lid);
+
+        //get votes
+        $this->getVotes($id);
 
         //parse block
         $this->_objTpl->parse('feedDetails');
