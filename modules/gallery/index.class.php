@@ -942,8 +942,8 @@ class Gallery
                     $imageName = substr($imageName, 0, strrpos($imageName, '.'));
                 }
 
-                  if ($this->arrSettings['slide_show'] == 'on') {
-                    $optionValue="slideshowDelay:".$this->arrSettings['slide_show_seconds'];
+                  if ($this->arrSettings['slide_show'] == 'slideshow') {
+                      $optionValue="slideshowDelay:".$this->arrSettings['slide_show_seconds'];
                 }
                 else {
                     $optionValue="counterType:'skip',continuous:true,animSequence:'sync'";
