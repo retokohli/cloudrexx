@@ -381,6 +381,14 @@ class u2u extends u2uLibrary
 
 	   }
 
+	   $this->_objTpl->setVariable(array(
+           'TXT_U2U_ADDRESS_BOOK'           =>  $_ARRAYLANG['TXT_U2U_ADDRESS_BOOK'],
+           'TXT_U2U_NICK_NAME'              =>  $_ARRAYLANG['TXT_U2U_NICK_NAME'],
+           'TXT_U2U_CITY'                   =>  $_ARRAYLANG['TXT_U2U_CITY'],
+           'TXT_U2U_EMAIL'                  =>  $_ARRAYLANG['TXT_U2U_EMAIL'],
+           'TXT_U2U_ACTIONS'                =>  $_ARRAYLANG['TXT_U2U_ACTIONS'],
+        ));
+
 
 
         foreach($objResult as $objId => $objValue) {
@@ -402,11 +410,6 @@ class u2u extends u2uLibrary
                            'TXT_U2U_ADDRESS_CITY'           =>  $userCity ['city'],
                            'TXT_U2U_ADDRESS_EMAIL'          =>  $userEmail['email'],
                            'TXT_U2U_ADDRESS_BUDDIES_ID'     =>  $objValue['buddies_id'],
-                           'TXT_U2U_ADDRESS_BOOK'           =>  $_ARRAYLANG['TXT_U2U_ADDRESS_BOOK'],
-                           'TXT_U2U_NICK_NAME'              =>  $_ARRAYLANG['TXT_U2U_NICK_NAME'],
-                           'TXT_U2U_CITY'                   =>  $_ARRAYLANG['TXT_U2U_CITY'],
-                           'TXT_U2U_EMAIL'                  =>  $_ARRAYLANG['TXT_U2U_EMAIL'],
-                           'TXT_U2U_ACTIONS'                =>  $_ARRAYLANG['TXT_U2U_ACTIONS'],
                            'TXT_U2U_DETAILS'                =>  $_ARRAYLANG['TXT_U2U_DETAILS'],
                            'TXT_U2U_DELETE'                 =>  $_ARRAYLANG['TXT_U2U_DELETE'],
                            'TXT_U2U_BUDDY_SITE'             =>  $userSite['website'],
