@@ -279,7 +279,8 @@ class ShopLibrary
      * Initialize the shop configuration array
      *
      * The array created contains all of the common shop settings.
-     * @global $objDatabase Database object
+     * @global  $objDatabase    Database object
+     * @return                  True on success, false otherwise
      */
     function _initConfiguration()
     {
@@ -290,6 +291,8 @@ class ShopLibrary
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
         ";
         $objResult = $objDatabase->Execute($query);
+        $this->arrConfig = array();
+        if (!$objResult) return false;
         while (!$objResult->EOF) {
             $this->arrConfig[$objResult->fields['name']] = array(
                 'id'     => $objResult->fields['id'],
@@ -303,6 +306,7 @@ class ShopLibrary
             'value'  => '',
             'status' => '0',
         );
+        return true;
     }
 
 

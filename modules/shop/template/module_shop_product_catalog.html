@@ -1,6 +1,6 @@
 <!-- START shop_product_catalog.html -->
 <script language="javascript" type="text/javascript">
-<!-- // confirm delete product
+// <![CDATA[
 function deleteProduct(id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
@@ -9,13 +9,21 @@ function deleteProduct(id)
 
 function shopProductsDoAction(obj,act)
 {
-  if (shopProductsIsChecked('selectedProductId[]') == true) {
-    switch (act) {
-      case 'del':
+  if (shopProductsIsChecked('selectedProductId[]')) {
+    switch(act) {
+      case 'delete':
         if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-          document.formCatalog.action = "index.php?cmd=shop{MODULE_INDEX}&act=delProduct";
+          document.formCatalog.action = "index.php?cmd=shop{MODULE_INDEX}&act=deleteProduct";
           document.formCatalog.submit();
         }
+        break;
+      case 'activate':
+        document.formCatalog.action = "index.php?cmd=shop{MODULE_INDEX}&act=activateProducts";
+        document.formCatalog.submit();
+        break;
+      case 'deactivate':
+        document.formCatalog.action = "index.php?cmd=shop{MODULE_INDEX}&act=deactivateProducts";
+        document.formCatalog.submit();
         break;
     }
   } else {
@@ -26,19 +34,16 @@ function shopProductsDoAction(obj,act)
 
 function shopProductsIsChecked(fieldName)
 {
-  var x = 0;
   for (var i = 0; i < document.formCatalog.elements.length; ++i) {
     var e = document.formCatalog.elements[i];
-    if (e.name == fieldName && e.checked == true) {
-      ++x;
-    }
-  }
-  if (x > 0) {
-    return true;
+    if (e.name == fieldName && e.checked == true) return true;
   }
   return false;
 }
-// -->
+
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
+Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
+// ]]>
 </script>
 <form name="formSearch" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products">
   <table summary="" width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
@@ -58,24 +63,29 @@ function shopProductsIsChecked(fieldName)
     </tr>
   </table>
 </form>
-<br />
+
 <form name="formCatalog" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products">
   {SHOP_PRODUCT_PAGING}<br />
   <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
-      <th colspan="15">{TXT_PRODUCT_CATALOG}&nbsp;(&nbsp;{TXT_TOTAL}&nbsp;{SHOP_PRODUCT_TOTAL}&nbsp;)</th>
+      <th colspan="16">{TXT_PRODUCT_CATALOG}&nbsp;({TXT_TOTAL}&nbsp;{SHOP_PRODUCT_TOTAL})</th>
     </tr>
     <tr class="row1">
       <td width="1%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_ID}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_PRODUCT_STATUS}&nbsp;</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_SEQUENCE}</b></td>
+      <td width="7%" nowrap="nowrap">
+        <span class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">
+          <img src="images/icons/home.gif" alt="{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE}" />
+        </span>
+      </td>
       <td width="88%"><b>{TXT_PRODUCT_NAME}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_SHOP_PRODUCT_CUSTOM_ID}</b></td>
       <td width="1%" colspan="2" nowrap="nowrap"><b>{TXT_SPECIAL_OFFER}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_EKP}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_HP}</b></td>
-      <td width="1%" nowrap="nowrap"><b>{TXT_TAX}</b></td>
+      <td width="1%" nowrap="nowrap"><b>{TXT_SHOP_VAT}</b></td>
       <!--td width="5%" nowrap="nowrap"><b>{TXT_WEIGHT}</b></td-->
       <td width="1%" nowrap="nowrap"><b>{TXT_DISTRIBUTION}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_STOCK}</b></td>
@@ -87,13 +97,17 @@ function shopProductsIsChecked(fieldName)
         <td>{SHOP_PRODUCT_ID}<input type="hidden" name="shopProductId[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
         <td>
           <img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" />
-          <input type="checkbox" name="active[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_STATUS} /><input type="hidden" name="activeOld[{SHOP_PRODUCT_ID}]" value="{SHOP_ACTIVE_VALUE_OLD}" />
+          <input type="checkbox" name="active[{SHOP_PRODUCT_ID}]" value="1"{SHOP_PRODUCT_STATUS} /><input type="hidden" name="activeOld[{SHOP_PRODUCT_ID}]" value="{SHOP_ACTIVE_VALUE_OLD}" />
         </td>
         <td><input type="text" name="shopSortOrder[{SHOP_PRODUCT_ID}]" size="5" maxlength="5" value="{SHOP_SORT_ORDER}" /><input type="hidden" name="shopSortOrderOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" /></td>
+        <td>
+          <input type="checkbox" name="shownonstartpage[{SHOP_PRODUCT_ID}]" value="1"{SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED} />
+          <input type="hidden" name="shownonstartpageOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD}" />
+        </td>
         <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME}">{SHOP_PRODUCT_NAME}</a></td>
         <td><input maxlength="255" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="10" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
         <td>
-          <input type="checkbox" name="specialOffer[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_SPECIAL_OFFER} />
+          <input type="checkbox" name="specialOffer[{SHOP_PRODUCT_ID}]" value="1"{SHOP_PRODUCT_SPECIAL_OFFER} />
         </td>
         <td>
           <input maxlength=10 name="discount[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISCOUNT}" size="6" />
@@ -102,14 +116,14 @@ function shopProductsIsChecked(fieldName)
         </td>
         <td><input type="text" name="price1[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE1}" size="6" maxlength="10" /><input type="hidden" name="price1Old[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE1}" /></td>
         <td><input type="text" name="price2[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE2}" size="6" maxlength="10" /><input type="hidden" name="price2Old[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE2}" /></td>
-        <td>{SHOP_PRODUCT_TAX_MENU}<input type="hidden" name="taxIdOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_TAX_ID}" /></td>
+        <td>{SHOP_PRODUCT_VAT_MENU}<input type="hidden" name="taxIdOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_VAT_ID}" /></td>
         <!--td><input type="text" name="weight[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" size="10" maxlength="10" /><input type="hidden" name="weightOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" /></td-->
         <!--td>{SHOP_DISTRIBUTION_MENU}<input type="hidden" name="distributionOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISTRIBUTION}" /></td-->
         <td>{SHOP_DISTRIBUTION}</td>
         <td><input type="text" name="stock[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" size="5" maxlength="5" /><input type="hidden" name="stockOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" /></td>
         <td nowrap="nowrap"><div style="text-align:right;">
           <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;new=1" title="{TXT_AS_TEMPLATE}"><img src="images/icons/press.gif" alt="{TXT_AS_TEMPLATE}" border="0" /></a>&nbsp;
-          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>&nbsp;
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{TXT_SHOP_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_SHOP_EDIT}" border="0" /></a>&nbsp;
           <a href="javascript:deleteProduct('{SHOP_PRODUCT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
         </div></td>
       </tr>
@@ -120,7 +134,7 @@ function shopProductsIsChecked(fieldName)
   <a href="javascript:{}" onclick="changeCheckboxes('formCatalog','selectedProductId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
   <select name="selectAction" onchange="shopProductsDoAction(this,this.value)">
     <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
-    <option value="del">{TXT_DELETE}</option>
+    <option value="delete">{TXT_DELETE}</option>
   </select>
   <br />
   <br />

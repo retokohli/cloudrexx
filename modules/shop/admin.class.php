@@ -156,7 +156,7 @@ class shopmanager extends ShopLibrary
      */
     function __construct()
     {
-        global $_ARRAYLANG, $objTemplate, $objDatabase;
+        global $_ARRAYLANG, $objTemplate;
 
         // sigma template
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
@@ -1503,7 +1503,7 @@ class shopmanager extends ShopLibrary
         // $success may also be '', in which case no changed setting has
         // been detected.
         // Refresh the Settings, so changes are made visible right away
-        $this->objSettings = new Settings();
+        $this->_initConfiguration();
 
         $i = 0;
         self::$pageTitle= $_ARRAYLANG['TXT_SETTINGS'];
@@ -2210,8 +2210,8 @@ class shopmanager extends ShopLibrary
                 // Shop general settings template
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_general.html');
 
-                $saferpayStatus = ($this->arrConfig['saferpay_id']['status'] == 1) ? 'checked="checked"' : '';
-                $saferpayTestStatus = ($this->arrConfig['saferpay_use_test_account']['status'] == 1) ? 'checked="checked"' : '';
+                $saferpayStatus = ($this->arrConfig['saferpay_id']['status'] == 1) ? ' checked="checked"' : '';
+                $saferpayTestStatus = ($this->arrConfig['saferpay_use_test_account']['status'] == 1) ? ' checked="checked"' : '';
 
                 require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                 $paypalStatus = ($this->arrConfig['paypal_account_email']['status'] == 1) ? ' checked="checked"' : '';
@@ -2222,11 +2222,11 @@ class shopmanager extends ShopLibrary
                 );
                 $yellowpayStatus =
                     ($this->arrConfig['yellowpay_shop_id']['status'] == 1
-                        ? 'checked="checked"' : ''
+                        ? ' checked="checked"' : ''
                     );
                 $yellowpayTest = $this->arrConfig['yellowpay_use_testserver']['value'];
-                $yellowpayTestCheckedYes = ($yellowpayTest ? 'checked="checked"' : '');
-                $yellowpayTestCheckedNo = ($yellowpayTest ? '' : 'checked="checked"');
+                $yellowpayTestCheckedYes = ($yellowpayTest ? ' checked="checked"' : '');
+                $yellowpayTestCheckedNo = ($yellowpayTest ? '' : ' checked="checked"');
 
                 // Datatrans
                 $datatrans_request_type = Settings::getValueByName('datatrans_request_type');
@@ -2834,6 +2834,7 @@ class shopmanager extends ShopLibrary
         $shopEnddate              = '0000-00-00 00:00:00';
         $shopImageName            = '';
         $shopUserGroupIds         = '';
+//        $shopFlags = '';
         $shopGroupId   = 0;
         $shopArticleId = 0;
         $shopKeywords  = '';
@@ -2856,10 +2857,7 @@ class shopmanager extends ShopLibrary
             $shopCustomerPrice        = floatval($_POST['shopCustomerPrice']);
             $shopResellerPrice        = floatval($_POST['shopResellerPrice']);
             $shopSpecialOffer         =
-                (isset($_POST['shopSpecialOffer'])
-                    ? intval($_POST['shopSpecialOffer'])
-                    : 0
-                );
+                (isset($_POST['shopSpecialOffer']) ? 1 : 0);
             $shopDiscount             = floatval($_POST['shopDiscount']);
             $shopTaxId                = (isset($_POST['shopTaxId']) ? $_POST['shopTaxId'] : 0);
             $shopShortDescription     = contrexx_stripslashes($_POST['shopShortDescription']);
@@ -2875,11 +2873,9 @@ class shopmanager extends ShopLibrary
             $shopStartdate            = !empty($_POST['shopStartdate']) ? contrexx_stripslashes($_POST['shopStartdate']) : '0000-00-00 00:00:00';
             $shopEnddate              = !empty($_POST['shopEnddate']) ? contrexx_stripslashes($_POST['shopEnddate']) : '0000-00-00 00:00:00';
             $shopManufacturerId       = intval($_POST['shopManufacturerId']);
-            $shopFlags                =
-                (isset($_POST['shopFlags'])
-                    ? join(' ', $_POST['shopFlags'])
-                    : ''
-                );
+// Currently not used on the detail page
+//            $shopFlags                = (isset($_POST['shopFlags'])
+//                    ? join(' ', $_POST['shopFlags']) : '');
             $shopDistribution         = $_POST['shopDistribution'];
             // Different meaning of the "weight" field for downloads!
             // The getWeight() method will treat purely numeric values
@@ -2992,6 +2988,8 @@ class shopmanager extends ShopLibrary
                 $objProduct->setPictures($shopImageName);
                 $objProduct->setDistribution($shopDistribution);
                 $objProduct->setWeight($shopWeight);
+// Currently not used on the detail page
+//                $objProduct->setFlags($shopFlags);
                 $objProduct->setUsergroups($shopUserGroupIds);
                 $objProduct->setGroupCountId($shopGroupId);
                 $objProduct->setGroupArticleId($shopArticleId);
@@ -3017,9 +3015,10 @@ class shopmanager extends ShopLibrary
             // virtual ShopCategories.
             // Note that this *MUST* be called *AFTER* the Product is updated
             // or inserted.
-            Products::changeFlagsByProductCode(
-                $shopProductIdentifier, $shopFlags
-            );
+// Virtual categories are disabled for the time being
+//            Products::changeFlagsByProductCode(
+//                $shopProductIdentifier, $shopFlags
+//            );
 
             if ($shopProductId > 0) {
                 $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
@@ -3167,16 +3166,16 @@ class shopmanager extends ShopLibrary
             $objProduct->getPictures()
         );
 
-        $shopFlagsSelection =
-            ShopCategories::getVirtualCategoriesSelectionForFlags(
-                $objProduct->getFlags()
-            );
-        if ($shopFlagsSelection) {
-            self::$objTemplate->setVariable(array(
-                'TXT_SHOP_FLAGS' => $_ARRAYLANG['TXT_SHOP_FLAGS'],
-                'SHOP_FLAGS_SELECTION' => $shopFlagsSelection,
-            ));
-        }
+//        $shopFlagsSelection =
+//            ShopCategories::getVirtualCategoriesSelectionForFlags(
+//                $objProduct->getFlags()
+//            );
+//        if ($shopFlagsSelection) {
+//            self::$objTemplate->setVariable(array(
+//                'TXT_SHOP_FLAGS' => $_ARRAYLANG['TXT_SHOP_FLAGS'],
+//                'SHOP_FLAGS_SELECTION' => $shopFlagsSelection,
+//            ));
+//        }
 
         // The distribution type (delivery, download, or none)
         $shopDistribution = $objProduct->getDistribution();
@@ -3214,9 +3213,9 @@ class shopmanager extends ShopLibrary
             'SHOP_CUSTOMER_PRICE' => Currency::formatPrice($objProduct->getPrice()),
             'SHOP_RESELLER_PRICE' => Currency::formatPrice($objProduct->getResellerPrice()),
             'SHOP_DISCOUNT' => Currency::formatPrice($objProduct->getDiscountPrice()),
-            'SHOP_SPECIAL_OFFER' => ($objProduct->isSpecialOffer() ? 'checked="checked"' : ''),
-            'SHOP_TAX' => Vat::getLongMenuString(
-                    $objProduct->getVatId(), 'shopTaxId', "style='width: 220px'"
+            'SHOP_SPECIAL_OFFER' => ($objProduct->isSpecialOffer() ? ' checked="checked"' : ''),
+            'SHOP_VAT_MENUOPTIONS' => Vat::getMenuoptions(
+                    $objProduct->getVatId(), true
                 ),
             'SHOP_SHORT_DESCRIPTION' => get_wysiwyg_editor(
                     'shopShortDescription',
@@ -3235,11 +3234,12 @@ class shopmanager extends ShopLibrary
                 ),
             'SHOP_STARTDATE' => $objProduct->getStartDate(),
             'SHOP_ENDDATE' => $objProduct->getEndDate(),
-            'SHOP_ARTICLE_ACTIVE' => ($objProduct->getStatus() ? 'checked="checked"' : ''),
-            'SHOP_B2B' => ($objProduct->isB2B() ? 'checked="checked"' : ''),
-            'SHOP_B2C' => ($objProduct->isB2C() ? 'checked="checked"' : ''),
-            'SHOP_STOCK_VISIBILITY' => ($objProduct->isStockVisible() ? 'checked="checked"' : ''),
-            'SHOP_MANUFACTURER_SELECT' => $this->getManufacturerMenu($objProduct->getManufacturerId()),
+            'SHOP_ARTICLE_ACTIVE' => ($objProduct->getStatus() ? ' checked="checked"' : ''),
+            'SHOP_B2B' => ($objProduct->isB2B() ? ' checked="checked"' : ''),
+            'SHOP_B2C' => ($objProduct->isB2C() ? ' checked="checked"' : ''),
+            'SHOP_STOCK_VISIBILITY' => ($objProduct->isStockVisible() ? ' checked="checked"' : ''),
+            'SHOP_MANUFACTURER_MENUOPTIONS' =>
+                Manufacturer::getMenuoptions($objProduct->getManufacturerId()),
             'SHOP_PICTURE1_IMG_SRC' => (!empty($arrImages[1]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix)
                     ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix
                     : self::$defaultImage
@@ -3274,7 +3274,7 @@ class shopmanager extends ShopLibrary
                     $objProduct->getDistribution(),
                     'shopDistribution',
                     'distributionChanged();',
-                    "style='width: 220px'"
+                    'style="width: 220px"'
                 ),
             'SHOP_WEIGHT' => ($shopDistribution != 'delivery'
                     ? '0 g'
@@ -3317,7 +3317,6 @@ class shopmanager extends ShopLibrary
 
         $i = 0; // Used for rowclass
         $shopSearchPattern = '';
-
         $objFWUser = FWUser::getFWUserObject();
 
         // Update the order status if valid
@@ -3381,7 +3380,7 @@ class shopmanager extends ShopLibrary
         }
         if (isset($_POST['shopCustomerType'])) {
             $shopCustomerType = intval($_POST['shopCustomerType']);
-            if (0 <= $shopCustomerType && $shopCustomerType >= 1) {
+            if ($shopCustomerType == 0 || $shopCustomerType == 1) {
                 $shopSearchPattern .= " AND is_reseller=$shopCustomerType";
             }
         }
@@ -5160,7 +5159,7 @@ class shopmanager extends ShopLibrary
             'TXT_SPECIAL_OFFER' => $_ARRAYLANG['TXT_SPECIAL_OFFER'],
             'TXT_HP' => $_ARRAYLANG['TXT_HP'],
             'TXT_EKP' => $_ARRAYLANG['TXT_EKP'],
-            'TXT_TAX' => $_ARRAYLANG['TXT_TAX'],
+            'TXT_SHOP_VAT' => $_ARRAYLANG['TXT_SHOP_VAT'],
             'TXT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
             'TXT_ACTION' => $_ARRAYLANG['TXT_ACTION'],
             'TXT_STOCK' => $_ARRAYLANG['TXT_STOCK'],
@@ -5168,7 +5167,7 @@ class shopmanager extends ShopLibrary
             'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
             'TXT_ACCEPT_CHANGES' => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
             'TXT_ALL_PRODUCT_GROUPS' => $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'],
-            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_SHOP_EDIT' => $_ARRAYLANG['TXT_SHOP_EDIT'],
             'TXT_AS_TEMPLATE' => $_ARRAYLANG['TXT_AS_TEMPLATE'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
             'TXT_PREVIEW' => $_ARRAYLANG['TXT_PREVIEW'],
@@ -5180,6 +5179,8 @@ class shopmanager extends ShopLibrary
             'TXT_MAKE_SELECTION' => $_ARRAYLANG['TXT_MAKE_SELECTION'],
             'TXT_PRODUCT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
             'TXT_DISTRIBUTION' => $_ARRAYLANG['TXT_DISTRIBUTION'],
+            'TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE' => $_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE'],
+            'TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP' => htmlentities($_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP'], ENT_QUOTES, CONTREXX_CHARSET),
 //            'TXT_WEIGHT' => $_ARRAYLANG['TXT_WEIGHT'],
         ));
 
@@ -5261,11 +5262,11 @@ class shopmanager extends ShopLibrary
                 'SHOP_PRODUCT_DISCOUNT' => Currency::formatPrice($objProduct->getDiscountprice()),
                 'SHOP_PRODUCT_SPECIAL_OFFER' => $specialOffer,
                 'SHOP_SPECIAL_OFFER_VALUE_OLD' => $specialOfferValue,
-                'SHOP_PRODUCT_TAX_MENU' => Vat::getShortMenuString(
+                'SHOP_PRODUCT_VAT_MENU' => Vat::getShortMenuString(
                         $objProduct->getVatId(),
                         'taxId['.$objProduct->getId().']'
                     ),
-                'SHOP_PRODUCT_TAX_ID' => ($objProduct->getVatId()
+                'SHOP_PRODUCT_VAT_ID' => ($objProduct->getVatId()
                         ? $objProduct->getVatId() : 'NULL'
                     ),
                 'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->getDistribution(),
@@ -5279,6 +5280,8 @@ class shopmanager extends ShopLibrary
 //                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->getWeight()),
                 'SHOP_DISTRIBUTION' => $_ARRAYLANG['TXT_DISTRIBUTION_'.
                     strtoupper($objProduct->getDistribution())],
+                'SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED' => ($objProduct->isShownOnStartpage() ? ' checked="checked"' : ''),
+                'SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD' => ($objProduct->isShownOnStartpage() ? '1' : ''),
             ));
             self::$objTemplate->parse('productRow');
         }
@@ -5319,6 +5322,8 @@ class shopmanager extends ShopLibrary
             $shopStatusOld        = $_POST['activeOld'][$id];
             $shopTaxId            = (isset($_POST['taxId'][$id]) ? $_POST['taxId'][$id] : 0);
             $shopTaxIdOld         = $_POST['taxIdOld'][$id];
+            $shownOnStartpage = (isset($_POST['shownonstartpage'][$id]) ? $_POST['shownonstartpage'][$id] : 0);
+            $shownOnStartpageOld = (isset($_POST['shownonstartpageOld'][$id]) ? $_POST['shownonstartpageOld'][$id] : 0);
 /*
     Distribution and weight have been removed from the overview due to the
     changes made to the delivery options.
@@ -5373,6 +5378,7 @@ class shopmanager extends ShopLibrary
                 || $shopStock != $shopStockOld
                 || $shopStatus != $shopStatusOld
                 || $shopTaxId != $shopTaxIdOld
+                || $shownOnStartpage != $shownOnStartpageOld
 /*
                 || $shopDistribution != $shopDistributionOld
                 // Weight, see above
@@ -5405,6 +5411,7 @@ class shopmanager extends ShopLibrary
                     $objProduct->setVatId($shopTaxId);
 //                    $objProduct->setDistribution($shopDistribution);
 //                    $objProduct->setWeight($shopWeight);
+                    $objProduct->setShownOnStartpage($shownOnStartpage);
                     if (!$objProduct->store()) {
                         $arrError[$shopProductIdentifier] = true;
                     }
