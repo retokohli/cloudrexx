@@ -383,10 +383,17 @@ class u2u extends u2uLibrary
                 $imgPath = "images/u2u/home.gif";
                 $userSite['website']="href='".$userSite['website']."'";
             }
+
+            $strEmail = '&nbsp;';
+            $objUser = $objFWUser->objUser->getUser($objValue['buddies_id']);
+            if (in_array($objUser->getEmailAccess(), array('everyone', 'members_only'))){
+                $strEmail = $userEmail['email'];
+            }
+
             $this->_objTpl->setVariable(array(
                    'TXT_U2U_ADDRESS_NAME'           =>  $userName ['username'],
                    'TXT_U2U_ADDRESS_CITY'           =>  $userCity ['city'],
-                   'TXT_U2U_ADDRESS_EMAIL'          =>  $userEmail['email'],
+                   'TXT_U2U_ADDRESS_EMAIL'          =>  $strEmail,
                    'TXT_U2U_ADDRESS_BUDDIES_ID'     =>  $objValue['buddies_id'],
                    'TXT_U2U_BUDDY_SITE'             =>  $userSite['website'],
                    'TXT_U2U_IMG_PATH'               =>  $imgPath,
@@ -564,12 +571,10 @@ class u2u extends u2uLibrary
         }
        if($_REQUEST['preview']!="") {
             $this->_objTpl->setVariable(array(
-
-
                         'TXT_U2U_PREVIEW_MESSAGE'                    => $_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'],
                         'TXT_U2U_PREVIEW_HEADER'                     => $_REQUEST['title'],
                         'TXT_U2U_PREVIEW_SUBJECT'                    => $_REQUEST['private_message'],
-                        'TXT_U2U_PREVIEW_WEBSITE'                    => $_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'],
+                        'TXT_U2U_PREVIEW_WEBSITE'                    => '',//'http://'.$_CONFIG['domainUrl'],
                         'TXT_RECEPIENT'                              => $recpName,//$_REQUEST['recipients'],
                         'TXT_PRIVATE_MESSAGE_TITLE'                  => $_REQUEST['title'],
                         'TXT_BCC'                                    => $_REQUEST['bcc'],
