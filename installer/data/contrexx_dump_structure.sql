@@ -1049,11 +1049,11 @@ CREATE TABLE `contrexx_module_ecard_ecards` (
   `code` varchar(35) NOT NULL default '',
   `date` int(10) unsigned NOT NULL default '0',
   `TTL` int(10) unsigned NOT NULL default '0',
-  `salutation` varchar(100) NOT NULL default '',
-  `senderName` varchar(100) NOT NULL default '',
-  `senderEmail` varchar(100) NOT NULL default '',
-  `recipientName` varchar(100) NOT NULL default '',
-  `recipientEmail` varchar(100) NOT NULL default '',
+  `salutation` varchar(100) default '',
+  `senderName` varchar(100) default '',
+  `senderEmail` varchar(100) default '',
+  `recipientName` varchar(100) default '',
+  `recipientEmail` varchar(100) default '',
   `message` text NOT NULL,
   PRIMARY KEY  (`code`)
 ) TYPE=MyISAM;
