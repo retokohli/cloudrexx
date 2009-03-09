@@ -964,15 +964,22 @@ class Gallery
                 }
                 //Ends here
 
-                $titleLink="<a href='$strImagePath' target='_blank' ><b>$imageName</b></a><span><font size='-1'>$descriptionString<font></span>";
+                $titleLink="&lt;a href='$strImagePath' target='_blank' &gt;&lt;b&gt;$imageName&lt;/b&gt;&lt;/a&gt;&lt;span&gt;&lt;font size='-1'&gt;$descriptionString&lt;font&gt;&lt;/span&gt;";
 
 
                 if ($this->arrSettings['enable_popups'] == "on") {
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
+                        '}"  title="'.$titleLink.'" href="'.
+                        $strImagePath.'"><img border="2" title="'.$imageName.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageName.'" /></a>';
+                    /*
+                    $strImageOutput =
+                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
                         '}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="'.
                         $strImagePath.'"><img title="'.$imageName.'" src="'.
                         $imageThumbPath.'" alt="'.$imageName.'" /></a>';
+                        */
                 } else {
                     $strImageOutput =
                         '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
