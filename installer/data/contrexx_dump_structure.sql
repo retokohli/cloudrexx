@@ -2853,7 +2853,8 @@ CREATE TABLE `contrexx_stats_visitors` (
   `proxy_ip` varchar(100) default NULL,
   `proxy_host` varchar(255) default NULL,
   `proxy_useragent` varchar(255) default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `sid` (`sid`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_visitors_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
