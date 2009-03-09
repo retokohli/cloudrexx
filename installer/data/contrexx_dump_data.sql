@@ -216,7 +216,7 @@ INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (123);
 INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (184);
 INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (366);
 INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (731);
-INSERT INTO `contrexx_access_users` (`id`, `is_admin`, `username`, `password`, `regdate`, `expiration`, `validity`, `last_auth`, `last_activity`, `email`, `email_access`, `frontend_lang_id`, `backend_lang_id`, `active`, `profile_access`, `restore_key`, `restore_key_time`, `u2u_active`) VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,1236614442,1236614458,'','nobody',1,1,1,'members_only','',0,'');
+INSERT INTO `contrexx_access_users` (`id`, `is_admin`, `username`, `password`, `regdate`, `expiration`, `validity`, `last_auth`, `last_activity`, `email`, `email_access`, `frontend_lang_id`, `backend_lang_id`, `active`, `profile_access`, `restore_key`, `restore_key_time`, `u2u_active`) VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,1236628213,1236628476,'','nobody',1,1,1,'members_only','',0,'');
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (1,0,'group','global','TXT_CONTENT_MANAGEMENT',1,'','_self',1,0,1);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (2,0,'group','global','TXT_MODULE',1,'','_self',1,2,2);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (3,0,'group','global','TXT_ADMINISTRATION',1,'','_self',1,3,3);
@@ -3732,7 +3732,8 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, 
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (57,'jobs','TXT_JOBS_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (58,'auction','TXT_AUCTION_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (59,'partners','TXT_PARTNERS_MODULE_DESCRIPTION','y',0,0);
-INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('8f2c5679e9d686f318c522ddb4c6b85e','1236614437','1236614458','backend',1,'userFrontendLangId|i:1;auth|a:2:{s:5:\"secid\";s:4:\"DP6M\";s:3:\"log\";b:1;}content|a:2:{s:9:\"expandAll\";b:1;s:9:\"expandCat\";i:0;}');
+INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('3046a0bfae41cc9c764406e7045669b4','1236627454','1236627471','frontend',0,'');
+INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('5f9b83b734b3850a46cbbb57272da420','1236628209','1236628476','backend',1,'userFrontendLangId|i:2;auth|a:2:{s:5:\"secid\";s:4:\"AZZX\";s:3:\"log\";b:1;}skins|b:0;content|a:2:{s:9:\"expandAll\";b:0;s:9:\"expandCat\";i:0;}');
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
