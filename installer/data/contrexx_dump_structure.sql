@@ -1054,12 +1054,12 @@ CREATE TABLE `contrexx_module_ecard_ecards` (
   `senderEmail` varchar(100) NOT NULL default '',
   `recipientName` varchar(100) NOT NULL default '',
   `recipientEmail` varchar(100) NOT NULL default '',
-  `message` varchar(500) NOT NULL default '',
+  `message` text NOT NULL,
   PRIMARY KEY  (`code`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_ecard_settings` (
   `setting_name` varchar(100) NOT NULL default '',
-  `setting_value` varchar(500) NOT NULL default '',
+  `setting_value` text NOT NULL,
   PRIMARY KEY  (`setting_name`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_egov_configuration` (
