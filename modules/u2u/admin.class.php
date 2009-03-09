@@ -32,7 +32,6 @@ class u2uAdmin extends u2uLibrary {
 
         global $objInit, $objTemplate, $_ARRAYLANG, $_CORELANG;
 
-
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/u2u/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -41,8 +40,7 @@ class u2uAdmin extends u2uLibrary {
         $objFWUser = FWUser::getFWUserObject();
         $this->_intCurrentUserId = $objFWUser->objUser->getId();
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION',' <a href="?cmd=u2u&amp;act=settings">'.$_ARRAYLANG['TXT_U2U_SETTINGS'].'</a>
-                                                        ');
+        $objTemplate->setVariable('CONTENT_NAVIGATION',' <a href="?cmd=u2u&amp;act=settings">'.$_ARRAYLANG['TXT_U2U_SETTINGS'].'</a>');
     }
 
     /**
@@ -51,17 +49,13 @@ class u2uAdmin extends u2uLibrary {
      * @global   object      $objTemplate
      */
     function getPage() {
-
         global $objTemplate;
 
         if(!isset($_GET['act'])) {
             $_GET['act']='';
         }
-
         switch($_GET['act'])  {
-
     		case 'saveSettings':
-
     			Permission::checkAccess(121, 'static');
     			$this->saveSettings();
     			 $this->settings();
@@ -94,16 +88,15 @@ class u2uAdmin extends u2uLibrary {
         $this->_objTpl->loadTemplatefile('module_u2u_settings.html',true,true);
 		$this->_pageTitle = $_ARRAYLANG['TXT_U2U_SETTINGS'];
 
-
-		$settingMaxPosting   =$this->_getMaxPostingDetails();
-		$settingMaxChars     =$this->_getMaxCharDetails();
-		$settingEmailSubject =$this->_getEmailSubjectDetails();
-		$settingEmailFrom    =$this->_getEmailFromDetails();
-		$settingEmailMessage =$this->_getEmailMessageDetails();
+		$settingMaxPosting   = $this->_getMaxPostingDetails();
+		$settingMaxChars     = $this->_getMaxCharDetails();
+		$settingEmailSubject = $this->_getEmailSubjectDetails();
+		$settingEmailFrom    = $this->_getEmailFromDetails();
+		$settingEmailMessage = $this->_getEmailMessageDetails();
 		$this->strMessages   = contrexx_stripslashes($settingEmailMessage['email_message']);
-		$strEmailInputHTML = get_wysiwyg_editor('private_message',$this->strMessages,'default ');
+		$strEmailInputHTML   = get_wysiwyg_editor('private_message',$this->strMessages,'default ');
 
-       		$this->_objTpl->setVariable(array(
+		$this->_objTpl->setVariable(array(
 			'TXT_U2U_MAX_POSTING_SIZE'	             => $settingMaxPosting['max_posting_size'],
 			'TXT_U2U_MAX_POSTING_CHARS'              => $settingMaxChars['max_posting_chars'],
 			'TXT_U2U_SETTINGS_MAIL_SUBJECT'          => $settingEmailSubject['subject'],
@@ -124,7 +117,6 @@ class u2uAdmin extends u2uLibrary {
             'TXT_U2U_VALUE'                          => $_ARRAYLANG['TXT_U2U_VALUE'],
 		    'TXT_SAVE'                               => $_CORELANG['TXT_SAVE']
 		));
-
 	}
 
 	/**
@@ -135,54 +127,40 @@ class u2uAdmin extends u2uLibrary {
     function saveSettings() {
 
        global $_CORELANG, $_ARRAYLANG, $objDatabase;
-
        if($_POST['frmSettings_submit']) {
-
             $settings =  array();
-
             $settings =  array('max_inbox'      => contrexx_addslashes(strip_tags($_POST['frmSettings_max_inbox'])),
-     		                   'max_chars' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_max_chars'])),
-     		                   'mail_subject' 	=> contrexx_addslashes(strip_tags($_POST['frmSettings_subject'])),
-     		                   'mail_from' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_from'])),
-     		                   'mail_message' 	=> contrexx_addslashes($_POST['private_message']),
+            	                   'max_chars' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_max_chars'])),
+            	                   'mail_subject' 	=> contrexx_addslashes(strip_tags($_POST['frmSettings_subject'])),
+            	                   'mail_from' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_from'])),
+            	                   'mail_message' 	=> contrexx_addslashes($_POST['private_message']),
                                );
-
-
-           $updateMaxPostings=' UPDATE '.DBPREFIX.'module_u2u_settings
+            $updateMaxPostings=' UPDATE '.DBPREFIX.'module_u2u_settings
                                 SET `value`      = "'.$settings['max_inbox'].'"
                                 WHERE `name` = "max_posting_size"';
+            $objDatabase->Execute($updateMaxPostings);
 
-           $objDatabase->Execute($updateMaxPostings);
+            $updateMaxPostingChars=' UPDATE '.DBPREFIX.'module_u2u_settings
+            						SET `value`      = "'.$settings['max_chars'].'"
+            							 WHERE `name` = "max_posting_chars"';
+            $objDatabase->Execute($updateMaxPostingChars);
 
-           $updateMaxPostingChars=' UPDATE '.DBPREFIX.'module_u2u_settings
-									SET `value`      = "'.$settings['max_chars'].'"
-										 WHERE `name` = "max_posting_chars"';
-
-           $objDatabase->Execute($updateMaxPostingChars);
-
-           $updateMailSubject=' UPDATE '.DBPREFIX.'module_u2u_settings
+            $updateMailSubject=' UPDATE '.DBPREFIX.'module_u2u_settings
                                 SET `value`      = "'.$settings['mail_subject'].'"
                                 WHERE `name` = "subject"';
+            $objDatabase->Execute($updateMailSubject);
 
-           $objDatabase->Execute($updateMailSubject);
-
-           $updateMailFrom=' UPDATE '.DBPREFIX.'module_u2u_settings
+            $updateMailFrom=' UPDATE '.DBPREFIX.'module_u2u_settings
                                 SET `value`      = "'.$settings['mail_from'].'"
                                 WHERE `name` = "from"';
+            $objDatabase->Execute($updateMailFrom);
 
-           $objDatabase->Execute($updateMailFrom);
-
-           $updateMailMessage=' UPDATE '.DBPREFIX.'module_u2u_settings
+            $updateMailMessage=' UPDATE '.DBPREFIX.'module_u2u_settings
                                 SET `value`      = "'.$settings['mail_message'].'"
                                 WHERE `name` = "email_message"';
-
-           $objDatabase->Execute($updateMailMessage);
-
-
-    		$this->_strOkMessage = "Success";
-        }
-        else {
-
+            $objDatabase->Execute($updateMailMessage);
+            $this->_strOkMessage = "Success";
+        } else {
     		$this->_strErrMessage = "Not success";
     	}
 
