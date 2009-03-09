@@ -1972,8 +1972,6 @@ EOF;
                         } else {
                             $inputValue     = "";
                         }
-                    } else {
-                        $inputValue = "";
                     }
                 }
 
