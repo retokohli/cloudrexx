@@ -329,7 +329,11 @@ function disableButtons(from, dest, add, remove) {
       </tr>
       <tr class="row1">
         <td nowrap="nowrap">{TXT_TAX_RATE}</td>
-        <td>{SHOP_TAX}</td>
+        <td>
+          <select name="shopTaxId" style="width:220px;">
+            {SHOP_VAT_MENUOPTIONS}
+          </select>
+        </td>
       </tr>
       <tr class="row2">
         <td nowrap="nowrap">{TXT_DISTRIBUTION}</td>
@@ -400,12 +404,12 @@ function disableButtons(from, dest, add, remove) {
           </table>
         </td>
       </tr>
-      <!-- BEGIN shopFlags -->
+      <!-- BEGIN shopFlags
       <tr class="row2">
         <td nowrap="nowrap">{TXT_SHOP_FLAGS}</td>
         <td>{SHOP_FLAGS_SELECTION}</td>
       </tr>
-      <!-- END shopFlags -->
+      END shopFlags -->
       <tr valign="top" class="row2">
         <td colspan="2">{TXT_SHORT_DESCRIPTION}<br />{SHOP_SHORT_DESCRIPTION}</td>
       </tr>
@@ -420,7 +424,11 @@ function disableButtons(from, dest, add, remove) {
       </tr>
       <tr valign="top" class="row1">
         <td nowrap="nowrap">{TXT_SHOP_MANUFACTURER}</td>
-        <td>{SHOP_MANUFACTURER_SELECT}</td>
+        <td>
+          <select name="shopManufacturerId" style="width: 220px;">
+            {SHOP_MANUFACTURER_MENUOPTIONS}
+          </select>
+        </td>
       </tr>
       <tr valign="top" class="row2">
         <td nowrap="nowrap">{TXT_MANUFACTURER_URL}</td>
@@ -487,7 +495,6 @@ function disableButtons(from, dest, add, remove) {
           <input type="hidden" id="hi_2" name="productImage2" value="{SHOP_PICTURE2_IMG_SRC_NO_THUMB}" />
           <input type="hidden" id="hi_2_w" name="productImage2_width" value="{SHOP_PICTURE2_IMG_WIDTH}" />
           <input type="hidden" id="hi_2_h" name="productImage2_height" value="{SHOP_PICTURE2_IMG_HEIGHT}" />
-
         </td>
         <td width="27%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop', '3','width=800,height=640,resizable=yes,status=no,scrollbars=yes', 'img', '');" >{TXT_SHOP_EDIT_OR_ADD_IMAGE}<br /> <img id="img3"  style="width: {SHOP_IMG3_WIDTH}px; height: {SHOP_IMG3_HEIGHT}px; border: none;" src="{SHOP_PICTURE3_IMG_SRC}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" /></a>
