@@ -1,14 +1,14 @@
 <?php
 
-//error_reporting(0);
-//ini_set('display_errors', 0);
+error_reporting(0);
+ini_set('display_errors', 0);
 
 require_once("../config/version.php");
 if ($_SERVER['HTTP_X_PROTOTYPE_VERSION']) {
     // Check if there's a new version
     $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
     $version = $v[0]  * 10000 + $v[1]  * 100 + $v[2];
-    $link = fsockopen('www.contrexx.com',80);
+    $link = @fsockopen('www.contrexx.com',80);
     if (!$link) {
         exit;
     }
