@@ -971,13 +971,13 @@ class Gallery
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
                         '}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="'.
-                        $strImagePath.'"><img border="2" title="'.$imageName.'" src="'.
+                        $strImagePath.'"><img title="'.$imageName.'" src="'.
                         $imageThumbPath.'" alt="'.$imageName.'" /></a>';
                 } else {
                     $strImageOutput =
                         '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
                         $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
-                        $objResult->fields['id'].'">'.'<img border="0" title="'.
+                        $objResult->fields['id'].'">'.'<img  title="'.
                         $imageName.'" src="'.$imageThumbPath.'"'.
                         'alt="'.$imageName.'" /></a>';
                 }
