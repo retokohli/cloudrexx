@@ -8,15 +8,15 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,
 Text[0]=["","{TXT_REDIRECT_HELP}"];
 
 function switchBoxAndTab(objElement, strTabId) {
-	
+
 	if (countActiveLanguages() == 0) {
 		//We just "unchecked" the last language, disallow this
-		objElement.checked = true;	
+		objElement.checked = true;
 	} else {
 		//There are more active languages, hide the tab
 		switchTabVisibility(strTabId);
 	}
-	
+
 	//Now make sure that a possible div is shown
 	activateAnyActiveDiv();
 }
@@ -32,7 +32,7 @@ function switchTabVisibility(strTabId) {
 
 function countActiveLanguages() {
 	var activeLanguages = 0;
-	
+
 	for (var h=0; h < document.forms.length;h++) {
 		for (var i=0; i < document.forms[h].elements.length;i++) {
 			//read out all form-elements with the loop
@@ -42,8 +42,8 @@ function countActiveLanguages() {
 				}
 			}
 		}
-	}	
-	
+	}
+
 	return activeLanguages;
 }
 
@@ -53,7 +53,7 @@ function activateAnyActiveDiv() {
 		document.getElementById(TabName).className = 'inactive';
 		document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
 	}
-	
+
 	//Activate the first possible div with an acitvated checkbox
 	for (var TabName in arrTabToDiv) {
 		if (document.getElementById(TabName).style.display == 'inline') {
@@ -71,7 +71,7 @@ function showSelectedThumbnailMethod(method, langId) {
     } else {
         document.getElementById('thumbnail_ori_'+langId).style.display = 'none';
         document.getElementById('thumbnail_diff_'+langId).style.display = '';
-	}	
+	}
 }
 
 //Following Functions are needed for Picture-Selection -------------------------------------------------------------
@@ -119,7 +119,7 @@ var switchMode = function(mode)
             }
         }
     }
-    
+
     setRows();
 }
 
@@ -127,9 +127,9 @@ var setRows = function()
 {
     var row = 1;
     var bodies = $$('.editBody');
-    
+
     for (var i = 0; i<bodies.length; i++) {
-        
+
         var tb = bodies[i].getElementsByTagName("tr");
         for (var j = 0; j<tb.length; j++) {
             if (tb[j].visible) {
