@@ -2030,8 +2030,15 @@ class galleryManager extends GalleryLibrary
                                                            'SETTINGS_VALUE_HEADER_FLAT'      => 'checked',
                                                     ));
                     }
-
-
+                    break;
+                case 'show_file_name':
+                    if ($objResult->fields['value'] == 'on') {
+                        $checked = "checked='checked'";
+                    } else {
+                        $checked = "";
+                    }
+                    $this->_objTpl->setVariable('SETTINGS_VALUE_SHOW_FILE_NAME', $checked);
+                    break;
                 default: //integer value
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$objResult->fields['value']);
             }
@@ -2114,10 +2121,15 @@ class galleryManager extends GalleryLibrary
             $_POST['header_type'] = 'hierarchy';
         }
 
+        if (empty($_POST['show_file_name']) || $_POST['show_file_name'] != 'on') {
+            $_POST['show_file_name'] = "off";
+        }
+
+
         foreach ($_POST as $strKey => $strValue) {
             $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_settings
-                                    SET     value="'.$strValue.'"
-                                    WHERE     name="'.$strKey.'"');
+                                    SET     value="'.contrexx_addslashes($strValue).'"
+                                    WHERE     name="'.contrexx_addslashes($strKey).'"');
         }
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_SETTINGS_SAVED'];
     }
