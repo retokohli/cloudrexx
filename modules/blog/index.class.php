@@ -174,8 +174,8 @@ class Blog extends BlogLibrary  {
         $strComment = '';
 
         //Check for new votings
-        if (isset($_GET['vote'])) {
-            $this->addVoting($intMessageId, $_GET['vote']);
+        if (isset($_POST['vote'])) {
+            $this->addVoting($intMessageId, $_POST['vote']);
         }
 
         //Check for new comments
@@ -587,6 +587,8 @@ class Blog extends BlogLibrary  {
     function getVotingBar($intMessageId) {
         global $_ARRAYLANG;
 
+        JS::activate("prototype");
+
         $strReturn = '';
         $intMessageId = intval($intMessageId);
 
@@ -596,12 +598,26 @@ class Blog extends BlogLibrary  {
         }
 
         for ($i = 1; $i <= 10; ++$i) {
-            $js   = "window.location='index.php?section=blog&amp;cmd=details&amp;id=$intMessageId&amp;vote=$i';return false";
+            //$js   = "window.location='index.php?section=blog&amp;cmd=details&amp;id=$intMessageId&amp;vote=$i';return false";
             $title= $_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'] . ": $i";
-            $strReturn .= '<a href="#" onclick="javascript:'.$js.'" title="'.$title.'">';
+            $strReturn .= '<a href="#" onclick="javascript: vote('.$i.')">';
             $strReturn .= '<img title="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'" alt="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/blog/voting/'.$i.'.gif" border="0" />';
             $strReturn .= '</a>';
         }
+
+        $strReturn .= "<form action=\"index.php?section=blog&amp;cmd=details&amp;id=".$intMessageId."\"
+            method=\"post\" id=\"vote_form\" >
+            <input type=\"hidden\" value=\"\" name=\"vote\" id=\"vote_value\" />
+            </form>";
+        $strReturn .= "<script type=\"text/javascript\">
+            /* <![CDATA[[ */
+
+            var vote = function(value) {
+                $('vote_value').value = parseInt(value);
+                $('vote_form').submit();
+            }
+            /* ]]> */
+        </script>";
 
         return $strReturn;
     }
