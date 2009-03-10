@@ -31,7 +31,5 @@ $_ARRAYLANG['TXT_ECARD_EDIT'] = "Daten korrigieren";
 $_ARRAYLANG['TXT_ECARD_SEND'] = "E-Card versenden";
 $_ARRAYLANG['TXT_ECARD_FIELD_INPUT_INCORRECT'] = "Bitte füllen Sie alle markierten Felder korrekt aus!";
 $_ARRAYLANG['TXT_ECARD_HAS_SENT_YOU_AN_ECARD'] = "hat Ihnen eine E-Card geschickt!";
-$_ARRAYLANG['TXT_ECARD_IMAGES'] = "Bilder";
 $_ARRAYLANG['TXT_ECARD_FROM'] = "E-Card von";
-$_ARRAYLANG['TXT_DELETE_MOTIVE '] = "Bild löschen";
 ?>
