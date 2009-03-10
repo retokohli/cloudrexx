@@ -58,8 +58,8 @@ function selectMultiAction()
 	<tr>
 		<td>
 			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-			<a href="#" onClick="changeCheckboxes('guestbook','selectedId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
-			<a href="#" onClick="changeCheckboxes('guestbook','selectedId[]',false); return false;">{TXT_DESELECT_ALL}</a>
+			<a href="#" onclick="changeCheckboxes('guestbook','selectedId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
+			<a href="#" onclick="changeCheckboxes('guestbook','selectedId[]',false); return false;">{TXT_DESELECT_ALL}</a>
 			<img src="images/icons/strike.gif">
 			<select name="guestbook_MultiAction" onchange="selectMultiAction();">
 				<option value="0">{TXT_SUBMIT_SELECT}</option>
