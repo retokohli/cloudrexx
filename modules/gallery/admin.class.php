@@ -3515,17 +3515,19 @@ $strFileNew = '';
             $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
             // a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
             if (!empty($memoryLimit)) {
-                   $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8;
-                if (function_exists('memory_get_usage')) {
+                   $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
+        if (function_exists('memory_get_usage')) {
                     $potentialRequiredMemory += memory_get_usage();
                 } else {
-                    // add a default of 3MBytes
-                    $potentialRequiredMemory += 3*pow(1024, 2);
+                    // add a default of 10 MBytes
+                    $potentialRequiredMemory += 10*pow(1024, 2);
                 }
 
                 if ($potentialRequiredMemory > $memoryLimit) {
                     // try to set a higher memory_limit
-                    if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+                    @ini_set('memory_limit', $potentialRequiredMemory);
+                    $curr_limit = $objSystem->_getBytes(@ini_get('memory_limit'));
+                    if ($curr_limit < $potentialRequiredMemory) {
                         return false;
                     }
                 }
@@ -3552,7 +3554,7 @@ $strFileNew = '';
             case 2: //JPG
                 if ($this->boolJpgEnabled) {
                     $handleImage1 = ImageCreateFromJpeg($strPathOld.$strFileOld);
-                    $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
+                    $handleImage2 = ImageCreateTrueColor($intNewWidth,$intNewHeight);
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
                     ImageJpeg($handleImage2, $strPathNew.$strFileNew, $intQuality);
 
