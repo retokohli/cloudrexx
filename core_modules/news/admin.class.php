@@ -1154,8 +1154,8 @@ class newsManager extends newsLibrary {
                 }
             }
 
-            $startDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-			$endDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+            $startDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+			$endDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
 
             $newsFrontendAccess     = !empty($_POST['news_read_access']);
             $newsFrontendGroups     = $newsFrontendAccess && isset($_POST['news_read_access_associated_groups']) && is_array($_POST['news_read_access_associated_groups']) ? array_map('intval', $_POST['news_read_access_associated_groups']) : array();
