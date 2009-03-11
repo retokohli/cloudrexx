@@ -35,9 +35,10 @@ if (_DEBUG) {
 //    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE ? true : false);
 //    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE    ? true : false);
 //    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP ? true : false);
-    if (_DEBUG & DBG_LOG_FIREPHP) DBG::enable_firephp();
-    if (_DEBUG & DBG_LOG_FILE)    DBG::setup('dbg.log', 'w');
     DBG::enable_all();
+    if (_DEBUG & DBG_LOG_FILE)                              DBG::setup('dbg.log', 'w');
+    if (_DEBUG & DBG_LOG_FIREPHP)                           DBG::enable_firephp();
+    if ((_DEBUG & DBG_ADODB) or (_DEBUG & DBG_ADODB_TRACE)) DBG::enable_adodb();
 }
 
 if (_DEBUG & DBG_PHP) {
