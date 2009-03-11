@@ -14,6 +14,13 @@ if ($_SERVER['HTTP_X_PROTOTYPE_VERSION']) {
     if (!$link) {
         exit;
     }
+    # Please don't change this, we'd like to know who installs our software.
+    # The data won't be given away to third parties; there will not be any
+    # negative consequences for you. This data is collected entirely for 
+    # internal statistics (installation count etc).
+    #
+    # If you decide to change this code, you will not receive any notification
+    # about new versions anymore.
     $r = $_SERVER['HTTP_REFERER'];
     $a = $_SERVER['REMOTE_ADDR'];
     fwrite($link,
