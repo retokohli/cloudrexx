@@ -66,8 +66,8 @@ class Data extends DataLibrary  {
 	function getPage()
 	{
 	    if (isset($_GET['act'])) {
-	        if ($_GET['act'] == "thickbox") {
-	            $this->thickbox();
+	        if ($_GET['act'] == "shadowbox") {
+	            $this->shadowbox();
 	        }
 	    }
 
@@ -139,14 +139,14 @@ class Data extends DataLibrary  {
 
 
                 $lang = $_LANGID;
-                $width = $this->_arrSettings['data_thickbox_width'];
-                $height = $this->_arrSettings['data_thickbox_height'];
+                $width = $this->_arrSettings['data_shadowbox_width'];
+                $height = $this->_arrSettings['data_shadowbox_height'];
                 if ($objResult->fields['mode'] == "normal") {
                     if ($this->_arrSettings['data_entry_action'] == "content") {
                         $cmd = $this->_arrSettings['data_target_cmd'];
                         $url = "index.php?section=data&amp;cmd=".$cmd;
                     } else {
-                        $url = "index.php?section=data&amp;act=thickbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                        $url = "index.php?section=data&amp;act=shadowbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
                     }
                 } else {
                     $url = $objResult->fields['forward_url'];
@@ -347,10 +347,10 @@ class Data extends DataLibrary  {
 	}
 
 	/**
-	 * Show the thickbox
+	 * Show the shadowbox
 	 *
 	 */
-	function thickbox()
+	function shadowbox()
 	{
 	    global $objDatabase, $_ARRAYLANG, $objInit;
 
@@ -368,7 +368,7 @@ class Data extends DataLibrary  {
         $picture = (!empty($entry['translation'][$lang]['image'])) ? $entry['translation'][$lang]['image'] : "none";
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
-        $this->_objTpl->setCurrentBlock("thickbox");
+        $this->_objTpl->setCurrentBlock("shadowbox");
 
         $objResult = $objDatabase->SelectLimit(" SELECT foldername
                                FROM ".DBPREFIX."skins
@@ -377,7 +377,7 @@ class Data extends DataLibrary  {
             $themesPath = $objResult->fields['foldername'];
         }
 
-        $template = preg_replace("/\[\[([A-Z_]+)\]\]/", '{$1}', $settings['data_template_thickbox']);
+        $template = preg_replace("/\[\[([A-Z_]+)\]\]/", '{$1}', $settings['data_template_shadowbox']);
         $this->_objTpl->setTemplate($template);
 
 
@@ -400,7 +400,7 @@ class Data extends DataLibrary  {
         } else {
             $this->_objTpl->hideBlock("image");
         }
-        $this->_objTpl->parse("thickbox");
+        $this->_objTpl->parse("shadowbox");
         $this->_objTpl->show();
 	    die();
 	}
