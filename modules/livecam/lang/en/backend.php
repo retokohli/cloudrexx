@@ -14,7 +14,6 @@ $_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Thumbnail path";
 $_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Some of the fields are empty!";
 $_ARRAYLANG['TXT_UPDATE_FAILED'] = "Update failed";
 $_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX'] = "Activate Shadowbox";
-$_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX_INFO'] = "For the Shadowbox to work, you need to add the following placeholder in the design template (index.html): [[JAVASCRIPT_SHADOWBOX]]";
 $_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "Maximum thumbnail width (in pixels)";
 $_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "Maximum image width (in pixels)";
 $_ARRAYLANG['TXT_CAM'] = "Camera";
