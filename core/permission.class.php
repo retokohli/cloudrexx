@@ -78,7 +78,7 @@ class Permission
     {
         global $objInit;
 
-        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? '&redirect='.$redirect : '')).'cmd=noaccess');
+        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).'cmd=noaccess');
         exit;
     }
 
