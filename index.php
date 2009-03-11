@@ -59,14 +59,14 @@
 
 include_once('lib/DBG.php');
 /**
- * Debug level, see lib/DBG.pho
- *
+ * Debug level, see lib/DBG.php
+ *   DBG_NONE            - Turn debugging off
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
- *   DBG_LOG_FILE        - DBG: log to file
+ *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
- *   DBG_ALL             - set all debug flags
+ *   DBG_ALL             - sets all debug flags
  */
 define('_DEBUG', false);
 
@@ -75,14 +75,15 @@ define('_DEBUG', false);
 //-------------------------------------------------------
 if (_DEBUG) {
 // These globals are both unused and unnecessary.  Please use the constants.
-//    $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP)           == 0 ? false : true;
-//    $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB)         == 0 ? false : true;
-//    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE)   == 0 ? false : true;
-//    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE)      == 0 ? false : true;
-//    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP)   == 0 ? false : true;
-    if (_DEBUG & DBG_LOG_FIREPHP) DBG::enable_firephp();
-    if (_DEBUG & DBG_LOG_FILE)    DBG::setup('dbg.log', 'w');
+//    $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP         ? true : false);
+//    $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB       ? true : false);
+//    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE ? true : false);
+//    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE    ? true : false);
+//    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP ? true : false);
     DBG::enable_all();
+    if (_DEBUG & DBG_LOG_FILE)                              DBG::setup('dbg.log', 'w');
+    if (_DEBUG & DBG_LOG_FIREPHP)                           DBG::enable_firephp();
+    if ((_DEBUG & DBG_ADODB) or (_DEBUG & DBG_ADODB_TRACE)) DBG::enable_adodb();
 }
 
 if (_DEBUG & DBG_PHP) {

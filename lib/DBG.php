@@ -8,8 +8,6 @@ define('DBG_LOG_FILE'   ,  8);
 define('DBG_LOG_FIREPHP', 16);
 define('DBG_ALL'        , 31);
 
-// Redirect ADODB output to us instead of STDOUT.
-define('ADODB_OUTP', 'DBG_log_adodb');
 
 class DBG
 {
@@ -81,6 +79,10 @@ class DBG
         self::$enable_trace = 1;
     }
 
+    // Redirect ADODB output to us instead of STDOUT.
+    static function enable_adodb() {
+        define('ADODB_OUTP', 'DBG_log_adodb');
+    }
 
     static function disable_trace()
     {
