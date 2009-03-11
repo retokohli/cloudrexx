@@ -80,7 +80,7 @@ class DataLibrary
 													value
 											FROM	'.DBPREFIX.'module_data_settings
 										');
-		$exceptions = array("data_template_category", "data_template_entry", "data_template_thickbox");
+		$exceptions = array("data_template_category", "data_template_entry", "data_template_shadowbox");
 		if($objResult !== false){
 			while (!$objResult->EOF) {
 			    if (array_search($objResult->fields['name'], $exceptions) !== false) {

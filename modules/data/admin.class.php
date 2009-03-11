@@ -1731,7 +1731,7 @@ class DataAdmin extends DataLibrary {
     		'TXT_BUTTON_SAVE'							=>	$_ARRAYLANG['TXT_SAVE'],
     		'TXT_GENERAL_TEMPLATE_CATEGORY'             =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_CATEGORY'],
     		'TXT_GENERAL_TEMPLATE_ENTRY'                =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_ENTRY'],
-    		'TXT_GENERAL_TEMPLATE_THICKBOX'             =>  $_ARRAYLANG['TXT_DATA_SETTINGS_THICKBOX_TEMPLATE'],
+    		'TXT_GENERAL_TEMPLATE_SHADOWBOX'            =>  $_ARRAYLANG['TXT_DATA_SETTINGS_SHADOWBOX_TEMPLATE'],
     		'TXT_USE_DATALIST'                          =>  $_ARRAYLANG['TXT_DATA_SETTINGS_USE_DATALIST'],
     		'TXT_CONTENT_PAGE'                          =>  $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'],
     		'TXT_BOX'                                   =>  $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'],
@@ -1750,14 +1750,14 @@ class DataAdmin extends DataLibrary {
     		'DATA_SETTINGS_BLOCK_MESSAGES'					=>	intval($this->_arrSettings['data_block_messages']),
     		'DATA_SETTINGS_TEMPLATE_CATEGORY'               =>  $this->_arrSettings['data_template_category'],
     		'DATA_SETTINGS_TEMPLATE_ENTRY'                  =>  $this->_arrSettings['data_template_entry'],
-    		'DATA_SETTINGS_TEMPLATE_THICKBOX'               =>  $this->_arrSettings['data_template_thickbox'],
+    		'DATA_SETTINGS_TEMPLATE_SHADOWBOX'              =>  $this->_arrSettings['data_template_shadowbox'],
        		'USE_DATALIST_CHECKED'                          =>  ($useDatalist) ? "checked=\"checked\"" : "",
        	    'TXT_PLACEHOLDER'                               =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
 	   		'PAGE_SELECT_DISPLAY'                           =>  ($this->_arrSettings['data_entry_action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
             'ACTION_SELECTED_BOX'                           => ($this->_arrSettings['data_entry_action'] == "overlaybox") ? "selected=\"selected\"" : "",
 	   		'ACTION_SELECTED_CONTENT'                       => ($this->_arrSettings['data_entry_action'] == "content") ? "selected=\"selected\"" : "",
-	   		'DATA_SETTINGS_BOX_WIDTH'                       => $this->_arrSettings['data_thickbox_width'],
-	   		'DATA_SETTINGS_BOX_HEIGHT'                      => $this->_arrSettings['data_thickbox_height']
+	   		'DATA_SETTINGS_BOX_WIDTH'                       => $this->_arrSettings['data_shadowbox_width'],
+	   		'DATA_SETTINGS_BOX_HEIGHT'                      => $this->_arrSettings['data_shadowbox_height']
     	));
 
 
@@ -1804,14 +1804,14 @@ class DataAdmin extends DataLibrary {
     								'frmSettings_RssNumberOfComments'		=>	'data_rss_comments',
     								'frmSettings_TagHitlist'				=>	'data_tags_hitlist',
     								'frmSettings_frontendPage'              =>  'data_target_cmd',
-    								'frmSettings_thickbox_width'            =>  'data_thickbox_width',
-    								'frmSettings_thickbox_height'           =>  'data_thickbox_height'
+    								'frmSettings_shadowbox_width'            =>  'data_shadowbox_width',
+    								'frmSettings_shadowbox_height'           =>  'data_shadowbox_height'
     						);
 
         // String Settings
         $arrTextValues = array(   'frmSettings_templateCategory'          => 'data_template_category',
                                     'frmSettings_templateEntry'             => 'data_template_entry',
-                                    'frmSettings_templateThickbox'       => 'data_template_thickbox'
+                                    'frmSettings_templateShadowbox'       => 'data_template_shadowbox'
                                 );
 
     	//Enum-Settings, must be a value of a given list

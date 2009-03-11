@@ -193,8 +193,7 @@ class dataBlocks extends DataLibrary
                 $cmd = $this->arrCategories[$id]['cmd'];
                 $url = "index.php?section=data&amp;cmd=".$cmd;
             } else {
-                //$url = "index.php?section=data&amp;act=thickbox&height=".$height."&amp;width=".$width."&amp;lang=".$lang;
-                $url = "index.php?section=data&amp;act=thickbox&amp;lang=".$lang;
+                $url = "index.php?section=data&amp;act=shadowbox&amp;lang=".$lang;
         }
 
         foreach ($this->entryArray as $entryId => $entry) {
@@ -314,15 +313,15 @@ class dataBlocks extends DataLibrary
             $image = "";
         }
         $lang = $_LANGID;
-        $width = $this->_arrSettings['data_thickbox_width'];
-        $height = $this->_arrSettings['data_thickbox_height'];
+        $width = $this->_arrSettings['data_shadowbox_width'];
+        $height = $this->_arrSettings['data_shadowbox_height'];
 
         if ($entry['mode'] == "normal") {
             if ($this->_arrSettings['data_entry_action'] == "content") {
                 $cmd = $this->_arrSettings['data_target_cmd'];
                 $url = "index.php?section=data&amp;cmd=".$cmd;
             } else {
-                $url = "index.php?section=data&amp;act=thickbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                $url = "index.php?section=data&amp;act=shadowbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
             }
         } else {
             $url = $entry['translation'][$_LANGID]['forward_url'];
