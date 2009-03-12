@@ -107,22 +107,25 @@ class statsLibrary
                 $referer = "";
             }
 
-            $counterTag = "<!-- Counter  START -->\n";
-            $counterTag .= "<script type=\"text/javascript\">\n";
-            $counterTag .= "<!--\n";
-            $counterTag .= "referer = (document.referrer) ? escape(document.referrer) : \"\";\n";
-            $counterTag .= "v = navigator.appName;\n";
-            $counterTag .= "c=0;\n";
-            $counterTag .= "if (v != \"Netscape\")\n";
-            $counterTag .= "    c = screen.colorDepth;\n";
-            $counterTag .= "else\n";
-            $counterTag .= "    c = screen.pixelDepth;\n";
-            $url = '\'<script language="JavaScript" type="text/javascript" src="'.ASCMS_CORE_MODULE_WEB_PATH.'/stats/counter.php?mode=script&referer=\'+referer+\'&pageId=\' + '.$pageId.' + \'&screen=\' + screen.width + \'x\' + screen.height  +  \'&color_depth=\' + c + \''.$searchTerm.'" ><\/script>\'';
-            $counterTag .= "document.write(".$url.");\n";
-            $counterTag .= "// -->\n";
-            $counterTag .= "</script>\n";
-            $counterTag .= "<noscript><div><img src=\"".ASCMS_CORE_MODULE_WEB_PATH."/stats/counter.php?mode=noscript&amp;referer=".$referer."&amp;pageId=".$pageId.$searchTerm."\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>\n";
-            $counterTag .= "<!-- Counter Code END -->\n";
+            $ascms_core_module_web_path = ASCMS_CORE_MODULE_WEB_PATH;
+            $counterTag = "<!-- Counter  START -->
+                <script type=\"text/javascript\"><!--
+                    var referer = (document.referrer) ? escape(document.referrer) : '';
+                    var v = navigator.appName;
+                    var c = 0;
+                    if (v != 'Netscape') {
+                        c = screen.colorDepth;
+                    }
+                    else {
+                        c = screen.pixelDepth;
+                    }
+                    alert('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ></s'+'cript>');
+                    document.write('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ></s'+'cript>');
+                    // -->
+                    </script>
+                    <noscript><div><img src=\"$ascms_core_module_web_path\"/stats/counter.php?mode=noscript&amp;referer=$referer&amp;pageId=$pageId.$searchTerm\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>
+                    <!-- Counter Code END -->
+            ";
         }
         return $counterTag;
     }
