@@ -141,10 +141,10 @@ class LivecamManager extends LivecamLibrary
             'TXT_ARCHIVE_PATH'        => $_ARRAYLANG['TXT_ARCHIVE_PATH'],
             'TXT_SAVE'                => $_ARRAYLANG['TXT_SAVE'],
             'TXT_THUMBNAIL_PATH'      => $_ARRAYLANG['TXT_THUMBNAIL_PATH'],
-            'TXT_LIGHTBOX_ACTIVE'     => $_CORELANG['TXT_ACTIVATED'],
-            'TXT_LIGHTBOX_INACTIVE'   => $_CORELANG['TXT_DEACTIVATED'],
-            'TXT_ACTIVATE_LIGHTBOX'   => $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'],
-            'TXT_ACTIVATE_LIGHTBOX_INFO'    => $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'],
+            'TXT_SHADOWBOX_ACTIVE'     => $_CORELANG['TXT_ACTIVATED'],
+            'TXT_SHADOWBOX_INACTIVE'   => $_CORELANG['TXT_DEACTIVATED'],
+            'TXT_ACTIVATE_SHADOWBOX'   => $_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX'],
+            'TXT_ACTIVATE_SHADOWBOX_INFO'    => $_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX_INFO'],
             'TXT_MAKE_A_FRONTEND_PAGE'    => $_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'],
             'TXT_CURRENT_IMAGE_MAX_SIZE'    => $_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'],
             'TXT_THUMBNAIL_MAX_SIZE'        => $_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'],
@@ -160,12 +160,12 @@ class LivecamManager extends LivecamLibrary
         ));
 
         for ($i = 1; $i<=$amount; $i++) {
-            if ($cams[$i]['lightboxActivate'] == 1) {
-                $lightboxActive = 'checked="checked"';
-                $lightboxInctive = '';
+            if ($cams[$i]['shadowboxActivate'] == 1) {
+                $shadowboxActive = 'checked="checked"';
+                $shadowboxInctive = '';
             } else {
-                $lightboxActive = '';
-                $lightboxInctive = 'checked="checked"';
+                $shadowboxActive = '';
+                $shadowboxInctive = 'checked="checked"';
             }
 
             $this->_objTpl->setVariable(array(
@@ -173,8 +173,8 @@ class LivecamManager extends LivecamLibrary
                 'CURRENT_IMAGE_URL'      => $cams[$i]['currentImagePath'],
                 'ARCHIVE_PATH'           => $cams[$i]['archivePath'],
                 'THUMBNAIL_PATH'         => $cams[$i]['thumbnailPath'],
-                'LIGHTBOX_ACTIVE'         => $lightboxActive,
-                'LIGHTBOX_INACTIVE'         => $lightboxInctive,
+                'SHADOWBOX_ACTIVE'         => $shadowboxActive,
+                'SHADOWBOX_INACTIVE'         => $shadowboxInctive,
                 'CURRENT_IMAGE_MAX_SIZE' => $cams[$i]['maxImageWidth'],
                 'THUMBNAIL_MAX_SIZE'     => $cams[$i]['thumbMaxSize'],
                 'HOUR_FROM'              => $this->getHourOptions($cams[$i]['showFrom']),
@@ -220,7 +220,7 @@ class LivecamManager extends LivecamLibrary
         $archivePath = $_POST['archivePath'];
         $thumbnailPath = $_POST['thumbnailPath'];
         $thumbMaxSize = intval($_POST['thumbMaxSize']);
-        $lightboxActivate = intval($_POST['lightboxActivate']);
+        $shadowboxActivate = intval($_POST['shadowboxActivate']);
         $hourFrom = intval($_POST['hourFrom']);
         $hourTill = intval($_POST['hourTill']);
         $minuteFrom = intval($_POST['minuteFrom']);
@@ -234,7 +234,7 @@ class LivecamManager extends LivecamLibrary
                        archivePath = '".$archivePath."',
                        thumbnailPath = '".$thumbnailPath."',
                        thumbMaxSize = ".$thumbMaxSize.",
-                       lightboxActivate = '".$lightboxActivate."',
+                       shadowboxActivate = '".$shadowboxActivate."',
                        showFrom = $showFrom,
                        showTill = $showTill
                    WHERE id = ".$id;
@@ -298,7 +298,7 @@ class LivecamManager extends LivecamLibrary
             if ($result->RecordCount() == 0) {
                 $query = "  INSERT INTO ".DBPREFIX."module_livecam
                             (id, currentImagePath, archivePath, thumbnailPath,
-                             maxImageWidth, thumbMaxSize, lightboxActivate)
+                             maxImageWidth, thumbMaxSize, shadowboxActivate)
                             VALUES
                             (".$i.", '/webcam/cam".$i."/current.jpg',
                              '/webcam/cam".$i."/archive',

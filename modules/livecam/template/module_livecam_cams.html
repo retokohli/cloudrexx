@@ -20,10 +20,10 @@ updateCam = function(id)
         minuteTill : $('minuteTill_'+id).value,
     };
 
-    if ($('lightboxActivate_1_'+id).checked == true) {
-        properties.lightboxActivate = 1
+    if ($('shadowboxActivate_1_'+id).checked == true) {
+        properties.shadowboxActivate = 1
     } else {
-        properties.lightboxActivate = 0;
+        properties.shadowboxActivate = 0;
     }
 
     new Ajax.Request("index.php?cmd=livecam&act=saveCam", {
@@ -39,9 +39,7 @@ updateCam = function(id)
     });
 }
 
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=['','{TXT_ACTIVATE_LIGHTBOX_INFO}'];
-Text[1]=['','{TXT_MAKE_A_FRONTEND_PAGE}'];
+
 
 /* ]]> */
 </script>
@@ -91,11 +89,10 @@ Text[1]=['','{TXT_MAKE_A_FRONTEND_PAGE}'];
 			<td nowrap="nowrap" style="vertical-align: top;"><input type="text" size="70" id="thumbMaxSize_{CAM_NUMBER}" value="{THUMBNAIL_MAX_SIZE}" /></td>
 		</tr>
 		<tr class="row2">
-			<td nowrap="nowrap" style="vertical-align: top;">{TXT_ACTIVATE_LIGHTBOX}</td>
+			<td nowrap="nowrap" style="vertical-align: top;">{TXT_ACTIVATE_SHADOWBOX}</td>
 			<td  nowrap="nowrap" style="vertical-align: top;">
-                <input id="lightboxActivate_1_{CAM_NUMBER}" type="radio" value="1" {LIGHTBOX_ACTIVE} name="lightboxActivate_{CAM_NUMBER}" />{TXT_LIGHTBOX_ACTIVE}&nbsp;
-                <input id="lightboxActivate_2_{CAM_NUMBER}" type="radio" value="0" {LIGHTBOX_INACTIVE} name="lightboxActivate_{CAM_NUMBER}" />{TXT_LIGHTBOX_INACTIVE}&nbsp;&nbsp;
-                <img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+                <input id="shadowboxActivate_1_{CAM_NUMBER}" type="radio" value="1" {SHADOWBOX_ACTIVE} name="shadowboxActivate_{CAM_NUMBER}" />{TXT_SHADOWBOX_ACTIVE}&nbsp;
+                <input id="shadowboxActivate_2_{CAM_NUMBER}" type="radio" value="0" {SHADOWBOX_INACTIVE} name="shadowboxActivate_{CAM_NUMBER}" />{TXT_SHADOWBOX_INACTIVE}&nbsp;&nbsp;
             </td>
 		</tr>
 		<tr class="row1">

@@ -69,7 +69,7 @@ class LivecamLibrary
                             thumbnailPath,
                             maxImageWidth,
                             thumbMaxSize,
-                            lightboxActivate,
+                            shadowboxActivate,
                             showFrom,
                             showTill
                     FROM contrexx_module_livecam";
@@ -92,7 +92,7 @@ class LivecamLibrary
                     "thumbnailPath"             => $result->fields['thumbnailPath'],
                     "maxImageWidth"             => $result->fields['maxImageWidth'],
                     "thumbMaxSize"              => $result->fields['thumbMaxSize'],
-                    "lightboxActivate"          => $result->fields['lightboxActivate'],
+                    "shadowboxActivate"          => $result->fields['shadowboxActivate'],
                     "showFrom"                  => $result->fields['showFrom'],
                     "showTill"                  => $result->fields['showTill']
                 );
