@@ -33,6 +33,10 @@ var Rating = function(nr, currentRate, options)
     /* the picture for the foreground (yellow) */
     this.fgStar = 'star_y.gif';
 
+    /* the picture for the star to be display after
+     * rating (red) */
+    this.rateStar = 'star_r.gif';
+
     /* the path to the star pictures */
     this.starPath = 'media/';
 
@@ -72,6 +76,10 @@ var Rating = function(nr, currentRate, options)
             this.fgStar = options.fgStar;
         }
 
+        if (options.rateStar) {
+            this.rateStar = options.rateStar;
+        }
+
         if (options.starPath) {
             this.starPath = options.starPath;
         }
@@ -99,10 +107,10 @@ var Rating = function(nr, currentRate, options)
 
     // ad the divs
     this.bg = document.createElement("div");
-    this.overlay = document.createElement("div");
+    this.fg = document.createElement("div");
     obj.appendChild(this.bg);
-    obj.appendChild(this.overlay);
-
+    obj.appendChild(this.fg);
+ 
     // ad the style
     obj.style.position = "relative"; 
     obj.style.width = this.width + 'px';
@@ -116,14 +124,15 @@ var Rating = function(nr, currentRate, options)
     this.bg.style.left = '0px';
     this.bg.style.top = '0px';
 
-    this.overlay.style.height = this.starHeight+'px';
-    this.overlay.style.position = 'absolute';
-    this.overlay.style.top = '0px';
-    this.overlay.style.left = '0px';
-    this.overlay.style.background = 'url('+this.starPath+this.fgStar+') repeat-x';
-    this.overlay.style.zIndex = "2";
-    this.overlay.style.width = this.currentSize+"px";
-}
+    this.fg.style.height = this.starHeight+'px';
+    this.fg.style.position = 'absolute';
+    this.fg.style.top = '0px';
+    this.fg.style.left = '0px';
+    this.fg.style.background = 'url('+this.starPath+this.fgStar+') repeat-x';
+    this.fg.style.zIndex = "2";
+    this.fg.style.width = this.currentSize+"px";
+
+    }
 
 /**
  * The moving event
@@ -142,7 +151,7 @@ Rating.prototype.moving = function(event)
             } else {
                 var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2)
             }
-            this.overlay.style.width = X+'px';
+            this.fg.style.width = X+'px';
         }
     }
 }
@@ -153,7 +162,7 @@ Rating.prototype.moving = function(event)
 Rating.prototype.blur = function(event) 
 {
     if (!this.rated) {
-        this.overlay.style.width = this.currentSize+'px';
+        this.fg.style.width = this.currentSize+'px';
     }
 }
 
@@ -174,7 +183,7 @@ Rating.prototype.over =  function(event)
             } else {
                 var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2)
             }
-            this.overlay.style.width = X+'px';
+            this.fg.style.width = X+'px';
         }
     }
 }
@@ -189,13 +198,14 @@ Rating.prototype.click = function(event)
     } else {
         var x = event.layerX;
     }
+
     if (x <= this.width) {
         if (x <= this.starWidth/4) {
             X = 0;
         } else {
             var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2)
         }
-        this.overlay.style.width = X+'px';
+        this.fg.style.width = X+'px';
         this.currentSize = X;
         this.rated = true;
     }
@@ -203,4 +213,5 @@ Rating.prototype.click = function(event)
     var rating = (X / this.width) * this.stars;
     this.onRate(this.callbackData, rating);
     this.rated = true;
+    this.fg.style.background = 'url('+this.starPath+this.rateStar+') repeat-x';
 }
