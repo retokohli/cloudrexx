@@ -991,14 +991,18 @@ CREATE TABLE `contrexx_module_downloads_category` (
   `add_files_access_id` int(11) unsigned NOT NULL default '0',
   `manage_files_access_id` int(11) unsigned NOT NULL default '0',
   `image` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `is_active` (`is_active`),
+  KEY `visibility` (`visibility`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_downloads_category_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `category_id` int(11) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  PRIMARY KEY  (`lang_id`,`category_id`)
+  PRIMARY KEY  (`lang_id`,`category_id`),
+  FULLTEXT KEY `name` (`name`),
+  FULLTEXT KEY `description` (`description`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_download` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -1019,14 +1023,18 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `order` int(3) unsigned NOT NULL default '0',
   `views` int(10) unsigned NOT NULL default '0',
   `download_count` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `is_active` (`is_active`),
+  KEY `visibility` (`visibility`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_downloads_download_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `download_id` int(11) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  PRIMARY KEY  (`lang_id`,`download_id`)
+  PRIMARY KEY  (`lang_id`,`download_id`),
+  FULLTEXT KEY `name` (`name`),
+  FULLTEXT KEY `description` (`description`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_rel_download_category` (
   `download_id` int(10) unsigned NOT NULL default '0',
