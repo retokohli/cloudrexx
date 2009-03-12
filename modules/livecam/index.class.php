@@ -170,7 +170,6 @@ class Livecam extends LivecamLibrary
         $this->_objTpl->setTemplate($this->pageContent);
 
         $this->_objTpl->setVariable(array(
-            "LIVECAM_JAVASCRIPT"    => $this->_getJavascript(),
             "CMD"                   => $this->cam
         ));
         $this->_objTpl->setGlobalVariable('LIVECAM_DATE', $this->date);
@@ -211,8 +210,11 @@ class Livecam extends LivecamLibrary
         $this->camSettings = $this->getCamSettings($this->cam);
         //var_dump($this->camSettings);
 
-        if ($this->camSettings['lightboxActivate'] == 1) {
-            $imageLink = $this->camSettings['currentImageUrl'];
+        JS::activate("shadowbox", array('players' => array('img')));
+        JS::activate("datepicker");
+
+        if ($this->camSettings['shadowboxActivate'] == 1) {
+            $imageLink = $this->camSettings['currentImagePath'];
         } else {
             if (isset($_GET['file'])) {
                 $archiveDate = substr($_GET['file'], 0, 10);
@@ -221,10 +223,11 @@ class Livecam extends LivecamLibrary
                 $imageLink = '?section=livecam&amp;act=today';
             }
         }
+
         $this->_objTpl->setVariable(array(
-            'LIVECAM_CURRENT_IMAGE'        => isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$_GET['file'] : $this->camSettings['currentImagePath'],
+            'LIVECAM_CURRENT_IMAGE'      => isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$_GET['file'] : $this->camSettings['currentImagePath'],
             'LIVECAM_IMAGE_TEXT'        => isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild',
-            'LIVECAM_IMAGE_LIGHTBOX'    => $this->camSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
+            'LIVECAM_IMAGE_SHADOWBOX'   => $this->camSettings['shadowboxActivate'] == 1 ? 'rel="shadowboxgallery"' : '',
             'LIVECAM_IMAGE_LINK'        => $imageLink,
             'LIVECAM_IMAGE_SIZE'        => $this->camSettings['currentMaxSize'],
         ));
@@ -260,6 +263,9 @@ class Livecam extends LivecamLibrary
     {
 		global $_ARRAYLANG;
 
+        JS::activate("shadowbox", array('players' => array('img')));
+        JS::activate("datepicker");
+
         $this->camSettings = $this->getCamSettings($this->cam);
         $this->_getThumbs();
 
@@ -280,11 +286,11 @@ class Livecam extends LivecamLibrary
                 }
 
                 $this->_objTpl->setVariable(array(
-                    'LIVECAM_PICTURE_URL'        => $arrThumbnail['link_url'],
-                    'LIVECAM_PICTURE_TIME'        => $arrThumbnail['time'],
-                    'LIVECAM_THUMBNAIL_URL'        => $arrThumbnail['image_url'],
+                    'LIVECAM_PICTURE_URL'       => $arrThumbnail['link_url'],
+                    'LIVECAM_PICTURE_TIME'      => $arrThumbnail['time'],
+                    'LIVECAM_THUMBNAIL_URL'     => $arrThumbnail['image_url'],
                     'LIVECAM_THUMBNAIL_SIZE'    => $this->camSettings['thumbMaxSize'],
-                    'LIVECAM_IMAGE_LIGHTBOX'    => $this->camSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
+                    'LIVECAM_IMAGE_SHADOWBOX'   => $this->camSettings['shadowboxActivate'] == 1 ? 'rel="shadowbox[gallery]"' : '',
                 ));
                 $this->_objTpl->parse($this->_pictureTemplatePlaceholder.$picNr);
 
@@ -376,7 +382,7 @@ class Livecam extends LivecamLibrary
                     */
                     if($nowTime <= $maxTime && $nowTime >= $minTime) {
 
-                        if($this->camSettings['lightboxActivate'] == 1) {
+                        if($this->camSettings['shadowboxActivate'] == 1) {
                             $linkUrl = ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$this->date.'/'.$file;
                         } else {
                             $linkUrl = '?section=livecam&amp;file='.$this->date.'/'.$file;
@@ -393,20 +399,6 @@ class Livecam extends LivecamLibrary
             }
             closedir($objDirectory);
         }
-    }
-
-    /**
-    * Get javascript
-    *
-    * Get the javascript code used by the calender
-    *
-    * @access private
-    * @return string $javascript
-    */
-    function _getJavaScript()
-    {
-        $strJavascript = '<script src="modules/livecam/datepicker/datepickercontrol.js" type="text/javascript"></script>';
-        return $strJavascript;
     }
 }
 ?>
