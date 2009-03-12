@@ -366,7 +366,7 @@ class Dataviewer {
 	function editProject() {
 		global $_ARRAYLANG, $objDatabase;			
 		$this->_objTpl->loadTemplateFile('module_dataviewer_edit_project.html');
-		$this->_pageTitle = $_ARRAYLANG['TXT_DATAVIEWER_NEW_PROJECT'];
+		$this->_pageTitle = $_ARRAYLANG['TXT_EDIT_PROJECT'];
 		
 		$_POST['save'] = !empty($_POST['save']) ? $_POST['save'] : "";
 		$id            = !empty($_GET['id']) ? $_GET['id'] : "";

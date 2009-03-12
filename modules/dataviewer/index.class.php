@@ -41,11 +41,11 @@ class  Dataviewer {
 		global $objDatabase, $_ARRAYLANG;
 		$this->_objTpl->setTemplate($this->pageContent);
 		
-		if (!$this->isActive($projectname)) {
+		if (!$this->isActive($projectname) || !in_array($_SESSION['userFrontendLangId'], $this->getLangID($projectname))) {
 			header("Location: index.php");
-		}			
-		
-		
+		}	
+
+				
 		//prepare $GET filter
 		$selectedFilters = !empty($_GET['filter']) ? $_GET['filter'] : "";
 		$where           = "";
@@ -93,11 +93,17 @@ class  Dataviewer {
 		if($selectedFilters == "") {
 				$selectRecordsQuery = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . "  LIMIT 0";
 		}
+		
+		if (!$this->hasFilters($projectname)) {
+			$selectRecordsQuery = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . $orderBy;	
+		}
 				
 		
 		//*****************DIAMIR
+		$this->_objTpl->setVariable(array('DISPLAY_STYLE' => "none"));	
+		
 		if (in_array("Distributor", $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$projectname)) && $selectedFilters['country'] !== "" && (count($selectedFilters) == 1)) {
-			$selectRecordsQueryDistributor = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . $where . " AND Distributor = '1' ORDER BY name ASC";
+			$selectRecordsQueryDistributor = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $this->makeInputDBvalid($projectname) . $where . " AND Distributor = '1' ORDER BY dealer ASC";
 			$objRecordsResultDistributor   = $objDatabase->Execute($selectRecordsQueryDistributor);
 			
 			while (!$objRecordsResultDistributor->EOF) {			
@@ -111,13 +117,14 @@ class  Dataviewer {
 				
 				$this->_objTpl->parse('dataviewer_distributor_row');		
 				$objRecordsResultDistributor->MoveNext();
-			}	
+			}
+			
+			$this->_objTpl->setVariable(array('DISPLAY_STYLE' => "block"));	
 		}
 		//*****************DIAMIR
 		
 		$objRecordsResult  = $objDatabase->Execute($selectRecordsQuery);
-		
-		
+				
 		$selectedFilters = !empty($_GET['filter']) ? $_GET['filter'] : "";
 			
 		//prepare $GET filter
@@ -155,6 +162,21 @@ class  Dataviewer {
 				$this->_objTpl->parse('dataviewer_row');		
 				$objRecordsResult->MoveNext();
 			}	
+		}
+		
+		if (!$this->hasFilters($projectname)) {
+			//set template variables
+			while (!$objRecordsResult->EOF) {			
+				foreach ($placeholders as $id => $placeholder) {
+					$id++;	//because we dont want placeholder_0
+					$this->_objTpl->setVariable(array(
+						'DATAVIEWER_PLACEHOLDER_' . $id => htmlspecialchars($objRecordsResult->fields[$placeholder])
+					));	
+				}
+				
+				$this->_objTpl->parse('dataviewer_row');		
+				$objRecordsResult->MoveNext();
+			}
 		}
 		
 		
@@ -238,11 +260,20 @@ class  Dataviewer {
 		$query     = "SELECT status FROM ".DBPREFIX."module_dataviewer_projects WHERE name = '" . $this->makeInputDBvalid($projectname) . "';";
 		$objResult = $objDatabase->Execute($query);
 		
-		if($objResult->fields['status'] == 1) {
+		if($objResult->fields['status'] == "1") {
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	function getLangID($projectname) {
+		global $objDatabase;
+		$query     = "SELECT language FROM ".DBPREFIX."module_dataviewer_projects WHERE name = '" . $this->makeInputDBvalid($projectname) . "';";
+		$objResult = $objDatabase->Execute($query);
+		$arrLanguage = explode(";", $objResult->fields['language']);
+		
+		return $arrLanguage;
 	}
 		
 	
@@ -369,6 +400,7 @@ class  Dataviewer {
 		$objResult = $objDatabase->Execute($query);
 		return $objResult->fields['name'];
 	}
+	
 	
 	
 	/**
