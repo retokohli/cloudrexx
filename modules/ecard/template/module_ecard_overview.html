@@ -1,10 +1,10 @@
 <!-- START module_ecard_overview.html -->
-<link rel="stylesheet" href="../lib/lytebox/lytebox.css" type="text/css" media="screen" />
-<!--script type="text/javascript" language="javascript" src="../lib/lytebox/lytebox.js"></script-->
 <script language="JavaScript" type="text/javascript">
-Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+/* <![CDATA[ */
+Shadowbox.loadSkin('classic','../lib/javascript/shadowbox/src/skin/');
+Shadowbox.loadLanguage('en', '../lib/javascript/shadowbox/src/lang');
+Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], '../lib/javascript/shadowbox/src/player');
+Shadowbox.loadLanguage('en', '../lib/javascript/shadowbox/lang')
 window.onload = function() {
   Shadowbox.init();
 };
@@ -35,7 +35,9 @@ function openWindow(theURL, features) {
   dataPopup = window.open(theURL, features);
   dataPopup.focus();
 }
+/* ]]> */
 </script>
+
 <form id="ecardForm" method="post" action="index.php?cmd=ecard&amp;act=save">
   <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
     <tr>

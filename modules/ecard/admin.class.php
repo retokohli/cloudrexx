@@ -352,7 +352,6 @@ class ecard
         //$type == 1 => resize methode for creating thumbnails
         //$type == 2 => resize methode for creating optimized motives
 
-echo("resizeMotive($type, $sourcePath, $destinationPath):  Entered<br />");
         /* Initialize variables */
         $motiveFilename = basename($sourcePath);
         $query = "
