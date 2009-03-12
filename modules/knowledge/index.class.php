@@ -323,6 +323,7 @@ class Knowledge extends KnowledgeLibrary
 	       "AMOUNT_OF_RATING" => $amount,
 	       
 	       "MAX_RATING"    => $this->settings->get("max_rating"),
+           "LOCKED"        => $this->checkLocking($id),
 	       "HITS"          => $article['hits'],
 	       
 	       "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
@@ -417,10 +418,11 @@ class Knowledge extends KnowledgeLibrary
     	               "ARTICLE_ID"    => $articleid,
     	               "QUESTION"      => $article['content'][$_LANGID]['question'],
     	               "ANSWER"        => $article['content'][$_LANGID]['answer'],
-            	       "AVERAGE"       => $average,
+            	       "AVERAGE"       => round($average, 2),
             	       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
             	       "AMOUNT_OF_RATING" => $amount,
             	       "MAX_RATING"    => $this->settings->get("max_rating"),
+                       "LOCKED"        => $this->checkLocking($articleid),
             	       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
             	       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
 	                   "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
@@ -486,9 +488,10 @@ class Knowledge extends KnowledgeLibrary
                        "ARTICLE_ID"    => $articleid,
                        "QUESTION"      => $article['content'][$_LANGID]['question'],
                        "ANSWER"        => $article['content'][$_LANGID]['answer'],
-                       "AVERAGE"       => $average,
+                       "AVERAGE"       => round($average, 2),
                        "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
                        "AMOUNT_OF_RATING" => $amount,
+                       "HITS"          => $article['hits'],
                        "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
                        "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
                        "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
@@ -496,6 +499,7 @@ class Knowledge extends KnowledgeLibrary
                        "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
                        "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
                        "MAX_RATING"    => $this->settings->get("max_rating"),
+                       "LOCKED"        => $this->checkLocking($articleid),
                        "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
                        "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
                    ));
@@ -558,10 +562,11 @@ class Knowledge extends KnowledgeLibrary
             	    
             	       "QUESTION"      => $article['content'][$_LANGID]['question'],
             	       "ANSWER"        => $article['content'][$_LANGID]['answer'],
-            	       "AVERAGE"       => $average,
+            	       "AVERAGE"       => round($average, 2),
             	       "AMOUNT_OF_RATING" => $amount,
             	       
             	       "MAX_RATING"    => $this->settings->get("max_rating"),
+                       "LOCKED"        => $this->checkLocking($articleKey),
             	       "HITS"          => $article['hits'],
             	       
             	       "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
@@ -670,15 +675,32 @@ class Knowledge extends KnowledgeLibrary
 	 */
 	private function rate()
 	{
+        global $_CONFIG;
+
 	    $id = intval($_POST['id']);
 	    
 	    $rated = intval($_POST['rated']);
-	    try {
-	       $this->articles->vote($id, $rated);   
-	    } catch (DatabaseError $e) {
-	        die($e->plain());
-	    }
+        if (!isset($_COOKIE['knowledge_rating_'.$id])) {
+            try {
+                var_dump(setcookie('knowledge_rating_'.$id, 'rated'));
+                $this->articles->vote($id, $rated);   
+            } catch (DatabaseError $e) {
+                die($e->plain());
+            }
+        } 
 	    die(); 
 	}
+
+    /**
+     * Return string for javascript if the cookie is set
+     */
+    private function checkLocking($id) 
+    {
+        if (isset($_COOKIE['knowledge_rating_'.$id])) {
+            return "true";
+        } else {
+            return "false";
+        }
+    }
 	
 }

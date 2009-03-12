@@ -117,23 +117,31 @@ var Rating = function(nr, currentRate, options)
     obj.style.height = this.starHeight + 'px';
     obj.style.overlay = "hidden";
 
-    this.bg.style.background = 'url('+this.starPath+this.bgStar+') repeat-x';
     this.bg.style.width = this.width+"px";
     this.bg.style.height = this.starHeight+'px';
     this.bg.style.position = "absolute";
     this.bg.style.left = '0px';
     this.bg.style.top = '0px';
-    this.bg.style.cursor = "pointer";
+    this.bg.style.background = 'url('+this.starPath+this.bgStar+') repeat-x';
+    if (!this.locked) {
+        this.bg.style.cursor = "pointer";
+    }
+
 
     this.fg.style.height = this.starHeight+'px';
     this.fg.style.position = 'absolute';
     this.fg.style.top = '0px';
     this.fg.style.left = '0px';
-    this.fg.style.background = 'url('+this.starPath+this.fgStar+') repeat-x';
     this.fg.style.zIndex = "2";
     this.fg.style.width = this.currentSize+"px";
-    this.fg.style.cursor = "pointer";
+
+    if (this.locked) {
+        this.fg.style.background = 'url('+this.starPath+this.rateStar+') repeat-x';
+    } else {
+        this.fg.style.background = 'url('+this.starPath+this.fgStar+') repeat-x';
+        this.fg.style.cursor = "pointer";
     }
+}
 
 /**
  * The moving event
