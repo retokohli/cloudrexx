@@ -316,7 +316,7 @@ class news extends newsLibrary {
 
         if ($count>=1) {
             while (!$objResult->EOF) {
-                ($i % 2) ? $class  = 'row1' : $class  = 'row2';
+                ($i % 2) ? $class  = 'row2' : $class  = 'row1';
 
                 if ($objResult->fields['newsuid'] && ($objFWUser = FWUser::getFWUserObject()) && ($objUser = $objFWUser->objUser->getUser($objResult->fields['newsuid']))) {
                     $firstname = $objUser->getProfileAttribute('firstname');
