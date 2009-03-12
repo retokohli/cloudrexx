@@ -153,7 +153,7 @@ class ecard
             if ($motive != '') {
                 $this->_objTpl->setVariable(array(
                     'ECARD_MOTIVE_OPTIMIZED_PATH' => ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motive,
-                    'ECARD_MOTIVE_ID' => $i,
+                    'ECARD_MOTIVE_ID' => $objResult->fields['id'],
                     'ECARD_THUMBNAIL_PATH' => ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motive,
                     'ECARD_CSSNUMBER' => ($i % 3) + 1,
                     'ECARD_IMAGE_SELECTED' =>
@@ -191,10 +191,11 @@ class ecard
         $query = "
             SELECT setting_value
               FROM ".DBPREFIX."module_ecard_settings
-             WHERE setting_value='motive_0.$id'";
+             WHERE setting_name='motive_$id'";
         $objResult = $objDatabase->Execute($query);
         $selectedMotive = basename($objResult->fields['setting_value']);
         // Initialize DATA placeholder
+        var_dump($selectedMotive);
         $this->_objTpl->setVariable(array(
             'ECARD_DATA' =>
                 '<strong>'.$senderName.'</strong> (<a href="mailto:'.$senderEmail.'">'.
