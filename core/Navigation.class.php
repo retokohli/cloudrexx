@@ -100,7 +100,7 @@ class Navigation
                                 (
                                     !$objFWUser->objUser->getAdminStatus() ?
                                          // user is not administrator
-                                        'AND (n.protected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
+                                        'AND (n.protected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds(false)).')' : '').')' :
                                         // user is administrator
                                         ''
                                 )
