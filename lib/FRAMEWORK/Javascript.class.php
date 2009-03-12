@@ -524,6 +524,54 @@ class JS
         $script = $matchinfo[1];
         self::registerJS($script);
     }
+
+
+    /**
+     * Finds all <script>-Tags in the passed HTML content, strips them out
+     * and puts them in the internal JAVASCRIPT placeholder store.
+     * You can then retreive them all-in-one with JS::getCode().
+     * @param string $content - Reference to the HTML content. Note that it
+     *                          WILL be modified in-place.
+     */
+    public function findJavascripts(&$content) {
+        JS::grabComments($content);
+        $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $content);
+        JS::restoreComments($content);
+    }
+
+    
+    private static $comment_dict = array();
+    /**
+     * Grabs all comments in the given HTML and replaces them with a
+     * temporary string. Modifies the given HTML in-place.
+     * @param string $content
+     */
+    private static function grabComments(&$content) {
+        $content = preg_replace_callback('#<!--.*?-->#ms', 'JS::_storeComment', $content);
+    }
+
+    /**
+     * Restores all grabbed comments (@see JS::grabComments()) and 
+     * puts them back in the given content. Modifies the given HTML in-place.
+     * @param string $content
+     */
+    private static function restoreComments(&$content) {
+        foreach (self::$comment_dict as $key => $value) {
+            $content = str_replace($key, $value, $content);
+        }
+    }
+
+    private static $re_name_postfix = 1;
+    /**
+     * Internal helper for replacing comments. @see JS::grabComments()
+     */
+    private static function _storeComment($re) {
+        
+        $name = 'saved_comment_'.self::$re_name_postfix;
+        self::$comment_dict[$name] = $re[0];
+        self::$re_name_postfix++;
+        return $name;
+    }
 }
 
 ?>
