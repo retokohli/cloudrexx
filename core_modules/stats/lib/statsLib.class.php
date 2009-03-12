@@ -119,7 +119,6 @@ class statsLibrary
                     else {
                         c = screen.pixelDepth;
                     }
-                    alert('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ></s'+'cript>');
                     document.write('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ></s'+'cript>');
                     // -->
                     </script>
