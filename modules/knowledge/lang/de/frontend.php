@@ -60,6 +60,6 @@ $_ARRAYLANG['TXT_SEARCH_NONE'] = "keine";
 $_ARRAYLANG['TXT_KNOWLEDGE_INDICATOR'] = "%amount Bewertungen, &oslash; %rating";
 $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'] = "Erstellt";
 $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'] = "Geändert";
-$_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'] = "Anzahl Bewertungen";
+$_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'] = "Bewertung";
 $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'] = "Durchschnittliche Bewertung";
 ?>
