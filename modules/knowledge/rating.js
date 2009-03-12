@@ -123,6 +123,7 @@ var Rating = function(nr, currentRate, options)
     this.bg.style.position = "absolute";
     this.bg.style.left = '0px';
     this.bg.style.top = '0px';
+    this.bg.style.cursor = "pointer";
 
     this.fg.style.height = this.starHeight+'px';
     this.fg.style.position = 'absolute';
@@ -131,7 +132,7 @@ var Rating = function(nr, currentRate, options)
     this.fg.style.background = 'url('+this.starPath+this.fgStar+') repeat-x';
     this.fg.style.zIndex = "2";
     this.fg.style.width = this.currentSize+"px";
-
+    this.fg.style.cursor = "pointer";
     }
 
 /**
@@ -145,7 +146,7 @@ Rating.prototype.moving = function(event)
         } else {
             var x = event.layerX;
         }
-        if (x <= this.width) {
+        if (x < this.width) {
             if (x <= this.starWidth/4) {
                 X = 0;
             } else {
@@ -177,7 +178,7 @@ Rating.prototype.over =  function(event)
         } else {
             var x = event.layerX;
         }
-        if (x <= this.width) {
+        if (x < this.width) {
             if (x <= this.starWidth/4) {
                 X = 0;
             } else {
@@ -199,7 +200,7 @@ Rating.prototype.click = function(event)
         var x = event.layerX;
     }
 
-    if (x <= this.width) {
+    if (x < this.width) {
         if (x <= this.starWidth/4) {
             X = 0;
         } else {
