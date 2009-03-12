@@ -68,7 +68,7 @@ include_once('lib/DBG.php');
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
  */
-define('_DEBUG', false);
+define('_DEBUG', DBG_NONE);
 
 //-------------------------------------------------------
 // Set error reporting
@@ -2135,16 +2135,21 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
      * be loaded twice.
      */
     $endcode = $objTemplate->get();
-    // we don't want the commented scripts. We could've used lookaround, but this is of performance reasons
-    $endcode = preg_replace('/<!--(.*?)<script(.*?)-->/i', '<!--$1<scrript$2-->', $endcode);
-    $endcode = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
-/*
-Proposal:  Use this
-    $endcode = preg_replace_callback('/<script .*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
-and change JS::registerFromRegex to use index 2
-*/
+
+    /* Finds all uncommented script tags, strips them out of the HTML and 
+     * stores them internally so we can put them in the placeholder later
+     * (see JS::getCode() below)
+     */
+    JS::findJavascripts($endcode);
+
+    /*
+     * Proposal:  Use this
+     *     $endcode = preg_replace_callback('/<script .*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
+     * and change JS::registerFromRegex to use index 2
+     */
     // i know this is ugly, but is there another way
     $endcode = str_replace("javascript_inserting_here", JS::getCode(), $endcode);
+
     echo $endcode;
 }
 $objCache->endCache();
