@@ -353,18 +353,22 @@ class Category {
 
         $objResult = $objDatabase->Execute('
             SELECT
+                `category_id`,
                 `lang_id`,
                 `name`,
                 `description`
             FROM `'.DBPREFIX.'module_downloads_category_locale`
-            WHERE `category_id` = '.$this->id);
+            WHERE `category_id` IN ('.implode(',', array_keys($this->arrLoadedCategories)).')');
         if ($objResult) {
             while (!$objResult->EOF) {
-                $this->names[$objResult->fields['lang_id']] = $objResult->fields['name'];
-                $this->descriptions[$objResult->fields['lang_id']] = $objResult->fields['description'];
+                $this->arrLoadedCategories[$objResult->fields['category_id']]['names'][$objResult->fields['lang_id']] = $objResult->fields['name'];
+                $this->arrLoadedCategories[$objResult->fields['category_id']]['descriptions'][$objResult->fields['lang_id']] = $objResult->fields['description'];
 
                 $objResult->MoveNext();
             }
+
+            $this->names = isset($this->arrLoadedCategories[$this->id]['names']) ? $this->arrLoadedCategories[$this->id]['names'] : null;
+            $this->descriptions = isset($this->arrLoadedCategories[$this->id]['descriptions']) ? $this->arrLoadedCategories[$this->id]['descriptions'] : null;
         }
     }
 
