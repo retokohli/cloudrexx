@@ -14,6 +14,7 @@ Allgemein
 - Das XML-Sitemap enthält keine Einträge mehr, welche auf eine andere Webseite
   zeigen. Das selbe trifft auch für Bereiche zu, welche sich ausserhalb des
   Ablagepfades von Contrexx befinden.
+- Der WYSIWYG-Editor visualisiert HTML Blöcke.
 
 Grundeinstellungen
 - Neue Konfigurationsoption 'Virtuelle Sprachverzeichnisse verwenden'.
