@@ -92,6 +92,28 @@
 		}
 		return "OK";		
 	}
+	
+	
+	
+	function preview() {
+		div = document.getElementById("preview");
+		numberOfElements = document.project.column.length;		
+		
+				
+		var tableStart = '<table id="preview" border="0" cellpadding="5" cellspacing="0"><tr>';
+		var tableEnd = '<\/tr><\/table>';
+		var rows = "";
+		var blindText = "";
+		var i = 0;
+		
+		while (i < numberOfElements) {
+			
+			var rows = rows + '<td><b>' + document.project.column[i].value + '<\/b><\/td>';
+			var blindText = blindText + '<td>lorem ipsum..<\/td>';
+			i++;
+		}
+		div.innerHTML = tableStart + rows + '<tr>' + blindText + '<\/tr>' + tableEnd;
+	}
 
 	
 	Text[0] = ["", '{TIP_PROJECTNAME}'];
@@ -152,7 +174,7 @@
 			<!-- END columnsRow -->
 			<tr class="row1" id="rowTemplate" style="display: none;">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])">
-					Spalte <input id="columnCounter" name="columnCounter[]" type="text" value="" style="border:0px; background:transparent; width:20px;" />
+					Spalte <span>1</span>
 				</td>
 				<td width="88%"><input type="text" name="column[]" id="column" onkeypress="this.value=validateInput(this.value); preview();" onblur="this.value=validateInput(this.value); preview();" style="width: 400px;" value="" maxlength="250" />&nbsp;<a href="javascript:void;" onclick="deleteRow(this); preview();"><img border="0" src="../cadmin/images/icons/delete.gif" alt="delete" /></a><br /></td>
 			</tr>

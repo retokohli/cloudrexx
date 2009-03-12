@@ -1,43 +1,34 @@
 	var projectTable;
-	var rowId = 0;
+	var rowId = 2;
 	function addColumn() {
 		var foo = document.getElementById("rowTemplate");	
 		var rowTemplate = foo.cloneNode(true);
-		
 		projectTable = document.getElementById("projectTable");
-		rowTemplate.id = "projectRow_"+rowId++;
-//		columnCounter.id = "columnCounter_"+rowId++;
-		document.getElementById("columnCounter").value = rowId;
+		rowTemplate.id = "projectRow_"+rowId;
+		foo.getElementsByTagName('SPAN')[0].innerHTML = rowId;
 		rowTemplate.style.display = "table-row";
 		projectTable.insertBefore(rowTemplate, foo);
+		rowId++;
  	}
 		
 	var deleteRow = function (obj) {
 		var tr = obj.parentNode.parentNode;
 		tr.parentNode.removeChild(tr);
+		checkNumeration();
 	}
 	
-	
-	
-	
-	
-	function preview() {
-		div = document.getElementById("preview");
-		numberOfElements = document.project.column.length;		
-		
-		var tableStart = '<table id="preview" border="0" cellpadding="5" cellspacing="0"><tr>';
-		var tableEnd = '<\/tr><\/table>';
-		var rows = "";
-		var blindText = "";
-		var i = 1;
-		
-		while (i < numberOfElements) {
-			var rows = rows + '<td><b>' + document.project.column[i].value + '<\/b><\/td>';
-			var blindText = blindText + '<td>lorem ipsum..<\/td>';
-			i++;
+	function checkNumeration(){
+		nofElements = document.getElementsByTagName('SPAN').length;
+		for(i=1; i<nofElements; i++) {
+			alert("mo");
+			document.getElementsByTagName('SPAN')[0].innerHTML = i;
 		}
-		div.innerHTML = tableStart + rows + '<tr>' + blindText + '<\/tr>' + tableEnd;
 	}
+	
+	
+	
+	
+	
 	
 	
 	

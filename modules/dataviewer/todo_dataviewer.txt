@@ -7,14 +7,11 @@ edit project
 
 new project
 ------------
-* bei der spalteneingabe spaltenzahl hochzählen
-* keine doppelten spaltennamen zulassen
+* bei der spalteneingabe spaltenzahl nach löschen korrigieren
 
 
-*text anstatt icon (filter + platzhalter)
+* beim importieren leere datensätze nicht beachten
 
 
 
 *einstellung ob DROP DOWN oder auflistung
-
-*sprachsteuerung
