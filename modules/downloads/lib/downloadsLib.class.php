@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);ini_set('display_errors', 1);
+if (isset($_COOKIE['debug'])) {error_reporting(E_ALL);ini_set('display_errors', 1);$objDatabase->debug=true;}
 require_once dirname(__FILE__).'/Category.class.php';
 require_once dirname(__FILE__).'/Download.class.php';
 /**
@@ -24,13 +24,14 @@ class DownloadsLibrary
         'getManageFilesAccessId'            => 'manage_files'
     );
 
+    protected $searchKeyword;
     protected $arrConfig = array(
         'overview_cols_count'   => 2
     );
 
 //    var $_arrLang   = array();
 
-    function __construct()
+    public function __construct()
     {
 global $_ARRAYLANG;
 
@@ -45,9 +46,11 @@ $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_LOCALES'] = 'Beim Speichern des Besch
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_CATEGORY_ASSOCIATIONS'] = 'Beim Speichern der Kategoriezugehörigkeiten trat ein Fehler auf!';
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_RELATIONS'] = 'Beim Speichern der Verwanten Downloads trat ein Fehler auf!';
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Zugriffsberechtigungen trat ein Fehler auf!';
+$_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'] = 'Unbekannt';
 
         //$this->_init();
         $this->initSettings();
+        $this->initSearch();
         $this->initDefaultCategoryImage();
         $this->initDefaultDownloadImage();
     }
@@ -64,6 +67,12 @@ $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Z
             }
         }
     }
+
+    protected function initSearch()
+    {
+        $this->searchKeyword = empty($_REQUEST['downloads_search_keyword']) ? '' : $_REQUEST['downloads_search_keyword'];
+    }
+
     protected function initDefaultCategoryImage()
     {
         $this->defaultCategoryImage['src'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/no_picture.gif';
