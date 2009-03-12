@@ -55,8 +55,6 @@ class dataBlocks extends DataLibrary
     {
         global $objDatabase, $objInit;
 
-        JS::activate("shadowbox", array('players' => array('html', 'iframe')));
-
         $objRs = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."settings
                                         WHERE setname = 'dataUseModule'");
 
@@ -112,6 +110,8 @@ class dataBlocks extends DataLibrary
     function getData($placeholder)
     {
         global $objDatabase;
+
+        JS::activate("shadowbox", array('players' => array('html', 'iframe')));
 
         $matter = substr($placeholder, 6, -1);
 
