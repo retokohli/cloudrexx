@@ -1017,6 +1017,7 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `license` varchar(255) NOT NULL,
   `version` varchar(10) NOT NULL,
   `author` varchar(100) NOT NULL,
+  `website` varchar(255) NOT NULL,
   `ctime` int(14) unsigned NOT NULL default '0',
   `is_active` tinyint(3) unsigned NOT NULL default '0',
   `visibility` tinyint(1) unsigned NOT NULL default '1',
