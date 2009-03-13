@@ -1046,7 +1046,6 @@ class Download {
                     ) {
                         // we won't store this association, because the user doesn't have the permission to
                         unset($arrRemovedCategories[array_search($objCategory->getId(), $arrRemovedCategories)]);
-                        print 's';
                     }
                 }
 
