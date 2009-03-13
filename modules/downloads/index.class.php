@@ -21,9 +21,6 @@ ARRAYLANG['TXT_DOWNLOADS_FILTERS']    = "Suche";
 */
 
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
-
 class downloads extends DownloadsLibrary
 {
     private $htmlLinkTemplate = '<a href="%s" title="%s">%s</a>';
@@ -133,7 +130,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Zuletzt aktualisiert";
         }
 
         $this->parseMessages();
-error_reporting(0);ini_set('display_errors', 0);
+
         return $this->objTemplate->get();
     }
 
@@ -560,8 +557,8 @@ JS_CODE;
         } else {
             $imageSrc = $this->defaultCategoryImage['src'];
             $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
-            $image = '';
-            $thumbnail = '';
+            $image = $this->getHtmlImageTag($this->defaultCategoryImage['src'], htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));;
+            $thumbnail = $this->getHtmlImageTag($this->defaultCategoryImage['src'].'.thumb', htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
         }
 
         $this->objTemplate->setVariable(array(
