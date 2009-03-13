@@ -1880,7 +1880,7 @@ $objTemplate->setVariable(array(
     'NAVTITLE'             => $page_catname,
     'GLOBAL_TITLE'         => $_CONFIG['coreGlobalPageTitle'],
     'DOMAIN_URL'           => $_CONFIG['domainUrl'],
-    'BASE_URL'             => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].'/'.ASCMS_PATH_OFFSET,
+    'BASE_URL'             => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET,
     'METAKEYS'             => $page_keywords,
     'METADESC'             => $page_desc,
     'METAROBOTS'           => $page_robots,
