@@ -545,8 +545,14 @@ div#livecam #CALBUTTONDPC_datum {
 #directory div.insert_feeds,
 #directory div.paging {
 	margin: 15px 0px 0px 0px;
-	text-align:center;
+	text-align:left;
 	float:left;
+}
+
+#directory div.feed h2 {
+	padding: 0px 0px 5px 0px;
+	margin: 0px 0px 5px 0px;
+	border-bottom: 1px solid #cccccc;
 }
 
 #directory div.image {
@@ -570,8 +576,22 @@ div#livecam #CALBUTTONDPC_datum {
 #directory div.infos h3 {
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 5px 0px;
+	float: left;
 }
 
+#directory div.voting {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float: right;
+}
+
+#directory div.link {
+	width: 100%;
+	padding: 5px 0px 0px 0px;
+	margin: 5px 0px 0px 0px;	
+	float: left;
+	border-top: 1px solid #cccccc;
+}
 
 #directory .selector {
     clear: left;
@@ -814,7 +834,6 @@ div#livecam #CALBUTTONDPC_datum {
 #blog div.message_ok {
 	color: #029202;
 }
-
 
 #blog div.posted {
 	font-size: 0.9em;
@@ -1796,23 +1815,257 @@ dl.data_module {
     font-family:"Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
     font-size:75%;
     line-height:1.5;
-
+    
 }
 
 dl.data_module dt {
-   font-weight: bold;
+   font-weight: bold; 
 }
 
 dl.data_module dd {
     margin: 5px 0;
 }
 
-dl.data_module img {
+dl.data_module img { 
     margin-right: 20px;
     margin-bottom: 10px;
 }
 
-div.datalist_block img {
-    margin-right: 5px;
+/****************************************/
+/* CSS DEFINITIONS FOR DOWNLOADS-MODULE */
+/****************************************/
+
+#downloads {
+	width: 100%;
 }
 
+#downloads div.category {
+}
+
+#downloads div.overview div.row div.category {
+	float: left;
+	width: 50%;
+}
+
+#downloads div.overview div.row div.category div.title {
+	font-weight: bold;
+}
+
+#downloads div.overview div.row div.category div.content a {
+    color: black;
+}
+
+#downloads div.overview div.row div.category div.content a:hover {
+    color: #C5252F;
+}
+
+#downloads div.overview div.row div.category div.content a.more {
+    color: #8b9581;
+}
+
+#downloads div.overview div.row div.category div.content a.more:hover {
+    color: #C5252F;
+}
+
+
+#downloads div.subcategories {
+	padding: 0px 0px 15px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+}
+
+#downloads div.file {
+	width: 100%;
+	padding: 10px 0px 10px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#downloads div.image {
+	float: left;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#downloads div.image img {
+	margin: 0px 0px 15px 0px;
+}
+
+#downloads div.file_list .infos {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 84%;
+	float: left;
+}
+
+#downloads div.infos {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+}
+
+
+#downloads div.infos h3 {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+
+}
+
+#downloads div.infos .shortdetail_top {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+}
+
+#downloads div.infos .shortdetail_top img, #downloads div.infos .shortdetail_bottom img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 10px;
+	height: 10px;
+}
+
+#downloads div.infos .shortdetail_bottom a {
+	color: #808080;
+}
+
+#downloads div.infos .shortdetail_bottom a:hover {
+	color: #000000;
+}
+
+#downloads div.infos .shortdetail_bottom {
+	padding: 0px 0px 0px 0px;
+	margin: 5px 0px 0px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+}
+
+#downloads div.infos .detail_desc {
+	padding: 0px 0px 5px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 84%;
+	float: left;
+}
+
+#downloads div.infos .file_info {
+	padding: 5px 0px 5px 5px;
+	margin: 0px 0px 0px 0px;	
+}
+
+#downloads div.infos .file_info img {
+	padding: 0px 2px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 10px;
+	height: 10px;	
+}
+
+#downloads div.download {
+	padding: 0px 0px 10px 0px;
+	margin: 5px 0px 15px 0px;
+	text-align: center;
+	width: 100%;
+	float: left;
+}
+
+#downloads div.download h3 img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	position: relative;
+	top: 16px;
+}
+
+#downloads div.infos .file_owner, #downloads div.infos .file_owner a {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+	text-align: right;
+}
+
+#downloads div.infos .file_owner a:hover {
+	color: #000000;
+}
+
+
+#downloads div.file_list div.paging {
+	float:left;
+}
+
+
+#downloads div.subcategories div.category {
+	float: left;
+	width: 50%;
+}
+
+
+#downloads ul.subcategory_list,
+#downloads ul.file_list {
+	padding: 0px;
+}
+
+#downloads ul.subcategory_list li.header,
+#downloads ul.file_list li.header {
+	list-style: none;
+	padding: 4px 5px 4px 5px;
+	margin: 0px 0px 0px 0px;
+	font-weight: bold;
+	background-color: #EFEFEF;
+	border: 0px;
+	border-right: 1px solid #ffffff;
+	border-bottom: 1px dotted #D0D0D0;
+}
+
+#downloads ul.subcategory_list li.subcategory_0,
+#downloads ul.subcategory_list li.subcategory_1 {
+	list-style: none;
+	padding: 3px 5px 3px 5px;
+	margin: 0px 0px 0px 0px;
+	border: 0px;
+	border-bottom: 1px dotted #D0D0D0;
+	border-right: 1px solid #ffffff;
+	border-spacing: 0px;
+	vertical-align:top;
+}
+
+#downloads ul.subcategory_list li.subcategory_1 {
+	background-color: #F9F9F9
+}
+
+#downloads ul.file_list li.file_0,
+#downloads ul.file_list li.file_1 {
+	list-style: none;
+	padding: 3px 5px 3px 5px;
+	margin: 0px 0px 0px 0px;
+	border: 0px;
+	border-bottom: 1px dotted #D0D0D0;
+	border-right: 1px solid #ffffff;
+	border-spacing: 0px;
+	vertical-align:top;
+}
+
+#downloads ul.file_list li.file_1 {
+	background-color: #F9F9F9;
+}
+
+#downloads div.message,
+#downloads div.message_ok,
+#downloads div.message_error {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#downloads div.message_error {
+	color: #ff0000;
+}
+
+#downloads div.message_ok {
+	color: #029202;
+}
