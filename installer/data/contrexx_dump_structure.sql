@@ -1007,9 +1007,8 @@ CREATE TABLE `contrexx_module_downloads_category_locale` (
 CREATE TABLE `contrexx_module_downloads_download` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` enum('file','url') NOT NULL default 'file',
-  `mime_type` enum('undefined','image','text','media','archive','application') NOT NULL default 'undefined',
+  `mime_type` enum('image','document','pdf','media','archive','application','link') NOT NULL default 'image',
   `source` varchar(255) NOT NULL,
-  `icon` enum('_blank','avi','bmp','css','doc','dot','exe','fla','gif','htm','html','inc','jpg','js','mp3','nfo','pdf','php','png','pps','ppt','rar','swf','txt','wma','xls','zip') NOT NULL default '_blank',
   `size` int(10) unsigned NOT NULL default '0',
   `image` varchar(255) NOT NULL,
   `owner_id` int(5) unsigned NOT NULL default '0',
