@@ -99,37 +99,44 @@ class Download {
         'image'         => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_IMAGE',
             'extensions'    => array('jpg', 'jpeg', 'gif', 'png'),
-            'icon'          => 'picture.png'
+            'icon'          => 'picture.png',
+            'icon_small'    => 'picture_small.png'
         ),
         'document'      => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_DOCUMENT',
             'extensions'    => array('doc', 'xls', 'txt', 'ppt', 'xml', 'odt', 'ott', 'sxw', 'stw', 'dot', 'rtf', 'sdw', 'wpd', 'jtd', 'cvs'),
-            'icon'          => 'document.png'
+            'icon'          => 'document.png',
+            'icon_small'    => 'document_small.png'
         ),
         'pdf'           => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_PDF',
             'extensions'    => array('pdf'),
-            'icon'          => 'pdf.png'
+            'icon'          => 'pdf.png',
+            'icon_small'    => 'pdf_small.png'
         ),
         'media'         => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_MEDIA',
             'extensions'    => array('avi', 'mp3', 'mpeg', 'wmv', 'mov', 'rm', 'wav', 'ogg'),
-            'icon'          => 'media.png'
+            'icon'          => 'media.png',
+            'icon_small'    => 'media_small.png'
         ),
         'archive'       => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_ARCHIVE',
             'extensions'    => array('tar', 'tar.gz', 'tar.bz2', 'tbz2', 'tb2', 'tbz', 'tgz', 'taz', 'tar.Z', 'zip', 'rar', 'cab'),
-            'icon'          => 'archive.jpg'
+            'icon'          => 'archive.jpg',
+            'icon_small'    => 'archive_small.png'
         ),
         'application'   => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_APPLICATION',
             'extensions'    => array('exe', 'sh', 'bin', 'dmg', 'deb', 'rpm', 'msi', 'jar', 'pkg'),
-            'icon'          => 'software.png'
+            'icon'          => 'software.png',
+            'icon_small'    => 'software_small.png'
         ),
         'link'          => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_LINK',
             'extensions'    => array(),
-            'icon'          => 'links.png'
+            'icon'          => 'links.png',
+            'icon_small'    => 'links_small.png'
         )
     );
 
@@ -1193,9 +1200,9 @@ class Download {
         return $this->source;
     }
 
-    public function getIcon()
+    public function getIcon($small = false)
     {
-        return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.Download::$arrMimeTypes[$this->getMimeType()]['icon'];
+        return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.Download::$arrMimeTypes[$this->getMimeType()][($small ? 'icon_small' : 'icon')];
     }
 
     public function getSize()
