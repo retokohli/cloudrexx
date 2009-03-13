@@ -140,7 +140,7 @@ class ecard
 
         // Select motives from DB
         $query = "
-            SELECT *
+            SELECT setting_value, setting_name
               FROM ".DBPREFIX."module_ecard_settings
              WHERE setting_name LIKE 'motive_%'
              ORDER BY setting_name ASC";
@@ -150,19 +150,25 @@ class ecard
         while (!$objResult->EOF) {
             $motive = $objResult->fields['setting_value'];
             $motive = basename($motive);
-            if ($motive != '') {
-                $this->_objTpl->setVariable(array(
-                    'ECARD_MOTIVE_OPTIMIZED_PATH' => ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motive,
-                    'ECARD_MOTIVE_ID' => $objResult->fields['id'],
-                    'ECARD_THUMBNAIL_PATH' => ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motive,
-                    'ECARD_CSSNUMBER' => ($i % 3) + 1,
-                    'ECARD_IMAGE_SELECTED' =>
-                        ($id == $i ? ' checked="checked"' : ''),
-                ));
-                $this->_objTpl->parse('motiveBlock');
-                if ($i % 3 == 0) {
-                    $this->_objTpl->parse('motiveRow');
-                }
+            $arrMatch = array();
+            $id = 0;
+            if (preg_match('/(\d+)$/', $objResult->fields['setting_name'], $arrMatch))
+            $id = $arrMatch[1];
+            if (empty($motive)) {
+                $objResult->MoveNext();
+                continue;
+            }
+            $this->_objTpl->setVariable(array(
+                'ECARD_MOTIVE_OPTIMIZED_PATH' => ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motive,
+                'ECARD_MOTIVE_ID' => $id,
+                'ECARD_THUMBNAIL_PATH' => ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motive,
+                'ECARD_CSSNUMBER' => ($i % 3) + 1,
+                'ECARD_IMAGE_SELECTED' =>
+                    ($id == $i ? ' checked="checked"' : ''),
+            ));
+            $this->_objTpl->parse('motiveBlock');
+            if ($i % 3 == 0) {
+                $this->_objTpl->parse('motiveRow');
             }
             ++$i;
             $objResult->MoveNext();
@@ -170,7 +176,6 @@ class ecard
         $this->_objTpl->setVariable(
             'ECARD_JAVASCRIPT', self::getJavascript()
         );
-
     }
 
 
@@ -194,8 +199,6 @@ class ecard
              WHERE setting_name='motive_$id'";
         $objResult = $objDatabase->Execute($query);
         $selectedMotive = basename($objResult->fields['setting_value']);
-        // Initialize DATA placeholder
-        var_dump($selectedMotive);
         $this->_objTpl->setVariable(array(
             'ECARD_DATA' =>
                 '<strong>'.$senderName.'</strong> (<a href="mailto:'.$senderEmail.'">'.
