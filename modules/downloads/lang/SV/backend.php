@@ -8,7 +8,7 @@
  */
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] = "Kategorie hinzufügen";
-$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_PLACEHOLDER'] = "Platzhalter";
 $_ARRAYLANG['TXT_MANAGE_FILES'] = "Dateien verwalten";
 $_ARRAYLANG['TXT_ADD_FILE'] = "Datei hinzufügen";
@@ -206,4 +206,11 @@ $_ARRAYLANG['TXT_DOWNLOADS_URL'] = "URL";
 $_ARRAYLANG['TXT_IMAGE'] = "Bild";
 $_ARRAYLANG['TXT_SELECT_ACTION'] = "Aktion auswählen";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'] = "Downloads zur Kategorie %s hinzufügen";
+$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'] = "Overview page";
+$_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'] = "Number of columns";
+$_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT_DESC'] = "The number of columns to be used in the tabular listing on the overview page. Please consider to adjust the layout of the content page if required.";
+$_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT'] = "Maximum count of subcategories";
+$_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT_DESC'] = "Maximum amount of subcategories for each category that should be listed on the overview page.";
+$_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'] = "Attributes";
+$_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES_DESC'] = "Select the attritubes that you want to use for the downloads.";
 ?>

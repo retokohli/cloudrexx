@@ -8,7 +8,6 @@
  */
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] = "Kategorie hinzufügen";
-$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_PLACEHOLDER'] = "Platzhalter";
 $_ARRAYLANG['TXT_MANAGE_FILES'] = "Dateien verwalten";
 $_ARRAYLANG['TXT_ADD_FILE'] = "Datei hinzufügen";
