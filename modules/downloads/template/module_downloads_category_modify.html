@@ -241,11 +241,11 @@
                         <!-- END downloads_category_description -->
                     </td>
                 </tr>
-                <tr>
-                    <td>{TXT_DOWNLOADS_PARENT_CATEGORY}</td>
+                <tr class="row1">
+                    <td>{TXT_DOWNLOADS_CATEGORY}</td>
                     <td>{DOWNLOADS_CATEGORY_PARENT_CATEGORY_MENU}</td>
                 </tr>
-                <tr class="row1">
+                <tr class="row2">
                     <td>{TXT_DOWNLOADS_OWNER}</td>
                     <td>
                         {DOWNLOADS_CATEGORY_OWNER}
@@ -256,7 +256,7 @@
                         <br />
                     </td>
                 </tr>
-                <tr class="row2">
+                <tr class="row1">
                     <td>{TXT_DOWNLOADS_IMAGE}</td>
                     <td>
                         <input type="hidden" name="downloads_category_image" id="downloads_category_image" value="{DOWNLOADS_CATEGORY_IMAGE}" />
@@ -282,10 +282,6 @@
                         <br /><input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsOpenWindow('index.php?cmd=fileBrowser&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes')" />
                         <br />
                     </td>
-                </tr>
-                <tr class="row1">
-                    <td>{TXT_DOWNLOADS_STATUS}</td>
-                    <td><input type="checkbox" name="downloads_category_active" id="downloads_category_active" value="1" {DOWNLOADS_CATEGORY_ACTIVE_CHECKED} /> <label for="downloads_category_active">{TXT_DOWNLOADS_ACTIVE}</label></td>
                 </tr>
                 <tr class="row2">
                     <td>{TXT_DOWNLOADS_DOWNLOADS}</td>
@@ -321,6 +317,10 @@
                            </tbody>
                         </table>
                     </td>
+                </tr>
+                <tr class="row1">
+                    <td>{TXT_DOWNLOADS_STATUS}</td>
+                    <td><input type="checkbox" name="downloads_category_active" id="downloads_category_active" value="1" {DOWNLOADS_CATEGORY_ACTIVE_CHECKED} /> <label for="downloads_category_active">{TXT_DOWNLOADS_ACTIVE}</label></td>
                 </tr>
             </tbody>
         </table>
