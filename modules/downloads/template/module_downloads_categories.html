@@ -203,18 +203,23 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             <!-- END downloads_download_no_orderbox -->
         </td>
         <td nowrap="nowrap">
-            <img src="{DOWNLOADS_DOWNLOAD_ICON}" width="15" height="13" />
-          <!-- BEGIN downloads_download_name_link_open -->
-            <a href="index.php?cmd=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_DOWNLOAD}">
-          <!-- END downloads_download_name_link_open -->
+          <!-- BEGIN downloads_download_modify_link_open -->
+            <a href="index.php?cmd=downloads&amp;act=download&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID}&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" title="{TXT_DOWNLOADS_EDIT}">
+          <!-- END downloads_download_modify_link_open -->
             {DOWNLOADS_DOWNLOAD_NAME}
-          <!-- BEGIN downloads_download_name_link_close -->
+          <!-- BEGIN downloads_download_modify_link_close -->
             </a>
-          <!-- END downloads_download_name_link_close -->
+          <!-- END downloads_download_modify_link_close -->
         </td>
         <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
         <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_OWNER}</td>
         <td nowrap="nowrap" style="text-align: right;">
+            <!-- BEGIN downloads_download_function_download_link -->
+            <a href="index.php?cmd=downloads&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SOURCE}"><img src="images/icons/pixel.gif" alt="{DOWNLOADS_DOWNLOAD_SOURCE}" width="16" height="16" border="0" /></a>
+            <!-- END downloads_download_function_download_link -->
+            <!-- BEGIN downloads_download_function_no_download_link -->
+            <img src="images/icons/pixel.gif" alt="no permission to download this download" width="16" height="16" border="0" />
+            <!-- END downloads_download_function_no_download_link -->
             <!-- BEGIN downloads_download_function_modify_link -->
             <a href="index.php?cmd=downloads&amp;act=download&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID}&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" title="{TXT_DOWNLOADS_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_DOWNLOADS_EDIT}" width="16" height="16" border="0" /></a>
             <!-- END downloads_download_function_modify_link -->

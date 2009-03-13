@@ -47,6 +47,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_CATEGORY_ASSOCIATIONS'] = 'Beim Speic
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_RELATIONS'] = 'Beim Speichern der Verwanten Downloads trat ein Fehler auf!';
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Zugriffsberechtigungen trat ein Fehler auf!';
 $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'] = 'Unbekannt';
+$_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'] = 'Webseite';
 
         //$this->_init();
         $this->initSettings();

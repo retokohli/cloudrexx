@@ -5,7 +5,7 @@ class Download {
     private $type;
     private $mime_type;
     private $source;
-    private $icon;
+    //private $icon;
     private $size;
     private $image;
     private $owner_id;
@@ -14,7 +14,9 @@ class Download {
     private $license;
     private $version;
     private $author;
+    private $website;
     private $ctime;
+    private $mtime;
     private $is_active;
     private $visibility;
     private $order;
@@ -34,7 +36,7 @@ class Download {
             'type'                              => 'string',
             'mime_type'                         => 'string',
             'source'                            => 'string',
-            'icon'                              => 'string',
+            //'icon'                              => 'string',
             'size'                              => 'int',
             'image'                             => 'string',
             'owner_id'                         => 'int',
@@ -42,7 +44,9 @@ class Download {
             'license'                           => 'string',
             'version'                           => 'string',
             'author'                            => 'string',
+            'website'                           => 'string',
             'ctime'                             => 'int',
+            'mtime'                             => 'int',
             'is_active'                         => 'int',
             'visibility'                        => 'int',
             'order'                             => 'int',
@@ -58,37 +62,36 @@ class Download {
     private $arrTypes = array('file', 'url');
     private $defaultType = 'file';
 
-    private $arrIcons = array(
-        'avi',
-        'bmp',
-        'css',
-        'doc',
-        'dot',
-        'exe',
-        'fla',
-        'gif',
-        'htm',
-        'html',
-        'inc',
-        'jpg',
-        'js',
-        'mp3',
-        'nfo',
-        'pdf',
-        'php',
-        'png',
-        'pps',
-        'ppt',
-        'rar',
-        'swf',
-        'txt',
-        'wma',
-        'xls',
-        'zip'
-    );
-    private $defaultIcon = '_blank';
-    private $urlIcon = 'htm';
-    private $iconPath;
+//    private $arrIcons = array(
+//        'avi',
+//        'bmp',
+//        'css',
+//        'doc',
+//        'dot',
+//        'exe',
+//        'fla',
+//        'gif',
+//        'htm',
+//        'html',
+//        'inc',
+//        'jpg',
+//        'js',
+//        'mp3',
+//        'nfo',
+//        'pdf',
+//        'php',
+//        'png',
+//        'pps',
+//        'ppt',
+//        'rar',
+//        'swf',
+//        'txt',
+//        'wma',
+//        'xls',
+//        'zip'
+//    );
+//  private $defaultIcon = '_blank';
+//    private $urlIcon = 'htm';
 
     private $isFrontendMode;
 
@@ -100,8 +103,13 @@ class Download {
         ),
         'document'      => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_DOCUMENT',
-            'extensions'    => array('pdf', 'doc', 'xls', 'txt', 'ppt', 'xml', 'odt', 'ott', 'sxw', 'stw', 'dot', 'rtf', 'sdw', 'wpd', 'jtd', 'cvs'),
+            'extensions'    => array('doc', 'xls', 'txt', 'ppt', 'xml', 'odt', 'ott', 'sxw', 'stw', 'dot', 'rtf', 'sdw', 'wpd', 'jtd', 'cvs'),
             'icon'          => 'document.png'
+        ),
+        'pdf'           => array(
+            'description'   => 'TXT_DOWNLOADS_TYPE_PDF',
+            'extensions'    => array('pdf'),
+            'icon'          => 'pdf.png'
         ),
         'media'         => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_MEDIA',
@@ -121,7 +129,7 @@ class Download {
         'link'          => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_LINK',
             'extensions'    => array(),
-            'icon'          => ''
+            'icon'          => 'links.png'
         )
     );
 
@@ -175,7 +183,6 @@ class Download {
         $objFWUser = FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
 
-        $this->iconPath = ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/';
         $this->clean();
     }
 
@@ -197,7 +204,7 @@ class Download {
         $this->type = $this->defaultType;
         $this->mime_type = $this->defaultMimeType;
         $this->source = '';
-        $this->icon = $this->defaultIcon;
+        //$this->icon = $this->defaultIcon;
         $this->size = 0;
         $this->image = '';
         $this->owner_id = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -206,7 +213,9 @@ class Download {
         $this->license = '';
         $this->version = '';
         $this->author = '';
+        $this->website = '';
         $this->ctime = time();
+        $this->mtime = $this->ctime;
         $this->is_active = 1;
         $this->visibility = 1;
         $this->order = 0;
@@ -388,7 +397,7 @@ class Download {
                 $this->type = isset($this->arrLoadedDownloads[$id]['type']) ? $this->arrLoadedDownloads[$id]['type'] : $this->defaultType;
                 $this->mime_type = isset($this->arrLoadedDownloads[$id]['mime_type']) ? $this->arrLoadedDownloads[$id]['mime_type'] : $this->defaultMimeType;
                 $this->source = isset($this->arrLoadedDownloads[$id]['source']) ? $this->arrLoadedDownloads[$id]['source'] : '';
-                $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
+                //$this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
                 $this->image = isset($this->arrLoadedDownloads[$id]['image']) ? $this->arrLoadedDownloads[$id]['image'] : '';
                 $this->owner_id = isset($this->arrLoadedDownloads[$id]['owner_id']) ? $this->arrLoadedDownloads[$id]['owner_id'] : 0;
@@ -397,7 +406,9 @@ class Download {
                 $this->license = isset($this->arrLoadedDownloads[$id]['license']) ? $this->arrLoadedDownloads[$id]['license'] : '';
                 $this->version = isset($this->arrLoadedDownloads[$id]['version']) ? $this->arrLoadedDownloads[$id]['version'] : '';
                 $this->author = isset($this->arrLoadedDownloads[$id]['author']) ? $this->arrLoadedDownloads[$id]['author'] : '';
+                $this->website = isset($this->arrLoadedDownloads[$id]['website']) ? $this->arrLoadedDownloads[$id]['website'] : '';
                 $this->ctime = isset($this->arrLoadedDownloads[$id]['ctime']) ? $this->arrLoadedDownloads[$id]['ctime'] : time();
+                $this->mtime = isset($this->arrLoadedDownloads[$id]['mtime']) ? $this->arrLoadedDownloads[$id]['mtime'] : (isset($this->ctime) ? $this->ctime : time());
                 $this->is_active = isset($this->arrLoadedDownloads[$id]['is_active']) ? $this->arrLoadedDownloads[$id]['is_active'] : 1;
                 $this->visibility = isset($this->arrLoadedDownloads[$id]['visibility']) ? $this->arrLoadedDownloads[$id]['visibility'] : 1;
                 $this->order = isset($this->arrLoadedDownloads[$id]['order']) ? $this->arrLoadedDownloads[$id]['order'] : 0;
@@ -536,6 +547,9 @@ class Download {
             $objFWUser = FWUser::getFWUserObject();
 
             // download access
+            if (!isset($arrFilter['is_active'])) {
+                $arrConditions[] = 'tblD.`is_active` = 1';
+            }
             $arrConditions[] = 'tblD.`visibility` = 1'.(
                 $objFWUser->objUser->login() ?
                 ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
@@ -798,6 +812,20 @@ class Download {
     }
 
 
+    public function incrementDownloadCount()
+    {
+        global $objDatabase;
+
+        $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_download` SET `download_count` = `download_count` + 1 WHERE `id` = '.$this->id);
+    }
+
+    public function incrementViewCount()
+    {
+        global $objDatabase;
+
+        $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_download` SET `views` = `views` + 1 WHERE `id` = '.$this->id);
+    }
+
     /**
      * Store download
      *
@@ -830,13 +858,14 @@ class Download {
                     `type` = '".$this->type."',
                     `mime_type` = '".$this->mime_type."',
                     `source` = '".addslashes($this->source)."',
-                    `icon` = '".addslashes($this->icon)."',
                     `size` = ".intval($this->size).",
                     `image` = '".addslashes($this->image)."',
                     `owner_id` = ".intval($this->owner_id).",
                     `license` = '".addslashes($this->license)."',
                     `version` = '".addslashes($this->version)."',
                     `author` = '".addslashes($this->author)."',
+                    `website` = '".addslashes($this->website)."',
+                    `mtime` = ".$this->mtime.",
                     `is_active` = ".intval($this->is_active).",
                     `visibility` = ".intval($this->visibility).",
                     `order` = ".intval($this->order)."
@@ -852,14 +881,15 @@ class Download {
                     `type`,
                     `mime_type`,
                     `source`,
-                    `icon`,
                     `size`,
                     `image`,
                     `owner_id`,
                     `license`,
                     `version`,
                     `author`,
+                    `website`,
                     `ctime`,
+                    `mtime`,
                     `is_active`,
                     `visibility`,
                     `order`
@@ -867,14 +897,15 @@ class Download {
                     '".$this->type."',
                     '".$this->mime_type."',
                     '".addslashes($this->source)."',
-                    '".addslashes($this->icon)."',
                     ".intval($this->size).",
                     '".addslashes($this->image)."',
                     ".intval($this->owner_id).",
                     '".addslashes($this->license)."',
                     '".addslashes($this->version)."',
                     '".addslashes($this->author)."',
+                    '".addslashes($this->website)."',
                     ".$this->ctime.",
+                    ".$this->mtime.",
                     ".intval($this->is_active).",
                     ".intval($this->visibility).",
                     ".intval($this->order)."
@@ -1165,7 +1196,7 @@ class Download {
 
     public function getIcon()
     {
-        return $this->iconPath.$this->icon.'.gif';
+        return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.Download::$arrMimeTypes[$this->getMimeType()]['icon'];
     }
 
     public function getSize()
@@ -1204,9 +1235,19 @@ class Download {
         return $this->author;
     }
 
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
     public function getCTime()
     {
         return $this->ctime;
+    }
+
+    public function getMTime()
+    {
+        return $this->mtime;
     }
 
     public function getActiveStatus()
@@ -1260,24 +1301,26 @@ class Download {
     {
         global $objDatabase;
 
-        $objFWUser = FWUser::getFWUserObject();
-        $objResult = $objDatabase->Execute('
-            SELECT  tblR.`download_id`, tblR.`category_id`
-            FROM    `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR
-                    '.($this->isFrontendMode ? 'INNER JOIN `'.DBPREFIX.'module_downloads_category` AS tblC ON tblC.`id` = tblR.`category_id`' : '').'
-            WHERE   tblR.`download_id` IN ('.implode(',', array_keys($this->arrLoadedDownloads)).')
-                    '.($this->isFrontendMode ? 'AND tblC.`is_active` = 1 AND (tblC.`visibility` = 1'.(
-                        $objFWUser->objUser->login() ?
-                            ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
-                            .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds(false)).')' : '')
-                            : '').')
-                    ORDER BY tblC.`parent_id`, tblC.`order`'
-                    : '')
-        );
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $this->arrLoadedDownloads[$objResult->fields['download_id']]['categories'][] = $objResult->fields['category_id'];
-                $objResult->MoveNext();
+        if (count($this->arrLoadedDownloads)) {
+            $objFWUser = FWUser::getFWUserObject();
+            $objResult = $objDatabase->Execute('
+                SELECT  tblR.`download_id`, tblR.`category_id`
+                FROM    `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR
+                        '.($this->isFrontendMode ? 'INNER JOIN `'.DBPREFIX.'module_downloads_category` AS tblC ON tblC.`id` = tblR.`category_id`' : '').'
+                WHERE   tblR.`download_id` IN ('.implode(',', array_keys($this->arrLoadedDownloads)).')
+                        '.($this->isFrontendMode ? 'AND tblC.`is_active` = 1 AND (tblC.`visibility` = 1'.(
+                            $objFWUser->objUser->login() ?
+                                ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
+                                .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds(false)).')' : '')
+                                : '').')
+                        ORDER BY tblC.`parent_id`, tblC.`order`'
+                        : '')
+            );
+            if ($objResult) {
+                while (!$objResult->EOF) {
+                    $this->arrLoadedDownloads[$objResult->fields['download_id']]['categories'][] = $objResult->fields['category_id'];
+                    $objResult->MoveNext();
+                }
             }
         }
 
@@ -1313,10 +1356,10 @@ class Download {
         // TODO: add url valicator
         if ($this->type == 'url') {
             $source = FWValidator::getUrl($source);
-            $this->icon = $this->urlIcon;
-        } else {
-            $extension = pathinfo($source, PATHINFO_EXTENSION);
-            $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
+            //$this->icon = $this->urlIcon;
+//        } else {
+//            $extension = pathinfo($source, PATHINFO_EXTENSION);
+//            $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
         }
 
         $this->source = $source;
@@ -1357,9 +1400,14 @@ class Download {
         $this->author = $author;
     }
 
-    public function setCTime($ctime)
+    public function setWebsite($website)
     {
-        $this->ctime = $ctime;
+        $this->website = FWValidator::getUrl($website);
+    }
+
+    public function updateMTime()
+    {
+        $this->mtime = time();
     }
 
     public function setActiveStatus($isActive)

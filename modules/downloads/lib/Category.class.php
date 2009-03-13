@@ -94,7 +94,7 @@ class Category {
          )
     );
 
-
+    private $isFrontendMode;
 
     /**
      * Contains the number of currently loaded categories
@@ -125,6 +125,9 @@ class Category {
 
     public function __construct()
     {
+        global $objInit;
+
+        $this->isFrontendMode = $objInit->mode == 'frontend';
         $this->clean();
     }
 
@@ -551,6 +554,18 @@ class Category {
                 $arrConditions[] = implode(' AND ', $arrFilterConditions['conditions']);
                 $tblLocales = isset($arrFilterConditions['tables']['locale']);
             }
+        }
+
+        // parse access permissions for the frontend
+        if ($this->isFrontendMode) {
+            $objFWUser = FWUser::getFWUserObject();
+
+            // category access
+            $arrConditions[] = '(tblC.`visibility` = 1'.(
+                $objFWUser->objUser->login() ?
+                    ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
+                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds(false)).')' : '')
+                : '').')';
         }
 
         // parse search
