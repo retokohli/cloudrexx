@@ -81,12 +81,45 @@ table td.none {
 	list-style: none;
 }
 
+#header_links li.lang{
+	float:left;
+	padding:12px 34px 12px 9px;
+	list-style: none;
+	background-image:url(images/world.gif);
+	background-position: right center;
+	background-repeat:no-repeat;
+}
+
+#lang_navigation a {
+	text-decoration:none;
+	color:#CFEDFF;
+	padding: 0px 0px 0px 22px;
+}
+
+#lang_navigation a.de {
+	background-image:url(images/flag_de.gif);
+	background-position: left center;
+	background-repeat:no-repeat;
+}
+
+#lang_navigation a.en {
+	background-image:url(images/flag_en.gif);
+	background-position: left center;
+	background-repeat:no-repeat;
+}
+
+#lang_navigation a.fr {
+	background-image:url(images/flag_fr.gif);
+	background-position: left center;
+	background-repeat:no-repeat;
+}
+
 #header_links, #header_links a{
 	text-decoration:none;
 	color:#CFEDFF;
 }
 
-#header_links a:hover{
+#header_links a:hover, #lang_navigation a:hover{
 	color:#ffffff;
 }
 

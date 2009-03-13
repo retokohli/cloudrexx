@@ -1787,6 +1787,7 @@ dl.data_module img {
 /****************************************/
 
 #downloads {
+	width: 100%;
 }
 
 #downloads div.category {
@@ -1818,7 +1819,11 @@ dl.data_module img {
 }
 
 
-
+#downloads div.subcategories {
+	padding: 0px 0px 15px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+}
 
 #downloads div.file {
 	width: 100%;
@@ -1829,14 +1834,21 @@ dl.data_module img {
 }
 
 #downloads div.image {
-	float:left;
+	float: left;
 	height:auto !important;
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
 }
 
 #downloads div.image img {
-	margin: 0px 15px 15px 0px;
+	margin: 0px 0px 15px 0px;
+}
+
+#downloads div.file_list .infos {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 84%;
+	float: left;
 }
 
 #downloads div.infos {
@@ -1849,13 +1861,97 @@ dl.data_module img {
 #downloads div.infos h3 {
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 5px 0px;
+
+}
+
+#downloads div.infos .shortdetail_top {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+}
+
+#downloads div.infos .shortdetail_top img, #downloads div.infos .shortdetail_bottom img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 10px;
+	height: 10px;
+}
+
+#downloads div.infos .shortdetail_bottom a {
+	color: #808080;
+}
+
+#downloads div.infos .shortdetail_bottom a:hover {
+	color: #000000;
+}
+
+#downloads div.infos .shortdetail_bottom {
+	padding: 0px 0px 0px 0px;
+	margin: 5px 0px 0px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+}
+
+#downloads div.infos .detail_desc {
+	padding: 0px 0px 5px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 84%;
+	float: left;
+}
+
+#downloads div.infos .file_info {
+	padding: 5px 0px 5px 5px;
+	margin: 0px 0px 0px 0px;	
+}
+
+#downloads div.infos .file_info img {
+	padding: 0px 2px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 10px;
+	height: 10px;	
+}
+
+#downloads div.download {
+	padding: 0px 0px 10px 0px;
+	margin: 5px 0px 15px 0px;
+	text-align: center;
+	width: 100%;
+	float: left;
+}
+
+#downloads div.download h3 img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	position: relative;
+	top: 16px;
+}
+
+#downloads div.infos .file_owner, #downloads div.infos .file_owner a {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+	text-align: right;
+}
+
+#downloads div.infos .file_owner a:hover {
+	color: #000000;
 }
 
 
+#downloads div.file_list div.paging {
+	float:left;
+}
 
 
-
-
+#downloads div.subcategories div.category {
+	float: left;
+	width: 50%;
+}
 
 
 #downloads ul.subcategory_list,

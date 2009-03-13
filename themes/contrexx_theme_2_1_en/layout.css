@@ -33,11 +33,24 @@
 	padding: 0;
 }
 
-
 #header_links .search div {
 	padding-right:0.5em;
 	padding-left:0.5em;
 	background-color:#6983B6;
+}
+
+#lang_navigation {
+	margin: 0;
+	padding: 4px 28px 4px 8px;
+	width: auto !important;
+	float:left;
+	height: auto !important;
+	background-color: #173A8B;
+	border-top:1px solid #6983B6;
+	border-bottom:1px solid #6983B6;
+	border-left:1px solid #6983B6;
+	border-right:1px solid #6983B6;
+	z-index: 99;
 }
 
 #wrapper_navigation {
@@ -137,19 +150,23 @@
 	color:#CFEDFF;
 }
 
-#wrapper_powered {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-}
-
-#powered {
+#wrapper_copyright_powered {
 	margin: 0 auto;
 	padding: 10px 0 15px 0;
 	width: 970px;
-	position:relative;
-        text-align: right;
 	color:#9F9F9F;
 	font-size: 11px;
+}
+
+#copyright {
+	float:left;
+	width: 485px;
+        text-align: left;
+}
+
+#powered {
+	float:left;
+	width: 485px;
+        text-align: right;
 }
 
