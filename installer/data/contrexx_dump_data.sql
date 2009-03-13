@@ -1612,6 +1612,11 @@ INSERT INTO `contrexx_module_downloads_rel_download_download` (`id1`, `id2`) VAL
 INSERT INTO `contrexx_module_downloads_rel_download_download` (`id1`, `id2`) VALUES (4,3);
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (1,'overview_cols_count','2');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (2,'overview_max_subcats','5');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (3,'use_attr_size','1');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (4,'use_attr_license','1');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (5,'use_attr_version','1');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (6,'use_attr_author','1');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (7,'use_attr_website','1');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxCharacters','100');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxLines','50');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('motive_0','Bild_001.jpg');
