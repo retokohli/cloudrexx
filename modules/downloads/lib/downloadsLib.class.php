@@ -25,7 +25,13 @@ class DownloadsLibrary
 
     protected $searchKeyword;
     protected $arrConfig = array(
-        'overview_cols_count'   => 2
+        'overview_cols_count'   => 2,
+        'overview_max_subcats'  => 5,
+        'use_attr_size'         => 1,
+        'use_attr_license'      => 1,
+        'use_attr_version'      => 1,
+        'use_attr_author'       => 1,
+        'use_attr_website'      => 1
     );
 
     public function __construct()
@@ -45,6 +51,8 @@ $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_RELATIONS'] = 'Beim Speicher
 $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'] = 'Beim Speichern der Zugriffsberechtigungen trat ein Fehler auf!';
 $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'] = 'Unbekannt';
 $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'] = 'Webseite';
+$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'] = 'Herunter geladen';
+$_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = 'Angeschaut';
 
         //$this->_init();
         $this->initSettings();
@@ -84,6 +92,15 @@ $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'] = 'Webseite';
     protected function initDefaultDownloadImage()
     {
         $this->defaultDownloadImage = $this->defaultCategoryImage;
+    }
+
+    protected function updateSettings()
+    {
+        global $objDatabase;
+
+        foreach ($this->arrConfig as $key => $value) {
+            $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
+        }
     }
 
     protected function getCategoryMenu($accessType, $selectedCategory, $selectionText, $attrs = null, $categoryId = null)

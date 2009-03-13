@@ -165,7 +165,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" method="post">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
-        <th colspan="8" style="padding:3px;">{DOWNLOADS_OF_CATEGORY_TXT}</th>
+        <th colspan="10" style="padding:3px;">{DOWNLOADS_OF_CATEGORY_TXT}</th>
     </tr> 
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
         <td width="1%" style="text-align: center;">#</td>
@@ -173,8 +173,10 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_STATUS}&amp;download_by=is_active&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_STATUS_LABEL}</a></td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_ORDER}&amp;download_by=order&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_ORDER_LABEL}</a></td>
         <td width="15%"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_NAME}&amp;download_by=name&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_NAME_LABEL}</a></td>
-        <td width="65%"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION}&amp;download_by=description&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION_LABEL}</a></td>
+        <td width="63%"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION}&amp;download_by=description&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION_LABEL}</a></td>
         <td width="15%">{TXT_DOWNLOADS_OWNER}</td>
+        <td width="1%"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_DOWNLOADED}&amp;download_by=download_count&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_DOWNLOADED_LABEL}</a></td>
+        <td width="1%"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_VIEWED}&amp;download_by=views&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_VIEWED_LABEL}</a></td>
         <td width="1%">{TXT_DOWNLOADS_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN downloads_download_list -->
@@ -213,6 +215,8 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
         </td>
         <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
         <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_OWNER}</td>
+        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_DOWNLOADED}</td>
+        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_VIEWED}</td>
         <td nowrap="nowrap" style="text-align: right;">
             <!-- BEGIN downloads_download_function_download_link -->
             <a href="index.php?cmd=downloads&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SOURCE}"><img src="images/icons/pixel.gif" alt="{DOWNLOADS_DOWNLOAD_SOURCE}" width="16" height="16" border="0" /></a>

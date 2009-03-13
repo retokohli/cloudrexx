@@ -35,7 +35,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <br /> -->
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
-        <th colspan="8">{TXT_DOWNLOADS_DOWNLOADS}</th>
+        <th colspan="10">{TXT_DOWNLOADS_DOWNLOADS}</th>
     </tr>
 <!-- BEGIN downloads_download_data -->
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
@@ -44,9 +44,11 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_STATUS}&amp;by=is_active" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_STATUS}</a></td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_ORDER}&amp;by=order" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ORDER}</a></td>
         <td width="15%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_NAME}&amp;by=name" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_NAME}</a></td>
-        <td width="65%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_DESCRIPTION}&amp;by=description" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DESCRIPTION}</a></td>
+        <td width="63%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_DESCRIPTION}&amp;by=description" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DESCRIPTION}</a></td>
         <td width="15%">{TXT_DOWNLOADS_OWNER}</td>
         <!-- <td width="25%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_SOURCE}&amp;by=source" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_SOURCE}</a></td> -->
+        <td width="1%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_DOWNLOADED}&amp;by=download_count" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOADED}</a></td>
+        <td width="1%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_VIEWED}&amp;by=views" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_VIEWED}</a></td>
         <td width="1%">{TXT_DOWNLOADS_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN downloads_download_list -->
@@ -83,6 +85,8 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
         </td>
         <td>{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
         <td>{DOWNLOADS_DOWNLOAD_OWNER}</td>
+        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_DOWNLOADED}</td>
+        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_VIEWED}</td>
         <td style="text-align: right;">
             <!-- BEGIN downloads_download_function_download -->
             <a href="index.php?cmd=downloads&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SOURCE}"><img src="images/icons/pixel.gif" alt="{DOWNLOADS_DOWNLOAD_SOURCE}" width="16" height="16" border="0" /></a>

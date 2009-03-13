@@ -63,6 +63,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_MBYTE'] = "MB";
 $_ARRAYLANG['TXT_DOWNLOADS_GBYTE'] = "GB";
 $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'] = "Hinzugefügt von";
 $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Zuletzt aktualisiert";
+$_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Verwandte Kategories";
 
 
         global $_LANGID;
@@ -163,8 +164,11 @@ $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Zuletzt aktualisiert";
     {
         global $_LANGID;
 
+
+
         $objDownload = new Download();
         $objCategory = Category::getCategory(!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
+
         if ($objCategory->getId()) {
             // check access permissions to selected category
             if (!Permission::checkAccess(142, 'static', true)
@@ -248,8 +252,8 @@ $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Zuletzt aktualisiert";
             }
         }
 
-
         $this->parseGlobalStuff($objCategory);
+
     }
 
     private function parseCategory($objCategory)
@@ -398,12 +402,15 @@ JS_CODE;
                 $objSubcategory->next();
             }
 
-            $this->objTemplate->touchBlock($arrCategoryBlocks[0]);
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_CATEGORIES', $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES']);
+            $this->objTemplate->parse($arrCategoryBlocks[0]);
         }
     }
 
     private function parseRelatedCategories($objDownload)
     {
+        global $_ARRAYLANG;
+
         if (!$this->objTemplate->blockExists('downloads_file_category_list')) {
             return;
         }
@@ -423,7 +430,8 @@ JS_CODE;
                 }
             }
 
-            $this->objTemplate->touchBlock('downloads_file_category_list');
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_RELATED_CATEGORIES', $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES']);
+            $this->objTemplate->parse('downloads_file_category_list');
         } else {
             $this->objTemplate->hideBlock('downloads_file_category_list');
         }
@@ -562,14 +570,10 @@ JS_CODE;
         }
 
         $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
-            'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_WEBSITE'             => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
             'TXT_DOWNLOADS_ADDED_BY'            => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'],
             'TXT_DOWNLOADS_LAST_UPDATED'        => $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'],
-            'TXT_DOWNLOADS_SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
-            'TXT_DOWNLOADS_LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
-            'TXT_DOWNLOADS_DOWNLOADS'           => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
+            'TXT_DOWNLOADS_DOWNLOADED'          => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'],
+            'TXT_DOWNLOADS_VIEWED'              => $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'],
             'DOWNLOADS_FILE_ID'                 => $objDownload->getId(),
             'DOWNLOADS_FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$categoryId.'&amp;id='.$objDownload->getId(),
             'DOWNLOADS_FILE_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
@@ -584,21 +588,56 @@ JS_CODE;
             'DOWNLOADS_FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;download='.$objDownload->getId(),
             'DOWNLOADS_FILE_OWNER'              => $this->getParsedUsername($objDownload->getOwnerId()),
             'DOWNLOADS_FILE_OWNER_ID'           => $objDownload->getOwnerId(),
-            'DOWNLOADS_FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize()),
-            'DOWNLOADS_FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
-            'DOWNLOADS_FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_FILE_LAST_UPDATED'       => date(ASCMS_DATE_FORMAT, $objDownload->getMTime()),
             'DOWNLOADS_FILE_VIEWS'              => $objDownload->getViewCount(),
             'DOWNLOADS_FILE_DOWNLOAD_COUNT'     => $objDownload->getDownloadCount()
         ));
+
+        // parse size
+        if ($this->arrConfig['use_attr_size']) {
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
+                'DOWNLOADS_FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
+            ));
+        }
+
+        // parse license
+        if ($this->arrConfig['use_attr_license']) {
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
+                'DOWNLOADS_FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
+            ));
+        }
+
+        // parse version
+        if ($this->arrConfig['use_attr_version']) {
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
+                'DOWNLOADS_FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
+            ));
+        }
+
+        // parse author
+        if ($this->arrConfig['use_attr_author']) {
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+                'DOWNLOADS_FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
+            ));
+        }
+
+        // parse website
+        if ($this->arrConfig['use_attr_website']) {
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_WEBSITE'             => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
+                'DOWNLOADS_FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
+                'DOWNLOADS_FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
+            ));
+        }
     }
 
     private function parseRelatedDownloads($objDownload, $currentCategoryId)
     {
-        global $_LANGID;
+        global $_LANGID, $_ARRAYLANG;
 
         if (!$this->objTemplate->blockExists('downloads_related_file_list')) {
             return;
@@ -684,7 +723,8 @@ JS_CODE;
                 $objRelatedDownload->next();
             }
 
-            $this->objTemplate->touchBlock('downloads_related_file_list');
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_RELATED_DOWNLOADS', $_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS']);
+            $this->objTemplate->parse('downloads_related_file_list');
         } else {
             $this->objTemplate->hideBlock('downloads_related_file_list');
         }
