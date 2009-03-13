@@ -564,7 +564,7 @@ class Category {
             $arrConditions[] = '(tblC.`visibility` = 1'.(
                 $objFWUser->objUser->login() ?
                     ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
-                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds(false)).')' : '')
+                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
                 : '').')';
         }
 

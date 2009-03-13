@@ -313,7 +313,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
 //                $this->_placeholder();
 //                break;
             case 'settings':
-                $this->_settings();
+                $this->settings();
                 break;
 //            case 'download_old':
 //                $this->_download();
@@ -721,12 +721,16 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'DOWNLOADS_SORT_ORDER'          => ($orderBy == 'order' && $orderDirection == 'asc') ? 'desc' : 'asc',
             'DOWNLOADS_SORT_NAME'           => ($orderBy == 'name' && $orderDirection == 'asc') ? 'desc' : 'asc',
             'DOWNLOADS_SORT_DESCRIPTION'    => ($orderBy == 'description' && $orderDirection == 'asc') ? 'desc' : 'asc',
+            'DOWNLOADS_SORT_DOWNLOADED'     => ($orderBy == 'download_count' && $orderDirection == 'desc') ? 'asc' : 'desc',
+            'DOWNLOADS_SORT_VIEWED'         => ($orderBy == 'views' && $orderDirection == 'desc') ? 'asc' : 'desc',
             //'DOWNLOADS_SORT_SOURCE'         => ($orderBy == 'source' && $orderDirection == 'asc') ? 'desc' : 'asc',
             'DOWNLOADS_ID'                  => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($orderBy == 'id' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
             'DOWNLOADS_STATUS'              => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($orderBy == 'is_active' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
             'DOWNLOADS_ORDER'               => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'].($orderBy == 'order' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
             'DOWNLOADS_NAME'                => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($orderBy == 'name' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
             'DOWNLOADS_DESCRIPTION'         => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'].($orderBy == 'description' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_DOWNLOADED'          => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'].($orderBy == 'download_count' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+            'DOWNLOADS_VIEWED'              => $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'].($orderBy == 'views' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
             //'DOWNLOADS_SOURCE'              => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'].($orderBy == 'source' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : '')
         ));
 
@@ -867,6 +871,8 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                 'DOWNLOADS_DOWNLOAD_NAME'                   => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'            => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_OWNER'                  => $this->getParsedUsername($objDownload->getOwnerId()),
+                'DOWNLOADS_DOWNLOAD_DOWNLOADED'             => $objDownload->getDownloadCount(),
+                'DOWNLOADS_DOWNLOAD_VIEWED'                 => $objDownload->getViewCount()
                 //'DOWNLOADS_DOWNLOAD_SOURCE'                 => htmlentities($source, ENT_QUOTES, CONTREXX_CHARSET),
             ));
 
@@ -1103,11 +1109,11 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             $objDownload->setSource(isset($_POST['downloads_download_'.$objDownload->getType().'_source']) ? contrexx_stripslashes($_POST['downloads_download_'.$objDownload->getType().'_source']) : '');
             $objDownload->setActiveStatus(!empty($_POST['downloads_download_is_active']));
             $objDownload->setMimeType(isset($_POST['downloads_download_mime_type']) ? contrexx_stripslashes($_POST['downloads_download_mime_type']) : '');
-            $objDownload->setSize(isset($_POST['downloads_download_size']) ? intval($_POST['downloads_download_size']) : '');
-            $objDownload->setLicense(isset($_POST['downloads_download_license']) ? contrexx_stripslashes($_POST['downloads_download_license']) : '');
-            $objDownload->setVersion(isset($_POST['downloads_download_version']) ? contrexx_stripslashes($_POST['downloads_download_version']) : '');
-            $objDownload->setAuthor(isset($_POST['downloads_download_author']) ? contrexx_stripslashes($_POST['downloads_download_author']) : '');
-            $objDownload->setWebsite(isset($_POST['downloads_download_website']) ? contrexx_stripslashes($_POST['downloads_download_website']) : '');
+            $this->arrConfig['use_attr_size'] ? $objDownload->setSize(isset($_POST['downloads_download_size']) ? intval($_POST['downloads_download_size']) : '') : null;
+            $this->arrConfig['use_attr_license'] ? $objDownload->setLicense(isset($_POST['downloads_download_license']) ? contrexx_stripslashes($_POST['downloads_download_license']) : '') : null;
+            $this->arrConfig['use_attr_version'] ? $objDownload->setVersion(isset($_POST['downloads_download_version']) ? contrexx_stripslashes($_POST['downloads_download_version']) : '') : null;
+            $this->arrConfig['use_attr_author'] ? $objDownload->setAuthor(isset($_POST['downloads_download_author']) ? contrexx_stripslashes($_POST['downloads_download_author']) : '') : null;
+            $this->arrConfig['use_attr_website'] ? $objDownload->setWebsite(isset($_POST['downloads_download_website']) ? contrexx_stripslashes($_POST['downloads_download_website']) : '') : null;
             $objDownload->setImage(isset($_POST['downloads_download_image']) ? contrexx_stripslashes($_POST['downloads_download_image']) : '');
             $objDownload->setVisibility(!empty($_POST['downloads_download_visibility']));
             $objDownload->setProtection(!empty($_POST['downloads_download_access']));
@@ -1147,7 +1153,6 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'TXT_DOWNLOADS_ACTIVE'                          => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
             'TXT_DOWNLOADS_TYPE'                            => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
             'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
-            'TXT_DOWNLOADS_BYTES'                           => $_ARRAYLANG['TXT_DOWNLOADS_BYTES'],
             'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
             'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
             'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
@@ -1239,32 +1244,78 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
         }
 
 
-        // parse active status
-        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED', $objDownload->getActiveStatus() ? 'checked="checked"' : '');
-
-
         // parse mime type
         $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_MIME_TYPE_MENU', $this->getDownloadMimeTypeMenu($objDownload->getMimeType()));
 
 
+        $attrRow = 0;
         // parse size
-        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_SIZE', $objDownload->getSize());
+        if ($this->arrConfig['use_attr_size']) {
+            $this->_objTpl->setVariable(array(
+                'TXT_DOWNLOADS_BYTES'               => $_ARRAYLANG['TXT_DOWNLOADS_BYTES'],
+                'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'  => $attrRow++ % 2 + 1,
+                'DOWNLOADS_DOWNLOAD_SIZE'           => $objDownload->getSize()
+            ));
+            $this->_objTpl->parse('downloads_download_attr_size');
+        } else {
+            $this->_objTpl->hideBlock('downloads_download_attr_size');
+        }
 
 
         // parse license
-        $this->_objTpl->setVariable('DOWNLOADs_DOWNLOAD_LICENSE', htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET));
+        if ($this->arrConfig['use_attr_license']) {
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'  => $attrRow++ % 2 + 1,
+                'DOWNLOADs_DOWNLOAD_LICENSE'        => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_download_attr_license');
+        } else {
+            $this->_objTpl->hideBlock('downloads_download_attr_license');
+        }
 
 
         // parse version
-        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_VERSION', htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET));
+        if ($this->arrConfig['use_attr_version']) {
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'  => $attrRow++ % 2 + 1,
+                'DOWNLOADS_DOWNLOAD_VERSION'        => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_download_attr_version');
+        } else {
+            $this->_objTpl->hideBlock('downloads_download_attr_version');
+        }
 
 
         // parse author
-        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_AUTHOR', htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET));
+        if ($this->arrConfig['use_attr_author']) {
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'  => $attrRow++ % 2 + 1,
+                'DOWNLOADS_DOWNLOAD_AUTHOR'         => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_download_attr_author');
+        } else {
+            $this->_objTpl->hideBlock('downloads_download_attr_author');
+        }
 
 
         // parse website
-        $this->_objTpl->setVariable('DOWNLOADS_DOWNLOAD_WEBSITE', htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET));
+        if ($this->arrConfig['use_attr_website']) {
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'  => $attrRow++ % 2 + 1,
+                'DOWNLOADS_DOWNLOAD_WEBSITE'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_download_attr_website');
+        } else {
+            $this->_objTpl->hideBlock('downloads_download_attr_website');
+        }
+
+
+
+        // parse active status
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'      => $attrRow++ % 2 + 1,
+            'DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED'  => $objDownload->getActiveStatus() ? 'checked="checked"' : ''
+        ));
 
 
         // parse image attribute
@@ -1982,11 +2033,15 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                 'DOWNLOADS_DOWNLOAD_SORT_ORDER'             => ($downloadOrderBy == 'order' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_DOWNLOAD_SORT_NAME'              => ($downloadOrderBy == 'name' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
                 'DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION'       => ($downloadOrderBy == 'description' && $downloadOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_DOWNLOAD_SORT_DOWNLOADED'        => ($downloadOrderBy == 'download_count' && $downloadOrderDirection == 'desc') ? 'asc' : 'desc',
+                'DOWNLOADS_DOWNLOAD_SORT_VIEWED'            => ($downloadOrderBy == 'views' && $downloadOrderDirection == 'desc') ? 'asc' : 'desc',
                 'DOWNLOADS_DOWNLOAD_SORT_ID_LABEL'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($downloadOrderBy == 'id' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_STATUS_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($downloadOrderBy == 'is_active' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_ORDER_LABEL'       => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'].($downloadOrderBy == 'order' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_NAME_LABEL'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($downloadOrderBy == 'name' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'].($downloadOrderBy == 'description' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_SORT_DOWNLOADED_LABEL'  => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'].($downloadOrderBy == 'download_count' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_DOWNLOAD_SORT_VIEWED_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'].($downloadOrderBy == 'views' ? $downloadOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'DOWNLOADS_DOWNLOAD_CATEGORY_SORT'          => $categoryOrderDirection,
                 'DOWNLOADS_DOWNLOAD_CATEGORY_BY'            => $categoryOrderBy,
                 'DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET'        => $categoryLimitOffset
@@ -2196,6 +2251,8 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                 'DOWNLOADS_DOWNLOAD_NAME'           => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_OWNER'          => htmlentities($this->getParsedUsername($objDownload->getOwnerId()), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_DOWNLOAD_DOWNLOADED'     => $objDownload->getDownloadCount(),
+                'DOWNLOADS_DOWNLOAD_VIEWED'         => $objDownload->getViewCount(),
                 'DOWNLOADS_DOWNLOAD_STATUS_LED'     => $objDownload->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
                 //'DOWNLOADS_DOWNLOAD_ICON'           => $objDownload->getIcon(),
                 'DOWNLOADS_DOWNLOAD_ROW_CLASS'      => $nr++ % 2 ? 'row1' : 'row2'
@@ -2220,72 +2277,55 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
     }
 
 
-    /**
-     * module settings
-     *
-     * @global object $objDatabase
-     * @global array $_ARRAYLANG
-     */
-    function _settings()
-    {
-        global $_ARRAYLANG, $objDatabase, $_CONFIG;
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('settings.html');
+                /**
+                 * module settings
+                 *
+                 * @global object $objDatabase
+                 * @global array $_ARRAYLANG
+                 */
+                private function settings()
+                {
+                    global $_ARRAYLANG;
 
+                    $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
+                    $this->_objTpl->loadTemplateFile('module_downloads_settings.html');
 
-        // Save settings
-        // ------------------------------------------------------
-        if ($_REQUEST["mode"] == "save") {
+                    if (isset($_POST['downloads_settings_save'])) {
+                        $this->arrConfig['overview_cols_count']     = !empty($_POST['downloads_settings_col_count']) ? intval($_POST['downloads_settings_col_count']) : $this->arrConfig['overview_cols_count'];
+                        $this->arrConfig['overview_max_subcats']    = !empty($_POST['downloads_settings_subcat_count']) ? intval($_POST['downloads_settings_subcat_count']) : $this->arrConfig['overview_max_subcats'];
+                        $this->arrConfig['use_attr_size']           = !empty($_POST['downloads_settings_attribute_size']) ? intval($_POST['downloads_settings_attribute_size']) : 0;
+                        $this->arrConfig['use_attr_license']        = !empty($_POST['downloads_settings_attribute_license']) ? intval($_POST['downloads_settings_attribute_license']) : 0;
+                        $this->arrConfig['use_attr_version']        = !empty($_POST['downloads_settings_attribute_version']) ? intval($_POST['downloads_settings_attribute_version']) : 0;
+                        $this->arrConfig['use_attr_author']         = !empty($_POST['downloads_settings_attribute_author']) ? intval($_POST['downloads_settings_attribute_author']) : 0;
+                        $this->arrConfig['use_attr_website']        = !empty($_POST['downloads_settings_attribute_website']) ? intval($_POST['downloads_settings_attribute_website']) : 0;
 
-            $query = "
-              UPDATE ".DBPREFIX."module_downloads_settings SET
-                  `setting_value`='".intval($_REQUEST["settings_filter"])."'
-                where `setting_id`=1
-            ";
+                        $this->updateSettings();
+                    }
 
-            $objDatabase->Execute($query);
-            $query = "
-              UPDATE ".DBPREFIX."module_downloads_settings SET
-                  `setting_value`='".$_REQUEST["settings_design"]."'
-                where `setting_id`=2
-            ";
-            $objDatabase->Execute($query);
-            header('location:index.php?cmd=downloads&act=settings&msg=1');
-            exit();
-        }
-
-        if ($_REQUEST["msg"]=="1") {
-            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
-        }
-
-        if ($this->_arrConfig["filter"]==1) {
-            $filter_checked = 'checked';
-        } else {
-            $filter_checked = '';
-        }
-
-        for($x = 1; $x < 4; $x++) {
-            if ($this->_arrConfig["design"]==$x) {
-                $SlectedDesign[$x] = 'selected';
-            } else {
-                $SlectedDesign[$x] = '';
-            }
-        }
-
-        $this->_objTpl->setVariable(array(
-            'TXT_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_DOWNLOADS_FILTER' => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
-            'TXT_DOWNLOADS_DESIGN' => $_ARRAYLANG['TXT_DOWNLOADS_DESIGN'],
-            'TXT_DOWNLOADS_NO_ICONS' => $_ARRAYLANG['TXT_DOWNLOADS_NO_ICONS'],
-            'TXT_DOWNLOADS_ICON_SET' => $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'FILTER_CHECKED' => $filter_checked,
-            'ICONS_SELECTED_1' => $SlectedDesign[1],
-            'ICONS_SELECTED_2' => $SlectedDesign[2],
-            'ICONS_SELECTED_3' => $SlectedDesign[3],
-            'ICONS_SELECTED_4' => $SlectedDesign[4],
-        ));
-    }
+                    $this->_objTpl->setVariable(array(
+            'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],
+            'TXT_DOWNLOADS_OVERVIEW_PAGE'                   => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'],
+            'TXT_DOWNLOADS_COL_COUNT'                       => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'],
+            'TXT_DOWNLOADS_COL_COUNT_DESC'                  => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT_DESC'],
+            'TXT_DOWNLOADS_SUBCAT_COUNT'                    => $_ARRAYLANG['DOWNLOADS_SETTINGS_COL_COUNT'],
+            'TXT_DOWNLOADS_SUBCAT_COUNT_DESC'               => $_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT_DESC'],
+            'TXT_DOWNLOADS_ATTRIBUTES'                      => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'],
+            'TXT_DOWNLOADS_ATTRIBUTES_DESC'                 => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES_DESC'],
+            'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
+            'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
+            'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
+            'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_WEBSITE'                         => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
+            'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
+            'DOWNLOADS_SETTINGS_COL_COUNT'                  => $this->arrConfig['overview_cols_count'],
+            'DOWNLOADS_SETTINGS_SUBCAT_COUNT'               => $this->arrConfig['overview_max_subcats'],
+            'DOWNLOADS_SETTINGS_ATTRIBUTE_SIZE_CHECKED'     => $this->arrConfig['use_attr_size'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_ATTRIBUTE_LICENSE_CHECKED'  => $this->arrConfig['use_attr_license'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_ATTRIBUTE_VERSION_CHECKED'  => $this->arrConfig['use_attr_version'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_ATTRIBUTE_AUTHOR_CHECKED'   => $this->arrConfig['use_attr_author'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_ATTRIBUTE_WEBSITE_CHECKED'  => $this->arrConfig['use_attr_website'] ? 'checked="checked"' : ''
+            ));
+                }
 
 
     /**
