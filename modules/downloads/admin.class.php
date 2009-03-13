@@ -234,7 +234,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
      * @global object $objTemplate
      * @global array $_ARRAYLANG
      */
-    function getPage()
+    public function getPage()
     {
         global $objTemplate, $_ARRAYLANG;
         if (!isset($_REQUEST['act'])) {
@@ -245,9 +245,9 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
 
 
         switch ($_REQUEST['act']) {
-//            case 'files':
-//                $this->_files();
-//                break;
+            case 'get':
+                $this->getDownload();
+                break;
 
             case 'delete_category':
                 $this->deleteCategory();
@@ -309,15 +309,10 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
                 }
                 break;
 
-//            case 'placeholder':
-//                $this->_placeholder();
-//                break;
             case 'settings':
                 $this->settings();
                 break;
-//            case 'download_old':
-//                $this->_download();
-//                break;
+
             default:
                 $this->downloads();
                 break;
@@ -329,6 +324,34 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->arrStatusMsg['error']),
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+    }
+    private function getDownload()
+    {
+        $objDownload = new Download();
+        $objDownload->load(!empty($_GET['id']) ? intval($_GET['id']) : 0);
+        if (!$objDownload->EOF) {
+            if (// download is protected
+                $objDownload->getAccessId()
+                // the user isn't a admin
+                && !Permission::checkAccess(142, 'static', true)
+                // the user doesn't has access to this download
+                && !Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
+                // the user isn't the owner of the download
+                && $objDownload->getOwnerId() != $this->userId
+            ) {
+                Permission::noAccess();
+            }
+
+            if ($objDownload->getType() == 'file') {
+                header("Content-Type: application/force-download");
+                header("Content-Disposition: attachment; filename=". htmlspecialchars(basename($objDownload->getSource())));
+                header("Content-Length: ".filesize(ASCMS_PATH.$objDownload->getSource()));
+                readfile(ASCMS_PATH.$objDownload->getSource());
+            } else {
+                // add socket -> prevent to hide the source from the customer
+                header('Location: '.$objDownload->getSource());
+            }
+        }
     }
 
     private function deleteCategory()
@@ -851,6 +874,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                 // parse download function
                 $this->_objTpl->setVariable(array(
                     'DOWNLOADS_DOWNLOAD_ID'                 => $objDownload->getId(),
+                    'DOWNLOADS_DOWNLOAD_DOWNLOAD_ICON'      => $objDownload->getIcon(true),
                     'DOWNLOADS_DOWNLOAD_SOURCE'             => htmlentities($objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET)
                 ));
 
@@ -1902,13 +1926,14 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                 }
 
                 $this->_objTpl->setVariable(array(
-                    'DOWNLOADS_CATEGORY_ROW_CLASS'      => $nr++ % 2 ? 'row1' : 'row2',
-                    'DOWNLOADS_CATEGORY_ID'             => $objSubcategory->getId(),
-                    'DOWNLOADS_CATEGORY_STATUS_LED'     => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
-                    'DOWNLOADS_OPEN_CATEGORY_DESC'      => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_CATEGORY_NAME'           => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_CATEGORY_AUTHOR'         => $this->getParsedUsername($objSubcategory->getOwnerId())
+                    'DOWNLOADS_CATEGORY_ROW_CLASS'          => $nr++ % 2 ? 'row1' : 'row2',
+                    'DOWNLOADS_CATEGORY_ID'                 => $objSubcategory->getId(),
+                    'DOWNLOADS_CATEGORY_STATUS_LED'         => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                    'DOWNLOADS_OPEN_CATEGORY_DESC'          => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_CATEGORY_DOWNLOADS_COUNT'    => intval($objSubcategory->getAssociatedDownloadsCount()),
+                    'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_CATEGORY_AUTHOR'             => $this->getParsedUsername($objSubcategory->getOwnerId())
                 ));
 
                 $this->_objTpl->parse('downloads_category_list');
@@ -2197,8 +2222,9 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                 )
             ) {
                 $this->_objTpl->setVariable(array(
-                    'DOWNLOADS_DOWNLOAD_ID'     => $objDownload->getId(),
-                    'DOWNLOADS_DOWNLOAD_SOURCE' => htmlentities($objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET)
+                    'DOWNLOADS_DOWNLOAD_ID'             => $objDownload->getId(),
+                    'DOWNLOADS_DOWNLOAD_DOWNLOAD_ICON'  => $objDownload->getIcon(true),
+                    'DOWNLOADS_DOWNLOAD_SOURCE'         => htmlentities($objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET)
                 ));
 
                 $this->_objTpl->parse('downloads_download_function_download_link');
