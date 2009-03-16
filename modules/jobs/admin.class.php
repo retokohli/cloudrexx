@@ -276,6 +276,7 @@ class jobsManager extends jobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+
         $query = "
             SELECT `value`
               FROM `".DBPREFIX."module_jobs_settings`
@@ -314,7 +315,7 @@ class jobsManager extends jobsLibrary
                       AND j.job = $jobID";
         }
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
+        while($objResult!==false && !$objResult->EOF) {
             if (empty($jobID) or $objResult->fields['jobid'] != $jobID) {
                 $notAssociatedLocations .= "<option value=\"".$objResult->fields['id']."\">".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
             } else {
