@@ -235,7 +235,7 @@ class jobsManager extends jobsLibrary
             $this->_objTpl->hideBlock('row');
             return;
         }
-        while (!$objResult->EOF) {
+        while ($objResult !== false && !$objResult->EOF) {
             $statusPicture = ($objResult->fields['status']==1) ? "status_green.gif" : "status_red.gif";
             $this->_objTpl->setVariable(array(
                 'JOBS_ID'         => $objResult->fields['jobsId'],
@@ -842,7 +842,8 @@ class jobsManager extends jobsLibrary
             $link = "";
             $url = "";
             $show_location_fe = "";
-            while(!$objResult->EOF) {
+            $dberr = ($objResult === false);
+            while(!$objResult->EOF && !$dberr) {
                 if ($objResult->fields['name']== "footnote") {
                     $footnote = stripslashes($objResult->fields['value']);
                 }
@@ -1060,7 +1061,7 @@ class jobsManager extends jobsLibrary
         $this->_objTpl->setCurrentBlock('row');
         $i=0;
 
-        while (!$objResult->EOF) {
+        while ($objResult !== false && !$objResult->EOF) {
             $class = (($i % 2) == 0) ? "row1" : "row2";
             $sorting = $objResult->fields['sort_style'];
             $this->_objTpl->setVariable(array(
@@ -1174,7 +1175,7 @@ class jobsManager extends jobsLibrary
         $this->_objTpl->setCurrentBlock('row');
         $i=0;
 
-        while (!$objResult->EOF) {
+        while ($objResult !== false && !$objResult->EOF) {
             $class = (($i % 2) == 0) ? "row1" : "row2";
 // Unused
 //            $sorting = $objResult->fields['sort_style'];
