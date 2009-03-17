@@ -1050,7 +1050,7 @@ CREATE TABLE `contrexx_module_downloads_rel_download_download` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_settings` (
   `id` int(11) NOT NULL auto_increment,
-  `name` varchar(20) NOT NULL default '',
+  `name` varchar(32) NOT NULL,
   `value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;

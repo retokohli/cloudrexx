@@ -1602,9 +1602,13 @@ INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (5,'use_attr_version','1');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (6,'use_attr_author','1');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (7,'use_attr_website','1');
-INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (8,'top_file_count','5');
-INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (9,'newest_file_count','5');
-INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (10,'updated_file_count','5');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (8,'most_viewed_file_count','5');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (9,'most_downloaded_file_count','5');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (10,'most_popular_file_count','5');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (11,'newest_file_count','5');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (12,'updated_file_count','5');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (13,'new_file_time_limit','604800');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (14,'updated_file_time_limit','604800');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxCharacters','100');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxLines','50');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('motive_0','Bild_001.jpg');
