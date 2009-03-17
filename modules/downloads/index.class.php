@@ -64,6 +64,10 @@ $_ARRAYLANG['TXT_DOWNLOADS_GBYTE'] = "GB";
 $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'] = "Hinzugefügt von";
 $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Zuletzt aktualisiert";
 $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Verwandte Kategories";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED'] = "Am meisten angeschaut";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED'] = "Am meisten herunter geladen";
+$_ARRAYLANG['TXT_DOWNLOADS_NEW'] = "Neu";
+$_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED'] = "Kürzlich aktualisiert";
 
 
         global $_LANGID;
@@ -615,6 +619,13 @@ JS_CODE;
 
                 $objDownload->next();
             }
+
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_MOST_VIEWED'         => $_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED'],
+                'TXT_DOWNLOADS_MOST_DOWNLOADED'     => $_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED'],
+                'TXT_DOWNLOADS_NEW'                 => $_ARRAYLANG['TXT_DOWNLOADS_NEW'],
+                'TXT_DOWNLOADS_RECENTLY_UPDATED'    => $_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED']
+            ));
 
             $this->objTemplate->touchBlock($arrBlocks[0]);
         }
