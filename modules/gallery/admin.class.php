@@ -1987,13 +1987,15 @@ class galleryManager extends GalleryLibrary
                 break;
 
                 case 'enable_popups':
-                if ($objResult->fields['value'] == 'on') {
-                        $strValue = 'checked';
-                        $this->_objTpl->SetVariable('IMAGE_WIDTH_CONTAINER_VISIBILITY','none');
-                    } else {
-                        $this->_objTpl->SetVariable('IMAGE_WIDTH_CONTAINER_VISIBILITY','block');
-                    }
-                    $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
+                if ($objResult->fields['value'] != 'on') {
+                    $this->_objTpl->SetVariable(array(
+                        'IMAGE_WIDTH_CONTAINER_VISIBILITY'  => 'display: none',
+                        'SLIDE_SHOW_BLOCK'                  => 'display: none',
+                    ));
+                } else {
+                    $strValue = 'checked';
+                }
+                $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
 
                 break;
 
@@ -2039,6 +2041,7 @@ class galleryManager extends GalleryLibrary
                     }
                     $this->_objTpl->setVariable('SETTINGS_VALUE_SHOW_FILE_NAME', $checked);
                     break;
+
                 default: //integer value
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$objResult->fields['value']);
             }
