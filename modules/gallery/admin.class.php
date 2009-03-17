@@ -1961,7 +1961,7 @@ class galleryManager extends GalleryLibrary
                                             FROM         '.DBPREFIX.'module_gallery_settings
                                             ORDER BY     id');
 
-        while (!$objResult->EOF) {
+        while ($objResult && !$objResult->EOF) {
             $strValue = '';
 
             switch ($objResult->fields['name']) {
@@ -1970,67 +1970,55 @@ class galleryManager extends GalleryLibrary
                 case 'show_voting':
                 case 'show_latest':
                 case 'show_random':
-// neu
                 case 'show_ext':
                     if ($objResult->fields['value'] == 'on') {
                         $strValue = 'checked';
                     }
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
-                break;
-
+                    break;
                 case 'slide_show':
                     if ($objResult->fields['value'] == 'slideshow') {
                         $this->_objTpl->SetVariable('SETTINGS_VALUE_SLIDE_SHOW', 'checked="checked"');
                     }else{
                         $this->_objTpl->SetVariable('SETTINGS_VALUE_NORMAL_VIEW', 'checked="checked"');
                     }
-                break;
-
+                    break;
                 case 'enable_popups':
-                if ($objResult->fields['value'] != 'on') {
-                    $this->_objTpl->SetVariable(array(
-                        'IMAGE_WIDTH_CONTAINER_VISIBILITY'  => 'display: none',
-                        'SLIDE_SHOW_BLOCK'                  => 'display: none',
-                    ));
-                } else {
-                    $strValue = 'checked';
-                }
-                $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
-
-                break;
-
+                    if ($objResult->fields['value'] != 'on') {
+                        $this->_objTpl->SetVariable(array(
+                            'IMAGE_WIDTH_CONTAINER_VISIBILITY'  => 'display: none',
+                            'SLIDE_SHOW_BLOCK'                  => 'display: none',
+                        ));
+                    } else {
+                        $strValue = 'checked';
+                    }
+                    $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
+                    break;
                 case 'standard_size_type':
                     if ($objResult->fields['value'] == 'abs')     {
                         $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_THUMB_TYPE_ABS'        =>    'checked',
-                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    ''
-                                                    ));
+                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    ''));
                     } else {
                          $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_THUMB_TYPE_ABS'        =>    '',
-                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    'checked'
-                                                    ));
+                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    'checked'));
                     }
-                break;
+                    break;
                 case 'validation_standard_type':
                     if ($objResult->fields['value'] == 'all')     {
                         $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_VALIDATION_TYPE_ALL'    =>    'checked',
-                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    ''
-                                                    ));
+                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    ''));
                     } else {
                          $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_VALIDATION_TYPE_ALL'    =>    '',
-                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    'checked'
-                                                    ));
+                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    'checked'));
                     }
-                break;
-// neu
+                    break;
                 case 'header_type':
                     if ($objResult->fields['value'] == 'hierarchy')     {
                         $this->_objTpl->SetVariable(array( 'SETTINGS_VALUE_HEADER_HIERARCHY' => 'checked',
-                                                           'SETTINGS_VALUE_HEADER_FLAT'      => '',
-                                                    ));
+                                                           'SETTINGS_VALUE_HEADER_FLAT'      => ''));
                     } else {
                         $this->_objTpl->SetVariable(array( 'SETTINGS_VALUE_HEADER_HIERARCHY' => '',
-                                                           'SETTINGS_VALUE_HEADER_FLAT'      => 'checked',
-                                                    ));
+                                                           'SETTINGS_VALUE_HEADER_FLAT'      => 'checked'));
                     }
                     break;
                 case 'show_file_name':
@@ -2041,7 +2029,6 @@ class galleryManager extends GalleryLibrary
                     }
                     $this->_objTpl->setVariable('SETTINGS_VALUE_SHOW_FILE_NAME', $checked);
                     break;
-
                 default: //integer value
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$objResult->fields['value']);
             }
