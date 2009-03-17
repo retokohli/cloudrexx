@@ -157,7 +157,7 @@ class u2u extends u2uLibrary
                 $this->_objTpl->hideBlock('u2u_private_notification_message_link');
             }
 
-            $strMessageInputHTML = get_wysiwyg_editor('private_message',$this->strMessages,'news');
+            $strMessageInputHTML = get_wysiwyg_editor('private_message', $this->strMessages,'news');
 
             $this->_objTpl->setVariable(array(
                 'TXT_SEND_PRIVATE_MESSAGE'           =>  $_ARRAYLANG['TXT_SEND_PRIVATE_MESSAGE'],
@@ -560,6 +560,7 @@ class u2u extends u2uLibrary
        	global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
 
        	$errArray = array();
+       	$_REQUEST['private_message'] = stripslashes(html_entity_decode($_REQUEST['private_message'], ENT_QUOTES, CONTREXX_CHARSET));
         $this->strMessages=$_REQUEST['private_message'];
         /**
         * For display the preview***
@@ -651,14 +652,13 @@ class u2u extends u2uLibrary
                         $errArray[0]['receipents_userid']  =  $ID;
                         $errArray[0]['sending_userid']     =  $objFWUser->objUser->getId();
                         $errArray[0]['title']              =  contrexx_addslashes(strip_tags(trim(htmlentities($_REQUEST['title'],ENT_QUOTES,CONTREXX_CHARSET))));
-                        $errArray[0]['private_message']    =  contrexx_addslashes($_REQUEST['private_message'],ENT_QUOTES,CONTREXX_CHARSET);
+                        $errArray[0]['private_message']    =  addslashes($_REQUEST['private_message']);
                         $this->insertEntryDataMessage($errArray);
                         $this->arrStatusMsg['ok'][]=$_ARRAYLANG['TXT_U2U_ENTRY_ADD_SUCCESS_MESSAGE'];
                         $successVar=1;
                         $this->strMessages="";
                         //Send notification to users
                         $this->sendNotificationMail();
-
                     }
                 }
             }
