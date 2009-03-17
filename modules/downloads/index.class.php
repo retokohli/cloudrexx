@@ -225,6 +225,21 @@ $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Verwandte Kategories";
             if ($this->objTemplate->blockExists('downloads_overview')) {
                 $this->objTemplate->hideBlock('downloads_overview');
             }
+            if ($this->objTemplate->blockExists('downloads_most_viewed_file_list')) {
+                $this->objTemplate->hideBlock('downloads_most_viewed_file_list');
+            }
+            if ($this->objTemplate->blockExists('downloads_most_downloaded_file_list')) {
+                $this->objTemplate->hideBlock('downloads_most_downloaded_file_list');
+            }
+            if ($this->objTemplate->blockExists('downloads_most_popular_file_list')) {
+                $this->objTemplate->hideBlock('downloads_most_popular_file_list');
+            }
+            if ($this->objTemplate->blockExists('downloads_newest_file_list')) {
+                $this->objTemplate->hideBlock('downloads_newest_file_list');
+            }
+            if ($this->objTemplate->blockExists('downloads_updated_file_list')) {
+                $this->objTemplate->hideBlock('downloads_updated_file_list');
+            }
         } else {
             // parse category overview
             $this->parseCategories($objCategory, array('downloads_overview', 'downloads_overview_category'), null, null, 'downloads_overview_row', array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $this->arrConfig['overview_max_subcats']);
@@ -236,6 +251,37 @@ $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Verwandte Kategories";
                     $this->objTemplate->hideBlock('downloads_file_list');
                 }
             }
+
+            // parse most viewed downloads
+            $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), null, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
+
+            // parse most downloaded downloads
+            $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), null, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
+
+            // parse most popular downloads
+            // TODO: Rating system has to be implemented first!
+            //$this->parseSpecialDownloads(array('downloads_most_popular_file_list', 'downloads_most_popular_file'), null, array('rating' => 'desc'), $this->arrConfig['most_popular_file_count']);
+
+            // parse newest downloads
+            $filter = array(
+                'ctime' => array(
+                    '>=' => time() - $this->arrConfig['new_file_time_limit']
+                )
+            );
+            $this->parseSpecialDownloads(array('downloads_newest_file_list', 'downloads_newest_file'), $filter, array('ctime' => 'desc'), $this->arrConfig['newest_file_count']);
+
+            // parse recently updated downloads
+            $filter = array(
+                'mtime' => array(
+                    '>=' => time() - $this->arrConfig['updated_file_time_limit']
+                ),
+                // exclude newest downloads
+                'ctime' => array(
+                    '<' => time() - $this->arrConfig['new_file_time_limit']
+                ),
+            );
+            $this->parseSpecialDownloads(array('downloads_updated_file_list', 'downloads_updated_file'), $filter, array('mtime' => 'desc'), $this->arrConfig['updated_file_count']);
+
 
             // hide unwanted blocks on the overview page
             if ($this->objTemplate->blockExists('downloads_category')) {
@@ -511,7 +557,7 @@ JS_CODE;
 
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $objDownload = new Download();
-        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'is_active' => true), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
         $categoryId = $objCategory->getId();
 
         if ($objDownload->EOF) {
@@ -541,6 +587,36 @@ JS_CODE;
             }
 
             $this->objTemplate->touchBlock('downloads_file_list');
+        }
+    }
+
+    private function parseSpecialDownloads($arrBlocks, $arrFilter, $arrSort, $limit)
+    {
+        if (!$this->objTemplate->blockExists($arrBlocks[0])) {
+            return;
+        }
+
+        $objDownload = new Download();
+        $objDownload->loadDownloads($arrFilter, null, $arrSort, null, $limit);
+
+        if ($objDownload->EOF) {
+            $this->objTemplate->hideBlock($arrBlocks[0]);
+        } else {
+            $row = 1;
+            while (!$objDownload->EOF) {
+                // select category
+                $arrAssociatedCategories = $objDownload->getAssociatedCategoryIds();
+                $categoryId = $arrAssociatedCategories[0];
+
+                // parse download info
+                $this->parseDownloadAttributes($objDownload, $categoryId);
+                $this->objTemplate->setVariable('DOWNLOADS_FILE_ROW_CLASS', 'row'.($row++ % 2 + 1));
+                $this->objTemplate->parse($arrBlocks[1]);
+
+                $objDownload->next();
+            }
+
+            $this->objTemplate->touchBlock($arrBlocks[0]);
         }
     }
 
@@ -591,6 +667,7 @@ JS_CODE;
             'DOWNLOADS_FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;download='.$objDownload->getId(),
             'DOWNLOADS_FILE_OWNER'              => $this->getParsedUsername($objDownload->getOwnerId()),
             'DOWNLOADS_FILE_OWNER_ID'           => $objDownload->getOwnerId(),
+            'DOWNLOADS_FILE_SRC'                => htmlentities($objDownload->getType() == 'file' ? basename($objDownload->getSource()) : $objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_FILE_LAST_UPDATED'       => date(ASCMS_DATE_FORMAT, $objDownload->getMTime()),
             'DOWNLOADS_FILE_VIEWS'              => $objDownload->getViewCount(),
             'DOWNLOADS_FILE_DOWNLOAD_COUNT'     => $objDownload->getDownloadCount()
