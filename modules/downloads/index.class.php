@@ -596,6 +596,8 @@ JS_CODE;
 
     private function parseSpecialDownloads($arrBlocks, $arrFilter, $arrSort, $limit)
     {
+        global $_ARRAYLANG;
+
         if (!$this->objTemplate->blockExists($arrBlocks[0])) {
             return;
         }
