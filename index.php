@@ -1168,6 +1168,7 @@ switch ($plainSection) {
         $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
         $newsObj->getPageTitle($page_title);
         $page_title = $newsObj->newsTitle;
+        $page_metatitle = $page_title;
     break;
 
 //-------------------------------------------------------
@@ -1316,6 +1317,7 @@ switch ($plainSection) {
         $objTemplate->setVariable('CONTENT_TEXT', $docSysObj->getDocSysPage());
         $docSysObj->getPageTitle($page_title);
         $page_title = $docSysObj->docSysTitle;
+        $page_metatitle = $docSysObj->docSysTitle;
     break;
 
 //-------------------------------------------------------
@@ -1410,11 +1412,11 @@ switch ($plainSection) {
         $objGallery = new Gallery($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objGallery->getPage());
 
-        // Optional change: Show gallery name instead of page title
-        //$topGalleryName = $objGallery->getTopGalleryName();
-        //if ($topGalleryName) {
-        //    $page_title = $topGalleryName;
-        //}
+        $topGalleryName = $objGallery->getTopGalleryName();
+        if ($topGalleryName) {
+            $page_title = $topGalleryName;
+            $page_metatitle = $topGalleryName;
+        }
 
     break;
 
@@ -1459,6 +1461,7 @@ switch ($plainSection) {
         $objTemplate->setVariable("CONTENT_TEXT", $objImmo->getPage());
         if(!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj'){
             $page_title = $objImmo->getPageTitle($page_title);
+            $page_metatitle = $page_title;
         }
     break;
 
@@ -1516,6 +1519,7 @@ break;
 
         if(!empty($directory_pagetitle)) {
             $page_metatitle = $directory_pagetitle;
+            $page_title = $directory_pagetitle;
         }
 
         break;
@@ -1591,6 +1595,7 @@ break;
         $objTemplate->setVariable("CONTENT_TEXT", $objKnowledge->getPage());
         if (!empty($objKnowledge->pageTitle)) {
             $page_title = $objKnowledge->pageTitle;
+            $page_metatitle = $objKnowledge->pageTitle;
         }
    break;
 
@@ -1608,6 +1613,8 @@ break;
         $objTemplate->setVariable('CONTENT_TEXT', $jobsObj->getJobsPage());
         $jobsObj->getPageTitle($page_title);
         $page_title = $jobsObj->jobsTitle;
+        $page_metatitle = $jobsObj->jobsTitle;
+
     break;
 
 //-------------------------------------------------------
