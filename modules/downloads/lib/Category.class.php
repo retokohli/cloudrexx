@@ -70,6 +70,7 @@ class Category {
     private $descriptions;
 
     private $downloads;
+    private $downloads_count;
 
     private $arrAttributes = array(
         'core' => array(
@@ -168,6 +169,7 @@ class Category {
         $this->names = array();
         $this->descriptions = array();
         $this->downloads = null;
+        $this->downloads_count = null;
         $this->permission_set = false;
         $this->EOF = true;
     }
@@ -301,14 +303,49 @@ class Category {
 
     public function getAssociatedDownloadsCount()
     {
+        if (!isset($this->downloads_count)) {
+            $this->loadAssociatedDownloadsCount();
+        }
+        return $this->downloads_count;
+    }
+
+    private function loadAssociatedDownloadsCount()
+    {
         global $objDatabase;
 
-        $objResult = $objDatabase->SelectLimit('SELECT COUNT(1) AS `count` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id.' GROUP BY `category_id`', 1);
+        $objFWUser = FWUser::getFWUserObject();
+        $arrCategoryIds = array_keys($this->arrLoadedCategories);
+        $objResult = $objDatabase->Execute('
+            SELECT  tblR.`category_id`,
+                    COUNT(1) AS `count`
+            FROM    `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR
+            '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ? 'INNER JOIN `'.DBPREFIX.'module_downloads_download` AS tblD ON tblD.`id` = tblR.`download_id`' : '').'
+            WHERE   tblR.`category_id` IN ('.implode(',', $arrCategoryIds).')
+                    '.($this->isFrontendMode ? 'AND tblD.`is_active` = 1' : '').'
+                    '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ?
+                            'AND (tblD.`visibility` = 1'.(
+                                $objFWUser->objUser->login() ?
+                                    ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
+                                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                                :   '').')'
+                            :   '').'
+            GROUP BY tblR.`category_id`');
+
         if ($objResult) {
-            return $objResult->fields['count'];
-        } else {
-            return false;
+            while (!$objResult->EOF) {
+                $this->arrLoadedCategories[$objResult->fields['category_id']]['downloads_count'] = $objResult->fields['count'];
+                $objResult->MoveNext();
+            }
         }
+
+        $length = count($arrCategoryIds);
+        for ($i = 0; $i < $length; $i++) {
+            if (!isset($this->arrLoadedCategories[$arrCategoryIds[$i]]['downloads_count'])) {
+                $this->arrLoadedCategories[$arrCategoryIds[$i]]['downloads_count'] = 0;
+            }
+        }
+
+        $this->downloads_count = $this->arrLoadedCategories[$this->id]['downloads_count'];
     }
 
     public function getAssociatedDownloadIds()
@@ -454,6 +491,7 @@ class Category {
                 $this->names = isset($this->arrLoadedCategories[$id]['names']) ? $this->arrLoadedCategories[$id]['names'] : null;
                 $this->descriptions = isset($this->arrLoadedCategories[$id]['descriptions']) ? $this->arrLoadedCategories[$id]['descriptions'] : null;
                 $this->downloads = isset($this->arrLoadedCategories[$id]['downloads']) ? $this->arrLoadedCategories[$id]['downloads'] : null;
+                $this->downloads_count = isset($this->arrLoadedCategories[$id]['downloads_count']) ? $this->arrLoadedCategories[$id]['downloads_count'] : null;
                 $this->permission_set = false;
                 $this->EOF = false;
                 return true;
@@ -556,8 +594,8 @@ class Category {
             }
         }
 
-        // parse access permissions for the frontend
-        if ($this->isFrontendMode) {
+        // parse access permissions
+        if (!Permission::checkAccess(142, 'static', true)) {
             $objFWUser = FWUser::getFWUserObject();
 
             // category access

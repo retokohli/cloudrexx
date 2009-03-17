@@ -708,12 +708,8 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             }
         }
 
-//        $this->_objTpl->setVariable('DOWNLOADS_PARENT_CATEGORY_MENU', $this->getCategoryMenu('read', $categoryId, $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\'index.php?cmd=downloads&amp;category_id=\'+this.value"'));
-//        if ($categoryId) {
-//            $filter = array('category_id' => $categoryId);
-//        } else {
-            $filter = null;
-//        }
+        // this is required so that the methode Download::getFilteredIdList() will be processed
+            $filter = array('category_id' => 0);
 
         $objDownload = new Download();
         $objDownload->loadDownloads($filter, $search = null, $arrOrder, $arrAttributes = null, $_CONFIG['corePagingLimit'], $limitOffset);
@@ -1776,18 +1772,18 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             }
 
             while (!$objSubcategory->EOF) {
-                if (// subcategory is hidden -> check if the user is allowed to see it listed anyways
-                    !$objSubcategory->getVisibility()
-                    // non managers are not allowed to see hidden subcategories
-                    && !Permission::checkAccess(142, 'static', true)
-                    // those who have read access permission to the subcategory are allowed to see it listed
-                    && !Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
-                    // the owner is allowed to see its own categories
-                    && (!$objSubcategory->getOwnerId() || $objSubcategory->getOwnerId() != $objFWUser->objUser->getId())
-                ) {
-                    $objSubcategory->next();
-                    continue;
-                }
+//                if (// subcategory is hidden -> check if the user is allowed to see it listed anyways
+//                    !$objSubcategory->getVisibility()
+//                    // non managers are not allowed to see hidden subcategories
+//                    && !Permission::checkAccess(142, 'static', true)
+//                    // those who have read access permission to the subcategory are allowed to see it listed
+//                    && !Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
+//                    // the owner is allowed to see its own categories
+//                    && (!$objSubcategory->getOwnerId() || $objSubcategory->getOwnerId() != $objFWUser->objUser->getId())
+//                ) {
+//                    $objSubcategory->next();
+//                    continue;
+//                }
 
                 // parse order input box
                 if ($changeSortOrder) {
@@ -1931,6 +1927,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
                     'DOWNLOADS_CATEGORY_STATUS_LED'         => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
                     'DOWNLOADS_OPEN_CATEGORY_DESC'          => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
                     'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_CATEGORY_PROTECTED'          => $objSubcategory->getReadAccessId() ? '_locked' : '',
                     'DOWNLOADS_CATEGORY_DOWNLOADS_COUNT'    => intval($objSubcategory->getAssociatedDownloadsCount()),
                     'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_CATEGORY_AUTHOR'             => $this->getParsedUsername($objSubcategory->getOwnerId())
@@ -2090,10 +2087,10 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
         $objFWUser = FWUser::getFWUserObject();
 
         while (!$objDownload->EOF) {
-            if (!Permission::checkAccess(142, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
-                $objDownload->next();
-                continue;
-            }
+//            if (!Permission::checkAccess(142, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
+//                $objDownload->next();
+//                continue;
+//            }
 
             // parse select checkbox & order box
             if (// managers are allowed to manage every download
@@ -2303,32 +2300,38 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
     }
 
 
-                /**
-                 * module settings
-                 *
-                 * @global object $objDatabase
-                 * @global array $_ARRAYLANG
-                 */
-                private function settings()
-                {
-                    global $_ARRAYLANG;
+    /**
+     * Settings page
+     *
+     * @global array $_ARRAYLANG
+     */
+    private function settings()
+    {
+        global $_ARRAYLANG;
 
-                    $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
-                    $this->_objTpl->loadTemplateFile('module_downloads_settings.html');
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
+        $this->_objTpl->loadTemplateFile('module_downloads_settings.html');
 
-                    if (isset($_POST['downloads_settings_save'])) {
-                        $this->arrConfig['overview_cols_count']     = !empty($_POST['downloads_settings_col_count']) ? intval($_POST['downloads_settings_col_count']) : $this->arrConfig['overview_cols_count'];
-                        $this->arrConfig['overview_max_subcats']    = !empty($_POST['downloads_settings_subcat_count']) ? intval($_POST['downloads_settings_subcat_count']) : $this->arrConfig['overview_max_subcats'];
-                        $this->arrConfig['use_attr_size']           = !empty($_POST['downloads_settings_attribute_size']) ? intval($_POST['downloads_settings_attribute_size']) : 0;
-                        $this->arrConfig['use_attr_license']        = !empty($_POST['downloads_settings_attribute_license']) ? intval($_POST['downloads_settings_attribute_license']) : 0;
-                        $this->arrConfig['use_attr_version']        = !empty($_POST['downloads_settings_attribute_version']) ? intval($_POST['downloads_settings_attribute_version']) : 0;
-                        $this->arrConfig['use_attr_author']         = !empty($_POST['downloads_settings_attribute_author']) ? intval($_POST['downloads_settings_attribute_author']) : 0;
-                        $this->arrConfig['use_attr_website']        = !empty($_POST['downloads_settings_attribute_website']) ? intval($_POST['downloads_settings_attribute_website']) : 0;
+        if (isset($_POST['downloads_settings_save'])) {
+            $this->arrConfig['overview_cols_count']         = !empty($_POST['downloads_settings_col_count']) ? intval($_POST['downloads_settings_col_count']) : $this->arrConfig['overview_cols_count'];
+            $this->arrConfig['overview_max_subcats']        = !empty($_POST['downloads_settings_subcat_count']) ? intval($_POST['downloads_settings_subcat_count']) : $this->arrConfig['overview_max_subcats'];
+            $this->arrConfig['use_attr_size']               = !empty($_POST['downloads_settings_attribute_size']) ? intval($_POST['downloads_settings_attribute_size']) : 0;
+            $this->arrConfig['use_attr_license']            = !empty($_POST['downloads_settings_attribute_license']) ? intval($_POST['downloads_settings_attribute_license']) : 0;
+            $this->arrConfig['use_attr_version']            = !empty($_POST['downloads_settings_attribute_version']) ? intval($_POST['downloads_settings_attribute_version']) : 0;
+            $this->arrConfig['use_attr_author']             = !empty($_POST['downloads_settings_attribute_author']) ? intval($_POST['downloads_settings_attribute_author']) : 0;
+            $this->arrConfig['use_attr_website']            = !empty($_POST['downloads_settings_attribute_website']) ? intval($_POST['downloads_settings_attribute_website']) : 0;
+            $this->arrConfig['most_viewed_file_count']      = !empty($_POST['downloads_settings_most_viewed_file_count']) ? intval($_POST['downloads_settings_most_viewed_file_count']) : $this->arrConfig['most_viewed_file_count'];
+            $this->arrConfig['most_downloaded_file_count']  = !empty($_POST['downloads_settings_most_downloaded_file_count']) ? intval($_POST['downloads_settings_most_downloaded_file_count']) : $this->arrConfig['most_downloaded_file_count'];
+            $this->arrConfig['most_popular_file_count']     = !empty($_POST['downloads_settings_most_popular_file_count']) ? intval($_POST['downloads_settings_most_popular_file_count']) : $this->arrConfig['most_popular_file_count'];
+            $this->arrConfig['newest_file_count']           = !empty($_POST['downloads_settings_newest_file_count']) ? intval($_POST['downloads_settings_newest_file_count']) : $this->arrConfig['newest_file_count'];
+            $this->arrConfig['updated_file_count']          = !empty($_POST['downloads_settings_updated_file_count']) ? intval($_POST['downloads_settings_updated_file_count']) : $this->arrConfig['updated_file_count'];
+            $this->arrConfig['new_file_time_limit']         = !empty($_POST['downloads_settings_new_file_time_limit']) ? intval($_POST['downloads_settings_new_file_time_limit']) : $this->arrConfig['new_file_time_limit'];
+            $this->arrConfig['updated_file_time_limit']     = !empty($_POST['downloads_settings_updated_file_time_limit']) ? intval($_POST['downloads_settings_updated_file_time_limit']) : $this->arrConfig['updated_file_time_limit'];
 
-                        $this->updateSettings();
-                    }
+            $this->updateSettings();
+        }
 
-                    $this->_objTpl->setVariable(array(
+        $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],
             'TXT_DOWNLOADS_OVERVIEW_PAGE'                   => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'],
             'TXT_DOWNLOADS_COL_COUNT'                       => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'],
@@ -2349,9 +2352,16 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'DOWNLOADS_SETTINGS_ATTRIBUTE_LICENSE_CHECKED'  => $this->arrConfig['use_attr_license'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_VERSION_CHECKED'  => $this->arrConfig['use_attr_version'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_AUTHOR_CHECKED'   => $this->arrConfig['use_attr_author'] ? 'checked="checked"' : '',
-            'DOWNLOADS_SETTINGS_ATTRIBUTE_WEBSITE_CHECKED'  => $this->arrConfig['use_attr_website'] ? 'checked="checked"' : ''
-            ));
-                }
+            'DOWNLOADS_SETTINGS_ATTRIBUTE_WEBSITE_CHECKED'  => $this->arrConfig['use_attr_website'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_MOST_VIEWED_FILE_COUNT'     => $this->arrConfig['most_viewed_file_count'],
+            'DOWNLOADS_SETTINGS_MOST_DOWNLOADED_FILE_COUNT' => $this->arrConfig['most_downloaded_file_count'],
+            'DOWNLOADS_SETTINGS_MOST_POPULAR_FILE_COUNT'    => $this->arrConfig['most_popular_file_count'],
+            'DOWNLOADS_SETTINGS_NEWEST_FILE_COUNT'          => $this->arrConfig['newest_file_count'],
+            'DOWNLOADS_SETTINGS_UPDATED_FILE_COUNT'         => $this->arrConfig['updated_file_count'],
+            'DOWNLOADS_SETTINGS_NEW_FILE_TIME_LIMIT'        => $this->arrConfig['new_file_time_limit'],
+            'DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT'  => $this->arrConfig['updated_file_time_limit']
+        ));
+    }
 
 
     /**

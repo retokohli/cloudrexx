@@ -25,13 +25,20 @@ class DownloadsLibrary
 
     protected $searchKeyword;
     protected $arrConfig = array(
-        'overview_cols_count'   => 2,
-        'overview_max_subcats'  => 5,
-        'use_attr_size'         => 1,
-        'use_attr_license'      => 1,
-        'use_attr_version'      => 1,
-        'use_attr_author'       => 1,
-        'use_attr_website'      => 1
+        'overview_cols_count'           => 2,
+        'overview_max_subcats'          => 5,
+        'use_attr_size'                 => 1,
+        'use_attr_license'              => 1,
+        'use_attr_version'              => 1,
+        'use_attr_author'               => 1,
+        'use_attr_website'              => 1,
+        'most_viewed_file_count'        => 5,
+        'most_downloaded_file_count'    => 5,
+        'most_popular_file_count'       => 5,
+        'newest_file_count'             => 5,
+        'updated_file_count'            => 5,
+        'new_file_time_limit'           => 604800,
+        'updated_file_time_limit'       => 604800
     );
 
     public function __construct()
@@ -97,7 +104,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = 'Angeschaut';
     protected function updateSettings()
     {
         global $objDatabase;
-
+$objDatabase->debug=true;
         foreach ($this->arrConfig as $key => $value) {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }

@@ -574,6 +574,14 @@ class Download {
                     ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
                     .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
                 : '');
+        } elseif (!Permission::checkAccess(142, 'static', true)) {
+            $objFWUser = FWUser::getFWUserObject();
+
+             $arrConditions[] = 'tblD.`visibility` = 1'.(
+                $objFWUser->objUser->login() ?
+                ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
+                .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                : '');
         }
 
         // parse search
@@ -650,7 +658,7 @@ class Download {
         $arrConditions = array();
 
         $arrComparisonOperators = array(
-            'int'       => array('=','<','>'),
+            'int'       => array('=','<','>', '<=', '>='),
             'string'    => array('!=','<','>', 'REGEXP')
         );
         $arrDefaultComparisonOperator = array(
@@ -770,6 +778,10 @@ class Download {
                     $arrSortExpressions[] = $direction;
                 }
             }
+
+            if (!in_array('id', $arrSort)) {
+                $arrSortExpressions[] = 'tblD.`id`';
+            }
         }
 
         $query = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT tblD.`id`
@@ -781,7 +793,7 @@ class Download {
                 : '')
             .($joinDownloadTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_download` AS tblR ON (tblR.`id1` = tblD.`id` OR tblR.`id2` = tblD.`id`)' : '')
             .(count($arrCustomSelection) ? ' WHERE ('.implode(') AND (', $arrCustomSelection).')' : '')
-            .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
+            .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : ' ORDER BY tblD.`id`');
 
         if (empty($limit)) {
             $objDownloadId = $objDatabase->Execute($query);
