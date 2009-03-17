@@ -209,8 +209,23 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'] = "Downloads zur Kategori
 $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'] = "Overview page";
 $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'] = "Number of columns";
 $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT_DESC'] = "The number of columns to be used in the tabular listing on the overview page. Please consider to adjust the layout of the content page if required.";
-$_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT'] = "Maximum count of subcategories";
-$_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT_DESC'] = "Maximum amount of subcategories for each category that should be listed on the overview page.";
+$_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT'] = "Maximum number of subcategories";
+$_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT_DESC'] = "Maximum number of subcategories of each category that should be listed on the overview page.";
 $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'] = "Attributes";
 $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES_DESC'] = "Select the attritubes that you want to use for the downloads.";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED_FILE_COUNT'] = "Number of most viewed downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED_FILE_COUNT_DESC'] = "Maximum number of downloads that shoud be listed in the block 'Most viewed downloads'.";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED_FILE_COUNT'] = "Number of most downloaded downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED_FILE_COUNT_DESC'] = "Maximum number of downloads that shoud be listed in the block 'Most downloaded downloads'.";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_POPULAR_FILE_COUNT'] = "Number of most popular downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_POPULAR_FILE_COUNT_DESC'] = "Maximum number of downloads that shoud be listed in the block 'Most popular downloads'.";
+$_ARRAYLANG['TXT_DOWNLOADS_NEWEST_FILE_COUNT'] = "Number of newest downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_NEWEST_FILE_COUNT_DESC'] = "Maximum number of downloads that shoud be listed in the block 'Newest downloads'.";
+$_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT'] = "Number of recently updated downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT_DESC'] = "Maximum number of downloads that shoud be listed in the block 'Recently updated downloads'.";
+$_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT'] = "Timelimit to mark new downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'] = "Timelimit (in seconds) for newly added downloads at marking them as new downloads.";
+$_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'] = "Timelimit to mark updated downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'] = "Defines how long (in seconds) a updated download should be marked as recently updated.";
+$_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'] = "Examples: 1 day = 86400 seconds / 1 week = 604800 seconds";
 ?>
