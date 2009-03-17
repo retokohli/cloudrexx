@@ -1393,8 +1393,8 @@ INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_gene
 INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_rss_activated','0');
 INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_rss_comments','10');
 INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_rss_messages','5');
-INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_shadowbox_height','500');
-INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_shadowbox_width','100');
+INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_shadowbox_height','300');
+INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_shadowbox_width','500');
 INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_tags_hitlist','5');
 INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_target_cmd','0');
 INSERT INTO `contrexx_module_data_settings` (`name`, `value`) VALUES ('data_template_category','<!-- BEGIN datalist_category -->\r\n<!-- this displays the category and the subcategories -->\r\n<div class=\"datalist_block\">\r\n<dl>\r\n	<!-- BEGIN category -->\r\n	<dt class=\"cattitle\">[[CATTITLE]]</dt>\r\n	<dd class=\"catcontent\">\r\n		<dl>\r\n		<!-- BEGIN entry -->\r\n		<dt>[[TITLE]]</dt>\r\n		<dd>\r\n			[[IMAGE]] [[CONTENT]] <a href=\"[[HREF]]\" [[CLASS]] [[TARGET]]>[[TXT_MORE]]</a>\r\n			<br style=\"clear: both;\" />\r\n		</dd>\r\n		<!-- END entry -->\r\n		</dl>\r\n	</dd>\r\n	<!-- END category -->\r\n</dl>\r\n</div>\r\n<!-- END datalist_category -->\r\n\r\n<!-- BEGIN datalist_single_category-->\r\n<!-- this displays just the entries of the category -->\r\n<div class=\"datalist_block\">\r\n<dl>\r\n    <!-- BEGIN single_entry -->\r\n    <dt class=\"cattitle\">[[TITLE]]</dt>\r\n    <dd class=\"catcontent2\">\r\n        [[IMAGE]] <p>[[CONTENT]] <a href=\"[[HREF]]\" [[CLASS]] [[TARGET]]>[[TXT_MORE]]</a></p>\r\n        <div style=\"clear: both;\"></div>\r\n    </dd>\r\n    <!-- END single_entry -->\r\n</dl>\r\n</div>\r\n<!-- END datalist_single_category -->');
