@@ -1248,7 +1248,6 @@ $this->arrRows[2] = '';
                         $setVariable["DIRECTORY_FEED_".strtoupper($fieldName)."_URL"] = $arrLinks[0];
                     }
 
-                    DBG::msg("setting variable "."DIRECTORY_FEED_".strtoupper($fieldName).' to '.nl2br($content));
                     $setVariable["TXT_DIRECTORY_FEED_".strtoupper($fieldName)] = $name;
                     $fieldsList .= '<div class="fieldsList"><div class="fieldDesc">'.nl2br($name).'</div><div class="fieldContent">'.nl2br($content).'</div></div>';
                 }
