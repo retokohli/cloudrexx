@@ -1015,4 +1015,5 @@ $_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess f
 $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "This function depends on a system running on an Apache web server. As well does it require the Apache module mod_rewrite. The system was unable to determine if those requirements are fulfilled!";
 $_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Fehler:  Konnte keine Informationen über vorhandene Tabellen lesen";
 $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Verzeichnis: '%1\$s'";
+$_ARRAYLANG['TXT_CONTENT_ASSIGN_BLOCK'] = "Assign blocks";
 ?>

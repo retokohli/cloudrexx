@@ -228,4 +228,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'] = "Timelimit (in seconds) 
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'] = "Timelimit to mark updated downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'] = "Defines how long (in seconds) a updated download should be marked as recently updated.";
 $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'] = "Examples: 1 day = 86400 seconds / 1 week = 604800 seconds";
+$_ARRAYLANG['TXT_DOWNLOADS_BLOCKS'] = "Template blocks";
+$_ARRAYLANG['TXT_DOWNLOADS_MISCELLANEOUS'] = "Miscellaneous";
 ?>
