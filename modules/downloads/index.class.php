@@ -53,22 +53,7 @@ class downloads extends DownloadsLibrary
     */
     function __construct($strPageContent)
     {
-global $_ARRAYLANG;
-
-$_ARRAYLANG['TXT_DOWNLOADS_START'] = 'Start';
-$_ARRAYLANG['TXT_DOWNLOADS_MORE'] = 'mehr';
-$_ARRAYLANG['TXT_DOWNLOADS_BYTES'] = "Bytes";
-$_ARRAYLANG['TXT_DOWNLOADS_KBYTE'] = "KB";
-$_ARRAYLANG['TXT_DOWNLOADS_MBYTE'] = "MB";
-$_ARRAYLANG['TXT_DOWNLOADS_GBYTE'] = "GB";
-$_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'] = "Hinzugefügt von";
-$_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Zuletzt aktualisiert";
-$_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Verwandte Kategories";
-$_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED'] = "Am meisten angeschaut";
-$_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED'] = "Am meisten herunter geladen";
-$_ARRAYLANG['TXT_DOWNLOADS_NEW'] = "Neu";
-$_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED'] = "Kürzlich aktualisiert";
-
+        global $_ARRAYLANG;
 
         global $_LANGID;
 
