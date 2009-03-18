@@ -228,4 +228,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'] = "Definiert die Zeitspann
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'] = "Zeitspanne zur Kennzeichnung von aktualisierten Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'] = "Definiert die Zeitspanne (in Sekunden) wie lange ein aktualisierter Download als solcher gekennzeichnet werden soll.";
 $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'] = "Beispiele: 1 Tag = 86400 Sekunden / 1 Woche = 604800 Sekunden";
+$_ARRAYLANG['TXT_DOWNLOADS_BLOCKS'] = "Template Blöcke";
+$_ARRAYLANG['TXT_DOWNLOADS_MISCELLANEOUS'] = "Sonstiges";
 ?>
