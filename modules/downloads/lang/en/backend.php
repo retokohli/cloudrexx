@@ -224,10 +224,21 @@ $_ARRAYLANG['TXT_DOWNLOADS_NEWEST_FILE_COUNT_DESC'] = "Maximum number of downloa
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT'] = "Number of recently updated downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT_DESC'] = "Maximum number of downloads that shoud be listed in the block 'Recently updated downloads'.";
 $_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT'] = "Timelimit to mark new downloads";
-$_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'] = "Timelimit (in seconds) for newly added downloads at marking them as new downloads.";
+$_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'] = "Amount of time (in seconds) for how long a newly aded download should be marked as new";
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'] = "Timelimit to mark updated downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'] = "Defines how long (in seconds) a updated download should be marked as recently updated.";
 $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'] = "Examples: 1 day = 86400 seconds / 1 week = 604800 seconds";
 $_ARRAYLANG['TXT_DOWNLOADS_BLOCKS'] = "Template blocks";
 $_ARRAYLANG['TXT_DOWNLOADS_MISCELLANEOUS'] = "Miscellaneous";
+$_ARRAYLANG['TXT_DOWNLOADS_START'] = "Start";
+$_ARRAYLANG['TXT_DOWNLOADS_MORE'] = "more";
+$_ARRAYLANG['TXT_DOWNLOADS_KBYTE'] = "KB";
+$_ARRAYLANG['TXT_DOWNLOADS_MBYTE'] = "MB";
+$_ARRAYLANG['TXT_DOWNLOADS_GBYTE'] = "GB";
+$_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'] = "Added by";
+$_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Last updated";
+$_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Related categories";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED'] = "Most viewed";
+$_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED'] = "Most downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED'] = "Recently updated";
 ?>
