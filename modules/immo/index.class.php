@@ -1298,7 +1298,7 @@ class Immo extends ImmoLib
         $subQueryPart = "";
         $first = true;
         $matches = array();
-        preg_match_all("/%([A-Z0-9äöü]+[^%])%/", $this->arrSettings['message'], $matches);
+        preg_match_all("/%([^%]+)%/", $this->arrSettings['message'], $matches);
         setlocale(LC_ALL, "de_CH");
         foreach ($matches[1] as $match) {
             if ($first) {
