@@ -308,7 +308,7 @@ class Knowledge extends KnowledgeLibrary
 	    $amount = $article['votes'];
 	    
 	    $this->tpl->setVariable(array(
-	       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
+	       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
 	       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
 	       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
 	       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
@@ -419,7 +419,7 @@ class Knowledge extends KnowledgeLibrary
     	               "QUESTION"      => $article['content'][$_LANGID]['question'],
     	               "ANSWER"        => $article['content'][$_LANGID]['answer'],
             	       "AVERAGE"       => round($average, 2),
-            	       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
+            	       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
             	       "AMOUNT_OF_RATING" => $amount,
             	       "MAX_RATING"    => $this->settings->get("max_rating"),
                        "LOCKED"        => $this->checkLocking($articleid),
@@ -489,7 +489,7 @@ class Knowledge extends KnowledgeLibrary
                        "QUESTION"      => $article['content'][$_LANGID]['question'],
                        "ANSWER"        => $article['content'][$_LANGID]['answer'],
                        "AVERAGE"       => round($average, 2),
-                       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
+                       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
                        "AMOUNT_OF_RATING" => $amount,
                        "HITS"          => $article['hits'],
                        "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
@@ -552,7 +552,7 @@ class Knowledge extends KnowledgeLibrary
     	               "ARTICLE_ID"    => $articleKey,
     	               "COUNTER"       => $counter++,
     	                   	               
-    	               "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
+    	               "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
             	       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
             	       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
             	       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
