@@ -25,6 +25,59 @@ class ImmoLib{
 	var $_objTpl;
 
 
+	var $arrFields = array(
+	   'price'             => 'Verkaufspreis',
+	   'short_desc'        => 'Kurzbeschreibung',
+	   'extras'            => 'Extras Übersicht',
+	);
+
+	var $arrPriceFields = array(
+	   'Verkaufspreis', 'Verkaufspreis EHP', 'Amtlicher Wert',
+	   'Amtlicher Wert EHP', 'Eigenmietwert Direkte Bundessteuer',
+	   'Eigenmietwert EHP', 'Gebäudeversicherung', 'Heiz- und NK, jährlich',
+	   'Erneuerungsfonds, jährlich', 'Eigenmietwert Kantons-/ Gemeindesteuer',
+	   'Handänderungskosten, 2.7% v. VP (Notariatskosten, Staatsabgaben, Grundbuchgebühren)'
+	);
+
+	var $arrFieldLayout = array(
+	   'standortplan'  =>
+            array(  'googlemap'),
+	   'vorzüge'       =>
+            array(  'Vorzüge Detailansicht'),
+	   'gebäudedaten'  =>
+            array(  'Baujahr',
+                    'Grundstücksfläche',
+                    'Gesamtwohnfläche',
+                    'Nettowohnfläche',
+                    'Amtlicher Wert',
+                    'Amtlicher Wert EHP',
+                    'Eigenmietwert Kantons-/ Gemeindesteuer',
+                    'Eigenmietwert Direkte Bundessteuer',
+                    'Eigenmietwert EHP',
+                    'Gebäudeversicherung',
+                    'Heiz- und NK, jährlich',
+                    'Erneuerungsfonds, jährlich',
+                    'Weitere Informationen'),
+        'zusatzfelder'  =>
+            array(  'Zustand',
+                    'Aussicht',
+                    'Schulen'),
+        'angebot'       =>
+            array(  'Verkaufspreis',
+                    'Verkaufspreis EHP',
+                    'Handänderungskosten, 2.7% v. VP (Notariatskosten, Staatsabgaben, Grundbuchgebühren)'),
+        'pläne'         =>
+            array(  'Verkaufsdokumentation',
+                    'Detailangaben',
+                    'Angaben Wohnfläche',
+                    'Grundriss EG',
+                    'Grundriss 1. OG',
+                    'Grundriss 2. OG',
+                    'Grundriss DG',
+                    'Grundriss 1. UG',
+                    'Situationsplan')
+	);
+
 	/**
 	 * Name of the theme directory, which shall be used. (see templates/frontend_images_viewer.html for example)
 	 *

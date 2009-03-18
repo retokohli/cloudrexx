@@ -1381,11 +1381,43 @@ class Immo extends ImmoLib
                 $message = str_replace("\r", "", $this->arrSettings['message']);
                 $message = str_replace("\n", "", $message);
 
+                //get all fieldnames + -contents from the highlighted immo ID
+                if(!empty($highlight)){
+                    $this->_getFieldNames($highlight);
+                }
+
                 /*
                     No replace the placeholder in the message with the date (if provided)
                 */
                 foreach ($matches[1] as $match) {
                     $toReplace = (isset($data[strtolower($match)])) ? $data[strtolower($match)] : "";
+                    //custom values for "price" field
+                    if($match == strtoupper($this->arrFields['price'])){
+                        $toReplace = number_format($toReplace, 0, '.', "'");
+                        $status = $this->_getFieldFromText('status');
+                        if($this->_getFieldFromText($this->arrFields['price']) == 0){
+                            $status = "null";
+                        }
+                        $toReplace = $this->arrSettings['currency_lang_'.$this->frontLang]." ".$toReplace." ".$this->_currencySuffix;
+                        switch($status){
+                            case 'verkauft':
+                                $toReplace = '<strike>'.$toReplace.'</strike>  &nbsp;<span style=\"color: red;\">(verkauft)</span>';
+                            break;
+
+                            case 'versteckt':
+                                $toReplace = '<span style=\"color: red;\">verkauft</span>';
+                            break;
+//
+//                            case 'null':
+//                                $toReplace = '<span style=\"color: red;\">verkauft</span>';
+//                            break;
+
+                            case 'reserviert':
+                                $toReplace .= '  &nbsp;<span style=\"color: red;\">(reserviert)</span>';
+                            break;
+                            default:
+                       }
+                    }
                     $message = str_replace("%".$match."%", $toReplace, $message);
                 }
 
