@@ -1883,7 +1883,7 @@ dl.data_module img {
 }
 
 #downloads div.image {
-	float: left;
+	float: right;
 	height:auto !important;
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
@@ -1960,21 +1960,22 @@ dl.data_module img {
 	padding: 0px 2px 0px 0px;
 	margin: 0px 0px 0px 0px;
 	width: 10px;
-	height: 10px;	
+	height: 10px;
 }
 
 #downloads div.download {
 	padding: 0px 0px 10px 0px;
 	margin: 5px 0px 15px 0px;
-	text-align: center;
 	width: 100%;
-	float: left;
+    position: relative;
 }
 
 #downloads div.download h3 img {
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
-	position: relative;
+    width: 24px;
+    height: 24px;
+    float:left;
 	top: 16px;
 }
 
@@ -2068,4 +2069,42 @@ dl.data_module img {
 
 #downloads div.message_ok {
 	color: #029202;
+}
+
+#downloads #download_view_types_wrapper {
+    display: block;
+    padding: 2em 0em 0em 0em;
+    clear:both;
+}
+#downloads #download_view_types {
+    display: block;
+    clear:both;
+    margin: 0px;
+    padding: 0px;
+}
+
+#downloads #download_view_types li{
+    float:left;
+    display: block;
+    padding-right: 1px;
+}
+#downloads #download_view_types li a.active{
+    float:left;
+    display: block;
+    background-color: #6983b6;
+    color:white;
+    padding: 0.4em 1em 0.4em 1em;
+}
+
+#downloads #download_view_types li a{
+    float:left;
+    display: block;
+    background-color: #f0f0f0;
+    padding: 0.4em 1em 0.4em 1em;
+    font-weight: bold;
+}
+
+#downloads #download_tabbar_closer {
+    margin-top: 2.2em;
+    border-top: 1px solid #f0f0f0;
 }
