@@ -16,6 +16,7 @@ $_ARRAYLANG['TXT_PREVIOUS_IMAGE'] = "Forrige billede";
 $_ARRAYLANG['TXT_NEXT_IMAGE'] = "Næste billede";
 $_ARRAYLANG['TXT_RESOLUTION'] = "Opløsning";
 $_ARRAYLANG['TXT_USER_DEFINED'] = "Brugerdefineret";
+$_ARRAYLANG['TXT_IMAGE_COUNT'] = "Antal billeder";
 $_ARRAYLANG['TXT_GALLERY'] = "Billedgalleri";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Bedømmelsen af billedet";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Aktuel bedømmelse";
