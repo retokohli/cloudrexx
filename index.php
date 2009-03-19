@@ -1720,6 +1720,12 @@ break;
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownloadsModule = new downloads($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
+
+        $downloads_pagetitle = $objDownloadsModule->getPageTitle();
+        if(!empty($downloads_pagetitle)) {
+            $page_metatitle = $downloads_pagetitle;
+            $page_title = $downloads_pagetitle;
+        }
     break;
 
 //-------------------------------------------------------
@@ -2144,7 +2150,7 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
      */
     $endcode = $objTemplate->get();
 
-    /* Finds all uncommented script tags, strips them out of the HTML and 
+    /* Finds all uncommented script tags, strips them out of the HTML and
      * stores them internally so we can put them in the placeholder later
      * (see JS::getCode() below)
      */

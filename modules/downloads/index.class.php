@@ -32,6 +32,7 @@ class downloads extends DownloadsLibrary
     private $userId;
     private $categoryId;
     private $cmd = '';
+    private $pageTitle;
 
     /**
      * @var HTML_Template_Sigma
@@ -83,10 +84,10 @@ class downloads extends DownloadsLibrary
         if (!empty($this->cmd)) {
             $this->moduleParamsHtml .= '&amp;cmd='.htmlentities($this->cmd, ENT_QUOTES, CONTREXX_CHARSET);
             $this->moduleParamsJs .= '&cmd='.htmlspecialchars($this->cmd, ENT_QUOTES, CONTREXX_CHARSET);
+        }
 
-            if (intval($this->cmd)) {
-                $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($this->cmd);
-            }
+        if (intval($this->cmd)) {
+            $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($this->cmd);
         } else {
             $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0;
         }
@@ -172,13 +173,12 @@ class downloads extends DownloadsLibrary
             $this->parseCrumbtrail($objCategory);
 
             if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) {
+                $this->pageTitle = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
                 $this->parseRelatedCategories($objDownload);
                 $this->parseRelatedDownloads($objDownload, $objCategory->getId());
 
                 $this->parseDownload($objDownload, $objCategory->getId());
-
-
 
                 // hide unwanted blocks on the detail page
                 if ($this->objTemplate->blockExists('downloads_category')) {
@@ -191,6 +191,8 @@ class downloads extends DownloadsLibrary
                     $this->objTemplate->hideBlock('downloads_file_list');
                 }
             } else {
+                $this->pageTitle = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+
                 // parse selected category
                 $this->parseCategory($objCategory);
 
@@ -402,6 +404,11 @@ function downloadsDeleteCategory(id,name)
 JS_CODE;
 
         return $javascript;
+    }
+
+    public function getPageTitle()
+    {
+        return $this->pageTitle;
     }
 
     private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null)
