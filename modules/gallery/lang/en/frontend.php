@@ -16,6 +16,7 @@ $_ARRAYLANG['TXT_PREVIOUS_IMAGE'] = "Previous image";
 $_ARRAYLANG['TXT_NEXT_IMAGE'] = "Next image";
 $_ARRAYLANG['TXT_RESOLUTION'] = "Resolution";
 $_ARRAYLANG['TXT_USER_DEFINED'] = "User defined";
+$_ARRAYLANG['TXT_GALLERY'] = "Image gallery";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Image ratings";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Current rating";
 $_ARRAYLANG['TXT_VOTING_STATS_WITH'] = "with";
