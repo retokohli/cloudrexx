@@ -29,8 +29,19 @@ class FWLanguage
      */
     function __construct()
     {
-        global $objDatabase;
+        $this->loadLangConfig();
+    }
 
+    /**
+     * Loads the language config from database.
+     *
+     * This used to be in __construct but is also
+     * called from core/language.class.php to reload
+     * the config, so core/settings.class.php can 
+     * rewrite .htaccess (virtual lang dirs).
+     */
+    function loadLangConfig() {
+        global $objDatabase;
          $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default
@@ -52,6 +63,7 @@ class FWLanguage
                 $objResult->MoveNext();
             }
         }
+
     }
 
 
