@@ -120,7 +120,8 @@ class frontendEditingLib {
 		
 		//Should toolbar be shown?
 		$showToolbar = 'true';
-		if($_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD] == false) {
+        if(isset($_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD]) && 
+                $_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD] == false) {
 			$showToolbar = 'false';
 		}
 				
@@ -146,7 +147,9 @@ class frontendEditingLib {
 	public static function isUserLoggedIn() {
 		$objCurrentUser = FWUser::getFWUserObject();
 		
-		return ($objCurrentUser->objUser->login() && $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] == true);
+        return ($objCurrentUser->objUser->login() && 
+                isset($_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD]) 
+                ? ($_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] == true) : false);
 	}
 }
 
