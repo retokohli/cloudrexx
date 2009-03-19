@@ -541,7 +541,7 @@ class MediaLibrary {
         // replace $change with ''
         $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|', '+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', 'Ã¤', 'Ã¶', 'Ã¼', 'Ã§');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach($change as $str){
@@ -728,7 +728,7 @@ class MediaLibrary {
 		$class1        = 'sort';     // sort desc
 		$class2        = 'sort';     // sort asc
 
-		switch($sort[0]){
+		switch($this->sortBy){
 		    case 'size':
 		        $class['size'] = $this->sortDesc ? $class1 : $class2;
 		        break;
