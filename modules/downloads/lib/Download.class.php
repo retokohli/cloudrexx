@@ -5,7 +5,7 @@ class Download {
     private $type;
     private $mime_type;
     private $source;
-    //private $icon;
+    private $icon;
     private $size;
     private $image;
     private $owner_id;
@@ -36,7 +36,7 @@ class Download {
             'type'                              => 'string',
             'mime_type'                         => 'string',
             'source'                            => 'string',
-            //'icon'                              => 'string',
+            'icon'                              => 'string',
             'size'                              => 'int',
             'image'                             => 'string',
             'owner_id'                         => 'int',
@@ -62,36 +62,36 @@ class Download {
     private $arrTypes = array('file', 'url');
     private $defaultType = 'file';
 
-//    private $arrIcons = array(
-//        'avi',
-//        'bmp',
-//        'css',
-//        'doc',
-//        'dot',
-//        'exe',
-//        'fla',
-//        'gif',
-//        'htm',
-//        'html',
-//        'inc',
-//        'jpg',
-//        'js',
-//        'mp3',
-//        'nfo',
-//        'pdf',
-//        'php',
-//        'png',
-//        'pps',
-//        'ppt',
-//        'rar',
-//        'swf',
-//        'txt',
-//        'wma',
-//        'xls',
-//        'zip'
-//    );
-//  private $defaultIcon = '_blank';
-//    private $urlIcon = 'htm';
+    private $arrIcons = array(
+        'avi',
+        'bmp',
+        'css',
+        'doc',
+        'dot',
+        'exe',
+        'fla',
+        'gif',
+        'htm',
+        'html',
+        'inc',
+        'jpg',
+        'js',
+        'mp3',
+        'nfo',
+        'pdf',
+        'php',
+        'png',
+        'pps',
+        'ppt',
+        'rar',
+        'swf',
+        'txt',
+        'wma',
+        'xls',
+        'zip'
+    );
+    private $defaultIcon = '_blank';
+    private $urlIcon = 'htm';
 
     private $isFrontendMode;
 
@@ -211,7 +211,7 @@ class Download {
         $this->type = $this->defaultType;
         $this->mime_type = $this->defaultMimeType;
         $this->source = '';
-        //$this->icon = $this->defaultIcon;
+        $this->icon = $this->defaultIcon;
         $this->size = 0;
         $this->image = '';
         $this->owner_id = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -404,7 +404,7 @@ class Download {
                 $this->type = isset($this->arrLoadedDownloads[$id]['type']) ? $this->arrLoadedDownloads[$id]['type'] : $this->defaultType;
                 $this->mime_type = isset($this->arrLoadedDownloads[$id]['mime_type']) ? $this->arrLoadedDownloads[$id]['mime_type'] : $this->defaultMimeType;
                 $this->source = isset($this->arrLoadedDownloads[$id]['source']) ? $this->arrLoadedDownloads[$id]['source'] : '';
-                //$this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
+                $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
                 $this->image = isset($this->arrLoadedDownloads[$id]['image']) ? $this->arrLoadedDownloads[$id]['image'] : '';
                 $this->owner_id = isset($this->arrLoadedDownloads[$id]['owner_id']) ? $this->arrLoadedDownloads[$id]['owner_id'] : 0;
@@ -1217,6 +1217,11 @@ class Download {
         return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.Download::$arrMimeTypes[$this->getMimeType()][($small ? 'icon_small' : 'icon')];
     }
 
+    public function getFileIcon()
+    {
+        return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.$this->icon.'.gif';
+    }
+
     public function getSize()
     {
         return $this->size;
@@ -1371,13 +1376,12 @@ class Download {
 
     public function setSource($source)
     {
-        // TODO: add url valicator
         if ($this->type == 'url') {
             $source = FWValidator::getUrl($source);
-            //$this->icon = $this->urlIcon;
-//        } else {
-//            $extension = pathinfo($source, PATHINFO_EXTENSION);
-//            $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
+            $this->icon = $this->urlIcon;
+        } else {
+            $extension = pathinfo($source, PATHINFO_EXTENSION);
+            $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
         }
 
         $this->source = $source;
