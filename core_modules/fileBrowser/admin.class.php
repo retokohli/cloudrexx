@@ -49,11 +49,13 @@ class FileBrowser {
         'media4'    => 'TXT_FILEBROWSER_MEDIA_4',
         'shop'      => 'TXT_FILEBROWSER_SHOP',
         'blog'      => 'TXT_FILEBROWSER_BLOG',
-        'podcast'   => 'TXT_FILEBROWSER_PODCAST'
+        'podcast'   => 'TXT_FILEBROWSER_PODCAST',
+        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS'
     );
     var $_shopEnabled;
     var $_blogEnabled;
     var $_podcastEnabled;
+    var $_downloadsEnabled;
 
     /**
      * File extensions that are allowed to upload
@@ -99,6 +101,7 @@ class FileBrowser {
         $this->_shopEnabled = $this->_checkForModule('shop');
         $this->_blogEnabled = $this->_checkForModule('blog');
         $this->_podcastEnabled = $this->_checkForModule('podcast');
+        $this->_downloadsEnabled = $this->_checkForModule('downloads');
 
         $this->_checkUpload();
         $this->checkMakeDir();
@@ -256,6 +259,9 @@ class FileBrowser {
             case 'podcast':
                 $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
             break;
+            case 'downloads':
+                $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
+            break;
             default:
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
@@ -373,6 +379,10 @@ class FileBrowser {
                 $strPath    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
             break;
+            case 'downloads':
+                $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
+            break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -432,6 +442,10 @@ class FileBrowser {
             case 'podcast':
                 $strPath    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'downloads':
+                $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
             break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -657,6 +671,9 @@ class FileBrowser {
                 case 'podcast':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PODCAST_IMAGES_WEB_PATH);
                 break;
+                case 'downloads':
+                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
+                break;
                 default:
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
             }
@@ -728,6 +745,9 @@ class FileBrowser {
             break;
             case 'podcast':
                 $strPath = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
+            break;
+            case 'downloads':
+                $strPath = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
             break;
             default:
                 $strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -812,6 +832,7 @@ class FileBrowser {
             if($type == 'shop' && !$this->_shopEnabled){ continue; }
             if($type == 'blog' && !$this->_blogEnabled){ continue; }
             if($type == 'podcast' && !$this->_podcastEnabled){ continue; }
+            if($type == 'downloads' && !$this->_downloadsEnabled){ continue; }
             $menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$text]."</option>\n";
         }
         $menu .= "</select>";
