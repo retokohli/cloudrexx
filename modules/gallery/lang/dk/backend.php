@@ -92,7 +92,6 @@ $_ARRAYLANG['TXT_IMAGE_LINK'] = "Billedlink";
 $_ARRAYLANG['TXT_IMAGE_SIZE_SHOW'] = "Vis billedstørrelse";
 $_ARRAYLANG['TXT_SETTINGS'] = "Indstillinger";
 $_ARRAYLANG['TXT_GALLERY'] = "Billedgalleri";
-$_ARRAYLANG['TXT_SIZE'] = "Filstørrelse";
 $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'] = "importer billeder";
 $_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'] = "På din sytem bliver følgende billedformater understøttet:";
 $_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'] = "Billeder som ikke er i disse formater, bliver ikke uplaoded";

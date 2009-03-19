@@ -16,6 +16,7 @@ $_ARRAYLANG['TXT_PREVIOUS_IMAGE'] = "Vorheriges Bild";
 $_ARRAYLANG['TXT_NEXT_IMAGE'] = "Nächstes Bild";
 $_ARRAYLANG['TXT_RESOLUTION'] = "Auflösung";
 $_ARRAYLANG['TXT_USER_DEFINED'] = "Benutzerdefiniert";
+$_ARRAYLANG['TXT_GALLERY'] = "Bildergalerie";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Bildbewertungen";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Aktuelle Bewertung";
 $_ARRAYLANG['TXT_VOTING_STATS_WITH'] = "bei";

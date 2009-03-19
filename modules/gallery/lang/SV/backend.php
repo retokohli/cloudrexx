@@ -92,7 +92,6 @@ $_ARRAYLANG['TXT_IMAGE_LINK'] = "Bildlink";
 $_ARRAYLANG['TXT_IMAGE_SIZE_SHOW'] = "Bildgrösse zeigen";
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_GALLERY'] = "Bildergalerie";
-$_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'] = "Bilder importieren";
 $_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'] = "Auf Ihrem System werden folgende Bildformate unterstützt:";
 $_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'] = "Bilder welche nicht diesen Formaten entsprechen, werden nicht heraufgeladen.";
