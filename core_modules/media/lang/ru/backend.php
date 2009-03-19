@@ -69,6 +69,7 @@ $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Просмотр дизайна";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Установить новый шаблон дизайна";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Активировать";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Метка заполнитель каталога";
+$_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED'] = "Some special characters ";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Мета ключи";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Магазин";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Содержание";
