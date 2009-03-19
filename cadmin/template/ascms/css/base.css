@@ -394,6 +394,12 @@ table.subnavbar {
 	padding: 4px;
 }
 
+.warningbox {
+    border: #ffb400 1px solid;
+    background: #ffde8f; 
+    padding: 4px;
+}
+
 .note {
         padding-left: 18px;
         background: url('../../../images/icons/note.gif') no-repeat 0 50%;
