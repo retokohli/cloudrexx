@@ -419,9 +419,11 @@ class settingsManager
             'RewriteRule ^('.implode('|', $arrLanguageCodes).')/.*$ '.ASCMS_PATH_OFFSET.'/sitemap_$1.xml [L,NC]'
         );
 
+        // can't use 301 here, as it would fuck up all the tiny little services that
+        // POST to something else than index.php (frontend editing, ...)
         $arrRules['normal_files'] = array(
             'RewriteCond %{IS_SUBREQ} false',
-            'RewriteRule ^(?:'.implode('|', $arrLanguageCodes).')/(.*)$ '.ASCMS_PATH_OFFSET.'/$1 [L,NC,R=301]'
+            'RewriteRule ^(?:'.implode('|', $arrLanguageCodes).')/(.*)$ '.ASCMS_PATH_OFFSET.'/$1 [L,NC]'
         );
 
         $arrRules['fallback'] = array(

@@ -96,7 +96,6 @@ class InitCMS
         $this->loadModulePaths();
     }
 
-
     /**
      * Backend language initialization
      */
@@ -151,7 +150,9 @@ class InitCMS
         if (   isset($_CONFIG['useVirtualLanguagePath'])
             && $_CONFIG['useVirtualLanguagePath'] == 'on'
             && $this->mode == 'frontend'
-            && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])) {
+            && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])
+            && basename($_SERVER['SCRIPT_FILENAME']) != 'frontendEditing.class.php'
+        ) {
             header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.CONTREXX_DIRECTORY_INDEX.(empty($_GET) ? '' : '?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))));
             exit;
         }
