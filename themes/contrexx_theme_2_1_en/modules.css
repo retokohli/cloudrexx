@@ -1,4 +1,9 @@
 /***************************************************/
+/* Fix the PNG transparency in IE6                 */
+/***************************************************/
+img,a { behavior: url(themes/contrexx_theme_2_1_en/iepngfix.htc) }
+
+/***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
 
@@ -154,6 +159,12 @@ div.row2 {
         float: none;
 }
 
+/***************************************************/
+/* CSS DEFINITIONS FOR LIVECAM MODULE              */
+/***************************************************/
+div#livecam #CALBUTTONDPC_datum {
+    display: none;
+}
 
 /***************************************************/
 /* CSS DEFINITIONS FOR GALLERY MODULE              */
@@ -1751,6 +1762,44 @@ div.datalist_block dl dd.catcontent {
     padding-top:5px;
 }
 
+/************************************/
+/* CSS DEFINITIONS FOR DATA-MODULE  */
+/************************************/
+
+div.datalist_block dl dt {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    font-weight: bold;
+    display: block;
+}
+
+div.datalist_block dl dd {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    border-top: 0px solid #cbb354;
+}
+
+div.datalist_block dl dt.cattitle {
+    font-weight: bold;
+    margin: 0px;
+    padding: 2px;
+    display: block;
+    background-color: #EEEEEE;
+    border: 0px #bcbcbc solid;
+    margin-top: 11px;
+}
+
+div.datalist_block dl dd.catcontent {
+	padding: 0px;
+    border: 0px #bcbcbc solid;
+    border-top: none;
+	padding-top:5px;
+}
+
+div.datalist_block dl dd.catcontent2 p{
+    padding: 0px;
+}
+
 div.datalist_block dl dd.catcontent2 p{
     padding: 0px;
 }
@@ -1834,7 +1883,7 @@ dl.data_module img {
 }
 
 #downloads div.image {
-	float: left;
+	float: right;
 	height:auto !important;
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
@@ -1911,21 +1960,22 @@ dl.data_module img {
 	padding: 0px 2px 0px 0px;
 	margin: 0px 0px 0px 0px;
 	width: 10px;
-	height: 10px;	
+	height: 10px;
 }
 
 #downloads div.download {
 	padding: 0px 0px 10px 0px;
 	margin: 5px 0px 15px 0px;
-	text-align: center;
 	width: 100%;
-	float: left;
+    position: relative;
 }
 
 #downloads div.download h3 img {
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
-	position: relative;
+    width: 24px;
+    height: 24px;
+    float:left;
 	top: 16px;
 }
 
@@ -2019,4 +2069,42 @@ dl.data_module img {
 
 #downloads div.message_ok {
 	color: #029202;
+}
+
+#downloads #download_view_types_wrapper {
+    display: block;
+    padding: 2em 0em 0em 0em;
+    clear:both;
+}
+#downloads #download_view_types {
+    display: block;
+    clear:both;
+    margin: 0px;
+    padding: 0px;
+}
+
+#downloads #download_view_types li{
+    float:left;
+    display: block;
+    padding-right: 1px;
+}
+#downloads #download_view_types li a.active{
+    float:left;
+    display: block;
+    background-color: #6983b6;
+    color:white;
+    padding: 0.4em 1em 0.4em 1em;
+}
+
+#downloads #download_view_types li a{
+    float:left;
+    display: block;
+    background-color: #f0f0f0;
+    padding: 0.4em 1em 0.4em 1em;
+    font-weight: bold;
+}
+
+#downloads #download_tabbar_closer {
+    margin-top: 2.2em;
+    border-top: 1px solid #f0f0f0;
 }
