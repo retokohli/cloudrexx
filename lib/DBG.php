@@ -26,6 +26,9 @@ class DBG
         throw new Exception('This is a static class! No need to create an object!');
     }
 
+    public static function __internal__setup() {
+        self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
+    }
 
     static function enable_firephp()
     {
@@ -66,9 +69,7 @@ class DBG
         if (self::$dbg_fh) fclose(self::$dbg_fh);
         if(!is_null(self::$firephp)) return true; //no need to setup ressources, we're using firephp
         self::$dbg_fh = fopen($file, $mode);
-        $cinfo = debug_backtrace();
 
-        self::$fileskiplength = strlen(dirname($cinfo[0]['file'])) +1;
         return true;
     }
 
@@ -222,6 +223,7 @@ class DBG
 
 }
 
+DBG::__internal__setup();
 
 function DBG_log_adodb($msg)
 {
