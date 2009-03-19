@@ -30,6 +30,8 @@ class downloads extends DownloadsLibrary
     private $moduleParamsJs = '?section=downloads';
 
     private $userId;
+    private $categoryId;
+    private $cmd = '';
 
     /**
      * @var HTML_Template_Sigma
@@ -55,45 +57,48 @@ class downloads extends DownloadsLibrary
     {
         global $_ARRAYLANG;
 
-        global $_LANGID;
-
         parent::__construct();
-
-        $this->_intLanguageId = intval($_LANGID);
 
         $objFWUser = FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
+
+        $this->parseURLModifiers();
 
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);
     }
 
+    private function parseURLModifiers()
+    {
+        if (isset($_GET['download'])) {
+            $this->cmd = 'download_file';
+        } elseif (isset($_GET['delete_file'])) {
+            $this->cmd = 'delete_file';
+        } elseif (isset($_REQUEST['cmd'])) {
+            $this->cmd = $_REQUEST['cmd'];
+        }
+
+        // check if the cmd is a number
+        if (!empty($this->cmd)) {
+            $this->moduleParamsHtml .= '&amp;cmd='.htmlentities($this->cmd, ENT_QUOTES, CONTREXX_CHARSET);
+            $this->moduleParamsJs .= '&cmd='.htmlspecialchars($this->cmd, ENT_QUOTES, CONTREXX_CHARSET);
+
+            if (intval($this->cmd)) {
+                $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($this->cmd);
+            }
+        } else {
+            $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0;
+        }
+    }
 
     /**
-    * Reads $_GET['cmd'] and selects (depending on the value) an action
+    * Reads $this->cmd and selects (depending on the value) an action
     *
     */
     public function getPage()
     {
-        if (!isset($_GET['cmd'])) {
-            $_GET['cmd'] = '';
-        }
-
-        if (isset($_GET['download'])) {
-            $_GET['cmd'] = 'download_file';
-        }
-        if (isset($_GET['delete_file'])) {
-            $_GET['cmd'] = 'delete_file';
-        }
-
-        // check if the cmd is a number
-        if (!empty($_REQUEST['cmd']) && intval($_REQUEST['cmd'])) {
-            $this->moduleParamsHtml .= '&amp;cmd='.intval($_REQUEST['cmd']);
-            $this->moduleParamsJs .= '&cmd='.intval($_REQUEST['cmd']);
-        }
-
-        switch ($_GET['cmd']) {
+        switch ($this->cmd) {
             case 'download_file':
                 $this->download();
                 exit;
@@ -107,14 +112,8 @@ class downloads extends DownloadsLibrary
             case "file":
                 $this->GetFile();
                 break;
-            /*case 'user';
-                $this->showUserInfo();
-                break;
-            case 'check';
-                $this->checkUser();
-                break;*/
+
             default:
-                //$this->listDownloads();
                 $this->overview();
                 break;
         }
@@ -156,7 +155,7 @@ class downloads extends DownloadsLibrary
 
 
         $objDownload = new Download();
-        $objCategory = Category::getCategory(!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
+        $objCategory = Category::getCategory($this->categoryId);
 
         if ($objCategory->getId()) {
             // check access permissions to selected category
@@ -646,6 +645,16 @@ JS_CODE;
             $thumbnail = $this->getHtmlImageTag($this->defaultCategoryImage['src'].'.thumb', htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
         }
 
+        if ($objDownload->getType() == 'file') {
+            $source = basename($objDownload->getSource());
+        } else {
+            if (preg_match('#^[a-z]+://([^/]+)#i', $objDownload->getSource(), $arrMatch)) {
+                $source = $arrMatch[1];
+            } else {
+                $source = $objDownload->getSource();
+            }
+        }
+
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_ADDED_BY'            => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'],
             'TXT_DOWNLOADS_LAST_UPDATED'        => $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'],
@@ -661,11 +670,12 @@ JS_CODE;
             'DOWNLOADS_FILE_THUMBNAIL'          => $thumbnail,
             'DOWNLOADS_FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
             'DOWNLOADS_FILE_ICON'               => $this->getHtmlImageTag($objDownload->getIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_FILE_FILE_TYPE_ICON'     => $this->getHtmlImageTag($objDownload->getFileIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_FILE_DELETE_ICON'        => $this->getHtmlDeleteLinkIcon($objDownload->getId(), htmlspecialchars($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;download='.$objDownload->getId(),
             'DOWNLOADS_FILE_OWNER'              => $this->getParsedUsername($objDownload->getOwnerId()),
             'DOWNLOADS_FILE_OWNER_ID'           => $objDownload->getOwnerId(),
-            'DOWNLOADS_FILE_SRC'                => htmlentities($objDownload->getType() == 'file' ? basename($objDownload->getSource()) : $objDownload->getSource(), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_FILE_SRC'                => htmlentities($source, ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_FILE_LAST_UPDATED'       => date(ASCMS_DATE_FORMAT, $objDownload->getMTime()),
             'DOWNLOADS_FILE_VIEWS'              => $objDownload->getViewCount(),
             'DOWNLOADS_FILE_DOWNLOAD_COUNT'     => $objDownload->getDownloadCount()
