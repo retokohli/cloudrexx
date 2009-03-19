@@ -1133,6 +1133,12 @@ if (!empty($objTemplate->_variables['CONTENT_OK_MESSAGE'])) {
         $objTemplate->_variables['CONTENT_OK_MESSAGE'].'</div><br />';
 }
 
+if (!empty($objTemplate->_variables['CONTENT_WARNING_MESSAGE'])) {
+    $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .= 
+        '<div class="warningbox" style="overflow: auto">'.
+        $objTemplate->_variables['CONTENT_WARNING_MESSAGE'].'</div><br />';
+}
+
 // Style parsing
 if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
     // check if there's a css file in the core section
