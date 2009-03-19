@@ -43,6 +43,20 @@ class Immo extends ImmoLib
     */
     var $_objTpl;
 
+    var $_arrPriceFormat = array(
+    	1 => array(
+    		'dec' => 0,
+    		'dec_sep' => ",",
+    		'thousand_sep' => "'",
+    	),
+    	2 => array(
+    		'dec' => 0,
+    		'dec_sep' => ",",
+    		'thousand_sep' => "'",
+    	)
+    );
+
+
     /**
      * frontend CMS language
      *
@@ -851,9 +865,9 @@ class Immo extends ImmoLib
                         $textcount++;
                         $this->_objTpl->setVariable(array(
                             'IMMO_FIELD_NAME'            =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-                            'IMMO_FIELD_CONTENT'        =>    htmlentities($field['type'] == 'price' ? number_format($field['content'][$this->frontLang],0,".","'") : $field['content'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-                            'TXT_IMMO_CURRENCY_PREFIX'    =>    $field['type'] == 'price' ? htmlentities($this->arrSettings['currency_lang_'.$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET) : '',
-                            'TXT_IMMO_CURRENCY_SUFFIX'    =>    $field['type'] == 'price' ? $this->_currencySuffix : '',
+                            'IMMO_FIELD_CONTENT'         =>    htmlentities($field['type'] == 'price' ? number_format($field['content'][$this->frontLang], $this->_arrPriceFormat[$this->frontLang]['dec'], $this->_arrPriceFormat[$this->frontLang]['dec_sep'], $this->_arrPriceFormat[$this->frontLang]['thousand_sep']) : $field['content'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
+                            'TXT_IMMO_CURRENCY_PREFIX'   =>    $field['type'] == 'price' ? htmlentities($this->arrSettings['currency_lang_'.$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET) : '',
+                            'TXT_IMMO_CURRENCY_SUFFIX'   =>    $field['type'] == 'price' ? $this->_currencySuffix : '',
                         ));
                         if(trim($field['content'][$this->frontLang]) != ''){
                             if($textcount < $this->_fieldCount['text']){
@@ -1393,7 +1407,7 @@ class Immo extends ImmoLib
                     $toReplace = (isset($data[strtolower($match)])) ? $data[strtolower($match)] : "";
                     //custom values for "price" field
                     if($match == strtoupper($this->arrFields['price'])){
-                        $toReplace = number_format($toReplace, 0, '.', "'");
+                        $toReplace = number_format($toReplace, $this->_arrPriceFormat[$this->frontLang]['dec'], $this->_arrPriceFormat[$this->frontLang]['dec_sep'], $this->_arrPriceFormat[$this->frontLang]['thousand_sep']);
                         $status = $this->_getFieldFromText('status');
                         if($this->_getFieldFromText($this->arrFields['price']) == 0){
                             $status = "null";
