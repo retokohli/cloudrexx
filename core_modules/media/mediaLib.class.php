@@ -148,6 +148,15 @@ class MediaLibrary {
                             @unlink($this->path . $fileName . '.thumb');
                         }
 
+                        $ok = 0;
+                        $err = 0;
+
+                        $fileName = preg_replace("/[^\x2c-\x7d]/", "_", $fileName, -1, $count);
+                        if ($count > 0) {
+                            $warn = true;
+                        } else {
+                            $warn = false;
+                        }
                         if(@move_uploaded_file($tmpFile, $this->path . $fileName)) {
                             $obj_file = new File();
                         	$obj_file->setChmod($this->path, $this->webPath, $fileName);
@@ -164,11 +173,12 @@ class MediaLibrary {
 
         if($ok != 0 && $er == 0) {
         	$objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_NEW_FILE']);
-        }
-        elseif($ok == 0 && $er != 0) {
+            if ($warn) {
+                $objTemplate->setVariable('CONTENT_WARNING_MESSAGE', $_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED']);
+            }
+        } elseif ($ok == 0 && $er != 0) {
         	$objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_FILE']);
-        }
-        else {
+        } else {
         	$objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_SEVERAL_NEW_FILE']);
         }
     }
