@@ -481,7 +481,7 @@ class FWUser extends User_Setting
      * characters (like 0/O, l/I etc.).
      */
     public static function mkSECID() {
-        $chars = 'ACDEFGHJKLMNPRTUWXZ2345679';
+        $chars = 'ACDEFGHJKLMNPRTUWXZ345679';
         $max   = strlen($chars) -1;
         $ret = '';
         for ($i=0;$i<4;$i++) {
