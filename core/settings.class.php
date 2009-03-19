@@ -358,10 +358,13 @@ class settingsManager
      * which are needed for a working path translation of the virtual language paths.
      * Otherwise if $use is set to FALSE, it removes the associated RewriteRules form the HtAccess file.
      *
+     * This is public, as it needs to be set from core/language.class.php as well (when enabling or
+     * disabling languages etc.)
+     *
      * @param boolean $use
-     * @access private
+     * @access public
      */
-    private function setVirtualLanguagePath($use)
+    public function setVirtualLanguagePath($use)
     {
         global $objLanguage, $_CONFIG;
 

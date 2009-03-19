@@ -23,7 +23,7 @@ include_once('../lib/DBG.php');
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
  */
-define('_DEBUG', false);
+define('_DEBUG', DBG_NONE);
 
 //-------------------------------------------------------
 // Set error reporting
@@ -741,8 +741,8 @@ switch ($plainCmd) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
-        $objLanguage = new LanguageManager();
-        $objLanguage->getLanguagePage();
+        $objLangManager = new LanguageManager();
+        $objLangManager->getLanguagePage();
         break;
 
     //-------------------------------------------------------

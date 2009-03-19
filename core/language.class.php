@@ -9,6 +9,7 @@
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
+require_once ASCMS_CORE_PATH.'/settings.class.php';
 
 /**
  * Language Manager
@@ -949,7 +950,10 @@ class LanguageManager
      */
     function modifyLanguage()
     {
-        global $_CORELANG, $objDatabase;
+        // note: $objLanguage is not the same as $this, even if it
+        // used to be (was defined in cadmin/index.php)
+        global $_CORELANG, $_CONFIG, $objDatabase, $objLanguage;
+
         if (!empty($_POST['submit']) AND (isset($_POST['addLanguage']) && $_POST['addLanguage']=="true")) {
             //-----------------------------------------------
             // Add new language with all variables
@@ -1016,6 +1020,12 @@ class LanguageManager
                 $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET name='".$name."', frontend=".$active." , is_default='".$status."',backend='".$adminstatus."' WHERE id=".$id);
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+
+            $objLanguage->loadLangConfig();
+            $settings = new settingsManager();
+            DBG::msg("setting virtual lang paths: ".($_CONFIG['useVirtualLanguagePath'] == 'on'));
+            $settings->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on');
+
             return true;
        }
         return false;
