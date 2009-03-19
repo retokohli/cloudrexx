@@ -750,7 +750,7 @@ class Gallery
      */
     function showCategoryOverview($intParentId=0)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
 
         $intParentId = intval($intParentId);
 
@@ -854,14 +854,14 @@ class Gallery
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="images/modules/gallery/no_images.gif" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': 0';
-                    $strInfo     .= '<br />'.$_ARRAYLANG['TXT_SIZE'].': 0kB';
+                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': 0kB';
                 } else {
                     $strName    = $arrCategoryLang['name'];
                     $strDesc    = $arrCategoryLang['desc'];
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="'.$arrCategoryImages[$objResult->fields['id']].'" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': '.$arrCategoryImageCounter[$objResult->fields['id']];
-                    $strInfo     .= '<br />'.$_ARRAYLANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB';
+                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB';
                 }
 
                 $this->_objTpl->setVariable(array(
