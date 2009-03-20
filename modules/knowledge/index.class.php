@@ -59,6 +59,7 @@ class Knowledge extends KnowledgeLibrary
 	{	 	    
 	    global $_LANGID;
         JS::activate('prototype');
+        JS::registerJS('modules/knowledge/frontend/fix_prototype.js');
         JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
