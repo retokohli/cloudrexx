@@ -802,7 +802,7 @@ JS_CODE;
         }
     }
 
-    private function parseCategoryAttributes($objCategory, $row, $variablePrefix, $allowDeleteCategory)
+    private function parseCategoryAttributes($objCategory, $row, $variablePrefix, $allowDeleteCategory = false)
     {
         global $_LANGID, $_ARRAYLANG;
 
