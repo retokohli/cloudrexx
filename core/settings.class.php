@@ -13,7 +13,7 @@
 /**
  * @ignore
  */
-require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
+isset($objInit) && $objInit->mode == 'backend' ? require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php' : null;
 /**
  * @ignore
  */
