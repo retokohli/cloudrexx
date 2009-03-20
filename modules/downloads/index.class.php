@@ -1,26 +1,26 @@
 <?php
 /**
- * Downloadmodul
+ * Digital Asset Management
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Damir Beciragic <damie.beciragic@comvation.com>
- * @version        $Id: index.inc.php,v 1.00 $
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  downloads
+ * @subpackage  module_downloads
+ * @version     1.0.0
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
 
-
-/*
-
-ARRAYLANG['TXT_DOWNLOADS_FILTERS']    = "Suche";
-
+/**
+* Digital Asset Management Frontend
+* @copyright    CONTREXX CMS - COMVATION AG
+* @author       COMVATION Development Team <info@comvation.com>
+* @package      contrexx
+* @subpackage   module_downloads
+* @version      1.0.0
 */
-
-
 class downloads extends DownloadsLibrary
 {
     private $htmlLinkTemplate = '<a href="%s" title="%s">%s</a>';
@@ -281,10 +281,10 @@ class downloads extends DownloadsLibrary
             }
 
             // parse most viewed downloads
-            $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), null, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
+            $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
 
             // parse most downloaded downloads
-            $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), null, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
+            $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
 
             // parse most popular downloads
             // TODO: Rating system has to be implemented first!
@@ -950,7 +950,7 @@ JS_CODE;
             $this->objTemplate->setVariable(array(
                 'TXT_DOWNLOADS_MOST_VIEWED'         => $_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED'],
                 'TXT_DOWNLOADS_MOST_DOWNLOADED'     => $_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED'],
-                'TXT_DOWNLOADS_NEW'                 => $_ARRAYLANG['TXT_DOWNLOADS_NEW'],
+                'TXT_DOWNLOADS_NEW_DOWNLOADS'       => $_ARRAYLANG['TXT_DOWNLOADS_NEW_DOWNLOADS'],
                 'TXT_DOWNLOADS_RECENTLY_UPDATED'    => $_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED']
             ));
 
