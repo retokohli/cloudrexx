@@ -1,21 +1,26 @@
 <?php
 /**
- * Downloads module
+ * Digital Asset Management
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  downloads
+ * @subpackage  module_downloads
+ * @version     1.0.0
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
 
-
-
-
+/**
+ * Digital Asset Management Backend
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
 class downloads extends DownloadsLibrary
 {
     /**

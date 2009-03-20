@@ -1,5 +1,21 @@
 <?php
+/**
+ * Digital Asset Management
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
 
+/**
+ * Digital Asset Management Category
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
 class Category {
     /**
      * ID of loaded category
@@ -934,7 +950,6 @@ class Category {
                     `modify_access_by_owner` = ".intval($this->modify_access_by_owner)."
                 WHERE `id` = ".$this->id
             ) === false) {
-                // TODO: add lang var ?
                 $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_CATEGORY'];
                 return false;
             }
@@ -961,7 +976,6 @@ class Category {
                 )") !== false) {
                 $this->id = $objDatabase->Insert_ID();
             } else {
-                // TODO: add lang var
                 $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_CATEGORY'];
                 return false;
             }
@@ -977,10 +991,12 @@ class Category {
         }
 
         if (!$this->storePermissions()) {
-            // TODO: add lang var
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'];
             return false;
         }
+
+        $objFWUser = FWUser::getFWUserObject();
+        $objFWUser->objUser->getDynamicPermissionIds(true);
 
         return true;
     }
@@ -1398,5 +1414,4 @@ class Category {
     }
 
 }
-
 ?>

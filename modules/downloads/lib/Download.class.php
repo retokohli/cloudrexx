@@ -1,4 +1,21 @@
 <?php
+/**
+ * Digital Asset Management
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
+
+/**
+ * Digital Asset Management Download
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
 class Download {
 
     private $id;
@@ -335,7 +352,6 @@ class Download {
         return isset($this->descriptions[$langId]) ? $this->descriptions[$langId] : '';
     }
 
-    // TODO: extend function that is loads the locales of all loaded downloads at once
     public function loadLocales()
     {
         global $objDatabase;
@@ -916,7 +932,6 @@ class Download {
                     `order` = ".intval($this->order)."
                 WHERE `id` = ".$this->id
             ) === false) {
-                // TODO: add lang var ?
                 $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_DOWNLOAD'];
                 return false;
             }
@@ -961,7 +976,6 @@ class Download {
                 )") !== false) {
                 $this->id = $objDatabase->Insert_ID();
             } else {
-                // TODO: add lang var
                 $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_DOWNLOAD'];
                 return false;
             }
@@ -986,6 +1000,9 @@ class Download {
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'];
             return false;
         }
+
+        $objFWUser = FWUser::getFWUserObject();
+        $objFWUser->objUser->getDynamicPermissionIds(true);
 
         return true;
     }
@@ -1527,17 +1544,6 @@ class Download {
     {
         $this->downloads = $arrDownloads;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -1,19 +1,34 @@
 <?php
+/**
+ * Digital Asset Management
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
+
+/**
+ * @ignore
+ */
 require_once dirname(__FILE__).'/Category.class.php';
+/**
+ * @ignore
+ */
 require_once dirname(__FILE__).'/Download.class.php';
 /**
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-/**
- * Downloads library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  Library 4 downloads module
- */
 
+/**
+ * Digital Asset Management Library
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
 class DownloadsLibrary
 {
 
