@@ -104,6 +104,8 @@ $_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Zeichensatz der Verbindung";
 $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "Der Zeichensatz für die MySQL Verbindung wird für die Sortierreihenfolge, sowie für Suchoperationen verwendet.<br  /><br />Wenn Sie vor haben diese Webseite in mehreren Sprachen anzubieten, wird empfohlen, entweder <strong>utf8_unicode_ci</strong> oder <strong>utf8_general_ci</strong> zu verwenden. Wobei <strong>utf8_unicode_ci</strong> Erweiterungen unterstützt, was bedeutet, dass es z.B. die Gleichsetzung im Deutschen von `ß´ = `ss´ kennt, im Gegensatz zu <strong>utf8_general_ci</strong>, welches zwar keine Erweiterungen unterstützt, deshalb aber wesentlich schneller ist.<br /><br />Verwenden Sie andernfalls, wenn Sie die Webseite nur in einer Sprache anbieten wollen, einen entsprechend spezifischen Zeichensatz.";
 
 // installation
+$_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Konnte die überflüssigen Sprachen nicht deaktivieren!";
+$_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE'] = "Konnte die Standard Sprachen nicht aktivieren!";
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Konnte die Berechtigungen nicht ändern: ";
 $_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Kann die Datei [FILENAME] nicht öffnen";
 $_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Kann die Datei %s nicht erstellen";
@@ -153,14 +155,15 @@ $_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE'] = "Konnte den RSS Titel nicht setzen!";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION'] = "Konnte die RSS Beschreibung nicht setzen!";
 $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Konnte die Kontaktformular E-Mail Adresse nicht setzen!";
 $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
-$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Geben Sie hier den Domainnamen an, auf welchem diese Installation durchgeführt wird, z.B. 'www.ihredomain.com' (ohne http:// oder zusätzliche Pfade)";
+$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Geben Sie hier den Domainnamen an, auf welchem diese Installation durchgeführt wird, z.B. 'www.ihredomain.com' (ohne http(s):// oder zusätzliche Pfade)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Konnte die Domain URL nicht setzen!";
-$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Geben Sie die Domain URL ohne 'http://' oder zusätzliche Pfade an!";
+$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Geben Sie die Domain URL ohne 'http(s)://' oder zusätzliche Pfade an!";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Die Datei %s konnte nicht geschrieben werden. Überprüfen Sie die Berechtigungen (666) der Datei.";
 
 // admin account
 $_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Definieren Sie einen Benutzernamen mit Passwort, der als Administrator dienen soll.";
 $_ARRLANG['TXT_SET_USERNAME'] = "Sie müssen einen Benutzernamen definieren!";
+$_ARRLANG['TXT_INVALID_USERNAME'] = "Der Benutzername hat ungültige Zeichen. Es dürfen nur A-Z, 0-9, - und _ verwendet werden.";
 $_ARRLANG['TXT_SET_PASSWORD'] = "Sie müssen ein Passwort definieren!";
 $_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 Zeichen)";
 $_ARRLANG['TXT_PASSWORD_LENGTH'] = "Das Passwort muss mindestens 6 Zeichen lang sein!";

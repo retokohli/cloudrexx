@@ -4,7 +4,7 @@
 function reset()
 {
     if(confirm('{TXT_CALENDAR_RESET_STANDARD_CONFIRM}'))
-        window.location.replace("?cmd=calendar{MODULE_INDEX}&act=style&style=reset");
+        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=style&style=reset");
 
 }
 
@@ -20,7 +20,7 @@ function setStyle()
 // -->
 </script>
 
-<form action="index.php?cmd=calendar{MODULE_INDEX}&amp;act=saveSettings" method="post">
+<form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=saveSettings" method="post">
     <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 		<tr>
 			<th colspan="2" nowrap="nowrap">
@@ -78,6 +78,19 @@ function setStyle()
 			</td>
 		</tr>
 		<!-- END calendar_std_lang -->
+    </table>
+    <table class="adminlist" width="100%" cellpadding="3" cellspacing="0" border="0">
+        <tr>
+            <th colspan="2">{TXT_CALENDAR_FRONTEND_SETTINGS}</th>
+        </tr>
+        <tr class="row1">
+            <td  style="width: 250px">{TXT_CALENDAR_SETTINGS_FE_ENTRIES_ENABLED}</td>
+            <td>
+                <select name="fe_entries_ability">
+                    {FE_ENTRIES_OPTIONS}
+                </select>
+            </td>
+        </tr>
     </table>
     <br />
     <ul id="tabmenu">

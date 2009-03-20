@@ -72,7 +72,8 @@ function votingShowCurrent($page_content){
 			additional_nickname,               additional_forename,
 			additional_surname,                additional_phone,
 			additional_street,                 additional_zip,
-		   	additional_city,                   additional_email
+            additional_city,                   additional_email,
+            additional_comment
 
 			FROM ".DBPREFIX."voting_system where id=".intval($_GET['vid']);
 	} else {
@@ -83,7 +84,8 @@ function votingShowCurrent($page_content){
 			additional_nickname,               additional_forename,
 			additional_surname,                additional_phone,
 			additional_street,                 additional_zip,
-		   	additional_city,                   additional_email
+		   	additional_city,                   additional_email,
+            additional_comment
 
 			FROM ".DBPREFIX."voting_system where status=1";
 	}
@@ -125,9 +127,9 @@ function votingShowCurrent($page_content){
 			$votingVotes=$objResult->fields['votes'];
 			$votingDate=$objResult->fields['datesec'];
 
-			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
+			if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
 			$objTpl->setVariable(array(
-				'VOTING_OLDER_TEXT'		=> '<a href="?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
+				'VOTING_OLDER_TEXT'		=> '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
 				'VOTING_OLDER_DATE'		=> showFormattedDate($votingDate),
 				'VOTING_VOTING_ID'		=> $votingid,
 				'VOTING_LIST_CLASS'		=> $class,
@@ -154,19 +156,18 @@ function votingShowCurrent($page_content){
     	}
 		$images = 1;
 
-		/*$votingResultText .= _vote_result_html($votingId);
-			$votingResultText .= "<br />";*/
-
 		$query = "SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
 		$objResult = $objDatabase->Execute($query);
 
 		while (!$objResult->EOF) {
 			if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
-				$votingResultText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
-			    $votingResultText .= stripslashes($objResult->fields['question'])."<br />";
+				$votingOptionText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
+			    $votingOptionText .= stripslashes($objResult->fields['question'])."<br />";
 			}
 			$objResult->MoveNext();
 		}
+
+		$votingResultText = _vote_result_html($votingId);
 
 		if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
 			$votingVotes		= '';
@@ -182,9 +183,6 @@ function votingShowCurrent($page_content){
 
 			$submitbutton	= '<input type="submit" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" name="Submit" />';
 		} else {
-
-			$votingResultText = _vote_result_html($votingId);
-
 			if ($objTpl->blockExists('voting_email_input')) {
 				$objTpl->hideBlock('voting_email_input');
 			}
@@ -194,7 +192,7 @@ function votingShowCurrent($page_content){
 
 
 
-			$votingVotes	= "<strong>".$_ARRAYLANG['TXT_VOTING_TOTAL'].":	".$votingVotes."</strong>";
+			$votingVotes	= $_ARRAYLANG['TXT_VOTING_TOTAL'].":	".$votingVotes;
 			$submitbutton	='';
 		}
 
@@ -219,6 +217,7 @@ function votingShowCurrent($page_content){
 			'VOTING_MSG'					=> $msg,
 			'VOTING_TITLE'					=> $votingTitle,
 		    'VOTING_DATE'					=> showFormattedDate($votingDate),
+			'VOTING_OPTIONS_TEXT'			=> $votingOptionText,
 			'VOTING_RESULTS_TEXT'			=> $votingResultText,
 			'VOTING_RESULTS_TOTAL_VOTES'	=> $votingVotes,
 			'VOTING_OLDER_TITLE'			=> $_ARRAYLANG['TXT_VOTING_OLDER'],
@@ -259,9 +258,9 @@ function votingShowCurrent($page_content){
 			$votingVotes=$objResult->fields['votes'];
 			$votingDate=$objResult->fields['datesec'];
 
-			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
+			if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
 			$objTpl->setVariable(array(
-				'VOTING_OLDER_TEXT'		=> '<a href="?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
+				'VOTING_OLDER_TEXT'		=> '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
 				'VOTING_OLDER_DATE'		=> showFormattedDate($votingDate),
 				'VOTING_VOTING_ID'		=> $votingid,
 				'VOTING_LIST_CLASS'		=> $class,
@@ -317,6 +316,7 @@ function _store_additional_data($id){
 		"street           = '". addslashes($_POST['additional_street'  ]) . "', ".
 		"zip              = '". addslashes($_POST['additional_zip'     ]) . "', ".
 		"city             = '". addslashes($_POST['additional_city'    ]) . "', ".
+		"comment          = '". addslashes($_POST['additional_comment' ]) . "', ".
 		"email            = '". addslashes($email                       ) . "'  ";
 	$objDatabase->Execute($sql);
 }
@@ -444,16 +444,18 @@ function _create_additional_input_fields($settings) {
 	global $_ARRAYLANG;
 
 	$input_template = '<input name="%name" id="%name" type="%type" />';
+	$input_template_textarea = '<textarea name="%name" id="%name" > </textarea>';
 
 	$additionals = array(
-		'additional_nickname' => array('text', $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME']),
-		'additional_forename' => array('text', $_ARRAYLANG['TXT_ADDITIONAL_FORENAME']),
-		'additional_surname'  => array('text', $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ]),
-		'additional_phone'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ]),
-		'additional_street'   => array('text', $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ]),
-		'additional_zip'      => array('text', $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ]),
-		'additional_city'     => array('text', $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ]),
-		'additional_email'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ]),
+		'additional_nickname' => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME']),
+		'additional_forename' => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_FORENAME']),
+		'additional_surname'  => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ]),
+		'additional_phone'    => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ]),
+		'additional_street'   => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ]),
+		'additional_zip'      => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ]),
+		'additional_city'     => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ]),
+		'additional_email'    => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ]),
+		'additional_comment'  => array('textarea', $_ARRAYLANG['TXT_ADDITIONAL_COMMENT' ]),
 	);
 	$retval = array();
 	foreach ($additionals as $name => $data) {
@@ -465,7 +467,7 @@ function _create_additional_input_fields($settings) {
 			str_replace('%name',  $name,
 			str_replace('%label', $label,
 			str_replace('%type',  $type,
-			$input_template
+			($type == 'textarea' ? $input_template_textarea : $input_template)
 		)));
 		$retval[] = array($name, $label, $input_tag);
 	}
@@ -504,7 +506,7 @@ function _vote_result_html($votingId) {
 
 		$out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['question'])."</span><br />\n";
 		$out .= "<img src='images/modules/voting/$images.gif' width='".$imagewidth."%' height='10' />";
-		$out .= "&nbsp;<em>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</em><br /><br />";
+		$out .= "&nbsp;<em>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</em><br />";
 		$objResult->MoveNext();
 	}
 	return $out;

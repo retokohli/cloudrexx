@@ -475,6 +475,12 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnValidateLog.txt', 'w');
     }
 
 
+    static function getAcceptedCurrencyCodeArray()
+    {
+    	return self::$arrAcceptedCurrencyCode;
+    }
+
+
     static function getAcceptedCurrencyCodeMenuoptions($selected=0)
     {
         $strMenuoptions = '';

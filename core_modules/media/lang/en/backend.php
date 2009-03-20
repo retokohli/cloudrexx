@@ -69,6 +69,7 @@ $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Themes Overview";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "New theme";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activate";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Replacement directory";
+$_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED'] = "Some special characters have been replaced to avoid problems.";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Keys";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Content";

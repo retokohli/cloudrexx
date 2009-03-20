@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Security
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Gerben van der Lubbe <spoofedexistence@gmail.com>
- * @author        Ivan Schmid <ivan.schmid@comvation.com>
- * @version      2.1
+ * @author      Gerben van der Lubbe <spoofedexistence@gmail.com>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
+ * @version     2.1
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -16,9 +17,9 @@
  * The security class checks for possible attacks to the server
  * and supports a few functions to make everything more secure.
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Gerben van der Lubbe <spoofedexistence@gmail.com>
- * @author        Ivan Schmid <ivan.schmid@comvation.com>
- * @version      2.1
+ * @author      Gerben van der Lubbe <spoofedexistence@gmail.com>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
+ * @version     2.1
  * @package     contrexx
  * @subpackage  core
  */
@@ -28,14 +29,14 @@ class Security
      * Title of the active page
      * @var boolean
      */
-    var $reportingMode = false;
+    public $reportingMode = false;
 
     /**
      * $_SERVER variable indexes used by Contrexx
      *
      * @var array
      */
-    var $criticalServerVars = array (
+    public $criticalServerVars = array (
         'DOCUMENT_ROOT',
         'HTTPS',
         'HTTP_ACCEPT_LANGUAGE',
@@ -105,12 +106,7 @@ class Security
     }
 
 
-
-
-
     /**
-    * Report intrustion
-    *
     * Reports a possible intrusion attempt to the administrator
     * @param   $type    The type of intrusion attempt to report.
     * @param   $file    The file requesting the report (defaults to "Filename not available")
@@ -134,15 +130,12 @@ class Security
                 "HTTP_VIA : $httpvia\r\n".
                 "HTTP_CLIENT_IP : $httpclientip\r\n".
                 "GetHostByName : $gethostbyname\r\n";
-
         // Add all requested information
-
-
         foreach ($this->criticalServerVars as $serverVar) {
             $_SERVERlite[$serverVar] = $_SERVER[$serverVar];
         }
 
-        $httpheaders = getallheaders();
+        $httpheaders = function_exists('getallheaders') ? getallheaders() : null;
         $gpcs = "";
         $gpcs .= $this->getRequestInfo($httpheaders, "HTTP HEADER");
         $gpcs .= $this->getRequestInfo($_REQUEST, "REQUEST");
@@ -198,7 +191,6 @@ class Security
             $objMail->Send();
         }
     }
-
 
 
     /**
@@ -289,6 +281,8 @@ class Security
                     $array = htmlspecialchars($array, ENT_QUOTES, CONTREXX_CHARSET);
                 }
 
+// This is crap!  Every second english language sentence matches those.
+/*
                 // Test for SQL injection
                 if(
                     // Disallow "*or/and*=*" or "*or*like*"
@@ -309,6 +303,7 @@ class Security
                     // On "*UNION*SELECT ", remove union
                     $array = eregi_replace("([^a-z]+|^)UNION([^a-z]+.*SELECT[\t ]+)", "\\1\\3", $array);
                 }
+*/
 
                 // Return the untrusted value, it's fine
                 if($safe == 1) {
@@ -329,5 +324,7 @@ class Security
         // Return the trusted array
         return $trusted;
     }
+
 }
+
 ?>

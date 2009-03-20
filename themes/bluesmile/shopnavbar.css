@@ -1,0 +1,135 @@
+/* CSS Shop Sidebar Anzeige - COMVATION AG */
+#shopnavbar {
+	margin: 0px;
+	padding: 10px;
+	list-style: none;
+	border-top: 0px solid #000000;
+	width: 160px;
+	text-transform: none;
+	position: relative;
+	left: 7px;
+}
+
+#shopnavbar a {
+	margin: 0px;
+	padding-left: 10px;
+	list-style: none;
+	border-top: 0px solid #000000;
+	text-transform: none;
+	font-weight: normal;
+}
+
+.shopnavi, #shopnaviCart {
+	font: bold 11px Arial, Verdana, Arial, sans-serif;
+	text-transform: uppercase;
+}
+
+#shopJsCart {
+	margin-right: 4px;
+	padding: 4px;
+	border: 1px solid #BCBCBC;
+	background-color: #DEDEDE;
+}
+
+.curencies {
+	background:transparent url(images/shop/money.gif) no-repeat !important;
+	padding-left: 20px !important;
+	padding-top: 4px;
+	height: auto !important;
+	min-height: 20px;
+	height:12px;
+	width: auto !important;
+	min-width: 100px;
+	width: 100px;
+	border-bottom: none;
+}
+
+
+
+
+#shopnavbar .curencies a.active, #shopnavbar .curencies a.inactive {
+	margin: 0;
+	padding: 0;
+	background-color: transparent;
+	display: inline;
+	border-top: 0px solid #000000;
+}
+
+
+.kategorie {
+	background:transparent url(images/shop/pfeilshop.gif) no-repeat !important;
+	padding-left: 20px !important;
+	height: auto !important;
+	min-height: 12px;
+	height:12px;
+	width: auto !important;
+	min-width: 120px;
+	width: 120px;
+	border-bottom: none;
+}
+
+.korbinhalt {
+	
+	padding-left: 0px !important;
+	height: auto !important;
+	min-height: 20px;
+	height:20px;
+	width: auto !important;
+	min-width: 120px;
+	width: 120px;
+	border-bottom: none;
+	padding-top: 4px;
+}
+
+.korbinhalt a {
+	padding-left: 0px !important;
+}
+
+#warenkorbinhalt {
+	background:transparent url(images/shop/warenkorb.gif) no-repeat !important;
+	padding-left: 20px !important;
+	height: auto !important;
+	min-height: 20px;
+	height:20px;
+	width: auto !important;
+	min-width: 120px;
+	width: 120px;
+	border-bottom: none;
+	padding-top: 4px;
+}
+
+.userinfo {
+	background:transparent url(images/shop/user.gif) no-repeat !important;
+	padding-left: 20px !important;
+	height: auto !important;
+	min-height: 25px;
+	height:20px;
+	width: auto !important;
+	min-width: 120px;
+	width: 120px;
+	border-bottom: none;
+}
+
+#warenkorbanzeige {
+	background:transparent url(images/shop/zumwarenkorb.gif) no-repeat !important;
+	padding-left: 20px !important;
+	height: auto !important;
+	min-height: 25px;
+	height:20px;
+	width: auto !important;
+	min-width: 120px;
+	width: 120px;
+	border-bottom: none;
+}
+
+#warenkorbleeren {
+	background:transparent url(images/shop/warenkorbcancel.gif) no-repeat !important;
+	padding-left: 20px !important;
+	height: auto !important;
+	min-height: 25px;
+	height:20px;
+	width: auto !important;
+	min-width: 120px;
+	width: 120px;
+	border-bottom: none;
+}

@@ -125,13 +125,19 @@ function mediaDoAction()
     }
     document.fileList.selectAction.value = "0";
 }
+
+function openWindow(theURL,winName,features)
+{
+    objPopup = window.open(theURL,"fileUploader",features);
+    objPopup.focus();
+}
 </script>
 
 {MEDIA_JAVA_SCRIPT_PREVIEW}
 
 <ul id="tabmenu">
     <li><a id="mediaTab_newdir" href="javascript:{}" onclick="selectTab('newdir')" title="">{TXT_MEDIA_NEW_DIRECTORY}</a></li>
-    <li><a id="mediaTab_loadfile" href="javascript:{}" onclick="selectTab('loadfile')" title="">{TXT_MEDIA_UPLOAD_FILES}</a></li>
+    <li><a id="mediaTab_loadfile" href="<!-- BEGIN media_use_advanced_file_uploader -->javascript:openWindow('{FILEBROWSER_ADVANCED_UPLOAD_PATH}','','width=800,height=600,resizable=yes,status=no,scrollbars=no');<!-- END media_use_advanced_file_uploader --><!-- BEGIN media_dont_use_advanced_file_uploader -->javascript:{}" onclick="selectTab('loadfile')<!-- END media_dont_use_advanced_file_uploader -->" title="">{TXT_MEDIA_UPLOAD_FILES}</a></li>
 </ul>
 
 <div id="newdir" class="mediaTab" style="display:none;">

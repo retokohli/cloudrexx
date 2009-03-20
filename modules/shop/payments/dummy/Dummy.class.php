@@ -28,12 +28,36 @@
 class Dummy
 {
     /**
+     * Constructor (PHP 4)
+     *
+     * Note that this is neither needed nor used.
+     * @author Reto Kohli <reto.kohli@comvation.com>
+     */
+    function Dummy()
+    {
+        $this->__construct();
+    }
+
+    /**
+     * Constructor (PHP 5)
+     *
+     * Note that this is neither needed nor used.
+     * @author Reto Kohli <reto.kohli@comvation.com>
+     */
+    function __construct()
+    {
+        // Nothing to do here.
+    }
+
+
+    /**
      * Returns the dummy payment form
      * @author Reto Kohli <reto.kohli@comvation.com>
      * @static
      * @return string  HTML code for the dummy payment form
      */
-    static function getForm()
+    //static
+    function getForm()
     {
         $orderid    = $_SESSION['shop']['orderid'];
         $confirmURI = "index.php?section=shop".MODULE_INDEX."&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=-1";
@@ -75,7 +99,8 @@ _;
      *                  Boolean false after a failed payment or a general
      *                  error.
      */
-    static function commit()
+    //static
+    function commit()
     {
         $result = intval(isset($_GET['result']) ? $_GET['result'] : 0);
         if ($result < 1 || $result > 2) {

@@ -41,4 +41,7 @@ $_ARRAYLANG['TXT_SUBMIT'] = "Submit";
 $_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Hallo";
 $_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "News-Meldung zu bestätigen";
 $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Es wurde eine neue News-Meldung eingetragen, die noch freigeschalten werden muss. Unter nachfolgender URL können Sie dies tun:";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Der eingegebene Captcha-Code ist nicht korrekt!";
+$_ARRAYLANG['TXT_CAPTCHA'] = "Bitte geben Sie die abgebildeten Zeichen ein:";
+$_ARRAYLANG['TXT_NEWS_MORE'] = "more";
 ?>

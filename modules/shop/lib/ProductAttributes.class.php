@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Shop Product Attributes
  *
- * @version     $Id: 0.0.1 alpha$
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
@@ -18,7 +19,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
  * This class provides frontend and backend helper and display functionality
  * related to the Product Attribute class.
  * See {@link ProductAttribute} for details.
- * @version     $Id: 0.0.1 alpha$
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -45,7 +46,7 @@ class ProductAttributes  // friend Product
     /**
      * The array of ProductAttribute values
      *
-     * Includes the fields id, name_id, value, price, and price_prefix
+     * Includes the fields id, name_id, value, and price
      * @var array
      */
     private static $arrValue;
@@ -69,29 +70,68 @@ class ProductAttributes  // friend Product
     static function reset()
     {
         // These will be reinitialised the next time they are accessed
-        self::$productId   = false;
         self::$arrName     = false;
         self::$arrValue    = false;
         self::$arrRelation = false;
     }
 
 
-    /** NEW **/
-    static function getNameArray($name_id=0)
+    /**
+     * Returns an array of ProductAttribute names.
+     *
+     * If the optional $productId argument is greater than zero,
+     * only names associated with this Product are returned,
+     * all names found in the database otherwise.
+     * @static
+     * @access  public
+     * @param   integer     $productId      The optional Product ID
+     * @return  array                       Array of ProductAttribute names
+     *                                      upon success, false otherwise.
+     */
+    static function getNameArrayByProductId($productId=0)
     {
-        // No name ID, and the array has not been initialized yet,
-        // or some name ID, and the array element has not been initialized yet
-        if (   (   empty($name_id)
-                && empty(self::$arrName))
-            || (   $name_id
-                && empty(self::$arrName[$name_id]))) {
-            // Initialize as much of the array as needed
-            if (!self::initNameArray($name_id)) return false;
+        global $objDatabase;
+
+        $query = "
+            SELECT DISTINCT id, name, display_type
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
+            ".($productId
+              ? "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
+                         ON attributes_name_id=id
+                      WHERE product_id=$productId
+                   ORDER BY sort_id ASC
+            " : '');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        self::$arrName = array();
+        while (!$objResult->EOF) {
+            $id = $objResult->fields['id'];
+            self::$arrName[$id] = array(
+                'id' => $id,
+                'name' => $objResult->fields['name'],
+                'type' => $objResult->fields['display_type'],
+            );
+            $objResult->MoveNext();
         }
-        // No name ID:  Return the entire array
-        if (empty($name_id)) return self::$arrName;
-        // Otherwise, there is some name ID:  Return the selected array element
+//echo("getNameArrayByProductId($productId): Made: ".var_export(self::$arrName, true)."<hr />");
+        return self::$arrName;
+    }
+
+
+    /** NEW **/
+    static function getNameArrayByNameId($name_id)
+    {
+        if (empty(self::$arrName) && !self::initNameArray()) return false;
+        if (empty(self::$arrName[$name_id])) return false;
         return self::$arrName[$name_id];
+    }
+
+
+    /** NEW **/
+    static function getNameArray()
+    {
+        if (empty(self::$arrName) && !self::initNameArray()) return false;
+        return self::$arrName;
     }
 
 
@@ -100,32 +140,37 @@ class ProductAttributes  // friend Product
         global $objDatabase;
 
         if (!isset(self::$arrName)) self::$arrName = array();
-        $arrSqlName = Text::getSqlSnippets(
-            '`name`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_NAME
-        );
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`name`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_NAME
+//        );
+//        $query = "
+//            SELECT `name`.`id`, `name`.`display_type`".
+//                   $arrSqlName['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name` AS `name`".
+//                   $arrSqlName['join'].
+//            ($name_id ? " WHERE `name`.`id`=$name_id" : '');
         $query = "
-            SELECT `name`.`id`, `name`.`display_type`".
-                   $arrSqlName['field']."
+            SELECT `name`.`id`, `name`.`display_type`,
+                   `name`.`name`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name` AS `name`".
-                   $arrSqlName['join'].
             ($name_id ? " WHERE `name`.`id`=$name_id" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            // Replace Text in a missing language by another, if available
-            if ($strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strName = $objText->getText();
-            }
+//            $text_name_id = $objResult->fields[$arrSqlName['name']];
+//            $strName = $objResult->fields[$arrSqlName['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($strName === null) {
+//                $objText = Text::getById($text_name_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strName = $objText->getText();
+//            }
             self::$arrName[$id] = array(
                 'id' => $id,
-                'name' => $strName,
+                'name' => $objResult->fields['name'], //$strName,
                 'type' => $objResult->fields['display_type'],
             );
             $objResult->MoveNext();
@@ -134,21 +179,17 @@ class ProductAttributes  // friend Product
     }
 
 
-    static function getValueArray($name_id=0)
+    static function getValueArray()
     {
-        // No name ID, and the array has not been initialized yet,
-        // or some name ID, and the array element has not been initialized yet
-        if (   (   empty($name_id)
-                && empty(self::$arrValue))
-            || (   $name_id
-                && empty(self::$arrValue[$name_id]))) {
-            // Initialize the array with all the values of the
-            // Product Attribute selected, if any, or all
-            if (!self::initValueArray($name_id)) return false;
-        }
-        // No name ID:  Return the entire array
-        if (empty($name_id)) return self::$arrValue;
-        // Otherwise, there is some name ID:  Return the selected array element
+        if (empty(self::$arrValue) && !self::initValueArray()) return false;
+        return self::$arrValue;
+    }
+
+
+    static function getValueArrayByNameId($name_id)
+    {
+        if (empty(self::$arrValue) && !self::initValueArray()) return false;
+    	if (empty(self::$arrValue[$name_id])) return array();
         return self::$arrValue[$name_id];
     }
 
@@ -158,37 +199,42 @@ class ProductAttributes  // friend Product
         global $objDatabase;
 
         if (!isset(self::$arrValue)) self::$arrValue = array();
-        $arrSqlValue = Text::getSqlSnippets(
-            '`value`.`text_value_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
-        );
+//        $arrSqlValue = Text::getSqlSnippets(
+//            '`value`.`text_value_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
+//        );
+//        $query = "
+//            SELECT `value`.`id`, `value`.`name_id`,
+//                   `value`.`price`".$arrSqlValue['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value` as `value`".
+//                   $arrSqlValue['join'].
+//            ($name_id ? " WHERE `value`.`name_id`=$name_id" : '');
         $query = "
             SELECT `value`.`id`, `value`.`name_id`,
-                   `value`.`price`".$arrSqlValue['field']."
+                   `value`.`price`, `value`.`value`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value` as `value`".
-                   $arrSqlValue['join'].
             ($name_id ? " WHERE `value`.`name_id`=$name_id" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $value_id = $objResult->fields['id'];
             $name_id = $objResult->fields['name_id'];
-            $text_value_id = $objResult->fields[$arrSqlValue['name']];
-            $strValue = $objResult->fields[$arrSqlValue['text']];
-            // Replace Text in a missing language by another, if available
-            if ($strValue === null) {
-                $objText = Text::getById($text_value_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strValue = $objText->getText();
-            }
+//            $text_value_id = $objResult->fields[$arrSqlValue['name']];
+//            $strValue = $objResult->fields[$arrSqlValue['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($strValue === null) {
+//                $objText = Text::getById($text_value_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strValue = $objText->getText();
+//            }
             if (!isset(self::$arrValue[$name_id]))
                 self::$arrValue[$name_id] = array();
             self::$arrValue[$name_id][$value_id] = array(
                 'id' => $value_id,
                 'name_id' => $name_id,
-                'value' => $strValue,
-                'text_value_id' => $text_value_id,
+                'value' => $objResult->fields['value'], //$strValue,
+//                'text_value_id' => $text_value_id,
                 'price' => $objResult->fields['price'],
             );
             $objResult->MoveNext();
@@ -200,25 +246,17 @@ class ProductAttributes  // friend Product
     /**
      * @todo
      */
-    static function getRelationArray($product_id=0)
+    static function getRelationArray($product_id)
     {
-        // No Product ID, and the array has not been initialized yet,
-        // or some Product ID, and the array element has not been initialized yet
-        if (   (   empty($product_id)
-                && empty(self::$arrRelation))
-            || (   $product_id
-                && empty(self::$arrRelation[$product_id]))) {
-            // Initialize the array with all the values of the
-            // Product Attribute selected, if any, or all
+        if (empty($product_id)) return false;
+        if (   !isset(self::$arrRelation)
+            || !isset(self::$arrRelation[$product_id])) {
             if (!self::initRelationArray($product_id)) return false;
         }
-        // No Product ID:  Return the entire array
-        if (empty($product_id)) return self::$arrRelation;
-        // Otherwise, there is some Product ID:  Return the selected array element
-        return (isset(self::$arrRelation[$product_id])
-            ? self::$arrRelation[$product_id]
-            : false
-        );
+        // No options for this Product ID:  Return the empty array
+        if (empty(self::$arrRelation[$product_id])) return array();
+        // Otherwise, there are some options.  Return that array element
+        return self::$arrRelation[$product_id];
     }
 
 
@@ -246,27 +284,77 @@ class ProductAttributes  // friend Product
             self::$arrRelation[$product_id][$value_id] = $objResult->fields['sort_id'];
             $objResult->MoveNext();
         }
+//echo("initRelationArray($product_id):  Made ".var_export(self::$arrRelation, true)."<br />");
         return true;
-
     }
 
 
     /**
-     * Return an array of Attribute value IDs related to the given
-     * Product ID.
+     * OLD
+     * Returns an array of ProductAttribute relations.
+     *
+     * Set the $flagReuse parameter to false after any Attribute properties
+     * have been changed.
+     * If the optional $productId argument is greater than zero,
+     * only relations associated with this Product are returned,
+     * all relations found in the database otherwise.
+     * @static
+     * @access  public
+     * @param   boolean     $flagReuse      If true, returns the previously
+     *                                      initialized array, if any.
+     *                                      Reinitializes the array otherwise.
+     * @param   integer     $productId      The optional Product ID
+     * @return  array                       Array of ProductAttribute relations
+     *                                      upon success, false otherwise.
+     */
+    function getRelationArray_200($flagReuse=true, $productId=0)
+    {
+        global $objDatabase;
+
+        if ($flagReuse && self::$arrRelation) {
+            return self::$arrRelation;
+        }
+
+        $query = "
+            SELECT *
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
+        ".($productId ? "WHERE product_id=$productId" : '')."
+          ORDER BY sort_id ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        self::$arrRelation = array();
+        while (!$objResult->EOF) {
+            $arrRelation = array();
+            $id = $objResult->fields['attribute_id'];
+            $arrRelation['id']        = $id;
+            $arrRelation['productId'] = $objResult->fields['product_id'];
+            $arrRelation['nameId']    = $objResult->fields['attributes_name_id'];
+            $arrRelation['valueId']   = $objResult->fields['attributes_value_id'];
+            $arrRelation['order']     = $objResult->fields['sort_id'];
+            self::$arrRelation[$id]   = $arrRelation;
+            $objResult->MoveNext();
+        }
+        return self::$arrRelation;
+    }
+
+
+    /**
+     * OBSOLETE
+     * Returns an array of Attribute value IDs for the specified Product.
      *
      * The array has the form
      * array(
-     *  value ID => array(
-     *      value ID => value ID,
+     *  Index => array(
+     *      valueId => value ID,
      *      order   => sorting order,
      *  ),
      *  ...
+     * @access  public
      * @param   integer     $productId      The Product ID
      * @return  array                       Array of ProductAttribute value IDs
      *                                      upon success, false otherwise.
-     * @static
-    static function getValueIdArrayByProductId($productId)
+    function getProductValueArray($productId)
     {
         global $objDatabase;
 
@@ -274,15 +362,16 @@ class ProductAttributes  // friend Product
             SELECT attributes_value_id, sort_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
              WHERE product_id=$productId
-             ORDER BY sort_id ASC
+          ORDER BY sort_id ASC
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) {
+            return false;
+        }
         $arrValue = array();
         while (!$objResult->EOF) {
-            $value_id = $objResult->fields['attributes_value_id'];
-            $arrValue[$value_id] = array(
-                'value_id' => $id,
+            $arrValue[] = array(
+                'valueId' => $objResult->fields['attributes_value_id'],
                 'order'   => $objResult->fields['sort_id'],
             );
             $objResult->MoveNext();
@@ -303,7 +392,7 @@ class ProductAttributes  // friend Product
      * @param   integer     $order          The optional sorting order,
      *                                      defaults to 0 (zero)
      * @return  boolean                     True on success, false otherwise
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -338,7 +427,7 @@ class ProductAttributes  // friend Product
      * @static
      * @param   integer     $productId      The Product ID
      * @return  boolean                     True on success, false otherwise.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function deleteByProductId($productId)
     {
@@ -360,8 +449,7 @@ class ProductAttributes  // friend Product
      * Use with due care!
      * @static
      * @return  boolean                     True on success, false otherwise.
-     * @global  ADONewConnection
-     * @todo    Remove Text records as well
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     static function deleteAll()
     {
@@ -448,9 +536,9 @@ class ProductAttributes  // friend Product
     {
         $inputBoxes = '';
         $select = true;
-        $arrAttributeName = ProductAttributes::getNameArray($name_id);
+        $arrAttributeName = ProductAttributes::getNameArrayByNameId($name_id);
         $display_type = $arrAttributeName['type'];
-        foreach (ProductAttributes::getValueArray($name_id) as $value_id => $arrAttributeValue) {
+        foreach (ProductAttributes::getValueArrayByNameId($name_id) as $value_id => $arrAttributeValue) {
             $inputBoxes .=
                 '<input type="text" name="'.$name.'['.$value_id.']" '.
                 'id="'.$name.'-'.$value_id.'" '.
@@ -470,12 +558,11 @@ class ProductAttributes  // friend Product
     }
 
 
-
-
     /**
      * Returns HTML code for the value menu for each ProductAttribute
      *
-     * @global  array
+     * Used in the Backend for selecting and editing.
+     * @global  array       $_ARRAYLANG     Language array
      * @param   integer     $attributeId    ID of the ProductAttribute name
      * @param   string      $name           Name of the menu
      * @param   integer     $selectedId     ID of the selected value
@@ -484,11 +571,11 @@ class ProductAttributes  // friend Product
      * @return  string      $menu           Contains the value menus
      */
     function getAttributeValueMenu(
-        $name_id, $name, $selectedId=0, $onchange='', $style='')
-    {
+        $name_id, $name, $selectedId=0, $onchange='', $style=''
+    ) {
         global $_ARRAYLANG;
 
-        $arrValues = self::getValueArray($name_id);
+        $arrValues = self::getValueArrayByNameId($name_id);
 //echo("PAs::getAttributeValueMenu($name_id, $name, $selectedId, $onchange, $style):  Values: ".var_export($arrValues, true)."<br />");
         // No options, or an error occurred
         if (!$arrValues) return '';
@@ -509,12 +596,11 @@ class ProductAttributes  // friend Product
             'id="attributeValueMenuLink-'.$name_id.'" '.
             'style="display: none;" '.
             'onclick="removeSelectedValues('.$name_id.')" '.
-            'title="'.$_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE'].'">'.
+            'title="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'" '.
             'alt="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'">'.
             $_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'</a>'."\n";
         return $menu;
     }
-
 
 
     /**
@@ -527,10 +613,17 @@ class ProductAttributes  // friend Product
     static function getAttributeJSVars()
     {
         $jsVars = '';
+        $highestIndex = 0;
         foreach (ProductAttributes::getValueArray() as $name_id => $arrAttributeValue) {
-            list($value_id, $arrValue) = each($arrAttributeValue);
-            $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
+        	$first = true;
+        	foreach (array_keys($arrAttributeValue) as $value_id) {
+	            if ($first)
+	                $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
+	            $first = false;
+	            if ($value_id > $highestIndex) $highestIndex = $value_id;
+        	}
         }
+        $jsVars .= "\nindex = ".$highestIndex.";\n";
         return $jsVars;
     }
 

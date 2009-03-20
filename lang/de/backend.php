@@ -745,16 +745,16 @@ $_ARRAYLANG['TXT_DBM_EXPORT_EDITION'] = "Edition";
 $_ARRAYLANG['TXT_DBM_EXPORT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_DBM_EXPORT_COMMENTS'] = "Hinweise: <font style=\"color: green; font-weight: bold;\">Grün hinterlegte Zeilen</font> sind Sicherungen der aktuellen Contrexx-Version. <font style=\"color: red; font-weight: bold;\">Rot hinterlegte Zeilen</font> sind Sicherungen aus einer älteren Contrexx-Version. Bei Verwendung dieser Sicherungen ist Vorsicht geboten, da diese mit neueren Versionen von Contrexx inkompatibel sein können.";
 $_ARRAYLANG['TXT_DBM_EXPORT_RESTORE'] = "Backup laden";
-$_ARRAYLANG['TXT_DBM_EXPORT_ERROR'] = "Backup fehlgeschlagen: Der Zielordner '' verfügt nicht über die benötigten Zugriffsrechte (777).";
+$_ARRAYLANG['TXT_DBM_EXPORT_ERROR'] = "Backup fehlgeschlagen: Der Zielordner '%1\$s' verfügt nicht über die benötigten Zugriffsrechte (777).";
 $_ARRAYLANG['TXT_DBM_EXPORT_ERROR_SELECTION'] = "Backup fehlgeschlagen: Es wurden keine Tabellen zum Export markiert.";
-$_ARRAYLANG['TXT_DBM_EXPORT_SUCCESS'] = "Ein Backup der Datenbank wurde unter '' erfolgreich erstellt.";
+$_ARRAYLANG['TXT_DBM_EXPORT_SUCCESS'] = "Ein Backup der Datenbank wurde unter '%1\$s' erfolgreich erstellt.";
 $_ARRAYLANG['TXT_DBM_EXPORT_DELETE_SUCCESS'] = "Das Backup wurde erfolgreich entfernt.";
 $_ARRAYLANG['TXT_DBM_EXPORT_DELETE_ERROR'] = "Backup konnte nicht gelöscht werden.";
 $_ARRAYLANG['TXT_DBM_IMPORT'] = "Sicherung importieren";
 $_ARRAYLANG['TXT_DBM_IMPORT_DESCRIPTION'] = "Hier können Sie eine Sicherung von einem anderen System in Ihre Contrexx-Installation importieren. Nach erfolgreichem heraufladen der Datei erscheint diese in der Übersicht unter \"Vorhandene Sicherungen\".";
 $_ARRAYLANG['TXT_DBM_IMPORT_FILE'] = "Sicherungsdatei";
 $_ARRAYLANG['TXT_DBM_IMPORT_SUBMIT'] = "Sicherung hochladen";
-$_ARRAYLANG['TXT_DBM_IMPORT_ERROR_TYPE'] = "Fehler beim Upload: Ungültiger Datentyp ''!";
+$_ARRAYLANG['TXT_DBM_IMPORT_ERROR_TYPE'] = "Fehler beim Upload: Ungültiger Datentyp '%1\$s'!";
 $_ARRAYLANG['TXT_DBM_IMPORT_ERROR_NO_CONTREXX'] = "Die heraufgeladene Datei enthielt keine von Contrexx erstellte Datenbanksicherung.";
 $_ARRAYLANG['TXT_DBM_IMPORT_SUCCESS'] = "Bestehende Sicherung wurde erfolgreich heraufgeladen.";
 $_ARRAYLANG['TXT_DBM_DETAILS_TITLE'] = "Details anzeigen";
@@ -764,7 +764,7 @@ $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sortierung";
 $_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'] = "Aktives PDF Template";
 $_ARRAYLANG['TXT_THEME_PDF'] = "PDF-Ansicht";
 $_ARRAYLANG['TXT_VISIBLE'] = "Sichtbar";
-$_ARRAYLANG['TXT_DOWNLOADS'] = "Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_DOWNLOADS_MODULE_DESCRIPTION'] = "Nach Kategorien strukturierte Downloadliste mit Dateininformationen (Beschreibung, Grösse, Screenshot, Bewertung)";
 $_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY_HELP'] = "Globaler Google-Map API Schlüssel für die Hauptdomain. <br />Neue Schlüssel können erstellt werden unter: http://code.google.com/apis/maps/signup.html";
 $_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY'] = "Google-Map API Schlüssel";
@@ -951,18 +951,35 @@ $_ARRAYLANG['TXT_DOWNLOAD_BACKUPS'] = "Backup herunterladen";
 $_ARRAYLANG['TXT_VIEW_BACKUPS'] = "Backups anzeigen";
 $_ARRAYLANG['TXT_BACKUP'] = "Backup";
 $_ARRAYLANG['TXT_SYSTEM_UPDATE'] = "System Update";
-$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'] = "Meldungen verwalten";
+$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE__DELETE_THIS_VAR'] = "";
 $_ARRAYLANG['TXT_ECARD'] = "E-Card";
 $_ARRAYLANG['TXT_ECARD_TITLE'] = "E-Card";
-
-// Added
-$_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
+$_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partner";
+$_ARRAYLANG['TXT_SETTINGS_FILE_UPLOADER'] = "File Uploader";
+$_ARRAYLANG['TXT_FILEUPLOADER_MODULE_DESCRIPTION'] = "Erlaubt das Hinaufladen von grossen Dateien.";
+$_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = "Auf die Datei <strong>%s</strong> besteht kein Schreibzugriff!<br />Ohne Schreibzugriff auf diese Datei können keine Einstellungen vorgenommen werden!";
+$_ARRAYLANG['TXT_U2U_MODULE'] = "User to User Nachrichten";
+$_ARRAYLANG['TXT_DOWNLOADS_ADMINISTER'] = "Verwalten";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'] = "Geschützte Seiten auflisten";
+$_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'] = "Dies definiert, ob bei der Navigation, Volltextsuche, Sitemap und XML-Sitemap auch geschützte Seiten aufgelistet werden sollen, wenn der Benutzer nicht authentifiziert ist - Status (on | off)";
+$_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = "Template für Mobilgeräte";
+$_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Neuen Eintrag hinzufügen";
+$_ARRAYLANG['TXT_U2U_MODULE_DESCRIPTION'] = "User to User Nachrichten";
+$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_TITLE'] = "Einstellungen";
+$_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'] = "Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'] = "Kategorien";
+$_ARRAYLANG['TXT_KNOWLEDGE_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_KNOWLEDGE'] = "Wissensdatenbank";
+$_ARRAYLANG['TXT_KNOWLEDGE_MODULE_DESCRIPTION'] = "Wissensdatenbank";
+$_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_OVERVIEW'] = "Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_EDIT_ARTICLES'] = "Artikel bearbeiten/hinzufügen";
+$_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_CATEGORIES'] = "Kategorien";
+$_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_EDIT_CATEGORIES'] = "Kategorien bearbeiten/hinzufügen";
+$_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_CORE_LANGUAGE_FRONTEND_COLON'] = "Frontend Sprache:";
-
 $_ARRAYLANG['TXT_CORE_KILOBYTE_ABBREV'] = "%1\$s KB";
 $_ARRAYLANG['TXT_CORE_KILOBYTE'] = "%1\$s Kilobyte";
 $_ARRAYLANG['TXT_CORE_KILOBYTES'] = "%1\$s Kilobytes";
-
 $_ARRAYLANG['TXT_DBM_CSV'] = "CSV";
 $_ARRAYLANG['TXT_DBM_CSV_EXPORT'] = "nach CSV exportieren";
 $_ARRAYLANG['TXT_DBM_CSV_IMPORT'] = "von CSV importieren";
@@ -983,13 +1000,19 @@ $_ARRAYLANG['TXT_DBM_ERROR_NO_SOURCE_TABLES'] = "Fehler:  Keine Tabellen als Que
 $_ARRAYLANG['TXT_DBM_ERROR_NO_TARGET_FOLDER'] = "Fehler:  Kein Zielverzeichnis angegeben";
 $_ARRAYLANG['TXT_DBM_SUCCEEDED_EXPORTING_TABLES'] = "Erfolgreich exportierte Tabellen: %1\$s";
 $_ARRAYLANG['TXT_DBM_FAILED_EXPORTING_TABLES'] = "Nicht exportierte Tabellen: %1\$s";
-
-
-$_ARRAYLANG[''] = "";
-$_ARRAYLANG[''] = "";
-$_ARRAYLANG[''] = "";
-$_ARRAYLANG[''] = "";
-$_ARRAYLANG[''] = "";
-
-
+$_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
+$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
+$_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
+$_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
+$_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
+$_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'] = "Virtuelle Sprachverzeichnisse verwenden";
+$_ARRAYLANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'] = "Diese Eigenschaft bewirkt, dass jede Frontend Sprache in ein virtuelles Unterverzeichnis (Sprachverzeichnis) gesetzt wird.<br />Der Inhalt der Sprache %s wird dann z.B. über die URL %s angesprochen.<br />Das Verwenden von Virtuellen Sprachverzeichnisse erlaubt es Suchmaschinen jede Sprache Ihrer Webseite in deren Suchindex aufzunehmen.";
+$_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Das XML Sitemap %s konnte nicht aktualisiert werden, da die Datei nicht beschreibbar ist!";
+$_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "Die Datei %s ist nicht beschreibbar und kann daher nicht aktualisiert werden! Setzen Sie auf diese Datei Schreibzugriff, damit das System korrekt funktioniert!";
+$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Die HtAccess Datei %s konnte nicht ausgelesen werden, da die darin enthaltenen Contrexx spezifischen Anweisungen ungültig sind!";
+$_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "Diese Funktion setzt voraus, dass das System auf einem Apache Webserver betrieben wird. Zudem wird das Apache Modul mod_rewrite verwendet. Es konnte nicht sichergestellt werden, ob dieser Server diese Anforderungen erfüllt!";
+$_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Fehler:  Konnte keine Informationen über vorhandene Tabellen lesen";
+$_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Verzeichnis: '%1\$s'";
+$_ARRAYLANG['TXT_CONTENT_ASSIGN_BLOCK'] = "Blöcke zuweisen";
 ?>

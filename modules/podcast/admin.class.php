@@ -2,9 +2,9 @@
 /**
  * Class podcast manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.1
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.1
  * @package     contrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
@@ -160,10 +160,10 @@ class podcastManager extends podcastLib
 
 
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'                => $this->_pageTitle,
+            'CONTENT_TITLE'             => $this->_pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->_strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
-            'ADMIN_CONTENT'                => $this->_objTpl->get()
+            'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
     }
 
@@ -176,26 +176,26 @@ class podcastManager extends podcastLib
 
         $this->_objTpl->setVariable(array(
             'TXT_PODCAST_STATUS'                    => $_ARRAYLANG['TXT_PODCAST_STATUS'],
-            'TXT_PODCAST_TITLE'                        => $_ARRAYLANG['TXT_PODCAST_TITLE'],
+            'TXT_PODCAST_TITLE'                     => $_ARRAYLANG['TXT_PODCAST_TITLE'],
             'TXT_PODCAST_AUTHOR'                    => $_ARRAYLANG['TXT_PODCAST_AUTHOR'],
-            'TXT_PODCAST_DATE'                        => $_ARRAYLANG['TXT_PODCAST_DATE'],
-            'TXT_PODCAST_TEMPLATE'                    => $_ARRAYLANG['TXT_PODCAST_TEMPLATE'],
-            'TXT_PODCAST_FUNCTIONS'                    => $_ARRAYLANG['TXT_PODCAST_FUNCTIONS'],
+            'TXT_PODCAST_DATE'                      => $_ARRAYLANG['TXT_PODCAST_DATE'],
+            'TXT_PODCAST_TEMPLATE'                  => $_ARRAYLANG['TXT_PODCAST_TEMPLATE'],
+            'TXT_PODCAST_FUNCTIONS'                 => $_ARRAYLANG['TXT_PODCAST_FUNCTIONS'],
             'TXT_PODCAST_ADD_MEDIUM'                => $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'],
-            'TXT_PODCAST_CONFIRM_DELETE_MEDIUM_MSG'    => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_MEDIUM_MSG'],
+            'TXT_PODCAST_CONFIRM_DELETE_MEDIUM_MSG' => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_MEDIUM_MSG'],
             'TXT_PODCAST_OPERATION_IRREVERSIBLE'    => $_ARRAYLANG['TXT_PODCAST_OPERATION_IRREVERSIBLE'],
-            'TXT_PODCAST_CHECK_ALL'                    => $_ARRAYLANG['TXT_PODCAST_CHECK_ALL'],
-            'TXT_PODCAST_UNCHECK_ALL'                => $_ARRAYLANG['TXT_PODCAST_UNCHECK_ALL'],
-            'TXT_PODCAST_WITH_SELECTED'                => $_ARRAYLANG['TXT_PODCAST_WITH_SELECTED'],
+            'TXT_PODCAST_CHECK_ALL'                 => $_ARRAYLANG['TXT_PODCAST_CHECK_ALL'],
+            'TXT_PODCAST_UNCHECK_ALL'               => $_ARRAYLANG['TXT_PODCAST_UNCHECK_ALL'],
+            'TXT_PODCAST_WITH_SELECTED'             => $_ARRAYLANG['TXT_PODCAST_WITH_SELECTED'],
             'TXT_PODCAST_DELETE'                    => $_ARRAYLANG['TXT_PODCAST_DELETE'],
-            'TXT_PODCAST_CONFIRM_DELETE_MEDIA_MSG'    => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_MEDIA_MSG'],
-            'TXT_PODCAST_SHOW_MEDIUM'                => $_ARRAYLANG['TXT_PODCAST_SHOW_MEDIUM']
+            'TXT_PODCAST_CONFIRM_DELETE_MEDIA_MSG'  => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_MEDIA_MSG'],
+            'TXT_PODCAST_SHOW_MEDIUM'               => $_ARRAYLANG['TXT_PODCAST_SHOW_MEDIUM']
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_PODCAST_SHOW_HTML_SOURCE_CODE'    => $_ARRAYLANG['TXT_PODCAST_SHOW_HTML_SOURCE_CODE'],
-            'TXT_PODCAST_MODIFY_MEDIUM'            => $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'],
-            'TXT_PODCAST_DELETE_MEDIUM'            => $_ARRAYLANG['TXT_PODCAST_DELETE_MEDIUM']
+            'TXT_PODCAST_SHOW_HTML_SOURCE_CODE' => $_ARRAYLANG['TXT_PODCAST_SHOW_HTML_SOURCE_CODE'],
+            'TXT_PODCAST_MODIFY_MEDIUM'         => $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'],
+            'TXT_PODCAST_DELETE_MEDIUM'         => $_ARRAYLANG['TXT_PODCAST_DELETE_MEDIUM']
         ));
 
         $rowNr = 0;
@@ -224,14 +224,14 @@ class podcastManager extends podcastLib
 
             foreach ($arrMedia as $mediumId => $arrMedium) {
                 $this->_objTpl->setVariable(array(
-                    'PODCAST_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
-                    'PODCAST_MEDIUM_ID'            => $mediumId,
-                    'PODCAST_MEDIUM_STATUS_IMG'    => $arrMedium['status'] == 1 ? 'led_green.gif' : 'led_red.gif',
-                    'PODCAST_MEDIUM_STATUS_TXT'    => $arrMedium['status'] == 1 ? $_ARRAYLANG['TXT_PODCAST_ACTIVE'] : $_ARRAYLANG['TXT_PODCAST_INACTIVE'],
-                    'PODCAST_MEDIUM_DATE'        => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
-                    'PODCAST_MEDIUM_TITLE'        => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'PODCAST_MEDIUM_AUTHOR'        => !empty($arrMedium['author']) ? htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
-                    'PODCAST_MEDIUM_TEMPLATE'    => htmlentities($arrTemplates[$arrMedium['template_id']]['description'], ENT_QUOTES, CONTREXX_CHARSET)
+                    'PODCAST_ROW_CLASS'         => $rowNr % 2 == 1 ? 'row1' : 'row2',
+                    'PODCAST_MEDIUM_ID'         => $mediumId,
+                    'PODCAST_MEDIUM_STATUS_IMG' => $arrMedium['status'] == 1 ? 'led_green.gif' : 'led_red.gif',
+                    'PODCAST_MEDIUM_STATUS_TXT' => $arrMedium['status'] == 1 ? $_ARRAYLANG['TXT_PODCAST_ACTIVE'] : $_ARRAYLANG['TXT_PODCAST_INACTIVE'],
+                    'PODCAST_MEDIUM_DATE'       => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
+                    'PODCAST_MEDIUM_TITLE'      => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'PODCAST_MEDIUM_AUTHOR'     => !empty($arrMedium['author']) ? htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
+                    'PODCAST_MEDIUM_TEMPLATE'   => htmlentities($arrTemplates[$arrMedium['template_id']]['description'], ENT_QUOTES, CONTREXX_CHARSET)
                 ));
                 $this->_objTpl->parse('podcast_media_list');
                 $rowNr++;
@@ -273,13 +273,13 @@ class podcastManager extends podcastLib
 
         $this->_objTpl->setVariable(array(
             'TXT_PODCAST_MEDIUM'    => $_ARRAYLANG['TXT_PODCAST_MEDIUM'],
-            'TXT_PODCAST_BACK'        => $_ARRAYLANG['TXT_PODCAST_BACK']
+            'TXT_PODCAST_BACK'      => $_ARRAYLANG['TXT_PODCAST_BACK']
         ));
 
         $arrTemplate = &$this->_getTemplate($arrMedium['template_id']);
         $this->_objTpl->setVariable(array(
-            'PODCAST_MEDIUM_TITLE'            => $arrMedium['title'],
-            'PODCAST_MEDIUM_INCLUDE_CODE'    => $this->_getHtmlTag($arrMedium, $arrTemplate['template'])
+            'PODCAST_MEDIUM_TITLE'          => $arrMedium['title'],
+            'PODCAST_MEDIUM_INCLUDE_CODE'   => $this->_getHtmlTag($arrMedium, $arrTemplate['template'])
         ));
     }
 
@@ -351,18 +351,18 @@ class podcastManager extends podcastLib
         $this->_objTpl->setVariable(array(
             'TXT_PODCAST_CATEGORIES'                    => $_ARRAYLANG['TXT_PODCAST_CATEGORIES'],
             'TXT_PODCAST_STATUS'                        => $_ARRAYLANG['TXT_PODCAST_STATUS'],
-            'TXT_PODCAST_TITLE'                            => $_ARRAYLANG['TXT_PODCAST_TITLE'],
-            'TXT_PODCAST_DESCRIPTION'                    => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
-            'TXT_PODCAST_MEDIA_COUNT'                    => $_ARRAYLANG['TXT_PODCAST_MEDIA_COUNT'],
-            'TXT_PODCAST_FUNCTIONS'                        => $_ARRAYLANG['TXT_PODCAST_FUNCTIONS'],
-            'TXT_PODCAST_ADD_NEW_CATEGORY'                => $_ARRAYLANG['TXT_PODCAST_ADD_NEW_CATEGORY'],
-            'TXT_PODCAST_CONFIRM_DELETE_CATEGORY_MSG'    => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_CATEGORY_MSG'],
+            'TXT_PODCAST_TITLE'                         => $_ARRAYLANG['TXT_PODCAST_TITLE'],
+            'TXT_PODCAST_DESCRIPTION'                   => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
+            'TXT_PODCAST_MEDIA_COUNT'                   => $_ARRAYLANG['TXT_PODCAST_MEDIA_COUNT'],
+            'TXT_PODCAST_FUNCTIONS'                     => $_ARRAYLANG['TXT_PODCAST_FUNCTIONS'],
+            'TXT_PODCAST_ADD_NEW_CATEGORY'              => $_ARRAYLANG['TXT_PODCAST_ADD_NEW_CATEGORY'],
+            'TXT_PODCAST_CONFIRM_DELETE_CATEGORY_MSG'   => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_CATEGORY_MSG'],
             'TXT_PODCAST_OPERATION_IRREVERSIBLE'        => $_ARRAYLANG['TXT_PODCAST_OPERATION_IRREVERSIBLE']
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_PODCAST_MODIFY_CATEGORY'    => $_ARRAYLANG['TXT_PODCAST_MODIFY_CATEGORY'],
-            'TXT_PODCAST_DELETE_CATEGORY'    => $_ARRAYLANG['TXT_PODCAST_DELETE_CATEGORY']
+            'TXT_PODCAST_MODIFY_CATEGORY'   => $_ARRAYLANG['TXT_PODCAST_MODIFY_CATEGORY'],
+            'TXT_PODCAST_DELETE_CATEGORY'   => $_ARRAYLANG['TXT_PODCAST_DELETE_CATEGORY']
         ));
 
         $arrCategories = &$this->_getCategories(false, true);
@@ -370,14 +370,14 @@ class podcastManager extends podcastLib
             $mediaCount = &$this->_getMediaCount($categoryId);
 
             $this->_objTpl->setVariable(array(
-                'PODCAST_ROW_CLASS'                    => $rowNr % 2 == 1 ? 'row1' : 'row2',
-                'PODCAST_CATEGORY_ID'                => $categoryId,
-                'PODCAST_CATEGORY_STATUS_IMG'        => $arrCategory['status'] == 1 ? 'led_green.gif' : 'led_red.gif',
-                'PODCAST_CATEGORY_STATUS_TXT'        => $arrCategory['status'] == 1 ? $_ARRAYLANG['TXT_PODCAST_ACTIVE'] : $_ARRAYLANG['TXT_PODCAST_INACTIVE'],
+                'PODCAST_ROW_CLASS'                 => $rowNr % 2 == 1 ? 'row1' : 'row2',
+                'PODCAST_CATEGORY_ID'               => $categoryId,
+                'PODCAST_CATEGORY_STATUS_IMG'       => $arrCategory['status'] == 1 ? 'led_green.gif' : 'led_red.gif',
+                'PODCAST_CATEGORY_STATUS_TXT'       => $arrCategory['status'] == 1 ? $_ARRAYLANG['TXT_PODCAST_ACTIVE'] : $_ARRAYLANG['TXT_PODCAST_INACTIVE'],
                 'PODCAST_CATEGORY_TITLE'            => htmlentities($arrCategory['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                'PODCAST_CATEGORY_DESCRIPTION'        => htmlentities($arrCategory['description'], ENT_QUOTES, CONTREXX_CHARSET),
-                'PODCAST_CATEGORY_DESCRIPTION_CUT'    => htmlentities(strlen($arrCategory['description']) > 50 ? substr($arrCategory['description'],0, 47).'...' : $arrCategory['description'], ENT_QUOTES, CONTREXX_CHARSET),
-                'PODCAST_CATEGORY_MEDIA_COUNT'        => $mediaCount > 0 ? '<a href="index.php?cmd=podcast&amp;categoryId='.$categoryId.'" title="'.sprintf($_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'], $arrCategory['title']).'">'.$mediaCount.'</a>' : '-'
+                'PODCAST_CATEGORY_DESCRIPTION'      => htmlentities($arrCategory['description'], ENT_QUOTES, CONTREXX_CHARSET),
+                'PODCAST_CATEGORY_DESCRIPTION_CUT'  => htmlentities(strlen($arrCategory['description']) > 50 ? substr($arrCategory['description'],0, 47).'...' : $arrCategory['description'], ENT_QUOTES, CONTREXX_CHARSET),
+                'PODCAST_CATEGORY_MEDIA_COUNT'      => $mediaCount > 0 ? '<a href="index.php?cmd=podcast&amp;categoryId='.$categoryId.'" title="'.sprintf($_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'], $arrCategory['title']).'">'.$mediaCount.'</a>' : '-'
             ));
             $this->_objTpl->parse('podcast_categories_list');
             $rowNr++;
@@ -455,21 +455,21 @@ class podcastManager extends podcastLib
         $this->_objTpl->loadTemplatefile('module_podcast_modify_category.html');
 
         $this->_objTpl->setVariable(array(
-            'TXT_PODCAST_TITLE'                    => $_ARRAYLANG['TXT_PODCAST_TITLE'],
-            'TXT_PODCAST_DESCRIPTION'            => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
+            'TXT_PODCAST_TITLE'                 => $_ARRAYLANG['TXT_PODCAST_TITLE'],
+            'TXT_PODCAST_DESCRIPTION'           => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
             'TXT_PODCAST_STATUS'                => $_ARRAYLANG['TXT_PODCAST_STATUS'],
             'TXT_PODCAST_ACTIVE'                => $_ARRAYLANG['TXT_PODCAST_ACTIVE'],
-            'TXT_PODCAST_SAVE'                    => $_ARRAYLANG['TXT_PODCAST_SAVE'],
-            'TXT_PODCAST_BACK'                    => $_ARRAYLANG['TXT_PODCAST_BACK'],
+            'TXT_PODCAST_SAVE'                  => $_ARRAYLANG['TXT_PODCAST_SAVE'],
+            'TXT_PODCAST_BACK'                  => $_ARRAYLANG['TXT_PODCAST_BACK'],
             'TXT_PODCAST_FRONTEND_LANGUAGES'    => $_ARRAYLANG['TXT_PODCAST_FRONTEND_LANGUAGES']
         ));
 
         $this->_objTpl->setVariable(array(
-            'PODCAST_CATEGORY_ID'            => $categoryId,
-            'PODCAST_CATEGORY_MODIFY_TITLE'    => $categoryId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_CATEGORY'] : $_ARRAYLANG['TXT_PODCAST_ADD_NEW_CATEGORY'],
+            'PODCAST_CATEGORY_ID'           => $categoryId,
+            'PODCAST_CATEGORY_MODIFY_TITLE' => $categoryId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_CATEGORY'] : $_ARRAYLANG['TXT_PODCAST_ADD_NEW_CATEGORY'],
             'PODCAST_CATEGORY_TITLE'        => htmlentities($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_CATEGORY_DESCRIPTION'    => htmlentities($categoryDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_CATEGORY_STATUS'        => $categoryStatus == 1 ? 'checked="checked"' : ''
+            'PODCAST_CATEGORY_DESCRIPTION'  => htmlentities($categoryDescription, ENT_QUOTES, CONTREXX_CHARSET),
+            'PODCAST_CATEGORY_STATUS'       => $categoryStatus == 1 ? 'checked="checked"' : ''
         ));
 
         $arrLanguages = &$objLanguage->getLanguageArray();
@@ -479,9 +479,9 @@ class podcastManager extends podcastLib
             $column = $langNr % 3;
 
             $this->_objTpl->setVariable(array(
-                'PODCAST_LANG_ID'                    => $langId,
-                'PODCAST_LANG_ASSOCIATED'             => in_array($langId, $categoryAssociatedLangIds) ? 'checked="checked"' : '',
-                'PODCAST_LANG_NAME'                    => $arrLanguage['name'].' ('.$arrLanguage['lang'].')'
+                'PODCAST_LANG_ID'                   => $langId,
+                'PODCAST_LANG_ASSOCIATED'           => in_array($langId, $categoryAssociatedLangIds) ? 'checked="checked"' : '',
+                'PODCAST_LANG_NAME'                 => $arrLanguage['name'].' ('.$arrLanguage['lang'].')'
             ));
             $this->_objTpl->parse('podcast_category_associated_language_'.$column);
 
@@ -531,25 +531,25 @@ class podcastManager extends podcastLib
         $arrTemplates = &$this->_getTemplates(true, $limitPos);
         if (count($arrTemplates) > 0) {
             $this->_objTpl->setVariable(array(
-                'TXT_PODCAST_TEMPLATES'                    => $_ARRAYLANG['TXT_PODCAST_TEMPLATES'],
-                'TXT_PODCAST_DESCRIPTION'                => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
-                'TXT_PODCAST_FUNCTIONS'                    => $_ARRAYLANG['TXT_PODCAST_FUNCTIONS'],
-                'TXT_PODCAST_ADD_NEW_TEMPLATE'            => $_ARRAYLANG['TXT_PODCAST_ADD_NEW_TEMPLATE'],
-                'TXT_PODCAST_CONFIRM_DELETE_TEMPLATE'    => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_TEMPLATE'],
+                'TXT_PODCAST_TEMPLATES'                 => $_ARRAYLANG['TXT_PODCAST_TEMPLATES'],
+                'TXT_PODCAST_DESCRIPTION'               => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
+                'TXT_PODCAST_FUNCTIONS'                 => $_ARRAYLANG['TXT_PODCAST_FUNCTIONS'],
+                'TXT_PODCAST_ADD_NEW_TEMPLATE'          => $_ARRAYLANG['TXT_PODCAST_ADD_NEW_TEMPLATE'],
+                'TXT_PODCAST_CONFIRM_DELETE_TEMPLATE'   => $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_TEMPLATE'],
                 'TXT_PODCAST_OPERATION_IRREVERSIBLE'    => $_ARRAYLANG['TXT_PODCAST_OPERATION_IRREVERSIBLE']
             ));
 
             $this->_objTpl->setGlobalVariable(array(
-                'TXT_PODCAST_MODIFY_TEMPLATE'    => $_ARRAYLANG['TXT_PODCAST_MODIFY_TEMPLATE'],
-                'TXT_PODCAST_DELETE_TEMPLATE'    => $_ARRAYLANG['TXT_PODCAST_DELETE_TEMPLATE']
+                'TXT_PODCAST_MODIFY_TEMPLATE'   => $_ARRAYLANG['TXT_PODCAST_MODIFY_TEMPLATE'],
+                'TXT_PODCAST_DELETE_TEMPLATE'   => $_ARRAYLANG['TXT_PODCAST_DELETE_TEMPLATE']
             ));
 
             $rowNr = 0;
             foreach ($arrTemplates as $templateId => $arrTemplate) {
                 $this->_objTpl->setVariable(array(
-                    'PODCAST_TEMPLATE_ID'            => $templateId,
-                    'PODCAST_TEMPLATE_DESCRIPTION'    => htmlentities($arrTemplate['description'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'PODCAST_ROW_CLASS'                => $rowNr % 2 == 1 ? 'row1' : 'row2'
+                    'PODCAST_TEMPLATE_ID'           => $templateId,
+                    'PODCAST_TEMPLATE_DESCRIPTION'  => htmlentities($arrTemplate['description'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'PODCAST_ROW_CLASS'             => $rowNr % 2 == 1 ? 'row1' : 'row2'
                 ));
                 $rowNr++;
 
@@ -634,19 +634,19 @@ class podcastManager extends podcastLib
         $this->_pageTitle = $templateId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_PODCAST_ADD_NEW_TEMPLATE'];
 
         $this->_objTpl->setVariable(array(
-            'TXT_PODCAST_DESCRIPTION'        => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
-            'TXT_PODCAST_TEMPLATE'            => $_ARRAYLANG['TXT_PODCAST_TEMPLATE'],
-            'TXT_PODCAST_FILE_EXTENSIONS'    => $_ARRAYLANG['TXT_PODCAST_FILE_EXTENSIONS'],
-            'TXT_PODCAST_BACK'                => $_ARRAYLANG['TXT_PODCAST_BACK'],
-            'TXT_PODCAST_SAVE'                => $_ARRAYLANG['TXT_PODCAST_SAVE']
+            'TXT_PODCAST_DESCRIPTION'       => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
+            'TXT_PODCAST_TEMPLATE'          => $_ARRAYLANG['TXT_PODCAST_TEMPLATE'],
+            'TXT_PODCAST_FILE_EXTENSIONS'   => $_ARRAYLANG['TXT_PODCAST_FILE_EXTENSIONS'],
+            'TXT_PODCAST_BACK'              => $_ARRAYLANG['TXT_PODCAST_BACK'],
+            'TXT_PODCAST_SAVE'              => $_ARRAYLANG['TXT_PODCAST_SAVE']
         ));
 
         $this->_objTpl->setVariable(array(
-            'PODCAST_TEMPLATE_ID'                => $templateId,
-            'PODCAST_TEMPLATE_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_TEMPLATE_TEMPLATE'            => htmlentities($template, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_TEMPLATE_FILE_EXTENSIONS'    => $extensions,
-            'PODCAST_TEMPLATE_MODIFY_TITLE'        => $templateId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_PODCAST_ADD_NEW_TEMPLATE']
+            'PODCAST_TEMPLATE_ID'               => $templateId,
+            'PODCAST_TEMPLATE_DESCRIPTION'      => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+            'PODCAST_TEMPLATE_TEMPLATE'         => htmlentities($template, ENT_QUOTES, CONTREXX_CHARSET),
+            'PODCAST_TEMPLATE_FILE_EXTENSIONS'  => $extensions,
+            'PODCAST_TEMPLATE_MODIFY_TITLE'     => $templateId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_PODCAST_ADD_NEW_TEMPLATE']
         ));
     }
 
@@ -690,7 +690,7 @@ class podcastManager extends podcastLib
         $this->_pageTitle = $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'];
 
         $this->_objTpl->setVariable(array(
-            'TXT_PODCAST_BACK'            => $_ARRAYLANG['TXT_PODCAST_BACK'],
+            'TXT_PODCAST_BACK'          => $_ARRAYLANG['TXT_PODCAST_BACK'],
             'TXT_PODCAST_SELECT_ALL'    => $_ARRAYLANG['TXT_PODCAST_SELECT_ALL']
         ));
 
@@ -713,45 +713,45 @@ class podcastManager extends podcastLib
         $this->_pageTitle = $_ARRAYLANG['TXT_PODCAST_SETTINGS'];
 
         $this->_objTpl->setVariable(array(
-            'TXT_PODCAST_SETTINGS'                => $_ARRAYLANG['TXT_PODCAST_SETTINGS'],
-            'TXT_PODCAST_STANDARD_DIMENSIONS'    => $_ARRAYLANG['TXT_PODCAST_STANDARD_DIMENSIONS'],
-            'TXT_PODCAST_PIXEL_WIDTH'            => $_ARRAYLANG['TXT_PODCAST_PIXEL_WIDTH'],
-            'TXT_PODCAST_PIXEL_HEIGHT'            => $_ARRAYLANG['TXT_PODCAST_PIXEL_HEIGHT'],
+            'TXT_PODCAST_SETTINGS'              => $_ARRAYLANG['TXT_PODCAST_SETTINGS'],
+            'TXT_PODCAST_STANDARD_DIMENSIONS'   => $_ARRAYLANG['TXT_PODCAST_STANDARD_DIMENSIONS'],
+            'TXT_PODCAST_PIXEL_WIDTH'           => $_ARRAYLANG['TXT_PODCAST_PIXEL_WIDTH'],
+            'TXT_PODCAST_PIXEL_HEIGHT'          => $_ARRAYLANG['TXT_PODCAST_PIXEL_HEIGHT'],
             'TXT_PODCAST_LATEST_MEDIA_COUNT'    => $_ARRAYLANG['TXT_PODCAST_LATEST_MEDIA_COUNT'],
             'TXT_PODCAST_FEED_TITLE'            => $_ARRAYLANG['TXT_PODCAST_FEED_TITLE'],
-            'TXT_PODCAST_FEED_DESCRIPTION'        => $_ARRAYLANG['TXT_PODCAST_FEED_DESCRIPTION'],
+            'TXT_PODCAST_FEED_DESCRIPTION'      => $_ARRAYLANG['TXT_PODCAST_FEED_DESCRIPTION'],
             'TXT_PODCAST_FEED_IMAGE'            => $_ARRAYLANG['TXT_PODCAST_FEED_IMAGE'],
             'TXT_PODCAST_BROWSE'                => $_ARRAYLANG['TXT_PODCAST_BROWSE'],
-            'TXT_PODCAST_FEED_LINK'                => $_ARRAYLANG['TXT_PODCAST_FEED_LINK'],
-            'TXT_PODCAST_SAVE'                    => $_ARRAYLANG['TXT_PODCAST_SAVE'],
-            'TXT_PODCAST_PLACEHOLDERS'            => $_ARRAYLANG['TXT_PODCAST_PLACEHOLDERS'],
-            'TXT_PODCAST_GENERAL'                => $_ARRAYLANG['TXT_PODCAST_GENERAL'],
+            'TXT_PODCAST_FEED_LINK'             => $_ARRAYLANG['TXT_PODCAST_FEED_LINK'],
+            'TXT_PODCAST_SAVE'                  => $_ARRAYLANG['TXT_PODCAST_SAVE'],
+            'TXT_PODCAST_PLACEHOLDERS'          => $_ARRAYLANG['TXT_PODCAST_PLACEHOLDERS'],
+            'TXT_PODCAST_GENERAL'               => $_ARRAYLANG['TXT_PODCAST_GENERAL'],
             'TXT_PODCAST_BLOCK_TEMPLATE'        => $_ARRAYLANG['TXT_PODCAST_BLOCK_TEMPLATE'],
             'TXT_PODCAST_BLOCK_SETTINGS'        => $_ARRAYLANG['TXT_PODCAST_BLOCK_SETTINGS'],
-            'TXT_PODCAST_SHOW_HOME_CONTENT'        => $_ARRAYLANG['TXT_PODCAST_SHOW_HOME_CONTENT'],
+            'TXT_PODCAST_SHOW_HOME_CONTENT'     => $_ARRAYLANG['TXT_PODCAST_SHOW_HOME_CONTENT'],
             'TXT_PODCAST_DEACTIVATE'            => $_ARRAYLANG['TXT_PODCAST_DEACTIVATE'],
-            'TXT_PODCAST_ACTIVATE'                => $_ARRAYLANG['TXT_PODCAST_ACTIVATE'],
-            'TXT_PODCAST_HOMECONTENT_USAGE'        => $_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE'],
+            'TXT_PODCAST_ACTIVATE'              => $_ARRAYLANG['TXT_PODCAST_ACTIVATE'],
+            'TXT_PODCAST_HOMECONTENT_USAGE'     => $_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE'],
             'TXT_PODCAST_HOMECONTENT_USAGE_TEXT'=> $_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE_TEXT'],
             'TXT_PODCAST_CATEGORIES'            => $_ARRAYLANG['TXT_PODCAST_CATEGORIES'],
             'TXT_PODCAST_THUMB_MAX_SIZE'        => $_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE'],
             'TXT_PODCAST_THUMB_MAX_SIZE_HOMECONTENT' => $_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE_HOMECONTENT'],
-            'TXT_PODCAST_PIXEL'                    => $_ARRAYLANG['TXT_PODCAST_PIXEL'],
-            'TXT_PODCAST_PLAY'                    => $_ARRAYLANG['TXT_PODCAST_PLAY'],
+            'TXT_PODCAST_PIXEL'                 => $_ARRAYLANG['TXT_PODCAST_PIXEL'],
+            'TXT_PODCAST_PLAY'                  => $_ARRAYLANG['TXT_PODCAST_PLAY'],
             'TXT_PODCAST_MEDIA_DATE'            => $_ARRAYLANG['TXT_PODCAST_MEDIA_DATE'],
-            'TXT_PODCAST_MEDIA_TITLE'            => $_ARRAYLANG['TXT_PODCAST_MEDIA_TITLE'],
-            'TXT_PODCAST_MEDIA_PLAYLENGHT'        => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGHT'],
-            'TXT_PODCAST_MEDIA_ID'                => $_ARRAYLANG['TXT_PODCAST_MEDIA_ID'],
-            'TXT_PODCAST_MEDIA_VIEWS_COUNT'        => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS_COUNT'],
-            'TXT_PODCAST_MEDIA_VIEWS'            => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'],
-            'TXT_PODCAST_MEDIA_AUTHOR'            => $_ARRAYLANG['TXT_PODCAST_MEDIA_AUTHOR'],
+            'TXT_PODCAST_MEDIA_TITLE'           => $_ARRAYLANG['TXT_PODCAST_MEDIA_TITLE'],
+            'TXT_PODCAST_MEDIA_PLAYLENGHT'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGHT'],
+            'TXT_PODCAST_MEDIA_ID'              => $_ARRAYLANG['TXT_PODCAST_MEDIA_ID'],
+            'TXT_PODCAST_MEDIA_VIEWS_COUNT'     => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS_COUNT'],
+            'TXT_PODCAST_MEDIA_VIEWS'           => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'],
+            'TXT_PODCAST_MEDIA_AUTHOR'          => $_ARRAYLANG['TXT_PODCAST_MEDIA_AUTHOR'],
             'TXT_PODCAST_MEDIA_SHORT_PLAYLENGHT'=> $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_PLAYLENGHT'],
-            'TXT_PODCAST_MEDIA_PLAYLENGHT'        => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGHT'],
-            'TXT_PODCAST_MEDIA_URL'                => $_ARRAYLANG['TXT_PODCAST_MEDIA_URL'],
-            'TXT_PODCAST_MEDIA_THUMBNAIL'        => $_ARRAYLANG['TXT_PODCAST_MEDIA_THUMBNAIL'],
-            'TXT_PODCAST_MEDIA_SHORT_DATE'        => $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_DATE'],
-            'TXT_PODCAST_MEDIA_DESCRIPTION'        => $_ARRAYLANG['TXT_PODCAST_MEDIA_DESCRIPTION'],
-            'TXT_PODCAST_AUTO_VALIDATE'            => $_ARRAYLANG['TXT_PODCAST_AUTO_VALIDATE'],
+            'TXT_PODCAST_MEDIA_PLAYLENGHT'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGHT'],
+            'TXT_PODCAST_MEDIA_URL'             => $_ARRAYLANG['TXT_PODCAST_MEDIA_URL'],
+            'TXT_PODCAST_MEDIA_THUMBNAIL'       => $_ARRAYLANG['TXT_PODCAST_MEDIA_THUMBNAIL'],
+            'TXT_PODCAST_MEDIA_SHORT_DATE'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_DATE'],
+            'TXT_PODCAST_MEDIA_DESCRIPTION'     => $_ARRAYLANG['TXT_PODCAST_MEDIA_DESCRIPTION'],
+            'TXT_PODCAST_AUTO_VALIDATE'         => $_ARRAYLANG['TXT_PODCAST_AUTO_VALIDATE'],
         ));
 
         if (isset($_POST['podcast_save_settings'])) {
@@ -782,19 +782,19 @@ class podcastManager extends podcastLib
 
         $this->_objTpl->setVariable(array(
             'PODCAST_SETTINGS_DEFAULT_WIDTH'                => $this->_arrSettings['default_width'],
-            'PODCAST_SETTINGS_DEFAULT_HEIGHT'                => $this->_arrSettings['default_height'],
-            'PODCAST_SETTINGS_LATEST_MEDIA_COUNT'            => $this->_arrSettings['latest_media_count'],
-            'PODCAST_SETTINGS_THUMB_MAX_SIZE'                => $this->_arrSettings['thumb_max_size'],
-            'PODCAST_SETTINGS_THUMB_MAX_SIZE_HOMECONTENT'    => $this->_arrSettings['thumb_max_size_homecontent'],
+            'PODCAST_SETTINGS_DEFAULT_HEIGHT'               => $this->_arrSettings['default_height'],
+            'PODCAST_SETTINGS_LATEST_MEDIA_COUNT'           => $this->_arrSettings['latest_media_count'],
+            'PODCAST_SETTINGS_THUMB_MAX_SIZE'               => $this->_arrSettings['thumb_max_size'],
+            'PODCAST_SETTINGS_THUMB_MAX_SIZE_HOMECONTENT'   => $this->_arrSettings['thumb_max_size_homecontent'],
             'PODCAST_SETTINGS_SHOW_HOMECONTENT_'.
-            $_CONFIG['podcastHomeContent']                    => 'checked="checked"',
+            $_CONFIG['podcastHomeContent']                  => 'checked="checked"',
             'PODCAST_SETTINGS_AUTO_VALIDATE_'.
             $this->_arrSettings['auto_validate']            => 'checked="checked"',
-            'PODCAST_SETTINGS_FEED_TITLE'                    => $this->_arrSettings['feed_title'],
-            'PODCAST_SETTINGS_FEED_DESCRIPTION'                => $this->_arrSettings['feed_description'],
-            'PODCAST_SETTINGS_FEED_IMAGE'                    => $this->_arrSettings['feed_image'],
-            'PODCAST_SETTINGS_TAB'                            => $selectedTab,
-            'PODCAST_SETTINGS_FEED_URL'                        => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_FEED_WEB_PATH.'/podcast.xml'
+            'PODCAST_SETTINGS_FEED_TITLE'                   => $this->_arrSettings['feed_title'],
+            'PODCAST_SETTINGS_FEED_DESCRIPTION'             => $this->_arrSettings['feed_description'],
+            'PODCAST_SETTINGS_FEED_IMAGE'                   => $this->_arrSettings['feed_image'],
+            'PODCAST_SETTINGS_TAB'                          => $selectedTab,
+            'PODCAST_SETTINGS_FEED_URL'                     => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_FEED_WEB_PATH.'/podcast.xml'
         ));
 
         if(!in_array($selectedTab, $arrSettingsTabs)){
@@ -802,8 +802,8 @@ class podcastManager extends podcastLib
         }
         foreach ($arrSettingsTabs as $tab) {
             $this->_objTpl->setVariable(array(
-                'PODCAST_SETTINGS_'.strtoupper($tab).'_DIV_DISPLAY'    =>    sprintf('style="display: %s;"', ($selectedTab == $tab ? 'block' : 'none')),
-                'PODCAST_SETTINGS_'.strtoupper($tab).'_TAB_CLASS'    =>    $selectedTab == $tab ? 'class="active"' : '',
+                'PODCAST_SETTINGS_'.strtoupper($tab).'_DIV_DISPLAY' =>  sprintf('style="display: %s;"', ($selectedTab == $tab ? 'block' : 'none')),
+                'PODCAST_SETTINGS_'.strtoupper($tab).'_TAB_CLASS'   =>  $selectedTab == $tab ? 'class="active"' : '',
             ));
         }
         $mediumCategories = array();
@@ -831,10 +831,10 @@ class podcastManager extends podcastLib
             array_walk($arrCatLangIds, create_function('&$cat, $k, $arrLanguages', '$cat = $arrLanguages[$cat]["lang"];'), $arrLanguages);
             $arrCategory['title'] .= ' ('.implode(', ', $arrCatLangIds).')';
             $this->_objTpl->setVariable(array(
-                'PODCAST_CATEGORY_ID'                    => $categoryId,
-                'PODCAST_CATEGORY_ASSOCIATED'             => in_array($categoryId, $mediumCategories) ? 'checked="checked"' : '',
+                'PODCAST_CATEGORY_ID'                   => $categoryId,
+                'PODCAST_CATEGORY_ASSOCIATED'           => in_array($categoryId, $mediumCategories) ? 'checked="checked"' : '',
                 'PODCAST_SHOW_MEDIA_OF_CATEGORY_TXT'    => sprintf($_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'], $arrCategory['title']),
-                'PODCAST_CATEGORY_NAME'                    => $arrCategory['title']
+                'PODCAST_CATEGORY_NAME'                 => $arrCategory['title']
             ));
             $this->_objTpl->parse('podcast_medium_associated_category_'.$column);
             $categoryNr++;

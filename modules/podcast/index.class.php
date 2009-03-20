@@ -2,9 +2,9 @@
 /**
  * Class podcast
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
@@ -66,11 +66,8 @@ class podcast extends podcastLib
         return $this->_objTpl->get();
     }
 
-
-    function showMedium($blockFirst = false)
-    {
-        global $_ARRAYLANG, $_CONFIG;
-
+    function showMedium($blockFirst = false){
+        global $_ARRAYLANG, $_CONFIG, $_LANGID;
         $categoryId = isset($_REQUEST['cid']) ? (intval($_REQUEST['cid']) == 0 ? false : intval($_REQUEST['cid'])) : false;
         $mediumId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         if($mediumId > 0){
@@ -78,7 +75,7 @@ class podcast extends podcastLib
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_PODCAST_PLAY'           => $_ARRAYLANG['TXT_PODCAST_PLAY'],
+            'TXT_PODCAST_PLAY'        => $_ARRAYLANG['TXT_PODCAST_PLAY'],
             'TXT_PODCAST_MEDIA_VIEWS' => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'],
         ));
 
@@ -123,19 +120,19 @@ EOF;
 
                 $mediumCode = sprintf($embedCode, addcslashes($this->_getHtmlTag($arrMedium, $arrTemplate['template']), "\r\n'"));
                 $this->_objTpl->setVariable(array(
-                    'PODCAST_MEDIUM_ID'                => $mediumId,
+                    'PODCAST_MEDIUM_ID'             => $mediumId,
                     'PODCAST_MEDIUM_CATEGORY_ID'    => $categoryId,
-                    'PODCAST_MEDIUM_TITLE'            => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'PODCAST_MEDIUM_AUTHOR'            => empty($arrMedium['author']) ? '-' : htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'PODCAST_MEDIUM_TITLE'          => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'PODCAST_MEDIUM_AUTHOR'         => empty($arrMedium['author']) ? '-' : htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
                     'PODCAST_MEDIUM_DESCRIPTION'    => htmlentities($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'PODCAST_MEDIUM_CODE'            => $mediumCode,
-                    'PODCAST_MEDIUM_DATE'            => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
-                    'PODCAST_MEDIUM_SHORT_DATE'        => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
-                    'PODCAST_MEDIUM_THUMBNAIL'        => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'PODCAST_MEDIUM_CODE'           => $mediumCode,
+                    'PODCAST_MEDIUM_DATE'           => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
+                    'PODCAST_MEDIUM_SHORT_DATE'     => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
+                    'PODCAST_MEDIUM_THUMBNAIL'      => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
                     'PODCAST_MEDIUM_URL'            => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'PODCAST_MEDIUM_PLAYLENGHT'        => $this->_getPlaylenghtFormatOfTimestamp($arrMedium['playlenght']),
-                    'PODCAST_MEDIUM_VIEWS'            => $this->_getViews($mediumId),
-                    'PODCAST_MEDIUM_FILESIZE'        => $this->_formatFileSize($arrMedium['size'])
+                    'PODCAST_MEDIUM_PLAYLENGHT'     => $this->_getPlaylenghtFormatOfTimestamp($arrMedium['playlenght']),
+                    'PODCAST_MEDIUM_VIEWS'          => $this->_getViews($mediumId),
+                    'PODCAST_MEDIUM_FILESIZE'       => $this->_formatFileSize($arrMedium['size'])
                 ));
 
                 $this->_objTpl->parse('podcast_medium');
@@ -158,7 +155,7 @@ EOF;
             $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=podcast&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
         }
         if(intval($categoryId) == 0){
-            $categories = array_keys($this->_getCategories(true, false, FRONTEND_LANG_ID));
+            $categories = array_keys($this->_getCategories(true, false, $_LANGID));
         }else{
             $categories = $categoryId;
         }
@@ -169,17 +166,17 @@ EOF;
                 foreach ($arrMedia as $mediumId => $arrMedium) {
                     $this->_objTpl->setVariable(array(
                         'PODCAST_MEDIUM_ROW'                => $i%2==0 ? 'row1' : 'row2',
-                        'PODCAST_MEDIA_ID'                    => $mediumId,
-                        'PODCAST_MEDIA_CATEGORY_ID'            => $categoryId,
-                        'PODCAST_MEDIA_TITLE'                => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'PODCAST_MEDIA_AUTHOR'                => htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'PODCAST_MEDIA_DESCRIPTION'            => empty($arrMedium['description']) ? '-' : htmlentities($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_ID'                  => $mediumId,
+                        'PODCAST_MEDIA_CATEGORY_ID'         => $categoryId,
+                        'PODCAST_MEDIA_TITLE'               => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_AUTHOR'              => htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_DESCRIPTION'         => empty($arrMedium['description']) ? '-' : htmlentities($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
                         'PODCAST_MEDIA_DATE'                => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
-                        'PODCAST_MEDIA_SHORT_DATE'            => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
-                        'PODCAST_MEDIA_URL'                    => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'PODCAST_MEDIA_THUMBNAIL'            => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'PODCAST_MEDIA_VIEWS'                => $this->_getViews($mediumId),
-                        'PODCAST_MEDIA_PLAYLENGHT'            => $this->_getPlaylenghtFormatOfTimestamp($arrMedium['playlenght']),
+                        'PODCAST_MEDIA_SHORT_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
+                        'PODCAST_MEDIA_URL'                 => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_THUMBNAIL'           => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_VIEWS'               => $this->_getViews($mediumId),
+                        'PODCAST_MEDIA_PLAYLENGHT'          => $this->_getPlaylenghtFormatOfTimestamp($arrMedium['playlenght']),
                         'PODCAST_MEDIA_SHORT_PLAYLENGHT'    => $this->_getShortPlaylenghtFormatOfTimestamp($arrMedium['playlenght'])
                     ));
                     $i++;

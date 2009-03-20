@@ -10,11 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Debug mode
- * @ignore
- */
-define('_EGOV_DEBUG', 0);
 
 /*
 ALTER TABLE `contrexx_module_egov_products`
@@ -93,17 +88,7 @@ class eGov extends eGovLibrary
 
     function __construct()
     {
-        global $_ARRAYLANG, $objTemplate;
-
-        if (_EGOV_DEBUG) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 1);
-            global $objDatabase; $objDatabase->debug = 1;
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-            global $objDatabase; $objDatabase->debug = 0;
-        }
+        global $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_arrFormFieldTypes = array(
             'text' => $_ARRAYLANG['TXT_EGOV_TEXTBOX'],
@@ -121,7 +106,10 @@ class eGov extends eGovLibrary
 
         $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/egov/template');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
+        $this->langId=$objInit->userFrontendLangId;
+
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=egov'>".$_ARRAYLANG['TXT_ORDERS']."</a>
                                                         <a href='index.php?cmd=egov&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>
                                                         <a href='index.php?cmd=egov&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");

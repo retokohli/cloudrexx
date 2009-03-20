@@ -3,8 +3,8 @@
 /**
  * Block
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_block
  * @todo        Edit PHP DocBlocks!
@@ -20,9 +20,9 @@ require_once ASCMS_MODULE_PATH.'/block/lib/blockLib.class.php';
  *
  * block module class
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_block
  */

@@ -7,381 +7,480 @@ Text[1]=["","{TXT_CONTACT_CAPTCHA_DESCRIPTION}"];
 Text[2]=["","{TXT_CONTACT_SEND_COPY_DESCRIPTION}"];
 Text[3]=["","{TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION}"];
 
-formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
+var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
+var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
+var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
+
+function addRecipient()
+{
+    var elField = document.getElementById('formRecipient_'+formRecipientLastId).cloneNode(true);
+
+    document.getElementById('formRecipient_'+formRecipientLastId).setAttribute('id', 'formRecipient_'+(formRecipientLastId+1));
+    document.getElementById('contactFormRecipientId_'+formRecipientLastId).innerHTML = formRecipientLastId+1;
+    document.getElementById('contactFormRecipientId_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientId_'+(formRecipientLastId+1));
+    document.getElementById('contactFormRecipientName_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientName['+(formRecipientLastId+1)+']');
+    document.getElementById('contactFormRecipientName_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientName_'+(formRecipientLastId+1));
+    document.getElementById('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientEmail['+(formRecipientLastId+1)+']');
+    document.getElementById('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientEmail_'+(formRecipientLastId+1));
+    document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientSort['+(formRecipientLastId+1)+']');
+    document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('value', ++sort);
+    document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientSort_'+(formRecipientLastId+1));
+    document.getElementById('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('href', 'javascript:removeFormElement('+(formRecipientLastId+1)+', \'Recipient\')');
+    document.getElementById('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDelete_'+(formRecipientLastId+1));
+    document.getElementById('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formRecipientLastId+1)+', \'Recipient\')');
+    document.getElementById('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonUp_'+(formRecipientLastId+1));
+    document.getElementById('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formRecipientLastId+1)+', \'Recipient\')');
+    document.getElementById('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDown_'+(formRecipientLastId+1));
+
+    formRecipientLastId = formRecipientLastId + 1;
+
+    document.getElementById('formRecipientContainer').appendChild(elField);
+}
 
 function addFormField()
 {
-	elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
+    var elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
 
-	document.getElementById('formField_'+formFieldLastId).setAttribute('id', 'formField_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldId_'+formFieldLastId).innerHTML = formFieldLastId+1;
-	document.getElementById('contactFormFieldId_'+formFieldLastId).setAttribute('id', 'contactFormFieldId_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('name', 'contactFormFieldName['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('id', 'contactFormFieldName_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormField('+(formFieldLastId+1)+')');
-	document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDelete_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldAttributeBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldAttributeBox_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('href', 'javascript:moveFormFieldUp('+(formFieldLastId+1)+')');
-	document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonUp_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('href', 'javascript:moveFormFieldDown('+(formFieldLastId+1)+')');
-	document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDown_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldRequiredBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequiredBox_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('name', 'contactFormFieldRequired['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequired_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('name', 'contactFormFieldCheckType['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('id', 'contactFormFieldCheckType_'+(formFieldLastId+1));
+    document.getElementById('formField_'+formFieldLastId).setAttribute('id', 'formField_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldId_'+formFieldLastId).innerHTML = formFieldLastId+1;
+    document.getElementById('contactFormFieldId_'+formFieldLastId).setAttribute('id', 'contactFormFieldId_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('name', 'contactFormFieldName['+(formFieldLastId+1)+']');
+    document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('id', 'contactFormFieldName_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
+    document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormElement('+(formFieldLastId+1)+', \'Field\')');
+    document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDelete_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldAttributeBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldAttributeBox_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formFieldLastId+1)+', \'Field\')');
+    document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonUp_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formFieldLastId+1)+', \'Field\')');
+    document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDown_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldRequiredBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequiredBox_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('name', 'contactFormFieldRequired['+(formFieldLastId+1)+']');
+    document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequired_'+(formFieldLastId+1));
+    document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('name', 'contactFormFieldCheckType['+(formFieldLastId+1)+']');
+    document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('id', 'contactFormFieldCheckType_'+(formFieldLastId+1));
 
-	formFieldLastId = formFieldLastId + 1;
+    formFieldLastId = formFieldLastId + 1;
 
-	document.getElementById('formFieldContainer').appendChild(elField);
+    document.getElementById('formFieldContainer').appendChild(elField);
 }
 
-function removeFormField(id)
+function removeFormElement(id, what)
 {
-	document.getElementById('formFieldContainer').removeChild(document.getElementById('formField_'+id));
+    document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
 }
 
-function moveFormFieldUp(id)
+function moveFormElementUp(id, what)
 {
-	elField1 = document.getElementById('formField_'+id);
-	elField2 = document.getElementById('formField_'+id).cloneNode(true);
-	for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-		if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-			elFieldType1 = i;
-			break;
-		}
-	}
+    elField1 = document.getElementById('form'+what+'_'+id);
+    elField2 = document.getElementById('form'+what+'_'+id).cloneNode(true);
+    if(what == 'Field')
+        for (var i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
+            if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
+                elFieldType1 = i;
+                break;
+            }
+        }
 
-	elField3 = document.getElementById('formField_'+id).previousSibling;
-	if (elField3) {
-		try {
-			elField3Id = elField3.getAttribute('id');
-		} catch (e) {
-			elField3Id = '';
-		}
-		while (elField3.nodeType != 1 || elField3Id == '' || elField3Id.substring(0, 10) != 'formField_') {
-			elField3 = elField3.previousSibling;
-			if (!elField3) {
-				return;
-			}
+    elField3 = document.getElementById('form'+what+'_'+id).previousSibling;
+    if (elField3) {
+        try {
+            elField3Id = elField3.getAttribute('id');
+        } catch (e) {
+            elField3Id = '';
+        }
+        while (elField3.nodeType != 1 || elField3Id == '' || elField3Id.substring(0, 5+(what.length)) != 'form'+what+'_') {
+            elField3 = elField3.previousSibling;
+            if (!elField3) return;
+            try {
+                elField3Id = elField3.getAttribute('id');
+                if (typeof(elField3Id) != 'string') {
+                    elField3Id = '';
+                }
+            } catch (e) {
+                elField3Id = '';
+            }
+        }
+    } else {
+        return;
+    }
 
-			try {
-				elField3Id = elField3.getAttribute('id');
-				if (typeof(elField3Id) != 'string') {
-					elField3Id = '';
-				}
-			} catch (e) {
-				elField3Id = '';
+    if(what == "Recipient"){
+        var recipientSortGoesDown   = getFieldByName(elField2, 'contactFormRecipientSort')
+        var recipientSortGoesUp     = getFieldByName(elField3, 'contactFormRecipientSort')
+        recipientSortGoesDown.value = recipientSortGoesDown.value*1 - 1;
+        recipientSortGoesUp.value   = recipientSortGoesUp.value*1 + 1;
+    }
 
-			}
-		}
-	} else {
-		return;
-	}
+    document.getElementById('form'+what+'Container').removeChild(elField1);
+    document.getElementById('form'+what+'Container').insertBefore(elField2, elField3);
 
-	document.getElementById('formFieldContainer').removeChild(elField1);
-	document.getElementById('formFieldContainer').insertBefore(elField2, elField3);
-
-	document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType1].selected = true;
+    if(what == 'Field')
+        document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType1].selected = true;
 }
 
-function moveFormFieldDown(id)
+function getFieldByName(obj, name)
 {
-	elField1 = document.getElementById('formField_'+id).cloneNode(true);
+    var fields = obj.getElementsByTagName("input");
+    for(var i = 0; i < fields.length; i++){
+        if(fields[i].name.indexOf(name) != -1){
+            return fields[i];
+        }
+    }
+}
 
-	for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-		if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-			elFieldType1 = i;
-			break;
-		}
-	}
+function moveFormElementDown(id, what)
+{
+    elField1 = document.getElementById('form'+what+'_'+id).cloneNode(true);
 
-	elField2 = document.getElementById('formField_'+id).nextSibling;
-	if (elField2) {
-		while (elField2.nodeType != 1) {
-			elField2 = elField2.nextSibling;
-			if (!elField2) {
-				return;
-			}
-		}
-	} else {
-		return;
-	}
+    if(what == 'Field')
+        for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
+            if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
+                elFieldType1 = i;
+                break;
+            }
+        }
 
-	for (i = 0; i < document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes.length; i++) {
-		if (document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[i].selected == true) {
-			elFieldType2 = i;
-			break;
-		}
-	}
+    elField2 = document.getElementById('form'+what+'_'+id).nextSibling;
+    if (elField2) {
+        while (elField2.nodeType != 1) {
+            elField2 = elField2.nextSibling;
+            if (!elField2) {
+                return;
+            }
+        }
+    } else {
+        return;
+    }
 
-	elField3 = elField2;
-	elField2 = elField2.cloneNode(true);
+    if(what == 'Field')
+        for (i = 0; i < document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes.length; i++) {
+            if (document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[i].selected == true) {
+                elFieldType2 = i;
+                break;
+            }
+        }
 
-	document.getElementById('formFieldContainer').removeChild(document.getElementById('formField_'+id));
-	document.getElementById('formFieldContainer').replaceChild(elField1, elField3);
-	document.getElementById('formFieldContainer').insertBefore(elField2, document.getElementById('formField_'+id));
+    elField3 = elField2;
+    elField2 = elField2.cloneNode(true);
 
-	document.getElementById('contactFormFieldType_'+id).childNodes[elFieldType1].selected = true;
-	document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType2].selected = true;
+    if(what == "Recipient"){
+        var recipientSortGoesUp     = getFieldByName(elField2, 'contactFormRecipientSort')
+        recipientSortGoesUp.value   = recipientSortGoesUp.value*1 - 1;
+        var recipientSortGoesDown   = getFieldByName(elField1, 'contactFormRecipientSort')
+        recipientSortGoesDown.value = recipientSortGoesDown.value*1 + 1;
+    }
+
+
+    document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
+    document.getElementById('form'+what+'Container').replaceChild(elField1, elField3);
+    document.getElementById('form'+what+'Container').insertBefore(elField2, document.getElementById('form'+what+'_'+id));
+
+    if(what == 'Field'){
+        document.getElementById('contactFormFieldType_'+id).childNodes[elFieldType1].selected = true;
+        document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType2].selected = true;
+    }
 }
 
 function setFormFieldAttributeBox(el, type)
 {
-	elId = el.substr(21);
-	elField = document.getElementById('contactFormFieldAttributeBox_'+elId);
+    elId = el.substr(21);
+    elField = document.getElementById('contactFormFieldAttributeBox_'+elId);
 
-	for (i=elField.childNodes.length-1; i>=0; i--) {
-		if (elField.childNodes[i].nodeType) {
-			switch (elField.childNodes[i].nodeType) {
-				case 1:
-				case 3:
-					elField.removeChild(elField.childNodes[i]);
-					break;
-			}
-		}
-	}
+    for (i=elField.childNodes.length-1; i>=0; i--) {
+        if (elField.childNodes[i].nodeType) {
+            switch (elField.childNodes[i].nodeType) {
+                case 1:
+                case 3:
+                    elField.removeChild(elField.childNodes[i]);
+                    break;
+            }
+        }
+    }
 
-	if (document.getElementById('formField'+type+'Attribute_0')) {
-		elAttribute = document.getElementById('formField'+type+'Attribute_0');
-		for (i=0; i<elAttribute.childNodes.length; i++) {
-			if (elAttribute.childNodes[i].nodeType == 1) {
-				if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldAttribute[0]') {
-					elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldAttribute['+elId+']');
-				}
-			}
-			elField = elAttribute.childNodes[i].cloneNode(true);
-			document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
-		}
-	} else {
-		elField = document.createTextNode('');
-		document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
-	}
+    if (document.getElementById('formField'+type+'Attribute_0')) {
+        elAttribute = document.getElementById('formField'+type+'Attribute_0');
+        for (i=0; i<elAttribute.childNodes.length; i++) {
+            if (elAttribute.childNodes[i].nodeType == 1) {
+                if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldAttribute[0]') {
+                    elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldAttribute['+elId+']');
+                }
+            }
+            elField = elAttribute.childNodes[i].cloneNode(true);
+            document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
+        }
+    } else {
+        elField = document.createTextNode('');
+        document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
+    }
 
-	elField = document.getElementById('contactFormFieldRequiredBox_'+elId);
+    elField = document.getElementById('contactFormFieldRequiredBox_'+elId);
 
-	for (i=elField.childNodes.length-1; i>=0; i--) {
-		if (elField.childNodes[i].nodeType) {
-			switch (elField.childNodes[i].nodeType) {
-				case 1:
-				case 3:
-					elField.removeChild(elField.childNodes[i]);
-					break;
-			}
-		}
-	}
+    for (i=elField.childNodes.length-1; i>=0; i--) {
+        if (elField.childNodes[i].nodeType) {
+            switch (elField.childNodes[i].nodeType) {
+                case 1:
+                case 3:
+                    elField.removeChild(elField.childNodes[i]);
+                    break;
+            }
+        }
+    }
 
-	switch (type) {
-		case 'text':
-		case 'file':
-		case 'password':
-		case 'textarea':
-		case 'checkbox':
-		case 'checkboxGroup':
-		case 'date':
-		case 'radio':
-			elAttribute = document.getElementById('contactFormFieldRequiredBox_0').cloneNode(true);
-			for (i=0; i<elAttribute.childNodes.length; i++) {
-				if (elAttribute.childNodes[i].nodeType == 1) {
-					if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired['+elId+']') {
-						elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldRequired['+elId+']');
-						elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldRequired_'+elId);
-					}
+    switch (type) {
+        case 'text':
+        case 'file':
+        case 'password':
+        case 'textarea':
+        case 'checkbox':
+        case 'checkboxGroup':
+        case 'date':
+        case 'radio':
+            elAttribute = document.getElementById('contactFormFieldRequiredBox_0').cloneNode(true);
+            for (i=0; i<elAttribute.childNodes.length; i++) {
+                if (elAttribute.childNodes[i].nodeType == 1) {
+                    if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired['+elId+']') {
+                        elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldRequired['+elId+']');
+                        elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldRequired_'+elId);
+                    }
 
-					if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType['+elId+']') {
-						elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldCheckType['+elId+']');
-						elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldCheckType_'+elId);
-						if (type == 'checkbox' || type == 'checkboxGroup' || type == 'date' || type == 'select' || type == 'radio') {
-							continue;
-						}
-					}
-				}
+                    if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType['+elId+']') {
+                        elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldCheckType['+elId+']');
+                        elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldCheckType_'+elId);
+                        if (type == 'checkbox' || type == 'checkboxGroup' || type == 'date' || type == 'select' || type == 'radio') {
+                            continue;
+                        }
+                    }
+                }
 
-				elField = elAttribute.childNodes[i].cloneNode(true);
-				document.getElementById('contactFormFieldRequiredBox_'+elId).appendChild(elField);
-			}
-			break;
+                elField = elAttribute.childNodes[i].cloneNode(true);
+                document.getElementById('contactFormFieldRequiredBox_'+elId).appendChild(elField);
+            }
+            break;
 
-		default:
-			break;
-	}
+        default:
+            break;
+    }
 }
 
 function createContentSite()
 {
-	if (confirm('{TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE}')) {
-		document.getElementById('contentSiteAction').value = "create";
-	}
-	return true;
+    if (confirm('{TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE}')) {
+        document.getElementById('contentSiteAction').value = "create";
+    }
+    return true;
 }
 
 function updateContentSite()
 {
-	if (confirm('{TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE}')) {
-		document.getElementById('contentSiteAction').value = "update";
-	}
-	return true;
+    if (confirm('{TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE}')) {
+        document.getElementById('contentSiteAction').value = "update";
+    }
+    return true;
 }
 // -->
 </script>
 <div style="display:none;">
-	<div style="white-space:nowrap; height:20px; clear:both;" id="formField_{CONTACT_FORM_FIELD_NEXT_ID}">
-		<div style="width:55px; display:inline; float:left;">
-			<a href="javascript:removeFormField('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-			<a href="javascript:moveFormFieldUp('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-			<a href="javascript:moveFormFieldDown('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-		</div>
-		<div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormFieldId_{CONTACT_FORM_FIELD_NEXT_ID}" >
-			{CONTACT_FORM_FIELD_NEXT_ID}
-		</div>
-		<div style="width:120px; display:inline; float:left;">
-			<input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_NEXT_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_NEXT_ID}" value="" />
-		</div>
-		<div style="width:135px; display:inline; float:left;">
-			{CONTACT_FORM_FIELD_TYPE_MENU_TPL}
-		</div>
-		<div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_NEXT_ID}">
-			{CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
-		</div>
-		<div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_NEXT_ID}">
-			{CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL}
-		</div>
-	</div>
-	<div style="display:inline;" id="formFieldtextAttribute_0">
-		{CONTACT_FORM_FIELD_TEXT_TPL}
-	</div>
-	<div style="display:inline;" id="formFieldlabelAttribute_0">
-		{CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
-	</div>
-	<div style="display:inline;" id="formFieldcheckboxAttribute_0">
-		{CONTACT_FORM_FIELD_CHECKBOX_TPL}
-	</div>
-	<div style="display:inline;" id="formFieldcheckboxGroupAttribute_0">
-		{CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL}
-	</div>
-	<div style="display:inline;" id="formFieldddateAttribute_0">
-		{CONTACT_FORM_FIELD_DATE_TPL}
-	</div>
-	<div style="display:inline;" id="formFieldhiddenAttribute_0">
-		{CONTACT_FORM_FIELD_HIDDEN_TPL}
-	</div>
-	<div style="display:inline;" id="formFieldradioAttribute_0">
-		{CONTACT_FORM_FIELD_RADIO_TPL}
-	</div>
-	<div style="display:inline;" id="formFieldselectAttribute_0">
-		{CONTACT_FORM_FIELD_SELECT_TPL}
-	</div>
-	<div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_0">
-		{CONTACT_FORM_FIELD_CHECK_BOX_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_TPL}
-	</div>
+    <div style="white-space:nowrap; height:20px; clear:both;" id="formRecipient_{CONTACT_FORM_RECIPIENT_NEXT_ID}">
+        <div style="width:55px; display:inline; float:left;">
+            <a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+            <a href="javascript:moveFormElementUp('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonUp_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+            <a href="javascript:moveFormElementDown('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonDown_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+        </div>
+        <div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormRecipientId_{CONTACT_FORM_RECIPIENT_NEXT_ID}" >
+            {CONTACT_FORM_RECIPIENT_NEXT_ID}
+        </div>
+        <div style="width:290px; display:inline; float:left;">
+            <input style="width:285px;" type="text" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{TXT_CONTACT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
+        </div>
+        <div style="width:290px; display:inline;">
+            <input style="width:285px;" type="text" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{TXT_CONTACT_REGEX_EMAIL}" onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" /> *
+            <input type="hidden" name="contactFormRecipientSort[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{CONTACT_FORM_RECIPIENT_NEXT_SORT}" />
+        </div>
+    </div>
+    <div style="white-space:nowrap; height:20px;" id="formField_{CONTACT_FORM_FIELD_NEXT_ID}">
+        <div style="width:55px; display:inline; float:left;">
+            <a href="javascript:removeFormElement('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+            <a href="javascript:moveFormElementUp('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+            <a href="javascript:moveFormElementDown('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+        </div>
+        <div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormFieldId_{CONTACT_FORM_FIELD_NEXT_ID}" >
+            {CONTACT_FORM_FIELD_NEXT_ID}
+        </div>
+        <div style="width:120px; display:inline; float:left;">
+            <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_NEXT_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_NEXT_ID}" value="" />
+        </div>
+        <div style="width:135px; display:inline; float:left;">
+            {CONTACT_FORM_FIELD_TYPE_MENU_TPL}
+        </div>
+        <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_NEXT_ID}">
+            {CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
+        </div>
+        <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_NEXT_ID}">
+            {CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL}
+        </div>
+    </div>
+    <div style="display:inline;" id="formFieldtextAttribute_0">
+        {CONTACT_FORM_FIELD_TEXT_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldlabelAttribute_0">
+        {CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldcheckboxAttribute_0">
+        {CONTACT_FORM_FIELD_CHECKBOX_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldcheckboxGroupAttribute_0">
+        {CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldddateAttribute_0">
+        {CONTACT_FORM_FIELD_DATE_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldhiddenAttribute_0">
+        {CONTACT_FORM_FIELD_HIDDEN_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldradioAttribute_0">
+        {CONTACT_FORM_FIELD_RADIO_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldselectAttribute_0">
+        {CONTACT_FORM_FIELD_SELECT_TPL}
+    </div>
+    <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_0">
+        {CONTACT_FORM_FIELD_CHECK_BOX_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_TPL}
+    </div>
 </div>
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
-	<input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
-	<table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-		<tbody style="vertical-align:top;">
-			<tr>
-				<th colspan="2">{CONTACT_ACTION_TITLE}</th>
-			</tr>
-			<tr class="row1" style="height:20px;">
-				<td width="10%">{TXT_CONTACT_NAME}</td>
-				<td width="90%"><input style="width:670px;" type="text" name="contactFormName" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
-			</tr>
-			<tr class="row2" style="height:20px;">
-				<td>{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
-				<td><input style="width: 670px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *<td>
-			</tr>
-			<tr class="row1">
-				<td>{TXT_CONTACT_SUBJECT}</td>
-				<td><input style="width: 670px;" type="text" name="contactFormSubject" value="{CONTACT_FORM_SUBJECT}" /></td>
-			</tr>
-			<tr class="row2">
-				<td>{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
-				<td><input type="radio" name="contactFormUseCustomStyle" value="1" id="contactFormUseCustomStyle_1" {CONTACT_FORM_USE_CUSTOM_STYLE_YES} /><label for="contactFormUseCustomStyle_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCustomStyle" value="0" id="contactFormUseCustomStyle_0" {CONTACT_FORM_USE_CUSTOM_STYLE_NO} /><label for="contactFormUseCustomStyle_0">{TXT_CONTACT_NO}</label></td>
-			</tr>
-			<tr class="row1">
-				<td>{TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT}</td>
-				<td><input type="radio" name="contactFormShowForm" value="1" id="contactFormShowForm_1" {CONTACT_FORM_SHOW_FORM_YES} /><label for="contactFormShowForm_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormShowForm" value="0" id="contactFormShowForm_0" {CONTACT_FORM_SHOW_FORM_NO} /><label for="contactFormShowForm_0">{TXT_CONTACT_NO}</label></td>
-			</tr>
-			<tr class="row2">
-				<td>{TXT_CONTACT_CAPTCHA_PROTECTION}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
-				<td><input type="radio" name="contactFormUseCaptcha" value="1" id="contactFormUseCaptcha_1" {CONTACT_FORM_USE_CAPTCHA_YES} /><label for="contactFormUseCaptcha_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCaptcha" value="0" id="contactFormUseCaptcha_0" {CONTACT_FORM_USE_CAPTCHA_NO} /><label for="contactFormUseCaptcha_0">{TXT_CONTACT_NO}</label></td>
-			</tr>
-			<tr class="row1">
-				<td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
-				<td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
-			</tr>
-			<tr class="row2">
-				<td>{TXT_CONTACT_FORM_DESC}</td>
-				<td>{CONTACT_FORM_TEXT}</td>
-			</tr>
-			<tr class="row1">
-				<td>{TXT_CONTACT_FEEDBACK}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-				<td>{CONTACT_FORM_FEEDBACK}</td>
-			</tr>
-			<tr class="row2">
-				<td>{TXT_CONTACT_FORM_FIELDS}</td>
-				<td>
-					<div id="formFieldContainer">
-						<div style="white-space:nowrap; height:20px; clear:both;">
-							<div style="width:55px; display:inline; float:left; text-align:center;">
-								&nbsp;
-							</div>
-							<div style="width:35px; display:inline; float:left; text-align:center;">
-								{TXT_CONTACT_ID}
-							</div>
-							<div style="width:135px; display:inline; float:left;">
-								{TXT_CONTACT_FIELD_NAME}
-							</div>
-							<div style="width:120px; display:inline; float:left;">
-								{TXT_CONTACT_TYPE}
-							</div>
-							<div style="width:240px; height:1px; display:inline; float:left;">
-								{TXT_CONTACT_VALUE_S}
-							</div>
-							<div style="width:150px; display:inline;">
-								{TXT_CONTACT_MANDATORY_FIELD}
-							</div>
-						</div>
-						<!-- BEGIN contact_form_field_list -->
-							<div style="white-space:nowrap; height:20px; clear:both;" id="formField_{CONTACT_FORM_FIELD_ID}">
-								<div style="width:55px; display:inline; float:left;">
-									<a href="javascript:removeFormField('{CONTACT_FORM_FIELD_ID}')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-									<a href="javascript:moveFormFieldUp('{CONTACT_FORM_FIELD_ID}')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-									<a href="javascript:moveFormFieldDown('{CONTACT_FORM_FIELD_ID}')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-								</div>
-								<div style="width:35px; display:inline; float:left; text-align:center;">
-									{CONTACT_FORM_FIELD_ID}
-								</div>
-								<div style="width:135px; display:inline; float:left;">
-									<input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_ID}" value="{CONTACT_FORM_FIELD_NAME}" />
-								</div>
-								<div style="width:120px; display:inline; float:left;">
-									{CONTACT_FORM_FIELD_TYPE_MENU}
-								</div>
-								<div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_ID}">
-									{CONTACT_FORM_FIELD_ATTRIBUTES}
-								</div>
-								<div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_ID}">
-									{CONTACT_FORM_FIELD_CHECK_BOX} {CONTACT_FORM_FIELD_CHECK_MENU}
-								</div>
-							</div>
-						<!-- END contact_form_field_list -->
-					</div>
-					<br />
-					<br />
-					<input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
-					<br />
-					<br />
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<br />
-	* {TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}
-	<br />
-	<br />
-	<input type="submit" name="saveForm" value="{TXT_CONTACT_SAVE}" />
+    <input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
+    <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+        <tbody style="vertical-align:top;">
+            <tr>
+                <th colspan="2">{CONTACT_ACTION_TITLE}</th>
+            </tr>
+            <tr class="row1" style="height:20px;">
+                <td width="10%">{TXT_CONTACT_NAME}</td>
+                <td width="90%"><input style="width:670px;" type="text" name="contactFormName" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
+            </tr>
+            <tr class="row2" style="height:20px;">
+                <td>{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
+                <td><input style="width: 670px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *<td>
+            </tr>
+            <tr class="row1" style="height:20px;">
+                <td>{TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION}</td>
+                <td>
+                    <div id="formRecipientContainer">
+                        <!-- BEGIN contact_form_recipient_list -->
+                            <div style="white-space:nowrap; height:20px;" id="formRecipient_{CONTACT_FORM_RECIPIENT_ID}">
+                                <div style="width:55px; display:inline; float:left;">
+                                    <a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+                                    <a href="javascript:moveFormElementUp('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonUp_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+                                    <a href="javascript:moveFormElementDown('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonDown_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+                                </div>
+                                <div style="width:35px; display:inline; float:left; text-align:center;">
+                                    {CONTACT_FORM_RECIPIENT_ID}
+                                </div>
+                                <div style="width:290px; display:inline; float:left;">
+                                    <input style="width:285px;" type="text" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
+                                </div>
+                                <div style="width:290px; display:inline;">
+                                    <input style="width:285px;" type="text" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_EMAIL}" onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" /> *
+                                    <input type="hidden"  name="contactFormRecipientSort[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_SORT}" />
+                                </div>
+                            </div>
+                        <!-- END contact_form_recipient_list -->
+                    </div>
+                    <br /><input type="button" onclick="addRecipient()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
+                <td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_CONTACT_SUBJECT}</td>
+                <td><input style="width: 670px;" type="text" name="contactFormSubject" value="{CONTACT_FORM_SUBJECT}" /></td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
+                <td><input type="radio" name="contactFormUseCustomStyle" value="1" id="contactFormUseCustomStyle_1" {CONTACT_FORM_USE_CUSTOM_STYLE_YES} /><label for="contactFormUseCustomStyle_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCustomStyle" value="0" id="contactFormUseCustomStyle_0" {CONTACT_FORM_USE_CUSTOM_STYLE_NO} /><label for="contactFormUseCustomStyle_0">{TXT_CONTACT_NO}</label></td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT}</td>
+                <td><input type="radio" name="contactFormShowForm" value="1" id="contactFormShowForm_1" {CONTACT_FORM_SHOW_FORM_YES} /><label for="contactFormShowForm_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormShowForm" value="0" id="contactFormShowForm_0" {CONTACT_FORM_SHOW_FORM_NO} /><label for="contactFormShowForm_0">{TXT_CONTACT_NO}</label></td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_CONTACT_CAPTCHA_PROTECTION}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+                <td><input type="radio" name="contactFormUseCaptcha" value="1" id="contactFormUseCaptcha_1" {CONTACT_FORM_USE_CAPTCHA_YES} /><label for="contactFormUseCaptcha_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCaptcha" value="0" id="contactFormUseCaptcha_0" {CONTACT_FORM_USE_CAPTCHA_NO} /><label for="contactFormUseCaptcha_0">{TXT_CONTACT_NO}</label></td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+                <td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_CONTACT_FORM_DESC}</td>
+                <td>{CONTACT_FORM_TEXT}</td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_CONTACT_FEEDBACK}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+                <td>{CONTACT_FORM_FEEDBACK}</td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_CONTACT_FORM_FIELDS}</td>
+                <td>
+                    <div id="formFieldContainer">
+                        <div style="white-space:nowrap; height:20px; clear:both;">
+                            <div style="width:55px; display:inline; float:left; text-align:center;">
+                                &nbsp;
+                            </div>
+                            <div style="width:35px; display:inline; float:left; text-align:center;">
+                                {TXT_CONTACT_ID}
+                            </div>
+                            <div style="width:135px; display:inline; float:left;">
+                                {TXT_CONTACT_FIELD_NAME}
+                            </div>
+                            <div style="width:120px; display:inline; float:left;">
+                                {TXT_CONTACT_TYPE}
+                            </div>
+                            <div style="width:240px; height:1px; display:inline; float:left;">
+                                {TXT_CONTACT_VALUE_S}
+                            </div>
+                            <div style="width:150px; display:inline;">
+                                {TXT_CONTACT_MANDATORY_FIELD}
+                            </div>
+                        </div>
+                        <!-- BEGIN contact_form_field_list -->
+                            <div style="white-space:nowrap; height:20px; clear:both;" id="formField_{CONTACT_FORM_FIELD_ID}">
+                                <div style="width:55px; display:inline; float:left;">
+                                    <a href="javascript:removeFormElement('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+                                    <a href="javascript:moveFormElementUp('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+                                    <a href="javascript:moveFormElementDown('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+                                </div>
+                                <div style="width:35px; display:inline; float:left; text-align:center;">
+                                    {CONTACT_FORM_FIELD_ID}
+                                </div>
+                                <div style="width:135px; display:inline; float:left;">
+                                    <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_ID}" value="{CONTACT_FORM_FIELD_NAME}" />
+                                </div>
+                                <div style="width:120px; display:inline; float:left;">
+                                    {CONTACT_FORM_FIELD_TYPE_MENU}
+                                </div>
+                                <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_ID}">
+                                    {CONTACT_FORM_FIELD_ATTRIBUTES}
+                                </div>
+                                <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_ID}">
+                                    {CONTACT_FORM_FIELD_CHECK_BOX} {CONTACT_FORM_FIELD_CHECK_MENU}
+                                </div>
+                            </div>
+                        <!-- END contact_form_field_list -->
+                    </div>
+                    <br />
+                    <br />
+                    <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
+                    <br />
+                    <br />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br />
+    * {TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}
+    <br />
+    <br />
+    <input type="submit" name="saveForm" value="{TXT_CONTACT_SAVE}" />
 </form>
 <!-- END module_contact_form_modify.html -->

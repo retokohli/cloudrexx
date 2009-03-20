@@ -1,13 +1,13 @@
 <!-- START calendar_reg_show.html -->
+<!-- START calendar_reg_ovreview.html -->
 <script language="JavaScript" type="text/javascript">
-// <![CDATA[
-function confirmDeleteReg(regId)
+<!--
+function confirmDeleteReg(Id)
 {
-  if (confirm("{TXT_CALENDAR_DELETE_CONFIRM}")) {
-    document.location.href = "index.php?cmd=calendar{MODULE_INDEX}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+regId;
-  }
+	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_REG_NOTE_ID}&id="+Id);
+	}
 }
-// ]]>
 </script>
 <table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
 	<tr>
@@ -27,6 +27,6 @@ function confirmDeleteReg(regId)
 	<!-- END registration -->
 </table>
 <br />
-<input type="button" value="{TXT_CALENDAR_BACK}" onclick="document.location.href='index.php?cmd=calendar{MODULE_INDEX}&amp;act=reg&amp;id={CALENDAR_REG_NOTE_ID}'" />
+<input type="button" value="{TXT_CALENDAR_BACK}" onclick="document.location.href='index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_REG_NOTE_ID}'" />
 <input type="button" value="{TXT_CALENDAR_DELETE}" onclick="confirmDeleteReg({CALENDAR_REG_ID})" />
 <!-- END calendar_reg_show.html -->

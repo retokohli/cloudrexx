@@ -1,10 +1,9 @@
 <?php
-
 /**
  * Contact library
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core_module_contact
  * @todo        Edit PHP DocBlocks!
@@ -13,30 +12,93 @@
 /**
  * Contact library
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core_module_contact
  */
 class ContactLib
 {
-    public $arrForms;
-    public $_arrSettings;
+    protected $_arrRecipients = array();
+    protected $_lastRecipientId;
+    var $arrForms;
+    var $_arrSettings;
 
     /**
      * Regexpression list
      */
-    public $arrCheckTypes;
+    var $arrCheckTypes;
+
+    /**
+     * return the last recipient id
+     *
+     * @return integer
+     */
+    public function getLastRecipientId($refresh = false)
+    {
+    	global $objDatabase;
+        if (empty($this->_lastRecipientId) || $refresh) {
+            $this->_lastRecipientId = intval($objDatabase->SelectLimit('SELECT MAX(`id`) as `max` FROM `'.DBPREFIX.'module_contact_recipient`', 1)->fields['max']);
+        }
+        return $this->_lastRecipientId;
+    }
+
+    /**
+     * return the highest sort value of a recipient list
+     *
+     * @return integer
+     */
+    public function getHighestSortValue($formId)
+    {
+    	global $objDatabase;
+        return intval($objDatabase->SelectLimit('SELECT MAX(`sort`) as `max` FROM `'.DBPREFIX.'module_contact_recipient` WHERE `id_form` = '.$formId, 1)->fields['max']);
+    }
+
+    /**
+     * load recipient list
+     *
+     * @param integer $formId
+     * @param boolean $refresh
+     * @return array
+     */
+    public function getRecipients($formId = 0, $refresh = false)
+    {
+        global $objDatabase;
+
+        $formId = intval($formId);
+        if ($formId > 0 && isset($this->_arrRecipients[$formId]) && !$refresh){
+            return $this->_arrRecipients[$formId];
+        }
+        if ($formId == 0 && !empty($this->_arrRecipients) && !$refresh ){
+            return $this->_arrRecipients;
+        }
+		$this->_arrRecipients = array();
+        $objRS = $objDatabase->Execute("
+            SELECT `id`, `id_form`, `name`, `email`, `sort`
+            FROM `".DBPREFIX."module_contact_recipient`".
+            (($formId == 0) ? "" : " WHERE `id_form` = ".$formId).
+            " ORDER BY `sort` ASC");
+        while (!$objRS->EOF){
+            $this->_arrRecipients[$objRS->fields['id']] = array(
+                'id_form' 	=>  $objRS->fields['id_form'],
+                'name'  	=>  $objRS->fields['name'],
+                'email' 	=>  $objRS->fields['email'],
+                'sort'  	=>  $objRS->fields['sort'],
+            );
+            $objRS->MoveNext();
+        }
+        return $this->_arrRecipients;
+    }
 
     function initContactForms($allLanguages = false)
     {
-        global $objDatabase;
+        global $objDatabase, $_FRONTEND_LANGID;
 
         if ($allLanguages) {
             $sqlWhere = '';
         } else {
-            $sqlWhere = "WHERE tblForm.langId=".FRONTEND_LANG_ID;
+            $sqlWhere = "WHERE tblForm.langId=".$_FRONTEND_LANGID;
         }
 
         $this->arrForms = array();
@@ -52,18 +114,19 @@ class ContactLib
         if ($objContactForms !== false) {
             while (!$objContactForms->EOF) {
                 $this->arrForms[$objContactForms->fields['id']] = array(
-                    'name'    => $objContactForms->fields['name'],
+                    'name'  => $objContactForms->fields['name'],
                     'emails'    => $objContactForms->fields['mails'],
                     'number'    => intval($objContactForms->fields['number']),
-                    'subject'    => $objContactForms->fields['subject'],
-                    'last'        => intval($objContactForms->fields['last']),
-                    'text'        => $objContactForms->fields['text'],
-                    'lang'        => $objContactForms->fields['langId'],
-                    'feedback'    => $objContactForms->fields['feedback'],
-                    'showForm'    => $objContactForms->fields['showForm'],
+                    'subject'   => $objContactForms->fields['subject'],
+                    'last'      => intval($objContactForms->fields['last']),
+                    'text'      => $objContactForms->fields['text'],
+                    'lang'      => $objContactForms->fields['langId'],
+                    'feedback'  => $objContactForms->fields['feedback'],
+                    'showForm'  => $objContactForms->fields['showForm'],
                     'useCaptcha'    => $objContactForms->fields['use_captcha'],
                     'useCustomStyle'    => $objContactForms->fields['use_custom_style'],
-                    'sendCopy'    => $objContactForms->fields['send_copy']
+                    'sendCopy'  => $objContactForms->fields['send_copy'],
+                    'recipients' => $this->getRecipients($objContactForms->fields['id'], true)
                 );
 
                 $objContactForms->MoveNext();
@@ -73,26 +136,28 @@ class ContactLib
 
     function initCheckTypes()
     {
+        global $objDatabase;
+
         $this->arrCheckTypes = array(
-            1    => array(
-                'regex'    => '.*',
-                'name'    => 'TXT_CONTACT_REGEX_EVERYTHING'
+            1   => array(
+                'regex' => '.*',
+                'name'  => 'TXT_CONTACT_REGEX_EVERYTHING'
             ),
-            2    => array(
-                'regex'    => '^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$',
-                'name'    => 'TXT_CONTACT_REGEX_EMAIL'
+            2   => array(
+                'regex' => '^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$',
+                'name'  => 'TXT_CONTACT_REGEX_EMAIL'
             ),
-            3    => array(
-                'regex'    => '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=\/\#\%]*$',
-                'name'    => 'TXT_CONTACT_REGEX_URL'
+            3   => array(
+                'regex' => '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=\/\#\%]*$',
+                'name'  => 'TXT_CONTACT_REGEX_URL'
             ),
-            4    => array(
-                'regex'    => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('������������') : '������������').'\ ]*$',
-                'name'    => 'TXT_CONTACT_REGEX_TEXT'
+            4   => array(
+                'regex' => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*$',
+                'name'  => 'TXT_CONTACT_REGEX_TEXT'
             ),
-            5    => array(
-                'regex'    => '^[0-9]*$',
-                'name'    => 'TXT_CONTACT_REGEX_NUMBERS'
+            5   => array(
+                'regex' => '^[0-9]*$',
+                'name'  => 'TXT_CONTACT_REGEX_NUMBERS'
             )
         );
     }
@@ -167,10 +232,10 @@ class ContactLib
             if ($objFields !== false) {
                 while (!$objFields->EOF) {
                     $arrFields[$objFields->fields['id']] = array(
-                        'name'            => $objFields->fields['name'],
-                        'type'            => $objFields->fields['type'],
+                        'name'          => $objFields->fields['name'],
+                        'type'          => $objFields->fields['type'],
                         'attributes'    => $objFields->fields['attributes'],
-                        'is_required'    => $objFields->fields['is_required'],
+                        'is_required'   => $objFields->fields['is_required'],
                         'check_type'    => $objFields->fields['check_type']
                     );
                     $objFields->MoveNext();
@@ -242,21 +307,36 @@ class ContactLib
 
     function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
     {
-        global $objDatabase;
+        global $objDatabase, $_FRONTEND_LANGID;
 
         if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form
                                   (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `langId`)
                                   VALUES
-                                  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$useCustomStyle.", ".$sendCopy.", ".FRONTEND_LANG_ID.")") !== false) {
+                                  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$useCustomStyle.", ".$sendCopy.", ".$_FRONTEND_LANGID.")") !== false) {
             $formId = $objDatabase->Insert_ID();
 
-            foreach ($arrFields as $arrField) {
+            foreach ($arrFields as $fieldId => $arrField) {
                 $this->_addFormField($formId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
             }
         }
         $_REQUEST['formId'] = $formId;
 
         $this->initContactForms(true);
+    }
+
+    /**
+     * delete recipients
+     *
+     * @param integer $id
+     * @return bool
+     */
+    function _deleteFormRecipients($id){
+        global $objDatabase;
+        if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_recipient WHERE id_form = ".$id)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     function deleteForm($id)
@@ -266,7 +346,7 @@ class ContactLib
         if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form WHERE id=".$id) !== false) {
             $this->_deleteFormFieldsByFormId($id);
             $this->_deleteFormDataByFormId($id);
-
+            $this->_deleteFormRecipients($id);
             $this->initContactForms(true);
 
             return true;
@@ -329,7 +409,7 @@ class ContactLib
 
         $count = $objEntry->RecordCount();
         if ($limit && $count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, 'Kontaktformular Eintr�ge');
+            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES']);
             $objEntry = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pagingPos);
         }
 
@@ -347,11 +427,11 @@ class ContactLib
                 }
 
                 $arrEntries[$objEntry->fields['id']] = array(
-                    'time'        => $objEntry->fields['time'],
-                    'host'        => $objEntry->fields['host'],
-                    'lang'        => $objEntry->fields['lang'],
-                    'ipaddress'    => $objEntry->fields['ipaddress'],
-                    'data'        => $arrData
+                    'time'      => $objEntry->fields['time'],
+                    'host'      => $objEntry->fields['host'],
+                    'lang'      => $objEntry->fields['lang'],
+                    'ipaddress' => $objEntry->fields['ipaddress'],
+                    'data'      => $arrData
                 );
                 $objEntry->MoveNext();
             }
@@ -364,6 +444,7 @@ class ContactLib
     {
         global $objDatabase;
 
+        $arrEntry;
         $arrCols = array();
         $objEntry = $objDatabase->SelectLimit("SELECT `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id, 1);
 
@@ -380,15 +461,15 @@ class ContactLib
             }
 
             $arrEntry = array(
-                'time'        => $objEntry->fields['time'],
-                'host'        => $objEntry->fields['host'],
-                'lang'        => $objEntry->fields['lang'],
-                'ipaddress'    => $objEntry->fields['ipaddress'],
-                'data'        => $arrData
+                'time'      => $objEntry->fields['time'],
+                'host'      => $objEntry->fields['host'],
+                'lang'      => $objEntry->fields['lang'],
+                'ipaddress' => $objEntry->fields['ipaddress'],
+                'data'      => $arrData
             );
         }
+
         return $arrEntry;
     }
 }
-
 ?>

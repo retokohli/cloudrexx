@@ -3,79 +3,76 @@
 //<![CDATA[
 function submit_form()
 {
-  for (i=document.shopForm.elements['list1[]'].length-1; i >= 0 ; i--)
-  {
-    document.shopForm.elements['list1[]'].options[i].selected=true;
+  for (var i = document.shopForm.elements['list1[]'].length-1; i >= 0; --i) {
+    document.shopForm.elements['list1[]'].options[i].selected = true;
   }
-  for (i=document.shopForm.elements['list2[]'].length-1; i >= 0 ; i--)
-  {
-    document.shopForm.elements['list2[]'].options[i].selected=true;
+  for (var i=document.shopForm.elements['list2[]'].length-1; i >= 0; --i) {
+    document.shopForm.elements['list2[]'].options[i].selected = true;
   }
   document.shopForm.submit();
 }
 
-
 function sortSelect(obj)
 {
   var o = new Array();
-  if (obj.options==null) { return; }
-  for (var i=0; i < obj.options.length; i++) {
-    o[o.length] = new Option( obj.options[i].text, obj.options[i].value, obj.options[i].defaultSelected, obj.options[i].selected) ;
-    }
-  if (o.length==0) { return; }
+  if (obj.options == null) return;
+  for (var i = 0; i < obj.options.length; ++i) {
+    o[o.length] = new Option(obj.options[i].text, obj.options[i].value, obj.options[i].defaultSelected, obj.options[i].selected);
+  }
+  if (o.length == 0) return;
   o = o.sort(
     function(a,b) {
-      if ((a.text+"") < (b.text+"")) { return -1; }
-      if ((a.text+"") > (b.text+"")) { return 1; }
+      if ((a.text+"") < (b.text+"")) return -1;
+      if ((a.text+"") > (b.text+"")) return 1;
       return 0;
-      }
-      );
-
-  for (var i=0; i < o.length; i++) {
-    obj.options[i] = new Option(o[i].text, o[i].value, o[i].defaultSelected, o[i].selected);
     }
+  );
+
+  for (var i = 0; i < o.length; ++i) {
+    obj.options[i] = new Option(o[i].text, o[i].value, o[i].defaultSelected, o[i].selected);
+  }
 }
 
-function moveSelectedOptions(from,to)
+function moveSelectedOptions(from, to)
 {
   // Move them over
-  for (var i=0; i < from.options.length; i++) {
+  for (var i = 0; i < from.options.length; ++i) {
     var o = from.options[i];
     if (o.selected) {
-      to.options[to.options.length] = new Option( o.text, o.value, false, false);
-      }
+      to.options[to.options.length] = new Option(o.text, o.value, false, false);
     }
+  }
   // Delete them from original
-  for (var i=(from.options.length-1); i>=0; i--) {
+  for (var i = from.options.length-1; i >= 0; --i) {
     var o = from.options[i];
     if (o.selected) {
       from.options[i] = null;
-      }
     }
-  if ((arguments.length < 3) || (arguments[2]==true)) {
+  }
+  if (arguments.length < 3 || arguments[2] == true) {
     sortSelect(from);
     sortSelect(to);
-    }
+  }
   from.selectedIndex = -1;
   to.selectedIndex = -1;
 }
 
-function moveAllOptions(from,to)
+function moveAllOptions(from, to)
 {
   // Move them over
-  for (var i=0; i < from.options.length; i++) {
+  for (var i = 0; i < from.options.length; ++i) {
     var o = from.options[i];
-      to.options[to.options.length] = new Option( o.text, o.value, false, false);
-    }
+    to.options[to.options.length] = new Option(o.text, o.value, false, false);
+  }
   // Delete them from original
-  for (var i=(from.options.length-1); i>=0; i--) {
+  for (var i = from.options.length-1; i >= 0; --i) {
     var o = from.options[i];
-      from.options[i] = null;
-    }
-  if ((arguments.length < 3) || (arguments[2]==true)) {
+    from.options[i] = null;
+  }
+  if (arguments.length < 3 || arguments[2] == true) {
     sortSelect(from);
     sortSelect(to);
-    }
+  }
   from.selectedIndex = -1;
   to.selectedIndex = -1;
 }
@@ -106,9 +103,9 @@ function moveAllOptions(from,to)
   </tr>
   <tr class="row2">
     <td nowrap="nowrap">
-      <select class="zoneList" name="list1[]" multiple="multiple" size="15" ondblclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])">
-        {SHOP_COUNTRY_SELECTED_OPTIONS}
-      </select>
+<select class="zoneList" name="list1[]" multiple="multiple" size="15" ondblclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])">
+{SHOP_COUNTRY_SELECTED_OPTIONS}
+</select>
     </td>
     <td nowrap="nowrap"><div style="text-align:center;vertical-align:middle;">
       <input type="button" title="{TXT_ADD_ALL}" name="add_all" value="&gt;&gt;" onclick="moveAllOptions(this.form['list1[]'],this.form['list2[]'])" /><br /><br />
@@ -117,9 +114,9 @@ function moveAllOptions(from,to)
       <input type="button" title="{TXT_REMOVE_ALL}" name="remove_all" value="&lt;&lt;" onclick="moveAllOptions(this.form['list2[]'],this.form['list1[]'])" />
     </div></td>
     <td nowrap="nowrap">
-      <select class="zoneList" name="list2[]" multiple="multiple" size="15"  ondblclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])">
-        {SHOP_COUNTRY_NOTSELECTED_OPTIONS}
-      </select>
+<select class="zoneList" name="list2[]" multiple="multiple" size="15"  ondblclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])">
+{SHOP_COUNTRY_NOTSELECTED_OPTIONS}
+</select>
     </td>
   </tr>
   <tr class="row1">

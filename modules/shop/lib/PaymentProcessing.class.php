@@ -105,86 +105,29 @@ class PaymentProcessing
 
 
     /**
-     * Initialize basic payment service provider information
-     * @global  ADONewConnection  $objDatabase
+     * Initialize known payment service providers
      */
-    function init()
+    static function init()
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets('`psp`.text_name_id', FRONTEND_LANG_ID);
-        $arrSqlDescription = Text::getSqlSnippets('`psp`.text_description_id', FRONTEND_LANG_ID);
-        $arrSqlCompanyUrl = Text::getSqlSnippets('`psp`.text_company_url_id', FRONTEND_LANG_ID);
-        $arrSqlPicture = Text::getSqlSnippets('`psp`.text_picture_id', FRONTEND_LANG_ID);
-        $arrSqlText = Text::getSqlSnippets('`psp`.text_id', FRONTEND_LANG_ID);
-        $query = "
-            SELECT `psp`.`id`, `psp`.`type`, `psp`.`status`".
-                   $arrSqlName['field'].$arrSqlDescription['field'].
-                   $arrSqlCompanyUrl['field'].$arrSqlPicture['field'].
-                   $arrSqlText['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors` AS `psp`".
-                   $arrSqlName['join'].$arrSqlDescription['join'].
-                   $arrSqlCompanyUrl['join'].$arrSqlPicture['join'].
-                   $arrSqlText['join']."
-             ORDER BY `psp`.`id` ASC
-        ";
+        $query = '
+            SELECT id, type, name, description,
+                   company_url, status, picture, text
+              FROM '.DBPREFIX.'module_shop_payment_processors
+          ORDER BY id
+        ';
         $objResult = $objDatabase->Execute($query);
         while(!$objResult->EOF) {
-            // Replace Text in a missing language by another, if available
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            if ($strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strName = $objText->getText();
-            }
-            $text_description_id = $objResult->fields[$arrSqlDescription['name']];
-            $strDescription = $objResult->fields[$arrSqlDescription['text']];
-            if ($strDescription === null) {
-                $objText = Text::getById($text_description_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strDescription = $objText->getText();
-            }
-            $text_company_url_id = $objResult->fields[$arrSqlCompanyUrl['name']];
-            $strCompanyUrl = $objResult->fields[$arrSqlCompanyUrl['text']];
-            if ($strCompanyUrl === null) {
-                $objText = Text::getById($text_company_url_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strCompanyUrl = $objText->getText();
-            }
-            $text_picture_id = $objResult->fields[$arrSqlPicture['name']];
-            $strPicture = $objResult->fields[$arrSqlPicture['text']];
-            if ($strPicture === null) {
-                $objText = Text::getById($text_picture_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strPicture = $objText->getText();
-            }
-            $text_id = $objResult->fields[$arrSqlText['name']];
-            $strText = $objResult->fields[$arrSqlText['text']];
-            if ($strText === null) {
-                $objText = Text::getById($text_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strText = $objText->getText();
-            }
             self::$arrPaymentProcessor[$objResult->fields['id']] = array(
-                'id'                  => $objResult->fields['id'],
-                'type'                => $objResult->fields['type'],
-                'status'              => $objResult->fields['status'],
-                'name'                => $strName,
-                'text_name_id'        => $text_name_id,
-                'description'         => $strDescription,
-                'text_description_id' => $text_description_id,
-                'company_url'         => $strCompanyUrl,
-                'text_company_url_id' => $text_company_url_id,
-                'picture'             => $strPicture,
-                'text_picture_id'     => $text_picture_id,
-                'text'                => $strText,
-                'text_id'             => $text_id,
+                'id'          => $objResult->fields['id'],
+                'type'        => $objResult->fields['type'],
+                'name'        => $objResult->fields['name'],
+                'description' => $objResult->fields['description'],
+                'company_url' => $objResult->fields['company_url'],
+                'status'      => $objResult->fields['status'],
+                'picture'     => $objResult->fields['picture'],
+                'text'        => $objResult->fields['text']
             );
             $objResult->MoveNext();
         }
@@ -602,7 +545,7 @@ class PaymentProcessing
                 "</option>\n"
               : ''
             );
-        foreach (self::$arrPaymentProcessor as $id => $arrPaymentProcessor) {
+        foreach (array_keys(self::$arrPaymentProcessor) as $id) {
             $strMenuoptions .=
                 '<option value="'.$id.'"'.
                 ($id == $selected_id ? ' selected="selected"' : '').'>'.

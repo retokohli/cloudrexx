@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -24,18 +23,29 @@ require_once ASCMS_MODULE_PATH.'/blog/lib/blogLib.class.php';
  */
 class BlogHomeContent extends BlogLibrary  {
 
-    public $_strPageContent;
-    public $_objTpl;
+    var $_strPageContent;
+    var $_objTpl;
 
     /**
      * Constructor php5
      */
     function __construct($strPageContent)
     {
+        global $_LANGID;
         BlogLibrary::__construct();
         $this->_strPageContent = $strPageContent;
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_intLanguageId = intval($_LANGID);
         $this->_arrSettings = $this->createSettingsArray();
+    }
+
+
+    /**
+     * Constructor php4
+     */
+    function BlogHomeContent($strPageContent)
+    {
+        $this->__construct($strPageContent);
     }
 
 
@@ -141,8 +151,8 @@ class BlogHomeContent extends BlogLibrary  {
         $strReturn = '<ul class="blogCategoriesList">';
         $arrCategories = $this->createCategoryArray();
         foreach($arrCategories as $intCategoryId => $arrCategoryValues) {
-            if($arrCategoryValues[FRONTEND_LANG_ID]['is_active']) {
-                $strReturn .= '<li class="blogCategoriesListItem"><a href="index.php?section=blog&amp;cmd=search&amp;category='.$intCategoryId.'">'.$arrCategoryValues[FRONTEND_LANG_ID]['name'].'&nbsp;('.$this->countEntriesOfCategory($intCategoryId).')</a></li>';
+            if($arrCategoryValues[$this->_intLanguageId]['is_active']) {
+                $strReturn .= '<li class="blogCategoriesListItem"><a href="index.php?section=blog&amp;cmd=search&amp;category='.$intCategoryId.'">'.$arrCategoryValues[$this->_intLanguageId]['name'].'&nbsp;('.$this->countEntriesOfCategory($intCategoryId).')</a></li>';
             }
         }
         $strReturn .= '</ul>';
@@ -163,7 +173,7 @@ class BlogHomeContent extends BlogLibrary  {
         $this->_objTpl->setTemplate($this->_strPageContent, true, true);
 
         //Show latest XX entries
-        $arrEntries = $this->createEntryArray(FRONTEND_LANG_ID, 0, intval($this->_arrSettings['blog_block_messages']));
+        $arrEntries = $this->createEntryArray($this->_intLanguageId, 0, intval($this->_arrSettings['blog_block_messages']));
         if (count($arrEntries) > 0) {
             $intRowClass = 1;
 
@@ -184,15 +194,17 @@ class BlogHomeContent extends BlogLibrary  {
                     'BLOG_ENTRY_AUTHOR_NAME'    =>    $arrEntryValues['user_name'],
                     'BLOG_ENTRY_SUBJECT'        =>    $arrEntryValues['subject'],
                     'BLOG_ENTRY_POSTED_BY'        =>    $this->getPostedByString($arrEntryValues['user_name'], $arrEntryValues['time_created']),
-                    'BLOG_ENTRY_INTRODUCTION'    =>    $this->getIntroductionText($arrEntryValues['translation'][FRONTEND_LANG_ID]['content']),
-                    'BLOG_ENTRY_CONTENT'        =>    $arrEntryValues['translation'][FRONTEND_LANG_ID]['content'],
-                    'BLOG_ENTRY_CATEGORIES'        =>    $this->getCategoryString($arrEntryValues['categories'][FRONTEND_LANG_ID], true),
-                    'BLOG_ENTRY_TAGS'            =>    $this->getLinkedTags($arrEntryValues['translation'][FRONTEND_LANG_ID]['tags']),
+                    'BLOG_ENTRY_POSTED_BY_ICON'  =>    $this->getPostedByIcon($arrEntryValues['time_created']),
+                    'BLOG_ENTRY_INTRODUCTION'    =>    $this->getIntroductionText($arrEntryValues['translation'][$this->_intLanguageId]['content']),
+                    'BLOG_ENTRY_CONTENT'        =>    $arrEntryValues['translation'][$this->_intLanguageId]['content'],
+                    'BLOG_ENTRY_CATEGORIES'        =>    $this->getCategoryString($arrEntryValues['categories'][$this->_intLanguageId], true),
+                    'BLOG_ENTRY_TAGS'            =>    $this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
+                    'BLOG_ENTRY_TAGS_ICON'       =>    $this->getTagsIcon(),
                     'BLOG_ENTRY_COMMENTS'        =>    $arrEntryValues['comments_active'].'&nbsp;'.$_ARRAYLANG['TXT_BLOG_HOME_COMMENTS'],
                     'BLOG_ENTRY_VOTING'            =>    '&#216;&nbsp;'.$arrEntryValues['votes_avg'],
                     'BLOG_ENTRY_VOTING_STARS'    =>    $this->getRatingBar($intEntryId),
                     'BLOG_ENTRY_LINK'            =>    '<a href="index.php?section=blog&amp;cmd=details&amp;id='.$intEntryId.'" title="'.$arrEntryValues['subject'].'">'.$_ARRAYLANG['TXT_BLOG_HOME_OPEN'].'</a>',
-                    'BLOG_ENTRY_IMAGE'            =>    ($arrEntryValues['translation'][FRONTEND_LANG_ID]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][FRONTEND_LANG_ID]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : ''
+                    'BLOG_ENTRY_IMAGE'            =>    ($arrEntryValues['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : ''
                 ));
 
                 $this->_objTpl->parse('blogBlockEntries');
@@ -207,8 +219,8 @@ class BlogHomeContent extends BlogLibrary  {
             //Collect active categories for the current language
             $arrCurrentLanguageCategories = array();
             foreach($arrCategories as $intCategoryId => $arrLanguageData) {
-                if ($arrLanguageData[FRONTEND_LANG_ID]['is_active']) {
-                    $arrCurrentLanguageCategories[$intCategoryId] = $arrLanguageData[FRONTEND_LANG_ID]['name'];
+                if ($arrLanguageData[$this->_intLanguageId]['is_active']) {
+                    $arrCurrentLanguageCategories[$intCategoryId] = $arrLanguageData[$this->_intLanguageId]['name'];
                 }
             }
 
@@ -237,5 +249,3 @@ class BlogHomeContent extends BlogLibrary  {
         return $this->_objTpl->get();
     }
 }
-
-?>

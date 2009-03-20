@@ -31,7 +31,7 @@ class SmtpSettings
      * Only if $getPassword is set to TRUE will the password of the specified SMTP
      * account be returned.
      * @access private
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @param integer $accountId
      * @param boolean $getPassword
      * @return mixed Array with account details if $accountId is a valid account ID, otherwise FALSE
@@ -69,7 +69,7 @@ class SmtpSettings
      * Returns an array with all available SMTP accounts. This includes
      * on the one hand the self defined accounts and on the other hand the
      * local system account defined in the php.ini.
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @see getSystemSmtpAccount()
      * @return array Array with SMTP accounts
      * @static
@@ -98,7 +98,7 @@ class SmtpSettings
     /**
      * Returns the local configured SMTP account of the current system.
      * @global  array $_CORELANG
-     * @return  array             Array with the SMTP account details
+     * @return array Array with the SMTP account details
      * @static
      */
     static function getSystemSmtpAccount()

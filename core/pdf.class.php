@@ -123,18 +123,18 @@ class PDF extends HTML2FPDF
     }
 
     function _replaceCharacters($string){
-    	global $_CONFIG;
+        global $_CONFIG;
 
-    	// replace $change with ''
+        // replace $change with ''
         $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
 
         //echo $string;
 
         // replace $signs1 with $signs
         if ($_CONFIG['coreCharacterEncoding'] == 'UTF-8') {
-        	$signs1 = array(' ', 'ã¤', 'ã¶', 'ã¼', 'ã');
+            $signs1 = array(' ', 'ã¤', 'ã¶', 'ã¼', 'ã');
         } else {
-        	$signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+            $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
         }
 
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');

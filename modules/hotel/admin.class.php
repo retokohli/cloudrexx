@@ -13,10 +13,6 @@
 * @version        1.0.0
 */
 
-if($_SERVER['REMOTE_ADDR'] == gethostbyname("kon.ath.cx")){
-    $objDatabase->debug=99;
-}
-
 require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
 include(dirname(__FILE__).'/HotelLib.class.php');
 
@@ -27,7 +23,7 @@ class HotelManager extends HotelLib {
     * @access private
     * @var object
     */
-    var $_objTpl;
+    public $_objTpl;
 
     /**
     * Page title
@@ -35,7 +31,7 @@ class HotelManager extends HotelLib {
     * @access private
     * @var string
     */
-    var $_pageTitle;
+    public $_pageTitle;
 
     /**
     * Status messages
@@ -43,11 +39,11 @@ class HotelManager extends HotelLib {
     * @access private
     * @var string
     */
-    var $_strOkMessage = '';
-    var $_strErrMessage = '';
+    public $_strOkMessage = '';
+    public $_strErrMessage = '';
 
 
-    var $_defaultImage = 'images/icons/images.gif';
+    public $_defaultImage = 'images/icons/images.gif';
 
     /**
      * field adjustment list for import from CSV
@@ -55,7 +51,7 @@ class HotelManager extends HotelLib {
      * @access private
      * @var array CSV fields
      */
-    var $_arrTravelImportFieldsTranslationTable = array(
+    public $_arrTravelImportFieldsTranslationTable = array(
         'id'         =>         0, //id uses auto_increment, not needed
         'hotel_id'    =>        0,
         'prio'        =>         1,
@@ -85,14 +81,6 @@ class HotelManager extends HotelLib {
     );
 
     /**
-    * Constructor
-    */
-    function HotelManager()
-    {
-        $this->__construct();
-    }
-
-    /**
     * PHP5 constructor
     *
     * @global object $objTemplate
@@ -101,7 +89,7 @@ class HotelManager extends HotelLib {
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG;
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "
@@ -113,7 +101,7 @@ class HotelManager extends HotelLib {
 
         );
 
-        $this->_objFile =& new File();
+        $this->_objFile = new File();
         parent::__construct();
     }
 
@@ -126,7 +114,8 @@ class HotelManager extends HotelLib {
     */
     function getPage()
     {
-        global $objTemplate, $_ARRAYLANG;
+        global $objTemplate;
+
         if (!isset($_GET['act'])) {
             $_GET['act']="";
         }
@@ -250,8 +239,10 @@ class HotelManager extends HotelLib {
      *
      * @return void
      */
-    function _travelMain(){
-        global $_ARRAYLANG, $objDatabase;
+    function _travelMain()
+    {
+        global $_ARRAYLANG;
+
         $this->_objTpl->loadTemplateFile('module_hotel_travel.html');
         $this->_objTpl->setGlobalVariable(array(
             'TXT_HOTEL_TRAVEL_OVERVIEW' =>    $_ARRAYLANG['TXT_HOTEL_TRAVEL_OVERVIEW'],
@@ -370,12 +361,9 @@ class HotelManager extends HotelLib {
      *
      * @return bool
      */
-    function _travelImportData(){
+    function _travelImportData()
+    {
         global $objDatabase, $_ARRAYLANG;
-
-        if($_SERVER['REMOTE_ADDR'] == gethostbyname("kon.ath.cx")){
-            $objDatabase->debug=1;
-        }
 
         if(!isset($_REQUEST['hotel_travel_import_submit'])){
             return false;
@@ -411,7 +399,8 @@ class HotelManager extends HotelLib {
 
         if($pcl->extract(    PCLZIP_OPT_PATH, ASCMS_TEMP_PATH.'/hotel_cvs_import/',
                             PCLZIP_OPT_BY_NAME, $compressedFilename) == 0){
-            $this->_strErrMessage = "Error : ".$archive->errorInfo(true);
+// Undefined
+//            $this->_strErrMessage = "Error : ".$archive->errorInfo(true);
             return false;
         }
 
@@ -427,11 +416,6 @@ class HotelManager extends HotelLib {
                 $t = $this->_arrTravelImportFieldsTranslationTable;
                 $d = explode($strSeparator, $strCVSLine);
                 $d = array_map(array(&$this,'stripquotes'), $d);
-
-//                if($_SERVER['REMOTE_ADDR'] == '84.72.45.57'){
-//                    print_r($d);
-//                    $objDatabase->debug=99;
-//                }
 
                 $arrDateFrom         = explode('.', $d[$t['from']]);
                 $d[$t['from']]        = mktime(0, 0, 0, $arrDateFrom[1], $arrDateFrom[0], $arrDateFrom[2]);
@@ -481,9 +465,9 @@ class HotelManager extends HotelLib {
      */
     function _RPCSortInterests(){
         global $_CONFIG, $objDatabase;
-        $output = '';
         $fieldValues = array('hotel_id', 'name', 'firstname', 'street', 'zip', 'location', 'telephone', 'comment', 'time');
-        $hotelID = !empty($_REQUEST['hotelid']) ? intval($_REQUEST['hotelid']) : 0;
+// Unused
+//        $hotelID = !empty($_REQUEST['hotelid']) ? intval($_REQUEST['hotelid']) : 0;
         $field = (!empty($_GET['field'])) ? contrexx_addslashes($_GET['field']) : 'time';
         $order = (!empty($_GET['order'])) ? contrexx_addslashes($_GET['order']) : 'asc';
         $limit = (!empty($_GET['limit'])) ? intval($_GET['limit']) : $_CONFIG['corePagingLimit'];
@@ -557,8 +541,10 @@ class HotelManager extends HotelLib {
      *
      * @return void
      */
-    function _interests(){
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    function _interests()
+    {
+        global $objDatabase, $_ARRAYLANG;
+
         $interestID = intval($_GET['del']);
         if(!empty($interestID)){
             if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_hotel_interest WHERE id = $interestID") !== false){
@@ -576,10 +562,11 @@ class HotelManager extends HotelLib {
         $_SESSION['hotel']['endDate']    = !empty($_REQUEST['inputEndDate']) ? contrexx_addslashes($_REQUEST['inputEndDate'])  : $_SESSION['hotel']['endDate'];
         $limit = !empty($_REQUEST['limit']) ? intval($_REQUEST['limit']) : 20;
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
-        $field = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'visits';
-        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
-        $hsearchField = !empty($_REQUEST['searchField']) ? $_REQUEST['searchField'] : '' ;
-        $hsearch = !empty($_REQUEST['search']) ? contrexx_addslashes($_REQUEST['search']) : '' ;
+// Unused
+//        $field = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'visits';
+//        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
+//        $hsearchField = !empty($_REQUEST['searchField']) ? $_REQUEST['searchField'] : '' ;
+//        $hsearch = !empty($_REQUEST['search']) ? contrexx_addslashes($_REQUEST['search']) : '' ;
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_HOTEL_HOTEL_ID'                     => $_ARRAYLANG['TXT_HOTEL_HOTEL_ID'],
@@ -667,7 +654,7 @@ class HotelManager extends HotelLib {
         if(($objRS = $objDatabase->Execute($query)) !== false){
             $count = $objRS->RecordCount();
             $objRS = $objDatabase->SelectLimit($query, $limit, $pos);
-            $i=0;
+            $rowclass = 0;
             while(!$objRS->EOF){
                 $this->_objTpl->setVariable(array(
                       'HOTEL_CONTACT_ID'        =>    intval($objRS->fields['id']),
@@ -686,23 +673,21 @@ class HotelManager extends HotelLib {
                     'HOTEL_TELEPHONE_MOBILE'    =>    htmlspecialchars($objRS->fields['phone_mobile']),
                     'HOTEL_COMMENT'            =>    str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
                     'HOTEL_COMMENT_TEXT'        =>    str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
-                    'HOTEL_COMMENT_INDEX'    =>    $i,
-                    'HOTEL_COMMENT_INDEX2'    =>    $i,
+                    'HOTEL_COMMENT_INDEX'    =>    $rowclass,
+                    'HOTEL_COMMENT_INDEX2'    =>    $rowclass,
                     'HOTEL_TIMESTAMP'        =>    date(ASCMS_DATE_FORMAT, $objRS->fields['timestamp']),
-                    'ROW_CLASS'                =>    ($rowclass++ % 2 == 0) ? 'row1' : 'row2',
+                    'ROW_CLASS'                =>    (++$rowclass % 2 ? 'row1' : 'row2'),
                 ));
                 $this->_objTpl->parse('commentsArray');
                 $this->_objTpl->parse('downloads');
-                $i++;
                 $objRS->MoveNext();
             }
         }
 
-
-
         $this->_objTpl->setVariable(array(
             'HOTEL_STATS_INTERESTS_PAGING'    => getPaging($count, $pos, '&amp;cmd=hotel&amp;act=interests&amp;limit='.$limit, '', true),
         ));
+        return true;
     }
 
 
@@ -730,7 +715,7 @@ class HotelManager extends HotelLib {
                 }
 
                 $query .=  " ORDER BY `timestamp`";
-                $CSVfields = $fields = '';
+                $CSVfields = '';
                 $cols = array(        'email', 'name', 'firstname', 'company', 'street', 'zip', 'location',
                                     'telephone', 'telephone_office', 'telephone_mobile', 'purchase', 'funding',
                                     'comment','timestamp');
@@ -752,7 +737,7 @@ class HotelManager extends HotelLib {
                 }
 
                 $query .= " ORDER BY `time`";
-                $CSVfields = $fields = '';
+                $CSVfields = '';
                 $cols = array(        'reference', 'name', 'firstname', 'street', 'zip', 'location',
                                     'email', 'phone_office', 'phone_home', 'phone_mobile', 'doc_via_mail',
                                     'funding_advice', 'inspection', 'contact_via_phone', 'comment', 'time' );
@@ -770,7 +755,6 @@ class HotelManager extends HotelLib {
         $CSVfields = substr($CSVfields, 0, -1).$this->_lineBreak;
 
         if(($objRS = $objDatabase->Execute($query)) !== false){
-            $i = 0;
             while(!$objRS->EOF){
                 foreach ($objRS->fields as $fieldName => $fieldContent) {
                     $CSVdata .= $this->_escapeCsvValue(($fieldName != 'timestamp' && $fieldName != 'time') ? $fieldContent : date(ASCMS_DATE_FORMAT, $fieldContent)).$separator;
@@ -849,7 +833,8 @@ class HotelManager extends HotelLib {
                             AND fname.lang_id =1
                         )
                     WHERE interest.id = $interestID";
-        if(($objRS = $objDatabase->SelectLimit($query, 1))){
+        $objRS = $objDatabase->SelectLimit($query, 1);
+        if ($objRS) {
             $this->_objTpl->setVariable(array(
                 'HOTEL_OBJECT_DETAILS'        =>  htmlspecialchars($objRS->fields['hotel_header']
                                             .', '.htmlspecialchars($objRS->fields['hotel_location'])),
@@ -871,7 +856,7 @@ class HotelManager extends HotelLib {
                 'HOTEL_TRAVEL_ISISCODE'        =>    $objRS->fields['code'],
                 'HOTEL_TRAVEL_COMMENT'        =>    nl2br(htmlspecialchars($objRS->fields['comment'])),
                 'HOTEL_TRAVEL_TIMESTAMP'    =>    date(ASCMS_DATE_FORMAT ,$objRS->fields['time']),
-                'ROW_CLASS'                    =>    ($rowclass++ % 2 == 0) ? 'row1' : 'row2',
+                'ROW_CLASS'                    =>    'row1',
             ));
         }
     }
@@ -940,7 +925,8 @@ class HotelManager extends HotelLib {
                             AND fname.lang_id =1
                         )
                     WHERE contact.id = $contactID";
-        if(($objRS = $objDatabase->SelectLimit($query, 1))){
+        $objRS = $objDatabase->SelectLimit($query, 1);
+        if ($objRS) {
             $this->_objTpl->setVariable(array(
                 'HOTEL_OBJECT_DETAILS'    =>  htmlspecialchars($objRS->fields['hotel_header']
                                             .', '.htmlspecialchars($objRS->fields['hotel_address'])
@@ -959,7 +945,7 @@ class HotelManager extends HotelLib {
                 'HOTEL_FUNDING'            =>    $objRS->fields['funding'] == 1 ? $_ARRAYLANG['TXT_HOTEL_YES'] : $_ARRAYLANG['TXT_HOTEL_NO'],
                 'HOTEL_COMMENT'            =>    htmlspecialchars($objRS->fields['comment']),
                 'HOTEL_TIMESTAMP'        =>    date(ASCMS_DATE_FORMAT ,$objRS->fields['timestamp']),
-                'ROW_CLASS'                =>    ($rowclass++ % 2 == 0) ? 'row1' : 'row2',
+                'ROW_CLASS'                =>    'row1',
             ));
         }
     }
@@ -998,7 +984,8 @@ class HotelManager extends HotelLib {
         $limit = !empty($_REQUEST['limit']) ? intval($_REQUEST['limit']) : $_CONFIG['corePagingLimit'];
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
         $field = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'visits';
-        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
+// Unused
+//        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
         $hsearchField = !empty($_REQUEST['searchField']) ? $_REQUEST['searchField'] : '' ;
         $hsearch = !empty($_REQUEST['search']) ? contrexx_addslashes($_REQUEST['search']) : '' ;
 
@@ -1109,8 +1096,10 @@ class HotelManager extends HotelLib {
             $objRS = $objDatabase->SelectLimit($query, $limit, $pos);
             $i = 0;
             while(!$objRS->EOF){
-                $split = explode("&", $objRS->fields['page']);
-                $hotelID = intval($split[0]);
+// Unused
+//                $split = explode('&', $objRS->fields['page']);
+// Unused
+//                $hotelID = intval($split[0]);
 
                 $this->_objTpl->setVariable(array(
                     'HOTEL_OBJECT_NAME'        =>    htmlspecialchars($objRS->fields['page']),
@@ -1244,7 +1233,8 @@ class HotelManager extends HotelLib {
         $limit = !empty($_REQUEST['limit']) ? intval($_REQUEST['limit']) : $_CONFIG['corePagingLimit'];
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
         $field = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'visits';
-        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
+// Unused
+//        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
         $hsearchField = !empty($_REQUEST['searchField']) ? $_REQUEST['searchField'] : '' ;
         $hsearch = !empty($_REQUEST['search']) ? contrexx_addslashes($_REQUEST['search']) : '' ;
 
@@ -1384,6 +1374,7 @@ class HotelManager extends HotelLib {
         $this->_objTpl->setVariable(array(
             'HOTEL_STATS_DOWNLOADS_PAGING'    => getPaging($count, $pos, '&amp;cmd=hotel&amp;act=downloads&amp;limit='.$limit, '', true),
         ));
+        return true;
     }
 
     /**
@@ -1391,9 +1382,10 @@ class HotelManager extends HotelLib {
      *
      * @return JSON object
      */
-    function _RPCSearchInterests(){
+    function _RPCSearchInterests()
+    {
         global $_CONFIG, $objDatabase;
-        $output = '';
+
         $fieldValues = array('int_count', 'int_reference', 'int_ref_note', 'int_header');
         $field = (!empty($_GET['field'])) ? contrexx_addslashes($_GET['field']) : 'int_count';
         $order = (!empty($_GET['order'])) ? contrexx_addslashes($_GET['order']) : 'asc';
@@ -1450,7 +1442,7 @@ class HotelManager extends HotelLib {
     function _RPCSearch()
     {
         global $_CONFIG, $objDatabase;
-        $output = '';
+
         $fieldValues = array('hotel_id', 'name', 'firstname', 'street', 'zip', 'location', 'telephone', 'comment', 'timestamp');
         $hotelID = !empty($_REQUEST['hotelid']) ? intval($_REQUEST['hotelid']) : 0;
         $field = (!empty($_GET['field'])) ? contrexx_addslashes($_GET['field']) : 'timestamp';
@@ -1535,7 +1527,7 @@ class HotelManager extends HotelLib {
     function _RPCOverview()
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
-        $output = '';
+
         $fieldValues = array('hotel_id', 'reference', 'ref_nr_note', 'visibility', 'address', 'location', 'object_type', 'new_building', 'property_type', 'foreigner_authorization', 'special_offer');
         $field = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'timestamp';
         $searchterm = (!empty($_REQUEST['searchTerm'])) ? contrexx_addslashes($_REQUEST['searchTerm']) : '';
@@ -1548,7 +1540,7 @@ class HotelManager extends HotelLib {
 
         //create order by query
         $orderby = '';
-        foreach ($order_fields as $key => $val){
+        foreach (array_keys($order_fields) as $key){
             if(!in_array($order_fields[$key], $fieldValues) && ( $order_order[$key] != 'asc' || $order_order[$key] != 'desc' )){
                 die();
             }
@@ -1670,7 +1662,7 @@ class HotelManager extends HotelLib {
     function _RPCSort()
     {
         global $_CONFIG, $objDatabase;
-        $output = '';
+
         $fieldValues = array('visits', 'reference', 'ref_note', 'header', 'location');
         $field = (!empty($_GET['field'])) ? contrexx_addslashes($_GET['field']) : 'visits';
         $order = (!empty($_GET['order'])) ? contrexx_addslashes($_GET['order']) : 'asc';
@@ -1732,7 +1724,7 @@ class HotelManager extends HotelLib {
     function _RPCDownloadStats()
     {
         global $_CONFIG, $objDatabase;
-        $output = '';
+
         $fieldValues = array('dl_count', 'dl_reference', 'dl_ref_note', 'dl_header', 'dl_linkname');
         $field = (!empty($_GET['field'])) ? contrexx_addslashes($_GET['field']) : 'dl_count';
         $order = (!empty($_GET['order'])) ? contrexx_addslashes($_GET['order']) : 'asc';
@@ -1799,9 +1791,11 @@ class HotelManager extends HotelLib {
         $limit = !empty($_REQUEST['limit']) ? intval($_REQUEST['limit']) : $this->arrSettings['latest_entries_count'];
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
         $field = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'hotel_id';
-        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
+// Unused
+//        $order = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
         $hsearchField = !empty($_REQUEST['searchField']) ? $_REQUEST['searchField'] : '' ;
-        $hsearch = !empty($_REQUEST['search']) ? contrexx_addslashes($_REQUEST['search']) : '' ;
+// Unused
+//        $hsearch = !empty($_REQUEST['search']) ? contrexx_addslashes($_REQUEST['search']) : '' ;
 
         $rowclass = 2;
         $queryAll = "  SELECT hotel.id as `hotel_id`,
@@ -2105,7 +2099,8 @@ WHERE id = $hotelID )";
         $fieldID = intval($_GET['fieldid']);
         $langID = intval($_GET['langid']);
         $value = contrexx_addslashes($_GET['value']);
-        $ID = contrexx_addslashes($_GET['ID']);
+// Unused
+//        $ID = contrexx_addslashes($_GET['ID']);
         $objRS = $objDatabase->SelectLimit("SELECT fieldvalue AS suggestion
                                         FROM ".DBPREFIX."module_hotel_content
                                         WHERE field_id = $fieldID
@@ -2516,7 +2511,6 @@ WHERE id = $hotelID )";
         $rowClassImg = 2;  //img
         $rowClassLnk = 2;  //lnk
         $hotelData = "";
-        $imageData = "";
         foreach ($this->fieldNames as $fieldkey => $field) {
             if($field['mandatory']){
                 $this->_objTpl->setVariable('HOTEL_MANDATORY_ID', $fieldkey);
@@ -2675,7 +2669,7 @@ WHERE id = $hotelID )";
      */
     function _showMapPopup(){
         global $_ARRAYLANG;
-        $objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
+        $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->loadTemplateFile('module_hotel_map_popup.html');
         $googlekey = (!empty($this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']])) ? $this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']] : '';
@@ -2701,8 +2695,9 @@ WHERE id = $hotelID )";
      * @access private
      *
      */
-    function _showSettings(){
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    function _showSettings()
+    {
+        global $_ARRAYLANG, $_CONFIG;
 
         $this->_getFieldNames();
         $domain1 = $_CONFIG['domainUrl'];
@@ -2791,7 +2786,7 @@ WHERE id = $hotelID )";
 
         $rowid = 2;
         foreach ($this->fieldNames as $fieldID => $field) {
-            foreach($this->languages as $langID => $language){
+            foreach(array_keys($this->languages) as $langID) {
                 $this->_objTpl->setVariable(array(
                     'HOTEL_FIELD_CONTENT'=> (!empty($field['names'][$langID])) ? $field['names'][$langID] : '',
                     'HOTEL_FIELD_LANGID' => $langID
@@ -2835,10 +2830,11 @@ WHERE id = $hotelID )";
      *
      * @return void
      */
-    function _saveSettings() {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
-        $error = false;
+    function _saveSettings()
+    {
+        global $_ARRAYLANG, $_CONFIG;
 
+        $error = false;
         $domain1 =  $_CONFIG['domainUrl'];
         $domain2 =  $this->_getDomain($_CONFIG['domainUrl']);
         // with underlines for dots
@@ -2953,7 +2949,7 @@ WHERE id = $hotelID )";
             }
         }
 
-        foreach ($this->languages as $langID => $language) {
+        foreach (array_keys($this->languages) as $langID) {
             if (isset($_POST['currency_lang_'.$langID])) {
                   if (!$this->_updateSetting('currency_lang_'.$langID, $_POST['currency_lang_'.$langID])) {
                        $error = true;
@@ -3019,7 +3015,7 @@ WHERE id = $hotelID )";
             }
             $lastFieldID = $objDatabase->Insert_ID();
 
-            foreach ($this->languages as $langID => $language){
+            foreach (array_keys($this->languages) as $langID){
                 if(!$dberror){
                     $query="    INSERT INTO ".DBPREFIX."module_hotel_fieldname
                                                 (id,
@@ -3061,7 +3057,7 @@ WHERE id = $hotelID )";
         $checked = array();
 
         foreach ($_POST as $key => $value) {
-            if (preg_match('/^value\_[0-9]+_[0-9]+$/', $key)) {
+            if (preg_match('/^value_[0-9]+_[0-9]+$/', $key)) {
                 $singleVals = explode("_", $key);
                 $id = $singleVals[1];
                 $langId = $singleVals[2];
@@ -3161,4 +3157,5 @@ WHERE id = $hotelID )";
     }
 
 }
+
 ?>

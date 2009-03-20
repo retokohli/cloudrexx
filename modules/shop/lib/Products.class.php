@@ -107,8 +107,8 @@ class Products
         &$count, $offset=0,
         $productId=0, $shopCategoryId=0, $manufacturerId=0, $pattern='',
         $flagSpecialoffer=false, $flagLastFive=false,
-        $orderSetting='p.sort_order ASC, p.id DESC', // Default
-        $flagIsReseller=false,
+        $orderSetting='',
+        $flagIsReseller='',
         $flagShowInactive=false
     ) {
         global $objDatabase, $_CONFIG;
@@ -120,9 +120,8 @@ class Products
             && empty($pattern)
             && empty($flagSpecialoffer)
             && empty($flagLastFive)
-            && empty($flagShowInactive)  // Backend only!
+            && empty($flagShowInactive) // Backend only!
         ) return array();
-
         if ($productId) {
             // select single Product by ID
             $objProduct = Product::getById($productId);
@@ -133,6 +132,8 @@ class Products
             $count = 0;
             return false;
         }
+        if (empty($orderSetting))
+            $orderSetting = 'p.sort_order ASC, p.id DESC';
 
         // Limit Products visible to resellers or non-resellers.
         $queryReseller =
@@ -174,10 +175,10 @@ class Products
             if ($shopCategoryId > 0) {
                 // select Products by ShopCategory ID
                 $q_special_offer = '';
-                $q1_category = 'INNER JOIN '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories AS c ON c.id=p.catid';
+                $q1_category = 'INNER JOIN '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories AS c ON c.catid=p.catid';
                 $q2_category =
                     "AND p.catid=$shopCategoryId".
-                    ($flagShowInactive ? '' : ' AND c.status=1');
+                    ($flagShowInactive ? '' : ' AND c.catstatus=1');
             }
             if ($manufacturerId > 0) {
                 // select Products by Manufacturer ID
@@ -207,15 +208,20 @@ class Products
                    $q2_category $q2_manufacturer $q_search
               ".($orderSetting ? "ORDER BY $orderSetting" : '');
         }
-        if ($count == 0) {
-            if ($_CONFIG['corePagingLimit'])
-                $count = $_CONFIG['corePagingLimit'];
-        }
-        if ($count) {
-            $objResult = $objDatabase->SelectLimit($querySelect.$queryTail, $count, $offset);
-        } else {
-            $objResult = $objDatabase->Execute($querySelect.$queryTail);
-        }
+        $limit =
+            ($count > 0
+                ? $count
+                : (!empty($_CONFIG['corePagingLimit'])
+                    ? $_CONFIG['corePagingLimit']
+                    : 10
+                  )
+            );
+        $count = 0;
+//        if ($limit) {
+        $objResult = $objDatabase->SelectLimit($querySelect.$queryTail, $limit, $offset);
+//        } else {
+//            $objResult = $objDatabase->Execute($querySelect.$queryTail);
+//        }
         if (!$objResult) return false;
         $arrProduct = array();
         while (!$objResult->EOF) {
@@ -341,38 +347,6 @@ class Products
             $objResult->MoveNext();
         }
         return $arrProductId;
-    }
-
-    /**
-     * OBSOLETE -- See {@link getByShopParams()}.
-     * Returns an array of Product objects contained by the ShopCategory
-     * with the given ID.
-     *
-     * Frontend use only.
-     * @param   integer     $catId      The ShopCategory ID
-     * @return  mixed                   The array of Product IDs on success,
-     *                                  false otherwise.
-     * @static
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function getByShopCategory($catId)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE catid=$catId
-          ORDER BY sort_order ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrProduct = array();
-        while (!$objResult->EOF) {
-            $arrProduct[] = Product::getById($objResult->fields['id']);
-            $objResult->MoveNext();
-        }
-        return $arrProduct;
     }
 
 
@@ -521,7 +495,7 @@ class Products
             // don't create it again.
             if (file_exists($imagePath.'.thumb')
              && filemtime($imagePath.'.thumb') > filemtime($imagePath)) {
-                //$this->addMessage("Hinweis: Thumbnail f�r Produkt ID '$id' existiert bereits");
+                //$this->addMessage("Hinweis: Thumbnail fuer Produkt ID '$id' existiert bereits");
                 // Need the original size to update the record, though
                 list($width, $height) =
                     $objImageManager->_getImageSize($imagePath);

@@ -226,4 +226,5 @@ $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Error del Servidor: La consulta de b&
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Por favor, introduzca una direcci&oacute;n &uacute;nica o mueva el mapa al punto deseado.";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Voto";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

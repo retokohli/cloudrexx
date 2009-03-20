@@ -32,6 +32,7 @@ class GuestbookManager extends GuestbookLibrary
     var $strErrMessage = '';
     var $strOkMessage = '';
     var $imagePath;
+    var $langId;
     var $arrSettings = array();
 
 
@@ -44,10 +45,14 @@ class GuestbookManager extends GuestbookLibrary
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
+        $this->langId=$objInit->userFrontendLangId;
+
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=guestbook'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
                                                         <a href='?cmd=guestbook&amp;act=add'>".$_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY']."</a>
                                                         <a href='?cmd=guestbook&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_guestbook");
         $this->getSettings();
     }
@@ -113,10 +118,10 @@ class GuestbookManager extends GuestbookLibrary
         }
 
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'    => $this->pageTitle,
+            'CONTENT_TITLE' => $this->pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
-            'ADMIN_CONTENT'    => $this->_objTpl->get()
+            'ADMIN_CONTENT' => $this->_objTpl->get()
         ));
     }
 
@@ -154,10 +159,10 @@ class GuestbookManager extends GuestbookLibrary
             'GUESTBOOK_SEND_NOTIFICATION_EMAIL' => $this->arrSettings['guestbook_send_notification_email'] == '1' ? "checked=\"checked\"" : "",
             'GUESTBOOK_REPLACE_AT' => $this->arrSettings['guestbook_replace_at'] == '1' ? "checked=\"checked\"" : "",
             'GUESTBOOK_ONLY_LANG_ENTRIES' => $this->arrSettings['guestbook_only_lang_entries'] == '1' ? "checked=\"checked\"" : "",
-            'TXT_STORE'    => $_ARRAYLANG['TXT_STORE'],
-            'TXT_SETTINGS'    => $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_AUTO_ACTIVATE_NEW_ENTRIES'    => $_ARRAYLANG['TXT_AUTO_ACTIVATE_NEW_ENTRIES'],
-            'TXT_SEND_NOTIFICATION_MESSAGE'    => $_ARRAYLANG['TXT_SEND_NOTIFICATION_MESSAGE'],
+            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
+            'TXT_SETTINGS'  => $_ARRAYLANG['TXT_SETTINGS'],
+            'TXT_AUTO_ACTIVATE_NEW_ENTRIES' => $_ARRAYLANG['TXT_AUTO_ACTIVATE_NEW_ENTRIES'],
+            'TXT_SEND_NOTIFICATION_MESSAGE' => $_ARRAYLANG['TXT_SEND_NOTIFICATION_MESSAGE'],
             'TXT_REPLACE_AT' => $_ARRAYLANG['TXT_REPLACE_AT'],
             'TXT_GUESTBOOK_ONLY_LANG_ENTRIES' => $_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES']
         ));
@@ -184,6 +189,7 @@ class GuestbookManager extends GuestbookLibrary
 
         $this->_objTpl->setVariable(array(
             'TXT_ADD_ENTRY'     => $_ARRAYLANG['TXT_ADD_ENTRY'],
+            'TXT_FORENAME'      => $_ARRAYLANG['TXT_FORENAME'],
             'TXT_NAME'          => $_ARRAYLANG['TXT_NAME'],
             'TXT_COMMENT'       => $_ARRAYLANG['TXT_COMMENT'],
             'TXT_LOCATION'      => $_ARRAYLANG['TXT_LOCATION'],
@@ -196,7 +202,7 @@ class GuestbookManager extends GuestbookLibrary
             'TXT_STORE'         => $_ARRAYLANG['TXT_STORE'],
             'TXT_RESET'         => $_ARRAYLANG['TXT_RESET'],
             'TXT_BACK_TO_INDEX' => $_ARRAYLANG['txtBackToIndex'], // N/A
-            'GUESTBOOK_JAVASCRIPT'    => $javascript
+            'GUESTBOOK_JAVASCRIPT'  => $javascript
         ));
         // $this->_store();
     }
@@ -217,8 +223,9 @@ class GuestbookManager extends GuestbookLibrary
 
         $error = "";
 
-        if (!empty($_POST['nickname']) AND !empty($_POST['comment'])) {
-            $nick  = contrexx_addslashes(strip_tags($_POST['nickname']));
+		if (!empty($_POST['forename']) AND !empty($_POST['name']) /*AND !empty($_POST['comment'])*/) {
+			$forename  = contrexx_addslashes(strip_tags($_POST['forename']));
+			$name  = contrexx_addslashes(strip_tags($_POST['name']));
             $gender  = contrexx_addslashes(strip_tags($_POST['malefemale']));
             $mail = isset($_POST['email']) ? contrexx_addslashes($_POST['email']) : '';
             $url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : '';
@@ -237,16 +244,29 @@ class GuestbookManager extends GuestbookLibrary
                 $error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
             }
             if (empty($error)) {
-                $query = "
-                    INSERT INTO ".DBPREFIX."module_guestbook (
-                        nickname, gender, url, datetime,
-                        email, comment, ip, location, lang_id
-                    ) VALUES (
-                        '$nick', '$gender', '$url', NOW(),
-                        '$mail', '$comment', '$ip', '$location',
-                        '".FRONTEND_LANG_ID."'
-                    )";
+                $query = "INSERT INTO ".DBPREFIX."module_guestbook
+			                           (forename,
+			                            name,
+                                        gender,
+                                        url,
+                                        datetime,
+                                        email,
+                                        comment,
+                                        ip,
+                                        location,
+                                        lang_id)
+					            VALUES ('$forename',
+							            '$name',
+                                        '$gender',
+                                        '$url',
+                                        NOW(),
+                                        '$mail',
+                                        '$comment',
+                                        '$ip',
+                                        '$location',
+                                        '$this->langId')";
                 $objDatabase->Execute($query);
+
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
             }else{
                 $this->strErrMessage = $error;
@@ -255,6 +275,10 @@ class GuestbookManager extends GuestbookLibrary
             $this->strErrMessage = $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'];
         }
     }
+
+
+
+
 
 
     /**
@@ -287,11 +311,12 @@ class GuestbookManager extends GuestbookLibrary
             'TXT_DATE'       => $_ARRAYLANG['TXT_DATE'],
             'TXT_STORE'      => $_ARRAYLANG['TXT_STORE'],
             'TXT_RESET'      => $_ARRAYLANG['TXT_RESET'],
-            'GUESTBOOK_JAVASCRIPT'    => $javascript
+            'GUESTBOOK_JAVASCRIPT'  => $javascript
         ));
 
         if(!empty($_GET['id'])){
-            $query = "SELECT nickname,
+			$query = "SELECT forename,
+							   name,
                                id,
                                gender,
                                url,
@@ -308,17 +333,18 @@ class GuestbookManager extends GuestbookLibrary
                 switch($objResult->fields["gender"]) {
                     case "M" : $gender_m = "checked"; break;
                     case "F" : $gender_f = "checked"; break;
-                    default     : $gender_m = ""; $gender_f = ""; break;
+                    default  : $gender_m = ""; $gender_f = ""; break;
                 }
                 $this->_objTpl->setVariable(array(
-                    'GUESTBOOK_NICK'      => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_FORENAME'  => htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_NAME'      => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
                     'GUESTBOOK_CHECKED_M' => $gender_m,
                     'GUESTBOOK_CHECKED_F' => $gender_f,
                     'GUESTBOOK_URL'       => htmlentities($objResult->fields["url"], ENT_QUOTES, CONTREXX_CHARSET),
                     'GUESTBOOK_LOCATION'  => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
                     'GUESTBOOK_MAIL'      => htmlentities($objResult->fields["email"], ENT_QUOTES, CONTREXX_CHARSET),
                     'GUESTBOOK_COMMENT'   => $objResult->fields["comment"],
-                    'GUESTBOOK_IP'         => htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET),
+                    'GUESTBOOK_IP'       => htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET),
                     'GUESTBOOK_DATE'         => $objResult->fields["datetime"],
                     'GUESTBOOK_ID'        => $objResult->fields["id"]
                 ));
@@ -374,13 +400,13 @@ class GuestbookManager extends GuestbookLibrary
             'TXT_CONFIRM_DELETE_DATA'    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
             'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
             'TXT_SELECT_ALL'             => $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_DESELECT_ALL'             =>    $_ARRAYLANG['TXT_DESELECT_ALL'],
-            'TXT_SUBMIT_SELECT'             => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
-            'TXT_SUBMIT_DELETE'             => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
-            'TXT_SUBMIT_ACTIVATE'         => $_ARRAYLANG['TXT_SUBMIT_ACTIVATE'],
-            'TXT_SUBMIT_DEACTIVATE'         => $_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'],
+            'TXT_DESELECT_ALL'           => $_ARRAYLANG['TXT_DESELECT_ALL'],
+            'TXT_SUBMIT_SELECT'          => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
+            'TXT_SUBMIT_DELETE'          => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
+            'TXT_SUBMIT_ACTIVATE'        => $_ARRAYLANG['TXT_SUBMIT_ACTIVATE'],
+            'TXT_SUBMIT_DEACTIVATE'      => $_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'],
             'TXT_ACTION'                 => $_ARRAYLANG['TXT_GUESTBOOK_ACTION'],
-            'TXT_DELETE_CATEGORY_ALL'     => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL']
+            'TXT_DELETE_CATEGORY_ALL'    => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL']
         ));
 
         $pos = intval($_GET['pos']);
@@ -388,7 +414,7 @@ class GuestbookManager extends GuestbookLibrary
         /** start paging **/
         $query = "SELECT *
             FROM ".DBPREFIX."module_guestbook "
-            .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='".FRONTEND_LANG_ID."' " : '');
+            .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='$this->langId' " : '');
         $objResult = $objDatabase->Execute($query);
 
         $count = $objResult->RecordCount();
@@ -397,9 +423,10 @@ class GuestbookManager extends GuestbookLibrary
         $this->_objTpl->setVariable("GUESTBOOK_PAGING", $paging);
         /** end paging **/
 
-        $query = "    SELECT         id,
+        $query = "  SELECT      id,
                                 status,
-                                nickname,
+								forename,
+								name,
                                 gender,
                                 url,
                                 email,
@@ -408,9 +435,9 @@ class GuestbookManager extends GuestbookLibrary
                                 location,
                                 datetime,
                                 UNIX_TIMESTAMP(datetime) AS uTimestamp
-                    FROM         ".DBPREFIX."module_guestbook "
-                    .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='".FRONTEND_LANG_ID."' " : '')
-                    ."ORDER BY     id DESC ";
+                    FROM        ".DBPREFIX."module_guestbook "
+                    .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='$this->langId' " : '')
+                    ."ORDER BY  id DESC ";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
         $i=0;
@@ -435,16 +462,17 @@ class GuestbookManager extends GuestbookLibrary
 
             $this->_objTpl->setVariable(array(
                        'GUESTBOOK_ROWCLASS' => $rowclass,
-                       'GUESTBOOK_STATUS'    => $statusIcon,
-                       'GUESTBOOK_NICK'        => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
-                       'GUESTBOOK_GENDER'    => $gender,
-                       'GUESTBOOK_URL'        => $url,
-                       'GUESTBOOK_LOCATION'    => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
-                       'GUESTBOOK_DATE'        => date(ASCMS_DATE_FORMAT, $objResult->fields["uTimestamp"]),
-                       'GUESTBOOK_MAIL'        => $mail,
-                       'GUESTBOOK_COMMENT'    => nl2br($objResult->fields["comment"]),
-                       'GUESTBOOK_ID'        => $objResult->fields["id"],
-                       'GUESTBOOK_IP'        => "<a href='?cmd=nettools&amp;tpl=whois&amp;address=".htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET)."' alt='".$_ARRAYLANG['TXT_SHOW_DETAILS']."' title='".$_ARRAYLANG['TXT_SHOW_DETAILS']."'>".htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET)."</a>"
+                       'GUESTBOOK_STATUS'   => $statusIcon,
+					   'GUESTBOOK_FORENAME'	=> htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
+					   'GUESTBOOK_NAME'	    => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
+                       'GUESTBOOK_GENDER'   => $gender,
+                       'GUESTBOOK_URL'      => $url,
+                       'GUESTBOOK_LOCATION' => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
+                       'GUESTBOOK_DATE'     => date(ASCMS_DATE_FORMAT, $objResult->fields["uTimestamp"]),
+                       'GUESTBOOK_MAIL'     => $mail,
+                       'GUESTBOOK_COMMENT'  => nl2br($objResult->fields["comment"]),
+                       'GUESTBOOK_ID'       => $objResult->fields["id"],
+                       'GUESTBOOK_IP'       => "<a href='?cmd=nettools&amp;tpl=whois&amp;address=".htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET)."' alt='".$_ARRAYLANG['TXT_SHOW_DETAILS']."' title='".$_ARRAYLANG['TXT_SHOW_DETAILS']."'>".htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET)."</a>"
             ));
             $this->_objTpl->parse('guestbook_row');
             $i++;
@@ -471,7 +499,8 @@ class GuestbookManager extends GuestbookLibrary
         $error = "";
 
         if (!empty($guestbookId)) {
-            $nick      = contrexx_addslashes(strip_tags($_POST['nickname']));
+			$forename = contrexx_addslashes(strip_tags($_POST['forename']));
+			$name	  = contrexx_addslashes(strip_tags($_POST['name']));
             $gender   = contrexx_addslashes(strip_tags($_POST['malefemale']));
             $mail = isset($_POST['email']) ?  contrexx_addslashes(strip_tags($_POST['email'])) : '';
             $url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : "";
@@ -490,9 +519,10 @@ class GuestbookManager extends GuestbookLibrary
             if(!$objValidator->isEmail($mail)) {
                 $error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
             }
-            if(!empty($nick) && !empty($comment) && empty($error)) {
+			if(!empty($forename) && !empty($name) /*&& !empty($comment) && empty($error)*/) {
                 $query = "UPDATE ".DBPREFIX."module_guestbook
-                               SET nickname='$nick',
+							   SET forename='$forename',
+							   	   name='$name',
                                    gender='$gender',
                                    email='$mail',
                                    url='$url',
@@ -500,7 +530,7 @@ class GuestbookManager extends GuestbookLibrary
                                    location='$location',
                                    ip='$ip',
                                    datetime='$date',
-                                   lang_id='".FRONTEND_LANG_ID."'
+                                   lang_id='$this->langId'
                              WHERE id=$guestbookId";
                 $objResult = $objDatabase->Execute($query);
             }

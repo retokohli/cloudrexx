@@ -81,8 +81,8 @@ $_ARRAYLANG['TXT_WRONG_EMAIL'] = "Die von Ihnen angegebene E-Mail Adresse ist un
 $_ARRAYLANG['TXT_DIR_CITY'] = "City";
 $_ARRAYLANG['TXT_RESTORE_MAIL_TITLE'] = "Zurücksetzung Ihres Passwortes";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART1'] = "Jemand hat für Ihr  ";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " RSS Verzeichnis Benutzerkonto, Benutzername: ";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = ", eine Zurückstellung des Passwortes angefordert.\\n\\nFalls diese Zurückstellung nicht von Ihnen angefordert wurde, kann dieses E-Mail missachten werden. Diese Nachricht wurde nur an die Adresse dieses Benutzerkonto verschickt. ";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " RSS fortegnelse brugerkonto, brugernavn: ";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = ", har efterspurgt en tilbagesætning af kodeordet.\\n\\nHvis det ikke er dig der har krævet denne tilbagesætteslse, skal du ikke foretage dig noget. ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = "Sie müssen sich gegebenen Falls keine Sorgen um Ihr Benutzerkonto machen.\\n\\nUm ein neues Passwort zu setzen, benutzen Sie bitte folgenden Link: ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART5'] = "Diese Zurückstellung wurde angefordert von: ";
 $_ARRAYLANG['TXT_DIR_LAST_UPDATE'] = "Letzte Aktualisierung";
@@ -226,4 +226,5 @@ $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Serverfehler: Die Suchanfrage (Geocod
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Geben Sie eine eindeutige Adresse an oder bewegen die Karte mit der Maus an den gewünschten Punkt";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Stimme";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

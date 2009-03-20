@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_hotel
  */
-$_ARRAYLANG['TXT_HOTEL_SEARCH'] = "Suchen";
+$_ARRAYLANG['TXT_HOTEL_SEARCH'] = "Rechercher";
 $_ARRAYLANG['TXT_HOTEL_NAME'] = "Name";
 $_ARRAYLANG['TXT_HOTEL_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_HOTEL_OBJECTTYPE_FLAT'] = "Wohnung";

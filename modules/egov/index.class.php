@@ -11,11 +11,6 @@
  */
 
 /**
- * Debug mode
- */
-define('_EGOV_DEBUG', 0);
-
-/**
  * Includes
  */
 require_once dirname(__FILE__).'/lib/eGovLibrary.class.php';
@@ -49,16 +44,6 @@ class eGov extends eGovLibrary
      */
     function __construct($pageContent)
     {
-        if (_EGOV_DEBUG) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 1);
-            global $objDatabase; $objDatabase->debug = 1;
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-            global $objDatabase; $objDatabase->debug = 0;
-        }
-
         $this->initContactForms();
         $this->pageContent = $pageContent;
         $this->objTemplate = new HTML_Template_Sigma('.');
@@ -452,7 +437,7 @@ class eGov extends eGovLibrary
 
     function paymentYellowpay($order_id, $amount)
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID;
 
         $paymentMethods =
             (!empty($_REQUEST['handler'])
@@ -488,7 +473,7 @@ class eGov extends eGovLibrary
             $FormFields .= 'contactFormField_Quantity='.$_REQUEST['contactFormField_Quantity'];
         }
 
-        $languageCode = strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID));
+        $languageCode = strtoupper(FWLanguage::getLanguageCodeById($_LANGID));
         $arrShopOrder = array(
             // From registration confirmation form
             'txtShopId'      => eGovLibrary::GetSettings('yellowpay_shopid'),

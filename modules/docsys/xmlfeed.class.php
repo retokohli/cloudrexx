@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Docsys RSS XML Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -24,18 +23,20 @@
  */
 class rssFeed
 {
-    public $xmlType;
-    public $filePath;
-    public $fileName = array();
-    public $limit;
-    public $channelTitle;
-    public $channelLink;
-    public $channelDescription;
-    public $channelLanguage;
-    public $channelCopyright;
-    public $channelGenerator;
-    public $channelWebMaster;
-    public $itemLink;
+    var $xmlType;
+    var $filePath;
+    var $fileName = array();
+    var $limit;
+    var $langId;
+
+    var $channelTitle;
+    var $channelLink;
+    var $channelDescription;
+    var $channelLanguage;
+    var $channelCopyright;
+    var $channelGenerator;
+    var $channelWebMaster;
+    var $itemLink;
 
 
     /**
@@ -47,9 +48,11 @@ class rssFeed
     */
     function __construct()
     {
-        global $_CONFIG, $objDatabase;
+        global $_CONFIG, $objInit, $objDatabase;
 
-        $query = "SELECT lang FROM ".DBPREFIX."languages WHERE id='".FRONTEND_LANG_ID."'";
+        $this->langId=$objInit->userFrontendLangId;
+
+        $query = "SELECT lang FROM ".DBPREFIX."languages WHERE id='$this->langId'";
         $objResult = $objDatabase->Execute($query);
 
         $this->xmlType = "headlines";
@@ -59,7 +62,7 @@ class rssFeed
         $this->channelGenerator = $_CONFIG['coreCmsName'];
         $this->channelWebMaster = $_CONFIG['coreAdminEmail'];
         $this->channelLanguage  = $objResult->fields['lang'];
-        $this->itemLink = ASCMS_PROTOCOL."://".$_SERVER['SERVER_NAME']."/?section=docsys&amp;cmd=details&amp;id=";
+        $this->itemLink = ASCMS_PROTOCOL."://".$_SERVER['SERVER_NAME']."/?section=docsys".MODULE_INDEX."&amp;cmd=details&amp;id=";
         $this->fileName[1] = 'docsys_headlines_'.$objResult->fields['lang'].'.xml';
         $this->fileName[2] = 'docsys_'.$objResult->fields['lang'].'.xml';
 
@@ -80,7 +83,7 @@ class rssFeed
         if(is_writeable($this->filePath) AND is_dir($this->filePath)){
             return true;
         }
-        else{
+        else{  
             return false;
         }
     }
@@ -93,7 +96,7 @@ class rssFeed
     */
     function createXML()
     {
-        global $objDatabase;
+        global $_LANGID, $objDatabase;
 
         if ($this->checkPermissions()){
             $xmlOutput = "";
@@ -121,9 +124,9 @@ class rssFeed
 //                               u.id
 //                        FROM ".DBPREFIX."module_docsys AS n,
 //                             ".DBPREFIX."access_users AS u
-//                        WHERE n.userid = u.id AND n.lang = ".FRONTEND_LANG_ID."
+//                        WHERE n.userid = u.id AND n.lang = ".$_LANGID."
 //                        ORDER BY n.id DESC";
-
+            
             $query = "SELECT n.id AS docId,
                                n.date,
                                n.title,
@@ -132,9 +135,9 @@ class rssFeed
                                n.lang,
                                n.userid,
                                u.id
-                        FROM ".DBPREFIX."module_docsys AS n,
+                        FROM ".DBPREFIX."module_docsys".MODULE_INDEX." AS n,
                              ".DBPREFIX."access_users AS u
-                        WHERE n.userid = u.id AND n.lang = ".FRONTEND_LANG_ID."
+                        WHERE n.userid = u.id AND n.lang = ".$_LANGID."
                         ORDER BY n.id DESC";
             $objResult = $objDatabase->SelectLimit($query, $this->limit);
 
@@ -168,5 +171,4 @@ class rssFeed
         }
     }
 }
-
 ?>

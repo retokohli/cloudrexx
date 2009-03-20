@@ -12,24 +12,25 @@
 $_CONFIG['cacheEnabled']             = "off";
 $_CONFIG['cacheExpiration']          = 86400;
 $_CONFIG['contentHistoryStatus']     = "on";
-$_CONFIG['coreAdminEmail']           = "reto.kohli@comvation.com";
-$_CONFIG['coreAdminName']            = "Reto Kohli";
+$_CONFIG['coreAdminEmail']           = "info@example.com";
+$_CONFIG['coreAdminName']            = "Administrator";
 $_CONFIG['coreGlobalPageTitle']      = "Contrexx Demo";
 $_CONFIG['coreIdsStatus']            = "off";
+$_CONFIG['coreListProtectedPages']   = "on";
 $_CONFIG['corePagingLimit']          = 30;
 $_CONFIG['coreSmtpServer']           = 0;
 $_CONFIG['dnsServer']                = "ns1.contrexxhosting.com";
-$_CONFIG['domainUrl']                = "localhost";
+$_CONFIG['domainUrl']                = "pkg.contrexxlabs.com";
 $_CONFIG['frontendEditingStatus']    = "on";
-$_CONFIG['googleMapsAPIKey']         = "dfsggsdfgsdfg";
-$_CONFIG['googleSitemapStatus']      = "on";
-$_CONFIG['languageDetection']        = "on";
-$_CONFIG['lastAccessId']             = 12;
+$_CONFIG['googleMapsAPIKey']         = "";
+$_CONFIG['languageDetection']        = "off";
+$_CONFIG['lastAccessId']             = 52;
 $_CONFIG['searchVisibleContentOnly'] = "on";
 $_CONFIG['sessionLifeTime']          = 3600;
 $_CONFIG['spamKeywords']             = "sex, viagra";
 $_CONFIG['systemStatus']             = "on";
 $_CONFIG['useVirtualLanguagePath']   = "off";
+$_CONFIG['xmlSitemapStatus']         = "on";
 
 /**
 * -------------------------------------------------------------------------
@@ -43,7 +44,7 @@ $_CONFIG['searchDescriptionLength']  = 150;
 * Contact
 * -------------------------------------------------------------------------
 */
-$_CONFIG['contactFormEmail']         = "reto.kohli@comvation.com";
+$_CONFIG['contactFormEmail']         = "info@example.com";
 
 /**
 * -------------------------------------------------------------------------
@@ -58,7 +59,7 @@ $_CONFIG['blockStatus']              = 1;
 * News
 * -------------------------------------------------------------------------
 */
-$_CONFIG['newsTeasersStatus']        = 0;
+$_CONFIG['newsTeasersStatus']        = 1;
 
 /**
 * -------------------------------------------------------------------------
@@ -111,7 +112,7 @@ $_CONFIG['podcastHomeContent']       = 1;
 * Alias
 * -------------------------------------------------------------------------
 */
-$_CONFIG['aliasStatus']              = 1;
+$_CONFIG['aliasStatus']              = 0;
 
 /**
 * -------------------------------------------------------------------------
@@ -119,5 +120,19 @@ $_CONFIG['aliasStatus']              = 1;
 * -------------------------------------------------------------------------
 */
 $_CONFIG['dataUseModule']            = 1;
+
+/**
+* -------------------------------------------------------------------------
+* FileUploader
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['fileUploaderStatus']       = "off";
+
+/**
+* -------------------------------------------------------------------------
+* Knowledge
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['useKnowledgePlaceholders'] = 1;
 
 ?>

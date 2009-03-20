@@ -1,5 +1,4 @@
 <?php
-
 /**
  * RSS Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -22,30 +21,40 @@
  */
 class rssFeed
 {
-    private $xmlType;
-    private $filePath;
-    private $fileName = array();
-    public $newsLimit;
-    private $catId;
+    var $xmlType;
+    var $filePath;
+    var $fileName = array();
+    var $newsLimit;
+    var $langId;
+    var $catId;
 
-    public $channelTitle;
-    public $channelLink;
-    public $channelDescription;
-    private $channelLanguage;
-    private $channelCopyright;
-    private $channelGenerator;
-    public $channelWebmaster;
-    private $itemLink;
+    var $channelTitle;
+    var $channelLink;
+    var $channelDescription;
+    var $channelLanguage;
+    var $channelCopyright;
+    var $channelGenerator;
+    var $channelWebmaster;
+    var $itemLink;
 
     /**
-     * Constructor
-     *
-     * @global    array
-     * @global    ADONewConnection
-     */
-    function __construct()
+    * Constructor
+    *
+    * @global    array
+    * @global    InitCMS
+    * @global    ADONewConnection
+    */
+    function __construct($catId)
     {
-        global $_CONFIG;
+        global $_CONFIG, $objInit, $objDatabase;
+
+        //$db->query("SELECT lang FROM ".DBPREFIX."languages WHERE id='$this->langId'");
+        //$db->next_record();
+/*
+define('ASCMS_FEED_PATH',                   ASCMS_DOCUMENT_ROOT.'/feed');
+define('ASCMS_FEED_WEB_PATH',               ASCMS_PATH_OFFSET.'/feed');
+ASCMS_DIRECTORY_FEED_PATH
+*/
 
         $this->filePath = ASCMS_DIRECTORY_FEED_PATH . '/';
         $this->channelCopyright = "http://".$_CONFIG['domainUrl'];
@@ -56,10 +65,10 @@ class rssFeed
     }
 
     /**
-     * checkPermissions: checks if the permissions on the feed-directory are correct
-     *
-     * @return   boolean
-     */
+    * checkPermissions: checks if the permissions on the feed-directory are correct
+    *
+    * @return   boolean
+    */
     function checkPermissions()
     {
         if(is_writeable($this->filePath) AND is_dir($this->filePath)){
@@ -71,9 +80,9 @@ class rssFeed
 
 
     /**
-     * deletes the rss news feed file
-     *
-     */
+    * deletes the rss news feed file
+    *
+    */
     function delete()
     {
         @unlink($this->filePath.$this->fileName);
@@ -82,15 +91,15 @@ class rssFeed
 
 
     /**
-     * creates the rss news feed file
-     *
-     * @global   array
-     * @global   integer
-     * @global   ADONewConnection
-     */
+    * creates the rss news feed file
+    *
+    * @global   array
+    * @global   integer
+    * @global   ADONewConnection
+    */
     function create()
     {
-        global $objDatabase;
+        global $_CONFIG, $_FRONTEND_LANGID, $objDatabase;
 
         $xmlOutput = "";
 
@@ -136,5 +145,4 @@ class rssFeed
         }
     }
 }
-
 ?>

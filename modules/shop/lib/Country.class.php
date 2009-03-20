@@ -54,35 +54,48 @@ class Country
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets(
-            '`country`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
-        );
+// post-2.1
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`country`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
+//        );
+//        $query = "
+//            SELECT `country`.`id`, `country`.`status`,
+//                   `country`.`iso_code_2`, `country`.`iso_code_3`".
+//                   $arrSqlName['field']."
+//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries AS `country`".
+//                   $arrSqlName['join']."
+//             ORDER BY `country`.`id` ASC
+//        ";
         $query = "
-            SELECT `country`.`id`, `country`.`status`,
-                   `country`.`iso_code_2`, `country`.`iso_code_3`".
-                   $arrSqlName['field']."
+            SELECT `country`.`countries_id`, `country`.`activation_status`,
+                   `country`.`countries_iso_code_2`, `country`.`countries_iso_code_3`,
+                   `country`.`countries_name`".
+//                   $arrSqlName['field']."
+            "
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries AS `country`".
-                   $arrSqlName['join']."
-             ORDER BY `country`.`id` ASC
+//                   $arrSqlName['join']."
+            "
+             ORDER BY `country`.`countries_name` ASC
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            if ($strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText) $strName = $objText->getText();
-            }
+            $id = $objResult->fields['countries_id'];
+//            $id = $objResult->fields['id'];
+//            $text_name_id = $objResult->fields[$arrSqlName['name']];
+//            $strName = $objResult->fields[$arrSqlName['text']];
+//            if ($strName === null) {
+//                $objText = Text::getById($text_name_id, 0);
+//                if ($objText) $strName = $objText->getText();
+//            }
             self::$arrCountries[$id] = array(
                 'id' => $id,
-                'name' => $strName,
-                'text_name_id' => $text_name_id,
-                'iso_code_2' => $objResult->fields['iso_code_2'],
-                'iso_code_3' => $objResult->fields['iso_code_3'],
-                'status' => $objResult->fields['status']
+                'name' => $objResult->fields['countries_name'], //$strName,
+//                'text_name_id' => $text_name_id,
+                'iso_code_2' => $objResult->fields['countries_iso_code_2'],
+                'iso_code_3' => $objResult->fields['countries_iso_code_3'],
+                'status' => $objResult->fields['activation_status']
             );
             $objResult->MoveNext();
         }
@@ -117,13 +130,28 @@ class Country
 
 
     /**
+     * Returns array of all countries
+     * @return  array               The country array
+     * @static
+     */
+    static function getArray()
+    {
+        if (empty(self::$arrCountries)) self::initCountries();
+        return self::$arrCountries;
+    }
+
+
+    /**
      * Returns the name of the country selected by its ID
+     *
+     * If a country with the given ID does not exist, returns the empty string.
      * @param   integer   $country_id     The country ID
-     * @return  string                    The country name
+     * @return  string                    The country name, or the empty string
      * @static
      */
     static function getNameById($country_id)
     {
+    	if (empty($country_id)) return '';
         if (empty(self::$arrCountries)) self::initCountries();
         return self::$arrCountries[$country_id]['name'];
     }
@@ -209,48 +237,67 @@ class Country
     {
         global $objDatabase;
 
+        if (empty(self::$arrCountries)) self::initCountries();
+
         // Query relations between zones and countries:
         // Get all country IDs and names
         // associated with that zone ID
-        $arrSqlName = Text::getSqlSnippets(
-            '`country`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
-        );
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`country`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
+//        );
+// TEST!
+//        $query = "
+//            SELECT `country`.`id`, `relation`.`country_id`".
+//                   $arrSqlName['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `country`".
+//                   $arrSqlName['join']."
+//              LEFT JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
+//                ON `country`.`id`=`relation`.`country_id`
+//             WHERE `country`.`status`=1
+//               AND `relation`.`zone_id`=$zone_id
+//             ORDER BY ".$arrSqlName['text']." ASC
+//        ";
         $query = "
-            SELECT `country`.`id`, `relation`.`country_id`".
-                   $arrSqlName['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `country`".
-                   $arrSqlName['join']."
-              LEFT JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
-                ON `country`.`id`=`relation`.`country_id`
-               AND `relation`.`zone_id`=$zone_id
-             WHERE `country`.`status`=1
-             ORDER BY ".$arrSqlName['text']." ASC
+            SELECT `relation`.`countries_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
+              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `country`
+                ON `country`.`countries_id`=`relation`.`countries_id`
+             WHERE `relation`.`zones_id`=$zone_id
+             ORDER BY `country`.`countries_name`
         ";
+//             WHERE `country`.`activation_status`=1
+//             ORDER BY ".//$arrSqlName['text']."`country`.`countries_name` ASC
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        $arrCountries = array();
+        // Initialize the array to avoid notices when one or the other is empty
+        $arrZoneCountries = array('in' => array(), 'out' => array());
         while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            if ($strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText) $strName = $objText->getText();
-            }
-            $flagInZone =
-                ($objResult->fields['country_id'] === null
-                    ? 'out' : 'in'
-                );
+            $id = $objResult->fields['countries_id'];
+            // Country may only be in the Zone if it exists and is active
+            if (   empty(self::$arrCountries[$id])
+                || empty(self::$arrCountries[$id]['status']))
+                continue;
 //echo("Country::getArraysByZoneId($zone_id): Country ID $id, name /$strName/, relation is $flagInZone<br />");
-            $arrCountries[$flagInZone][$id] = array(
+            $arrZoneCountries['in'][$id] = array(
                 'id' => $id,
-                'name' => $strName,
-                'text_name_id' => $text_name_id,
+                'name' => self::$arrCountries[$id]['name'],
+// Probably not needed:
+//                'text_name_id' => $text_name_id,
             );
             $objResult->MoveNext();
         }
-        return $arrCountries;
+        foreach (self::$arrCountries as $id => $arrCountry) {
+            // Country may only be available for the Zone if it is active
+        	if (empty($arrZoneCountries['in'][$id])
+        	    && $arrCountry['status'])
+	            $arrZoneCountries['out'][$id] = array(
+	                'id' => $id,
+	                'name' => $arrCountry['name'],
+	            );
+
+        }
+        return $arrZoneCountries;
     }
 
 }

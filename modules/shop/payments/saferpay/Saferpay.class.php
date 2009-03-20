@@ -6,8 +6,12 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * Socket connections to payment services
+ */
+require_once ASCMS_CORE_PATH.'/Socket.class.php';
 
 /**
  * Interface to Saferpay
@@ -15,7 +19,6 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  */
 class Saferpay
 {
@@ -24,7 +27,7 @@ class Saferpay
      * @access  public
      * @var     boolean
      */
-    private $isTest = false;
+    public $isTest = false;
 
     /**
      * Temporary data
@@ -349,10 +352,16 @@ class Saferpay
     {
         $this->arrShopOrder = $arrShopOrder;
         $this->attributes = $this->getAttributeList('payInit');
-        // Fixed: suppressed warnings if no network is available
-        // or any other connection problem occurs
+
+        // This won't work without allow_url_fopen
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payInit'].'?'.$this->attributes);
+        if ($this->arrTemp['result']) return $this->arrTemp['result'];
+        // Try socket connection as well
+        $this->arrTemp['result'] =
+            Socket::getHttp10Response(
+                $this->gateway['payInit'].'?'.$this->attributes
+            );
         return $this->arrTemp['result'];
     }
 
@@ -373,8 +382,18 @@ class Saferpay
         $this->arrShopOrder['DATA']      = urlencode($DATA);
         $this->arrShopOrder['SIGNATURE'] = urlencode($SIGNATURE);
         $this->attributes = $this->getAttributeList('payConfirm');
+
+        // This won't work without allow_url_fopen
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payConfirm'].'?'.$this->attributes);
+        if (!$this->arrTemp['result']) {
+	        // Try socket connection as well
+	        $this->arrTemp['result'] =
+	            Socket::getHttp10Response(
+	                $this->gateway['payConfirm'].'?'.$this->attributes
+	            );
+        }
+
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             $ID = '';
             $TOKEN = '';
@@ -401,8 +420,18 @@ class Saferpay
         $this->arrShopOrder['ID'] = $this->arrTemp['id'];
         $this->arrShopOrder['TOKEN'] = $this->arrTemp['token'];
         $this->attributes = $this->getAttributeList('payComplete');
+
+        // This won't work without allow_url_fopen
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payComplete'].'?'.$this->attributes);
+        if (!$this->arrTemp['result']) {
+            // Try socket connection as well
+            $this->arrTemp['result'] =
+                Socket::getHttp10Response(
+                    $this->gateway['payComplete'].'?'.$this->attributes
+                );
+        }
+
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             return true;
         }
@@ -596,6 +625,12 @@ class Saferpay
     }
 
 
+    /**
+     * Returns code for HTML menu options for choosing the window display
+     * option
+     * @param   integer     $selected       The selected option ID
+     * @return  string                      The HTML menu options
+     */
     static function getWindowMenuoptions($selected=0)
     {
         global $_ARRAYLANG;

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NewsML
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -40,6 +39,7 @@ class NewsML
     public $administrate = false;
     public $_inCDATA = false;
 
+
     function __construct($administrate = false)
     {
         $this->administrate = $administrate;
@@ -49,7 +49,10 @@ class NewsML
 
 
     /**
+    * Set news
+    *
     * Set the news message of the newsML category
+    *
     * @access public
     * @param array $arrNewsMLCategories
     * @param string &$code
@@ -61,7 +64,6 @@ class NewsML
         if (count($arrTplPlaceholders)>0) {
             foreach ($arrNewsMLCategories as $category) {
                 $arrMatches = preg_grep('/^'.$category.'$/i', $arrTplPlaceholders);
-
                 if (count($arrMatches)>0) {
                     $categoryIds = array_keys($arrMatches);
                     $categoryId = $categoryIds[0];
@@ -72,8 +74,12 @@ class NewsML
         }
     }
 
+
     /**
+    * Parse NewsML documents
+    *
     * Parse the NewsML documents of the category $categoryId and return the parsed html code
+    *
     * @access public
     * @param integer $categoryId
     * @global array $_CORELANG
@@ -142,7 +148,6 @@ class NewsML
                             $arrDocuments[$documentId]['photo']['height'] = 75;
                         }
                     }
-
                     $output = str_replace(
                         array(
                             '{IMAGE_SOURCE}',
@@ -163,8 +168,6 @@ class NewsML
                 } else {
                     $output = preg_replace('/<--\sBEGIN\simage[\s\S]*END\simage\s-->/', '', $output);
                 }
-
-
                 $nr++;
             }
         }
@@ -173,11 +176,8 @@ class NewsML
 
     /**
     * Initialize newsML categories
-    *
-    * Initializ the newsML categories
-    *
-    * @access private
-    * @global object $objDatabase
+    * @access   private
+    * @global   object  $objDatabase
     */
     function initCategories()
     {
@@ -186,40 +186,34 @@ class NewsML
         $this->arrCategories = array();
         $this->arrTplPlaceholders = array();
 
-        $objCategories = $objDatabase->Execute("SELECT
-            cat.id,
-            cat.name,
-            cat.subjectCodes,
-            cat.showSubjectCodes,
-            cat.template,
-            cat.`limit`,
-            cat.`showPics`,
-            provider.name AS providerName,
-            provider.path,
-            provider.providerId,
-            cat.auto_update
-            FROM ".DBPREFIX."module_feed_newsml_categories AS cat, ".DBPREFIX."module_feed_newsml_providers AS provider
-            WHERE cat.providerId=provider.id");
+        $objCategories = $objDatabase->Execute("
+            SELECT cat.id, cat.name, cat.subjectCodes, cat.showSubjectCodes,
+                   cat.template, cat.`limit`, cat.`showPics`, cat.auto_update,
+                   provider.name AS providerName,
+                   provider.path, provider.providerId
+              FROM ".DBPREFIX."module_feed_newsml_categories AS cat,
+                   ".DBPREFIX."module_feed_newsml_providers AS provider
+             WHERE cat.providerId=provider.id");
         if ($objCategories !== false) {
             while (!$objCategories->EOF) {
                 $this->arrCategories[$objCategories->fields['id']] = array(
-                    'name'                => $objCategories->fields['name'],
-                    'subjectCodes'        => explode(',', $objCategories->fields['subjectCodes']),
-                    'showSubjectCodes'    => $objCategories->fields['showSubjectCodes'],
-                    'template'            => $objCategories->fields['template'],
-                    'limit'                => $objCategories->fields['limit'],
-                    'showPics'            => $objCategories->fields['showPics'],
-                    'path'                => $objCategories->fields['path'],
-                    'providerName'        => $objCategories->fields['providerName'],
+                    'name'              => $objCategories->fields['name'],
+                    'subjectCodes'      => explode(',', $objCategories->fields['subjectCodes']),
+                    'showSubjectCodes'  => $objCategories->fields['showSubjectCodes'],
+                    'template'          => $objCategories->fields['template'],
+                    'limit'             => $objCategories->fields['limit'],
+                    'showPics'          => $objCategories->fields['showPics'],
+                    'path'              => $objCategories->fields['path'],
+                    'providerName'      => $objCategories->fields['providerName'],
                     'providerId'        => $objCategories->fields['providerId'],
-                    'auto_update'        => (bool) $objCategories->fields['auto_update']
+                    'auto_update'       => (bool) $objCategories->fields['auto_update']
                 );
-
                 $this->arrTplPlaceholders[$objCategories->fields['id']] = preg_replace('/\s/', '_', $objCategories->fields['name']);
                 $objCategories->MoveNext();
             }
         }
     }
+
 
     /**
     * Initialize providers
@@ -259,7 +253,8 @@ class NewsML
         $arrDocuments = array();
         $subjectCodeDelimiter = '';
 
-        if ($this->arrCategories[$categoryId]['showSubjectCodes'] != 'all' && count($this->arrCategories[$categoryId]['subjectCodes'])>0) {
+        if (   $this->arrCategories[$categoryId]['showSubjectCodes'] != 'all'
+            && count($this->arrCategories[$categoryId]['subjectCodes']) > 0) {
             $subjectCodeDelimiter = 'AND (';
             foreach ($this->arrCategories[$categoryId]['subjectCodes'] as $subjectCode) {
                 $subjectCodeDelimiter .= 'subjectCode '.($this->arrCategories[$categoryId]['showSubjectCodes'] == 'exclude' ? '!' : ''). '='.$subjectCode.($this->arrCategories[$categoryId]['showSubjectCodes'] == 'exclude' ? ' AND ' : ' OR ');
@@ -290,70 +285,70 @@ class NewsML
                     'dateId'            => $objDocuments->fields['dateId'],
                     'newsItemId'        => $objDocuments->fields['newsItemId'],
                     'revisionId'        => $objDocuments->fields['revisionId'],
-                    'thisRevisionDate'    => $objDocuments->fields['thisRevisionDate'],
-                    'publicIdentifier'    => $objDocuments->fields['publicIdentifier'],
-                    'urgency'            => $objDocuments->fields['urgency'],
-                    'subjectCode'        => $objDocuments->fields['subjectCode'],
-                    'headLine'            => $objDocuments->fields['headLine'],
-                    'dataContent'        => $objDocuments->fields['dataContent']
+                    'thisRevisionDate'  => $objDocuments->fields['thisRevisionDate'],
+                    'publicIdentifier'  => $objDocuments->fields['publicIdentifier'],
+                    'urgency'           => $objDocuments->fields['urgency'],
+                    'subjectCode'       => $objDocuments->fields['subjectCode'],
+                    'headLine'          => $objDocuments->fields['headLine'],
+                    'dataContent'       => $objDocuments->fields['dataContent']
                 );
-
-
-                    $pics = array();
-                    $objAssociated = $objDatabase->Execute("SELECT pId_slave FROM ".DBPREFIX."module_feed_newsml_association WHERE pId_master='".$objDocuments->fields['publicIdentifier']."' ORDER BY pId_slave DESC");
-                    if ($objAssociated !== false) {
-                        while(!$objAssociated->EOF) {
-                            $objPic = $objDatabase->SelectLimit("SELECT properties, source FROM ".DBPREFIX."module_feed_newsml_documents WHERE publicIdentifier LIKE '".$objAssociated->fields['pId_slave']."%' AND media_type='Photo'", 1);
-                            if ($objPic !== false) {
-                                if ($objPic->RecordCount() == 1) {
-                                    $arrTmpProperties = explode(';', $objPic->fields['properties']);
-                                    foreach ($arrTmpProperties as $property) {
-                                        $arrPair = explode(':', $property);
-                                        $arrProperties[base64_decode($arrPair[0])] = base64_decode($arrPair[1]);
-                                    }
-
-                                    $pics[$objAssociated->fields['pId_slave']] = array(
-                                        'source'    => $this->arrCategories[$categoryId]['path'].'/'.$objPic->fields['source'],
-                                        'label'        => isset($arrProperties['label']) ? $arrProperties['label'] : '',
-                                        'width'        => isset($arrProperties['Width']) ? $arrProperties['Width'] : '',
-                                        'height'    => isset($arrProperties['Height']) ? $arrProperties['Height'] : ''
-                                    );
-
-                                    if ($pics[$objAssociated->fields['pId_slave']]['width'] == 85 && $pics[$objAssociated->fields['pId_slave']]['height'] == 85) {
-                                        $arrDocuments[$objDocuments->fields['id']]['photo'] = $pics[$objAssociated->fields['pId_slave']];
-                                        break;
-                                    }
+                $pics = array();
+                $objAssociated = $objDatabase->Execute("
+                    SELECT pId_slave
+                      FROM ".DBPREFIX."module_feed_newsml_association
+                     WHERE pId_master='".$objDocuments->fields['publicIdentifier']."'
+                     ORDER BY pId_slave DESC");
+                if ($objAssociated !== false) {
+                    while (!$objAssociated->EOF) {
+                        $objPic = $objDatabase->SelectLimit("
+                            SELECT properties, source
+                              FROM ".DBPREFIX."module_feed_newsml_documents
+                             WHERE publicIdentifier LIKE '".$objAssociated->fields['pId_slave']."%'
+                               AND media_type='Photo'", 1);
+                        if ($objPic !== false) {
+                            if ($objPic->RecordCount() == 1) {
+                                $arrTmpProperties = explode(';', $objPic->fields['properties']);
+                                foreach ($arrTmpProperties as $property) {
+                                    $arrPair = explode(':', $property);
+                                    $arrProperties[base64_decode($arrPair[0])] = base64_decode($arrPair[1]);
+                                }
+                                $pics[$objAssociated->fields['pId_slave']] = array(
+                                    'source'    => $this->arrCategories[$categoryId]['path'].'/'.$objPic->fields['source'],
+                                    'label'     => isset($arrProperties['label']) ? $arrProperties['label'] : '',
+                                    'width'     => isset($arrProperties['Width']) ? $arrProperties['Width'] : '',
+                                    'height'    => isset($arrProperties['Height']) ? $arrProperties['Height'] : ''
+                                );
+                                if (   $pics[$objAssociated->fields['pId_slave']]['width'] == 85
+                                    && $pics[$objAssociated->fields['pId_slave']]['height'] == 85) {
+                                    $arrDocuments[$objDocuments->fields['id']]['photo'] = $pics[$objAssociated->fields['pId_slave']];
+                                    break;
                                 }
                             }
-
-                            $objAssociated->MoveNext();
                         }
-
-                        if (!isset($arrDocuments[$objDocuments->fields['id']]['photo']) && count($pics) > 0) {
-                            reset($pics);
-                            $arrDocuments[$objDocuments->fields['id']]['photo'] = current($pics);
-                        }
-
+                        $objAssociated->MoveNext();
+                    }
+                    if (!isset($arrDocuments[$objDocuments->fields['id']]['photo']) && count($pics) > 0) {
+                        reset($pics);
+                        $arrDocuments[$objDocuments->fields['id']]['photo'] = current($pics);
+                    }
                 }
-
                 $objDocuments->MoveNext();
             }
         }
-
         return $arrDocuments;
     }
 
+
     /**
-    * Read NewsML documents
-    *
-    * Read the NewsML documents of the category with the id $categoryId from its data directory
-    * and delete the documents after they are inserted into the database
-    *
-    * @access public
-    * @param integer $categoryId
-    * @global object $objDatabase
-    */
-	function readDocuments($categoryId, $matchFilenamePattern = null)
+     * Read NewsML documents
+     *
+     * Read the NewsML documents of the category with the id $categoryId from its data directory
+     * and delete the documents after they are inserted into the database
+     * @access public
+     * @param integer $categoryId
+     * @global object $objDatabase
+     */
+    function readDocuments($categoryId, $matchFilenamePattern = null)
     {
         global $objDatabase;
 
@@ -363,7 +358,7 @@ class NewsML
 
             $document = @readdir($objDir);
             while ($document) {
-				if (!in_array($document, $this->_arrExcludeFiles) && strtolower(substr($document, -3)) == 'xml' && (!$matchFilenamePattern || preg_match($matchFilenamePattern, $document))) {
+                if (!in_array($document, $this->_arrExcludeFiles) && strtolower(substr($document, -3)) == 'xml' && (!$matchFilenamePattern || preg_match($matchFilenamePattern, $document))) {
                     array_push($arrDocuments , $document);
                 }
                 $document = @readdir($objDir);
@@ -383,7 +378,7 @@ class NewsML
                 }
             }
 
-//            print_r($this->_arrDocuments);
+//          print_r($this->_arrDocuments);
 
             foreach ($this->_arrDocuments as $dateId => $arrNewsItems) {
                 foreach ($arrNewsItems as $newsItemId => $arrRevisions) {
@@ -504,12 +499,15 @@ class NewsML
     function _readDocument($categoryId, $document)
     {
         $xmlFilePath  = ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'].'/'.$document;
+
         $this->_currentXmlElement = null;
         $this->_xmlDocument = null;
+
         $xml_parser = xml_parser_create($this->_xmlParserCharacterEncoding);
         xml_set_object($xml_parser,$this);
         xml_set_element_handler($xml_parser,"_xmlStartTag","_xmlEndTag");
         xml_set_character_data_handler($xml_parser, "_xmlCharacterDataTag");
+
         $documentContent = @file_get_contents($xmlFilePath);
         if ($documentContent !== false) {
             xml_parse($xml_parser, $documentContent);
@@ -549,7 +547,7 @@ class NewsML
                 while (!$objDocuments->EOF) {
                     $this->_arrDocuments[$newsItem['dateId']][$newsItem['newsItemId']][$objDocuments->fields['revisionId']] = array(
                         'revisionId'        => $objDocuments->fields['revisionId'],
-                        'publicIdentifier'    => $objDocuments->fields['publicIdentifier']
+                        'publicIdentifier'  => $objDocuments->fields['publicIdentifier']
                     );
                     $objDocuments->MoveNext();
                 }
@@ -559,17 +557,17 @@ class NewsML
         if (!isset($this->_arrDocuments[$newsItem['dateId']][$newsItem['newsItemId']][$newsItem['revisionId']])) {
             $this->_arrDocuments[$newsItem['dateId']][$newsItem['newsItemId']][$newsItem['revisionId']] = array(
                 'revisionId'            => $newsItem['revisionId'],
-                'publicIdentifier'        => $newsItem['publicIdentifier'],
+                'publicIdentifier'      => $newsItem['publicIdentifier'],
                 'previousRevisionId'    => $newsItem['previousRevisionId'],
-                'revisionUpdateStatus'    => $newsItem['revisionUpdateStatus'],
+                'revisionUpdateStatus'  => $newsItem['revisionUpdateStatus'],
                 'dateId'                => $newsItem['dateId'],
                 'newsItemId'            => $newsItem['newsItemId'],
-                'thisRevisionDate'        => $newsItem['thisRevisionDate'],
-                'urgency'                => $newsItem['urgency'],
-                'associatedNewsItems'    => isset($newsItem['associatedNewsItems']) ? $newsItem['associatedNewsItems'] : array(),
-                'subjectCode'            => $newsItem['newsComponent']['subjectCode'],
-                'headLine'                => $newsItem['newsComponent']['headLine'],
-                'dataContent'            => $this->_getContentOfNewsComponent($newsItem['newsComponent'])
+                'thisRevisionDate'      => $newsItem['thisRevisionDate'],
+                'urgency'               => $newsItem['urgency'],
+                'associatedNewsItems'   => isset($newsItem['associatedNewsItems']) ? $newsItem['associatedNewsItems'] : array(),
+                'subjectCode'           => $newsItem['newsComponent']['subjectCode'],
+                'headLine'              => $newsItem['newsComponent']['headLine'],
+                'dataContent'           => $this->_getContentOfNewsComponent($newsItem['newsComponent'])
             );
         }
     }
@@ -578,7 +576,7 @@ class NewsML
     {
         $arrContent = array(
             'properties' => array(),
-            'mediaType'    => '',
+            'mediaType' => '',
             'source'    => ''
         );
 
@@ -667,7 +665,7 @@ class NewsML
         if (isset($newsComponent['DESCRIPTIVEMETADATA'])) {
             // SubjectDetail describes the kind of SubjectMatter. For example: World cup, National cup
             //if (isset($newsComponent['DESCRIPTIVEMETADATA']['SUBJECTCODE']['SUBJECTDETAIL']['attrs']['FORMALNAME'])) {
-            //    $arrNewsComponent['subjectCode'] = intval($newsComponent['DESCRIPTIVEMETADATA']['SUBJECTCODE']['SUBJECTDETAIL']['attrs']['FORMALNAME']);
+            //  $arrNewsComponent['subjectCode'] = intval($newsComponent['DESCRIPTIVEMETADATA']['SUBJECTCODE']['SUBJECTDETAIL']['attrs']['FORMALNAME']);
             //} else
             if (isset($newsComponent['DESCRIPTIVEMETADATA']['SUBJECTCODE']['SUBJECTMATTER']['attrs']['FORMALNAME'])) {
                 $arrNewsComponent['subjectCode'] = intval($newsComponent['DESCRIPTIVEMETADATA']['SUBJECTCODE']['SUBJECTMATTER']['attrs']['FORMALNAME']);
@@ -692,8 +690,8 @@ class NewsML
         }
 
         if (isset($newsComponent['CONTENTITEM'])) {
-            $contentItem = array();
             if (isset($newsComponent['CONTENTITEM'][0])) {
+                $contentItem = array();
                 foreach ($newsComponent['CONTENTITEM'] as $contentItemElement) {
                     array_push($contentItem, $this->_getContentItem($contentItemElement));
                 }
@@ -741,7 +739,7 @@ class NewsML
         $arrContentItem = array();
 
         $arrContentMediaTypes = array(
-            'types'        => array(
+            'types'     => array(
                 'Text',
                 'Graphic',
                 'Photo',
@@ -749,7 +747,7 @@ class NewsML
                 'Video',
                 'ComplexData'
             ),
-            'default'    => 'Text'
+            'default'   => 'Text'
         );
 
         if (isset($contentItem['FORMAT']['attrs']['FORMALNAME'])) {
@@ -783,25 +781,31 @@ class NewsML
         return $arrContentItem;
     }
 
-
     function _getNITF($nitfContent)
     {
         $content = '';
         foreach ($nitfContent['cdata'] as $arrdata) {
             $content .= "<p>".$arrdata['data']."</p>";
         }
+
         return addslashes($content);
     }
 
-
-    function _getNewsItemRef()
+    /**
+     * @param   mixed   $newsItemRef
+     * @return  string                  The empty string
+     * @todo    Remove unused $newsItemRef argument
+     */
+    function _getNewsItemRef($newsItemRef)
     {
         return '';
     }
 
-
     /**
+    * Delete NewsML document
+    *
     * Delete the NewsML document with the id $documentId
+    *
     * @access public
     * @param integer $documentId
     * @global object $objDatabase
@@ -814,13 +818,16 @@ class NewsML
         $status = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_feed_newsml_documents WHERE id='".$documentId."'");
         if ($status !== false) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
-
     /**
-    * Delete the NewsML category specified by the $categoryId
+    * Delete NewsML category
+    *
+    * Deletethe NewsML category specified by the $categoryId
+    *
     * @access public
     * @param integer $categoryId
     * @global object $objDatabase
@@ -832,10 +839,10 @@ class NewsML
 
         if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_feed_newsml_categories WHERE id=".$categoryId) !== false) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
-
 
     /**
     * Add category
@@ -929,12 +936,14 @@ class NewsML
     {
         $this->_initProviders();
 
-        $menu = "<select ".$attrs.">\n";
+        $menu = "<select $attrs>\n";
         foreach ($this->_arrProviders as $providerId => $providerName) {
-            $menu .= "<option value=\"".$providerId."\"".($providerId != $selectedProviderId ? "" : " selected=\"selected\"").">".$providerName."</option>\n";
+            $menu .=
+                '<option value="'.$providerId.'"'.
+                ($providerId == $selectedProviderId ? ' selected="selected"' : '').
+                '>'.$providerName."</option>\n";
         }
         $menu .= "</select>\n";
-
         return $menu;
     }
 
@@ -959,16 +968,17 @@ class NewsML
         $menu .= "<option value=\"only\"".($subjectCodeMethod == "only" ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_FEED_ONLY_DISPLAY_SELECTED']."</option>\n";
         $menu .= "<option value=\"exclude\"".($subjectCodeMethod == "exclude" ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_FEED_DISPLAY_ONLY_INDICATED_ONES']."</option>\n";
         $menu .= "</select>\n";
+
         return $menu;
     }
 
-
     /**
     * XML parser start tag
-    * @access private
-    * @param resource $parser
-    * @param string $name
-    * @param array $attrs
+    * @access   private
+    * @param    mixed   $parser
+    * @param    string  $name
+    * @param    array   $attrs
+    * @todo     Remove unused $parser argument
     */
     function _xmlStartTag($parser, $name, $attrs)
     {
@@ -1018,40 +1028,40 @@ class NewsML
 
     /**
     * XML parser character data tag
-    *
-    * @access private
-    * @param resource $parser
-    * @param string $cData
+    * @access   private
+    * @param    mixed   $parser
+    * @param    string  $cData
+    * @todo     Remove unused $parser argument
     */
     function _xmlCharacterDataTag($parser, $cData)
     {
         if (strlen(trim($cData))) {
             if ($this->_inParagraph) {
-//                if (!empty($this->_xmlContentHTMLTag)) {
+//              if (!empty($this->_xmlContentHTMLTag)) {
                 if ($this->_inCDATA) {
                     $this->_tmpParagraph[count($this->_tmpParagraph)-1]['data'] .= $cData;
                 } else {
                     array_push(
                         $this->_tmpParagraph,
                         array(
-                            'type'    => $this->_xmlContentHTMLTag,
-                            'data'    => $cData
+                            'type'  => $this->_xmlContentHTMLTag,
+                            'data'  => $cData
                         )
                     );
 
                     $this->_inCDATA = true;
                 }
                     //array_push($this->_tmpParagraph, array($this->_xmlContentHTMLTag => .= '<'.$this->_xmlContentHTMLTag.'>'.$cData.'</'.$this->_xmlContentHTMLTag.'>';
-//                } else {
-//                    array_push(
-//                        $this->_tmpParagraph,
-//                        array(
-//                            'type'    => '',
-//                            'data'    => $cData
-//                        )
-//                    );
-//                    //$this->_tmpParagraph .= $cData;
-//                }
+//              } else {
+//                  array_push(
+//                      $this->_tmpParagraph,
+//                      array(
+//                          'type'  => '',
+//                          'data'  => $cData
+//                      )
+//                  );
+//                  //$this->_tmpParagraph .= $cData;
+//              }
             } else {
                 if (!isset($this->_currentXmlElement['cdata'])) {
                     $this->_currentXmlElement['cdata'] = $cData;
@@ -1065,24 +1075,27 @@ class NewsML
     /**
     * XML parser end tag
     *
-    * @access private
-    * @param resource $parser
-    * @param string $name
+    * @access   private
+    * @param    mixed   $parser
+    * @param    string  $name
+    * @todo     Remove unused $parser argument
     */
     function _xmlEndTag($parser, $name)
     {
         $this->_inCDATA = false;
+
         if ($this->_inNITF) {
             if ($name == "BODY.CONTENT") {
                 $this->_inParagraph = false;
                 $this->_xmlContentHTMLTag = '';
 
-//                if (!isset($this->_currentXmlElement['cdata'])) {
-//                    $this->_currentXmlElement['cdata'] = "";
-//                }
+//              if (!isset($this->_currentXmlElement['cdata'])) {
+//                  $this->_currentXmlElement['cdata'] = "";
+//              }
                 $this->_currentXmlElement['cdata'] = $this->_tmpParagraph;
                 $this->_tmpParagraph = array();
             }
+
             if ($name == "NITF") {
                 $this->_inNITF = false;
             }
@@ -1091,7 +1104,6 @@ class NewsML
             unset($this->_arrParentXmlElement[$name]);
         }
     }
-
 
     /*
     * These functions are for future usage
@@ -1113,8 +1125,8 @@ class NewsML
         if ($objNewsMLDocument !== false) {
             while (!$objNewsMLDocument->EOF) {
                 $arrNewsMLDocuments[$objNewsMLDocument->fields['dateId']][$objNewsMLDocument->fields['newsItemId']][$objNewsMLDocument->fields['revisionId']] = array(
-                    'publicIdentifier'    => $objNewsMLDocument->fields['publicIdentifier'],
-                    //'instruction'        => $objNewsMLDocument->
+                    'publicIdentifier'  => $objNewsMLDocument->fields['publicIdentifier'],
+                    //'instruction'     => $objNewsMLDocument->
                     'status'            => true
                 );
                 $objNewsMLDocument->MoveNext();
@@ -1156,5 +1168,4 @@ class NewsML
     }
     */
 }
-
 ?>

@@ -226,4 +226,5 @@ $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Serverfehler: Die Suchanfrage (Geocod
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Geben Sie eine eindeutige Adresse an oder bewegen die Karte mit der Maus an den gewünschten Punkt";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Stimme";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

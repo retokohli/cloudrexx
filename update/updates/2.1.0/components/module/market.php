@@ -31,6 +31,31 @@ function _marketUpdate()
 		}
 	}
 
+
+	/*****************************************************************
+	* EXTENSION:	New attributes 'color' and 'sort_id' for entries *
+	* ADDED:		Contrexx v2.1.0        					         *
+	*****************************************************************/
+	$arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_market');
+	if ($arrColumns === false) {
+		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_market'));
+		return false;
+	}
+
+	if (!isset($arrColumns['SORT_ID'])) {
+		$query = "ALTER TABLE `".DBPREFIX."module_market` ADD `sort_id` INT( 4 ) NOT NULL DEFAULT '0' AFTER `paypal`" ;
+		if ($objDatabase->Execute($query) === false) {
+			return _databaseError($query, $objDatabase->ErrorMsg());
+		}
+	}
+
+	if (!isset($arrColumns['COLOR'])) {
+		$query = "ALTER TABLE `".DBPREFIX."module_market` ADD `color` VARCHAR(50) NOT NULL DEFAULT '' AFTER `description`" ;
+		if ($objDatabase->Execute($query) === false) {
+			return _databaseError($query, $objDatabase->ErrorMsg());
+		}
+	}
+
     return true;
 }
 ?>

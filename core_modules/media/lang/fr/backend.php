@@ -69,6 +69,7 @@ $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Aperçu des modèles";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Nouveau modèle";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activer";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Variable dossier";
+$_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED'] = "Some special characters ";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Clés";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Contenu";

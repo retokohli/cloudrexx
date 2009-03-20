@@ -4,238 +4,214 @@ function _updateSettings()
     global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $arrSettings, $arrSettingsByName;
 
     $setVars = false;
+
     $arrSettings = array(
         3    => array(
-            'setname'   => 'dnsServer',
-            'setvalue'  => 'ns1.contrexxhosting.com',
-            'setmodule' => 1,
+            'setname'    => 'dnsServer',
+            'setvalue'    => 'ns1.contrexxhosting.com',
+            'setmodule'    => 1
         ),
         4    => array(
-            'setname'   => 'bannerStatus',
-            'setvalue'  => '0',
-            'setmodule' => 28,
+            'setname'    => 'bannerStatus',
+            'setvalue'    => '0',
+            'setmodule'    => 28
         ),
         5    => array(
-            'setname'   => 'spamKeywords',
-            'setvalue'  => 'sex, viagra',
-            'setmodule' => 1,
+            'setname'    => 'spamKeywords',
+            'setvalue'    => 'sex, viagra',
+            'setmodule'    => 1
         ),
         11    => array(
-            'setname'   => 'coreAdminName',
-            'setvalue'  => '',
-            'setmodule' => 1,
+            'setname'    => 'coreAdminName',
+            'setvalue'    => '',
+            'setmodule'    => 1
         ),
         18    => array(
-            'setname'   => 'corePagingLimit',
-            'setvalue'  => '30',
-            'setmodule' => 1,
+            'setname'    => 'corePagingLimit',
+            'setvalue'    => '30',
+            'setmodule'    => 1
         ),
         19    => array(
-            'setname'   => 'searchDescriptionLength',
-            'setvalue'  => '150',
-            'setmodule' => 5,
+            'setname'    => 'searchDescriptionLength',
+            'setvalue'    => '150',
+            'setmodule'    => 5
         ),
         23    => array(
-            'setname'   => 'coreIdsStatus',
-            'setvalue'  => 'off',
-            'setmodule' => 1,
+            'setname'    => 'coreIdsStatus',
+            'setvalue'    => 'off',
+            'setmodule'    => 1
         ),
         24    => array(
-            'setname'   => 'coreAdminEmail',
-            'setvalue'  => '',
-            'setmodule' => 1,
+            'setname'    => 'coreAdminEmail',
+            'setvalue'    => '',
+            'setmodule'    => 1
         ),
         29    => array(
-            'setname'   => 'contactFormEmail',
-            'setvalue'  => '',
-            'setmodule' => 6,
+            'setname'    => 'contactFormEmail',
+            'setvalue'    => '',
+            'setmodule'    => 6
         ),
         34    => array(
-            'setname'   => 'sessionLifeTime',
-            'setvalue'  => '3600',
-            'setmodule' => 1,
+            'setname'    => 'sessionLifeTime',
+            'setvalue'    => '3600',
+            'setmodule'    => 1
         ),
         35    => array(
-            'setname'   => 'lastAccessId',
-            'setvalue'  => '0',
-            'setmodule' => 1,
+            'setname'    => 'lastAccessId',
+            'setvalue'    => '0',
+            'setmodule'    => 1
         ),
         37    => array(
-            'setname'   => 'newsTeasersStatus',
-            'setvalue'  => '0',
-            'setmodule' => 8,
+            'setname'    => 'newsTeasersStatus',
+            'setvalue'    => '0',
+            'setmodule'    => 8
         ),
         39    => array(
-            'setname'   => 'feedNewsMLStatus',
-            'setvalue'  => '0',
-            'setmodule' => 22,
+            'setname'    => 'feedNewsMLStatus',
+            'setvalue'    => '0',
+            'setmodule'    => 22
         ),
         40    => array(
-            'setname'   => 'calendarheadlines',
-            'setvalue'  => '1',
-            'setmodule' => 21,
+            'setname'    => 'calendarheadlines',
+            'setvalue'    => '1',
+            'setmodule'    => 21
         ),
         41    => array(
-            'setname'   => 'calendarheadlinescount',
-            'setvalue'  => '5',
-            'setmodule' => 21,
+            'setname'    => 'calendarheadlinescount',
+            'setvalue'    => '5',
+            'setmodule'    => 21
         ),
         42    => array(
-            'setname'   => 'blockStatus',
-            'setvalue'  => '1',
-            'setmodule' => 7,
+            'setname'    => 'blockStatus',
+            'setvalue'    => '1',
+            'setmodule'    => 7
         ),
         43    => array(
-            'setname'   => 'contentHistoryStatus',
-            'setvalue'  => 'on',
-            'setmodule' => 1,
+            'setname'    => 'contentHistoryStatus',
+            'setvalue'    => 'on',
+            'setmodule'    => 1
         ),
         44    => array(
-            'setname'   => 'calendarheadlinescat',
-            'setvalue'  => '0',
-            'setmodule' => 21,
+            'setname'    => 'calendarheadlinescat',
+            'setvalue'    => '0',
+            'setmodule'    => 21
         ),
         45    => array(
-            'setname'   => 'calendardefaultcount',
-            'setvalue'  => '30',
-            'setmodule' => 21,
+            'setname'    => 'calendardefaultcount',
+            'setvalue'    => '30',
+            'setmodule'    => 21
         ),
         48    => array(
-            'setname'   => 'blockRandom',
-            'setvalue'  => '1',
-            'setmodule' => 7,
+            'setname'    => 'blockRandom',
+            'setvalue'    => '1',
+            'setmodule'    => 7
         ),
         49    => array(
-            'setname'   => 'directoryHomeContent',
-            'setvalue'  => '0',
-            'setmodule' => 12,
+            'setname'    => 'directoryHomeContent',
+            'setvalue'    => '0',
+            'setmodule'    => 12
         ),
         50    => array(
-            'setname'   => 'cacheEnabled',
-            'setvalue'  => 'off',
-            'setmodule' => 1,
+            'setname'    => 'cacheEnabled',
+            'setvalue'    => 'off',
+            'setmodule'    => 1
         ),
         51    => array(
-            'setname'   => 'coreGlobalPageTitle',
-            'setvalue'  => 'Contrexx Demo-Seite',
-            'setmodule' => 1,
+            'setname'    => 'coreGlobalPageTitle',
+            'setvalue'    => 'Contrexx Demo-Seite',
+            'setmodule'    => 1
         ),
         52    => array(
-            'setname'   => 'cacheExpiration',
-            'setvalue'  => '86400',
-            'setmodule' => 1,
+            'setname'    => 'cacheExpiration',
+            'setvalue'    => '86400',
+            'setmodule'    => 1
         ),
         53    => array(
-            'setname'   => 'domainUrl',
-            'setvalue'  => 'localhost',
-            'setmodule' => 1,
+            'setname'    => 'domainUrl',
+            'setvalue'    => 'localhost',
+            'setmodule'    => 1
         ),
         54    => array(
-            'setname'   => 'xmlSitemapStatus',
-            'setvalue'  => 'off',
-            'setmodule' => 1,
+            'setname'    => 'googleSitemapStatus',
+            'setvalue'    => 'off',
+            'setmodule'    => 1
         ),
         55    => array(
-            'setname'   => 'systemStatus',
-            'setvalue'  => 'on',
-            'setmodule' => 1,
+            'setname'    => 'systemStatus',
+            'setvalue'    => 'on',
+            'setmodule'    => 1
         ),
         56    => array(
-            'setname'   => 'searchVisibleContentOnly',
-            'setvalue'  => 'on',
-            'setmodule' => 1,
+            'setname'    => 'searchVisibleContentOnly',
+            'setvalue'    => 'on',
+            'setmodule'    => 1
         ),
         60    => array(
-            'setname'   => 'forumHomeContent',
-            'setvalue'  => '0',
-            'setmodule' => 20,
+            'setname'    => 'forumHomeContent',
+            'setvalue'    => '0',
+            'setmodule'    => 20
         ),
         61    => array(
-            'setname'   => 'aliasStatus',
-            'setvalue'  => '',
-            'setmodule' => 41,
+            'setname'    => 'aliasStatus',
+            'setvalue'    => '',
+            'setmodule'    => 41
         ),
         62    => array(
-            'setname'   => 'coreSmtpServer',
-            'setvalue'  => '0',
-            'setmodule' => 1,
+            'setname'    => 'coreSmtpServer',
+            'setvalue'    => '0',
+            'setmodule'    => 1
         ),
         63    => array(
-            'setname'   => 'languageDetection',
-            'setvalue'  => 'on',
-            'setmodule' => 1,
+            'setname'    => 'languageDetection',
+            'setvalue'    => 'on',
+            'setmodule'    => 1
         ),
         64    => array(
-            'setname'   => 'podcastHomeContent',
-            'setvalue'  => '0',
-            'setmodule' => 35,
+            'setname'    => 'podcastHomeContent',
+            'setvalue'    => '0',
+            'setmodule'    => 35
         ),
         65    => array(
-            'setname'   => 'googleMapsAPIKey',
-            'setvalue'  => '',
-            'setmodule' => 1,
+            'setname'    => 'googleMapsAPIKey',
+            'setvalue'    => '',
+            'setmodule'    => 1
         ),
         66    => array(
-            'setname'   => 'forumTagContent',
-            'setvalue'  => '0',
-            'setmodule' => 20,
+            'setname'    => 'forumTagContent',
+            'setvalue'    => '0',
+            'setmodule'    => 20
         ),
         67    => array(
-            'setname'   => 'useVirtualLanguagePath',
-            'setvalue'  => 'off',
-            'setmodule' => 1,
+            'setname'    => 'useVirtualLanguagePath',
+            'setvalue'    => 'off',
+            'setmodule'    => 1
         ),
         68    => array(
-            'setname'   => 'dataUseModule',
-            'setvalue'  => '1',
-            'setmodule' => 48,
+            'setname'    => 'dataUseModule',
+            'setvalue'    => '1',
+            'setmodule'    => 48
         ),
         69    => array(
-            'setname'   => 'frontendEditingStatus',
-            'setvalue'  => 'on',
-            'setmodule' => 1,
+            'setname'    => 'frontendEditingStatus',
+            'setvalue'    => 'on',
+            'setmodule'    => 1
         ),
+        72    => array(
+            'setname'    => 'useKnowledgePlaceholders',
+            'setvalue'    => '1',
+            'setmodule'    => 56
+        ),
+
+        useKnowledgePlaceholders
+
     );
 
-    $arrSettingsByName = array(
-        'dnsServer'                => 3,
-        'bannerStatus'             => 4,
-        'spamKeywords'             => 5,
-        'coreAdminName'            => 11,
-        'corePagingLimit'          => 18,
-        'searchDescriptionLength'  => 19,
-        'coreIdsStatus'            => 23,
-        'coreAdminEmail'           => 24,
-        'contactFormEmail'         => 29,
-        'sessionLifeTime'          => 34,
-        'lastAccessId'             => 35,
-        'newsTeasersStatus'        => 37,
-        'feedNewsMLStatus'         => 39,
-        'calendarheadlines'        => 40,
-        'calendarheadlinescount'   => 41,
-        'blockStatus'              => 42,
-        'contentHistoryStatus'     => 43,
-        'calendarheadlinescat'     => 44,
-        'calendardefaultcount'     => 45,
-        'blockRandom'              => 48,
-        'directoryHomeContent'     => 49,
-        'cacheEnabled'             => 50,
-        'coreGlobalPageTitle'      => 51,
-        'cacheExpiration'          => 52,
-        'domainUrl'                => 53,
-        'xmlSitemapStatus'         => 54,
-        'systemStatus'             => 55,
-        'searchVisibleContentOnly' => 56,
-        'forumHomeContent'         => 60,
-        'aliasStatus'              => 61,
-        'coreSmtpServer'           => 62,
-        'languageDetection'        => 63,
-        'podcastHomeContent'       => 64,
-        'googleMapsAPIKey'         => 65,
-        'forumTagContent'          => 66,
-    );
+    $arrSettingsByName = array();
+    foreach ($arrSettings as $setid => $data) {
+        $arrSettingsByName[$data['setname']] = $setid;
+    }
 
-    // change googleSitemapStatus to xmlSitemapStatus
+	// change googleSitemapStatus to xmlSitemapStatus
     $query = "SELECT 1 FROM `".DBPREFIX."settings` WHERE `setname`='googleSitemapStatus'";
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult) {
@@ -354,8 +330,8 @@ function _updateSettings()
     }
 
     $query = "
-        ALTER TABLE ".DBPREFIX."settings
-        CHANGE COLUMN setid setid integer(6) UNSIGNED NOT NULL auto_increment;
+    ALTER TABLE ".DBPREFIX."settings
+    CHANGE COLUMN setid setid integer(6) UNSIGNED NOT NULL auto_increment;
     ";
     if (!$objDatabase->Execute($query)) {
         return _databaseError($query, $objDatabase->ErrorMsg());
@@ -365,7 +341,7 @@ function _updateSettings()
 
 function _updateSettingsTable($setId, $arrSetting)
 {
-    global $objDatabase, $_ARRAYLANG, $arrSettings, $arrSettingsByName, $arrCurrentSettingsTable;
+    global $objDatabase, $arrSettings, $arrSettingsByName, $arrCurrentSettingsTable;
 
     if (!isset($arrCurrentSettingsTable)) {
         $arrCurrentSettingsTable = array();
@@ -383,8 +359,9 @@ function _updateSettingsTable($setId, $arrSetting)
                     $query = "INSERT INTO `".DBPREFIX."settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (".$setId.", '".$arrSetting['setname']."', '".$arrSetting['setvalue']."', '".$arrSetting['setmodule']."')";
                     if ($objDatabase->Execute($query) !== false) {
                         return true;
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
                     }
-                    return _databaseError($query, $objDatabase->ErrorMsg());
                 } else {
                     // option ID is already in use => update the option who uses the wrong ID to it's right ID
                     $setname = $objSettings->fields['setname'];
@@ -398,18 +375,22 @@ function _updateSettingsTable($setId, $arrSetting)
                                 unset($arrCurrentSettingsTable[$setname]);
                                 if (_updateSettingsTable($setId, $arrSetting)) {
                                     return true;
+                                } else {
+                                    return false;
                                 }
-                                return false;
+                            } else {
+                                return _databaseError($query, $objDatabase->ErrorMsg());
                             }
+                        } else {
                             return _databaseError($query, $objDatabase->ErrorMsg());
                         }
-                        return _databaseError($query, $objDatabase->ErrorMsg());
                     } else {
                         $arrCurrentSettingsTable[] = $setname;
                         if (_updateSettingsTable($arrSettingsByName[$setname], $arrSettings[$arrSettingsByName[$setname]]) && _updateSettingsTable($setId, $arrSetting)) {
                             return true;
+                        } else {
+                            return false;
                         }
-                        return false;
                     }
                 }
             } else {
@@ -441,18 +422,22 @@ function _updateSettingsTable($setId, $arrSetting)
                                 unset($arrCurrentSettingsTable[$setname]);
                                 if (_updateSettingsTable($setId, $arrSetting)) {
                                     return true;
+                                } else {
+                                    return false;
                                 }
-                                return false;
+                            } else {
+                                return _databaseError($query, $objDatabase->ErrorMsg());
                             }
+                        } else {
                             return _databaseError($query, $objDatabase->ErrorMsg());
                         }
-                        return _databaseError($query, $objDatabase->ErrorMsg());
                     } else {
                         $arrCurrentSettingsTable[] = $setname;
                         if (_updateSettingsTable($arrSettingsByName[$setname], $arrSettings[$arrSettingsByName[$setname]]) && _updateSettingsTable($setId, $arrSetting)) {
                             return true;
+                        } else {
+                            return false;
                         }
-                        return false;
                     }
                 }
             } else {

@@ -7,19 +7,21 @@
  * @subpackage  module_livecam
  */
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
-$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Archive Path";
+$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Archive path";
 $_ARRAYLANG['TXT_SAVE'] = "Save";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL To The Current Image";
-$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Thumbnail Path";
-$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Some Fields Are Empty!";
-$_ARRAYLANG['TXT_UPDATE_FAILED'] = "Update Failed";
-$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'] = "activate LightBox";
-$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "For LightBox to function, you need to put the following place holder in the header of the index.html file (Design & Layout): [[JAVASCRIPT_LIGHTBOX]]";
-$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "max. width of thumbnails (in pixels)";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "max. width of the current image (in pixels)";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL to the current image";
+$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Thumbnail path";
+$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Some of the fields are empty!";
+$_ARRAYLANG['TXT_UPDATE_FAILED'] = "Update failed";
+$_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX'] = "Activate Shadowbox";
+$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "Maximum thumbnail width (in pixels)";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "Maximum image width (in pixels)";
 $_ARRAYLANG['TXT_CAM'] = "Camera";
 $_ARRAYLANG['TXT_CAMS'] = "Cameras";
-$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Amount of cameras";
-$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "To the frontend page";
-$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "For every webcam, there needs to be a content page using the camera number as \"cmd\" on the page settings tab.";
+$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Number of cameras";
+$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "To frontend page";
+$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "For each camera, you need to create a content page, using the camera ID as \"cmd\" value.";
+$_ARRAYLANG['TXT_LIVECAM_SHOWFROM'] = "Show images from";
+$_ARRAYLANG['TXT_LIVECAM_SHOWTILL'] = "until";
+$_ARRAYLANG['TXT_LIVECAM_OCLOCK'] = "Time";
 ?>

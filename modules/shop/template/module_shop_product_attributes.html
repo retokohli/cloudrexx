@@ -4,7 +4,6 @@
 // Selected Product Attribute value IDs 
 attributeValueId = new Array();
 {SHOP_PRODUCT_ATTRIBUTE_JS_VARS}
-index = {SHOP_PRODUCT_ATTRIBUTE_MAX_ID};
 
 // Event handlers
 onChangeHandler = new Array();
@@ -112,9 +111,9 @@ function updateAttributeValueList(id)
       if (type > 3) {
         // Clear the value name for text and upload fields
         document.getElementById('attributeValue-'+valueId).value = '';
-        document.getElementById('attributeValue-'+valueId).disabled = 'disabled';
+        document.getElementById('attributeValue-'+valueId).disabled = true;
       } else {
-        document.getElementById('attributeValue-'+valueId).disabled = '';
+        document.getElementById('attributeValue-'+valueId).disabled = false;
       }
       value = document.getElementById('attributeValue-'+valueId).value;
       price = document.getElementById('attributePrice-'+valueId).value;
@@ -225,7 +224,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
     switch(strAct){
       case 'del':
         if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-          document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes&delProduct=1";
+          document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes";
           document.getElementById('shopSelectOptions').submit();
         }
         break;

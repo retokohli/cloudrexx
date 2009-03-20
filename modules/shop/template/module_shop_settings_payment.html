@@ -3,8 +3,8 @@
 <!-- //
 function deletePayment(pId)
 {
-    if(confirm('{TXT_CONFIRM_DELETE_PAYMENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=payment&paymentId="+pId);
+  if (confirm('{TXT_CONFIRM_DELETE_PAYMENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=payment&paymentId="+pId);
 }
 
 Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];
@@ -45,7 +45,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
           </select>
         </td>
     <td nowrap="nowrap">{SHOP_ZONE_SELECTION}</td>
-        <td nowrap="nowrap"><div align="center"><input type="checkbox" name="paymentActive[{SHOP_PAYMENT_ID}]" value="1"{SHOP_PAYMENT_STATUS} /></div></td>
+        <td nowrap="nowrap"><div align="center"><input type="checkbox" name="paymentActive[{SHOP_PAYMENT_ID}]" value="1" {SHOP_PAYMENT_STATUS} /></div></td>
         <td nowrap="nowrap"><div style="text-align:right"><a href="javascript:deletePayment('{SHOP_PAYMENT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
       </tr>
     <!-- END shopPayment -->

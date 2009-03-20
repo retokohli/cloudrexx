@@ -135,6 +135,10 @@ class Market extends marketLibrary
                 Permission::checkAccess(98, 'static');
                 $this->editEntry();
             break;
+            case 'copyEntry':
+                Permission::checkAccess(98, 'static');
+                $this->editEntry(true);
+            break;
             case 'entries':
                 Permission::checkAccess(98, 'static');
                 $this->entries();
@@ -444,6 +448,11 @@ class Market extends marketLibrary
 
         $this->_pageTitle = $_ARRAYLANG['TXT_ENTRIES'];
         $this->_objTpl->loadTemplateFile('module_market_entries.html',true,true);
+        if (isset($_POST['market_store_order'])) {
+            foreach ($_POST['entrySortNr'] as $sortEntryId => $sortNr) {
+                $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_market` SET `sort_id` = '.intval($sortNr).' WHERE `id` = '.intval($sortEntryId));
+            }
+        }
 
         if (!isset($_GET['catid'])) {
             $where     = '';
@@ -487,6 +496,7 @@ class Market extends marketLibrary
         $this->_objTpl->setVariable(array(
             'TXT_IMG_EDIT'                =>    $_CORELANG['TXT_EDIT'],
             'TXT_IMG_DEL'                =>    $_CORELANG['TXT_DELETE'],
+            'TXT_IMG_COPY'                =>    $_CORELANG['TXT_COPY'],
             'TXT_STATUS'                =>    $_CORELANG['TXT_STATUS'],
             'TXT_DATE'                    =>    $_CORELANG['TXT_DATE'],
             'TXT_TITLE'                    =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
@@ -527,6 +537,7 @@ class Market extends marketLibrary
                     'ENTRY_TITLE'            =>    $this->entries[$entryId]['title'],
                     'ENTRY_DATE'            =>    $date,
                     'ENTRY_ID'                =>    $entryId,
+                    'ENTRY_SORT_ORDER'          => $this->entries[$entryId]['sort_id'],
                     'ENTRY_DESCRIPTION'        =>    $this->entries[$entryId]['description'],
                     'ENTRY_TYPE'            =>    $type,
                     'ENTRY_ADDEDBY'            =>    $addedby,
@@ -586,6 +597,7 @@ class Market extends marketLibrary
             'TXT_NAME'                        =>    $_CORELANG['TXT_NAME'],
             'TXT_E-MAIL'                    =>    $_CORELANG['TXT_EMAIL'],
             'TXT_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
+			'TXT_MARKET_COLOR'				 =>		$_ARRAYLANG['TXT_MARKET_COLOR'],
             'TXT_DESCRIPTION'                =>    $_CORELANG['TXT_DESCRIPTION'],
             'TXT_SAVE'                        =>    $_CORELANG['TXT_SAVE'],
             'TXT_FIELDS_REQUIRED'            =>    $_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'],
@@ -617,7 +629,7 @@ class Market extends marketLibrary
             while (!$objResult->EOF) {
                 $this->_objTpl->setCurrentBlock('spez_fields');
 
-                ($i % 2)? $class = "row2" : $class = "row1";
+                ($i % 2)? $class = "row1" : $class = "row2";
                 $input = '<input type="text" name="spez_'.$objResult->fields['id'].'" style="width: 300px;" maxlength="100">';
 
                 // initialize variables
@@ -634,12 +646,12 @@ class Market extends marketLibrary
           }
 
         $this->_objTpl->setVariable(array(
-            'FORM_ACTION'            => "addEntry",
-            'CATEGORIES'            => $categories,
-            'ENTRY_ADDEDBY'            => htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ENTRY_USERDETAILS_ON'    => "checked",
-            'ENTRY_TYPE_OFFER'        => "checked",
-            'DAYS_ONLINE'            => $daysOnline
+            'FORM_ACTION'			=> "addEntry",
+            'CATEGORIES'			=> $categories,
+            'ENTRY_ADDEDBY'			=> htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+            'ENTRY_USERDETAILS_ON'	=> "checked",
+            'ENTRY_TYPE_OFFER'		=> "checked",
+            'DAYS_ONLINE'			=> $daysOnline
         ));
 
         if (isset($_POST['submitEntry'])) {
@@ -700,9 +712,9 @@ class Market extends marketLibrary
 
         if ($objResult !== false) {
             $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_STATUS_CHANGED'];
-           }else{
+       	}else{
            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-           }
+      	 }
     }
 
 
@@ -736,11 +748,11 @@ class Market extends marketLibrary
     * @global array
     * @global array
     */
-    function editEntry() {
+    function editEntry($copy = false) {
 
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'];
+        $this->_pageTitle = $copy ? $_ARRAYLANG['TXT_COPY_ADVERTISEMENT'] : $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'];
         $this->_objTpl->loadTemplateFile('module_market_entry.html',true,true);
 
         $this->_objTpl->setVariable(array(
@@ -748,6 +760,7 @@ class Market extends marketLibrary
             'TXT_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
             'TXT_NAME'                        =>    $_CORELANG['TXT_NAME'],
             'TXT_E-MAIL'                    =>    $_CORELANG['TXT_EMAIL'],
+			'TXT_MARKET_COLOR'				 =>		$_ARRAYLANG['TXT_MARKET_COLOR'],
             'TXT_DESCRIPTION'                =>    $_CORELANG['TXT_DESCRIPTION'],
             'TXT_SAVE'                        =>    $_CORELANG['TXT_SAVE'],
             'TXT_FIELDS_REQUIRED'            =>    $_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'],
@@ -767,13 +780,13 @@ class Market extends marketLibrary
             'TXT_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_MARKET_SHOW_IN_ADVERTISEMENT'],
             'TXT_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
             'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
-            'FORM_ACTION'                    =>    "editEntry",
+            'FORM_ACTION'                    =>    $copy ? "addEntry" : "editEntry",
             'TXT_DAYS'                        =>    $_ARRAYLANG['TXT_MARKET_DAYS'],
         ));
 
         if (isset($_REQUEST['id'])) {
             $entryId = $_REQUEST['id'];
-            $objResult = $objDatabase->Execute('SELECT type, title, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5  FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
+            $objResult = $objDatabase->Execute('SELECT type, title, color, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5  FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     //entry type
@@ -860,7 +873,7 @@ class Market extends marketLibrary
                     if ($objSpezFields !== false) {
                         $i = 0;
                         while (!$objSpezFields->EOF) {
-                            ($i % 2)? $class = "row2" : $class = "row1";
+                            ($i % 2)? $class = "row1" : $class = "row2";
                             $input = '<input type="text" name="spez_'.$objSpezFields->fields['id'].'" value="'.$objResult->fields[$objSpezFields->fields['name']].'" style="width: 300px;" maxlength="100">';
                             // initialize variables
                             $this->_objTpl->setVariable(array(
@@ -879,6 +892,7 @@ class Market extends marketLibrary
                         'ENTRY_TYPE_OFFER'            =>    $offer,
                         'ENTRY_TYPE_SEARCH'            =>    $search,
                         'ENTRY_TITLE'                =>    $objResult->fields['title'],
+                        'ENTRY_COLOR'                =>    $objResult->fields['color'],
                         'ENTRY_DESCRIPTION'            =>    $objResult->fields['description'],
                         'ENTRY_PICTURE'                =>    $picture,
                         'ENTRY_PICTURE_OLD'            =>    $objResult->fields['picture'],
@@ -903,6 +917,9 @@ class Market extends marketLibrary
         }
 
         if (isset($_POST['submitEntry'])) {
+            if ($copy) {
+                return $this->insertEntry(1);
+            }
             if ($_FILES['pic']['name'] != "") {
                 $picture = $this->uploadPicture();
 /* TODO: Never used
@@ -933,6 +950,7 @@ class Market extends marketLibrary
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET
                                     type='".contrexx_addslashes($_POST['type'])."',
                                       title='".contrexx_addslashes($_POST['title'])."',
+                                      color='".contrexx_addslashes($_POST['color'])."',
                                       description='".contrexx_addslashes($_POST['description'])."',
                                     premium='".contrexx_addslashes($_POST['premium'])."',
                                       picture='".$picture."',
@@ -1143,13 +1161,13 @@ class Market extends marketLibrary
             foreach ($_POST['setvalue'] as $id => $value) {
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='".contrexx_addslashes($value)."' WHERE id=".intval($id));
 
-                if ($id == 11) {
-                    if ($value == '0') {
-                        $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET mailto='admin' WHERE id='2'");
-                    } else {
-                        $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET mailto='advertiser' WHERE id='2'");
-                    }
-                }
+	            if ($id == 11) {
+	            	if ($value == '0') {
+	            		$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET mailto='admin' WHERE id='2'");
+	            	} else {
+	            		$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET mailto='advertiser' WHERE id='2'");
+	            	}
+	            }
             }
 
             if ($objResult !== false) {
@@ -1250,15 +1268,15 @@ class Market extends marketLibrary
 
         //get content
         $objResult = $objDatabase->Execute("SELECT title, content, mailto, mailcc FROM ".DBPREFIX."module_market_mail WHERE id = '2'");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $mailContent         = $objResult->fields['content'];
-                $mailTitle             = $objResult->fields['title'];
-                $mailTo             = $objResult->fields['mailto'];
-                $mailCC                = $objResult->fields['mailcc'];
-                $objResult->MoveNext();
-            }
-        }
+		if ($objResult !== false) {
+			while (!$objResult->EOF) {
+				$mailContent     	= $objResult->fields['content'];
+				$mailTitle         	= $objResult->fields['title'];
+				$mailTo         	= $objResult->fields['mailto'];
+				$mailCC        		= $objResult->fields['mailcc'];
+				$objResult->MoveNext();
+			}
+		}
 
         $mailTo == 'admin' ? $admin = 'checked' : $admin = '';
         $mailTo == 'advertiser' || $mailTo == '' ? $advertiser = 'checked' : $advertiser = '';
@@ -1285,20 +1303,20 @@ class Market extends marketLibrary
         ));
 
         $this->_objTpl->setVariable(array(
-            'MAIL_CONTENT'                 => $mailContent,
-            'MAIL_TITLE'                   => $mailTitle,
-            'MAIL_TO_ADVERTISER'          => $advertiser,
-            'MAIL_TO_ADMIN'              => $admin,
-            'MAIL_CC'                      => $mailCC
+            'MAIL_CONTENT' 				=> $mailContent,
+            'MAIL_TITLE'   				=> $mailTitle,
+            'MAIL_TO_ADVERTISER'      	=> $advertiser,
+            'MAIL_TO_ADMIN'      		=> $admin,
+            'MAIL_CC'      				=> $mailCC
         ));
 
         if (isset($_POST['submitSettings'])) {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='1', mailto='".$_POST['mailTo']."' WHERE id='2'");
 
             if ($_POST['mailTo'] == 'admin') {
-                $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='0' WHERE id='11'");
+            	$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='0' WHERE id='11'");
             } else {
-                $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='1' WHERE id='11'");
+            	$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='1' WHERE id='11'");
             }
 
             if ($objResult !== false) {

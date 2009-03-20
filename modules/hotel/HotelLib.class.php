@@ -15,19 +15,19 @@
 
 class HotelLib{
 
-    var $_objTpl;
+    public $_objTpl;
 
     /**
      * weekdays abbreviations (index = langid)
      *
      * @var array
      */
-    var $_weekdaysShort = array(    1 => array('So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'),
+    public $_weekdaysShort = array(    1 => array('So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'),
                                 2 => array('Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'),
                                 3 => array('Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa')
                             );
 
-    var $fieldNames = array();
+    public $fieldNames = array();
 
     /**
      * array of available languages
@@ -35,40 +35,40 @@ class HotelLib{
      * value     -> _ARRAYLANG language variablename
      * @var array
      */
-    var $languages = array();
+    public $languages = array();
 
     /**
      * framework file object
      *
      * @var object
      */
-    var $_objFile;
+    public $_objFile;
 
     /**
      * number of languages
      *
      * @var int
      */
-    var $langCount = 0;
+    public $langCount = 0;
 
     /**
      * holds the field ID of the last field found by HotelLib::_getFieldFromText()
      *
      * @var int
      */
-    var $_currFieldID;
+    public $_currFieldID;
 
     /**
      * relative path to standard image in image-fields
      *
      * @var str
      */
-    var $noImage = 'images/icons/.gif';
+    public $noImage = 'images/icons/.gif';
 
     /**
      * Array with the settings values
      */
-    var $arrSettings;
+    public $arrSettings;
 
 
     /**
@@ -76,7 +76,7 @@ class HotelLib{
      *
      * @var string (escaped)
      */
-    var $_lineBreak = "\r\n";
+    public $_lineBreak = "\r\n";
 
     /**
      * Array holding number of field per type
@@ -84,7 +84,7 @@ class HotelLib{
      *
      * @var array
      */
-    var $_fieldCount;
+    public $_fieldCount;
 
 
 
@@ -93,16 +93,8 @@ class HotelLib{
      *
      * @var array
      */
-    var $_hotelIDs = array();
+    public $_hotelIDs = array();
 
-
-    /**
-    * Constructor
-    */
-    function HotelLib()
-    {
-        $this->__construct();
-    }
 
     /**
     * PHP5 constructor
@@ -123,10 +115,8 @@ class HotelLib{
      * @param $count whether fieldtypes shall be count, if bigger than 0 (also specifies the frontend language)
      * @param $frontend if this value is true, then the contents of one language {@see $this->frontLang} will be fetched only
      */
-    function _getFieldNames($hotelID=0, $count=0, $frontend=false)
-    {
+    function _getFieldNames($hotelID = 0, $count = 0, $frontend = false){
         global $objDatabase;
-
         $objRS = $objDatabase->Execute("    SELECT id, field_id, lang_id, name
                                             FROM ".DBPREFIX."module_hotel_fieldname");
         $allNames = array();
@@ -148,14 +138,14 @@ class HotelLib{
         if($objRS !== false){
             while(!$objRS->EOF){
                 $names = array();
-                foreach($allNames as $key => $name) {
+                foreach($allNames as $name) {
                     if ($name['field_id'] == $objRS->fields['id']) {
                         $names[$name['lang_id']] = $name['name'];
                     }
                 }
 
                 if(!$frontend){
-                    foreach ($this->languages as $langID => $language) {
+                    foreach (array_keys($this->languages) as $langID) {
                         $query = "    SELECT  id, hotel_id, lang_id, field_id, fieldvalue, active
                                     FROM ".DBPREFIX."module_hotel_content
                                     WHERE field_id = ".$objRS->fields['id']."
@@ -167,10 +157,11 @@ class HotelLib{
                         }
                     }
                 }else{
+                    $langID = $this->frontLang;
                     $query = "    SELECT  id, hotel_id, lang_id, field_id, fieldvalue, active
                                 FROM ".DBPREFIX."module_hotel_content
                                 WHERE field_id = ".$objRS->fields['id']."
-                                AND lang_id = ".FRONTEND_LANG_ID;
+                                AND lang_id = ".$langID;
                     $query .= ($hotelID > 0) ? " AND hotel_id = $hotelID " : '';
                     $objRSContent = $objDatabase->SelectLimit($query, 1);
                     if($objRSContent !== false){
@@ -179,20 +170,23 @@ class HotelLib{
                 }
 
                 $content['active'] = $objRSContent->fields['active'];
+
                 $img = ($hotelID > 0) ? $this->_getImageInfo($objRS->fields['id'], $hotelID) : array('uri' => '') ;
-                if($count > 0 && $content['active'] == 1 && trim($names[$count]) != '' && !in_array($names[$count], $this->_usedFields)){
+                if($count > 0 && $content['active'] == 1 && trim($names[$count]) != '' && !in_array($names[$count] ,$this->_usedFields)){
                     switch($objRS->fields['type']){
-                        case 'text':
+                           case 'text':
                         case 'textarea':
                         case 'digits_only':
                         case 'price':
                             $this->_fieldCount['text']++;
-                            break;
+                        break;
+
                         case 'img':
                             $this->_fieldCount['img']++;
-                            break;
+                        break;
+
                         default:
-                            break;
+                        break;
                     }
                 }
                 $this->fieldNames[$objRS->fields['id']] = array(
@@ -208,8 +202,10 @@ class HotelLib{
         }
     }
 
-    function _getImageInfo($fieldID, $hotelID){
+    function _getImageInfo($fieldID, $hotelID)
+    {
         global $objDatabase;
+
         $query = "    SELECT id, field_id, uri
                     FROM ".DBPREFIX."module_hotel_image
                     WHERE field_id = $fieldID
@@ -219,6 +215,7 @@ class HotelLib{
         if($objRS !== false){
             return $objRS->fields;
         }
+        return false;
     }
 
 
@@ -230,7 +227,8 @@ class HotelLib{
      * @return unknown
      */
 
-    function _getLanguages(){
+    function _getLanguages()
+    {
         global $objDatabase;
         $query = "    SELECT id, language
                         FROM ".DBPREFIX."module_hotel_languages";
@@ -257,9 +255,9 @@ class HotelLib{
     function _getFieldFromText($str, $type = 'content'){
         array_walk($this->fieldNames, array($this, '_searchField'), $str);
         if($type == 'content'){
-            return $this->fieldNames[$this->_currFieldID]['content'][FRONTEND_LANG_ID];
+            return $this->fieldNames[$this->_currFieldID]['content'][$this->frontLang];
         }else if ($type == 'names'){
-            return $this->fieldNames[$this->_currFieldID]['names'][FRONTEND_LANG_ID];
+            return $this->fieldNames[$this->_currFieldID]['names'][$this->frontLang];
         }else if ($type == 'img'){
             return $this->fieldNames[$this->_currFieldID]['img'];
         }else if ($type == 'active'){
@@ -311,35 +309,30 @@ class HotelLib{
      * @param  string domain
      * @return string domain2
      */
-
-    function _getDomain($domain){
+    function _getDomain($domain)
+    {
         $dparts = explode(".", $domain);
-        switch(count($dparts)){
-            case 1:
-                return false;
-            break;
+        switch (count($dparts)) {
             case 2:
                 return 'www.'.$domain;
-            break;
+                break;
             case 3:
                 if($dparts[0] == 'www'){
                     return substr($domain, 4);
                 }
-            break;
-            default:
-                return false;
-            break;
+                break;
         }
+        return false;
     }
+
 
     /**
      * helper callback
-     *
      * @param string     $item
-     * @param int        $key
      */
-    function arrStrToLower(&$item, $key) {
-       $item = strtolower($item);
+    function arrStrToLower(&$item)
+    {
+        $item = strtolower($item);
     }
 
     /**
@@ -377,9 +370,10 @@ class HotelLib{
 
     }
 
-    function getHotel_tableID($ID){
+    function getHotel_tableID($ID)
+    {
         global $objDatabase;
-        $ret = array();
+
         $query = "  SELECT `field_id`
                     FROM `".DBPREFIX."module_hotel_fieldname`
                     WHERE `name` = 'hotel_id'";
@@ -410,6 +404,5 @@ class HotelLib{
         return '<td>'.$str.'</td>';
     }
 }
-
 
 ?>

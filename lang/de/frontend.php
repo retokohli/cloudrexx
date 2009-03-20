@@ -87,7 +87,7 @@ $_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Die Datenbank steht nicht zur Ver
 $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Es kann keine Verbindung zum Datenbankserver hergestellt werden!";
 $_ARRAYLANG['TXT_DELETED'] = "Gelöscht";
 $_ARRAYLANG['TXT_PRIVACY_STATEMENT'] = "Datenschutz";
-$_ARRAYLANG['TXT_DOWNLOADS'] = "Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'] = "Login";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'] = "Benutzername";
@@ -178,8 +178,13 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "Der gewählte Benutzername wi
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
-
-// Added
+$_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partner";
+$_ARRAYLANG['TXT_U2U_MODULE'] = "User to User Nachrichten";
+$_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Neuen Eintrag hinzufügen";
 $_ARRAYLANG['TXT_CORE_TEXT_MISSING'] = "*Text fehlt*";
-
+$_ARRAYLANG['TXT_JOBS_MODULE_DESCRIPTION'] = "Stellenangebote zum Verwalten von Jobs";
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
+$_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
+$_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
+$_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 ?>

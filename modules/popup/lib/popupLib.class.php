@@ -356,7 +356,7 @@ class popupLibrary
     */
     function _setBlock($id, &$code)
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
 
         $objBlock = $objDatabase->SelectLimit("    SELECT     tblBlock.content
                                                 FROM     ".DBPREFIX."module_block_blocks AS tblBlock
@@ -380,7 +380,7 @@ class popupLibrary
     */
     function _setBlockGlobal(&$code, $pageId)
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
 
         $objResult = $objDatabase->Execute("SELECT    value
                                             FROM    ".DBPREFIX."module_block_settings
@@ -408,7 +408,7 @@ class popupLibrary
         $objBlock = $objDatabase->Execute("    SELECT     tblBlock.id, tblBlock.content
                                                 FROM     ".DBPREFIX."module_block_blocks AS tblBlock,
                                                         ".$tables."
-                                                WHERE     (tblLang.lang_id=".FRONTEND_LANG_ID." AND tblLang.block_id=tblBlock.id)
+                                                WHERE     (tblLang.lang_id=".$_LANGID." AND tblLang.block_id=tblBlock.id)
                                                         ".$where."
                                                 AND     tblBlock.active=1
                                                 GROUP     BY tblBlock.id
@@ -436,7 +436,7 @@ class popupLibrary
     */
     function _setBlockRandom(&$code)
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
 
         //Get Block Name and Status
         $objBlockName = $objDatabase->Execute("SELECT tblBlock.id FROM ".DBPREFIX."module_block_blocks AS tblBlock WHERE tblBlock.active=1 AND tblBlock.random=1");

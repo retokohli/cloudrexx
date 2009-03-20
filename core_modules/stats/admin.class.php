@@ -34,21 +34,23 @@ require_once ASCMS_CORE_MODULE_PATH . '/stats/lib/statsLib.class.php';
  */
 class stats extends statsLibrary
 {
+
     public $pageTitle;
     public $strErrMessage = '';
     public $strOkMessage = '';
     public $_objTpl;
 
     public $arrColourDefinitions = array(
-        '1'        => 'TXT_MONOCHROME',
-        '2'        => 'TXT_CGA',
-        '4'        => 'TXT_VGA',
-        '8'        => 'TXT_SVGA',
-        '15'    => 'TXT_HIGH_COLOR',
-        '16'    => 'TXT_HIGH_COLOR',
-        '24'    => 'TXT_TRUE_COLOR',
-        '32'    => 'TXT_TRUE_COLOR_WITH_ALPHA_CHANNEL'
+         '1' => 'TXT_MONOCHROME',
+         '2' => 'TXT_CGA',
+         '4' => 'TXT_VGA',
+         '8' => 'TXT_SVGA',
+        '15' => 'TXT_HIGH_COLOR',
+        '16' => 'TXT_HIGH_COLOR',
+        '24' => 'TXT_TRUE_COLOR',
+        '32'   => 'TXT_TRUE_COLOR_WITH_ALPHA_CHANNEL',
     );
+
 
     /**
     * constructor
@@ -62,6 +64,7 @@ class stats extends statsLibrary
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/stats/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=stats&amp;stat=visitorDetails'>".$_ARRAYLANG['TXT_VISITOR_DETAILS']."</a>
                                                 <a href='index.php?cmd=stats&amp;stat=requests'>".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."</a>
                                                 <a href='index.php?cmd=stats&amp;stat=referer'>".$_ARRAYLANG['TXT_REFERER']."</a>
@@ -70,58 +73,67 @@ class stats extends statsLibrary
                                                 <a href='index.php?cmd=stats&amp;stat=clients'>".$_ARRAYLANG['TXT_USER_INFORMATION']."</a>
                                                 <a href='index.php?cmd=stats&amp;stat=search'>".$_ARRAYLANG['TXT_SEARCH_TERMS']."</a>
                                                 <a href='index.php?cmd=stats&amp;stat=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+
         $this->firstDate = time();
         $this->_initConfiguration();
     }
 
 
     /**
-    * Get content
-    *
     * Get the content of the requested page
-    *
     * @access    public
     * @global    HTML_Template_Sigma
     * @see    _showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
     * @return    mixed    Template content
     */
-    function getContent()
-    {
+    function getContent(){
         global $objTemplate;
 
         $this->_optimizeTables();
+
         if(!isset($_GET['stat'])){
             $_GET['stat'] = "";
         }
+
         switch ($_GET['stat']){
             case 'visitorDetails':
                 $this->_showVisitorDetails();
                 break;
+
             case 'requests': // show request stats
                 $this->_showRequests();
                 break;
+
             case 'referer':
                 $this->_showReferer();
                 break;
+
             case 'mvp': // most viewed pages
                 $this->_showMostViewedPages();
                 break;
+
             case 'spiders':
                 $this->_showSpiders();
                 break;
+
             case 'clients': // show client stats
                 $this->_showClients();
                 break;
+
             case 'search': // show search term stats
                 $this->_showSearchTerms();
                 break;
+
             case 'settings':
                 Permission::checkAccess(40, 'static');
                 $this->_showSettings();
                 break;
+
             default: // show overview
                 $this->_showVisitorDetails();
+                break;
         }
+
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'                => $this->pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
@@ -130,11 +142,8 @@ class stats extends statsLibrary
         ));
     }
 
-
-    function _optimizeTables()
-    {
+    function _optimizeTables() {
         global $objDatabase;
-
         $query = "OPTIMIZE TABLE `".DBPREFIX."stats_browser`,
                                  `".DBPREFIX."stats_colourdepth`,
                                  `".DBPREFIX."stats_config`,
@@ -154,14 +163,14 @@ class stats extends statsLibrary
         $objDatabase->Execute($query);
     }
 
-
-    function _showVisitorDetails()
-    {
+    function _showVisitorDetails() {
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_stats_visitor_details.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_VISITOR_DETAILS'];
+
         $this->_initVisitorDetails();
+
         // set language variables
         $this->_objTpl->setVariable(array(
             'TXT_VISITOR_DETAILS'        => $_ARRAYLANG['TXT_VISITOR_DETAILS'],
@@ -173,6 +182,7 @@ class stats extends statsLibrary
             'TXT_PROXY_IP'                => $_ARRAYLANG['TXT_PROXY_IP'],
             'TXT_PROXY_HOSTNAME'        => $_ARRAYLANG['TXT_PROXY_HOSTNAME']
         ));
+
         // set client details
         if (count($this->arrVisitorsDetails)>0) {
             $rowClass = 1;
@@ -200,21 +210,20 @@ class stats extends statsLibrary
         }
     }
 
-
     /**
     * Show requests
     *
     * Show the request statistics
+    *
     * @access    private
     * @global    array
     * @see    _showRequestsToday(), _showRequestsDays(), _showRequestsMonths(), _showRequestsYears(), _showRequestsToday()
     */
-    function _showRequests()
-    {
+    function _showRequests(){
         global $_ARRAYLANG;
-
         $this->_objTpl->loadTemplateFile('module_stats_requests.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS'];
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_TODAY'                    => $_ARRAYLANG['TXT_TODAY'],
             'TXT_DAILY_STATISTICS'        => $_ARRAYLANG['TXT_DAILY_STATISTICS'],
@@ -230,19 +239,24 @@ class stats extends statsLibrary
             case 'today':
                 $this->_showRequestsToday();
                 break;
+
             case 'days':
                 $this->_showRequestsDays();
                 break;
+
             case 'months':
                 $this->_showRequestsMonths();
                 break;
+
             case 'years':
                 $this->_showRequestsYears();
                 break;
+
             default:
                 $this->_showRequestsToday();
                 break;
         }
+
         $this->_objTpl->parse('requests_block');
     }
 
@@ -250,6 +264,7 @@ class stats extends statsLibrary
     * Show requests today
     *
     * Show the page requests and visitors of today
+    *
     * @access    private
     * @see    _initStatisticsToday()
     * @global    array
@@ -262,10 +277,12 @@ class stats extends statsLibrary
         // set variables
         $visitors = 0;
         $requests = 0;
-        $rowClass = 0;
+
         $this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_today.html');
+
         // initialize the statistics
         $this->_initStatisticsToday();
+
         // set language variables
         $this->_objTpl->setVariable(array(
             'TXT_DETAILS'                => $_ARRAYLANG['TXT_DETAILS'],
@@ -274,14 +291,17 @@ class stats extends statsLibrary
             'TXT_PAGE_VIEWS'            => $_ARRAYLANG['TXT_PAGE_VIEWS'],
             'TXT_VIEW_DETAILS'            => $_ARRAYLANG['TXT_VIEW_DETAILS']
         ));
+
         // set statistic details
         $rowClass = 1;
+
         $currentHour = date('H');
         $arrRange = array();
         if ($currentHour < 23) {
             $arrRange = range($currentHour+1, 23);
         }
         $arrRange = array_merge($arrRange, range(0, $currentHour));
+
         foreach ($arrRange as $hour) {
             $pHour = str_pad($hour, 2, 0, STR_PAD_LEFT);
             if (isset($this->arrRequests[$pHour])) {
@@ -298,8 +318,10 @@ class stats extends statsLibrary
                 'STATS_REQUESTS_PAGE_VIEWS'    => empty($requests) ? 0 : $requests
             ));
             $this->_objTpl->parse('stats_requests_today');
+
             $rowClass++;
         }
+
         // set total statistic details
         $this->_objTpl->setVariable(array(
             'STATS_REQUESTS_ROW_CLASS'    => $rowClass%2 == 1 ? "row2" : "row1",
@@ -308,6 +330,7 @@ class stats extends statsLibrary
             'STATS_REQUESTS_PAGE_VIEWS'    => '<br /><b>'.$this->totalRequests.'</b>'
         ));
         $this->_objTpl->parse('stats_requests_today');
+
         // set statistic graph
         if (count($this->arrRequests)>0) {
             $this->_objTpl->setVariable(array(
@@ -318,14 +341,15 @@ class stats extends statsLibrary
                 'STATS_REQUESTS_GRAPH' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
             ));
         }
+
         $this->_objTpl->parse('requests_block');
     }
-
 
     /**
     * Show requests days
     *
     * Show the page requests and visitors of the days
+    *
     * @access    private
     * @see    _initStatisticsDays()
     * @global    array
@@ -338,10 +362,12 @@ class stats extends statsLibrary
         // set variables
         $visitors = 0;
         $requests = 0;
-        $rowClass = 0;
+
         $this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_days.html');
+
         // initialize the statistics
         $this->_initStatisticsDays();
+
         // set language variables
         $this->_objTpl->setVariable(array(
             'TXT_DETAILS'                => $_ARRAYLANG['TXT_DETAILS'],
@@ -351,22 +377,20 @@ class stats extends statsLibrary
             'TXT_PAGE_VIEWS'            => $_ARRAYLANG['TXT_PAGE_VIEWS'],
             'TXT_VIEW_DETAILS'            => $_ARRAYLANG['TXT_VIEW_DETAILS']
         ));
+
         // set statistic details
         $rowClass = 1;
         $arrMonths = explode(',',$_ARRAYLANG['TXT_MONTH_ARRAY']);
         $arrDayNames = explode(',',$_ARRAYLANG['TXT_DAY_ARRAY']);
         $arrRange = array();
         if (date('d') < date('t')) {
-            $previousMonth = (date('m') == 1 ? 12 : date('m')-1);
-            $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y'));
-            $daysOfPreviousMonth = date('t', mktime(0, 0, 0, $previousMonth, 1, $previousYear));
-            $arrRange[$previousMonth] = range(
-                (date('d') + 1 > $daysOfPreviousMonth
-                    ? $daysOfPreviousMonth : date('d') + 1
-                ),
+            $arrRange[$previousMonth = (date('m') == 1 ? 12 : date('m')-1)] = range(
+                date('d') + 1 > ($daysOfPreviousMonth = date('t', mktime(0,0,0,$previousMonth,1,$previousYear,$previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))))
+                    ?    $daysOfPreviousMonth
+                    :    date('d') + 1,
                 $daysOfPreviousMonth
             );
-                    }
+        }
         $arrRange[date('m')] = range(1, date('d'));
 
         foreach ($arrRange as $month => $arrDays) {
@@ -378,18 +402,22 @@ class stats extends statsLibrary
                     $visitors = 0;
                     $requests = 0;
                 }
+
                 $weekday = $arrDayNames[date('w',mktime(0,0,0,$month,$day,date('Y')- (date('m') == 1 && $month < date('m') ? 1 : 0)))];
                 if (date('w',mktime(0,0,0,$month,$day,$month < date('m') ? $previousYear : date('Y'))) == 0) {
                     $weekday = "<span style=\"color: #ff0000;\">".$weekday."</span>";
                 }
+
                 $this->_objTpl->setVariable(array(
-                    'STATS_REQUESTS_ROW_CLASS'    => (++$rowClass % 2 ? "row2" : "row1"),
+                    'STATS_REQUESTS_ROW_CLASS'    => $rowClass%2 == 1 ? "row2" : "row1",
                     'STATS_REQUESTS_WEEKDAY'    => $weekday,
                     'STATS_REQUESTS_DATE'        => $day.'.&nbsp;'.$arrMonths[$month-1],
                     'STATS_REQUESTS_VISITORS'    => empty($visitors) ? 0 : $visitors,
                     'STATS_REQUESTS_PAGE_VIEWS'    => empty($requests) ? 0 : $requests
                 ));
                 $this->_objTpl->parse('stats_requests_days');
+
+                $rowClass++;
             }
         }
 
@@ -435,7 +463,6 @@ class stats extends statsLibrary
         // set variables
         $visitors = 0;
         $requests = 0;
-        $rowClass = 0;
 
         $this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_months.html');
 
@@ -471,12 +498,14 @@ class stats extends statsLibrary
                     $requests = 0;
                 }
                 $this->_objTpl->setVariable(array(
-                    'STATS_REQUESTS_ROW_CLASS'    => (++$rowClass % 2 ? "row2" : "row1"),
+                    'STATS_REQUESTS_ROW_CLASS'    => $rowClass%2 == 1 ? "row2" : "row1",
                     'STATS_REQUESTS_TIME'        => $arrMonthNames[$month-1].' '.date('Y', mktime(0,0,0,1,1,$year)),
                     'STATS_REQUESTS_VISITORS'    => empty($visitors) ? 0 : $visitors,
                     'STATS_REQUESTS_PAGE_VIEWS'    => empty($requests) ? 0 : $requests
                 ));
                 $this->_objTpl->parse('stats_requests_months');
+
+                $rowClass++;
             }
         }
 
@@ -522,8 +551,10 @@ class stats extends statsLibrary
         $requests = 0;
 
         $this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_years.html');
+
         // initialize the statistics
         $this->_initStatisticsYears();
+
         // set language variables
         $this->_objTpl->setVariable(array(
             'TXT_DETAILS'                => $_ARRAYLANG['TXT_DETAILS'],
@@ -534,7 +565,7 @@ class stats extends statsLibrary
         ));
 
         // set statistic details
-        $rowClass = 0;
+        $rowClass = 1;
         if (count($this->arrRequests)>0) {
             for ($year=key($this->arrRequests);$year<=date('Y');$year++) {
                 if (isset($this->arrRequests[$year])) {
@@ -545,12 +576,14 @@ class stats extends statsLibrary
                     $requests = 0;
                 }
                 $this->_objTpl->setVariable(array(
-                    'STATS_REQUESTS_ROW_CLASS'    => (++$rowClass % 2 ? "row2" : "row1"),
+                    'STATS_REQUESTS_ROW_CLASS'    => $rowClass%2 == 1 ? "row2" : "row1",
                     'STATS_REQUESTS_TIME'        => $year,
                     'STATS_REQUESTS_VISITORS'    => empty($visitors) ? 0 : $visitors,
                     'STATS_REQUESTS_PAGE_VIEWS'    => empty($requests) ? 0 : $requests
                 ));
                 $this->_objTpl->parse('stats_requests_years');
+
+                $rowClass++;
             }
 
             // set total statistic details
@@ -1034,28 +1067,24 @@ class stats extends statsLibrary
         }
     }
 
-
     /**
     * start element handler of the xml country parser
-    *
     * @access    private
+    * @todo     Remove unused argument $parser
     */
-    function _xmlCountryStartTag($parser, $name, $attrs)
-    {
-        if ($name == "COUNTRY") {
+    function _xmlCountryStartTag($parser, $name, $attrs){
+        if($name == "COUNTRY"){
             $this->arrCountryNames[$attrs['CODE']] = $attrs['NAME'];
         }
     }
 
-
     /**
     * end element handler of the xml country parser
-    *
-    * @access    private
+    * @access   private
+    * @todo     Remove unused argument $parser
     */
     function _xmlCountryEndTag($parser, $name){
     }
-
 
     /**
     * Show settings
@@ -1066,8 +1095,7 @@ class stats extends statsLibrary
     * @global    array
     * @see    _saveSettings();
     */
-    function _showSettings()
-    {
+    function _showSettings() {
         global $_ARRAYLANG;
 
         if (isset($_POST['save_stats_settings']) && !empty($_POST['save_stats_settings'])) {
@@ -1076,7 +1104,9 @@ class stats extends statsLibrary
         if (isset($_POST['delete_statistics']) && !empty($_POST['delete_statistics'])) {
             $this->strOkMessage .= $this->_deleteStatistics();
         }
+
         $this->_objTpl->loadTemplateFile('module_stats_settings.html',true,true);
+
         // set language variables
         $this->_objTpl->setVariable(array(
             'TXT_SETTINGS'                    => $_ARRAYLANG['TXT_SETTINGS'],
@@ -1097,11 +1127,11 @@ class stats extends statsLibrary
             'TXT_ONLINE_TIMEOUT'            => $_ARRAYLANG['TXT_ONLINE_TIMEOUT'],
             'TXT_ONLINE_TIMEOUT_INTERVAL'    => $_ARRAYLANG['TXT_ONLINE_TIMEOUT_INTERVAL'],
             'TXT_RELOAD_BLOCK_TIME'            => $_ARRAYLANG['TXT_RELOAD_BLOCK_TIME'],
-            'TXT_SHOW_LIMIT'                => $_ARRAYLANG['TXT_SHOW_LIMIT'],
-            'TXT_SHOW_LIMIT_VISITOR_DETAILS'    => $_ARRAYLANG['TXT_SHOW_LIMIT_VISITOR_DETAILS'],
-            'TXT_STORE'                        => $_ARRAYLANG['TXT_STORE'],
-            'TXT_SECONDS'                    => $_ARRAYLANG['TXT_SECONDS'],
-            'TXT_RESET_STATISTIC'                => $_ARRAYLANG['TXT_RESET_STATISTIC'],
+             'TXT_SHOW_LIMIT'                => $_ARRAYLANG['TXT_SHOW_LIMIT'],
+             'TXT_SHOW_LIMIT_VISITOR_DETAILS'    => $_ARRAYLANG['TXT_SHOW_LIMIT_VISITOR_DETAILS'],
+             'TXT_STORE'                        => $_ARRAYLANG['TXT_STORE'],
+             'TXT_SECONDS'                    => $_ARRAYLANG['TXT_SECONDS'],
+             'TXT_RESET_STATISTIC'                => $_ARRAYLANG['TXT_RESET_STATISTIC'],
             'TXT_SELECT_STATISTICS_TO_RESET'    => $_ARRAYLANG['TXT_SELECT_STATISTICS_TO_RESET'],
             'TXT_VISITORS_AND_PAGE_VIEWS'        => $_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS'],
             'TXT_VISITOR_DETAIL_FROM_TODAY'        => $_ARRAYLANG['TXT_VISITOR_DETAIL_FROM_TODAY'],
@@ -1111,6 +1141,7 @@ class stats extends statsLibrary
             'TXT_SELECT_ALL'                    => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_REMOVE_SELECTION'                => $_ARRAYLANG['TXT_REMOVE_SELECTION']
         ));
+
         $this->_objTpl->setVariable(array(
             'STATS_SETTINGS_MAKE_STATISTICS'    => $this->arrConfig['make_statistics']['status'] ? "checked=\"checked\"" : "",
             'STATS_SETTINGS_STATUS'                => $this->arrConfig['make_statistics']['status'] ? "block" : "none",
@@ -1136,7 +1167,6 @@ class stats extends statsLibrary
             'STATS_SETTINGS_PAGING_LIMIT_VISITOR_DETAILS'    => $this->arrConfig['paging_limit_visitor_details']['value'],
         ));
     }
-
 }
 
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * News
  *
@@ -29,12 +28,23 @@ require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
  * @package     contrexx
  * @subpackage  core_module_news
  */
-class news extends newsLibrary
-{
-    public $newsTitle;
-    public $arrSettings = array();
-    public $_objTpl;
-    public $_submitMessage;
+class news extends newsLibrary {
+    var $newsTitle;
+    var $langId;
+    var $arrSettings = array();
+    var $_objTpl;
+    var $_submitMessage;
+
+    /**
+    * Constructor
+    *
+    * @param  string
+    * @access public
+    */
+    function news($pageContent)
+    {
+        $this->__construct($pageContent);
+    }
 
     /**
      * PHP5 constructor
@@ -44,9 +54,12 @@ class news extends newsLibrary
      */
     function __construct($pageContent)
     {
+        global $_LANGID;
         $this->getSettings();
         $this->pageContent = $pageContent;
-        $this->_objTpl = new HTML_Template_Sigma();
+        $this->langId = $_LANGID;
+
+        $this->_objTpl = &new HTML_Template_Sigma();
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -90,7 +103,7 @@ class news extends newsLibrary
     */
     function getDetails()
     {
-        global $objDatabase, $_ARRAYLANG, $_PATHCONFIG;
+        global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
         $newsid = intval($_GET['newsid']);
@@ -107,13 +120,20 @@ class news extends newsLibrary
                                                             news.changelog          AS changelog,
                                                             news.title              AS title,
                                                             news.teaser_image_path  AS newsimage,
-                                                            news.teaser_text        AS teasertext
+                                                            news.teaser_text        AS teasertext,
+															cat.name				AS catname
                                                     FROM    '.DBPREFIX.'module_news AS news
+			              							INNER JOIN '.DBPREFIX.'module_news_categories AS cat ON cat.catid = news.catid
                                                     WHERE   news.status = 1 AND
                                                             news.id = '.$newsid.' AND
-                                                            news.lang ='.FRONTEND_LANG_ID.' AND
-                                                            (news.startdate <= CURDATE() OR news.startdate="0000-00-00") AND
-                                                            (news.enddate >= CURDATE() OR news.enddate="0000-00-00")'
+                                                            news.lang ='.$this->langId.' AND
+                                                            (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
+                                                            (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")'
+                                                           .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                                                ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                                                    " AND frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
+                                                                    :   " AND frontend_access_id=0 ")
+                                                                :   '')
                                                     , 1);
 
             if ($objResult !== false) {
@@ -173,7 +193,8 @@ class news extends newsLibrary
                        'NEWS_SOURCE'        => $newsSource,
                        'NEWS_URL'           => $newsUrl,
                        'NEWS_AUTHOR'        => $author,
-                       'NEWS_IMAGE'         => (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />'
+                       'NEWS_IMAGE'         => (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />',
+					   'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
 
                     $objResult->MoveNext();
@@ -196,9 +217,8 @@ class news extends newsLibrary
     * @global    array
     * @return    string    parsed content
     */
-    function getHeadlines()
-    {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG, $_PATHCONFIG;
+    function getHeadlines() {
+        global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $selected   = '';
         $newsfilter = '';
@@ -234,7 +254,7 @@ class news extends newsLibrary
 
         $catMenu    =  '<select onchange="this.form.submit()" name="category">'."\n";
         $catMenu    .= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_CATEGORY'].'</option>'."\n";
-        $catMenu    .= $this->getCategoryMenu(FRONTEND_LANG_ID, $selected)."\n";
+        $catMenu    .= $this->getCategoryMenu($this->langId, $selected)."\n";
         $catMenu    .= '</select>'."\n";
 
         $this->_objTpl->setVariable(array(
@@ -242,26 +262,34 @@ class news extends newsLibrary
             'TXT_PERFORM'           => $_ARRAYLANG['TXT_PERFORM'],
             'TXT_CATEGORY'          => $_ARRAYLANG['TXT_CATEGORY'],
             'TXT_DATE'              => $_ARRAYLANG['TXT_DATE'],
-            'TXT_TITLE'                => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE']
+            'TXT_TITLE'             => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_NEWS_MESSAGE']
         ));
 
         $query = '  SELECT      n.id                AS newsid,
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
                                 n.title             AS newstitle,
+                                n.text              AS newscontent,
                                 n.teaser_image_path AS newsimage,
+								n.teaser_image_thumbnail_path AS newsimagethumbnail,
                                 n.redirect          AS newsredirect,
+                                n.teaser_text       AS teasertext,
                                 nc.name             AS name
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
                     ON          n.catid=nc.catid
                     WHERE       status = 1
-                                AND n.lang='.FRONTEND_LANG_ID.'
-                                AND (n.startdate<=CURDATE() OR n.startdate="0000-00-00")
-                                AND (n.enddate>=CURDATE() OR n.enddate="0000-00-00")
-                                '.$newsfilter.'
-                    ORDER BY    newsdate DESC';
+                                AND n.lang='.$this->langId.'
+                                AND (n.startdate<=\''.date('Y-m-d H:i:s').'\' OR n.startdate="0000-00-00 00:00:00")
+                                AND (n.enddate>=\''.date('Y-m-d H:i:s').'\' OR n.enddate="0000-00-00 00:00:00")
+                                '.$newsfilter
+                               .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                        " AND frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
+                                        :   " AND frontend_access_id=0 ")
+                                    :   '')
+                    .'ORDER BY    newsdate DESC';
 
         /***start paging ****/
         $objResult = $objDatabase->Execute($query);
@@ -288,7 +316,7 @@ class news extends newsLibrary
 
         if ($count>=1) {
             while (!$objResult->EOF) {
-                ($i % 2) ? $class  = 'row1' : $class  = 'row2';
+                ($i % 2) ? $class  = 'row2' : $class  = 'row1';
 
                 if ($objResult->fields['newsuid'] && ($objFWUser = FWUser::getFWUserObject()) && ($objUser = $objFWUser->objUser->getUser($objResult->fields['newsuid']))) {
                     $firstname = $objUser->getProfileAttribute('firstname');
@@ -303,14 +331,29 @@ class news extends newsLibrary
                 }
 
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
+                if (!empty($objResult->fields['newsimage'])) {
+                    if (!empty($objResult->fields['newsimagethumbnail'])) {
+                        $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />';
+                    } elseif (file_exists(ASCMS_PATH.$objResult->fields['newsimage'].".thumb")) {
+                        $image = '<img src="'.$objResult->fields['newsimage'].'.thumb" alt="'.$newstitle.'" title="'.$newstitle.'" />';
+                    } else {
+                        $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />';
+                    }
+                } else {
+                    $image = "";
+                }
+
                 $this->_objTpl->setVariable(array(
                            'NEWS_CSS'           => $class,
+                           'NEWS_TEASER'        => $objResult->fields['teasertext'],
+                           'NEWS_TITLE'         => $newstitle,
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
-                           'NEWS_LINK'          => (empty($objResult->fields['newsredirect'])) ? '<a href="?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                           'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                           'NEWS_LINK'         	=> (empty($objResult->fields['newsredirect'])) ? (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ? '' :'<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
                            'NEWS_AUTHOR'        => $author,
-                           'NEWS_IMAGE'         => (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />'
+                           'NEWS_IMAGE'         => $image
                         ));
 
                 $this->_objTpl->parse('newsrow');
@@ -340,21 +383,24 @@ class news extends newsLibrary
         }
     }
 
-    function _notify_by_email($news_id)
-    {
+    function _notify_by_email($news_id) {
+        global $objDatabase;
         $user_id  = intval($this->arrSettings['news_notify_user']);
         $group_id = intval($this->arrSettings['news_notify_group']);
         $users_in_group = array();
+
         if ($group_id > 0) {
             $objFWUser = FWUser::getFWUserObject();
-            $objGroup = $objFWUser->objGroup->getGroup($group_id);
-            if ($objGroup) {
+
+            if ($objGroup = $objFWUser->objGroup->getGroup($group_id)) {
                 $users_in_group = $objGroup->getAssociatedUserIds();
             }
         }
+
         if ($user_id > 0) {
             $users_in_group[] = $user_id;
         }
+
         // Now we have fetched all user IDs that
         // are to be notified. Now send those emails!
         foreach ($users_in_group as $user_id) {
@@ -362,16 +408,16 @@ class news extends newsLibrary
         }
     }
 
-
-    function _notify_user_by_email($user_id, $news_id)
-    {
+    function _notify_user_by_email($user_id, $news_id) {
         global $_ARRAYLANG, $_CONFIG;
-
         // First, load recipient infos.
         try {
             $objFWUser = FWUser::getFWUserObject();
             $objUser = $objFWUser->objUser->getUser($user_id);
-        } catch (Exception $e) {}
+        }
+        catch (Exception $e) {
+        }
+
         if (!$objUser) {
             return false;
         }
@@ -392,13 +438,13 @@ class news extends newsLibrary
                 // Line not full yet
                 if ($line) $line .= ' ' . $words[$idx];
                 else       $line =        $words[$idx];
-            } else {
+            }
+            else {
                 // Line is full. add to message and empty.
                 $msg .= "$line\n";
                 $line = $words[$idx];
             }
         }
-        $serverPort = '';
         $msg .= "$line\n";
         $msg .= "  http://".$_SERVER['SERVER_NAME'].  $serverPort.ASCMS_PATH_OFFSET . "/cadmin/index.php?cmd=news"
             . "&act=edit&newsId=$news_id&validate=true";
@@ -450,7 +496,7 @@ class news extends newsLibrary
         $this->_objTpl->setTemplate($this->pageContent);
 
         require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
-        $objModulManager = new modulemanager();
+        $objModulManager = &new modulemanager();
         $arrInstalledModules = $objModulManager->getModules();
         if (in_array(23, $arrInstalledModules)) {
             $communityModul = true;
@@ -459,7 +505,7 @@ class news extends newsLibrary
         }
 
         if (!$this->arrSettings['news_submit_news'] == '1' || (!$communityModul && $this->arrSettings['news_submit_only_community'] == '1')) {
-            header('Location: index.php?section=news');
+            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=news');
             exit;
         } elseif ($this->arrSettings['news_submit_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
@@ -485,8 +531,15 @@ class news extends newsLibrary
         $newsUrl2 = "http://";
         $insertStatus = false;
 
+        require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
+		$captcha = new Captcha();
+
+		$offset = $captcha->getOffset();
+		$alt = $captcha->getAlt();
+		$url = $captcha->getUrl();
+
         if (isset($_POST['submitNews'])) {
-            $objValidator = new FWValidator();
+            $objValidator = &new FWValidator();
 
             $_POST['newsTitle'] = contrexx_strip_tags(html_entity_decode($_POST['newsTitle']));
             $_POST['newsTeaserText'] = contrexx_stripslashes($_POST['newsTeaserText']);
@@ -498,33 +551,37 @@ class news extends newsLibrary
             $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsUrl2'])));
             $_POST['newsCat'] = intval($_POST['newsCat']);
 
-            if (!empty($_POST['newsTitle']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
-                $insertStatus = $this->_insert();
-                if (!$insertStatus) {
-                    $newsTitle = $_POST['newsTitle'];
-                    $newsTeaserText = $_POST['newsTeaserText'];
-                    $newsRedirect = $_POST['newsRedirect'];
-                    $newsSource = $_POST['newsSource'];
-                    $newsUrl1 = $_POST['newsUrl1'];
-                    $newsUrl2 = $_POST['newsUrl2'];
-                    $newsCat = $_POST['newsCat'];
-                    $newsText = $_POST['newsText'];
-                }
-                else {
-                    $this->_notify_by_email($insertStatus);
-                }
-            } else {
-                $newsTitle = $_POST['newsTitle'];
-                $newsTeaserText = $_POST['newsTeaserText'];
-                $newsRedirect = $_POST['newsRedirect'];
-                $newsSource = $_POST['newsSource'];
-                $newsUrl1 = $_POST['newsUrl1'];
-                $newsUrl2 = $_POST['newsUrl2'];
-                $newsCat = $_POST['newsCat'];
-                $newsText = $_POST['newsText'];
-
-                $this->_submitMessage = $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
+            if(!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+            	$this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
+
+	        if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
+	                $insertStatus = $this->_insert();
+	                if (!$insertStatus) {
+	                    $newsTitle = $_POST['newsTitle'];
+	                    $newsTeaserText = $_POST['newsTeaserText'];
+	                    $newsRedirect = $_POST['newsRedirect'];
+	                    $newsSource = $_POST['newsSource'];
+	                    $newsUrl1 = $_POST['newsUrl1'];
+	                    $newsUrl2 = $_POST['newsUrl2'];
+	                    $newsCat = $_POST['newsCat'];
+	                    $newsText = $_POST['newsText'];
+	                }
+	                else {
+	                    $this->_notify_by_email($insertStatus);
+	                }
+	            } else {
+	                $newsTitle = $_POST['newsTitle'];
+	                $newsTeaserText = $_POST['newsTeaserText'];
+	                $newsRedirect = $_POST['newsRedirect'];
+	                $newsSource = $_POST['newsSource'];
+	                $newsUrl1 = $_POST['newsUrl1'];
+	                $newsUrl2 = $_POST['newsUrl2'];
+	                $newsCat = $_POST['newsCat'];
+	                $newsText = $_POST['newsText'];
+
+	                $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
+	            }
         }
 
         if ($insertStatus) {
@@ -540,6 +597,8 @@ class news extends newsLibrary
             $wysiwygEditor = "FCKeditor";
             $FCKeditorBasePath = "/editor/fckeditor/";
 
+
+
             $this->_objTpl->setVariable(array(
                 'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
                 'TXT_TITLE'                 => $_ARRAYLANG['TXT_TITLE'],
@@ -552,18 +611,22 @@ class news extends newsLibrary
                 'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
                 'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
                 'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
+                "TXT_CAPTCHA"           	=> $_ARRAYLANG['TXT_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
-                'NEWS_CAT_MENU'             => $this->getCategoryMenu(FRONTEND_LANG_ID, $newsCat),
+                'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
                 'NEWS_TITLE'                => $newsTitle,
                 'NEWS_SOURCE'               => $newsSource,
                 'NEWS_URL1'                 => $newsUrl1,
                 'NEWS_URL2'                 => $newsUrl2,
                 'NEWS_TEASER_TEXT'          => $newsTeaserText,
-                'NEWS_REDIRECT'             => $newsRedirect
+                'NEWS_REDIRECT'             => $newsRedirect,
+            	"CAPTCHA_OFFSET"        	=> $offset,
+            	"IMAGE_URL"                 => $url,
+            	"IMAGE_ALT"                 => $alt
             ));
 
             if ($this->_objTpl->blockExists('news_category_menu')) {
-                $objResult = $objDatabase->Execute('SELECT catid, name FROM '.DBPREFIX.'module_news_categories WHERE lang='.FRONTEND_LANG_ID.' ORDER BY catid asc');
+                $objResult = $objDatabase->Execute('SELECT catid, name FROM '.DBPREFIX.'module_news_categories WHERE lang='.$this->langId.' ORDER BY catid asc');
 
                 if ($objResult !== false) {
                     while (!$objResult->EOF) {
@@ -644,7 +707,7 @@ class news extends newsLibrary
             '$newsurl1',
             '$newsurl2',
             '$newscat',
-            '".FRONTEND_LANG_ID."',
+            '$this->langId',
             '',
             '',
             '".($this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0")."',
@@ -674,13 +737,14 @@ class news extends newsLibrary
     */
     function _showFeed()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID;
 
-        $objLanguage = new FWLanguage();
+        $objLanguage = &new FWLanguage();
         $this->_objTpl->setTemplate($this->pageContent);
+
         $serverPort = $_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT']);
-        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').".xml";
-        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').".js";
+        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".xml";
+        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".js";
         $hostname = addslashes(htmlspecialchars($_SERVER['SERVER_NAME'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
@@ -710,5 +774,4 @@ RSS2JSCODE;
         return $this->_objTpl->get();
     }
 }
-
 ?>

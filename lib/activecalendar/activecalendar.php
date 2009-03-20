@@ -118,6 +118,7 @@ var $cssPrefixTodayEvent="today"; //  prefix for the event class name if the eve
 var $cssEventContent="eventcontent"; // table tag: calendar event content. Multiple class names can be generated
 var $crSunClass=true; // true: creates a td class on every Sunday (set above)
 var $crSatClass=true; // true: creates a td class on every Saturday (set above)
+var $urlMonthNav;
 /*
 ********************************************************************************
 You can change below the GET VARS NAMES [url parameter names] (navigation + day links)
@@ -135,12 +136,6 @@ Default start and end year for the date picker (can be changed, if using the ADO
 */
 var $startYear=1971;
 var $endYear=2037;
-
-/*
-Added missing class variable -- 20080724 reto.kohli@comvation.com
-*/
-var $urlMonthNav = false;
-
 /*
 ----------------------
 @START PUBLIC METHODS
@@ -440,7 +435,7 @@ $out="<tr>\n";
 		if ($stmonth == 12) {
 			$stmonth = 1;
 			$curyear++;
-		}
+		} 
 		else $stmonth++;
 	}
 $out.="</tr>\n";

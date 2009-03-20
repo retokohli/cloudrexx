@@ -83,5 +83,10 @@ $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] = "Регистрация";
 $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'] = "Выход";
 $_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'] = "Пожалуйста, проверьте все поля";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'] = "К регистрации";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ACTIVATED'] = "Регистрация активирована";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Количество подписчиков";
+$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Активировать нотификацию";
 $_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "no escort";
+$_ARRAYLANG['TXT_CALENDAR_FRONTENDSAVEOK'] = "Ihr Eintrag wurde gespeichert.";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
 ?>

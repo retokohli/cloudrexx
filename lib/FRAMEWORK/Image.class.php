@@ -149,12 +149,20 @@ class ImageManager
      * @param   integer $maxWidth       The maximum width of the image
      * @param   integer $maxHeight      The maximum height of the image
      * @param   integer $quality        The desired jpeg thumbnail quality
+     * @param	string	$thumbNailSuffix	Suffix of the thumbnail. Default is 'thumb'
+	 * @param	string	$strPathNew		Image file store folder. Default is $strPath
+	 * @param	string	$strWebPathNew	Image file web store folder. Default is $strWebPath
+	 * @param	string	$fileNew		Image file store name. Default is $file
      * @return  bool                    True on success, false otherwise.
      */
     function _createThumbWhq(
-        $strPath, $strWebPath, $file, $maxWidth=80, $maxHeight=80, $quality=90
+        $strPath, $strWebPath, $file, $maxWidth=80, $maxHeight=80, $quality=90, $thumbNailSuffix = '.thumb', $strPathNew = null, $strWebPathNew = null, $fileNew = null
     ) {
+        $objFile   = &new File();
         $file      = basename($file);
+        $fileNew   = empty($fileNew) ? $file : basename($fileNew);
+        empty($strPathNew) ? $strPathNew = $strPath : false;
+        empty($strWebPathNew) ? $strWebPathNew = $strWebPath : false;
         $tmpSize   = getimagesize($strPath.$file);
 
         // reset the ImageManager
@@ -181,16 +189,15 @@ class ImageManager
         if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) {
             return false;
         }
-        if (is_file("$strPath$file.thumb")) {
-            if (!unlink("$strPath$file.thumb")) {
+        if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
+            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) {
                 return false;
             }
         }
-        if (!$this->saveNewImage("$strPath$file.thumb")) {
+        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) {
             return false;
         }
-        $objFile = new File();
-        if (!$objFile->setChmod($strPath, $strWebPath, "$file.thumb")) {
+        if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) {
             return false;
         }
         return true;
@@ -471,34 +478,34 @@ class ImageManager
             }
 
             @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
-            $objSystem = new FWSystem();
-            if ($objSystem === false) {
-                return false;
-            }
+        	$objSystem = new FWSystem();
+        	if ($objSystem === false) {
+        	    return false;
+        	}
             $arrSizeInfo = getimagesize($file);
             if (is_array($arrSizeInfo)) {
-                $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
-                if (empty($memoryLimit)) {
-                    // set default php memory limit of 8MBytes
-                    $memoryLimit = 8*pow(1024, 2);
-                }
+            	$memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
+            	if (empty($memoryLimit)) {
+            		// set default php memory limit of 8MBytes
+            		$memoryLimit = 8*pow(1024, 2);
+            	}
 
-                $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'] * 1.8;
-                if (function_exists('memory_get_usage')) {
-                    $potentialRequiredMemory += memory_get_usage();
-                } else {
-                    // add a default of 3MBytes
-                    $potentialRequiredMemory += 3*pow(1024, 2);
-                }
+            	$potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'] * 1.8;
+            	if (function_exists('memory_get_usage')) {
+            		$potentialRequiredMemory += memory_get_usage();
+            	} else {
+            		// add a default of 3MBytes
+            		$potentialRequiredMemory += 3*pow(1024, 2);
+            	}
 
-                if ($potentialRequiredMemory > $memoryLimit) {
-                    // try to set a higher memory_limit
-                    if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
-                        return false;
-                    }
-                }
+            	if ($potentialRequiredMemory > $memoryLimit) {
+            		// try to set a higher memory_limit
+            		if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+            			return false;
+            		}
+            	}
             } else {
-                return false;
+            	return false;
             }
             $image = $function($file);
             return $image;

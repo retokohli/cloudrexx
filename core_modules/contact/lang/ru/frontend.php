@@ -13,6 +13,7 @@ $_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Имя компьютера";
 $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "IP Адрес";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Язык Обозревателя";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Версия Обозревателя";
+$_ARRAYLANG['TXT_CONTACT_SUBMIT'] = "Отправка";
 $_ARRAYLANG['TXT_CONTACT_YES'] = "Да";
 $_ARRAYLANG['TXT_CONTACT_NO'] = "Нет";
 $_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Закачка";
@@ -30,4 +31,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Файл %s не был полнос�
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Файл не был закачан!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Для активации этой опции пользователь должен ввести код изображенный на картинке, чтобы иметь возможность отправть контактную форму. Это необходимо для блокирования автоматических записей генерируемых спамботами.";
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Указанная строка символов была неправильной!";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 ?>

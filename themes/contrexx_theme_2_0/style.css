@@ -110,6 +110,7 @@ table {
 	border-spacing: 0px;
 	border-collapse: collapse;
 	border-width: 0px; 
+	cell-spacing: 0px;
 }
 
 th {

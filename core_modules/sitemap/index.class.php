@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Sitemapping
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -23,20 +22,20 @@
  */
 class sitemap
 {
-    public $pageContent;
-    public $_objTpl;
-    public $_sitemapPageName = array();
-    public $_sitemapPageURL = array();
-    public $_sitemapPageLevel = array();
-    public $_sitemapPageTarget = array();
-    public $_arrName = array();
-    public $_arrUrl = array();
-    public $_arrTarget = array();
-    public $_doSitemap = true;
-    public $_sitemapBlock;
-    public $_cssPrefix = "sitemap_level_";
-    public $_subTagStart = "<ul>";
-    public $_subTagEnd = "</ul>";
+    var $pageContent;
+    var $_objTpl;
+    var $_sitemapPageName = array();
+    var $_sitemapPageURL = array();
+    var $_sitemapPageLevel = array();
+    var $_sitemapPageTarget = array();
+    var $_arrName = array();
+    var $_arrUrl = array();
+    var $_arrTarget = array();
+    var $_doSitemap = true;
+    var $_sitemapBlock;
+    var $_cssPrefix = "sitemap_level_";
+    var $_subTagStart = "<ul>";
+    var $_subTagEnd = "</ul>";
 
 
     /**
@@ -48,7 +47,7 @@ class sitemap
     function __construct($pageContent)
     {
         $this->pageContent = $pageContent;
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = &new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_objTpl->setTemplate($this->pageContent);
@@ -70,33 +69,30 @@ class sitemap
 
     function _initialize()
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
-        $query = "SELECT n.cmd AS cmd,
-                         n.catid AS catid,
-                         n.catname AS catname,
-                         n.target AS target,
-                         n.parcat AS parcat,
-                         n.displayorder AS displayorder,
+        $query = "SELECT n.cmd,
+                         n.catid,
+                         n.catname,
+                         n.target,
+                         n.parcat,
+                         c.redirect,
                          m.name AS section,
-                         a_s.url AS alias_url,
-						 settings.setvalue AS alias_enable
-                    FROM ".DBPREFIX."content_navigation AS n
-                        LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-						LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
-							ON settings.setmodule = 41
-						   AND settings.setname   = 'aliasStatus'
-                        LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-                                ON  a_t.id        = a_s.target_id
-                                AND a_s.isdefault = 1,
-                         ".DBPREFIX."modules AS m
-
-                   WHERE (n.module=m.id AND n.displaystatus = 'on' AND n.activestatus = '1' AND n.lang=".FRONTEND_LANG_ID.")
+                         a_s.url AS alias_url
+                    FROM ".DBPREFIX."content_navigation     AS n
+              INNER JOIN ".DBPREFIX."content                AS c        ON c.id = n.catid
+              INNER JOIN ".DBPREFIX."modules                AS m        ON m.id = n.module
+         LEFT OUTER JOIN ".DBPREFIX."module_alias_target    AS a_t      ON a_t.url = n.catid
+         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s      ON a_s.target_id = a_t.id AND a_s.isdefault = 1
+                   WHERE n.displaystatus = 'on'
+                     AND n.activestatus = '1'
+                     AND n.is_validated='1'
+                     AND n.lang=".$_LANGID."
                      ".(
                         !$objFWUser->objUser->login() ?
                             // user is not authenticated
-                            'AND (n.protected=0)' :
+                            ($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND n.protected=0' : '') :
                             // user is authenticated
                             (
                                 !$objFWUser->objUser->getAdminStatus() ?
@@ -107,8 +103,8 @@ class sitemap
                             )
                         )."
                      AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
-                        AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
-                ORDER BY n.parcat DESC, n.displayorder ASC";
+                     AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
+                ORDER BY n.parcat DESC, n.displayorder";
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
@@ -118,13 +114,14 @@ class sitemap
                 $section = ( ($s=="") ? "" : "&amp;section=$s" );
                 $cmd     = ( ($c=="") ? "" : "&amp;cmd=$c" );
 
-                if ($objResult->fields['alias_enable'] && ($alias = $objResult->fields['alias_url'])) {
-                    $link = $alias;
-                }
-                elseif (!empty($s)) {
-                    $link = "?section=".$s.$cmd;
+                if ($_CONFIG['aliasStatus'] && ($alias = $objResult->fields['alias_url'])) {
+                    $link = rawurlencode(stripslashes($alias));
+                } elseif (!empty($objResult->fields['redirect'])) {
+                    $link = $objResult->fields['redirect'];
+                } elseif (!empty($s)) {
+                    $link = CONTREXX_SCRIPT_PATH."?section=".$s.$cmd;
                 } else {
-                    $link = "?page=".$objResult->fields['catid'].$section.$cmd;
+                    $link = CONTREXX_SCRIPT_PATH."?page=".$objResult->fields['catid'].$section.$cmd;
                 }
                 $this->_arrName[$objResult->fields['parcat']][$objResult->fields['catid']] = stripslashes($objResult->fields['catname']);
                 $this->_arrUrl[$objResult->fields['catid']] = $link;
@@ -185,10 +182,10 @@ class sitemap
 
                     $this->_objTpl->setVariable(array(
                         'STYLE'     => $cssStyle,
-                        'SPACER'     => $spacer,
-                        'NAME'         => $val,
+                        'SPACER'    => $spacer,
+                        'NAME'      => $val,
                         'TARGET'    => $this->_sitemapPageTarget[$key],
-                        'URL'         => $this->_sitemapPageURL[$key]
+                        'URL'       => $this->_sitemapPageURL[$key]
                     ));
                     $this->_objTpl->parse("sitemap");
                 }
@@ -232,5 +229,4 @@ class sitemap
         return $sitemapBlock;
     }
 }
-
 ?>

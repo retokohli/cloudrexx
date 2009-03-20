@@ -20,7 +20,7 @@
  */
 class FWLanguage
 {
-    public $arrLanguage = NULL;
+    public $arrLanguage = null;
 
     /**
      * Constructor (PHP5)
@@ -29,14 +29,25 @@ class FWLanguage
      */
     function __construct()
     {
-        global $objDatabase;
+        $this->loadLangConfig();
+    }
 
-         $objResult = $objDatabase->Execute('
+    /**
+     * Loads the language config from database.
+     *
+     * This used to be in __construct but is also
+     * called from core/language.class.php to reload
+     * the config, so core/settings.class.php can 
+     * rewrite .htaccess (virtual lang dirs).
+     */
+    function loadLangConfig() {
+        global $objDatabase;
+         $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default
-              FROM '.DBPREFIX.'languages
-          ORDER BY id
-         ');
+              FROM ".DBPREFIX."languages
+             ORDER BY id
+         ");
          if ($objResult) {
              while (!$objResult->EOF) {
                 $this->arrLanguage[$objResult->fields['id']] = array(
@@ -52,6 +63,7 @@ class FWLanguage
                 $objResult->MoveNext();
             }
         }
+
     }
 
 
@@ -200,7 +212,7 @@ class FWLanguage
 
         $objResult = $objDatabase->Execute("
             SELECT lang
-              FROM '.DBPREFIX.'languages
+              FROM ".DBPREFIX."languages
              WHERE id=$langId
         ");
         if (!$objResult) {

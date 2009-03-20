@@ -28,11 +28,6 @@ define('SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY', 7);
 define('SHOP_PRODUCT_ATTRIBUTE_TYPE_COUNT',            8);
 
 /**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-
-/**
  * Product Attribute
  *
  * These may be associated with zero or more Products.
@@ -77,12 +72,6 @@ class ProductAttribute
     private $name = '';
 
     /**
-     * The ProductAttribute name Text ID
-     * @var integer
-     */
-    private $text_name_id = false;
-
-    /**
      * The ProductAttribute type
      * @var integer
      */
@@ -100,7 +89,7 @@ class ProductAttribute
      */
     private $arrRelation = false;
 
-/**
+    /**
      * Sorting order
      *
      * Only used by our friend, the Product class
@@ -115,15 +104,17 @@ class ProductAttribute
      * @param   integer   $id         The optional ProductAttribute ID
      * @param   integer   $productId  The optional Product ID
      */
-    function __construct($type, $id=0, $productId=false)
+    function __construct($name, $type, $id=0, $productId=false)
     {
+        $this->name      = $name;
         $this->setType($type);
         $this->id        = $id;
         $this->productId = $productId;
         if ($id)
-            $this->arrValue = ProductAttributes::getValueArray($id);
+            $this->arrValue = ProductAttributes::getValueArrayByNameId($id);
         if ($productId)
             $this->arrRelation = ProductAttributes::getRelationArray($productId);
+//echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)."<br />");
     }
 
 
@@ -137,10 +128,10 @@ class ProductAttribute
         return $this->name;
     }
     /**
-     * Set the name
+     * Set the ProductAttribute name
      *
      * Empty name arguments are ignored.
-     * @param   string          $name               The name
+     * @param   string    $name              The ProductAttribute name
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setName($name)
@@ -236,7 +227,7 @@ class ProductAttribute
     function getValueArray()
     {
         if (!is_array($this->arrValue))
-            $this->arrValue = ProductAttributes::getValueArray($this->id);
+            $this->arrValue = ProductAttribute::getValueArrayByNameId($this->id);
         return $this->arrValue;
     }
     /**
@@ -292,21 +283,18 @@ class ProductAttribute
      *                                when associated with a Product
      * @return  boolean               True on success, false otherwise
      */
-    function updateValue($value_id, $value, $price, $order=0)
+    function changeValue($value_id, $value, $price, $order=0)
     {
         $this->arrValue[$value_id]['value'] = $value;
         $this->arrValue[$value_id]['price'] = $price;
         $this->arrValue[$value_id]['order'] = $order;
         // Insert into database, and update ID
-        //return $this->_updateValue($this->arrValue[$value_id]);
+        //return $this->updateValue($this->arrValue[$value_id]);
     }
 
 
     /**
-     * Remove the ProductAttribute value with the given ID from a Product.
-     *
-     * Note that this will not delete the value itself, but only clears the
-     * association with a Product.
+     * Remove the ProductAttribute value with the given ID.
      * @param   integer     $value_id       The Product Attribute value ID
      * @return  boolean                     True on success, false otherwise
      * @copyright   CONTREXX CMS - COMVATION AG
@@ -319,10 +307,6 @@ class ProductAttribute
         // Anything to be removed?
         if (empty($this->arrValue[$value_id])) return true;
 
-        $arrValue = $this->arrValue[$value_id];
-        $text_id = $arrValue['text_value_id'];
-        if (!Text::deleteById($text_id)) return false;
-
         // Remove relations to Products
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
@@ -333,11 +317,12 @@ class ProductAttribute
 
         // Remove the value
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_values
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
             WHERE id=$value_id
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
+        unset($this->arrValue[$value_id]);
         return true;
     }
 
@@ -351,7 +336,7 @@ class ProductAttribute
      * Keep in mind that any Products currently held in memory may cause
      * inconsistencies!
      * @return  boolean                     True on success, false otherwise.
-     * @global  ADONewConnection  $objDatabase
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function delete()
     {
@@ -364,12 +349,6 @@ class ProductAttribute
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-
-        // Delete values' Text entries
-        foreach ($this->arrValue as $arrValue) {
-            $objText = $arrValue['value'];
-            if (!Text::deleteById($objText->getId())) return false;
-        }
         // Delete values
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
@@ -377,8 +356,6 @@ class ProductAttribute
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        // Delete names' Text entry
-        if (!Text::deleteById($this->name->getId())) return false;
         // Delete name
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
@@ -399,14 +376,6 @@ class ProductAttribute
      */
     function store()
     {
-        // Store Text
-        $objText = Text::replace(
-            $this->text_name_id, FRONTEND_LANG_ID, $this->name,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_NAME
-        );
-//echo("replaced text: ".var_export($objText, true)."<br />");
-        if (!$objText) return false;
-        $this->text_name_id = $objText->getId();
         if ($this->id && $this->recordExists()) {
             if (!$this->update()) return false;
         } else {
@@ -453,7 +422,7 @@ class ProductAttribute
 
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
-               SET text_name_id=$this->text_name_id,
+               SET name='".addslashes($this->name)."',
                    display_type=$this->type
              WHERE id=$this->id
         ";
@@ -477,9 +446,9 @@ class ProductAttribute
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (
-                text_name_id, display_type
+                name, display_type
             ) VALUES (
-                $this->text_name_id,
+                '".addslashes($this->name)."',
                 $this->type
             )
         ";
@@ -497,53 +466,62 @@ class ProductAttribute
      */
     function storeValues()
     {
-        // Mind: value entries in the array may be new and have to
+//echo("storeValues(): this->arrvalue: ".var_export($this->arrValue, true)."<br />");
+    	// Mind: value entries in the array may be new and have to
         // be inserted, even though the object itself has got a valid ID!
-        foreach ($this->arrValue as $arrValue) { // $id is the key in the loop
-            // The Text ID is not set for values that have been added
-            $text_id =
-                (empty($arrValue['text_value_id'])
-                    ? 0 : $arrValue['text_value_id']
-                );
+        foreach ($this->arrValue as $arrValue) {
+//            // The Text ID is not set for values that have been added
+//            $text_id =
+//                (empty($arrValue['text_value_id'])
+//                    ? 0 : $arrValue['text_value_id']
+//                );
 //echo("storing value: ".var_export($arrValue, true)."<br />");
-
-            // Store Text
-            $objText = Text::replace(
-                $text_id, FRONTEND_LANG_ID, $arrValue['value'],
-                MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
-            );
-            if (!$objText) return false;
-            $arrValue['text_value_id'] = $objText->getId();
-            // Note that the $id is only identical to the value ID stored
-            // in $arrValue['id'] for value records already present.
-            // If the value was just added to the array, the $id is just
-            // an array index, and its $arrValue['id'] is empty.
-            $value_id = (isset($arrValue['id']) ? $arrValue['id'] : 0);
+//            // Store Text
+//            $objText = Text::replace(
+//                $text_id, FRONTEND_LANG_ID, $arrValue['value'],
+//                MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
+//            );
+//            if (!$objText) return false;
+//            $arrValue['text_value_id'] = $objText->getId();
+            // Note that the array index and the value ID stored
+            // in $arrValue['id'] are only identical to for value
+            // records already present in the database.
+            // If the value was just added to the array, the array index
+            // is just that -- an array index, and its $arrValue['id'] is empty.
+            $value_id = (empty($arrValue['id']) ? 0 : $arrValue['id']);
+//echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true)."<br />");
             if ($value_id && $this->recordExistsValue($value_id)) {
-                if (!$this->_updateValue($value_id)) return false;
+                if (!$this->updateValue($arrValue)) return false;
             } else {
-                // This is a temporary dummy value used to find the
-                // value array in $this->arrValue.
-                // Updated in _insertValue().
-                //$arrValue['id'] = $id; // $id is the key in the loop
-                if (!$this->_insertValue($arrValue)) return false;
+                if (!$this->insertValue($arrValue)) return false;
             }
         }
         return true;
     }
 
 
-    function _updateValue($value_id)
+    /**
+     * Update the Attibute value record in the database
+     *
+     * The value array is passed by reference, as the ID may be updated
+     * in case it had not been set and {@link insertValue()} was called.
+     * @param   array       $arrValue       The value array
+     * @return  boolean                     True on success, false otherwise
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     */
+    function updateValue(&$arrValue)
     {
         global $objDatabase;
 
+//echo("updateValue():  Got value: ".var_export($arrValue, true)."<br />");
+        // mind: value entries in the array may be *new* and have to
+        // be inserted, even though the object itself has got a valid ID!
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
                SET name_id=$this->id,
-                   text_value_id=".$this->arrValue[$value_id]['text_value_id']."',
-                   price=".floatval($this->arrValue[$value_id]['price']).",
-             WHERE id=$value_id
-        ";
+                   value='".addslashes($arrValue['value'])."',
+                   price=".floatval($arrValue['price'])."
+             WHERE id=".$arrValue['id'];
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -557,20 +535,21 @@ class ProductAttribute
      * @access  private
      * @param   array       $arrValue       The value array, by reference
      * @return  boolean                     True on success, false otherwise
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
-    function _insertValue(&$arrValue)
+    function insertValue(&$arrValue)
     {
         global $objDatabase;
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (
-                name_id, text_value_id, price
+                name_id, value, price
             ) VALUES (
                 $this->id,
-                ".$arrValue['text_value_id'].",
+                '".addslashes($arrValue['value'])."',
                 ".floatval($arrValue['price'])."
-            )";
+            )
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrValue['id'] = $objDatabase->Insert_ID();
@@ -609,12 +588,11 @@ class ProductAttribute
      */
     static function getByNameId($name_id)
     {
-        $arrName = ProductAttributes::getNameArray($name_id);
+        $arrName = ProductAttributes::getNameArrayByNameId($name_id);
         if ($arrName === false) return false;
         $objProductAttribute = new ProductAttribute(
-            $arrName['type'], $name_id
+            $arrName['name'], $arrName['type'], $name_id
         );
-        $objProductAttribute->setName($arrName['name']);
         return $objProductAttribute;
     }
 
@@ -650,21 +628,25 @@ class ProductAttribute
     {
         global $objDatabase;
 
-        $arrSqlValue = Text::getSqlSnippets(
-            'text_value_id', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
-        );
+//        $arrSqlValue = Text::getSqlSnippets(
+//            'text_value_id', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
+//        );
+//        $query = "
+//            SELECT ".$arrSqlValue['field']."
+//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value".
+//                   $arrSqlValue['join']."
+//             WHERE id=$id
+//        ";
         $query = "
-            SELECT ".$arrSqlValue['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value".
-                   $arrSqlValue['join']."
+            SELECT `value`
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
              WHERE id=$id
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        if ($objResult->RecordCount() == 1)
-            return $objResult->fields[$arrSqlValue['text']];
-        return '';
+        if (!$objResult || $objResult->EOF) return false;
+//        return $objResult->fields[$arrSqlValue['text']];
+        return $objResult->fields['value'];
     }
 
 
@@ -672,12 +654,11 @@ class ProductAttribute
      * Return the price of the ProductAttribute value selected by its ID
      * from the database.
      *
-     * Returns false on error, or the empty string if the value cannot be
-     * found.
+     * Returns false on error, or 0 (zero) if the value cannot be found.
      * @param   integer   $id     The ProductAttribute value ID
-     * @return  mixed             The ProductAttribute value price on success,
-     *                            the empty string if it cannot be found,
-     *                            or false.
+     * @return  double            The ProductAttribute value price on success,
+     *                            0 (zero) if it cannot be found,
+     *                            or false on failure.
      * @static
      * @global  mixed     $objDatabase  Database object
      */
@@ -685,53 +666,42 @@ class ProductAttribute
     {
         global $objDatabase;
 
-        // id, name_id, value, price, price_prefix (enum('+', '-'))
+        // id, name_id, value, price
         $query = "
-            SELECT price, price_prefix
+            SELECT price
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
              WHERE id=$id
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        if ($objResult->RecordCount() == 1) {
-            return $objResult->fields['price_prefix'].$objResult->fields['price'];
-        }
-        return '';
+        if (!$objResult) return false;
+        if ($objResult->RecordCount() == 1)
+            return $objResult->fields['price'];
+        return 0;
     }
 
 
     /**
      * Return the name of the ProductAttribute selected by its ID
      * from the database.
-     *
-     * Returns false on error, or the empty string if the name cannot be
-     * found.
-     * @param   integer   $id     The ProductAttribute ID
-     * @return  mixed             The ProductAttribute name on success,
-     *                            the empty string if it cannot be found,
-     *                            or false.
-     * @static
-     * @global  mixed     $objDatabase  Database object
+     * @param   integer     $nameId         The ProductAttribute name ID
+     * @return  mixed                       The ProductAttribute name on
+     *                                      success, false otherwise
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
-    static function getNameById($id)
+    static function getNameById($nameId)
     {
         global $objDatabase;
 
         $query = "
             SELECT name
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
-             WHERE id=$id
+             WHERE id=$nameId
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
+        if (!$objResult || $objResult->EOF) {
             return false;
         }
-        if ($objResult->RecordCount() == 1) {
-            return $objResult->fields['name'];
-        }
-        return '';
+        return $objResult->fields['name'];
     }
 
 
@@ -773,7 +743,7 @@ class ProductAttribute
      * @param   string      $value          The Attribute value name
      * @return  integer                     The first matching value ID found,
      *                                      or false.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function getValueIdByName($value)
     {
@@ -796,61 +766,6 @@ class ProductAttribute
     // old (static) functions, taken from index.php/admin.php
     // these may be removed at will!
     ///////////////////////////////////////////////////////////////////////
-
-    /**
-     * Store new attribute option
-     *
-     * OBSOLETE
-     *
-     * @access    private
-     * @return    string    $statusMessage    Status message
-     */
-    function _storeNewAttributeOption()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $arrAttributeList = array();
-        $arrAttributeValue = array();
-        $arrAttributePrice = array();
-
-        if (empty($_POST['optionName'][0]))
-            return $_ARRAYLANG['TXT_DEFINE_NAME_FOR_OPTION'];
-        if (!is_array($_POST['attributeValueList'][0]))
-            return $_ARRAYLANG['TXT_DEFINE_VALUE_FOR_OPTION'];
-
-        //$arrAttributesDb = $this->arrAttributes;
-        $arrAttributeList = $_POST['attributeValueList'];
-        $arrAttributeValue = $_POST['attributeValue'];
-        $arrAttributePrice = $_POST['attributePrice'];
-
-        $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (
-                name
-            ) VALUES (
-                '".addslashes($_POST['optionName'][0])."'
-            )
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult)
-            return "ERROR: could not insert product attribute name into database<br />";
-        $name_id = $objResult->Insert_Id();
-        foreach ($arrAttributeList[0] as $id) {
-            // insert new attribute value
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (
-                    name_id, value, price
-                ) VALUES (
-                    $name_id, '".
-                    addslashes($arrAttributeValue[$id])."', '".
-                    floatval($arrAttributePrice[$id])."'
-                )
-            ";
-            $objDatabase->Execute($query);
-        }
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name");
-        return '';
-    }
 
 
 ////////////////////////////////////////////////////////////////////////////

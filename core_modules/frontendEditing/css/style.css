@@ -160,8 +160,8 @@ html, body {
 }
 
 #fe_LoginBoxContent .fe_LoginSpacer {
-	padding: 4px 2px 4px 2px;
-	margin: 0px 0px 5px 0px;
+	padding: 2px 2px 2px 2px;
+	margin: 0px 0px 3px 0px;
 }
 
 #fe_LoginBoxContent .fe_LoginError {
@@ -187,7 +187,7 @@ html, body {
 
 #fe_LoginBoxContent form .fe_LoginBoxValue {
 	width: 100%;
-	margin-bottom: 8px;
+	margin-bottom: 4px;
 	text-align: left;
 }
 

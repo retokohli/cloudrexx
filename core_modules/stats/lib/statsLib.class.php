@@ -19,61 +19,42 @@
  */
 class statsLibrary
 {
-    var $totalVisitors = 0;
-    var $totalRequests = 0;
+    public $totalVisitors = 0;
+    public $totalRequests = 0;
+    public $arrBrowsers = array();
+    public $browserSum = 0;
+    public $arrSupportJavaScript = array();
+    public $supportJavaScriptSum = 0;
+    public $arrOperatingSystems = array();
+    public $operatingSystemsSum = 0;
+    public $arrScreenResolutions = array();
+    public $screenResolutionSum = 0;
+    public $arrColourDepths = array();
+    public $colourDepthSum = 0;
+    public $arrMostViewedPages = array();
+    public $mostViewedPagesSum = 0;
+    public $arrIndexedPages = array();
+    public $arrSpiders = array();
+    public $arrVisitorsDetails = array();
+    public $arrVisitors = array();
+    public $arrRequests = array();
+    public $arrLastReferer = array();
+    public $arrTopReferer = array();
+    public $arrHostnames = array();
+    public $hostnamesSum = 0;
+    public $arrCountries = array();
+    public $countriesSum = 0;
+    public $arrCountryNames = array();
+    public $arrConfig = array();
+    public $arrSearchTerms = array();
+    public $pagingLimit = "";
+    public $pagingLimitVisitorDetails = "";
+    public $spiderAgent = false;
+    public $arrClient = array();
+    public $arrProxy = array();
+    public $md5Id = 0;
+    public $currentTime = 0;
 
-    var $arrBrowsers = array();
-    var $browserSum = 0;
-
-    var $arrSupportJavaScript = array();
-    var $supportJavaScriptSum = 0;
-
-    var $arrOperatingSystems = array();
-    var $operatingSystemsSum = 0;
-
-    var $arrScreenResolutions = array();
-    var $screenResolutionSum = 0;
-
-    var $arrColourDepths = array();
-    var $colourDepthSum = 0;
-
-    var $arrMostViewedPages = array();
-    var $mostViewedPagesSum = 0;
-
-    var $arrIndexedPages = array();
-    var $arrSpiders = array();
-
-    var $arrVisitorsDetails = array();
-
-    var $arrVisitors = array();
-    var $arrRequests = array();
-
-    var $arrLastReferer = array();
-    var $arrTopReferer = array();
-
-    var $arrHostnames = array();
-    var $hostnamesSum = 0;
-    var $arrCountries = array();
-    var $countriesSum = 0;
-    var $arrCountryNames = array();
-
-    var $arrConfig = array();
-
-    var $arrSearchTerms = array();
-
-    var $pagingLimit = "";
-    var $pagingLimitVisitorDetails = "";
-
-    var $spiderAgent = false;
-
-    var $arrClient = array();
-    var $arrProxy = array();
-    var $md5Id = 0;
-    var $currentTime = 0;
-
-    function statsLibrary() {
-        $this->__construct();
-    }
 
     function __construct() {
         $this->_initConfiguration();
@@ -81,13 +62,11 @@ class statsLibrary
 
 
     /**
-    * Initialize configuration
-    *
     * Initialize the configuration for the counter and statistics
-    *
     * @global    ADONewConnection
     */
-    function _initConfiguration() {
+    function _initConfiguration()
+    {
         global $objDatabase;
 
         $query = "SELECT name, value, `status` FROM ".DBPREFIX."stats_config";
@@ -98,22 +77,20 @@ class statsLibrary
             }
         }
 
-           $this->pagingLimit = "LIMIT ".$this->arrConfig['paging_limit']['value']."";
-           $this->pagingLimitVisitorDetails = "LIMIT ".$this->arrConfig['paging_limit_visitor_details']['value']."";
-           $this->currentTime = time();
+        $this->pagingLimit = "LIMIT ".$this->arrConfig['paging_limit']['value']."";
+        $this->pagingLimitVisitorDetails = "LIMIT ".$this->arrConfig['paging_limit_visitor_details']['value']."";
+        $this->currentTime = time();
     }
 
 
     /**
-    * Get counter tag
-    *
     * Creates the tag to call the counter
-    *
-    * @access    public
-    * @global    integer    $pageId
-    * @return    string    $counterTag    The counter tag
+    * @access   public
+    * @global   integer $pageId
+    * @return   string  $counterTag The counter tag
     */
-    function getCounterTag() {
+    function getCounterTag()
+    {
         global $pageId;
 
         $searchTerm = "";
@@ -130,37 +107,39 @@ class statsLibrary
                 $referer = "";
             }
 
-            $counterTag = "<!-- Counter  START -->\n";
-            $counterTag .= "<script type=\"text/javascript\">\n";
-            $counterTag .= "<!--\n";
-            $counterTag .= "referer = (document.referrer) ? escape(document.referrer) : \"\";\n";
-            $counterTag .= "v = navigator.appName;\n";
-            $counterTag .= "c=0;\n";
-            $counterTag .= "if (v != \"Netscape\")\n";
-            $counterTag .= "    c = screen.colorDepth;\n";
-            $counterTag .= "else\n";
-            $counterTag .= "    c = screen.pixelDepth;\n";
-            $url = '\'<script language="JavaScript" type="text/javascript" src="'.ASCMS_CORE_MODULE_WEB_PATH.'/stats/counter.php?mode=script&referer=\'+referer+\'&pageId=\' + '.$pageId.' + \'&screen=\' + screen.width + \'x\' + screen.height  +  \'&color_depth=\' + c + \''.$searchTerm.'" ><\/script>\'';
-            $counterTag .= "document.write(".$url.");\n";
-            $counterTag .= "// -->\n";
-            $counterTag .= "</script>\n";
-            $counterTag .= "<noscript><div style=\"display:none;\"><img src=\"".ASCMS_CORE_MODULE_WEB_PATH."/stats/counter.php?mode=noscript&amp;referer=".$referer."&amp;pageId=".$pageId.$searchTerm."\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>\n";
-            $counterTag .= "<!-- Counter Code END -->\n";
+            $ascms_core_module_web_path = ASCMS_CORE_MODULE_WEB_PATH;
+            $counterTag = "<!-- Counter  START -->
+                <script type=\"text/javascript\"><!--
+                    var referer = (document.referrer) ? escape(document.referrer) : '';
+                    var v = navigator.appName;
+                    var c = 0;
+                    if (v != 'Netscape') {
+                        c = screen.colorDepth;
+                    }
+                    else {
+                        c = screen.pixelDepth;
+                    }
+                    document.write('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ></s'+'cript>');
+                    // -->
+                    </script>
+                    <noscript><div><img src=\"$ascms_core_module_web_path/stats/counter.php?mode=noscript&amp;referer=$referer&amp;pageId=$pageId.$searchTerm\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>
+                    <!-- Counter Code END -->
+            ";
         }
         return $counterTag;
     }
 
+
     /**
-    * Check for spider
-    *
     * Check if the user agent is a spider
     */
-    function checkForSpider() {
+    function checkForSpider()
+    {
         if ($this->arrConfig['count_spiders']['status']) {
+            $arrRobots = array();
             require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php';
             $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
              $spiderAgent = false;
-
             foreach ($arrRobots as $spider) {
                 $spiderName = trim($spider);
                 if (preg_match("=".$spiderName."=",$useragent)) {
@@ -168,18 +147,15 @@ class statsLibrary
                     break;
                 }
             }
-
             if ($spiderAgent) {
                 $this->_countSpider($useragent);
             }
         }
     }
 
+
     /**
-    * count spider visits
-    *
     * count every spider visit
-    *
     * @global   ADONewConnection
     * @global   integer
     * @return   boolean  result
@@ -244,7 +220,7 @@ class statsLibrary
         $objDatabase->Execute($query);
 
         if ($objDatabase->Affected_Rows() == 0) {
-               $query = "INSERT INTO `".DBPREFIX."stats_spiders_summary` (`name`, `timestamp`, `count`) VALUES ('".substr($useragent,0,255)."', '".time()."', 1)";
+            $query = "INSERT INTO `".DBPREFIX."stats_spiders_summary` (`name`, `timestamp`, `count`) VALUES ('".substr($useragent,0,255)."', '".time()."', 1)";
             $objDatabase->Execute($query);
         }
     }
@@ -256,7 +232,9 @@ class statsLibrary
     * and not in the uri
     *
     */
-    function _getRequestedUrl() {
+    function _getRequestedUrl()
+    {
+        $arrBannedWords = array();
         require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
 
         $uriString="";
@@ -274,7 +252,7 @@ class statsLibrary
             }
         }
 
-        if (count($arrBannedWords)>0) {
+        if (count($arrBannedWords)) {
             foreach ($arrBannedWords as $blockElem) {
                 $blockElem = trim($blockElem);
                 //some blocked words in get-Vars?
@@ -338,13 +316,13 @@ class statsLibrary
             while (!$objResult->EOF) {
                 $arrVisitor = array(
                                     'client_ip' => $objResult->fields['client_ip'],
-                                    'client_host'    => $objResult->fields['client_host'],
-                                    'client_useragent'    => $objResult->fields['client_useragent'],
-                                    'proxy_ip'            => $objResult->fields['proxy_ip'],
+                                    'client_host'   => $objResult->fields['client_host'],
+                                    'client_useragent'  => $objResult->fields['client_useragent'],
+                                    'proxy_ip'          => $objResult->fields['proxy_ip'],
                                     'proxy_host'        => $objResult->fields['proxy_host'],
-                                    'proxy_useragent'    => $objResult->fields['proxy_useragent'],
-                                    'timestamp'            => $objResult->fields['timestamp'],
-                                    'last_request'        => date(ASCMS_DATE_FORMAT, $objResult->fields['timestamp'])
+                                    'proxy_useragent'   => $objResult->fields['proxy_useragent'],
+                                    'timestamp'         => $objResult->fields['timestamp'],
+                                    'last_request'      => date(ASCMS_DATE_FORMAT, $objResult->fields['timestamp'])
                                     );
                 array_push($this->arrVisitorsDetails,$arrVisitor);
                 $objResult->MoveNext();
@@ -405,12 +383,12 @@ class statsLibrary
             while (!$objResult->EOF) {
                 $arrVisitor = array(
                                     'client_ip' => $objResult->fields['client_ip'],
-                                    'client_host'    => $objResult->fields['client_host'],
-                                    'client_useragent'    => $objResult->fields['client_useragent'],
-                                    'proxy_ip'            => $objResult->fields['proxy_ip'],
+                                    'client_host'   => $objResult->fields['client_host'],
+                                    'client_useragent'  => $objResult->fields['client_useragent'],
+                                    'proxy_ip'          => $objResult->fields['proxy_ip'],
                                     'proxy_host'        => $objResult->fields['proxy_host'],
-                                    'proxy_useragent'    => $objResult->fields['proxy_useragent'],
-                                    'last_request'        => $objResult->fields['last_request']
+                                    'proxy_useragent'   => $objResult->fields['proxy_useragent'],
+                                    'last_request'      => $objResult->fields['last_request']
                                     );
                 array_push($this->arrVisitorsDetails,$arrVisitor);
                 $objResult->MoveNext();
@@ -427,7 +405,7 @@ class statsLibrary
         // get statistics
         $query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
                     FROM `".DBPREFIX."stats_visitors_summary`
-                            WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
+                           WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
                             mktime(
                                 0,
                                 0,
@@ -445,7 +423,7 @@ class statsLibrary
 
         $query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
                     FROM `".DBPREFIX."stats_requests_summary`
-                            WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
+                           WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
                             mktime(
                                 0,
                                 0,
@@ -462,7 +440,9 @@ class statsLibrary
         }
     }
 
-    function _initStatisticsMonths() {
+
+    function _initStatisticsMonths()
+    {
         global $objDatabase;
 
         // remove outdated visitor and request entries in the summary
@@ -570,13 +550,13 @@ class statsLibrary
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
                 $arrIndexedPage = array(
-                    'last_indexed'        => $objResult->fields['last_indexed_date'],
-                    'page'                => $objResult->fields['page'],
-                    'title'                => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
-                    'count'                => $objResult->fields['count'],
-                    'spider_useragent'    => $objResult->fields['spider_useragent'],
-                    'spider_ip'            => $objResult->fields['spider_ip'],
-                    'spider_host'        => $objResult->fields['spider_host']
+                    'last_indexed'      => $objResult->fields['last_indexed_date'],
+                    'page'              => $objResult->fields['page'],
+                    'title'             => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
+                    'count'             => $objResult->fields['count'],
+                    'spider_useragent'  => $objResult->fields['spider_useragent'],
+                    'spider_ip'         => $objResult->fields['spider_ip'],
+                    'spider_host'       => $objResult->fields['spider_host']
                 );
                 array_push($this->arrIndexedPages, $arrIndexedPage);
                 $objResult->MoveNext();
@@ -590,9 +570,9 @@ class statsLibrary
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
                 $arrSpider = array(
-                    'name'            => $objResult->fields['name'],
-                    'count'            => $objResult->fields['count'],
-                    'last_indexed'    => $objResult->fields['last_indexed']
+                    'name'          => $objResult->fields['name'],
+                    'count'         => $objResult->fields['count'],
+                    'last_indexed'  => $objResult->fields['last_indexed']
                 );
                 array_push($this->arrSpiders, $arrSpider);
                 $objResult->MoveNext();
@@ -726,13 +706,13 @@ class statsLibrary
     /**
     * return the image with the procentualy width or height
     *
-    * @param    float    $maxWidth    width if the image is 100% in widht
-    * @param    float    $maxHeight    height if the image is 100% in height
-    * @param    float    $percWidth    procentualy width
-    * @param    float    $percHeight    procentualy height
-    * @param     string    choose the image for the percentbar
-    * @param    string    $title    title and alternative text
-    * @return    string    the path to the image with procentualy width and height
+    * @param    float   $maxWidth   width if the image is 100% in widht
+    * @param    float   $maxHeight  height if the image is 100% in height
+    * @param    float   $percWidth  procentualy width
+    * @param    float   $percHeight procentualy height
+    * @param    string  choose the image for the percentbar
+    * @param    string  $title  title and alternative text
+    * @return   string  the path to the image with procentualy width and height
     */
     function _makePercentBar($maxWidth, $maxHeight, $percWidth, $percHeight, $gif, $title = '')
     {
@@ -753,8 +733,8 @@ class statsLibrary
             $this->arrSearchTerms['internal'] = array();
             while (!$objResult->EOF) {
                 array_push($this->arrSearchTerms['internal'], array(
-                    'name'    => stripslashes($objResult->fields['name']),
-                    'count'    => $objResult->fields['count']
+                    'name'  => stripslashes($objResult->fields['name']),
+                    'count' => $objResult->fields['count']
                 ));
                 $objResult->MoveNext();
             }
@@ -765,8 +745,8 @@ class statsLibrary
             $this->arrSearchTerms['external'] = array();
             while (!$objResult->EOF) {
                 array_push($this->arrSearchTerms['external'], array(
-                    'name'    => stripslashes($objResult->fields['name']),
-                    'count'    => $objResult->fields['count']
+                    'name'  => stripslashes($objResult->fields['name']),
+                    'count' => $objResult->fields['count']
                 ));
                 $objResult->MoveNext();
             }
@@ -777,8 +757,8 @@ class statsLibrary
             $this->arrSearchTerms['summary'] = array();
             while (!$objResult->EOF) {
                 array_push($this->arrSearchTerms['summary'], array(
-                    'name'    => stripslashes($objResult->fields['name']),
-                    'count'    => $objResult->fields['totalCount']
+                    'name'  => stripslashes($objResult->fields['name']),
+                    'count' => $objResult->fields['totalCount']
                 ));
                 $objResult->MoveNext();
             }
@@ -938,8 +918,8 @@ class statsLibrary
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
                 $lastRefer = array(
-                    'uri'        => $objResult->fields['uri'],
-                    'timestamp'    => $objResult->fields['timestamp']
+                    'uri'       => $objResult->fields['uri'],
+                    'timestamp' => $objResult->fields['timestamp']
                 );
                 array_push($this->arrLastReferer, $lastRefer);
                 $objResult->MoveNext();
@@ -951,8 +931,8 @@ class statsLibrary
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
                 $topRefer = array(
-                    'uri'        => $objResult->fields['uri'],
-                    'count'        => $objResult->fields['count']
+                    'uri'       => $objResult->fields['uri'],
+                    'count'     => $objResult->fields['count']
                 );
                 array_push($this->arrTopReferer, $topRefer);
                 $objResult->MoveNext();

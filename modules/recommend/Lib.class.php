@@ -55,7 +55,7 @@ class RecommendLibrary
      */
     function getMessageSubject($lang)
     {
-        global $objDatabase;
+        global $objDatabase, $_FRONTEND_LANGID;
 
         $query = "SELECT value FROM ".DBPREFIX."module_recommend WHERE name = 'subject' AND lang_id = $lang";
         $objResult = $objDatabase->Execute($query);
@@ -73,7 +73,7 @@ class RecommendLibrary
      */
     function getFemaleSalutation($lang)
     {
-        global $objDatabase;
+        global $objDatabase, $_FRONTEND_LANGID;
 
         $query = "SELECT value FROM ".DBPREFIX."module_recommend WHERE name = 'salutation_female' AND lang_id = $lang";
         $objResult = $objDatabase->Execute($query);
@@ -92,7 +92,7 @@ class RecommendLibrary
      */
     function getMaleSalutation($lang)
     {
-        global $objDatabase;
+        global $objDatabase, $_FRONTEND_LANGID;
 
         $query = "SELECT value FROM ".DBPREFIX."module_recommend WHERE name = 'salutation_male' AND lang_id = $lang";
         $objResult = $objDatabase->Execute($query);
@@ -130,7 +130,7 @@ Comment of <SENDER_NAME>:
      */
     function getStandardSubject()
     {
-        return     "Webpage recommendation from <SENDER_NAME>";
+        return  "Webpage recommendation from <SENDER_NAME>";
     }
 }
 

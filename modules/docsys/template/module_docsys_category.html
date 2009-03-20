@@ -4,11 +4,11 @@
 function deleteCategorie(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
-        window.location.replace("index.php?cmd=docsys&act=delcat&catId="+id);
+        window.location.replace("index.php?cmd=docsys{MODULE_INDEX}&act=delcat&catId="+id);
 }
 // -->
 </script>
-<form name="form1" method="post" action="index.php?cmd=docsys&amp;act=cat">
+<form name="form1" method="post" action="index.php?cmd=docsys{MODULE_INDEX}&amp;act=cat">
 <input type="hidden" name="addCat" value="true" />
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
 <tr>
@@ -26,7 +26,7 @@ function deleteCategorie(id)
 </table>
 <br />
 </form>
-<form name="form2" method="post" action="index.php?cmd=docsys&amp;act=cat">
+<form name="form2" method="post" action="index.php?cmd=docsys{MODULE_INDEX}&amp;act=cat">
 <input type="hidden" name="modCat" value="true" />
   <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
     <tr>

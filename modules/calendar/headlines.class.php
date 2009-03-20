@@ -1,5 +1,4 @@
-<?php
-
+<?PHP
 /**
  * Calendar headline news
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -13,7 +12,8 @@
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
+require_once ASCMS_MODULE_PATH . '/calendar/lib/calendarLib.class.php';
+require_once ASCMS_MODULE_PATH . '/calendar/lib/series.class.php';
 
 /**
  * Headline news
@@ -28,106 +28,103 @@ require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
  */
 class calHeadlines extends calendarLibrary
 {
-    public $_pageContent;
-    public $_objTemplate;
+    var $_pageContent;
+    var $_objTemplate;
+    var $objSeries;
 
     /**
      * Constructor php5
      */
-    function __construct($pageContent)
-    {
+    function __construct($pageContent) {
+        $this->calHeadlines($pageContent);
+    }
+
+    /**
+     * Constructor php4
+     */
+    function calHeadlines($pageContent) {
         $this->_pageContent = $pageContent;
-        $this->_objTemplate = new HTML_Template_Sigma('.');
+        $this->_objTemplate = &new HTML_Template_Sigma('.');
     }
 
 
     function getHeadlines()
     {
-        global $_CONFIG, $objDatabase;
+        global $_CONFIG, $objDatabase, $_LANGID;
+
+        //get startdates
+        $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date('d', mktime());
+        $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date('m', mktime());
+        $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date('Y', mktime());
+
+        $startdate = mktime(0, 0, 0, $month, $day, $year);
+
+
+        //get category
+        if ($_CONFIG['calendarheadlinescat'] != 0) {
+            $category = $_CONFIG['calendarheadlinescat'];
+        } else {
+            $category = null;
+        }
+
+        //check access
+        $auth = $this->_checkAccess();
+
+        //get maxsize
+        $count = $_CONFIG['calendarheadlinescount'];
+
+        //get events list
+        $this->objSeries     = new seriesManager();
+        $this->eventList     = $this->objSeries->getEventList($startdate,0,$count, $auth, null, $category, true);
+
+        //generate list
+        $this->_showList();
+
+        return $this->_objTemplate->get();
+    }
+
+
+    function _showList()
+    {
+        global $_CONFIG;
 
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
-        $category_name = '';
-        if ($_CONFIG['calendarheadlinescat'] != 0) {
-            $query = "SELECT name FROM ".DBPREFIX."module_calendar_categories
-                      WHERE id = {$_CONFIG['calendarheadlinescat']}";
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            $category_name = $objResult->fields['name'];
-        }
-        $this->_objTemplate->setVariable(array("CALENDAR_EVENT_CATEGORY" => $category_name));
-        $this->_objTemplate->setCurrentBlock('calendar_headlines_row');
+
         if ($_CONFIG['calendarheadlines']) {
-            $today = time();
-            //check access
-            $auth = $this->_checkAccess();
-            if ($auth == true) {
-                $access = "";
-            } else {
-                $access = " AND access='0' ";
-            }
-            if ($_CONFIG['calendarheadlinescat'] == "0") {
-                $query = '    SELECT     id
-                            FROM    '.DBPREFIX.'module_calendar_categories
-                            WHERE    lang='.FRONTEND_LANG_ID;
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult->RecordCount() > 0) {
-                    $strWhere = ' AND ( ';
-                    while (!$objResult->EOF) {
-                        $strWhere .= 'catid='.$objResult->fields['id'].' OR ';
-                        $objResult->MoveNext();
-                    }
-                    $strWhere = substr($strWhere,0,strlen($strWhere)-4);
-                    $strWhere .= ' ) ';
+            if (!empty($this->eventList)) {
 
-                    $query = "SELECT id, catid, startdate, pic, comment, enddate, name FROM ".DBPREFIX."module_calendar
-                              WHERE enddate > $today  AND
-                              active = 1
-                              ".$strWhere.$access."
-                              ORDER BY startdate ASC
-                              LIMIT 0,".$_CONFIG['calendarheadlinescount'];
-                }
-            } else {
-                $query = "SELECT id, catid, pic, startdate, enddate, comment, name FROM ".DBPREFIX."module_calendar
-                  WHERE catid = {$_CONFIG['calendarheadlinescat']}
-                  AND enddate > $today AND
-                  active = 1
-                  ".$access."
-                  ORDER BY startdate ASC
-                  LIMIT 0,".$_CONFIG['calendarheadlinescount'];
-            }
+                $i = 0;
+                foreach ($this->eventList as $key => $array) {
 
-            $objResult = $objDatabase->Execute($query);
-
-            if ($objResult !== false && $objResult->RecordCount()>=0) {
-                while (!$objResult->EOF) {
-                    if (strlen($objResult->fields['comment']) > 100) {
-                        $points = "...";
+                    if (strlen($array['comment']) > 100) {
+                        $points = '...';
                     } else {
-                        $points = "";
+                        $points = '';
                     }
-
-                    $parts= explode("\n", wordwrap($objResult->fields['comment'], 100, "\n"));
-
+                    $parts= explode("\n", wordwrap($array['comment'], 100, "\n"));
                     $this->_objTemplate->setVariable(array(
-                        "CALENDAR_EVENT_ENDTIME"        => date("H:i", $objResult->fields['enddate']),
-                        "CALENDAR_EVENT_ENDDATE"        => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['enddate']),
-                        "CALENDAR_EVENT_STARTTIME"        => date("H:i", $objResult->fields['startdate']),
-                        "CALENDAR_EVENT_STARTDATE"        => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['startdate']),
-                        "CALENDAR_EVENT_NAME"            => stripslashes(htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)),
-                        "CALENDAR_EVENT_THUMB"             => "<img src='".$objResult->fields['pic'].".thumb' border='0' alt='".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."' />",
-                        "CALENDAR_EVENT_THUMB_SOURCE"     => $objResult->fields['pic'],
-                        "CALENDAR_EVENT_ID"             => $objResult->fields['id'],
-                        "CALENDAR_EVENT_COMMENT"        => $objResult->fields['comment'],
-                        "CALENDAR_EVENT_SHORT_COMMENT"    => $parts[0].$points,
+                        'CALENDAR_EVENT_ENDTIME'        => date('H:i', $array['enddate']),
+                        'CALENDAR_EVENT_ENDDATE'        => date(ASCMS_DATE_SHORT_FORMAT, $array['enddate']),
+                        'CALENDAR_EVENT_STARTTIME'        => date('H:i', $array['startdate']),
+                        'CALENDAR_EVENT_STARTDATE'        => date(ASCMS_DATE_SHORT_FORMAT, $array['startdate']),
+                        'CALENDAR_EVENT_NAME'            => htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'CALENDAR_EVENT_THUMB'             =>
+                            '<img src="'.$array['pic'].
+                            '.thumb" border="0" alt="'.
+                            htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).
+                            '" />',
+                        'CALENDAR_EVENT_THUMB_SOURCE'     => $array['pic'],
+                        'CALENDAR_EVENT_ID'             => $key,
+                        'CALENDAR_EVENT_COMMENT'        => $array['comment'],
+                        'CALENDAR_EVENT_SHORT_COMMENT'    => $parts[0].$points,
+                        'CALENDAR_EVENT_ROW'            => (++$i % 2 ? 'row1' : 'row2'),
                     ));
-
-                    $this->_objTemplate->parseCurrentBlock();
-                    $objResult->MoveNext();
+                    $this->_objTemplate->parse('calendar_headlines_row');
                 }
-                return $this->_objTemplate->get();
             }
+        } else {
+            $this->_objTemplate->hideBlock('calendar_headlines_row');
         }
-        $this->_objTemplate->hideBlock('calendar_headlines_row');
-        return '';
     }
 }
 

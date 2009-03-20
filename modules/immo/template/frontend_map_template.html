@@ -5,12 +5,12 @@
 <head>
 <title>Map</title>
 <style type="text/css">
-.saxermap {
+.immomap {
    color: black;
    font-size: 11px;
    font-family: verdana;
 }
-div.saxermap a {
+div.immomap a {
    color: black;
    text-decoration: underline;
 }
@@ -59,30 +59,30 @@ var loadMap = function() {
 		//cIcon.shadow = "";
         //sIcon.imageMap = [0,1,13,37,38,28,34,7];
         //cIcon.imageMap = [0,1,13,37,38,28,34,7];
-		// Set markers		
+		// Set markers
 		for (var i = 0; i < markers.length; i++) {
 			map.addOverlay(createMarker(i));
 		}
 		//change to hybrid mode
-		gMapType = map.getMapTypes();		
+		gMapType = map.getMapTypes();
         map.setMapType(gMapType[2]);  // [0] map [1] satellite [2] hybrid
-        
+
         // remove overlays on click
         GEvent.addListener(map, "click", function(overlay, point) {
           if (overlay == null){
             map.closeInfoWindow();
           }
         });
-        
+
     	//switch maptype to normal if zoom bigger than 14 (no images available for this zoom location)
     	//else show hybrid
-    	
+
         GEvent.addListener(map, "zoomend", function() {
     	    zoom = map.getZoom();
 			if(zoom > 14){
 				map.setMapType(gMapType[0]);
 			}else{
-				map.setMapType(gMapType[2]);		
+				map.setMapType(gMapType[2]);
 			}
     	});
 	}
@@ -91,8 +91,9 @@ var loadMap = function() {
 var createMarker = function(i) {
 	var point = new GLatLng(markers[i]['long'], markers[i]['lat']);
 	var message = createMessage(i);
+	//custom icons can be set here, different ones as well
 	/*var icon = null;
-	if (markers[i]['logo'] == 'saxer') {
+	if (markers[i]['logo'] == 1) {
 		icon = sIcon;
 	} else {
 		icon = cIcon;
@@ -108,7 +109,7 @@ var createMarker = function(i) {
 var createMessage = function(id) {
 	var message = markers[id]['message'];
 	var id = markers[id]['id'];
-	return "<div class=\"saxermap\">"+message+"<p><a href=\"javascript:showObj("+id+");\">"+txtLook+"<\/a><\/p><\/div>";
+	return "<div class=\"immomap\">"+message+"<p><a href=\"javascript:showObj("+id+");\">"+txtLook+"<\/a><\/p><\/div>";
 }
 
 var showObj = function(id){

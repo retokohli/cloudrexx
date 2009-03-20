@@ -1,7 +1,7 @@
 <?php
 function _coreUpdate()
 {
-    global $objDatabase, $_ARRAYLANG;
+    global $objDatabase, $_CORELANG;
 
     $query = "SELECT `id` FROM `".DBPREFIX."languages` WHERE `charset` != 'UTF-8'";
     $objLanguage = $objDatabase->Execute($query);
@@ -58,7 +58,7 @@ function _coreUpdate()
      **********************************************/
     $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX."backend_areas");
     if ($arrColumns === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'backend_areas'));
+        setUpdateMsg(sprintf($_CORELANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'backend_areas'));
         return false;
     }
 
@@ -74,12 +74,12 @@ function _coreUpdate()
         }
     }
 
-    $arrTables = $objDatabase->MetaTables();
     /*********************
      *
      * ADD COUNTRY TABLE
      *
      ********************/
+    $arrTables = $objDatabase->MetaTables();
     if (!in_array(DBPREFIX."lib_country", $arrTables)) {
         $query = "CREATE TABLE `".DBPREFIX."lib_country` (
             `id` int(11) unsigned NOT NULL auto_increment,
@@ -1307,6 +1307,25 @@ function _coreUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     }
+
+    /**********************************************
+     *
+     * NEW IN VERSION 2.1: templates for mobile devices!
+     *
+     **********************************************/
+    $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX."languages");
+    if ($arrColumns === false) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'languages'));
+        return false;
+    }
+
+    if (!in_array('mobile_themes_id', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."languages` ADD `mobile_themes_id` INT(2) UNSIGNED NOT NULL DEFAULT 0";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
 
     return true;
 }

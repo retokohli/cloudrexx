@@ -116,157 +116,150 @@ function _accessUpdate()
         }
     }
 
-    if (in_array(DBPREFIX.'community_config', $arrTables)) {
-        $query = 'SELECT `name`, `value`, `status` FROM `'.DBPREFIX.'community_config`';
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $arrCommunityConfig[$objResult->fields['name']] = array(
-                    'value'        => $objResult->fields['value'],
-                    'status'    => $objResult->fields['status']
-                );
-                $objResult->MoveNext();
+    $query = 'SELECT `name`, `value`, `status` FROM `'.DBPREFIX.'community_config`';
+    $objResult = $objDatabase->Execute($query);
+    if ($objResult) {
+        while (!$objResult->EOF) {
+            $arrCommunityConfig[$objResult->fields['name']] = array(
+                'value'        => $objResult->fields['value'],
+                'status'    => $objResult->fields['status']
+            );
+            $objResult->MoveNext();
+        }
+    } else {
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
+
+    $arrSettings = array(
+        'user_activation' => array(
+            'value'    => '',
+            'status'    => $arrCommunityConfig['user_activation']['status']
+        ),
+        'user_activation_timeout' => array(
+            'value'        => $arrCommunityConfig['user_activation_timeout']['value'],
+            'status'    => $arrCommunityConfig['user_activation_timeout']['status']
+        ),
+        'assigne_to_groups' => array(
+            'value'        => $arrCommunityConfig['community_groups']['value'],
+            'status'    => 1
+        ),
+        'max_profile_pic_width' => array(
+            'value'        => '160',
+            'status'    => 1
+        ),
+        'max_profile_pic_height' => array(
+            'value'        => '160',
+            'status'    => 1
+        ),
+        'profile_thumbnail_pic_width' => array(
+            'value'        => '50',
+            'status'    => 1
+        ),
+        'profile_thumbnail_pic_height' => array(
+            'value'        => '50',
+            'status'    => 1
+        ),
+        'max_profile_pic_size' => array(
+            'value'        => '30000',
+            'status'    => 1
+        ),
+        'max_pic_width' => array(
+            'value'        => '600',
+            'status'    => 1
+        ),
+        'max_pic_height' => array(
+            'value'        => '600',
+            'status'    => 1
+        ),
+        'max_thumbnail_pic_width' => array(
+            'value'        => '130',
+            'status'    => 1
+        ),
+        'max_thumbnail_pic_height' => array(
+            'value'        => '130',
+            'status'    => 1
+        ),
+        'max_pic_size' => array(
+            'value'        => '200000',
+            'status'    => 1
+        ),
+        'notification_address' => array(
+            'value'        => addslashes($_CONFIG['coreAdminEmail']),
+            'status'    => 1
+        ),
+        'user_config_email_access' => array(
+            'value'        => '',
+            'status'    => 1
+        ),
+        'user_config_profile_access' => array(
+            'value'        => '',
+            'status'    => 1
+        ),
+        'default_email_access' => array(
+            'value'        => 'members_only',
+            'status'    => 1
+        ),
+        'default_profile_access' => array(
+            'value'        => 'members_only',
+            'status'    => 1
+        ),
+        'user_delete_account' => array(
+            'value'        => '',
+            'status'    => 1
+        ),
+        'block_currently_online_users' => array(
+            'value'        => '10',
+            'status'    => 0
+        ),
+        'block_currently_online_users_pic' => array(
+            'value'        => '',
+            'status'    => 0
+        ),
+        'block_last_active_users' => array(
+            'value'        => '10',
+            'status'    => 0
+        ),
+        'block_last_active_users_pic' => array(
+            'value'        => '',
+            'status'    => 0
+        ),
+        'block_latest_reg_users' => array(
+            'value'        => '10',
+            'status'    => 0
+        ),
+        'block_latest_reg_users_pic' => array(
+            'value'        => '',
+            'status'    => 0
+        ),
+        'block_birthday_users' => array(
+            'value'        => '10',
+            'status'    => 0
+        ),
+        'block_birthday_users_pic' => array(
+            'value'        => '',
+            'status'    => 0
+        ),
+    );
+
+    foreach ($arrSettings as $key => $arrSetting) {
+        $query = "SELECT 1 FROM `".DBPREFIX."access_settings` WHERE `key` = '".$key."'";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult !== false) {
+            if ($objResult->RecordCount() == 0) {
+                $query = "INSERT INTO `".DBPREFIX."access_settings` (
+                    `key`,
+                    `value`,
+                    `status`
+                ) VALUES (
+                    '".$key."',
+                    '".$arrSetting['value']."',
+                    '".$arrSetting['status']."'
+                )";
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
             }
         } else {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-
-        $arrSettings = array(
-            'user_activation' => array(
-                'value'    => '',
-                'status'    => $arrCommunityConfig['user_activation']['status']
-            ),
-            'user_activation_timeout' => array(
-                'value'        => $arrCommunityConfig['user_activation_timeout']['value'],
-                'status'    => $arrCommunityConfig['user_activation_timeout']['status']
-            ),
-            'assigne_to_groups' => array(
-                'value'        => $arrCommunityConfig['community_groups']['value'],
-                'status'    => 1
-            ),
-            'max_profile_pic_width' => array(
-                'value'        => '160',
-                'status'    => 1
-            ),
-            'max_profile_pic_height' => array(
-                'value'        => '160',
-                'status'    => 1
-            ),
-            'profile_thumbnail_pic_width' => array(
-                'value'        => '50',
-                'status'    => 1
-            ),
-            'profile_thumbnail_pic_height' => array(
-                'value'        => '50',
-                'status'    => 1
-            ),
-            'max_profile_pic_size' => array(
-                'value'        => '30000',
-                'status'    => 1
-            ),
-            'max_pic_width' => array(
-                'value'        => '600',
-                'status'    => 1
-            ),
-            'max_pic_height' => array(
-                'value'        => '600',
-                'status'    => 1
-            ),
-            'max_thumbnail_pic_width' => array(
-                'value'        => '130',
-                'status'    => 1
-            ),
-            'max_thumbnail_pic_height' => array(
-                'value'        => '130',
-                'status'    => 1
-            ),
-            'max_pic_size' => array(
-                'value'        => '200000',
-                'status'    => 1
-            ),
-            'notification_address' => array(
-                'value'        => addslashes($_CONFIG['coreAdminEmail']),
-                'status'    => 1
-            ),
-            'user_config_email_access' => array(
-                'value'        => '',
-                'status'    => 1
-            ),
-            'user_config_profile_access' => array(
-                'value'        => '',
-                'status'    => 1
-            ),
-            'default_email_access' => array(
-                'value'        => 'members_only',
-                'status'    => 1
-            ),
-            'default_profile_access' => array(
-                'value'        => 'members_only',
-                'status'    => 1
-            ),
-            'user_delete_account' => array(
-                'value'        => '',
-                'status'    => 1
-            ),
-            'block_currently_online_users' => array(
-                'value'        => '10',
-                'status'    => 0
-            ),
-            'block_currently_online_users_pic' => array(
-                'value'        => '',
-                'status'    => 0
-            ),
-            'block_last_active_users' => array(
-                'value'        => '10',
-                'status'    => 0
-            ),
-            'block_last_active_users_pic' => array(
-                'value'        => '',
-                'status'    => 0
-            ),
-            'block_latest_reg_users' => array(
-                'value'        => '10',
-                'status'    => 0
-            ),
-            'block_latest_reg_users_pic' => array(
-                'value'        => '',
-                'status'    => 0
-            ),
-            'block_birthday_users' => array(
-                'value'        => '10',
-                'status'    => 0
-            ),
-            'block_birthday_users_pic' => array(
-                'value'        => '',
-                'status'    => 0
-            ),
-        );
-
-        foreach ($arrSettings as $key => $arrSetting) {
-            $query = "SELECT 1 FROM `".DBPREFIX."access_settings` WHERE `key` = '".$key."'";
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult !== false) {
-                if ($objResult->RecordCount() == 0) {
-                    $query = "INSERT INTO `".DBPREFIX."access_settings` (
-                        `key`,
-                        `value`,
-                        `status`
-                    ) VALUES (
-                        '".$key."',
-                        '".$arrSetting['value']."',
-                        '".$arrSetting['status']."'
-                    )";
-                    if ($objDatabase->Execute($query) === false) {
-                        return _databaseError($query, $objDatabase->ErrorMsg());
-                    }
-                }
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-
-        $query = 'DROP TABLE `'.DBPREFIX.'community_config`';
-        if ($objDatabase->Execute($query) === false) {
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     }
@@ -360,6 +353,7 @@ function _accessUpdate()
                         return _databaseError($query, $objDatabase->ErrorMsg());
                     }
                 }
+
                 $objUser->MoveNext();
             }
         } else {
@@ -608,10 +602,7 @@ function _accessUpdate()
         }
     }
 
-    $query = "UPDATE `".DBPREFIX."access_user_profile` SET `website` = CONCAT('http://', `website`) WHERE `website` != '' AND `website` NOT LIKE 'http://%'";
-    if ($objDatabase->Execute($query) === false) {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
+
 
     /***********************************
      *
@@ -747,35 +738,6 @@ function _accessUpdate()
         }
     }
 
-    /************************************
-     *
-     * ADD CUSTOM ATTRIBUTE VALUE ENTRY
-     *
-     ***********************************/
-    $query = "SELECT `id` FROM `".DBPREFIX."access_users`";
-    $objUser = $objDatabase->Execute($query);
-    if ($objUser !== false) {
-        while (!$objUser->EOF) {
-            $query = "SELECT `attribute_id` FROM `".DBPREFIX."access_user_attribute_value` WHERE `user_id` = ".$objUser->fields['id']." ORDER BY `attribute_id`";
-            $objProfile = $objDatabase->SelectLimit($query, 1);
-            if ($objProfile) {
-                if ($objProfile->RecordCount() == 0 || $objProfile->fields['attribute_id'] > 0) {
-                    $query = "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`attribute_id`, `user_id`, `history_id`, `value`) VALUES
-    ('0', '".$objUser->fields['id']."', '0', '')";
-                    if ($objDatabase->Execute($query) === false) {
-                        return _databaseError($query, $objDatabase->ErrorMsg());
-                    }
-                }
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-
-            $objUser->MoveNext();
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
 
 
     /************************
@@ -846,7 +808,7 @@ function _accessUpdate()
     }
 
     if (!in_array('user_id', $arrColumns)) {
-        $query = "
+         $query = "
             ALTER TABLE `".DBPREFIX."sessions`
              DROP `username`,
               ADD `user_id` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `status`";
@@ -854,7 +816,17 @@ function _accessUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     }
+
+    /***************************************
+     *
+     * ADD CHECKBOX PROFILE ATTRIBUTE TYPE
+     *
+     **************************************/
+    $query = "ALTER TABLE `".DBPREFIX."access_user_attribute` CHANGE `type` `type` enum('text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history') NOT NULL DEFAULT 'text'";
+    if ($objDatabase->Execute($query) === false) {
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
+
     return true;
 }
-
 ?>

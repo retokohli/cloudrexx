@@ -41,4 +41,7 @@ $_ARRAYLANG['TXT_SUBMIT'] = "Отправить";
 $_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Здравствуйте";
 $_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "Подтверждение новости";
 $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Новость еще не была опубликована. Вы можете это сделать проследовав по ссылке:";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Der eingegebene Captcha-Code ist nicht korrekt!";
+$_ARRAYLANG['TXT_CAPTCHA'] = "Bitte geben Sie die abgebildeten Zeichen ein:";
+$_ARRAYLANG['TXT_NEWS_MORE'] = "Больше";
 ?>

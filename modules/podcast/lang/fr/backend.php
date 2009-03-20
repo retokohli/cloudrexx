@@ -79,7 +79,7 @@ $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Texte source";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Texte source de la video %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Sélectionner tout";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Sélectionner source";
-$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Veuillez saisir soit une video locale que que voulez ajouter au dossier Podcast,<br />soit directement l'URL de la video.<br /><br />Vous pouvez aussi saisir un lien YouTube (exemple: http://youtube.com/watch?v=abcdef12345)<br />Le code de ce lien peut être copié directement sur la page YouTube (à droite de la video) et coller ici.";
+$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Veuillez saisir soit une video locale que que voulez ajouter au dossier Podcast,<br />soit directement l'URL de la video.<br /><br />Vous pouvez aussi saisir un lien YouTube (exemple: http://youtube.com/watch?v=abcdef12345)<br />Le code de ce lien peut être copié directement sur la page YouTube (à droite de la video) et collé ici.";
 $_ARRAYLANG['TXT_PODCAST_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_PODCAST_REMOTE'] = "URL";
 $_ARRAYLANG['TXT_PODCAST_NEXT'] = "Suite";

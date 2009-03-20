@@ -16,6 +16,7 @@
 class reservationLib
 {
     var $options;
+    var $langId;
 
     /**
      * Constructor
@@ -26,7 +27,7 @@ class reservationLib
         $this->tidy();
 
         /* FIXME */
-        setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu');
+	    setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu');
     }
 
     /**
@@ -49,7 +50,7 @@ class reservationLib
         global $objDatabase;
 
         $query = "SELECT setname, setvalue FROM ".DBPREFIX."module_reservation_settings
-                  WHERE lang_id = '".FRONTEND_LANG_ID."'";
+                  WHERE lang_id = '".$this->langId."'";
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult) {

@@ -12,7 +12,7 @@
 
 // SECURITY CHECK
 if (eregi('index.class.php', $_SERVER['PHP_SELF'])) {
-    header('Location: index.php');
+    header('Location: '.CONTREXX_DIRECTORY_INDEX);
     die();
 }
 
@@ -39,7 +39,11 @@ if(ini_get('allow_url_fopen') != 1){
  * @package     contrexx
  * @subpackage  module_feed
  */
-class feed extends feedLibrary{
+class feed extends feedLibrary
+{
+	/**
+	 * @var    HTML_Template_Sigma
+	 */
     public $_objTpl;
     public $pageTitle;
     public $statusMessage;
@@ -139,19 +143,19 @@ class feed extends feedLibrary{
 
 
     function showNews() {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //feed path
         $this->feedpath = ASCMS_FEED_PATH . '/';
 
-        //active (with FRONTEND_LANG_ID) categories
+        //active (with $_LANGID) categories
         $query = "SELECT id,
                            name
                       FROM ".DBPREFIX."module_feed_category
                      WHERE status = '1'
-                       AND lang = '".FRONTEND_LANG_ID."'
+                       AND lang = '".$_LANGID."'
                   ORDER BY pos";
         if(($objResult = $objDatabase->Execute($query)))
 
@@ -197,7 +201,7 @@ class feed extends feedLibrary{
             if(!isset($_GET['cat']) and !isset($_GET['news'])){
                 $this->_objTpl->setVariable('FEED_NO_NEWSFEED', $_ARRAYLANG['TXT_FEED_NO_NEWSFEED']);
             }else{
-                header("Location: index.php?section=feed");
+                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=feed");
             }
         } else {
             if ($this->_objTpl->blockExists('feed_cat')) {
@@ -208,7 +212,7 @@ class feed extends feedLibrary{
                     //out news
                     foreach($news_id[$x] as $y){
                         $this->_objTpl->setVariable(array(
-                            'FEED_NEWS_LINK'   => '?section=feed&amp;cat='.$news_subid[$x][$y].'&amp;news='.$news_id[$x][$y],
+                            'FEED_NEWS_LINK'   => CONTREXX_DIRECTORY_INDEX.'?section=feed&amp;cat='.$news_subid[$x][$y].'&amp;news='.$news_id[$x][$y],
                             'FEED_NEWS_NAME'   => strip_tags($news_name[$x][$y])
                         ));
                         $this->_objTpl->parse('feed_news');
@@ -249,7 +253,7 @@ class feed extends feedLibrary{
                            AND status = '1'";
             $objResult = $objDatabase->Execute($query);
             if($objResult->RecordCount() == 0){
-                header("Location: index.php?section=feed");
+                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=feed");
                 die;
             }
 
@@ -263,7 +267,7 @@ class feed extends feedLibrary{
 
             $query = "SELECT name,
                                filename,
-                 FROM_UNIXTIME(time, '%d. %M %Y, %H:%i') AS time,
+                               time,
                                articles,
                                image
                           FROM ".DBPREFIX."module_feed_news
@@ -283,11 +287,11 @@ class feed extends feedLibrary{
             $filename = $this->feedpath.$objResult->fields['filename'];
 
             //rss class
-            $rss =& new XML_RSS($filename);
+            $rss = new XML_RSS($filename);
             $rss->parse();
             //channel info
             $out_title = strip_tags($rss->channel['title']);
-            $out_time  = strip_tags($objResult->fields['time']);
+            $out_time  = date(ASCMS_DATE_FORMAT, $objResult->fields['time']);
 
             //image
             foreach ($rss->getImages() as $img) {
@@ -309,8 +313,8 @@ class feed extends feedLibrary{
             foreach ($rss->getItems() as $value){
                 if($x < $objResult->fields['articles']){
                     $this->_objTpl->setVariable(array(
-                        'FEED_LINK'   => htmlentities($value['link'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'FEED_NAME'   => htmlentities($value['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'FEED_LINK'   => $value['link'],
+                        'FEED_NAME'   => $value['title'],
                     ));
                     $this->_objTpl->parse('feed_output_news');
                     $x++;

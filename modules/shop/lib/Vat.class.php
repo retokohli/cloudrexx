@@ -3,7 +3,7 @@
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     1.0.0
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
@@ -18,7 +18,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     1.0.0
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -75,6 +75,41 @@ class Vat
      */
     private static $vatOtherId = false;
 
+    /**
+     * The current order goes to the shop country if true.
+     * Defaults to true.
+     * @var     boolean
+     */
+    private static $is_home_country = true;
+
+    /**
+     * The current user is a reseller if true
+     * Defaults to false.
+     * @var     boolean
+     */
+    private static $is_reseller = false;
+
+
+    /**
+     * Set the home country flag
+     * @param   boolean     True if the shop home country and the
+     *                      ship-to country are identical
+     */
+    static function isHomeCountry($is_home_country)
+    {
+        self::$is_home_country = $is_home_country;
+    }
+
+    /**
+     * Set the reseller flag
+     * @param   boolean     True if the current customer has the
+     *                      reseller flag set
+     */
+    static function isReseller($is_reseller)
+    {
+        self::$is_reseller = $is_reseller;
+    }
+
 
     /**
      * Initialize the Vat object with current values from the database.
@@ -85,7 +120,7 @@ class Vat
      *  (ID => rate)
      * Plus initializes the various object variables.
      * May die() with a message if it fails to access its settings.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  void
      * @static
      */
@@ -93,65 +128,67 @@ class Vat
     {
         global $objDatabase;
 
-        $arrSqlClass = Text::getSqlSnippets('`vat`.`text_class_id`', FRONTEND_LANG_ID);
-        $query = "
-            SELECT `vat`.`id`, `percent`".$arrSqlClass['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat as `vat`
-             ".$arrSqlClass['join'];
+//        $arrSqlClass = Text::getSqlSnippets('`vat`.`text_class_id`', FRONTEND_LANG_ID);
+//        $query = "
+//            SELECT `vat`.`id`, `percent`".$arrSqlClass['field']."
+//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat as `vat`
+//             ".$arrSqlClass['join'];
+//        $objResult = $objDatabase->Execute($query);
+//        if (!$objResult) return false;
+        $query = "SELECT id, percent, class ".
+                 "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         self::$arrVat = array();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-            $text_class_id = $objResult->fields[$arrSqlClass['name']];
-            $strClass = $objResult->fields[$arrSqlClass['text']];
-            // Replace Text in a missing language by another, if available
-            if ($text_class_id && $strClass === null) {
-                $objText = Text::getById($text_class_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strClass = $objText->getText();
-            }
+//            $text_class_id = $objResult->fields[$arrSqlClass['name']];
+//            $strClass = $objResult->fields[$arrSqlClass['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($text_class_id && $strClass === null) {
+//                $objText = Text::getById($text_class_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strClass = $objText->getText();
+//            }
             self::$arrVat[$id] = array(
                 'id'    => $id,
                 'rate'  => $objResult->fields['percent'],
-                'class' => $strClass,
-                'text_class_id' => $text_class_id,
+                'class' => $objResult->fields['class'], //$strClass,
+//                'text_class_id' => $text_class_id,
             );
             $objResult->MoveNext();
         }
         self::$arrVatEnabled = array(
-            // Country:
-            // Foreign
+            // Foreign countries
             0 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_enabled_foreign_customer')),
+                0 => Settings::getValueByName('vat_enabled_foreign_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_enabled_foreign_reseller')),
+                1 => Settings::getValueByName('vat_enabled_foreign_reseller'),
             ),
-            // Home
+            // Home country
             1 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_enabled_home_customer')),
+                0 => Settings::getValueByName('vat_enabled_home_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_enabled_home_reseller')),
+                1 => Settings::getValueByName('vat_enabled_home_reseller'),
             ),
         );
         self::$arrVatIncluded = array(
-            // Country:
-            // Foreign
+            // Foreign country
             0 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_included_foreign_customer')),
+                0 => Settings::getValueByName('vat_included_foreign_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_included_foreign_reseller')),
+                1 => Settings::getValueByName('vat_included_foreign_reseller'),
             ),
-            // Home
+            // Home country
             1 => array(
                 // Customer
-                0 => array(Settings::getValueByName('vat_included_home_customer')),
+                0 => Settings::getValueByName('vat_included_home_customer'),
                 // Reseller
-                1 => array(Settings::getValueByName('vat_included_home_reseller')),
+                1 => Settings::getValueByName('vat_included_home_reseller'),
             ),
         );
         self::$vatDefaultId = Settings::getValueByName('vat_default_id');
@@ -238,11 +275,11 @@ class Vat
      * @return  boolean     True if VAT is enabled, false otherwise.
      * @static
      */
-    static function isEnabled($is_home_country, $is_reseller)
+    static function isEnabled()
     {
         if (!is_array(self::$arrVat)) self::init();
         return
-            (self::$arrVatEnabled[$is_home_country ? 1 : 0][$is_reseller ? 1 : 0]
+            (self::$arrVatEnabled[self::$is_home_country ? 1 : 0][self::$is_reseller ? 1 : 0]
                 ? true : false
             );
     }
@@ -257,11 +294,11 @@ class Vat
      * @return  boolean     True if VAT is included, false otherwise.
      * @static
      */
-    static function isIncluded($is_home_country, $is_reseller)
+    static function isIncluded()
     {
         if (!is_array(self::$arrVat)) self::init();
         return
-            (self::$arrVatIncluded[$is_home_country ? 1 : 0][$is_reseller ? 1 : 0]
+            (self::$arrVatIncluded[self::$is_home_country ? 1 : 0][self::$is_reseller ? 1 : 0]
                 ? true : false
             );
     }
@@ -473,14 +510,15 @@ class Vat
             $rate = $vatRates[$id];
             if (   self::$arrVat[$id]['class'] != $class
                 || self::$arrVat[$id]['rate']  != $rate) {
-                $objText = Text::replace(
-                    $text_class_id, LANG_ID, $class,
-                    MODULE_ID, TEXT_SHOP_VAT_CLASS
-                );
-                if (!$objText) return false;
+//                $objText = Text::replace(
+//                    $text_class_id, LANG_ID, $class,
+//                    MODULE_ID, TEXT_SHOP_VAT_CLASS
+//                );
+//                if (!$objText) return false;
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_vat
-                       SET `percent`=$rate
+                       SET `percent`=$rate,
+                           `class`='".addslashes($class)."'
                      WHERE `id`=$id
                 ";
                 $objResult = $objDatabase->Execute($query);
@@ -514,21 +552,28 @@ class Vat
 
         $vatRate = doubleval($vatRate);
         if ($vatRate >= 0) {
-            $objText = Text::replace(
-                0, BACKEND_LANG_ID, $vatClass, MODULE_ID, TEXT_SHOP_VAT_CLASS
-            );
-            if (!$objText) return false;
+//            $objText = Text::replace(
+//                0, BACKEND_LANG_ID, $vatClass, MODULE_ID, TEXT_SHOP_VAT_CLASS
+//            );
+//            if (!$objText) return false;
+//            $query = "
+//                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
+//                    text_class_id, percent
+//                ) VALUES (
+//                    ".$objText->getId().", $vatRate
+//                )
+//            ";
             $query = "
                 INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
-                    text_class_id, percent
+                    class, percent
                 ) VALUES (
-                    ".$objText->getId().", $vatRate
+                    '".addslashes($vatClass)."', $vatRate
                 )
             ";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) return true;
-            // Rollback and delete the Text
-            Text::deleteById($objText->getId(), BACKEND_LANG_ID);
+//            // Rollback and delete the Text
+//            Text::deleteById($objText->getId(), BACKEND_LANG_ID);
         }
         return false;
     }
@@ -555,8 +600,8 @@ class Vat
         if (!is_array(self::$arrVat)) self::init();
         $vatId = intval($vatId);
         if ($vatId > 0) {
-            if (!Text::deleteById(self::$arrVat[$vatId]['text_class_id']))
-                return false;
+//            if (!Text::deleteById(self::$arrVat[$vatId]['text_class_id']))
+//                return false;
             $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat WHERE id=$vatId";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) return true;
@@ -566,6 +611,7 @@ class Vat
 
 
     /**
+     * post-2.1
      * Returns the Text ID stored in the VAT record for the given VAT ID
      * @param   integer   $vat_id       The VAT ID
      * @return  integer                 The Text ID on success, false otherwise
@@ -600,12 +646,12 @@ class Vat
      * @return  double              Tax amount
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function amount($rate, $price, $is_home_country=false, $is_reseller=false)
+    static function amount($rate, $price)
     {
         if (!is_array(self::$arrVat)) self::init();
         // Is the vat enabled at all?
-        if (self::isEnabled($is_home_country, $is_reseller)) {
-            if (self::isIncluded($is_home_country, $is_reseller)) {
+        if (self::isEnabled(self::$is_home_country, self::$is_reseller)) {
+            if (self::isIncluded(self::$is_home_country, self::$is_reseller)) {
                 // Gross price; calculate the included VAT amount, like
                 // $amount = $price - 100 * $price / (100 + $rate)
                 return $price - 100*$price / (100+$rate);

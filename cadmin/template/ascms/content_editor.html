@@ -58,13 +58,13 @@ function aliasText(txt) {
 		.replace(/à/ig,  'a')
 		.replace(/ç/ig,  'c')
 		.replace(/[èé]/ig, 'e')
-		.replace(/[\s\+\/\(\)=,;%&]+/g, '-') // interpunction etc. 
+		.replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
 		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
-		// Sanitize most latin1 characters. 
+		// Sanitize most latin1 characters.
 		// there's more to come. maybe there's
 		// a generic function for this?
 		// Fallback for everything we didn't catch by now
-		.replace(/[^a-z_-]+/ig, '_')
+		.replace(/[^\sa-z_-]+/ig, '_')
 		.replace(/[_-]{2,}/g, '_')
 		.replace(/^[_\.\/\-]+/, '')
 		.toLowerCase()
@@ -222,7 +222,7 @@ function SetUrl(url, width, height, alt) {
 	case 'image':
 	case 'webpages':
 		document.getElementById(newsElInsertBox).value = url;
-		break;
+		break
 	case 'link':
 		insertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
 		break;
@@ -364,8 +364,8 @@ function openWindow(theURL,winName,features){
 				<tr class="row2">
 					<td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
 					<td>
-						<input type="radio" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="TypeSelection">{TXT_CONTENT_TYPE_DEFAULT}</label>
-						<input type="radio" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="TypeSelection">{TXT_CONTENT_TYPE_REDIRECT}</label>
+						<input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
+						<input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
 					</td>
 				</tr>
 			</tbody>
@@ -394,7 +394,7 @@ function openWindow(theURL,winName,features){
 				</tr>
 				<tr class="row2">
 					<td width="15%">{TXT_REDIRECT}</td>
-					<td width="85%"><input type="text" id="typeRedirectValue" name="redirect" value="{TXT_NO_REDIRECT}" maxlength="255" size="80" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="getFileBrowser('typeRedirectValue', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+					<td width="85%"><input type="text" id="typeRedirectValue" name="redirectUrl" value="{TXT_NO_REDIRECT}" maxlength="255" size="80" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="getFileBrowser('typeRedirectValue', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
 				</tr>
 			</thead>
 		</table>
@@ -696,7 +696,7 @@ function openWindow(theURL,winName,features){
 		<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
 			<thead>
 			    <tr>
-					<th colspan="3">Block zuweisen</th>
+					<th colspan="3">{TXT_CONTENT_ASSIGN_BLOCK}</th>
 				</tr>
 				<tr class="row2">
 					<td height="22" width="15%">{TXT_GROUPS}</td>
@@ -739,7 +739,7 @@ function openWindow(theURL,winName,features){
 </form>
 
 <script type="text/javascript">
-updateAliasPreview(document.formContent.alias.value);
+    updateAliasPreview(document.formContent.alias.value);
 </script>
 
 <!-- END content_editor.html -->

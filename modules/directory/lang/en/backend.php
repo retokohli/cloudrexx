@@ -305,4 +305,7 @@ $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Too many requests: The daily limi
 $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Server error: The search query (Goecoding) could not be handled correctly.";
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Please enter a unique address or move the map to the desired point.";
 $_ARRAYLANG['TXT_MAKE_SELECTION'] = "Please choose";
+$_ARRAYLANG['TXT_YOUTUBEWIDTH'] = "YouTube Width";
+$_ARRAYLANG['TXT_YOUTUBEHEIGHT'] = "YouTube Height";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>
