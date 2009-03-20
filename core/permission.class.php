@@ -67,10 +67,7 @@ class Permission
     }
 
     /**
-     * Redirects the browser to the noaccess webpage (?cmd=noaccess).
-     *
-     * This methode should only be used within the backend
-     * due the site ?cmd=noaccess doesn't exists in the frontend.
+     * Redirects the browser to the noaccess webpage.
      *
      * @return void
      */
@@ -78,7 +75,8 @@ class Permission
     {
         global $objInit;
 
-        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).'cmd=noaccess');
+        $objFWUser = FWUser::getFWUserObject();
+        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).($objFWUser->objUser->login() ? 'cmd=noaccess' : ''));
         exit;
     }
 
