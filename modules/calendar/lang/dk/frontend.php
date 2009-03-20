@@ -87,4 +87,6 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ACTIVATED'] = "Aktiver tilmeldelse";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Antal deltagere";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Aktiver underretning";
 $_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "Ingen eskort";
+$_ARRAYLANG['TXT_CALENDAR_FRONTENDSAVEOK'] = "Ihr Eintrag wurde gespeichert.";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
 ?>

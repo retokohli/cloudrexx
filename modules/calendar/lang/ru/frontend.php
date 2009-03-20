@@ -87,4 +87,6 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ACTIVATED'] = "Регистрация а
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Количество подписчиков";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Активировать нотификацию";
 $_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "no escort";
+$_ARRAYLANG['TXT_CALENDAR_FRONTENDSAVEOK'] = "Ihr Eintrag wurde gespeichert.";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
 ?>

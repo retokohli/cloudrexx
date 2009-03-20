@@ -87,4 +87,6 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ACTIVATED'] = "Activate Registration";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Number of attendees";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Activate notification";
 $_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "no escort";
+$_ARRAYLANG['TXT_CALENDAR_FRONTENDSAVEOK'] = "Your entry has been saved.";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
 ?>

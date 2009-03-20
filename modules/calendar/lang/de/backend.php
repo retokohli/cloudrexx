@@ -274,4 +274,5 @@ $_ARRAYLANG['TXT_CALENDAR_SETTINGS_FE_ENTRIES_ENABLED'] = "Besuchern erlauben Te
 $_ARRAYLANG['TXT_CALENDAR_FE_DEACTIVATED'] = "deaktiviert";
 $_ARRAYLANG['TXT_CALENDAR_FE_REGISTEREDONLY'] = "nur Community";
 $_ARRAYLANG['TXT_CALENDAR_FE_ALL'] = "alle Besucher";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Diese Funktionalität ist nicht aktiviert.";
 ?>
