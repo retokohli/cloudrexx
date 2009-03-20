@@ -223,4 +223,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_FILE_TOO_LARGE'] = "Die Datei %s wurde nicht hinauf g
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hinauf geladen!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'] = "Die Datei %s konnte nicht übermittelt werden, da ein Fehler auftrat!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_EXTENSION_NOT_ALLOWED'] = "Die Datei %s wurde abgelehnt, da sie eine unerlaubte Dateiendung aufweist!";
+$_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'] = "Verzeichnis erstellen";
 ?>

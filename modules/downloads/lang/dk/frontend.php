@@ -223,4 +223,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_FILE_TOO_LARGE'] = "Filen %s blev ikke uploadet, da f
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'] = "Filen %s kunne ikke uploades fuldstændigt!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'] = "Filen %s kunne ikke blive overført, da der opstod en fejl!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_EXTENSION_NOT_ALLOWED'] = "Filen %s blev afvist, da filendelsen ikke er tilladt!";
+$_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'] = "Create directory";
 ?>

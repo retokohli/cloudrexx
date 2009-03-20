@@ -223,4 +223,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_FILE_TOO_LARGE'] = "\¡El fichero no pudo ser subido 
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'] = "\¡El fichero %s no fue subido correctamente!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'] = "\¡El fichero %s no pudo ser enviado a causa de un error!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_EXTENSION_NOT_ALLOWED'] = "\¡El fichero %s fue rechazado debido a que tiene una extensi&oacute;n no permitida!";
+$_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'] = "Create directory";
 ?>

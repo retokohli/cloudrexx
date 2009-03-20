@@ -223,4 +223,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_FILE_TOO_LARGE'] = "Файл %s не был пере�
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'] = "Файл %s не был полностью закачан!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'] = "Файл не бы передан из-за возникшей ошибки!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_EXTENSION_NOT_ALLOWED'] = "Файл не был передан из-за недопустимого расширения!";
+$_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'] = "Create directory";
 ?>
