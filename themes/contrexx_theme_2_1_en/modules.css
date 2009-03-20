@@ -2003,56 +2003,6 @@ dl.data_module img {
 	width: 50%;
 }
 
-
-#downloads ul.subcategory_list,
-#downloads ul.file_list {
-	padding: 0px;
-}
-
-#downloads ul.subcategory_list li.header,
-#downloads ul.file_list li.header {
-	list-style: none;
-	padding: 4px 5px 4px 5px;
-	margin: 0px 0px 0px 0px;
-	font-weight: bold;
-	background-color: #EFEFEF;
-	border: 0px;
-	border-right: 1px solid #ffffff;
-	border-bottom: 1px dotted #D0D0D0;
-}
-
-#downloads ul.subcategory_list li.subcategory_0,
-#downloads ul.subcategory_list li.subcategory_1 {
-	list-style: none;
-	padding: 3px 5px 3px 5px;
-	margin: 0px 0px 0px 0px;
-	border: 0px;
-	border-bottom: 1px dotted #D0D0D0;
-	border-right: 1px solid #ffffff;
-	border-spacing: 0px;
-	vertical-align:top;
-}
-
-#downloads ul.subcategory_list li.subcategory_1 {
-	background-color: #F9F9F9
-}
-
-#downloads ul.file_list li.file_0,
-#downloads ul.file_list li.file_1 {
-	list-style: none;
-	padding: 3px 5px 3px 5px;
-	margin: 0px 0px 0px 0px;
-	border: 0px;
-	border-bottom: 1px dotted #D0D0D0;
-	border-right: 1px solid #ffffff;
-	border-spacing: 0px;
-	vertical-align:top;
-}
-
-#downloads ul.file_list li.file_1 {
-	background-color: #F9F9F9;
-}
-
 #downloads div.message,
 #downloads div.message_ok,
 #downloads div.message_error {
