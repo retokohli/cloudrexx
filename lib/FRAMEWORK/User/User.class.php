@@ -459,7 +459,7 @@ class User extends User_Profile
         return $this->backend_language;
     }
 
-    public function getDynamicPermissionIds($reload = true)
+    public function getDynamicPermissionIds($reload = false)
     {
         if (!isset($this->arrCachedUsers[$this->id]['dynamic_access_ids']) || $reload) {
             $this->loadPermissionIds('dynamic');
@@ -634,7 +634,7 @@ class User extends User_Profile
         return $this->restore_key_time;
     }
 
-    public function getStaticPermissionIds($reload = true)
+    public function getStaticPermissionIds($reload = false)
     {
         if (!isset($this->arrCachedUsers[$this->id]['static_access_ids']) || $reload) {
             $this->loadPermissionIds('static');
