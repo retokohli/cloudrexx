@@ -539,7 +539,7 @@ class JS
         JS::restoreComments($content);
     }
 
-    
+
     private static $comment_dict = array();
     /**
      * Grabs all comments in the given HTML and replaces them with a
@@ -551,11 +551,12 @@ class JS
     }
 
     /**
-     * Restores all grabbed comments (@see JS::grabComments()) and 
+     * Restores all grabbed comments (@see JS::grabComments()) and
      * puts them back in the given content. Modifies the given HTML in-place.
      * @param string $content
      */
     private static function restoreComments(&$content) {
+        krsort(self::$comment_dict);
         foreach (self::$comment_dict as $key => $value) {
             $content = str_replace($key, $value, $content);
         }
@@ -566,7 +567,7 @@ class JS
      * Internal helper for replacing comments. @see JS::grabComments()
      */
     private static function _storeComment($re) {
-        
+
         $name = 'saved_comment_'.self::$re_name_postfix;
         self::$comment_dict[$name] = $re[0];
         self::$re_name_postfix++;
