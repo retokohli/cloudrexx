@@ -1433,6 +1433,18 @@ switch ($plainSection) {
         $objTemplate->setVariable("CONTENT_TEXT", votingShowCurrent($page_content));
     break;
 
+    //-------------------------------------------------------
+    // file uploader
+    //-------------------------------------------------------
+    case 'fileUploader':
+        $modulespath = ASCMS_MODULE_PATH.'/fileUploader/index.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objFileUploader = new FileUploader();
+        $objFileUploader->getPage();
+        exit;
+    break;
+
 //-------------------------------------------------------
 // News Feed Module
 //-------------------------------------------------------
