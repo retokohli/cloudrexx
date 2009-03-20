@@ -5,6 +5,7 @@ class Download {
     private $type;
     private $mime_type;
     private $source;
+    private $source_name;
     private $icon;
     private $size;
     private $image;
@@ -36,10 +37,11 @@ class Download {
             'type'                              => 'string',
             'mime_type'                         => 'string',
             'source'                            => 'string',
+            'source_name'                       => 'string',
             'icon'                              => 'string',
             'size'                              => 'int',
             'image'                             => 'string',
-            'owner_id'                         => 'int',
+            'owner_id'                          => 'int',
             'access_id'                         => 'int',
             'license'                           => 'string',
             'version'                           => 'string',
@@ -211,6 +213,7 @@ class Download {
         $this->type = $this->defaultType;
         $this->mime_type = $this->defaultMimeType;
         $this->source = '';
+        $this->source_name = '';
         $this->icon = $this->defaultIcon;
         $this->size = 0;
         $this->image = '';
@@ -240,7 +243,7 @@ class Download {
      *
      * @return boolean
      */
-    public function delete()
+    public function delete($categoryId = null)
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
@@ -250,6 +253,15 @@ class Download {
             !Permission::checkAccess(142, 'static', true)
             // the owner has the permission to delete it by himself
             && (!$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
+            && (
+                empty($categoryId)
+                || ($objCategory = Category::getCategory($categoryId)) === false
+                || (
+                    $objCategory->getManageFilesAccessId()
+                    && !Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                    && (!$objFWUser->objUser->login() || $objCategory->getOwnerId() != $objFWUser->objUser->getId())
+                )
+            )
         ) {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_DOWNLOAD'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
             return false;
@@ -404,6 +416,7 @@ class Download {
                 $this->type = isset($this->arrLoadedDownloads[$id]['type']) ? $this->arrLoadedDownloads[$id]['type'] : $this->defaultType;
                 $this->mime_type = isset($this->arrLoadedDownloads[$id]['mime_type']) ? $this->arrLoadedDownloads[$id]['mime_type'] : $this->defaultMimeType;
                 $this->source = isset($this->arrLoadedDownloads[$id]['source']) ? $this->arrLoadedDownloads[$id]['source'] : '';
+                $this->source_name = isset($this->arrLoadedDownloads[$id]['source_name']) ? $this->arrLoadedDownloads[$id]['source_name'] : '';
                 $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
                 $this->image = isset($this->arrLoadedDownloads[$id]['image']) ? $this->arrLoadedDownloads[$id]['image'] : '';
@@ -854,12 +867,23 @@ class Download {
      * @global array
      * @return boolean
      */
-    public function store()
+    public function store($objCategory = null)
     {
         global $objDatabase, $_ARRAYLANG;
 
         if (!Permission::checkAccess(142, 'static', true)
             && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
+            && (
+                empty($objCategory)
+                || (
+                    ($this->id && $objCategory->getManageFilesAccessId() || !$this->id && $objCategory->getAddFilesAccessId())
+                    && (
+                        $this->id && !Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                        || !$this->id && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true)
+                    )
+                    && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objCategory->getOwnerId() != $objFWUser->objUser->getId())
+                )
+            )
         ) {
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_MODIFY_DOWNLOAD_PROHIBITED'];
             return false;
@@ -877,6 +901,8 @@ class Download {
                     `type` = '".$this->type."',
                     `mime_type` = '".$this->mime_type."',
                     `source` = '".addslashes($this->source)."',
+                    `source_name` = '".addslashes($this->source_name)."',
+                    `icon` = '".addslashes($this->icon)."',
                     `size` = ".intval($this->size).",
                     `image` = '".addslashes($this->image)."',
                     `owner_id` = ".intval($this->owner_id).",
@@ -900,6 +926,8 @@ class Download {
                     `type`,
                     `mime_type`,
                     `source`,
+                    `source_name`,
+                    `icon`,
                     `size`,
                     `image`,
                     `owner_id`,
@@ -916,6 +944,8 @@ class Download {
                     '".$this->type."',
                     '".$this->mime_type."',
                     '".addslashes($this->source)."',
+                    '".addslashes($this->source_name)."',
+                    '".addslashes($this->icon)."',
                     ".intval($this->size).",
                     '".addslashes($this->image)."',
                     ".intval($this->owner_id).",
@@ -1212,6 +1242,11 @@ class Download {
         return $this->source;
     }
 
+    public function getSourceName()
+    {
+        return $this->source_name;
+    }
+
     public function getIcon($small = false)
     {
         return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.Download::$arrMimeTypes[$this->getMimeType()][($small ? 'icon_small' : 'icon')];
@@ -1374,14 +1409,21 @@ class Download {
         $this->mime_type = in_array($mimeType, array_keys(Download::$arrMimeTypes)) ? $mimeType : $this->defaultMimeType;
     }
 
-    public function setSource($source)
+    public function setSource($source, $sourceName = null)
     {
         if ($this->type == 'url') {
             $source = FWValidator::getUrl($source);
             $this->icon = $this->urlIcon;
+
+            if (preg_match('#^[a-z]+://([^/]+)#i', $source, $arrMatch)) {
+                $this->source_name = $arrMatch[1];
+            } else {
+                $this->source_name = $source;
+            }
         } else {
             $extension = pathinfo($source, PATHINFO_EXTENSION);
             $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
+            $this->source_name = isset($sourceName) ? $sourceName : basename($source);
         }
 
         $this->source = $source;

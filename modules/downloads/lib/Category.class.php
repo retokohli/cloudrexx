@@ -154,16 +154,16 @@ class Category {
         $this->read_protected = false;
         $this->read_groups = null;
         $this->add_subcategories_access_id = 0;
-        $tihs->add_subcategories_protected = false;
+        $this->add_subcategories_protected = true;
         $this->add_subcategories_groups = null;
         $this->manage_subcategories_access_id = 0;
-        $this->manage_subcategories_protected = false;
+        $this->manage_subcategories_protected = true;
         $this->manage_subcategories_groups = null;
         $this->add_files_access_id = 0;
-        $this->add_files_protected = false;
+        $this->add_files_protected = true;
         $this->add_files_groups = null;
         $this->manage_files_access_id = 0;
-        $this->manage_files_protected = false;
+        $this->manage_files_protected = true;
         $this->manage_files_groups = null;
         $this->set_permissions_recursive = false;
         $this->names = array();
@@ -192,7 +192,12 @@ class Category {
                 // ...the owner has the permission to delete it by himself
                 (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
                 // ...or the user has the right the delete subcategories of the current parent category
-                && (!($objParentCategory = Category::getCategory($this->parent_id)) || !Permission::checkAccess($objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true))
+                && (
+                    !($objParentCategory = Category::getCategory($this->parent_id))
+                    || (!Permission::checkAccess($objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
+                        && !$objFWUser->objUser->login()|| $objParentCategory->getOwnerId() != $objFWUser->objUser->getId()
+                    )
+                )
             )
         ) {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_CATEGORY'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
@@ -1332,7 +1337,7 @@ class Category {
             }
 
             $arrPermissions[$type] = array(
-                'protected'                   => $this->{$type.'_protected'},
+                'protected'             => $this->{$type.'_protected'},
                 'groups'                => $arrGroups,
                 'associated_groups'     => array(),
                 'not_associated_groups' => array()
