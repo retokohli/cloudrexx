@@ -619,6 +619,8 @@ class newsManager extends newsLibrary {
             $newsBackendAccessId = 0;
         }
 
+        $objFWUser->objUser->getDynamicPermissionIds(true);
+
         if (!empty($newstitle)){
             $objResult = $objDatabase->Execute('INSERT
                                             INTO '.DBPREFIX.'module_news
@@ -1278,6 +1280,8 @@ class newsManager extends newsLibrary {
                     $newsBackendAccessId = 0;
                 }
             }
+
+            $objFWUser->objUser->getDynamicPermissionIds(true);
 
             // $finishednewstext = $newstext."<br>".$_ARRAYLANG['TXT_LAST_EDIT'].": ".$date;
             $objResult = $objDatabase->Execute("UPDATE  ".DBPREFIX."module_news

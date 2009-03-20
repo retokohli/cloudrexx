@@ -497,6 +497,8 @@ class AccessManager extends AccessLib
             if (isset($_POST['access_save_group'])) {
                 if ($objGroup->store()) {
                     $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'];
+                    $objFWUser->objUser->getDynamicPermissionIds(true);
+                    $objFWUser->objUser->getStaticPermissionIds(true);
                     $this->_groupList();
                     return;
                 } else {
@@ -1069,6 +1071,8 @@ class AccessManager extends AccessLib
                 $objUser->store()
             ) {
                 $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
+                $objFWUser->objUser->getDynamicPermissionIds(true);
+                $objFWUser->objUser->getStaticPermissionIds(true);
 
                 if ($oldActiveStatus != $objUser->getActiveStatus() &&
                     isset($_POST['access_user_status_notification']) &&
