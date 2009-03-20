@@ -25,7 +25,6 @@ class Dataviewer {
        
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/dataviewer/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $objTemplate->setVariable("CONTENT_NAVIGATION",
             							"<a href='index.php?cmd=dataviewer'>".$_ARRAYLANG['TXT_DATAVIEWER_OVERVIEW']."</a>
             							<a href='index.php?cmd=dataviewer&amp;act=new'>".$_ARRAYLANG['TXT_DATAVIEWER_NEW_PROJECT']."</a>
@@ -144,7 +143,11 @@ class Dataviewer {
 				'COUNTRYBASED' 		=> $objResultProjects->fields['countrybased'] == 1 ? $_ARRAYLANG['TXT_YES'] : $_ARRAYLANG['TXT_NO'],
 				'FILTER' 			=> $filtersString,
 				'ROWCLASS' 			=> ($i % 2 == 0) ? 'row1' : 'row2',
-				'TXT_SHOW_PREVIEW'  => $_ARRAYLANG['TXT_SHOW_PREVIEW']
+				'TXT_PLACEHOLDER'        	=> $_ARRAYLANG['TXT_PLACEHOLDER'],
+            	'TXT_EDIT'        			=> $_ARRAYLANG['TXT_EDIT'],
+            	'TXT_DELETE'        		=> $_ARRAYLANG['TXT_DELETE'],
+            	'TXT_IMPORT'        		=> $_ARRAYLANG['TXT_IMPORT'],
+            	'TXT_EDIT_FILTER'			=> $_ARRAYLANG['TXT_EDIT_FILTER'],
 			));
 			
 			$i++;
@@ -160,7 +163,7 @@ class Dataviewer {
     	}
 
         $this->_objTpl->setVariable(array(
-            'TXT_PROJECTNAME'        	=> $_ARRAYLANG['TXT_PROJECTNAME'],
+            'TXT_PROJECTNAME'        	=> $_ARRAYLANG['TXT_PROJECTNAME'],         
             'TXT_PROJECTDESCRIPTION' 	=> $_ARRAYLANG['TXT_PROJECTDESCRIPTION'],
             'TXT_FUNCTIONS'        		=> $_ARRAYLANG['TXT_FUNCTIONS'],
             'TXT_PROJECTSTATUS'        	=> $_ARRAYLANG['TXT_PROJECTSTATUS'],
@@ -971,7 +974,7 @@ class Dataviewer {
 			$objPlaceholdersResult->MoveNext();
 			
 			$this->_objTpl->setVariable(array(
-				'PLACEHOLDER'		=> $_ARRAYLANG['TXT_PLACEHOLDER'] . " " . ($i == 0 ? "1" : $i+1),
+				'PLACEHOLDERID'		=> $i == 0 ? "1" : $i+1,
 				'ROWCLASS' 			=> ($i % 2 == 0) ? 'row1' : 'row2',
 				'TXT_NO_ASSIGNMENT'	=> $_ARRAYLANG['TXT_NO_ASSIGNMENT']
 			));		
@@ -980,10 +983,11 @@ class Dataviewer {
 		}	
 			
 		$this->_objTpl->setVariable(array(
-			'ID'				=> $id,
-			'TXT_PLACEHOLDER'	=> $_ARRAYLANG['TXT_PLACEHOLDER'],
-			'TIP_PLACEHOLDER'	=> $_ARRAYLANG['TIP_PLACEHOLDER'],
-			'TXT_SAVE'			=> $_ARRAYLANG['TXT_SAVE']
+			'ID'							=> $id,
+			'TXT_PLACEHOLDER'				=> $_ARRAYLANG['TXT_PLACEHOLDER'],
+			'TXT_WHERE_TO_PUT_PLACEHOLDER'	=> $_ARRAYLANG['TXT_WHERE_TO_PUT_PLACEHOLDER'],
+			'TIP_PLACEHOLDER'				=> $_ARRAYLANG['TIP_PLACEHOLDER'],
+			'TXT_SAVE'						=> $_ARRAYLANG['TXT_SAVE']
 		));		
 	}
 			
@@ -1345,7 +1349,6 @@ class Dataviewer {
 		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($projectname));
 		unset($columns['COUNTRY']);
 		
-		$xhtml  		= "{DATAVIEWER_FILTER}\n{DATAVIEWER_JS}<br /><br />";
 		$tableHeadlines = "";
 		$tableContent   = "";
 		$i = 1;
@@ -1361,7 +1364,7 @@ class Dataviewer {
 		$tableStart     = '<table border="0" width="100%" id="dataviewer_Table">';
 		$tableEnd       = '</table>';
 		
-		$xhtml .= $tableStart . $tableHeadlines . $tableContent . $tableEnd;
+		$xhtml .= '<!-- BEGIN dataviewer_filter_row --><div class="thisFilter">[[DATAVIEWER_FILTER]]</div><!-- END dataviewer_filter_row -->'.$tableStart . $tableHeadlines . $tableContent . $tableEnd;
 		
 		return html_entity_decode($xhtml);
 	}
@@ -1388,12 +1391,14 @@ class Dataviewer {
         $arrSetting = $this->getSettings();
         
 		$this->_objTpl->setVariable(array(			
-			'TXT_DATAVIEWER_SETTINGS' 	=> $_ARRAYLANG['TXT_DATAVIEWER_SETTINGS'],
-			'TXT_PLACEHOLDER' 			=> $_ARRAYLANG['TXT_PLACEHOLDER'],
-			'TXT_SAVE' 			   		=> $_ARRAYLANG['TXT_SAVE'],
-			'TXT_USE_COUNTRYBASED' 		=> $_ARRAYLANG['TXT_USE_COUNTRYBASED'],
-			'TIP_USE_COUNTRYBASED' 		=> $_ARRAYLANG['TIP_USE_COUNTRYBASED'],
-			'CHECKED' 			   		=> ($arrSetting['use_countrybased'] == 1) ? "checked" : ""
+			'TXT_DATAVIEWER_SETTINGS' 			=> $_ARRAYLANG['TXT_DATAVIEWER_SETTINGS'],
+			'TXT_PLACEHOLDER' 					=> $_ARRAYLANG['TXT_PLACEHOLDER'],
+			'TXT_WHERE_TO_PUT_PLACEHOLDER' 		=> $_ARRAYLANG['TXT_WHERE_TO_PUT_PLACEHOLDER'],
+			'TXT_HOW_TO_PLACEHOLDER_SETTINGS' 		=> $_ARRAYLANG['TXT_HOW_TO_PLACEHOLDER_SETTINGS'],
+			'TXT_SAVE' 			   				=> $_ARRAYLANG['TXT_SAVE'],
+			'TXT_USE_COUNTRYBASED' 				=> $_ARRAYLANG['TXT_USE_COUNTRYBASED'],
+			'TIP_USE_COUNTRYBASED' 				=> $_ARRAYLANG['TIP_USE_COUNTRYBASED'],
+			'CHECKED' 			   				=> ($arrSetting['use_countrybased'] == 1) ? "checked" : ""
 			
 		));			
 	}

@@ -16,7 +16,7 @@
 			</tr>
 			<!-- BEGIN placeholderRow -->
 			<tr class="{ROWCLASS}">
-				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{PLACEHOLDER}</td>
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">[[PLACEHOLDER_{PLACEHOLDERID}]]</td>
 				<td width="88%">
 					<select size="1" name="placeholders[]" style="width: 200px;">
 						<option value="noAssignment">{TXT_NO_ASSIGNMENT}</option>
@@ -27,6 +27,9 @@
 				</td>
 			</tr>
 			<!-- END placeholderRow -->
+			<tr>
+				<td colspan="2"><br />{TXT_WHERE_TO_PUT_PLACEHOLDER}</td>
+			</tr>
 		</tbody>
 	</table>
 	<br />

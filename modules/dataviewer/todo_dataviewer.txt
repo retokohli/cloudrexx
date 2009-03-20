@@ -2,16 +2,4 @@
 edit project
 ------------
 *JS preview funktion checken
-
-
-
-new project
-------------
-* bei der spalteneingabe spaltenzahl nach löschen korrigieren
-
-
-* beim importieren leere datensätze nicht beachten
-
-
-
-*einstellung ob DROP DOWN oder auflistung
+*spaltennamen dürfen nicht leer sein
