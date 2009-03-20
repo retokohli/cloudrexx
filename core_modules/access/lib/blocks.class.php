@@ -186,12 +186,8 @@ class Access_Blocks extends AccessLib
 
 		$filter = array(
 			'active'	=> true,
-			'birthday'	=> array(
-				array(
-					'>' => mktime(0,0,0,date('m'),date('d'),date('y')),
-					'<'	=> mktime(0,0,0,date('m'),date('d'),date('y'))+86400
-				)
-			)
+            'birthday_day'      => date('j'),
+            'birthday_month'    => date('n')
 		);
 		if ($arrSettings['block_birthday_users_pic']['status']) {
 			$filter['picture'] = array('!=' => '');
@@ -238,14 +234,10 @@ class Access_Blocks extends AccessLib
 	{
 		$arrSettings = User_Setting::getSettings();
 
-		$filter = array(
-			'active'	=> true,
-			'birthday'	=> array(
-				array(
-					'>' => mktime(0,0,0,date('m'),date('d'),date('y')),
-					'<'	=> mktime(0,0,0,date('m'),date('d'),date('y'))+86400
-				)
-			)
+        $filter = array(
+            'active'            => true,
+            'birthday_day'      => date('j'),
+            'birthday_month'    => date('n')
 		);
 		if ($arrSettings['block_birthday_users_pic']['status']) {
 			$filter['picture'] = array('!=' => '');

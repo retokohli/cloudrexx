@@ -343,6 +343,10 @@ class User_Profile
                 }
 
 
+            } elseif ($attribute == 'birthday_day') {
+                $arrConditions[] = "(FROM_UNIXTIME(tblP.`birthday`, '%e') = '".intval($condition)."')";
+            } elseif ($attribute == 'birthday_month') {
+                $arrConditions[] = "(FROM_UNIXTIME(tblP.`birthday`, '%c') = '".intval($condition)."')";
             }
         }
 
