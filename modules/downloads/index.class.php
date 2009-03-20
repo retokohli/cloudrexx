@@ -545,7 +545,10 @@ class downloads extends DownloadsLibrary
         if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
             if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
                 $path = 'index.php?section=fileUploader&standalone=true&type=downloads';
-                $this->objTemplate->setVariable('DOWNLOADS_FILE_UPLOAD_BUTTON', '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_DOWNLOADS_BROWSE'].'" />');
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_FILE_UPLOAD_BUTTON'  => '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_DOWNLOADS_BROWSE'].'" />',
+                    'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE']
+                ));
                 $this->objTemplate->parse('downloads_advanced_file_upload');
             }
 
@@ -560,6 +563,7 @@ class downloads extends DownloadsLibrary
                     'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
                     'TXT_DOWNLOADS_UPLOAD_FILE'     => $_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE'],
                     'TXT_DOWNLOADS_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_DOWNLOADS_MAX_FILE_SIZE'],
+                    'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE'],
                     'DOWNLOADS_UPLOAD_URL'          => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId(),
                     'DOWNLOADS_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
                 ));
@@ -592,8 +596,9 @@ class downloads extends DownloadsLibrary
         }
 
         $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_CREATE_DIRECTORY'    => $_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'],
-            'DOWNLOADS_CREATE_CATEGORY_URL'     => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId()
+            'TXT_DOWNLOADS_CREATE_DIRECTORY'        => $_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'],
+            'TXT_DOWNLOADS_CREATE_NEW_DIRECTORY'    => $_ARRAYLANG['TXT_DOWNLOADS_CREATE_NEW_DIRECTORY'],
+            'DOWNLOADS_CREATE_CATEGORY_URL'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId()
         ));
         $this->objTemplate->parse('downloads_create_category');
     }
@@ -759,7 +764,10 @@ JS_CODE;
                 $objSubcategory->next();
             }
 
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_CATEGORIES', $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES']);
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_CATEGORIES'  => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
+                'TXT_DOWNLOADS_DIRECTORIES' => $_ARRAYLANG['TXT_DOWNLOADS_DIRECTORIES']
+            ));
             $this->objTemplate->parse($arrCategoryBlocks[0]);
         }
     }
@@ -905,7 +913,9 @@ JS_CODE;
                 $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '&amp;'.substr($this->moduleParamsHtml, 1).'&amp;category='.$objCategory->getId().'&amp;downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
             }
 
-            $this->objTemplate->touchBlock('downloads_file_list');
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_FILES', $_ARRAYLANG['TXT_DOWNLOADS_FILES']);
+
+            $this->objTemplate->parse('downloads_file_list');
         }
     }
 
