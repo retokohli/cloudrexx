@@ -87,4 +87,6 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ACTIVATED'] = "Anmeldung aktivieren";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Anzahl Teilnehmer";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Benachrichtigung aktivieren";
 $_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "keine Begleitung";
+$_ARRAYLANG['TXT_CALENDAR_FRONTENDSAVEOK'] = "Ihr Eintrag wurde gespeichert.";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Diese Funktionalität ist nicht aktiviert.";
 ?>
