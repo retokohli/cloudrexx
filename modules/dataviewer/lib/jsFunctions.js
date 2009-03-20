@@ -9,6 +9,7 @@
 		rowTemplate.style.display = "table-row";
 		projectTable.insertBefore(rowTemplate, foo);
 		rowId++;
+		checkNumeration();
  	}
 		
 	var deleteRow = function (obj) {
@@ -19,9 +20,9 @@
 	
 	function checkNumeration(){
 		nofElements = document.getElementsByTagName('SPAN').length;
+//		alert(nofElements);
 		for(i=1; i<nofElements; i++) {
-			alert("mo");
-			document.getElementsByTagName('SPAN')[0].innerHTML = i;
+			document.getElementsByTagName('SPAN')[i-1].innerHTML = i;
 		}
 	}
 	

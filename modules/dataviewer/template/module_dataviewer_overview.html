@@ -24,25 +24,22 @@
 			<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_PROJECTDESCRIPTION}</span></td>
 			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_LANGUAGE}</span></td>
 			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_COUNTRY_BASED}</span></td>
-			<td nowrap="nowrap" width="24%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
-			<td nowrap="nowrap" width="6%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
+			<td nowrap="nowrap" width="22%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
+			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
 		</tr>
 		<!-- BEGIN projectRow -->
 		<tr class="{ROWCLASS}">
 			<td valign="top">{STATUS}</td>
-			<td valign="top">{NAME}</td>
+			<td valign="top"><a href="index.php?cmd=dataviewer&act=edit&id={ID}">{NAME}</a></td>
 			<td valign="top">{DESCRIPTION}</td>
 			<td valign="top">{LANGUAGE}</td>
 			<td valign="top">{COUNTRYBASED}</td>
-			<td valign="top">{FILTER}</td>
+			<td valign="top"><a href="index.php?cmd=dataviewer&act=filter&id={ID}" title="Filter bearbeiten">{TXT_EDIT_FILTER}</a> {FILTER}</td>
 			<td valign="top">
-				<a href="index.php?cmd=dataviewer&act=edit&id={ID}"><img border="0" src="images/icons/edit.gif" alt="edit" title="bearbeiten" /></a>
-				<a href="index.php?cmd=dataviewer&act=import&id={ID}"><img border="0" src="../images/modules/dataviewer/csv.gif" alt="import" title="importieren" /></a>
-				<a href="#" onclick="deleteConfirm('{ID}');"><img border="0" src="../images/modules/dataviewer/delete.gif" alt="delete" title="löschen"/></a><br />
-				<a href="index.php?cmd=dataviewer&act=filter&id={ID}">Filter</a>
-				<a href="index.php?cmd=dataviewer&act=placeholder&id={ID}">Platzhalter</a>
-				<!--<a href="index.php?cmd=dataviewer&act=filter&id={ID}"><img border="0" src="../images/modules/dataviewer/question_mark.gif" alt="filter" title="Filter"/></a>
-				<a href="index.php?cmd=dataviewer&act=placeholder&id={ID}"><img border="0" src="../images/modules/dataviewer/placeholder.gif" alt="placeholder" title="Platzhalter"/></a>-->
+				<a href="index.php?cmd=dataviewer&act=edit&id={ID}"><img border="0" src="images/icons/edit.gif" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
+				<a href="index.php?cmd=dataviewer&act=import&id={ID}"><img border="0" src="../images/modules/dataviewer/import.gif" alt="{TXT_IMPORT}" title="{TXT_IMPORT}" /></a>
+				<a href="index.php?cmd=dataviewer&act=placeholder&id={ID}"><img border="0" src="../images/modules/dataviewer/placeholder.gif" alt="{TXT_PLACEHOLDER}" title="{TXT_PLACEHOLDER}"/></a>
+				<a href="#" onclick="deleteConfirm('{ID}');"><img border="0" src="../images/modules/dataviewer/delete.gif" alt="{TXT_DELETE}" title="{TXT_DELETE}"/></a>
 			</td>
 		</tr>
 		<!-- END projectRow -->
