@@ -122,6 +122,7 @@ Benutzerverwaltung
   mehr im Backend anmelden.
 - Die Auflistung der Benutzer erfolgt korrekt, egal nach welchem Merkmal
   sortiert wird.
+- Die Auflistung der Benutzer, welche Geburtstag haben funktioniert.
 
 Datenbank Manager
 - Die mySQL Syntax der Sicherungen wurde gefixt, so dass die erzeugten .sql
