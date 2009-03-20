@@ -344,7 +344,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
 
             if ($objDownload->getType() == 'file') {
                 header("Content-Type: application/force-download");
-                header("Content-Disposition: attachment; filename=". htmlspecialchars(basename($objDownload->getSource())));
+                header("Content-Disposition: attachment; filename=". htmlspecialchars($objDownload->getSourceName()));
                 header("Content-Length: ".filesize(ASCMS_PATH.$objDownload->getSource()));
                 readfile(ASCMS_PATH.$objDownload->getSource());
             } else {
