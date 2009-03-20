@@ -13,6 +13,7 @@ $_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Nombre del host";
 $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "Direcci&oacute;n IP";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Idioma del navegador";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Versi&oacute;n del navegador";
+$_ARRAYLANG['TXT_CONTACT_SUBMIT'] = "Enviar";
 $_ARRAYLANG['TXT_CONTACT_YES'] = "S&iacute;";
 $_ARRAYLANG['TXT_CONTACT_NO'] = "No";
 $_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Subidas";
@@ -30,4 +31,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "\¡El fichero %s no fue subido correc
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "\¡El archivo no se ha subido correctamente!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Por favor, escriba los caracteres de la imagen en el campo de texto destinado para ello. Esto es necesario para que el sistema sepa que usted no es un robot de spam.";
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "\¡La cadena de caracteres introducida no es v&aacute;lida!";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 ?>

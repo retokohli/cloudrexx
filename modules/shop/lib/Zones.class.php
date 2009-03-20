@@ -9,31 +9,36 @@ class Zones
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets(
-            '`zone`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_ZONES_NAME
-        );
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`zone`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_ZONES_NAME
+//        );
         $query = "
-            SELECT `zone`.`id`, `zone`.`status`".$arrSqlName['field']."
+            SELECT `zone`.`zones_id`, `zone`.`activation_status`, `zone`.`zones_name`".
+        //$arrSqlName['field']."
+            "
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`".
-                   $arrSqlName['join']."
-             ORDER BY ".$arrSqlName['text']." ASC";
+        //$arrSqlName['join']."
+            "
+             ORDER BY `zone`.`zones_name` ASC";
+        //".$arrSqlName['text']."
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         self::$arrZone = array();
         while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            if ($strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText) $strName = $objText->getText();
-            }
+            $id = $objResult->fields['zones_id']; // id
+//            $text_name_id = $objResult->fields[$arrSqlName['name']];
+//            $strName = $objResult->fields[$arrSqlName['text']];
+//            if ($strName === null) {
+//                $objText = Text::getById($text_name_id, 0);
+//                if ($objText) $strName = $objText->getText();
+//            }
             self::$arrZone[$id] = array(
                 'id' => $id,
-                'text_name_id' => $text_name_id,
-                'name' => $strName,
-                'status' => $objResult->fields['status']
+                'name' => $objResult->fields['zones_name'], // REPLACE:
+//                'text_name_id' => $text_name_id,
+//                'name' => $strName,
+                'status' => $objResult->fields['activation_status'], // status
             );
             $objResult->MoveNext();
         }
@@ -149,26 +154,41 @@ class Zones
 
         if (empty($_POST['zone_name_new'])) return '';
         $strName = $_POST['zone_name_new'];
-        $objText = Text::replace(
-            0, FRONTEND_LANG_ID, $strName,
-            MODULE_ID, TEXT_SHOP_ZONES_NAME
-        );
-        if (!$objText) return false;
+//        $objText = Text::replace(
+//            0, FRONTEND_LANG_ID, $strName,
+//            MODULE_ID, TEXT_SHOP_ZONES_NAME
+//        );
+//        if (!$objText) return false;
+//        $objResult = $objDatabase->Execute("
+//            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_zones (
+//                text_name_id, status
+//            ) VALUES (
+//                ".$objText->getId().",
+//                ".(isset($_POST['zone_active_new']) ? 1 : 0)."
+//            )
+//        ");
         $objResult = $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_zones (
-                text_name_id, status
+                zones_name, activation_status
             ) VALUES (
-                ".$objText->getId().",
-                ".(isset($_POST['zone_active_new']) ? 1 : 0)."
+                '".addslashes($strName)."',
+                ".(empty($_POST['zone_active_new']) ? 0 : 1)."
             )
         ");
         if (!$objResult) return false;
         $zone_id = $objDatabase->Insert_ID();
         if (isset($_POST['selected_countries'])) {
             foreach ($_POST['selected_countries'] as $country_id) {
+//                $objResult = $objDatabase->Execute("
+//                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
+//                        zone_id, country_id
+//                    ) VALUES (
+//                        $zone_id, $country_id
+//                    )
+//                ");
                 $objResult = $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-                        zone_id, country_id
+                        zones_id, countries_id
                     ) VALUES (
                         $zone_id, $country_id
                     )
@@ -192,37 +212,55 @@ class Zones
         if (   empty($_POST['zones'])
             || empty($_POST['zone_list'])) return '';
         if (empty(self::$arrZone)) self::init();
-        $arrRelation = self::getCountryRelationArray();
         foreach ($_POST['zone_list'] as $zone_id) {
             $strName = $_POST['zone_name'][$zone_id];
-            $text_name_id = self::$arrZone[$zone_id]['text_name_id'];
-            $objText = Text::replace(
-                $text_name_id, FRONTEND_LANG_ID, $strName,
-                MODULE_ID, TEXT_SHOP_ZONES_NAME
-            );
-            if (!$objText) return false;
+//            $text_name_id = self::$arrZone[$zone_id]['text_name_id'];
+//            $objText = Text::replace(
+//                $text_name_id, FRONTEND_LANG_ID, $strName,
+//                MODULE_ID, TEXT_SHOP_ZONES_NAME
+//            );
+//            if (!$objText) return false;
+//            $objResult = $objDatabase->Execute("
+//                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones
+//                   SET text_name_id=".$objText->getId().",
+//                       status=".(isset($_POST['zone_active'][$zone_id]) ? 1 : 0)."
+//                 WHERE id=$zone_id
+//            ");
             $objResult = $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-                   SET text_name_id=".$objText->getId().",
-                       status=".(isset($_POST['zone_active'][$zone_id]) ? 1 : 0)."
-                 WHERE id=$zone_id
+                   SET zones_name='".addslashes($strName)."',
+                       activation_status=".(empty($_POST['zone_active'][$zone_id]) ? 0 : 1)."
+                 WHERE zones_id=$zone_id
             ");
             if (!$objResult) return false;
 
+//            $objResult = $objDatabase->Execute("
+//                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
+//                 WHERE zone_id=$zone_id
+//            ");
             $objResult = $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-                 WHERE zone_id=$zone_id
+                 WHERE zones_id=$zone_id
             ");
             if (!$objResult) return false;
-            foreach ($_POST['selected_countries'][$zone_id] as $country_id) {
-                $objResult = $objDatabase->Execute("
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-                        zone_id, country_id
-                    ) VALUES (
-                        $zone_id, $country_id
-                    )
-                ");
-                if (!$objResult) return false;
+            if (!empty($_POST['selected_countries'][$zone_id])) {
+	            foreach ($_POST['selected_countries'][$zone_id] as $country_id) {
+//	                $objResult = $objDatabase->Execute("
+//	                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
+//	                        zone_id, country_id
+//	                    ) VALUES (
+//	                        $zone_id, $country_id
+//	                    )
+//	                ");
+	                $objResult = $objDatabase->Execute("
+	                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
+	                        zones_id, countries_id
+	                    ) VALUES (
+	                        $zone_id, $country_id
+	                    )
+	                ");
+	                if (!$objResult) return false;
+	            }
             }
         }
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");

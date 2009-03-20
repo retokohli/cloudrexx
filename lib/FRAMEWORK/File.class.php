@@ -22,8 +22,8 @@
  */
 class File
 {
-    var $conn_id;                           // current Connections ID
-    var $login_result;                       // current Login
+    var $conn_id;                          // current Connections ID
+    var $login_result;                     // current Login
 
     var $ftp_is_activated;                 // FTP is activated ( true/false )
     var $ftpHost;                          // FTP Host
@@ -34,13 +34,16 @@ class File
     var $chmodFolder       = 0777;         // chmod for folder 0777
     var $chmodFile         = 0666;         // chmod for files  0644,0766
     var $chmodFolderPHP4    = '0777';
-    var $chmodFilePHP4        = '0666';
+    var $chmodFilePHP4      = '0666';
 
-    var $saveMode;                           // save_mode is true/false
+    var $saveMode;                         // save_mode is true/false
     var $is_php5;
 
 
-
+    /**
+     * Creates a new File helper object. Uses FTP if configured,
+     * direct file access otherwise.
+     */
     function __construct()
     {
         global  $_FTPCONFIG;
@@ -54,11 +57,17 @@ class File
         $this->is_php5 = (phpversion()<5) ? false : true;
 
         if($this->ftp_is_activated == true){
-            //crate baseconnection
-            $this->conn_id = @ftp_connect($this->ftpHost);
-
+            $this->conn_id = ftp_connect($this->ftpHost);
+        }
+        if ($this->conn_id) {
             //logon with user and password
             $this->login_result = @ftp_login($this->conn_id, $this->ftpUserName, $this->ftpUserPass);
+        }
+        else {
+            // We can't connect to FTP, so we try
+            // falling back to "normal" file mode.
+            //FIXME: notify user in a useful manner.
+            $this->ftp_is_activated = false;
         }
 
         $this->checkConnection();
@@ -198,15 +207,15 @@ class File
             if($file!="." && $file!="..") {
                 if($this->ftp_is_activated == true){
                     if(!is_dir($path.$dirName."/".$file)) {
-                           @ftp_delete($this->conn_id, $this->ftpDirectory.$webPath.$dirName."/".$file);
+                        @ftp_delete($this->conn_id, $this->ftpDirectory.$webPath.$dirName."/".$file);
                     } else {
-                           $this->delDir($path, $webPath, $dirName."/".$file);
+                        $this->delDir($path, $webPath, $dirName."/".$file);
                     }
                 }else{
                     if(!is_dir($path.$dirName."/".$file)) {
-                           $this->delFile($path, $webPath, $file);
+                        $this->delFile($path, $webPath, "$dirName/$file");
                     } else {
-                           $this->delDir($path, $webPath, $dirName."/".$file);
+                        $this->delDir($path, $webPath, $dirName."/".$file);
                     }
                 }
             }
@@ -256,9 +265,9 @@ class File
             }
             clearstatcache();
             if (@file_exists($path.$fileName)){
-                  $status = "error";
+                $status = "error";
             }else{
-                  $status = $fileName;
+                $status = $fileName;
             }
         }
 
@@ -286,9 +295,9 @@ class File
     // replaces some characters
     function replaceCharacters($string){
         // replace $change with ''
-        $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
+        $change = array('+', 'Â¦', '"', '@', '*', '#', 'Â°', '%', 'Â§', '&', 'Â¬', '/', '|', '(', 'Â¢', ')', '=', '?', '\'', 'Â´', '`', '^', '~', '!', 'Â¨', '[', ']', '{', '}', 'Â£', '$', '-', '<', '>', '\\', ';', ',', ':');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', 'Ã¤', 'Ã¶', 'Ã¼', 'Ã§');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         $string = strtolower($string);
@@ -331,13 +340,13 @@ class File
                 if(!ftp_rename($this->conn_id, $this->ftpDirectory.$webPath.$oldFileName, $this->ftpDirectory.$webPath.$newFileName)){
                     $status = "error";
                 }else{
-                      $status = $newFileName;
+                    $status = $newFileName;
                 }
             }else{
                 if(!rename($path.$oldFileName, $path.$newFileName)){
                     $status = "error";
                 }else{
-                      $status = $newFileName;
+                    $status = $newFileName;
                 }
             }
         }else{
@@ -361,13 +370,13 @@ class File
                 if(!ftp_rename($this->conn_id, $this->ftpDirectory.$webPath.$oldDirName, $this->ftpDirectory.$webPath.$newDirName)){
                     $status = "error";
                 }else{
-                      $status = $newDirName;
+                    $status = $newDirName;
                 }
             }else{
                 if(!rename($path.$oldDirName, $path.$newDirName)){
                     $status = "error";
                 }else{
-                      $status = $newDirName;
+                    $status = $newDirName;
                 }
             }
         }else{
@@ -417,7 +426,39 @@ class File
         return false;
     }
 
+    
+    /**
+     * takes a fileinput name and puts this file to a specified path
+     *
+     * @param string $fileinput HTML File input name
+     * @param string $fileTarget webserver filepath
+     * @param max filesize $maxSize
+     * @param array $types NOT YET IMPLEMENTED OR USED
+     * @return true on success, false otherwise
+     * 
+     * @todo implement filetype parsing and other features
+     */
+    static function uploadFileHttp($fileinput, $fileTarget, $maxSize = 0, $types = 0) {
+        if(!$fileinput or !$fileTarget) {
+            return false;
+        }
 
+        if(!$_FILES[$fileinput]) {
+            return false;
+        }
+        $tmpFilePath = $_FILES[$fileinput]['tmp_name'];
+        if( $maxSize > 0 && filesize($tmpFilePath) > $maxSize){
+            return false;
+        }
+        if(move_uploaded_file($tmpFilePath, $fileTarget)) {
+            return true;
+        } else{
+            return false;
+        }
+
+    }
+    
+    
     function uploadFile($path, $webPath, $fileName, $sourceFile){
         // upload the file
         echo $fileName;

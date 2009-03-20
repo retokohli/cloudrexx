@@ -37,7 +37,6 @@ class feedLibrary
     }
 
 
-    //FUNC refresh
     function showNewsRefresh($id, $time, $path)
     {
         global $objDatabase;

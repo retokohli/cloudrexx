@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The Shop
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -63,12 +62,11 @@ while (!$objResult->EOF) {
     $username = $objResult->fields['username'];
     $email = $objResult->fields['email'];
     // START: COMPATIBELITY MODE FOR SHOP ACCOUNT SELLING
-    $arrMatch = array();
-    if (preg_match('#^shop_customer_[0-9]+\-(.*)$#', $email, $arrMatch)) {
-        $email = $arrMatch[1];
+    if (preg_match('#^shop_customer_[0-9]+\-(.*)$#', $email, $compatibleEmail)) {
+        $email = $compatibleEmail[1];
     }
     // END: COMPATIBELITY MODE FOR SHOP ACCOUNT SELLING
-
+    
     $firstname = $objResult->fields['firstname'];
     $lastname = $objResult->fields['lastname'];
     $subject = "Your account on www.noser.com will expire in seven days";

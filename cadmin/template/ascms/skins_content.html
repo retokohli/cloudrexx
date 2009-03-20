@@ -1,13 +1,11 @@
 <!-- START themes_content.html -->
 <script language="JavaScript" type="text/javascript">
 <!-- // confirm delete page
-function reloadThemesPage(obj){
-    if(obj.value != ''){
-        document.themesForm.action = 'index.php?cmd=skins';
-    	document.themesForm.themesDelName.value='';
-    	document.themesForm.themesDelFileName.value='';
-    	document.themesForm.submit();
-    }
+function reloadThemesPage(){
+	document.themesForm.action = 'index.php?cmd=skins';
+	document.themesForm.themesDelName.value='';
+	document.themesForm.themesDelFileName.value='';
+	document.themesForm.submit();
 }
 // -->
 </script>
@@ -22,7 +20,7 @@ function reloadThemesPage(obj){
 	</tr>
 	<tr valign="top" class="row1">
 		<td>
-			<select name="themes" size="9" onChange="reloadThemesPage(this)" style="WIDTH: 180px">
+			<select name="themes" size="9" onChange="reloadThemesPage()" style="WIDTH: 180px">
 			<option value="">--- {TXT_CHOOSE_TEMPLATE_GROUP} ----</option>
 			{THEMES_MENU}
 			</select>		</td>
@@ -32,21 +30,20 @@ function reloadThemesPage(obj){
     </tr>
 	<tr valign="top" class="row1">
 	  <td>
-			<select name="themesPage" size="22" onChange="reloadThemesPage(this)" style="WIDTH: 180px">
+			<select name="themesPage" size="22" onChange="reloadThemesPage()" style="WIDTH: 180px">
 			<option value="">--- {TXT_SELECT_FILE} -------------------</option>
 			{THEMES_PAGES_MENU}
 			</select>
-  	  </td>
+			<br /><br />
+			<input type="input" name="themesNewFileName" maxlength="50" style="width: 180px" /><br />
+			<input type="submit" name="Submit" value="{TXT_CREATE_FILE}" style="WIDTH: 100px" />
+			</td>
     </tr>
 	<tr valign="top" class="row1">
 	  <th width="180" nowrap="nowrap">{TXT_MANAGE_FILES}</th>
     </tr>
 	<tr valign="top" class="row1">
 	  <td>
-			<input type="input" name="themesNewFileName" maxlength="50" style="width: 180px" /><br />
-			<input type="submit" name="Submit" value="{TXT_CREATE_FILE}" style="WIDTH: 100px" />
-	       	<br /><br />
-
 			<select name="themesDelFileName" style="WIDTH: 180px">
 			<option value="" selected>--- {TXT_SELECT_FILE} ---</option>
 			{THEMES_PAGE_DEL_VALUE}

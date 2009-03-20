@@ -11,22 +11,14 @@
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
- * @todo        From time to time, do
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value");
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name");
  */
-
-/**
- * Debug level
- * @ignore
- */
-define('_SHOP_DEBUG', 0);
 
 /**
  * @ignore
  */
-require_once ASCMS_CORE_PATH.'/Text.class.php';
+// post-2.1
+//require_once ASCMS_CORE_PATH.'/Text.class.php';
+
 require_once ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/shopLib.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
@@ -34,6 +26,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Exchange.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Payment.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Shipment.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Manufacturer.class.php';
@@ -91,6 +84,10 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Products.class.php';
  * Country class
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Country.class.php';
+/**
+ * Discount
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
 
 /**
  * Administration of the Shop
@@ -105,8 +102,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Country.class.php';
  */
 class shopmanager extends ShopLibrary
 {
-    const noPictureName = 'no_picture.gif';
-    const thumbnailSuffix = '.thumb';
     /**
      * The Template object
      * @var   HTML_Template_Sigma
@@ -115,12 +110,11 @@ class shopmanager extends ShopLibrary
     private static $strErrMessage = '';
     private static $strOkMessage  = '';
     private static $pageTitle = '';
-    private static $defaultImage = '';
     private static $arrCategoryTreeName = array();
     // OBSOLETE: private $categoryTreeSorting   = array();
     // OBSOLETE: private $categoryTreeStatus    = array();
-    private static $shopImagePath;
-    private static $shopImageWebPath;
+    private static $defaultImage = '';
+    private static $uploadDir = false;
 
     // ProductAttributes
     // OBSOLETE: private $defaultAttributeOption = 0;
@@ -162,29 +156,13 @@ class shopmanager extends ShopLibrary
      */
     function __construct()
     {
-        global $_ARRAYLANG, $objTemplate, $objDatabase;
-
-        if (_SHOP_DEBUG & 1) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 1);
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 0);
-        }
-        if (_SHOP_DEBUG & 2) {
-            $objDatabase->debug = 1;
-        } else {
-            $objDatabase->debug = 0;
-        }
+        global $_ARRAYLANG, $objTemplate;
 
         // sigma template
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
-        // both include ASCMS_PATH_OFFSET!
-        self::$shopImagePath = ASCMS_SHOP_IMAGES_PATH.'/';
-        self::$shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/';
-        self::$defaultImage = self::$shopImageWebPath.self::noPictureName;
+        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
 
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
@@ -202,15 +180,6 @@ class shopmanager extends ShopLibrary
 
         // Settings object
         $this->objSettings = new Settings();
-        // added return value. If empty, no error occurred
-        $success = $this->objSettings->storeSettings();
-        if ($success) {
-            $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
-        } elseif ($success === false) {
-            $this->addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
-        }
-        // $success may also be '', in which case no changed setting has
-        // been detected.
 
         // Exchange object
         // OBSOLETE: $this->objExchange = new Exchange();
@@ -232,7 +201,7 @@ class shopmanager extends ShopLibrary
         global $objTemplate, $_ARRAYLANG;
 
         if (isset($_SESSION['shop']['strOkMessage'])) {
-            $this->addMessage($_SESSION['shop']['strOkMessage']);
+            self::addMessage($_SESSION['shop']['strOkMessage']);
             unset($_SESSION['shop']['strOkMessage']);
         }
 
@@ -371,12 +340,10 @@ class shopmanager extends ShopLibrary
      */
     function _manufacturer()
     {
-        global $_ARRAYLANG;
-
+        global $_ARRAYLANG, $objDatabase;
         self::$pageTitle = $_ARRAYLANG['TXT_SHOP_MANUFACTURER'];
         self::$objTemplate->loadTemplateFile('module_shop_manufacturer.html', true, true);
 
-        $flagReinit = false;
         $id = (!empty($_REQUEST['id']) ? intval($_REQUEST['id'])  :  0);
         if (!empty($_REQUEST['exe'])) {
             $name = (!empty($_REQUEST['name']) ? $_REQUEST['name'] : '');
@@ -384,51 +351,101 @@ class shopmanager extends ShopLibrary
             if (preg_match('/^(?:[\w\d\-]+\.)+[\w]+/i', $url)) {
                 $url = "http://$url";
             }
+
+            // insert new manufacturer
             if ($_REQUEST['exe'] == 'insert') {
-                if (Manufacturer::insert($name, $url)) {
-                    $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_SUCCESS']);
-                    $flagReinit = true;
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
+                                (name, url) VALUES ('$name', '$url')
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult) {
+                    self::addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_SUCCESS']);
                 } else {
-                    $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_FAILED']);
+                    self::addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_FAILED']);
                 }
             }
+
+            // update manufacturer
             if ($_REQUEST['exe'] == 'update' && $id > 0) {
-                if (Manufacturer::update($name, $url, $id)) {
-                    $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS']);
-                    $flagReinit = true;
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
+                       SET name='$name', url='$url'
+                     WHERE id=$id
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult) {
+                    self::addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS']);
                 } else {
-                    $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED']);
+                    self::addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED']);
                 }
             }
+
             if ($_REQUEST['exe'] == 'delete' && $id > 0) {
-                if (Manufacturer::delete($id)) {
-                    $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS']);
-                    $flagReinit = true;
+                $query = "
+                    DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
+                     WHERE id=$id
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult) {
+                    self::addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS']);
                 } else {
-                    $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED']);
+                    self::addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED']);
                 }
             }
+
             if ($_REQUEST['exe'] == 'deleteList') {
-                $result = true;
-                foreach ($_POST['selectedManufacturerId'] as $manufacturer_id) {
-                    $result &= Manufacturer::delete($manufacturer_id);
-                }
-                if ($result) {
-                    $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS']);
-                    $flagReinit = true;
-                } else {
-                    $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED']);
+                foreach ($_POST['selectedManufacturerId'] as $selectedId) {
+                    $query = "
+                        DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
+                         WHERE id=".intval($selectedId);
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                        self::addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS']);
+                    } else {
+                        self::addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED']);
+                    }
                 }
             }
         }
-        if ($flagReinit) Manufacturer::init();
-        $arrManufacturers = Manufacturer::getArray();
-        if ($_REQUEST['mode'] == 'update') {
+
+        $i = 1;
+        $query = "
+            SELECT id, name, url
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
+          ORDER BY name
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            $this->errorHandling();
+        }
+
+        while (!$objResult->EOF) {
+            self::$objTemplate->setVariable(array(
+                'VALUE_ID' => $objResult->fields['id'],
+                'VALUE_NAME' => $objResult->fields['name'],
+                'SHOP_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
+            ));
+            self::$objTemplate->parse("manufacturerRow");
+            $objResult->MoveNext();
+        }
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+        ));
+
+        if (isset($_REQUEST['mode']) && $_REQUEST['mode'] == 'update') {
             // Update the selected Manufacturer
+            $query = '
+                SELECT id, name, url
+                  FROM '.DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
+                 WHERE id=$id
+            ";
+            $objResult = $objDatabase->Execute($query);
             self::$objTemplate->setVariable(array(
                 'TXT_SHOP_INSERT_NEW_MANUFACTURER' => $_ARRAYLANG['TXT_SHOP_UPDATE_MANUFACTURER'],
-                'VALUE_MANUFACTURER_NAME' => $arrManufacturers[$id]['name'],
-                'VALUE_MANUFACTURER_URL' => $arrManufacturers[$id]['url'],
+                'VALUE_MANUFACTURER_NAME' => $objResult->fields['name'],
+                'VALUE_MANUFACTURER_URL' => $objResult->fields['url'],
                 'EXE_MODE' => 'update',
                 'VALUE_ID' => $id,
             ));
@@ -441,19 +458,7 @@ class shopmanager extends ShopLibrary
                 'EXE_MODE' => 'insert',
             ));
         }
-        $i = 1;
-        foreach ($arrManufacturers as $id => $arrManufacturer) {
-            self::$objTemplate->setVariable(array(
-                'VALUE_ID' => $arrManufacturer['id'],
-                'VALUE_NAME' => $arrManufacturer['name'],
-                'SHOP_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
-            ));
-            self::$objTemplate->parse('manufacturerRow');
-        }
-        self::$objTemplate->setGlobalVariable(array(
-            'TXT_SHOP_EDIT' => $_ARRAYLANG['TXT_SHOP_EDIT'],
-            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
-        ));
+
         self::$objTemplate->setVariable(array(
             'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
             'TXT_URL' => $_ARRAYLANG['TXT_MANUFACTURER_URL'],
@@ -472,18 +477,16 @@ class shopmanager extends ShopLibrary
             'TXT_SHOP_CONFIRM_DELETE_MANUFACTURER' => $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_MANUFACTURER'],
             'TXT_MAKE_SELECTION' => $_ARRAYLANG['TXT_MAKE_SELECTION'],
         ));
+
     }
 
 
     /**
      * Import and Export data from/to csv
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
-     * @todo    For 2.1, fix the queries to use the Text::getSqlSnippets()
-     *          method in order to get the active frontend language
      */
     function _import()
     {
-
         global $_ARRAYLANG, $objDatabase;
 
         self::$pageTitle = $_ARRAYLANG['TXT_SHOP_IMPORT_TITLE'];
@@ -495,16 +498,15 @@ class shopmanager extends ShopLibrary
                 DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg
                  WHERE img_id=".$_REQUEST['img'];
             if ($objDatabase->Execute($query)) {
-                $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_DELETED']);
+                self::addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_DELETED']);
             } else {
-                $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_DELETE']);
+                self::addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_DELETE']);
             }
             $this->objCSVimport->initTemplateArray();
         }
 
         // Save template
         if (isset($_REQUEST['SaveImg'])) {
-//echo("Got import template:<br />".var_export($_POST, true)."<br />");
             $query = "
                 INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_importimg (
                     img_name, img_cats, img_fields_file, img_fields_db
@@ -516,9 +518,9 @@ class shopmanager extends ShopLibrary
                 )
             ";
             if ($objDatabase->Execute($query)) {
-                $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_SAVED']);
+                self::addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_SAVED']);
             } else {
-                $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_SAVE']);
+                self::addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_SAVE']);
             }
             $this->objCSVimport->initTemplateArray();
         }
@@ -556,7 +558,7 @@ class shopmanager extends ShopLibrary
                 ++$importedLines;
                 $line = $objCsv->NextLine();
             }
-            $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_CATEGORIES'].': '.$importedLines);
+            self::addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_CATEGORIES'].': '.$importedLines);
         }
 
         // Import
@@ -574,8 +576,9 @@ class shopmanager extends ShopLibrary
             $query = '
                 SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
                   FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_importimg
-                 WHERE img_id='.$_REQUEST["ImportImage"];
+                 WHERE img_id='.$_REQUEST['ImportImage'];
             $objResult = $objDatabase->Execute($query);
+
             $arrCategoryName = preg_split(
                 '/;/', $objResult->fields['img_cats'], null, PREG_SPLIT_NO_EMPTY
             );
@@ -674,9 +677,9 @@ class shopmanager extends ShopLibrary
             // Fix picture field and create thumbnails
             $this->makeProductThumbnailsById($arrId);
 
-            $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$importedLines);
+            self::addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$importedLines);
             if ($errorLines) {
-                $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_NOT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$errorLines);
+                self::addError($_ARRAYLANG['TXT_SHOP_IMPORT_NOT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$errorLines);
             }
         } // end import
 
@@ -694,7 +697,7 @@ class shopmanager extends ShopLibrary
                 $Noimg = $_ARRAYLANG['TXT_SHOP_IMPORT_NO_TEMPLATES_AVAILABLE'];
                 $ImportButtonStyle = 'style="display: none;"';
             } else {
-                $Noimg = '';
+                $Noimg = "";
                 $ImportButtonStyle = '';
             }
         } else {
@@ -733,18 +736,22 @@ class shopmanager extends ShopLibrary
                         'id', 'product_id', 'picture', 'title', 'catid', 'handler',
                         'normalprice', 'resellerprice', 'shortdesc', 'description',
                         'stock', 'stock_visibility', 'discountprice', 'is_special_offer',
-                        'property1', 'property2', 'status', 'b2b', 'b2c', 'startdate', 'enddate',
-                        'thumbnail_percent', 'thumbnail_quality', 'manufacturer_url', 'external_link',
-                        'sort_order', 'vat_id', 'weight');
-                    $query =
-                        "SELECT id, product_id, picture, title, catid, handler, ".
-                        "normalprice, resellerprice, shortdesc, description, ".
-                        "stock, stock_visibility, discountprice, is_special_offer, ".
-                        "property1, property2, status, b2b, b2c, startdate, enddate, ".
-                        "thumbnail_percent, thumbnail_quality, manufacturer_url, external_link, ".
-                        "sort_order, vat_id, weight ".
-                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products ".
-                        "ORDER BY id ASC";
+                        'status', 'b2b', 'b2c', 'startdate', 'enddate',
+                        'manufacturer', 'manufacturer_url', 'external_link',
+                        'sort_order', 'vat_id', 'weight',
+                        'flags', 'group_id', 'article_id', 'keywords'
+                    );
+                    $query = "
+                        SELECT id, product_id, picture, title, catid, handler,
+                               normalprice, resellerprice, shortdesc, description,
+                               stock, stock_visibility, discountprice, is_special_offer,
+                               status, b2b, b2c, startdate, enddate,
+                               manufacturer, manufacturer_url, external_link,
+                               sort_order, vat_id, weight,
+                               flags, group_id, article_id, keywords
+                          FROM ".DBPREFIX."module_shop_products
+                         ORDER BY id ASC
+                    ";
                 break;
                 // products - custom:
                 case 'rproduct':
@@ -757,31 +764,38 @@ class shopmanager extends ShopLibrary
                         'stock', 'stock_visibility',
                         'status', 'b2b', 'b2c',
                         'startdate', 'enddate',
+                        'manufacturer_name', 'manufacturer_website',
                         'manufacturer_url', 'external_link',
                         'sort_order',
-                        'vat_id', 'vat_percent', 'weight',
+                        'vat_percent', 'weight',
+                        'discount_group', 'article_group', 'keywords'
                     );
-                    $query =
-                        "SELECT p.product_id, p.picture, p.title, ".
-                        "p.catid, c1.catname as category, c2.catname as parentcategory, p.handler, ".
-                        "p.normalprice, p.resellerprice, p.discountprice, p.is_special_offer, ".
-                        "p.shortdesc, p.description, p.stock, p.stock_visibility, ".
-                        "p.status, p.b2b, p.b2c, p.startdate, p.enddate, ".
-                        "p.manufacturer_url, p.external_link, p.sort_order, ".
-                        DBPREFIX."module_shop".MODULE_INDEX."_manufacturer.name as manufacturer_name, ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer.url as manufacturer_website, ".
-                        "p.vat_id, v.percent as vat_percent, p.weight ".
-                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products p ".
-                        // c1.id *MUST NOT* be NULL
-                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories c1 ".
-                        "ON p.catid=c1.id ".
-                        // c2.id *MAY* be NULL (if c1.id is root)
-                        "LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories c2 ".
-                        "ON c1.parent_id=c2.id ".
-                        // vat_id, OTOH, *MAY* be NULL
-                        "LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_vat v ON vat_id = v.id ".
-                        // manufacturer
-                        "LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer ON ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer.id = p.manufacturer ".
-                        "ORDER BY catid ASC, product_id ASC";
+                    // c1.catid *MUST NOT* be NULL
+                    // c2.catid *MAY* be NULL (if c1.catid is root)
+                    // vat_id *MAY* be NULL
+                    $query = "
+                        SELECT p.product_id, p.picture, p.title,
+                               p.catid, c1.catname as category, c2.catname as parentcategory, p.handler,
+                               p.normalprice, p.resellerprice, p.discountprice, p.is_special_offer,
+                               p.shortdesc, p.description, p.stock, p.stock_visibility,
+                               p.status, p.b2b, p.b2c, p.startdate, p.enddate,
+                               m.name as manufacturer_name,
+                               m.url as manufacturer_website,
+                               p.manufacturer_url, p.external_link,
+                               p.sort_order,
+                               v.percent as vat_percent, p.weight,
+                               d.name AS discount_group,
+                               a.name AS article_group,
+                               p.keywords
+                          FROM ".DBPREFIX."module_shop_products p
+                         INNER JOIN ".DBPREFIX."module_shop_categories c1 ON p.catid=c1.catid
+                          LEFT JOIN ".DBPREFIX."module_shop_categories c2 ON c1.parentid=c2.catid
+                          LEFT JOIN ".DBPREFIX."module_shop_vat v ON vat_id=v.id
+                          LEFT JOIN ".DBPREFIX."module_shop_manufacturer as m ON m.id = p.manufacturer
+                          LEFT JOIN ".DBPREFIX."module_shop_discountgroup_count_name as d ON d.id = p.group_id
+                          LEFT JOIN ".DBPREFIX."module_shop_article_group as a ON a.id = p.article_id
+                         ORDER BY catid ASC, product_id ASC
+                    ";
                 break;
                 // customer - plain fields:
                 case 'tcustomer':
@@ -790,32 +804,34 @@ class shopmanager extends ShopLibrary
                         'customerid', 'username', 'password', 'prefix', 'company', 'firstname', 'lastname',
                         'address', 'city', 'zip', 'country_id', 'phone', 'fax', 'email',
                         'ccnumber', 'ccdate', 'ccname', 'cvc_code', 'company_note',
-                        'is_reseller', 'register_date', 'customer_status');
-                    $query =
-                        "SELECT customerid, username, password, prefix, company, firstname, lastname, ".
-                        "address, city, zip, country_id, phone, fax, email, ".
-                        "ccnumber, ccdate, ccname, cvc_code, company_note, ".
-                        "is_reseller, register_date, customer_status ".
-                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers ".
-                        "ORDER BY lastname ASC, firstname ASC";
+                        'is_reseller', 'register_date', 'customer_status', 'group_id',
+                    );
+                    $query = "
+                        SELECT customerid, username, password, prefix, company, firstname, lastname,
+                               address, city, zip, country_id, phone, fax, email,
+                               ccnumber, ccdate, ccname, cvc_code, company_note,
+                               is_reseller, register_date, customer_status,
+                               group_id
+                          FROM ".DBPREFIX."module_shop_customers
+                         ORDER BY lastname ASC, firstname ASC
+                    ";
                 break;
                 // customer - custom:
-                // Uses the Backend language for country names
                 case 'rcustomer':
                     $content_location = "KundenRelationen.csv";
                     $fieldNames = array(
                         'customerid', 'username', 'firstname', 'lastname', 'prefix', 'company',
-                        'address', 'zip', 'city', 'country_name',
-                        'phone', 'fax', 'email', 'is_reseller', 'register_date');
+                        'address', 'zip', 'city', 'countries_name',
+                        'phone', 'fax', 'email', 'is_reseller', 'register_date', 'group_name',
+                    );
                     $query = "
-                        SELECT c.customerid, c.username, c.firstname,
-                               c.lastname, c.prefix, c.company, c.address,
-                               c.zip, c.city, t.text AS country_name, c.phone,
-                               c.fax, c.email, c.is_reseller, c.register_date
-                          FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers c
-                         INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_countries n ON c.country_id=n.id
-                         INNER JOIN ".DBPREFIX."core_text AS t ON n.text_name_id=t.id
-                         WHERE t.lang_id=".LANGID."
+                        SELECT c.customerid, c.username, c.firstname, c.lastname, c.prefix, c.company,
+                               c.address, c.zip, c.city, n.countries_name,
+                               c.phone, c.fax, c.email, c.is_reseller, c.register_date,
+                               d.name AS group_name
+                          FROM ".DBPREFIX."module_shop_customers c
+                         INNER JOIN ".DBPREFIX."module_shop_countries n ON c.country_id=n.countries_id
+                          LEFT JOIN ".DBPREFIX."module_shop_customer_group d ON c.group_id=d.id
                          ORDER BY c.lastname ASC, c.firstname ASC
                     ";
                 break;
@@ -839,7 +855,6 @@ class shopmanager extends ShopLibrary
                         "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders ORDER BY orderid ASC";
                 break;
                 // orders - custom:
-                // Uses the Backend language for country names
                 case 'rorder':
                     $content_location = "BestellungenRelationen.csv";
                     $fieldNames = array(
@@ -848,36 +863,29 @@ class shopmanager extends ShopLibrary
                         'ship_firstname', 'ship_lastname', 'ship_address', 'ship_city', 'ship_zip',
                         'ship_phone', 'customer_note',
                         'customerid', 'username', 'firstname', 'lastname', 'prefix', 'company',
-                        'address', 'zip', 'city', 'country_name',
+                        'address', 'zip', 'city', 'countries_name',
                         'phone', 'fax', 'email', 'is_reseller', 'register_date',
                         'currency_code', 'shipper_name', 'payment_name',
                         'account_number', 'bank_name', 'bank_code');
                     $query = "
-                        SELECT o.orderid, o.order_sum, o.tax_price,
-                               o.currency_ship_price, o.currency_payment_price,
-                               o.currency_order_sum, o.order_date,
-                               o.order_status, o.ship_prefix, o.ship_company,
-                               o.ship_firstname, o.ship_lastname,
-                               o.ship_address, o.ship_city, o.ship_zip,
+                        SELECT o.orderid, o.order_sum, o.tax_price, o.currency_ship_price, o.currency_payment_price,
+                               o.currency_order_sum, o.order_date, o.order_status, o.ship_prefix, o.ship_company,
+                               o.ship_firstname, o.ship_lastname, o.ship_address, o.ship_city, o.ship_zip,
                                o.ship_phone, o.customer_note,
-                               c.customerid, c.username, c.firstname,
-                               c.lastname, c.prefix, c.company,
-                               c.address, c.zip, c.city, t.text AS country_name,
-                               c.phone, c.fax, c.email, c.is_reseller,
-                                c.register_date,
-                               u.code AS currency_code, s.name AS shipper_name,
-                               p.name AS payment_name,
+                               c.customerid, c.username, c.firstname, c.lastname, c.prefix, c.company,
+                               c.address, c.zip, c.city, n.countries_name,
+                               c.phone, c.fax, c.email, c.is_reseller, c.register_date,
+                               u.code AS currency_code, s.name AS shipper_name, p.name AS payment_name,
                                l.holder, l.bank, l.blz
-                          FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders o
-                         INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers c ON o.customerid=c.customerid
-                         INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_countries n ON c.country_id=n.id
-                         INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_currencies u ON o.selected_currency_id=u.id
-                         INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_shipper s ON o.shipping_id=s.id
-                         INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_payment p ON o.payment_id=p.id
-                         INNER JOIN ".DBPREFIX."core_text AS t ON n.text_name_id=t.id
-                          LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_lsv l ON o.orderid=l.order_id
-                         WHERE t.lang_id=".LANGID."
-                         ORDER BY orderid ASC";
+                          FROM ".DBPREFIX."module_shop_orders o
+                         INNER JOIN ".DBPREFIX."module_shop_customers c ON o.customerid=c.customerid
+                         INNER JOIN ".DBPREFIX."module_shop_countries n ON c.country_id=n.countries_id
+                         INNER JOIN ".DBPREFIX."module_shop_currencies u ON o.selected_currency_id=u.id
+                          LEFT JOIN ".DBPREFIX."module_shop_shipper s ON o.shipping_id=s.id
+                          LEFT JOIN ".DBPREFIX."module_shop_payment p ON o.payment_id=p.id
+                          LEFT JOIN ".DBPREFIX."module_shop_lsv l ON o.orderid=l.order_id
+                         ORDER BY orderid ASC
+                    ";
                 break;
             } // switch
 
@@ -892,8 +900,7 @@ class shopmanager extends ShopLibrary
                     }
                     $fileContent .= '"'.join('";"', $arrReplaced)."\"\n";
                 }
-// TODO
-// Test the output for UTF8
+// Test the output for UTF8!
                 if (strtoupper(CONTREXX_CHARSET) == 'UTF-8') {
                     $fileContent = utf8_decode($fileContent);
                 }
@@ -903,8 +910,7 @@ class shopmanager extends ShopLibrary
                 echo($fileContent);
                 exit();
             } else {
-                $this->addError($_ARRAYLANG['TXT_SHOP_EXPORT_ERROR']);
-                self::$strOkMessage  = '';
+                self::addError($_ARRAYLANG['TXT_SHOP_EXPORT_ERROR']);
             }
         } else {
             // can't submit without a group selection
@@ -1023,8 +1029,8 @@ class shopmanager extends ShopLibrary
      *                          Note that everything except an illegal
      *                          argument (a non-array) is considered a
      *                          success!
-     * @todo    Implement a simple and elegant way to notify the user when
-     *          errors occur while creating the thumbnails
+     * @internal    NTH: Implement a simple and elegant way to notify the user
+     *              when errors occur while creating the thumbnails
      */
     function makeProductThumbnailsById($arrId)
     {
@@ -1053,14 +1059,13 @@ class shopmanager extends ShopLibrary
                 || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
                 continue;
             }
-            // delete old thumb - now integrated into _createThumbWhq()
-            //unlink(self::$shopImagePath.$imageName.self::thumbnailSuffix);
+            // Note:  Old thumb is deleted in _createThumbWhq()
             // reset the ImageManager
             $objImageManager->imageCheck = 1;
             // create thumbnail
             if ($objImageManager->_createThumbWhq(
-                self::$shopImagePath,
-                self::$shopImageWebPath,
+                ASCMS_SHOP_IMAGES_PATH.'/',
+                ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                 $imageName,
                 $_CONFIG['shop_thumbnail_max_width'],
                 $_CONFIG['shop_thumbnail_max_height'],
@@ -1088,7 +1093,6 @@ class shopmanager extends ShopLibrary
      * Show product attributes page
      *
      * Show the settings for the attributes of the products
-     * @todo    Remove price prefix globally, make price signed
      *
      */
     function _showProductAttributes()
@@ -1097,10 +1101,9 @@ class shopmanager extends ShopLibrary
 
         self::$pageTitle = $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'];
         self::$objTemplate->addBlockfile('SHOP_PRODUCTS_FILE', 'shop_products_block', 'module_shop_product_attributes.html');
-        $this->addError($this->_showAttributeOptions());
+        self::addError($this->_showAttributeOptions());
     }
 
-// TODO: FROM HERE:  Check and fix multilanguage
 
     /**
      * Show attribute options
@@ -1114,16 +1117,19 @@ class shopmanager extends ShopLibrary
 
         // delete option
         if (isset($_GET['delId']) && !empty($_GET['delId'])) {
-            $this->addError($this->_deleteAttributeOption($_GET['delId']));
+            self::addError($this->_deleteAttributeOption($_GET['delId']));
         } elseif (!empty($_GET['delProduct']) && !empty($_POST['selectedOptionId'])) {
-            $this->addError($this->_deleteAttributeOption($_POST['selectedOptionId']));
+            self::addError($this->_deleteAttributeOption($_POST['selectedOptionId']));
         }
         // store new option
         if (!empty($_POST['addAttributeOption']))
-            $this->addError($this->_storeNewAttributeOption());
+            $this->_storeNewAttributeOption();
         // update attribute options
         if (!empty($_POST['updateAttributeOptions']))
-            $this->addError($this->_updateAttributeOptions());
+            $this->_updateAttributeOptions();
+        // Clear the Product Attribute data present in ProductAttributes.
+        // This may have been changed above and would thus be out of date.
+        ProductAttributes::reset();
 
         // set language variables
         self::$objTemplate->setVariable(array(
@@ -1139,8 +1145,7 @@ class shopmanager extends ShopLibrary
             'TXT_RADIOBUTTON_OPTION' => $_ARRAYLANG['TXT_RADIOBUTTON_OPTION'],
             'TXT_MENU_OPTION' => $_ARRAYLANG['TXT_MENU_OPTION'],
             'TXT_SHOP_MENU_OPTION_DUTY' => $_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY'],
-            'TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE'
-                  => $_ARRAYLANG['TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE'],
+            'TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE' => $_ARRAYLANG['TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE'],
         ));
         self::$objTemplate->setGlobalVariable(array(
             'TXT_OPTIONS' => $_ARRAYLANG['TXT_OPTIONS'],
@@ -1150,7 +1155,6 @@ class shopmanager extends ShopLibrary
             'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
             'TXT_VALUE' => $_ARRAYLANG['TXT_VALUE'],
             'TXT_PRICE' => $_ARRAYLANG['TXT_PRICE'],
-            'TXT_PRICE_PREFIX' => $_ARRAYLANG['TXT_PRICE_PREFIX'],
             'TXT_ADD_NEW_VALUE' => $_ARRAYLANG['TXT_ADD_NEW_VALUE'],
             'TXT_EDIT_OPTION' => $_ARRAYLANG['TXT_EDIT_OPTION'],
             'TXT_DELETE_OPTION' => $_ARRAYLANG['TXT_DELETE_OPTION'],
@@ -1164,40 +1168,36 @@ class shopmanager extends ShopLibrary
         $rowClass = 1;
         $max_value_id = -1;
         // Init all values, stored statically in the class
-        ProductAttributes::initValueArray();
+        //ProductAttributes::initValueArray();
         foreach (ProductAttributes::getNameArray() as $name_id => $arrAttributeName) {
-            $arrAttributeValue = ProductAttributes::getValueArray($name_id);
+            $arrAttributeValue = ProductAttributes::getValueArrayByNameId($name_id);
             self::$objTemplate->setCurrentBlock('attributeList');
             self::$objTemplate->setVariable(array(
                 'SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS' => (++$rowClass % 2 ? 'row2' : 'row1'),
                 'SHOP_PRODUCT_ATTRIBUTE_ID' => $name_id,
                 'SHOP_PRODUCT_ATTRIBUTE_NAME' => $arrAttributeName['name'],
-                'SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU' =>
-                    ProductAttributes::getAttributeValueMenu(
+            'SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU' => ProductAttributes::getAttributeValueMenu(
                         $name_id,
                         'attributeValueList',
                         '',
                         'setSelectedValue('.$name_id.')',
                         'width: 200px;'
-                    ),
-                'SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES' =>
-                    ProductAttributes::getAttributeInputBoxes(
+                ),
+            'SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES' => ProductAttributes::getAttributeInputBoxes(
                         $name_id,
                         'attributeValue',
                         'value',
                         255,
                         'width: 170px;'
-                    ),
-                'SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES' =>
-                    ProductAttributes::getAttributeInputBoxes(
+                ),
+                'SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES' => ProductAttributes::getAttributeInputBoxes(
                         $name_id,
                         'attributePrice',
                         'price',
                         9,
                         'width: 170px; text-align: right;'
                     ),
-               'SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE' =>
-                    ProductAttributes::getAttributeDisplayTypeMenu(
+               'SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE' => ProductAttributes::getAttributeDisplayTypeMenu(
                         $name_id,
                         $arrAttributeName['type'],
                         'updateAttributeValueList('.$name_id.')'
@@ -1210,16 +1210,15 @@ class shopmanager extends ShopLibrary
         }
         // The same for a new ProductAttribute
         self::$objTemplate->setVariable(array(
-            'TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU' =>
-                ProductAttributes::getAttributeDisplayTypeMenu(
+            'TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU' => ProductAttributes::getAttributeDisplayTypeMenu(
                     0, 0, 'updateAttributeValueList(0)'
                 ),
         ));
 
         self::$objTemplate->setVariable(array(
-            'SHOP_PRODUCT_ATTRIBUTE_JS_VARS'  =>
-                ProductAttributes::getAttributeJSVars(),
-            'SHOP_PRODUCT_ATTRIBUTE_MAX_ID' => $max_value_id,
+            'SHOP_PRODUCT_ATTRIBUTE_JS_VARS' =>
+//$this->_getAttributeJSVars().
+                ProductAttributes::getAttributeJSVars(), //"\nindex = ".$this->highestIndex.";\n",
             'SHOP_PRODUCT_ATTRIBUTE_CURRENCY' => Currency::getDefaultCurrencySymbol(),
         ));
     }
@@ -1249,22 +1248,24 @@ class shopmanager extends ShopLibrary
         $i = 0;
         foreach (ProductAttributes::getNameArray() as $name_id => $arrAttributeName) {
 //echo("name ID: $name_id, arrName: ".var_export($arrAttributeName, true)."<br />");
-            $arrValueId = array();
+            $arrRelation = array();
             // If a Product is selected, check those Product Attribute values
             // associated with it
             if ($productId)
-                $arrValueId = array_keys(ProductAttributes::getRelationArray($productId));
-//echo("arrValue ID: ".var_export($arrValueId, true)."<br />");
+                $arrRelation = ProductAttributes::getRelationArray($productId);
+//echo("arrRelation: ".var_export($arrRelation, true)."<br />");
             // All values available for this Product Attribute
-            $arrAttributeValues = ProductAttributes::getValueArray($name_id);
+            $arrAttributeValues = ProductAttributes::getValueArrayByNameId($name_id);
 //echo("PA values: ".var_export($arrAttributeValues, true)."<br />");
 
             $nameSelected = false;
+            $order = 0;
             foreach ($arrAttributeValues as $value_id => $arrAttributeValue) {
 //echo("value ID: $value_id, arrValue: ".var_export($arrAttributeValue, true)."<br />");
-                if (in_array($value_id, $arrValueId)) {
+                if (in_array($value_id, array_keys($arrRelation))) {
                     $valueSelected = true;
                     $nameSelected  = true;
+                    $order = $arrRelation[$value_id];
                 } else {
                     $valueSelected = false;
                 }
@@ -1283,7 +1284,8 @@ class shopmanager extends ShopLibrary
                 'SHOP_PRODUCTS_ATTRIBUTE_NAME' => $arrAttributeName['name'],
                 'SHOP_PRODUCTS_ATTRIBUTE_SELECTED' => ($nameSelected ? ' checked="checked"' : ''),
                 'SHOP_PRODUCTS_ATTRIBUTE_DISPLAY_TYPE' => ($nameSelected ? 'block' : 'none'),
-                'SHOP_PRODUCTS_ATTRIBUTE_SORTID' => (isset($arrAttributeValue['order']) ? $arrAttributeValue['order'] : 0),
+                'SHOP_PRODUCTS_ATTRIBUTE_SORTID' => $order,
+                    //self::$arrRelation[$product_id][$value_id] = $objResult->fields['sort_id'];
             ));
             self::$objTemplate->parse('attributeList');
         }
@@ -1291,7 +1293,10 @@ class shopmanager extends ShopLibrary
 
 
     /**
-     * Inserts the ProductAttribute with name and values into the database.
+     * Store new attribute option
+     *
+     * Store a new attribute option
+     *
      * @access    private
      * @return    string    $statusMessage    Status message
      */
@@ -1348,17 +1353,15 @@ class shopmanager extends ShopLibrary
         $arrAttributeValue = $_POST['attributeValue'];
         $arrAttributePrice = $_POST['attributePrice'];
 
-        foreach ($arrAttributeName as $name_id => $name) {
-//echo("updating name id $name_id, name $name<br />");
-
+        foreach ($arrAttributeList as $name_id => $arrValueIds) {
             $flagChanged = false;
-
             $objAttribute = ProductAttribute::getByNameId($name_id);
             if (!$objAttribute)
-// TODO:  Add error message
-                continue;
+                return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
 
+            $name = $arrAttributeName[$name_id];
             $type = $arrAttributeType[$name_id];
+//echo("_updateAttributeOptions(): updating name id $name_id, name $name<br />");
             if (   $name != $objAttribute->getName()
                 || $type != $objAttribute->getType()) {
                 $objAttribute->setName($name);
@@ -1366,22 +1369,26 @@ class shopmanager extends ShopLibrary
                 $flagChanged = true;
             }
 
-//echo("List ".var_export($arrAttributeList, true)."<br />");
+//echo("_updateAttributeOptions(): List ".var_export($arrAttributeList, true)."<br />");
 //continue;
 
             $arrValueObj = $objAttribute->getValueArray();
-            foreach ($arrAttributeList[$name_id] as $value_id) {   //echo("looping name id $name_id, value ids ".join(',', $arrAttributeValueIds)."<br />");
+            foreach ($arrValueIds as $value_id) {   //echo("looping name id $name_id, value ids ".join(',', $arrAttributeValueIds)."<br />");
 //echo("updating:  value id $value_id, arrValueObj[$value_id] ".var_export($arrValueObj[$value_id], true)."<br />");
 //echo("arrAttributeValue[$value_id] ".var_export($arrAttributeValue[$value_id], true)."<br />arrAttributePrice[$value_id] ".var_export($arrAttributePrice[$value_id], true)."<br />");
-                if (isset($arrValueObj[$value_id])) {                           //echo("updating value ".$arrAttributeValue[$value_id].", id $value_id<br />");
+                // Make sure these values are defined if empty
+                if (empty($arrAttributeValue[$value_id]))
+                    $arrAttributeValue[$value_id] = '';
+                if (empty($arrAttributePrice[$value_id]))
+                    $arrAttributePrice[$value_id] = '0.00';
+                if (isset($arrValueObj[$value_id])) {
                     if (   $arrAttributeValue[$value_id] != $arrValueObj[$value_id]['value']
                         || $arrAttributePrice[$value_id] != $arrValueObj[$value_id]['price']) {
-                        $objAttribute->updateValue($value_id, $arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
+                        $objAttribute->changeValue($value_id, $arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
                         $flagChanged = true;
-//echo("updated: ".var_export($objAttribute, true)."<br />");
-                        }
+//echo("changed: ".var_export($objAttribute, true)."<br />");
+                    }
                 } else {
-                    // insert new attribute value
                     $objAttribute->addValue($arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
 //echo("added: ".var_export($objAttribute, true)."<br />");
                 }
@@ -1389,15 +1396,17 @@ class shopmanager extends ShopLibrary
 
             // Delete values that are no longer present in the post
             foreach (array_keys($arrValueObj) as $value_id) {
+                if (!in_array($value_id, $arrAttributeList[$name_id])) {
 //echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_id], true)."<br />");
-                if (!in_array($value_id, $arrAttributeList[$name_id]))
-                    $objAttribute->deleteValueById($value_id);
+                	$objAttribute->deleteValueById($value_id);
+                }
             }
 
-            if (!$objAttribute->store())
+            if ($flagChanged && !$objAttribute->store())
                 return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
         }
 
+/*
         // Delete Product Attributes with no values
         foreach (array_keys(ProductAttributes::getNameArray()) as $name_id) {
             if (!array_key_exists($name_id, $arrAttributeList)) {
@@ -1408,6 +1417,7 @@ class shopmanager extends ShopLibrary
                     return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
             }
         }
+*/
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_value");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_name");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes");
@@ -1449,47 +1459,9 @@ class shopmanager extends ShopLibrary
                 return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
             }
         }
-        $this->addMessage($_ARRAYLANG['TXT_OPTION_SUCCESSFULLY_DELETED']);
+        self::addMessage($_ARRAYLANG['TXT_OPTION_SUCCESSFULLY_DELETED']);
         return '';
     }
-
-
-    /**
-     * OBSOLETE
-     * See {@link ProductAttributes::getAttributeInputBoxes()}.
-     * Get attribute inputboxes
-     *
-     * Generate a list of the inputboxes with the values of an attribute option
-     * @access    private
-     * @param    integer    $name_id    Id of the attribute option
-     * @param    string    $name    Name of the inputboxes
-     * @param    string    $content    Attribute value type
-     * @param    integer    $maxlength    Maxlength of the inputboxes
-     * @param    string    $style    CSS-Style declaration for the inputboxes
-     * @return    string    $inputBoxes    List with the generated inputboxes
-    function _getAttributeInputBoxes($name_id, $name, $content, $maxlength='', $style='')
-    {
-        $inputBoxes = '';
-        $select = true;
-        foreach ($this->arrAttributes[$name_id]['values'] as $value_id => $arrValue) {
-            $inputBoxes .=
-                '<input type="text" name="'.$name.'['.$value_id.
-                ']" id="'.$name.'-'.$value_id.'" value="'.$arrValue[$content].
-                '"'.
-                ($maxlength ? ' maxlength="'.$maxlength.'"' : '').
-                ' style="display: '.($select ? 'inline' : 'none').';'.
-                ($style ? " $style" : '').
-                '" onchange="updateAttributeValueList('.$name_id.','.$value_id.')"'.
-                // For text and file upload options, disable the value field
-                (   $content == 'value'
-                 && $this->arrAttributes[$name_id]['displayType'] > 3
-                    ? ' disabled="disabled"' : '').
-                ' />';
-            $select = false;
-        }
-        return $inputBoxes;
-    }
-     */
 
 
     /**
@@ -1498,19 +1470,17 @@ class shopmanager extends ShopLibrary
      * OBSOLETE.  Use ProductAttribute::getAttributeJSVars() instead.
      * @access    private
      * @return    string    $jsVars    Javascript variables list
+     */
     function _getAttributeJSVars()
     {
         $jsVars = '';
-        foreach ($this->arrAttributes as $name_id => $arrValues) {
+        foreach ($this->arrAttributes as $attributeId => $arrValues) {
             reset($arrValues['values']);
             $arrValue = current($arrValues['values']);
-            $jsVars .= "attributeValueId[$name_id] = ".$arrValue['id'].";\n";
+            $jsVars .= "attributeValueId[$attributeId] = ".$arrValue['id'].";\n";
         }
-//echo("Original _getAttributeJSVars():<br />$jsVars<br />");
-//echo("Class PAs:getAttributeJSVars():<br />".ProductAttributes::getAttributeJSVars()."<br />");
         return $jsVars;
     }
-     */
 
 
     /**
@@ -1522,6 +1492,18 @@ class shopmanager extends ShopLibrary
     function _showSettings()
     {
         global $objDatabase, $_ARRAYLANG;
+
+        // added return value. If empty, no error occurred
+        $success = $this->objSettings->storeSettings();
+        if ($success) {
+            self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+        } elseif ($success === false) {
+            self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
+        }
+        // $success may also be '', in which case no changed setting has
+        // been detected.
+        // Refresh the Settings, so changes are made visible right away
+        $this->_initConfiguration();
 
         $i = 0;
         self::$pageTitle= $_ARRAYLANG['TXT_SETTINGS'];
@@ -1595,6 +1577,9 @@ class shopmanager extends ShopLibrary
             'TXT_IMMEDIATE' => $_ARRAYLANG['TXT_IMMEDIATE'],
             'TXT_DEFERRED' => $_ARRAYLANG['TXT_DEFERRED'],
             'TXT_SHOP_ACCEPTED_PAYMENT_METHODS' => $_ARRAYLANG['TXT_SHOP_ACCEPTED_PAYMENT_METHODS'],
+            // General
+            'TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE' => $_ARRAYLANG['TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE'],
+            'TXT_SHOP_PRODUCT_SORTING' => $_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING'],
             // country settings
             'TXT_COUNTRY_LIST' => $_ARRAYLANG['TXT_COUNTRY_LIST'],
             'TXT_DISPLAY_IT_IN_THE_SHOP' => $_ARRAYLANG['TXT_DISPLAY_IT_IN_THE_SHOP'],
@@ -1608,8 +1593,6 @@ class shopmanager extends ShopLibrary
             'TXT_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
             'TXT_SELECTED_COUNTRIES' => $_ARRAYLANG['TXT_SELECTED_COUNTRIES'],
             'TXT_AVAILABLE_COUNTRIES' => $_ARRAYLANG['TXT_AVAILABLE_COUNTRIES'],
-            // General
-            'TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE' => $_ARRAYLANG['TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE'],
             // weight
             'TXT_SHIPPING_MAX_WEIGHT' => $_ARRAYLANG['TXT_SHIPPING_MAX_WEIGHT'],
             'TXT_MAX_WEIGHT_TIP' => $_ARRAYLANG['TXT_MAX_WEIGHT_TIP'],
@@ -1640,7 +1623,7 @@ class shopmanager extends ShopLibrary
         }
 
         switch ($_GET['tpl']) {
-            case "currency":
+            case 'currency':
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_currency.html');
                 self::$objTemplate->setCurrentBlock('shopCurrency');
                 foreach (Currency::getCurrencyArray() as $currency) {
@@ -1659,16 +1642,16 @@ class shopmanager extends ShopLibrary
                     self::$objTemplate->parseCurrentBlock();
                 }
                 break;
-            case "payment":
+            case 'payment':
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_payment.html');
                 self::$objTemplate->setCurrentBlock('shopPayment');
                 require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
                 foreach (Payment::getPaymentArray() as $id => $data) {
-                    $query = "SELECT r.zone_id as zone_id ".
+                    $query = "SELECT r.zones_id as zone_id ".
                              "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment AS r, ".
                                      DBPREFIX."module_shop".MODULE_INDEX."_zones AS z ".
-                              "WHERE z.status=1 ".
-                                "AND z.id=r.zone_id ".
+                              "WHERE z.activation_status=1 ".
+                                "AND z.zones_id=r.zones_id ".
                                 "AND r.payment_id=".$data['id'];
                     $objResult = $objDatabase->Execute($query);
                     if (!$objResult->EOF) {
@@ -1681,12 +1664,10 @@ class shopmanager extends ShopLibrary
                         'SHOP_PAYMENT_STYLE' => (++$i % 2 ? 'row2' : 'row1'),
                         'SHOP_PAYMENT_ID' => $data['id'],
                         'SHOP_PAYMENT_NAME' => $data['name'],
-                        'SHOP_PAYMENT_HANDLER_MENUOPTIONS' =>
-                            PaymentProcessing::getMenuoptions($data['processor_id']),
+                        'SHOP_PAYMENT_HANDLER_MENUOPTIONS' => PaymentProcessing::getMenuoptions($data['processor_id']),
                         'SHOP_PAYMENT_COST' => $data['costs'],
                         'SHOP_PAYMENT_COST_FREE_SUM' => $data['costs_free_sum'],
-                        'SHOP_ZONE_SELECTION' =>
-                            Zones::getMenu(
+                        'SHOP_ZONE_SELECTION' => Zones::getMenu(
                                 $zone_id, 'paymentZone['.$data['id'].']'
                             ),
                             //$this->_getZonesMenu("paymentZone[".$data['id']."]", $zone_id),
@@ -1696,17 +1677,16 @@ class shopmanager extends ShopLibrary
                 }
 
                 self::$objTemplate->setVariable(array(
-                    'SHOP_PAYMENT_HANDLER_MENUOPTIONS_NEW' =>
-                        // Selected PSP ID is -1 to disable the
+                    'SHOP_PAYMENT_HANDLER_MENUOPTIONS_NEW' => // Selected PSP ID is -1 to disable the
                         // "Please select" option
                         PaymentProcessing::getMenuoptions(-1),
                     'SHOP_ZONE_SELECTION_NEW' => Zones::getMenu(0, 'paymentZone_new'),
-                        //$this->_getZonesMenu("paymentZone_new")
+                        //$this->_getZonesMenu('paymentZone_new')
                 ));
 
                 // end show payment
                 break;
-            case "shipment":
+            case 'shipment':
                 // start show shipment
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_shipment.html');
                 self::$objTemplate->setGlobalVariable(
@@ -1716,11 +1696,11 @@ class shopmanager extends ShopLibrary
                 $arrShipments = Shipment::getShipmentsArray();
                 $i = 0;
                 foreach (Shipment::getShippersArray() as $sid => $arrShipper) {
-                    $query = "SELECT r.zone_id as zone_id ".
+                    $query = "SELECT r.zones_id as zone_id ".
                              "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment AS r, ".
                                      DBPREFIX."module_shop".MODULE_INDEX."_zones AS z ".
-                            "WHERE z.status=1 ".
-                              "AND z.id=r.zone_id ".
+                            "WHERE z.activation_status=1 ".
+                              "AND z.zones_id=r.zones_id ".
                               "AND r.shipment_id=$sid";
                     $objResult = $objDatabase->Execute($query);
 
@@ -1767,15 +1747,16 @@ class shopmanager extends ShopLibrary
                 self::$objTemplate->setVariable(
                     'SHOP_ZONE_SELECTION_NEW', Zones::getMenu(0, 'shipmentZoneNew')
                 );
-                        //$this->_getZonesMenu("shipmentZoneNew", 1)));
+                        //$this->_getZonesMenu('shipmentZoneNew', 1)));
                 // end show shipment
                 break;
-            case "countries":
+            case 'countries':
                 // start show countries
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_countries.html');
                 $selected = '';
                 $notSelected = '';
-                foreach ($this->arrCountries as $cId => $data) {
+                $arrCountries = Country::getArray();
+                foreach ($arrCountries as $cId => $data) {
                     if ($data['status'] == 1) {
                         $selected .=
                             '<option value="'.$cId.'">'.
@@ -1792,7 +1773,7 @@ class shopmanager extends ShopLibrary
                 ));
                 // end show countries
                 break;
-            case "zones":
+            case 'zones':
                 // start show zones
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_zones.html');
                 //self::$objTemplate->setCurrentBlock('shopZones');
@@ -1807,6 +1788,7 @@ class shopmanager extends ShopLibrary
                         ($selectFirst ? '' : ' selected="selected"').
                         '>'.$arrZone['name']."</option>\n";
                     $arrCountryInZone = Country::getArraysByZoneId($zone_id);
+//echo("Countries: ".var_export($arrCountryInZone, true)."<br />");
                     $strSelectedCountries = '';
                     foreach ($arrCountryInZone['in'] as $country_id => $arrCountry) {
                         $strSelectedCountries .=
@@ -1837,7 +1819,7 @@ class shopmanager extends ShopLibrary
                     'SHOP_ZONE_COUNTRY_LIST' => Country::getMenuoptions(),
                 ));
                 break;
-            case "mail":
+            case 'mail':
                 $strMailSelectedTemplates = '';
                 $strMailTemplates = '';
                 $objLanguage = new FWLanguage();
@@ -1848,7 +1830,9 @@ class shopmanager extends ShopLibrary
                 self::$objTemplate->setVariable(array(
                     'TXT_MAIL_TEMPLATES' => $_ARRAYLANG['TXT_MAIL_TEMPLATES'],
                     'TXT_REPLACEMENT_DIRECTORY' => $_ARRAYLANG['TXT_REPLACEMENT_DIRECTORY'],
-                    'TXT_ADD' => $_ARRAYLANG['TXT_ADD'],
+                    'TXT_SHOP_ADD_EDIT' => $_ARRAYLANG['TXT_ADD'],
+//                    'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+//                    'TXT_ADD' => $_ARRAYLANG['TXT_ADD'],
                     'TXT_SEND_TEMPLATE' => $_ARRAYLANG['TXT_SEND_TEMPLATE'],
                     'TXT_TEMPLATE' => $_ARRAYLANG['TXT_TEMPLATE'],
                     'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
@@ -1860,7 +1844,7 @@ class shopmanager extends ShopLibrary
                     'TXT_SHIPPING_ADDRESS' => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
                     'TXT_ORDER_DETAILS' => $_ARRAYLANG['TXT_ORDER_DETAILS'],
                     'TXT_ORDER_SUM' => $_ARRAYLANG['TXT_ORDER_SUM'],
-                    'TXT_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
+                    'TXT_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'],
                     'TXT_USERNAME' => $_ARRAYLANG['TXT_USERNAME'],
                     'TXT_PASSWORD' => $_ARRAYLANG['TXT_PASSWORD'],
                     'TXT_OTHER' => $_ARRAYLANG['TXT_OTHER'],
@@ -1876,14 +1860,14 @@ class shopmanager extends ShopLibrary
                     'TXT_MESSAGE' => $_ARRAYLANG['TXT_MESSAGE'],
                     'TXT_STORE_AS_NEW_TEMPLATE' => $_ARRAYLANG['TXT_STORE_AS_NEW_TEMPLATE'],
                     'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
-                    'TXT_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_RECIPIENT_ADDRESS'],
+                    'TXT_SHOP_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'],
                     'TXT_SEPARATED_WITH_COMMAS' => $_ARRAYLANG['TXT_SEPARATED_WITH_COMMAS'],
                     'TXT_SEND' => $_ARRAYLANG['TXT_SEND'],
                     'TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE' => $_ARRAYLANG['TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE'],
                     'TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE' => $_ARRAYLANG['TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE'],
                     'TXT_CONFIRM_DELETE_TEMPLATE' => $_ARRAYLANG['TXT_CONFIRM_DELETE_TEMPLATE'],
                     'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-                    'TXT_PLEASE_SET_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_PLEASE_SET_RECIPIENT_ADDRESS'],
+                    'TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS' => $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'],
                     'TXT_SET_MAIL_FROM_ADDRESS' => $_ARRAYLANG['TXT_SET_MAIL_FROM_ADDRESS'],
                     'TXT_ADDRESS_CUSTOMER' => $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'],
                     'TXT_SHOP_COMPANY' => $_ARRAYLANG['TXT_SHOP_COMPANY'],
@@ -1925,19 +1909,21 @@ class shopmanager extends ShopLibrary
                             $shopMailTo    = trim($shopMailTo);
                             $blnMailResult = Mail::send($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
                             if ($blnMailResult) {
-                                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
+                                self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
                             } else {
-                                $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                                self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
                             }
                         }
                     } else {
-                        $this->addError($_ARRAYLANG['TXT_PLEASE_SET_RECIPIENT_ADDRESS']);
+                        self::addError($_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS']);
                     }
                 }
+
                 // Generate title row of the template list
                 $arrAvailable = array();
                 foreach ($arrLanguage as $lang_id => $langValues) {
-                    if ($langValues['frontend']) {
+//echo("Language ID $lang_id<br />");
+                	if ($langValues['frontend']) {
                         self::$objTemplate->setVariable(array('SHOP_MAIL_LANGUAGE' => $langValues['name'],));
                         self::$objTemplate->parse('shopMailLanguages');
                         // Get the availability of all templates
@@ -1947,12 +1933,12 @@ class shopmanager extends ShopLibrary
                             $arrAvailable[$template_id][$lang_id] =
                                 $arrTemplate['available'];
                         }
+//echo("Availability array: ".var_export($arrAvailable, true)."<br />");
                     }
                     if ($langValues['is_default'] == 'true')
                         $defaultLang = $langValues['id'];
                 }
-                // Generate template rows of the template list with the language status
-                // Generate each row
+                // Generate rows of the template list with the availability icon
                 foreach ($arrAvailable as $template_id => $arrLangStatus) {
                     self::$objTemplate->setVariable(
                         'SHOP_MAIL_CLASS', (++$i % 2 ? 'row1' : 'row2')
@@ -1984,8 +1970,7 @@ class shopmanager extends ShopLibrary
                     self::$objTemplate->setVariable(array(
                         'SHOP_TEMPLATE_ID' => $template_id,
                         'SHOP_LANGUAGE_ID' => $defaultLang,
-                        'SHOP_MAIL_TEMPLATE_NAME' =>
-                            $template_name.$template_protected,
+                        'SHOP_MAIL_TEMPLATE_NAME' => $template_name.$template_protected,
                     ));
                     self::$objTemplate->parse('shopMailTemplates');
                     // generate dropdown template-list
@@ -2017,10 +2002,11 @@ class shopmanager extends ShopLibrary
                                 $template_id = $_GET['tplId'];
                                 // set the source template to load
                                 if (!empty($_GET['portLangId'])) {
-                                    $langId = $_GET['portLangId'];
+                                    $lang_id = $_GET['portLangId'];
                                 } else {
-                                    $langId = $_GET['langId'];
+                                    $lang_id = $_GET['langId'];
                                 }
+//echo("Template ID $template_id, Language ID $lang_id<br />");
                                 // Generate language menu
                                 $langMenu =
                                     '<select name="langId" size="1" '.
@@ -2039,7 +2025,9 @@ class shopmanager extends ShopLibrary
                                     '&nbsp;<input type="checkbox" id="portMail" name="portMail" value="1" />&nbsp;'.
                                     $_ARRAYLANG['TXT_COPY_TO_NEW_LANGUAGE'];
                                 // Get the content of the template
-                                $arrTemplate = Mail::getTemplate(intval($template_id), $langId);
+//echo("Getting Template array for template ID $template_id, language ID $lang_id<br />");
+                                    $arrTemplate = Mail::getTemplate(intval($template_id), $lang_id);
+//echo("Template array: ".var_export($arrTemplates, true)."<br />");
                                 self::$objTemplate->setVariable(array(
                                     'SHOP_MAIL_ID' => (isset($_GET['portLangId']) ? '' : $template_id),
                                     'SHOP_MAIL_NAME' => $arrTemplate['sender'],
@@ -2048,15 +2036,15 @@ class shopmanager extends ShopLibrary
                                     'SHOP_MAIL_FROM' => $arrTemplate['from'],
                                     'SHOP_LOADD_TEMPLATE_ID' => $_GET['tplId'],
                                     'SHOP_LOADD_LANGUAGE_ID' => $_GET['langId'],
+                                    'TXT_SHOP_ADD_EDIT' => $_ARRAYLANG['TXT_EDIT'],
                                 ));
                                 self::$objTemplate->touchBlock('saveToOther');
                             } else {
                                 self::$objTemplate->hideBlock('saveToOther');
                                 // set the default sender
-                                self::$objTemplate->setVariable(
-                                    'SHOP_MAIL_FROM',
-                                        $this->arrConfig['email']['value']
-                                );
+                                self::$objTemplate->setVariable(array(
+                                    'SHOP_MAIL_FROM' => $this->arrConfig['email']['value'],
+                                ));
                             }
                             break;
                         case 'shopMailSend':
@@ -2076,8 +2064,8 @@ class shopmanager extends ShopLibrary
                             $langMenu .= '</select>';
                             // Get the content of the template
                             $tplId = (isset($_GET['tplId']) ? intval($_GET['tplId']) : '');
-                            $langId = (isset($_GET['langId']) ? intval($_GET['langId']) : '');
-                            $arrTemplate = Mail::getTemplate($tplId, $langId);
+                            $lang_id = (isset($_GET['langId']) ? intval($_GET['langId']) : '');
+                            $arrTemplate = Mail::getTemplate($tplId, $lang_id);
                             if ($arrTemplate) {
                                 self::$objTemplate->setVariable(array(
                                     'SHOP_MAIL_ID_SEND' => $arrTemplate['id'],
@@ -2097,16 +2085,12 @@ class shopmanager extends ShopLibrary
                     self::$objTemplate->setVariable(array(
                         'SHOP_MAIL_OVERVIEW_STYLE' => 'display: none;',
                         'SHOP_MAILTAB_OVERVIEW_CLASS' => '',
-                        'SHOP_MAIL_EDIT_STYLE' =>
-                            ($_GET['strTab'] == 'shopMailEdit'
+                        'SHOP_MAIL_EDIT_STYLE' => ($_GET['strTab'] == 'shopMailEdit'
                                 ? 'display: block;' : 'display: none;'),
-                        'SHOP_MAILTAB_EDIT_CLASS' =>
-                            ($_GET['strTab'] == 'shopMailEdit' ? 'active' : ''),
-                        'SHOP_MAIL_EDIT_TEMPLATES' =>
-                            ($_GET['strTab'] == 'shopMailEdit'
+                        'SHOP_MAILTAB_EDIT_CLASS' => ($_GET['strTab'] == 'shopMailEdit' ? 'active' : ''),
+                        'SHOP_MAIL_EDIT_TEMPLATES' => ($_GET['strTab'] == 'shopMailEdit'
                                 ? $strMailSelectedTemplates : $strMailTemplates),
-                        'SHOP_MAIL_EDIT_LANGS' =>
-                            ($_GET['strTab'] == 'shopMailEdit'
+                        'SHOP_MAIL_EDIT_LANGS' => ($_GET['strTab'] == 'shopMailEdit'
                                 ? ($_GET['tplId'] != 0
                                     ? $langMenu
                                     : '<input type="hidden" name="langId" value="'.
@@ -2115,24 +2099,19 @@ class shopmanager extends ShopLibrary
                                 : '<input type="hidden" name="langId" value="'.
                                     $defaultLang.'" />'
                             ),
-                        'SHOP_MAIL_SEND_STYLE' =>
-                            ($_GET['strTab'] == 'shopMailSend'
+                        'SHOP_MAIL_SEND_STYLE' => ($_GET['strTab'] == 'shopMailSend'
                                 ? 'display: block;' : 'display: none;'),
-                        'SHOP_MAILTAB_SEND_CLASS' =>
-                            ($_GET['strTab'] == 'shopMailSend' ? 'active' : ''),
-                        'SHOP_MAIL_SEND_TEMPLATES' =>
-                            ($_GET['strTab'] == 'shopMailSend'
+                        'SHOP_MAILTAB_SEND_CLASS' => ($_GET['strTab'] == 'shopMailSend' ? 'active' : ''),
+                        'SHOP_MAIL_SEND_TEMPLATES' => ($_GET['strTab'] == 'shopMailSend'
                                 ? $strMailSelectedTemplates : $strMailTemplates),
-                        'SHOP_MAIL_SEND_LANGS' =>
-                            ($_GET['strTab'] == 'shopMailSend'
+                        'SHOP_MAIL_SEND_LANGS' => ($_GET['strTab'] == 'shopMailSend'
                                 ? (isset($_GET['tplId'])
                                     ? $langMenu
                                     : '<input type="hidden" name="langId" value="'.
                                         $defaultLang.'" />')
                                 : '<input type="hidden" name="langId" value="'.
                                     $defaultLang.'" />'),
-                        'SHOP_MAIL_TO' =>
-                            (   $_GET['strTab'] == 'shopMailSend'
+                        'SHOP_MAIL_TO' => (   $_GET['strTab'] == 'shopMailSend'
                              && isset($_GET['shopMailTo'])
                                 ? $_GET['shopMailTo'] : ''),
                     ));
@@ -2220,10 +2199,10 @@ class shopmanager extends ShopLibrary
                     'SHOP_VAT_SELECTED_FOREIGN_RESELLER_INCLUDED' => ($included_foreign_reseller ? ' selected="selected"' : ''),
                     'SHOP_VAT_SELECTED_FOREIGN_RESELLER_EXCLUDED' => ($included_foreign_reseller ? '' : ' selected="selected"'),
                     'SHOP_VAT_DEFAULT_MENUOPTIONS' => Vat::getMenuoptions(
-                            $this->arrConfig['vat_default_id']['value']
+                            $this->arrConfig['vat_default_id']['value'], true
                         ),
                     'SHOP_VAT_OTHER_MENUOPTIONS' => Vat::getMenuoptions(
-                            $this->arrConfig['vat_other_id']['value']
+                            $this->arrConfig['vat_other_id']['value'], true
                         ),
                 ));
                 break;
@@ -2260,12 +2239,10 @@ class shopmanager extends ShopLibrary
                     'SHOP_SAFERPAY_STATUS' => $saferpayStatus,
                     'SHOP_SAFERPAY_TEST_ID' => $this->arrConfig['saferpay_use_test_account']['value'],
                     'SHOP_SAFERPAY_TEST_STATUS' => $saferpayTestStatus,
-                    'SHOP_SAFERPAY_FINALIZE_PAYMENT' =>
-                        ($this->arrConfig['saferpay_finalize_payment']['value']
+                    'SHOP_SAFERPAY_FINALIZE_PAYMENT' => ($this->arrConfig['saferpay_finalize_payment']['value']
                             ? ' checked="checked"' : ''
                         ),
-                    'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' =>
-                        Saferpay::getWindowMenuoptions(
+                    'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' => Saferpay::getWindowMenuoptions(
                             $this->arrConfig['saferpay_window_option']['value']
                         ),
 
@@ -2293,8 +2270,7 @@ class shopmanager extends ShopLibrary
                     'SHOP_CONTACT_FAX' => $this->arrConfig['fax']['value'],
                     'SHOP_PAYPAL_EMAIL' => $this->arrConfig['paypal_account_email']['value'],
                     'SHOP_PAYPAL_STATUS' => $paypalStatus,
-                    'SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS' =>
-                        PayPal::getAcceptedCurrencyCodeMenuoptions(
+                    'SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS' => PayPal::getAcceptedCurrencyCodeMenuoptions(
                             $this->arrConfig['paypal_default_currency']['value']
                         ),
                     // LSV settings
@@ -2314,6 +2290,7 @@ class shopmanager extends ShopLibrary
                     'SHOP_SHOW_PRODUCTS_DEFAULT_OPTIONS' => Products::getDefaultViewMenuoptions(
                             $this->arrConfig['shop_show_products_default']['value']
                         ),
+                    'SHOP_PRODUCT_SORTING_MENUOPTIONS' => self::getProductSortingMenuoptions(),
                 ));
                 break;
         }
@@ -2323,16 +2300,35 @@ class shopmanager extends ShopLibrary
 
     /**
      * OBSOLETE
+    function _getPayPalAcceptedCurrencyCodesMenu()
+    {
+        require_once ASCMS_MODULE_PATH .'/shop/payments/paypal/Paypal.class.php';
+        $objPayPal = new PayPal();
+
+        $menu = "<select name=\"paypal_default_currency\">\n";
+        foreach ($objPayPal->arrAcceptedCurrencyCodes as $code) {
+            $menu .= "<option".($this->arrConfig['paypal_default_currency']['value'] == $code ? ' selected="selected"' : "").">".$code."</option>\n";
+        }
+        $menu .= "</select>\n";
+        return $menu;
+    }
+     */
+
+
+    /**
      * Show exchange page
      *
      * Shows the import & export page and does the import and export work
+     *
      * @access private
      * @see Exchange::selectExchangeContent()
+     */
     function showExchange()
     {
         global $_ARRAYLANG;
 
-        self::$pageTitle= $_ARRAYLANG['TXT_EXPORT']."/".$_ARRAYLANG['TXT_IMPORT'];
+        self::$pageTitle = $_ARRAYLANG['TXT_EXPORT']."/".$_ARRAYLANG['TXT_IMPORT'];
+
         // Exchange content
         if (isset($_POST['handler']) && !empty($_POST['handler'])) {
             $strMethod = substr($_POST['handler'],0,6);
@@ -2342,7 +2338,6 @@ class shopmanager extends ShopLibrary
             self::$objTemplate->setTemplate($this->objExchange->selectExchangeContent());
         }
     }
-     */
 
 
     function showCategories()
@@ -2389,7 +2384,7 @@ class shopmanager extends ShopLibrary
 
         self::$objTemplate->setGlobalVariable(array(
             'TXT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
-            'TXT_SHOP_EDIT' => $_ARRAYLANG['TXT_SHOP_EDIT'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
             'TXT_PREVIEW' => $_ARRAYLANG['TXT_PREVIEW'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE']
         ));
@@ -2409,7 +2404,7 @@ class shopmanager extends ShopLibrary
             $flagEditTabActive = true;
             $arrShopCategory = ShopCategories::getArrayById($id);
             $pictureFilename = $arrShopCategory['picture'];
-            $picturePath = self::$shopImageWebPath.$pictureFilename.self::thumbnailSuffix;
+            $picturePath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$pictureFilename.self::thumbnailSuffix;
             if ($pictureFilename == '') {
                 $picturePath = self::$defaultImage;
             }
@@ -2418,7 +2413,7 @@ class shopmanager extends ShopLibrary
                 'SHOP_MOD_CAT_ID' => $id,
                 'SHOP_SELECTED_CAT_NAME' => $arrShopCategory['name'],
                 'SHOP_CAT_MENUOPTIONS' => ShopCategories::getShopCategoriesMenuoptions(
-                        $arrShopCategory['parentId']
+                        $arrShopCategory['parentId'], false
                     ),
                 'SHOP_PICTURE_IMG_HREF' => $picturePath,
                 'SHOP_CATEGORY_IMAGE_FILENAME' => $pictureFilename,
@@ -2430,7 +2425,7 @@ class shopmanager extends ShopLibrary
                 'TXT_ADD_NEW_SHOP_GROUP' => $_ARRAYLANG['TXT_ADD_NEW_PRODUCT_GROUP'],
                 'SHOP_MOD_CAT_ID' => '',
                 'SHOP_SELECTED_CAT_NAME' => '',
-                'SHOP_CAT_MENUOPTIONS' => ShopCategories::getShopCategoriesMenuoptions(0),
+                'SHOP_CAT_MENUOPTIONS' => ShopCategories::getShopCategoriesMenu(0, false),
                 'SHOP_PICTURE_IMG_HREF' => self::$defaultImage,
                 'SHOP_SELECTED_CATEGORY_VIRTUAL_CHECKED' => '',
                 'SHOP_SELECTED_CATEGORY_STATUS_CHECKED' => ' checked="checked"',
@@ -2475,6 +2470,83 @@ class shopmanager extends ShopLibrary
 
 
     /**
+     * Do shop categories menu
+     *
+     * @version  1.0      initial version
+     * @param    integer  $parentId
+     * @param    integer  $level
+     * @return   string   $result
+     */
+    function doCategoryTree($parentId=0, $level=0)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT catid, parentid, catname, catsorting, catstatus
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+             WHERE parentId=$parentId
+          ORDER BY parentid ASC, catsorting ASC
+        ";
+        if (($objResult = $objDatabase->Execute($query)) === false) {
+            $this->errorHandling();
+            return false;
+        }
+        while (!$objResult->EOF) {
+            $catId = $objResult->fields['catid'];
+            $this->categoryTreeName[$catId] =
+                $objResult->fields['catname'];
+            $this->categoryTreeSorting[$catId] =
+                $objResult->fields['catsorting'];
+            $this->categoryTreeStatus[$catId] =
+                $objResult->fields['catstatus'];
+            $this->categoryTreeLevel[$catId] = $level;
+            $this->doCategoryTree($catId, $level+1);
+            $objResult->MoveNext();
+        }
+        return true;
+    }
+
+
+    /**
+     * Do shop categories menu
+     *
+     * @version  1.0      initial version
+     * @param    integer  $parentId
+     * @param    integer  $level
+     * @return   string   $result
+     */
+    function doCategoryTreeActiveOnly($parentId=0, $level=0)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT catid, parentid, catname, catsorting, catstatus
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+             WHERE catstatus=1 AND parentId=$parentId
+             ORDER BY parentid ASC, catsorting ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult === false) {
+            $this->errorHandling();
+            return false;
+        }
+        while (!$objResult->EOF) {
+            $catId = $objResult->fields['catid'];
+            $this->categoryTreeName[$catId] =
+                $objResult->fields['catname'];
+            $this->categoryTreeSorting[$catId] =
+                $objResult->fields['catsorting'];
+            $this->categoryTreeStatus[$catId] =
+                $objResult->fields['catstatus'];
+            $this->categoryTreeLevel[$catId] = $level;
+            $this->doCategoryTree($catId, $level+1);
+            $objResult->MoveNext();
+        }
+        return true;
+    }
+
+
+    /**
      * Insert or update a ShopCategory with data provided in the request.
      * @return  boolean                 True on success, false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
@@ -2483,31 +2555,32 @@ class shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG;
 
-        if (empty($_POST['modCatName'])) return true;
+        if (empty($_POST['modCatName'])) {
+            return true;
+        }
         $name      = strip_tags($_POST['modCatName']);
         $id        = $_POST['modCatId'];
         $status    = (isset($_POST['modCatStatus']) ? true : false);
         $virtual   = (isset($_POST['modCatVirtual']) ? true : false);
-        $parent_id  = $_POST['modCatParentId'];
+        $parentid  = $_POST['modCatParentId'];
         $picture   = $_POST['modCatImageHref'];
         if ($id > 0) {
             // Update existing ShopCategory
-            $objShopCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
+            $objShopCategory = ShopCategory::getById($id);
             if (!$objShopCategory) {
-//echo("no category<br />");
                 return false;
             }
             // Check validity of the IDs of the category and its parent.
             // If the values are identical, leave the parent ID alone!
-            if ($id != $parent_id) {
-                $objShopCategory->setParentId($parent_id);
+            if ($id != $parentid) {
+                $objShopCategory->setParentId($parentid);
             }
             $objShopCategory->setName($name);
             $objShopCategory->setStatus($status);
         } else {
             // Add new ShopCategory
             $objShopCategory = new ShopCategory(
-                $name, $parent_id, $status, 0
+                $name, $parentid, $status, 0
             );
         }
         // Ignore the picture if it's the default image!
@@ -2518,20 +2591,19 @@ class shopmanager extends ShopLibrary
         } else {
             $objImage = new ImageManager();
             if (!$objImage->_createThumbWhq(
-                self::$shopImagePath,
-                self::$shopImageWebPath,
+                ASCMS_SHOP_IMAGES_PATH.'/',
+                ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                 $picture,
                 $this->arrConfig['shop_thumbnail_max_width']['value'],
                 $this->arrConfig['shop_thumbnail_max_height']['value'],
                 $this->arrConfig['shop_thumbnail_quality']['value']
             )) {
-                self::$strErrMessage .= $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'];
+                self::addError($_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL']);
             }
         }
         $objShopCategory->setPicture(basename($picture));
         $objShopCategory->setVirtual($virtual);
         if (!$objShopCategory->store()) {
-//echo("Failed storing category:<br />".var_export($objShopCategory, true)."<hr />");
             self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             return false;
         }
@@ -2556,7 +2628,7 @@ class shopmanager extends ShopLibrary
             if ($order   != $_POST['catSorting_old'][$id]
              || $status  != $_POST['catStatus_old'][$id]
              || $virtual != $_POST['catVirtual_old'][$id]) {
-                $objShopCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
+                $objShopCategory = ShopCategory::getById($id);
                 $objShopCategory->setSorting($order);
                 $objShopCategory->setStatus($status);
                 $objShopCategory->setVirtual($virtual);
@@ -2604,10 +2676,10 @@ class shopmanager extends ShopLibrary
             $arrCategoryId = array_reverse($arrCategoryId);
             foreach ($arrCategoryId as $cId) {
                 // Check whether this category has subcategories
-                $query = "SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories WHERE 1 AND parent_id=".intval($cId);
+                $query = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories WHERE 1 AND parentid=".intval($cId);
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult->RecordCount() > 0) {
-                    $this->addError($_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")");
+                    self::addError($_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")");
                     continue;
                 }
 
@@ -2630,7 +2702,7 @@ class shopmanager extends ShopLibrary
                         $query = "SELECT 1 FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items WHERE productid=".$id;
                         $objResult = $objDatabase->Execute($query);
                         if ($objResult->RecordCount() > 0) {
-                            $this->addError($_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")");
+                            self::addError($_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")");
                             continue 2;
                         }
                         $this->delProduct($id);
@@ -2638,7 +2710,7 @@ class shopmanager extends ShopLibrary
                 }
 
                 // Delete the category
-                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories WHERE id=".intval($cId);
+                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories WHERE catid=".intval($cId);
                 if (!$objDatabase->Execute($query)) {
                     $this->errorHandling();
                 } else {
@@ -2646,13 +2718,14 @@ class shopmanager extends ShopLibrary
                 }
             }
             if ($blnDeletedCat) {
-                $this->addMessage($_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']);
+                self::addMessage($_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']);
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories");
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
 
@@ -2687,14 +2760,16 @@ class shopmanager extends ShopLibrary
         $result = true;
         if (count($arrProductId) > 0) {
             foreach ($arrProductId as $id) {
-                $objProduct = Product::getById($id, FRONTEND_LANG_ID);
-                if (!$objProduct) continue;
-//                $code = $objProduct->getCode();
-//                if (empty($code)) {
+                $objProduct = Product::getById($id);
+                if (!$objProduct) {
+                    continue;
+                }
+                $code = $objProduct->getCode();
+                if (empty($code)) {
                     $result &= $objProduct->delete();
-//                } else {
-//                    $result &= !Products::deleteByCode($objProduct->getCode());
-//                }
+                } else {
+                    $result &= !Products::deleteByCode($objProduct->getCode());
+                }
             }
         }
         return $result;
@@ -2706,10 +2781,9 @@ class shopmanager extends ShopLibrary
         @unlink($file);
         clearstatcache();
         if (@file_exists($file)) {
-            $filesys = eregi_replace("/","\\", $file);
-            @system("del $filesys");
+            $filesys = eregi_replace('/', '\\', $file);
+            @system('del '.$filesys);
             clearstatcache();
-
             // don't work in safemode
             if (@file_exists($file)) {
                 @chmod ($file, 0775);
@@ -2717,11 +2791,8 @@ class shopmanager extends ShopLibrary
             }
         }
         clearstatcache();
-        if (@file_exists($file)) {
-            return false;
-        } else {
-            return true;
-        }
+        if (@file_exists($file)) return false;
+        return true;
     }
 
 
@@ -2763,13 +2834,17 @@ class shopmanager extends ShopLibrary
         $shopEnddate              = '0000-00-00 00:00:00';
         $shopImageName            = '';
         $shopUserGroupIds         = '';
+//        $shopFlags = '';
+        $shopGroupId   = 0;
+        $shopArticleId = 0;
+        $shopKeywords  = '';
 
-// TODO: Is $shopTempThumbnailName, and its session equivalent,
+// Is $shopTempThumbnailName, and its session equivalent,
 // still in use anywhere?
-        if (isset($_SESSION['shopPM']['TempThumbnailName'])) {
-            $shopTempThumbnailName = $_SESSION['shopPM']['TempThumbnailName'];
-            unset($_SESSION['shopPM']['TempThumbnailName']);
-        }
+//        if (isset($_SESSION['shopPM']['TempThumbnailName'])) {
+//            $shopTempThumbnailName = $_SESSION['shopPM']['TempThumbnailName'];
+//            unset($_SESSION['shopPM']['TempThumbnailName']);
+//        }
 
         $shopProductId = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         $objProduct = false;
@@ -2797,11 +2872,10 @@ class shopmanager extends ShopLibrary
             $shopB2C                  = isset($_POST['shopB2C']);
             $shopStartdate            = !empty($_POST['shopStartdate']) ? contrexx_stripslashes($_POST['shopStartdate']) : '0000-00-00 00:00:00';
             $shopEnddate              = !empty($_POST['shopEnddate']) ? contrexx_stripslashes($_POST['shopEnddate']) : '0000-00-00 00:00:00';
-            $shopManufacturerId       = (isset($_POST['shopManufacturerId']) ? $_POST['shopManufacturerId'] : 0);
-            $shopFlags                =
-                (isset($_POST['shopFlags'])
-                    ? join(' ', $_POST['shopFlags']) : ''
-                );
+            $shopManufacturerId       = intval($_POST['shopManufacturerId']);
+// Currently not used on the detail page
+//            $shopFlags                = (isset($_POST['shopFlags'])
+//                    ? join(' ', $_POST['shopFlags']) : '');
             $shopDistribution         = $_POST['shopDistribution'];
             // Different meaning of the "weight" field for downloads!
             // The getWeight() method will treat purely numeric values
@@ -2818,21 +2892,25 @@ class shopmanager extends ShopLibrary
                   ? implode(',', $_POST['shopGroupsAssigned'])
                   : ''
                 );
+            $shopGroupId   = intval($_POST['shopDiscountGroupCount']);
+            $shopArticleId = intval($_POST['shopDiscountGroupArticle']);
+            $shopKeywords  = contrexx_addslashes($_POST['shopKeywords']);
+
             // check incoming picture file paths
             for ($i = 1; $i <= 3; ++$i) {
                 $imageDir = dirname($_POST['productImage'.$i]).'/';
-                if ($imageDir != self::$shopImageWebPath) {
+                if ($imageDir != ASCMS_SHOP_IMAGES_WEB_PATH.'/') {
                     // copy image to shop image folder
                     $imageFile = basename($_POST['productImage'.$i]);
-                    if (file_exists(ASCMS_PATH.self::$shopImageWebPath.$imageFile)) {
-                        $this->addError(
-                            self::$shopImageWebPath.$imageFile.': '.
+                    if (file_exists(ASCMS_PATH.ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageFile)) {
+                        self::addError(
+                            ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageFile.': '.
                             $_ARRAYLANG['TXT_SHOP_FILE_EXISTS']
                         );
                     }
                     if (!copy(ASCMS_PATH.$imageDir.$imageFile,
-                        ASCMS_PATH.self::$shopImageWebPath.$imageFile)) {
-                        $this->addError(
+                        ASCMS_PATH.ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageFile)) {
+                        self::addError(
                             $imageDir.$imageFile.': '.
                             $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE']
                         );
@@ -2879,26 +2957,15 @@ class shopmanager extends ShopLibrary
 //            } else {
                 $arrProduct = array($objProduct);
 //            }
-            if (!is_array($arrProduct))
+            if (!is_array($arrProduct)) {
                 return false;
+            }
             foreach ($arrProduct as $objProduct) {
                 // Update product
-                $objProduct = Product::getById($shopProductId, FRONTEND_LANG_ID);
-//echo("Got Product: ".var_export($objProduct, true)."<br />");
-                if (!$objProduct)
-                    $objProduct = new Product(
-                        $shopProductIdentifier,
-                        $shopCatMenu,
-                        $shopProductName,
-                        $shopDistribution,
-                        $shopCustomerPrice,
-                        $shopArticleActive,
-                        0,
-                        $shopWeight
-                    );
+                $objProduct = Product::getById($shopProductId);
 
                 $objProduct->setCode($shopProductIdentifier);
-// TODO: Only change the parent ShopCategory for a Product
+// NOTE: Only change the parent ShopCategory for a Product
 // that is in a real ShopCategory.
                 $objProduct->setShopCategoryId($shopCatMenu);
                 $objProduct->setName($shopProductName);
@@ -2921,9 +2988,12 @@ class shopmanager extends ShopLibrary
                 $objProduct->setPictures($shopImageName);
                 $objProduct->setDistribution($shopDistribution);
                 $objProduct->setWeight($shopWeight);
-                $objProduct->setFlags($shopFlags);
+// Currently not used on the detail page
+//                $objProduct->setFlags($shopFlags);
                 $objProduct->setUsergroups($shopUserGroupIds);
-                $objProduct->store();
+                $objProduct->setGroupCountId($shopGroupId);
+                $objProduct->setGroupArticleId($shopArticleId);
+                $objProduct->setKeywords($shopKeywords);
 
                 // Remove old Product Attributes.
                 // They are re-added below.
@@ -2932,19 +3002,20 @@ class shopmanager extends ShopLibrary
                 // Add new product attributes
                 if (   isset($_POST['productOptionsValues'])
                     && is_array($_POST['productOptionsValues'])) {
-                    foreach ($_POST['productOptionsValues'] as $value_id => $nameId) {
+                    foreach ($_POST['productOptionsValues'] as $valueId => $nameId) {
                         $order = intval($_POST['productOptionsSortId'][$nameId]);
-                        $objProduct->addAttribute(intval($value_id), $order);
+//echo("Adding option value ID $valueId with order $order<br />");
+                        $objProduct->addAttribute(intval($valueId), $order);
                     }
                 }
-//echo("Stored Product: ".var_export($objProduct, true)."<br />");
+                $objProduct->store();
             }
 
             // Add/remove Categories and Products to/from
             // virtual ShopCategories.
             // Note that this *MUST* be called *AFTER* the Product is updated
             // or inserted.
-// Virtual Categories are disabled for the time being
+// Virtual categories are disabled for the time being
 //            Products::changeFlagsByProductCode(
 //                $shopProductIdentifier, $shopFlags
 //            );
@@ -2955,10 +3026,10 @@ class shopmanager extends ShopLibrary
                 $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
             }
 
-            if (   !empty($shopTempThumbnailName)
-                && file_exists(self::$shopImagePath.$shopTempThumbnailName)) {
-                @unlink(self::$shopImagePath.$shopTempThumbnailName);
-            }
+//            if (   !empty($shopTempThumbnailName)
+//                && file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$shopTempThumbnailName)) {
+//                @unlink(ASCMS_SHOP_IMAGES_PATH.'/'.$shopTempThumbnailName);
+//            }
 
             $objImage = new ImageManager();
             $arrImages = Products::getShopImagesFromBase64String($shopImageName);
@@ -2967,23 +3038,23 @@ class shopmanager extends ShopLibrary
                 if (   !empty($arrImage['img'])
                     && $arrImage['img'] != self::noPictureName) {
                     if (!$objImage->_createThumbWhq(
-                        self::$shopImagePath,
-                        self::$shopImageWebPath,
+                        ASCMS_SHOP_IMAGES_PATH.'/',
+                        ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                         $arrImage['img'],
                         $this->arrConfig['shop_thumbnail_max_width']['value'],
                         $this->arrConfig['shop_thumbnail_max_height']['value'],
                         $this->arrConfig['shop_thumbnail_quality']['value']
                     )) {
-                        $this->addError(sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']));
+                        self::addError(sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']));
                     }
                 }
             }
 
             switch ($_POST['shopAfterStoreAction']) {
-                case "newEmpty":
+                case 'newEmpty':
                     header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage");
                     exit();
-                case "newTemplate":
+                case 'newTemplate':
                     header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage&id=".
                         $objProduct->getId()."&new=1"
                     );
@@ -3046,7 +3117,7 @@ class shopmanager extends ShopLibrary
             'TXT_IMAGE_NAME' => $_ARRAYLANG['TXT_IMAGE_NAME'],
             'TXT_PRODUCT_OPTIONS' => $_ARRAYLANG['TXT_PRODUCT_OPTIONS'],
             'TXT_SHOP_EDIT_OR_ADD_IMAGE' => $_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE'],
-            'TXT_SHOP_VAT_RATE' => $_ARRAYLANG['TXT_SHOP_VAT_RATE'],
+            'TXT_TAX_RATE' => $_ARRAYLANG['TXT_TAX_RATE'],
             'TXT_SHOP_MANUFACTURER' => $_ARRAYLANG['TXT_SHOP_MANUFACTURER'],
             'TXT_SHOP_SELECT_ALL' => $_ARRAYLANG['TXT_SHOP_SELECT_ALL'],
             'TXT_SHOP_DESELECT_ALL' => $_ARRAYLANG['TXT_SHOP_DESELECT_ALL'],
@@ -3064,6 +3135,9 @@ class shopmanager extends ShopLibrary
             'TXT_SHOP_ACCOUNT_VALIDITY' => $_ARRAYLANG['TXT_SHOP_ACCOUNT_VALIDITY'],
             'TXT_SHOP_GROUPS_AVAILABLE' => $_ARRAYLANG['TXT_SHOP_GROUPS_AVAILABLE'],
             'TXT_SHOP_GROUPS_ASSIGNED' => $_ARRAYLANG['TXT_SHOP_GROUPS_ASSIGNED'],
+            'TXT_SHOP_DISCOUNT_GROUP_COUNT' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_COUNT'],
+            'TXT_SHOP_DISCOUNT_GROUP_ARTICLE' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_ARTICLE'],
+            'TXT_SHOP_KEYWORDS' => $_ARRAYLANG['TXT_SHOP_KEYWORDS'],
         ));
         // end language variables
 
@@ -3080,26 +3154,28 @@ class shopmanager extends ShopLibrary
         }
 
         // Edit product
-        if ($shopProductId > 0)
-            $objProduct = Product::getById($shopProductId, FRONTEND_LANG_ID);
-        if (!$objProduct)
+        if ($shopProductId > 0) {
+            $objProduct = Product::getById($shopProductId);
+        }
+        if (!$objProduct) {
             $objProduct = new Product('', 0, '', '', 0, 1, 0, 0);
+        }
 
         // extract product image infos (path, width, height)
         $arrImages = Products::getShopImagesFromBase64String(
             $objProduct->getPictures()
         );
 
-        $shopFlagsSelection =
-            ShopCategories::getVirtualCategoriesSelectionForFlags(
-                $objProduct->getFlags(), FRONTEND_LANG_ID
-            );
-        if ($shopFlagsSelection) {
-            self::$objTemplate->setVariable(array(
-                'TXT_SHOP_FLAGS' => $_ARRAYLANG['TXT_SHOP_FLAGS'],
-                'SHOP_FLAGS_SELECTION' => $shopFlagsSelection,
-            ));
-        }
+//        $shopFlagsSelection =
+//            ShopCategories::getVirtualCategoriesSelectionForFlags(
+//                $objProduct->getFlags()
+//            );
+//        if ($shopFlagsSelection) {
+//            self::$objTemplate->setVariable(array(
+//                'TXT_SHOP_FLAGS' => $_ARRAYLANG['TXT_SHOP_FLAGS'],
+//                'SHOP_FLAGS_SELECTION' => $shopFlagsSelection,
+//            ));
+//        }
 
         // The distribution type (delivery, download, or none)
         $shopDistribution = $objProduct->getDistribution();
@@ -3123,23 +3199,23 @@ class shopmanager extends ShopLibrary
             }
             $objGroup->next();
         }
-
+        $shopGroupId   = $objProduct->getGroupCountId();
+        $shopArticleId = $objProduct->getGroupArticleId();
+        $shopKeywords  = $objProduct->getKeywords();
         self::$objTemplate->setVariable(array(
-            'SHOP_PRODUCT_ID'             =>
-                (isset($_REQUEST['new']) ? 0 : $objProduct->getId()),
+            'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->getId()),
             'SHOP_PRODUCT_CUSTOM_ID' => $objProduct->getCode(),
             'SHOP_DATE' => date('Y-m-d H:m'),
-            'SHOP_PRODUCT_NAME'           =>
-                htmlentities($objProduct->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+            'SHOP_PRODUCT_NAME' => $objProduct->getName(),
             'SHOP_CAT_MENUOPTIONS' => ShopCategories::getShopCategoriesMenuoptions(
-                    $objProduct->getShopCategoryId()
+                    $objProduct->getShopCategoryId(), false
                 ),
             'SHOP_CUSTOMER_PRICE' => Currency::formatPrice($objProduct->getPrice()),
             'SHOP_RESELLER_PRICE' => Currency::formatPrice($objProduct->getResellerPrice()),
             'SHOP_DISCOUNT' => Currency::formatPrice($objProduct->getDiscountPrice()),
             'SHOP_SPECIAL_OFFER' => ($objProduct->isSpecialOffer() ? ' checked="checked"' : ''),
-            'SHOP_VAT' => Vat::getLongMenuString(
-                    $objProduct->getVatId(), 'shopTaxId', "style='width: 220px'"
+            'SHOP_VAT_MENUOPTIONS' => Vat::getMenuoptions(
+                    $objProduct->getVatId(), true
                 ),
             'SHOP_SHORT_DESCRIPTION' => get_wysiwyg_editor(
                     'shopShortDescription',
@@ -3164,28 +3240,28 @@ class shopmanager extends ShopLibrary
             'SHOP_STOCK_VISIBILITY' => ($objProduct->isStockVisible() ? ' checked="checked"' : ''),
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
                 Manufacturer::getMenuoptions($objProduct->getManufacturerId()),
-            'SHOP_PICTURE1_IMG_SRC' => (!empty($arrImages[1]['img']) && is_file(self::$shopImagePath.$arrImages[1]['img'].self::thumbnailSuffix)
-                    ? self::$shopImageWebPath.$arrImages[1]['img'].self::thumbnailSuffix
+            'SHOP_PICTURE1_IMG_SRC' => (!empty($arrImages[1]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix)
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix
                     : self::$defaultImage
                 ),
-            'SHOP_PICTURE2_IMG_SRC' => (!empty($arrImages[2]['img']) && is_file(self::$shopImagePath.$arrImages[2]['img'].self::thumbnailSuffix)
-                    ? self::$shopImageWebPath.$arrImages[2]['img'].self::thumbnailSuffix
+            'SHOP_PICTURE2_IMG_SRC' => (!empty($arrImages[2]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[2]['img'].self::thumbnailSuffix)
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[2]['img'].self::thumbnailSuffix
                     : self::$defaultImage
                 ),
-            'SHOP_PICTURE3_IMG_SRC' => (!empty($arrImages[3]['img']) && is_file(self::$shopImagePath.$arrImages[3]['img'].self::thumbnailSuffix)
-                    ? self::$shopImageWebPath.$arrImages[3]['img'].self::thumbnailSuffix
+            'SHOP_PICTURE3_IMG_SRC' => (!empty($arrImages[3]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[3]['img'].self::thumbnailSuffix)
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[3]['img'].self::thumbnailSuffix
                     : self::$defaultImage
                 ),
-            'SHOP_PICTURE1_IMG_SRC_NO_THUMB' => (!empty($arrImages[1]['img']) && is_file(self::$shopImagePath.$arrImages[1]['img'])
-                    ? self::$shopImageWebPath.$arrImages[1]['img']
+            'SHOP_PICTURE1_IMG_SRC_NO_THUMB' => (!empty($arrImages[1]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[1]['img'])
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img']
                     : self::$defaultImage
                 ),
-            'SHOP_PICTURE2_IMG_SRC_NO_THUMB' => (!empty($arrImages[2]['img']) && is_file(self::$shopImagePath.$arrImages[2]['img'])
-                    ? self::$shopImageWebPath.$arrImages[2]['img']
+            'SHOP_PICTURE2_IMG_SRC_NO_THUMB' => (!empty($arrImages[2]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[2]['img'])
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[2]['img']
                     : self::$defaultImage
                 ),
-            'SHOP_PICTURE3_IMG_SRC_NO_THUMB' => (!empty($arrImages[3]['img']) && is_file(self::$shopImagePath.$arrImages[3]['img'])
-                    ? self::$shopImageWebPath.$arrImages[3]['img']
+            'SHOP_PICTURE3_IMG_SRC_NO_THUMB' => (!empty($arrImages[3]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[3]['img'])
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[3]['img']
                     : self::$defaultImage
                 ),
             'SHOP_PICTURE1_IMG_WIDTH' => $arrImages[1]['width'],
@@ -3215,6 +3291,9 @@ class shopmanager extends ShopLibrary
                 ),
             'SHOP_CREATE_ACCOUNT_YES_CHECKED' => (empty($shopUserGroupIds) ? '' : ' checked="checked"'),
             'SHOP_CREATE_ACCOUNT_NO_CHECKED' => (empty($shopUserGroupIds) ? ' checked="checked"' : ''),
+            'SHOP_DISCOUNT_GROUP_COUNT_MENU_OPTIONS' => Discount::getMenuOptionsGroupCount($shopGroupId),
+            'SHOP_DISCOUNT_GROUP_ARTICLE_MENU_OPTIONS' => Discount::getMenuOptionsGroupArticle($shopArticleId),
+            'SHOP_KEYWORDS' => $shopKeywords,
         ));
         // Show the weight row if the corresponding setting is enabled
         self::$objTemplate->setVariable(
@@ -3227,9 +3306,9 @@ class shopmanager extends ShopLibrary
     /**
      * Show the stored orders
      * @access  public
-     * @global  ADONewConnection
-     * @global  array
-     * @global  array
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @global  array   $_ARRAYLANG
+     * @global  array   $_CONFIG
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function shopShowOrders()
@@ -3259,9 +3338,9 @@ class shopmanager extends ShopLibrary
             && !empty($_GET['orderId'])) {
             $result = shopmanager::sendConfirmationMail($_GET['orderId']);
             if (!empty($result)) {
-                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
+                self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
             } else {
-                $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
             }
         }
 
@@ -3300,19 +3379,25 @@ class shopmanager extends ShopLibrary
                     $shopSearchAccount)";
         }
         if (isset($_POST['shopCustomerType'])) {
-            $shopCustomerType = $_POST['shopCustomerType'];
-            if ($shopCustomerType == 1) {
-                $shopSearchPattern .= ' AND is_reseller=1';
+            $shopCustomerType = intval($_POST['shopCustomerType']);
+            if ($shopCustomerType == 0 || $shopCustomerType == 1) {
+                $shopSearchPattern .= " AND is_reseller=$shopCustomerType";
             }
         }
-        if (isset($_POST['shopOrderStatus'])
-         && $_POST['shopOrderStatus'] >= 0
-         && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
-            $shopOrderStatus = intval($_POST['shopOrderStatus']);
-            $shopSearchPattern = " AND order_status='$shopOrderStatus'";
-            // Check "Show pending orders" as well if these are selected
-            if ($shopOrderStatus == SHOP_ORDER_STATUS_PENDING) {
-                $_POST['shopShowPendingOrders'] = 1;
+        if (isset($_POST['shopOrderStatus'])) {
+        	$shopOrderStatus = $_POST['shopOrderStatus'];
+            if (   is_numeric($shopOrderStatus)
+                && $_POST['shopOrderStatus'] >= 0
+                && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
+                $shopOrderStatus = intval($_POST['shopOrderStatus']);
+                $shopSearchPattern .= " AND order_status='$shopOrderStatus'";
+	            // Check "Show pending orders" as well if these are selected
+	            if ($shopOrderStatus == SHOP_ORDER_STATUS_PENDING) {
+	                $_POST['shopShowPendingOrders'] = 1;
+	            }
+            } else {
+            	// Ignore.
+            	$shopOrderStatus = '';
             }
         }
         if (isset($_POST['shopListSort'])) {
@@ -3365,68 +3450,23 @@ class shopmanager extends ShopLibrary
             'TXT_MAKE_SELECTION' => $_ARRAYLANG['TXT_MAKE_SELECTION'],
             'TXT_SHOP_SHOW_PENDING_ORDERS' => $_ARRAYLANG['TXT_SHOP_SHOW_PENDING_ORDERS'],
             'SHOP_SEARCH_TERM' => $shopSearchTerm,
-            'SHOP_ORDER_STATUS_MENU' => $this->getOrderStatusMenu($shopOrderStatus),
-            'SHOP_CUSTOMER_TYPE_MENU' => Customers::getCustomerTypeMenu($shopCustomerType),
-            'SHOP_CUSTOMER_SORT_MENU' => Customers::getCustomerSortMenu($shopCustomerOrderField),
+//            'SHOP_ORDER_STATUS_MENU' =>
+//                $this->getOrderStatusMenu($shopOrderStatus),
+            'SHOP_ORDER_STATUS_MENUOPTIONS' => $this->getOrderStatusMenuoptions($shopOrderStatus, true),
+            'SHOP_CUSTOMER_TYPE_MENUOPTIONS' => Customers::getCustomerTypeMenu($shopCustomerType),
+            'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getCustomerSortMenu($shopCustomerOrderField),
             // Protected download user account validity
             'TXT_SHOP_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
         ));
         self::$objTemplate->setGlobalVariable(array(
             'TXT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
             'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS'],
-            'TXT_SHOP_EDIT' => $_ARRAYLANG['TXT_SHOP_EDIT'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
             'SHOP_CURRENCY' => Currency::getDefaultCurrencySymbol(),
         ));
 
-        // create "search order status" listbox
-        $strShopOrderSearchStatus = '<option value="5" selected="selected">-- '.$_ARRAYLANG['TXT_STATUS']." --</option>\n";
-        for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {
-            $strShopOrderSearchStatus .=
-                '<option value="'.$i.'">'.
-                $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$i].
-                "</option>\n";
-        }
-        self::$objTemplate->setVariable(array('SHOP_ORDER_SEARCH_STATUS' => $strShopOrderSearchStatus));
-
-        // check whether a search has been requested
-        $shopCustomerOrder = "order_date DESC";
-        if (isset($_POST['shopSearchOrders']) OR isset($_POST['shopListLetter'])) {
-            if (   $_POST['shopOrderStatus'] >= 0
-                && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
-                $shopOrderStatus = intval($_POST['shopOrderStatus']);
-                $shopSearchPattern = " AND order_status='$shopOrderStatus'";
-            }
-
-            if (isset($_POST['shopCustomerType'])) {
-                $shopCustomerType = intval($_POST['shopCustomerType']);
-                // Ignore negative value
-                if ($shopCustomerType >= 0)
-                    $shopSearchPattern .= " AND is_reseller=$shopCustomerType";
-            }
-            if (!empty($_POST['shopSearchTerm'])) {
-                $searchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopSearchPattern .= " AND (company LIKE '%$searchTerm%' OR firstname LIKE '%$searchTerm%' OR lastname LIKE '%$searchTerm%' OR address LIKE '%$searchTerm%'  OR city LIKE '%$searchTerm%' OR phone LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%')";
-            }
-            if ($_POST['shopListLetter'] != '') {
-                $shopLetter = htmlspecialchars($_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
-                $shopSearchPattern .= " AND LEFT($shopListOrder, 1)='$shopLetter' ";
-            }
-            if (isset($_POST['shopListSort'])) {
-                $shopCustomerOrder = addslashes(strip_tags($_POST['shopListSort']))." DESC";
-            }
-            // let the user choose whether to see pending orders or not
-            if (!isset($_POST['shopShowPendingOrders'])) {
-                $shopSearchPattern = " AND order_status!='0'";
-            } else {
-                self::$objTemplate->setVariable(
-                    'SHOP_SHOW_PENDING_ORDERS_CHECKED', ' checked="checked"'
-                );
-            }
-        }
-
-        // create sql query
+        // Create SQL query
         $query = "
             SELECT orderid, firstname, lastname, company,
                    currency_order_sum, selected_currency_id,
@@ -3512,7 +3552,7 @@ class shopmanager extends ShopLibrary
                         'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice(
                                 $objResult->fields['currency_order_sum']),
                         'SHOP_ORDER_STATUS' => $this->getOrderStatusMenu(
-                            $orderStatus,
+                            intval($orderStatus),
                             'shopOrderStatusId['.$orderId.']',
                             'changeOrderStatus('.
                                 $orderId.','.
@@ -3537,8 +3577,8 @@ class shopmanager extends ShopLibrary
      * @access  public
      * @param   string  $templateName   Name of the template file
      * @param   integer $type           1: edit order, 0: just display it
-     * @global  ADONewConnection
-     * @global  array
+     * @global  ADONewConnection  $objDatabase    Database connection object    Database
+     * @global  array   $_ARRAYLANG     Language array
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function shopShowOrderdetails($templateName, $type)
@@ -3555,72 +3595,11 @@ class shopmanager extends ShopLibrary
         //  'module_shop_order_edit.html'
         self::$objTemplate->loadTemplateFile($templateName, true, true);
 
-        // begin language variables
-        self::$objTemplate->setVariable(array(
-            'TXT_ORDER' => $_ARRAYLANG['TXT_ORDER'],
-            'TXT_ORDERNUMBER' => $_ARRAYLANG['TXT_ORDERNUMBER'],
-            'TXT_ORDERDATE' => $_ARRAYLANG['TXT_ORDERDATE'],
-            'TXT_ORDERSTATUS' => $_ARRAYLANG['TXT_ORDERSTATUS'],
-            'TXT_ORDER_SUM' => $_ARRAYLANG['TXT_ORDER_SUM'],
-            'TXT_BILL' => $_ARRAYLANG['TXT_BILL'],
-            'TXT_SHIPPING_METHOD' => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
-            'TXT_LAST_EDIT' => $_ARRAYLANG['TXT_LAST_EDIT'],
-            'TXT_BILLING_ADDRESS' => $_ARRAYLANG['TXT_BILLING_ADDRESS'],
-            'TXT_SHIPPING_ADDRESS' => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
-            'TXT_COMPANY' => $_ARRAYLANG['TXT_COMPANY'],
-            'TXT_PREFIX' => $_ARRAYLANG['TXT_PREFIX'],
-            'TXT_FIRST_NAME' => $_ARRAYLANG['TXT_FIRST_NAME'],
-            'TXT_LAST_NAME' => $_ARRAYLANG['TXT_LAST_NAME'],
-            'TXT_ADDRESS' => $_ARRAYLANG['TXT_ADDRESS'],
-            'TXT_ZIP_CITY' => $_ARRAYLANG['TXT_ZIP_CITY'],
-            'TXT_PHONE' => $_ARRAYLANG['TXT_PHONE'],
-            'TXT_EMAIL' => $_ARRAYLANG['TXT_EMAIL'],
-            'TXT_COUNTRY' => $_ARRAYLANG['TXT_COUNTRY'],
-            'TXT_FAX' => $_ARRAYLANG['TXT_FAX'],
-            'TXT_PAYMENT_INFORMATIONS' => $_ARRAYLANG['TXT_PAYMENT_INFORMATIONS'],
-            'TXT_CREDIT_CARD_OWNER' => $_ARRAYLANG['TXT_CREDIT_CARD_OWNER'],
-            'TXT_CARD_NUMBER' => $_ARRAYLANG['TXT_CARD_NUMBER'],
-            'TXT_CVC_CODE' => $_ARRAYLANG['TXT_CVC_CODE'],
-            'TXT_EXPIRY_DATE' => $_ARRAYLANG['TXT_EXPIRY_DATE'],
-            'TXT_PAYMENT_TYPE' => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
-            'TXT_NUMBER' => $_ARRAYLANG['TXT_NUMBER'],
-            'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
-            'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
-            'TXT_PRODUCT_NAME' => $_ARRAYLANG['TXT_PRODUCT_NAME'],
-            'TXT_PRODUCT_PRICE' => $_ARRAYLANG['TXT_PRODUCT_PRICE'],
-            'TXT_SUM' => $_ARRAYLANG['TXT_SUM'],
-            'TXT_SHIPPING_PRICE' => $_ARRAYLANG['TXT_SHIPPING_PRICE'],
-            'TXT_PAYMENT_COSTS' => $_ARRAYLANG['TXT_PAYMENT_COSTS'],
-            'TXT_TOTAL' => $_ARRAYLANG['TXT_TOTAL'],
-            'TXT_CUSTOMER_REMARKS' => $_ARRAYLANG['TXT_CUSTOMER_REMARKS'],
-            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
-            'TXT_SHOP_EDIT' => $_ARRAYLANG['TXT_SHOP_EDIT'],
-            'TXT_IP_ADDRESS' => $_ARRAYLANG['TXT_IP_ADDRESS'],
-            'TXT_BROWSER_VERSION' => $_ARRAYLANG['TXT_BROWSER_VERSION'],
-            'TXT_CLIENT_HOST' => $_ARRAYLANG['TXT_CLIENT_HOST'],
-            'TXT_BROWSER_LANGUAGE' => $_ARRAYLANG['TXT_BROWSER_LANGUAGE'],
-            'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS'],
-            // inserted VAT, weight here
-            // change header depending on whether the vat is included or excluded
-            'TXT_SHOP_VAT_RATE' => (Vat::isIncluded()
-                                            ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
-                                            : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']),
-            'TXT_TOTAL_WEIGHT' => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
-            'TXT_NET_PRICE' => $_ARRAYLANG['TXT_NET_PRICE'],
-            'TXT_WARNING_SHIPPER_WEIGHT' => $_ARRAYLANG['TXT_WARNING_SHIPPER_WEIGHT'],
-            'TXT_WEIGHT' => $_ARRAYLANG['TXT_WEIGHT'],
-            'TXT_SHOP_ACCOUNT_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
-        ));
-
-        self::$objTemplate->setGlobalVariable(array(
-            'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS']
-        ));
-
         $shopOrderId = intval($_REQUEST['orderid']);
 
         // lsv data
         $query = "
-            SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_lsv
+            SELECT * FROM ".DBPREFIX."module_shop_lsv
              WHERE order_id=$shopOrderId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -3645,17 +3624,26 @@ class shopmanager extends ShopLibrary
         $arrProducts = array();
 
         // Order and Customer query (no products/order items)
-        $query = "SELECT o.orderid, o.customerid, o.selected_currency_id, o.currency_order_sum, ".
-            "o.order_date, o.order_status, o.last_modified, o.customerid, o.ship_prefix, ".
-            "o.ship_company, o.ship_firstname, o.ship_lastname, o.ship_address, o.ship_zip, ".
-            "o.ship_city, o.ship_country_id, o.ship_phone, o.currency_ship_price, o.tax_price, ".
-            "o.shipping_id, o.payment_id, o.currency_payment_price, o.customer_ip, o.customer_host, ".
-            "o.customer_lang, o.customer_browser, o.customer_note, o.modified_by, ".
-            "c.customerid, c.prefix, c.company, c.firstname, c.lastname, c.address, c.zip, c.city, ".
-            "c.country_id, c.phone, c.fax, c.ccnumber, c.cvc_code, c.ccdate, c.ccname, ".
-            "c.company_note, c.email, c.is_reseller ".
-            "FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c, ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o ".
-            "WHERE c.customerid = o.customerid AND o.orderid = $shopOrderId";
+        $query = "
+            SELECT o.orderid, o.customerid, o.selected_currency_id,
+                   o.currency_order_sum, o.order_date, o.order_status,
+                   o.last_modified, o.customerid, o.ship_prefix,
+                   o.ship_company, o.ship_firstname, o.ship_lastname,
+                   o.ship_address, o.ship_zip, o.ship_city, o.ship_country_id,
+                   o.ship_phone, o.currency_ship_price, o.tax_price,
+                   o.shipping_id, o.payment_id, o.currency_payment_price,
+                   o.customer_ip, o.customer_host, o.customer_lang,
+                   o.customer_browser, o.customer_note, o.modified_by,
+                   c.customerid, c.prefix, c.company, c.firstname, c.lastname,
+                   c.address, c.zip, c.city, c.country_id, c.phone, c.fax,
+                   c.ccnumber, c.cvc_code, c.ccdate, c.ccname,
+                   c.company_note, c.email, c.is_reseller,
+                   group_id
+              FROM ".DBPREFIX."module_shop_customers AS c,
+                   ".DBPREFIX."module_shop_orders AS o
+             WHERE c.customerid=o.customerid
+               AND o.orderid=$shopOrderId
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             $this->errorHandling();
@@ -3671,107 +3659,121 @@ class shopmanager extends ShopLibrary
                 $shippingId                          = $objResult->fields['shipping_id'];
                 $paymentId                           = $objResult->fields['payment_id'];
                 $isReseller                          = $objResult->fields['is_reseller'];
+                $ship_to_country_id = $objResult->fields['ship_country_id'];
                 $orderStatus                         = $objResult->fields['order_status'];
                 $shipperName                         = Shipment::getShipperName($shippingId);
+                $groupCustomerId             = $objResult->fields['group_id'];
+		        Vat::isReseller($isReseller);
+		        Vat::isHomeCountry(
+		               empty($this->arrConfig['country_id']['value'])
+		            || $this->arrConfig['country_id']['value'] == $ship_to_country_id
+		        );
                 self::$objTemplate->setVariable(array(
-                    'SHOP_CUSTOMER_ID' => $objResult->fields['customerid' ],
-                    'SHOP_ORDERID' => $objResult->fields['orderid'],
-                    'SHOP_DATE' => $objResult->fields['order_date'],
-                    'SHOP_ORDER_STATUS' => ($type == 1
-                            ? $this->getOrderStatusMenu(
-                                $orderStatus,
-                                'shopOrderStatusId',
-                                'swapSendToStatus(this.value)'
-                              )
-                            : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus]
-                        ),
-                    'SHOP_SEND_MAIL_STYLE' => ($orderStatus == SHOP_ORDER_STATUS_CONFIRMED
-                            ? 'display: inline;' : 'display: none;'
-                        ),
-                    'SHOP_SEND_MAIL_STATUS' => ($type == 1
-                            ? ($orderStatus != SHOP_ORDER_STATUS_CONFIRMED
-                                ? ' checked="checked"' : ''
-                              )
-                            : ''
-                        ),
-                    'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($shopCurrencyOrderSum),
-                    'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
-                    'SHOP_PREFIX' => $objResult->fields['prefix'],
-                    'SHOP_COMPANY' => $objResult->fields['company'],
-                    'SHOP_FIRSTNAME' => $objResult->fields['firstname'],
-                    'SHOP_LASTNAME' => $objResult->fields['lastname'],
-                    'SHOP_ADDRESS' => $objResult->fields['address'],
-                    'SHOP_ZIP' => $objResult->fields['zip'],
-                    'SHOP_CITY' => $objResult->fields['city'],
-                    'SHOP_COUNTRY' => Country::getNameById($countryId),
-                    'SHOP_SHIP_PREFIX' => $objResult->fields['ship_prefix'],
-                    'SHOP_SHIP_COMPANY' => $objResult->fields['ship_company'],
-                    'SHOP_SHIP_FIRSTNAME' => $objResult->fields['ship_firstname'],
-                    'SHOP_SHIP_LASTNAME' => $objResult->fields['ship_lastname'],
-                    'SHOP_SHIP_ADDRESS' => $objResult->fields['ship_address'],
-                    'SHOP_SHIP_ZIP' => $objResult->fields['ship_zip'],
-                    'SHOP_SHIP_CITY' => $objResult->fields['ship_city'],
-                    'SHOP_SHIP_COUNTRY' => ($type == 1
-                          ? Country::getMenu('shopShipCountry', $objResult->fields['ship_country_id'])
-                          : ($objResult->fields['ship_country_id']
-                              ? Country::getNameById($objResult->fields['ship_country_id'])
-                              : ''
-                            )
-                        ),
-                    'SHOP_SHIP_PHONE' => $objResult->fields['ship_phone'],
-                    'SHOP_PHONE' => $objResult->fields['phone'],
-                    'SHOP_FAX' => $objResult->fields['fax'],
-                    'SHOP_EMAIL' => $shopMailTo,
-                    'SHOP_PAYMENTTYPE' => Payment::getProperty($paymentId, 'name'),
-                    'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
-                    'SHOP_CCDATE' => $objResult->fields['ccdate'],
-                    'SHOP_CCNAME' => $objResult->fields['ccname'],
-                    'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
-                    'SHOP_CUSTOMER_NOTE' => $objResult->fields['customer_note'],
-                    'SHOP_CUSTOMER_IP' => $objResult->fields['customer_ip'] == ''
-                            ? '&nbsp;'
-                            : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
-                              $objResult->fields['customer_ip'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-                              $objResult->fields['customer_ip'].'</a>',
-                    'SHOP_CUSTOMER_HOST' => $objResult->fields['customer_host'] == ''
-                            ? '&nbsp;'
-                            : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
-                              $objResult->fields['customer_host'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-                              $objResult->fields['customer_host'].'</a>',
-                    'SHOP_CUSTOMER_LANG' => $objResult->fields['customer_lang'] == '' ? '&nbsp;' : $objResult->fields['customer_lang'],
-                    'SHOP_CUSTOMER_BROWSER' => $objResult->fields['customer_browser'] == '' ? '&nbsp;' : $objResult->fields['customer_browser'],
-                    'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'],
-                    'SHOP_LAST_MODIFIED' => ($shopLastModified
-                          ? $shopLastModified.'&nbsp;'.$_ARRAYLANG['TXT_EDITED_BY'].
-                            '&nbsp;'.$objResult->fields['modified_by']
-                          : $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED']
-                        ),
-                    'SHOP_SHIPPING_TYPE' => $shipperName,
+	                'SHOP_CUSTOMER_ID' => $objResult->fields['customerid' ],
+	                'SHOP_ORDERID' => $objResult->fields['orderid'],
+	                'SHOP_DATE' => $objResult->fields['order_date'],
+	                'SHOP_ORDER_STATUS' => ($type == 1
+	                    ? $this->getOrderStatusMenu(
+	                        $orderStatus,
+	                        'shopOrderStatusId',
+	                        'swapSendToStatus(this.value)'
+	                      )
+	                    : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus]),
+	                'SHOP_SEND_MAIL_STYLE' => ($orderStatus == SHOP_ORDER_STATUS_CONFIRMED
+	                        ? 'display: inline;'
+	                        : 'display: none;'
+	                    ),
+	                'SHOP_SEND_MAIL_STATUS' => ($type == 1
+	                        ? ($orderStatus != SHOP_ORDER_STATUS_CONFIRMED
+	                            ? ' checked="checked"'
+	                            : ''
+	                          )
+	                        : ''
+	                    ),
+	                'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($shopCurrencyOrderSum),
+	                'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
+	                'SHOP_PREFIX' => $objResult->fields['prefix'],
+	                'SHOP_COMPANY' => $objResult->fields['company'],
+	                'SHOP_FIRSTNAME' => $objResult->fields['firstname'],
+	                'SHOP_LASTNAME' => $objResult->fields['lastname'],
+	                'SHOP_ADDRESS' => $objResult->fields['address'],
+	                'SHOP_ZIP' => $objResult->fields['zip'],
+	                'SHOP_CITY' => $objResult->fields['city'],
+	                'SHOP_COUNTRY' => Country::getNameById($countryId),
+	                'SHOP_SHIP_PREFIX' => $objResult->fields['ship_prefix'],
+	                'SHOP_SHIP_COMPANY' => $objResult->fields['ship_company'],
+	                'SHOP_SHIP_FIRSTNAME' => $objResult->fields['ship_firstname'],
+	                'SHOP_SHIP_LASTNAME' => $objResult->fields['ship_lastname'],
+	                'SHOP_SHIP_ADDRESS' => $objResult->fields['ship_address'],
+	                'SHOP_SHIP_ZIP' => $objResult->fields['ship_zip'],
+	                'SHOP_SHIP_CITY' => $objResult->fields['ship_city'],
+	                'SHOP_SHIP_COUNTRY' => ($type == 1
+	                        ? $this->_getCountriesMenu('shopShipCountry', $ship_to_country_id)
+	                        : Country::getNameById($ship_to_country_id)
+	                    ),
+	                'SHOP_SHIP_PHONE' => $objResult->fields['ship_phone'],
+	                'SHOP_PHONE' => $objResult->fields['phone'],
+	                'SHOP_FAX' => $objResult->fields['fax'],
+	                'SHOP_EMAIL' => $shopMailTo,
+	                    'SHOP_PAYMENTTYPE' => Payment::getProperty($paymentId, 'name'),
+	                'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
+	                'SHOP_CCDATE' => $objResult->fields['ccdate'],
+	                'SHOP_CCNAME' => $objResult->fields['ccname'],
+	                'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
+	                'SHOP_CUSTOMER_NOTE' => $objResult->fields['customer_note'],
+	                'SHOP_CUSTOMER_IP' => $objResult->fields['customer_ip'] == ''
+	                        ? '&nbsp;'
+	                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+	                          $objResult->fields['customer_ip'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+	                          $objResult->fields['customer_ip'].'</a>',
+	                'SHOP_CUSTOMER_HOST' => $objResult->fields['customer_host'] == ''
+	                        ? '&nbsp;'
+	                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+	                          $objResult->fields['customer_host'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+	                          $objResult->fields['customer_host'].'</a>',
+	                'SHOP_CUSTOMER_LANG' => $objResult->fields['customer_lang'] == '' ? '&nbsp;' : $objResult->fields['customer_lang'],
+	                'SHOP_CUSTOMER_BROWSER' => $objResult->fields['customer_browser'] == '' ? '&nbsp;' : $objResult->fields['customer_browser'],
+	                'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'],
+	                'SHOP_LAST_MODIFIED' => ($shopLastModified == 0 ? $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED'] : $shopLastModified.'&nbsp;'.$_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.$objResult->fields['modified_by']),
+	                'SHOP_SHIPPING_TYPE' => $shipperName,
                 ));
 
                 // set shipment price or remove it from the details overview if empty
                 if ($objResult->fields['currency_ship_price'] != 0) {
                     self::$objTemplate->setVariable(array('SHOP_SHIPPING_PRICE' => $objResult->fields['currency_ship_price']));
                 } else {
-                    self::$objTemplate->setVariable(array('SHOP_SHIPPING_PRICE' => '0.00'));
+//                    if ($type != 1) {
+//                        self::$objTemplate->hideBlock('shopShipmentPrice');
+//                    } else {
+                        self::$objTemplate->setVariable(array('SHOP_SHIPPING_PRICE' => '0.00'));
+//                    }
                 }
 
                 // set payment price or remove it from the details overview if empty
                 if ($objResult->fields['currency_payment_price'] != 0) {
                     self::$objTemplate->setVariable(array('SHOP_PAYMENT_PRICE' => $objResult->fields['currency_payment_price']));
                 } else {
-                    self::$objTemplate->setVariable(array('SHOP_PAYMENT_PRICE' => '0.00'));
+//                    if ($type != 1) {
+//                        self::$objTemplate->hideBlock('shopPaymentPrice');
+//                    } else {
+                        self::$objTemplate->setVariable(array('SHOP_PAYMENT_PRICE' => '0.00'));
+//                    }
                 }
-                self::$objTemplate->setGlobalVariable(
-                    'SHOP_CURRENCY', Currency::getSymbolById($selectedCurrencyId)
-                );
-                $processorId = Payment::getPaymentProcessorId($paymentId);
-                $ppName = PaymentProcessing::getPaymentProcessorName($processorId);
+
+                self::$objTemplate->setGlobalVariable(array(
+                    'SHOP_CURRENCY' => Currency::getCurrencySymbolById($selectedCurrencyId)
+                ));
+
+                // set the handler of the payment method
+                $psp_id = Payment::getPaymentProcessorId($paymentId);
+                $ppName = PaymentProcessing::getPaymentProcessorName($psp_id);
                 if ($ppName) {
                     self::$objTemplate->setVariable(array('SHOP_PAYMENT_HANDLER' => $ppName));
                 } else {
                     $this->errorHandling();
                 }
+
+                // set last modified date of the order
                 self::$objTemplate->setVariable(array(
                     'SHOP_LAST_MODIFIED_DATE' => $shopLastModified
                 ));
@@ -3786,19 +3788,21 @@ class shopmanager extends ShopLibrary
                 ));
 
                 // shipper menu and javascript array
+                $strJsArrShipment = Shipment::getJSArrays();
                 self::$objTemplate->setVariable(array(
                     'SHOP_SHIPPING_TYP_MENU' => Shipment::getShipperMenu(
                         $objResult->fields['ship_country_id'],
                         $objResult->fields['shipping_id'],
-                        "javascript:calcPrice()"),
-                    'SHOP_JS_ARR_SHIPMENT' => Shipment::getJSArrays(),
+                        "javascript:calcPrice(0)"),
+                    'SHOP_JS_ARR_SHIPMENT' => $strJsArrShipment
                 ));
 
                 // set products menu and javascript array
                 $query = '
                     SELECT id, product_id, title,
                         resellerprice, normalprice, discountprice, is_special_offer,
-                        weight, vat_id, handler
+                        weight, vat_id, handler,
+                        group_id, article_id
                     FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products
                     WHERE status=1
                 ';
@@ -3822,6 +3826,8 @@ class shopmanager extends ShopLibrary
                                   ? Weight::getWeightString($objResult->fields['weight'])
                                   : '0'
                                 ),
+                            'group_id' => $objResult->fields['group_id'],
+                            'article_id' => $objResult->fields['article_id'],
                         );
                         $objResult->MoveNext();
                     }
@@ -3829,8 +3835,8 @@ class shopmanager extends ShopLibrary
                     // used to update the display when changing the product ID.
                     // we need the VAT rate in there as well in order to be able to correctly change the products,
                     // and the flag indicating whether the VAT is included in the prices already.
-                    $strJsArrProduct = "var vat_included = ".
-                        Vat::isIncluded().
+                    $strJsArrProduct =
+                        'var vat_included = '.Vat::isIncluded().
                         ";\nvar arrProducts = new Array();\n";
                     $menu = '';
                     foreach ($arrProducts as $arrProduct) {
@@ -3842,18 +3848,31 @@ class shopmanager extends ShopLibrary
                             "arrProducts[".$arrProduct['id']."]['code'] = '".$arrProduct['code']."';\n".
                             "arrProducts[".$arrProduct['id']."]['title'] = '".addslashes($arrProduct['title'])."';\n".
                             "arrProducts[".$arrProduct['id']."]['percent'] = '".$arrProduct['percent']."';\n".
-                            "arrProducts[".$arrProduct['id']."]['weight'] = '".$arrProduct['weight']."';\n";
-                        if ($isReseller) {
-                            $strJsArrProduct .= "arrProducts[".$arrProduct['id']."]['price'] = '".
-                            Currency::getCurrencyPrice($arrProduct['resellerprice'])."';\n";
-                        } else {
-                            if ($arrProducts[$arrProduct['id']]['is_special_offer']) {
-                                $strJsArrProduct .= "arrProducts[".$arrProduct['id']."]['price'] = '".
-                                Currency::getCurrencyPrice($arrProduct['discountprice'])."';\n";
-                            } else {
-                                $strJsArrProduct .= "arrProducts[".$arrProduct['id']."]['price'] = '".
-                                Currency::getCurrencyPrice($arrProduct['normalprice'])."';\n";
-                            }
+                            "arrProducts[".$arrProduct['id']."]['weight'] = '".$arrProduct['weight']."';\n".
+                            "arrProducts[".$arrProduct['id']."]['group_id'] = '".$arrProduct['group_id']."';\n".
+                            "arrProducts[".$arrProduct['id']."]['article_id'] = '".$arrProduct['article_id']."';\n";
+                        $price = $arrProduct['normalprice'];
+                        if ($arrProducts[$arrProduct['id']]['is_special_offer']) {
+                            $price = $arrProduct['discountprice'];
+                        } elseif ($isReseller) {
+                            $price = $arrProduct['resellerprice'];
+                        }
+                        // Determine discounted price from customer and article group matrix
+                        $discountCustomerRate = Discount::getDiscountRateCustomer(
+                            $groupCustomerId, $arrProduct['article_id']
+                        );
+                        $price -= $price * $discountCustomerRate * 0.01;
+                        // Determine prices for various count discounts, if any
+                        $arrDiscountCountRate = Discount::getDiscountCountRateArray($arrProduct['group_id']);
+                        $strJsArrProduct .=
+                            "arrProducts[".$arrProduct['id']."]['price'] = new Array();\n";
+                        // Order the counts in reverse, from highest to lowest
+                        foreach (array_reverse($arrDiscountCountRate, true) as $count => $rate) {
+                            // Deduct the customer type discount right away
+                            $discountPrice = $price - ($price * $rate * 0.01);
+                            $strJsArrProduct .=
+                                "arrProducts[".$arrProduct['id']."]['price'][$count] = '".
+                                Currency::getCurrencyPrice($discountPrice)."';\n";
                         }
                     }
                 }
@@ -3877,9 +3896,23 @@ class shopmanager extends ShopLibrary
                 if (!isset($arrProductOptions[$objResult->fields['order_items_id']]['options'])) {
                     $arrProductOptions[$objResult->fields['order_items_id']]['options'] = array();
                 }
-                array_push($arrProductOptions[$objResult->fields['order_items_id']]['options'],
-                $objResult->fields['product_option_name'].": ".
-                $objResult->fields['product_option_value']);
+                $optionName = $objResult->fields['product_option_name'];
+                $optionValueOriginal = $objResult->fields['product_option_value'];
+                $optionValue = ShopLibrary::stripUniqidFromFilename($optionValueOriginal);
+// shirtprint
+                // Link an uploaded image name to its file
+                if (   $optionValue != $optionValueOriginal
+                    && file_exists(ASCMS_PATH.'/'.$this->uploadDir.'/'.$optionValueOriginal)) {
+                    $optionValue =
+                        '<a href="'.$this->uploadDir.'/'.
+                        $optionValueOriginal.'" target="uploadimage">'.
+                        $optionValue.'</a>';
+                }
+
+                array_push(
+                    $arrProductOptions[$objResult->fields['order_items_id']]['options'],
+                    $optionName.": ".$optionValue
+                );
                 $objResult->MoveNext();
             }
         }
@@ -3896,18 +3929,23 @@ class shopmanager extends ShopLibrary
             $this->errorHandling();
         } else {
             self::$objTemplate->setCurrentBlock('orderdetailsRow');
+            // modulo counter
+            $i = 0;
+            // reset totals
             $total_weight     = 0;
             $total_vat_amount = 0;
             $total_net_price  = 0;
-           while (!$objResult->EOF) {
+
+            // products loop
+            while (!$objResult->EOF) {
                 if ($type == 1) {
                     $productName = $objResult->fields['product_name'];
                 } else {
-                    $productName = $objResult->fields['product_name'].
-                    (isset($arrProductOptions[$objResult->fields['order_items_id']])
-                        ?   '<br /><i>-'.implode('; ', $arrProductOptions[$objResult->fields['order_items_id']]['options']).'</li>'
-                        :   ''
-                    );
+                    $productName = $objResult->fields['product_name'];
+                    if (isset($arrProductOptions[$objResult->fields['order_items_id']])) {
+                        $productName .=
+                            '<i><br />- '.implode('<br />- ', $arrProductOptions[$objResult->fields['order_items_id']]['options']).'</i>';
+                    }
                 }
 
                 $productId = $objResult->fields['productid'];
@@ -3982,18 +4020,18 @@ class shopmanager extends ShopLibrary
                         ),
                     'SHOP_PRODUCT_CUSTOM_ID' => $productCode,
                     // fill VAT field
-                    'SHOP_PRODUCT_VAT_RATE' => ($type == 1
+                    'SHOP_PRODUCT_TAX_RATE' => ($type == 1
                             ? $productVatRate
                             : Vat::format($productVatRate)
                         ),
-                    'SHOP_PRODUCT_VAT_AMOUNT' => Currency::formatPrice($rowVatAmount),
+                    'SHOP_PRODUCT_TAX_AMOUNT' => Currency::formatPrice($rowVatAmount),
                     'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($weight),
                     'SHOP_ACCOUNT_VALIDITY' => FWUser::getValidityString($weight),
                 ));
 
-                // get a product menu for each product if $type == 1 (edit)
-                // preselects the current product id
-                // TODO: move this to Product.class.php once it's available
+                // Get a product menu for each Product if $type == 1 (edit).
+                // Preselects the current Product ID.
+                // Move this to Product.class.php!
                 if ($type == 1) {
                     $menu = '';
                     foreach ($arrProducts as $arrProduct) {
@@ -4018,18 +4056,18 @@ class shopmanager extends ShopLibrary
             //if ($total_vat_amount) {
                 // distinguish between included VAT, and additional VAT added to sum
                 $tax_part_percentaged = (Vat::isIncluded()
-                    ?   $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
-                    :   $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
+	                    ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+	                    : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
                 );
                 self::$objTemplate->setVariable(array(
-                    'SHOP_VAT_PRICE' => Currency::formatPrice($total_vat_amount),
-                    'SHOP_VAT_PROCENTUAL' => $tax_part_percentaged,
+                    'SHOP_TAX_PRICE' => Currency::formatPrice($total_vat_amount),
+                    'SHOP_PART_TAX_PROCENTUAL' => $tax_part_percentaged,
                 ));
             //} else {
                 // No VAT otherwise
                 // remove it from the details overview if empty
                 //self::$objTemplate->hideBlock('shopTaxPrice');
-                //$tax_part_percentaged = $_ARRAYLANG['TXT_NO_VAT'];
+                //$tax_part_percentaged = $_ARRAYLANG['TXT_NO_TAX'];
             //}
 
             self::$objTemplate->setVariable(array(
@@ -4039,13 +4077,77 @@ class shopmanager extends ShopLibrary
                 'SHOP_NET_PRICE' => Currency::formatPrice($total_net_price),
             ));
         }
+
+        self::$objTemplate->setVariable(array(
+            'TXT_ORDER' => $_ARRAYLANG['TXT_ORDER'],
+            'TXT_ORDERNUMBER' => $_ARRAYLANG['TXT_ORDERNUMBER'],
+            'TXT_ORDERDATE' => $_ARRAYLANG['TXT_ORDERDATE'],
+            'TXT_ORDERSTATUS' => $_ARRAYLANG['TXT_ORDERSTATUS'],
+            'TXT_ORDER_SUM' => $_ARRAYLANG['TXT_ORDER_SUM'],
+            'TXT_BILL' => $_ARRAYLANG['TXT_BILL'],
+            'TXT_SHIPPING_METHOD' => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
+            'TXT_LAST_EDIT' => $_ARRAYLANG['TXT_LAST_EDIT'],
+            'TXT_BILLING_ADDRESS' => $_ARRAYLANG['TXT_BILLING_ADDRESS'],
+            'TXT_SHIPPING_ADDRESS' => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
+            'TXT_COMPANY' => $_ARRAYLANG['TXT_COMPANY'],
+            'TXT_PREFIX' => $_ARRAYLANG['TXT_PREFIX'],
+            'TXT_FIRST_NAME' => $_ARRAYLANG['TXT_FIRST_NAME'],
+            'TXT_LAST_NAME' => $_ARRAYLANG['TXT_LAST_NAME'],
+            'TXT_ADDRESS' => $_ARRAYLANG['TXT_ADDRESS'],
+            'TXT_ZIP_CITY' => $_ARRAYLANG['TXT_ZIP_CITY'],
+            'TXT_PHONE' => $_ARRAYLANG['TXT_PHONE'],
+            'TXT_EMAIL' => $_ARRAYLANG['TXT_EMAIL'],
+            'TXT_COUNTRY' => $_ARRAYLANG['TXT_COUNTRY'],
+            'TXT_FAX' => $_ARRAYLANG['TXT_FAX'],
+            'TXT_PAYMENT_INFORMATIONS' => $_ARRAYLANG['TXT_PAYMENT_INFORMATIONS'],
+            'TXT_CREDIT_CARD_OWNER' => $_ARRAYLANG['TXT_CREDIT_CARD_OWNER'],
+            'TXT_CARD_NUMBER' => $_ARRAYLANG['TXT_CARD_NUMBER'],
+            'TXT_CVC_CODE' => $_ARRAYLANG['TXT_CVC_CODE'],
+            'TXT_EXPIRY_DATE' => $_ARRAYLANG['TXT_EXPIRY_DATE'],
+            'TXT_PAYMENT_TYPE' => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
+            'TXT_NUMBER' => $_ARRAYLANG['TXT_NUMBER'],
+            'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
+            'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
+            'TXT_PRODUCT_NAME' => $_ARRAYLANG['TXT_PRODUCT_NAME'],
+            'TXT_PRODUCT_PRICE' => $_ARRAYLANG['TXT_PRODUCT_PRICE'],
+            'TXT_SUM' => $_ARRAYLANG['TXT_SUM'],
+            'TXT_SHIPPING_PRICE' => $_ARRAYLANG['TXT_SHIPPING_PRICE'],
+            'TXT_PAYMENT_COSTS' => $_ARRAYLANG['TXT_PAYMENT_COSTS'],
+            'TXT_TOTAL' => $_ARRAYLANG['TXT_TOTAL'],
+            'TXT_CUSTOMER_REMARKS' => $_ARRAYLANG['TXT_CUSTOMER_REMARKS'],
+            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_IP_ADDRESS' => $_ARRAYLANG['TXT_IP_ADDRESS'],
+            'TXT_BROWSER_VERSION' => $_ARRAYLANG['TXT_BROWSER_VERSION'],
+            'TXT_CLIENT_HOST' => $_ARRAYLANG['TXT_CLIENT_HOST'],
+            'TXT_BROWSER_LANGUAGE' => $_ARRAYLANG['TXT_BROWSER_LANGUAGE'],
+            'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS'],
+            // inserted VAT, weight here
+            // change header depending on whether the tax is included or excluded
+            'TXT_TAX_RATE' => (Vat::isIncluded()
+                    ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                    : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                ),
+            'TXT_TOTAL_WEIGHT' => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
+            'TXT_NET_PRICE' => $_ARRAYLANG['TXT_NET_PRICE'],
+            'TXT_WARNING_SHIPPER_WEIGHT' => $_ARRAYLANG['TXT_WARNING_SHIPPER_WEIGHT'],
+            'TXT_WEIGHT' => $_ARRAYLANG['TXT_WEIGHT'],
+            'TXT_SHOP_ACCOUNT_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
+        ));
+
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS']
+        ));
+
+
     }
 
 
     /**
      * Store order
-     * @global  ADONewConnection
-     * @global  array
+     *
+     * @global  array   $_ARRAYLANG     Language array
+     * @global  ADONewConnection  $objDatabase    Database connection object    Database object
      */
     function shopStoreOrderdetails()
     {
@@ -4054,7 +4156,6 @@ class shopmanager extends ShopLibrary
         $shopOrderId = intval($_POST['orderid']);
         $objFWUser = FWUser::getFWUserObject();
 
-        //begin language variables
         self::$objTemplate->setVariable(array(
             'TXT_ID' => $_ARRAYLANG['TXT_ID'],
             'TXT_DATE' => $_ARRAYLANG['TXT_DATE'],
@@ -4071,47 +4172,47 @@ class shopmanager extends ShopLibrary
         }
         // store the product details and add the price of each product
         // to the total order sum $shopTotalOrderSum
-        foreach ($_REQUEST['shopProductId'] AS $elem => $pId) {
-            if ($_POST['shopProductList'][$elem] == 0 && stripslashes($elem) != "'new'") {
+        foreach ($_REQUEST['shopProductList'] as $orderItemId => $productId) {
+            if ($orderItemId != 0 && $productId == 0) {
                 // delete the product from the list
                 $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items ".
-                    "WHERE order_items_id = $elem";
+                    "WHERE order_items_id = $orderItemId";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult !== false) {
                     $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes ".
                     "WHERE order_items_id = ".
-                    intval(substr(contrexx_stripslashes($elem),1,-1));
+                    intval(substr(contrexx_stripslashes($orderItemId),1,-1));
                     $objResult = $objDatabase->Execute($query);
                 }
-            } elseif ($_POST['shopProductList'][$elem] != 0 && stripslashes($elem) == "'new'") {
+            } elseif ($orderItemId == 0 && $productId != 0) {
                 // add a new product to the list
-                $shopProductPrice = floatval($_REQUEST['shopProductPrice'][$elem]);
-                $shopProductQuantity = intval($_REQUEST['shopProductQuantity'][$elem]) < 1 ? 1 : intval($_REQUEST['shopProductQuantity'][$elem]);
+                $shopProductPrice = floatval($_REQUEST['shopProductPrice'][$orderItemId]);
+                $shopProductQuantity = intval($_REQUEST['shopProductQuantity'][$orderItemId]) < 1 ? 1 : intval($_REQUEST['shopProductQuantity'][$orderItemId]);
                 $shopTotalOrderSum += $shopProductPrice * $shopProductQuantity;
-                $shopProductTaxPercent = floatval($_REQUEST['shopProductTaxPercent'][$elem]);
-                $shopProductWeight = Weight::getWeight($_REQUEST['shopProductWeight'][$elem]);
+                $shopProductTaxPercent = floatval($_REQUEST['shopProductTaxPercent'][$orderItemId]);
+                $shopProductWeight = Weight::getWeight($_REQUEST['shopProductWeight'][$orderItemId]);
                 $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items ".
                     "(orderid, productid, product_name, price, quantity, vat_percent, weight) ".
-                    "VALUES ($shopOrderId, $pId, '".
-                    contrexx_strip_tags($_POST['shopProductName'][$elem]).
+                    "VALUES ($shopOrderId, $productId, '".
+                    contrexx_strip_tags($_POST['shopProductName'][$orderItemId]).
                     "', $shopProductPrice, $shopProductQuantity, ".
                     "$shopProductTaxPercent, $shopProductWeight)";
                 $objResult = $objDatabase->Execute($query);
-            } elseif ($_POST['shopProductList'][$elem] != 0 && stripslashes($elem) != "'new'") {
-                // update the products information
-                $shopProductPrice = floatval($_REQUEST['shopProductPrice'][$elem]);
-                $shopProductQuantity = intval($_REQUEST['shopProductQuantity'][$elem]) < 1 ? 1 : intval($_REQUEST['shopProductQuantity'][$elem]);
+            } elseif ($orderItemId != 0 && $productId != 0) {
+                // update the order item
+                $shopProductPrice = floatval($_REQUEST['shopProductPrice'][$orderItemId]);
+                $shopProductQuantity = intval($_REQUEST['shopProductQuantity'][$orderItemId]) < 1 ? 1 : intval($_REQUEST['shopProductQuantity'][$orderItemId]);
                 $shopTotalOrderSum += $shopProductPrice * $shopProductQuantity;
-                $shopProductTaxPercent = floatval($_REQUEST['shopProductTaxPercent'][$elem]);
-                $shopProductWeight = Weight::getWeight($_REQUEST['shopProductWeight'][$elem]);
+                $shopProductTaxPercent = floatval($_REQUEST['shopProductTaxPercent'][$orderItemId]);
+                $shopProductWeight = Weight::getWeight($_REQUEST['shopProductWeight'][$orderItemId]);
                 $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_order_items SET ".
                         "price = $shopProductPrice".
                         ", quantity = $shopProductQuantity".
-                        ", productid = ".intval($_POST['shopProductList'][$elem]).
-                        ", product_name='".contrexx_strip_tags($_POST['shopProductName'][$elem]).
+                        ", productid = ".intval($_POST['shopProductList'][$orderItemId]).
+                        ", product_name='".contrexx_strip_tags($_POST['shopProductName'][$orderItemId]).
                         "', vat_percent = $shopProductTaxPercent".
                         ", weight = $shopProductWeight".
-                    " WHERE order_items_id=$elem";
+                    " WHERE order_items_id=$orderItemId";
                 $objResult = $objDatabase->Execute($query);
             }
         }
@@ -4144,14 +4245,14 @@ class shopmanager extends ShopLibrary
             $this->errorHandling();
             return false;
         } else {
-            $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+            self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
             // Send an email to the customer, if requested
             if (!empty($_POST['shopSendMail'])) {
                 $result = shopmanager::sendConfirmationMail($shopOrderId);
                 if (!empty($result)) {
-                    $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
+                    self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
                 } else {
-                    $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                    self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
                     return false;
                 }
             }
@@ -4162,6 +4263,7 @@ class shopmanager extends ShopLibrary
 
     /**
      * Delete Order
+     *
      * @version  1.0      initial version
      * @param    integer  $selectedid
      * @return   string   $result
@@ -4186,28 +4288,56 @@ class shopmanager extends ShopLibrary
         // delete each selected order
         if (count($arrOrderId) > 0) {
             foreach ($arrOrderId as $oId) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes WHERE order_id=".intval($oId);
-                if ($objDatabase->Execute($query)) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items WHERE orderid=".intval($oId);
-                    if ($objDatabase->Execute($query)) {
-                        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_lsv WHERE order_id=".intval($oId);
-                        if ($objDatabase->Execute($query)) {
-                            $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=".intval($oId);
-                            if (!$objDatabase->Execute($query)) {
-                                $this->errorHandling();
-                            }
-                        } else {
-                            $this->errorHandling();
-                        }
-                    } else {
-                        $this->errorHandling();
-                    }
-                } else {
+                // Delete files uploaded with the order
+                $query = "
+                    SELECT product_option_value
+                      FROM ".DBPREFIX."module_shop_order_items_attributes
+                     WHERE order_id=$oId
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult) {
                     $this->errorHandling();
+                } else {
+                    while (!$objResult->EOF) {
+                        $filename =
+                            ASCMS_PATH.'/'.$this->uploadDir.'/'.
+                            $objResult->fields['product_option_value'];
+                        if (file_exists($filename)) {
+                            if (!@unlink($filename)) {
+                                self::addError(sprintf($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $filename));
+                            }
+                        }
+                        $objResult->MoveNext();
+                    }
+                }
+                $query = "
+                    DELETE FROM ".DBPREFIX."module_shop_order_items_attributes
+                     WHERE order_id=".intval($oId);
+                if (!$objDatabase->Execute($query)) {
+                    $this->errorHandling();
+                }
+                $query = "
+                    DELETE FROM ".DBPREFIX."module_shop_order_items
+                     WHERE orderid=".intval($oId);
+                if (!$objDatabase->Execute($query)) {
+                    $this->errorHandling();
+                }
+                $query = "
+                    DELETE FROM ".DBPREFIX."module_shop_lsv
+                     WHERE order_id=".intval($oId);
+                if (!$objDatabase->Execute($query)) {
+                    $this->errorHandling();
+                }
+                $query = "
+                    DELETE FROM ".DBPREFIX."module_shop_orders
+                     WHERE orderid=".intval($oId);
+                if (!$objDatabase->Execute($query)) {
+                    $this->errorHandling();
+                    return false;
                 }
             } // foreach
         }
-        $this->addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
+        self::addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
         return true;
     }
 
@@ -4219,8 +4349,20 @@ class shopmanager extends ShopLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        $template = (isset($_GET['tpl']) ? $_GET['tpl'] : '');
+        if ($template == 'discounts') {
+            return $this->showDiscountCustomer();
+        }
+        if ($template == 'groups') {
+            return $this->showCustomerGroups();
+        }
+        $pos = 0;
+        $i   = 0;
         self::$objTemplate->loadTemplateFile("module_shop_customers.html", true, true);
         self::$objTemplate->setVariable(array(
+            'TXT_OVERVIEW' => $_ARRAYLANG['TXT_OVERVIEW'],
+            'TXT_SHOP_DISCOUNTS_CUSTOMER' => $_ARRAYLANG['TXT_SHOP_DISCOUNTS_CUSTOMER'],
+            'TXT_SHOP_CUSTOMER_GROUPS' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_GROUPS'],
             'TXT_CUSTOMERS_PARTNERS' => $_ARRAYLANG['TXT_CUSTOMERS_PARTNERS'],
             'TXT_CUSTOMER_TYP' => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
             'TXT_CUSTOMER' => $_ARRAYLANG['TXT_CUSTOMER'],
@@ -4247,43 +4389,44 @@ class shopmanager extends ShopLibrary
             'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
             'TXT_SELECT_ACTION' => $_ARRAYLANG['TXT_SELECT_ACTION'],
-            'TXT_MAKE_SELECTION' => $_ARRAYLANG['TXT_MAKE_SELECTION']
+            'TXT_MAKE_SELECTION' => $_ARRAYLANG['TXT_MAKE_SELECTION'],
         ));
         self::$objTemplate->setGlobalVariable(array(
             'TXT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
             'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS'],
-            'TXT_SHOP_EDIT' => $_ARRAYLANG['TXT_SHOP_EDIT'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
-            'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS']
+            'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS'],
         ));
-
-        $shopSearchPattern = '';
-        $shopCustomerOrder = 'customerid DESC';
-        if (isset($_POST['shopSearchCustomers']) || isset($_POST['shopListLetter'])) {
-            if ($_POST['shopCustomerStatus'] < 2) {
+        //set search
+        $shopSearchPattern = "";
+        $shopCustomerOrder = "customerid DESC";
+        if (isset($_POST['shopSearchCustomers']) OR isset($_POST['shopListLetter'])) {
+            if ($_POST['shopCustomerStatus']<2) {
                 $shopCustomerStatus = intval($_POST['shopCustomerStatus']);
-                $shopSearchPattern = " AND customer_status=$shopCustomerStatus";
+                $shopSearchPattern = " AND customer_status = $shopCustomerStatus";
+
             }
-            if ($_POST['shopCustomer'] < 2) {
+            if ($_POST['shopCustomer']<2) {
                 $shopCustomer = intval($_POST['shopCustomer']);
-                $shopSearchPattern .= " AND is_reseller=$shopCustomer";
+                $shopSearchPattern .= " AND is_reseller = $shopCustomer";
             }
             if ($_POST['shopSearchTerm'] != '') {
                 $shopSearchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
                 $shopSearchPattern .=
-                    " AND (   customerid LIKE '%$shopSearchTerm%'
-                           OR company LIKE '%$shopSearchTerm%'
-                           OR firstname LIKE '%$shopSearchTerm%'
-                           OR lastname LIKE '%$shopSearchTerm%'
-                           OR address LIKE '%$shopSearchTerm%'
-                           OR city LIKE '%$shopSearchTerm%'
-                           OR phone LIKE '%$shopSearchTerm%'
-                           OR email LIKE '%$shopSearchTerm%')";
+                    " AND (customerid LIKE '%$shopSearchTerm%'
+                        OR company LIKE '%$shopSearchTerm%'
+                        OR firstname LIKE '%$shopSearchTerm%'
+                        OR lastname LIKE '%$shopSearchTerm%'
+                        OR address LIKE '%$shopSearchTerm%'
+                        OR city LIKE '%$shopSearchTerm%'
+                        OR phone LIKE '%$shopSearchTerm%'
+                        OR email LIKE '%$shopSearchTerm%')";
             }
             if ($_POST['shopListLetter'] != '') {
                 $shopLetter = htmlspecialchars($_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET);
                 $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
-                $shopSearchPattern .= " AND LEFT($shopListOrder,1)='$shopLetter' ";
+                $shopSearchPattern .= " AND LEFT($shopListOrder,1) = '$shopLetter' ";
             }
             if (isset($_POST['shopListSort'])) {
                 $shopCustomerOrder = addslashes(strip_tags($_POST['shopListSort']))." DESC";
@@ -4298,7 +4441,6 @@ class shopmanager extends ShopLibrary
           ORDER BY $shopCustomerOrder
         ";
         $objResult = $objDatabase->Execute($query);
-        $pos = 0;
         if (!$objResult) {
             $this->errorHandling();
         } else {
@@ -4321,28 +4463,34 @@ class shopmanager extends ShopLibrary
         } else {
             self::$objTemplate->setCurrentBlock('customersRow');
             while (!$objResult->EOF) {
-                $i = 0;
-                $shopCustomerStatus = 'led_red.gif';
+                $shopCustomerStatus = "led_red.gif";
                 if ($objResult->fields['customer_status'] == 1) {
-                    $shopCustomerStatus = 'led_green.gif';
+                    $shopCustomerStatus = "led_green.gif";
+                }
+                if (($i % 2) == 0) {
+                    $class='row1';
+                } else {
+                    $class='row2';
                 }
                 self::$objTemplate->setVariable(array(
-                    'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
-                    'SHOP_CUSTOMERID' => $objResult->fields['customerid'],
-                    'SHOP_COMPANY' => $objResult->fields['company'] == '' ? '&nbsp;' : $objResult->fields['company'],
-                    'SHOP_NAME' => $objResult->fields['firstname'].'&nbsp;'.$objResult->fields['lastname'],
-                    'SHOP_ADDRESS' => $objResult->fields['address'] == '' ? '&nbsp;' : $objResult->fields['address'],
-                    'SHOP_ZIP' => $objResult->fields['zip'],
-                    'SHOP_CITY' => $objResult->fields['city'],
-                    'SHOP_PHONE' => $objResult->fields['phone'] == '' ? '&nbsp;' : $objResult->fields['phone'],
-                    'SHOP_EMAIL' => $objResult->fields['email'] == '' ? '&nbsp;' : $objResult->fields['email'],
-                    'SHOP_CUSTOMER_STATUS_IMAGE' => $shopCustomerStatus,
+                'SHOP_ROWCLASS' => $class,
+                'SHOP_CUSTOMERID' => $objResult->fields['customerid'],
+                'SHOP_COMPANY' => $objResult->fields['company'] == '' ? '&nbsp;' : $objResult->fields['company'],
+                'SHOP_NAME' => $objResult->fields['firstname'].'&nbsp;'.$objResult->fields['lastname'],
+                'SHOP_ADDRESS' => $objResult->fields['address'] == '' ? '&nbsp;' : $objResult->fields['address'],
+                'SHOP_ZIP' => $objResult->fields['zip'],
+                'SHOP_CITY' => $objResult->fields['city'],
+                'SHOP_PHONE' => $objResult->fields['phone'] == '' ? '&nbsp;' : $objResult->fields['phone'],
+                'SHOP_EMAIL' => $objResult->fields['email'] == '' ? '&nbsp;' : $objResult->fields['email'],
+                'SHOP_CUSTOMER_STATUS_IMAGE' => $shopCustomerStatus,
                 ));
                 self::$objTemplate->parse('customersRow');
+                ++$i;
                 $objResult->MoveNext();
             }
-            self::$objTemplate->setVariable('SHOP_CUSTOMER_PAGING', $paging);
+            self::$objTemplate->setVariable('SHOP_CUSTOMER_PAGING',$paging);
         }
+        return true;
     }
 
 
@@ -4354,27 +4502,30 @@ class shopmanager extends ShopLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $arrCustomerId = array();
-        if (!empty($_GET['customerId'])) {
-            $arrCustomerId = array($_GET['customerId']);
-        } elseif (!empty($_POST['selectedCustomerId'])) {
+
+        if (isset($_GET['customerId']) && !empty($_GET['customerId'])) {
+            $arrCustomerId = array(0 => $_GET['customerId']);
+        } elseif (isset($_POST['selectedCustomerId']) && !empty($_POST['selectedCustomerId'])) {
             $arrCustomerId = $_POST['selectedCustomerId'];
         }
-        if (count($arrCustomerId)) {
-            foreach ($arrCustomerId as $customer_id) {
+
+        if (count($arrCustomerId) > 0) {
+            foreach ($arrCustomerId as $cId) {
                 $query = "SELECT orderid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-                      WHERE customerid=$customer_id";
+                      WHERE customerid = ".intval($cId);
+
                 if (($objResult = $objDatabase->Execute($query)) !== false) {
                     while (!$objResult->EOF) {
                         $shopOrderId = $objResult->fields['orderid'];
                         $this->shopDeleteOrder($shopOrderId);
                         $objResult->MoveNext();
                     }
-                    $this->addMessage($_ARRAYLANG['TXT_ALL_ORDERS_DELETED']);
+                    self::addMessage($_ARRAYLANG['TXT_ALL_ORDERS_DELETED']);
                 }
                 $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-                      WHERE customerid=$customer_id";
+                      WHERE customerid = ".intval($cId);
                 if ($objDatabase->Execute($query)) {
-                    $this->addMessage($_ARRAYLANG['TXT_CUSTOMER_DELETED']);
+                    self::addMessage($_ARRAYLANG['TXT_CUSTOMER_DELETED']);
                 } else {
                     $this->errorHandling();
                 }
@@ -4392,6 +4543,8 @@ class shopmanager extends ShopLibrary
         global $objDatabase, $_ARRAYLANG;
 
         self::$objTemplate->loadTemplateFile("module_shop_customer_details.html", true, true);
+        $i = 1;
+        //begin language variables
         self::$objTemplate->setVariable(array(
             'TXT_CUSTOMER_DETAILS' => $_ARRAYLANG['TXT_CUSTOMER_DETAILS'],
             'TXT_CUSTOMER_DATA' => $_ARRAYLANG['TXT_CUSTOMER_DATA'],
@@ -4424,19 +4577,126 @@ class shopmanager extends ShopLibrary
             'TXT_MORE_INFORMATIONS' => $_ARRAYLANG['TXT_MORE_INFORMATIONS'],
             'TXT_REMARK' => $_ARRAYLANG['TXT_REMARK'],
             'TXT_EDIT_CUSTOMER' => $_ARRAYLANG['TXT_EDIT_CUSTOMER'],
-            'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS']
+            'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS'],
+            'TXT_SHOP_DISCOUNT_GROUP_CUSTOMER' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_CUSTOMER'],
         ));
         self::$objTemplate->setGlobalVariable(array(
             'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS']
         ));
 
-        if (isset($_POST['shopStore']))
-            $this->shopAddCustomer();
+        $customerid = intval($_REQUEST['customerid']);
+        if (isset($_POST['shopStore'])) {
+            if ($this->_checkEmailIntegrity($_POST['shopEmail'], $customerid)) {
+                if ($this->_checkUsernameIntegrity($_POST['shopUsername'], $customerid)) {
+                    $shopUsername       = addslashes(strip_tags($_POST['shopUsername']));
+                    $shopPassword       = $_POST['shopPassword'];
+                    $shopCompany        = addslashes(strip_tags($_POST['shopCompany']));
+                    $shopPrefix         = addslashes(strip_tags($_POST['shopPrefix']));
+                    $shopFirstname      = addslashes(strip_tags($_POST['shopFirstname']));
+                    $shopLastname       = addslashes(strip_tags($_POST['shopLastname']));
+                    $shopAddress        = addslashes(strip_tags($_POST['shopAddress']));
+                    $shopCity           = addslashes(strip_tags($_POST['shopCity']));
+                    $shopZip            = addslashes(strip_tags($_POST['shopZip']));
+                    $shopCountry        = intval($_POST['shopCountry']);
+                    $shopPhone          = addslashes(strip_tags($_POST['shopPhone']));
+                    $shopFax            = addslashes(strip_tags($_POST['shopFax']));
+                    $shopEmail          = addslashes(strip_tags($_POST['shopEmail']));
+                    $shopCcnumber       = addslashes(strip_tags($_POST['shopCcnumber']));
+                    $shopCcdate         = addslashes(strip_tags($_POST['shopCcdate']));
+                    $shopCcname         = addslashes(strip_tags($_POST['shopCcname']));
+                    $shopCvcCode        = addslashes(strip_tags($_POST['shopCvcCode']));
+                    $shopCompanyNote    = addslashes(strip_tags($_POST['shopCompanyNote']));
+                    $shopCustomerStatus = intval($_POST['shopCustomerStatus']);
+                    $shopIsReseller     = intval($_POST['shopCustomerClass']);
+                    $shopRegisterDate   = addslashes(strip_tags($_POST['shopRegisterDate']));
+                    $shopDiscountGroup  = intval($_POST['shopDiscountGroupCustomer']);
+                    // update the customer informations
+                    $shopMd5Password = '';
+                    if ($shopPassword != '') {
+                        $shopMd5Password = md5($shopPassword);
+                    }
+                    $shopUdatePassword = '';
+                    if ($shopMd5Password != '') { //if password has been reset, set it new
+                        $shopUdatePassword = ",password = '$shopMd5Password' ";
+                    }
 
-        $customer_id = intval($_REQUEST['customerid']);
+                    $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+                              SET username = '".$shopUsername."' $shopUdatePassword ,
+                                      prefix = '".$shopPrefix."',
+                                      company ='".$shopCompany."',
+                                      firstname ='".$shopFirstname."',
+                                      lastname ='".$shopLastname."',
+                                      address='".$shopAddress."',
+                                      city='".$shopCity."',
+                                      zip='".$shopZip."',
+                                      country_id ='".$shopCountry."',
+                                      phone='".$shopPhone."',
+                                      fax='".$shopFax."',
+                                      email = '".$shopEmail."',
+                                      ccnumber='".$shopCcnumber."',
+                                      ccdate='".$shopCcdate."',
+                                      ccname='".$shopCcname."',
+                                      cvc_code='".$shopCvcCode."',
+                                      company_note='".$shopCompanyNote."',
+                                      customer_status='".$shopCustomerStatus."',
+                                      is_reseller='".$shopIsReseller."',
+                                      register_date='".$shopRegisterDate."',
+                                      group_id=$shopDiscountGroup
+                              WHERE customerid=".$customerid;
+
+                    if (!$objDatabase->Execute($query)) {
+                        //if query has errors, call errorhandling
+                        $this->errorHandling();
+                    } else {
+                        self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+                    }
+                    //check if the logindata must be sent
+                    if (isset($_POST['shopSendLoginData'])) {
+                        // Determine customer language
+                        $query = "
+                            SELECT customer_lang
+                              FROM ".DBPREFIX."module_shop_customers
+                             INNER JOIN ".DBPREFIX."module_shop_orders
+                             USING (customerid)
+                             WHERE customerid=$customerid
+                        ";
+                        $objResult = $objDatabase->Execute($query);
+                        if (!$objResult || $objResult->RecordCount() == 0) {
+                            return false;
+                        }
+                        $lang_id = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
+                        // Select template for sending login data
+                        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(3, $lang_id);
+                        $shopMailTo = $_POST['shopEmail'];
+                        $shopMailFrom = $arrShopMailtemplate['mail_from'];
+                        $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
+                        $shopMailSubject = $arrShopMailtemplate['mail_subject'];
+                        $shopMailBody = $arrShopMailtemplate['mail_body'];
+                        // replace variables from template
+                        $shopMailBody = str_replace("<USERNAME>", $shopUsername, $shopMailBody);
+                        $shopMailBody = str_replace("<PASSWORD>", $shopPassword, $shopMailBody);
+                        // added
+                        $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $shopPrefix, $shopMailBody);
+                        $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $shopLastname, $shopMailBody);
+                        $result = ShopLibrary::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+                        if ($result) {
+                            self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
+                        } else {
+                            self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                            return false;
+                        }
+                    }
+                } else {
+                    self::addError($_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER']);
+                }
+            } else {
+                self::addError($_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER']);
+            }
+        } //end if
+
         //set the customer informations
         $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers ".
-                 "WHERE customerid=$customer_id";
+                 "WHERE customerid=$customerid";
         if (($objResult = $objDatabase->Execute($query)) === false) {
             //if query has errors, call errorhandling
             $this->errorHandling();
@@ -4456,48 +4716,52 @@ class shopmanager extends ShopLibrary
                 //set edit fields
                 self::$objTemplate->setVariable(array(
                     'SHOP_CUSTOMERID' => $objResult->fields['customerid'],
-                    'SHOP_PREFIX' => $objResult->fields['prefix'] == '' ? "&nbsp;" : $objResult->fields['prefix'],
-                    'SHOP_LASTNAME' => $objResult->fields['lastname'] == '' ? "&nbsp;" : $objResult->fields['lastname'],
-                    'SHOP_FIRSTNAME' => $objResult->fields['firstname'] == '' ? "&nbsp;" : $objResult->fields['firstname'],
-                    'SHOP_COMPANY' => $objResult->fields['company'] == '' ? "&nbsp;" : $objResult->fields['company'],
-                    'SHOP_ADDRESS' => $objResult->fields['address'] == '' ? "&nbsp;" : $objResult->fields['address'],
-                    'SHOP_CITY' => $objResult->fields['city'] == '' ? "&nbsp;" : $objResult->fields['city'],
-                    'SHOP_USERNAME' => $objResult->fields['username'] == '' ? "&nbsp;" : $objResult->fields['username'],
+                    'SHOP_PREFIX' => $objResult->fields['prefix'] == "" ? "&nbsp;" : $objResult->fields['prefix'],
+                    'SHOP_LASTNAME' => $objResult->fields['lastname'] == "" ? "&nbsp;" : $objResult->fields['lastname'],
+                    'SHOP_FIRSTNAME' => $objResult->fields['firstname'] == "" ? "&nbsp;" : $objResult->fields['firstname'],
+                    'SHOP_COMPANY' => $objResult->fields['company'] == "" ? "&nbsp;" : $objResult->fields['company'],
+                    'SHOP_ADDRESS' => $objResult->fields['address'] == "" ? "&nbsp;" : $objResult->fields['address'],
+                    'SHOP_CITY' => $objResult->fields['city'] == "" ? "&nbsp;" : $objResult->fields['city'],
+                    'SHOP_USERNAME' => $objResult->fields['username'] == "" ? "&nbsp;" : $objResult->fields['username'],
                     // unavailable
                     //'SHOP_ORDER_STATUS' => $objResult->fields['order_status'],
-                    'SHOP_COUNTRY' => $this->arrCountries[$objResult->fields['country_id']]['name'],
-                    'SHOP_ZIP' => $objResult->fields['zip'] == '' ? "&nbsp;" : $objResult->fields['zip'],
-                    'SHOP_PHONE' => $objResult->fields['phone'] == '' ? "&nbsp;" : $objResult->fields['phone'],
-                    'SHOP_FAX' => $objResult->fields['fax'] == '' ? "&nbsp;" : $objResult->fields['fax'],
-                    'SHOP_EMAIL' => $objResult->fields['email'] == '' ? "&nbsp;" : $objResult->fields['email'],
+                    'SHOP_COUNTRY' => Country::getNameById($objResult->fields['country_id']),
+                    'SHOP_ZIP' => $objResult->fields['zip'] == "" ? "&nbsp;" : $objResult->fields['zip'],
+                    'SHOP_PHONE' => $objResult->fields['phone'] == "" ? "&nbsp;" : $objResult->fields['phone'],
+                    'SHOP_FAX' => $objResult->fields['fax'] == "" ? "&nbsp;" : $objResult->fields['fax'],
+                    'SHOP_EMAIL' => $objResult->fields['email'] == "" ? "&nbsp;" : $objResult->fields['email'],
                     // unavailable
                     //'SHOP_PAYMENTTYPE' => $objResult->fields['paymenttyp'],
-                    'SHOP_CCNUMBER' => $objResult->fields['ccnumber'] == '' ? "&nbsp;" : $objResult->fields['ccnumber'],
-                    'SHOP_CCDATE' => $objResult->fields['ccdate'] == '' ? "&nbsp;" : $objResult->fields['ccdate'],
-                    'SHOP_CCNAME' => $objResult->fields['ccname'] == '' ? "&nbsp;" : $objResult->fields['ccname'],
-                    'SHOP_CVC_CODE' => $objResult->fields['cvc_code'] == '' ? "&nbsp;" : $objResult->fields['cvc_code'],
-                    'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'] == '' ? "-" : $objResult->fields['company_note'],
+                    'SHOP_CCNUMBER' => $objResult->fields['ccnumber'] == "" ? "&nbsp;" : $objResult->fields['ccnumber'],
+                    'SHOP_CCDATE' => $objResult->fields['ccdate'] == "" ? "&nbsp;" : $objResult->fields['ccdate'],
+                    'SHOP_CCNAME' => $objResult->fields['ccname'] == "" ? "&nbsp;" : $objResult->fields['ccname'],
+                    'SHOP_CVC_CODE' => $objResult->fields['cvc_code'] == "" ? "&nbsp;" : $objResult->fields['cvc_code'],
+                    'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'] == "" ? "-" : $objResult->fields['company_note'],
                     'SHOP_IS_RESELLER' => $customerType,
                     'SHOP_REGISTER_DATE' => $objResult->fields['register_date'],
                     'SHOP_CUSTOMER_STATUS' => $customerStatus,
+                    'SHOP_DISCOUNT_GROUP_CUSTOMER' => Discount::getCustomerGroupName(
+                            $objResult->fields['group_id']
+                        ),
                 ));
                 $objResult->MoveNext();
-            }//end if
-        }//end else
+            }
+        }
         //set the orders
         $query = "SELECT order_date,orderid,order_status, selected_currency_id, currency_order_sum ".
                   "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders ".
-                  "WHERE customerid = $customer_id ".
+                  "WHERE customerid = $customerid ".
                   "ORDER BY order_date DESC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             //if query has errors, call errorhandling
             $this->errorHandling();
         } else {
+        	Currency::init($objResult->fields['selected_currency_id']);
             self::$objTemplate->setCurrentBlock('orderRow');
-            $i = 1;
             while (!$objResult->EOF) {
                 $class = (++$i % 2 ? 'row1' : 'row2');
+                //set edit fields
                 self::$objTemplate->setVariable(array(
                     'SHOP_ROWCLASS' => $class,
                     'SHOP_ORDER_ID' => $objResult->fields['orderid'],
@@ -4507,8 +4771,7 @@ class shopmanager extends ShopLibrary
                         ),
                     'SHOP_ORDER_DATE' => $objResult->fields['order_date'],
                     'SHOP_ORDER_STATUS' => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objResult->fields['order_status']],
-                    'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($objResult->fields['currency_order_sum']).' '.
-                        Currency::getDefaultCurrencySymbol(),
+                    'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($objResult->fields['currency_order_sum']).' '.Currency::getDefaultCurrencySymbol(),
                 ));
                 self::$objTemplate->parse('orderRow');
                 $objResult->MoveNext();
@@ -4523,15 +4786,16 @@ class shopmanager extends ShopLibrary
      */
     function shopNewEditCustomer()
     {
-        global $_ARRAYLANG;
-
+        global $objDatabase, $_ARRAYLANG;
+        //set template
         self::$objTemplate->loadTemplateFile("module_shop_edit_customer.html", true, true);
 
-        // Store Customer if desired
+        //Check if the data must be stored
         if (isset($_POST['shopStore'])) {
             $this->shopAddCustomer();
         }
 
+        //begin language variables
         self::$objTemplate->setVariable(array(
             'TXT_CUSTOMER_DATA' => $_ARRAYLANG['TXT_CUSTOMER_DATA'],
             'TXT_CUSTOMER_NUMBER' => $_ARRAYLANG['TXT_CUSTOMER_NUMBER'],
@@ -4564,70 +4828,89 @@ class shopmanager extends ShopLibrary
             'TXT_REMARK' => $_ARRAYLANG['TXT_REMARK'],
             'TXT_SAVE_CHANGES' => $_ARRAYLANG['TXT_SAVE_CHANGES'],
             'TXT_SEND_LOGIN_DATA' => $_ARRAYLANG['TXT_SEND_LOGIN_DATA'],
+            'TXT_SHOP_DISCOUNT_GROUP_CUSTOMER' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_CUSTOMER'],
         ));
-
-        $customer_id = false;
-        $objCustomer = false;
-        if (!empty($_REQUEST['customerid'])) {
-            $customer_id = intval($_REQUEST['customerid']);
-            if ($customer_id)
-                $objCustomer = Customer::getById($customer_id);
-        }
-        if ($objCustomer)  {
-            // Edit an existing Customer
-            self::$pageTitle = $_ARRAYLANG['TXT_EDIT_CUSTOMER'];
-            self::$objTemplate->setVariable(array(
-                'SHOP_SEND_LOGING_DATA_STATUS' => '',
-                'SHOP_CUSTOMER_ACT' => "customerdetails&amp;customerid=$customer_id"
-            ));
-        } else {
-            // Create a new Customer
+        //set requested customerid
+        $customerid = (isset($_REQUEST['customerid']) ? intval($_REQUEST['customerid']) : 0);
+        if ($customerid == 0) { //create a new customer
             self::$pageTitle = $_ARRAYLANG['TXT_ADD_NEW_CUSTOMER'];
             self::$objTemplate->setVariable(array(
-                'SHOP_CUSTOMERID' => '&nbsp;',
-                'SHOP_SEND_LOGING_DATA_STATUS' => ' checked="checked"',
-                'SHOP_REGISTER_DATE' => date('Y-m-d h:m:s'),
-                'SHOP_COUNTRY' => $this->_getCountriesMenu('shopCountry'),
-                'SHOP_CUSTOMER_ACT' => 'neweditcustomer'
+            'SHOP_CUSTOMERID' => "&nbsp;",
+            'SHOP_SEND_LOGING_DATA_STATUS' => ' checked="checked"',
+            'SHOP_REGISTER_DATE' => date("Y-m-d h:m:s"),
+            'SHOP_COUNTRY' => $this->_getCountriesMenu('shopCountry'),
+            'SHOP_CUSTOMER_ACT' => 'neweditcustomer'
             ));
-            $objCustomer = new Customer('', '', '', '', '', '', '', '', '', '');
-        }
-        if ($objCustomer->isReseller()) {
-            self::$objTemplate->setVariable('SHOP_IS_RESELLER', 'selected="selected"');
-            self::$objTemplate->setVariable('SHOP_IS_CUSTOMER', '');
-        } else {
-            self::$objTemplate->setVariable('SHOP_IS_RESELLER', '');
-            self::$objTemplate->setVariable('SHOP_IS_CUSTOMER', 'selected="selected"');
-        }
-        if ($objCustomer->isActive()) {
-            self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_0', '');
-            self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_1', 'selected="selected"');
-        } else {
-            self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_0', 'selected="selected"');
-            self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_1', '');
-        }
+        } else {    //edit user
+            self::$pageTitle = $_ARRAYLANG['TXT_EDIT_CUSTOMER'];
+            self::$objTemplate->setVariable(array(
+            'SHOP_SEND_LOGING_DATA_STATUS' => "",
+            'SHOP_CUSTOMER_ACT' => "customerdetails&amp;customerid={SHOP_CUSTOMERID}"
+            ));
 
-        self::$objTemplate->setVariable(array(
-            'SHOP_CUSTOMERID' => $objCustomer->getId(),
-            'SHOP_PREFIX' => $objCustomer->getPrefix(),
-            'SHOP_LASTNAME' => $objCustomer->getLastName(),
-            'SHOP_FIRSTNAME' => $objCustomer->getFirstName(),
-            'SHOP_COMPANY' => $objCustomer->getCompany(),
-            'SHOP_ADDRESS' => $objCustomer->getAddress(),
-            'SHOP_CITY' => $objCustomer->getCity(),
-            'SHOP_USERNAME' => $objCustomer->getUserName(),
-            'SHOP_COUNTRY' => $this->_getCountriesMenu('shopCountry', $objCustomer->getCountryId()),
-            'SHOP_ZIP' => $objCustomer->getZip(),
-            'SHOP_PHONE' => $objCustomer->getPhone(),
-            'SHOP_FAX' => $objCustomer->getFax(),
-            'SHOP_EMAIL' => $objCustomer->getEmail(),
-            'SHOP_CCNUMBER' => $objCustomer->getCcNumber(),
-            'SHOP_CCDATE' => $objCustomer->getCcDate(),
-            'SHOP_CCNAME' => $objCustomer->getCcName(),
-            'SHOP_CVC_CODE' => $objCustomer->getCcCode(),
-            'SHOP_COMPANY_NOTE' => $objCustomer->getCompanyNote(),
-            'SHOP_REGISTER_DATE' => $objCustomer->getRegisterDate(),
-        ));
+        }
+        // set the customer informations
+        if ($customerid > 0) {
+            $query = "SELECT *
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+                  WHERE customerid = $customerid
+                  ORDER BY lastname ASC";
+            if (($objResult = $objDatabase->Execute($query)) === false) {
+                //if query has errors, call errorhandling
+                $this->errorHandling();
+            } else {
+                if (!$objResult->EOF) {
+                    if ($objResult->fields['is_reseller'] == 1) {
+                        self::$objTemplate->setVariable('SHOP_IS_RESELLER', ' selected="selected"');
+                        self::$objTemplate->setVariable('SHOP_IS_CUSTOMER', '');
+                    } else {
+                        self::$objTemplate->setVariable('SHOP_IS_RESELLER', '');
+                        self::$objTemplate->setVariable('SHOP_IS_CUSTOMER', ' selected="selected"');
+                    }
+                    if ($objResult->fields['customer_status'] == 1) {
+                        self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_0', '');
+                        self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_1', ' selected="selected"');
+                    } else {
+                        self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_0', ' selected="selected"');
+                        self::$objTemplate->setVariable('SHOP_CUSTOMER_STATUS_1', '');
+                    }
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_CUSTOMERID' => $objResult->fields['customerid'],
+                        'SHOP_PREFIX' => $objResult->fields['prefix'],
+                        'SHOP_LASTNAME' => $objResult->fields['lastname'],
+                        'SHOP_FIRSTNAME' => $objResult->fields['firstname'],
+                        'SHOP_COMPANY' => $objResult->fields['company'],
+                        'SHOP_ADDRESS' => $objResult->fields['address'],
+                        'SHOP_CITY' => $objResult->fields['city'],
+                        'SHOP_USERNAME' => $objResult->fields['username'],
+                        // unavailable
+                        //'SHOP_ORDER_STATUS' => $objResult->fields['order_status'],
+                        'SHOP_COUNTRY' => $this->_getCountriesMenu('shopCountry', $objResult->fields['country_id']),
+                        'SHOP_ZIP' => $objResult->fields['zip'],
+                        'SHOP_PHONE' => $objResult->fields['phone'],
+                        'SHOP_FAX' => $objResult->fields['fax'],
+                        'SHOP_EMAIL' => $objResult->fields['email'],
+                        // unavailable
+                        //'SHOP_PAYMENTTYPE' => $objResult->fields['paymenttyp'],
+                        'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
+                        'SHOP_CCDATE' => $objResult->fields['ccdate'],
+                        'SHOP_CCNAME' => $objResult->fields['ccname'],
+                        'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
+                        'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'],
+                        'SHOP_REGISTER_DATE' => $objResult->fields['register_date'],
+                        'SHOP_DISCOUNT_GROUP_CUSTOMER' => Discount::getMenuOptionsGroupCustomer(
+                                $objResult->fields['group_id']
+                            ),
+                    ));
+                }
+            }
+        } else {
+            // Set up default values
+            self::$objTemplate->setVariable(array(
+                'SHOP_DISCOUNT_GROUP_CUSTOMER' => Discount::getMenuOptionsGroupCustomer(),
+            ));
+        }
+        return true;
     }
 
 
@@ -4640,98 +4923,107 @@ class shopmanager extends ShopLibrary
      */
     function shopAddCustomer()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_FRONTEND_LANGID;
 
-        if (!$this->_checkEmailIntegrity($_POST['shopEmail'])) {
-            $this->addError($_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER']);
-            return false;
-        }
-        if (!$this->_checkUsernameIntegrity($_POST['shopUsername'])) {
-            $this->addError($_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER']);
-            return false;
-        }
+        if ($this->_checkEmailIntegrity($_POST['shopEmail'])) {
+            if ($this->_checkUsernameIntegrity($_POST['shopUsername'])) {
+                $shopUsername       = addslashes(strip_tags($_POST['shopUsername']));
+                $shopPassword       = $_POST['shopPassword'];
+                $shopMd5Password    = md5($shopPassword);
+                $shopCompany        = addslashes(strip_tags($_POST['shopCompany']));
+                $shopPrefix         = addslashes(strip_tags($_POST['shopPrefix']));
+                $shopFirstname      = addslashes(strip_tags($_POST['shopFirstname']));
+                $shopLastname       = addslashes(strip_tags($_POST['shopLastname']));
+                $shopAddress        = addslashes(strip_tags($_POST['shopAddress']));
+                $shopCity           = addslashes(strip_tags($_POST['shopCity']));
+                $shopZip            = addslashes(strip_tags($_POST['shopZip']));
+                $shopCountry        = intval($_POST['shopCountry']);
+                $shopPhone          = addslashes(strip_tags($_POST['shopPhone']));
+                $shopFax            = addslashes(strip_tags($_POST['shopFax']));
+                $shopEmail          = addslashes(strip_tags($_POST['shopEmail']));
+                $shopCcnumber       = addslashes(strip_tags($_POST['shopCcnumber']));
+                $shopCcdate         = addslashes(strip_tags($_POST['shopCcdate']));
+                $shopCcname         = addslashes(strip_tags($_POST['shopCcname']));
+                $shopCvcCode        = addslashes(strip_tags($_POST['shopCvcCode']));
+                $shopCompanyNote    = addslashes(strip_tags($_POST['shopCompanyNote']));
+                $shopCustomerStatus = intval($_POST['shopCustomerStatus']);
+                $shopIsReseller     = intval($_POST['shopCustomerClass']);
+                $shopRegisterDate   = addslashes(strip_tags($_POST['shopRegisterDate']));
+                $shopDiscountGroup  =
+                    (isset($_POST['shopDiscountGroupCustomer'])
+                        ? intval($_POST['shopDiscountGroupCustomer'])
+                        : 0
+                    );
 
-        $objCustomer = new Customer(
-            strip_tags(contrexx_stripslashes($_POST['shopPrefix'])),
-            strip_tags(contrexx_stripslashes($_POST['shopFirstname'])),
-            strip_tags(contrexx_stripslashes($_POST['shopLastname'])),
-            strip_tags(contrexx_stripslashes($_POST['shopCompany'])),
-            strip_tags(contrexx_stripslashes($_POST['shopAddress'])),
-            strip_tags(contrexx_stripslashes($_POST['shopCity'])),
-            strip_tags(contrexx_stripslashes($_POST['shopZip'])),
-            intval($_POST['shopCountry']),
-            strip_tags(contrexx_stripslashes($_POST['shopPhone'])),
-            strip_tags(contrexx_stripslashes($_POST['shopFax']))
-        );
-        $objCustomer->setEmail(strip_tags(contrexx_stripslashes($_POST['shopEmail'])));
-        $objCustomer->setCcNumber(strip_tags(contrexx_stripslashes($_POST['shopCcnumber'])));
-        $objCustomer->setCcDate(strip_tags(contrexx_stripslashes($_POST['shopCcdate'])));
-        $objCustomer->setCcName(strip_tags(contrexx_stripslashes($_POST['shopCcname'])));
-        $objCustomer->setCcCode(strip_tags(contrexx_stripslashes($_POST['shopCvcCode'])));
-        $objCustomer->setCompanyNote(strip_tags(contrexx_stripslashes($_POST['shopCompanyNote'])));
-        $objCustomer->setActiveStatus($_POST['shopCustomerStatus']);
-        $objCustomer->setResellerStatus($_POST['shopCustomerClass']);
-        $objCustomer->setRegisterDate(strip_tags(contrexx_stripslashes($_POST['shopRegisterDate'])));
-        $objCustomer->setUserName(strip_tags(contrexx_stripslashes($_POST['shopUsername'])));
-        $shopPassword = '';
-        if (!empty($_POST['shopPassword'])) {
-            $shopPassword = $_POST['shopPassword'];
-            $objCustomer->setPassword(md5($shopPassword));
-        }
-        if (!$objCustomer->store()) {
-            $this->errorHandling();
-            $this->addError($_ARRAYLANG['TXT_SHOP_ERROR_INSERTING_CUSTOMER']);
-        } else {
-            $this->addMessage($_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'].", ID ".$objCustomer->getId());
-        }
-
-        // Send login data if desired
-        if (isset($_POST['shopSendLoginData'])) {
-            // Select template for sending login data
-            // Determine Customer language
-            $query = "
-                SELECT customer_lang
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-                 INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-                 USING (customerid)
-                 WHERE customerid=".$objCustomer->getId();
-            $objResult = $objDatabase->Execute($query);
-            // In case the language cannot be found, use the current
-            // frontend language
-            $langId = FRONTEND_LANG_ID;
-            if ($objResult && !$objResult->EOF) {
-                $langId = $objResult->fields['customer_lang'];
-            }
-            // Compatibility with old behavior of storing the ISO639-1 code
-            if (!is_numeric($langId))
-                $langId = FWLanguage::getLangIdByIso639_1($langId);
-            // Select template for sending login data
-            $arrShopMailtemplate = Mail::getTemplate(3, $langId);
-            $shopMailTo = $_POST['shopEmail'];
-            $shopMailFrom = $arrShopMailtemplate['mail_from'];
-            $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
-            $shopMailSubject = $arrShopMailtemplate['mail_subject'];
-            $shopMailBody = $arrShopMailtemplate['mail_body'];
-            $shopMailBody = str_replace("<USERNAME>", $objCustomer->getUserName(), $shopMailBody);
-            $shopMailBody = str_replace("<PASSWORD>", $shopPassword, $shopMailBody);
-            $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $objCustomer->getPrefix(), $shopMailBody);
-            $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $objCustomer->getLastName(), $shopMailBody);
-            $result = Mail::send($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
-            if ($result) {
-                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
+                // insert the customer data
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+                        (username, password, prefix, company, firstname,
+                        lastname, address, city, zip, country_id,
+                        phone, fax, email,
+                        ccnumber, ccdate, ccname, cvc_code,
+                        company_note, customer_status,
+                        is_reseller, register_date,
+                        group_id)
+                    VALUES
+                        ('$shopUsername', '$shopMd5Password', '$shopPrefix',
+                        '$shopCompany', '$shopFirstname', '$shopLastname',
+                        '$shopAddress', '$shopCity', '$shopZip',
+                        '$shopCountry', '$shopPhone', '$shopFax',
+                        '$shopEmail', '$shopCcnumber', '$shopCcdate',
+                        '$shopCcname', '$shopCvcCode', '$shopCompanyNote',
+                        $shopCustomerStatus, $shopIsReseller, '$shopRegisterDate',
+                        $shopDiscountGroup)
+                ";
+                if (!$objDatabase->Execute($query)) {
+                    // if query has errors, call errorhandling
+                    $this->errorHandling();
+                } else {
+                    $customerid = $objDatabase->Insert_ID();
+                    self::addMessage($_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'].", ID $customerid");
+                }
+                //check if the logindata must be sent
+                if (isset($_POST['shopSendLoginData'])) {
+                    // Select template for sending login data
+                    $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(3, $_FRONTEND_LANGID);
+                    $shopMailTo = $_POST['shopEmail'];
+                    $shopMailFrom = $arrShopMailtemplate['mail_from'];
+                    $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
+                    $shopMailSubject = $arrShopMailtemplate['mail_subject'];
+                    $shopMailBody = $arrShopMailtemplate['mail_body'];
+                    //replace variables from template
+                    $shopMailBody = str_replace("<USERNAME>", $shopUsername, $shopMailBody);
+                    $shopMailBody = str_replace("<PASSWORD>", $shopPassword, $shopMailBody);
+                    // added
+                    $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $shopPrefix, $shopMailBody);
+                    $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $shopLastname, $shopMailBody);
+                    $result = ShopLibrary::shopSendmail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+                    if ($result) {
+                        self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
+                    } else {
+                        self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                        return false;
+                    }
+                }
             } else {
-                $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                self::addError($_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER']);
                 return false;
             }
+        } else {
+            self::addError($_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER']);
+            return false;
         }
         return true;
     }
 
 
     /**
-     * Returns HTML code for the ShopCategory dropdown menu options
-     * @param    integer  $selectedid   The optional preselected ShopCategory ID
-     * @return   string                 HTML code with the menu options
+     * Returns HTML code for a dropdown menu of ShopCategories
+     *
+     * Obsolete.  Use {@link ShopCategories::getShopCategoriesMenu()} or
+     * {@link ShopCategories::getShopCategoriesMenuoptions()} instead.
+     * @param    integer  $selectedid   The optional selected category ID
+     * @return   string                 The HTML code of the menu
      */
     function getCatMenu($selectedid=0)
     {
@@ -4742,27 +5034,27 @@ class shopmanager extends ShopLibrary
 
     /**
      * Returns the shop categories menu
+     *
      * @version  1.0      initial version
      * @param    integer  $parcat
      * @param    integer  $level
      * @param    integer  $selectedid
      * @return   string   $result
-     * @todo    Optional argument $parcat *MUST NOT* be the first argument!
      */
-    function doShopCatMenu($parcat=0, $level, $selectedid)
+    function doShopCatMenu($parcat, $level, $selectedid)
     {
         global $objDatabase;
 
-        $result='';
-        $query = "SELECT id, parent_id, catname ".
+        $result="";
+        $query = "SELECT catid, parentid, catname ".
             "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
-            "ORDER BY parent_id ASC, sort_order ASC";
+            "ORDER BY parentid ASC, catsorting ASC";
         if (($objResult = $objDatabase->Execute($query)) === false) {
             $this->errorHandling();
             return false;
         }
         while (!$objResult->EOF) {
-            $navtable[$objResult->fields['parent_id']][$objResult->fields['id']] = $objResult->fields['catname'];
+            $navtable[$objResult->fields['parentid']][$objResult->fields['catid']] = $objResult->fields['catname'];
             $objResult->MoveNext();
         }
 
@@ -4772,7 +5064,7 @@ class shopmanager extends ShopLibrary
                 $selected = '';
                 $output = str_repeat('...', $level);
                 if ($selectedid == $key) {
-                    $selected = ' selected="selected"';
+                    $selected = "selected='selected'";
                 }
                 $result.= "<option value='$key' $selected>$output".htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
 // fix: the following line produces infinite loops if parent == child
@@ -4790,12 +5082,15 @@ class shopmanager extends ShopLibrary
     function _products()
     {
         global $_ARRAYLANG;
+
         self::$objTemplate->loadTemplateFile('module_shop_products.html',true,true);
         self::$objTemplate->setGlobalVariable(array(
             'TXT_ADD_PRODUCTS' => $_ARRAYLANG['TXT_ADD_PRODUCTS'],
             'TXT_PRODUCT_CATALOG' => $_ARRAYLANG['TXT_PRODUCT_CATALOG'],
             'TXT_PRODUCT_CHARACTERISTICS' => $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'],
-            'TXT_DOWNLOAD_OPTIONS' => $_ARRAYLANG['TXT_DOWNLOAD_OPTIONS']
+            'TXT_DOWNLOAD_OPTIONS' => $_ARRAYLANG['TXT_DOWNLOAD_OPTIONS'],
+            'TXT_SHOP_ARTICLE_GROUPS' => $_ARRAYLANG['TXT_SHOP_ARTICLE_GROUPS'],
+            'TXT_SHOP_DISCOUNT_COUNT_GROUPS' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_GROUPS'],
         ));
         if (!empty($_REQUEST['tpl'])) {
             $tpl = $_REQUEST['tpl'];
@@ -4813,11 +5108,18 @@ class shopmanager extends ShopLibrary
                 self::$pageTitle = $_ARRAYLANG['TXT_ADD_PRODUCTS'];
                 $this->manageProduct();
                 break;
+            case 'discounts':
+                self::$pageTitle = $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_GROUPS'];
+                $this->showDiscountGroupsCount();
+                break;
+            case 'groups':
+                self::$pageTitle = $_ARRAYLANG['TXT_SHOP_ARTICLE_GROUPS'];
+                $this->showArticleGroups();
+                break;
             default:
                 // Alternative: self::$pageTitle = $_ARRAYLANG['TXT_PRODUCT_CATALOG'];
                 self::$pageTitle = $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'];
                 $this->showProducts();
-                break;
         }
         self::$objTemplate->parse('shop_products_block');
     }
@@ -4830,10 +5132,14 @@ class shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        // Store changed values if desired
+        // Store changed values
         if (isset($_REQUEST['shopSaveProductAttributes'])) {
             $this->storeProducts();
         }
+
+        //initialize variable
+        $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $i=1;
 
         self::$objTemplate->addBlockfile(
             'SHOP_PRODUCTS_FILE',
@@ -4874,39 +5180,37 @@ class shopmanager extends ShopLibrary
             'TXT_PRODUCT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
             'TXT_DISTRIBUTION' => $_ARRAYLANG['TXT_DISTRIBUTION'],
             'TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE' => $_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE'],
-            'TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP' => $_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP'],
+            'TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP' => htmlentities($_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP'], ENT_QUOTES, CONTREXX_CHARSET),
 //            'TXT_WEIGHT' => $_ARRAYLANG['TXT_WEIGHT'],
         ));
 
         $catId = 0;
-        $manufacturerId = 0;
-        $flagSpecialoffer = false;
-        $searchTerm = '';
         if (isset($_REQUEST['catId'])) {
             $catId = intval($_REQUEST['catId']);
         }
+        $manufacturerId = 0;
         if (isset($_REQUEST['manufacturerId'])) {
             $manufacturerId = intval($_REQUEST['manufacturerId']);
         }
-        if (isset($_REQUEST['specialoffer'])) {
-            $flagSpecialoffer = SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS;
-        }
+// Not applicable in the backend
+//        $flagSpecialoffer = '';
+//        if (isset($_REQUEST['specialoffer'])) {
+//            $flagSpecialoffer = true;
+//        }
+        $searchTerm = '';
         if (!empty($_REQUEST['shopSearchTerm'])) {
             $searchTerm = mysql_escape_string(
-                trim(stripslashes($_REQUEST['shopSearchTerm']))
+                trim(contrexx_stripslashes($_REQUEST['shopSearchTerm']))
             );
         }
         $pos   = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $count = 0;
-
+        // Mind that $count is handed over by reference.
         $arrProducts = Products::getByShopParams(
-            // Mind that $count is handed over by reference.
-            $count, $pos, 0, $catId, $manufacturerId,
-            $searchTerm, $flagSpecialoffer,
-            false, // No "last five"
-            self::$arrProductOrder[1], // Default sorting order
-            '', // Empty string: Ignore reseller status
-            true // Show inactive Products in the backend
+            $count, $pos, 0, $catId, $manufacturerId, $searchTerm,
+            false, false,
+            self::$arrProductOrder[$this->arrConfig['product_sorting']['value']],
+            '', true // Include inactive Products
         );
         $shopPagingLimit = intval($_CONFIG['corePagingLimit']);
         // Show paging if the Product count is greater than the page limit
@@ -4914,16 +5218,18 @@ class shopmanager extends ShopLibrary
             self::$objTemplate->setVariable(
                 'SHOP_PRODUCT_PAGING',
                 getPaging(
-                    $count, $pos,
-                    '&amp;cmd=shop'.MODULE_INDEX.
-                      '&amp;act=products&amp;catId='.$catId,
-                    '<b>'.$_ARRAYLANG['TXT_PRODUCTS'].'</b>',
+                    $count,
+                    $pos,
+                    '&amp;cmd=shop'.MODULE_INDEX.'&amp;act=products&amp;catId='.
+                        $catId,
+                        '<b>'.$_ARRAYLANG['TXT_PRODUCTS'].'</b>',
                     true
                 )
             );
         }
         self::$objTemplate->setVariable(array(
-            'SHOP_CAT_MENUOPTIONS' => ShopCategories::getShopCategoriesMenuoptions($catId),
+            'SHOP_CAT_MENUOPTIONS' =>
+                ShopCategories::getShopCategoriesMenuoptions($catId, false),
             'SHOP_SEARCH_TERM' => $searchTerm,
             'SHOP_PRODUCT_TOTAL' => $count,
         ));
@@ -4970,6 +5276,8 @@ class shopmanager extends ShopLibrary
                 'SHOP_PRODUCT_STATUS_PICTURE' => $productStatusPicture,
                 'SHOP_ACTIVE_VALUE_OLD' => $productStatusValue,
                 'SHOP_SORT_ORDER' => $objProduct->getOrder(),
+//                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->getDistribution(), "distribution[".$objProduct->getId()."]"),
+//                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->getWeight()),
                 'SHOP_DISTRIBUTION' => $_ARRAYLANG['TXT_DISTRIBUTION_'.
                     strtoupper($objProduct->getDistribution())],
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED' => ($objProduct->isShownOnStartpage() ? ' checked="checked"' : ''),
@@ -5039,7 +5347,7 @@ class shopmanager extends ShopLibrary
                     // The NULL weight will be silently ignored by the database.
                     if ($shopWeight === 'NULL') {
                         // 'NULL', the format was invalid. cast error
-                        $this->addError($_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED']);
+                        self::addError($_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED']);
                     } else {
                         // If getWeight() returns any other value, the format
                         // is valid.  Verify that the numeric value has changed
@@ -5081,7 +5389,7 @@ class shopmanager extends ShopLibrary
                 $arrProducts =
 //                    ($shopProductIdentifierOld != ''
 //                        ? Products::getByCustomId($shopProductIdentifierOld) :
-                    array(Product::getById($id, FRONTEND_LANG_ID))
+                    array(Product::getById($id))
 //                );
                     ;
                 if (!is_array($arrProducts)) {
@@ -5111,32 +5419,33 @@ class shopmanager extends ShopLibrary
             }
         }
         if (empty($arrError)) {
-            $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+            self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
             return true;
         }
-        $this->addError($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
+        self::addError($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
         return false;
     }
 
 
     /**
      * Get some statistical stuff
+     *
      * @global    ADONewConnection
-     * @global    array
+     * @global    array      $_ARRAYLANG
      */
     function shopOrderStatistics()
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $paging = '';
+        $paging = "";
         $sumColumn4 = 0;
         $sumColumn3 = 0;
-        $sumColumn2 ='';
+        $sumColumn2 ="";
         $shopTotalSoldProducts = 0;
         $shopTotalOrderSum = 0.00;
         $shopTotalOrders = 0;
         $shopBestMonthSum = 0;
-        $shopBestMonthDate = '';
+        $shopBestMonthDate = "";
         $shopOrders = false;
         $arrShopMonthSum = array();
 
@@ -5195,7 +5504,7 @@ class shopmanager extends ShopLibrary
                     $shopTotalOrders++;
                     $objResult->MoveNext();
                 }
-                $months = explode(",", $_ARRAYLANG['TXT_MONTH_ARRAY']);
+                $months = explode(',', $_ARRAYLANG['TXT_MONTH_ARRAY']);
                 foreach ($arrShopMonthSum as $year => $arrMonth) {
                     foreach ($arrMonth as $month => $sum) {
                         if ($shopBestMonthSum < $sum) {
@@ -5231,30 +5540,34 @@ class shopmanager extends ShopLibrary
                 $shopStartDate = intval($_REQUEST['shopStartYear'])."-".sprintf("%02s",intval($_REQUEST['shopStartMonth']))."-01 00:00:00";
                 $shopStopDate = intval($_REQUEST['shopStopYear'])."-".sprintf("%02s",intval($_REQUEST['shopStopMonth']))."-".date('t',mktime(0,0,0,intval($_REQUEST['shopStopMonth']),1,intval($_REQUEST['shopStopYear'])))." 23:59:59";
             } else {   //set timeperiod to max. one year
-                $shopLastYear = Date("Y");
-                if ($shopOrderStartyear < Date("Y")) {
-                    $shopOrderStartmonth  = Date("m");
-                    $shopLastYear = Date("Y")-1;
+                $shopLastYear = Date('Y');
+                if ($shopOrderStartyear < Date('Y')) {
+                    $shopOrderStartmonth  = Date('m');
+                    $shopLastYear = Date('Y')-1;
                 }
-                $shopEndMonth = Date("m");
-                self::$objTemplate->setVariable("SHOP_START_MONTH", $this->shop_getMonthDropdwonMenu($shopOrderStartmonth));
-                self::$objTemplate->setVariable("SHOP_END_MONTH", $this->shop_getMonthDropdwonMenu($shopEndMonth));
-                self::$objTemplate->setVariable("SHOP_START_YEAR", $this->shop_getYearDropdwonMenu($shopOrderStartyear, $shopLastYear));
-                self::$objTemplate->setVariable("SHOP_END_YEAR", $this->shop_getYearDropdwonMenu($shopOrderStartyear,Date("Y")));
+                $shopEndMonth = Date('m');
+                self::$objTemplate->setVariable('SHOP_START_MONTH', $this->shop_getMonthDropdwonMenu($shopOrderStartmonth));
+                self::$objTemplate->setVariable('SHOP_END_MONTH', $this->shop_getMonthDropdwonMenu($shopEndMonth));
+                self::$objTemplate->setVariable('SHOP_START_YEAR', $this->shop_getYearDropdwonMenu($shopOrderStartyear, $shopLastYear));
+                self::$objTemplate->setVariable('SHOP_END_YEAR', $this->shop_getYearDropdwonMenu($shopOrderStartyear,Date('Y')));
                 $shopStartDate = $shopLastYear."-".$shopOrderStartmonth."-01 00:00:00";
-                $shopStopDate = date("Y")."-".$shopEndMonth."-".date('t',mktime(0,0,0, $shopEndMonth,1,date("Y")))." 23:59:59";
+                $shopStopDate = date('Y')."-".$shopEndMonth."-".date('t',mktime(0,0,0, $shopEndMonth,1,date('Y')))." 23:59:59";
             }
             //check if an statistic has been requested
-            $shopSelectedStat = intval($_REQUEST['shopSelectStats']);
-            if ($shopSelectedStat ==2) {
+            $shopSelectedStat =
+                (isset($_REQUEST['shopSelectStats'])
+                    ? intval($_REQUEST['shopSelectStats'])
+                    : 0
+                );
+            if ($shopSelectedStat == 2) {
                 //query for articles stats
                 self::$objTemplate->setVariable(array(
                 'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_PRODUCT_NAME'],
                 'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
                 'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_STOCK'],
-                'SHOP_ORDERS_SELECTED' => '',
-                'SHOP_ARTICLES_SELECTED' => ' selected="selected"',
-                'SHOP_CUSTOMERS_SELECTED' => '',
+                'SHOP_ORDERS_SELECTED' => "",
+                'SHOP_ARTICLES_SELECTED' => "selected=\"selected\"",
+                'SHOP_CUSTOMERS_SELECTED' => "",
                 ));
                 $query =  "SELECT A.quantity AS shopColumn2, A.productid AS id, A.price AS sum, B.title AS title, B.stock AS shopColumn3, C.selected_currency_id
                           FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
@@ -5271,9 +5584,9 @@ class shopmanager extends ShopLibrary
                 'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_NAME'],
                 'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COMPANY'],
                 'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-                'SHOP_ORDERS_SELECTED' => '',
-                'SHOP_ARTICLES_SELECTED' => '',
-                'SHOP_CUSTOMERS_SELECTED' => ' selected="selected"',
+                'SHOP_ORDERS_SELECTED' => "",
+                'SHOP_ARTICLES_SELECTED' => "",
+                'SHOP_CUSTOMERS_SELECTED' => "selected=\"selected\"",
                 ));
                 $query = "SELECT A.currency_order_sum AS sum, A.selected_currency_id AS currency_id, C.company AS shopColumn2,sum(B.quantity) AS shopColumn3, C.lastname As lastname, C.firstname AS firstname, C.prefix AS prefix, C.customerid AS id
                            FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS A,
@@ -5293,9 +5606,9 @@ class shopmanager extends ShopLibrary
                 'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_DATE'],
                 'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ORDERS'],
                 'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-                'SHOP_ORDERS_SELECTED' => ' selected="selected"',
-                'SHOP_ARTICLES_SELECTED' => '',
-                'SHOP_CUSTOMERS_SELECTED' => '',
+                'SHOP_ORDERS_SELECTED' => "selected=\"selected\"",
+                'SHOP_ARTICLES_SELECTED' => "",
+                'SHOP_CUSTOMERS_SELECTED' => "",
                 ));
                 $query = "SELECT sum(A.quantity) AS shopColumn3, count(A.orderid) AS shopColumn2, B.selected_currency_id, B.currency_order_sum AS sum, DATE_FORMAT(B.order_date,'%m') AS month, DATE_FORMAT(B.order_date,'%Y') AS year
                            FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
@@ -5314,6 +5627,8 @@ class shopmanager extends ShopLibrary
             } else {
                 if ($shopSelectedStat == 2) { //it's the article statistc
                     while (!$objResult->EOF) {
+                        // set currency id
+                        Currency::setActiveCurrencyId($objResult->fields['selected_currency_id']);
                         $key = $objResult->fields['id'];
                         if (!isset($arrayResults[$key])) {
                             $arrayResults[$key] = array(
@@ -5326,10 +5641,8 @@ class shopmanager extends ShopLibrary
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] + $objResult->fields['shopColumn2'];
                         $arrayResults[$key]['column1'] = "<a href='?cmd=shop".MODULE_INDEX."&amp;act=products&amp;tpl=manage&amp;id=".$objResult->fields['id']."' title=\"".$objResult->fields['title']."\">".$objResult->fields['title']."</a>";
                         $arrayResults[$key]['column3'] = $objResult->fields['shopColumn3'];
-                        $arrayResults[$key]['column4'] =
-                            $arrayResults[$key]['column4']
-                          + (  $objResult->fields['shopColumn2']
-                             * Currency::getDefaultCurrencyPrice($objResult->fields['sum']));
+                        $arrayResults[$key]['column4'] = $arrayResults[$key]['column4'] + $objResult->fields['shopColumn2'] * Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
+
                         $objResult->MoveNext();
                     }
                     if (is_array($arrayResults)) {
@@ -5342,10 +5655,13 @@ class shopmanager extends ShopLibrary
 
                     }
                 } elseif ($shopSelectedStat == 3) {
-                    // Customer stats
+                    //is customer statistic
                     while (!$objResult->EOF) {
+                        // set currency id
+                        Currency::setActiveCurrencyId($objResult->fields['currency_id']);
+
                         $key = $objResult->fields['id'];
-                        $shopCustomerName = ltrim($objResult->fields['prefix']." ".$objResult->fields['firstname']." ".$objResult->fields['lastname']);
+                        $shopCustomerName = ltrim($objResult->fields['prefix'].' '.$objResult->fields['firstname'].' '.$objResult->fields['lastname']);
                         if (!isset($arrayResults[$key])) {
                             $arrayResults[$key] = array(
                                 'column1' => '',
@@ -5363,7 +5679,7 @@ class shopmanager extends ShopLibrary
                         $objResult->MoveNext();
                     }
                 } else { //it's the default statistic (orders)
-                    $arrayMonths=explode(",", $_ARRAYLANG['TXT_MONTH_ARRAY']);
+                    $arrayMonths=explode(',', $_ARRAYLANG['TXT_MONTH_ARRAY']);
                     while (!$objResult->EOF) {
                         $key = $objResult->fields['year'].".".$objResult->fields['month'];
                         if (!isset($arrayResults[$key])) {
@@ -5374,12 +5690,10 @@ class shopmanager extends ShopLibrary
                                 'column4' => 0,
                             );
                         }
-                        $arrayResults[$key]['column1'] = $arrayMonths[intval($objResult->fields['month'])-1]." ".$objResult->fields['year'];
+                        $arrayResults[$key]['column1'] = $arrayMonths[intval($objResult->fields['month'])-1].' '.$objResult->fields['year'];
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] +1;
                         $arrayResults[$key]['column3'] = $arrayResults[$key]['column3'] + $objResult->fields['shopColumn3'];
-                        $arrayResults[$key]['column4'] =
-                            $arrayResults[$key]['column4']
-                          + Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
+                        $arrayResults[$key]['column4'] = $arrayResults[$key]['column4'] + Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
                         $sumColumn2 = $sumColumn2 + 1;
                         $sumColumn3 = $sumColumn3 + $objResult->fields['shopColumn3'];
                         $sumColumn4 = $sumColumn4 + Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
@@ -5387,27 +5701,30 @@ class shopmanager extends ShopLibrary
                     }
                     krsort($arrayResults, SORT_NUMERIC);
                 }
+                //set block an read whole array out
                 self::$objTemplate->setCurrentBlock('statisticRow');
                 $i=0; //used for row-class
                 if (is_array($arrayResults)) {
                     foreach ($arrayResults as $entry) {
+                        if (($i % 2) == 0) {$class='row1';} else {$class='row2';}
                         self::$objTemplate->setVariable(array(
-                        'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
-                        'SHOP_COLUMN_1' => $entry['column1'],
-                        'SHOP_COLUMN_2' => $entry['column2'],
-                        'SHOP_COLUMN_3' => $entry['column3'],
-                        'SHOP_COLUMN_4' => Currency::formatPrice($entry['column4']).' '.
-                            Currency::getDefaultCurrencySymbol(),
+	                        'SHOP_ROWCLASS' => $class,
+	                        'SHOP_COLUMN_1' => $entry['column1'],
+	                        'SHOP_COLUMN_2' => $entry['column2'],
+	                        'SHOP_COLUMN_3' => $entry['column3'],
+	                        'SHOP_COLUMN_4' => Currency::formatPrice($entry['column4']).' '.
+	                            Currency::getDefaultCurrencySymbol(),
                         ));
-                        self::$objTemplate->parse("statisticRow");
+                        self::$objTemplate->parse('statisticRow');
+                        ++$i;
                     }
                 }
             }
         } else {
             $sumColumn2 = 0;
-            $arrayMonths=explode(",", $_ARRAYLANG['TXT_MONTH_ARRAY']);
-            $shopActualMonth = "<option value=\"".Date("m")."\">".$arrayMonths[Date("m")-1]."</option>\n";
-            $shopActualYear = "<option value=\"".Date("Y")."\">".Date("Y")."</option>\n";
+            $arrayMonths=explode(',', $_ARRAYLANG['TXT_MONTH_ARRAY']);
+            $shopActualMonth = "<option value=\"".Date('m')."\">".$arrayMonths[Date('m')-1]."</option>\n";
+            $shopActualYear = "<option value=\"".Date('Y')."\">".Date('Y')."</option>\n";
             self::$objTemplate->setVariable(array(
             'SHOP_START_MONTH' => $shopActualMonth,
             'SHOP_END_MONTH' => $shopActualMonth,
@@ -5416,26 +5733,23 @@ class shopmanager extends ShopLibrary
             'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_DATE'],
             'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ORDERS'],
             'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-            'SHOP_ORDERS_SELECTED' => ' selected="selected"',
-            'SHOP_ARTICLES_SELECTED' => '',
-            'SHOP_CUSTOMERS_SELECTED' => '',
+            'SHOP_ORDERS_SELECTED' => "selected=\"selected\"",
+            'SHOP_ARTICLES_SELECTED' => "",
+            'SHOP_CUSTOMERS_SELECTED' => "",
             ));
         }
-        // Total sum
+        //set the variables for the sum
         self::$objTemplate->setVariable(array(
-            'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
-            'SHOP_TOTAL_SUM' => Currency::formatPrice($shopTotalOrderSum).' '.
-                Currency::getDefaultCurrencySymbol(),
-            'SHOP_MONTH' => $shopBestMonthDate,
-            'SHOP_MONTH_SUM' => Currency::formatPrice($shopBestMonthSum).' '.
-                Currency::getDefaultCurrencySymbol(),
-            'SHOP_TOTAL_ORDERS' => $shopTotalOrders,
-            'SHOP_SOLD_ARTICLES' => $shopTotalSoldProducts,
-            'SHOP_SUM_COLUMN_2' => $sumColumn2,
-            'SHOP_SUM_COLUMN_3' => $sumColumn3,
-            'SHOP_SUM_COLUMN_4' => Currency::formatPrice($sumColumn4).' '.
-                Currency::getDefaultCurrencySymbol(),
-            'SHOP_STATISTIC_PAGING' => $paging
+        'SHOP_ROWCLASS' => $i % 2 == 0 ? 'row1' : 'row2',
+        'SHOP_TOTAL_SUM' => Currency::formatPrice($shopTotalOrderSum).' '.Currency::getDefaultCurrencySymbol(),
+        'SHOP_MONTH' => $shopBestMonthDate,
+        'SHOP_MONTH_SUM' => Currency::formatPrice($shopBestMonthSum).' '.Currency::getDefaultCurrencySymbol(),
+        'SHOP_TOTAL_ORDERS' => $shopTotalOrders,
+        'SHOP_SOLD_ARTICLES' => $shopTotalSoldProducts,
+        'SHOP_SUM_COLUMN_2' => $sumColumn2,
+        'SHOP_SUM_COLUMN_3' => $sumColumn3,
+        'SHOP_SUM_COLUMN_4' => Currency::formatPrice($sumColumn4).' '.Currency::getDefaultCurrencySymbol(),
+        'SHOP_STATISTIC_PAGING' => $paging
         ));
     }
 
@@ -5468,7 +5782,7 @@ class shopmanager extends ShopLibrary
             $strMenu .=
                 "<option value='$shopStartYear'".
                 ($selectedOption == $shopStartYear
-                    ?   'selected="selected"'
+                    ?   ' selected="selected"'
                     :   ''
                 ).
                 ">$shopStartYear</option>\n";
@@ -5480,26 +5794,25 @@ class shopmanager extends ShopLibrary
 
     /**
      * Set the database query error Message
-     * @global    array
+     * @global    array      $_ARRAYLANG
      */
     function errorHandling()
     {
         global $_ARRAYLANG;
-        $this->addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
+        self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
     }
 
 
     /**
      * Shows an overview of all pricelists
-     * @global    ADONewConnection
-     * @global    array
+     * @global    array     $_ARRAYLANG
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function shopPricelistOverview()
     {
         global $objDatabase, $_ARRAYLANG;
 
         self::$objTemplate->loadTemplateFile("module_shop_pricelist_overview.html", true, true);
-
         self::$objTemplate->setVariable(array(
             'TXT_CONFIRM_DELETE_ORDER' => $_ARRAYLANG['TXT_CONFIRM_DELETE_ORDER'],
             'TXT_DELETE_PRICELIST_MSG' => $_ARRAYLANG['TXT_DELETE_PRICELIST_MSG'],
@@ -5516,7 +5829,7 @@ class shopmanager extends ShopLibrary
         ));
 
         self::$objTemplate->setGlobalVariable(array(
-            'TXT_SHOP_EDIT' => $_ARRAYLANG['TXT_SHOP_EDIT'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE']
         ));
 
@@ -5525,12 +5838,12 @@ class shopmanager extends ShopLibrary
         $query = "SELECT id, name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists ORDER BY name ASC";
         $objResult = $objDatabase->Execute($query);
         if ($objResult->RecordCount() > 0) { // there's a row in the database
-            self::$objTemplate->setCurrentBlock("showPricelists");
+            self::$objTemplate->setCurrentBlock('showPricelists');
             while (!$objResult->EOF) {
                 if ($row_color % 2 == 0) {
-                    self::$objTemplate->setVariable("PRICELIST_OVERVIEW_ROWCOLOR","row2");
+                    self::$objTemplate->setVariable('PRICELIST_OVERVIEW_ROWCOLOR', 'row2');
                 } else {
-                    self::$objTemplate->setVariable("PRICELIST_OVERVIEW_ROWCOLOR","row1");
+                    self::$objTemplate->setVariable('PRICELIST_OVERVIEW_ROWCOLOR', 'row1');
                 }
                 self::$objTemplate->setVariable(array(
                 'PRICELIST_OVERVIEW_ID' => $objResult->fields['id'],
@@ -5538,7 +5851,7 @@ class shopmanager extends ShopLibrary
                 'PRICELIST_OVERVIEW_PDFLINK' => "<a href='".ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.$objResult->fields['id']."' target='_blank' title='".$_ARRAYLANG['TXT_DISPLAY']."'>".
                 'http://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.$objResult->fields['id'].'</a>'));
 
-                self::$objTemplate->parse("showPricelists");
+                self::$objTemplate->parse('showPricelists');
                 $row_color++;
                 $objResult->MoveNext();
             }
@@ -5551,33 +5864,33 @@ class shopmanager extends ShopLibrary
     /**
      * Shows an overview of all pricelists
      * @version 1.0     initial version
-     * @global  ADONewConnection
-     * @global  array
+     * @global  array   $_ARRAYLANG
      */
     function shopPricelistNew()
     {
         global $objDatabase, $_ARRAYLANG;
 
         self::$objTemplate->loadTemplateFile("module_shop_pricelist_details.html", true, true);
+
         self::$objTemplate->setVariable(array(
-            'TXT_GENERAL_SETTINGS' => $_ARRAYLANG['TXT_GENERAL_SETTINGS'],
-            'TXT_PDF_LINK' => $_ARRAYLANG['TXT_PDF_LINK'],
-            'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
-            'TXT_LANGUAGE' => $_ARRAYLANG['TXT_LANGUAGE'],
-            'TXT_FRAME' => $_ARRAYLANG['TXT_FRAME'],
-            'TXT_DISPLAY' => $_ARRAYLANG['TXT_DISPLAY'],
-            'TXT_DONT_DISPLAY' => $_ARRAYLANG['TXT_DONT_DISPLAY'],
-            'TXT_HEADER' => $_ARRAYLANG['TXT_HEADER'],
-            'TXT_FOOTER' => $_ARRAYLANG['TXT_FOOTER'],
-            'TXT_DATE' => $_ARRAYLANG['TXT_DATE'],
-            'TXT_PAGENUMBER' => $_ARRAYLANG['TXT_PAGENUMBER'],
-            'TXT_PRODUCTSELECTION' => $_ARRAYLANG['TXT_PRODUCTSELECTION'],
-            'TXT_ALL_PRODUCTS' => $_ARRAYLANG['TXT_ALL_PRODUCTS'],
-            'TXT_SEPERATE_PRODUCTS' => $_ARRAYLANG['TXT_SEPERATE_PRODUCTS'],
-            'TXT_STORE_PRODUCT_LIST' => $_ARRAYLANG['TXT_STORE_PRODUCT_LIST']
+        'TXT_GENERAL_SETTINGS' => $_ARRAYLANG['TXT_GENERAL_SETTINGS'],
+        'TXT_PDF_LINK' => $_ARRAYLANG['TXT_PDF_LINK'],
+        'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
+        'TXT_LANGUAGE' => $_ARRAYLANG['TXT_LANGUAGE'],
+        'TXT_FRAME' => $_ARRAYLANG['TXT_FRAME'],
+        'TXT_DISPLAY' => $_ARRAYLANG['TXT_DISPLAY'],
+        'TXT_DONT_DISPLAY' => $_ARRAYLANG['TXT_DONT_DISPLAY'],
+        'TXT_HEADER' => $_ARRAYLANG['TXT_HEADER'],
+        'TXT_FOOTER' => $_ARRAYLANG['TXT_FOOTER'],
+        'TXT_DATE' => $_ARRAYLANG['TXT_DATE'],
+        'TXT_PAGENUMBER' => $_ARRAYLANG['TXT_PAGENUMBER'],
+        'TXT_PRODUCTSELECTION' => $_ARRAYLANG['TXT_PRODUCTSELECTION'],
+        'TXT_ALL_PRODUCTS' => $_ARRAYLANG['TXT_ALL_PRODUCTS'],
+        'TXT_SEPERATE_PRODUCTS' => $_ARRAYLANG['TXT_SEPERATE_PRODUCTS'],
+        'TXT_STORE_PRODUCT_LIST' => $_ARRAYLANG['TXT_STORE_PRODUCT_LIST']
         ));
 
-        // Language menu
+        // generate langauge menu
         $langMenu = "<select name=\"langId\" size=\"1\">\n";
         $query = "SELECT id, name, is_default FROM ".DBPREFIX."languages WHERE backend=1";
         if (($objResult = $objDatabase->Execute($query)) !== false) {
@@ -5589,35 +5902,39 @@ class shopmanager extends ShopLibrary
         $langMenu .= "</select>\n";
 
         self::$objTemplate->setVariable(array(
-            'SHOP_PRICELIST_DETAILS_PLID' => 'new',
-            'SHOP_PRICELIST_DETAILS_ACT' => 'pricelist_insert',
-            'SHOP_PRICELIST_PDFLINK' => '&nbsp;',
-            'SHOP_PRICELIST_DETAILS_NAME' => '',
-            'SHOP_PRICELIST_DETAILS_BORDERON' => ' checked="checked"',
-            'SHOP_PRICELIST_DETAILS_BORDEROFF' => '',
-            'SHOP_PRICELIST_DETAILS_HEADERON' => ' checked="checked"',
-            'SHOP_PRICELIST_DETAILS_HEADEROFF' => '',
-            'SHOP_PRICELIST_DETAILS_HEADERLEFT' => '',
-            'SHOP_PRICELIST_DETAILS_HEADERRIGHT' => '',
-            'SHOP_PRICELIST_DETAILS_FOOTERON' => ' checked="checked"',
-            'SHOP_PRICELIST_DETAILS_FOOTEROFF' => '',
-            'SHOP_PRICELIST_DETAILS_FOOTERLEFT' => '',
-            'SHOP_PRICELIST_DETAILS_FOOTERRIGHT' => '',
-            'SHOP_PRICELIST_DETAILS_ALLPROD' => ' checked="checked"',
-            'SHOP_PRICELIST_DETAILS_SEPPROD' => '',
-            'SHOP_PRICELIST_DETAILS_LANGUAGE' => $langMenu
+        'SHOP_PRICELIST_DETAILS_PLID' => 'new',
+        'SHOP_PRICELIST_DETAILS_ACT' => 'pricelist_insert',
+        'SHOP_PRICELIST_PDFLINK' => '&nbsp;',
+        'SHOP_PRICELIST_DETAILS_NAME' => '',
+        'SHOP_PRICELIST_DETAILS_BORDERON' => ' checked="checked"',
+        'SHOP_PRICELIST_DETAILS_BORDEROFF' => '',
+        'SHOP_PRICELIST_DETAILS_HEADERON' => ' checked="checked"',
+        'SHOP_PRICELIST_DETAILS_HEADEROFF' => '',
+        'SHOP_PRICELIST_DETAILS_HEADERLEFT' => '',
+        'SHOP_PRICELIST_DETAILS_HEADERRIGHT' => '',
+        'SHOP_PRICELIST_DETAILS_FOOTERON' => ' checked="checked"',
+        'SHOP_PRICELIST_DETAILS_FOOTEROFF' => '',
+        'SHOP_PRICELIST_DETAILS_FOOTERLEFT' => '',
+        'SHOP_PRICELIST_DETAILS_FOOTERRIGHT' => '',
+        'SHOP_PRICELIST_DETAILS_ALLPROD' => ' checked="checked"',
+        'SHOP_PRICELIST_DETAILS_SEPPROD' => '',
+        'SHOP_PRICELIST_DETAILS_LANGUAGE' => $langMenu
         ));
+
         $selectedCategories = '*';
-        self::$objTemplate->setCurrentBlock("showShopCategories");
-        self::$objTemplate->setCurrentBlock("showShopCategories2");
-        self::$objTemplate->setCurrentBlock("showShopCategories3");
+
+        self::$objTemplate->setCurrentBlock('showShopCategories');
+        self::$objTemplate->setCurrentBlock('showShopCategories2');
+        self::$objTemplate->setCurrentBlock('showShopCategories3');
+
         $this->shopPricelistMainCategories($selectedCategories);
     }
 
 
     /**
      * Returns the Maincategories for the PDF-Selections
-     * @global  ADONewConnection
+     *
+     * @global    var        $objDatabase
      */
     function shopPricelistMainCategories($selectedCategories)
     {
@@ -5625,10 +5942,10 @@ class shopmanager extends ShopLibrary
 
         $row_color = 0;
         $query = "
-            SELECT id,catname
+            SELECT catid,catname
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-             WHERE parent_id=0
-             ORDER BY sort_order ASC
+             WHERE parentid=0
+             ORDER BY catsorting ASC
         ";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
@@ -5638,18 +5955,20 @@ class shopmanager extends ShopLibrary
                 self::$objTemplate->setVariable('PDF_CATEGORY_CHECKED', '');
             } else {
                 self::$objTemplate->setVariable('PDF_CATEGORY_DISABLED', '');
-                self::$objTemplate->setVariable('PDF_CATEGORY_CHECKED', '');
+                self::$objTemplate->setVariable('PDF_CATEGORY_CHECKED', ''); //empty the field
 
                 foreach ($selectedCategories as $checkedValue) {
-                    if ($objResult->fields['id'] == $checkedValue) {
+                    if ($objResult->fields['catid'] == $checkedValue) { // this field is checked
                         self::$objTemplate->setVariable('PDF_CATEGORY_CHECKED', ' checked="checked"');
                     }
                 }
             }
-            self::$objTemplate->setVariable('PDF_CATEGORY_ID', $objResult->fields['id']);
-            self::$objTemplate->setVariable('PDF_CATEGORY_ID2', $objResult->fields['id']);
-            self::$objTemplate->setVariable('PDF_CATEGORY_ID3', $objResult->fields['id']);
-            self::$objTemplate->setVariable('CATEGORY_OVERVIEW_ROWCOLOR', (++$row_color % 2 ? 'row1' : 'row2'));
+            self::$objTemplate->setVariable(array(
+                'PDF_CATEGORY_ID' => $objResult->fields['catid'],
+	            'PDF_CATEGORY_ID2' => $objResult->fields['catid'],
+	            'PDF_CATEGORY_ID3' => $objResult->fields['catid'],
+	            'CATEGORY_OVERVIEW_ROWCOLOR' => (++$row_color % 2 ? 'row1' : 'row2'),
+            ));
             self::$objTemplate->parse('showShopCategories');
             self::$objTemplate->parse('showShopCategories2');
             self::$objTemplate->parse('showShopCategories3');
@@ -5660,37 +5979,32 @@ class shopmanager extends ShopLibrary
 
     /**
      * Inserts a new pricelist into the database
-     * @global  ADONewConnection
-     * @global  array
+     * @global    var        $objDatabase
+     * @global    array    $_ARRAYLANG
      */
     function shopPricelistInsert()
     {
         global $objDatabase, $_ARRAYLANG;
 
+        $selectedCategories = '';
         if ($_POST['productsAll']) {
             $selectedCategories = '*';
-        }
-        else
-        {
-            foreach ($_POST as $key => $value) {
-                if (substr($key, 0, 14) == 'categoryNumber') {
+        } else {
+        	foreach ($_POST as $key => $value) {
+                if (substr($key,0,14) == 'categoryNumber') {
                     $arrSelectedMainCats[$value] = $value;
                 }
             }
-
             foreach ($arrSelectedMainCats as $key => $value) {
                 $this->doCategoryTreeActiveOnly($value);
-                foreach (array_keys(self::$arrCategoryTreeName) as $catKey) {
-                    $selectedCategories .= $catKey.",";
+                foreach (array_keys($this->categoryTreeName) as $catKey) {
+                    $selectedCategories .= $catKey.',';
                 }
-                $selectedCategories .= $value.","; //I also have to add the maincategory!! IMPORTANT
+                // Add the root category
+                $selectedCategories .= $value;
             }
-
-            $selectedCategories = substr($selectedCategories,0,strlen($selectedCategories)-1); // drop the last ,
-            if ($selectedCategories == '') { // no groups were selected.. so select all for preventing errors
-                $selectedCategories = '*';
-            }
-
+            // If no groups were selected, select all.  Prevents errors.
+            if (empty($selectedCategories)) $selectedCategories = '*';
         }
 
         if (empty($_POST['pricelistName'])) {
@@ -5711,20 +6025,20 @@ class shopmanager extends ShopLibrary
                 footer_right='".addslashes(trim($_POST['footerTextRight']))."',
                 categories='".addslashes($selectedCategories)."'";
         $objDatabase->Execute($query);
-        $this->addMessage($_ARRAYLANG['TXT_PRODUCT_LIST_CREATED_SUCCESSFUL']);
+        self::addMessage($_ARRAYLANG['TXT_PRODUCT_LIST_CREATED_SUCCESSFUL']);
     }
 
 
     /**
      * Edit a pricelist
-     * @global  ADONewConnection
-     * @global  array
+     * @global    var        $objDatabase
+     * @global    array    $_ARRAYLANG
      */
     function shopPricelistEdit($pricelistID)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        self::$objTemplate->loadTemplateFile('module_shop_pricelist_details.html', true, true);
+        self::$objTemplate->loadTemplateFile("module_shop_pricelist_details.html", true, true);
         self::$objTemplate->setVariable(array(
             'TXT_GENERAL_SETTINGS' => $_ARRAYLANG['TXT_GENERAL_SETTINGS'],
             'TXT_PDF_LINK' => $_ARRAYLANG['TXT_PDF_LINK'],
@@ -5748,12 +6062,15 @@ class shopmanager extends ShopLibrary
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists
              WHERE id=$pricelistID
         ");
-        $langId = $objResult->fields['lang_id'];
-        self::$objTemplate->setVariable('SHOP_PRICELIST_DETAILS_ACT', 'pricelist_update&amp;id='.$objResult->fields['id']);
-        self::$objTemplate->setVariable('SHOP_PRICELIST_PDFLINK',
-            '<a href="'.ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.$objResult->fields['id'].'" target="_blank" title="PDF">'.
-            'http://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.$objResult->fields['id'].'</a>');
-        self::$objTemplate->setVariable('SHOP_PRICELIST_DETAILS_NAME', $objResult->fields['name']);
+        $lang_id = $objResult->fields['lang_id'];
+        self::$objTemplate->setVariable(array(
+            'SHOP_PRICELIST_DETAILS_ACT' => 'pricelist_update&amp;id='.$objResult->fields['id'],
+            'SHOP_PRICELIST_PDFLINK' => '<a href="'.ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.
+	            $objResult->fields['id'].'" target="_blank" title="PDF">'.
+	            'http://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET.
+	            '/modules/shop/pdf.php?plid='.$objResult->fields['id'].'</a>',
+            'SHOP_PRICELIST_DETAILS_NAME' => $objResult->fields['name'],
+        ));
         //are the borders on?
         if ($objResult->fields['border_on'] == 1) {
             self::$objTemplate->setVariable('SHOP_PRICELIST_DETAILS_BORDERON', ' checked="checked"');
@@ -5793,14 +6110,12 @@ class shopmanager extends ShopLibrary
             self::$objTemplate->setVariable('SHOP_PRICELIST_DETAILS_SEPPROD', ' checked="checked"');
 
             $selectedCategories = explode(',', $objResult->fields['categories']);
-            $query = "
-                SELECT id
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-                 WHERE parent_id=0
-            ";
+            $query = "SELECT catid ".
+                     "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
+                     "WHERE parentid = 0";
             $objResult = $objDatabase->Execute($query);
             while (!$objResult->EOF) {
-                $arrMainCategories[$objResult->fields['id']] = $objResult->fields['id'];
+                $arrMainCategories[$objResult->fields['catid']] = $objResult->fields['catid'];
                 $objResult->MoveNext();
             }
             foreach ($selectedCategories as $value) {
@@ -5812,21 +6127,18 @@ class shopmanager extends ShopLibrary
             }
         }
 
-        // Language menu
-        $langMenu = '<select name="langId" size="1">'."\n";
-        $query = 'SELECT id, name, is_default FROM '.DBPREFIX.'languages WHERE backend=1';
+        // generate langauge menu
+        $langMenu = "<select name=\"langId\" size=\"1\">\n";
+        $query = "SELECT id, name, is_default FROM ".DBPREFIX."languages WHERE backend=1";
         if (($objResult = $objDatabase->Execute($query)) !== false) {
             while (!$objResult->EOF) {
-                $langMenu .=
-                    '<option value="'.$objResult->fields['id'].'"'.
-                    ($objResult->fields['id'] == $langId
-                        ? ' selected="selected"' : ''
-                    ).'>'.$objResult->fields['name']."</option>\n";
+                $langMenu .= "<option value=\"".$objResult->fields['id']."\"".($objResult->fields['id'] == $lang_id ? " selected=\"selected\"" : "").">".$objResult->fields['name']."</option>\n";
                 $objResult->MoveNext();
             }
         }
         $langMenu .= "</select>\n";
         self::$objTemplate->setVariable('SHOP_PRICELIST_DETAILS_LANGUAGE', $langMenu);
+
         self::$objTemplate->setCurrentBlock('showShopCategories');
         self::$objTemplate->setCurrentBlock('showShopCategories2');
         self::$objTemplate->setCurrentBlock('showShopCategories3');
@@ -5836,13 +6148,15 @@ class shopmanager extends ShopLibrary
 
     /**
      * Update a pricelist entry in the database
-     * @global  ADONewConnection
-     * @global  array
+     *
+     * @global  var     $objDatabase
+     * @global  array   $_ARRAYLANG
      */
     function shopPricelistUpdate($pricelistID)
     {
         global $objDatabase, $_ARRAYLANG;
 
+        $selectedCategories = '';
         if ($_POST['productsAll']) {
             $selectedCategories = '*';
         } else {
@@ -5851,47 +6165,41 @@ class shopmanager extends ShopLibrary
                     $arrSelectedMainCats[$value] = $value;
                 }
             }
-
             foreach ($arrSelectedMainCats as $key => $value) {
                 $this->doCategoryTreeActiveOnly($value);
-                foreach (array_keys(self::$arrCategoryTreeName) as $catKey) {
-                    $selectedCategories .= $catKey.",";
+                foreach (array_keys($this->categoryTreeName) as $catKey) {
+                    $selectedCategories .= $catKey.',';
                 }
-                $selectedCategories .= $value.","; //I also have to add the maincategory!! IMPORTANT
+                $selectedCategories .= $value;
             }
-
-            $selectedCategories = substr($selectedCategories,0,strlen($selectedCategories)-1); // drop the last ,
-            if ($selectedCategories == '') { // no groups were selected.. so select all for preventing errors
-                $selectedCategories = '*';
-            }
+            if (empty($selectedCategories)) $selectedCategories = '*';
         }
-
-        if (empty($_POST['pricelistName'])) {
+        if (empty($_POST['pricelistName']))
             $_POST['pricelistName'] = $_ARRAYLANG['TXT_NO_NAME'];
-        }
-
-        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists ".
-                 "SET name=         '".addslashes(strip_tags($_POST['pricelistName']))."', ".
-                     "lang_id=       ".intval($_POST['langId']).", ".
-                     "border_on=     ".intval($_POST['borderOn']).", ".
-                     "header_on=     ".intval($_POST['headerOn']).", ".
-                     "header_left=  '".addslashes(trim($_POST['headerTextLeft']))."', ".
-                     "header_right= '".addslashes(trim($_POST['headerTextRight']))."', ".
-                     "footer_on=     ".intval($_POST['footerOn']).", ".
-                     "footer_left=  '".addslashes(trim($_POST['footerTextLeft']))."', ".
-                     "footer_right= '".addslashes(trim($_POST['footerTextRight']))."', ".
-                     "categories=   '".addslashes($selectedCategories)."' ".
-                 "WHERE id=".$pricelistID;
+        $query = "
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists
+               SET name='".addslashes(strip_tags($_POST['pricelistName']))."',
+                   lang_id=".intval($_POST['langId']).",
+                   border_on=".intval($_POST['borderOn']).",
+                   header_on=".intval($_POST['headerOn']).",
+                   header_left='".addslashes(trim($_POST['headerTextLeft']))."',
+                   header_right='".addslashes(trim($_POST['headerTextRight']))."',
+                   footer_on=".intval($_POST['footerOn']).",
+                   footer_left='".addslashes(trim($_POST['footerTextLeft']))."',
+                   footer_right='".addslashes(trim($_POST['footerTextRight']))."',
+                   categories='".addslashes($selectedCategories)."'
+             WHERE id=$pricelistID
+        ";
         $objDatabase->Execute($query);
-
-        $this->addMessage($_ARRAYLANG['TXT_PRODUCT_LIST_UPDATED_SUCCESSFUL']);
+        self::addMessage($_ARRAYLANG['TXT_PRODUCT_LIST_UPDATED_SUCCESSFUL']);
     }
 
 
     /**
      * Delete a pricelist
-     * @global  ADONewConnection
-     * @global  array
+     *
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @global  array   $_ARRAYLANG
      */
     function shopPricelistDelete($pricelistID='')
     {
@@ -5915,7 +6223,7 @@ class shopmanager extends ShopLibrary
                      WHERE id=".intval($plId)
                 ;
                 if ($objDatabase->Execute($query)) {
-                    $this->addMessage($_ARRAYLANG['TXT_PRICELIST_MESSAGE_DELETED']);
+                    self::addMessage($_ARRAYLANG['TXT_PRICELIST_MESSAGE_DELETED']);
                 } else {
                     $this->errorHandling();
                 }
@@ -5925,14 +6233,59 @@ class shopmanager extends ShopLibrary
 
 
     /**
+     * Return HTML code for the Manufacturer dropdown menu
+     * @static
+     * @param   integer $selectedId     The optional selected Manufacturer ID
+     * @return  string                  The HTML code string
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @global  array   $_ARRAYLANG
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getManufacturerMenu($selectedId=0)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $query = '
+            SELECT id, name, url
+              FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer
+          ORDER BY name
+        ';
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            $this->errorHandling();
+        }
+
+        $strMenu =
+            '<select name="shopManufacturerId" style="width: 220px;">'.
+            ($selectedId == 0
+              ? '<option value="0">'.
+                $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
+                '</option>'
+              : ''
+            );
+        while (!$objResult->EOF) {
+            $id = $objResult->fields['id'];
+            $strMenu .=
+                '<option value="'.$id.'"'.
+                ($selectedId == $id ? ' selected="selected"' : '').
+                '>'.$objResult->fields['name'].'</option>';
+            $objResult->MoveNext();
+        }
+        $strMenu .= '</select>';
+        return $strMenu;
+    }
+
+
+    /**
      * Send a confirmation mail to the Customer for the given Order ID.
      * @param   integer   $orderId      The order ID
      * @return  string                  The target e-mail address on success,
-     *                                  the empty string otherwise
+     *                                   the empty string otherwise
      */
     function sendConfirmationMail($orderId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         $query = "
             SELECT email, last_modified, customer_lang, order_status
@@ -5941,15 +6294,15 @@ class shopmanager extends ShopLibrary
              WHERE o.customerid=c.customerid
                AND o.orderid=$orderId";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) {
+            return false;
+        }
         $shopMailTo = $objResult->fields['email'];
         $shopLastModified = $objResult->fields['last_modified'];
-        $langId = $objResult->fields['customer_lang'];
-        // Compatibility with old behavior of storing the ISO639-1 code
-        if (!intval($langId))
-            $langId = FWLanguage::getLangIdByIso639_1($langId);
+        $customerLang = $objResult->fields['customer_lang'];
         $orderStatus = $objResult->fields['order_status'];
-        $arrShopMailtemplate = Mail::getTemplate(2, $langId);
+        $lang_id = FWLanguage::getLangIdByIso639_1($customerLang);
+        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(2, $lang_id);
         $shopMailFrom = $arrShopMailtemplate['mail_from'];
         $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
         $shopMailSubject = $arrShopMailtemplate['mail_subject'];
@@ -5957,44 +6310,11 @@ class shopmanager extends ShopLibrary
         $shopMailSubject = str_replace('<ORDER_STATUS>', $orderStatus, $shopMailSubject);
         $shopMailBody = $arrShopMailtemplate['mail_body'];
         $shopMailBody = str_replace('<DATE>', $shopLastModified, $shopMailBody);
-        $shopMailBody = str_replace('<ORDER_STATUS>', $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus], $shopMailBody);
-        if (Mail::send($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody))
+        $shopMailBody = str_replace('<ORDER_STATUS>', $this->arrOrderStatus[$orderStatus], $shopMailBody);
+        if (shopmanager::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)) {
             return $shopMailTo;
+        }
         return '';
-    }
-
-
-    /**
-     * Returns a dropdown menu string with all available order status.
-     * @param   string  $selectedId     Optional preselected status ID
-     * @param   string  $menuName       Optional menu name
-     * @param   string  $onchange       Optional onchange callback function
-     * @return  string  $menu           The dropdown menu string
-     * @global  array
-     */
-    function getOrderStatusMenu($selectedStatus=-1, $menuName='', $onchange='')
-    {
-        global $_ARRAYLANG;
-
-        $menu =
-            ($selectedStatus >= 0
-              ? ''
-              : '<option value="-1">-- '.
-                $_ARRAYLANG['TXT_STATUS'].
-                " --</option>\n"
-            );
-        for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {
-            $menu .= '<option value="'.$i.'"'.
-            ($selectedStatus == $i ? ' selected="selected"' : '').
-            '>'.$_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$i]."</option>\n";
-        }
-        if ($menuName != '') {
-            $menu =
-                '<select name="'.$menuName.'" id="'.$menuName.'" '.
-                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
-                ">\n".$menu."</select>\n";
-        }
-        return $menu;
     }
 
 
@@ -6005,8 +6325,9 @@ class shopmanager extends ShopLibrary
      * error messages.
      * @param   string  $strErrorMessage    The error message to add
      * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @static
      */
-    function addError($strErrorMessage)
+    static function addError($strErrorMessage)
     {
         self::$strErrMessage .=
             (self::$strErrMessage != '' && $strErrorMessage != ''
@@ -6022,13 +6343,467 @@ class shopmanager extends ShopLibrary
      * messages.
      * @param   string  $strOkMessage       The message to add
      * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @static
      */
-    function addMessage($strOkMessage)
+    static function addMessage($strOkMessage)
     {
         self::$strOkMessage .=
             (self::$strOkMessage != '' && $strOkMessage != ''
                 ? '<br />' : ''
             ).$strOkMessage;
+    }
+
+
+    /**
+     * Show the count discount editing page
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function showDiscountGroupsCount()
+    {
+        global $_ARRAYLANG;
+
+        if (isset($_POST['discountStore'])) {
+            $this->shopStoreDiscountCount();
+        }
+        if (isset($_GET['deleteDiscount'])) {
+            $this->shopDeleteDiscountCount();
+        }
+
+        self::$objTemplate->addBlockfile('SHOP_PRODUCTS_FILE', 'shop_products_block', 'module_shop_discount_groups_count.html');
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_OVERVIEW' => $_ARRAYLANG['TXT_OVERVIEW'],
+            'TXT_SHOP_CUSTOMER_GROUPS' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_GROUPS'],
+            'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
+            'TXT_SHOP_CONFIRM_DELETE_DISCOUNT_GROUP' => $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_DISCOUNT_GROUP'],
+            'TXT_SHOP_DISCOUNT_GROUPS' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUPS'],
+            'TXT_SHOP_DISCOUNT_GROUP_NAME' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NAME'],
+            'TXT_SHOP_DISCOUNT_GROUP_UNIT' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_UNIT'],
+            'TXT_SHOP_DISCOUNT_MIN_COUNT' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_MIN_COUNT'],
+            'TXT_SHOP_DISCOUNT_RATE' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_RATE'],
+            'TXT_SHOP_EDIT_DISCOUNT_GROUP' => $_ARRAYLANG['TXT_SHOP_EDIT_DISCOUNT_GROUP'],
+            'TXT_SHOP_DISCOUNT_COUNT_TIP' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_TIP'],
+            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
+            'TXT_SHOP_CANCEL' => $_ARRAYLANG['TXT_SHOP_CANCEL'],
+        ));
+
+        // Discounts overview
+        $arrDiscounts = Discount::getDiscountCountArray();
+        self::$objTemplate->setCurrentBlock('shopDiscount');
+        $i = 0;
+        foreach ($arrDiscounts as $id => $arrDiscount) {
+            $name = $arrDiscount['name'];
+            $unit = $arrDiscount['unit'];
+            self::$objTemplate->setVariable(array(
+                'SHOP_DISCOUNT_ID' => $id,
+                'SHOP_DISCOUNT_GROUP_NAME' => $name,
+                'SHOP_DISCOUNT_GROUP_UNIT' => $unit,
+                'SHOP_DISCOUNT_ROW_STYLE' => 'row'.((++$i % 2)+1),
+            ));
+            self::$objTemplate->parse('shopDiscount');
+        }
+
+        // Add/edit Discount
+        $id = 0;
+        $arrDiscountRates = array();
+        if (!empty($_GET['editDiscount'])) {
+            $id = intval($_GET['id']);
+            $arrDiscountRates = Discount::getDiscountCountRateArray($id);
+            self::$objTemplate->setGlobalVariable(array(
+                'SHOP_DISCOUNT_EDIT_CLASS' => 'active',
+                'SHOP_DISCOUNT_EDIT_DISPLAY' => 'block',
+                'SHOP_DISCOUNT_LIST_CLASS' => '',
+                'SHOP_DISCOUNT_LIST_DISPLAY' => 'none',
+                'TXT_ADD_OR_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            ));
+        } else {
+            self::$objTemplate->setGlobalVariable(array(
+                'SHOP_DISCOUNT_EDIT_CLASS' => '',
+                'SHOP_DISCOUNT_EDIT_DISPLAY' => 'none',
+                'SHOP_DISCOUNT_LIST_CLASS' => 'active',
+                'SHOP_DISCOUNT_LIST_DISPLAY' => 'block',
+                'TXT_ADD_OR_EDIT' => $_ARRAYLANG['TXT_ADD'],
+            ));
+        }
+        self::$objTemplate->setCurrentBlock('shopDiscountName');
+        self::$objTemplate->setVariable(array(
+            'SHOP_DISCOUNT_ID_EDIT' => $id,
+            'SHOP_DISCOUNT_ROW_STYLE' => 'row'.((++$i % 2)+1),
+        ));
+        if (isset($arrDiscounts[$id])) {
+            $arrDiscount = $arrDiscounts[$id];
+            $name = $arrDiscount['name'];
+            $unit = $arrDiscount['unit'];
+            self::$objTemplate->setVariable(array(
+                'SHOP_DISCOUNT_GROUP_NAME' => $name,
+                'SHOP_DISCOUNT_GROUP_UNIT' => $unit,
+            ));
+        }
+        self::$objTemplate->parse('shopDiscountName');
+        self::$objTemplate->setCurrentBlock('shopDiscountRate');
+        foreach ($arrDiscountRates as $count => $rate) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_DISCOUNT_COUNT' => $count,
+                'SHOP_DISCOUNT_RATE' => $rate,
+                'SHOP_DISCOUNT_RATE_INDEX' => $i,
+                'SHOP_DISCOUNT_ROW_STYLE' => 'row'.((++$i % 2)+1),
+            ));
+            self::$objTemplate->parse('shopDiscountRate');
+        }
+        // Add a couple of empty rows for adding new counts and rates
+        for ($j = 0; $j < 5; ++$j) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_DISCOUNT_COUNT' => '',
+                'SHOP_DISCOUNT_RATE' => '',
+                'SHOP_DISCOUNT_RATE_INDEX' => $i,
+                'SHOP_DISCOUNT_ROW_STYLE' => 'row'.((++$i % 2)+1),
+            ));
+            self::$objTemplate->parse('shopDiscountRate');
+        }
+        return true;
+    }
+
+
+    /**
+     * Store the count discounts after editing
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function shopStoreDiscountCount()
+    {
+        if (!isset($_POST['discountId'])) return true;
+        $discountId = $_POST['discountId'];
+        $discountGroupName = $_POST['discountGroupName'];
+        $discountGroupUnit = $_POST['discountGroupUnit'];
+        $arrDiscountCount = $_POST['discountCount'];
+        $arrDiscountRate = $_POST['discountRate'];
+        return Discount::storeDiscountCount(
+            $discountId, $discountGroupName, $discountGroupUnit,
+            $arrDiscountCount, $arrDiscountRate
+        );
+    }
+
+
+    /**
+     * Delete the count discount selected by its ID from the GET request
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function shopDeleteDiscountCount()
+    {
+        if (!isset($_GET['id'])) return true;
+        $discountId = $_GET['id'];
+        return Discount::deleteDiscountCount($discountId);
+    }
+
+
+    /**
+     * Show the customer groups for editing
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function showCustomerGroups()
+    {
+        global $_ARRAYLANG;
+
+        if (isset($_POST['store'])) {
+            Discount::storeCustomerGroup(
+                $_POST['groupName'], $_POST['id']
+            );
+        }
+        if (isset($_GET['delete'])) {
+            Discount::deleteCustomerGroup($_GET['id']);
+        }
+
+        self::$objTemplate->loadTemplateFile('module_shop_discount_groups_customer.html');
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_OVERVIEW' => $_ARRAYLANG['TXT_OVERVIEW'],
+            'TXT_SHOP_DISCOUNTS_CUSTOMER' => $_ARRAYLANG['TXT_SHOP_DISCOUNTS_CUSTOMER'],
+            'TXT_SHOP_CUSTOMER_GROUPS' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_GROUPS'],
+            'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
+            'TXT_SHOP_CONFIRM_DELETE_CUSTOMER_GROUP' => $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_CUSTOMER_GROUP'],
+            'TXT_SHOP_CUSTOMER_GROUPS' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_GROUPS'],
+            'TXT_SHOP_CUSTOMER_GROUP_NAME' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_GROUP_NAME'],
+            'TXT_SHOP_EDIT_CUSTOMER_GROUP' => $_ARRAYLANG['TXT_SHOP_EDIT_CUSTOMER_GROUP'],
+            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
+            'TXT_SHOP_CANCEL' => $_ARRAYLANG['TXT_SHOP_CANCEL'],
+        ));
+
+        // Group overview
+        $arrGroups = Discount::getCustomerGroupArray();
+        self::$objTemplate->setCurrentBlock('shopGroup');
+        $i = 0;
+        foreach ($arrGroups as $id => $name) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_GROUP_ID' => $id,
+                'SHOP_GROUP_NAME' => $name,
+                'SHOP_ROW_STYLE' => 'row'.((++$i % 2)+1),
+            ));
+            self::$objTemplate->parse('shopGroup');
+        }
+
+        // Add/edit Group
+        $id = 0;
+        if (!empty($_GET['edit'])) {
+            $id = intval($_GET['id']);
+            self::$objTemplate->setGlobalVariable(array(
+                'SHOP_GROUP_EDIT_CLASS' => 'active',
+                'SHOP_GROUP_EDIT_DISPLAY' => 'block',
+                'SHOP_GROUP_LIST_CLASS' => '',
+                'SHOP_GROUP_LIST_DISPLAY' => 'none',
+                'TXT_ADD_OR_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            ));
+        } else {
+            self::$objTemplate->setGlobalVariable(array(
+                'SHOP_GROUP_EDIT_CLASS' => '',
+                'SHOP_GROUP_EDIT_DISPLAY' => 'none',
+                'SHOP_GROUP_LIST_CLASS' => 'active',
+                'SHOP_GROUP_LIST_DISPLAY' => 'block',
+                'TXT_ADD_OR_EDIT' => $_ARRAYLANG['TXT_ADD'],
+            ));
+        }
+        self::$objTemplate->setCurrentBlock('shopGroupName');
+        self::$objTemplate->setVariable(array(
+            'SHOP_GROUP_ID_EDIT' => $id,
+            'SHOP_ROW_STYLE' => 'row'.((++$i % 2)+1),
+        ));
+        if (isset($arrGroups[$id])) {
+            self::$objTemplate->setVariable(
+                'SHOP_GROUP_NAME', $arrGroups[$id]
+            );
+        }
+        self::$objTemplate->parse('shopGroupName');
+        return true;
+    }
+
+
+    /**
+     * Show the article groups for editing
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function showArticleGroups()
+    {
+        global $_ARRAYLANG;
+
+        if (isset($_POST['store'])) {
+            Discount::storeArticleGroup(
+                $_POST['groupName'], $_POST['id']
+            );
+        }
+        if (isset($_GET['delete'])) {
+            Discount::deleteArticleGroup($_GET['id']);
+        }
+
+        self::$objTemplate->addBlockfile('SHOP_PRODUCTS_FILE', 'shop_products_block', 'module_shop_article_groups.html');
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
+            'TXT_SHOP_CONFIRM_DELETE_ARTICLE_GROUP' => $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_ARTICLE_GROUP'],
+            'TXT_SHOP_ARTICLE_GROUPS' => $_ARRAYLANG['TXT_SHOP_ARTICLE_GROUPS'],
+            'TXT_SHOP_ARTICLE_GROUP_NAME' => $_ARRAYLANG['TXT_SHOP_ARTICLE_GROUP_NAME'],
+            'TXT_SHOP_EDIT_ARTICLE_GROUP' => $_ARRAYLANG['TXT_SHOP_EDIT_ARTICLE_GROUP'],
+            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
+            'TXT_SHOP_CANCEL' => $_ARRAYLANG['TXT_SHOP_CANCEL'],
+        ));
+
+        // Group overview
+        $arrGroups = Discount::getArticleGroupArray();
+        self::$objTemplate->setCurrentBlock('shopGroup');
+        $i = 0;
+        foreach ($arrGroups as $id => $name) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_GROUP_ID' => $id,
+                'SHOP_GROUP_NAME' => $name,
+                'SHOP_ROW_STYLE' => 'row'.((++$i % 2)+1),
+            ));
+            self::$objTemplate->parseCurrentBlock();
+        }
+
+        // Add/edit Group
+        $id = 0;
+        if (!empty($_GET['edit'])) {
+            $id = intval($_GET['id']);
+            self::$objTemplate->setGlobalVariable(array(
+                'SHOP_GROUP_EDIT_CLASS' => 'active',
+                'SHOP_GROUP_EDIT_DISPLAY' => 'block',
+                'SHOP_GROUP_LIST_CLASS' => '',
+                'SHOP_GROUP_LIST_DISPLAY' => 'none',
+                'TXT_ADD_OR_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            ));
+        } else {
+            self::$objTemplate->setGlobalVariable(array(
+                'SHOP_GROUP_EDIT_CLASS' => '',
+                'SHOP_GROUP_EDIT_DISPLAY' => 'none',
+                'SHOP_GROUP_LIST_CLASS' => 'active',
+                'SHOP_GROUP_LIST_DISPLAY' => 'block',
+                'TXT_ADD_OR_EDIT' => $_ARRAYLANG['TXT_ADD'],
+            ));
+        }
+        self::$objTemplate->setCurrentBlock('shopGroupName');
+        self::$objTemplate->setVariable(array(
+            'SHOP_GROUP_ID_EDIT' => $id,
+            'SHOP_ROW_STYLE' => 'row'.((++$i % 2)+1),
+        ));
+        if (isset($arrGroups[$id])) {
+            self::$objTemplate->setVariable(
+                'SHOP_GROUP_NAME', $arrGroups[$id]
+            );
+        }
+        self::$objTemplate->parseCurrentBlock();
+        return true;
+    }
+
+
+    /**
+     * Show the customer and article group discounts for editing.
+     *
+     * Handles storing of the discounts as well.
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function showDiscountCustomer()
+    {
+        global $_ARRAYLANG;
+
+        if (!empty($_POST['store'])) {
+            $this->shopStoreDiscountCustomer();
+        }
+
+        self::$objTemplate->loadTemplateFile("module_shop_discount_customer.html");
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_OVERVIEW' => $_ARRAYLANG['TXT_OVERVIEW'],
+            'TXT_SHOP_DISCOUNTS_CUSTOMER' => $_ARRAYLANG['TXT_SHOP_DISCOUNTS_CUSTOMER'],
+            'TXT_SHOP_CUSTOMER_GROUPS' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_GROUPS'],
+            'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
+            'TXT_SHOP_CONFIRM_DELETE_DISCOUNT_GROUP' => $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_DISCOUNT_GROUP'],
+            'TXT_SHOP_DISCOUNT_GROUPS' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUPS'],
+            'TXT_SHOP_DISCOUNT_GROUP_NAME' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NAME'],
+            'TXT_SHOP_DISCOUNT_RATE' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_RATE'],
+            'TXT_SHOP_EDIT_DISCOUNT_GROUP' => $_ARRAYLANG['TXT_SHOP_EDIT_DISCOUNT_GROUP'],
+            'TXT_SHOP_DISCOUNT_COUNT_TIP' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_TIP'],
+            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
+            'TXT_SHOP_CANCEL' => $_ARRAYLANG['TXT_SHOP_CANCEL'],
+
+        ));
+
+        // Discounts overview
+        $arrCustomerGroup = Discount::getCustomerGroupArray();
+        $arrArticleGroup = Discount::getArticleGroupArray();
+        $arrRate = Discount::getDiscountRateCustomerArray();
+        $i = 0;
+        // Set up the customer groups header
+        self::$objTemplate->setVariable(
+            'SHOP_CUSTOMER_GROUP_COUNT_PLUS_1', count($arrCustomerGroup) + 1
+        );
+        self::$objTemplate->setCurrentBlock('shopCustomerGroupHeader');
+        self::$objTemplate->setVariable(array(
+            'SHOP_DISCOUNT_ROW_STYLE' => 'row'.((++$i % 2)+1),
+        ));
+        self::$objTemplate->setCurrentBlock('shopCustomerGroupHeaderColumn');
+        foreach ($arrCustomerGroup as $id => $strCustomerGroupName) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_CUSTOMER_GROUP_ID' => $id,
+                'SHOP_CUSTOMER_GROUP_NAME' => $strCustomerGroupName,
+            ));
+            self::$objTemplate->parseCurrentBlock();
+        }
+
+        foreach ($arrArticleGroup as $groupArticleId => $strArticleGroupName) {
+            foreach ($arrCustomerGroup as $groupCustomerId => $strCustomerGroupName) {
+                $rate = (isset($arrRate[$groupCustomerId][$groupArticleId])
+                    ? $arrRate[$groupCustomerId][$groupArticleId] : 0
+                );
+                self::$objTemplate->setCurrentBlock('shopDiscountColumn');
+                self::$objTemplate->setVariable(array(
+                    'SHOP_CUSTOMER_GROUP_ID' => $groupCustomerId,
+                    'SHOP_DISCOUNT_RATE' => sprintf('%2.2f', $rate),
+                    'SHOP_DISCOUNT_ROW_STYLE' => 'row'.((++$i % 2)+1),
+                ));
+                self::$objTemplate->parseCurrentBlock();
+            }
+            self::$objTemplate->setCurrentBlock('shopArticleGroupRow');
+            self::$objTemplate->setVariable(array(
+                'SHOP_ARTICLE_GROUP_ID' => $groupArticleId,
+                'SHOP_ARTICLE_GROUP_NAME' => $strArticleGroupName,
+                'SHOP_DISCOUNT_ROW_STYLE' => 'row'.((++$i % 2)+1),
+            ));
+            self::$objTemplate->parseCurrentBlock();
+        }
+        return true;
+    }
+
+
+    /**
+     * Store the customer and article group discount rates after editing
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function shopStoreDiscountCustomer()
+    {
+        return Discount::storeDiscountCustomer($_POST['discountRate']);
+    }
+
+
+    /**
+     * Deletes the customer group selected by its ID from the GET request
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function shopDeleteCustomerGroup()
+    {
+        if (empty($_GET['id'])) return true;
+        return Discount::deleteCustomerGroup($_GET['id']);
+    }
+
+
+    /**
+     * Deletes the article group selected by its ID from the GET request
+     * @return    boolean             True on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function shopDeleteArticleGroup()
+    {
+        if (empty($_GET['id'])) return true;
+        return Discount::deleteCustomerGroup($_GET['id']);
+    }
+
+
+    /**
+     * Returns the HTML dropdown menu options for the
+     * product sorting order menu in the settings
+     * @return    string            The HTML code string
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getProductSortingMenuoptions()
+    {
+        global $_ARRAYLANG;
+
+        $activeSorting = $this->arrConfig['product_sorting']['value'];
+        $arrAvailableOrder = array(
+            1 => 'INDIVIDUAL',
+            2 => 'ALPHABETIC',
+            3 => 'PRODUCTCODE',
+        );
+        $strMenuOptions = '';
+        foreach ($arrAvailableOrder as $index => $sorting) {
+            $strMenuOptions .=
+                '<option value="'.$index.'"'.
+                ($activeSorting == $index ? ' selected="selected"' : '').
+                '>'.$_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING_'.$sorting].'</option>';
+        }
+        return $strMenuOptions;
     }
 
 }

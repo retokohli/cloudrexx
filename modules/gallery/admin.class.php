@@ -59,7 +59,7 @@ class galleryManager extends GalleryLibrary
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->intLangId = FRONTEND_LANG_ID;
+        $this->intLangId=$objInit->userFrontendLangId;
 
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
         $this->strImageWebPath = ASCMS_GALLERY_WEB_PATH . '/';
@@ -402,7 +402,7 @@ class galleryManager extends GalleryLibrary
      */
     function overview()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
@@ -475,7 +475,7 @@ class galleryManager extends GalleryLibrary
                                                                     value
                                                         FROM        '.DBPREFIX.'module_gallery_language
                                                         WHERE        gallery_id='.$intMainKey.' AND
-                                                                    lang_id='.FRONTEND_LANG_ID.'
+                                                                    lang_id='.$_LANGID.'
                                                         ORDER BY    name ASC
                                                     ');
                 unset($arrCategoryLang);
@@ -529,7 +529,7 @@ class galleryManager extends GalleryLibrary
                                                                             value
                                                                 FROM        '.DBPREFIX.'module_gallery_language
                                                                 WHERE        gallery_id='.$objResult->fields['id'].' AND
-                                                                            lang_id='.FRONTEND_LANG_ID.'
+                                                                            lang_id='.$_LANGID.'
                                                                 ORDER BY    name ASC
                                                             ');
                         unset($arrCategoryLang);
@@ -669,9 +669,11 @@ class galleryManager extends GalleryLibrary
      */
     private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0, $parseSubCategories = true)
     {
+        global $_LANGID;
+
 // TODO: Unused
 //        $objFWuser = FWUser::getFWUserObject();
-        $categories = $this->sql->getCategoriesArray(FRONTEND_LANG_ID, $parent_id);
+        $categories = $this->sql->getCategoriesArray($_LANGID, $parent_id);
 
         if ($disabled) {
             $this->_objTpl->setVariable('CAT_DROPDOWN_DISABLED', ' disabled="disabled"');
@@ -1474,6 +1476,8 @@ class galleryManager extends GalleryLibrary
                     return;
                 }
 
+                $imageNameChopped = substr($strOutputName, 0, strrpos($strOutputName, '.'));
+
                 $this->_objTpl->setVariable(array(
                     'IMAGES_ID'                     =>    $intOutputId,
                     'IMAGES_THUMB_PATH'             =>    $strOutputThumbpath,
@@ -1482,7 +1486,8 @@ class galleryManager extends GalleryLibrary
                     'IMAGES_CATIMG_ICON'            =>    $outputCatimgIcon,
                     'IMAGES_HIDE_LINKICON_S'        =>    $outputLinkIconS,
                     'IMAGES_HIDE_LINKICON_E'        =>    $outputLinkIconE,
-                    'IMAGES_NAME'                   =>    $strOutputName,
+//                    'IMAGES_NAME'                   =>    $strOutputName,
+                    'IMAGES_NAME'                   =>    $imageNameChopped,
                     'IMAGES_LASTEDIT'               =>    $strOutputLastedit,
                     'IMAGES_ORIG_RESO'              =>    $strOutputOrigReso,
                     'IMAGES_ORIG_WIDTH'             =>    $strOutputOrigWidth,
@@ -1941,11 +1946,14 @@ class galleryManager extends GalleryLibrary
             'TXT_GALLERY_SETTINGS_POPUP_ENABLED'    =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_POPUP_ENABLED'],
             'TXT_GALLERY_SETTINGS_IMAGE_WIDTH'        =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'],
             'TXT_GALLERY_SETTINGS_PAGING'            =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_PAGING'],
-// neu
-            'TXT_SETTINGS_HEADER_TYPE'              =>  $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'],
-            'TXT_SETTINGS_HEADER_HIERARCHY'         =>  $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'],
-            'TXT_SETTINGS_HEADER_FLAT'              =>  $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'],
-            'TXT_SETTINGS_IMAGENAME_EXT_SHOW'       =>  $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'],
+            'TXT_SETTINGS_HEADER_TYPE'              =>    $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'],
+            'TXT_SETTINGS_HEADER_HIERARCHY'         =>    $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'],
+            'TXT_SETTINGS_HEADER_FLAT'              =>    $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'],
+            'TXT_SETTINGS_IMAGENAME_EXT_SHOW'       =>    $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'],
+            'TXT_GALLERY_SLIDE_SHOW'                =>    $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW'],
+            'TXT_GALLERY_SLIDE_SHOW_SECONDS'        =>    $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'],
+            'TXT_GALLERY_SINGLE_IMAGE_VIEW'         =>    $_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] ,
+            'TXT_GALLERY_SHOW_FILE_NAME'            =>    $_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'],
 
             ));
 
@@ -1953,7 +1961,7 @@ class galleryManager extends GalleryLibrary
                                             FROM         '.DBPREFIX.'module_gallery_settings
                                             ORDER BY     id');
 
-        while (!$objResult->EOF) {
+        while ($objResult && !$objResult->EOF) {
             $strValue = '';
 
             switch ($objResult->fields['name']) {
@@ -1962,60 +1970,65 @@ class galleryManager extends GalleryLibrary
                 case 'show_voting':
                 case 'show_latest':
                 case 'show_random':
-// neu
                 case 'show_ext':
                     if ($objResult->fields['value'] == 'on') {
                         $strValue = 'checked';
                     }
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
-                break;
-
+                    break;
+                case 'slide_show':
+                    if ($objResult->fields['value'] == 'slideshow') {
+                        $this->_objTpl->SetVariable('SETTINGS_VALUE_SLIDE_SHOW', 'checked="checked"');
+                    }else{
+                        $this->_objTpl->SetVariable('SETTINGS_VALUE_NORMAL_VIEW', 'checked="checked"');
+                    }
+                    break;
                 case 'enable_popups':
-                if ($objResult->fields['value'] == 'on') {
-                        $strValue = 'checked';
-                        $this->_objTpl->SetVariable('IMAGE_WIDTH_CONTAINER_VISIBILITY','none');
+                    if ($objResult->fields['value'] != 'on') {
+                        $this->_objTpl->SetVariable(array(
+                            'IMAGE_WIDTH_CONTAINER_VISIBILITY'  => 'display: none',
+                            'SLIDE_SHOW_BLOCK'                  => 'display: none',
+                        ));
                     } else {
-                        $this->_objTpl->SetVariable('IMAGE_WIDTH_CONTAINER_VISIBILITY','block');
+                        $strValue = 'checked';
                     }
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
-
-                break;
-
+                    break;
                 case 'standard_size_type':
                     if ($objResult->fields['value'] == 'abs')     {
                         $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_THUMB_TYPE_ABS'        =>    'checked',
-                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    ''
-                                                    ));
+                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    ''));
                     } else {
                          $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_THUMB_TYPE_ABS'        =>    '',
-                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    'checked'
-                                                    ));
+                                                            'SETTINGS_VALUE_THUMB_TYPE_PROZ'    =>    'checked'));
                     }
-                break;
+                    break;
                 case 'validation_standard_type':
                     if ($objResult->fields['value'] == 'all')     {
                         $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_VALIDATION_TYPE_ALL'    =>    'checked',
-                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    ''
-                                                    ));
+                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    ''));
                     } else {
                          $this->_objTpl->SetVariable(array(    'SETTINGS_VALUE_VALIDATION_TYPE_ALL'    =>    '',
-                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    'checked'
-                                                    ));
+                                                            'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'    =>    'checked'));
                     }
-                break;
-// neu
+                    break;
                 case 'header_type':
                     if ($objResult->fields['value'] == 'hierarchy')     {
                         $this->_objTpl->SetVariable(array( 'SETTINGS_VALUE_HEADER_HIERARCHY' => 'checked',
-                                                           'SETTINGS_VALUE_HEADER_FLAT'      => '',
-                                                    ));
+                                                           'SETTINGS_VALUE_HEADER_FLAT'      => ''));
                     } else {
                         $this->_objTpl->SetVariable(array( 'SETTINGS_VALUE_HEADER_HIERARCHY' => '',
-                                                           'SETTINGS_VALUE_HEADER_FLAT'      => 'checked',
-                                                    ));
+                                                           'SETTINGS_VALUE_HEADER_FLAT'      => 'checked'));
                     }
-
-
+                    break;
+                case 'show_file_name':
+                    if ($objResult->fields['value'] == 'on') {
+                        $checked = "checked='checked'";
+                    } else {
+                        $checked = "";
+                    }
+                    $this->_objTpl->setVariable('SETTINGS_VALUE_SHOW_FILE_NAME', $checked);
+                    break;
                 default: //integer value
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$objResult->fields['value']);
             }
@@ -2098,10 +2111,15 @@ class galleryManager extends GalleryLibrary
             $_POST['header_type'] = 'hierarchy';
         }
 
+        if (empty($_POST['show_file_name']) || $_POST['show_file_name'] != 'on') {
+            $_POST['show_file_name'] = "off";
+        }
+
+
         foreach ($_POST as $strKey => $strValue) {
             $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_settings
-                                    SET     value="'.$strValue.'"
-                                    WHERE     name="'.$strKey.'"');
+                                    SET     value="'.contrexx_addslashes($strValue).'"
+                                    WHERE     name="'.contrexx_addslashes($strKey).'"');
         }
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_SETTINGS_SAVED'];
     }
@@ -3487,17 +3505,19 @@ $strFileNew = '';
             $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
             // a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
             if (!empty($memoryLimit)) {
-                   $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8;
-                if (function_exists('memory_get_usage')) {
+                   $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
+        if (function_exists('memory_get_usage')) {
                     $potentialRequiredMemory += memory_get_usage();
                 } else {
-                    // add a default of 3MBytes
-                    $potentialRequiredMemory += 3*pow(1024, 2);
+                    // add a default of 10 MBytes
+                    $potentialRequiredMemory += 10*pow(1024, 2);
                 }
 
                 if ($potentialRequiredMemory > $memoryLimit) {
                     // try to set a higher memory_limit
-                    if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+                    @ini_set('memory_limit', $potentialRequiredMemory);
+                    $curr_limit = $objSystem->_getBytes(@ini_get('memory_limit'));
+                    if ($curr_limit < $potentialRequiredMemory) {
                         return false;
                     }
                 }
@@ -3524,7 +3544,7 @@ $strFileNew = '';
             case 2: //JPG
                 if ($this->boolJpgEnabled) {
                     $handleImage1 = ImageCreateFromJpeg($strPathOld.$strFileOld);
-                    $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
+                    $handleImage2 = ImageCreateTrueColor($intNewWidth,$intNewHeight);
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
                     ImageJpeg($handleImage2, $strPathNew.$strFileNew, $intQuality);
 

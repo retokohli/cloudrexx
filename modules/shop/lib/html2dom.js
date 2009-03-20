@@ -66,9 +66,15 @@ var html2dom = {
                                 +'");\n';
                     if (children[i].attributes) {
                         for (var j = 0, a; a = children[i].attributes[j]; j++) {
+                            //http://whyiesucks.blogspot.com/2006/04/dynamically-changing-classes.html
+                            if(a['nodeName'] == 'class' && navigator.appName.match(/internet explorer/i)){
+                               attrName = 'className';
+                            }else{
+                               attrName = a['nodeName'];
+                            }
                             this.result += newvar
                                         +  '.setAttribute("'
-                                        + a['nodeName']
+                                        + attrName
                                         +'", "'
                                         + this.escape(a['nodeValue'])
                                         +'");\n';

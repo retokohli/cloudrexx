@@ -27,16 +27,65 @@
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
-class NewsletterLib {
-    var $_arrRecipientTitles = null;
+class NewsletterLib
+{
+    public $_arrRecipientTitles = null;
 
-    function _addRecipient($email, $sex, $title, $lastname, $firstname, $company, $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists)
+    protected function _getLists($orderBy = '')
+    {
+        global $objDatabase;
+
+        $arrLists = array();
+        $objList = $objDatabase->Execute("SELECT tblCategory.id,
+            tblCategory.status,
+            tblCategory.name,
+            tblCategory.notification_email,
+            COUNT(tblRel.category) as recipients
+            FROM ".DBPREFIX."module_newsletter_category AS tblCategory
+            LEFT JOIN ".DBPREFIX."module_newsletter_rel_user_cat AS tblRel ON tblRel.category = tblCategory.id
+            GROUP BY tblCategory.id".(!empty($orderBy) ? " ORDER BY ".$orderBy : ""));
+        if ($objList !== false) {
+            while (!$objList->EOF) {
+                $objMail = $objDatabase->SelectLimit("
+                    SELECT tblNewsletter.id, tblNewsletter.subject, tblNewsletter.date_sent
+                      FROM ".DBPREFIX."module_newsletter AS tblNewsletter
+                      LEFT JOIN ".DBPREFIX."module_newsletter_rel_cat_news AS tblRel
+                        ON tblRel.newsletter = tblNewsletter.id
+                     WHERE tblRel.category=".$objList->fields['id']."
+                     ORDER BY date_sent DESC", 1);
+                if ($objMail !== false && $objMail->RecordCount() == 1) {
+                    $mailId = $objMail->fields['id'];
+                    $mailSend = $objMail->fields['date_sent'];
+                    $mailName = $objMail->fields['subject'];
+                } else {
+                    $mailId = 0;
+                    $mailSend = 0;
+                    $mailName = '';
+                }
+
+                $arrLists[$objList->fields['id']] = array(
+                    'status'     => $objList->fields['status'],
+                    'name'       => $objList->fields['name'],
+                    'recipients' => $objList->fields['recipients'],
+                    'mail_sent'  => $mailSend,
+                    'mail_name'  => $mailName,
+                    'mail_id'    => ($mailSend > 0 ? $mailId : 0),
+                    'notification_email'    => $objList->fields['notification_email'],
+                );
+                $objList->MoveNext();
+            }
+        }
+        return $arrLists;
+    }
+
+    function _addRecipient($email, $uri, $sex, $title, $lastname, $firstname, $company, $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists)
     {
         global $objDatabase;
 
         if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_user (
         `code`,
         `email`,
+
         `sex`,
         `title`,
         `lastname`,
@@ -53,6 +102,7 @@ class NewsletterLib {
         ) VALUES (
         '".$this->_emailCode()."',
         '".contrexx_addslashes($email)."',
+
         '".contrexx_addslashes($sex)."',
         ".intval($title).",
         '".contrexx_addslashes($lastname)."',
@@ -76,12 +126,13 @@ class NewsletterLib {
         }
     }
 
-    function _updateRecipient($id, $email, $sex, $title, $lastname, $firstname, $company, $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists)
+    function _updateRecipient($id, $email, $uri, $sex, $title, $lastname, $firstname, $company, $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists)
     {
         global $objDatabase;
 
         if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET
         `email`='".contrexx_addslashes($email)."',
+        `uri`='".contrexx_addslashes($uri)."',
         `sex`='".contrexx_addslashes($sex)."',
         `title`=".intval($title).",
         `lastname`='".contrexx_addslashes($lastname)."',
@@ -122,17 +173,11 @@ class NewsletterLib {
             $arrRemovedLists = array_diff($arrCurrentList, $arrLists);
 
             foreach ($arrNewLists as $listId) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (`user`, `category`) VALUES (".$recipientId.", ".$listId.")") === false) {
-                    // could not add to list $listId
-                }
+                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (`user`, `category`) VALUES (".$recipientId.", ".$listId.")");
             }
-
             foreach ($arrRemovedLists as $listId) {
-                if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId." AND category=".$listId) === false) {
-                    // could not remove from list $listId
-                }
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId." AND category=".$listId);
             }
-
             return true;
         }
         return false;
@@ -148,15 +193,15 @@ class NewsletterLib {
                 if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (`user`, `category`) VALUES (".$recipientId.", ".$listId.")") !== false) {
                     return true;
                 }
-            } else {
-                return true;
+                return false;
             }
-        } else {
-            return false;
+            return true;
         }
+        return false;
     }
 
-    function _emailCode(){
+    function _emailCode()
+    {
         $ReturnVar = '';
         $pool = "qwertzupasdfghkyxcvbnm";
         $pool .= "23456789";

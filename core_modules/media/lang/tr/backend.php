@@ -69,6 +69,7 @@ $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Design Überblick";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Neue Designvorlage erstellen";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Aktivieren";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Platzhalter Verzeichnis";
+$_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED'] = "Some special characters ";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Keys";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Content";

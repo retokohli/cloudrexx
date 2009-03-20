@@ -1,0 +1,5 @@
+------------
+edit project
+------------
+*JS preview funktion checken
+*spaltennamen dürfen nicht leer sein

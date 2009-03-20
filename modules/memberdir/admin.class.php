@@ -34,6 +34,7 @@ class MemberDirManager extends MemberDirLibrary
     var $pageTitle='';
     var $statusMessage='';
     var $imagePath;
+    var $langId;
     var $okMessage='';
     //var $arrSettings = array();
 
@@ -53,9 +54,14 @@ class MemberDirManager extends MemberDirLibrary
         global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
+
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
+        $this->langId=$objInit->userFrontendLangId;
+
         parent::__construct();
+
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href=\"?cmd=memberdir\">".$_ARRAYLANG['TXT_OVERVIEW']."</a>
                                                         <a href=\"?cmd=memberdir&amp;act=newDir\">".$_ARRAYLANG['TXT_NEW_DIR']."</a>
                                                         <a href=\"?cmd=memberdir&amp;act=new\">".$_ARRAYLANG['TXT_NEW_MEMBER_SHORT']."</a>
@@ -145,8 +151,8 @@ class MemberDirManager extends MemberDirLibrary
                 $this->_settings();
                 break;
             case "showdir":
-                  $this->_overviewDir();
-                  break;
+                $this->_overviewDir();
+                break;
             case "editDir":
                 $this->_editDir();
                 break;
@@ -190,10 +196,10 @@ class MemberDirManager extends MemberDirLibrary
         }
 
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'    => $this->pageTitle,
+            'CONTENT_TITLE' => $this->pageTitle,
             'CONTENT_STATUS_MESSAGE' => $this->statusMessage,
             'CONTENT_OK_MESSAGE'     => $this->okMessage,
-            'ADMIN_CONTENT'    => $this->_objTpl->get()
+            'ADMIN_CONTENT' => $this->_objTpl->get()
         ));
     }
 
@@ -215,7 +221,7 @@ class MemberDirManager extends MemberDirLibrary
         $this->_objTpl->setGlobalVariable(array(
             "TXT_CONFIRM_DELETE_DATA"    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
             "TXT_ACTION_IS_IRREVERSIBLE" => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            "TXT_DELETE_CATEGORY_ALL"     => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'],
+            "TXT_DELETE_CATEGORY_ALL"    => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'],
             "TXT_MANAGE_ENTRIES"         => $_ARRAYLANG['TXT_OVERVIEW'],
             "TXT_SUBMIT_SELECT"          => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
             "TXT_SUBMIT_DELETE"          => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
@@ -266,7 +272,7 @@ class MemberDirManager extends MemberDirLibrary
             }
             $this->_objTpl->setVariable(array(
                 "MEMBERDIR_DIRID"           => $key,
-                "MEMBERDIR_DIRNAME"            => $value['name'],
+                "MEMBERDIR_DIRNAME"         => $value['name'],
                 "MEMBERDIR_ROW"             => "row".$rowid,
                 "MEMBERDIR_DESC"            => nl2br($value['description']),
                 "MEMBERDIR_ENTRYCOUNT"      => $entryCount,
@@ -289,7 +295,7 @@ class MemberDirManager extends MemberDirLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                "MEMBERDIR_DIRID"        => $key,
+                "MEMBERDIR_DIRID"       => $key,
             ));
 
             $this->_objTpl->parse("dirlist_row");
@@ -329,30 +335,30 @@ class MemberDirManager extends MemberDirLibrary
 
         $this->_objTpl->setVariable(array(
             'TXT_PIC_UPLOAD'                => $_ARRAYLANG['TXT_PIC_UPLOAD'],
-            'TXT_TITLE'                        => $_ARRAYLANG['TXT_NEW_DIR'],
+            'TXT_TITLE'                     => $_ARRAYLANG['TXT_NEW_DIR'],
             'TXT_ACTIVE'                    => $_ARRAYLANG['TXT_ACTIVE'],
-            'TXT_NAME'                        => $_ARRAYLANG['TXT_NAME'],
-            'TXT_SAVE'                        => $_ARRAYLANG['TXT_SAVE'],
+            'TXT_NAME'                      => $_ARRAYLANG['TXT_NAME'],
+            'TXT_SAVE'                      => $_ARRAYLANG['TXT_SAVE'],
             'TXT_FIELDS'                    => $_ARRAYLANG['TXT_FIELDS'],
-            'TXT_SORT'                        => $_ARRAYLANG['TXT_SORT'],
-            'TXT_DIR_NAME'                    => $_ARRAYLANG['TXT_MEMBERDIR_NAME'],
-            'TXT_DESCRIPTION'                => $_ARRAYLANG['TXT_DESCRIPTION'],
-            'TXT_DISPLAY_MODE'                => $_ARRAYLANG['TXT_DISPLAY_MODE'],
+            'TXT_SORT'                      => $_ARRAYLANG['TXT_SORT'],
+            'TXT_DIR_NAME'                  => $_ARRAYLANG['TXT_MEMBERDIR_NAME'],
+            'TXT_DESCRIPTION'               => $_ARRAYLANG['TXT_DESCRIPTION'],
+            'TXT_DISPLAY_MODE'              => $_ARRAYLANG['TXT_DISPLAY_MODE'],
             'TXT_MEMBERDIR_USER_DEFINED'    => $_ARRAYLANG['TXT_MEMBERDIR_USER_DEFINED'],
             'TXT_PARENT_DIR'                => $_ARRAYLANG['TXT_PARENT_DIR'],
-            'TXT_DISPLAY_MODE_BOTH'            => $_ARRAYLANG['TXT_DISPLAY_MODE_BOTH'],
-            'TXT_DISPLAY_MODE_DIR_ONLY'        => $_ARRAYLANG['TXT_DISPLAY_MODE_DIR_ONLY'],
-            'TXT_DISPLAY_MODE_ENTRIES_ONLY'    => $_ARRAYLANG['TXT_DISPLAY_MODE_ENTRIES_ONLY'],
-            'TXT_ONE_ROW'                    => $_ARRAYLANG['TXT_ONE_ROW'],
-            'TXT_MORE_ROW'                    => $_ARRAYLANG['TXT_MORE_ROW'],
-            'TXT_TYPE'                        => $_ARRAYLANG['TXT_ROW_TYPE'],
+            'TXT_DISPLAY_MODE_BOTH'         => $_ARRAYLANG['TXT_DISPLAY_MODE_BOTH'],
+            'TXT_DISPLAY_MODE_DIR_ONLY'     => $_ARRAYLANG['TXT_DISPLAY_MODE_DIR_ONLY'],
+            'TXT_DISPLAY_MODE_ENTRIES_ONLY' => $_ARRAYLANG['TXT_DISPLAY_MODE_ENTRIES_ONLY'],
+            'TXT_ONE_ROW'                   => $_ARRAYLANG['TXT_ONE_ROW'],
+            'TXT_MORE_ROW'                  => $_ARRAYLANG['TXT_MORE_ROW'],
+            'TXT_TYPE'                      => $_ARRAYLANG['TXT_ROW_TYPE'],
             'TXT_MEMBERDIR_LANGUAGE'        => $_ARRAYLANG['TXT_MEMBERDIR_LANGUAGE']
         ));
 
         $this->_objTpl->setVariable(array(
             'MODE_0_CHECKED' => 'checked',
             'PARENT_DIRLIST' => $select,
-            'MEMBERDIR_SELECTED_SORT'    => 0,
+            'MEMBERDIR_SELECTED_SORT'   => 0,
             'MEMBERDIR_FIELD_NAME_1'    => $names[0],
             'MEMBERDIR_FIELD_NAME_2'    => $names[1],
             'MEMBERDIR_FIELD_NAME_3'    => $names[2],
@@ -365,20 +371,20 @@ class MemberDirManager extends MemberDirLibrary
             'MEMBERDIR_FIELD_NAME_10'    => $names[9],
             'MEMBERDIR_FIELD_NAME_11'    => $names[10],
             'MEMBERDIR_FIELD_NAME_12'    => $names[11],
-            'MEMBERDIR_FIELD_ACTIVE_1'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_2'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_3'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_4'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_5'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_6'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_7'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_8'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_9'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_10'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_11'    => 'checked="checked"',
-            'MEMBERDIR_FIELD_ACTIVE_12'    => 'checked="checked"',
-            'MEMBERDIR_ACTION'            => '?cmd=memberdir&amp;act=saveNewDir',
-            'MEMBERDIR_LANGUAGE_MENU'    => $this->_getLanguageMenu('name="memberdirLangId" size="1"')
+            'MEMBERDIR_FIELD_ACTIVE_1'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_2'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_3'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_4'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_5'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_6'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_7'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_8'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_9'  => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_10' => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_11' => 'checked="checked"',
+            'MEMBERDIR_FIELD_ACTIVE_12' => 'checked="checked"',
+            'MEMBERDIR_ACTION'          => '?cmd=memberdir&amp;act=saveNewDir',
+            'MEMBERDIR_LANGUAGE_MENU'   => $this->_getLanguageMenu('name="memberdirLangId" size="1"')
         ));
     }*/
 
@@ -569,36 +575,36 @@ class MemberDirManager extends MemberDirLibrary
 
         $this->_objTpl->setVariable(array(
             'TXT_PIC_UPLOAD'                => $_ARRAYLANG['TXT_PIC_UPLOAD'],
-            'TXT_TITLE'                        => $dirid > 0 ? ($copy ? $_ARRAYLANG['TXT_MEMBERDIR_COPY_DIR'] : $_ARRAYLANG['TXT_EDIT_DIR']) : $_ARRAYLANG['TXT_NEW_DIR'],
+            'TXT_TITLE'                     => $dirid > 0 ? ($copy ? $_ARRAYLANG['TXT_MEMBERDIR_COPY_DIR'] : $_ARRAYLANG['TXT_EDIT_DIR']) : $_ARRAYLANG['TXT_NEW_DIR'],
             'TXT_ACTIVE'                    => $_ARRAYLANG['TXT_ACTIVE'],
-            'TXT_NAME'                        => $_ARRAYLANG['TXT_NAME'],
-            'TXT_TYPE'                        => $_ARRAYLANG['TXT_ROW_TYPE'],
-            'TXT_SAVE'                        => $_ARRAYLANG['TXT_SAVE'],
+            'TXT_NAME'                      => $_ARRAYLANG['TXT_NAME'],
+            'TXT_TYPE'                      => $_ARRAYLANG['TXT_ROW_TYPE'],
+            'TXT_SAVE'                      => $_ARRAYLANG['TXT_SAVE'],
             'TXT_FIELDS'                    => $_ARRAYLANG['TXT_FIELDS'],
-            'TXT_DIR_NAME'                    => $_ARRAYLANG['TXT_MEMBERDIR_NAME'],
-            'TXT_MORE_ROW'                    => $_ARRAYLANG['TXT_MORE_ROW'],
-            'TXT_ONE_ROW'                    => $_ARRAYLANG['TXT_ONE_ROW'],
-            'TXT_DESCRIPTION'                => $_ARRAYLANG['TXT_DESCRIPTION'],
+            'TXT_DIR_NAME'                  => $_ARRAYLANG['TXT_MEMBERDIR_NAME'],
+            'TXT_MORE_ROW'                  => $_ARRAYLANG['TXT_MORE_ROW'],
+            'TXT_ONE_ROW'                   => $_ARRAYLANG['TXT_ONE_ROW'],
+            'TXT_DESCRIPTION'               => $_ARRAYLANG['TXT_DESCRIPTION'],
             'TXT_PARENT_DIR'                => $_ARRAYLANG['TXT_PARENT_DIR'],
-            'TXT_SORT'                        => $_ARRAYLANG['TXT_SORT'],
+            'TXT_SORT'                      => $_ARRAYLANG['TXT_SORT'],
             'TXT_MEMBERDIR_USER_DEFINED'    => $_ARRAYLANG['TXT_MEMBERDIR_USER_DEFINED'],
-            'TXT_DISPLAY_MODE_BOTH'            => $_ARRAYLANG['TXT_DISPLAY_MODE_BOTH'],
-            'TXT_DISPLAY_MODE_DIR_ONLY'        => $_ARRAYLANG['TXT_DISPLAY_MODE_DIR_ONLY'],
-            'TXT_DISPLAY_MODE_ENTRIES_ONLY'    => $_ARRAYLANG['TXT_DISPLAY_MODE_ENTRIES_ONLY'],
-            'TXT_DISPLAY_MODE'                => $_ARRAYLANG['TXT_DISPLAY_MODE'],
+            'TXT_DISPLAY_MODE_BOTH'         => $_ARRAYLANG['TXT_DISPLAY_MODE_BOTH'],
+            'TXT_DISPLAY_MODE_DIR_ONLY'     => $_ARRAYLANG['TXT_DISPLAY_MODE_DIR_ONLY'],
+            'TXT_DISPLAY_MODE_ENTRIES_ONLY' => $_ARRAYLANG['TXT_DISPLAY_MODE_ENTRIES_ONLY'],
+            'TXT_DISPLAY_MODE'              => $_ARRAYLANG['TXT_DISPLAY_MODE'],
             'TXT_MEMBERDIR_LANGUAGE'        => $_ARRAYLANG['TXT_MEMBERDIR_LANGUAGE']
         ));
 
         $this->_objTpl->setVariable(array(
-            'MODE_'.$displayMode.'_CHECKED'    => 'checked="checked"',
+            'MODE_'.$displayMode.'_CHECKED' => 'checked="checked"',
             'PARENT_DIRLIST'                => $this->_getDirectoryMenu('name="parentdir" size="1" style="width:300px;"', $dirid),
-            'MEMBERDIR_ACTION'                => $dirid ? ('?cmd=memberdir&amp;act=save'.($copy ? 'Copy' : 'Edited').'Dir&amp;id='.$dirid) : '?cmd=memberdir&amp;act=saveNewDir',
+            'MEMBERDIR_ACTION'              => $dirid ? ('?cmd=memberdir&amp;act=save'.($copy ? 'Copy' : 'Edited').'Dir&amp;id='.$dirid) : '?cmd=memberdir&amp;act=saveNewDir',
             'MEMBERDIR_DIR_NAME'            => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
-            'MEMBERDIR_DESCRIPTION'            => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-            'MEMBERDIR_SELECTED_SORT'        => $sort,
-            'MEMBERDIR_LANGUAGE_MENU'        => $this->_getLanguageMenu('name="memberdirLangId" size="1" style="width:300px;"', $lang),
-            'MEMBERDIR_FIELD_PIC_1'            => $pic1 ? 'checked="checked"' : '',
-            'MEMBERDIR_FIELD_PIC_2'            => $pic2 ? 'checked="checked"' : ''
+            'MEMBERDIR_DESCRIPTION'         => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+            'MEMBERDIR_SELECTED_SORT'       => $sort,
+            'MEMBERDIR_LANGUAGE_MENU'       => $this->_getLanguageMenu('name="memberdirLangId" size="1" style="width:300px;"', $lang),
+            'MEMBERDIR_FIELD_PIC_1'         => $pic1 ? 'checked="checked"' : '',
+            'MEMBERDIR_FIELD_PIC_2'         => $pic2 ? 'checked="checked"' : ''
         ));
 
         if ($dirid) {
@@ -608,8 +614,8 @@ class MemberDirManager extends MemberDirLibrary
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $this->_objTpl->setVariable(array(
-                        'MEMBERDIR_FIELD_ACTIVE_'.$objResult->fields['field']    => ($objResult->fields['active'] == '1') ? 'checked="checked"' : '',
-                        'MEMBERDIR_FIELD_NAME_'.$objResult->fields['field']        => htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)
+                        'MEMBERDIR_FIELD_ACTIVE_'.$objResult->fields['field']   => ($objResult->fields['active'] == '1') ? 'checked="checked"' : '',
+                        'MEMBERDIR_FIELD_NAME_'.$objResult->fields['field']     => htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
 
                     $objResult->MoveNext();
@@ -623,7 +629,7 @@ class MemberDirManager extends MemberDirLibrary
             foreach ($arrFieldNames as $fieldId => $fieldName) {
                 $this->_objTpl->setVariable(array(
                     'MEMBERDIR_FIELD_NAME_'.($fieldId+1)    => $fieldName,
-                    'MEMBERDIR_FIELD_ACTIVE_'.($fieldId+1)    => 'checked="checked"'
+                    'MEMBERDIR_FIELD_ACTIVE_'.($fieldId+1)  => 'checked="checked"'
                 ));
             }
         }
@@ -807,26 +813,26 @@ class MemberDirManager extends MemberDirLibrary
         $fieldnames = $this->getFieldData($dirid);
 
         $this->_objTpl->setGlobalVariable(array(
-            "TXT_CONFIRM_DELETE_DATA"    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
+            "TXT_CONFIRM_DELETE_DATA"   => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
             'TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD' => $_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'],
             "TXT_ACTION_IS_IRREVERSIBLE" => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            "TXT_DELETE_CATEGORY_ALL"    => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'],
+            "TXT_DELETE_CATEGORY_ALL"   => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'],
             "TXT_MANAGE_ENTRIES"        => $_ARRAYLANG['TXT_OVERVIEW'].": ".$this->directories[$dirid]['name'],
             "TXT_ID"                    => $_ARRAYLANG['TXT_MEMBERDIR_ID'],
             "TXT_ACTION"                => $_ARRAYLANG['TXT_ACTION'],
             "TXT_SELECT_ALL"            => $_ARRAYLANG['TXT_SELECT_ALL'],
-            "TXT_DESELECT_ALL"            => $_ARRAYLANG['TXT_DESELECT_ALL'],
-            "TXT_SUBMIT_SELECT"            => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
-            "TXT_SUBMIT_DELETE"            => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
-            "TXT_SUBMIT_EXPORT"            => $_ARRAYLANG['TXT_SUBMIT_EXPORT'],
-            "TXT_LOCATION"                => $_ARRAYLANG['TXT_LOCATION'],
+            "TXT_DESELECT_ALL"          => $_ARRAYLANG['TXT_DESELECT_ALL'],
+            "TXT_SUBMIT_SELECT"         => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
+            "TXT_SUBMIT_DELETE"         => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
+            "TXT_SUBMIT_EXPORT"         => $_ARRAYLANG['TXT_SUBMIT_EXPORT'],
+            "TXT_LOCATION"              => $_ARRAYLANG['TXT_LOCATION'],
             "TXT_FILTER"                => $_ARRAYLANG['TXT_FILTER'],
-            'TXT_MEMBERDIR_SORTING'        => $_ARRAYLANG['TXT_MEMBERDIR_SORTING'],
+            'TXT_MEMBERDIR_SORTING'     => $_ARRAYLANG['TXT_MEMBERDIR_SORTING'],
             "MEMBERDIR_CHARLIST"        => $this->_getCharList("?cmd=memberdir&amp;act=showdir&amp;id=".$dirid),
             "DIRECTORY_LIST"            => $this->dirList('id', $dirid, 100),
             "TXT_SEARCH"                => $_ARRAYLANG['TXT_SEARCH'],
-            "TXT_KEYWORD"                => (empty($_GET['keyword'])) ? $_ARRAYLANG['TXT_KEYWORD'] : $_GET['keyword'],
-            "DIRID"                        => $dirid
+            "TXT_KEYWORD"               => (empty($_GET['keyword'])) ? $_ARRAYLANG['TXT_KEYWORD'] : $_GET['keyword'],
+            "DIRID"                     => $dirid
         ));
 
         for ($i=1; $i<=3; $i++) {
@@ -836,7 +842,7 @@ class MemberDirManager extends MemberDirLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                        "TXT_FIELD_".$i            => $fieldnames[$index]['name'],
+                        "TXT_FIELD_".$i         => $fieldnames[$index]['name'],
             ));
 
             $indexed[$i] = $index;
@@ -867,16 +873,16 @@ class MemberDirManager extends MemberDirLibrary
             $query = "SELECT *
                       FROM ".DBPREFIX."module_memberdir_values
                       WHERE (
-                          `1` LIKE '%$keyword%' OR
-                          `2` LIKE '%$keyword%' OR
-                          `3` LIKE '%$keyword%' OR
-                          `4` LIKE '%$keyword%' OR
-                          `5` LIKE '%$keyword%' OR
-                          `6` LIKE '%$keyword%' OR
-                          `7` LIKE '%$keyword%' OR
-                          `8` LIKE '%$keyword%' OR
-                          `9` LIKE '%$keyword%' OR
-                          `10` LIKE '%$keyword%' OR
+                        `1` LIKE '%$keyword%' OR
+                        `2` LIKE '%$keyword%' OR
+                        `3` LIKE '%$keyword%' OR
+                        `4` LIKE '%$keyword%' OR
+                        `5` LIKE '%$keyword%' OR
+                        `6` LIKE '%$keyword%' OR
+                        `7` LIKE '%$keyword%' OR
+                        `8` LIKE '%$keyword%' OR
+                        `9` LIKE '%$keyword%' OR
+                        `10` LIKE '%$keyword%' OR
                         `11` LIKE '%$keyword%' OR
                         `12` LIKE '%$keyword%' OR
                         `13` LIKE '%$keyword%' OR
@@ -885,7 +891,7 @@ class MemberDirManager extends MemberDirLibrary
                         `16` LIKE '%$keyword%' OR
                         `17` LIKE '%$keyword%' OR
                         `18` LIKE '%$keyword%'
-                          )";
+                        )";
             if (!empty($dirid)) {
                 $query .= " AND `dirid`= '$dirid'";
             }
@@ -918,12 +924,12 @@ class MemberDirManager extends MemberDirLibrary
             $rowid = 2;
             while (!$objResult->EOF) {
                 $this->_objTpl->setVariable(array(
-                    "MEMBERDIR_ROW"        => ($highlight == $objResult->fields['id']) ? "highlightedGreen" : "row" . $rowid,
-                    "MEMBERDIR_ID"        => $objResult->fields['id'],
+                    "MEMBERDIR_ROW"     => ($highlight == $objResult->fields['id']) ? "highlightedGreen" : "row" . $rowid,
+                    "MEMBERDIR_ID"      => $objResult->fields['id'],
                     "MEMBERDIR_USER_DEFINED_SORT_NUMBER"    => $objResult->fields['0'],
                     "MEMBERDIR_FIELD_1" => $objResult->fields[$indexed[1]],
-                    "MEMBERDIR_FIELD_2"    => $objResult->fields[$indexed[2]],
-                    "MEMBERDIR_FIELD_3"    => $objResult->fields[$indexed[3]],
+                    "MEMBERDIR_FIELD_2" => $objResult->fields[$indexed[2]],
+                    "MEMBERDIR_FIELD_3" => $objResult->fields[$indexed[3]],
                 ));
 
                 $rowid = ($rowid == 2) ? 1 : 2;
@@ -964,8 +970,8 @@ class MemberDirManager extends MemberDirLibrary
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            "TXT_SHOW_MEMBER"    => $_ARRAYLANG['TXT_SHOW_MEMBER'],
-            "TXT_EDIT"            => $_ARRAYLANG['TXT_EDIT'],
+            "TXT_SHOW_MEMBER"   => $_ARRAYLANG['TXT_SHOW_MEMBER'],
+            "TXT_EDIT"          => $_ARRAYLANG['TXT_EDIT'],
         ));
 
         $query = "SELECT * FROM ".DBPREFIX."module_memberdir_values
@@ -1014,9 +1020,9 @@ class MemberDirManager extends MemberDirLibrary
             $objResult2 = $objDatabase->Execute($query);
 
             $this->_objTpl->setVariable(array(
-                "TXT_DIRECTORY"            => $_ARRAYLANG['TXT_DIRECTORY'],
-                "MEMBERDIR_DIRECTORY"    => $this->directories[$objResult->fields['dirid']]['name'],
-                "MEMBERDIR_ID"            => $objResult->fields['id'],
+                "TXT_DIRECTORY"         => $_ARRAYLANG['TXT_DIRECTORY'],
+                "MEMBERDIR_DIRECTORY"   => $this->directories[$objResult->fields['dirid']]['name'],
+                "MEMBERDIR_ID"          => $objResult->fields['id'],
                 "MEMBERDIR_ROW"         => $rowid
             ));
             $rowid = ($rowid == 2) ? 1 : 2;
@@ -1028,8 +1034,8 @@ class MemberDirManager extends MemberDirLibrary
                         $value = ($objResult2->fields['field'] > 13) ? nl2br($objResult->fields[$objResult2->fields['field']]) : $objResult->fields[$objResult2->fields['field']];
                         $this->_objTpl->setVariable(array(
                             "MEMBERDIR_NAME"    => $objResult2->fields['name'],
-                            "MEMBERDIR_VALUE"    => $value,
-                            "MEMBERDIR_ROW"        => "row" . $rowid
+                            "MEMBERDIR_VALUE"   => $value,
+                            "MEMBERDIR_ROW"     => "row" . $rowid
                         ));
 
                         $this->_objTpl->parse("row");
@@ -1069,13 +1075,13 @@ class MemberDirManager extends MemberDirLibrary
         $dirid = (empty($_GET['dirid'])) ? $this->firstDir : $_GET['dirid'];
 
         $this->_objTpl->setGlobalVariable(array(
-            "MEMBERDIR_ACTION"        => "?cmd=memberdir&amp;act=saveNew",
+            "MEMBERDIR_ACTION"      => "?cmd=memberdir&amp;act=saveNew",
             "TXT_NEW_MEMBER"        => $_ARRAYLANG['TXT_NEW_MEMBER'],
             "MEMBERDIR_DIRECTORY_LIST" => $this->dirList('directory', $dirid, 200),
-            "MEMBERDIR_JS_URLPART"        => "&act=new",
-            "MEMBERDIR_DIRID"        => $dirid,
-            "TXT_DIRECTORY"            => $_ARRAYLANG['TXT_DIRECTORY'],
-            "TXT_SAVE"                => $_ARRAYLANG['TXT_SAVE'],
+            "MEMBERDIR_JS_URLPART"      => "&act=new",
+            "MEMBERDIR_DIRID"       => $dirid,
+            "TXT_DIRECTORY"         => $_ARRAYLANG['TXT_DIRECTORY'],
+            "TXT_SAVE"              => $_ARRAYLANG['TXT_SAVE'],
             "TXT_EDIT_IMAGE"        => $_ARRAYLANG['TXT_EDIT_IMAGE']
         ));
 
@@ -1084,13 +1090,13 @@ class MemberDirManager extends MemberDirLibrary
         $row = 2;
         if ($this->directories[$dirid]['pic1']) {
             $this->_objTpl->setVariable(array(
-                "TXT_MEMBERDIR_FIELD"    => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 1",
-                "MEMBERDIR_FIELD_NAME"    => "picfield1",
+                "TXT_MEMBERDIR_FIELD"   => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 1",
+                "MEMBERDIR_FIELD_NAME"  => "picfield1",
                 "MEMBERDIR_ROW"         => "row".$row,
                 "TXT_MAX_FILE_SIZE"     => $_ARRAYLANG['TXT_MAX_FILE_SIZE'].": ".ini_get("upload_max_filesize"),
                 "MEMBERDIR_IMAGE_NUMBER" => 1,
-                "MEMBERDIR_IMAGE_SRC"    => "images/icons/images.gif",
-                "MEMBERDIR_IMAGE_SIZE"    => "21"
+                "MEMBERDIR_IMAGE_SRC"   => "images/icons/images.gif",
+                "MEMBERDIR_IMAGE_SIZE"  => "21"
             ));
 
             $this->_objTpl->parse("pic_row");
@@ -1098,13 +1104,13 @@ class MemberDirManager extends MemberDirLibrary
         }
         if ($this->directories[$dirid]['pic2']) {
             $this->_objTpl->setVariable(array(
-                "TXT_MEMBERDIR_FIELD"    => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 2",
-                "MEMBERDIR_FIELD_NAME"    => "picfield2",
+                "TXT_MEMBERDIR_FIELD"   => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 2",
+                "MEMBERDIR_FIELD_NAME"  => "picfield2",
                 "MEMBERDIR_ROW"         => "row".$row,
                 "TXT_MAX_FILE_SIZE"     => $_ARRAYLANG['TXT_MAX_FILE_SIZE'].": ".ini_get("upload_max_filesize"),
                 "MEMBERDIR_IMAGE_NUMBER" => 2,
-                "MEMBERDIR_IMAGE_SRC"    => "images/icons/images.gif",
-                "MEMBERDIR_IMAGE_SIZE"    => "21"
+                "MEMBERDIR_IMAGE_SRC"   => "images/icons/images.gif",
+                "MEMBERDIR_IMAGE_SIZE"  => "21"
             ));
 
             $this->_objTpl->parse("pic_row");
@@ -1114,10 +1120,10 @@ class MemberDirManager extends MemberDirLibrary
         foreach ($fields as $key => $field) {
             if ($field['active']) {
                 $this->_objTpl->setVariable(array(
-                    "TXT_MEMBERDIR_FIELD"     => $field['name'],
-                    "MEMBERDIR_FIELD_NAME"     => "field_".$key,
-                    "MEMBERDIR_FIELD_VALUE"     => (isset($_POST["field_".$key])) ? $_POST["field_".$key] : "",
-                    "MEMBERDIR_ROW"             => "row".$row
+                    "TXT_MEMBERDIR_FIELD"    => $field['name'],
+                    "MEMBERDIR_FIELD_NAME"   => "field_".$key,
+                    "MEMBERDIR_FIELD_VALUE"  => (isset($_POST["field_".$key])) ? $_POST["field_".$key] : "",
+                    "MEMBERDIR_ROW"          => "row".$row
                 ));
                 if ($key >= 13) {
                     $this->_objTpl->parse("textarea_row");
@@ -1169,7 +1175,7 @@ class MemberDirManager extends MemberDirLibrary
                     '".$values[13]."', '".$values[14]."',
                     '".$values[15]."', '".$values[16]."',
                     '".$values[17]."', '".$values[18]."',
-                    '".FRONTEND_LANG_ID."'
+                    '".$this->langId."'
                    )";
 
         if ($objDatabase->Execute($query)) {
@@ -1270,23 +1276,23 @@ class MemberDirManager extends MemberDirLibrary
         global $_ARRAYLANG;
 
         $this->_objTpl->setVariable(array(
-            "TXT_DIRECTORY"        => $_ARRAYLANG['TXT_DIRECTORY'],
-            "TXT_NAME"            => $_ARRAYLANG['TXT_NAME'],
+            "TXT_DIRECTORY"     => $_ARRAYLANG['TXT_DIRECTORY'],
+            "TXT_NAME"          => $_ARRAYLANG['TXT_NAME'],
             "TXT_SHOW_FORENAME" => $_ARRAYLANG['TXT_SHOW_FORENAME'],
-            "TXT_COMPANY"        => $_ARRAYLANG['TXT_COMPANY'],
-            "TXT_SHOW_STREET"    => $_ARRAYLANG['TXT_SHOW_STREET'],
-            "TXT_SHOW_PLZ"        => $_ARRAYLANG['TXT_SHOW_PLZ'],
-            "TXT_LOCATION"         => $_ARRAYLANG['TXT_LOCATION'],
+            "TXT_COMPANY"       => $_ARRAYLANG['TXT_COMPANY'],
+            "TXT_SHOW_STREET"   => $_ARRAYLANG['TXT_SHOW_STREET'],
+            "TXT_SHOW_PLZ"      => $_ARRAYLANG['TXT_SHOW_PLZ'],
+            "TXT_LOCATION"      => $_ARRAYLANG['TXT_LOCATION'],
             "TXT_SHOW_PHONE"    => $_ARRAYLANG['TXT_SHOW_PHONE'],
-            "TXT_SHOW_FAX"        => $_ARRAYLANG['TXT_SHOW_FAX'],
+            "TXT_SHOW_FAX"      => $_ARRAYLANG['TXT_SHOW_FAX'],
             "TXT_SHOW_EMAIL"    => $_ARRAYLANG['TXT_SHOW_EMAIL'],
-            "TXT_SHOW_COMMENT"    => $_ARRAYLANG['TXT_SHOW_COMMENT'],
-            "TXT_SHOW_INDUSTRY"    => $_ARRAYLANG['TXT_SHOW_INDUSTRY'],
-            "TXT_SHOW_WIR_ACC"    => $_ARRAYLANG['TXT_SHOW_WIR_ACC'],
+            "TXT_SHOW_COMMENT"  => $_ARRAYLANG['TXT_SHOW_COMMENT'],
+            "TXT_SHOW_INDUSTRY" => $_ARRAYLANG['TXT_SHOW_INDUSTRY'],
+            "TXT_SHOW_WIR_ACC"  => $_ARRAYLANG['TXT_SHOW_WIR_ACC'],
             "TXT_SHOW_WIR_RATE" => $_ARRAYLANG['TXT_SHOW_WIR_RATE'],
-            "TXT_SHOW_ACCOUNT_TYPE"    => $_ARRAYLANG['TXT_SHOW_ACCOUNT_TYPE'],
-            "TXT_SHOW_DATE"        => $_ARRAYLANG['TXT_SHOW_DATE'],
-            "TXT_SAVE"            => $_ARRAYLANG['TXT_SAVE'],
+            "TXT_SHOW_ACCOUNT_TYPE" => $_ARRAYLANG['TXT_SHOW_ACCOUNT_TYPE'],
+            "TXT_SHOW_DATE"     => $_ARRAYLANG['TXT_SHOW_DATE'],
+            "TXT_SAVE"          => $_ARRAYLANG['TXT_SAVE'],
             "TXT_SHOW_INTERNET" => $_ARRAYLANG['TXT_SHOW_INTERNET']
         ));
     }
@@ -1317,13 +1323,13 @@ class MemberDirManager extends MemberDirLibrary
         $dirid = (empty($_POST['changeDir'])) ? $objResult->fields['dirid'] : $_POST['directory'];
 
         $this->_objTpl->setGlobalVariable(array(
-            "MEMBERDIR_ACTION"        => "?cmd=memberdir&amp;act=saveEditedMember&amp;id=$id",
+            "MEMBERDIR_ACTION"      => "?cmd=memberdir&amp;act=saveEditedMember&amp;id=$id",
             "TXT_NEW_MEMBER"        => $_ARRAYLANG['TXT_EDIT_MEMBER'],
             "MEMBERDIR_DIRECTORY_LIST" => $this->dirList('directory', $dirid, 200),
-            "MEMBERDIR_JS_URLPART"    => "&act=editMember&id=".$id,
-            "MEMBERDIR_DIRID"        => $dirid,
-            "TXT_DIRECTORY"            => $_ARRAYLANG['TXT_DIRECTORY'],
-            "TXT_SAVE"                => $_ARRAYLANG['TXT_SAVE'],
+            "MEMBERDIR_JS_URLPART"  => "&act=editMember&id=".$id,
+            "MEMBERDIR_DIRID"       => $dirid,
+            "TXT_DIRECTORY"         => $_ARRAYLANG['TXT_DIRECTORY'],
+            "TXT_SAVE"              => $_ARRAYLANG['TXT_SAVE'],
             "TXT_EDIT_IMAGE"        => $_ARRAYLANG['TXT_EDIT_IMAGE']
         ));
 
@@ -1334,12 +1340,12 @@ class MemberDirManager extends MemberDirLibrary
         // Show Input stuff for pic1
         if ($this->directories[$dirid]['pic1']) {
             $this->_objTpl->setVariable(array(
-                "TXT_MEMBERDIR_FIELD"    => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 1",
+                "TXT_MEMBERDIR_FIELD"   => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 1",
                 "MEMBERDIR_ROW"         => "row".$row,
                 "MEMBERDIR_IMAGE_NUMBER" => 1,
-                "MEMBERDIR_IMAGE_SRC"    => ($objResult->fields['pic1'] == "none") ? "images/icons/images.gif" : $objResult->fields['pic1'],
+                "MEMBERDIR_IMAGE_SRC"   => ($objResult->fields['pic1'] == "none") ? "images/icons/images.gif" : $objResult->fields['pic1'],
                 "MEMBERDIR_HIDDEN_VALUE"    => ($objResult->fields['pic1'] == "none") ? "" : $objResult->fields['pic1'],
-                "MEMBERDIR_IMAGE_SIZE"    => ($objResult->fields['pic1'] == "none") ? "21" : "60"
+                "MEMBERDIR_IMAGE_SIZE"  => ($objResult->fields['pic1'] == "none") ? "21" : "60"
             ));
 
             $this->_objTpl->parse("pic_row");
@@ -1348,12 +1354,12 @@ class MemberDirManager extends MemberDirLibrary
         // Show Input stuff for pic2
         if ($this->directories[$dirid]['pic2']) {
             $this->_objTpl->setVariable(array(
-                "TXT_MEMBERDIR_FIELD"    => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 2",
+                "TXT_MEMBERDIR_FIELD"   => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 2",
                 "MEMBERDIR_ROW"         => "row".$row,
                 "MEMBERDIR_IMAGE_NUMBER" => 2,
-                "MEMBERDIR_IMAGE_SRC"    => ($objResult->fields['pic2'] == "none") ? "images/icons/images.gif" : $objResult->fields['pic2'],
+                "MEMBERDIR_IMAGE_SRC"   => ($objResult->fields['pic2'] == "none") ? "images/icons/images.gif" : $objResult->fields['pic2'],
                 "MEMBERDIR_HIDDEN_VALUE"    => ($objResult->fields['pic2'] == "none") ? "" : $objResult->fields['pic2'],
-                "MEMBERDIR_IMAGE_SIZE"    => ($objResult->fields['pic2'] == "none") ? "21" : "60"
+                "MEMBERDIR_IMAGE_SIZE"  => ($objResult->fields['pic2'] == "none") ? "21" : "60"
             ));
 
             $this->_objTpl->parse("pic_row");
@@ -1362,10 +1368,10 @@ class MemberDirManager extends MemberDirLibrary
         foreach ($fields as $key => $field) {
             if ($field['active']) {
                     $this->_objTpl->setVariable(array(
-                        "TXT_MEMBERDIR_FIELD"    => $field['name'],
-                        "MEMBERDIR_FIELD_NAME"        => "field_".$key,
-                        "MEMBERDIR_FIELD_VALUE"        => (empty($_POST['changeDir'])) ? $objResult->fields["$key"] : $_POST["field_$key"],
-                        "MEMBERDIR_ROW"            => "row".$row
+                        "TXT_MEMBERDIR_FIELD"   => $field['name'],
+                        "MEMBERDIR_FIELD_NAME"      => "field_".$key,
+                        "MEMBERDIR_FIELD_VALUE"     => (empty($_POST['changeDir'])) ? $objResult->fields["$key"] : $_POST["field_$key"],
+                        "MEMBERDIR_ROW"         => "row".$row
                     ));
                 if ($key >= 13) {
                     $this->_objTpl->parse("textarea_row");
@@ -1425,7 +1431,7 @@ class MemberDirManager extends MemberDirLibrary
                 $picture = 'pic2';
             }
 
-             if ($objResult->fields[$picture] != "none") {
+           if ($objResult->fields[$picture] != "none") {
                 $query = "UPDATE ".DBPREFIX."module_memberdir_values
                           SET `$picture` = 'none'
                           WHERE id = '$id'";
@@ -1695,7 +1701,7 @@ class MemberDirManager extends MemberDirLibrary
                      '". $this->getDbInput($row[16]) ."',
                      '". $this->getDbInput($row[17]) ."',
                      '". $this->getDbInput($row[18]) ."',
-                     '". FRONTEND_LANG_ID ."')
+                     '". $this->langId ."')
                 ";
 
 
@@ -1714,10 +1720,10 @@ class MemberDirManager extends MemberDirLibrary
              * of the directory
              */
             $this->_objTpl->setVariable(array(
-                "IMPORT_ACTION"        => "?cmd=memberdir&amp;act=import",
-                "IMPORT_ADD_NAME"    => $_ARRAYLANG['TXT_DIRECTORY'],
-                "IMPORT_ADD_VALUE"    => $this->dirList('directory', $this->firstDir, 200),
-                "IMPORT_ROWCLASS"    => "row1",
+                "IMPORT_ACTION"     => "?cmd=memberdir&amp;act=import",
+                "IMPORT_ADD_NAME"   => $_ARRAYLANG['TXT_DIRECTORY'],
+                "IMPORT_ADD_VALUE"  => $this->dirList('directory', $this->firstDir, 200),
+                "IMPORT_ROWCLASS"   => "row1",
                 "TXT_HELP"          => $_ARRAYLANG['TXT_IMPORT_HELP']
             ));
             $this->_objTpl->parse("additional");
@@ -1757,10 +1763,10 @@ class MemberDirManager extends MemberDirLibrary
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
 
         $this->_objTpl->setVariable(array(
-            "TXT_SETTINGS"        => $_ARRAYLANG['TXT_SETTINGS'],
-            "TXT_SETTINGS_DEFAULT_LISTING"    => $_ARRAYLANG['TXT_SETTINGS_DEFAULT_LISTING'],
-            "TXT_SAVE"            => $_ARRAYLANG['TXT_SAVE'],
-            "TXT_YES"            => $_ARRAYLANG['TXT_YES'],
+            "TXT_SETTINGS"      => $_ARRAYLANG['TXT_SETTINGS'],
+            "TXT_SETTINGS_DEFAULT_LISTING"  => $_ARRAYLANG['TXT_SETTINGS_DEFAULT_LISTING'],
+            "TXT_SAVE"          => $_ARRAYLANG['TXT_SAVE'],
+            "TXT_YES"           => $_ARRAYLANG['TXT_YES'],
             "TXT_NO"            => $_ARRAYLANG['TXT_NO'],
             "TXT_SETTINGS_IMAGE_MAX_HEIGHT"  => $_ARRAYLANG['TXT_SETTINGS_IMAGE_MAX_HEIGHT'],
             "TXT_SETTINGS_IMAGE_MAX_WIDTH"   => $_ARRAYLANG['TXT_SETTINGS_IMAGE_MAX_WIDTH'],
@@ -1771,9 +1777,9 @@ class MemberDirManager extends MemberDirLibrary
         $selected = "selected=\"selected\"";
 
         $this->_objTpl->setVariable(array(
-            "SETTINGS_DEFAULT_LISTING"    => $this->options['default_listing'],
-            "YES_SELECTED"        => ($this->options['default_listing'] == 1 ? $selected : ""),
-            "NO_SELECTED"        => ($this->options['default_listing'] == 0 ? $selected : "")
+            "SETTINGS_DEFAULT_LISTING"  => $this->options['default_listing'],
+            "YES_SELECTED"      => ($this->options['default_listing'] == 1 ? $selected : ""),
+            "NO_SELECTED"       => ($this->options['default_listing'] == 0 ? $selected : "")
         ));
     }
 

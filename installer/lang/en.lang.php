@@ -104,6 +104,8 @@ $_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Connection collation";
 $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "The connection collation is used to determine to sort order, or for search operations.<br /><br />If you are going to create a multilanguage based Website, then it is recommended to use either <strong>utf8_unicode_ci</strong> or <strong>utf8_general_ci</strong> as a collation. The difference of these two collations is that only <strong>utf8_unicode_ci</strong> supports expansions, which means it knows for example that in German `ß´ is equal to `ss´. On the other hand, <strong>utf8_general_ci</strong> is faster, but comparisons are less correct, due of its lack of expansions support.<br /><br />Wenn this will be only a one language based website, then you could probably use a language specific collation.";
 
 // installation
+$_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Could not deactivate the unused languages!";
+$_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE'] = "Could not activate default language!";
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Could not change the permissions: ";
 $_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Cannot open the file [FILENAME]";
 $_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Cannot create file %s";
@@ -153,9 +155,9 @@ $_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE'] = "Could not set the RSS title!";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION'] = "Failed to set the RSS description!";
 $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Could not set the e-mail address of the contact forms!";
 $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
-$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Provide here the domain name for the installation steps, for example 'www.yourdomain.com' (without http: // or additional paths)";
+$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Provide here the domain name for the installation steps, for example 'www.yourdomain.com' (without http(s): // or additional paths)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Could not set the domain URL!";
-$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Provide the domain URL without 'http://' or additional path information!";
+$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Provide the domain URL without 'http(s)://' or additional path information!";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "The file %s could not be written.  Review you the file access premission (e.g. 666).";
 
 // admin account
@@ -181,4 +183,5 @@ $_ARRLANG['TXT_INTERNET_SITE_FOR_VISITORS'] = "Internet site for visitors";
 $_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "The Web site is available immediately at the following address: <br /><b>[WEB_URL]</b>";
 $_ARRLANG['TXT_ADMIN_SITE'] = "Administrator area";
 $_ARRLANG['TXT_ADMIN_SITE_MESSAGE'] = "The site can be administered at the following address: <br /><b>[ADMIN_URL]</b>";
+$_ARRLANG['TXT_INVALID_USERNAME'] = "The username has invalid characters. You can only use the following: A-Z, 0-9, - and _";
 ?>

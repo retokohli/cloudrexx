@@ -69,6 +69,7 @@ $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Designoverzicht";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Nieuw design";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activeren";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Vervangende map";
+$_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED'] = "Some special characters ";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta keys";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Content";

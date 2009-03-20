@@ -18,16 +18,16 @@
  */
 class UserGroup {
 
-    public $id;
-    public $name;
-    public $description;
-    public $is_active;
-    public $type;
+    var $id;
+    var $name;
+    var $description;
+    var $is_active;
+    var $type;
 
-    public $arrLoadedGroups = array();
-    public $arrCache = array();
+    var $arrLoadedGroups = array();
+    var $arrCache = array();
 
-    public $arrAttributes = array(
+    var $arrAttributes = array(
         'group_id',
         'group_name',
         'group_description',
@@ -35,25 +35,25 @@ class UserGroup {
         'type'
     );
 
-    public $arrTypes = array(
+    var $arrTypes = array(
         'frontend',
         'backend'
     );
 
-    public $arrUsers;
-    public $arrStaticPermissions;
-    public $arrDynamicPermissions;
+    var $arrUsers;
+    var $arrStaticPermissions;
+    var $arrDynamicPermissions;
 
-    public $defaultType = 'frontend';
+    var $defaultType = 'frontend';
 
-    public $EOF;
+    var $EOF;
 
     /**
      * Contains the message if an error occurs
      *
      * @var unknown_type
      */
-    public $error_msg;
+    var $error_msg;
 
     function UserGroup()
     {
@@ -69,20 +69,17 @@ class UserGroup {
     {
         $objGroup = clone $this;
         $objGroup->arrCache = &$this->arrCache;
+        $objGroup->loadGroups($filter, $arrSort, $arrAttributes, $limit, $offset);
 
-        if ($objGroup->loadGroups($filter, $arrSort, $arrAttributes, $limit, $offset)) {
-            return $objGroup;
-        } else {
-            return false;
-        }
+        return $objGroup;
     }
 
-    function loadGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
+    private function loadGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
     {
         global $objDatabase;
 
         $this->arrLoadedGroups = array();
-        $arrWhereExpressions = array();
+        $arrWhereExpressions = array('conditions' => array(), 'joins' => array());
         $arrSortExpressions = array();
         $arrSelectExpressions = array();
 
@@ -90,14 +87,14 @@ class UserGroup {
         if (is_array($filter)) {
             $arrWhereExpressions = $this->parseFilterConditions($filter);
         } elseif (!empty($filter)) {
-            $arrWhereExpressions[] = '`group_id` = '.intval($filter);
+            $arrWhereExpressions['conditions'][] = 'tblG.`group_id` = '.intval($filter);
         }
 
         // set sort order
         if (is_array($arrSort)) {
             foreach ($arrSort as $attribute => $direction) {
                 if (in_array($attribute, $this->arrAttributes) && in_array(strtolower($direction), array('asc', 'desc'))) {
-                    $arrSortExpressions[] = '`'.$attribute.'` '.$direction;
+                    $arrSortExpressions[] = 'tblG.`'.$attribute.'` '.$direction;
                 }
             }
         }
@@ -118,8 +115,9 @@ class UserGroup {
         }
 
         $query = 'SELECT `'.implode('`, `', $arrSelectExpressions).'`
-            FROM `'.DBPREFIX.'access_user_groups`'
-            .(count($arrWhereExpressions) ? ' WHERE '.implode(' AND ', $arrWhereExpressions) : '')
+            FROM `'.DBPREFIX.'access_user_groups` AS tblG'
+            .(count($arrWhereExpressions['joins']) ? implode(' ', $arrWhereExpressions['joins']) : '')
+            .(count($arrWhereExpressions['conditions']) ? ' WHERE '.implode(' AND ', $arrWhereExpressions['conditions']) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
         if (empty($limit)) {
@@ -142,22 +140,28 @@ class UserGroup {
         }
     }
 
-    function parseFilterConditions($arrFilter)
+    private function parseFilterConditions($arrFilter)
     {
-        $arrConditions = array();
+        $arrConditions = array('conditions' => array(), 'joins' => array());
         foreach ($arrFilter as $attribute => $condition) {
             switch ($attribute) {
                 case 'group_name':
                 case 'group_description':
-                    $arrConditions[] = "`".$attribute."` LIKE '%".addslashes($condition)."%'";
+                    $arrConditions['conditions'][] = "tblG.`".$attribute."` LIKE '%".addslashes($condition)."%'";
                     break;
 
                 case 'is_active':
-                    $arrConditions[] = '`'.$attribute.'` = '.intval($condition);
+                    $arrConditions['conditions'][] = 'tblG.`'.$attribute.'` = '.intval($condition);
                     break;
 
                 case 'type':
-                    $arrConditions[] = "`".$attribute."` = '".addslashes($condition)."'";
+                    $arrConditions['conditions'][] = "tblG.`".$attribute."` = '".addslashes($condition)."'";
+                   break;
+
+                case 'static':
+                case 'dynamic':
+                    $arrConditions['conditions'][] = 'tbl'.$attribute.'.`access_id` = '.intval($condition);
+                    $arrConditions['joins'][] = ' INNER JOIN `'.DBPREFIX.'access_group_'.$attribute.'_ids` as tbl'.$attribute.' USING (`group_id`)';
                     break;
             }
         }
@@ -169,34 +173,34 @@ class UserGroup {
     {
         $objGroup = clone $this;
         $objGroup->arrCache = &$this->arrCache;
+        $objGroup->load($id);
 
-        if ($objGroup->load($id)) {
-            return $objGroup;
-        } else {
-            return false;
-        }
+        return $objGroup;
     }
 
-    function load($id)
+    private function load($id)
     {
-        if (empty($id)) return $this->clean();
-        if (isset($this->arrCache[$id])) {
-            $this->id = $this->arrCache[$id]['group_id'];
-            $this->name = isset($this->arrCache[$id]['group_name']) ? $this->arrCache[$id]['group_name'] : '';
-            $this->description = isset($this->arrCache[$id]['group_description']) ? $this->arrCache[$id]['group_description'] : '';
-            $this->is_active = isset($this->arrCache[$id]['is_active']) ? (bool)$this->arrCache[$id]['is_active'] : false;
-            $this->type = isset($this->arrCache[$id]['type']) ? $this->arrCache[$id]['type'] : $this->defaultType;
-            $this->arrDynamicPermissions = null;
-            $this->arrStaticPermissions = null;
-            $this->arrUsers = null;
-            $this->EOF = false;
-            return true;
+        if ($id) {
+            if (!isset($this->arrCache[$id])) {
+                return $this->loadGroups($id);
+            } else {
+                $this->id = $this->arrCache[$id]['group_id'];
+                $this->name = isset($this->arrCache[$id]['group_name']) ? $this->arrCache[$id]['group_name'] : '';
+                $this->description = isset($this->arrCache[$id]['group_description']) ? $this->arrCache[$id]['group_description'] : '';
+                $this->is_active = isset($this->arrCache[$id]['is_active']) ? (bool)$this->arrCache[$id]['is_active'] : false;
+                $this->type = isset($this->arrCache[$id]['type']) ? $this->arrCache[$id]['type'] : $this->defaultType;
+                $this->arrDynamicPermissions = null;
+                $this->arrStaticPermissions = null;
+                $this->arrUsers = null;
+                $this->EOF = false;
+                return true;
+            }
+        } else {
+            $this->clean();
         }
-        return $this->loadGroups($id);
     }
 
-
-    function loadUsers()
+    private function loadUsers()
     {
         global $objDatabase;
 
@@ -224,7 +228,7 @@ class UserGroup {
         }
     }
 
-    function loadPermissions($type)
+    private function loadPermissions($type)
     {
         global $objDatabase;
 
@@ -242,12 +246,12 @@ class UserGroup {
         }
     }
 
-    function loadDynamicPermissions()
+    private function loadDynamicPermissions()
     {
         return $this->loadPermissions('dynamic');
     }
 
-    function loadStaticPermissions()
+    private function loadStaticPermissions()
     {
         return $this->loadPermissions('static');
     }
@@ -264,7 +268,7 @@ class UserGroup {
      * @global array
      * @return boolean
      */
-    function store()
+    public function store()
     {
         global $objDatabase, $_CORELANG;
 
@@ -328,7 +332,7 @@ class UserGroup {
      * @global ADONewConnection
      * @return boolean
      */
-    function storeUserAssociations()
+    private function storeUserAssociations()
     {
         global $objDatabase;
 
@@ -352,7 +356,7 @@ class UserGroup {
         return $status;
     }
 
-    function storePermissions()
+    private function storePermissions()
     {
         global $objDatabase;
 
@@ -392,7 +396,7 @@ class UserGroup {
         $this->EOF = true;
     }
 
-    function delete()
+    public function delete()
     {
         global $objDatabase, $_CORELANG;
 
@@ -421,7 +425,7 @@ class UserGroup {
      * Load next group
      *
      */
-    function next()
+    public function next()
     {
         if (next($this->arrLoadedGroups) === false || !$this->load(key($this->arrLoadedGroups))) {
             $this->EOF = true;
@@ -429,68 +433,76 @@ class UserGroup {
     }
 
 
-    function setName($name)
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    function setDescription($description)
+    public function setDescription($description)
     {
         $this->description = $description;
     }
 
-    function setActiveStatus($status)
+    public function setActiveStatus($status)
     {
         $this->is_active = (bool)$status;
     }
 
-    function setType($type)
+    public function setType($type)
     {
         $this->type = in_array($type, $this->arrTypes) ? $type : $this->defaultType;
     }
 
     /**
      * Set ID's of users which should belong to this group
+     *
      * @param array $arrUsers
      * @see User, User::getUser()
      * @return void
      */
-    function setUsers($arrUsers)
+    public function setUsers($arrUsers)
     {
-        //$objFWUser = FWUser::getFWUserObject();
+        $objFWUser = FWUser::getFWUserObject();
         $this->arrUsers = array();
-        foreach ($arrUsers as $userId) {
+        foreach ($arrUsers as $userId)
+        {
             //if ($objFWUser->objUser->getUser($userId)) {
                 $this->arrUsers[] = $userId;
             //}
         }
     }
 
-    function setDynamicPermissionIds($arrPermissionIds)
+    public function setDynamicPermissionIds($arrPermissionIds)
     {
         $this->arrDynamicPermissions = array_map('intval', $arrPermissionIds);
     }
 
-    function setStaticPermissionIds($arrPermissionIds)
+    public function setStaticPermissionIds($arrPermissionIds)
     {
         $this->arrStaticPermissions = array_map('intval', $arrPermissionIds);
     }
 
-    function getLoadedGroupCount()
+    public function getLoadedGroupCount()
     {
         return count($this->arrLoadedGroups);
     }
 
-    function getGroupCount($arrFilter = null)
+    public function getLoadedGroupIds()
+    {
+        return array_keys($this->arrLoadedGroups);
+    }
+
+    public function getGroupCount($arrFilter = null)
     {
         global $objDatabase;
 
-        $arrWhereExpressions = is_array($arrFilter) ? $this->parseFilterConditions($arrFilter) : array();
+        $arrWhereExpressions = is_array($arrFilter) ? $this->parseFilterConditions($arrFilter) : array('joins' => array(), 'conditions' => array());
 
         $objGroupCount = $objDatabase->SelectLimit('
             SELECT SUM(1) AS `group_count`
-            FROM `'.DBPREFIX.'access_user_groups`'
-            .(count($arrWhereExpressions) ? ' WHERE '.implode(' AND ', $arrWhereExpressions) : ''),
+            FROM `'.DBPREFIX.'access_user_groups` AS tblG'
+            .(count($arrWhereExpressions['joins']) ? implode(' ', $arrWhereExpressions['joins']) : '')
+            .(count($arrWhereExpressions['conditions']) ? ' WHERE '.implode(' AND ', $arrWhereExpressions['conditions']) : ''),
             1
         );
 
@@ -501,7 +513,7 @@ class UserGroup {
         }
     }
 
-    function getUserCount($onlyActive = false)
+    public function getUserCount($onlyActive = false)
     {
         global $objDatabase;
 
@@ -515,7 +527,7 @@ class UserGroup {
         }
     }
 
-    function getAssociatedUserIds()
+    public function getAssociatedUserIds()
     {
         if (!isset($this->arrUsers)) {
             $this->arrUsers = $this->loadUsers();
@@ -523,7 +535,7 @@ class UserGroup {
         return $this->arrUsers;
     }
 
-    function getDynamicPermissionIds()
+    public function getDynamicPermissionIds()
     {
         if (!isset($this->arrDynamicPermissions)) {
             $this->arrDynamicPermissions = $this->loadDynamicPermissions();
@@ -531,7 +543,7 @@ class UserGroup {
         return $this->arrDynamicPermissions;
     }
 
-    function getStaticPermissionIds()
+    public function getStaticPermissionIds()
     {
         if (!isset($this->arrStaticPermissions)) {
             $this->arrStaticPermissions = $this->loadStaticPermissions();
@@ -539,37 +551,37 @@ class UserGroup {
         return $this->arrStaticPermissions;
     }
 
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function getDescription()
+    public function getDescription()
     {
         return $this->description;
     }
 
-    function getActiveStatus()
+    public function getActiveStatus()
     {
         return $this->is_active;
     }
 
-    function getType()
+    public function getType()
     {
         return $this->type;
     }
 
-    function getTypes()
+    public function getTypes()
     {
         return $this->arrTypes;
     }
 
-    function getErrorMsg()
+    public function getErrorMsg()
     {
         return $this->error_msg;
     }

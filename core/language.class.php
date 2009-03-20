@@ -9,6 +9,7 @@
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
+require_once ASCMS_CORE_PATH.'/settings.class.php';
 
 /**
  * Language Manager
@@ -23,14 +24,14 @@
  */
 class LanguageManager
 {
-    public $_objTpl;
-    public $pageTitle='';
-    public $strErrMessage = '';
-    public $strOkMessage = '';
-    public $arrLang = array();
-    public $filePath='';
-    public $hideVariables = true;
-    public $langIDs = array();
+    var $_objTpl;
+    var $pageTitle='';
+    var $strErrMessage = '';
+    var $strOkMessage = '';
+    var $arrLang = array();
+    var $filePath='';
+    var $hideVariables = true;
+    var $langIDs = array();
 
     /**
      * Constructor
@@ -51,7 +52,7 @@ class LanguageManager
         $this->filePath = ASCMS_LANGUAGE_PATH.'/';
         // get tables in database
         $objResult = $objDatabase->MetaTables('TABLES');
-        if ($objResult !== false && !$objResult->EOF) {
+        if ($objResult !== false) {
             $arrTables = $objResult;
         }
         if (in_array(DBPREFIX."language_variable_names",$arrTables) && in_array(DBPREFIX."language_variable_content",$arrTables)) {
@@ -84,7 +85,7 @@ class LanguageManager
      */
     function getLanguagePage()
     {
-        global $objTemplate;
+        global $_CORELANG, $objTemplate;
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = "";
@@ -343,7 +344,7 @@ class LanguageManager
                 if (!empty($result[1]) && !empty($result[2])) {
                     $backendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungï¿½tliges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
                 }
             }
 
@@ -363,7 +364,7 @@ class LanguageManager
                     }
                     $frontendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungï¿½tliges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
                 }
             }
 
@@ -949,7 +950,10 @@ class LanguageManager
      */
     function modifyLanguage()
     {
-        global $_CORELANG, $objDatabase;
+        // note: $objLanguage is not the same as $this, even if it
+        // used to be (was defined in cadmin/index.php)
+        global $_CORELANG, $_CONFIG, $objDatabase, $objLanguage;
+
         if (!empty($_POST['submit']) AND (isset($_POST['addLanguage']) && $_POST['addLanguage']=="true")) {
             //-----------------------------------------------
             // Add new language with all variables
@@ -1016,6 +1020,12 @@ class LanguageManager
                 $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET name='".$name."', frontend=".$active." , is_default='".$status."',backend='".$adminstatus."' WHERE id=".$id);
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+
+            $objLanguage->loadLangConfig();
+            $settings = new settingsManager();
+            DBG::msg("setting virtual lang paths: ".($_CONFIG['useVirtualLanguagePath'] == 'on'));
+            $settings->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on');
+
             return true;
        }
         return false;

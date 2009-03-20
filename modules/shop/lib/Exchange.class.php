@@ -1,10 +1,9 @@
 <?php
-
 /**
  * Exports and Imports CSV data
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Thomas Dï¿½ppen <thomas.daeppen@comvation.com>
+ * @author       Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @version      0.1
  * @subpackage  module_shop
@@ -15,7 +14,7 @@
  * Exports and Imports CSV data
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Thomas Dï¿½ppen <thomas.daeppen@comvation.com>
+ * @author       Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @version      0.1
  * @subpackage  module_shop
@@ -29,7 +28,7 @@ class Exchange
     * @var object
     * @see __construct(), selectExchangeContent(), export(), import(), selectPage(), checkStep()
     */
-    private $_objTpl;
+    var $_objTpl;
 
     /**
     * The exchange method
@@ -37,7 +36,7 @@ class Exchange
     * @var string
     * @see selectExchangeContent(), selectPage()
     */
-    private $strMethod;
+    var $strMethod;
 
     /**
     * Path to the export script
@@ -45,7 +44,7 @@ class Exchange
     * @var string
     * @see __construct(), export()
     */
-    private $strExportLink;
+    var $strExportLink;
 
     /**
     * Path of the temporary directory for the upload files
@@ -53,7 +52,7 @@ class Exchange
     * @var string
     * @see __construct(), import()
     */
-    private $strImportPath;
+    var $strImportPath;
 
     /**
     * Contains the step of each exchange method
@@ -61,7 +60,7 @@ class Exchange
     * @var array
     * @see __construct(), selectExchangeContent(), selectPage(), checkStep()
     */
-    private $arrExchangeStep = array();
+    var $arrExchangeStep = array();
 
     /**
     * Contains the predefined steps of each exchange method
@@ -69,7 +68,7 @@ class Exchange
     * @var array
     * @see __construct(), selectPage(), checkStep()
     */
-    private $arrExchangeSteps = array(
+    var $arrExchangeSteps = array(
                 'export'    => array(
                                 'selectTable',
                                 'selectCategories',
@@ -90,7 +89,7 @@ class Exchange
     * @var array
     * @see import()
     */
-    private $arrFileTypes = array(
+    var $arrFileTypes = array(
             'csv'    => array(
                                 "text/comma-separated-values",
                                 "application/vnd.ms-excel"
@@ -101,8 +100,13 @@ class Exchange
             );
 
     /**
-     * Constructor:
-     */
+    * Constructor:
+    */
+    function Exchange()
+    {
+        $this->__construct();
+    }
+
     function __construct()
     {
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template/');
@@ -117,16 +121,15 @@ class Exchange
         $this->strImportPath = ASCMS_PATH.'/modules/shop/tmp/';
     }
 
-
     /**
-     * Select exchange content
-     *
-     * Selects the exchange content and returns it
-     *
-     * @access public
-     * @return    object    Exchange template
-     * @see selectPage(), export(), import()
-     */
+    * Select exchange content
+    *
+    * Selects the exchange content and returns it
+    *
+    * @access public
+    * @return    object    Exchange template
+    * @see selectPage(), export(), import()
+    */
     function selectExchangeContent($method = "export", $step = "selectTable")
     {
         global $_ARRAYLANG;
@@ -174,7 +177,6 @@ class Exchange
     function export_DEV($step)
     {
         global $objDatabase, $_ARRAYLANG;
-
         print "EXPORT";
 //        $this->selectPage('export',$this->arrExchangeStep['export']);
         switch($step) {
@@ -187,11 +189,11 @@ class Exchange
                 print "HALLO";
                 $_SESSION['shop_exchange_export']['tables'] = array(
                     array(
-                        'name'    => DBPREFIX.'module_shop'.MODULE_INDEX.'_products',
+                        'name'    => DBPREFIX.'module_shop_products',
                         'text'    => "Produkte"
                         ),
                     array(
-                        'name'    => DBPREFIX.'module_shop'.MODULE_INDEX.'_customers',
+                        'name'    => DBPREFIX.'module_shop_customers',
                         'text'    => "Kunden"
                         ));
                 $this->_objTpl->setCurrentBlock('tablesExport');
@@ -226,28 +228,28 @@ class Exchange
                 {
                     case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         // Gets the product selection list
-                        $query = "SELECT id, parent_id, catname
+                        $query = "SELECT catid, parentid, catname
                                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
                         if(!($objResult = $objDatabase->Execute($query))) {
                             $i=0;
                             while(!$objResult->EOF) {
                                 $arrCategorie[$i] = array(
-                                    'id'        => $objResult->fields['id'],
-                                    'parent_id'    => $objResult->fields['parent_id'],
-                                    'catname'    => $objResult->fields['catname']
-                                );
+                                                        'catid'        => $objResult->fields['catid'],
+                                                        'parentid'    => $objResult->fields['parentid'],
+                                                        'catname'    => $objResult->fields['catname']
+                                                          );
                                 $i++;
                                 $objResult->MoveNext();
                             }
 
                             // Generates the categorie lists
                             for($i=0;$i<count($arrCategorie);$i++) {
-                                if($arrCategorie[$i]['parent_id'] != 0) {
-                                    $arrCategorie[$i]['catname'] = $arrCategorie[$arrCategorie[$i]['parent_id']]['catname']."_".$arrCategorie[$i]['catname'];
+                                if($arrCategorie[$i]['parentid'] != 0) {
+                                    $arrCategorie[$i]['catname'] = $arrCategorie[$arrCategorie[$i]['parentid']]['catname']."_".$arrCategorie[$i]['catname'];
                                 }
                                 $this->_objTpl->setCurrentBlock('categorieList_selectCategories');
                                 $this->_objTpl->setVariable(array(
-                                        'CATEGORIE_ID'        => $arrCategorie[$i]['id'],
+                                        'CATEGORIE_ID'        => $arrCategorie[$i]['catid'],
                                         'CATEGORIE_NAME'    => $arrCategorie[$i]['catname']
                                         ));
                                 $this->_objTpl->parseCurrentBlock();
@@ -297,7 +299,7 @@ class Exchange
 
                 // FIXME
                 // Replace $objDb->metadata() with $objDatabase-> and the corresponding method
-                $arrMetadata = $objDatabase->metadata();
+                $arrMetadata = $objDb->metadata();
 
                 $this->_objTpl->setCurrentBlock('Cols');
                 for($i=0;$i<count($arrMetadata);$i++) {
@@ -368,8 +370,7 @@ class Exchange
     */
     function import_DEV($step)
     {
-        global $objDatabase;
-
+        global $objDatabase, $_ARRAYLANG;
         print "IMPORT";
 //        $this->selectPage('import',$this->arrExchangeStep['import']);
         switch($step){
@@ -382,12 +383,12 @@ class Exchange
                 print "ADE";
                 $_SESSION['shop_exchange_import']['tables'] = array(
                         array(
-                                'name'    => DBPREFIX.'module_shop'.MODULE_INDEX.'_products',
+                                'name'    => DBPREFIX.'module_shop_products',
                                 'text'    => "Produkte",
                                 'id'    => "id"
                                 ),
                         array(
-                                'name'    => DBPREFIX.'module_shop'.MODULE_INDEX.'_customers',
+                                'name'    => DBPREFIX.'module_shop_customers',
                                 'text'    => "Kunden",
                                 'id'    => "customerid"
                                 ));
@@ -489,7 +490,7 @@ class Exchange
 
                 // FIXME
                 // Replace $objDb->metadata() with $objDatabase-> and the corresponding method
-                $arrMetadata = $objDatabase->metadata();
+                $arrMetadata = $objDb->metadata();
 
                 // Gets the content of the file to import
                 $fileContent = file_get_contents($this->strImportPath.$_SESSION['shop_exchange_import']['file']['name']);
@@ -613,9 +614,9 @@ class Exchange
                 // Clear the table
                 if($_POST['optionImport'] == "del") {
                     switch($_SESSION['shop_exchange_import']['table']['name']) {
-                        case DBPREFIX.'module_shop'.MODULE_INDEX.'_products':
+                        case DBPREFIX.'module_shop_products':
                             // Check if there are products that are still in use by an ordering
-                            $query = "SELECT productid FROM ".DBPREFIX.'module_shop'.MODULE_INDEX.'_order_items';
+                            $query = "SELECT productid FROM ".DBPREFIX.'module_shop_order_items';
                             $objResult = $objDatabase->Execute($query);
                             while(!$objResult->EOF) {
                                 if(in_array($objResult->fields['productid'],$arrIds)) {
@@ -737,10 +738,9 @@ class Exchange
             //$this->arrExchangeStep['import'] = "none";
             $this->selectExchangeContent($method,"selectTable");
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
-
 }
-
 ?>

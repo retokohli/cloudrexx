@@ -100,16 +100,15 @@ class podcastLib
 
     function __construct(){
         $this->_arrSettings = $this->_getSettings();
-        $this->_youTubeIdRegex = '#.*[\?&/]v[=/]('.$this->_youTubeAllowedCharacters.'{'.$this->_youTubeIdLenght.'}).*#';
+        $this->_youTubeIdRegex   = "#.*[\?&/]v[=/](".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}).*#";
         //youtubeIdCharacters and youtubeIdLength are JS variables.
-        $this->_youTubeIdRegexJS = '.*[\\?&/]v[=/]('+youtubeIdCharacters+'{'+youtubeIdLength+'}).*';
+        $this->_youTubeIdRegexJS = '.*[\\?&/]v[=/]("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*';
 		$this->_noThumbnail = ASCMS_PATH_OFFSET . '/images/podcast/no_picture.gif';
     }
 
     function _getMedia($ofCategory = false, $isActive = false, $limit = 0, $pos = 0)
     {
-        global $objDatabase, $_CONFIG;
-
+        global $objDatabase, $_CONFIG, $_LANGID;
         $arrMedia = array();
         $cat = false;
         $sqlLimit = ($limit == 0) ? $_CONFIG['corePagingLimit'] : $limit;
@@ -151,19 +150,19 @@ class podcastLib
                     $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
                 }
                 $arrMedia[$objMedium->fields['id']] = array(
-                    'title'            => $objMedium->fields['title'],
+                    'title'         => $objMedium->fields['title'],
                     'youtube_id'    => $objMedium->fields['youtube_id'],
                     'author'        => $objMedium->fields['author'],
-                    'description'    => $objMedium->fields['description'],
+                    'description'   => $objMedium->fields['description'],
                     'source'        => $mediumSource,
-                    'thumbnail'        => !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
-                    'width'            => $objMedium->fields['width'],
+                    'thumbnail'     => !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
+                    'width'         => $objMedium->fields['width'],
                     'height'        => $objMedium->fields['height'],
                     'playlenght'    => $objMedium->fields['playlenght'],
-                    'size'            => $objMedium->fields['size'],
+                    'size'          => $objMedium->fields['size'],
                     'status'        => $objMedium->fields['status'],
                     'date_added'    => $objMedium->fields['date_added'],
-                    'template_id'    => $objMedium->fields['template_id']
+                    'template_id'   => $objMedium->fields['template_id']
                 );
                 $objMedium->MoveNext();
             }
@@ -202,20 +201,20 @@ class podcastLib
                 $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
             }
             $arrMedium = array(
-                'title'            => $objMedium->fields['title'],
+                'title'         => $objMedium->fields['title'],
                 'youtube_id'    => $objMedium->fields['youtube_id'],
                 'author'        => $objMedium->fields['author'],
-                'description'    => $objMedium->fields['description'],
+                'description'   => $objMedium->fields['description'],
                 'source'        => $mediumSource,
-                'thumbnail'        => !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
-                'width'            => $objMedium->fields['width'],
+                'thumbnail'     => !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
+                'width'         => $objMedium->fields['width'],
                 'height'        => $objMedium->fields['height'],
                 'playlenght'    => $objMedium->fields['playlenght'],
-                'size'            => $objMedium->fields['size'],
+                'size'          => $objMedium->fields['size'],
                 'status'        => $objMedium->fields['status'],
                 'date_added'    => $objMedium->fields['date_added'],
-                'template_id'    => $objMedium->fields['template_id'],
-                'category'        => array()
+                'template_id'   => $objMedium->fields['template_id'],
+                'category'      => array()
             );
 
             $objCategory = $objDatabase->Execute("SELECT category_id FROM ".DBPREFIX."module_podcast_rel_medium_category WHERE medium_id=".$mediumId);
@@ -259,7 +258,7 @@ class podcastLib
 
     function _getCategories($isActive = false, $limit = false, $langId = false)
     {
-        global $objDatabase, $_CONFIG;
+        global $objDatabase, $_CONFIG, $_LANGID;
 
         $arrCategory = array();
 
@@ -273,14 +272,14 @@ class podcastLib
             while (!$objCategory->EOF) {
                 if ($langId !== false) {
                     $arrLangIds = &$this->_getLangIdsOfCategory($objCategory->fields['id']);
-                    if (!in_array(FRONTEND_LANG_ID, $arrLangIds)) {
+                    if (!in_array($_LANGID, $arrLangIds)) {
                         $objCategory->MoveNext();
                         continue;
                     }
                 }
                 $arrCategory[$objCategory->fields['id']] = array(
-                    'title'            => $objCategory->fields['title'],
-                    'description'    => $objCategory->fields['description'],
+                    'title'         => $objCategory->fields['title'],
+                    'description'   => $objCategory->fields['description'],
                     'status'        => $objCategory->fields['status']
                 );
                 $objCategory->MoveNext();
@@ -299,8 +298,8 @@ class podcastLib
         $objCategory = $objDatabase->SelectLimit("SELECT title, description, status FROM ".DBPREFIX."module_podcast_category WHERE id=".$categoryId.($isActive ? " AND status=1" : ""), 1);
         if ($objCategory !== false && $objCategory->RecordCount() == 1) {
             $arrCategory = array(
-                'title'            => $objCategory->fields['title'],
-                'description'    => $objCategory->fields['description'],
+                'title'         => $objCategory->fields['title'],
+                'description'   => $objCategory->fields['description'],
                 'status'        => $objCategory->fields['status']
             );
 
@@ -463,6 +462,17 @@ class podcastLib
     {
         global $objDatabase;
 
+        require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/File.class.php';
+
+        $query = "SELECT `thumbnail`
+                  FROM `".DBPREFIX."module_podcast_medium`
+                  WHERE `id` = ".$id;
+        if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
+            $thumbNail = $objRS->fields['thumbnail'];
+            $objFile = &new File();
+            $objFile->delFile(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, $thumbNail);
+        }
+
         if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_podcast_rel_medium_category WHERE medium_id=".$id) !== false) {
             if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_podcast_medium WHERE id=".$id) !== false) {
                 return true;
@@ -505,7 +515,7 @@ class podcastLib
     {
         global $objDatabase;
         $arrCategories = array_filter($arrCategories, create_function('$cat', 'return intval($cat) > 0;'));
-        $query = "    UPDATE  `".DBPREFIX."module_podcast_settings`
+        $query = "  UPDATE  `".DBPREFIX."module_podcast_settings`
                     SET `setvalue` = '".implode(',', $arrCategories)."'
                     WHERE `setname` = 'latest_media_categories'";
         if ($objDatabase->Execute($query) !== false) {
@@ -553,8 +563,8 @@ class podcastLib
         if ($objTemplate !== false) {
             while (!$objTemplate->EOF) {
                 $arrTemplates[$objTemplate->fields['id']] = array(
-                    'description'    => $objTemplate->fields['description'],
-                    'template'        => $objTemplate->fields['template'],
+                    'description'   => $objTemplate->fields['description'],
+                    'template'      => $objTemplate->fields['template'],
                     'extensions'    => $objTemplate->fields['extensions']
                 );
                 $objTemplate->MoveNext();
@@ -595,8 +605,8 @@ class podcastLib
         $objTemplate = $objDatabase->SelectLimit("SELECT description, template, extensions FROM ".DBPREFIX."module_podcast_template WHERE id=".$templateId, 1);
         if ($objTemplate !== false && $objTemplate->RecordCount() == 1) {
             return array(
-                'description'    => $objTemplate->fields['description'],
-                'template'        => $objTemplate->fields['template'],
+                'description'   => $objTemplate->fields['description'],
+                'template'      => $objTemplate->fields['template'],
                 'extensions'    => $objTemplate->fields['extensions']
             );
         } else {
@@ -671,7 +681,7 @@ class podcastLib
     {
         global $objDatabase;
         $id = 0;
-        $query = "    SELECT `id` FROM `".DBPREFIX."module_podcast_template`
+        $query = "  SELECT `id` FROM `".DBPREFIX."module_podcast_template`
                     WHERE `description` = 'YouTube Video'";
         $objRS = $objDatabase->SelectLimit($query, 1);
         if($objRS !== false){
@@ -908,33 +918,33 @@ EOF;
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_PODCAST_SELECT_SOURCE'        => $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'],
-            'TXT_PODCAST_SELECT_SOURCE_TXT'    => $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'],
-            'TXT_PODCAST_LOCAL'                => $_ARRAYLANG['TXT_PODCAST_LOCAL'],
+            'TXT_PODCAST_SELECT_SOURCE'     => $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'],
+            'TXT_PODCAST_SELECT_SOURCE_TXT' => $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'],
+            'TXT_PODCAST_LOCAL'             => $_ARRAYLANG['TXT_PODCAST_LOCAL'],
             'TXT_PODCAST_ADD_MEDIUM'        => $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'],
-            'TXT_PODCAST_STEP'                => $_ARRAYLANG['TXT_PODCAST_STEP'],
+            'TXT_PODCAST_STEP'              => $_ARRAYLANG['TXT_PODCAST_STEP'],
             'TXT_PODCAST_REMOTE'            => $_ARRAYLANG['TXT_PODCAST_REMOTE'],
-            'TXT_PODCAST_YOUTUBE'            => $_ARRAYLANG['TXT_PODCAST_YOUTUBE'],
+            'TXT_PODCAST_YOUTUBE'           => $_ARRAYLANG['TXT_PODCAST_YOUTUBE'],
             'TXT_PODCAST_BROWSE'            => $_ARRAYLANG['TXT_PODCAST_BROWSE'],
-            'TXT_PODCAST_NEXT'                => $_ARRAYLANG['TXT_PODCAST_NEXT'],
-            'TXT_PODCAST_YOUTUBE_ID_VALID'    => $_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_VALID'],
+            'TXT_PODCAST_NEXT'              => $_ARRAYLANG['TXT_PODCAST_NEXT'],
+            'TXT_PODCAST_YOUTUBE_ID_VALID'  => $_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_VALID'],
             'TXT_PODCAST_YOUTUBE_ID_INVALID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_INVALID'],
             'TXT_PODCAST_YOUTUBE_SPECIFY_ID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_SPECIFY_ID']
         ));
 
         $this->_objTpl->setVariable(array(
-            'PODCAST_SELECT_LOCAL_MEDIUM'        => $sourceType == 'local' ? 'checked="checked"' : '',
-            'PODCAST_SELECT_LOCAL_MEDIUM_BOX'    => $sourceType == 'local' ? 'block' : 'none',
-            'PODCAST_SELECT_REMOTE_MEDIUM'        => $sourceType == 'remote' ? 'checked="checked"' : '',
-            'PODCAST_SELECT_REMOTE_MEDIUM_BOX'    => $sourceType == 'remote' ? 'block' : 'none',
-            'PODCAST_SELECT_YOUTUBE_MEDIUM'        => $sourceType == 'youtube' ? 'checked="checked"' : '',
-            'PODCAST_SELECT_YOUTUBE_MEDIUM_BOX'    => $sourceType == 'youtube' ? 'block' : 'none',
-            'PODCAST_LOCAL_SOURCE'                => $sourceType == 'local' ? $source : '',
-            'PODCAST_REMOTE_SOURCE'                => $sourceType == 'remote' ? $source : 'http://',
+            'PODCAST_SELECT_LOCAL_MEDIUM'       => $sourceType == 'local' ? 'checked="checked"' : '',
+            'PODCAST_SELECT_LOCAL_MEDIUM_BOX'   => $sourceType == 'local' ? 'block' : 'none',
+            'PODCAST_SELECT_REMOTE_MEDIUM'      => $sourceType == 'remote' ? 'checked="checked"' : '',
+            'PODCAST_SELECT_REMOTE_MEDIUM_BOX'  => $sourceType == 'remote' ? 'block' : 'none',
+            'PODCAST_SELECT_YOUTUBE_MEDIUM'     => $sourceType == 'youtube' ? 'checked="checked"' : '',
+            'PODCAST_SELECT_YOUTUBE_MEDIUM_BOX' => $sourceType == 'youtube' ? 'block' : 'none',
+            'PODCAST_LOCAL_SOURCE'              => $sourceType == 'local' ? $source : '',
+            'PODCAST_REMOTE_SOURCE'             => $sourceType == 'remote' ? $source : 'http://',
             'PODCAST_YOUTUBE_SOURCE'            => $sourceType == 'youtube' ? $source : '',
-            'PODCAST_YOUTUBE_ID_CHARACTERS'        => $this->_youTubeAllowedCharacters,
-            'PODCAST_YOUTUBE_ID_LENGTH'            => $this->_youTubeIdLenght,
-            'PODCAST_YOUTUBE_REGEX_JS'            => $this->_youTubeIdRegexJS
+            'PODCAST_YOUTUBE_ID_CHARACTERS'     => $this->_youTubeAllowedCharacters,
+            'PODCAST_YOUTUBE_ID_LENGTH'         => $this->_youTubeIdLenght,
+            'PODCAST_YOUTUBE_REGEX_JS'          => $this->_youTubeIdRegexJS
         ));
     }
 
@@ -966,7 +976,7 @@ EOF;
         }else{
             //load frontend content as template
             global $objDatabase;
-            $query = "    SELECT `content`
+            $query = "  SELECT `content`
                         FROM `".DBPREFIX."content`
                         WHERE `id` = (
                             SELECT `catid`
@@ -986,25 +996,25 @@ EOF;
         $this->_pageTitle = $mediumId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'] : $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'];
 
         $this->_objTpl->setVariable(array(
-            'TXT_PODCAST_TITLE'                => $_ARRAYLANG['TXT_PODCAST_TITLE'],
-            'TXT_PODCAST_DESCRIPTION'        => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
+            'TXT_PODCAST_TITLE'             => $_ARRAYLANG['TXT_PODCAST_TITLE'],
+            'TXT_PODCAST_DESCRIPTION'       => $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
             'TXT_PODCAST_SOURCE'            => $_ARRAYLANG['TXT_PODCAST_SOURCE'],
-            'TXT_PODCAST_TEMPLATE'            => $_ARRAYLANG['TXT_PODCAST_TEMPLATE'],
+            'TXT_PODCAST_TEMPLATE'          => $_ARRAYLANG['TXT_PODCAST_TEMPLATE'],
             'TXT_PODCAST_DIMENSIONS'        => $_ARRAYLANG['TXT_PODCAST_DIMENSIONS'],
-            'TXT_PODCAST_PIXEL_WIDTH'        => $_ARRAYLANG['TXT_PODCAST_PIXEL_WIDTH'],
-            'TXT_PODCAST_PIXEL_HEIGHT'        => $_ARRAYLANG['TXT_PODCAST_PIXEL_HEIGHT'],
+            'TXT_PODCAST_PIXEL_WIDTH'       => $_ARRAYLANG['TXT_PODCAST_PIXEL_WIDTH'],
+            'TXT_PODCAST_PIXEL_HEIGHT'      => $_ARRAYLANG['TXT_PODCAST_PIXEL_HEIGHT'],
             'TXT_PODCAST_CATEGORIES'        => $_ARRAYLANG['TXT_PODCAST_CATEGORIES'],
             'TXT_PODCAST_STATUS'            => $_ARRAYLANG['TXT_PODCAST_STATUS'],
             'TXT_PODCAST_ACTIVE'            => $_ARRAYLANG['TXT_PODCAST_ACTIVE'],
-            'TXT_PODCAST_SAVE'                => $_ARRAYLANG['TXT_PODCAST_SAVE'],
+            'TXT_PODCAST_SAVE'              => $_ARRAYLANG['TXT_PODCAST_SAVE'],
             'TXT_PODCAST_PLAYLENGHT'        => $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT'],
-            'TXT_PODCAST_PLAYLENGHT_FORMAT'    => $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'],
-            'TXT_PODCAST_FILESIZE'            => $_ARRAYLANG['TXT_PODCAST_FILESIZE'],
-            'TXT_PODCAST_BYTES'                => $_ARRAYLANG['TXT_PODCAST_BYTES'],
+            'TXT_PODCAST_PLAYLENGHT_FORMAT' => $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'],
+            'TXT_PODCAST_FILESIZE'          => $_ARRAYLANG['TXT_PODCAST_FILESIZE'],
+            'TXT_PODCAST_BYTES'             => $_ARRAYLANG['TXT_PODCAST_BYTES'],
             'TXT_PODCAST_AUTHOR'            => $_ARRAYLANG['TXT_PODCAST_AUTHOR'],
-            'TXT_PODCAST_EDIT_OR_ADD_IMAGE'    => $_ARRAYLANG['TXT_PODCAST_EDIT_OR_ADD_IMAGE'],
-            'TXT_PODCAST_THUMBNAIL'            => $_ARRAYLANG['TXT_PODCAST_THUMBNAIL'],
-            'TXT_PODCAST_SHOW_FILE'            => $_ARRAYLANG['TXT_PODCAST_SHOW_FILE']
+            'TXT_PODCAST_EDIT_OR_ADD_IMAGE' => $_ARRAYLANG['TXT_PODCAST_EDIT_OR_ADD_IMAGE'],
+            'TXT_PODCAST_THUMBNAIL'         => $_ARRAYLANG['TXT_PODCAST_THUMBNAIL'],
+            'TXT_PODCAST_SHOW_FILE'         => $_ARRAYLANG['TXT_PODCAST_SHOW_FILE']
         ));
 
         if (isset($_POST['podcast_medium_save'])) {
@@ -1168,22 +1178,22 @@ EOF;
         }
 
         $this->_objTpl->setVariable(array(
-            'PODCAST_MODIFY_TITLE'                => $mediumId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'] : $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'].' ('.$_ARRAYLANG['TXT_PODCAST_STEP'].' 2: '.$_ARRAYLANG['TXT_PODCAST_CONFIG_MEDIUM'].')',
-            'PODCAST_MEDIUM_ID'                    => $mediumId,
-            'PODCAST_MEDIUM_TITLE'                => htmlentities($mediumTitle, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_MEDIUM_AUTHOR'                => htmlentities($mediumAuthor, ENT_QUOTES, CONTREXX_CHARSET),
+            'PODCAST_MODIFY_TITLE'              => $mediumId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'] : $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'].' ('.$_ARRAYLANG['TXT_PODCAST_STEP'].' 2: '.$_ARRAYLANG['TXT_PODCAST_CONFIG_MEDIUM'].')',
+            'PODCAST_MEDIUM_ID'                 => $mediumId,
+            'PODCAST_MEDIUM_TITLE'              => htmlentities($mediumTitle, ENT_QUOTES, CONTREXX_CHARSET),
+            'PODCAST_MEDIUM_AUTHOR'             => htmlentities($mediumAuthor, ENT_QUOTES, CONTREXX_CHARSET),
             'PODCAST_MEDIUM_DESCRIPTION'        => htmlentities($mediumDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_MEDIUM_SOURCE'                => $mediumSource,
-            'PODCAST_MEDIUM_SOURCE_URL'            => htmlentities($mediumSource, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_MEDIUM_TEMPLATE_MENU'        => $this->_getTemplateMenu($mediumTemplate, 'name="podcast_medium_template" style="width:450px;"'),
-            'PODCAST_MEDIUM_WIDTH'                => $mediumWidth,
-            'PODCAST_MEDIUM_HEIGHT'                => $mediumHeight,
-            'PODCAST_MEDIUM_PLAYLENGHT'            => $this->_getShortPlaylenghtFormatOfTimestamp($mediumPlaylenght),
-            'PODCAST_MEDIUM_FILESIZE'            => $mediumSize,
-            'PODCAST_MEDIUM_THUMBNAIL_SRC'        => !empty($mediumThumbnail) ? $mediumThumbnail : $this->_noThumbnail,
-            'PODCAST_MEDIUM_STATUS'                => $mediumStatus == 1 ? 'checked="checked"' : '',
-            'PODCAST_MEDIUM_YOUTUBE_DISABLED'    => !empty($mediumYoutubeID) ? 'disabled="disabled"' : '',
-            'PODCAST_MEDIUM_YOUTUBE_ID'            => !empty($mediumYoutubeID) ? $mediumYoutubeID : ''
+            'PODCAST_MEDIUM_SOURCE'             => $mediumSource,
+            'PODCAST_MEDIUM_SOURCE_URL'         => htmlentities($mediumSource, ENT_QUOTES, CONTREXX_CHARSET),
+            'PODCAST_MEDIUM_TEMPLATE_MENU'      => $this->_getTemplateMenu($mediumTemplate, 'name="podcast_medium_template" style="width:450px;"'),
+            'PODCAST_MEDIUM_WIDTH'              => $mediumWidth,
+            'PODCAST_MEDIUM_HEIGHT'             => $mediumHeight,
+            'PODCAST_MEDIUM_PLAYLENGHT'         => $this->_getShortPlaylenghtFormatOfTimestamp($mediumPlaylenght),
+            'PODCAST_MEDIUM_FILESIZE'           => $mediumSize,
+            'PODCAST_MEDIUM_THUMBNAIL_SRC'      => !empty($mediumThumbnail) ? $mediumThumbnail : $this->_noThumbnail,
+            'PODCAST_MEDIUM_STATUS'             => $mediumStatus == 1 ? 'checked="checked"' : '',
+            'PODCAST_MEDIUM_YOUTUBE_DISABLED'   => !empty($mediumYoutubeID) ? 'disabled="disabled"' : '',
+            'PODCAST_MEDIUM_YOUTUBE_ID'         => !empty($mediumYoutubeID) ? $mediumYoutubeID : ''
         ));
 
         $arrCategories = &$this->_getCategories();
@@ -1203,10 +1213,10 @@ EOF;
             $arrCategory['title'] .= ' ('.implode(', ', $arrCatLangIds).')';
 
             $this->_objTpl->setVariable(array(
-                'PODCAST_CATEGORY_ID'                    => $categoryId,
-                'PODCAST_CATEGORY_ASSOCIATED'             => in_array($categoryId, $mediumCategories) ? 'checked="checked"' : '',
+                'PODCAST_CATEGORY_ID'                   => $categoryId,
+                'PODCAST_CATEGORY_ASSOCIATED'           => in_array($categoryId, $mediumCategories) ? 'checked="checked"' : '',
                 'PODCAST_SHOW_MEDIA_OF_CATEGORY_TXT'    => sprintf($_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'], $arrCategory['title']),
-                'PODCAST_CATEGORY_NAME'                    => $arrCategory['title']
+                'PODCAST_CATEGORY_NAME'                 => $arrCategory['title']
             ));
             $this->_objTpl->parse('podcast_medium_associated_category_'.$column);
 
@@ -1228,7 +1238,7 @@ EOF;
         $mediumTitle = '';
         $s = @fsockopen('img.youtube.com', 80, $errno, $errmsg, 5);
         if(is_resource($s)){
-            $httpRequest =     "GET /vi/%s/default.jpg HTTP/1.1\r\n".
+            $httpRequest =  "GET /vi/%s/default.jpg HTTP/1.1\r\n".
                             "Host: img.youtube.com\r\n".
                             "User-Agent: ".$_SERVER['HTTP_USER_AGENT']."\r\n".
                             "Accept: ".$_SERVER['HTTP_ACCEPT']."\r\n".
@@ -1269,7 +1279,7 @@ EOF;
         $mediumTitle = '';
         $s = @fsockopen('www.youtube.com', 80, $errno, $errmsg, 5);
         if(is_resource($s)){
-            $httpRequest =     "GET /watch?v=".$youTubeID." HTTP/1.1\r\n".
+            $httpRequest =  "GET /watch?v=".$youTubeID." HTTP/1.1\r\n".
                             "Host: www.youtube.com\r\n".
                             "User-Agent: ".$_SERVER['HTTP_USER_AGENT']."\r\n".
                             "Accept: ".$_SERVER['HTTP_ACCEPT']."\r\n".
@@ -1304,7 +1314,7 @@ EOF;
         $mediumDescription = '';
         $s = @fsockopen('www.youtube.com', 80, $errno, $errmsg, 5);
         if(is_resource($s)){
-            $httpRequest =     "GET /watch?v=".$youTubeID." HTTP/1.1\r\n".
+            $httpRequest =  "GET /watch?v=".$youTubeID." HTTP/1.1\r\n".
                             "Host: www.youtube.com\r\n".
                             "User-Agent: ".$_SERVER['HTTP_USER_AGENT']."\r\n".
                             "Accept: ".$_SERVER['HTTP_ACCEPT']."\r\n".
@@ -1319,7 +1329,7 @@ EOF;
                 $response .= fread($s, 512);
             }
             @fclose($s);
-            preg_match('ï¿½expand-content">(.*?)\).*?<aï¿½im', $response, $match);
+            preg_match('¬expand-content">(.*?)\).*?<a¬im', $response, $match);
             $mediumDescription = $match[1];
         }
         return $mediumDescription;
@@ -1350,11 +1360,11 @@ EOF;
             while (!$objMedium->EOF) {
                 if (!isset($arrMedia[$objMedium->fields['id']])) {
                     $arrMedia[$objMedium->fields['id']] = array(
-                        'title'            => $objMedium->fields['title'],
+                        'title'         => $objMedium->fields['title'],
                         'author'        => $objMedium->fields['author'],
-                        'description'    => $objMedium->fields['description'],
+                        'description'   => $objMedium->fields['description'],
                         'source'        => str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']),
-                        'size'            => $objMedium->fields['size'],
+                        'size'          => $objMedium->fields['size'],
                         'date_added'    => $objMedium->fields['date_added'],
                         'categories'    => array()
                     );
@@ -1394,7 +1404,7 @@ EOF;
             foreach ($arrMedium['categories'] as $categoryId => $categoryTitle) {
                 array_push($arrCategories, array(
                     'domain'    => htmlspecialchars($categoryLink.$categoryId, ENT_QUOTES, CONTREXX_CHARSET),
-                    'title'        => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET)
+                    'title'     => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET)
                 ));
             }
 

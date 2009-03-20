@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ContentManager
  * @copyright    CONTREXX CMS - COMVATION AG
@@ -32,50 +31,56 @@ class ContentManager
      * Page title
     * @var string
     */
-    public $pagetitle = '';
+    var $pagetitle = '';
 
    /**
      * Error status message
     * @var string
     */
-    public $strErrMessage = '';
+    var $strErrMessage = array();
 
     /**
      * Status message (no error)
      * @var string
      */
-    public $strOkMessage = '';
+    var $strOkMessage = '';
 
    /**
      * Module ID
      * @var integer
     */
-    public $setModule = 0;
+    var $setModule = 0;
 
    /**
      * Command (cmd) parameter
     * @var string
     */
-    public $setCmd = '';
+    var $setCmd = '';
 
    /**
     * @var array
     * @desc Array with the WYSIWYG module ids
     */
-    public $arrNoExpertmodes = array();
+    var $arrNoExpertmodes = array();
 
    /**
-    *
-    * @var array
-    * @desc
+    * @var int
+    * @desc Language id
     */
-    public $arrAllFrontendGroups = array();
+    var $langId;
 
    /**
-    * Array of all backend groups (name, id)
+     *
+    * @var array
+     * @desc
+    */
+    var $arrAllFrontendGroups = array();
+
+   /**
+     * Array of all backend groups (name, id)
     * @var array
     */
-    public $arrAllBackendGroups = array();
+    var $arrAllBackendGroups = array();
 
    /**
     * @var array
@@ -84,11 +89,15 @@ class ContentManager
     *
     * @access private
     */
-    public $_requiredModules = array(1,13,14,15,18);
-    public $_navtable = array();
-    public $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
-    public $boolHistoryEnabled = false;
-    public $boolHistoryActivate = false;
+    var $_requiredModules = array(1,13,14,15,18);
+
+
+    var $_navtable = array();
+
+    var $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
+
+    var $boolHistoryEnabled = false;
+    var $boolHistoryActivate = false;
 
     /**
     * Constructor
@@ -96,9 +105,10 @@ class ContentManager
     * @param  string
     * @access public
     */
-    function __construct()
-    {
-        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG;
+    function __construct() {
+        global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG;
+
+        $this->langId=$objInit->userFrontendLangId;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
                            "<a href='index.php?cmd=content&amp;act=new'>".$_CORELANG['TXT_NEW_PAGE']."</a>
@@ -132,7 +142,7 @@ class ContentManager
     */
     function getPage()
     {
-        global $objTemplate;
+        global $_CORELANG, $objTemplate;
 
         if(!isset($_GET['act'])){
             $_GET['act']='';
@@ -200,7 +210,9 @@ class ContentManager
 
         case 'changeActiveStatus':
             $this->changeActiveStatus($_GET['id']);
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
             $this->contentOverview();
         break;
 
@@ -213,7 +225,7 @@ class ContentManager
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'                => $this->pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
-            'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage
+            'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
     }
 
@@ -244,9 +256,9 @@ class ContentManager
             ));
 
             foreach ($objLanguage->getLanguageArray() as $key){
-                if ($key['id'] == FRONTEND_LANG_ID) {
+                if ($key['id'] == $this->langId) {
                     $objTemplate->setVariable(array(
-                        'LANG_OLD_ID' => FRONTEND_LANG_ID,
+                        'LANG_OLD_ID' => $this->langId,
                         'LANG_OLD_NAME' => $key['name']
                     ));
                 } else {
@@ -268,7 +280,7 @@ class ContentManager
      */
     function _copyAll()
     {
-        global $objDatabase;
+        global $objDatabase, $_CORELANG;
 
         if (isset($_POST['langOriginal']) && !empty($_POST['langOriginal'])) {
             $this->_deleteAll(intval($_POST['langNew']));
@@ -381,6 +393,10 @@ class ContentManager
             unset($arrQuery);
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."content_navigation");
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."content");
+
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
         }
     }
 
@@ -401,7 +417,7 @@ class ContentManager
         if (intval($langId) != 0) {
             // the default language site cannot be deleted
             if ($objLanguage->getLanguageParameter($langId, "is_default")=="true") {
-                $this->strErrMessage= $_CORELANG['TXT_STANDARD_SITE_NOT_DELETED'];
+                $this->strErrMessage[] = $_CORELANG['TXT_STANDARD_SITE_NOT_DELETED'];
             } else {
                 $arrQuery = array();
                 $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE lang=".intval($langId));
@@ -435,7 +451,9 @@ class ContentManager
                 $objCache->writeCacheablePagesFile();
 
                 // write xml sitemap
-                XMLSitemap::write();
+                if (($result = XMLSitemap::write()) !== true) {
+                    $this->strErrMessage[] = $result;
+                }
             }
         }
     }
@@ -527,7 +545,9 @@ class ContentManager
             }
 
             // write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
         }
         $objNavbar = new ContentSitemap(0);
         $objTemplate->setVariable('ADMIN_CONTENT', $objNavbar->getSiteMap());
@@ -661,7 +681,8 @@ class ContentManager
             'TXT_NO_MODULE'            => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'             => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'               => $_CORELANG['TXT_BROWSE'],
-            'TXT_NO_REDIRECT'          => '',
+      		'TXT_CONTENT_ASSIGN_BLOCK' => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+           	'TXT_NO_REDIRECT'          => '',
             'TXT_SOURCE_MODE'          => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'       => $_CORELANG['TXT_CACHING_STATUS'],
             'TXT_THEMES'               => $_CORELANG['TXT_THEMES'],
@@ -812,9 +833,9 @@ class ContentManager
 			FROM ".DBPREFIX."settings
 			WHERE setmodule = 41 AND setname = 'aliasStatus'
 		";
-		$res = $objDatabase->SelectLimit($query, 1);
-		if ($res)
+		if ($res = $objDatabase->SelectLimit($query, 1)) {
 			return $res->fields['setvalue'];
+		}
 		return false;
 	}
 
@@ -874,6 +895,7 @@ class ContentManager
             'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'                    => $_CORELANG['TXT_BROWSE'],
+  			'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'                  => '',
             'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'               => $_CORELANG['TXT_CACHING_STATUS'],
@@ -1333,7 +1355,11 @@ class ContentManager
         $currentTime = time();
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
-        $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirect'])) : '';
+        $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirectUrl'])) : '';
+	    if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
+            $redirect = 'mailto:'.$match[1];
+            $_POST['redirectTarget'] = '_blank';
+        }
         $redirectTarget    = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
 
         $contenthtml=$this->_getBodyContent($contenthtml);
@@ -1377,7 +1403,7 @@ class ContentManager
                                                 username='".$objFWUser->objUser->getUsername()."',
                                                 changelog='".$currentTime."',
                                                     cmd='".$command."',
-                                                lang='".FRONTEND_LANG_ID."',
+                                                lang='".$this->langId."',
                                                 module='".$moduleId."',
                                                 startdate='".$startdate."',
                                                 enddate='".$enddate."',
@@ -1396,7 +1422,7 @@ class ContentManager
                                                   username='".$objFWUser->objUser->getUsername()."',
                                                   changelog='".$currentTime."',
                                                   cmd='".$command."',
-                                                  lang='".FRONTEND_LANG_ID."',
+                                                  lang='".$this->langId."',
                                                   module='".$moduleId."',
                                                   startdate='".$startdate."',
                                                   enddate='".$enddate."',
@@ -1407,8 +1433,7 @@ class ContentManager
         }
 
 
-        $err = $this->_set_default_alias($pageId, $_POST['alias']);
-        if ($err) {
+        if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
 			$objTemplate->setVariable("ALIAS_STATUS", $err);
 		}
 
@@ -1427,7 +1452,7 @@ class ContentManager
         if ($boolDirectUpdate) {
             $this->strOkMessage =$_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         } else {
-            $this->strErrMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'];
+            $this->strErrMessage[] = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'];
         }
 
         $protect = (empty($_POST['protection']) ? false : true);
@@ -1445,7 +1470,9 @@ class ContentManager
         $objCache->writeCacheablePagesFile();
 
         // write xml sitemap
-        XMLSitemap::write();
+        if (($result = XMLSitemap::write()) !== true) {
+            $this->strErrMessage[] = $result;
+        }
 
         if (empty($command) && intval($moduleId) == 0) {
             $objCache->deleteSingleFile($pageId);
@@ -1487,7 +1514,7 @@ class ContentManager
                                             username="'.$objFWUser->objUser->getUsername().'",
                                             changelog="'.$currentTime.'",
                                                 cmd="'.$command.'",
-                                            lang="'.FRONTEND_LANG_ID.'",
+                                            lang="'.$this->langId.'",
                                             module="'.$moduleId.'",
                                             startdate="'.$startdate.'",
                                             enddate="'.$enddate.'",
@@ -1525,7 +1552,7 @@ class ContentManager
 
     static function mkurl($absolute_local_path) {
         global $_CONFIG;
-        return "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
+        return ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
             ? ""
             : ":".intval($_SERVER['SERVER_PORT'])
         ).ASCMS_PATH_OFFSET.$absolute_local_path;
@@ -1564,7 +1591,7 @@ class ContentManager
         $contentdesc =     strip_tags(contrexx_addslashes($_POST['desc']));
         $contentkey =     strip_tags(contrexx_addslashes($_POST['key']));
 
-        $redirect = contrexx_addslashes(strip_tags($_POST['redirect']));
+        $redirect = contrexx_addslashes(strip_tags($_POST['redirectUrl']));
         $redirectTarget = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
@@ -1620,7 +1647,7 @@ class ContentManager
                 ".$parcat.", '".$catname."', '".$redirectTarget."', '1',
                 '".$displaystatus."', '".$cachingstatus."',
                 '".$objFWUser->objUser->getUsername()."', '".$currentTime."',
-                '".$command."', '".FRONTEND_LANG_ID."', '".$modul."',
+                '".$command."', '".$this->langId."', '".$modul."',
                 '".$startdate."', '".$enddate."',
                 '".$protected."', '".$themesId."', '".$cssNameNav."'
             )
@@ -1628,9 +1655,9 @@ class ContentManager
         $objDatabase->Execute($q1);
         $pageId = $objDatabase->Insert_ID();
 
-        $err = $this->_set_default_alias($pageId, $_POST['alias']);
-        if ($err)
+        if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
 			$objTemplate->setVariable("ALIAS_STATUS", $err);
+		}
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
@@ -1658,7 +1685,9 @@ class ContentManager
             $objCache->writeCacheablePagesFile();
 
             // write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
 
             // Create backup for history
             if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
@@ -1691,8 +1720,8 @@ class ContentManager
                                                    cachingstatus="'.$cachingstatus.'",
                                                    username="'.$objFWUser->objUser->getUsername().'",
                                                    changelog="'.$currentTime.'",
-                                                   cmd="'.$command.'",
-                                                   lang="'.FRONTEND_LANG_ID.'",
+                                                    cmd="'.$command.'",
+                                                  lang="'.$this->langId.'",
                                                    module="'.$modul.'",
                                                    startdate="'.$startdate.'",
                                                    enddate="'.$enddate.'",
@@ -1726,7 +1755,7 @@ class ContentManager
             }
             $this->modifyBlocks($_POST['assignedBlocks'], $pageId);
         } else {
-            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+            $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         }
         return $pageId;
     }
@@ -1771,11 +1800,11 @@ class ContentManager
                     $objResult->MoveNext();
                 }
                 if ($objResult->RecordCount()>1) {
-                    $this->strErrMessage =
+                    $this->strErrMessage[] =
                         $_CORELANG['TXT_PAGE_NOT_DELETED_DELETE_SUBCATEGORIES_FIRST'];
                 } else {
                     if (in_array($moduleId, $this->_requiredModules)) {
-                        $this->strErrMessage =
+                        $this->strErrMessage[] =
                             $_CORELANG['TXT_NOT_DELETE_REQUIRED_MODULES'];
                     } else {
                         if ($this->boolHistoryEnabled) {
@@ -1814,7 +1843,7 @@ class ContentManager
 
                             if ($objDatabase->Execute($q1) === false
                              || $objDatabase->Execute($q2) === false) {
-                                $this->strErrMessage =
+                                $this->strErrMessage[] =
                                     $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
                             } else {
                                  $this->strOkMessage =
@@ -1825,7 +1854,9 @@ class ContentManager
                                 $objCache->writeCacheablePagesFile();
 
                                 // write xml sitemap
-                                XMLSitemap::write();
+                                if (($result = XMLSitemap::write()) !== true) {
+                                    $this->strErrMessage[] = $result;
+                                }
                             }
                         }
                     }
@@ -1856,7 +1887,6 @@ class ContentManager
             if ($objModule) {
                 $moduleId = $objModule->fields['module'];
             }
-            $arrSkipPages = array();
             foreach ($catidarray as $value) {
 // TODO: $arrSkipPages is set too late (see below)!
                 $objResult = $objDatabase->Execute("
@@ -1866,9 +1896,9 @@ class ContentManager
                      WHERE id=catid
                        AND catid=$value
                        AND module IN (0,$moduleId)".
-                      (empty($arrSkipPages)
-                          ? ''
-                          : " AND parcat NOT IN (".implode(',', $arrSkipPages).")"
+                      (count($arrSkipPages)
+                          ? " AND parcat NOT IN (".implode(',', $arrSkipPages).")"
+                          : ''
                       )
                 );
                 if ($objResult !== false && $objResult->RecordCount() > 0) {
@@ -1909,7 +1939,7 @@ class ContentManager
                                         lang ='".$repository['lang']."',
                                         parid ='".$repository['parid']."'";
                     if ($objDatabase->Execute($query) === false) {
-                        $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                        $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
                     }
                     $paridarray[$value] = $objDatabase->Insert_ID();
                 } else {
@@ -2004,25 +2034,26 @@ class ContentManager
     }
 
 
-    function _homeModuleCheck($section, $cmd, $pageId)
+    function _homeModuleCheck($section,$cmd,$pageId)
     {
         global $objDatabase, $_CORELANG;
+        $lang=$this->langId;
+        $section=intval($section);
 
-        $section = intval($section);
         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name='home'");
         if ($objResult !== false && $objResult->RecordCount()>0) {
             $homeModuleId = intval($objResult->fields['id']);
         } else {
-            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+            $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             return false;
         }
 
-        $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE  lang=".FRONTEND_LANG_ID." AND module=".$homeModuleId);
+        $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE  lang=".$lang." AND module=".$homeModuleId);
         if ($objResult !== false && $objResult->RecordCount()>0) {
             $objResult = $objDatabase->Execute("SELECT m.name
                               FROM ".DBPREFIX."content_navigation AS n,
                                    ".DBPREFIX."modules AS m
-                             WHERE n.lang=".FRONTEND_LANG_ID."
+                             WHERE n.lang=".$lang."
                                AND n.module=".$section."
                                AND n.cmd='".$cmd."'
                                AND n.module>0
@@ -2031,7 +2062,7 @@ class ContentManager
             if ($objResult !== false) {
                 if ($objResult->RecordCount()>0) {
                     $sectionName = $objResult->fields['m.name'];
-                    $this->strErrMessage = $_CORELANG['TXT_PAGE_WITH_SAME_MODULE_EXIST']." ".$sectionName." ".$cmd;
+                    $this->strErrMessage[] = $_CORELANG['TXT_PAGE_WITH_SAME_MODULE_EXIST']." ".$sectionName." ".$cmd;
                     $this->setModule=$section;
                     $this->setCmd=$cmd+1;
                     return false;
@@ -2046,7 +2077,7 @@ class ContentManager
                 return false;
             }
         }
-        $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+        $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         return  false;
     }
 
@@ -2066,7 +2097,7 @@ class ContentManager
         $objResult = $objDatabase->Execute("
             SELECT catid, parcat, catname, backend_access_id
                                             FROM ".DBPREFIX."content_navigation
-                                            WHERE lang=".FRONTEND_LANG_ID."
+                                            WHERE lang=".$this->langId."
           ORDER BY parcat ASC, displayorder ASC
         ");
         if ($objResult === false) {
@@ -2148,10 +2179,12 @@ class ContentManager
                 $objCache->writeCacheablePagesFile();
 
                 // write xml sitemap
-                XMLSitemap::write();
+                if (($result = XMLSitemap::write()) !== true) {
+                    $this->strErrMessage[] = $result;
+                }
                 $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
-                $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
     }
@@ -2213,11 +2246,13 @@ class ContentManager
 //                }
 
                 // write xml sitemap
-                XMLSitemap::write();
+                if (($result = XMLSitemap::write()) !== true) {
+                    $this->strErrMessage[] = $result;
+                }
 
                 $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
-                $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
     }
@@ -2627,7 +2662,7 @@ class ContentManager
 	 * @param alias   the alias to install for the page. if it is empty or null,
 	 *                no change will happen.
 	 */
-    function _set_default_alias($pageid, $alias) {
+    function _set_default_alias($pageId, $alias) {
         $alias    = $this->_fix_alias($alias);
 
 		//////////////////////////////////////////////////////////////
@@ -2636,121 +2671,70 @@ class ContentManager
 		require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
 		$util = new aliasLib;
 
-        // Do we already have a default alias? This means we probably have to
-        // delete it if the name changed..
-        $alias_src_id = $this->_has_default_alias($pageid);
-
-        // figure out old name of alias, if present.
-        $old_name = '';
-        if ($alias_src_id) {
-            $objResult = $objDatabase->SelectLimit("
-                SELECT id FROM ".DBPREFIX."module_alias_target
-                WHERE type = 'local' and url = '$pageid'",
-                1
+		// check if there is already an alias present for the page
+        $aliasId = intval($this->_has_default_alias($pageId));
+        if (($arrAlias = $util->_getAlias($aliasId)) == false) {
+            $arrAlias = array(
+                'type'      => 'local',
+                'url'       => $pageId,
+                'pageUrl'   => '',
+                'sources'   => array()
             );
-            $target_id = $objResult->fields['id'];
-            $oldname_res = $objDatabase->SelectLimit("
-                SELECT url FROM ".DBPREFIX."module_alias_source
-                WHERE target_id = $target_id "
-                , 1
-            );
-            $old_name = $oldname_res->fields['url'];
+            $aliasId = 0;
         }
 
-        //////////////////////////////////////////////////////////////
-        // Remove alias if it's empty. But only if it's a default alias!
         if ($alias == '') {
-			if ($alias_src_id) {
-                // We have a default alias, which needs to be
-                // deleted.
-				$objDatabase->Execute("
-					DELETE FROM ".DBPREFIX."module_alias_source
-					WHERE target_id = $target_id "
-				);
-
-				// reads alias table, rewrites the .htaccess.
-				$util->_activateRewriteEngine(array($old_name));
-			}
-            return false;
-        }
-
-
-		//////////////////////////////////////////////////////////////
-		// Is the alias breaking access to a file?
-		if (!$util->is_alias_valid($alias)) {
-			return $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'];
-		}
-
-		//////////////////////////////////////////////////////////////
-		// Check if there is already an alias with that
-		// name.. or for that page.
-		$query = "
-			SELECT target_id
-			FROM  ".DBPREFIX."module_alias_source AS s
-			WHERE s.url = '$alias'
-		";
-		$src = $objDatabase->SelectLimit($query, 1);
-		if ($src->RecordCount()) {
-			// There is already some alias with that name.
-			// This is only a problem if the alias points to another
-			// page. For this, we need to figure out where
-			// this alias points.
-			$t_id = $src->fields['target_id'];
-			$q_target = "
-				SELECT count(*) AS _count
-				FROM ".DBPREFIX."module_alias_target AS t
-				WHERE t.url = '$pageid'
-				  AND t.id  = $t_id
-			";
-			$cnt = $objDatabase->SelectLimit($q_target, 1);
-			if ($cnt->fields['_count'] == 0) {
-				// Alias points somewhere else.
-				return $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'];
-			}
-			return false;
-		}
-
-		//////////////////////////////////////////////////////////////
-		// If the page already has a default alias, we're just
-		// going to update it.
-        if ($alias_src_id){
-			$objDatabase->Execute("
-				UPDATE ".DBPREFIX."module_alias_source
-				SET    url = '$alias'
-				WHERE  id  = $alias_src_id
-				LIMIT  1"
-			);
-		}
-		else {
-		//////////////////////////////////////////////////////////////
-		// Okay. we're now ready to create the alias.
-
-            // check if the target already exists
-            $has_target = $objDatabase->SelectLimit("
-                 SELECT id FROM ".DBPREFIX."module_alias_target
-                 WHERE  url = '$pageid'", 1);
-            if ((!$has_target->RecordCount()) or !($target_id = $has_target->fields['id'])) {
-		$objDatabase->Execute("
-			INSERT INTO ".DBPREFIX."module_alias_target
-				(type, url)
-			VALUES
-				('local', '$pageid')"
-		);
-                $target_id = $objDatabase->Insert_ID();
+        	// Remove alias if it's empty.
+            $aliasRemoved = false;
+            for ($i = 0; $i < count($arrAlias['sources']); $i++) {
+                if ($arrAlias['sources'][$i]['isdefault']) {
+                    $aliasRemoved = true;
+                    unset($arrAlias['sources'][$i]);
+                    break;
+                }
             }
-		$objDatabase->Execute("
-			INSERT INTO ".DBPREFIX."module_alias_source
-				(target_id, url, isdefault)
-			VALUES
-					($target_id, '$alias', 1)"
-		);
-		}
+            if ($aliasRemoved) {
+                if (!count($arrAlias['sources'])) {
+                    // no other alias for this page are left, so let's remove the whole alias
+                    $util->_deleteAlias($aliasId);
+                } else {
+					// update the alias with the removed source entry
+                    $util->_updateAlias($aliasId, $arrAlias);
+                }
+            }
+            return false;
+        } elseif (!$util->is_alias_valid($alias)) {
+            return sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($alias, ENT_QUOTES, CONTREXX_CHARSET));
+        } else {
+            // check if we are going to update or add an alias source
+            $aliasNr = null;
+            for ($i = 0; $i < count($arrAlias['sources']); $i++) {
+                if ($arrAlias['sources'][$i]['isdefault']) {
+                    $aliasNr = $i;
+                    break;
+                }
+            }
 
-		// reads alias table, rewrites the .htaccess.
-        // delete old entry if the name changed.
-        $delete_old = ($alias != $old_name) ? array($old_name) : array();
-        $util->_activateRewriteEngine($delete_old);
-		return false;
+            // check if the defined alias source is unique
+            if (!$util->_isUniqueAliasSource($alias, $pageId, $arrAlias['pageUrl'], isset($aliasNr) ? $arrAlias['sources'][$aliasNr]['id'] : 0)) {
+                return sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($alias, ENT_QUOTES, CONTREXX_CHARSET));
+            }
+
+
+            if (isset($aliasNr)) {
+                // updating the current standard alias source
+                $arrAlias['sources'][$aliasNr]['url'] = $alias;
+            } else {
+                // adding a new alias source
+                $arrAlias['sources'][] = array('url' => $alias, 'isdefault' => 1);
+            }
+
+            if (($aliasId ? $util->_updateAlias($aliasId, $arrAlias) : $util->_addAlias($arrAlias))) {
+                return false;
+            } else {
+                return $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
+            }
+        }
 	}
 
 	/**
@@ -2760,7 +2744,7 @@ class ContentManager
 	function _has_default_alias($pageid) {
 		global $objDatabase;
 		$check_update = "
-			SELECT a_s.url, a_s.id
+			SELECT a_s.url, a_t.id
 			FROM            ".DBPREFIX."module_alias_target AS a_t
 			LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 				  ON  a_t.id        = a_s.target_id
@@ -2775,7 +2759,7 @@ class ContentManager
 	}
     function modifyBlocks($associatedBlockIds, $pageId)
     {
-        global $objDatabase;
+        global $objDatabase, $_FRONTEND_LANGID;
 
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_block_rel_pages
@@ -2787,7 +2771,7 @@ class ContentManager
                     INSERT INTO '.DBPREFIX.'module_block_rel_pages
                        SET block_id='.$blockId.',
                            page_id='.$pageId.',
-                           lang_id='.FRONTEND_LANG_ID
+                           lang_id='.$_FRONTEND_LANGID
                 );
             }
         }
@@ -2797,13 +2781,13 @@ class ContentManager
                 SELECT all_pages
                                                 FROM    '.DBPREFIX.'module_block_rel_lang
                  WHERE block_id='.$blockId.'
-                   AND lang_id='.FRONTEND_LANG_ID
+                   AND lang_id='.$_FRONTEND_LANGID
             );
             if (!$objResult->RecordCount() > 0) {
                 $objDatabase->Execute('
                     INSERT INTO '.DBPREFIX.'module_block_rel_lang
                        SET block_id='.$blockId.',
-                           lang_id='.FRONTEND_LANG_ID.',
+                           lang_id='.$_FRONTEND_LANGID.',
                            all_pages=0
                                     ');
             } else {
@@ -2811,7 +2795,7 @@ class ContentManager
                     UPDATE ".DBPREFIX."module_block_rel_lang
                        SET all_pages='0'
                      WHERE block_id='".$blockId."'
-                       AND lang_id='".FRONTEND_LANG_ID."'
+                       AND lang_id='".$_FRONTEND_LANGID."'
                        AND all_pages='1'
                 ";
                 $objDatabase->Execute($query);

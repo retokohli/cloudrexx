@@ -51,15 +51,15 @@ class MemberDirLibrary
      */
     function _getCharList($link)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
-        $list = "<a href=\"".$link."&amp;sort=sc\">#?</a>&nbsp;&nbsp;";
+        $list = "<a href=\"".$link."&amp;sort=sc\">[&nbsp;#?&nbsp;]</a>&nbsp;";
 
         for ($i = 65; $i <= 90; $i++) {
-            $list .= "<a href=\"".$link."&amp;sort=".chr($i+32)."\">".chr($i)."</a>&nbsp;&nbsp;";
+            $list .= "<a href=\"".$link."&amp;sort=".chr($i+32)."\">[&nbsp;".chr($i)."&nbsp;]</a>&nbsp;";
         }
 
-        $list .= "<a href=\"".$link."&amp;sort=all\">".$_ARRAYLANG['TXT_ALL']."</a>";
+        $list .= "<a href=\"".$link."&amp;sort=all\"><b>[&nbsp;".$_CORELANG['TXT_ACCESS_ALL']."&nbsp;]</b></a>";
 
         return $list;
     }
@@ -134,10 +134,10 @@ class MemberDirLibrary
     {
         global $objDatabase;
 
-           $query = "SELECT dirid, parentdir, name, description,
-                            active, displaymode, sort,
+        $query = "SELECT dirid, parentdir, name, description,
+                         active, displaymode, sort,
                          pic1, pic2, lang_id
-                            FROM ".DBPREFIX."module_memberdir_directories
+                         FROM ".DBPREFIX."module_memberdir_directories
                   WHERE parentdir = $id";
         $objResult = $objDatabase->Execute($query);
 
@@ -189,7 +189,7 @@ class MemberDirLibrary
             $type = ($i < 12) ? "area" : "text";
             $query = "INSERT INTO ".DBPREFIX."module_memberdir_name
                       (field, dirid, name, active, `lang_id`) VALUES
-                      ('$field', '$dirid', '$name', '0', '".FRONTEND_LANG_ID."')";
+                      ('$field', '$dirid', '$name', '0', '{$this->langId}')";
             $objDatabase->Execute($query);
         }
     }
@@ -205,9 +205,11 @@ class MemberDirLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        $dirid_where = $dirid ? "WHERE dirid = '$dirid'" : '';
+
         $query = "SELECT field, dirid, name, active FROM ".DBPREFIX."module_memberdir_name
-                  WHERE dirid = '$dirid'
-                  ORDER BY field ASC";
+                $dirid_where
+                ORDER BY field ASC";
         $objResult = $objDatabase->Execute($query);
 
         $names = $_ARRAYLANG['TXT_FIELD_DEFAULT_NAMES'];
@@ -236,12 +238,12 @@ class MemberDirLibrary
      */
     function checkStr($str)
     {
-        if (preg_match('%^(http://)%', $str)) {
-            return '<a href="'.$str.'" title="'.$str.'">'.$str.'</a>';
-        } elseif (preg_match('%^(www\.)%', $str)) {
-            return '<a href="http://'.$str.'" title="">'.$str.'</a>';
-        } elseif (preg_match('%^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$%', $str)) {
-            return '<a href="mailto:'.$str.'" title="">'.$str.'</a>';
+        if (preg_match("%^(http://)%", $str)) {
+            return "<a href=\"".$str."\" title=\"$str\">".$str."</a>";
+        } elseif (preg_match("%^(www\.)%", $str)) {
+            return "<a href=\"http://".$str."\" title=\"\">".$str."</a>";
+        } elseif (preg_match("%^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$%", $str)) {
+            return "<a href=\"mailto:".$str."\" title=\"\">".$str."</a>";
         } else {
             return $str;
         }
@@ -258,19 +260,23 @@ class MemberDirLibrary
      */
     function dirList($name, $selection, $width)
     {
-        $select = '<select name="'.$name.'" style="width: '.$width.'px;" onchange="dirChange(this.value)">';
+        $select = "<select name=\"".$name."\" style=\"width: ".$width."px;\" onchange=\"dirChange(this.value)\">";
 
         foreach ($this->directories as $dirid => $directory) {
-            $select .=
-                '<option value="'.$dirid.'"'.
-                ($selection == $dirid ? ' selected="selected"' : '').'>'.
-                str_repeat('...', $directory['level']).
-                $directory['name'].'</option>';
+            $selected = ($selection == $dirid) ? "selected=\"selected\"" : "";
+
+            $prefix = "";
+            for ($i=1; $i<=$directory['level']; $i++) {
+               $prefix .= "...";
+            }
+
+            $select .= "<option value=\"".$dirid."\" $selected>".$prefix.$directory['name']."</option>";
         }
-        $select .= '</select>';
+
+        $select .= "</select>";
+
         return $select;
     }
-
 
     /**
      * export the member informations as a vcard (*.vcf)
@@ -281,7 +287,7 @@ class MemberDirLibrary
     function _exportVCard($id){
         global $objDatabase;
         //error_reporting(E_ALL);ini_set('display_errors',1);
-        $query = "    SELECT `pic1`, `pic2`, `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, `18`
+        $query = "  SELECT `pic1`, `pic2`, `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, `18`
                     FROM `".DBPREFIX."module_memberdir_values`
                     WHERE `id` = ".$id;
 
@@ -290,24 +296,24 @@ class MemberDirLibrary
 
             $vcard = new Contact_Vcard_Build();
 
-            $lastname     = $objRS->fields['1'];
-            $firstname    = $objRS->fields['2'];
+            $lastname   = $objRS->fields['1'];
+            $firstname  = $objRS->fields['2'];
             $company    = $objRS->fields['3'];
-            $phone        = $objRS->fields['4'];
-            $mobile        = $objRS->fields['5'];
+            $phone      = $objRS->fields['4'];
+            $mobile     = $objRS->fields['5'];
             $address    = $objRS->fields['6'];
             $zip        = $objRS->fields['7'];
-            $city        = $objRS->fields['8'];
-            $email        = $objRS->fields['9'];
+            $city       = $objRS->fields['8'];
+            $email      = $objRS->fields['9'];
             $fax        = $objRS->fields['10'];
-            $homepage    = $objRS->fields['11'];
-            $birthday    = $objRS->fields['12'];
-            $special1    = $objRS->fields['13'];
-            $special2    = $objRS->fields['14'];
-            $special3    = $objRS->fields['15'];
-            $special4    = $objRS->fields['16'];
-            $special5    = $objRS->fields['17'];
-            $special6    = $objRS->fields['18'];
+            $homepage   = $objRS->fields['11'];
+            $birthday   = $objRS->fields['12'];
+            $special1   = $objRS->fields['13'];
+            $special2   = $objRS->fields['14'];
+            $special3   = $objRS->fields['15'];
+            $special4   = $objRS->fields['16'];
+            $special5   = $objRS->fields['17'];
+            $special6   = $objRS->fields['18'];
 
             $vcard->setFormattedName("{$lastname} {$firstname}");
             $vcard->setName($lastname, $firstname, '', '' ,'');

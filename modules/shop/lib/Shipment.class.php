@@ -5,8 +5,6 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
- * @todo        Make static as much as possible
  */
 
 /**
@@ -63,7 +61,6 @@ class Shipment
      * module_shop_shipment_cost (id, shipper_id, max_weight, cost, price_free)
      * as of version 1.1.
      * @global  ADONewConnection
-     * @global  integer   $_LANG_ID
      * @param   boolean   $ignoreStatus   If false, only records with status==1
      *                                    are returned, all records otherwise.
      *                                    Use $ignoreStatus=true for the
@@ -76,32 +73,37 @@ class Shipment
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets(
-            '`shipper`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_SHIPPER_NAME
-        );
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`shipper`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_SHIPPER_NAME
+//        );
+//        $objResult = $objDatabase->Execute("
+//            SELECT `shipper`.`id`, `shipper`.`status`".$arrSqlName['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`".
+//                   $arrSqlName['join']."
+//             ORDER BY `shipper`.`id` ASC
+//        ");
         $objResult = $objDatabase->Execute("
-            SELECT `shipper`.`id`, `shipper`.`status`".$arrSqlName['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`".
-                   $arrSqlName['join']."
+            SELECT `shipper`.`id`, `shipper`.`status`, `shipper`.`name`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`
              ORDER BY `shipper`.`id` ASC
         ");
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $sid = $objResult->fields['id'];
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            // Replace Text in a missing language by another, if available
-            if ($text_name_id && $strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strName = $objText->getText();
-            }
+//            $text_name_id = $objResult->fields[$arrSqlName['name']];
+//            $strName = $objResult->fields[$arrSqlName['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($text_name_id && $strName === null) {
+//                $objText = Text::getById($text_name_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strName = $objText->getText();
+//            }
             self::$arrShippers[$sid] = array(
                 'id' => $objResult->fields['id'],
-                'name' => $strName,
-                'text_name_id' => $text_name_id,
+                'name' => $objResult->fields['name'], //$strName,
+//                'text_name_id' => $text_name_id,
                 'status' => $objResult->fields['status'],
             );
             $objResult->MoveNext();
@@ -138,7 +140,9 @@ class Shipment
      */
     static function getShipperName($shipperId)
     {
+    	if (empty($shipperId)) return '';
         if (empty(self::$arrShippers)) self::init(true);
+        if (empty(self::$arrShippers[$shipperId])) return '';
         return self::$arrShippers[$shipperId]['name'];
     }
 
@@ -163,7 +167,8 @@ class Shipment
      */
     static function getShipmentsArray()
     {
-        return self::$arrShipments;
+        if (empty(self::$arrShippments)) self::init();
+    	return self::$arrShipments;
     }
 
 
@@ -205,7 +210,7 @@ class Shipment
     /**
      * Returns an array of shipper ids relevant for the country specified by
      * the argument $countryId.
-     * @internal Note that s.shipment_id below now associates with shipper.id (TODO)
+     * @internal Note that s.shipment_id below now associates with shipper.id
      * @param   integer $countryId      The optional country ID
      * @return  array                   Array of shipment IDs on success,
      *                                  false otherwise
@@ -222,11 +227,11 @@ class Shipment
             SELECT `s`.`shipment_id` AS `shipper_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                ON `c`.`zone_id`=`z`.`id`
+                ON `c`.`zones_id`=`z`.`zones_id`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `s`
-                ON `z`.`id`=`s`.`zone_id`
-             WHERE `z`.`status`=1".
-              ($countryId ? " AND `c`.`country_id`=$countryId" : '');
+                ON `z`.`zones_id`=`s`.`zones_id`
+             WHERE `z`.`activation_status`=1".
+              ($countryId ? " AND `c`.`countries_id`=$countryId" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrShipperId = array();
@@ -262,11 +267,15 @@ class Shipment
         global $_ARRAYLANG;
 
         if (empty(self::$arrShippers)) self::init();
+//echo("getShipperMenu($countryId, $selectedId, $onchange):  Init()ed: ".var_export(self::$arrShippers, true)."<br />");
         $menu = (intval($selectedId) == 0
-            ? "<option value='0' selected='selected'>".$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT']."</option>\n"
+            ? '<option value="0" selected="selected">'.
+              $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
+              "</option>\n"
             : ''
         );
         $arrId = self::getCountriesRelatedShippingIdArray($countryId);
+//echo("getShipperMenu():  Country related IDs: ".var_export($arrId, true)."<br />");
         $haveShipper = false;
         foreach (array_keys(self::$arrShippers) as $sid) {
             // only show suitable shipments in the menu if the user is on the payment page,
@@ -279,13 +288,15 @@ class Shipment
                     $_SESSION['shop']['cart']['total_price'],
                     $_SESSION['shop']['cart']['total_weight']) != -1
             )) {
-                $selected = ($sid==intval($selectedId) ? 'selected="selected"' : '');
-                $menu .= '<option value="'.$sid.'" '.$selected.'>'.self::$arrShippers[$sid]['name']."</option>\n";
+                $menu .=
+                    '<option value="'.$sid.'"'.
+                    ($sid==intval($selectedId) ? ' selected="selected"' : '').
+                    '>'.self::$arrShippers[$sid]['name']."</option>\n";
                 $haveShipper = true;
             }
         }
         if (!$haveShipper)
-            return $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'];
+            return $_ARRAYLANG['TXT_SHOP_SHIPMENT_TOO_HEAVY'];
         if ($onchange)
             $menu =
                 '<select name="shipperId" onchange="'.$onchange.'">'.$menu.'</select>';
@@ -307,7 +318,7 @@ class Shipment
 
         if (empty(self::$arrShippers)) self::init();
         if (empty(self::$arrShippers[$sid])) return false;
-        if (!Text::deleteById(self::$arrShippers[$sid]['text_name_id'])) return false;
+//        if (!Text::deleteById(self::$arrShippers[$sid]['text_name_id'])) return false;
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper WHERE id=".$sid);
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE shipper_id=".$sid);
@@ -346,19 +357,25 @@ class Shipment
      * @param   integer $zone       The zone the Shipper is in
      * @return  boolean             True on success, false otherwise
      * @static
-     * @todo    Add zone to database table and this class!
      */
-    function addShipper($name, $isActive) // , $zone)
+    function addShipper($name, $isActive)
     {
         global $objDatabase;
 
-        $objText = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_SHIPPER_NAME);
-        if (!$objText->store()) return false;
+//        $objText = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_SHIPPER_NAME);
+//        if (!$objText->store()) return false;
+//        $objResult = $objDatabase->Execute("
+//            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` (
+//                `text_name_id`, `status`
+//            ) VALUES (
+//                ".$objText->getId().", ".($isActive ? 1 : 0)."
+//            )
+//        ");
         $objResult = $objDatabase->Execute("
             INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` (
-                `text_name_id`, `status`
+                `name`, `status`
             ) VALUES (
-                ".$objText->getId().", ".($isActive ? 1 : 0)."
+                '".addslashes($name)."', ".($isActive ? 1 : 0)."
             )
         ");
         return ($objResult ? true : false);

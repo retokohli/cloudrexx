@@ -76,4 +76,9 @@ $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sexe";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Inconnu";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'] = "Abonnement";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Résiliation abonnement";
+$_ARRAYLANG['TXT_ACCESS_MESSAGE'] = "Message";
+$_ARRAYLANG['TXT_ACCESS_SITE'] = "Site";
+$_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Envoyer message";
+$_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Ajouter au carnet d'adresses";
+$_ARRAYLANG['TXT_ADD_ADDRESS'] = "Ajouter au carnet d'adresses";
 ?>

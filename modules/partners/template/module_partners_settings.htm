@@ -1,0 +1,112 @@
+<!-- START module_partners_settings.html -->
+<script language="javascript" type="text/javascript">
+//<![CDATA[
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_COMMENTS_ALLOW_SORT_HELP}"];
+Text[1]=["","{TXT_COMMENTS_ALLOW_WIDTH_HELP}"];
+Text[2]=["","{TXT_COMMENTS_ALLOW_HEIGHT_HELP}"];
+Text[3]=["","{TXT_COMMENTS_ALLOW_WIDTH_HELP_LEVEL}"];
+Text[4]=["","{TXT_COMMENTS_ALLOW_HEIGHT_HELP_LEVEL}"];
+Text[5]=["","{TXT_COMMENTS_ALLOW_WIDTH_HELP_CERT}"];
+Text[6]=["","{TXT_COMMENTS_ALLOW_HEIGHT_HELP_CERT}"];
+Text[7]=["","{TXT_COMMENTS_ALLOW_ACTIVE_HELP_LEVEL}"];
+Text[8]=["","{TXT_COMMENTS_ALLOW_ACTIVE_HELP_PROFILE}"];
+Text[9]=["","{TXT_COMMENTS_ALLOW_ACTIVE_HELP_COUNTRY}"];
+Text[10]=["","{TXT_COMMENTS_ALLOW_ACTIVE_HELP_VERTICAL}"];
+Text[11]=["","{TXT_COMMENTS_ALLOW_ACTIVE_HELP_CERTIFICATE}"];
+//]]>
+</script>
+<form name="frmSettings" method="post" action="?cmd=partners&amp;act=saveSettings">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_GENERAL_TITLE}</th>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_SORT_TITLE}</td>
+			<td width="85%">{PARTNERS_SETTINGS_ORDER_ACTIVE}
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+		</tr>
+	</table>
+	<br />	
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_IMAGE_TITLE}</th>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_WIDTH_TITLE}</td>
+			<td width="85%"><input type="text" name="frmSettings_width" value="{PARTNERS_SETTINGS_WIDTH}"  maxlength="50" style="width:30%;"  />&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_HEIGHT_TITLE}</td>
+			<td><input type="text" name="frmSettings_height" value="{PARTNERS_SETTINGS_HEIGHT}"  maxlength="50" style="width:30%;"  />&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+		</tr>
+  	</table>
+	<br />
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_IMAGE_LEVEL_TITLE}</th>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_WIDTH_TITLE}</td>
+			<td width="85%"><input type="text" name="frmSettings_widthlevel" value="{PARTNERS_SETTINGS_WIDTH_LEVEL}"  maxlength="50" style="width:30%;"  />&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_HEIGHT_TITLE}</td>
+			<td><input type="text" name="frmSettings_heightlevel" value="{PARTNERS_SETTINGS_HEIGHT_LEVEL}"  maxlength="50" style="width:30%;"  />&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" /></td>
+		</tr>
+  	</table>
+  	<br />
+  		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_IMAGE_CERT_TITLE}</th>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_WIDTH_TITLE}</td>
+			<td width="85%"><input type="text" name="frmSettings_widthcert" value="{PARTNERS_SETTINGS_WIDTH_CERT}"  maxlength="50" style="width:30%;"  />&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_HEIGHT_TITLE}</td>
+			<td><input type="text" name="frmSettings_heightcert" value="{PARTNERS_SETTINGS_HEIGHT_CERT}"  maxlength="50" style="width:30%;"  />&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[6],Style[0])" /></td>
+		</tr>
+  	</table>
+  	<br />
+   	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_ACTIVE_TITLE}</th>
+		</tr>
+		<tr class="row1">
+			<td width="15%">{TXT_LEVEL_TITLE}</td>
+			<td width="85%">{PARNTERS_ACTIVE_LEVEL}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_PROFILE_TITLE}</td>
+			<td width="85%">{PARNTERS_ACTIVE_PROFILE}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[8],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="15%">{TXT_COUNTRY_TITLE}</td>
+			<td width="85%">{PARNTERS_ACTIVE_COUNTRY}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_VERTICAL_TITLE}</td>
+			<td width="85%">{PARNTERS_ACTIVE_VERTICAL}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[10],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="15%">{TXT_CERTIFICATE_TITLE}</td>
+			<td width="85%">{PARNTERS_ACTIVE_CERTIFICATE}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[11],Style[0])" /></td>
+		</tr>
+
+  	</table>
+	<input type="submit" value="{TXT_SAVE}" name="frmSettings_submit" />
+</form>
+<!-- END module_partners_settings.html -->

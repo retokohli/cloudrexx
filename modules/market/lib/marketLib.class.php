@@ -26,6 +26,28 @@ require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
  */
 class marketLibrary
 {
+    /**
+     * File extensions that are allowed to upload
+     *
+     * This array contains all file extensions that are allowed
+     * to be uploaded. If a file's file extensions is not listed
+     * in this array then the contact request will be blocked and
+     * a error message will be return instead.
+     */
+    private $enabledUploadFileExtensions = array(
+        "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
+        "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
+        "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
+        "xlw","xlt","sdc","vor","sdc","cvs","slk","wk1","wks",
+        "123","odp","otp","sxi","sti","pps","pot","sxd","sda",
+        "sdd","sdp","cgm","odg","otg","sxd","std","dxf","emf",
+        "eps","met","pct","sgf","sgv","svm","wmf","bmp","jpeg",
+        "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
+        "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
+        "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
+        "html","shtml","css","js","tpl","thumb","ico"
+    );
+
     function getCategories()
     {
         global $objDatabase;
@@ -71,6 +93,7 @@ class marketLibrary
                    $this->entries[$objResultEntries->fields['id']]['id']                 = $objResultEntries->fields['id'];
                    $this->entries[$objResultEntries->fields['id']]['type']             = $objResultEntries->fields['type'];
                    $this->entries[$objResultEntries->fields['id']]['title']             = $objResultEntries->fields['title'];
+                   $this->entries[$objResultEntries->fields['id']]['color']             = $objResultEntries->fields['color'];
                    $this->entries[$objResultEntries->fields['id']]['description']         = $objResultEntries->fields['description'];
                    $this->entries[$objResultEntries->fields['id']]['premium']             = $objResultEntries->fields['premium'];
                    $this->entries[$objResultEntries->fields['id']]['picture']             = $objResultEntries->fields['picture'];
@@ -84,6 +107,7 @@ class marketLibrary
                    $this->entries[$objResultEntries->fields['id']]['userdetails']         = $objResultEntries->fields['userdetails'];
                    $this->entries[$objResultEntries->fields['id']]['status']             = $objResultEntries->fields['status'];
                    $this->entries[$objResultEntries->fields['id']]['regkey']             = $objResultEntries->fields['regkey'];
+                   $this->entries[$objResultEntries->fields['id']]['sort_id']             = $objResultEntries->fields['sort_id'];
                    $this->entries[$objResultEntries->fields['id']]['spez_field_1']     = $objResultEntries->fields['spez_field_1'];
                    $this->entries[$objResultEntries->fields['id']]['spez_field_2']     = $objResultEntries->fields['spez_field_2'];
                    $this->entries[$objResultEntries->fields['id']]['spez_field_3']     = $objResultEntries->fields['spez_field_3'];
@@ -132,6 +156,8 @@ class marketLibrary
 
         if($_FILES['pic']['name'] != ""){
             $picture = $this->uploadPicture();
+        }elseif (isset($_POST['picOld'])) {
+            $picture = $this->copyPicture($_POST['picOld']);
         }else{
             $picture = "";
         }
@@ -169,6 +195,7 @@ class marketLibrary
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
+								  color='".contrexx_addslashes($_POST['color'])."',
                                   description='".contrexx_addslashes($_POST['description'])."',
                                 premium='".contrexx_addslashes($_POST['premium'])."',
                                   picture='".contrexx_addslashes($picture)."',
@@ -431,7 +458,7 @@ class marketLibrary
             $tmpFile          = $_FILES['pic']['tmp_name'];
                $fileName         = $_FILES['pic']['name'];
 
-               if($fileName != ""){
+               if($fileName != "" && preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $fileName, $arrMatch) && in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)){
                 //check extension
                    $info     = pathinfo($fileName);
                 $exte     = $info['extension'];
@@ -464,6 +491,36 @@ class marketLibrary
         return $status;
     }
 
+    function copyPicture($fileName)
+    {
+        $fileNameOri = $fileName;
+
+        if (!empty($fileName)) {
+            $path            = "pictures/";
+
+            $info     = pathinfo($fileName);
+            $exte     = $info['extension'];
+            $exte     = (!empty($exte)) ? '.' . $exte : '';
+            $part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
+            $rand      = rand(10, 99);
+            $fileName = md5($rand.$fileName).$exte;
+
+            //check file
+            // TODO: $x is not defined
+            $x = 0;
+            if(file_exists($this->mediaPath.$path.$fileName)){
+                $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
+                $fileName = md5($fileName).$exte;
+            }
+
+            $objFile = new File();
+            $objFile->copyFile($this->mediaPath.$path, $fileNameOri, $this->mediaPath.$path, $fileName);
+            $objFile->setChmod($this->mediaPath, $this->mediaWebPath, $path.$fileName);
+            return $fileName;
+        } else {
+            return '';
+        }
+    }
 
     function removeEntry($array){
 

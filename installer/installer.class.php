@@ -1,4 +1,9 @@
 <?php
+
+define('ASCMS_FRAMEWORK_PATH', dirname(dirname(__FILE__)) . '/lib/FRAMEWORK');
+require_once "../lib/FRAMEWORK/FWUser.class.php";
+require_once "../lib/FRAMEWORK/User/User.class.php";
+
 /**
  * Install Wizard Controller
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -915,10 +920,10 @@ class Installer
 	function _getConfigurationPage() {
 		global $objTpl, $_ARRLANG, $objCommon, $templatePath, $arrDefaultConfig, $_CONFIG, $useUtf8;
 
-		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-			$protocol = "https://";
-		} else {
+		if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') {
 			$protocol = "http://";
+		} else {
+			$protocol = "https://";
 		}
 		$serverName = $protocol.$_SERVER['SERVER_NAME'];
 
@@ -1500,12 +1505,12 @@ class Installer
 				|| !isset($_SESSION['installer']['sysConfig']['contactEmail']) || $_POST['contactEmail'] != $_SESSION['installer']['sysConfig']['contactEmail']
 				|| !isset($_SESSION['installer']['sysConfig']['domainURL']) || $_POST['domainURL'] != $_SESSION['installer']['sysConfig']['domainURL'])
 			{
-				$_SESSION['installer']['sysConfig']['adminEmail'] = $_POST['adminEmail'];
-				$_SESSION['installer']['sysConfig']['adminName'] = $_POST['adminName'];
+				$_SESSION['installer']['sysConfig']['adminEmail'] = trim($_POST['adminEmail']);
+				$_SESSION['installer']['sysConfig']['adminName'] = trim($_POST['adminName']);
 /*				$_SESSION['installer']['sysConfig']['rssTitle'] = $_POST['rssTitle'];
 				$_SESSION['installer']['sysConfig']['rssDescription'] = $_POST['rssDescription'];*/
-				$_SESSION['installer']['sysConfig']['contactEmail'] = $_POST['contactEmail'];
-				$_SESSION['installer']['sysConfig']['domainURL'] = $_POST['domainURL'];
+				$_SESSION['installer']['sysConfig']['contactEmail'] = trim($_POST['contactEmail']);
+				$_SESSION['installer']['sysConfig']['domainURL'] = trim($_POST['domainURL']);
 				$changed = true;
 			}
 
@@ -1643,6 +1648,9 @@ class Installer
 			if (!isset($_SESSION['installer']['account']['username']) || empty($_SESSION['installer']['account']['username'])) {
 				$this->arrStatusMsg['global'] .= $_ARRLANG['TXT_SET_USERNAME']."<br />";
 				$status = false;
+			} elseif (!User::isValidUsername($_SESSION['installer']['account']['username'])) {
+				$this->arrStatusMsg['global'] .= $_ARRLANG['TXT_INVALID_USERNAME']."<br />";
+				$status = false;
 			}
 			if (!isset($_SESSION['installer']['account']['password']) || empty($_SESSION['installer']['account']['password'])) {
 				$this->arrStatusMsg['global'] .= $_ARRLANG['TXT_SET_PASSWORD']."<br />";
@@ -1747,8 +1755,13 @@ class Installer
 				$port = '';
 			}
 
-			$webUrl = 'http://'.$_SERVER['SERVER_NAME'].$port.$_SESSION['installer']['config']['offsetPath'].'/';
-			$adminUrl = 'http://'.$_SERVER['SERVER_NAME'].$port.$_SESSION['installer']['config']['offsetPath'].'/cadmin/';
+            if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') {
+                $protocol = "http://";
+            } else {
+                $protocol = "https://";
+            }
+			$webUrl = $protocol.$_SESSION['installer']['sysConfig']['domainURL'].$port.$_SESSION['installer']['config']['offsetPath'].'/';
+			$adminUrl = $protocol.$_SESSION['installer']['sysConfig']['domainURL'].$port.$_SESSION['installer']['config']['offsetPath'].'/cadmin/';
 
 			$congratulationsMsg = $_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'];
 			$congratulationsMsg = str_replace("[VERSION]", $_CONFIG['coreCmsVersion'], $congratulationsMsg);

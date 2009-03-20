@@ -1,7 +1,7 @@
 <!-- START module_popup_popup.html -->
 <script language="JavaScript" type="text/javascript">
 <!-- //
-function add(from,dest,add,remove) 
+function add(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
 	{
@@ -11,36 +11,36 @@ function add(from,dest,add,remove)
 		return false;
 	}
 	else
-	{	
+	{
 //		str='';
 //		j=0;
 //		for(i in from){
 //			if(i = "length"){
 //				alert(from[i]):
 //			}
-//			
+//
 //		}
 //		alert(str);
-		for (var i=0; i<from.options.length; i++) 
-		{	    
-			if (from.options[i].selected) 
+		for (var i=0; i<from.options.length; i++)
+		{
+			if (from.options[i].selected)
 			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);				
-   			}			
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
 		}
-	    for (var i=from.length-1; i>=0; i--) 
-		{	    
-			if (from.options[i].selected) 
+	    for (var i=from.length-1; i>=0; i--)
+		{
+			if (from.options[i].selected)
 			{
-		       from.options[i] = null;				
-   			}			
-		}		
+		       from.options[i] = null;
+   			}
+		}
 	}
     //disableButtons(from,dest,add,remove);
-}	
+}
 
 
-function remove(from,dest,add,remove) 
+function remove(from,dest,add,remove)
 {
 	if ( dest.selectedIndex < 0)
 	{
@@ -50,30 +50,30 @@ function remove(from,dest,add,remove)
 		return false;
 	}
 	else
-	{	
-		for (var i=0; i<dest.options.length; i++) 
-		{	    
-			if (dest.options[i].selected) 
+	{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
 			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);				
-   			}			
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
 		}
-	    for (var i=dest.options.length-1; i>=0; i--) 
-		{	    
-			if (dest.options[i].selected) 
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
 			{
-		       dest.options[i] = null;				
-   			}			
-		}		
-	}	
+		       dest.options[i] = null;
+   			}
+		}
+	}
 	//disableButtons(from,dest,add,remove);
 }
 
 function disableButtons(from,dest,add,remove)
 {
 	if (from.options.length > 0 )
-	{		
-		add.disabled = 0;		
+	{
+		add.disabled = 0;
 	}
 	else
 		add.disabled = 1;
@@ -103,24 +103,24 @@ function deselectAll(CONTROL)
 function showOrHide(strElement)
 {
 	//alert(document.getElementByName(strElement+'_selectedPages[]').value);
-	
+
 	addpages		=	document.getElementsByName(strElement+'_addpages')[0];
 	removepages		=	document.getElementsByName(strElement+'_removepages')[0];
 	checkbox 		= 	document.getElementsByName('popup_show_on_all_pages['+strElement+']')[0];
-	
+
 	if(checkbox.checked){
 		addpages.disabled = true;
 		removepages.disabled = true;
-		
- 		while(document.getElementsByName(strElement+'_selectedPages[]')[0].length > 0){ 
+
+ 		while(document.getElementsByName(strElement+'_selectedPages[]')[0].length > 0){
  			remove(document.getElementById(strElement+'notSelectedPages'),document.getElementById(strElement+'SelectedPages'),addpages,removepages);
 		}
 	}else{
 		addpages.disabled = false;
-		removepages.disabled = false;		
+		removepages.disabled = false;
 	}
-	
-	
+
+
 	/*if (document.getElementById(strElement).style.display == 'block'){
 		document.getElementByName(strElement+'_selectedPages[]').value = '';
 	} else {
@@ -131,13 +131,11 @@ function showOrHide(strElement)
 function toggleLists(status)
 {
 	popup_Lists = document.getElementById('popupLists');
-	
+
 	if(status == 'on'){
 		popup_Lists.style.display = 'block';
-		//console.log(status);
 	} else {
 		popup_Lists.style.display = 'none';
-		//console.log(status);
 	}
 }
 
@@ -153,10 +151,10 @@ Text[5]=["","{TXT_POPUP_DATE_DESC}"];
 <script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
   DatePickerControl.onSelect = function(inputid)
-  {  	
+  {
     var startdate = document.getElementById("newCalendarNote").inputStartDate.value.replace(/-/g, "");
     var enddate = document.getElementById("newCalendarNote").inputEndDate.value.replace(/-/g, "");
-    
+
     if (startdate > enddate) {
     	var date = document.getElementById("newCalendarNote").inputStartDate.value;
     	document.getElementById("newCalendarNote").inputEndDate.value = date;
@@ -190,7 +188,7 @@ Text[5]=["","{TXT_POPUP_DATE_DESC}"];
 					<td nowrap>{TXT_POPUP_TOP}:&nbsp;<input type="text" name="popupTop" value="{POPUP_TOP}" size="8" /></td>
 					<td colspan="2" nowrap>{TXT_POPUP_LEFT}:&nbsp;<input type="text" name="popupLeft" value="{POPUP_LEFT}" size="8" />&nbsp;&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="Note" border="0" /></td>
 				</tr>
-				
+
 				<tr class="row2">
 					<td nowrap>{TXT_POPUP_SCROLLBARS}:</td>
 					<td nowrap><input type="radio" name="popupScrollbars" value="1" {POPUP_SCROLL_ON}/>{TXT_POPUP_ACTIVE}</td>
@@ -265,36 +263,36 @@ Text[5]=["","{TXT_POPUP_DATE_DESC}"];
 		</table>
 		<div id="pages_{POPUP_SELECTED_LANG_SHORTCUT}" style="display:block;">
 		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-			<tbody>	
+			</tbody>
 				<tr class="row2">
 					<td width="16%" valign="top">{TXT_POPUP_FRONTEND_PAGES}:</td>
 					<td width="84%" colspan="3">
 						<table width="100%" border="0">
-						  <tr> 
+						  <tr>
 						    <td width="13%">
 						      <select id="{POPUP_LANG_ID}notSelectedPages" name="{POPUP_LANG_ID}_notSelectedPages[]" size="12" style="width:200px;" multiple="multiple">
 						          {POPUP_RELATION_PAGES_UNSELECTED}
 						      </select>
 						      <br />
 						      <font size="1"><a href="javascript:selectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_SELECT}<br />
-						      </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font> 
+						      </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font>
 						    </td>
-						    <td width="4%"> 
-						      <div align="center"> 
+						    <td width="4%">
+						      <div align="center">
 						        <input type="button" value=" &gt;&gt; " name="{POPUP_LANG_ID}_addpages" onclick="add(document.getElementById('{POPUP_LANG_ID}notSelectedPages'),document.getElementById('{POPUP_LANG_ID}SelectedPages'),document.getElementsByName('{POPUP_LANG_ID}_addpages')[0],document.getElementsByName('{POPUP_LANG_ID}_removepages')[0]);" />
 						        <br />
 						        <input type="button" value=" &lt;&lt; " name="{POPUP_LANG_ID}_removepages" onclick="remove(document.getElementById('{POPUP_LANG_ID}notSelectedPages'),document.getElementById('{POPUP_LANG_ID}SelectedPages'),document.getElementsByName('{POPUP_LANG_ID}_addpages')[0],document.getElementsByName('{POPUP_LANG_ID}_removepages')[0]);" />
 						        <br /><br />
 						      </div>
 						    </td>
-						    <td width="1%"> 
+						    <td width="1%">
 						      <div align="left">
 						        <select id="{POPUP_LANG_ID}SelectedPages" name="{POPUP_LANG_ID}_selectedPages[]" size="12" style="width:200px;" multiple="multiple">
 						        	{POPUP_RELATION_PAGES_SELECTED}
 						        </select>
 						        <br />
 						        <font size="1"><a href="javascript:selectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_SELECT}<br />
-						        </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font> 
+						        </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font>
 						      </div>
 						    </td>
 						    <td width="82%">&nbsp;</td>

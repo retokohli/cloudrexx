@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Defines operating systems
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,60 +12,61 @@
 
 $arrOperatingSystems = array(
     array(
-        'regExp'    => "=Windows NT 5\.0|Windows 2000=",
-        'name'        => "Windows 2000"
+        'regExp' => '=Windows NT 5\.0|Windows 2000=',
+        'name' => 'Windows 2000'
     ),
     array(
-        'regExp'    => "=Windows NT 4\.0=",
-        'name'        => "Windows NT"
+        'regExp' => '=Windows NT 4\.0=',
+        'name' => 'Windows NT'
     ),
     array(
-        'regExp'    => "=Windows NT 5\.1|Windows XP=",
-        'name'        => "Windows XP"
+        'regExp' => '=Windows NT 5\.1|Windows XP=',
+        'name' => 'Windows XP'
     ),
     array(
-        'regExp'    => "=Windows NT 6\.0=",
-        'name'      => "Windows Vista"
+        'regExp' => '=Windows NT 6\.0=',
+        'name' => 'Windows Vista'
     ),
     array(
-        'regExp'    => "=Windows 98=",
-        'name'        => "Windows 98"
+        'regExp' => '=Windows 98=',
+        'name' => 'Windows 98'
     ),
     array(
-        'regExp'    => "=Windows 95=",
-        'name'        => "Windows 95"
+        'regExp' => '=Windows 95=',
+        'name' => 'Windows 95'
     ),
     array(
-        'regExp'    => "=Mac_PowerPC|Macintosh=",
-        'name'        => "Macintosh"
+        'regExp' => '=Mac_PowerPC|Macintosh=',
+        'name' => 'Macintosh'
     ),
     array(
-        'regExp'    => "=Linux=",
-        'name'        => "Linux"
+        'regExp' => '=Linux=',
+        'name' => 'Linux'
     ),
     array(
-        'regExp'    => "=SunOS=",
-        'name'        => "SunOS"
+        'regExp' => '=SunOS=',
+        'name' => 'SunOS'
     ),
     array(
-        'regExp'    => "=AIX=",
-        'name'        => "AIX"
+        'regExp' => '=AIX=',
+        'name' => 'AIX'
     ),
     array(
-        'regExp'    => "=FreeBSD=",
-        'name'        => "FreeBSD"
+        'regExp' => '=FreeBSD=',
+        'name' => 'FreeBSD'
     ),
     array(
-        'regExp'    => "=BeOS=",
-        'name'        => "BeOS"
+        'regExp' => '=BeOS=',
+        'name' => 'BeOS'
     ),
     array(
-        'regExp'    => "=IRIX=",
-        'name'        => "IRIX"
+        'regExp' => '=IRIX=',
+        'name' => 'IRIX'
     ),
     array(
-        'regExp'    => "=OS/2=",
-        'name'        => "OS/2"
+        'regExp' => '=OS/2=',
+        'name' => 'OS/2'
     )
 );
+
 ?>

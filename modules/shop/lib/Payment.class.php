@@ -37,31 +37,17 @@ class Payment
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets('`payment`.`text_name_id`', FRONTEND_LANG_ID);
         $query = "
-            SELECT `payment`.`id`, `payment`.`processor_id`,
-                   `payment`.`costs`, `payment`.`costs_free_sum`,
-                   `payment`.`sort_order`, `payment`.`status`".
-                   $arrSqlName['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_payment` AS `payment`".
-                   $arrSqlName['join']."
-             ORDER BY `payment`.`sort_order` ASC, `payment`.`id` ASC
+            SELECT id, name, processor_id, costs, costs_free_sum,
+                   sort_order, status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
+          ORDER BY id
         ";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            // Replace Text in a missing language by another, if available
-            if ($strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strName = $objText->getText();
-            }
             self::$arrPayment[$objResult->fields['id']] = array(
                 'id'             => $objResult->fields['id'],
-                'name'           => $strName,
-                'text_name_id'   => $text_name_id,
+                'name'           => $objResult->fields['name'],
                 'processor_id'   => $objResult->fields['processor_id'],
                 'costs'          => $objResult->fields['costs'],
                 'costs_free_sum' => $objResult->fields['costs_free_sum'],
@@ -110,7 +96,7 @@ class Payment
     /**
      * Returns the countries related payment ID array.
      *
-     * @global   ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @param    integer $countryId         The country ID
      * @param    array   $arrCurrencies     The currencies array
      * @return   array   $arrPaymentId      Array of payment IDs, like:
@@ -120,13 +106,15 @@ class Payment
     {
         global $objDatabase;
 
+//echo("getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies): Entered<br />");
+        if (empty(self::$arrPayment)) self::init();
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-        $objPayPal = new PayPal();
         $arrAcceptedCurrencyCodes = array();
+        $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
         foreach ($arrCurrencies as $arrCurrency) {
             if (   $arrCurrency['status']
                 && in_array($arrCurrency['code'],
-                            $objPayPal->arrAcceptedCurrencyCodes)
+                            $arrPaypalAcceptedCurrencyCodes)
             ) {
                 array_push($arrAcceptedCurrencyCodes, $arrCurrency['code']);
             }
@@ -134,14 +122,14 @@ class Payment
 
         $arrPaymentId = array();
         $query = "
-            SELECT `p`.`payment_id`
+            SELECT DISTINCT `p`.`payment_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                ON `c`.`zone_id`=`z`.`id`
+                ON `c`.`zones_id`=`z`.`zones_id`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `p`
-                ON `z`.`id`=`p`.`zone_id`
-             WHERE `c`.`country_id`=".intval($countryId)."
-               AND `z`.`status`=1
+                ON `z`.`zones_id`=`p`.`zones_id`
+             WHERE `c`.`countries_id`=".intval($countryId)."
+               AND `z`.`activation_status`=1
         ";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
@@ -154,6 +142,8 @@ class Payment
             }
             $objResult->MoveNext();
         }
+//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
+//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
         return $arrPaymentId;
     }
 
@@ -161,7 +151,6 @@ class Payment
     /**
      * Return HTML code for the payment dropdown menu
      * @param   string  $selectedId     Optional preselected payment ID
-     * @param   string  $menuname       Optional menu name
      * @param   string  $onchange       Optional onchange function
      * @param   integer $countryId      Country ID
      * @return  string                  HTML code for the dropdown menu
@@ -169,9 +158,17 @@ class Payment
      */
     static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
     {
+   	    global $_ARRAYLANG;
+
         $menu =
             '<select name="paymentId"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').'>'.
+            (intval($selectedId) == 0 && $onchange
+	            ? '<option value="0" selected="selected">'.
+	              $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'].
+	              "</option>\n"
+	            : ''
+            ).
             self::getPaymentMenuoptions($selectedId, $countryId).
             "</select>\n";
         return $menu;
@@ -191,6 +188,7 @@ class Payment
 
         // Initialize if necessary
         if (empty(self::$arrPayment)) self::init();
+        // Get Payment IDs available in the selected country, if any, or all.
         $arrPaymentId =
             ($countryId
                 ? self::getCountriesRelatedPaymentIdArray(
@@ -219,7 +217,7 @@ class Payment
     /**
      * Get the payment name for the ID given
      * @static
-     * @global  ADONewConnection  $objDatabase
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @param   integer   $paymentId      The payment ID
      * @return  mixed                     The payment name on success,
      *                                    false otherwise
@@ -239,7 +237,7 @@ class Payment
      * @param   integer   $paymentId    The payment ID
      * @return  integer                 The payment processor ID on success,
      *                                  false otherwise
-     * @global  ADONewConnection  $objDatabase
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     static function getPaymentProcessorId($paymentId)
     {

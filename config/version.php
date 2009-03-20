@@ -6,7 +6,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author       Comvation Development Team <info@comvation.com>
- * @version		1.3.0
+ * @version		1.0.0
  * @package     contrexx
  * @subpackage  config
  * @todo        Edit PHP DocBlocks!
@@ -21,10 +21,11 @@
 //	Mature
 //	Inactive
 
-$_CONFIG['coreCmsName']        = "ContrexxÂ® Web Content Management System";
-$_CONFIG['coreCmsVersion']	    = "1.3-dev";
-$_CONFIG['coreCmsStatus']	    = "Unstable";
-$_CONFIG['coreCmsEdition']	    = "Premium";
-$_CONFIG['coreCmsCodeName']    = "None";
-$_CONFIG['coreCmsReleaseDate']	= "-";
+$_CONFIG['coreCmsName']	     	= "Contrexx® Web Content Management System";
+$_CONFIG['coreCmsVersion']	  	= "1.1-dev";
+$_CONFIG['coreCmsStatus']	  	= "Unstable";
+$_CONFIG['coreCmsEdition']		= "Premium";
+$_CONFIG['coreCmsCodeName']	  	= "None";
+$_CONFIG['coreCmsReleaseDate'] 	= "-";
+
 ?>

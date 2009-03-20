@@ -226,4 +226,5 @@ $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Server error: The search query (Goeco
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Please enter a unique address or move the map to the desired point.";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Vote";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

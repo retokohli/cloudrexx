@@ -3,8 +3,8 @@
 /**
  * Livecam Library
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.0.0
+ * @author		Comvation Development Team <info@comvation.com>
+ * @version		1.0.0
  * @package     contrexx
  * @subpackage  module_livecam
  * @todo        Edit PHP DocBlocks!
@@ -13,23 +13,23 @@
 /**
  * Livecam Library
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        private
- * @version        1.0.0
+ * @author		Comvation Development Team <info@comvation.com>
+ * @access		private
+ * @version		1.0.0
  * @package     contrexx
  * @subpackage  module_livecam
  */
 class LivecamLibrary
 {
-    /**
-    * Settings array
-    *
-    * @access public
-    * @var array
-    */
-    var $arrSettings = array();
+	/**
+	* Settings array
+	*
+	* @access public
+	* @var array
+	*/
+	var $arrSettings = array();
 
-    /**
+	/**
     * Get settings
     *
     * Initialize the settings
@@ -39,14 +39,14 @@ class LivecamLibrary
     function getSettings()
     {
 
-        global $objDatabase;
+    	global $objDatabase;
 
-        $query = "SELECT setname, setvalue FROM ".DBPREFIX."module_livecam_settings";
+    	$query = "SELECT setname, setvalue FROM ".DBPREFIX."module_livecam_settings";
         $objResult = $objDatabase->Execute($query);
-        while (!$objResult->EOF) {
-            $this->arrSettings[$objResult->fields['setname']] = $objResult->fields['setvalue'];
-            $objResult->MoveNext();
-        }
+	    while (!$objResult->EOF) {
+		    $this->arrSettings[$objResult->fields['setname']] = $objResult->fields['setvalue'];
+		    $objResult->MoveNext();
+	    }
 
     }
 
@@ -69,7 +69,9 @@ class LivecamLibrary
                             thumbnailPath,
                             maxImageWidth,
                             thumbMaxSize,
-                            lightboxActivate
+                            shadowboxActivate,
+                            showFrom,
+                            showTill
                     FROM contrexx_module_livecam";
         if ($id != 0) {
             // select only one
@@ -90,7 +92,9 @@ class LivecamLibrary
                     "thumbnailPath"             => $result->fields['thumbnailPath'],
                     "maxImageWidth"             => $result->fields['maxImageWidth'],
                     "thumbMaxSize"              => $result->fields['thumbMaxSize'],
-                    "lightboxActivate"          => $result->fields['lightboxActivate']
+                    "shadowboxActivate"          => $result->fields['shadowboxActivate'],
+                    "showFrom"                  => $result->fields['showFrom'],
+                    "showTill"                  => $result->fields['showTill']
                 );
                 $ret[$result->fields['id']] = $cam;
                 $result->MoveNext();

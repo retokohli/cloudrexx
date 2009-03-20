@@ -9,10 +9,10 @@ function deleteCategory(catId)
 
 function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
 {
-  if(checkboxIsChecked(strForm,strCheckbox) == true){
-    switch(strAct){
+  if (checkboxIsChecked(strForm,strCheckbox) == true) {
+    switch (strAct) {
       case 'del':
-        if(confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+        if (confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
           document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delcat";
           document.forms[strForm].submit();
         }
@@ -24,48 +24,48 @@ function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
   objSelect.value = 0;
 }
 
+
 function openBrowser(url, id, attrs)
 {
-    fieldID = id;
-    try {
-      if (!browserPopup.closed) {
-        return browserPopup.focus();
-      }
-    } catch(e) {}
-    if (!window.focus) {
-      return true;
+  try {
+    if (!browserPopup.closed) {
+      return browserPopup.focus();
     }
-    browserPopup = window.open(url, "", attrs);
-    browserPopup.focus();
-    return false;
+  } catch(e) {}
+  if (!window.focus) {
+    return true;
+  }
+  browserPopup = window.open(url, "", attrs);
+  browserPopup.focus();
+  return false;
 }
 
-var imageMaxWidth  = {SHOP_IMAGE_WIDTH};
-var imageMaxHeight = {SHOP_IMAGE_HEIGHT};
+imageMaxWidth  = {SHOP_IMAGE_WIDTH};
+imageMaxHeight = {SHOP_IMAGE_HEIGHT};
 
 function SetUrl(url, width, height, alt)
 {
-  elInput = document.getElementById("imgHref");
+  var elInput = document.getElementById("imgHref");
   elInput.setAttribute('value', url);
   url = url.substring(1);
-  fileRegExp = /.+\/(.+)$/;
+  var fileRegExp = /.+\/(.+)$/;
   fileRegExp.exec(url);
-  fileName = RegExp.$1;
-  img = document.getElementById("img");
+  var fileName = RegExp.$1;
+  var img = document.getElementById("img");
   img.src = '/'+url;
   // Compute width/height ratio in order to set the correct size.
   // i.e.  2 =       200/100
-  imgRatioWidth = width/imageMaxWidth;
+  var imgRatioWidth = width/imageMaxWidth;
   // i.e.  3 =       240/80
-  imgRatioHeight = height/imageMaxHeight;
+  var imgRatioHeight = height/imageMaxHeight;
   // Now the higher ratio determines the scale factor
-  factor = imgRatioHeight;
+  var factor = imgRatioHeight;
   if (imgRatioWidth > imgRatioHeight) {
     factor = imgRatioWidth;
   }
   img.style.width = (width/factor)+"px";
   img.style.height = (height/factor)+"px";
-  elName = img.nextSibling.nextSibling.nextSibling;
+  var elName = img.nextSibling.nextSibling.nextSibling;
   elName.replaceData(0, elName.nodeValue.length, fileName);
 }
 
@@ -141,8 +141,8 @@ function cancelEdit()
         <td nowrap="nowrap">
           <div style="text-align:right;">
             <a href="?cmd=shop{MODULE_INDEX}&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
-              title="{TXT_SHOP_EDIT}">
-              <img src="images/icons/edit.gif" alt="{TXT_SHOP_EDIT}"
+              title="{TXT_EDIT}">
+              <img src="images/icons/edit.gif" alt="{TXT_EDIT}"
                 border="0" />
             </a>
             <a href="javascript:deleteCategory('{SHOP_CAT_ID}')"

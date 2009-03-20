@@ -150,14 +150,14 @@ class Access extends AccessLib
         }
 
         $objFWUser = FWUser::getFWUserObject();
-        $objFWUser->objGroup->load($groupId);
-        if ($objFWUser->objGroup->getType() == 'frontend' && $objFWUser->objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
+        $objGroup = $objFWUser->objGroup->getGroup($groupId);
+        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
                 $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&amp;section=access&amp;cmd=members&amp;groupId=".$groupId."&amp;search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&amp;username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
-            $this->_objTpl->setVariable('ACCESS_GROUP_NAME', $objFWUser->objGroup->load($groupId) ? htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
+            $this->_objTpl->setVariable('ACCESS_GROUP_NAME', ($objGroup = $objFWUser->objGroup->getGroup($groupId) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
 
             $nr = 0;
             while (!$objUser->EOF) {
@@ -185,6 +185,13 @@ class Access extends AccessLib
                     $this->parseAttribute($objUser, 'gender', 0, false, false, false, false, false);
                 }
 
+                if($this->_objTpl->blockExists('u2u_addaddress')){
+                    if($objUser->getId() == $objFWUser->objUser->getId()){
+                        $this->_objTpl->hideBlock('u2u_addaddress');
+                    }else{
+                        $this->_objTpl->touchBlock('u2u_addaddress');
+                    }
+                }
                 $this->_objTpl->parse('access_user');
                 $objUser->next();
             }
@@ -331,7 +338,8 @@ class Access extends AccessLib
         // set a new cookie if the language id had been changed
         if ($currentLangId != $newLangId) {
             // check if the desired language is active at all. otherwise set default language
-            if ($objInit->isFrontendLanguage($newLangId) || $newLangId = DEFAULT_LANG_ID) {
+    $objInit->arrLang[$newLangId]['frontend'];
+            if ($objInit->arrLang[$newLangId]['frontend'] || ($newLangId = $objInit->defaultFrontendLangId)) {
                 setcookie("langId", $newLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
             }
         }
@@ -432,6 +440,7 @@ class Access extends AccessLib
                 if ($this->handleSignUp($objUser)) {
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['ok']));
                     $this->_objTpl->parse('access_signup_store_success');
+                    $this->_objTpl->touchBlock('access_signup_store_success');
                     $this->_objTpl->hideBlock('access_signup_store_error');
                 } else {
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['error']));
@@ -483,17 +492,14 @@ class Access extends AccessLib
         $this->_objTpl->parse('access_signup_form');
     }
 
-
-    /**
-     * @todo    Use the user's language ID instead of the LANG_ID constant
-     */
     function handleSignUp($objUser)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG, $_LANGID;
 
         $objFWUser = FWUser::getFWUserObject();
         $objUserMail = $objFWUser->getMail();
         $arrSettings = User_Setting::getSettings();
+
         if ($arrSettings['user_activation']['status']) {
             $mail2load = 'reg_confirm';
             $mail2addr = $objUser->getEmail();
@@ -504,7 +510,7 @@ class Access extends AccessLib
 
         if (
             (
-                $objUserMail->load($mail2load, LANG_ID) ||
+                $objUserMail->load($mail2load, $_LANGID) ||
                 $objUserMail->load($mail2load)
             ) &&
             (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&

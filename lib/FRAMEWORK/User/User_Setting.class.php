@@ -14,14 +14,14 @@
  * @version     2.0.0
  * @package     contrexx
  * @subpackage  lib_framework
- */ 
+ */
 class User_Setting
 {
     /**
      * The user mail object
      * @var   User_Setting_Mail
      */
-    private $objMail;
+    protected $objMail;
 
     function __construct()
     {

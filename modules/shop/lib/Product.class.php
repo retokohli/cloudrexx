@@ -50,9 +50,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttributes.class.php';
  */
 class Product
 {
-    const defaultImage = 'no_image.gif';
-    const thumbnailSuffix = '.thumb';
-
     /**
      * @var     string          $code               Product code
      * @access  private
@@ -68,11 +65,6 @@ class Product
      * @access  private
      */
     private $name = '';
-    /**
-     * @var     integer         $text_name_id       The Product name Text ID
-     * @access  private
-     */
-    private $text_name_id = 0;
     /**
      * @var     Distribution    $distribution       Distribution type
      * @access  private
@@ -120,20 +112,10 @@ class Product
      */
     private $shortdesc = '';
     /**
-     * @var     integer         $text_shortdesc_id  The Product short description Text ID
-     * @access  private
-     */
-    private $text_shortdesc_id = 0;
-    /**
-     * @var     string            $description      Product description
+     * @var     string          $description        Product description
      * @access  private
      */
     private $description = '';
-    /**
-     * @var     integer         $text_description_id  The Product description Text ID
-     * @access  private
-     */
-    private $text_description_id = 0;
     /**
      * @var     integer         $stock              Product stock
      * @access  private
@@ -165,11 +147,13 @@ class Product
      */
     private $isB2C = true;
     /**
+     * For future use -- currently not used in the Shop!
      * @var     string          $startDate          Product startdate
      * @access  private
      */
     private $startDate = '0000-00-00';
     /**
+     * For future use -- currently not used in the Shop!
      * @var     string          $endDate            Product enddate
      * @access  private
      */
@@ -201,21 +185,28 @@ class Product
      * @var string
      */
     private $usergroups = '';
-    /*
-     * OBSOLETE -- Implemented by means of a flag now.
-     *
-     * If true, the Product is shown on the start page of the shop.
-     *
-     * Note that the "Show products on start page" setting must be set
-     * to "marked products" for this to work.
-     * @var boolean
-    private $shownOnStartpage = false;
-     */
-    /**
+    /*     * OBSOLETE -- Implemented by means of a flag now.     *     * If true, the Product is shown on the start page of the shop.     *     * Note that the "Show products on start page" setting must be set     * to "marked products" for this to work.     * @var boolean    private $shownOnStartpage = false;     */    /**
      * ProductAttribute value IDs array
      *
      * See {@link getProductAttributeValueIdArray()} for details.
      * @var     array   $arrProductAttributeValue
+     * The count type discount group ID
+     * @var     integer
+     */
+    private $groupCountId = 0;
+    /**
+     * The article group ID
+     * @var     integer
+     */
+    private $groupArticleId = 0;
+    /**
+     * The list of keywords
+     * @var     string
+     */
+    private $keywords = '';
+    /**
+     * @var     array   $arrProductAttributeValueId
+     *                                      ProductAttribute value IDs array
      * @access  private
      */
     private $arrProductAttributeValue = false;
@@ -225,7 +216,7 @@ class Product
      * Create a Product
      *
      * If the optional argument $id is set, the corresponding
-     * Product is updated.  Otherwise, a new Product is created.
+     * Product is updated, if it exists.  Otherwise, a new Product is created.
      * Set the remaining object variables by calling the appropriate
      * access methods.
      * @access  public
@@ -242,19 +233,23 @@ class Product
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $code, $categoryId, $distribution, $price,
+        $code, $categoryId, $name, $distribution, $price,
         $status, $order, $weight, $id=0
     ) {
-        $this->setCode($code);
-        $this->setShopCategoryId($categoryId);
-        $this->setDistribution($distribution);
-        $this->setPrice($price);
-        $this->setOrder($order);
-        $this->setWeight($weight);
+        // Assign & check
+        $this->code         = strip_tags($code);
+        $this->categoryId   = intval($categoryId);
+        $this->name         = strip_tags($name);
+        $this->distribution = strip_tags($distribution);
+        $this->price        = floatval($price);
+        $this->order = intval($order);
+        $this->weight       = intval($weight);
+        $this->id           = intval($id);
         $this->setStatus($status);
-        $this->id = intval($id);
-        if ($this->order <= 0) $this->order = 0;
-        // Default values for everything else.
+
+        if ($this->order <= 0) { $this->order = 0; }
+        // Default values for everything else as stated above
+
         // Enable cloning of Products with ProductAttributes
         if ($this->id > 0) {
             $this->arrProductAttributeValue =
@@ -458,7 +453,7 @@ class Product
      * @return  string                              Short description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getShortdesc()
+    function getshortdesc()
     {
         return $this->shortdesc;
     }
@@ -467,7 +462,7 @@ class Product
      * @param   string          $shortdesc          Short description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setShortdesc($shortdesc)
+    function setshortdesc($shortdesc)
     {
         $this->shortdesc = trim(strip_tags($shortdesc));
     }
@@ -809,6 +804,26 @@ class Product
     }
 
     /**
+     * Get the keywords
+     * @return  string                               The product keywords
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getKeywords()
+    {
+        return $this->keywords;
+    }
+    /**
+     * Set the keywords
+     * @param   string          $keywords         The product keywords
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setKeywords($keywords)
+    {
+        $this->keywords = $keywords;
+    }
+
+
+    /**
      * Get the visibility of the Product on the start page
      * @return  boolean                             Visibility
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -853,7 +868,7 @@ class Product
 
 
     /**
-     * Return the current Product discounted price for any Product.
+     * Return the current discounted price for any Product, if applicable.
      * @return  mixed                       The Product discount price,
      *                                      or false if there is no discount.
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -922,6 +937,45 @@ class Product
 
 
     /**
+     * Get the count type discount group ID
+     * @return  string         The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getGroupCountId()
+    {
+        return $this->groupCountId;
+    }
+    /**
+     * Set the count type discount group ID
+     * @param   string         $groupCountId       The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setGroupCountId($groupCountId)
+    {
+        $this->groupCountId = intval($groupCountId);
+    }
+
+    /**
+     * Get the article group ID
+     * @return  string         The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getGroupArticleId()
+    {
+        return $this->groupArticleId;
+    }
+    /**
+     * Set the article group ID
+     * @param   string         $groupArticleId       The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setGroupArticleId($groupArticleId)
+    {
+        $this->groupArticleId = intval($groupArticleId);
+    }
+
+
+    /**
      * Clone the Product
      *
      * Note that this does NOT create a copy in any way, but simply clears
@@ -934,9 +988,6 @@ class Product
     function makeClone()
     {
         $this->id = 0;
-        $this->text_name_id = 0;
-        $this->text_shortdesc_id = 0;
-        $this->text_description_id = 0;
     }
 
     /**
@@ -945,7 +996,7 @@ class Product
      * Associated Attributes and pictures are deleted with it.
      * @param       integer     $productId      The Product ID
      * @return      boolean                     True on success, false otherwise
-     * @global      ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @todo        The handling of pictures is buggy.  Pictures used by other
      *              Products are only recognised if all file names are identical
      *              and in the same order!
@@ -975,7 +1026,7 @@ class Product
                         // $arrPicture[0] contains the file name
                         $strFileName = base64_decode($arrPicture[0]);
                         // check whether it is the default image
-                        if (preg_match('/'.self::defaultImage.'$/', $strFileName))
+                        if (preg_match('/'.ShopLibrary::noPictureName.'$/', $strFileName))
                             continue;
                         // Delete the picture and thumbnail:
                         // Split file name and extension -- in case someone
@@ -993,10 +1044,7 @@ class Product
                 }
             }
         }
-        // Delete Text in *all* languages
-        if (!Text::deleteById($this->text_name_id)) return false;
-        if (!Text::deleteById($this->text_shortdesc_id)) return false;
-        if (!Text::deleteById($this->text_description_id)) return false;
+
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
              WHERE product_id=$this->id
@@ -1015,7 +1063,7 @@ class Product
      * Test whether a record with the ID of this object is already present
      * in the database.
      * @return  boolean                     True if it exists, false otherwise
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function recordExists()
@@ -1043,29 +1091,6 @@ class Product
      */
     function store()
     {
-        // Store all Text present (some may be new or empty).
-        // Make sure they all have the language, module, and key ID set.
-        $objText = Text::replace(
-            $this->text_name_id, FRONTEND_LANG_ID, $this->name,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_TITLE
-        );
-        if (!$objText) return false;
-        $this->text_name_id = $objText->getId();
-
-        $objText = Text::replace(
-            $this->text_shortdesc_id, FRONTEND_LANG_ID, $this->shortdesc,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_SHORTDESC
-        );
-        if (!$objText) return false;
-        $this->text_shortdesc_id = $objText->getId();
-
-        $objText = Text::replace(
-            $this->text_description_id, FRONTEND_LANG_ID, $this->description,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_DESCRIPTION
-        );
-        if (!$objText) return false;
-        $this->text_description_id = $objText->getId();
-
         if ($this->recordExists()) {
             if (!$this->update()) return false;
             if (!ProductAttributes::deleteByProductId($this->id))
@@ -1087,14 +1112,9 @@ class Product
 
     /**
      * Update this Product in the database.
-     *
-     * Does not update the Text fields present in the object.
-     * Only {@link store()} does that.
-     * Call this method yourself if you don't want to update language
-     * specific data.
      * Returns the result of the query.
      * @return      boolean                     True on success, false otherwise
-     * @global      ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -1105,13 +1125,13 @@ class Product
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
             SET product_id='".addslashes($this->code)."',
                 picture='$this->pictures',
-                text_title_id=$this->text_name_id,
+                title='".addslashes($this->name)."',
                 catid=$this->categoryId,
                 handler='$this->distribution',
                 normalprice=$this->price,
                 resellerprice=$this->resellerPrice,
-                text_shortdesc_id=$this->text_shortdesc_id,
-                text_description_id=$this->text_description_id,
+                shortdesc='".addslashes($this->shortdesc)."',
+                description='".addslashes($this->description)."',
                 stock=$this->stock,
                 stock_visibility=".($this->isStockVisible ? 1 : 0).",
                 discountprice=$this->discountPrice,
@@ -1127,8 +1147,12 @@ class Product
                 vat_id=$this->vatId,
                 weight=$this->weight,
                 flags='".addslashes($this->flags)."',
-                usergroups='$this->usergroups'
-          WHERE id=$this->id";
+                usergroups='$this->usergroups',
+                group_id=$this->groupCountId,
+                article_id=$this->groupArticleId,
+                keywords='".addslashes($this->keywords)."'
+          WHERE id=$this->id
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -1138,10 +1162,6 @@ class Product
     /**
      * Insert this Product into the database.
      *
-     * Does not update the Text fields present in the object.
-     * Only {@link store()} does that.
-     * Call this method yourself if you don't want to insert language
-     * specific data.
      * @return      boolean                     True on success, false otherwise
      * @global      ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -1152,27 +1172,28 @@ class Product
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products (
-                product_id, picture, text_title_id, catid, handler,
+                product_id, picture, title, catid, handler,
                 normalprice, resellerprice,
-                text_shortdesc_id, text_description_id,
+                shortdesc, description,
                 stock, stock_visibility, discountprice, is_special_offer,
                 status,
                 b2b, b2c, startdate, enddate,
                 manufacturer, external_link,
                 sort_order, vat_id, weight,
-                flags, usergroups
+                flags, usergroups,
+                group_id, article_id, keywords
             ) VALUES ('".
-                addslashes($this->code)."', '$this->pictures',
-                $this->text_name_id,
+                addslashes($this->code)."', '$this->pictures', '".
+                addslashes($this->name)."',
                 $this->categoryId,
                 '$this->distribution',
-                $this->price, $this->resellerPrice,
-                $this->text_shortdesc_id,
-                $this->text_description_id,
+                $this->price, $this->resellerPrice, '".
+                addslashes($this->shortdesc)."', '".
+                addslashes($this->description)."',
                 $this->stock, ".
                 ($this->isStockVisible ? 1 : 0).",
                 $this->discountPrice, ".
-                ($this->isSpecialOffer ? 1 : 0).", '".
+                ($this->isSpecialOffer ? 1 : 0).", ".
                 ($this->status ? 1 : 0).", ".
                 ($this->isB2B ? 1 : 0).", ".
                 ($this->isB2C ? 1 : 0).",
@@ -1181,7 +1202,9 @@ class Product
                 addslashes($this->externalLink)."',
                 $this->order, $this->vatId, $this->weight,
                 '".addslashes($this->flags)."',
-                '$this->usergroups'
+                '$this->usergroups',
+                $this->groupCountId, $this->groupArticleId, '".
+                addslashes($this->keywords)."'
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -1204,101 +1227,46 @@ class Product
     {
         global $objDatabase;
 
-        // Get SQL snippets for various Texts
-        $arrSqlName = Text::getSqlSnippets(
-            '`product`.`text_title_id`', FRONTEND_LANG_ID
-        );
-        $arrSqlShortdesc = Text::getSqlSnippets(
-            '`product`.`text_shortdesc_id`', FRONTEND_LANG_ID
-        );
-        $arrSqlLongdesc = Text::getSqlSnippets(
-            '`product`.`text_description_id`', FRONTEND_LANG_ID
-        );
-        $query = "
-            SELECT `product`.`product_id`, `product`.`catid`,
-                   `product`.`handler`, `product`.`normalprice`,
-                   `product`.`status`, `product`.`sort_order`,
-                   `product`.`weight`, `product`.`picture`,
-                   `product`.`resellerprice`, `product`.`stock`,
-                   `product`.`stock_visibility`, `product`.`discountprice`,
-                   `product`.`is_special_offer`,
-                   `product`.`b2b`, `product`.`b2c`,
-                   `product`.`startdate`, `product`.`enddate`,
-                   `product`.`manufacturer`, `product`.`external_link`,
-                   `product`.`vat_id`, `product`.`flags`,
-                   `product`.`usergroups`".
-                    $arrSqlName['field'].
-                    $arrSqlShortdesc['field'].
-                    $arrSqlLongdesc['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products` as `product`
-        ".
-        $arrSqlName['join'].
-        $arrSqlShortdesc['join'].
-        $arrSqlLongdesc['join']."
-             WHERE `product`.`id`=$id";
+        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) return false;
-        // Mind that the constructor also initializes the
-        // ProductAttributes array if the ID is valid,
-        // but not the values themselves!  See below.
+        if (!$objResult) {
+            return false;
+        }
+        if ($objResult->RecordCount() != 1) {
+            return false;
+        }
+        // constructor also read ProductAttributes if ID > 0
         $objProduct = new Product(
             $objResult->fields['product_id'],
             $objResult->fields['catid'],
+            $objResult->fields['title'],
             $objResult->fields['handler'],
             $objResult->fields['normalprice'],
             $objResult->fields['status'],
             $objResult->fields['sort_order'],
             $objResult->fields['weight'],
-            $id
+            $objResult->fields['id']
         );
-        // Use the foreign IDs from the Product table for reference to the
-        // Text records, not their primary keys.  The latter will be NULL
-        // if a record for the selected language does not exist!
-        $objProduct->text_name_id = $objResult->fields[$arrSqlName['name']];
-        $objProduct->text_shortdesc_id = $objResult->fields[$arrSqlShortdesc['name']];
-        $objProduct->text_description_id = $objResult->fields[$arrSqlLongdesc['name']];
-        // These Texts may be NULL, too, for the same reason.
-
-        $strName = $objResult->fields[$arrSqlName['text']];
-        $strShortdesc = $objResult->fields[$arrSqlShortdesc['text']];
-        $strLongdesc = $objResult->fields[$arrSqlLongdesc['text']];
-        // Replace Text in a missing language by another, if available
-        if ($strName === null) {
-            $objText = Text::getById($objProduct->text_name_id, 0);
-            if ($objText)
-                $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                $strName = $objText->getText();
-        }
-        if ($strShortdesc === null) {
-            $objText = Text::getById($objProduct->text_shortdesc_id, 0);
-            if ($objText)
-                $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                $strShortdesc = $objText->getText();
-        }
-        if ($strLongdesc === null) {
-            $objText = Text::getById($objProduct->text_description_id, 0);
-            if ($objText)
-                $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                $strLongdesc = $objText->getText();
-        }
-        $objProduct->name = $strName;
-        $objProduct->shortdesc = $strShortdesc;
-        $objProduct->description = $strLongdesc;
         $objProduct->pictures         = $objResult->fields['picture'];
-        $objProduct->resellerPrice    = $objResult->fields['resellerprice'];
-        $objProduct->stock            = $objResult->fields['stock'];
+        $objProduct->resellerPrice    = floatval($objResult->fields['resellerprice']);
+        $objProduct->shortdesc        = $objResult->fields['shortdesc'];
+        $objProduct->description      = $objResult->fields['description'];
+        $objProduct->stock            = intval($objResult->fields['stock']);
         $objProduct->setStockVisible($objResult->fields['stock_visibility']);
-        $objProduct->discountPrice    = $objResult->fields['discountprice'];
+        $objProduct->discountPrice    = floatval($objResult->fields['discountprice']);
         $objProduct->setSpecialOffer($objResult->fields['is_special_offer']);
         $objProduct->setB2B($objResult->fields['b2b']);
         $objProduct->setB2C($objResult->fields['b2c']);
         $objProduct->startDate        = $objResult->fields['startdate'];
         $objProduct->endDate          = $objResult->fields['enddate'];
-        $objProduct->manufacturerId   = $objResult->fields['manufacturer'];
+        $objProduct->manufacturerId   = intval($objResult->fields['manufacturer']);
         $objProduct->externalLink     = $objResult->fields['external_link'];
-        $objProduct->vatId            = $objResult->fields['vat_id'];
+        $objProduct->vatId            = intval($objResult->fields['vat_id']);
         $objProduct->flags            = $objResult->fields['flags'];
         $objProduct->usergroups       = $objResult->fields['usergroups'];
+        $objProduct->groupCountId     = intval($objResult->fields['group_id']);
+        $objProduct->groupArticleId   = intval($objResult->fields['article_id']);
+        $objProduct->keywords         = $objResult->fields['keywords'];
         // Fetch the Product Attribute relations
         $objProduct->arrProductAttributeValue =
             ProductAttributes::getRelationArray($objProduct->id);

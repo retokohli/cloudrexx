@@ -44,11 +44,6 @@ define('SHOP_PAYMENT_RESULT_CANCEL',          2);
 define('SHOP_PAYMENT_RESULT_COUNT',           3);
 
 /**
- * Table and field index constants for the core_text table
- */
-require_once('lib/keys.php');
-
-/**
  * All the helping hands needed to run the shop
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
@@ -62,6 +57,9 @@ require_once('lib/keys.php');
  */
 class ShopLibrary
 {
+    const noPictureName = 'no_picture.gif';
+    const thumbnailSuffix = '.thumb';
+
     /**
      * @todo These class variable *SHOULD* be initialized in the constructor,
      * otherwise it makes no sense to have them as class variables
@@ -71,11 +69,12 @@ class ShopLibrary
     public $arrConfig = array();
 
     /**
-     * Upload directory for uploaded customer images
-     * @var   string
+     * Array of all countries
+     * @var     array [$arrCountries] array of all countries
+     * @access  public
+     * @see     _initCountries()
      */
-    public $uploadDir = false;
-
+    public $arrCountries = array();
 
     /**
      * Sorting order strings according to the corresponding setting
@@ -95,15 +94,166 @@ class ShopLibrary
 
 
     /**
-     * OBSOLETE
-     * Returns HTML code for the payment handler dropdown menu
+     * Returns an array of the zones
+     * @return  array   The zones array
+     */
+    function _getZones()
+    {
+        global $objDatabase;
+        $query = "SELECT zones_id, zones_name, activation_status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones ORDER BY zones_name";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $arrZones[$objResult->fields['zones_id']] = array(
+                    'zones_id'          => $objResult->fields['zones_id'],
+                    'zones_name'        => $objResult->fields['zones_name'],
+                    'activation_status' => $objResult->fields['activation_status']
+                    );
+            $objResult->MoveNext();
+        }
+        return $arrZones;
+    }
+
+
+    function _getRelCountries()
+    {
+        global $objDatabase;
+
+        $query = "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries ORDER BY id";
+        $objResult = $objDatabase->Execute($query);
+        while ($objResult && !$objResult->EOF) {
+            $arrRelCountries[]=array($objResult->fields['zones_id'], $objResult->fields['countries_id']);
+            $objResult->MoveNext();
+        }
+        return $arrRelCountries;
+    }
+
+
+    function _getZonesMenu($menuName="zone_id", $selectedId="", $onchange="")
+    {
+        global $objDatabase;
+
+        $menu = "<input type='hidden' name='old_$menuName' value='$selectedId' />\n".
+                "\n<select name='$menuName'".
+                (!empty($onchange) ? " onchange='$onchange'" : '') .">\n";
+        $query = "SELECT zones_id, zones_name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones WHERE activation_status=1";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $menu .=
+                "<option value='".$objResult->fields['zones_id']."'".
+                (intval($selectedId)==intval($objResult->fields['zones_id'])
+                    ? " selected='selected'"
+                    : '').
+                '>'.$objResult->fields['zones_name']."</option>\n";
+            $objResult->MoveNext();
+        }
+        $menu .= "</select>\n";
+        return $menu;
+    }
+
+
+    /**
+     * Returns a dropdown menu or hidden input field (plus name) string
+     * for the active country/-ies.
+     *
+     * If there is just one active country, returns a hidden <input> tag with the
+     * countries' name appended.  If there are more, returns a dropdown menu with
+     * the optional ID preselected and optional onchange method added.
+     * @param   string  $menuName   Optional name of the menu
+     * @param   string  $selectedId Optional pre-selected country ID
+     * @param   string  $onchange   Optional onchange callback function
+     * @return  string              The dropdown menu string
+     */
+    function _getCountriesMenu($menuName='countryId', $selectedId='', $onchange='')
+    {
+        global $objDatabase;
+
+        $onchange = !empty($onchange) ? "onchange=\"".$onchange."\"" : "";
+        $menu = "\n<select name=\"".$menuName."\" ".$onchange.">\n";
+
+        $query = "SELECT countries_id, countries_name ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries ".
+            "WHERE activation_status=1";
+        $objResult = $objDatabase->Execute($query);
+
+        if ($objResult->RecordCount() > 1) {
+            while (!$objResult->EOF) {
+                $selected = (intval($selectedId)==$objResult->fields['countries_id']) ? "selected=\"selected\"" : "";
+                $menu .="<option value=\"".$objResult->fields['countries_id']."\" ".$selected.">".$objResult->fields['countries_name']."</option>\n";
+                $objResult->MoveNext();
+            }
+            $menu .= "</select>\n";
+        } else {
+            $menu = "\n<input name=\"".$menuName."\" type=\"hidden\" value=\"".$objResult->fields['countries_id']."\">".$objResult->fields['countries_name']."\n";
+        }
+        return $menu;
+    }
+
+
+    /**
+     * Returns a dropdown menu string with all available languages.
+     * See {@link /lib/FRAMEWORK/Language.class.php}.
+     *
+     * @param   string  $menuName   Optional name of the menu
+     * @param   string  $selectedId Optional preselected language ID
+     * @return  string  $menu       The dropdown menu string
+     */
+    function _getLanguageMenu($menuName="language", $selectedId="")
+    {
+        // init object from the framework
+        $objShopLanguage = new FWLanguage();
+        // gets indexed language array
+        $arrLanguage = $objShopLanguage->getLanguageArray();
+
+        $menu = "\n<select name=\"".$menuName."\">\n";
+        $menu .= ($selectedId==0) ? "<option value=\"0\" selected=\"selected\">All</option>\n" : "<option value=\"0\">All</option>\n";
+
+        foreach($arrLanguage AS $id => $data)
+        {
+            $selected = (intval($selectedId)==$id) ? "selected=\"selected\"" : "";
+            $menu .="<option value=\"".$id."\" $selected>".$data['name']."</option>\n";
+        }
+        $menu .= "</select>\n";
+        return $menu;
+    }
+
+
+    function _initCountries()
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT countries_id, countries_name,
+                   countries_iso_code_2, countries_iso_code_3,
+                   activation_status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             ORDER BY countries_id
+         ";
+         $objResult = $objDatabase->Execute($query);
+         while (!$objResult->EOF) {
+            $this->arrCountries[$objResult->fields['countries_id']] = array(
+                'countries_id' => $objResult->fields['countries_id'],
+                'countries_name' => $objResult->fields['countries_name'],
+                'countries_iso_code_2' => $objResult->fields['countries_iso_code_2'],
+                'countries_iso_code_3' => $objResult->fields['countries_iso_code_3'],
+                'activation_status' => $objResult->fields['activation_status']
+            );
+            $objResult->MoveNext();
+        }
+    }
+
+
+    /**
+     * gets a select box with all the payment handlers
+     *
      * @param   string  $menuName
      * @param   string  $selectedId
-     * @return  string
+     * @return  string  $menu
+     */
     function _getPaymentHandlerMenu($menuName='paymentHandler', $selectedId=0)
     {
         global $objDatabase;
 
+        $menu = "\n<select name=\"".$menuName."\">\n";
         $query = "
             SELECT id, name
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
@@ -111,28 +261,26 @@ class ShopLibrary
              ORDER BY name
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return '';
-        $menu = '<select name="'.$menuName.'">'."\n";
         while (!$objResult->EOF) {
+
             $menu .=
                 '<option value="'.$objResult->fields['id'].'"'.
                 ($selectedId == $objResult->fields['id']
                     ? ' selected="selected"' : ''
-                ).'>'.$objResult->fields['name'].
-                '</option>'."\n";
+                ).'>'.$objResult->fields['name']."</option>\n";
             $objResult->MoveNext();
         }
-        $menu .= '</select>'."\n";
+        $menu .= "</select>\n";
         return $menu;
     }
-     */
 
 
     /**
      * Initialize the shop configuration array
      *
      * The array created contains all of the common shop settings.
-     * @global ADONewConnection
+     * @global  $objDatabase    Database object
+     * @return                  True on success, false otherwise
      */
     function _initConfiguration()
     {
@@ -143,6 +291,8 @@ class ShopLibrary
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
         ";
         $objResult = $objDatabase->Execute($query);
+        $this->arrConfig = array();
+        if (!$objResult) return false;
         while (!$objResult->EOF) {
             $this->arrConfig[$objResult->fields['name']] = array(
                 'id'     => $objResult->fields['id'],
@@ -151,14 +301,139 @@ class ShopLibrary
             );
             $objResult->MoveNext();
         }
-/*
-  Never used.
         $this->arrConfig['js_cart'] = array(
             'id'     => 9999,
             'value'  => '',
             'status' => '0',
         );
-*/
+        return true;
+    }
+
+
+    /**
+     * Set up and send an email from the shop.
+     * @static
+     * @param   string    $shopMailTo           Recipient mail address
+     * @param   string    $shopMailFrom         Sender mail address
+     * @param   string    $shopMailFromText     Sender name
+     * @param   string    $shopMailSubject      Message subject
+     * @param   string    $shopMailBody         Message body
+     * @return  boolean                         True if the mail could be sent,
+     *                                          false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function shopSendmail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)
+    {
+        global $_CONFIG;
+
+        // replace cr/lf by lf only
+        $shopMailBody = preg_replace('/\015\012/', "\012", $shopMailBody);
+
+        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+            $objMail = new phpmailer();
+            if (   isset($_CONFIG['coreSmtpServer'])
+                && $_CONFIG['coreSmtpServer'] > 0
+                && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    $objMail->IsSMTP();
+                    $objMail->Host = $arrSmtp['hostname'];
+                    $objMail->Port = $arrSmtp['port'];
+                    $objMail->SMTPAuth = true;
+                    $objMail->Username = $arrSmtp['username'];
+                    $objMail->Password = $arrSmtp['password'];
+                }
+            }
+            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
+            $objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
+            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+            $objMail->Subject = $shopMailSubject;
+            $objMail->IsHTML(false);
+            $objMail->Body = $shopMailBody;
+            $objMail->AddAddress($shopMailTo);
+            if ($objMail->Send()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Pick a mail template from the database
+     *
+     * Get the selected mail template and associated fields from the database.
+     * @static
+     * @param   integer $shopTemplateId     The mail template ID
+     * @param   integer $langId             The language ID
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @return  mixed                       The mail template array on success,
+     *                                      false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function shopSetMailtemplate($shopTemplateId, $langId)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT from_mail, xsender, subject, message
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
+             WHERE tpl_id=$shopTemplateId
+               AND lang_id=$langId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $arrShopMailTemplate['mail_from'] = $objResult->fields['from_mail'];
+            $arrShopMailTemplate['mail_x_sender'] = $objResult->fields['xsender'];
+            $arrShopMailTemplate['mail_subject'] = $objResult->fields['subject'];
+            $arrShopMailTemplate['mail_body'] = $objResult->fields['message'];
+            return $arrShopMailTemplate;
+        }
+        return false;
+    }
+
+
+    /**
+     * Validate the email address
+     *
+     * Does an extensive syntax check to determine whether the string argument
+     * is a real email address.
+     * Note that this doesn't mean that the address is necessarily valid,
+     * but only that it isn't just an arbitrary character sequence.
+     * @todo    Some valid addresses are rejected by this method,
+     * such as *%+@mymail.com.
+     * Valid (atom) characters are: "!#$%&'*+-/=?^_`{|}~" (without the double quotes),
+     * see {@link http://rfc.net/rfc2822.html RFC 2822} for details.
+     * @todo    The rules applied to host names are not correct either, see
+     * {@link http://rfc.net/rfc1738.html RFC 1738} and {@link http://rfc.net/rfc3986.html}.
+     * Excerpt from RFC 1738:
+     * - hostport       = host [ ":" port ]
+     * - host           = hostname | hostnumber
+     * - hostname       = *[ domainlabel "." ] toplabel
+     * - domainlabel    = alphadigit | alphadigit *[ alphadigit | "-" ] alphadigit
+     * - toplabel       = alpha | alpha *[ alphadigit | "-" ] alphadigit
+     * - alphadigit     = alpha | digit
+     * Excerpt from RFC 3986:
+     * "Non-ASCII characters must first be encoded according to UTF-8 [STD63],
+     * and then each octet of the corresponding UTF-8 sequence must be percent-
+     * encoded to be represented as URI characters".
+     * @todo    This doesn't really belong here.  Should be placed into a
+     *          proper core e-mail class as a static method.
+     * @version 1.0
+     * @param   string  $string
+     * @return  boolean
+     */
+    function shopCheckEmail($string)
+    {
+        if (preg_match(
+            '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  // user
+            '@([a-z0-9]+([-\.a-z0-9]+)*)+'. // domain
+            '\.[a-z]{2,4}$/',               // sld, tld
+            $string
+        )) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -166,7 +441,7 @@ class ShopLibrary
      * Checks that the email address isn't already used by an other customer
      *
      * @access  private
-     * @global  ADONewConnection
+     * @global          $objDatabase    Database object
      * @param   string  $email          The users' email address
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the email address is unique, false otherwise
@@ -192,7 +467,7 @@ class ShopLibrary
      * Checks that the username isn't already used by an other customer
      *
      * @access  private
-     * @global  ADONewConnection
+     * @global          $objDatabase    Database object
      * @param   string  $username       The user name
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the user name is unique, false otherwise
@@ -223,7 +498,7 @@ class ShopLibrary
      * protected downloads, for example.
      * @param   integer   $orderId        The order ID
      * @return  string                    The custom order ID
-     * @global  ADONewConnection  $objDatabase  Database connection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getCustomOrderId($orderId)
@@ -262,7 +537,6 @@ class ShopLibrary
      * values overwritten for the indices mentioned!
      * @param   array   $arrSize      The original image size array, by reference
      * @return  array                 The scaled down (thumbnail) image size array
-     *
      */
     function scaleImageSizeToThumbnail(&$arrSize)
     {
@@ -303,98 +577,21 @@ class ShopLibrary
     /**
      * Deletes the order with the given ID.
      *
-     * Also removes related order items, attributes, the customer, and the
-     * user accounts created for the downloads.
-     * @param   integer   $orderId        The order ID
-     * @return  boolean                   True on success, false otherwise
-     * @global  ADONewConnection  $objDatabase    Database connection object
-     * @static
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function deleteOrder($orderId)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT customerid, order_date
-              FROM ".DBPREFIX."module_shop_orders
-             WHERE orderid=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        $customerId = $objResult->fields['customerid'];
-        $orderDate = $objResult->fields['order_date'];
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_order_items_attributes
-             WHERE order_id=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_order_items
-             WHERE orderid=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_orders
-             WHERE orderid=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_customers
-             WHERE customerid=$customerId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, $orderDate);
-        $objFWUser = FWUser::getFWUserObject();
-        $objUser = $objFWUser->objUser->getUsers(array('username' => $orderIdCustom.'-%'));
-        if ($objUser) {
-            while (!$objUser->EOF) {
-                if (!$objUser->delete()) {
-                    return false;
-                }
-                $objUser->next();
-            }
-        }
-        return true;
-    }
-
-
-    /**
-     * Deletes the order with the given ID.
-     *
      * If no valid ID is specified, looks in the GET and POST request
      * arrays for parameters called orderId and selectedOrderId, respectively.
-     * Also removes related order items, attributes, the customer, and the
+     * Also removes related order items, attributes, uploaded files, and the
      * user accounts created for the downloads.
+     * @todo    Fix user account deletion
      * @param   integer   $orderId        The optional order ID
      * @return  boolean                   True on success, false otherwise
      * @global  mixed     $objDatabase    Database object
      */
-    function deleteOrderOld($orderId=0)
+    function deleteOrder($orderId=0)
     {
         global $objDatabase, $_ARRAYLANG;
 
         $arrOrderId = array();
-        // prepare the array $arrOrderId with the ids of the orders to delete
+        // Prepare the array with the IDs of the orders to delete
         if (empty($orderId)) {
             if (isset($_GET['orderId']) && !empty($_GET['orderId'])) {
                 array_push($arrOrderId, $_GET['orderId']);
@@ -404,7 +601,9 @@ class ShopLibrary
         } else {
             array_push($arrOrderId, $orderId);
         }
-        if (empty($arrOrderId)) return true;
+        if (empty($arrOrderId)) {
+            return true;
+        }
 
         // Delete selected orders
         foreach ($arrOrderId as $orderId) {
@@ -425,7 +624,7 @@ class ShopLibrary
                     $objResult->fields['product_option_value'];
                 if (file_exists($filename)) {
                     if (@unlink($filename)) {
-                        //$this->addMessage("Datei $filename gel?scht");
+                        //$this->addMessage("Datei $filename gelscht");
                     } else {
                         $this->addError(sprintf($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $filename));
                     }
@@ -500,20 +699,60 @@ class ShopLibrary
 
 
     /**
-     * Add a line to the log file
+     * Returns a dropdown menu string with all available order status.
      *
-     * Prepends the current date and time to the string,
-     * adds a line terminator and appends this to the log file.
-     * Silently terminates if the log file cannot be opened for appending.
-     * @param   string   $strLine     The entry to be logged
-     * @static
+     * The enclosing <select> tag is only added if the $menuName argument
+     * is non-empty.  If that is empty, however, an additional header
+     * option is added.  See {@link getOrderStatusMenuoptions()} for details.
+     * @param   string  $selectedId     Optional preselected status ID
+     * @param   string  $menuName       Optional menu name
+     * @param   string  $onchange       Optional onchange callback function
+     * @return  string  $menu           The dropdown menu string
+     * @global  array
      */
-    static function addLog($strLine)
+    static function getOrderStatusMenu($selected='', $menuName='', $onchange='')
     {
-        $fp = fopen(ASCMS_DOCUMENT_ROOT.'/shop.log', 'a');
-        if (!$fp) return;
-        fwrite($fp, date('Ymd His')." $strLine\n");
-        fclose($fp);
+        if ($menuName != '') {
+            $menu =
+                '<select name="'.$menuName.'" id="'.$menuName.'" '.
+                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
+                ">\n".
+                self::getOrderStatusMenuoptions(
+                    $selected, empty($menuName)
+                ).
+                "</select>\n";
+        }
+        return $menu;
+    }
+
+
+    /**
+     * Returns the HTML menu options for selecting an order status
+     *
+     * Adds a "-- Status --" header option with empty string value
+     * if the $flagFilter parameter is true.
+     * @param   string      $selected       The value of the preselected status
+     * @param   boolean     $flagFilter     If true, the header option is added
+     * @return  string                      The HTML menu options string
+     */
+    static function getOrderStatusMenuoptions($selected='', $flagFilter=false)
+    {
+   	    global $_ARRAYLANG;
+
+        $strMenuoptions =
+            ($flagFilter
+	            ? '<option value="">-- '.
+	              $_ARRAYLANG['TXT_STATUS'].
+	              " --</option>\n"
+                : ''
+            );
+        for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {
+            $strMenuoptions .=
+                '<option value="'.$i.'"'.
+                ($i === $selected ? ' selected="selected"' : '').'>'.
+                $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$i]."</option>\n";
+        }
+        return $strMenuoptions;
     }
 
 }

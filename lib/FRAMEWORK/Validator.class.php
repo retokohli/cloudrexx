@@ -15,14 +15,14 @@
  * TKaelin @ 2.0.2: wrote new regex based on http://en.wikipedia.org/wiki/E-mail_address
 */
 define('VALIDATOR_REGEX_EMAIL',
-          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])'.					//user
+          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])'.     //user
           '(([.]?[a-z0-9!#$%*\/?|^{}`~&\'+\-=_])*)'.
-          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])'.
+          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])*'.
           '@(?:'.
-              '([a-z0-9]+([-.][a-z0-9]+)*)+'. 					//domain
-              '\.[a-z]{2,4}'.                 					//sld, tld
+              '([a-z0-9]+([-.][a-z0-9]+)*)+'.      //domain
+              '\.[a-z]{2,6}'.                      //sld, tld
             '|'.
-              'localhost'.                    					//or localhost
+              'localhost'.                         //or localhost
           ')'
 );
 

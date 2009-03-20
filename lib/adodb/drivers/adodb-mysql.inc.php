@@ -421,18 +421,18 @@ class ADODB_mysql extends ADOConnection {
 
 			// split type into type(length):
 			$fld->scale = null;
-			if (preg_match('/^(.+)\((\d+),(\d+)/', $type, $query_array)) {
+			if (preg_match("/^(.+)\((\d+),(\d+)/", $type, $query_array)) {
 				$fld->type = $query_array[1];
 				$fld->max_length = is_numeric($query_array[2]) ? $query_array[2] : -1;
 				$fld->scale = is_numeric($query_array[3]) ? $query_array[3] : -1;
-			} elseif (preg_match('/^(.+)\((\d+)/', $type, $query_array)) {
+			} elseif (preg_match("/^(.+)\((\d+)/", $type, $query_array)) {
 				$fld->type = $query_array[1];
 				$fld->max_length = is_numeric($query_array[2]) ? $query_array[2] : -1;
-			} elseif (preg_match('/^(enum)\((.*)\)$/i', $type, $query_array)) {
+			} elseif (preg_match("/^(enum)\((.*)\)$/i", $type, $query_array)) {
 				$fld->type = $query_array[1];
-				$arr = explode(',', $query_array[2]);
+				$arr = explode(",",$query_array[2]);
 				$fld->enums = $arr;
-				$zlen = max(array_map('strlen', $arr)) - 2; // PHP >= 4.0.6
+				$zlen = max(array_map("strlen",$arr)) - 2; // PHP >= 4.0.6
 				$fld->max_length = ($zlen > 0) ? $zlen : 1;
 			} else {
 				$fld->type = $type;
@@ -492,7 +492,7 @@ class ADODB_mysql extends ADOConnection {
 	}
 
 	// returns queryID or false
-	function _query($sql, $inputarr)
+	function _query($sql,$inputarr)
 	{
 	//global $ADODB_COUNTRECS;
 		//if($ADODB_COUNTRECS)
@@ -552,12 +552,12 @@ class ADODB_mysql extends ADOConnection {
             $table = "$owner.$table";
          }
          $a_create_table = $this->getRow(sprintf('SHOW CREATE TABLE %s', $table));
-		 if ($associative) $create_sql = $a_create_table['Create Table'];
+		 if ($associative) $create_sql = $a_create_table["Create Table"];
          else $create_sql  = $a_create_table[1];
 
          $matches = array();
 
-         if (!preg_match_all('/FOREIGN KEY \(`(.*?)`\) REFERENCES `(.*?)` \(`(.*?)`\)/', $create_sql, $matches)) return false;
+         if (!preg_match_all("/FOREIGN KEY \(`(.*?)`\) REFERENCES `(.*?)` \(`(.*?)`\)/", $create_sql, $matches)) return false;
 	     $foreign_keys = array();
          $num_keys = count($matches[0]);
          for ( $i = 0;  $i < $num_keys;  $i ++ ) {
@@ -593,7 +593,7 @@ class ADODB_mysql extends ADOConnection {
 
 class ADORecordSet_mysql extends ADORecordSet{
 
-	var $databaseType = 'mysql';
+	var $databaseType = "mysql";
 	var $canSeek = true;
 
 	function ADORecordSet_mysql($queryID,$mode=false)

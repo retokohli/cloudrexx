@@ -1,9 +1,8 @@
 <?php
-
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_data
@@ -17,27 +16,39 @@ require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
 /**
  * DataAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_data
  */
 class DataHomeContent extends DataLibrary  {
-
-	public $_strPageContent;
-	public $_objTpl;
-
+	
+	var $_strPageContent;
+	var $_objTpl;
+	
 	/**
 	 * Constructor php5
 	 */
-	function __construct($strPageContent)
-	{
+	function __construct($strPageContent) {
+		global $_LANGID;
+		
+		DataLibrary::__constructor();
+		
 	    $this->_strPageContent = $strPageContent;
-	    $this->_objTpl = new HTML_Template_Sigma('.');
+	    $this->_objTpl = &new HTML_Template_Sigma('.');
+	    $this->_intLanguageId = intval($_LANGID);
 		$this->_arrSettings = $this->createSettingsArray();
 	}
 
-
+	
+	/**
+	 * Constructor php4
+	 */
+    function DataHomeContent($strPageContent) {
+    	$this->__construct($strPageContent);    	
+	}
+	
+	
 	/**
 	 * Checks, if the home content is activated.
 	 *
@@ -46,9 +57,9 @@ class DataHomeContent extends DataLibrary  {
 	function blockFunktionIsActivated() {
 		return (intval($this->_arrSettings['data_block_activated']) == 1);
 	}
-
-
-
+	
+	
+	
 	/**
 	 * Check if a keywords occurs in a given text / content.
 	 *
@@ -59,9 +70,9 @@ class DataHomeContent extends DataLibrary  {
 	function searchKeywordInContent($strKeyword, $strContent) {
 		return preg_match('/\{'.$strKeyword.'\}/mi', $strContent);
 	}
-
-
-
+	
+	
+	
 	/**
 	 * Replaces the string $strNeedle in $strHaystack with $strReplace, if $boolActivated is true.
 	 *
@@ -75,12 +86,12 @@ class DataHomeContent extends DataLibrary  {
 		if ($boolActivated) {
 			return preg_replace('/\{'.$strNeedle.'\}/mi', $strReplace, $strHaystack);
 		}
-
+		
 		return $strHaystack;
 	}
-
-
-
+	
+	
+	
 	/**
 	 * Returns html-source for an calendar in the month-view.
 	 *
@@ -90,11 +101,11 @@ class DataHomeContent extends DataLibrary  {
 		$intYear 	= (isset($_GET['yearID'])) 	? intval($_GET['yearID']) 	: date('Y', time());
 		$intMonth 	= (isset($_GET['monthID'])) ? intval($_GET['monthID']) 	: date('m', time());
 		$intDay 	= (isset($_GET['dayID'])) 	? intval($_GET['dayID']) 	: 0;
-
+				
 		return $this->getCalendar($intYear,$intMonth,$intDay);
 	}
-
-
+	
+	
 	/**
 	 * Returns html-source for an tagcloud.  Just a wrapper-method.
 	 *
@@ -103,8 +114,8 @@ class DataHomeContent extends DataLibrary  {
 	function getHomeTagCloud() {
 		return $this->getTagCloud();
 	}
-
-
+	
+	
 	/**
 	 * Returns html-source for an tag-hitlist. Just a wrapper-method.
 	 *
@@ -113,8 +124,8 @@ class DataHomeContent extends DataLibrary  {
 	function getHomeTagHitlist() {
 		return $this->getTagHitlist();
 	}
-
-
+	
+	
 	/**
 	 * Returns html-source for an category-dropdown.
 	 *
@@ -123,8 +134,8 @@ class DataHomeContent extends DataLibrary  {
 	function getHomeCategoriesSelect() {
 		return $this->getCategoryDropDown('frmDoSearch_Keyword_Category', 0, true);
 	}
-
-
+	
+	
 	/**
 	 * Returns html-source for an category-list.
 	 *
@@ -132,21 +143,21 @@ class DataHomeContent extends DataLibrary  {
 	 */
 	function getHomeCategoriesList() {
 		$strReturn = '<ul class="dataCategoriesList">';
-
+		
 		$arrCategories = $this->createCategoryArray();
-
+		
 		foreach($arrCategories as $intCategoryId => $arrCategoryValues) {
-			if($arrCategoryValues[FRONTEND_LANG_ID]['is_active']) {
-				$strReturn .= '<li class="dataCategoriesListItem"><a href="index.php?section=data&amp;cmd=search&amp;category='.$intCategoryId.'">'.$arrCategoryValues[FRONTEND_LANG_ID]['name'].'&nbsp;('.$this->countEntriesOfCategory($intCategoryId).')</a></li>';
+			if($arrCategoryValues[$this->_intLanguageId]['is_active']) {
+				$strReturn .= '<li class="dataCategoriesListItem"><a href="index.php?section=data&amp;cmd=search&amp;category='.$intCategoryId.'">'.$arrCategoryValues[$this->_intLanguageId]['name'].'&nbsp;('.$this->countEntriesOfCategory($intCategoryId).')</a></li>';
 			}
 		}
-
+		
 		$strReturn .= '</ul>';
-
+		
 		return $strReturn;
 	}
-
-
+	
+	
 	/**
 	 * Fills the latest entries of the data-module into the data-page.
 	 *
@@ -155,15 +166,15 @@ class DataHomeContent extends DataLibrary  {
 	 */
 	function getLatestEntries() {
 		global $_ARRAYLANG;
-
+		
 		$this->_objTpl->setTemplate($this->_strPageContent, true, true);
-
+		
 		//Show latest XX entries
-		$arrEntries = $this->createEntryArray(FRONTEND_LANG_ID, 0, intval($this->_arrSettings['data_block_messages']));
+		$arrEntries = $this->createEntryArray($this->_intLanguageId, 0, intval($this->_arrSettings['data_block_messages']));
 		if (count($arrEntries) > 0) {
 			$intRowClass = 1;
-
-			foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+			
+			foreach ($arrEntries as $intEntryId => $arrEntryValues) {			
 				$this->_objTpl->setVariable(array(
 					'TXT_DATA_ENTRY_CATEGORIES'		=>	$_ARRAYLANG['TXT_DATA_HOME_CATEGORIES'],
 					'TXT_DATA_ENTRY_TAGS'			=>	$_ARRAYLANG['TXT_DATA_HOME_KEYWORDS'],
@@ -180,38 +191,38 @@ class DataHomeContent extends DataLibrary  {
 					'DATA_ENTRY_AUTHOR_NAME'	=>	$arrEntryValues['user_name'],
 					'DATA_ENTRY_SUBJECT'		=>	$arrEntryValues['subject'],
 					'DATA_ENTRY_POSTED_BY'		=>	$this->getPostedByString($arrEntryValues['user_name'], $arrEntryValues['time_created']),
-					'DATA_ENTRY_INTRODUCTION'	=>	$this->getIntroductionText($arrEntryValues['translation'][FRONTEND_LANG_ID]['content']),
-					'DATA_ENTRY_CONTENT'		=>	$arrEntryValues['translation'][FRONTEND_LANG_ID]['content'],
-					'DATA_ENTRY_CATEGORIES'		=>	$this->getCategoryString($arrEntryValues['categories'][FRONTEND_LANG_ID], true),
-					'DATA_ENTRY_TAGS'			=>	$this->getLinkedTags($arrEntryValues['translation'][FRONTEND_LANG_ID]['tags']),
+					'DATA_ENTRY_INTRODUCTION'	=>	$this->getIntroductionText($arrEntryValues['translation'][$this->_intLanguageId]['content']),
+					'DATA_ENTRY_CONTENT'		=>	$arrEntryValues['translation'][$this->_intLanguageId]['content'],
+					'DATA_ENTRY_CATEGORIES'		=>	$this->getCategoryString($arrEntryValues['categories'][$this->_intLanguageId], true),
+					'DATA_ENTRY_TAGS'			=>	$this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
 					'DATA_ENTRY_COMMENTS'		=>	$arrEntryValues['comments_active'].'&nbsp;'.$_ARRAYLANG['TXT_DATA_HOME_COMMENTS'],
 					'DATA_ENTRY_VOTING'			=>	'&#216;&nbsp;'.$arrEntryValues['votes_avg'],
 					'DATA_ENTRY_VOTING_STARS'	=>	$this->getRatingBar($intEntryId),
 					'DATA_ENTRY_LINK'			=>	'<a href="index.php?section=data&amp;cmd=details&amp;id='.$intEntryId.'" title="'.$arrEntryValues['subject'].'">'.$_ARRAYLANG['TXT_DATA_HOME_OPEN'].'</a>',
-					'DATA_ENTRY_IMAGE'			=>	($arrEntryValues['translation'][FRONTEND_LANG_ID]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][FRONTEND_LANG_ID]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : ''
+					'DATA_ENTRY_IMAGE'			=>	($arrEntryValues['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : ''
 				));
-
+								
 				$this->_objTpl->parse('dataBlockEntries');
 				++$intRowClass;
 			}
 		}
-
+		
 		//Show overview of categories
 		$arrCategories = $this->createCategoryArray();
-
+		
 		if (count($arrCategories) > 0) {
 			//Collect active categories for the current language
 			$arrCurrentLanguageCategories = array();
 			foreach($arrCategories as $intCategoryId => $arrLanguageData) {
-				if ($arrLanguageData[FRONTEND_LANG_ID]['is_active']) {
-					$arrCurrentLanguageCategories[$intCategoryId] = $arrLanguageData[FRONTEND_LANG_ID]['name'];
+				if ($arrLanguageData[$this->_intLanguageId]['is_active']) {
+					$arrCurrentLanguageCategories[$intCategoryId] = $arrLanguageData[$this->_intLanguageId]['name'];
 				}
 			}
-
+			
 			//Sort alphabetic
 			asort($arrCurrentLanguageCategories);
-
-			if (count($arrCurrentLanguageCategories)) {
+			
+			if (count($arrCurrentLanguageCategories)) {				
 				foreach($arrCurrentLanguageCategories as $intCategoryId => $strTranslation) {
 					$this->_objTpl->setVariable(array(
 						'DATA_CATEGORY_ID'		=>	$intCategoryId,
@@ -222,15 +233,14 @@ class DataHomeContent extends DataLibrary  {
 				}
 			}
 		}
-
+		
 		//Also try to fill the other variables (calendar, categories-dropdown, tag-cloud)
 		@$this->_objTpl->setVariable('DATA_CALENDAR', $this->getHomeCalendar());
 		@$this->_objTpl->setVariable('DATA_CATEGORIES', $this->getCategoryDropDown('frmDoSearch_Keyword_Category', 0, true));
 		@$this->_objTpl->setVariable('DATA_TAGCLOUD', $this->getTagCloud());
-
+		
 		return $this->_objTpl->get();
-	}
-
+	}	
+	
+	
 }
-
-?>

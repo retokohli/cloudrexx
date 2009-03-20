@@ -3,8 +3,8 @@
 <!-- //
 function deleteList(plid)
 {
-    if(confirm('{TXT_DELETE_PRICELIST_MSG}'))
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=pricelist_delete&id="+plid);
+  if (confirm('{TXT_DELETE_PRICELIST_MSG}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=pricelist_delete&id="+plid);
 }
 
 function newPricelist()
@@ -12,12 +12,12 @@ function newPricelist()
   window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=pricelist_new");
 }
 
-function shopPricelistDoAction(strForm,strCheckbox,objSelect,strAct)
+function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
 {
-  if(checkboxIsChecked(strForm,strCheckbox) == true){
-    switch(strAct){
+  if (checkboxIsChecked(strForm,strCheckbox) == true) {
+    switch (strAct) {
       case 'del':
-        if(confirm('{TXT_DELETE_PRICELIST_MSG}')){
+        if (confirm('{TXT_DELETE_PRICELIST_MSG}')) {
           document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=pricelist_delete";
           document.forms[strForm].submit();
         }
@@ -47,7 +47,7 @@ function shopPricelistDoAction(strForm,strCheckbox,objSelect,strAct)
       <td nowrap="nowrap">{PRICELIST_OVERVIEW_NAME}</td>
       <td nowrap="nowrap">{PRICELIST_OVERVIEW_PDFLINK}</td>
       <td nowrap="nowrap"><div style="text-align:right;">
-        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist_edit&amp;id={PRICELIST_OVERVIEW_ID}" target="_self" title="{TXT_SHOP_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_SHOP_EDIT}" /></a>
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist_edit&amp;id={PRICELIST_OVERVIEW_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
         <a href="javascript:deleteList({PRICELIST_OVERVIEW_ID})" target="_self" title="{TXT_DELETE}"><img border="0" src="images/icons/delete.gif" width="16" height="16" alt="{TXT_DELETE}" /></a>
       </div></td>
     </tr>

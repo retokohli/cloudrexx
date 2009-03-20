@@ -52,6 +52,11 @@ class Permission
         Permission::noAccess();
     }
 
+    /**
+     * Checks if the current user is a super user.
+     *
+     * @return boolean TRUE if the user is a super user, otherwise FALSE
+     */
     public static function hasAllAccess()
     {
         $objFWUser = FWUser::getFWUserObject();
@@ -61,10 +66,77 @@ class Permission
         return false;
     }
 
-    public static function noAccess()
+    /**
+     * Redirects the browser to the noaccess webpage.
+     *
+     * @return void
+     */
+    public static function noAccess($redirect = null)
     {
-        header('Location: index.php?cmd=noaccess');
+        global $objInit;
+
+        $objFWUser = FWUser::getFWUserObject();
+        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).($objFWUser->objUser->login() ? 'cmd=noaccess' : ''));
         exit;
+    }
+
+    /**
+     * Set access permission to either a single or a bunch of particular groups.
+     *
+     * @param $accessId     integer Affected Access-ID
+     * @param $type         string  Permission type, which is either 'static' or 'dynamic'
+     * @param $groupId      mixed   Either a single ID as integer or an array of ID's
+     * @return boolean  TRUE on success, FALSE on failure.
+     */
+    public static function setAccess($accessId, $type, $groupId)
+    {
+        global $objDatabase;
+
+        return (bool) $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_group_'.$type.'_ids` (`access_id`, `group_id`) VALUES ('.$accessId.', '.(is_array($groupId) ? implode('),('.$accessId.',', $groupId) : $groupId).')');
+    }
+
+    /**
+     * Generates a new dynamic access-ID
+     *
+     * @return mixed    Returns the newly created dynamic access-ID or FALSE on failure.
+     */
+    public static function createNewDynamicAccessId()
+    {
+        global $objDatabase, $_CONFIG;
+
+        $lastAccessId = $_CONFIG['lastAccessId'];
+        $newAccessId = $_CONFIG['lastAccessId'] + 1;
+
+        if (include_once(ASCMS_CORE_PATH.'/settings.class.php')) {
+            $objSettings = new settingsManager();
+            if ($objSettings->isWritable()) {
+                if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$newAccessId." WHERE `setname` = 'lastAccessId'")
+                    && $objSettings->writeSettingsFile()
+                ) {
+                    $_CONFIG['lastAccessId'] = $newAccessId;
+                    return $newAccessId;
+                } else {
+                    $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Remove access permission for either a single or a bunch of particular groups, in case the $groupId is specified, or otherwise for every group.
+     *
+     * @param $accessId integer Affected Access-ID
+     * @param $type     string  Permission type, which is either 'static' or 'dynamic'
+     * @param $groupId  mixed   Either a single ID as integer or an array of ID's
+     * @return boolean  TRUE on success, FALSE on failure.
+     */
+    public static function removeAccess($accessId, $type, $groupId = null)
+    {
+        global $objDatabase;
+
+        return (bool) $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `access_id` = '.$accessId.(isset($groupId) ? ' AND `group_id` IN ('.(is_array($groupId) ? implode(',', $groupId) : $groupId).')' : ''));
     }
 }
 

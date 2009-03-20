@@ -195,28 +195,32 @@ class Mime
      * @static
      * @return  string                      The default MIME type
      * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @static
      */
     static function getDefaultType()
     {
         return self::$strDefaultType;
     }
 
+
+    /**
+     * Returns the HTML code for the MIME type dropdown menu
+     * @param   string    $selected     The optional selected MIME tpye
+     * @return  string                  The menu options HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getTypeMenuoptions($selected='')
+    {
+        $strMenuoptions = '';
+        foreach (self::$arrExtensions2MimeTypes as $extension => $mimetype) {
+            $strMenuoptions .=
+                '<option value="'.$mimetype.'"'.
+                ($selected == $mimetype ? ' selected="selected"' : '').
+                ">$mimetype ($extension)</option>\n";
+        }
+        return $strMenuoptions;
+    }
+
 }
-
-
-/*
-    TEST
-
-$arrExtension = array(
-    'bild.jpg', '.jpg', 'jpg',
-    'a.b.c.def', '.def', 'def',
-    'noExtension', '.extensionOnly', 'dotAtEnd.',
-);
-foreach ($arrExtension as $strExtension) {
-    echo("Mime type for file name $strExtension: '".Mime::getMimeTypeForExtension($strExtension)."'<br />\n");
-}
-die('');
-
-*/
 
 ?>

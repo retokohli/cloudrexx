@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Frontend Edition
  *
@@ -129,36 +128,38 @@ class frontendEditing extends frontendEditingLib {
 		if ($_CONFIG['frontendEditingStatus'] == 'off') {
 			exit;
 		}
+
+		//Empty error code
+		$strErrorCode = '';
+
 		//Template
-		$this->objTemplate = new HTML_Template_Sigma($this->strTemplatePath);
+		$this->objTemplate = &new HTML_Template_Sigma($this->strTemplatePath);
 		$this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+
 		//Configuration
 		$this->boolHistoryEnabled = ($_CONFIG['contentHistoryStatus'] == 'on') ? true : false;
+
 		//create user object
 		$this->objUser = FWUser::getFWUserObject();
 		$this->objUser->setMode(true);
 	}
 
-
 	/**
 	 * Catches the parameters in the $_REQUEST array and validates them.
 	 */
-	private function getParameters()
-	{
+	private function getParameters() {
 		$this->strAction 			= isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
 		$this->intPageId 			= intval($_REQUEST['page']);
 		$this->strPageSection 		= isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
 		$this->strPageCommand		= isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
 	}
 
-
 	/**
 	 * Loads the values of the requested page from database.
 	 *
 	 * @global 	ADONewConnection
 	 */
-	private function loadValuesFromDatabase()
-	{
+	private function loadValuesFromDatabase() {
 		global $objDatabase;
 
 		$objResult = $objDatabase->Execute('	SELECT		content.title,
@@ -170,6 +171,7 @@ class frontendEditing extends frontendEditingLib {
 												WHERE		id='.$this->intPageId.'
 												LIMIT		1
 											');
+
 		if ($objResult->RecordCount() == 1) {
 			$this->strTitle 			= html_entity_decode($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
 			$this->strContent			= $objResult->fields['content'];
@@ -177,12 +179,10 @@ class frontendEditing extends frontendEditingLib {
 		}
 	}
 
-
 	/**
 	 * Selects the action to perform depending on $_GET['act'] value.
 	 */
-	public function performAction()
-	{
+	public function performAction() {
 		if ($this->checkAccessRights()) {
 			//User is logged in
 			switch ($this->strAction) {
@@ -298,16 +298,16 @@ class frontendEditing extends frontendEditingLib {
 	 * @return boolean	true, if the user is in a backend group.
 	 */
 	private function isUserInBackendGroup() {
-		$this->objUser->objGroup->loadGroups();
+		$objGroup = $this->objUser->objGroup->getGroups(array('is_active' => true, 'type' => 'backend'), null, 'group_id');
 		$arrAssociatedGroups = $this->objUser->objUser->getAssociatedGroupIds();
 
-		foreach ($arrAssociatedGroups as $intGroupId) {
-			if (array_key_exists($intGroupId, $this->objUser->objGroup->arrLoadedGroups)) {
-				if ($this->objUser->objGroup->arrLoadedGroups[$intGroupId]['type'] == 'backend' && intval($this->objUser->objGroup->arrLoadedGroups[$intGroupId]['is_active']) == 1) {
-					return true;
-				}
+        while (!$objGroup->EOF) {
+            if (in_array($objGroup->getId(), $arrAssociatedGroups)) {
+                return true;
 			}
+            $objGroup->next();
 		}
+
 		return false;
 	}
 
@@ -316,15 +316,16 @@ class frontendEditing extends frontendEditingLib {
 	 *
 	 * @return html source of the login page.
 	 */
-	private function getLoginPage()
-	{
+	private function getLoginPage() {
 		global $_CORELANG;
 
 		$this->objTemplate->loadTemplateFile('login.html',true,true);
+
 		$statusMessage = '<div class="fe_LoginSpacer">&nbsp;</div>';
 		if ($this->boolLoginFailed) {
 			$statusMessage = '<div class="fe_LoginError">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FAILED'].'</div>';
 		}
+
 		$this->objTemplate->setVariable(array(	'TXT_LOGIN_TITLE'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'],
 												'TXT_LOGIN_USERNAME'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'],
 												'TXT_LOGIN_PASSWORD'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD'],
@@ -336,6 +337,7 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_LOGIN_CANCEL'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_CANCEL'],
 												'TXT_LOGIN_PASSWORD_FORGOTTON'	=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD_FORGOTTON']
 									));
+
 		$this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=>	$this->intPageId,
 												'LOGIN_PAGE_SECTION'	=>	$this->strPageSection,
 												'LOGIN_PAGE_CMD'		=>	$this->strPageCommand,
@@ -343,56 +345,50 @@ class frontendEditing extends frontendEditingLib {
 												'LOGIN_USERNAME'		=>	(get_magic_quotes_gpc() == 1 ? stripslashes($_POST['USERNAME']) : $_POST['USERNAME']),
 												'LOGIN_STATUS_MESSAGE'	=>	$statusMessage
 										));
+
 		return 'login'.$this->strSplitChar.$this->objTemplate->get();
 	}
-
 
 	/**
 	 * Shows a security-image which is used for protection of the login-form.
 	 *
 	 */
-	private function getSecurityImage()
-	{
-		$_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
+	private function getSecurityImage() {
+        $_SESSION['auth']['secid'] = FWUser::mkSECID();
 
 		getSecurityImage($_SESSION['auth']['secid']);
 	}
-
 
 	/**
 	 * Returns html source of the disallowed page.
 	 *
 	 * @return html source of the disallowed page.
 	 */
-	private function getDisallowedPage()
-	{
+	private function getDisallowedPage() {
 		$this->objTemplate->loadTemplateFile('disallowed.html',true,true);
 
 		return 'disallowed'.$this->strSplitChar.$this->objTemplate->get();
 	}
-
 
 	/**
 	 * Returns url for accessing the admin-interface.
 	 *
 	 * @return url for accessing the admin-interface.
 	 */
-	private function getAdminPage()
-	{
+	private function getAdminPage() {
 		return 'admin'.$this->strSplitChar.frontendEditingLib::ADMIN_PATH ;
 	}
-
 
 	/**
 	 * Returns html source of the toolbar.
 	 *
 	 * @return html source of the toolbar.
 	 */
-	private function getToolbarPage()
-	{
+	private function getToolbarPage() {
 		global $_CORELANG;
 
 		$this->objTemplate->loadTemplateFile('toolbar.html',true,true);
+
 		$this->objTemplate->setVariable(array(	'TXT_TOOLBAR_USER'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_USER'],
 												'TXT_TOOLBAR_PREVIEW'		=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_PREVIEW'],
 												'TXT_TOOLBAR_EDIT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'],
@@ -400,84 +396,85 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_TOOLBAR_CLOSE'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_CLOSE'],
 												'TXT_TOOLBAR_LOGOUT'		=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_LOGOUT']
 										));
+
 		$this->objTemplate->setVariable(array(	'TOOLBAR_PATH'				=>	frontendEditingLib::FRONTENDEDITING_PATH,
 												'TOOLBAR_USERNAME'			=>	$this->objUser->objUser->getUsername()
 										));
+
 		return 'editor'.$this->strSplitChar.$this->objTemplate->get();
 	}
-
 
 	/**
 	 * Setter-Method for (de-)activating the toolbar visibility.
 	 *
 	 * @param $isToolbarVisible
 	 */
-	private function setToolbarVisibility($isToolbarVisible)
-	{
+	private function setToolbarVisibility($isToolbarVisible) {
 		$_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD] = $isToolbarVisible;
 	}
-
 
 	/**
 	 * Returns html source of the selection-page.
 	 *
 	 * @return html source of the selection-page.
 	 */
-	private function getSelectionPage()
-	{
+	private function getSelectionPage() {
 		global $_CORELANG;
 
 		$this->objTemplate->loadTemplateFile('selection.html',true,true);
+
 		$this->objTemplate->setVariable(array(	'TXT_SELECTION_TITLE'			=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
 												'TXT_SELECTION_TEXT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
 												'TXT_SELECTION_MODE_PAGE'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
 												'TXT_SELECTION_MODE_CONTENT'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
 								));
+
 		$this->objTemplate->setVariable(array(	'SELECTION_IMAGE_PATH'	=>	frontendEditingLib::FRONTENDEDITING_PATH,
 												'SELECTION_ADMIN_PATH'	=>	frontendEditingLib::ADMIN_PATH .'?cmd='.$this->strPageSection));
+
 		return 'selection'.$this->strSplitChar.$this->objTemplate->get();
 	}
 
-
 	/**
 	 * Returns html source of the editor.
+	 *
 	 * @return html source of the editor.
 	 */
-	private function getEditorPage()
-	{
+	private function getEditorPage() {
 		global $_CORELANG;
 
 		$this->objTemplate->loadTemplateFile('editor.html',true,true);
+
 		$this->objTemplate->setVariable(array(	'TXT_EDIT_TITLE'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'],
 												'TXT_EDIT_PAGETITLE'		=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_PAGETITLE'],
 												'TXT_EDIT_CONTENT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_CONTENT'],
 												'TXT_EDIT_PREVIEW'			=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_PREVIEW'],
 												'TXT_EDIT_SUBMIT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_SUBMIT']
 								));
+
 		$this->objTemplate->setVariable(array(	'EDIT_TITLE'			=>	$this->strTitle,
 												'EDIT_WYSIWYG'			=>	$this->getWysiwyg()
 										));
+
 		return 'editor'.$this->strSplitChar.$this->objTemplate->get();
 	}
 
-
 	/**
 	 * Returns an instance of the wysiwyg-editor filled with content of the desired page.
+	 *
 	 * @param	integer		$intPageId: the content of the page with this id will loaded into the editor
 	 */
-	private function getWysiwyg()
-	{
+	private function getWysiwyg() {
 		$strContent = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $this->strContent);
 		return get_wysiwyg_editor('fe_FormContent', $strContent, 'frontendEditing');
 	}
 
-
 	/**
 	 * Updates the page with the values submitted in $_REQUEST and collected by <pre>getParameters()</pre>.
+	 *
 	 * @global 	ADONewConnection
 	 */
-	private function updatePage()
-	{
+	private function updatePage() {
 		global $objDatabase;
 
 		//Collect existing values
@@ -516,9 +513,9 @@ class frontendEditing extends frontendEditingLib {
 												WHERE		id='.$this->intPageId.'
 												LIMIT		1
 											');
-// TODO:  Never used
-//		$strOld_C_Content 		= $objResult->fields['content'];
-//		$strOld_C_Title 		= $objResult->fields['title'];
+
+		$strOld_C_Content 		= $objResult->fields['content'];
+		$strOld_C_Title 		= $objResult->fields['title'];
 		$strOld_C_MetaTitle 	= $objResult->fields['metatitle'];
 		$strOld_C_MetaDesc 		= $objResult->fields['metadesc'];
 		$strOld_C_MetaKeys 		= $objResult->fields['metakeys'];
@@ -527,7 +524,7 @@ class frontendEditing extends frontendEditingLib {
 		$strOld_C_Redirect 		= $objResult->fields['redirect'];
 		$strOld_C_ExpertMode 	= $objResult->fields['expertmode'];
 
-//		$strOld_N_IsValidated	= $objResult->fields['is_validated'];
+		$strOld_N_IsValidated	= $objResult->fields['is_validated'];
 		$strOld_N_ParCat		= $objResult->fields['parcat'];
 		$strOld_N_CatName		= $objResult->fields['catname'];
 		$strOld_N_Target		= $objResult->fields['target'];
@@ -535,8 +532,8 @@ class frontendEditing extends frontendEditingLib {
 		$strOld_N_DisplayStatus	= $objResult->fields['displaystatus'];
 		$strOld_N_ActiveStatus	= $objResult->fields['activestatus'];
 		$strOld_N_CachingStatus	= $objResult->fields['cachingstatus'];
-//		$strOld_N_UserName		= $objResult->fields['username'];
-//		$strOld_N_ChangeLog		= $objResult->fields['changelog'];
+		$strOld_N_UserName		= $objResult->fields['username'];
+		$strOld_N_ChangeLog		= $objResult->fields['changelog'];
 		$strOld_N_Command		= $objResult->fields['cmd'];
 		$strOld_N_Language		= $objResult->fields['lang'];
 		$strOld_N_Module		= $objResult->fields['module'];
@@ -576,7 +573,7 @@ class frontendEditing extends frontendEditingLib {
 									INTO	'.DBPREFIX.'content_navigation_history
 									SET		is_active="1",
 											catid='.$this->intPageId.',
-											parcat="'.$strOld_N_ParCat.'",
+											parcat="'.$strOld_N_CatId.'",
 					                    	catname="'.$strOld_N_CatName.'",
 					                    	target="'.$$strOld_N_Target.'",
 					                    	displayorder='.$strOld_N_DisplayOrder.',
@@ -626,7 +623,6 @@ class frontendEditing extends frontendEditingLib {
 }
 
 //Instantiate database-object. Has to be global because of included classes!
-$strErrorCode = '';
 $objDatabase = getDatabaseObject($strErrorCode);
 
 //Instantiate language-array. Has to be global because of included classes!
@@ -639,5 +635,4 @@ $sessionObj = new cmsSession();
 //Instantiate Front editing
 $objFrontendEditing = new frontendEditing();
 $objFrontendEditing->performAction();
-
 ?>

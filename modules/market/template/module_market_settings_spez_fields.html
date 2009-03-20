@@ -12,11 +12,9 @@
       <td><b>{TXT_PLACEHOLDER_CONTENT}</b></td>
     </tr>
     <!-- BEGIN spez_fields -->
+    <input type="hidden" name="setname['{SPEZ_FIELD_ID}']" value="{SPEZ_FIELD_NAME}" />
     <tr class="{SPEZ_FIELD_ROWCLASS}"> 
-      <td valign="top">
-        <input type="hidden" name="setname['{SPEZ_FIELD_ID}']" value="{SPEZ_FIELD_NAME}" />
-        <input type="text" size="40" name="settitle['{SPEZ_FIELD_ID}']" value="{SPEZ_FIELD_TITLE}" />
-      </td>
+      <td valign="top"><input type="text" size="40" name="settitle['{SPEZ_FIELD_ID}']" value="{SPEZ_FIELD_TITLE}" /></td>
       <td ><input type="checkbox" name="setstatus['{SPEZ_FIELD_ID}']" value="1" {SPEZ_FIELD_STATUS}/></td>
       <td>{SPEZ_FIELD_TYPE}</td>
       <td>{PLACEHOLDER_TITLE}</td>

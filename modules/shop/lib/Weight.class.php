@@ -3,7 +3,7 @@
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     1.0.0
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -14,11 +14,10 @@
  * This class is used to properly convert weights between the format used
  * in the database (grams, integer) and a format for displaying and editing
  * in the user interface (string, with units).
- * Note that everything in this class is purely static.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     1.0.0
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */

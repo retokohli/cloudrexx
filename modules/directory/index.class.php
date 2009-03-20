@@ -33,7 +33,7 @@ require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
  */
 class rssDirectory extends directoryLibrary
 {
-    public $ArraySettings;
+   public $ArraySettings;
     public $statusMessage;
     public $folderImageLarge;
     public $folderImageSmall;
@@ -89,8 +89,10 @@ class rssDirectory extends directoryLibrary
         $this->folderImageLarge = "<img src='../../images/modules/directory/_folder_24.gif' alt='' />";
         $this->folderImageSmall = "<img src='../../images/modules/directory/_folder.gif' alt='' />";
 
-        //create latest xml
-        $this->createRSSlatest();
+        //create latest xml. (Dave, 2009-03-04: This sucks, as it causes the start
+        //                    page to break if the FTP server doesn't work. And why
+        //                    the hell do we need to re-create the RSS here anyhow?)
+        #$this->createRSSlatest();
 
         //get settings
         $this->settings = $this->getSettings();
@@ -171,6 +173,7 @@ class rssDirectory extends directoryLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
+
         if (isset($_GET['lid'])) {
             $lId = intval($_GET['lid']);
         } else {
@@ -215,6 +218,32 @@ class rssDirectory extends directoryLibrary
         }
 
         //select View
+       /*if ($this->settings['indexview']['value'] == 1) {
+            $this->arrRows ='';
+            $i = 0;
+            $firstCol = true;
+            ksort($this->arrRowsIndex);
+            foreach($this->arrRowsIndex as $rowKey => $rowName){
+                if ($index != substr($rowName, 0, 1)) {
+                    $index = substr($rowName, 0, 1);
+                    if($i%$this->rows==0){
+                        $i=1;
+                    }else{
+                        $i++;
+                    }
+
+                    $this->arrRows[$i] .= (!$firstCol ? "<br />" : "")."<b>".$index."</b><br />".substr($rowName,1);
+                    if ($i == $this->rows && $firstCol) {
+                        $firstCol = false;
+                    }
+                } else {
+                    $this->arrRows[$i] .= substr($rowName,1);
+                }
+            }
+        }*/
+
+
+        //select View
         if ($this->settings['indexview']['value'] == 1) {
             $this->arrRows ='';
             $i = 0;
@@ -233,7 +262,7 @@ $this->arrRows[2] = '';
                     if ($i % $this->rows == 0) {
                         $i = 1;
                     } else {
-                        ++$i;
+                        $i++;
                     }
                     $this->arrRows[$i] .= (!$firstCol ? "<br />" : "")."<b>".$index."</b><br />".substr($rowName, 1);
                     if ($i == $this->rows && $firstCol) {
@@ -265,12 +294,12 @@ $this->arrRows[2] = '';
 
     function showLevels($parentId)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
 // TODO: $showlevels is not defined
-//        if (!isset($showlevels)) {
-//            $arrLevel['showlevels'] = 1;
-//        }
+        if (!isset($showlevels)) {
+           $arrLevel['showlevels'] = 1;
+        }
 
         //get levels
         $objResult = $objDatabase->Execute("
@@ -307,6 +336,7 @@ $this->arrRows[2] = '';
                 $objResult->MoveNext();
             }
         }
+
 
         //show level
         $i = 1;
@@ -374,7 +404,7 @@ $this->arrRows[2] = '';
 
     function showCategories($parentId)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         if (!empty($_GET['lid'])) {
             $levelLink = "&amp;lid=".intval($_GET['lid']);
@@ -592,7 +622,7 @@ $this->arrRows[2] = '';
 
     function getLatest() {
 
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_dir WHERE status = '1' ORDER BY id DESC LIMIT 5");
         if ($objResult !== false) {
@@ -771,17 +801,25 @@ $this->arrRows[2] = '';
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
+
+// TODO: Never used
+//        $setVariable = array();
+
         //check popular & hits
         $this->checkPopular();
         //get search
         $this->getSearch();
         //get navtree
         $this->getNavtree($lid, $cid);
-        $this->_objTpl->setVariable(array(
+
+       $this->_objTpl->setVariable(array(
             'TXT_DIRECTORY_DIR'                    => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
             'DIRECTORY_CATEGORY_NAVI'             => $this->navtree,
         ));
-        $objDatabase->Execute("SELECT `country` FROM ".DBPREFIX."module_directory_dir WHERE id = '".intval($id)."'");
+
+        $objResult = $objDatabase->Execute("SELECT `country` FROM ".DBPREFIX."module_directory_dir WHERE id = '".intval($id)."'");
+        $country   = $objResult->fields['country'];
+
         if ($this->_isGoogleMapEnabled('frontend')) {
             $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/directory/template/module_directory_googlemap_include.html');
             $this->_objTpl->setVariable(array(
@@ -812,17 +850,26 @@ $this->arrRows[2] = '';
                 $this->_objTpl->parse('direcoryGoogleMapJavascript');
             }
         }
+
         //get content
         $this->getContent($id, $cid, $lid);
+
         //get attributes
         $this->getAttributes($id);
+
+        //get voting
+        $this->getVoting($id, $cid, $lid);
+
+        //get votes
+        $this->getVotes($id);
+
         //parse block
         $this->_objTpl->parse('feedDetails');
     }
 
 
-    function getAttributes($id)
-    {
+
+    function getAttributes($id) {
         global $objDatabase, $_ARRAYLANG;
 
         //get attributes
@@ -835,6 +882,7 @@ $this->arrRows[2] = '';
                 $objResult->MoveNext();
             }
         }
+
         //get categories
         $objResult = $objDatabase->Execute("SELECT cat_id FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE dir_id = '".$id."'");
         if ($objResult !== false) {
@@ -843,6 +891,7 @@ $this->arrRows[2] = '';
                 $objResult->MoveNext();
             }
         }
+
         if (!empty($arrCatId)) {
             $categories = "<ul>";
             foreach ($arrCatId as $catId) {
@@ -850,11 +899,13 @@ $this->arrRows[2] = '';
                 $categories .= "<li>".$objResult->fields['name']."</li>";
             }
             $categories .= "</ul>";
+
             $this->_objTpl->setVariable(array(
                 'TXT_DIRECTORY_FEED_CATEGORIES'        => $_ARRAYLANG['TXT_DIR_CATEGORIE'],
                 'DIRECTORY_FEED_CATEGORIES'            => $categories,
             ));
         }
+
         //get levels
         if ($this->settings['levels']['value'] == 1) {
             $objResult = $objDatabase->Execute("SELECT level_id FROM ".DBPREFIX."module_directory_rel_dir_level WHERE dir_id = '".$id."'");
@@ -864,6 +915,7 @@ $this->arrRows[2] = '';
                     $objResult->MoveNext();
                 }
             }
+
             if (!empty($arrLevelId)) {
                 $levels = "<ul>";
                 foreach ($arrLevelId as $levelId) {
@@ -871,12 +923,14 @@ $this->arrRows[2] = '';
                     $levels     .= "<li>".$objResult->fields['name']."</li>";
                 }
                 $levels .= "</ul>";
+
                 $this->_objTpl->setVariable(array(
                     'TXT_DIRECTORY_FEED_LEVELS'        => $_ARRAYLANG['TXT_LEVELS'],
                     'DIRECTORY_FEED_LEVELS'            => $levels,
                 ));
             }
         }
+
         // set variables
         $this->_objTpl->setVariable(array(
             'DIRECTORY_FEED_VALIDATE_DATE'        => date("d. M Y", $validatedate),
@@ -888,6 +942,9 @@ $this->arrRows[2] = '';
 
     /**
      * get Feed content
+     *
+     * get Feed content
+     *
      * @access   public
      * @param    string  $id
      * @global    ADONewConnection
@@ -996,6 +1053,7 @@ $this->arrRows[2] = '';
                 $arrFeedContent['spez_field_27']         = $objResult->fields['spez_field_27'];
                 $arrFeedContent['spez_field_28']         = $objResult->fields['spez_field_28'];
                 $arrFeedContent['spez_field_29']         = $objResult->fields['spez_field_29'];
+                $arrFeedContent['youtube']               = $objResult->fields['youtube'];
                 $objResult->MoveNext();
             }
         }
@@ -1025,6 +1083,16 @@ $this->arrRows[2] = '';
                         ? $_ARRAYLANG[$arrFieldsActive['title'][$fieldKey]]
                         : ''
                     );
+
+                    //youtube
+                    if ($fieldName == "youtube") {
+                        $youTubeIdRegex = "#.*[\?&/]v[=/]([a-zA-Z0-9_-]{11}).*#";
+                        preg_match($youTubeIdRegex, $arrFeedContent[$fieldName], $youTubeArray);
+                        $youTubeID = $youTubeArray[1];
+
+                        $content =  '<object width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"><param name="movie" value="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"></embed></object>';
+                    }
+
                     //get pics
                     if ($fieldName == "logo") {
                         $content = '<img src="'.$this->mediaWebPath.'images/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" />&nbsp;&nbsp;';
@@ -1036,7 +1104,7 @@ $this->arrRows[2] = '';
                         } else {
                             $path = "thumbs/";
                         }
-                        $setVariable["DIRECTORY_FEED_LOGO_THUMB"] = '<a href="'.$this->mediaWebPath."images/".$arrFeedContent[$fieldName].'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$width.',height='.$height.',status\'); return false"><img src="'.$this->mediaWebPath.$path.$arrFeedContent[$fieldName].'" width="'.$arrSettings['thumbSize']['value'].'" border="0" alt="'.$arrFeedContent['title'].'" /></a>&nbsp;&nbsp;';
+                        $setVariable["DIRECTORY_FEED_LOGO_THUMB"] = '<a href="'.$this->mediaWebPath."images/".$arrFeedContent[$fieldName].'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$width.',height='.$height.',status\'); return false"><img src="'.$this->mediaWebPath.$path.$arrFeedContent[$fieldName].'"  width="'.$arrSettings['thumbSize']['value'].'" border="0" alt="'.$arrFeedContent['title'].'" /></a>&nbsp;&nbsp;';
                     }
                     //rss link
                     if ($fieldName == "rss_link") {
@@ -1174,6 +1242,12 @@ $this->arrRows[2] = '';
                         }
                     }
                     $setVariable["DIRECTORY_FEED_".strtoupper($fieldName)] = nl2br($content);
+
+                    // we need a plain-URL variant too
+                    if ($fieldName == "homepage" || $fieldName == "relatedlinks" || $fieldName == "link") {
+                        $setVariable["DIRECTORY_FEED_".strtoupper($fieldName)."_URL"] = $arrLinks[0];
+                    }
+
                     $setVariable["TXT_DIRECTORY_FEED_".strtoupper($fieldName)] = $name;
                     $fieldsList .= '<div class="fieldsList"><div class="fieldDesc">'.nl2br($name).'</div><div class="fieldContent">'.nl2br($content).'</div></div>';
                 }
@@ -1278,9 +1352,10 @@ $this->arrRows[2] = '';
      */
     function newFeed()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $status="error";
+
         if (!$this->settings['addFeed']['value'] == '1' || (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1')) {
             header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory');
             exit;
@@ -1308,6 +1383,14 @@ $this->arrRows[2] = '';
         $levelId = 0;
         $categories = $this->getCategories($catId, 1);
         $levels     = $this->getLevels($levelId, 1);
+// TODO: $osId is not defined
+//$osId = 0;
+// TODO: Never used
+//        $platforms  = $this->getPlatforms($osId);
+// TODO: $langId is not defined
+//$langId = 0;
+// TODO: Never used
+//        $languages  = $this->getLanguages($langId);
 
         //get inputfields
         $this->getInputfields($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0, "add", "", "frontend");
@@ -1400,7 +1483,7 @@ $this->arrRows[2] = '';
 
     function myFeeds()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1') {
             header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory');
@@ -1643,6 +1726,8 @@ $this->arrRows[2] = '';
         }
 
         $pos = intval($_GET['pos']);
+// TODO: Never used
+//        $searchTermOrg = contrexx_addslashes($_GET['term']);
         $searchTerm = contrexx_addslashes($_GET['term']);
         $searchTermGoogle = $searchTerm;
         $array = explode(' ', $searchTerm);
@@ -1729,7 +1814,7 @@ $this->arrRows[2] = '';
             $query = "
                 SELECT files.id, files.title, files.description, files.link,
                  MATCH (files.description) AGAINST ('%$searchTerm%') AS score
-                  FROM ".$db."".DBPREFIX."module_directory_dir AS files
+                  FROM ".$db." ".DBPREFIX."module_directory_dir AS files
                  WHERE ((files.title LIKE ('%$searchTerm%') OR files.description LIKE ('%$searchTerm%') OR files.searchkeys LIKE ('%$searchTerm%'))
                         $query_search)
                    AND files.status != 0
@@ -1742,8 +1827,11 @@ $this->arrRows[2] = '';
             $objResult   = $objDatabase->Execute($query);
             $count       = $objResult->RecordCount();
             $pos         = intval($_GET['pos']);
-            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$searchTerm."&amp;check=".$_GET['check'].$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
 
+// TODO: $term is not defined, possibly $searchTerm?
+// TODO: $check is not defined
+//            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$term."&amp;check=".$check.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$searchTerm.$searchTermExp."&amp;check=".$_GET['check'], "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
             ////// paging end /////////
             $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
 
@@ -1918,7 +2006,7 @@ $this->arrRows[2] = '';
      */
     function redirectFeed($id)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         //crate latest and popular xml
         $this->createRSSlatest();
@@ -2096,7 +2184,7 @@ $this->arrRows[2] = '';
             'DIRECTORY_CATEGORY_NAVI' => $this->navtree,
             'DIRECTORY_VOTE_TITLE'    => $title,
             'DIRECTORY_VOTE_TEXT'     => $text,
-            'DIRECTORY_BACK'          => '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&lid='.$lid.'&cid='.$cid.'" target="_self">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+            'DIRECTORY_BACK'          => '<a href="javascript:history.go(-1);">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
             'TXT_DIRECTORY_DIR'       => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
         ));
     }
@@ -2215,19 +2303,33 @@ $this->arrRows[2] = '';
 
     function getPageTitle()
     {
-        if (!empty($_GET['lid'])) {
-            $this->getNavtreeLevels(intval($_GET['lid']));
-            ksort($this->navtreeLevels);
-            $navtreeLevels = join("&nbsp;-&nbsp;", $this->navtreeLevels);
+         global $objDatabase, $_ARRAYLANG;
+
+        $lid = (isset($_GET['lid']) ? intval($_GET['lid']) : 0);
+        $cid = (isset($_GET['cid']) ? intval($_GET['cid']) : 0);
+        $this->getNavtreeLevels($lid);
+        $this->getNavtreeCategories($cid);
+        $navtree =  '';
+
+        $arr_levels = $this->navtreeLevels;
+        $arr_cats = $this->navtreeCategories;
+        ksort($arr_levels);
+        ksort($arr_cats);
+
+        $page_title_level = join(" - ", $arr_levels);
+        $page_title_cat = join(" - ", $arr_cats);
+
+        if(!empty($arr_levels) && !empty($this->navtreeCategories)) {
+            $navtree = $page_title_level." - ".$page_title_cat;
+        } else {
+            $navtree = $page_title_level.$page_title_cat;
         }
-        if (!empty($_GET['cid'])) {
-            $navtreeLevels .= !empty($_GET['lid']) ? "&nbsp;-&nbsp;" : "";
-            $this->getNavtreeCategories(intval($_GET['cid']));
-            ksort($this->navtreeCategories);
-            $navtreeCats = join("&nbsp;-&nbsp;", $this->navtreeCategories);
-            $navtreeCats .= !empty($_GET['id']) ? "&nbsp;-&nbsp;" : "";
+
+        if(!empty($navtree) && !empty($this->pageTitle)) {
+            $navtree .= "&nbsp;-&nbsp;";
         }
-        $this->pageTitle = $navtreeLevels.$navtreeCats.$this->pageTitle;
+
+        $this->pageTitle = $navtree.$this->pageTitle;
         return $this->pageTitle;
     }
 
@@ -2263,7 +2365,7 @@ $this->arrRows[2] = '';
 
     function getNavtreeLevels($lid)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute("
             SELECT id, name, parentid
@@ -2285,7 +2387,7 @@ $this->arrRows[2] = '';
 
     function getNavtreeCategories($cid)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute("
             SELECT id, name, parentid
@@ -2294,6 +2396,7 @@ $this->arrRows[2] = '';
                AND id='$cid'
              ORDER BY id DESC
         ");
+
         if ($objResult) {
             while (!$objResult->EOF) {
                 $tempId = $objResult->fields['parentid'];

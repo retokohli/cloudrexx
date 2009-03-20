@@ -2,8 +2,8 @@
 /**
  * Content Workflow
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
- * @version        1.0.0
+ * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -21,17 +21,17 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
  *
  * Class for managing the content history
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
- * @access        public
- * @version        1.0.0
+ * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 class ContentWorkflow {
-    public $strPageTitle;
-    public $strErrMessage = '';
-    public $strOkMessage = '';
+    var $strPageTitle;
+    var $strErrMessage = array();
+    var $strOkMessage = '';
 
     /**
     * Constructor
@@ -44,21 +44,21 @@ class ContentWorkflow {
     function __construct() {
         global $objDatabase,$objTemplate,$_CORELANG,$_CONFIG;
 
-        $objDatabase->Execute('DELETE FROM    '.DBPREFIX.'content_logfile WHERE history_id=0');
+        $objDatabase->Execute('DELETE FROM  '.DBPREFIX.'content_logfile WHERE history_id=0');
         $objDatabase->Execute('OPTIMIZE TABLE '.DBPREFIX.'content_logfile');
         $objDatabase->Execute('OPTIMIZE TABLE '.DBPREFIX.'content_history');
         $objDatabase->Execute('OPTIMIZE TABLE '.DBPREFIX.'content_navigation_history');
 
-        $objTemplate->setVariable(    'CONTENT_NAVIGATION',
-                                       '<a href="index.php?cmd=workflow&amp;act=new">'.$_CORELANG['TXT_NEW_PAGES'].'</a>
-                                        <a href="index.php?cmd=workflow&amp;act=updated">'.$_CORELANG['TXT_UPDATED_PAGES'].'</a>
-                                        <a href="index.php?cmd=workflow&amp;act=deleted">'.$_CORELANG['TXT_DELETED_PAGES'].'</a>
-                                        <a href="index.php?cmd=workflow&amp;act=unvalidated">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>
-                                        <a href="index.php?cmd=workflow&amp;act=showClean">'.$_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'].'</a>
-                                   ');
+        $objTemplate->setVariable(  'CONTENT_NAVIGATION',
+                                    '<a href="index.php?cmd=workflow&amp;act=new">'.$_CORELANG['TXT_NEW_PAGES'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=updated">'.$_CORELANG['TXT_UPDATED_PAGES'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=deleted">'.$_CORELANG['TXT_DELETED_PAGES'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=unvalidated">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=showClean">'.$_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'].'</a>
+                                ');
 
         if ($_CONFIG['contentHistoryStatus'] == 'off') {
-            $this->strErrMessage = $_CORELANG['TXT_WORKFLOW_NOT_ACTIVE'];
+            $this->strErrMessage[] = $_CORELANG['TXT_WORKFLOW_NOT_ACTIVE'];
         }
     }
 
@@ -70,7 +70,7 @@ class ContentWorkflow {
     */
     function getPage()
     {
-        global $objTemplate;
+        global $objTemplate, $_CORELANG;
 
         if(!isset($_GET['act'])){
             $_GET['act'] = '';
@@ -127,9 +127,9 @@ class ContentWorkflow {
         }
 
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'                => $this->strPageTitle,
+            'CONTENT_TITLE'             => $this->strPageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
-            'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage
+            'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
     }
 
@@ -146,43 +146,43 @@ class ContentWorkflow {
 
         switch ($strAction) {
             case 'updated':
-                $this->strPageTitle    = $_CORELANG['TXT_UPDATED_PAGES'];
-                $strTitle             = $_CORELANG['TXT_UPDATED_PAGES'];
-                $strPagingAct        = 'updated';
-                $strQueryWhere         = 'WHERE action="update" AND is_validated="1"';
+                $this->strPageTitle = $_CORELANG['TXT_UPDATED_PAGES'];
+                $strTitle           = $_CORELANG['TXT_UPDATED_PAGES'];
+                $strPagingAct       = 'updated';
+                $strQueryWhere      = 'WHERE action="update" AND is_validated="1"';
             break;
             case 'deleted':
-                $this->strPageTitle    = $_CORELANG['TXT_DELETED_PAGES'];
-                $strTitle             = $_CORELANG['TXT_DELETED_PAGES'];
-                $strPagingAct        = 'deleted';
-                $strQueryWhere         = 'WHERE action="delete" AND is_validated="1"';
+                $this->strPageTitle = $_CORELANG['TXT_DELETED_PAGES'];
+                $strTitle           = $_CORELANG['TXT_DELETED_PAGES'];
+                $strPagingAct       = 'deleted';
+                $strQueryWhere      = 'WHERE action="delete" AND is_validated="1"';
             break;
             case 'unvalidated':
-                $this->strPageTitle    = $_CORELANG['TXT_WORKFLOW_VALIDATE'];
-                $strTitle            = $_CORELANG['TXT_WORKFLOW_VALIDATE'];
-                $strPagingAct        = 'unvalidated';
-                $strQueryWhere         = 'WHERE is_validated="0"';
+                $this->strPageTitle = $_CORELANG['TXT_WORKFLOW_VALIDATE'];
+                $strTitle           = $_CORELANG['TXT_WORKFLOW_VALIDATE'];
+                $strPagingAct       = 'unvalidated';
+                $strQueryWhere      = 'WHERE is_validated="0"';
             break;
             default:
-                $this->strPageTitle    = $_CORELANG['TXT_NEW_PAGES'];
-                $strTitle             = $_CORELANG['TXT_NEW_PAGES'];
-                $strPagingAct        = 'new';
-                $strQueryWhere         = 'WHERE action="new" AND is_validated="1"';
+                $this->strPageTitle = $_CORELANG['TXT_NEW_PAGES'];
+                $strTitle           = $_CORELANG['TXT_NEW_PAGES'];
+                $strPagingAct       = 'new';
+                $strQueryWhere      = 'WHERE action="new" AND is_validated="1"';
         }
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_history', 'content_history.html');
         $objTemplate->setVariable(array(
-            'TXT_TITLE'                    => $strTitle,
-            'TXT_SUBTITLE_DATE'            => $_CORELANG['TXT_DATE'],
-            'TXT_SUBTITLE_NAME'            => $_CORELANG['TXT_PAGETITLE'],
-            'TXT_SUBTITLE_MODULE'        => $_CORELANG['TXT_MODULE'],
-            'TXT_SUBTITLE_USER'            => $_CORELANG['TXT_USER'],
+            'TXT_TITLE'                 => $strTitle,
+            'TXT_SUBTITLE_DATE'         => $_CORELANG['TXT_DATE'],
+            'TXT_SUBTITLE_NAME'         => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_SUBTITLE_MODULE'       => $_CORELANG['TXT_MODULE'],
+            'TXT_SUBTITLE_USER'         => $_CORELANG['TXT_USER'],
             'TXT_SUBTITLE_FUNCTIONS'    => $_CORELANG['TXT_FUNCTIONS'],
             'TXT_DELETED_RESTORE_JS'    => $_CORELANG['TXT_DELETED_RESTORE_JS']
         ));
 
     //THEMES
-        $objResult = $objDatabase->Execute('SELECT    id,
+        $objResult = $objDatabase->Execute('SELECT  id,
                                                     themesname
                                             FROM    '.DBPREFIX.'skins
                                             ');
@@ -192,7 +192,7 @@ class ContentWorkflow {
             $objResult->MoveNext();
         }
     //MODULES
-        $objResult = $objDatabase->Execute('SELECT    id,
+        $objResult = $objDatabase->Execute('SELECT  id,
                                                     name
                                             FROM    '.DBPREFIX.'modules
                                         ');
@@ -202,7 +202,7 @@ class ContentWorkflow {
         }
         $arrModules[0] = '-';
     //GROUPS
-        $objResult = $objDatabase->Execute('SELECT    group_id,
+        $objResult = $objDatabase->Execute('SELECT  group_id,
                                                     group_name
                                             FROM    '.DBPREFIX.'access_user_groups
                                         ');
@@ -212,7 +212,7 @@ class ContentWorkflow {
             $objResult->MoveNext();
         }
     //PAGES
-        $objResult = $objDatabase->Execute('SELECT    id,
+        $objResult = $objDatabase->Execute('SELECT  id,
                                                     history_id,
                                                     action
                                             FROM    '.DBPREFIX.'content_logfile
@@ -223,7 +223,7 @@ class ContentWorkflow {
         $objTemplate->setVariable('HISTORY_PAGING',$strPaging);
         /** end paging **/
 
-        $objResult = $objDatabase->SelectLimit('SELECT        id,
+        $objResult = $objDatabase->SelectLimit('SELECT      id,
                                                             history_id,
                                                             action
                                                 FROM        '.DBPREFIX.'content_logfile
@@ -234,8 +234,8 @@ class ContentWorkflow {
                                             );
 
         while (!$objResult->EOF) {
-                $arrHistory[$objResult->fields['history_id']] = array(    'id'        =>    $objResult->fields['id'],
-                                                                        'action'    =>    $objResult->fields['action']
+                $arrHistory[$objResult->fields['history_id']] = array(  'id'        =>  $objResult->fields['id'],
+                                                                        'action'    =>  $objResult->fields['action']
                                                                     );
             $objResult->MoveNext();
         }
@@ -247,51 +247,55 @@ class ContentWorkflow {
             foreach ($arrHistory as $intHistoryId => $arrInner) {
 
                 $strQueryAction = $arrInner['action'];
-                $intLogfileId     = $arrInner['id'];
+                $intLogfileId   = $arrInner['id'];
 
-                $objResult = $objDatabase->SelectLimit('SELECT    navTable.id                    AS navID,
-                                                                navTable.catid                AS navPageId,
-                                                                navTable.is_active            AS navActive,
+                $objResult = $objDatabase->SelectLimit('SELECT  navTable.id                 AS navID,
+                                                                navTable.catid              AS navPageId,
+                                                                navTable.is_active          AS navActive,
                                                                 navTable.catname            AS navCatname,
-                                                                navTable.username            AS navUsername,
-                                                                navTable.changelog            AS navChangelog,
-                                                                navTable.startdate            AS navStartdate,
+                                                                navTable.username           AS navUsername,
+                                                                navTable.changelog          AS navChangelog,
+                                                                navTable.startdate          AS navStartdate,
                                                                 navTable.enddate            AS navEnddate,
-                                                                navTable.cachingstatus        AS navCachingStatus,
-                                                                navTable.themes_id            AS navTheme,
+                                                                navTable.cachingstatus      AS navCachingStatus,
+                                                                navTable.themes_id          AS navTheme,
                                                                 navTable.cmd                AS navCMD,
-                                                                navTable.module                AS navModule,
-                                                                navTable.frontend_access_id    AS navFAccess,
-                                                                navTable.backend_access_id    AS navBAccess,
-                                                                navTable.lang                AS navLang,
-                                                                conTable.title                AS conTitle,
-                                                                conTable.metatitle            AS conMetaTitle,
-                                                                conTable.metadesc            AS conMetaDesc,
-                                                                conTable.metakeys            AS conMetaKeywords,
+                                                                navTable.module             AS navModule,
+                                                                navTable.frontend_access_id AS navFAccess,
+                                                                navTable.backend_access_id  AS navBAccess,
+                                                                navTable.lang               AS navLang,
+                                                                conTable.title              AS conTitle,
+                                                                conTable.metatitle          AS conMetaTitle,
+                                                                conTable.metadesc           AS conMetaDesc,
+                                                                conTable.metakeys           AS conMetaKeywords,
                                                                 conTable.content            AS conContent,
-                                                                conTable.css_name            AS conCssName,
-                                                                conTable.redirect            AS conRedirect,
-                                                                conTable.expertmode            AS conExpertMode
+                                                                conTable.css_name           AS conCssName,
+                                                                conTable.redirect           AS conRedirect,
+                                                                conTable.expertmode         AS conExpertMode
                                                     FROM        '.DBPREFIX.'content_navigation_history AS navTable
-                                                    INNER JOIN    '.DBPREFIX.'content_history AS conTable
-                                                    ON            conTable.id = navTable.id
-                                                    WHERE         navTable.id = '.$intHistoryId, 1);
-                $strBackendGroups     = '';
-                $strFrontendGroups     = '';
+                                                    INNER JOIN  '.DBPREFIX.'content_history AS conTable
+                                                    ON          conTable.id = navTable.id
+                                                    WHERE       navTable.id = '.$intHistoryId, 1);
+                $strBackendGroups   = '';
+                $strFrontendGroups  = '';
 
-                $objSubResult = $objDatabase->SelectLimit('    SELECT    catid
-                                                        FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE    catid='.$objResult->fields['navPageId'], 1);
-                if ($objSubResult->RecordCount() == 1) {
-                    $boolPageExists = true;
+                if (!empty($objResult->fields['navPageId'])) {
+                    $objSubResult = $objDatabase->SelectLimit('    SELECT    catid
+                                                            FROM    '.DBPREFIX.'content_navigation
+                                                            WHERE    catid='.$objResult->fields['navPageId'], 1);
+                    if ($objSubResult->RecordCount() == 1) {
+                        $boolPageExists = true;
+                    } else {
+                        $boolPageExists = false;
+                    }
                 } else {
                     $boolPageExists = false;
                 }
 
                 if ($objResult->fields['navBAccess'] != 0) {
-                    $objSubResult = $objDatabase->Execute('    SELECT    group_id
+                    $objSubResult = $objDatabase->Execute(' SELECT  group_id
                                                             FROM    '.DBPREFIX.'access_group_dynamic_ids
-                                                            WHERE    access_id='.$objResult->fields['navBAccess'].'
+                                                            WHERE   access_id='.$objResult->fields['navBAccess'].'
                                                         ');
                     while (!$objSubResult->EOF) {
                         $strBackendGroups .= $arrGroups[$objSubResult->fields['group_id']].',';
@@ -303,9 +307,9 @@ class ContentWorkflow {
                 }
 
                 if ($objResult->fields['navFAccess'] != 0) {
-                    $objSubResult = $objDatabase->Execute('    SELECT    group_id
+                    $objSubResult = $objDatabase->Execute(' SELECT  group_id
                                                             FROM    '.DBPREFIX.'access_group_dynamic_ids
-                                                            WHERE    access_id='.$objResult->fields['navFAccess'].'
+                                                            WHERE   access_id='.$objResult->fields['navFAccess'].'
                                                         ');
                     while (!$objSubResult->EOF) {
                         $strFrontendGroups .= $arrGroups[$objSubResult->fields['group_id']].',';
@@ -361,50 +365,50 @@ class ContentWorkflow {
                 }
 
                 $objTemplate->setVariable(array(
-                    'TXT_CONTENT_TITLE'            =>    $_CORELANG['TXT_PAGETITLE'],
-                    'TXT_META_TITLE'            =>    $_CORELANG['TXT_META_TITLE'],
-                    'TXT_META_DESCRIPTION'        =>    $_CORELANG['TXT_META_DESCRIPTION'],
-                    'TXT_META_KEYWORD'            =>    $_CORELANG['TXT_META_KEYWORD'],
-                    'TXT_CATEGORY'                =>    $_CORELANG['TXT_CATEGORY'],
-                    'TXT_START_DATE'            =>    $_CORELANG['TXT_START_DATE'],
-                    'TXT_END_DATE'                =>    $_CORELANG['TXT_END_DATE'],
-                    'TXT_THEMES'                =>    $_CORELANG['TXT_THEMES'],
-                    'TXT_OPTIONAL_CSS_NAME'        =>    $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
-                    'TXT_MODULE'                =>    $_CORELANG['TXT_MODULE'],
-                    'TXT_REDIRECT'                =>    $_CORELANG['TXT_REDIRECT'],
-                    'TXT_SOURCE_MODE'            =>    $_CORELANG['TXT_SOURCE_MODE'],
-                    'TXT_CACHING_STATUS'        =>    $_CORELANG['TXT_CACHING_STATUS'],
-                    'TXT_FRONTEND'                =>    $_CORELANG['TXT_WEB_PAGES'],
-                    'TXT_BACKEND'                =>    $_CORELANG['TXT_ADMINISTRATION_PAGES'],
+                    'TXT_CONTENT_TITLE'         =>  $_CORELANG['TXT_PAGETITLE'],
+                    'TXT_META_TITLE'            =>  $_CORELANG['TXT_META_TITLE'],
+                    'TXT_META_DESCRIPTION'      =>  $_CORELANG['TXT_META_DESCRIPTION'],
+                    'TXT_META_KEYWORD'          =>  $_CORELANG['TXT_META_KEYWORD'],
+                    'TXT_CATEGORY'              =>  $_CORELANG['TXT_CATEGORY'],
+                    'TXT_START_DATE'            =>  $_CORELANG['TXT_START_DATE'],
+                    'TXT_END_DATE'              =>  $_CORELANG['TXT_END_DATE'],
+                    'TXT_THEMES'                =>  $_CORELANG['TXT_THEMES'],
+                    'TXT_OPTIONAL_CSS_NAME'     =>  $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
+                    'TXT_MODULE'                =>  $_CORELANG['TXT_MODULE'],
+                    'TXT_REDIRECT'              =>  $_CORELANG['TXT_REDIRECT'],
+                    'TXT_SOURCE_MODE'           =>  $_CORELANG['TXT_SOURCE_MODE'],
+                    'TXT_CACHING_STATUS'        =>  $_CORELANG['TXT_CACHING_STATUS'],
+                    'TXT_FRONTEND'              =>  $_CORELANG['TXT_WEB_PAGES'],
+                    'TXT_BACKEND'               =>  $_CORELANG['TXT_ADMINISTRATION_PAGES'],
                 ));
 
                 $objTemplate->setVariable(array(
-                    'HISTORY_ROWCLASS'        =>    ($intRowCount % 2 == 0) ? 'row0' : 'row1',
-                    'HISTORY_IMGDETAILS'    =>    $strIcon,
-                    'HISTORY_RID'            =>    $iRowId,
-                    'HISTORY_ID'            =>    $objResult->fields['navID'],
-                    'HISTORY_PID'            =>    $objResult->fields['navPageId'],
-                    'HISTORY_DATE'            =>    date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
-                    'HISTORY_USER'            =>    $objResult->fields['navUsername'],
-                    'HISTORY_PREFIX'        =>    $strPrefix,
-                    'HISTORY_TITLE'            =>    stripslashes($objResult->fields['navCatname']),
-                    'HISTORY_CONTENT_TITLE'    =>    stripslashes($objResult->fields['conTitle']),
-                    'HISTORY_METATITLE'        =>    stripslashes($objResult->fields['conMetaTitle']),
-                    'HISTORY_METADESC'        =>    stripslashes($objResult->fields['conMetaDesc']),
-                    'HISTORY_METAKEY'        =>    stripslashes($objResult->fields['conMetaKeywords']),
-                    'HISTORY_STARTDATE'        =>    $objResult->fields['navStartdate'],
-                    'HISTORY_ENDDATE'        =>    $objResult->fields['navEnddate'],
-                    'HISTORY_THEME'            =>    stripslashes($arrThemes[$objResult->fields['navTheme']]),
-                    'HISTORY_OPTIONAL_CSS'    =>    (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
-                    'HISTORY_MODULE'        =>    $arrModules[$objResult->fields['navModule']].' '.$objResult->fields['navCMD'],
-                    'HISTORY_CMD'            =>    (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
-                    'HISTORY_SECTION'        =>    $arrModules[$objResult->fields['navModule']],
-                    'HISTORY_REDIRECT'        =>    (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
-                    'HISTORY_SOURCEMODE'    =>    strtoupper($objResult->fields['conExpertMode']),
-                    'HISTORY_CACHING_STATUS'=>    ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
-                    'HISTORY_FRONTEND'        =>    stripslashes($strFrontendGroups),
-                    'HISTORY_BACKEND'        =>    stripslashes($strBackendGroups),
-                    'HISTORY_CONTENT'        =>    stripslashes(htmlspecialchars($objResult->fields['conContent'], ENT_QUOTES, CONTREXX_CHARSET)),
+                    'HISTORY_ROWCLASS'      =>  ($intRowCount % 2 == 0) ? 'row0' : 'row1',
+                    'HISTORY_IMGDETAILS'    =>  $strIcon,
+                    'HISTORY_RID'           =>  $iRowId,
+                    'HISTORY_ID'            =>  $objResult->fields['navID'],
+                    'HISTORY_PID'           =>  $objResult->fields['navPageId'],
+                    'HISTORY_DATE'          =>  date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
+                    'HISTORY_USER'          =>  $objResult->fields['navUsername'],
+                    'HISTORY_PREFIX'        =>  $strPrefix,
+                    'HISTORY_TITLE'         =>  stripslashes($objResult->fields['navCatname']),
+                    'HISTORY_CONTENT_TITLE' =>  stripslashes($objResult->fields['conTitle']),
+                    'HISTORY_METATITLE'     =>  stripslashes($objResult->fields['conMetaTitle']),
+                    'HISTORY_METADESC'      =>  stripslashes($objResult->fields['conMetaDesc']),
+                    'HISTORY_METAKEY'       =>  stripslashes($objResult->fields['conMetaKeywords']),
+                    'HISTORY_STARTDATE'     =>  $objResult->fields['navStartdate'],
+                    'HISTORY_ENDDATE'       =>  $objResult->fields['navEnddate'],
+                    'HISTORY_THEME'         =>  stripslashes($arrThemes[$objResult->fields['navTheme']]),
+                    'HISTORY_OPTIONAL_CSS'  =>  (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
+                    'HISTORY_MODULE'        =>  $arrModules[$objResult->fields['navModule']].' '.$objResult->fields['navCMD'],
+                    'HISTORY_CMD'           =>  (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
+                    'HISTORY_SECTION'       =>  $arrModules[$objResult->fields['navModule']],
+                    'HISTORY_REDIRECT'      =>  (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
+                    'HISTORY_SOURCEMODE'    =>  strtoupper($objResult->fields['conExpertMode']),
+                    'HISTORY_CACHING_STATUS'=>  ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
+                    'HISTORY_FRONTEND'      =>  stripslashes($strFrontendGroups),
+                    'HISTORY_BACKEND'       =>  stripslashes($strBackendGroups),
+                    'HISTORY_CONTENT'       =>  stripslashes(htmlspecialchars($objResult->fields['conContent'], ENT_QUOTES, CONTREXX_CHARSET)),
                 ));
 
                 $objTemplate->parse('showPages');
@@ -426,45 +430,44 @@ class ContentWorkflow {
     * @param     boolean        $boolInsert: This parameter has to set to true, if the page was deleted before
     * @return   integer       $intPageId: The id of the page which was loaded
     */
-    function loadHistory($intHistoryId,$boolInsert=false)
-    {
-        global $objDatabase, $_CORELANG;
+    function loadHistory($intHistoryId,$boolInsert=false) {
+        global $objDatabase, $_CORELANG, $_CONFIG;
 
         $intHistoryId = intval($intHistoryId);
 
         if ($intHistoryId > 0) {
-            $objResult = $objDatabase->Execute('SELECT    catid
+            $objResult = $objDatabase->Execute('SELECT  catid
                                                 FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE    id='.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intHistoryId.'
+                                                LIMIT   1
                                             ');
-            $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_navigation_history
-                                    SET        is_active="0"
-                                    WHERE    catid='.$objResult->fields['catid'].'
+            $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                    SET     is_active="0"
+                                    WHERE   catid='.$objResult->fields['catid'].'
                                 ');
 
-            $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_navigation_history
-                                    SET        is_active="1"
-                                    WHERE    id='.$intHistoryId.'
-                                    LIMIT    1
+            $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                    SET     is_active="1"
+                                    WHERE   id='.$intHistoryId.'
+                                    LIMIT   1
                                 ');
 
-            $objResult = $objDatabase->Execute('SELECT    *
+            $objResult = $objDatabase->Execute('SELECT  *
                                                 FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE    id='.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intHistoryId.'
+                                                LIMIT   1
                                             ');
 
             $objContentTree = new ContentTree();
             $arrCategory = $objContentTree->getThisNode($objResult->fields['parcat']);
 
             if (!is_array($arrCategory) && $boolInsert) {
-                    $objSubResult = $objDatabase->Execute('    SELECT    catid
+                    $objSubResult = $objDatabase->Execute(' SELECT  catid
                                                             FROM    '.DBPREFIX.'content_navigation
-                                                            WHERE    module=1 AND
+                                                            WHERE   module=1 AND
                                                                     cmd="lost_and_found" AND
                                                                     lang='.$objResult->fields['lang'].'
-                                                            LIMIT    1
+                                                            LIMIT   1
                                                         ');
                     $intParcat = intval($objSubResult->fields['catid']);
                 } else {
@@ -473,16 +476,16 @@ class ContentWorkflow {
 
             if ($boolInsert) {
                 //remove entry from logfile first
-                $objDatabase->Execute('    DELETE
+                $objDatabase->Execute(' DELETE
                                         FROM    '.DBPREFIX.'content_logfile
-                                        WHERE    action="delete" AND
+                                        WHERE   action="delete" AND
                                                 history_id='.$intHistoryId.'
-                                        LIMIT    1
+                                        LIMIT   1
                                     ');
 
-                $objDatabase->Execute('    INSERT
+                $objDatabase->Execute(' INSERT
                                         INTO    '.DBPREFIX.'content_navigation
-                                        SET        catid='.$objResult->fields['catid'].',
+                                        SET     catid='.$objResult->fields['catid'].',
                                                 parcat='.$intParcat.',
                                                 catname="'.addslashes($objResult->fields['catname']).'",
                                                 target="'.addslashes($objResult->fields['target']).'",
@@ -502,14 +505,14 @@ class ContentWorkflow {
                                                 themes_id='.$objResult->fields['themes_id'].'
                                     ');
 
-                $objResult = $objDatabase->Execute('SELECT    *
+                $objResult = $objDatabase->Execute('SELECT  *
                                                     FROM    '.DBPREFIX.'content_history
-                                                    WHERE    id='.$intHistoryId.'
-                                                    LIMIT    1
+                                                    WHERE   id='.$intHistoryId.'
+                                                    LIMIT   1
                                                 ');
-                $objDatabase->Execute('    INSERT
+                $objDatabase->Execute(' INSERT
                                         INTO    '.DBPREFIX.'content
-                                        SET        id='.$objResult->fields['page_id'].',
+                                        SET     id='.$objResult->fields['page_id'].',
                                                 content="'.addslashes($objResult->fields['content']).'",
                                                 title="'.addslashes($objResult->fields['title']).'",
                                                 metatitle="'.addslashes($objResult->fields['metatitle']).'",
@@ -521,8 +524,8 @@ class ContentWorkflow {
                                                 expertmode="'.addslashes($objResult->fields['expertmode']).'"
                                     ');
             } else {
-                $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_navigation
-                                        SET        parcat='.$intParcat.',
+                $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
+                                        SET     parcat='.$intParcat.',
                                                 catname="'.addslashes($objResult->fields['catname']).'",
                                                 target="'.addslashes($objResult->fields['target']).'",
                                                 displayorder='.$objResult->fields['displayorder'].',
@@ -539,17 +542,17 @@ class ContentWorkflow {
                                                 frontend_access_id='.$objResult->fields['frontend_access_id'].',
                                                 backend_access_id='.$objResult->fields['backend_access_id'].',
                                                 themes_id='.$objResult->fields['themes_id'].'
-                                        WHERE    catid='.$objResult->fields['catid'].'
-                                        LIMIT    1
+                                        WHERE   catid='.$objResult->fields['catid'].'
+                                        LIMIT   1
                                     ');
 
-                $objResult = $objDatabase->Execute('SELECT    *
+                $objResult = $objDatabase->Execute('SELECT  *
                                                     FROM    '.DBPREFIX.'content_history
-                                                    WHERE    id='.$intHistoryId.'
-                                                    LIMIT    1
+                                                    WHERE   id='.$intHistoryId.'
+                                                    LIMIT   1
                                                 ');
-                $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content
-                                        SET        content="'.addslashes($objResult->fields['content']).'",
+                $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content
+                                        SET     content="'.addslashes($objResult->fields['content']).'",
                                                 title="'.addslashes($objResult->fields['title']).'",
                                                 metatitle="'.addslashes($objResult->fields['metatitle']).'",
                                                 metadesc="'.addslashes($objResult->fields['metadesc']).'",
@@ -558,8 +561,8 @@ class ContentWorkflow {
                                                 css_name="'.addslashes($objResult->fields['css_name']).'",
                                                 redirect="'.addslashes($objResult->fields['redirect']).'",
                                                 expertmode="'.addslashes($objResult->fields['expertmode']).'"
-                                        WHERE    id='.$objResult->fields['page_id'].'
-                                        LIMIT    1
+                                        WHERE   id='.$objResult->fields['page_id'].'
+                                        LIMIT   1
                                     ');
             }
 
@@ -568,7 +571,9 @@ class ContentWorkflow {
             $objCache->writeCacheablePagesFile();
 
             //write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
 
             $this->strOkMessage = $_CORELANG['TXT_HISTORY_RESTORED'];
         }
@@ -590,35 +595,35 @@ class ContentWorkflow {
         $intHistoryId = intval($intHistoryId);
 
         if ($intHistoryId > 0) {
-            $objResult = $objDatabase->Execute('SELECT    is_active,
+            $objResult = $objDatabase->Execute('SELECT  is_active,
                                                         catid
                                                 FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE    id='.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intHistoryId.'
+                                                LIMIT   1
                                             ');
             if (intval($objResult->fields['is_active']) != 1) {
-                $objDatabase->Execute('    DELETE
+                $objDatabase->Execute(' DELETE
                                         FROM    '.DBPREFIX.'content_logfile
-                                        WHERE    history_id='.$intHistoryId.' AND
+                                        WHERE   history_id='.$intHistoryId.' AND
                                                 (action="update" OR
                                                 action="new")
-                                        LIMIT    1
+                                        LIMIT   1
                                     ');
-                $objDatabase->Execute('    DELETE
+                $objDatabase->Execute(' DELETE
                                         FROM    '.DBPREFIX.'content_navigation_history
-                                        WHERE    id='.$intHistoryId.'
-                                        LIMIT    1
+                                        WHERE   id='.$intHistoryId.'
+                                        LIMIT   1
                                     ');
-                $objDatabase->Execute('    DELETE
+                $objDatabase->Execute(' DELETE
                                         FROM    '.DBPREFIX.'content_history
-                                        WHERE    id='.$intHistoryId.'
-                                        LIMIT    1
+                                        WHERE   id='.$intHistoryId.'
+                                        LIMIT   1
                                     ');
 
                 $this->strOkMessage = $_CORELANG['TXT_HISTORY_DELETE_DONE'];
             } else {
                 //this history-entry is currently active, don't allow to delete
-                $this->strErrMessage = $_CORELANG['TXT_HISTORY_DELETE_ACTIVE'];
+                $this->strErrMessage[] = $_CORELANG['TXT_HISTORY_DELETE_ACTIVE'];
             }
         }
 
@@ -629,7 +634,7 @@ class ContentWorkflow {
     /**
     * Redirect to content manager (open site)
     *
-    * @param    integer      The page with this id will be shown in content manager
+    * @param    integer     The page with this id will be shown in content manager
     */
     function redirectPage($intPageId) {
         header('location:index.php?cmd=content&act=edit&pageId='.intval($intPageId));
@@ -651,21 +656,21 @@ class ContentWorkflow {
         $intValidateStatus = intval($intValidateStatus);
 
         if ($intLogfileId != 0) {
-            $objResult = $objDatabase->Execute('SELECT    action,
+            $objResult = $objDatabase->Execute('SELECT  action,
                                                         history_id
                                                 FROM    '.DBPREFIX.'content_logfile
-                                                WHERE    id='.$intLogfileId.' AND
+                                                WHERE   id='.$intLogfileId.' AND
                                                         is_validated="0"
-                                                LIMIT    1
+                                                LIMIT   1
                                             ');
 
             $intHistoryId = $objResult->fields['history_id'];
             $strAction = $objResult->fields['action'];
 
-            $objResult = $objDatabase->Execute('SELECT    page_id
+            $objResult = $objDatabase->Execute('SELECT  page_id
                                                 FROM    '.DBPREFIX.'content_history
-                                                WHERE    id = '.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id = '.$intHistoryId.'
+                                                LIMIT   1
                                             ');
             $row = $objResult->FetchRow();
             $intPageId = $row['page_id'];
@@ -673,50 +678,50 @@ class ContentWorkflow {
             switch ($strAction) {
                 case 'new':
                     if ($intValidateStatus == 1) {
-                        $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_logfile
-                                                SET        is_validated="1"
-                                                WHERE    id='.$intLogfileId.'
-                                                LIMIT    1
+                        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_logfile
+                                                SET     is_validated="1"
+                                                WHERE   id='.$intLogfileId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_navigation_history
-                                                SET        changelog='.time().'
-                                                WHERE    id='.$intHistoryId.' AND
+                        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                                SET     changelog='.time().'
+                                                WHERE   id='.$intHistoryId.' AND
                                                         catid='.$intPageId.'
-                                                LIMIT    1
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_navigation
-                                                SET        is_validated="1",
+                        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
+                                                SET     is_validated="1",
                                                         activestatus="1",
                                                         changelog='.time().'
-                                                WHERE    catid='.$intPageId.'
-                                                LIMIT    1
+                                                WHERE   catid='.$intPageId.'
+                                                LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_NEW_ACCEPT'];
                     } else {
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_logfile
-                                                WHERE    id='.$intLogfileId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intLogfileId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE    id='.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intHistoryId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_history
-                                                WHERE    id='.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intHistoryId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content
-                                                WHERE    id='.$intPageId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intPageId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_navigation
-                                                WHERE    catid='.$intPageId.'
-                                                LIMIT    1
+                                                WHERE   catid='.$intPageId.'
+                                                LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_NEW_DECLINE'];
                     }
@@ -724,28 +729,28 @@ class ContentWorkflow {
                 case 'delete':
                     if ($intValidateStatus == 1) {
                         //really delete page
-                        $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_logfile
-                                                SET        is_validated="1"
-                                                WHERE    id='.$intLogfileId.'
-                                                LIMIT    1
+                        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_logfile
+                                                SET     is_validated="1"
+                                                WHERE   id='.$intLogfileId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
-                                                FROM     '.DBPREFIX.'content
-                                                WHERE     id='.$intPageId.'
-                                                LIMIT    1
+                        $objDatabase->Execute(' DELETE
+                                                FROM    '.DBPREFIX.'content
+                                                WHERE   id='.$intPageId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
-                                                FROM     '.DBPREFIX.'content_navigation
-                                                WHERE     catid='.$intPageId.'
-                                                LIMIT    1
+                        $objDatabase->Execute(' DELETE
+                                                FROM    '.DBPREFIX.'content_navigation
+                                                WHERE   catid='.$intPageId.'
+                                                LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                     } else {
                         //decline delete
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_logfile
-                                                WHERE    id='.$intLogfileId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intLogfileId.'
+                                                LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_DELETE_DECLINE'];
                     }
@@ -754,28 +759,28 @@ class ContentWorkflow {
                     if ($intValidateStatus == 1) {
                         //allow update
                         $this->loadHistory($intHistoryId,false);
-                        $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_logfile
-                                                SET        is_validated="1"
-                                                WHERE    id='.$intLogfileId.'
-                                                LIMIT    1
+                        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_logfile
+                                                SET     is_validated="1"
+                                                WHERE   id='.$intLogfileId.'
+                                                LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_ACCEPT'];
                     } else {
                         //decline update
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_logfile
-                                                WHERE    id='.$intLogfileId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intLogfileId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE    id='.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intHistoryId.'
+                                                LIMIT   1
                                             ');
-                        $objDatabase->Execute('    DELETE
+                        $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_history
-                                                WHERE    id='.$intHistoryId.'
-                                                LIMIT    1
+                                                WHERE   id='.$intHistoryId.'
+                                                LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_DECLINE'];
                     }
@@ -786,7 +791,9 @@ class ContentWorkflow {
             $objCache->writeCacheablePagesFile();
 
             //write xml sitemap
-            XMLSitemap::write();
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
         }
     }
 
@@ -803,13 +810,13 @@ class ContentWorkflow {
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_history_clean', 'content_history_clean.html');
         $objTemplate->setVariable(array(
-            'TXT_HISTORY_CLEAN_TITLE'        => $_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'],
-            'TXT_HISTORY_CLEAN_DESCRIPTION'    => $_CORELANG['TXT_WORKFLOW_CLEAN_DESCRIPTION'],
+            'TXT_HISTORY_CLEAN_TITLE'       => $_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'],
+            'TXT_HISTORY_CLEAN_DESCRIPTION' => $_CORELANG['TXT_WORKFLOW_CLEAN_DESCRIPTION'],
             'TXT_HISTORY_CLEAN_OCCUPIED'    => $_CORELANG['TXT_WORKFLOW_CLEAN_OCCUPIED'],
-            'TXT_HISTORY_CLEAN_MIN_AGE'        => $_CORELANG['TXT_WORKFLOW_CLEAN_MINIMUM_AGE'],
+            'TXT_HISTORY_CLEAN_MIN_AGE'     => $_CORELANG['TXT_WORKFLOW_CLEAN_MINIMUM_AGE'],
             'TXT_HISTORY_CLEAN_DAYS'        => $_CORELANG['TXT_WORKFLOW_CLEAN_DAYS'],
-            'TXT_HISTORY_CLEAN_SUBMIT'        => $_CORELANG['TXT_EXECUTE'],
-            'TXT_HISTORY_CLEAN_JS_CONFIRM'    => $_CORELANG['TXT_WORKFLOW_CLEAN_CONFIRM']
+            'TXT_HISTORY_CLEAN_SUBMIT'      => $_CORELANG['TXT_EXECUTE'],
+            'TXT_HISTORY_CLEAN_JS_CONFIRM'  => $_CORELANG['TXT_WORKFLOW_CLEAN_CONFIRM']
         ));
 
         //Figure out how much space is occupied by the workflow
@@ -854,24 +861,24 @@ class ContentWorkflow {
         $intTimeStamp = time()-($intNumberOfDays*24*60*60);
 
         //Look for deleted pages older than XX days
-        $objResult = $objDatabase->Execute('SELECT        log.history_id as id
+        $objResult = $objDatabase->Execute('SELECT      log.history_id as id
                                             FROM        '.DBPREFIX.'content_logfile AS log
-                                            INNER JOIN    '.DBPREFIX.'content_navigation_history AS nav
-                                            ON            log.history_id = nav.id
-                                            WHERE        log.action="delete" And
+                                            INNER JOIN  '.DBPREFIX.'content_navigation_history AS nav
+                                            ON          log.history_id = nav.id
+                                            WHERE       log.action="delete" And
                                                         nav.changelog < '.$intTimeStamp);
 
         while (!$objResult->EOF) {
-            $objDatabase->Execute('    DELETE
+            $objDatabase->Execute(' DELETE
                                     FROM    '.DBPREFIX.'content_logfile
                                     WHERE    history_id='.$objResult->fields['id']);
 
-            $objDatabase->Execute('    DELETE
+            $objDatabase->Execute(' DELETE
                                     FROM    '.DBPREFIX.'content_navigation_history
                                     WHERE    id='.$objResult->fields['id'].'
                                     LIMIT    1');
 
-            $objDatabase->Execute('    DELETE
+            $objDatabase->Execute(' DELETE
                                     FROM    '.DBPREFIX.'content_history
                                     WHERE    id='.$objResult->fields['id'].'
                                     LIMIT    1');
@@ -880,23 +887,23 @@ class ContentWorkflow {
         }
 
         //Look for not active entries older than XX days
-        $objResult = $objDatabase->Execute('SELECT    id
+        $objResult = $objDatabase->Execute('SELECT  id
                                             FROM    '.DBPREFIX.'content_navigation_history
-                                            WHERE    is_active="0" AND
+                                            WHERE   is_active="0" AND
                                                     changelog < '.$intTimeStamp);
 
         while (!$objResult->EOF) {
-            $objDatabase->Execute('    DELETE
+            $objDatabase->Execute(' DELETE
                                     FROM    '.DBPREFIX.'content_logfile
-                                    WHERE    history_id='.$objResult->fields['id'].' AND
+                                    WHERE   history_id='.$objResult->fields['id'].' AND
                                             (action="update" OR action="new")');
 
-            $objDatabase->Execute('    DELETE
+            $objDatabase->Execute(' DELETE
                                     FROM    '.DBPREFIX.'content_navigation_history
                                     WHERE    id='.$objResult->fields['id'].'
                                     LIMIT    1');
 
-            $objDatabase->Execute('    DELETE
+            $objDatabase->Execute(' DELETE
                                     FROM    '.DBPREFIX.'content_history
                                     WHERE    id='.$objResult->fields['id'].'
                                     LIMIT    1');

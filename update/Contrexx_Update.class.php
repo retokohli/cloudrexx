@@ -217,7 +217,7 @@ class Contrexx_Update
         $this->objTemplate->addBlockfile('CONTENT', 'overview', 'overview.html');
         $this->objTemplate->setVariable('TXT_UPDATE_VERSION_SELECTION', $_CORELANG['TXT_UPDATE_VERSION_SELECTION']);
         $arrVersions = $this->getAvailabeVersions();
-        if (count($arrVersions['compatible'])) {
+        if (isset($arrVersions['compatible']) && count($arrVersions['compatible'])) {
             $this->objTemplate->setVariable(array(
                 'TXT_UPDATE_SELECT_VERSION_MSG'        => $_CORELANG['TXT_UPDATE_SELECT_VERSION_MSG'],
                 'TXT_UPDATE_AVAILABLE_VERSIONS'        => $_CORELANG['TXT_UPDATE_AVAILABLE_VERSIONS']

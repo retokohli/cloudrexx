@@ -57,6 +57,14 @@
       <td nowrap="nowrap"><input type="checkbox" name="shop_weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
     </tr>
     <tr class="row1">
+      <td nowrap="nowrap">{TXT_SHOP_PRODUCT_SORTING}</td>
+      <td nowrap="nowrap">
+        <select name="product_sorting" style="width: 270px;">
+          {SHOP_PRODUCT_SORTING_MENUOPTIONS}
+        </select>
+      </td>
+    </tr>
+    <tr class="row2">
       <td nowrap="nowrap">{TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE}</td>
       <td nowrap="nowrap">
         <select name="shop_show_products_default" style="width: 270px;">
@@ -135,7 +143,7 @@
           </table>
         </div>
       </td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="yellowpay_status" value="1"{SHOP_YELLOWPAY_STATUS} /></div></td>
+      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="yellowpay_status" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
     </tr>
 
     <tr valign="top" class="row2">
@@ -196,13 +204,13 @@
             <tr>
               <td>{TXT_USE_TEST_ACCOUNT}</td>
               <td>
-                <input type="checkbox" name="saferpay_use_test_account" value="1"{SHOP_SAFERPAY_TEST_STATUS} />
+                <input type="checkbox" name="saferpay_use_test_account" value="1" {SHOP_SAFERPAY_TEST_STATUS} />
               </td>
             </tr>
             <tr>
               <td>{TXT_FINALIZE_PAYMENT}</td>
               <td>
-                <input type="checkbox" name="saferpay_finalize_payment" value="1"{SHOP_SAFERPAY_FINALIZE_PAYMENT} />
+                <input type="checkbox" name="saferpay_finalize_payment" value="1" {SHOP_SAFERPAY_FINALIZE_PAYMENT} />
               </td>
             </tr>
             <tr>
@@ -216,7 +224,7 @@
           </table>
         </div>
       </td>
-      <td nowrap="nowrap" ><div align="center"><input type="checkbox" name="saferpay_status" value="1"{SHOP_SAFERPAY_STATUS} /></div></td>
+      <td nowrap="nowrap" ><div align="center"><input type="checkbox" name="saferpay_status" value="1" {SHOP_SAFERPAY_STATUS} /></div></td>
     </tr>
     <tr valign="top" class="row2">
       <td width="15%">{TXT_PAYPAL}</td>
@@ -242,12 +250,12 @@
           </table>
         </div>
       </td>
-      <td ><div align="center"><input type="checkbox" name="paypal_status" value="1"{SHOP_PAYPAL_STATUS} /></div></td>
+      <td ><div align="center"><input type="checkbox" name="paypal_status" value="1" {SHOP_PAYPAL_STATUS} /></div></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_PAYMENT_LSV}</td>
       <td>&nbsp;</td>
-      <td ><div align="center"><input type="checkbox" name="payment_lsv_status" value="1"{SHOP_PAYMENT_LSV_STATUS} /></div></td>
+      <td ><div align="center"><input type="checkbox" name="payment_lsv_status" value="1" {SHOP_PAYMENT_LSV_STATUS} /></div></td>
     </tr>
   </table>
   <br />

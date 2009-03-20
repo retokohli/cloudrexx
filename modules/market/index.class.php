@@ -259,8 +259,7 @@ class Market extends marketLibrary
 
         // set variables
         $this->_objTpl->setVariable(array(
-// TODO: $paging is never set!
-//            'MARKET_SEARCH_PAGING'            => $paging,
+            'MARKET_SEARCH_PAGING'            => $paging,
             'MARKET_CATEGORY_ROW_WIDTH'        => $categorieRowWidth,
             'MARKET_CATEGORY_ROW1'            => $categorieRows[1]."<br />",
             'MARKET_CATEGORY_ROW2'            => $categorieRows[2]."<br />",
@@ -331,7 +330,7 @@ class Market extends marketLibrary
                 $sortPaging            = "&sort=residence";
             break;
             default:
-                $sort                = "enddate";
+                $sort                = "sort_id, enddate";
                 $sortPaging            = "";
             break;
         }
@@ -356,7 +355,6 @@ class Market extends marketLibrary
         } else {
             $where = 'AND enddate >= "'.$today.'"';
         }
-
 
         /////// START PAGING ///////
         $pos= intval($_GET['pos']);
@@ -447,6 +445,7 @@ class Market extends marketLibrary
                    $this->_objTpl->setVariable(array(
                     'MARKET_ENDDATE'            => $enddate,
                     'MARKET_TITLE'                => $objResult->fields['title'],
+					'MARKET_COLOR'                => $objResult->fields['color'],
                     'MARKET_DESCRIPTION'        => substr($objResult->fields['description'], 0, 110)."<a href='index.php?section=market&cmd=detail&id=".$objResult->fields['id']."' target='_self'>[...]</a>",
                     'MARKET_PRICE'                => $price,
                     'MARKET_PICTURE'            => $image,
@@ -565,8 +564,8 @@ class Market extends marketLibrary
             }
         }
 
-         $inputs     = '<tr><td width="100" height="20">'.$_ARRAYLANG['TXT_MARKET_CATEGORY'].'</td><td><select name="catid" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'].'</option>'.$options.'</select></td></tr>';
-        $inputs     .= '<tr><td width="100" height="20">'.$_CORELANG['TXT_TYPE'].'</td><td><select name="type" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_TYPES'].'</option><option value="offer">'.$_ARRAYLANG['TXT_MARKET_OFFER'].'</option><option value="search">'.$_ARRAYLANG['TXT_MARKET_SEARCH'].'</option></select></td></tr>';
+        $inputs     .= '<p><label for="catid">'.$_ARRAYLANG['TXT_MARKET_CATEGORY'].'</label><select id="catid" name="catid"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'].'</option>'.$options.'</select></p>';
+        $inputs     .= '<p><label for="type">'.$_ARRAYLANG['TXT_TYPE'].'</label><select id="type" name="type"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_TYPES'].'</option><option value="offer">'.$_ARRAYLANG['TXT_MARKET_OFFER'].'</option><option value="search">'.$_ARRAYLANG['TXT_MARKET_SEARCH'].'</option></select></p>';
 
         $options = '';
 
@@ -576,7 +575,7 @@ class Market extends marketLibrary
             $options .= '<option value="'.$priceValue.'">'.$priceValue.' '.$this->settings['currency'].'</option>';
         }
 
-        $inputs     .= '<tr><td width="100" height="20">'.$_ARRAYLANG['TXT_MARKET_PRICE_MAX'].'</td><td><select name="price" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_PRICES'].'</option>'.$options.'</select></td></tr>';
+        $inputs     .= '<p><label for="cpricetid">'.$_ARRAYLANG['TXT_MARKET_PRICE_MAX'].'</label><select id="price" name="price"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_PRICES'].'</option>'.$options.'</select></p>';
 
 
         // set variables
@@ -763,11 +762,11 @@ class Market extends marketLibrary
             // set variables
             $this->_objTpl->setVariable(array(
                 'MARKET_TITLE'                    => $this->entries[$id]['title'],
+                'MARKET_COLOR'                    => $this->entries[$id]['color'],
                 'MARKET_ID'                        => $id,
-                'MARKET_EDIT'                    => '<a href="?section=market&amp;cmd=edit&amp;id='.$id.'">'.$_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'].'</a>',
-                'MARKET_DEL'                    => '<a href="?section=market&amp;cmd=del&amp;id='.$id.'">'.$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'].'</a>',
+                'MARKET_EDIT'                    => '<a href="index.php?section=market&amp;cmd=edit&amp;id='.$id.'">'.$_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'].'</a>',
+                'MARKET_DEL'                    => '<a href="index.php?section=market&amp;cmd=del&amp;id='.$id.'">'.$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'].'</a>',
                 'MARKET_TYPE'                    => $type,
-                'MARKET_PICTURE'                => $image,
                 'MARKET_USER_DETAILS'             => $userDetails,
                 'TXT_MARKET_USER_DETAILS'         => $TXTuserDetails,
                 'MARKET_DESCRIPTION'             => $this->entries[$id]['description'],
@@ -798,6 +797,17 @@ class Market extends marketLibrary
                 'MARKET_SPEZ_FIELD_4'            => $this->entries[$id]['spez_field_4'],
                 'MARKET_SPEZ_FIELD_5'            => $this->entries[$id]['spez_field_5'],
             ));
+
+            if ($this->_objTpl->blockExists('market_picture')) {
+                if (!empty($this->entries[$id]['picture'])) {
+                    $this->_objTpl->setVariable('MARKET_PICTURE', $image);
+                    $this->_objTpl->parse('market_picture');
+                } else {
+                    $this->_objTpl->hideBlock('market_picture');
+                }
+            } else {
+                $this->_objTpl->setVariable('MARKET_PICTURE', $image);
+            }
         }else{
             header('Location: ?section=market');
         }
@@ -1104,17 +1114,16 @@ class Market extends marketLibrary
 
         //spez fields
         $objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
-          if ($objResult !== false) {
+        if ($objResult !== false) {
             while(!$objResult->EOF) {
                 $spezFields[$objResult->fields['id']] = $objResult->fields['value'];
                 $objResult->MoveNext();
             }
-          }
+        }
 
         // set variables
         $this->_objTpl->setVariable(array(
-// TODO: $paging is never set!
-//            'MARKET_SEARCH_PAGING'            => $paging,
+            'MARKET_SEARCH_PAGING'            => $paging,
             'TXT_MARKET_ENDDATE'            => $_CORELANG['TXT_END_DATE'],
             'TXT_MARKET_TITLE'                => $_ARRAYLANG['TXT_MARKET_TITLE'],
             'TXT_MARKET_PRICE'                => $_ARRAYLANG['TXT_MARKET_PRICE'],
@@ -1126,8 +1135,7 @@ class Market extends marketLibrary
             'TXT_MARKET_SPEZ_FIELD_5'        => $spezFields[5],
         ));
 
-// TODO: Never used
-//        $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
+        $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $searchTermOrg         = contrexx_addslashes($_GET['term']);
         $searchTerm         = contrexx_addslashes($_GET['term']);
         $array = explode(' ', $searchTerm);
@@ -1157,6 +1165,39 @@ class Market extends marketLibrary
             }
         }
 
+        switch ($_GET['sort']) {
+            case 'title':
+                $sort                = "title";
+                $sortPaging            = "&sort=title";
+            break;
+            case 'enddate':
+                $sort                = "enddate";
+                $sortPaging            = "&sort=enddate";
+            break;
+            case 'price':
+                $sort                = "price";
+                $sortPaging            = "&sort=price";
+            break;
+            default:
+                $sort                = "sort_id, enddate";
+                $sortPaging            = "";
+            break;
+        }
+
+        if (isset($_GET['way'])) {
+            $way         = $_GET['way']=='ASC' ? 'DESC' : 'ASC';
+            $wayPaging     = '&way='.$_GET['way'];
+        }else{
+            $way         = 'ASC';
+            $wayPaging     = '';
+        }
+
+        $this->_objTpl->setVariable(array(
+            'MARKET_ENDDATE_SORT'            => "index.php?section=market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&sort=enddate&way=".$way,
+            'MARKET_TITLE_SORT'                => "index.php?section=market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&sort=title&way=".$way,
+            'MARKET_PRICE_SORT'                => "index.php?section=market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&sort=price&way=".$way,
+        ));
+
         if ($_GET['term'] != '') {
             $query="SELECT  id,
                             title,
@@ -1165,6 +1206,7 @@ class Market extends marketLibrary
                             picture,
                             userid,
                             enddate,
+                            premium,
                             spez_field_1,
                             spez_field_2,
                             spez_field_3,
@@ -1181,14 +1223,14 @@ class Market extends marketLibrary
                               OR spez_field_5 LIKE ('%$searchTerm%'))
                          ".$query_search."
                         AND status = '1'
-                   ORDER BY score DESC, enddate DESC";
+                   ORDER BY score DESC, ".$sort." ".$way."";
 
             /////// START PAGING ///////
             $pos= intval($_GET['pos']);
             $objResult = $objDatabase->Execute($query);
             $count = $objResult->RecordCount();
             if ($count > $this->settings['paging']) {
-                $paging = getPaging($count, $pos, "&amp;section=market&amp;cmd=search".$searchTermExp, "<b>Inserate</b>", true, $this->settings['paging']);
+                $paging = getPaging($count, $pos, "&amp;section=market&amp;cmd=search".$searchTermExp."&amp;sort=".$sort."&amp;way=".$way, "<b>Inserate</b>", true, $this->settings['paging']);
             }
             $this->_objTpl->setVariable('SEARCH_PAGING', $paging);
             $objResult = $objDatabase->SelectLimit($query, $this->settings['paging'], $pos);
@@ -1248,7 +1290,6 @@ class Market extends marketLibrary
                     if ($objUser) {
                         $city = $objUser->getProfileAttribute('city');
                     }
-
                        if ($objResult->fields['premium'] == 1) {
                            $row = "marketRow1";
                        }else{
@@ -1409,7 +1450,7 @@ class Market extends marketLibrary
 
                         //entry picture
                         if ($objResult->fields['picture'] != '') {
-                            $picture         = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" border="0" alt="" /><br /><br />';
+                            $picture         = '<img width="100" src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" border="0" alt="" /><br /><br />';
                         }else{
                             $picture         = '<img src="'.$this->mediaWebPath.'pictures/no_picture.gif" border="0" alt="" /><br /><br />';
                         }

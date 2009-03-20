@@ -7,7 +7,7 @@
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     $Id: 1.0.1 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -33,7 +33,7 @@ define('SHOP_CATEGORY_IMAGE_WEB_PATH',  ASCMS_SHOP_IMAGES_WEB_PATH.'/');
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     $Id: 1.0.1 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -302,7 +302,7 @@ class ShopCategories
      *                                      Defaults to true.
      * @return  string                      The ShopCategory ID list
      *                                      on success, false otherwise.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -316,11 +316,11 @@ class ShopCategories
         while (1) {
             // Get the ShopCategories' children
             $query = "
-               SELECT id
+               SELECT catid
                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-                WHERE ".($flagActiveOnly ? 'status=1 AND' : '')."
-                      parent_id IN ($tempList)
-             ORDER BY sort_order ASC
+                WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
+                      parentid IN ($tempList)
+             ORDER BY catsorting ASC
             ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
@@ -334,7 +334,7 @@ class ShopCategories
             while (!$objResult->EOF) {
                 $tempList .=
                     ($tempList ? ',' : '').
-                    $objResult->fields['id'];
+                    $objResult->fields['catid'];
                 $objResult->MoveNext();
             }
         }
@@ -368,7 +368,7 @@ class ShopCategories
      *
      * Sets up an array of ShopCategories IDs of the $shopCategoryId,
      * and all its ancestors.
-     * @param   integer   $shopCategoryId   The ShopCategories ID
+     * @param   integer  $shopCategoryId    The ShopCategories ID
      * @return  mixed                       The array of all ancestor
      *                                      ShopCategories on success,
      *                                      false otherwise.
@@ -379,7 +379,7 @@ class ShopCategories
     {
         self::$arrTrail = array($shopCategoryId);
         while ($shopCategoryId != 0) {
-            $objShopCategory = ShopCategory::getById($shopCategoryId, FRONTEND_LANG_ID);
+            $objShopCategory = ShopCategory::getById($shopCategoryId);
             if (!$objShopCategory) {
                 // Probably du to an illegal or unknown ID.
                 // Use a dummy array so the work can go on anyway.
@@ -459,7 +459,7 @@ class ShopCategories
     {
         $arrChildCategoryId = ShopCategories::getChildCategoryIdArray(0, false);
         foreach ($arrChildCategoryId as $id) {
-            $objShopCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
+            $objShopCategory = ShopCategory::getById($id);
             // delete siblings and Products as well; delete images if desired.
 // TODO: Add deleteById() method
             if (!$objShopCategory->delete($flagDeleteImages)) return false;
@@ -491,11 +491,11 @@ class ShopCategories
 
         // Look for an image in child Categories
         $query = "
-            SELECT picture, id
+            SELECT picture, catid
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-             WHERE parent_id=$catId
+             WHERE parentid=$catId
                AND picture!=''
-          ORDER BY sort_order ASC
+          ORDER BY catsorting ASC
         ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() > 0) {
@@ -536,8 +536,7 @@ class ShopCategories
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getChildCategoriesById(
-        $parentCategoryId=0,
-        $flagActiveOnly=true, $flagVirtual=true
+        $parentCategoryId=0, $flagActiveOnly=true, $flagVirtual=true
     ) {
         $arrChildShopCategoriesId =
             ShopCategories::getChildCategoryIdArray(
@@ -582,16 +581,48 @@ class ShopCategories
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getShopCategoriesMenu($selected_id=0, $name='catId')
-    {
+    static function getShopCategoriesMenu(
+        $selected_id=0, $name='catId', $flagActiveOnly=true
+    ) {
         global $_ARRAYLANG;
 
         return
             "<select name='$name'>".
             "<option value='0'>{$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS']}</option>".
-            self::getShopCategoriesMenuoptions($selected_id).
+            self::getShopCategoriesMenuoptions($selected_id, $flagActiveOnly).
             "</select>";
     }
+
+
+    /**
+     * OBSOLETE
+     * Returns the HTML code for a dropdown menu listing all ShopCategories.
+     *
+     * The <select> tag pair
+     * with the menu name will be included, plus an option for the root
+     * ShopCategory.
+     * @global  array       $_ARRAYLANG     Language array
+     * @param   integer     $selectedid     The selected ShopCategories ID
+     * @param   string      $name           The optional menu name,
+     *                                      defaults to 'catId'.
+     * @return  string                      The HTML dropdown menu code
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+    static function getShopCategoriesMenuNamed($selectedId=0, $name='catId')
+    {
+        global $_ARRAYLANG;
+
+        $result =
+            self::getShopCategoriesMenu($selectedId);
+        if ($name) {
+            $result =
+                "<select name='$name'>".
+                "<option value='0'>{$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS']}</option>".
+                "$result</select>";
+        }
+        return $result;
+    }
+     */
 
 
     /**
@@ -675,17 +706,17 @@ class ShopCategories
         global $objDatabase;
 
         $query = "
-           SELECT `id`
+           SELECT catid
              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories`
-            WHERE parent_id=$parentShopCategoryId".
-                  ($flagActiveOnly ? ' AND `status`=1' : '')."
-            ORDER BY sort_order ASC
+            WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
+                  parentid=$parentShopCategoryId
+         ORDER BY catsorting ASC
         "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrChildShopCategoryId = array();
         while (!$objResult->EOF) {
-            $arrChildShopCategoryId[] = $objResult->fields['id'];
+            $arrChildShopCategoryId[] = $objResult->fields['catid'];
             $objResult->MoveNext();
         }
         return $arrChildShopCategoryId;
@@ -716,18 +747,15 @@ class ShopCategories
     ) {
         global $objDatabase;
 
-        $strTextId = join(',', array_keys(Text::getIdArrayBySearch(
-            $strName, MODULE_ID, TEXT_SHOP_CATEGORIES_NAME, FRONTEND_LANG_ID
-        )));
-        if (empty($strTextId)) return false;
         $query = "
-           SELECT id
+           SELECT catid
              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-            WHERE parent_id=$parentId
-              AND text_name_id IN ($strTextId)".
-            ($flagActiveOnly ? ' AND status=1' : '')."
-            ORDER BY sort_order ASC
+            WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
+                  parentid=$parentId AND
+                  catname='".addslashes($strName)."'
+         ORDER BY catsorting ASC
         "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
+
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF || $objResult->RecordCount() > 1)
             return false;
@@ -761,7 +789,7 @@ class ShopCategories
      * @param   integer $shopCategoryId     The ShopCategories ID
      * @return  integer                     The next ShopCategories ID
      * @static
-     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     static function getNextShopCategoriesId($shopCategoryId=0)
     {
@@ -776,10 +804,10 @@ class ShopCategories
             ShopCategories::getChildCategoryIdArray($parentShopCategoryId, true);
         return
             (isset($arrChildShopCategoriesId[
-                array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
-             ])
+                        array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+                   ])
                 ? $arrChildShopCategoriesId[
-                    array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+                        array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
                   ]
                 : $arrChildShopCategoriesId[0]
             );
@@ -798,28 +826,17 @@ class ShopCategories
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets('text_name_id', FRONTEND_LANG_ID);
         $query = "
-           SELECT 1".$arrSqlName['field']."
+           SELECT catname
              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-            ".$arrSqlName['join']."
             WHERE flags LIKE '%__VIRTUAL__%'
-            ORDER BY sort_order ASC
+         ORDER BY catsorting ASC
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrVirtual = array();
         while (!$objResult->EOF) {
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            // Replace Text in a missing language by another, if available
-            if ($text_name_id && $strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strName = $objText->getText();
-            }
-            $arrVirtual[] = $strName;
+            $arrVirtual[] = $objResult->fields['catname'];
             $objResult->MoveNext();
         }
         return $arrVirtual;
@@ -848,22 +865,19 @@ class ShopCategories
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets('`categories`.`text_name_id`', FRONTEND_LANG_ID);
         $query = "
-            SELECT `categories`.`id`".$arrSqlName['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS `categories`".
-                   $arrSqlName['join']."
-             WHERE `categories`.`flags` LIKE '%__VIRTUAL__%'
-             ORDER BY `categories`.`sort_order` ASC
+           SELECT catid, catname
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+            WHERE flags LIKE '%__VIRTUAL__%'
+         ORDER BY catsorting ASC
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrVirtual = array();
         while (!$objResult->EOF) {
             $arrVirtual[] = array(
-                'id'   => $objResult->fields['id'],
-                'name' => $objResult->fields[$arrSqlName['text']],
-                'text_name_id' => $objResult->fields[$arrSqlName['name']],
+                'id'   => $objResult->fields['catid'],
+                'name' => $objResult->fields['catname'],
             );
             $objResult->MoveNext();
         }
@@ -940,7 +954,7 @@ class ShopCategories
         if ($id <= 0) {
             return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
         }
-        $objShopCategory = ShopCategory::getById($id, LANGID);
+        $objShopCategory = ShopCategory::getById($id);
         if (!$objShopCategory) {
             return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
         }
@@ -987,89 +1001,6 @@ class ShopCategories
         }
         return '';
     }
-
-//////////////////////////////////////////////////////////////////////////
-// Moved in from admin.class.php
-//////////////////////////////////////////////////////////////////////////
-
-    /**
-     * OBSOLETE
-     * Do shop categories menu
-     * @version  1.0      initial version
-     * @param    integer  $parentId
-     * @param    integer  $level
-     * @return   string   $result
-     */
-    function doCategoryTree($parentId=0, $level=0)
-    {
-echo("Warning:  Obsolete method ShopCategories::doCategoryTree() called<br />");
-        global $objDatabase;
-
-        $query = "
-            SELECT id, parent_id, text_name_id, sort_order, status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-             WHERE parentId=$parentId
-          ORDER BY parent_id ASC, sort_order ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return $this->errorHandling();
-        while (!$objResult->EOF) {
-            $catId = $objResult->fields['id'];
-            $this->categoryTreeName[$catId] =
-                $objResult->fields['catname'];
-            $this->categoryTreeSorting[$catId] =
-                $objResult->fields['sort_order'];
-            $this->categoryTreeStatus[$catId] =
-                $objResult->fields['status'];
-            $this->categoryTreeLevel[$catId] = $level;
-            $this->doCategoryTree($catId, $level+1);
-            $objResult->MoveNext();
-        }
-        return true;
-    }
-
-
-    /**
-     * OBSOLETE
-     * Do shop categories menu
-     * @version  1.0      initial version
-     * @param    integer  $parentId
-     * @param    integer  $level
-     * @return   string   $result
-     */
-    function doCategoryTreeActiveOnly($parentId=0, $level=0)
-    {
-echo("Warning:  Obsolete method ShopCategories::doCategoryTreeActiveOnly() called<br />");
-        global $objDatabase;
-
-        $query = "
-            SELECT id, parent_id, catname, sort_order, status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-             WHERE status=1 AND parentId=$parentId
-             ORDER BY parent_id ASC, sort_order ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult === false) {
-            $this->errorHandling();
-            return false;
-        }
-        while (!$objResult->EOF) {
-            $catId = $objResult->fields['id'];
-            $this->categoryTreeName[$catId] =
-                $objResult->fields['catname'];
-            $this->categoryTreeSorting[$catId] =
-                $objResult->fields['sort_order'];
-            $this->categoryTreeStatus[$catId] =
-                $objResult->fields['status'];
-            $this->categoryTreeLevel[$catId] = $level;
-            $this->doCategoryTree($catId, $level+1);
-            $objResult->MoveNext();
-        }
-        return true;
-    }
-
-
-
 
 }
 

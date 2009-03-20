@@ -1,18 +1,22 @@
 <?php
-
 /**
- * Shop Customer helper class
+ * Shop Customer
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
+ * @todo        Test!
  */
 
+
 /**
- * Shop Customer helper methods
+ * Customer as used in the Shop.
  *
- * All static.
+ * Includes access methods and data layer.
+ * Do not, I repeat, do not access private fields, or even try
+ * to access the database directly!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     2.1.0
@@ -21,23 +25,30 @@
  */
 class Customers
 {
-    /*
-     * OBSOLETE -- All the methods here are static
+    /**
+     * Create a Customers helper object (PHP4)
+     */
+    function Customers()
+    {
+        $this->__construct();
+    }
+
+
+    /**
      * Create a Customers helper object (PHP5)
+     */
     function __construct()
     {
+
     }
-     */
 
 
     /**
      * Returns a string with HTML code for the Customer type dropdown menu.
      * @param   integer     $selectedType   The optional preselected type
      * @return  string                      The Menu HTML code
-     * @static
-     * @todo    Remove that type array from the method code
      */
-    static function getCustomerTypeMenu($selectedType=-1)
+    function getCustomerTypeMenu($selectedType=-1)
     {
         global $_ARRAYLANG;
 
@@ -52,7 +63,7 @@ class Customers
                 '<option value="'.$index.'"'.
                 ($selectedType == $index ? ' selected="selected"' : '').
                 '>'.
-                ($index == -1
+                (   $index == -1
                     ? '-- '.$_ARRAYLANG[$strType].' --'
                     : $_ARRAYLANG[$strType]
                 ).
@@ -66,10 +77,8 @@ class Customers
      * Returns a string with HTML code for the Customer sorting dropdown menu.
      * @param   integer     $selectedField  The optional preselected field name
      * @return  string                      The Menu HTML code
-     * @todo    Remove that field array from the method code
-     * @static
      */
-    static function getCustomerSortMenu($selectedField='')
+    function getCustomerSortMenu($selectedField='')
     {
         global $_ARRAYLANG;
 
@@ -87,6 +96,8 @@ class Customers
         }
         return $strMenu;
     }
+
+
 
 }
 

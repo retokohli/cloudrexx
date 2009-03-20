@@ -3,7 +3,7 @@
 /**
  * Feed
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Paulo M. Santos <pmsantos@astalavista.net>
+ * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_feed
  * @todo        Edit PHP DocBlocks!
@@ -33,12 +33,17 @@ if (ini_get('allow_url_fopen') != 1){
  */
 class feedManager extends feedLibrary
 {
+    /**
+     * @var    HTML_Template_Sigma
+     */
     public $_objTpl;
     public $pageTitle;
     public $feedpath;
+    /**
+     * @var    NewsML
+     */
     public $_objNewsML;
 
-    // CONSTRUCTOR
     function __construct()
     {
         global  $_ARRAYLANG, $objTemplate, $_CONFIG;
@@ -104,9 +109,9 @@ class feedManager extends feedLibrary
         }
 
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'                => $this->pageTitle,
-            'CONTENT_OK_MESSAGE'        => isset($_SESSION['strOkMessage']) ? $_SESSION['strOkMessage'] : '',
-            'CONTENT_STATUS_MESSAGE'    => isset($_SESSION['strErrMessage']) ? $_SESSION['strErrMessage'] : '',
+            'CONTENT_TITLE' => $this->pageTitle,
+            'CONTENT_OK_MESSAGE' => isset($_SESSION['strOkMessage']) ? $_SESSION['strOkMessage'] : '',
+            'CONTENT_STATUS_MESSAGE' => isset($_SESSION['strErrMessage']) ? $_SESSION['strErrMessage'] : '',
         ));
 
         unset($_SESSION['strOkMessage']);
@@ -120,10 +125,10 @@ class feedManager extends feedLibrary
         global $_ARRAYLANG, $_CONFIG;
 
         $this->_objTpl->setVariable(array(
-            'TXT_FEED_SETTINGS'            => $_ARRAYLANG['TXT_FEED_SETTINGS'],
-            'TXT_FEED_USE_NEWSML'        => $_ARRAYLANG['TXT_FEED_USE_NEWSML'],
-            'TXT_FEED_SAVE'                => $_ARRAYLANG['TXT_FEED_SAVE'],
-            'FEED_USE_NEWSML_CHECKED'    => $_CONFIG['feedNewsMLStatus'] == '1' ? 'checked="checked"' : ''
+            'TXT_FEED_SETTINGS' => $_ARRAYLANG['TXT_FEED_SETTINGS'],
+            'TXT_FEED_USE_NEWSML' => $_ARRAYLANG['TXT_FEED_USE_NEWSML'],
+            'TXT_FEED_SAVE' => $_ARRAYLANG['TXT_FEED_SAVE'],
+            'FEED_USE_NEWSML_CHECKED' => $_CONFIG['feedNewsMLStatus'] == '1' ? 'checked="checked"' : ''
         ));
     }
 
@@ -189,24 +194,19 @@ class feedManager extends feedLibrary
             $this->_newsMLOverview();
             break;
         }
-
-
     }
 
+
     /**
-    * NewsML delete category
-    *
-    * Delete a newsML category
-    *
-    * @access private
-    * @global object $_ARRAYLANG
-    */
+     * Delete a newsML category
+     * @access private
+     * @global object $_ARRAYLANG
+     */
     function _newsMLDeleteCategory()
     {
         global $_ARRAYLANG;
 
         $categoryId = isset($_GET['categoryId']) ? intval($_GET['categoryId']) : 0;
-
         if ($categoryId != 0) {
             if ($this->_objNewsML->deleteCategory($categoryId)) {
                 $_SESSION['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_SUCCESSFULLY_DELETED']."<br />";
@@ -217,6 +217,7 @@ class feedManager extends feedLibrary
             $_SESSION['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
         }
     }
+
 
     function _newsMLDeleteCategories()
     {
@@ -245,6 +246,7 @@ class feedManager extends feedLibrary
         }
     }
 
+
     function _newsMLEditCategory()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -256,66 +258,64 @@ class feedManager extends feedLibrary
         $arrMonths = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
 
         $this->_objTpl->setVariable(array(
-            'FEED_CATEGORY_TITLE'                => $_ARRAYLANG['TXT_FEED_EDIT_CAT'],
-            'TXT_FEED_SHOW_PICTURES'            => $_ARRAYLANG['TXT_FEED_SHOW_PICTURES'],
-            'TXT_FEED_YES'                        => $_ARRAYLANG['TXT_FEED_YES'],
-            'TXT_FEED_NO'                        => $_ARRAYLANG['TXT_FEED_NO'],
-            'TXT_FEED_NAME'                        => $_ARRAYLANG['TXT_FEED_NAME'],
-            'TXT_FEED_NEWSML_PROVIDER'            => $_ARRAYLANG['TXT_FEED_NEWSML_PROVIDER'],
-            'TXT_FEED_NEWSML_SUBJECT_CODES'        => $_ARRAYLANG['TXT_FEED_THEMES'],
-            'TXT_FEED_NEWSML_MSG_COUNT'            => $_ARRAYLANG['TXT_FEED_NUMBER_OF_NEWS_MSGS'],
-            'TXT_FEED_LAYOUT'                    => $_ARRAYLANG['TXT_FEED_LAYOUT'],
-            'TXT_FEED_STORE'                    => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_FEED_SUBJECT_CODES_SEPARATED'    => $_ARRAYLANG['TXT_FEED_SUBJECT_CODES_SEPARATED'],
-            'TXT_FEED_BACK'                        => $_ARRAYLANG['TXT_FEED_BACK'],
-            'TXT_FEED_PLACEHOLDERS'                => $_ARRAYLANG['TXT_FEED_PLACEHOLDERS'],
-            'TXT_FEED_PLACEHOLDER'                => $_ARRAYLANG['TXT_FEED_PLACEHOLDER'],
-            'TXT_FEED_DESCRIPTION'                => $_ARRAYLANG['TXT_FEED_DESCRIPTION'],
-            'TXT_FEED_DATE'                        => $_ARRAYLANG['TXT_FEED_DATE'],
-            'TXT_FEED_TITLE'                    => $_ARRAYLANG['TXT_FEED_TITLE'],
-            'TXT_FEED_ID_OF_NEWS_MSG'            => $_ARRAYLANG['TXT_FEED_ID_OF_NEWS_MSG'],
-            'TXT_FEED_CONTENT_OF_NEWS_MSG'        => $_ARRAYLANG['TXT_FEED_CONTENT_OF_NEWS_MSG'],
-            'TXT_FEED_AVAILABILITY_OF_PLACEHOLDERS'    => $_ARRAYLANG['TXT_FEED_AVAILABILITY_OF_PLACEHOLDERS'],
-            'FEED_DATE'                            => $arrWeekDays[date('w')].', '.date('j').'. '.$arrMonths[date('n')-1].' '.date('Y').' / '.date('G:i').' h',
-            'FEED_LONG_DATE'                    => date(ASCMS_DATE_FORMAT),
-            'FEED_SHORT_DATE'                    => date(ASCMS_DATE_SHORT_FORMAT)
+            'FEED_CATEGORY_TITLE' => $_ARRAYLANG['TXT_FEED_EDIT_CAT'],
+            'TXT_FEED_SHOW_PICTURES' => $_ARRAYLANG['TXT_FEED_SHOW_PICTURES'],
+            'TXT_FEED_YES' => $_ARRAYLANG['TXT_FEED_YES'],
+            'TXT_FEED_NO' => $_ARRAYLANG['TXT_FEED_NO'],
+            'TXT_FEED_NAME' => $_ARRAYLANG['TXT_FEED_NAME'],
+            'TXT_FEED_NEWSML_PROVIDER' => $_ARRAYLANG['TXT_FEED_NEWSML_PROVIDER'],
+            'TXT_FEED_NEWSML_SUBJECT_CODES' => $_ARRAYLANG['TXT_FEED_THEMES'],
+            'TXT_FEED_NEWSML_MSG_COUNT' => $_ARRAYLANG['TXT_FEED_NUMBER_OF_NEWS_MSGS'],
+            'TXT_FEED_LAYOUT' => $_ARRAYLANG['TXT_FEED_LAYOUT'],
+            'TXT_FEED_STORE' => $_ARRAYLANG['TXT_SAVE'],
+            'TXT_FEED_SUBJECT_CODES_SEPARATED' => $_ARRAYLANG['TXT_FEED_SUBJECT_CODES_SEPARATED'],
+            'TXT_FEED_BACK' => $_ARRAYLANG['TXT_FEED_BACK'],
+            'TXT_FEED_PLACEHOLDERS' => $_ARRAYLANG['TXT_FEED_PLACEHOLDERS'],
+            'TXT_FEED_PLACEHOLDER' => $_ARRAYLANG['TXT_FEED_PLACEHOLDER'],
+            'TXT_FEED_DESCRIPTION' => $_ARRAYLANG['TXT_FEED_DESCRIPTION'],
+            'TXT_FEED_DATE' => $_ARRAYLANG['TXT_FEED_DATE'],
+            'TXT_FEED_TITLE' => $_ARRAYLANG['TXT_FEED_TITLE'],
+            'TXT_FEED_ID_OF_NEWS_MSG' => $_ARRAYLANG['TXT_FEED_ID_OF_NEWS_MSG'],
+            'TXT_FEED_CONTENT_OF_NEWS_MSG' => $_ARRAYLANG['TXT_FEED_CONTENT_OF_NEWS_MSG'],
+            'TXT_FEED_AVAILABILITY_OF_PLACEHOLDERS' => $_ARRAYLANG['TXT_FEED_AVAILABILITY_OF_PLACEHOLDERS'],
+            'FEED_DATE' => $arrWeekDays[date('w')].', '.date('j').'. '.$arrMonths[date('n')-1].' '.date('Y').' / '.date('G:i').' h',
+            'FEED_LONG_DATE' => date(ASCMS_DATE_FORMAT),
+            'FEED_SHORT_DATE' => date(ASCMS_DATE_SHORT_FORMAT)
         ));
 
         $categoryId = intval($_REQUEST['categoryId']);
-
         if (isset($this->_objNewsML->arrCategories[$categoryId])) {
             $this->_objTpl->setVariable(array(
-                'FEED_NEWSML_CATEGORY_ID'            => $categoryId,
-                'FEED_NEWSML_CATEGORY_NAME'            => $this->_objNewsML->arrCategories[$categoryId]['name'],
-                'FEED_NEWSML_PROVIDER_MENU'            => $this->_objNewsML->getProviderMenu($categoryId, 'name="feedNewsMLProviderId" style="width:300px;"'),
-                'FEED_NEWSML_SUBJECT_CODES_MENU'    => $this->_objNewsML->getSubjectCodesMenu($categoryId, 'name="feedNewsMLSubjectCode" style="width:300px;" onchange="document.getElementById(\'feedNewsMLSubjectBoxExclusive\').style.display=(this.value == \'all\' ? \'none\' : \'block\')"'),
-                'FEED_NEWSML_SUBJECT_CODES_STYLE'    => $this->_objNewsML->arrCategories[$categoryId]['showSubjectCodes'] == 'all' ? "none" : "block",
-                'FEED_NEWSML_SUBJECT_CODES'            => implode(',', $this->_objNewsML->arrCategories[$categoryId]['subjectCodes']),
-                'FEED_NEWSML_CATEGORY_MSG_COUNT'    => $this->_objNewsML->arrCategories[$categoryId]['limit'],
-                'FEED_NEWSML_CATEGORY_TEMPLATE'        => htmlentities(preg_replace('/\{([A-Za-z0-9_]*?)\}/', '[[\\1]]', $this->_objNewsML->arrCategories[$categoryId]['template']), ENT_QUOTES, CONTREXX_CHARSET),
-                'FEED_NEWSML_SHOW_PICS_YES'            => $this->_objNewsML->arrCategories[$categoryId]['showPics'] == '1' ? 'checked="checked"' : '',
-                'FEED_NEWSML_SHOW_PICS_NO'            => $this->_objNewsML->arrCategories[$categoryId]['showPics'] == '1' ? '' : 'checked="checked"'
+                'FEED_NEWSML_CATEGORY_ID' => $categoryId,
+                'FEED_NEWSML_CATEGORY_NAME' => $this->_objNewsML->arrCategories[$categoryId]['name'],
+                'FEED_NEWSML_PROVIDER_MENU' => $this->_objNewsML->getProviderMenu($categoryId, 'name="feedNewsMLProviderId" style="width:300px;"'),
+                'FEED_NEWSML_SUBJECT_CODES_MENU' => $this->_objNewsML->getSubjectCodesMenu($categoryId, 'name="feedNewsMLSubjectCode" style="width:300px;" onchange="document.getElementById(\'feedNewsMLSubjectBoxExclusive\').style.display=(this.value == \'all\' ? \'none\' : \'block\')"'),
+                'FEED_NEWSML_SUBJECT_CODES_STYLE' => $this->_objNewsML->arrCategories[$categoryId]['showSubjectCodes'] == 'all' ? "none" : "block",
+                'FEED_NEWSML_SUBJECT_CODES' => implode(',', $this->_objNewsML->arrCategories[$categoryId]['subjectCodes']),
+                'FEED_NEWSML_CATEGORY_MSG_COUNT' => $this->_objNewsML->arrCategories[$categoryId]['limit'],
+                'FEED_NEWSML_CATEGORY_TEMPLATE' => htmlentities(preg_replace('/\{([A-Za-z0-9_]*?)\}/', '[[\\1]]', $this->_objNewsML->arrCategories[$categoryId]['template']), ENT_QUOTES, CONTREXX_CHARSET),
+                'FEED_NEWSML_SHOW_PICS_YES' => $this->_objNewsML->arrCategories[$categoryId]['showPics'] == '1' ? 'checked="checked"' : '',
+                'FEED_NEWSML_SHOW_PICS_NO' => $this->_objNewsML->arrCategories[$categoryId]['showPics'] == '1' ? '' : 'checked="checked"'
             ));
         } elseif ($categoryId == 0) {
             $this->_objTpl->setVariable(array(
-                'FEED_NEWSML_PROVIDER_MENU'            => $this->_objNewsML->getProviderMenu($categoryId, 'name="feedNewsMLProviderId" style="width:300px;"'),
-                'FEED_NEWSML_SUBJECT_CODES_MENU'    => $this->_objNewsML->getSubjectCodesMenu(0, 'name="feedNewsMLSubjectCode" style="width:300px;" onchange="document.getElementById(\'feedNewsMLSubjectBoxExclusive\').style.display=(this.value == \'all\' ? \'none\' : \'block\')"'),
-                'FEED_NEWSML_SUBJECT_CODES_STYLE'    => "none",
-                'FEED_NEWSML_CATEGORY_MSG_COUNT'    => $this->_objNewsML->standardMessageCount,
-                'FEED_NEWSML_SHOW_PICS_YES'            => 'checked="checked"',
-                'FEED_NEWSML_SHOW_PICS_NO'            => ''
+                'FEED_NEWSML_PROVIDER_MENU' => $this->_objNewsML->getProviderMenu($categoryId, 'name="feedNewsMLProviderId" style="width:300px;"'),
+                'FEED_NEWSML_SUBJECT_CODES_MENU' => $this->_objNewsML->getSubjectCodesMenu(0, 'name="feedNewsMLSubjectCode" style="width:300px;" onchange="document.getElementById(\'feedNewsMLSubjectBoxExclusive\').style.display=(this.value == \'all\' ? \'none\' : \'block\')"'),
+                'FEED_NEWSML_SUBJECT_CODES_STYLE' => "none",
+                'FEED_NEWSML_CATEGORY_MSG_COUNT' => $this->_objNewsML->standardMessageCount,
+                'FEED_NEWSML_SHOW_PICS_YES' => 'checked="checked"',
+                'FEED_NEWSML_SHOW_PICS_NO' => ''
             ));
         } else {
             $this->_newsMLOverview();
         }
     }
 
-
     /**
-    * Delete a NewsML document
-    * @access private
-    * @global $_ARRAYLANG
-    */
+     * Delete a NewsML document
+     * @access private
+     * @global $_ARRAYLANG
+     */
     function _newsMLDeleteDocument()
     {
         global $_ARRAYLANG;
@@ -324,33 +324,26 @@ class feedManager extends feedLibrary
         if ($this->_objNewsML->deleteDocument($id)) {
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_NEWS_MSG_DELETED_SUCCESSFULLY'];
         } else {
-// TODO: $providerId is not defined
-//            $arrNewsMLDocuments = $this->_objNewsML->getDocuments($providerId);
-            $arrNewsMLDocuments = array();
+            $arrNewsMLDocuments = $this->_objNewsML->getDocuments($id);
             $_SESSION['strErrMessage'] = str_replace('%NAME%', $arrNewsMLDocuments[$id]['headline'], $_ARRAYLANG['TXT_FEED_COULD_NOT_DELETE_NEWS_MSG']);
         }
     }
 
 
     /**
-    * Delete NewsML documents
-    *
-    * Delete a NewsML documents
-    *
-    * @access private
-    * @global $_ARRAYLANG
-    */
+     * Delete NewsML documents
+     * @access private
+     * @global $_ARRAYLANG
+     */
     function _newsMLDeleteDocuments()
     {
         global $_ARRAYLANG;
 
-        if (isset($_POST['selectedNewsMLDocId']) && is_array($_POST['selectedNewsMLDocId']) && count($_POST['selectedNewsMLDocId'])>0) {
-// TODO: $providerId is not defined
-//            $arrNewsMLDocuments = $this->_objNewsML->getDocuments($providerId);
-            $arrNewsMLDocuments = array();
+        if (isset($_POST['selectedNewsMLDocId']) && is_array($_POST['selectedNewsMLDocId']) && count($_POST['selectedNewsMLDocId'])) {
             $status = true;
             foreach ($_POST['selectedNewsMLDocId'] as $id) {
                 $id = intval($id);
+                $arrNewsMLDocuments = $this->_objNewsML->getDocuments($id);
                 if ($id != 0) {
                     if (!$this->_objNewsML->deleteDocument($id)) {
                         $_SESSION['strErrMessage'] .= str_replace('%NAME%', $arrNewsMLDocuments[$id]['headline'], $_ARRAYLANG['TXT_FEED_COULD_NOT_DELETE_NEWS_MSG']);
@@ -358,7 +351,6 @@ class feedManager extends feedLibrary
                     }
                 }
             }
-
             if ($status) {
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_NEWS_MSGS_DELETED_SUCCESSFULLY'];
             }
@@ -372,15 +364,11 @@ class feedManager extends feedLibrary
         if (isset($_REQUEST['providerId']) && isset($this->_objNewsML->arrCategories[$_REQUEST['providerId']])) {
             $paging = "";
             $providerId = intval($_REQUEST['providerId']);
-
-            $this->_objTpl->loadTemplateFile('module_feed_newsml_details.html');
             $this->pageTitle = 'NewsML';
-
+            $this->_objTpl->loadTemplateFile('module_feed_newsml_details.html');
             $this->_objTpl->setVariable('FEED_NEWSML_TITLE', str_replace('%NAME%', $this->_objNewsML->arrCategories[$providerId]['name'], $_ARRAYLANG['TXT_FEED_NEWS_MSG_OF']));
-
             $this->_objNewsML->readDocuments($providerId);
             $arrNewsMLDocuments = $this->_objNewsML->getDocuments($providerId);
-
             if (count($arrNewsMLDocuments)>0) {
                 $rowNr = 0;
 
@@ -396,34 +384,34 @@ class feedManager extends feedLibrary
                 }
 
                 $this->_objTpl->setVariable(array(
-                    'TXT_FEED_MARKED'                        => $_ARRAYLANG['TXT_FEED_MARKED'],
-                    'TXT_FEED_MARK_ALL'                        => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
-                    'TXT_FEED_REMOVE_CHOICE'                => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
-                    'TXT_FEED_DELETE_MARKED'                => $_ARRAYLANG['TXT_FEED_DELETE_MARKED'],
-                    'TXT_FEED_BACK'                            => $_ARRAYLANG['TXT_FEED_BACK'],
-                    'TXT_FEED_TITLE'                        => $_ARRAYLANG['TXT_FEED_TITLE'],
-                    'TXT_FEED_DATE'                            => $_ARRAYLANG['TXT_FEED_DATE'],
-                    'TXT_FEED_FUNCTIONS'                    => $_ARRAYLANG['TXT_FEED_FUNCTIONS'],
-                    'TXT_FEED_ACTION_COULD_NOT_BE_UNDONE'    => $_ARRAYLANG['TXT_FEED_ACTION_COULD_NOT_BE_UNDONE'],
-                    'TXT_CONFIRM_DELETE_NEWS_MSG'            => $_ARRAYLANG['TXT_CONFIRM_DELETE_NEWS_MSG'],
-                    'TXT_CONFIRM_DELETE_NEWS_MSGS'            => $_ARRAYLANG['TXT_CONFIRM_DELETE_NEWS_MSGS']
+                    'TXT_FEED_MARKED' => $_ARRAYLANG['TXT_FEED_MARKED'],
+                    'TXT_FEED_MARK_ALL' => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
+                    'TXT_FEED_REMOVE_CHOICE' => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
+                    'TXT_FEED_DELETE_MARKED' => $_ARRAYLANG['TXT_FEED_DELETE_MARKED'],
+                    'TXT_FEED_BACK' => $_ARRAYLANG['TXT_FEED_BACK'],
+                    'TXT_FEED_TITLE' => $_ARRAYLANG['TXT_FEED_TITLE'],
+                    'TXT_FEED_DATE' => $_ARRAYLANG['TXT_FEED_DATE'],
+                    'TXT_FEED_FUNCTIONS' => $_ARRAYLANG['TXT_FEED_FUNCTIONS'],
+                    'TXT_FEED_ACTION_COULD_NOT_BE_UNDONE' => $_ARRAYLANG['TXT_FEED_ACTION_COULD_NOT_BE_UNDONE'],
+                    'TXT_CONFIRM_DELETE_NEWS_MSG' => $_ARRAYLANG['TXT_CONFIRM_DELETE_NEWS_MSG'],
+                    'TXT_CONFIRM_DELETE_NEWS_MSGS' => $_ARRAYLANG['TXT_CONFIRM_DELETE_NEWS_MSGS']
                 ));
 
                 $this->_objTpl->setGlobalVariable(array(
-                    'FEED_NEWSML_PROVIDERID'    => $providerId,
-                    'TXT_FEED_SHOW_NEWS_MSG'    => $_ARRAYLANG['TXT_FEED_SHOW_NEWS_MSG'],
-                    'TXT_FEED_DELETE_NEWS_MSG'    => $_ARRAYLANG['TXT_FEED_DELETE_NEWS_MSG']
+                    'FEED_NEWSML_PROVIDERID' => $providerId,
+                    'TXT_FEED_SHOW_NEWS_MSG' => $_ARRAYLANG['TXT_FEED_SHOW_NEWS_MSG'],
+                    'TXT_FEED_DELETE_NEWS_MSG' => $_ARRAYLANG['TXT_FEED_DELETE_NEWS_MSG']
                 ));
 
                 foreach ($arrNewsMLDocuments as $newsMLDocumentId => $arrNewsMLDocument) {
                     if ($rowNr>=$pos && $rowNr<($pos+intval($_CONFIG['corePagingLimit']))) {
                         $this->_objTpl->setVariable(array(
-                            'FEED_NEWSML_ID'                => $newsMLDocumentId,
-                            'FEED_NEWSML_CATID'                => $providerId,
-                            'FEED_NEWSML_LIST_ROW_CLASS'    => $rowNr % 2 == 0 ? "row2" : "row1",
-                            'FEED_NEWSML_TITLE'                => $arrNewsMLDocument['headLine'],
-                            'FEED_NEWSML_DATE'                => date(ASCMS_DATE_FORMAT, $arrNewsMLDocument['thisRevisionDate']),
-                            'FEED_NEWSML_RANK'                => $arrNewsMLDocument['urgency']
+                            'FEED_NEWSML_ID' => $newsMLDocumentId,
+                            'FEED_NEWSML_CATID' => $providerId,
+                            'FEED_NEWSML_LIST_ROW_CLASS' => $rowNr % 2 == 0 ? "row2" : "row1",
+                            'FEED_NEWSML_TITLE' => $arrNewsMLDocument['headLine'],
+                            'FEED_NEWSML_DATE' => date(ASCMS_DATE_FORMAT, $arrNewsMLDocument['thisRevisionDate']),
+                            'FEED_NEWSML_RANK' => $arrNewsMLDocument['urgency']
                         ));
                         $this->_objTpl->parse('feed_newsml_list');
                     }
@@ -435,8 +423,8 @@ class feedManager extends feedLibrary
                 $this->_objTpl->hideBlock('feed_newsml_nodata');
             } else {
                 $this->_objTpl->setVariable(array(
-                    'TXT_FEED_NO_NEWS_MSGS_PRESENT'    => $_ARRAYLANG['TXT_FEED_NO_NEWS_MSGS_PRESENT'],
-                    'TXT_FEED_BACK'                    => $_ARRAYLANG['TXT_FEED_BACK']
+                    'TXT_FEED_NO_NEWS_MSGS_PRESENT' => $_ARRAYLANG['TXT_FEED_NO_NEWS_MSGS_PRESENT'],
+                    'TXT_FEED_BACK' => $_ARRAYLANG['TXT_FEED_BACK']
                 ));
 
                 $this->_objTpl->touchBlock('feed_newsml_nodata');
@@ -449,14 +437,11 @@ class feedManager extends feedLibrary
     }
 
     /**
-    * NewsML save category
-    *
-    * Add or update a newsML category
-    *
-    * @access private
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    */
+     * Add or update a newsML category
+     * @access private
+     * @global object $objDatabase
+     * @global array $_ARRAYLANG
+     */
     function _newsMLSaveCategory()
     {
         global $_ARRAYLANG;
@@ -491,13 +476,10 @@ class feedManager extends feedLibrary
     }
 
     /**
-    * NewsML overview
-    *
-    * Show NewsML categories page
-    *
-    * @access private
-    * @global object $objDatabase
-    */
+     * Show NewsML categories page
+     * @access private
+     * @global object $objDatabase
+     */
     function _newsMLOverview()
     {
         global $_ARRAYLANG;
@@ -508,46 +490,49 @@ class feedManager extends feedLibrary
         $rowNr = 0;
 
         $this->_objTpl->setVariable(array(
-            'TXT_FEED_MARKED'            => $_ARRAYLANG['TXT_FEED_MARKED'],
-            'TXT_FEED_MARK_ALL'            => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
-            'TXT_FEED_REMOVE_CHOICE'    => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
-            'TXT_FEED_DELETE_MARKED'    => $_ARRAYLANG['TXT_FEED_DELETE_MARKED'],
-            'TXT_FEED_NEWSML_CATEGORIES'    => $_ARRAYLANG['TXT_FEED_NEWSML_CATEGORIES'],
-            'TXT_FEED_CATEGORY'                => $_ARRAYLANG['TXT_FEED_CATEGORY'],
-            'TXT_FEED_TEMPLATE_PLACEHOLDER'    => $_ARRAYLANG['TXT_FEED_TEMPLATE_PLACEHOLDER'],
-            'TXT_FEED_NEWSML_PROVIDER'        => $_ARRAYLANG['TXT_FEED_NEWSML_PROVIDER'],
-            'TXT_FEED_FUNCTIONS'            => $_ARRAYLANG['TXT_FEED_FUNCTIONS'],
-            'TXT_FEED_SHOW_DETAILS'            => $_ARRAYLANG['TXT_FEED_SHOW_DETAILS'],
-            'TXT_FEED_EDIT_CATEGORY'        => $_ARRAYLANG['TXT_FEED_EDIT_CATEGORY'],
-            'TXT_FEED_INSERT_CATEGORY'        => $_ARRAYLANG['TXT_FEED_INSERT_CATEGORY'],
-            'TXT_FEED_INFO'                    => $_ARRAYLANG['TXT_FEED_INFO'],
-            'TXT_FEED_WHAT_IS_NEWSML'        => $_ARRAYLANG['TXT_FEED_WHAT_IS_NEWSML'],
-            'TXT_FEED_NEWSML_DESCRIPTION'    => $_ARRAYLANG['TXT_FEED_NEWSML_DESCRIPTION'],
-            'TXT_FEED_CONFIRM_DELETE_CATEGORY'    => $_ARRAYLANG['TXT_FEED_CONFIRM_DELETE_CATEGORY'],
-            'TXT_FEED_CONFIRM_DELETE_CATEGORIES'    => $_ARRAYLANG['TXT_FEED_CONFIRM_DELETE_CATEGORIES'],
-            'TXT_FEED_ACTION_COULD_NOT_BE_UNDONE'    => $_ARRAYLANG['TXT_FEED_ACTION_COULD_NOT_BE_UNDONE']
+            'TXT_FEED_MARKED' => $_ARRAYLANG['TXT_FEED_MARKED'],
+            'TXT_FEED_MARK_ALL' => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
+            'TXT_FEED_REMOVE_CHOICE' => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
+            'TXT_FEED_DELETE_MARKED' => $_ARRAYLANG['TXT_FEED_DELETE_MARKED'],
+            'TXT_FEED_NEWSML_CATEGORIES' => $_ARRAYLANG['TXT_FEED_NEWSML_CATEGORIES'],
+            'TXT_FEED_CATEGORY' => $_ARRAYLANG['TXT_FEED_CATEGORY'],
+            'TXT_FEED_TEMPLATE_PLACEHOLDER' => $_ARRAYLANG['TXT_FEED_TEMPLATE_PLACEHOLDER'],
+            'TXT_FEED_NEWSML_PROVIDER' => $_ARRAYLANG['TXT_FEED_NEWSML_PROVIDER'],
+            'TXT_FEED_FUNCTIONS' => $_ARRAYLANG['TXT_FEED_FUNCTIONS'],
+            'TXT_FEED_SHOW_DETAILS' => $_ARRAYLANG['TXT_FEED_SHOW_DETAILS'],
+            'TXT_FEED_EDIT_CATEGORY' => $_ARRAYLANG['TXT_FEED_EDIT_CATEGORY'],
+            'TXT_FEED_INSERT_CATEGORY' => $_ARRAYLANG['TXT_FEED_INSERT_CATEGORY'],
+            'TXT_FEED_INFO' => $_ARRAYLANG['TXT_FEED_INFO'],
+            'TXT_FEED_WHAT_IS_NEWSML' => $_ARRAYLANG['TXT_FEED_WHAT_IS_NEWSML'],
+            'TXT_FEED_NEWSML_DESCRIPTION' => $_ARRAYLANG['TXT_FEED_NEWSML_DESCRIPTION'],
+            'TXT_FEED_CONFIRM_DELETE_CATEGORY' => $_ARRAYLANG['TXT_FEED_CONFIRM_DELETE_CATEGORY'],
+            'TXT_FEED_CONFIRM_DELETE_CATEGORIES' => $_ARRAYLANG['TXT_FEED_CONFIRM_DELETE_CATEGORIES'],
+            'TXT_FEED_ACTION_COULD_NOT_BE_UNDONE' => $_ARRAYLANG['TXT_FEED_ACTION_COULD_NOT_BE_UNDONE']
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_FEED_SHOW_DETAILS'            => $_ARRAYLANG['TXT_FEED_SHOW_DETAILS'],
-            'TXT_FEED_EDIT_CATEGORY'        => $_ARRAYLANG['TXT_FEED_EDIT_CATEGORY'],
-            'TXT_FEED_DELETE_CATEGORY'        => $_ARRAYLANG['TXT_FEED_DELETE_CATEGORY']
+            'TXT_FEED_SHOW_DETAILS' => $_ARRAYLANG['TXT_FEED_SHOW_DETAILS'],
+            'TXT_FEED_EDIT_CATEGORY' => $_ARRAYLANG['TXT_FEED_EDIT_CATEGORY'],
+            'TXT_FEED_DELETE_CATEGORY' => $_ARRAYLANG['TXT_FEED_DELETE_CATEGORY']
         ));
 
+        if (empty($this->_objNewsML->arrCategories)) {
+            $this->_objTpl->hideBlock('feed_newsml_list');
+            return;
+        }
         foreach ($this->_objNewsML->arrCategories as $newsMLProviderId => $arrNewsMLProvider) {
             $this->_objTpl->setVariable(array(
-            'FEED_NEWSML_CATEGORY_ID'        => $newsMLProviderId,
-            'FEED_NEWSML_ID'                => $newsMLProviderId,
-            'FEED_NEWSML_LIST_ROW_CLASS'    => $rowNr % 2 == 0 ? "row2" : "row1",
-            'FEED_NEWSML_NAME'                => $arrNewsMLProvider['name'],
-            'FEED_NEWSML_PLACEHOLDER'        => 'NEWSML_'.strtoupper(preg_replace('/\s/', '_', $arrNewsMLProvider['name'])),
-            'FEED_NEWSML_PROVIDER'            => $arrNewsMLProvider['providerName']
+                'FEED_NEWSML_CATEGORY_ID' => $newsMLProviderId,
+                'FEED_NEWSML_ID' => $newsMLProviderId,
+                'FEED_NEWSML_LIST_ROW_CLASS' => (++$rowNr % 2 ? 'row1' : 'row2'),
+                'FEED_NEWSML_NAME' => $arrNewsMLProvider['name'],
+                'FEED_NEWSML_PLACEHOLDER' => 'NEWSML_'.strtoupper(preg_replace('/\s/', '_', $arrNewsMLProvider['name'])),
+                'FEED_NEWSML_PROVIDER' => $arrNewsMLProvider['providerName']
             ));
             $this->_objTpl->parse('feed_newsml_list');
-
-            $rowNr++;
         }
     }
+
 
     function showNews()
     {
@@ -663,8 +648,8 @@ class feedManager extends feedLibrary
 
         while (!$objResult->EOF) {
             $this->_objTpl->setVariable(array(
-                'FEED_CATEGORY_ID'  => $objResult->fields['id'],
-                'FEED_CATEGORY'     => $objResult->fields['name']
+                'FEED_CATEGORY_ID' => $objResult->fields['id'],
+                'FEED_CATEGORY' => $objResult->fields['name']
             ));
             $this->_objTpl->parse('feed_table_option');
             $objResult->MoveNext();
@@ -685,14 +670,15 @@ class feedManager extends feedLibrary
 
             if ($objResult2->RecordCount() != 0){
                 $selected = '';
-                if ($_SESSION['feedCategorySort'] == $objResult->fields['id']){
-                    $selected = ' selected';
+                if (   isset($_SESSION['feedCategorySort'])
+                    && $_SESSION['feedCategorySort'] == $objResult->fields['id']) {
+                    $selected = ' selected="selected"';
                 }
 
                 $this->_objTpl->setVariable(array(
-                    'FEED_CATEGORY_ID'  => $objResult->fields['id'],
-                    'FEED_SELECTED'     => $selected,
-                    'FEED_CATEGORY'     => $objResult->fields['name']
+                    'FEED_CATEGORY_ID' => $objResult->fields['id'],
+                    'FEED_SELECTED' => $selected,
+                    'FEED_CATEGORY' => $objResult->fields['name']
                 ));
                 $this->_objTpl->parse('feed_category_option');
             }
@@ -703,9 +689,10 @@ class feedManager extends feedLibrary
         $filename = array();
         $dir = opendir ($this->feedpath);
         $file = readdir($dir);
-        while ($file) {
-            if ($file != '.' and $file != '..' and $file != 'index.html' and substr($file, 0, 5) != 'feed_'){
-                $filename[] = $file;
+        while ($file !== false) {
+            if ($file != '.'
+                 && $file != '..' and $file != 'index.html' and substr($file, 0, 5) != 'feed_'){
+                  $filename[] = $file;
             }
             $file = readdir($dir);
         }
@@ -788,19 +775,19 @@ class feedManager extends feedLibrary
                 ($objResult2->fields['status'] == 1) ? $status = 'green'  : $status = 'red';
 
                 $this->_objTpl->setVariable(array(
-                    'FEED_CLASS'           => $class,
-                    'FEED_STATUS'          => $status,
-                    'FEED_ID'              => $objResult2->fields['id'],
-                    'FEED_POS'             => $objResult2->fields['pos'],
-                    'FEED_NAME'            => $objResult2->fields['name'],
-                    'FEED_LANG'            => $to_lang[$objResult->fields['lang']],
-                    'FEED_CATEGORY'        => $objResult->fields['name'],
-                    'FEED_ARTICLE'         => $objResult2->fields['articles'],
-                    'FEED_CACHE'           => $objResult2->fields['cache'],
-                    'FEED_TIME'            => $objResult2->fields['time'],
-                    'TXT_FEED_EDIT'        => $_ARRAYLANG['TXT_FEED_EDIT'],
-                    'TXT_FEED_UPDATE'      => $_ARRAYLANG['TXT_FEED_UPDATE'],
-                    'TXT_FEED_PREVIEW'     => $_ARRAYLANG['TXT_FEED_PREVIEW']
+                    'FEED_CLASS' => $class,
+                    'FEED_STATUS' => $status,
+                    'FEED_ID' => $objResult2->fields['id'],
+                    'FEED_POS' => $objResult2->fields['pos'],
+                    'FEED_NAME' => $objResult2->fields['name'],
+                    'FEED_LANG' => $to_lang[$objResult->fields['lang']],
+                    'FEED_CATEGORY' => $objResult->fields['name'],
+                    'FEED_ARTICLE' => $objResult2->fields['articles'],
+                    'FEED_CACHE' => $objResult2->fields['cache'],
+                    'FEED_TIME' => $objResult2->fields['time'],
+                    'TXT_FEED_EDIT' => $_ARRAYLANG['TXT_FEED_EDIT'],
+                    'TXT_FEED_UPDATE' => $_ARRAYLANG['TXT_FEED_UPDATE'],
+                    'TXT_FEED_PREVIEW' => $_ARRAYLANG['TXT_FEED_PREVIEW']
                 ));
 
                 $this->_objTpl->parse('feed_table_row');
@@ -816,60 +803,58 @@ class feedManager extends feedLibrary
         if ($i > 0)
         {
             $this->_objTpl->setVariable(array(
-                'FEED_RECORDS_HIDDEN'           => '&nbsp;',
-                'TXT_FEED_MARK_ALL'             => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
-                'TXT_FEED_REMOVE_CHOICE'        => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
-                'TXT_FEED_SELECT_OPERATION'     => $_ARRAYLANG['TXT_FEED_SELECT_OPERATION'],
-                'TXT_FEED_SAVE_SORTING'         => $_ARRAYLANG['TXT_FEED_SAVE_SORTING'],
-                'TXT_FEED_ACTIVATE_NEWS_FEED'   => $_ARRAYLANG['TXT_FEED_ACTIVATE_NEWS_FEED'],
+                'FEED_RECORDS_HIDDEN' => '&nbsp;',
+                'TXT_FEED_MARK_ALL' => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
+                'TXT_FEED_REMOVE_CHOICE' => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
+                'TXT_FEED_SELECT_OPERATION' => $_ARRAYLANG['TXT_FEED_SELECT_OPERATION'],
+                'TXT_FEED_SAVE_SORTING' => $_ARRAYLANG['TXT_FEED_SAVE_SORTING'],
+                'TXT_FEED_ACTIVATE_NEWS_FEED' => $_ARRAYLANG['TXT_FEED_ACTIVATE_NEWS_FEED'],
                 'TXT_FEED_DEACTIVATE_NEWS_FEED' => $_ARRAYLANG['TXT_FEED_DEACTIVATE_NEWS_FEED'],
-                'TXT_FEED_DELETE_NEWS_FEED'     => $_ARRAYLANG['TXT_FEED_DELETE_NEWS_FEED']
+                'TXT_FEED_DELETE_NEWS_FEED' => $_ARRAYLANG['TXT_FEED_DELETE_NEWS_FEED']
             ));
             $this->_objTpl->parse('feed_table_hidden');
         }
 
         //parse $_ARRAYLANG
         $this->_objTpl->setVariable(array(
-            'TXT_FEED_INSERT_NEW_FEED'      => $_ARRAYLANG['TXT_FEED_INSERT_NEW_FEED'],
-            'TXT_FEED_CATEGORY'             => $_ARRAYLANG['TXT_FEED_CATEGORY'],
-            'TXT_FEED_CHOOSE_CATEGORY'      => $_ARRAYLANG['TXT_FEED_CHOOSE_CATEGORY'],
-            'TXT_FEED_NAME'                 => $_ARRAYLANG['TXT_FEED_NAME'],
-            'TXT_FEED_LINK'                 => $_ARRAYLANG['TXT_FEED_LINK'],
-            'TXT_FEED_FILE_NAME'            => $_ARRAYLANG['TXT_FEED_FILE_NAME'],
-            'TXT_FEED_CHOOSE_FILE_NAME'     => $_ARRAYLANG['TXT_FEED_CHOOSE_FILE_NAME'],
-            'TXT_FEED_NUMBER_ARTICLES'      => $_ARRAYLANG['TXT_FEED_NUMBER_ARTICLES'],
-            'TXT_FEED_CACHE_TIME'           => $_ARRAYLANG['TXT_FEED_CACHE_TIME'],
-            'TXT_FEED_SHOW_LOGO'            => $_ARRAYLANG['TXT_FEED_SHOW_LOGO'],
-            'TXT_FEED_NO'                   => $_ARRAYLANG['TXT_FEED_NO'],
-            'TXT_FEED_YES'                  => $_ARRAYLANG['TXT_FEED_YES'],
-            'TXT_FEED_STATUS'               => $_ARRAYLANG['TXT_FEED_STATUS'],
-            'TXT_FEED_INACTIVE'             => $_ARRAYLANG['TXT_FEED_INACTIVE'],
-            'TXT_FEED_ACTIVE'               => $_ARRAYLANG['TXT_FEED_ACTIVE'],
-            'TXT_FEED_SAVE'                 => $_ARRAYLANG['TXT_FEED_SAVE'],
-            'TXT_FEED_SORTING'              => $_ARRAYLANG['TXT_FEED_SORTING'],
-            'TXT_FEED_STATUS'               => $_ARRAYLANG['TXT_FEED_STATUS'],
-            'TXT_FEED_ID'                   => $_ARRAYLANG['TXT_FEED_ID'],
-            'TXT_FEED_NEWS_NAME'            => $_ARRAYLANG['TXT_FEED_NEWS_NAME'],
-            'TXT_FEED_LANGUAGE'             => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
-            'TXT_FEED_ALL_CATEGORIES'       => $_ARRAYLANG['TXT_FEED_ALL_CATEGORIES'],
-            'TXT_FEED_ARTICLE'              => $_ARRAYLANG['TXT_FEED_ARTICLE'],
-            'TXT_FEED_CACHE_TIME'           => $_ARRAYLANG['TXT_FEED_CACHE_TIME'],
-            'TXT_FEED_LAST_UPDATE'          => $_ARRAYLANG['TXT_FEED_LAST_UPDATE'],
-            'TXT_FEED_FORMCHECK_CATEGORY'   => $_ARRAYLANG['TXT_FEED_FORMCHECK_CATEGORY'],
-            'TXT_FEED_FORMCHECK_NAME'       => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
-            'TXT_FEED_FORMCHECK_LINK_FILE'  => $_ARRAYLANG['TXT_FEED_FORMCHECK_LINK_FILE'],
-            'TXT_FEED_FORMCHECK_ARTICLES'   => $_ARRAYLANG['TXT_FEED_FORMCHECK_ARTICLES'],
-            'TXT_FEED_FORMCHECK_CACHE'      => $_ARRAYLANG['TXT_FEED_FORMCHECK_CACHE'],
-            'TXT_FEED_FORMCHECK_IMAGE'      => $_ARRAYLANG['TXT_FEED_FORMCHECK_IMAGE'],
-            'TXT_FEED_FORMCHECK_STATUS'     => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS'],
-            'TXT_FEED_DELETE_CONFIRM'       => $_ARRAYLANG['TXT_FEED_DELETE_CONFIRM'],
-            'TXT_FEED_NO_SELECT_OPERATION'  => $_ARRAYLANG['TXT_FEED_NO_SELECT_OPERATION']
+            'TXT_FEED_INSERT_NEW_FEED' => $_ARRAYLANG['TXT_FEED_INSERT_NEW_FEED'],
+            'TXT_FEED_CATEGORY' => $_ARRAYLANG['TXT_FEED_CATEGORY'],
+            'TXT_FEED_CHOOSE_CATEGORY' => $_ARRAYLANG['TXT_FEED_CHOOSE_CATEGORY'],
+            'TXT_FEED_NAME' => $_ARRAYLANG['TXT_FEED_NAME'],
+            'TXT_FEED_LINK' => $_ARRAYLANG['TXT_FEED_LINK'],
+            'TXT_FEED_FILE_NAME' => $_ARRAYLANG['TXT_FEED_FILE_NAME'],
+            'TXT_FEED_CHOOSE_FILE_NAME' => $_ARRAYLANG['TXT_FEED_CHOOSE_FILE_NAME'],
+            'TXT_FEED_NUMBER_ARTICLES' => $_ARRAYLANG['TXT_FEED_NUMBER_ARTICLES'],
+            'TXT_FEED_CACHE_TIME' => $_ARRAYLANG['TXT_FEED_CACHE_TIME'],
+            'TXT_FEED_SHOW_LOGO' => $_ARRAYLANG['TXT_FEED_SHOW_LOGO'],
+            'TXT_FEED_NO' => $_ARRAYLANG['TXT_FEED_NO'],
+            'TXT_FEED_YES' => $_ARRAYLANG['TXT_FEED_YES'],
+            'TXT_FEED_STATUS' => $_ARRAYLANG['TXT_FEED_STATUS'],
+            'TXT_FEED_INACTIVE' => $_ARRAYLANG['TXT_FEED_INACTIVE'],
+            'TXT_FEED_ACTIVE' => $_ARRAYLANG['TXT_FEED_ACTIVE'],
+            'TXT_FEED_SAVE' => $_ARRAYLANG['TXT_FEED_SAVE'],
+            'TXT_FEED_SORTING' => $_ARRAYLANG['TXT_FEED_SORTING'],
+            'TXT_FEED_STATUS' => $_ARRAYLANG['TXT_FEED_STATUS'],
+            'TXT_FEED_ID' => $_ARRAYLANG['TXT_FEED_ID'],
+            'TXT_FEED_NEWS_NAME' => $_ARRAYLANG['TXT_FEED_NEWS_NAME'],
+            'TXT_FEED_LANGUAGE' => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
+            'TXT_FEED_ALL_CATEGORIES' => $_ARRAYLANG['TXT_FEED_ALL_CATEGORIES'],
+            'TXT_FEED_ARTICLE' => $_ARRAYLANG['TXT_FEED_ARTICLE'],
+            'TXT_FEED_CACHE_TIME' => $_ARRAYLANG['TXT_FEED_CACHE_TIME'],
+            'TXT_FEED_LAST_UPDATE' => $_ARRAYLANG['TXT_FEED_LAST_UPDATE'],
+            'TXT_FEED_FORMCHECK_CATEGORY' => $_ARRAYLANG['TXT_FEED_FORMCHECK_CATEGORY'],
+            'TXT_FEED_FORMCHECK_NAME' => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
+            'TXT_FEED_FORMCHECK_LINK_FILE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_LINK_FILE'],
+            'TXT_FEED_FORMCHECK_ARTICLES' => $_ARRAYLANG['TXT_FEED_FORMCHECK_ARTICLES'],
+            'TXT_FEED_FORMCHECK_CACHE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_CACHE'],
+            'TXT_FEED_FORMCHECK_IMAGE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_IMAGE'],
+            'TXT_FEED_FORMCHECK_STATUS' => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS'],
+            'TXT_FEED_DELETE_CONFIRM' => $_ARRAYLANG['TXT_FEED_DELETE_CONFIRM'],
+            'TXT_FEED_NO_SELECT_OPERATION' => $_ARRAYLANG['TXT_FEED_NO_SELECT_OPERATION']
         ));
     }
 
-    //---------------------------------------------------------------------------------------------
 
-    //FUNC preview
     function showNewsPreview($id)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -879,22 +864,28 @@ class feedManager extends feedLibrary
                       FROM ".DBPREFIX."module_feed_news
                      WHERE id = '".$id."'";
         $objResult = $objDatabase->Execute($query);
+
         $filename = $this->feedpath.$objResult->fields['filename'];
+
         //rss class
         $rss = new XML_RSS($filename);
         $rss->parse();
+
         //channel info
         $info = $rss->getChannelInfo();
         echo "<b>".strip_tags($info['title'])."</b><br />";
         echo $_ARRAYLANG['TXT_FEED_LAST_UPDATE'].": ".$objResult->fields['time']."<br />";
+
         //image
         foreach($rss->getImages() as $img) {
             if ($img['url'] != '') {
                 echo '<img src="'.strip_tags($img['url']).'" /><br />';
             }
         }
+
         echo '<br />';
         echo '<i>'.$_ARRAYLANG['TXT_FEED_MESSAGE_IMPORTANT'].'</i><br />';
+
         //items
         foreach ($rss->getItems() as $value) {
             echo '<li>'.strip_tags($value['title']).'</li>';
@@ -902,7 +893,6 @@ class feedManager extends feedLibrary
     }
 
 
-    //FUNC new
     function showNewsNew($category, $name, $link, $filename, $articles, $cache, $time, $image, $status)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -916,7 +906,6 @@ class feedManager extends feedLibrary
             if ($link != ''){
                 //copy
                 $filename = "feed_".$time."_".basename($link);
-
                 if (!copy($link, $this->feedpath.$filename)){
                     $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_LINK_NO_NEWS'];
                     $this->goToReplace('');
@@ -930,15 +919,13 @@ class feedManager extends feedLibrary
 
                 //rss class
                 $rss = new XML_RSS($this->feedpath.$filename);
-				$rss->parse();
-				$content = '';
-
+                $rss->parse();
+                $content = '';
                 foreach($rss->getStructure() as $array){
                     $content .= $array;
                 }
-
                 if ($content == ''){
-                	unlink($this->feedpath.$filename);
+                    unlink($this->feedpath.$filename);
                     $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_LINK_NO_NEWS'];
                     $this->goToReplace('');
                     die;
@@ -964,7 +951,7 @@ class feedManager extends feedLibrary
         }
     }
 
-    //FUNC delete
+
     function showNewsDelete($ids)
     {
         global $objDatabase;
@@ -998,7 +985,7 @@ class feedManager extends feedLibrary
         }
     }
 
-    //FUNC changestatus
+
     function showNewsChange($ids, $to)
     {
         global $objDatabase;
@@ -1011,7 +998,7 @@ class feedManager extends feedLibrary
         }
     }
 
-    //FUNC sort
+
     function showNewsChangePos($ids, $pos)
     {
         global $objDatabase;
@@ -1024,10 +1011,6 @@ class feedManager extends feedLibrary
         }
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // CASE EDIT
-    /////////////////////////
 
     function showEdit()
     {
@@ -1087,8 +1070,6 @@ class feedManager extends feedLibrary
             }
         }
 
-        //---------------------------------------------------------------------------------------------
-
         $query = "SELECT id,
                            subid,
                            name,
@@ -1129,17 +1110,17 @@ class feedManager extends feedLibrary
         }
 
         $this->_objTpl->setVariable(array(
-            'FEED_ID'           => $id,
-// TODO: $pos is not defined
-            'FEED_POS'          => 0, //$pos,
-            'FEED_NAME'         => $name,
-            'FEED_LINK'         => $link,
-            'FEED_ARTICLES'     => $articles,
-            'FEED_CACHE'        => $cache,
-            'FEED_IMG_STATUS0'  => $status_img0,
-            'FEED_IMG_STATUS1'  => $status_img1,
-            'FEED_STATUS0'      => $status0,
-            'FEED_STATUS1'      => $status1
+            'FEED_ID' => $id,
+// Undefined
+//            'FEED_POS' => $pos,
+            'FEED_NAME' => $name,
+            'FEED_LINK' => $link,
+            'FEED_ARTICLES' => $articles,
+            'FEED_CACHE' => $cache,
+            'FEED_IMG_STATUS0' => $status_img0,
+            'FEED_IMG_STATUS1' => $status_img1,
+            'FEED_STATUS0' => $status0,
+            'FEED_STATUS1' => $status1
         ));
 
         // category
@@ -1157,9 +1138,9 @@ class feedManager extends feedLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                'FEED_CATEGORY_ID'       => $objResult->fields['id'],
+                'FEED_CATEGORY_ID' => $objResult->fields['id'],
                 'FEED_CATEGORY_SELECTED' => $selected,
-                'FEED_CATEGORY'          => $objResult->fields['name']
+                'FEED_CATEGORY' => $objResult->fields['name']
             ));
             $this->_objTpl->parse('feed_table_option');
             $objResult->MoveNext();
@@ -1169,9 +1150,9 @@ class feedManager extends feedLibrary
         $allfiles = array();
         $dir = opendir ($this->feedpath);
         $file = readdir($dir);
-        while($file) {
+        while($file !== false) {
             if ($file != '.' and $file != '..' and $file != 'index.html' and substr($file, 0, 5) != 'feed_') {
-                $allfiles[] = $file;
+                  $allfiles[] = $file;
             }
             $file = readdir($dir);
         }
@@ -1187,7 +1168,7 @@ class feedManager extends feedLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                'FEED_FILE'          => $file,
+                'FEED_FILE' => $file,
                 'FEED_FILE_SELECTED' => $status
             ));
             $this->_objTpl->parse('feed_table_option_name');
@@ -1195,34 +1176,33 @@ class feedManager extends feedLibrary
 
         //parse $_ARRAYLANG
         $this->_objTpl->setVariable(array(
-            'TXT_FEED_EDIT_NEWS_FEED'          => $_ARRAYLANG['TXT_FEED_EDIT_NEWS_FEED'],
-            'TXT_FEED_CATEGORY'                => $_ARRAYLANG['TXT_FEED_CATEGORY'],
-            'TXT_FEED_NAME'                    => $_ARRAYLANG['TXT_FEED_NAME'],
-            'TXT_FEED_LINK'                    => $_ARRAYLANG['TXT_FEED_LINK'],
-            'TXT_FEED_FILE_NAME'               => $_ARRAYLANG['TXT_FEED_FILE_NAME'],
-            'TXT_FEED_CHOOSE_FILE_NAME'        => $_ARRAYLANG['TXT_FEED_CHOOSE_FILE_NAME'],
-            'TXT_FEED_NUMBER_ARTICLES'         => $_ARRAYLANG['TXT_FEED_NUMBER_ARTICLES'],
-            'TXT_FEED_CACHE_TIME'              => $_ARRAYLANG['TXT_FEED_CACHE_TIME'],
-            'TXT_FEED_SHOW_LOGO'               => $_ARRAYLANG['TXT_FEED_SHOW_LOGO'],
-            'TXT_FEED_NO'                      => $_ARRAYLANG['TXT_FEED_NO'],
-            'TXT_FEED_YES'                     => $_ARRAYLANG['TXT_FEED_YES'],
-            'TXT_FEED_STATUS'                  => $_ARRAYLANG['TXT_FEED_STATUS'],
-            'TXT_FEED_INACTIVE'                => $_ARRAYLANG['TXT_FEED_INACTIVE'],
-            'TXT_FEED_ACTIVE'                  => $_ARRAYLANG['TXT_FEED_ACTIVE'],
-            'TXT_FEED_RESET'                   => $_ARRAYLANG['TXT_FEED_RESET'],
-            'TXT_FEED_SAVE'                    => $_ARRAYLANG['TXT_FEED_SAVE'],
-            'TXT_FEED_FORMCHECK_ERROR_INTERN'  => $_ARRAYLANG['TXT_FEED_FORMCHECK_ERROR_INTERN'],
-            'TXT_FEED_FORMCHECK_CATEGORY'      => $_ARRAYLANG['TXT_FEED_FORMCHECK_CATEGORY'],
-            'TXT_FEED_FORMCHECK_NAME'          => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
-            'TXT_FEED_FORMCHECK_LINK_FILE'     => $_ARRAYLANG['TXT_FEED_FORMCHECK_LINK_FILE'],
-            'TXT_FEED_FORMCHECK_ARTICLES'      => $_ARRAYLANG['TXT_FEED_FORMCHECK_ARTICLES'],
-            'TXT_FEED_FORMCHECK_CACHE'         => $_ARRAYLANG['TXT_FEED_FORMCHECK_CACHE'],
-            'TXT_FEED_FORMCHECK_IMAGE'         => $_ARRAYLANG['TXT_FEED_FORMCHECK_IMAGE'],
-            'TXT_FEED_FORMCHECK_STATUS'        => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS']
+            'TXT_FEED_EDIT_NEWS_FEED' => $_ARRAYLANG['TXT_FEED_EDIT_NEWS_FEED'],
+            'TXT_FEED_CATEGORY' => $_ARRAYLANG['TXT_FEED_CATEGORY'],
+            'TXT_FEED_NAME' => $_ARRAYLANG['TXT_FEED_NAME'],
+            'TXT_FEED_LINK' => $_ARRAYLANG['TXT_FEED_LINK'],
+            'TXT_FEED_FILE_NAME' => $_ARRAYLANG['TXT_FEED_FILE_NAME'],
+            'TXT_FEED_CHOOSE_FILE_NAME' => $_ARRAYLANG['TXT_FEED_CHOOSE_FILE_NAME'],
+            'TXT_FEED_NUMBER_ARTICLES' => $_ARRAYLANG['TXT_FEED_NUMBER_ARTICLES'],
+            'TXT_FEED_CACHE_TIME' => $_ARRAYLANG['TXT_FEED_CACHE_TIME'],
+            'TXT_FEED_SHOW_LOGO' => $_ARRAYLANG['TXT_FEED_SHOW_LOGO'],
+            'TXT_FEED_NO' => $_ARRAYLANG['TXT_FEED_NO'],
+            'TXT_FEED_YES' => $_ARRAYLANG['TXT_FEED_YES'],
+            'TXT_FEED_STATUS' => $_ARRAYLANG['TXT_FEED_STATUS'],
+            'TXT_FEED_INACTIVE' => $_ARRAYLANG['TXT_FEED_INACTIVE'],
+            'TXT_FEED_ACTIVE' => $_ARRAYLANG['TXT_FEED_ACTIVE'],
+            'TXT_FEED_RESET' => $_ARRAYLANG['TXT_FEED_RESET'],
+            'TXT_FEED_SAVE' => $_ARRAYLANG['TXT_FEED_SAVE'],
+            'TXT_FEED_FORMCHECK_ERROR_INTERN' => $_ARRAYLANG['TXT_FEED_FORMCHECK_ERROR_INTERN'],
+            'TXT_FEED_FORMCHECK_CATEGORY' => $_ARRAYLANG['TXT_FEED_FORMCHECK_CATEGORY'],
+            'TXT_FEED_FORMCHECK_NAME' => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
+            'TXT_FEED_FORMCHECK_LINK_FILE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_LINK_FILE'],
+            'TXT_FEED_FORMCHECK_ARTICLES' => $_ARRAYLANG['TXT_FEED_FORMCHECK_ARTICLES'],
+            'TXT_FEED_FORMCHECK_CACHE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_CACHE'],
+            'TXT_FEED_FORMCHECK_IMAGE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_IMAGE'],
+            'TXT_FEED_FORMCHECK_STATUS' => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS']
         ));
     }
 
-    //---------------------------------------------------------------------------------------------
 
     function showEditSetNew($id, $subid, $name, $link, $filename, $articles, $cache, $time, $image, $status)
     {
@@ -1248,7 +1228,6 @@ class feedManager extends feedLibrary
         if ($objResult->RecordCount() == 0) {
             if ($link != '') {
                 $filename = "feed_".$time."_".basename($link);
-
                 if (!copy($link, $this->feedpath.$filename)) {
                     $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_NEWS_FEED'];
                     $this->goToReplace('&act=edit&id='.$id);
@@ -1263,7 +1242,6 @@ class feedManager extends feedLibrary
                 foreach($rss->getStructure() as $array) {
                     $content .= $array;
                 }
-
                 if ($content == '') {
                     unlink($this->feedpath.$filename);
                     $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_NEWS_FEED'];
@@ -1300,14 +1278,10 @@ class feedManager extends feedLibrary
         }
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // CASE CATEGORY
-    /////////////////////////
 
     function showCategory()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         unset($_SESSION['feedCategorySort']);
 
@@ -1377,14 +1351,14 @@ class feedManager extends feedLibrary
 
         while(!$objResult->EOF) {
             $selected = '';
-            if (FRONTEND_LANG_ID == $objResult->fields['id']) {
+            if ($_LANGID == $objResult->fields['id']) {
                 $selected = ' selected';
             }
 
             $this->_objTpl->setVariable(array(
-                'FEED_LANG_ID'       => $objResult->fields['id'],
+                'FEED_LANG_ID' => $objResult->fields['id'],
                 'FEED_LANG_SELECTED' => $selected,
-                'FEED_LANG_NAME'     => $objResult->fields['name']
+                'FEED_LANG_NAME' => $objResult->fields['name']
             ));
             $this->_objTpl->parse('feed_lang');
             $objResult->MoveNext();
@@ -1427,38 +1401,38 @@ class feedManager extends feedLibrary
 
         $total_records = $objResult->RecordCount();
         $this->_objTpl->setVariable(array(
-            'TOTAL_RECORDS'       => $total_records
+            'TOTAL_RECORDS' => $total_records
         ));
 
         $i = 0;
         while(!$objResult->EOF) {
             ($i % 2)                ? $class  = 'row1'  : $class  = 'row2';
             ($objResult->fields['status'] == 1) ? $status = 'green' : $status = 'red';
-
             //records
-            $query = "SELECT subid
-                           FROM ".DBPREFIX."module_feed_news
-                          WHERE subid = '".$objResult->fields['id']."'";
+            $query = "
+                SELECT COUNT(*) AS `numof_records`
+                  FROM ".DBPREFIX."module_feed_news
+                 WHERE subid = '".$objResult->fields['id']."'";
             $objResult2 = $objDatabase->Execute($query);
-              $records = $objResult->RecordCount();
-
+            $records = $objResult2->fields['numof_records'];
               //lang
-              $query = "SELECT name
-                           FROM ".DBPREFIX."languages
-                          WHERE id = '".$objResult->fields['lang']."'";
-              $objResult2 = $objDatabase->Execute($query);
+            $query = "
+                SELECT name
+                  FROM ".DBPREFIX."languages
+                 WHERE id = '".$objResult->fields['lang']."'";
+            $objResult2 = $objDatabase->Execute($query);
 
             //parser
             $this->_objTpl->setVariable(array(
-                'FEED_CLASS'           => $class,
-                'FEED_POS'             => $objResult->fields['pos'],
-                'FEED_STATUS'          => $status,
-                'FEED_ID'              => $objResult->fields['id'],
-                'FEED_NAME'            => $objResult->fields['name'],
-                'FEED_LANG'            => $objResult2->fields['name'],
-                'FEED_TIME'            => $objResult->fields['time'],
-                'FEED_RECORDS'         => $records,
-                'TXT_FEED_EDIT'        => $_ARRAYLANG['TXT_FEED_EDIT']
+                'FEED_CLASS' => $class,
+                'FEED_POS' => $objResult->fields['pos'],
+                'FEED_STATUS' => $status,
+                'FEED_ID' => $objResult->fields['id'],
+                'FEED_NAME' => $objResult->fields['name'],
+                'FEED_LANG' => $objResult2->fields['name'],
+                'FEED_TIME' => $objResult->fields['time'],
+                'FEED_RECORDS' => $records,
+                'TXT_FEED_EDIT' => $_ARRAYLANG['TXT_FEED_EDIT']
             ));
             $this->_objTpl->parse('feed_table_row');
             $objResult->MoveNext();
@@ -1468,15 +1442,15 @@ class feedManager extends feedLibrary
         //make visible
         if ($i > 0) {
             $this->_objTpl->setVariable(array(
-                'FEED_RECORDS_HIDDEN'        => '&nbsp;',
-                'TXT_FEED_MARK_ALL'          => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
-                'TXT_FEED_REMOVE_CHOICE'     => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
-                'TXT_FEED_SELECT_OPERATION'  => $_ARRAYLANG['TXT_FEED_SELECT_OPERATION'],
-                'TXT_FEED_SAVE_SORTING'      => $_ARRAYLANG['TXT_FEED_SAVE_SORTING'],
-                'TXT_FEED_ACTIVATE_CAT'      => $_ARRAYLANG['TXT_FEED_ACTIVATE_CAT'],
-                'TXT_FEED_DEACTIVATE_CAT'    => $_ARRAYLANG['TXT_FEED_DEACTIVATE_CAT'],
-                'TXT_FEED_DELETE_RECORDS'    => $_ARRAYLANG['TXT_FEED_DELETE_RECORDS'],
-                'TXT_FEED_DELETE_CAT'        => $_ARRAYLANG['TXT_FEED_DELETE_CAT']
+                'FEED_RECORDS_HIDDEN' => '&nbsp;',
+                'TXT_FEED_MARK_ALL' => $_ARRAYLANG['TXT_FEED_MARK_ALL'],
+                'TXT_FEED_REMOVE_CHOICE' => $_ARRAYLANG['TXT_FEED_REMOVE_CHOICE'],
+                'TXT_FEED_SELECT_OPERATION' => $_ARRAYLANG['TXT_FEED_SELECT_OPERATION'],
+                'TXT_FEED_SAVE_SORTING' => $_ARRAYLANG['TXT_FEED_SAVE_SORTING'],
+                'TXT_FEED_ACTIVATE_CAT' => $_ARRAYLANG['TXT_FEED_ACTIVATE_CAT'],
+                'TXT_FEED_DEACTIVATE_CAT' => $_ARRAYLANG['TXT_FEED_DEACTIVATE_CAT'],
+                'TXT_FEED_DELETE_RECORDS' => $_ARRAYLANG['TXT_FEED_DELETE_RECORDS'],
+                'TXT_FEED_DELETE_CAT' => $_ARRAYLANG['TXT_FEED_DELETE_CAT']
             ));
             $this->_objTpl->parse('feed_table_hidden');
         }
@@ -1484,37 +1458,35 @@ class feedManager extends feedLibrary
         //
 
         $this->_objTpl->setVariable(array(
-            'FEED_CATEGORY_PAGING'       => $paging
+            'FEED_CATEGORY_PAGING' => $paging
         ));
 
         //parse $_ARRAYLANG
         $this->_objTpl->setVariable(array(
-            'TXT_FEED_INSERT_CATEGORY'        => $_ARRAYLANG['TXT_FEED_INSERT_CATEGORY'],
-            'TXT_FEED_NAME'                   => $_ARRAYLANG['TXT_FEED_NAME'],
-            'TXT_FEED_LANGUAGE'               => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
-            'TXT_FEED_STATUS'                 => $_ARRAYLANG['TXT_FEED_STATUS'],
-            'TXT_FEED_INACTIVE'               => $_ARRAYLANG['TXT_FEED_INACTIVE'],
-            'TXT_FEED_ACTIVE'                 => $_ARRAYLANG['TXT_FEED_ACTIVE'],
-            'TXT_FEED_SAVE'                   => $_ARRAYLANG['TXT_FEED_SAVE'],
-            'TXT_FEED_SORTING'                => $_ARRAYLANG['TXT_FEED_SORTING'],
-            'TXT_FEED_STATUS'                 => $_ARRAYLANG['TXT_FEED_STATUS'],
-            'TXT_FEED_ID'                     => $_ARRAYLANG['TXT_FEED_ID'],
-            'TXT_FEED_CAT_NAME'               => $_ARRAYLANG['TXT_FEED_CAT_NAME'],
-            'TXT_FEED_LANGUAGE'               => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
-            'TXT_FEED_RECORDS'                => $_ARRAYLANG['TXT_FEED_RECORDS'],
-            'TXT_FEED_BUILT_EDITED'           => $_ARRAYLANG['TXT_FEED_BUILT_EDITED'],
-            'TXT_FEED_FORMCHECK_NAME'         => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
-            'TXT_FEED_FORMCHECK_LANGUAGE'     => $_ARRAYLANG['TXT_FEED_FORMCHECK_LANGUAGE'],
-            'TXT_FEED_FORMCHECK_STATUS'       => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS'],
+            'TXT_FEED_INSERT_CATEGORY' => $_ARRAYLANG['TXT_FEED_INSERT_CATEGORY'],
+            'TXT_FEED_NAME' => $_ARRAYLANG['TXT_FEED_NAME'],
+            'TXT_FEED_LANGUAGE' => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
+            'TXT_FEED_STATUS' => $_ARRAYLANG['TXT_FEED_STATUS'],
+            'TXT_FEED_INACTIVE' => $_ARRAYLANG['TXT_FEED_INACTIVE'],
+            'TXT_FEED_ACTIVE' => $_ARRAYLANG['TXT_FEED_ACTIVE'],
+            'TXT_FEED_SAVE' => $_ARRAYLANG['TXT_FEED_SAVE'],
+            'TXT_FEED_SORTING' => $_ARRAYLANG['TXT_FEED_SORTING'],
+            'TXT_FEED_STATUS' => $_ARRAYLANG['TXT_FEED_STATUS'],
+            'TXT_FEED_ID' => $_ARRAYLANG['TXT_FEED_ID'],
+            'TXT_FEED_CAT_NAME' => $_ARRAYLANG['TXT_FEED_CAT_NAME'],
+            'TXT_FEED_LANGUAGE' => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
+            'TXT_FEED_RECORDS' => $_ARRAYLANG['TXT_FEED_RECORDS'],
+            'TXT_FEED_BUILT_EDITED' => $_ARRAYLANG['TXT_FEED_BUILT_EDITED'],
+            'TXT_FEED_FORMCHECK_NAME' => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
+            'TXT_FEED_FORMCHECK_LANGUAGE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_LANGUAGE'],
+            'TXT_FEED_FORMCHECK_STATUS' => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS'],
             'TXT_FEED_DELETE_RECORDS_CONFIRM' => $_ARRAYLANG['TXT_FEED_DELETE_RECORDS_CONFIRM'],
-            'TXT_FEED_DELETE_CONFIRM'         => $_ARRAYLANG['TXT_FEED_DELETE_CONFIRM'],
-            'TXT_FEED_NO_SELECT_OPERATION'    => $_ARRAYLANG['TXT_FEED_NO_SELECT_OPERATION']
+            'TXT_FEED_DELETE_CONFIRM' => $_ARRAYLANG['TXT_FEED_DELETE_CONFIRM'],
+            'TXT_FEED_NO_SELECT_OPERATION' => $_ARRAYLANG['TXT_FEED_NO_SELECT_OPERATION']
         ));
     }
 
-    //---------------------------------------------------------------------------------------------
 
-    //FUNC new
     function showCategoryNew($name, $lang, $status, $time)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1539,7 +1511,7 @@ class feedManager extends feedLibrary
         }
     }
 
-    //FUNC discharge
+
     function showCategoryDischarge($ids)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1579,7 +1551,7 @@ class feedManager extends feedLibrary
         }
     }
 
-    //FUNC delete
+
     function showCategoryDelete($ids)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1615,7 +1587,7 @@ class feedManager extends feedLibrary
         }
     }
 
-    //FUNC changestatus
+
     function showCategoryChange($ids, $to)
     {
         global $objDatabase;
@@ -1628,7 +1600,7 @@ class feedManager extends feedLibrary
         }
     }
 
-    //FUNC sort
+
     function showCategoryChangePos($ids, $pos)
     {
         global $objDatabase;
@@ -1641,10 +1613,6 @@ class feedManager extends feedLibrary
         }
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // CASE CAT_EDIT
-    /////////////////////////
 
     function showCatEdit()
     {
@@ -1678,8 +1646,6 @@ class feedManager extends feedLibrary
             }
         }
 
-        //-----------------------------------------------------------------------------------------
-
         $query = "SELECT id,
                            name,
                            status,
@@ -1702,12 +1668,12 @@ class feedManager extends feedLibrary
         }
 
         $this->_objTpl->setVariable(array(
-            'FEED_ID'           => $id,
-            'FEED_NAME'         => $name,
-// TODO: $link is not defined
-            'FEED_LINK'         => '', //$link,
-            'FEED_STATUS0'      => $status0,
-            'FEED_STATUS1'      => $status1
+            'FEED_ID' => $id,
+            'FEED_NAME' => $name,
+// Undefined
+//            'FEED_LINK' => $link,
+            'FEED_STATUS0' => $status0,
+            'FEED_STATUS1' => $status1
         ));
 
         //lang
@@ -1725,9 +1691,9 @@ class feedManager extends feedLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                'FEED_LANG_ID'       => $objResult->fields['id'],
+                'FEED_LANG_ID' => $objResult->fields['id'],
                 'FEED_LANG_SELECTED' => $selected,
-                'FEED_LANG_NAME'     => $objResult->fields['name']
+                'FEED_LANG_NAME' => $objResult->fields['name']
             ));
             $this->_objTpl->parse('feed_lang');
             $objResult->MoveNext();
@@ -1735,25 +1701,20 @@ class feedManager extends feedLibrary
 
         //parse $_ARRAYLANG
         $this->_objTpl->setVariable(array(
-            'TXT_FEED_EDIT_CAT'           => $_ARRAYLANG['TXT_FEED_EDIT_CAT'],
-            'TXT_FEED_NAME'               => $_ARRAYLANG['TXT_FEED_NAME'],
-            'TXT_FEED_LANGUAGE'           => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
-            'TXT_FEED_STATUS'             => $_ARRAYLANG['TXT_FEED_STATUS'],
-            'TXT_FEED_INACTIVE'           => $_ARRAYLANG['TXT_FEED_INACTIVE'],
-            'TXT_FEED_ACTIVE'             => $_ARRAYLANG['TXT_FEED_ACTIVE'],
-            'TXT_FEED_RESET'              => $_ARRAYLANG['TXT_FEED_RESET'],
-            'TXT_FEED_SAVE'               => $_ARRAYLANG['TXT_FEED_SAVE'],
-            'TXT_FEED_FORMCHECK_NAME'     => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
+            'TXT_FEED_EDIT_CAT' => $_ARRAYLANG['TXT_FEED_EDIT_CAT'],
+            'TXT_FEED_NAME' => $_ARRAYLANG['TXT_FEED_NAME'],
+            'TXT_FEED_LANGUAGE' => $_ARRAYLANG['TXT_FEED_LANGUAGE'],
+            'TXT_FEED_STATUS' => $_ARRAYLANG['TXT_FEED_STATUS'],
+            'TXT_FEED_INACTIVE' => $_ARRAYLANG['TXT_FEED_INACTIVE'],
+            'TXT_FEED_ACTIVE' => $_ARRAYLANG['TXT_FEED_ACTIVE'],
+            'TXT_FEED_RESET' => $_ARRAYLANG['TXT_FEED_RESET'],
+            'TXT_FEED_SAVE' => $_ARRAYLANG['TXT_FEED_SAVE'],
+            'TXT_FEED_FORMCHECK_NAME' => $_ARRAYLANG['TXT_FEED_FORMCHECK_NAME'],
             'TXT_FEED_FORMCHECK_LANGUAGE' => $_ARRAYLANG['TXT_FEED_FORMCHECK_LANGUAGE'],
-            'TXT_FEED_FORMCHECK_STATUS'   => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS']
+            'TXT_FEED_FORMCHECK_STATUS' => $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS']
         ));
     }
 
-
-
-
-
-    //---------------------------------------------------------------------------------------------
 
     function showCatEditSet($id, $name, $status, $time, $lang)
     {
@@ -1780,7 +1741,6 @@ class feedManager extends feedLibrary
         }
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
     function goToReplace($add)
     {

@@ -5,7 +5,7 @@
 function deleteNote(Id)
 {
     if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-        window.location.replace("?cmd=calendar{MODULE_INDEX}&act=delete&id="+Id);
+        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=delete&id="+Id);
 }
 // -->
 </script>
@@ -64,7 +64,7 @@ function deleteNote(Id)
 			<!-- END infolink -->
 			<tr class="row1">
 			  <td width="100" valign="top"> <br />
-				<a href="index.php?cmd=calendar{MODULE_INDEX}&amp;act=edit&amp;id={CALENDAR_ID}" title="{TXT_CALENDAR_EDIT}">
+				<a href="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=edit&amp;id={CALENDAR_ID}" title="{TXT_CALENDAR_EDIT}">
 				<img src="images/icons/edit.gif" align="absmiddle" border="0" title="neu" alt="neu" /> </a>
 				<a href="javascript:deleteNote({CALENDAR_ID})" title="{TXT_CALENDAR_DELETE}">
 				<img src="images/icons/delete.gif" align="absmiddle" border="0" title="l&ouml;schen" alt="l&ouml;schen" /> </a>

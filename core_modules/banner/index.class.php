@@ -5,8 +5,8 @@
  *
  * This module will get all the news pages
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @version 1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core_module_banner
  * @todo        Edit PHP DocBlocks!
@@ -17,9 +17,9 @@ require_once ASCMS_CORE_MODULE_PATH . '/banner/bannerLib.class.php';
 /**
  * Banner
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @access public
- * @version 1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core_module_banner
  */
@@ -30,11 +30,14 @@ class Banner extends bannerLibrary
     /**
      * PHP5 constructor
      * @param  string  $pageContent
+     * @global string  $_LANGID
      * @access public
      */
     function __construct()
     {
+        global $_LANGID;
         $this->_getBannerGroupStatus();
+        $this->langId = $_LANGID;
     }
 
 
@@ -46,7 +49,6 @@ class Banner extends bannerLibrary
     function _getBannerGroupStatus()
     {
         global $objDatabase;
-
         $query = "SELECT id, status FROM ".DBPREFIX."module_banner_groups";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
@@ -56,7 +58,6 @@ class Banner extends bannerLibrary
             }
         }
     }
-
 
 
     /**
@@ -196,5 +197,7 @@ function bannerClicks(bannerId)
 //-->
 </script>";
     }
+
 }
+
 ?>

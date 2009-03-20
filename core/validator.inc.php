@@ -4,9 +4,9 @@
  *
  * Global request validator
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author		Comvation Development Team <info@comvation.com>
+ * @access		public
+ * @version		1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -55,15 +55,15 @@ function contrexx_addslashes($string)
 /**
 * stripslashes wrapper to check for gpc_magic_quotes
 *
-* @param string    $string
+* @param string	$string
 * @return string $string
 */
 function contrexx_stripslashes($string)
 {
-    if (CONTREXX_ESCAPE_GPC) {
-        return stripslashes($string);
-    }
-        return $string;
-    }
+	if (CONTREXX_ESCAPE_GPC) {
+		return stripslashes($string);
+	}
+		return $string;
+	}
 
 ?>

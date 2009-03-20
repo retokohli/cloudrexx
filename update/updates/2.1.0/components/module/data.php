@@ -49,20 +49,24 @@ function _dataUpdate()
               PRIMARY KEY (`message_id`)
             ) ENGINE=MyISAM",
         #################################################################################
-        'module_data_messages_lang' => "CREATE TABLE `".DBPREFIX."module_data_messages_lang` (
+            'module_data_messages_lang' => "CREATE TABLE `contrexx_module_data_messages_lang` (
               `message_id` int(6) unsigned NOT NULL default '0',
               `lang_id` int(2) unsigned NOT NULL default '0',
-              `is_active` enum('0','1') NOT NULL default '1',
-              `subject` varchar(250) NOT NULL default '',
-              `content` text NOT NULL,
-              `tags` varchar(250) NOT NULL default '',
-              `image` varchar(250) NOT NULL default '',
-              `attachment` varchar(255) NOT NULL default '',
-              `mode` set('normal','forward') NOT NULL default 'normal',
-              `forward_url` varchar(255) NOT NULL default '',
-              `forward_target` varchar(40) NULL,
-              PRIMARY KEY (`message_id`,`lang_id`)
-            ) ENGINE=MyISAM",
+              `is_active` enum('0','1')  NOT NULL default '1',
+              `subject` varchar(250)  NOT NULL default '',
+              `content` text  NOT NULL,
+              `tags` varchar(250)  NOT NULL default '',
+              `image` varchar(250)  NOT NULL default '',
+              `thumbnail` varchar(250)  NOT NULL,
+              `thumbnail_width` tinyint(3) unsigned NOT NULL default '0',
+              `thumbnail_height` tinyint(3) unsigned NOT NULL default '0',
+              `attachment` varchar(255)  NOT NULL default '',
+              `attachment_description` varchar(255)  NOT NULL default 'normal',
+              `mode` set('normal','forward')  NOT NULL default 'normal',
+              `forward_url` varchar(255)  NOT NULL default '',
+              `forward_target` varchar(40)  default NULL,
+              PRIMARY KEY  (`message_id`,`lang_id`)
+            ) ENGINE=MyISAM ",
         #################################################################################
         'module_data_placeholders' => "CREATE TABLE `".DBPREFIX."module_data_placeholders` (
               `id` int(10) unsigned NOT NULL auto_increment,
@@ -283,6 +287,44 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
             return _databaseError($settings_query, $objDatabase->ErrorMsg());
         }
     }
+
+
+
+	/*********************************************************
+	* EXTENSION:	Thunbmail Image & Attachment description *
+	* ADDED:		Contrexx v2.1.0					         *
+	*********************************************************/
+    $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_data_messages_lang');
+    if ($arrColumns === false) {
+        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_data_messages_lang'));
+        return false;
+    }
+
+    if (!in_array('thumbnail', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail` VARCHAR( 250 ) NOT NULL AFTER `image`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+    if (!in_array('thumbnail_width', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail_width` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `thumbnail`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+    if (!in_array('thumbnail_height', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail_height` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `thumbnail_width`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+    if (!in_array('attachment_description', $arrColumns)) {
+        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `attachment_description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `attachment`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
     return true;
 }
 

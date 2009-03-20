@@ -9,6 +9,31 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Setting_Mail.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Setting.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Profile_Attribute.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Profile.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/UserGroup.class.php';
+
+/**
  * Framework user
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -18,22 +43,22 @@
  */
 class FWUser extends User_Setting
 {
-    public $arrStatusMsg = array(
+    var $arrStatusMsg = array(
         'ok'    => array(),
         'error' => array(),
     );
 
-    public $backendMode;
+    var $backendMode;
     /**
      * User
      * @var   User
      */
-    public $objUser;
+    var $objUser;
     /**
      * User Group
      * @var   UserGroup
      */
-    public $objGroup;
+    var $objGroup;
 
 
     function __construct($backend = false)
@@ -99,7 +124,7 @@ class FWUser extends User_Setting
 
                 // store frontend lang_id in cookie
                 $langId = $this->objUser->getFrontendLanguage();
-                if ($objInit->isFrontendLanguage($langId)) {
+                if ($objInit->arrLang[$langId]['frontend']) {
                     setcookie ("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                 }
                 return true;
@@ -218,21 +243,20 @@ class FWUser extends User_Setting
      * @global array
      * @global array
      * @global integer
-     * @todo    Use the user's langage ID instead of the LANG_ID constant
      */
     public function restorePassword($email)
     {
-        global $_CORELANG, $_CONFIG;
+        global $_CORELANG, $_CONFIG, $_LANGID;
 
         $objUser = $this->objUser->getUsers(
-            array('email' => $email), null, null, null, 1
+            array('email' => $email, 'is_active' => true), null, null, null, 1
         );
         if ($objUser) {
             $objUserMail = $this->getMail();
             $objUser->setRestoreKey();
             if ($objUser->store() &&
                 (
-                    $objUserMail->load('reset_pw', LANG_ID) ||
+                    $objUserMail->load('reset_pw', $_LANGID) ||
                     $objUserMail->load('reset_pw')
                 ) &&
                 (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
@@ -385,10 +409,12 @@ class FWUser extends User_Setting
 
     public static function getFWUserObject()
     {
+        global $objInit;
         static $objFWUser;
 
-        if (!isset($objFWUser))
-            $objFWUser = new FWUser('backend');
+        if (!isset($objFWUser)) {
+            $objFWUser = new FWUser($objInit->mode == 'backend');
+        }
         return $objFWUser;
     }
 
@@ -447,6 +473,22 @@ class FWUser extends User_Setting
                 ($validity > 1 ? 'S' : '')];
         }
         return "$validity $unit";
+    }
+
+    /**
+     * Returns a SECID for logging in (Backend, Frontend editing)
+     * This is an uppercase four-letter string with no ambiguous
+     * characters (like 0/O, l/I etc.).
+     */
+    public static function mkSECID() {
+        $chars = 'ACDEFGHJKLMNPRTUWXZ345679';
+        $max   = strlen($chars) -1;
+        $ret = '';
+        for ($i=0;$i<4;$i++) {
+
+            $ret .= $chars{rand(0,$max)};
+        }
+        return $ret;
     }
 }
 

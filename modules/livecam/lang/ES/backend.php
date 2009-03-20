@@ -6,20 +6,22 @@
  * @package     contrexx
  * @subpackage  module_livecam
  */
-$_ARRAYLANG['TXT_SETTINGS'] = "Configuraci&oacute;n";
-$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Ruta de archivo";
-$_ARRAYLANG['TXT_SAVE'] = "Guardar";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL de ll imagen actual";
-$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Ruta de la miniatura";
-$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "\¡Algunos campos estan vacios!";
-$_ARRAYLANG['TXT_UPDATE_FAILED'] = "Fallo en la actualizaci&oacute;n";
-$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'] = "Activar LightBox";
-$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "Para que funcione Lightbox, debe poner la siguiente variable en el header de index.html: [[JAVASCRIPT_LIGHTBOX]]";
-$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "Anchura m&aacute;xima de la miniatura (en p&iacute;xeles).";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "Anchura m&aacute;xima de la imagen actual (en p&iacute;xeles).";
-$_ARRAYLANG['TXT_CAM'] = "C&aacute;mara";
-$_ARRAYLANG['TXT_CAMS'] = "C&aacute;maras";
-$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "N&uacute;mero de c&aacute;maras";
-$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "A la p&aacute;gina de entrada.";
-$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Para cada Webcam, debe existir una entrada en el gestor de contenidos que contenga como \"cmd\" el n&uacute; de camara.";
+$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Archivpfad";
+$_ARRAYLANG['TXT_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL zum aktuellen Bild";
+$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Thumbnail Pfad";
+$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Einige Felder sind leer!";
+$_ARRAYLANG['TXT_UPDATE_FAILED'] = "Update ist fehlgeschlagen";
+$_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX'] = "Shadowbox aktivieren";
+$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "max. Breite der Thumbnails (in Pixel)";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "max. Breite des aktuellen Bildes (in Pixel)";
+$_ARRAYLANG['TXT_CAM'] = "Kamera";
+$_ARRAYLANG['TXT_CAMS'] = "Kameras";
+$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Anzahl Kameras";
+$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Zur Frontend-Seite";
+$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Für jede Webcam müssen Sie eine Content-Seite erstellen mit der Kamera-Nummber als cmd.";
+$_ARRAYLANG['TXT_LIVECAM_SHOWFROM'] = "Bilder anzeigen von";
+$_ARRAYLANG['TXT_LIVECAM_SHOWTILL'] = "bis";
+$_ARRAYLANG['TXT_LIVECAM_OCLOCK'] = "Uhr";
 ?>

@@ -113,16 +113,16 @@ class RSSWriter {
 
         if (!empty($title) || !empty($description)) {
             array_push($this->_arrItems, array(
-                'title'            => $title,
-                'link'            => $link,
-                'description'    => $description,
+                'title'         => $title,
+                'link'          => $link,
+                'description'   => $description,
                 'author'        => $author,
-                'arrCategory'    => $arrCategory,
-                'comments'        => $comments,
-                'arrEnclosure'    => $arrEnclosure,
-                'arrGuid'        => $arrGuid,
-                'pubDate'        => $pubDate,
-                'arrSource'        => $arrSource
+                'arrCategory'   => $arrCategory,
+                'comments'      => $comments,
+                'arrEnclosure'  => $arrEnclosure,
+                'arrGuid'       => $arrGuid,
+                'pubDate'       => $pubDate,
+                'arrSource'     => $arrSource
             ));
 
             return true;
@@ -263,9 +263,9 @@ if (typeof rssFeedFontSize != "number") {
     rssFeedFontSize = "font-size:"+rssFeedFontSize+";";
 }
 if (typeof rssFeedTarget != "string") {
-    rssFeedTarget = "target=\\"_blank\\"";;
+    rssFeedTarget = "target=\"_blank\"";;
 } else {
-    rssFeedTarget = "target=\\""+rssFeedTarget+"\\"";
+    rssFeedTarget = "target=\""+rssFeedTarget+"\"";
 }
 if (typeof rssFeedFont != "string") {
     rssFeedFont = "";
@@ -513,7 +513,7 @@ XMLJSOUTPUT;
 			$bytes = 3;
 			return ($h & 0x0F) << 12 | (ord($c{$index + 1}) & 0x3F) << 6
 									 | (ord($c{$index + 2}) & 0x3F);
-        }
+        }                    
         else if ($h <= 0xF4 && $index < $len - 3) {
 			$bytes = 4;
 			return ($h & 0x0F) << 18 | (ord($c{$index + 1}) & 0x3F) << 12
@@ -554,7 +554,7 @@ XMLJSOUTPUT;
 	 * news gets displayed correctly in Latin1 pages.
 	 */
 	private function _js_umlauts($str) {
-		return preg_replace_callback('/(.)/u', array($this, '_uni_escape'), $str);
+		return preg_replace_callback('/(.)/u', array($this, '_uni_escape'), $str); 
 	}
 }
 ?>

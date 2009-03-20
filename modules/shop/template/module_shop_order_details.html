@@ -162,7 +162,7 @@ function edit(orderId)
     <td nowrap='nowrap' width="40%"><b>{TXT_PRODUCT_NAME}</b></td>
     <td nowrap='nowrap' width="10%"><div style="text-align:right;"><b>{TXT_WEIGHT}</b></div></td>
     <td nowrap='nowrap' width="15%"><div style="text-align:right;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
-    <td colspan="2" nowrap='nowrap' width="10%"><div style="text-align:left;"><b>{TXT_SHOP_VAT_RATE}</b></div></td>
+    <td colspan="2" nowrap='nowrap' width="10%"><div style="text-align:left;"><b>{TXT_TAX_RATE}</b></div></td>
     <td nowrap='nowrap' width="10%"><div style="text-align:right;"><b>{TXT_SUM}</b></div></td>
   </tr>
 <!-- BEGIN orderdetailsRow -->
@@ -173,8 +173,8 @@ function edit(orderId)
     <td nowrap='nowrap'>{SHOP_PRODUCT_NAME}&nbsp;</td>
     <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_WEIGHT}&nbsp;</div></td>
     <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
-    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_VAT_RATE}</div></td>
-    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_VAT_AMOUNT}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_TAX_RATE}</div></td>
+    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_TAX_AMOUNT}&nbsp;{SHOP_CURRENCY}</div></td>
     <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
   </tr>
 <!-- END orderdetailsRow -->
@@ -188,12 +188,12 @@ function edit(orderId)
 <!-- BEGIN shopTaxPrice -->
   <tr>
     <td colspan="7">&nbsp;</td>
-    <td><div style="text-align:right;"><b>{SHOP_PART_VAT_PROCENTUAL}</b></div></td>
-    <td><div style="text-align:right;">{SHOP_VAT_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td><div style="text-align:right;"><b>{SHOP_PART_TAX_PROCENTUAL}</b></div></td>
+    <td><div style="text-align:right;">{SHOP_TAX_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
   </tr>
 <!-- END shopTaxPrice -->
 <!-- BEGIN shopShipmentPrice -->
-    <tr><td>&nbsp;</td></tr>
+  <tr><td colspan="9">&nbsp;</td></tr>
   <tr>
     <td colspan="3">&nbsp;</td>
     <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL_WEIGHT}</b>&nbsp;</div></td>
@@ -226,5 +226,5 @@ function edit(orderId)
   </tr>
 </table>
 <br />
-<input type="button" name="editOrder" value="{TXT_SHOP_EDIT}" onclick="edit({SHOP_ORDERID})" />
+<input type="button" name="editOrder" value="{TXT_EDIT}" onclick="edit({SHOP_ORDERID})" />
 <!-- END shop_order_details.html -->

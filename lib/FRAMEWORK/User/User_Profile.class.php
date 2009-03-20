@@ -294,15 +294,15 @@ class User_Profile
 
                     default:
                         $arrComparisonOperators = array(
-                            'int'        => array('=','<','>'),
+                            'int'       => array('=','<','>'),
                             'string'    => array('!=','<','>')
                         );
                         $arrDefaultComparisonOperator = array(
-                            'int'        => '=',
+                            'int'       => '=',
                             'string'    => 'LIKE'
                         );
                         $arrEscapeFunction = array(
-                            'int'        => 'intval',
+                            'int'       => 'intval',
                             'string'    => 'addslashes'
                         );
 
@@ -323,7 +323,7 @@ class User_Profile
                                         $arrConditionRestriction[] = "tblP.`{$attribute}` ".(
                                             in_array($restrictionOperator, $arrComparisonOperators[$this->objAttribute->getDataType()], true) ?
                                                 $restrictionOperator
-                                            :    $arrDefaultComparisonOperator[$this->objAttribute->getDataType()]
+                                            :   $arrDefaultComparisonOperator[$this->objAttribute->getDataType()]
                                         )." '".$arrEscapeFunction[$this->objAttribute->getDataType()]($restrictionValue)."'";
                                     }
                                     $arrRestrictions[] = implode(' AND ', $arrConditionRestriction);
@@ -331,7 +331,7 @@ class User_Profile
                                     $arrRestrictions[] = "tblP.`{$attribute}` ".(
                                         in_array($operator, $arrComparisonOperators[$this->objAttribute->getDataType()], true) ?
                                             $operator
-                                        :    $arrDefaultComparisonOperator[$this->objAttribute->getDataType()]
+                                        :   $arrDefaultComparisonOperator[$this->objAttribute->getDataType()]
                                     )." '".$arrEscapeFunction[$this->objAttribute->getDataType()]($restriction)."'";
                                 }
                             }
@@ -343,6 +343,10 @@ class User_Profile
                 }
 
 
+            } elseif ($attribute == 'birthday_day') {
+                $arrConditions[] = "(FROM_UNIXTIME(tblP.`birthday`, '%e') = '".intval($condition)."')";
+            } elseif ($attribute == 'birthday_month') {
+                $arrConditions[] = "(FROM_UNIXTIME(tblP.`birthday`, '%c') = '".intval($condition)."')";
             }
         }
 

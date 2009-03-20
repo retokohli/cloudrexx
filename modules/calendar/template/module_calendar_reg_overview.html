@@ -4,13 +4,10 @@
 function deleteReg(Id)
 {
 	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-		if (Id == 0) {
-			document.frmRegList.submit();
-		} else {
-			window.location.replace("?cmd=calendar{MODULE_INDEX}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+Id);
-		}
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+Id);
 	}
 }
+
 
 function selectMultiAction()
 {
@@ -18,20 +15,18 @@ function selectMultiAction()
 		switch (frmRegList_MultiAction.value) {
 			case 'delete':
 				if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-					if (Id == 0) {
-						action='?cmd=calendar{MODULE_INDEX}&act=regdelete&note_id={CALENDAR_NOTE_ID}';
-						submit();
-					}
+					action='?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}';
+					submit();
 				}
 				break;
 
 			case 'signon':
-				action='?cmd=calendar{MODULE_INDEX}&act=regsign&type=1&note_id={CALENDAR_NOTE_ID}';
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=regsign&type=1&note_id={CALENDAR_NOTE_ID}';
 				submit();
 				break;
 
 			case 'signoff':
-				action='?cmd=calendar{MODULE_INDEX}&act=regsign&type=0&note_id={CALENDAR_NOTE_ID}';
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=regsign&type=0&note_id={CALENDAR_NOTE_ID}';
 				submit();
 				break;
 
@@ -67,7 +62,7 @@ function selectMultiAction()
 		<td>{CALENDAR_REG_NAME}</td>
 		<td><a href="mailto:{CALENDAR_REG_MAIL}">{CALENDAR_REG_MAIL}</a></td>
 		<td>
-			<a href="?cmd=calendar{MODULE_INDEX}&amp;act=regdetail&amp;id={CALENDAR_REG_ID}" title="{TXT_CALENDAR_DETAILS}">
+			<a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=regdetail&amp;id={CALENDAR_REG_ID}" title="{TXT_CALENDAR_DETAILS}">
 				<img src="images/icons/details.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_DETAILS}" />
 			</a><a href="javascript:deleteReg({CALENDAR_REG_ID})" title="{TXT_CALENADR_DELETE}">
 				<img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CALENDAR_DELETE}" />

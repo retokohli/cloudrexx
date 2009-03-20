@@ -80,6 +80,11 @@ class LivecamManager extends LivecamLibrary
      */
     function getPage()
     {
+
+/*
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        */
         global $objTemplate, $_CONFIG;
 
         if (!isset($_REQUEST['act'])) {
@@ -136,10 +141,10 @@ class LivecamManager extends LivecamLibrary
             'TXT_ARCHIVE_PATH'        => $_ARRAYLANG['TXT_ARCHIVE_PATH'],
             'TXT_SAVE'                => $_ARRAYLANG['TXT_SAVE'],
             'TXT_THUMBNAIL_PATH'      => $_ARRAYLANG['TXT_THUMBNAIL_PATH'],
-            'TXT_LIGHTBOX_ACTIVE'     => $_CORELANG['TXT_ACTIVATED'],
-            'TXT_LIGHTBOX_INACTIVE'   => $_CORELANG['TXT_DEACTIVATED'],
-            'TXT_ACTIVATE_LIGHTBOX'   => $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'],
-            'TXT_ACTIVATE_LIGHTBOX_INFO'    => $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'],
+            'TXT_SHADOWBOX_ACTIVE'     => $_CORELANG['TXT_ACTIVATED'],
+            'TXT_SHADOWBOX_INACTIVE'   => $_CORELANG['TXT_DEACTIVATED'],
+            'TXT_ACTIVATE_SHADOWBOX'   => $_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX'],
+            'TXT_ACTIVATE_SHADOWBOX_INFO'    => $_ARRAYLANG['TXT_ACTIVATE_SHADOWBOX_INFO'],
             'TXT_MAKE_A_FRONTEND_PAGE'    => $_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'],
             'TXT_CURRENT_IMAGE_MAX_SIZE'    => $_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'],
             'TXT_THUMBNAIL_MAX_SIZE'        => $_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'],
@@ -148,16 +153,19 @@ class LivecamManager extends LivecamLibrary
             'ASCMS_PATH_OFFSET'       => ASCMS_PATH_OFFSET,
             'ASCMS_PATH_OFFSET'       => ASCMS_PATH_OFFSET,
             'TXT_SUCCESS'             => $_CORELANG['TXT_SETTINGS_UPDATED'],
-            'TXT_TO_MODULE'           => $_ARRAYLANG['TXT_LIVECAM_TO_MODULE']
+            'TXT_TO_MODULE'           => $_ARRAYLANG['TXT_LIVECAM_TO_MODULE'],
+            'TXT_SHOWFROM'            => $_ARRAYLANG['TXT_LIVECAM_SHOWFROM'],
+            'TXT_SHOWTILL'            => $_ARRAYLANG['TXT_LIVECAM_SHOWTILL'],
+            'TXT_OCLOCK'              => $_ARRAYLANG['TXT_LIVECAM_OCLOCK'],
         ));
 
         for ($i = 1; $i<=$amount; $i++) {
-            if ($cams[$i]['lightboxActivate'] == 1) {
-                $lightboxActive = 'checked="checked"';
-                $lightboxInctive = '';
+            if ($cams[$i]['shadowboxActivate'] == 1) {
+                $shadowboxActive = 'checked="checked"';
+                $shadowboxInctive = '';
             } else {
-                $lightboxActive = '';
-                $lightboxInctive = 'checked="checked"';
+                $shadowboxActive = '';
+                $shadowboxInctive = 'checked="checked"';
             }
 
             $this->_objTpl->setVariable(array(
@@ -165,26 +173,33 @@ class LivecamManager extends LivecamLibrary
                 'CURRENT_IMAGE_URL'      => $cams[$i]['currentImagePath'],
                 'ARCHIVE_PATH'           => $cams[$i]['archivePath'],
                 'THUMBNAIL_PATH'         => $cams[$i]['thumbnailPath'],
-                'LIGHTBOX_ACTIVE'         => $lightboxActive,
-                'LIGHTBOX_INACTIVE'         => $lightboxInctive,
+                'SHADOWBOX_ACTIVE'         => $shadowboxActive,
+                'SHADOWBOX_INACTIVE'         => $shadowboxInctive,
                 'CURRENT_IMAGE_MAX_SIZE' => $cams[$i]['maxImageWidth'],
-                'THUMBNAIL_MAX_SIZE'     => $cams[$i]['thumbMaxSize']
+                'THUMBNAIL_MAX_SIZE'     => $cams[$i]['thumbMaxSize'],
+                'HOUR_FROM'              => $this->getHourOptions($cams[$i]['showFrom']),
+                'MINUTE_FROM'            => $this->getMinuteOptions($cams[$i]['showFrom']),
+                'HOUR_TILL'              => $this->getHourOptions((!empty($cams[$i]['showTill']) ? $cams[$i]['showTill'] : mktime(23))),
+                'MINUTE_TILL'            => $this->getMinuteOptions((!empty($cams[$i]['showTill']) ? $cams[$i]['showTill'] : mktime(0, 59))),
             ));
 
-            if (preg_match('/^https{0,1}:\/\//', $cams[$i]['currentImagePath'])) {
+            if (preg_match("/^https{0,1}:\/\//", $cams[$i]['currentImagePath'])) {
                 $filepath = $cams[$i]['currentImagePath'];
-                $this->_objTpl->setVariable('PATH', $filepath);
-                $this->_objTpl->parse('current_image');
+                $this->_objTpl->setVariable("PATH", $filepath);
+                $this->_objTpl->parse("current_image");
             } else {
                 $filepath = ASCMS_PATH.$cams[$i]['currentImagePath'];
                 if (file_exists($filepath) && is_file($filepath)) {
-                    $this->_objTpl->setVariable('PATH', $cams[$i]['currentImagePath']);
-                    $this->_objTpl->parse('current_image');
+                    $this->_objTpl->setVariable("PATH", $cams[$i]['currentImagePath']);
+                    $this->_objTpl->parse("current_image");
                 } else {
-                    $this->_objTpl->hideBlock('current_image');
+                    $this->_objTpl->hideBlock("current_image");
                 }
             }
-            $this->_objTpl->parse('cam');
+
+
+            $this->_objTpl->parse("cam");
+
             /*
             $this->_objTpl->setVariable('BLOCK_USE_BLOCK_SYSTEM', $_CONFIG['blockStatus'] == '1' ? 'checked="checked"' : '');
             */
@@ -205,7 +220,13 @@ class LivecamManager extends LivecamLibrary
         $archivePath = $_POST['archivePath'];
         $thumbnailPath = $_POST['thumbnailPath'];
         $thumbMaxSize = intval($_POST['thumbMaxSize']);
-        $lightboxActivate = intval($_POST['lightboxActivate']);
+        $shadowboxActivate = intval($_POST['shadowboxActivate']);
+        $hourFrom = intval($_POST['hourFrom']);
+        $hourTill = intval($_POST['hourTill']);
+        $minuteFrom = intval($_POST['minuteFrom']);
+        $minuteTill = intval($_POST['minuteTill']);
+        $showFrom = mktime($hourFrom, $minuteFrom);
+        $showTill = mktime($hourTill, $minuteTill);
 
         $query = " UPDATE ".DBPREFIX."module_livecam
                    SET currentImagePath = '".$currentImagePath."',
@@ -213,7 +234,9 @@ class LivecamManager extends LivecamLibrary
                        archivePath = '".$archivePath."',
                        thumbnailPath = '".$thumbnailPath."',
                        thumbMaxSize = ".$thumbMaxSize.",
-                       lightboxActivate = '".$lightboxActivate."'
+                       shadowboxActivate = '".$shadowboxActivate."',
+                       showFrom = $showFrom,
+                       showTill = $showTill
                    WHERE id = ".$id;
         if ($objDatabase->Execute($query) === false) {
             // return a 500 or so
@@ -275,7 +298,7 @@ class LivecamManager extends LivecamLibrary
             if ($result->RecordCount() == 0) {
                 $query = "  INSERT INTO ".DBPREFIX."module_livecam
                             (id, currentImagePath, archivePath, thumbnailPath,
-                             maxImageWidth, thumbMaxSize, lightboxActivate)
+                             maxImageWidth, thumbMaxSize, shadowboxActivate)
                             VALUES
                             (".$i.", '/webcam/cam".$i."/current.jpg',
                              '/webcam/cam".$i."/archive',
@@ -327,5 +350,43 @@ class LivecamManager extends LivecamLibrary
         $objDatabase->Execute($query);
     }
 
+
+    /**
+     * gets the contents of a HTML select for a list of hours, if timestamp is set, it also gets the selected value
+     *
+     * @param integer $timestamp Time of the selected value
+     * @return string HTML option list
+     */
+    private function getHourOptions($timestamp) {
+
+        $hours = (!empty($timestamp) ? date('G', $timestamp) : 0);
+        $options = "";
+        for($i = 0; $i < 24; $i++) {
+            $selected = "";
+            if($hours == $i)
+                    $selected = "selected='selected'";
+            $options .= "<option value='$i' $selected>$i</option>";
+        }
+        return $options;
+    }
+
+    /**
+     * gets the contents of a HTML select for a list of minutes, if timestamp is set, it also gets the selected value
+     *
+     * @param integer $timestamp Time of the selected value
+     * @return string HTML option list
+     */
+    private function getMinuteOptions($timestamp) {
+        $minutes = date('i', $timestamp);
+        $options = "";
+
+        for($i = 0; $i < 60; $i++) {
+            $selected = "";
+            if($minutes == $i)
+                $selected = "selected='selected'";
+            $options .= "<option value='$i' $selected>$i</option>";
+        }
+        return $options;
+    }
 }
 ?>

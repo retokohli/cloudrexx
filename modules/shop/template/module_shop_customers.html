@@ -3,8 +3,8 @@
 <!-- //
 function deleteCustomer(customerId)
 {
-    if(confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcustomer&customerId="+customerId);
+  if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcustomer&customerId="+customerId);
 }
 
 function sendForm(letter)
@@ -13,12 +13,12 @@ function sendForm(letter)
     document.formSearchCustomers.submit();
 }
 
-function shopCustomersDoAction(strForm,strCheckbox,objSelect,strAct)
+function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
 {
-  if(checkboxIsChecked(strForm,strCheckbox) == true){
-    switch(strAct){
+  if (checkboxIsChecked(strForm, strCheckbox) == true) {
+    switch (strAct) {
       case 'del':
-        if(confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}')){
+        if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}')) {
           document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delcustomer";
           document.forms[strForm].submit();
         }
@@ -31,6 +31,14 @@ function shopCustomersDoAction(strForm,strCheckbox,objSelect,strAct)
 }
 // -->
 </script>
+<div id="subnavbar_level2">
+  <ul>
+    <li><a href="index.php?cmd=shop&amp;act=customers&amp;tpl=catalog" title="{TXT_OVERVIEW}">{TXT_OVERVIEW}</a></li>
+    <li><a href="index.php?cmd=shop&amp;act=customers&amp;tpl=discounts" title="{TXT_SHOP_DISCOUNTS_CUSTOMER}">{TXT_SHOP_DISCOUNTS_CUSTOMER}</a></li>
+    <li><a href="index.php?cmd=shop&amp;act=customers&amp;tpl=groups" title="{TXT_SHOP_CUSTOMER_GROUPS}">{TXT_SHOP_CUSTOMER_GROUPS}</a></li>
+  </ul>
+</div>
+<br />
 <form name="formSearchCustomers" method="post" action="?cmd=shop{MODULE_INDEX}&amp;act=customers">
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
@@ -110,7 +118,7 @@ function shopCustomersDoAction(strForm,strCheckbox,objSelect,strAct)
           <td nowrap="nowrap">{SHOP_ZIP}&nbsp;/&nbsp;{SHOP_CITY}</td>
           <td nowrap="nowrap">{SHOP_PHONE}</td>
           <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=mail&amp;strTab=shopMailSend&amp;shopMailTo={SHOP_EMAIL}" title="{TXT_SEND_MAIL_TO_ADDRESS}">{SHOP_EMAIL}</a></td>
-          <td nowrap="nowrap"><div style="text-align:right;"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>        <a href="?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_SHOP_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_SHOP_EDIT}" border="0" /></a><a href="javascript:deleteCustomer('{SHOP_CUSTOMERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
+          <td nowrap="nowrap"><div style="text-align:right;"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>        <a href="?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteCustomer('{SHOP_CUSTOMERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
       </tr>
       <!-- END customersRow -->
     </table>

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Gallery
  *
@@ -25,40 +24,31 @@
  */
 class Gallery
 {
-    var $_objTpl;
-    var $pageContent;
-    var $arrSettings;
-    var $strImagePath;
-    var $strImageWebPath;
-    var $strThumbnailPath;
-    var $strThumbnailWebPath;
-    var $strCmd = '';
+    public $_objTpl;
+    public $pageContent;
+    public $arrSettings;
+    public $strImagePath;
+    public $strImageWebPath;
+    public $strThumbnailPath;
+    public $strThumbnailWebPath;
+    public $langId;
+    public $strCmd = '';
 
 
     /**
-    * Constructor php4
-    *
-    * @param      string
-    * @access     public
-    */
-    function Gallery($pageContent)
-    {
-        $this->__construct($pageContent);
-    }
-
-    /**
-    * Constructor
-    *
-    * @global ADONewConnection
-    * @global array
-    * @global integer
-    */
+     * Constructor
+     * @global ADONewConnection
+     * @global array
+     * @global integer
+     */
     function __construct($pageContent)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_LANGID;
 
         $this->pageContent = $pageContent;
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->langId= $_LANGID;
+
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
@@ -83,6 +73,8 @@ class Gallery
         } else {
             $this->strCmd = '&amp;cmd='.intval($_GET['cmd']);
         }
+
+        JS::activate('shadowbox');
 
         if (isset($_GET['pId']) && !empty($_GET['pId'])) {
             if (isset($_POST['frmGalComAdd_PicId'])) {
@@ -124,7 +116,8 @@ class Gallery
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
-        $intCatId    = intval($_GET['cid']);
+// Never used
+//        $intCatId    = intval($_GET['cid']);
         $this->_objTpl->setTemplate($this->pageContent);
 
 
@@ -144,10 +137,11 @@ class Gallery
 
         // get category description
         $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-            "WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID." AND name='desc' ".
+            "WHERE gallery_id=$intCatId AND lang_id=$this->langId AND name='desc' ".
             "LIMIT 1";
         $objResult = $objDatabase->Execute($query);
-        $strCategoryComment = $objResult->fields['value'];
+// Never used
+//        $strCategoryComment = $objResult->fields['value'];
 
         $objResult = $objDatabase->Execute(
             "SELECT comment, voting ".
@@ -161,7 +155,7 @@ class Gallery
             "WHERE id=$intPicId");
 
         $query = "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
-            "WHERE picture_id=$intPicId AND lang_id=".FRONTEND_LANG_ID." LIMIT 1";
+            "WHERE picture_id=$intPicId AND lang_id=$this->langId LIMIT 1";
         $objSubResult = $objDatabase->Execute($query);
 // while? -> if!
         while (!$objResult->EOF) {
@@ -223,6 +217,21 @@ class Gallery
         if ($this->arrSettings['show_ext'] == 'off') {
             $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
         }
+
+        if ($this->arrSettings['show_file_name'] == 'off') {
+            $strImageTitle = "";
+            $imageSize="";
+            $kB="";
+            $openBracket="";
+            $closeBracket="";
+            //substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
+        }
+        else {
+            $openBracket="(";
+            $closeBracket=")";
+            $kB=" kB";
+        }
+
         // set variables
         $this->_objTpl->setVariable(array(
             'GALLERY_PICTURE_ID'        => $intPicId,
@@ -236,7 +245,7 @@ class Gallery
             'GALLERY_IMAGE_LINK'        => $strImageWebPath,
             'GALLERY_IMAGE_NAME'        => $imageName,
             'GALLERY_IMAGE_DESCRIPTION' => $imageDesc,
-            'GALLERY_IMAGE_FILESIZE'    => $imageSize.'kB',
+            'GALLERY_IMAGE_FILESIZE'    => $openBracket.$imageSize.$kB.$closeBracket,
         ));
 
         if ($this->arrSettings['header_type'] == 'hierarchy') {
@@ -342,15 +351,15 @@ class Gallery
                         $strWWW = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     if ($objResult->fields['email'] != '') {
-                        $strEMail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
+                        $strEmail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
                     } else {
-                        $strEMail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
+                        $strEmail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     $this->_objTpl->setVariable(array(
                         'COMMENTS_NAME'     => html_entity_decode($objResult->fields['name']),
                         'COMMENTS_DATE'     => date($_ARRAYLANG['TXT_COMMENTS_DATEFORMAT'],$objResult->fields['date']),
                         'COMMENTS_WWW'      => $strWWW,
-                        'COMMENTS_EMAIL'    => $strEMail,
+                        'COMMENTS_EMAIL'    => $strEmail,
                         'COMMENTS_TEXT'     => nl2br($objResult->fields['comment']),
                         'COMMENTS_ROWCLASS' => $intRowClass
                     ));
@@ -364,6 +373,10 @@ class Gallery
             $this->_objTpl->hideBlock('commentTab');
         }
 
+// Undefined
+//        if($_CONFIG['corePagingLimit'] < $count) {
+//          $this->_objTpl->setVariable("GALLERY_FRONTEND_PAGING", $paging);
+//        }
         //$this->_objTpl->parse('galleryImage');
     }
 
@@ -380,7 +393,8 @@ class Gallery
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
-        $intCatId    = intval($_GET['cid']);
+// Never used
+//        $intCatId    = intval($_GET['cid']);
 
         // we need to read the category id out of the database to prevent abusement
         $intCatId = $this->getCategoryId($intPicId);
@@ -394,15 +408,14 @@ class Gallery
         }
 
         // POPUP Code
-        $objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+        $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         $objTpl->loadTemplateFile('module_gallery_show_picture.html',true,true);
 
         // get category description
-        $objResult = $objDatabase->Execute("
-            SELECT value FROM ".DBPREFIX."module_gallery_language
-             WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID."
-               AND name='desc' LIMIT 1
-        ");
+        $objResult = $objDatabase->Execute(
+            "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+            "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
+            "AND name='desc' LIMIT 1");
         $strCategoryComment = $objResult->fields['value'];
 
         $objResult = $objDatabase->Execute(
@@ -419,7 +432,7 @@ class Gallery
             "WHERE id=$intPicId");
         $objSubResult = $objDatabase->Execute(
             "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
-            "WHERE picture_id=$intPicId AND lang_id=".FRONTEND_LANG_ID." LIMIT 1");
+            "WHERE picture_id=$intPicId AND lang_id=$this->langId LIMIT 1");
         while (!$objResult->EOF) {
             $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
             $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
@@ -530,6 +543,7 @@ class Gallery
                     "WHERE picid=$intPicId");
                 if ($objResult->RecordCount() > 0) {
                     $intCount = 0;
+                    $intMark = 0;
                     while (!$objResult->EOF) {
                         $intCount++;
                         $intMark = $intMark + intval($objResult->fields['mark']);
@@ -582,15 +596,15 @@ class Gallery
                         $strWWW = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     if ($objResult->fields['email'] != '') {
-                        $strEMail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
+                        $strEmail = '<a href="mailto:'.$objResult->fields['email'].'"><img alt="'.$objResult->fields['email'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/email.gif" align="baseline" border="0" /></a>';
                     } else {
-                        $strEMail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
+                        $strEmail = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/pixel.gif" width="16" height="16" alt="" align="baseline" border="0" />';
                     }
                     $objTpl->setVariable(array(
                         'COMMENTS_NAME'     => html_entity_decode($objResult->fields['name']),
                         'COMMENTS_DATE'     => date($_ARRAYLANG['TXT_COMMENTS_DATEFORMAT'],$objResult->fields['date']),
                         'COMMENTS_WWW'      => $strWWW,
-                        'COMMENTS_EMAIL'    => $strEMail,
+                        'COMMENTS_EMAIL'    => $strEmail,
                         'COMMENTS_TEXT'     => nl2br($objResult->fields['comment']),
                         'COMMENTS_ROWCLASS' => $intRowClass
                     ));
@@ -623,11 +637,10 @@ class Gallery
         if (isset($_GET['cid'])) {
             $intCatId = intval($_GET['cid']);
 
-            $objResult = $objDatabase->Execute("
-                SELECT value FROM ".DBPREFIX."module_gallery_language
-                 WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID."
-                   AND name='name' LIMIT 1
-            ");
+            $objResult = $objDatabase->Execute(
+                "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+                "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
+                "AND name='name' LIMIT 1");
             $strCategory1 = $objResult->fields['value'];
 
             $objResult = $objDatabase->Execute(
@@ -635,11 +648,10 @@ class Gallery
 
             if ($objResult->fields['pid'] != 0) {
                 $intParentId = $objResult->fields['pid'];
-                $objResult = $objDatabase->Execute("
-                    SELECT value FROM ".DBPREFIX."module_gallery_language
-                     WHERE gallery_id=$intParentId AND lang_id=".FRONTEND_LANG_ID."
-                       AND name='name' LIMIT 1
-                ");
+                $objResult = $objDatabase->Execute(
+                    "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+                    "WHERE gallery_id=$intParentId AND lang_id=$this->langId ".
+                    "AND name='name' LIMIT 1");
                 $strCategory2 = $objResult->fields['value'];
             }
 
@@ -668,12 +680,9 @@ class Gallery
                 "WHERE id=$intCatId");
             if ($objResult) {
                 $intParentId = intval($objResult->fields['pid']);
-                $query = "
-                    SELECT id, value FROM ".DBPREFIX."module_gallery_categories
-                     INNER JOIN ".DBPREFIX."module_gallery_language ON id=gallery_id
-                     WHERE lang_id=".FRONTEND_LANG_ID."
-                       AND name='name' AND pid=$intParentId
-                ";
+                $query = "SELECT id, value FROM ".DBPREFIX."module_gallery_categories ".
+                    "INNER JOIN ".DBPREFIX."module_gallery_language ON id=gallery_id ".
+                    "WHERE lang_id=$this->langId AND name='name' AND pid=$intParentId";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     $strOutput = '| ';
@@ -716,11 +725,9 @@ class Gallery
                 }
             }
 
-            $query = "
-                SELECT value FROM ".DBPREFIX."module_gallery_language
-                 WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID."
-                   AND name='name' LIMIT 1
-            ";
+            $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+                "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
+                "AND name='name' LIMIT 1";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
                 $galleryName = $objResult->fields['value'];
@@ -743,7 +750,7 @@ class Gallery
      */
     function showCategoryOverview($intParentId=0)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
 
         $intParentId = intval($intParentId);
 
@@ -785,14 +792,14 @@ class Gallery
         if (isset($arrImageSizes) && isset($arrstrImagePaths)) {
             foreach ($arrImageSizes as $keyCat => $valueCat) {
                 $arrCategorySizes[$keyCat] = 0;
-                foreach ($valueCat as $keyImage => $valueImageSize) {
+                foreach ($valueCat as $valueImageSize) {
                     $arrCategorySizes[$keyCat] = $arrCategorySizes[$keyCat] + $valueImageSize;
                 }
             }
             foreach ($arrstrImagePaths as $keyCat => $valueCat) {
                 $arrCategoryImages[$keyCat] = 0;
                 $arrCategoryImageCounter[$keyCat] = 0;
-                foreach ($valueCat as $keyImage => $valuestrImagePath) {
+                foreach ($valueCat as $valuestrImagePath) {
                     $arrCategoryImages[$keyCat]    = $valuestrImagePath;
                     $arrCategoryImageCounter[$keyCat] = $arrCategoryImageCounter[$keyCat] + 1;
                 }
@@ -830,11 +837,10 @@ class Gallery
         } else {
             $i = 1;
             while (!$objResult->EOF) {
-                $objSubResult = $objDatabase->Execute("
-                    SELECT name, value FROM ".DBPREFIX."module_gallery_language
-                     WHERE gallery_id=".$objResult->fields['id']."
-                       AND lang_id=".FRONTEND_LANG_ID." ORDER BY name ASC
-                ");
+                $objSubResult = $objDatabase->Execute(
+                    "SELECT name, value FROM ".DBPREFIX."module_gallery_language ".
+                    "WHERE gallery_id=".$objResult->fields['id']." AND ".
+                    "lang_id=".intval($this->langId)." ORDER BY name ASC");
                 unset($arrCategoryLang);
                 while (!$objSubResult->EOF) {
                     $arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
@@ -848,14 +854,14 @@ class Gallery
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="images/modules/gallery/no_images.gif" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': 0';
-                    $strInfo     .= '<br />'.$_ARRAYLANG['TXT_SIZE'].': 0kB';
+                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': 0kB';
                 } else {
                     $strName    = $arrCategoryLang['name'];
                     $strDesc    = $arrCategoryLang['desc'];
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="'.$arrCategoryImages[$objResult->fields['id']].'" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': '.$arrCategoryImageCounter[$objResult->fields['id']];
-                    $strInfo     .= '<br />'.$_ARRAYLANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB';
+                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB';
                 }
 
                 $this->_objTpl->setVariable(array(
@@ -877,12 +883,9 @@ class Gallery
             'GALLERY_JAVASCRIPT'    =>    $this->getJavascript()
             ));
 
-        $objResult = $objDatabase->Execute("
-            SELECT value FROM ".DBPREFIX."module_gallery_language
-             WHERE gallery_id=$intParentId
-               AND lang_id=".FRONTEND_LANG_ID."
-               AND name='desc'
-        ");
+        $objResult = $objDatabase->Execute(
+            "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+            "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='desc'");
         $strCategoryComment = nl2br($objResult->fields['value']);
 
         $objResult = $objDatabase->Execute(
@@ -899,8 +902,8 @@ class Gallery
             "ORDER BY sorting");
         $intCount = $objResult->RecordCount();
         $this->_objTpl->setVariable(array(
-            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&amp;section=gallery&amp;cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>',false,intval($this->arrSettings['paging']))
-            ));
+            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&amp;section=gallery&amp;cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>', false, intval($this->arrSettings["paging"]))
+        ));
         // end paging
 
         $objResult = $objDatabase->SelectLimit(
@@ -918,18 +921,16 @@ class Gallery
             $this->_objTpl->setVariable(array('GALLERY_CATEGORY_COMMENT' =>    $strCategoryComment));
             $intFillLastRow = 1;
             while (!$objResult->EOF) {
-                $objSubResult = $objDatabase->Execute("
-                    SELECT p.name, p.desc
-                      FROM ".DBPREFIX."module_gallery_language_pics p
-                     WHERE picture_id=".$objResult->fields['id']."
-                       AND lang_id=".FRONTEND_LANG_ID."
-                     LIMIT 1
-                ");
+                $objSubResult = $objDatabase->Execute(
+                    "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
+                    "WHERE picture_id=".$objResult->fields['id']." AND lang_id=$this->langId LIMIT 1");
+
                 $imageFileSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
-                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
+// Never used
+//                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
                 $imageThumbPath = $this->strThumbnailWebPath.$objResult->fields['path'];
-                $imageName = $objSubResult->fields['name'];
+                $imageName = $this->arrSettings['show_file_name'] == 'on' ? $objSubResult->fields['name'] : '';
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
                 $imageSizeShow = $objResult->fields['size_show'];
@@ -941,26 +942,51 @@ class Gallery
                     $imageName = substr($imageName, 0, strrpos($imageName, '.'));
                 }
 
-                if ($this->arrSettings['enable_popups'] == "on") {
-                    $strImageOutput = '<a href="javascript:openWindow(\'';
-                    $strImageOutput .= CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'];
-                    $strImageOutput .= '\',\'\',\'width=';
-                    $strImageOutput .= $imageReso[0]+25;
-                    $strImageOutput .= ',height=';
-                    $strImageOutput .= $imageReso[1]+25;
-                    $strImageOutput .= ',resizable=yes';
-                    $strImageOutput .= ',status=no';
-                    $strImageOutput .= ',scrollbars=yes';
-                    $strImageOutput .= '\')"><img border="0" title="'.$imageName.'" src="';
-                    $strImageOutput .= $imageThumbPath;
-                    $strImageOutput .= '" alt="';
-                    $strImageOutput .= $imageName;
-                    $strImageOutput .= '" /></a>';
-                } else {
-                    $strImageOutput = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'].'">';
-                    $strImageOutput .= '<img border="0" title="'.$imageName.'" src="'.$imageThumbPath.'"';
-                    $strImageOutput .= 'alt="'.$imageName.'" /></a>';
+                  if ($this->arrSettings['slide_show'] == 'slideshow') {
+                      $optionValue="slideshowDelay:".$this->arrSettings['slide_show_seconds'];
+                }
+                else {
+                    $optionValue="counterType:'skip',continuous:true,animSequence:'sync'";
+                }
+                //calculation starts here
+                $numberOfChars="60";
+                if($imageLinkName!="") {
+                    if(strlen($imageLinkName) > $numberOfChars) {
+                        $descriptionString="&nbsp;&nbsp;&nbsp;".substr($imageLinkName,0,$numberOfChars);
+                        $descriptionString.=" ...";
+                    }
+                    else {
+                        $descriptionString="&nbsp;&nbsp;&nbsp;".$imageLinkName;
+                    }
+                }
+                else {
+                    $descriptionString="";
+                }
+                //Ends here
 
+                $titleLink="&lt;a href='$strImagePath' target='_blank' &gt;&lt;b&gt;$imageName&lt;/b&gt;&lt;/a&gt;&lt;span&gt;&lt;font size='-1'&gt;$descriptionString&lt;font&gt;&lt;/span&gt;";
+
+
+                if ($this->arrSettings['enable_popups'] == "on") {
+                    $strImageOutput =
+                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
+                        '}"  title="'.$titleLink.'" href="'.
+                        $strImagePath.'"><img border="2" title="'.$imageName.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageName.'" /></a>';
+                    /*
+                    $strImageOutput =
+                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
+                        '}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="'.
+                        $strImagePath.'"><img title="'.$imageName.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageName.'" /></a>';
+                        */
+                } else {
+                    $strImageOutput =
+                        '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
+                        $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
+                        $objResult->fields['id'].'">'.'<img  title="'.
+                        $imageName.'" src="'.$imageThumbPath.'"'.
+                        'alt="'.$imageName.'" /></a>';
                 }
 
                 if ($this->arrSettings['show_names'] == 'on') {
@@ -1132,7 +1158,7 @@ END;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $strName     = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Name']), ENT_QUOTES, CONTREXX_CHARSET);
-        $strEMail    = $_POST['frmGalComAdd_Email'];
+        $strEmail    = $_POST['frmGalComAdd_Email'];
         $strWWW        = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Homepage']), ENT_QUOTES, CONTREXX_CHARSET);
         $strComment = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Text']), ENT_QUOTES, CONTREXX_CHARSET);
 
@@ -1144,10 +1170,10 @@ END;
             $strWWW = '';
         }
 
-        if (!ereg("^.+@.+\\..+$", $strEMail)) {
-            $strEMail = '';
+        if (!ereg("^.+@.+\\..+$", $strEmail)) {
+            $strEmail = '';
         } else {
-            $strEmail = htmlspecialchars(strip_tags($strEMail), ENT_QUOTES, CONTREXX_CHARSET);
+            $strEmail = htmlspecialchars(strip_tags($strEmail), ENT_QUOTES, CONTREXX_CHARSET);
         }
 
         if ($this->arrSettings['show_comments'] == 'on' &&
@@ -1155,12 +1181,10 @@ END;
             !empty($strName) &&
             !empty($strComment))
         {
-            $strQuery = '
-                    ';
             $objDatabase->Execute(
                 'INSERT INTO '.DBPREFIX.'module_gallery_comments '.
                 'SET picid='.$intPicId.', date='.time().', ip="'.$_SERVER['REMOTE_ADDR'].'", '.
-                'name="'.$strName.'", email="'.$strEMail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
+                'name="'.$strName.'", email="'.$strEmail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
             $objCache->deleteAllFiles();
         }
     }

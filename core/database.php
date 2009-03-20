@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database access function(s)
  * @copyright    CONTREXX CMS - COMVATION AG
@@ -7,6 +8,11 @@
  * @subpackage  core
  * @version        1.0.0
  */
+
+/**
+ * @ignore
+ */
+require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
 
 /**
  * Returns the database object.
@@ -29,7 +35,6 @@
 function getDatabaseObject(&$errorMsg, $newInstance = false)
 {
     global $_DBCONFIG, $ADODB_FETCH_MODE;
-
     static $objDatabase;
 
     if (is_object($objDatabase) && !$newInstance) {
@@ -66,4 +71,5 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
         return false;
     }
 }
+
 ?>

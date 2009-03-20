@@ -16,12 +16,12 @@ Allgemein
 - Englische Sprachversion komplettiert
 - Sämtliche Contentseiten der Module und das buildin_style.css wurden neu
   geschrieben und gestaltet.
-  
+
 Frontend Editing
 - Contrexx wurde um eine Frontend Editing-Funktion ergänzt. Um diese zu
   verwenden müssen die folgenden Platzhalter in der index.html Ihres Designs
   eingefügt werden:
-  
+
   1) [[LOGIN_INCLUDE]] innerhalb des <head>-Tags
   2) [[LOGIN_CONTENT]] vor dem schliessenden </body>-Tag
   3) [[LOGIN_URL]] dort, wo Sie Ihren Login-Link postionieren möchten.
@@ -70,6 +70,9 @@ Modul: Community
 - Die Profil Eigenschaften Vor- und Nachname können bei der Registrierung
   angegeben werden.
 
+Modul: Datenlisten
+- Als PopUp Javascript Bibliothek wird iBox verwendet.
+
 Modul: Directory
 - Anzahl Einträge pro Seite (Paging) kann frei definiert werden.
 
@@ -83,9 +86,9 @@ Modul: Forum
   Designvorlagen (-> forum.html)
 - Bewertungssystem für Beiträge.
 - Neue Übersichtsseite mit den beliebtesten Beiträgen.
-- Es kann gewählt werden ob die neusten Beiträge nur pro Thread oder global 
+- Es kann gewählt werden ob die neusten Beiträge nur pro Thread oder global
   angezeigt werden sollen.
-- Eine Liste von erlaubten Dateiendungen kann definiert werden, welche für den 
+- Eine Liste von erlaubten Dateiendungen kann definiert werden, welche für den
   Dateiupload erlaubt werden.
 
 Modul: Gästebuch
@@ -126,6 +129,15 @@ Modul Shop
   zugewiesen worden sind, für beschränkte oder unbeschränkte Zeit.
   Vor Ablauf eines solchen Kontos kann ein E-Mail zur Benachrichtigung
   verschickt werden.
+- Der Wertebereich aller Preisfelder wurde vergrössert, so dass Beträge bis zu
+  99'999'999.99 verarbeitet werden können.
+
+Design und Themes
+- Neu ist in der Version 2.0 ein Platzhalter [[LOGIN_STATUS_NAME]] integriert,
+der den Loginstatus in Form von "in" (User ist eingelogt) und
+"out" (User ist ausgelogt) in der Designvorlage ausgibt.
+So ist es z.B möglich auf komfortabler Weise zwei Designs zu integrieren, die je
+nach Loginstatus wechseln.
 
 ****************************************
 * Behobene Fehler **********************
@@ -144,6 +156,9 @@ Allgemein
 - Die Suchfunktion findet nun auch wieder Einträge innerhalb des Kalenders.
 - Die PDF Ansicht funktioniert zuverlässiger, unabhängig von der Webserver
   Konfiguration.
+
+Benutzerverwaltung
+- Bei der Auflistung der Benutzer funktioniert das Paging.
 
 Content Manager
 - Wird eine Inhaltsseite vor unerlaubten Modifikationen geschützt, so wird nach
@@ -211,6 +226,7 @@ Modul: Newsletter
 
 Modul: Podcast
 - Datenbank Abfragen optimiert.
+- Das Abspielen der Videos funktioniert mit dem Internet Explorer 6.
 
 Modul: Shop
 - Fehler bei der Verarbeitung von IPN bei PayPal wurde behoben.

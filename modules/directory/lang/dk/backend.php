@@ -111,7 +111,7 @@ $_ARRAYLANG['TXT_DIR_USER_SUCCESFULL_DEL'] = "User succesdully deleted";
 $_ARRAYLANG['TXT_DIR_CONFIRM'] = "Confirm";
 $_ARRAYLANG['TXT_DIR_CONFIRM_LIST'] = "Confirmlist";
 $_ARRAYLANG['TXT_DIR_MAKE_SELECTION'] = "Please make a selection";
-$_ARRAYLANG['TXT_DIR_CHOOSE_ACTION'] = "Choose action";
+$_ARRAYLANG['TXT_DIR_CHOOSE_ACTION'] = "Vælg aktion";
 $_ARRAYLANG['TXT_DIR_BACK'] = "Back";
 $_ARRAYLANG['TXT_DIR_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_DIR_SYSTEM_VARIABLES'] = "Systemvariables";
@@ -305,4 +305,7 @@ $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Zu viele Anfragen: Die tägliche 
 $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Serverfehler: Die Suchanfrage (Geocoding) konnte nicht erfolgreich bearbeitet werden. ";
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Geben Sie eine eindeutige Adresse an oder bewegen die Karte mit der Maus an den gewünschten Punkt";
 $_ARRAYLANG['TXT_MAKE_SELECTION'] = "Bitte wählen Sie";
+$_ARRAYLANG['TXT_YOUTUBEWIDTH'] = "YouTube Height";
+$_ARRAYLANG['TXT_YOUTUBEHEIGHT'] = "YouTube Height";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

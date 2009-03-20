@@ -228,6 +228,7 @@ $_ARRAYLANG['TXT_CALENDAR_MAIL_PUBLICATION'] = "Publicaci&oacute;n";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Activar la notificaci&oacute;n";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS'] = "Receptor";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'] = "Puedes especificar tantos destinatarios como necesites. Las direcciones de correo electr&oacute;nico deben estar separadas por una coma (,). ";
+$_ARRAYLANG['TXT_CALENDAR_FRONTEND_SETTINGS'] = "Termine anmelden";
 $_ARRAYLANG['TXT_CALENDAR_SERIES_ACTIVATE'] = "Activar el tipo de serie";
 $_ARRAYLANG['TXT_CALENDAR_SERIES'] = "Tipo de serie";
 $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_DAILY'] = "Diariamente";
@@ -269,4 +270,9 @@ $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE'] = "Sin fecha de finalizaci
 $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER'] = "Acaba despu&eacute;s de";
 $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS'] = "Citas";
 $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS'] = "Termina a las ";
+$_ARRAYLANG['TXT_CALENDAR_SETTINGS_FE_ENTRIES_ENABLED'] = "Besuchern erlauben Termine anzumelden";
+$_ARRAYLANG['TXT_CALENDAR_FE_DEACTIVATED'] = "deaktiviert";
+$_ARRAYLANG['TXT_CALENDAR_FE_REGISTEREDONLY'] = "nur Community";
+$_ARRAYLANG['TXT_CALENDAR_FE_ALL'] = "alle Besucher";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
 ?>
