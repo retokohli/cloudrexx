@@ -31,5 +31,5 @@ $_ARRAYLANG['TXT_ECARD_EDIT'] = "Edit data";
 $_ARRAYLANG['TXT_ECARD_SEND'] = "Send e-card";
 $_ARRAYLANG['TXT_ECARD_FIELD_INPUT_INCORRECT'] = "Please fill all marked fields correctly.";
 $_ARRAYLANG['TXT_ECARD_HAS_SENT_YOU_AN_ECARD'] = "has sent you an e-card!";
-$_ARRAYLANG['TXT_ECARD_FROM'] = "E-Card von";
+$_ARRAYLANG['TXT_ECARD_FROM'] = "E-Card from";
 ?>
