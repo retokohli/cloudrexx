@@ -224,4 +224,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hi
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'] = "Die Datei %s konnte nicht übermittelt werden, da ein Fehler auftrat!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_EXTENSION_NOT_ALLOWED'] = "Die Datei %s wurde abgelehnt, da sie eine unerlaubte Dateiendung aufweist!";
 $_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'] = "Verzeichnis erstellen";
+$_ARRAYLANG['TXT_DOWNLOADS_DIRECTORIES'] = "Verzeichnisse";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE'] = "Neue Datei hinzufügen";
+$_ARRAYLANG['TXT_DOWNLOADS_CREATE_NEW_DIRECTORY'] = "Neues Verzeichnis erstellen";
 ?>

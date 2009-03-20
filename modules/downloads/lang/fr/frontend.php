@@ -224,4 +224,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'] = "Erreur: le fichier %s n'a pas pu ê
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'] = "Erreur lors de l'envoi du fichier %s!";
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_EXTENSION_NOT_ALLOWED'] = "Erreur: le fichier %s ne peut pas être accepté, car son extension n'est pas autorisée";
 $_ARRAYLANG['TXT_DOWNLOADS_CREATE_DIRECTORY'] = "Create directory";
+$_ARRAYLANG['TXT_DOWNLOADS_DIRECTORIES'] = "Directories";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE'] = "Add new file";
+$_ARRAYLANG['TXT_DOWNLOADS_CREATE_NEW_DIRECTORY'] = "Create new directory";
 ?>
