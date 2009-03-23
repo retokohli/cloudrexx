@@ -543,9 +543,16 @@ class ContactManager extends ContactLib
     public function setRecipients($arrRecipients)
     {
         global $objDatabase;
+
+
         foreach ($arrRecipients as $id => $arrRecipient) {
-			$objRS = $objDatabase->Execute("
-	            REPLACE INTO `".DBPREFIX."module_contact_recipient`
+            // this is a bit radical, but it works.
+            $objDatabase->Execute("
+                DELETE FROM `".DBPREFIX."module_contact_recipient` 
+                WHERE `id_form` = ".$id
+            );
+			$objDatabase->Execute("
+	            INSERT INTO `".DBPREFIX."module_contact_recipient`
 	            SET `id`  = $id,
 	            `id_form` = ".$arrRecipient['id_form'].",
 	            `name`	  = '".$arrRecipient['name']."',
