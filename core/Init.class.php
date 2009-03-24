@@ -147,7 +147,7 @@ class InitCMS
             setcookie ("langId", $frontendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
         }
 
-        if (   isset($_CONFIG['useVirtualLanguagePath'])
+        if (isset($_CONFIG['useVirtualLanguagePath'])
             && $_CONFIG['useVirtualLanguagePath'] == 'on'
             && $this->mode == 'frontend'
             && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])
