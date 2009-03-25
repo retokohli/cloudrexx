@@ -68,7 +68,16 @@ function _statsUpdate()
 		'stats_visitors_summary' => array(
 			'obsoleteIndex'	=> 'type',
 			'unique' => array('type', 'timestamp')
+		),
+        /************************************************
+        * EXTENSION:    Unique key on sid attribte of   *
+        *               table contrexx_statis_visitors  *
+        * ADDED:		Contrexx v2.1.0					*
+        ************************************************/
+		'stats_visitors' => array(
+			'unique' => array('sid')
 		)
+
 	) as $table => $arrUnique) {
 		do {
 			if (in_array($table, $_SESSION['contrexx_update']['update']['update_stats'])) {
@@ -89,7 +98,7 @@ function _statsUpdate()
 				if (isset($arrIndexes['unique'])) {
 					$_SESSION['contrexx_update']['update']['update_stats'][] = $table;
 					break;
-				} elseif (isset($arrIndexes[$arrUnique['obsoleteIndex']])) {
+				} elseif (isset($arrUnique['obsoleteIndex']) && isset($arrIndexes[$arrUnique['obsoleteIndex']])) {
 					$query = 'ALTER TABLE `'.DBPREFIX.$table.'` DROP INDEX `'.$arrUnique['obsoleteIndex'].'`';
 					if ($objDatabase->Execute($query) === false) {
 						return _databaseError($query, $objDatabase->ErrorMsg());
