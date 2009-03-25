@@ -54,7 +54,7 @@ return _16;},getSWFHTML:function(){var _19="";
 if(navigator.plugins&&navigator.mimeTypes&&navigator.mimeTypes.length){
 if(this.getAttribute("doExpressInstall")){
 this.addVariable("MMplayerType","PlugIn");}
-_19="<embed type=\"application/x-shockwave-flash\" src=\""+this.getAttribute("swf")+"\" width=\""+this.getAttribute("width")+"\" height=\""+this.getAttribute("height")+"\"";
+_19="<embed  wmode=\"transparent\" type=\"application/x-shockwave-flash\" src=\""+this.getAttribute("swf")+"\" width=\""+this.getAttribute("width")+"\" height=\""+this.getAttribute("height")+"\"";
 _19+=" id=\""+this.getAttribute("id")+"\" name=\""+this.getAttribute("id")+"\" ";
 var _1a=this.getParams();
 for(var key in _1a){_19+=[key]+"=\""+_1a[key]+"\" ";}
@@ -62,7 +62,7 @@ var _1c=this.getVariablePairs().join("&");
 if(_1c.length>0){_19+="flashvars=\""+_1c+"\"";}_19+="/>";
 }else{if(this.getAttribute("doExpressInstall")){this.addVariable("MMplayerType","ActiveX");}
 _19="<object id=\""+this.getAttribute("id")+"\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" width=\""+this.getAttribute("width")+"\" height=\""+this.getAttribute("height")+"\">";
-_19+="<param name=\"movie\" value=\""+this.getAttribute("swf")+"\" />";
+_19+="<param name=\"movie\" value=\""+this.getAttribute("swf")+"\" /><param name=\"wmode\" value=\"transparent\">";
 var _1d=this.getParams();
 for(var key in _1d){_19+="<param name=\""+key+"\" value=\""+_1d[key]+"\" />";}
 var _1f=this.getVariablePairs().join("&");
