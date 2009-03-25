@@ -801,6 +801,7 @@ class u2u extends u2uLibrary
             $messageID=$_GET["msgID"];
         }
         $arrMessage=$this->createEntryShowMessage($messageID);
+
         if($_REQUEST['status']=="outboxmsg") {
             $this->_objTpl->setVariable(array(
                                           'PRIVATE_MESSAGE_ID'                 =>  $messageID,
