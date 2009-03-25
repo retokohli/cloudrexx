@@ -807,29 +807,47 @@ class Forum extends ForumLibrary {
             $this->_objTpl->setGlobalVariable(array(
                 'FORUM_POST_ROWCLASS'            =>    ($intCounter++ % 2) + 1,
             ));
+
+            $quoteLink = "id=".$intThreadId."&act=quote&postid=".$postId;
+            $quoteLinkLoggedIn      = "location.href='index.php?section=forum&cmd=thread&".$quoteLink."';";
+            $quoteLinkNotLoggedIn   = "location.href='index.php?section=login&redirect=".base64_encode("index.php?section=forum&cmd=thread&".$quoteLink)."';";
             $this->_objTpl->setVariable(array(
-                'FORUM_POST_DATE'                =>    $arrValues['time_created'],
-                'FORUM_POST_LAST_EDITED'        =>    ($arrValues['time_edited'] != date(ASCMS_DATE_FORMAT, 0)) ? $_ARRAYLANG['TXT_FORUM_LAST_EDITED'].$arrValues['time_edited'] : '',
-                'FORUM_USER_ID'                    =>    $arrValues['user_id'],
-                'FORUM_USER_NAME'                =>    $strUserProfileLink,
-                'FORUM_USER_IMAGE'                =>    !empty($arrValues['user_image']) ? '<img border="0" width="60" height="60" src="'.$arrValues['user_image'].'" title="'.$arrValues['user_name'].'\'s avatar" alt="'.$arrValues['user_name'].'\'s avatar" />' : '',
-                'FORUM_USER_GROUP'                =>    '',
-                'FORUM_USER_RANK'                =>    '',
-
-                'FORUM_USER_REGISTERED_SINCE'    =>    '',
-                'FORUM_USER_POSTING_COUNT'        =>    '',
-                'FORUM_USER_CONTACTS'            =>    '',
-
-                'FORUM_POST_NUMBER'                =>    '#'.$arrValues['post_number'],
-                'FORUM_POST_ICON'                =>    $arrValues['post_icon'],
-                'FORUM_POST_SUBJECT'            =>    $arrValues['subject'],
-                'FORUM_POST_MESSAGE'            =>    addcslashes($arrValues['content'], '\\'),
-                'FORUM_POST_RATING'                =>    $strRating,
-                'FORUM_POST_ATTACHMENT_LINK'    =>    $arrAttachment['webpath'],
-                'FORUM_POST_ATTACHMENT_FILENAME' =>    $arrAttachment['name'],
-                'FORUM_POST_ATTACHMENT_ICON'    =>    $arrAttachment['icon'],
-                'FORUM_POST_ATTACHMENT_FILESIZE' =>    $arrAttachment['size'],
+                'FORUM_POST_DATE'                   => $arrValues['time_created'],
+                'FORUM_POST_LAST_EDITED'            => ($arrValues['time_edited'] != date(ASCMS_DATE_FORMAT, 0))
+                                                        ? $_ARRAYLANG['TXT_FORUM_LAST_EDITED'].$arrValues['time_edited']
+                                                        : '',
+                'FORUM_USER_ID'                     => $arrValues['user_id'],
+                'FORUM_USER_NAME'                   => $strUserProfileLink,
+                'FORUM_USER_IMAGE'                  => !empty($arrValues['user_image'])
+                                                        ? '<img border="0" width="60" height="60" src="'.$arrValues['user_image'].'" title="'
+                                                          .$arrValues['user_name'].'\'s avatar" alt="'.$arrValues['user_name'].'\'s avatar" />'
+                                                        : '',
+                'FORUM_USER_GROUP'                  => '',
+                'FORUM_USER_RANK'                   => '',
+                'FORUM_USER_REGISTERED_SINCE'       => '',
+                'FORUM_USER_POSTING_COUNT'          => '',
+                'FORUM_USER_CONTACTS'               => '',
+                'FORUM_POST_NUMBER'                 => '#'.$arrValues['post_number'],
+                'FORUM_POST_ICON'                   => $arrValues['post_icon'],
+                'FORUM_POST_SUBJECT'                => $arrValues['subject'],
+                'FORUM_POST_MESSAGE'                => addcslashes($arrValues['content'], '\\'),
+                'FORUM_POST_RATING'                 => $strRating,
+                'FORUM_POST_ATTACHMENT_LINK'        => $arrAttachment['webpath'],
+                'FORUM_POST_ATTACHMENT_FILENAME'    => $arrAttachment['name'],
+                'FORUM_POST_ATTACHMENT_ICON'        => $arrAttachment['icon'],
+                'FORUM_POST_ATTACHMENT_FILESIZE'    => $arrAttachment['size'],
+                'FORUM_QUOTE_ONCLICK'               => $this->_checkAuth($intCatId, 'write')
+                                                        ? $quoteLinkLoggedIn
+                                                        : $quoteLinkNotLoggedIn,
             ));
+
+            if(!$objFWUser->objUser->getId()){
+                $button = '<input type="button" value="'.$_ARRAYLANG['TXT_FORUM_CREATE_POST'].'" onclick="location.href=\'index.php?section=login&redirect='.base64_encode($_SERVER['REQUEST_URI']).'\';" />';
+                $this->_objTpl->setVariable(array(
+                    'FORUM_POST_REPLY_REDIRECT'     =>  $button,
+                ));
+            }
+
 
             $this->_objTpl->setVariable(array(
                 'FORUM_POST_ID'         => $postId,
