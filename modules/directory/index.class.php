@@ -1090,7 +1090,7 @@ $this->arrRows[2] = '';
                         preg_match($youTubeIdRegex, $arrFeedContent[$fieldName], $youTubeArray);
                         $youTubeID = $youTubeArray[1];
 
-                        $content =  '<object width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"><param name="movie" value="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"></embed></object>';
+                        $content =  '<object width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"><param name="wmode" value="transparent"><param name="movie" value="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed wmode="transparent" src="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"></embed></object>';
                     }
 
                     //get pics
