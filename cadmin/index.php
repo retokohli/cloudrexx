@@ -1052,7 +1052,7 @@ switch ($plainCmd) {
         $subMenuTitle=$_CORELANG['TXT_ACCESS_DENIED'];
         $objTemplate->setVariable(array(
         'CONTENT_TITLE'                => $_CORELANG['TXT_ACCESS_DENIED'],
-        'CONTENT_NAVIGATION'        => $_CONFIG['coreCmsName'],
+        'CONTENT_NAVIGATION'        => htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET),
         'CONTENT_STATUS_MESSAGE'    => '',
         'ADMIN_CONTENT'          =>
             '<img src="images/stop_hand.gif" alt="" /><br /><br />'.
@@ -1134,7 +1134,7 @@ if (!empty($objTemplate->_variables['CONTENT_OK_MESSAGE'])) {
 }
 
 if (!empty($objTemplate->_variables['CONTENT_WARNING_MESSAGE'])) {
-    $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .= 
+    $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
         '<div class="warningbox" style="overflow: auto">'.
         $objTemplate->_variables['CONTENT_WARNING_MESSAGE'].'</div><br />';
 }
