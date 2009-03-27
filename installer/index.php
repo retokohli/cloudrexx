@@ -27,7 +27,14 @@ function errorBox($errmsg){
 }
 
 
-
+$offsetPath = "";
+$arrDirectories = explode('/', $_SERVER['SCRIPT_NAME']);
+for ($i = 0;$i < count($arrDirectories)-2;$i++) {
+    if ($arrDirectories[$i] !== '') {
+        $offsetPath .= '/'.$arrDirectories[$i];
+    }
+}
+session_set_cookie_params(0, $offsetPath);
 session_start();
 
 $basePath = realpath(dirname(__FILE__));
