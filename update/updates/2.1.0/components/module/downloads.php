@@ -1,5 +1,5 @@
 <?php
-function _downloadUpdate()
+function _downloadsUpdate()
 {
 	global $objDatabase, $_ARRAYLANG;
 
@@ -104,7 +104,11 @@ function _downloadUpdate()
    );
 
     foreach ($tables as $name => $query) {
-        if (in_array(DBPREFIX.$name, $arrTables)) continue;
+        #print_r($arrTables);
+        if (in_array($name, $arrTables)) {
+            echo "seen $name\n";
+            continue;
+        }
         if ($objDatabase->Execute($query) === false) {
             return _databaseError($query, $objDatabase->ErrorMsg());
         }

@@ -11,8 +11,13 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-@error_reporting (0);
-@ini_set('display_errors', 0);
+error_reporting (0);
+ini_set('display_errors', 0);
+
+require_once "../lib/DBG.php";
+#DBG::enable_firephp();
+#DBG::enable_all();
+require_once 'UpdateUtil.php';
 
 define('UPDATE_PATH', dirname(__FILE__));
 

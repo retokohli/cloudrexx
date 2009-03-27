@@ -201,9 +201,6 @@ function _updateSettings()
             'setvalue'    => '1',
             'setmodule'    => 56
         ),
-
-        useKnowledgePlaceholders
-
     );
 
     $arrSettingsByName = array();
@@ -352,11 +349,11 @@ function _updateSettingsTable($setId, $arrSetting)
     if (($objSettings = $objDatabase->SelectLimit($query, 1)) !== false) {
         if ($objSettings->RecordCount() == 0) {
             // option isn't yet present => ok, check if the associated ID isn't already used
-            $query = "SELECT `setname` FROM `".DBPREFIX."settings` WHERE `setid` = ".$setId;
+            $query = "SELECT `setname` FROM `".DBPREFIX."settings` WHERE `setid` = ".intval($setId);
             if (($objSettings = $objDatabase->SelectLimit($query, 1)) !== false) {
                 if ($objSettings->RecordCount() == 0) {
                     // option ID isn't already in use => ok, add it
-                    $query = "INSERT INTO `".DBPREFIX."settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (".$setId.", '".$arrSetting['setname']."', '".$arrSetting['setvalue']."', '".$arrSetting['setmodule']."')";
+                    $query = "INSERT INTO `".DBPREFIX."settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (".intval($setId).", '".$arrSetting['setname']."', '".$arrSetting['setvalue']."', '".$arrSetting['setmodule']."')";
                     if ($objDatabase->Execute($query) !== false) {
                         return true;
                     } else {
@@ -369,7 +366,7 @@ function _updateSettingsTable($setId, $arrSetting)
                         // set a free ID which could be used as a temporary ID
                         $query = "SELECT MAX(`setid`) AS lastInsertId FROM `".DBPREFIX."settings`";
                         if (($objSettings = $objDatabase->SelectLimit($query, 1)) !== false) {
-                            $query = "UPDATE `".DBPREFIX."settings` SET `setid` = ".($objSettings->fields['lastInsertId']+1)." WHERE `setid` = ".$setId;
+                            $query = "UPDATE `".DBPREFIX."settings` SET `setid` = ".($objSettings->fields['lastInsertId']+1)." WHERE `setid` = ".intval($setId);
                             // associated a temportary ID to the option who uses the wrong ID
                             if ($objDatabase->Execute($query) !== false) {
                                 unset($arrCurrentSettingsTable[$setname]);
@@ -396,14 +393,14 @@ function _updateSettingsTable($setId, $arrSetting)
             } else {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
-        } elseif ($objSettings->fields['setid'] != $setId) {
+        } elseif ($objSettings->fields['setid'] != intval($setId)) {
             $currentSetId = $objSettings->fields['setid'];
             // option is already present but uses a wrong ID => check if the right associated ID of the option is already used by an other option
-            $query = "SELECT `setname` FROM `".DBPREFIX."settings` WHERE `setid` = ".$setId;
+            $query = "SELECT `setname` FROM `".DBPREFIX."settings` WHERE `setid` = ".intval($setId);
             if (($objSettings = $objDatabase->SelectLimit($query, 1)) !== false) {
                 if ($objSettings->RecordCount() == 0) {
                     // ID isn't already used => ok, set the correct ID of the option
-                    $query = "UPDATE `".DBPREFIX."settings` SET `setid` = ".$setId." WHERE `setid` = ".$currentSetId;
+                    $query = "UPDATE `".DBPREFIX."settings` SET `setid` = ".intval($setId)." WHERE `setid` = ".$currentSetId;
                     if ($objDatabase->Execute($query) !== false) {
                         return true;
                     } else {
@@ -416,7 +413,7 @@ function _updateSettingsTable($setId, $arrSetting)
                         // set a free ID which could be used as a temporary ID
                         $query = "SELECT MAX(`setid`) AS lastInsertId FROM `".DBPREFIX."settings`";
                         if (($objSettings = $objDatabase->SelectLimit($query, 1)) !== false) {
-                            $query = "UPDATE `".DBPREFIX."settings` SET `setid` = ".($objSettings->fields['lastInsertId']+1)." WHERE `setid` = ".$setId;
+                            $query = "UPDATE `".DBPREFIX."settings` SET `setid` = ".($objSettings->fields['lastInsertId']+1)." WHERE `setid` = ".intval($setId);
                             // associated a temportary ID to the option who uses the wrong ID
                             if ($objDatabase->Execute($query) !== false) {
                                 unset($arrCurrentSettingsTable[$setname]);

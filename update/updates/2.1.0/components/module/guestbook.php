@@ -9,7 +9,7 @@ function _guestbookUpdate()
         return false;
     }
 
-    if (isset($arrGuestbookColumns['NICKNAME'])) {
+    if (isset($arrGuestbookColumns['NICKNAME']) and !isset($arrGuestbookColumns['NAME'])) {
         $query = "ALTER TABLE ".DBPREFIX."module_guestbook
                   CHANGE `nickname` `name` varchar(255) NOT NULL default ''";
         $objResult = $objDatabase->Execute($query);
