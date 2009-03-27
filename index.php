@@ -1926,7 +1926,7 @@ $objTemplate->setVariable(array(
     'VISITOR_NUMBER'       => $objCounter->getVisitorNumber(),
     'COUNTER'              => $objCounter->getCounterTag(),
     'BANNER'               => isset($objBanner) ? $objBanner->getBannerJS() : '',
-    'VERSION'              => $_CONFIG['coreCmsName'],
+    'VERSION'              => htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET),
     'LANGUAGE_NAVBAR'      => $objNavbar->getFrontendLangNavigation(),
     'ACTIVE_LANGUAGE_NAME' => $objInit->getFrontendLangName(),
     'RANDOM'               => md5(microtime()),
