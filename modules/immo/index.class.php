@@ -374,7 +374,7 @@ class Immo extends ImmoLib
             $this->_currFieldID = $immoid;
 
             $address     = $this->_getFieldFromText('adresse');
-            $location     = $this->_getFieldFromText('ort');
+            $location_immo     = $this->_getFieldFromText('ort');
 
             $mailer = new PHPMailer();
             $objRS = $objDatabase->SelectLimit('SELECT setvalue FROM '.DBPREFIX.'module_immo_settings
@@ -424,7 +424,7 @@ class Immo extends ImmoLib
             $mailer->FromName = $this->arrSettings['sender_name'];
             $mailer->AddAddress($_REQUEST['contactFormField_email']);
             $mailer->Subject = $this->arrSettings['interest_confirm_subject'];
-            $message = str_replace('[[IMMO_OBJECT]]', $address.', '.$location." (Ref.Nr.: $reference)", $this->arrSettings['interest_confirm_message']);
+            $message = str_replace('[[IMMO_OBJECT]]', $address.', '.$location_immo." (Ref.Nr.: $reference)", $this->arrSettings['interest_confirm_message']);
             $mailer->Body = $message;
             $mailer->Send();
             $this->_objTpl->setVariable('CONTACT_FEEDBACK_TEXT', $_ARRAYLANG['TXT_IMMO_CONTACT_SUCCESSFUL']);
