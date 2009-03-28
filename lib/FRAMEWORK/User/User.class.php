@@ -505,6 +505,7 @@ class User extends User_Profile
         $tblCoreAttributes = false;
         $tblCustomAttributes = false;
         $tblGroup = false;
+        $groupTables = false;
 
         // parse filter
         if (isset($arrFilter) && is_array($arrFilter)) {
@@ -516,6 +517,7 @@ class User extends User_Profile
                 $tblCoreAttributes = true;
             }
             if (count($arrCustomAttributeConditions = $this->parseCustomAttributeFilterConditions($arrFilter))) {
+                $groupTables = true;
                 $arrConditions[] = implode(' AND ', $arrCustomAttributeConditions);
                 $tblCustomAttributes = true;
             }
@@ -525,6 +527,7 @@ class User extends User_Profile
                     foreach ($arrFilter['group_id'] as $condition => $groupId) {
                         $arrGroupConditions[] = 'tblG.`group_id` '.$condition.' '.intval($groupId);
                     }
+                    $groupTables = true;
                 } else {
                     $arrGroupConditions[] = 'tblG.`group_id` = '.intval($arrFilter['group_id']);
                 }
@@ -545,6 +548,7 @@ class User extends User_Profile
                 $tblCoreAttributes = true;
             }
             if (count($arrCustomAttributeConditions = $this->parseAttributeSearchConditions($search, false))) {
+                $groupTables = true;
                 $arrSearchConditions[] = implode(' OR ', $arrCustomAttributeConditions);
                 $tblCustomAttributes = true;
             }
@@ -566,7 +570,8 @@ class User extends User_Profile
 
         return array(
             'tables'        => $arrTables,
-            'conditions'    => $arrConditions
+            'conditions'    => $arrConditions,
+            'group_tables'  => $groupTables
         );
     }
 
@@ -748,6 +753,7 @@ class User extends User_Profile
         } elseif (!empty($filter)) {
             $sqlCondition['tables'] = array('core');
             $sqlCondition['conditions'] = array('tblU.`id` = '.intval($filter));
+            $sqlCondition['group_tables'] = false;
             $limit = 1;
         }
 
@@ -786,7 +792,7 @@ class User extends User_Profile
             .($arrQuery['tables']['group'] ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
             .(count($arrQuery['joins']) ? ' '.implode(' ',$arrQuery['joins']) : '')
             .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
-            .' GROUP BY tblU.`id`'
+            .($arrQuery['group_tables'] ? ' GROUP BY tblU.`id`' : '')
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
 
         if (empty($limit)) {
@@ -889,6 +895,7 @@ class User extends User_Profile
         $joinGroupTbl = false;
         $arrUserIds = array();
         $arrSortExpressions = array();
+        $groupTables = false;
         $nr = 0;
 
         if (!empty($sqlCondition)) {
@@ -906,6 +913,10 @@ class User extends User_Profile
 
             if (isset($sqlCondition['conditions']) && count($sqlCondition['conditions'])) {
                 $arrCustomSelection = $sqlCondition['conditions'];
+            }
+
+            if (!empty($sqlCondition['group_tables'])) {
+                $groupTables = true;
             }
         }
 
@@ -973,7 +984,8 @@ class User extends User_Profile
             ),
             'joins'         => $arrCustomJoins,
             'conditions'    => $arrCustomSelection,
-            'sort'          => $arrSortExpressions
+            'sort'          => $arrSortExpressions,
+            'group_tables'  => $groupTables
         );
         /*$arrNotSortedUserIds = array_diff(array_keys($this->arrLoadedUsers), $arrUserIds);
         foreach ($arrNotSortedUserIds as $userId) {
