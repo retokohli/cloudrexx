@@ -82,6 +82,7 @@ class DBG
 
     // Redirect ADODB output to us instead of STDOUT.
     static function enable_adodb() {
+        self::setup('php://output');
         define('ADODB_OUTP', 'DBG_log_adodb');
     }
 
@@ -227,6 +228,6 @@ DBG::__internal__setup();
 
 function DBG_log_adodb($msg)
 {
-    DBG::log(strip_tags($msg));
+    DBG::log(_DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP ? strip_tags($msg) : $msg);
 }
 
