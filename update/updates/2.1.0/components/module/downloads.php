@@ -106,7 +106,6 @@ function _downloadsUpdate()
     foreach ($tables as $name => $query) {
         #print_r($arrTables);
         if (in_array($name, $arrTables)) {
-            echo "seen $name\n";
             continue;
         }
         if ($objDatabase->Execute($query) === false) {
