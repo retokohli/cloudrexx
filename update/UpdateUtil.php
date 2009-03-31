@@ -22,6 +22,7 @@ class UpdateUtil {
      *           'notnull'         => true/false, # optional, defaults to true
      *           'auto_increment'  => true/false, # optional, defaults to false
      *           'default'         => 'value',    # optional, defaults to '' (or 0 if type is INT)
+     *           'default_expr'    => expression, # use this instead of 'default' to use NOW(), CURRENT_TIMESTAMP etc
      *           'primary'         => true/false, # optional, defaults to false
      *           'renamefrom'      => 'a_name'    # optional. Use this if the column existed previously with another name
      *       )
@@ -40,14 +41,11 @@ class UpdateUtil {
             throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
         }
         
-        DBG::dump($tableinfo);
         if (in_array($name, $tableinfo)) {
-            DBG::msg("table exists, checking cols, indexes: $name");
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx);
         }
         else {
-            DBG::msg("not in above array: $name");
             self::create_table($name, $struc, $idx);
         }
     }
@@ -122,22 +120,22 @@ class UpdateUtil {
         if ($keyinfo === false) {
             throw new Update_DatabaseException($objDatabase->ErrorMsg, $key_qry);
         }
-        DBG::msg("key info query = $key_qry");
 
         // Find already existing keys, drop unused keys
         while (!$keyinfo->EOF) {
-            DBG::dump($keyinfo->fields);
-            if (array_key_exists($keyinfo->fields['Key_name'], $idx)) {
+            if (isset($idx[ $keyinfo->fields['Key_name'] ])) {
                 $idx[$keyinfo->fields['Key_name']]['exists'] = true;
+                $keyinfo->MoveNext();
+                continue;
             }
-            elseif($keyinfo->fields['Key_name'] != 'PRIMARY') {
-                DBG::msg("index ". $keyinfo->fields['Key_name'] . 'is not primary and not in IDX list.. dropping');
-                DBG::dump($idx);
-                // primary keys should NOT be dropped :P
-                $drop_st = self::_dropkey($name, $keyinfo->fields['Key_name']);
-                if($objDatabase->Execute($drop_st)===false) {
-                    throw new Update_DatabaseException($objDatabase->ErrorMsg, $drop_st);
-                }
+            if ($keyinfo->fields['Key_name'] == 'PRIMARY') {
+                $keyinfo->MoveNext();
+                continue;
+            }
+            // primary keys should NOT be dropped :P
+            $drop_st = self::_dropkey($name, $keyinfo->fields['Key_name']);
+            if($objDatabase->Execute($drop_st)===false) {
+                throw new Update_DatabaseException($objDatabase->ErrorMsg, $drop_st);
             }
             $keyinfo->MoveNext();
         }
@@ -162,17 +160,27 @@ class UpdateUtil {
         $fields = '`'. join('`, `', $spec['fields']) . '`';
         $type   = array_key_exists('type', $spec) ? $spec['type'] : '';
 
-        $descr  = "CREATE $type INDEX ON $table ($fields)";
+        $descr  = "CREATE $type INDEX `$name` ON $table ($fields)";
+        return $descr;
     }
     private function _colspec($spec) {
-        $notnull = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
-        $autoinc = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
-        $default = (array_key_exists('default',        $spec)) ? addslashes($spec['default']) : '';
+        $notnull      = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
+        $autoinc      = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
+        $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
+        $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : '';
+
+        $default_st = '';
+        if ($default != '') {
+            $default_st = " DEFAULT '".addslashes($default)."'";
+        }
+        elseif($default_expr != '') {
+            $default_st = " DEFAULT $default_expr";
+        }
 
         $descr  = $spec['type'];
-        $descr .= $notnull ? " NOT NULL" : '';
+        $descr .= $notnull ? " NOT NULL"       : '';
         $descr .= $autoinc ? " auto_increment" : '';
-        $descr .= $default ? " DEFAULT '$default'" : '';
+        $descr .= $default_st;
         return $descr;
     }
     private function _getprimaries($struc) {
@@ -184,6 +192,14 @@ class UpdateUtil {
             }
         }
         return $primaries;
+    }
+
+    public static function DefaultActionHandler($e) {
+        if ($e instanceof Update_DatabaseException) {
+            return _databaseError($e->sql, $e->getMessage());
+        }
+		setUpdateMsg($e->getMessage());
+		return false;
     }
 }
 
