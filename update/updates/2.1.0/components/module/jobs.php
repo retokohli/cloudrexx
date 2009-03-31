@@ -1,6 +1,5 @@
 <?php
 function _jobsUpdate() {
-	global $_ARRAYLANG;
 
     try {
         UpdateUtil::table(
@@ -56,11 +55,8 @@ function _jobsUpdate() {
 
     }
     catch (UpdateException $e) {
-        if ($e instanceof Update_DatabaseException) {
-            return _databaseError($e->sql, $e->getMessage());
-        }
-		setUpdateMsg($e->getMessage());
-		return false;
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
     }
 	
 	// Everything went fine. Return without any errors.

@@ -6,6 +6,7 @@ if (!@include_once(ASCMS_CORE_PATH.'/API.php')) {
 function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = true, $updateModules = true)
 {
 	global $_ARRAYLANG, $_CORELANG, $objDatabase, $objUpdate;
+    DBG::calltrace();
 
 	$arrDirs = array('core_module', 'module');
 	$updateStatus = true;
@@ -92,8 +93,8 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
 							return false;
 						}
 						$function = '_'.substr($file, 0, -4).'Update';
-						$arrDefinedFunctions = get_defined_functions();
-						if (in_array(strtolower($function), array_map('strtolower', $arrDefinedFunctions['user']))) {
+                        DBG::msg("--------- calling $function()------");
+						if (function_exists($function)) {
 							$result = $function();
 							if ($result === false) {
 								if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -217,8 +218,8 @@ function _updateModuleRepository()
 						return false;
 					}
 					$function = '_updateModuleRepository_'.$arrFunction[1];
-					$arrDefinedFunctions = get_defined_functions();
-					if (in_array(strtolower($function), array_map('strtolower', $arrDefinedFunctions['user']))) {
+                    if (function_exists($function)) {
+                        DBG::msg("---------------------- update: calling $function() ---------");
 						$result = $function();
 						if ($result === false) {
 							if (empty($objUpdate->arrStatusMsg['title'])) {

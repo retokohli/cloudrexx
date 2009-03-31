@@ -53,7 +53,8 @@ function _statsUpdate()
 			'unique' => array('resolution')
 		),
 		'stats_search' => array(
-			'change' => "`name` `name` VARCHAR(100) BINARY NOT NULL DEFAULT ''"
+			'change' => "`name` `name` VARCHAR(100) BINARY NOT NULL DEFAULT ''",
+			'unique' => array('name')
 		),
 		'stats_spiders' => array(
 			'obsoleteIndex'	=> 'page',
@@ -109,31 +110,35 @@ function _statsUpdate()
 				return false;
 			}
 
-			$query = 'SELECT `'.implode('`,`', $arrUnique['unique']).'`, COUNT(`id`) AS redundancy FROM `'.DBPREFIX.$table.'` GROUP BY `'.implode('`,`', $arrUnique['unique']).'` ORDER BY redundancy DESC';
-			$objEntry = $objDatabase->SelectLimit($query, 10);
-			if ($objEntry !== false) {
-				while (!$objEntry->EOF) {
-					if (!checkTimeoutLimit()) {
-						return false;
-					}
-					$lastRedundancyCount = $objEntry->fields['redundancy'];
-					if ($objEntry->fields['redundancy'] > 1) {
-						$where = array();
-						foreach ($arrUnique['unique'] as $unique) {
-							$where[] = "`".$unique."` = '".addslashes($objEntry->fields[$unique])."'";
-						}
-						$query = 'DELETE FROM `'.DBPREFIX.$table.'` WHERE '.implode(' AND ', $where).' ORDER BY `'.(isset($arrUnique['count']) ? $arrUnique['count'] : 'count').'` LIMIT '.($objEntry->fields['redundancy']-1);
-						if ($objDatabase->Execute($query) === false) {
-							return _databaseError($query, $objDatabase->ErrorMsg());
-						}
-					} else {
-						break;
-					}
-					$objEntry->MoveNext();
-				}
-			} else {
-				return _databaseError($query, $objDatabase->ErrorMsg());
-			}
+            #DBG::msg("table = $table");
+            #DBG::dump($arrUnique);
+			if (isset($arrUnique['unique'])) {
+                $query = 'SELECT `'.implode('`,`', $arrUnique['unique']).'`, COUNT(`id`) AS redundancy FROM `'.DBPREFIX.$table.'` GROUP BY `'.implode('`,`', $arrUnique['unique']).'` ORDER BY redundancy DESC';
+                $objEntry = $objDatabase->SelectLimit($query, 10);
+                if ($objEntry !== false) {
+                    while (!$objEntry->EOF) {
+                        if (!checkTimeoutLimit()) {
+                            return false;
+                        }
+                        $lastRedundancyCount = $objEntry->fields['redundancy'];
+                        if ($objEntry->fields['redundancy'] > 1) {
+                            $where = array();
+                            foreach ($arrUnique['unique'] as $unique) {
+                                $where[] = "`".$unique."` = '".addslashes($objEntry->fields[$unique])."'";
+                            }
+                            $query = 'DELETE FROM `'.DBPREFIX.$table.'` WHERE '.implode(' AND ', $where).' ORDER BY `'.(isset($arrUnique['count']) ? $arrUnique['count'] : 'count').'` LIMIT '.($objEntry->fields['redundancy']-1);
+                            if ($objDatabase->Execute($query) === false) {
+                                return _databaseError($query, $objDatabase->ErrorMsg());
+                            }
+                        } else {
+                            break;
+                        }
+                        $objEntry->MoveNext();
+                    }
+                } else {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
 
 			if ($objEntry->RecordCount() == 0 || $lastRedundancyCount < 2) {
 				$query = 'ALTER TABLE `'.DBPREFIX.$table.'` ADD UNIQUE `unique` (`'.implode('`,`', $arrUnique['unique']).'`)';
