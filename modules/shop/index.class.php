@@ -649,11 +649,11 @@ class Shop extends ShopLibrary
 
                     if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers SET password='".md5($password)."' WHERE customerid=".$objResult->fields['customerid']) !== false) {
                         // Select template for sending login data
-                        $arrShopMailtemplate = Mail::getTemplate(3);
-                        $shopMailFrom = $arrShopMailtemplate['mail_from'];
-                        $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
-                        $shopMailSubject = $arrShopMailtemplate['mail_subject'];
-                        $shopMailBody = $arrShopMailtemplate['mail_body'];
+                        $arrShopMailtemplate = Mail::getTemplate(3, FRONTEND_LANG_ID);
+                        $shopMailFrom = $arrShopMailtemplate['from'];
+                        $shopMailFromText = $arrShopMailtemplate['sender'];
+                        $shopMailSubject = $arrShopMailtemplate['subject'];
+                        $shopMailBody = $arrShopMailtemplate['message'];
                         //replace variables from template
                         $shopMailBody = str_replace("<USERNAME>", $objResult->fields['username'], $shopMailBody);
                         $shopMailBody = str_replace("<PASSWORD>", $password, $shopMailBody);
@@ -4455,10 +4455,10 @@ right after the customer logs in!
         // Select template for order confirmation
         $arrShopMailtemplate = Mail::getTemplate(1, $langId);
         $mailTo = $objResult->fields['email'];
-        $mailFrom = $arrShopMailtemplate['mail_from'];
-        $mailFromText = $arrShopMailtemplate['mail_x_sender'];
-        $mailSubject = $arrShopMailtemplate['mail_subject'];
-        $mailBody = $arrShopMailtemplate['mail_body'];
+        $mailFrom = $arrShopMailtemplate['from'];
+        $mailFromText = $arrShopMailtemplate['sender'];
+        $mailSubject = $arrShopMailtemplate['subject'];
+        $mailBody = $arrShopMailtemplate['message'];
         $today = date('d.m.Y');
         $mailSubject = str_replace('<DATE>', $today, $mailSubject);
         $mailBody = Shop::_generateEmailBody($mailBody, $orderId, $langId);
@@ -4694,7 +4694,7 @@ right after the customer logs in!
                     // This one includes the <LOGIN_DATA> placeholder for
                     // the user name and password for the download.
                     $arrTemplate = Mail::getTemplate(4, $langId);
-                    $body = $arrTemplate['mail_body'];
+                    $body = $arrTemplate['message'];
                     // The login names are created separately for
                     // each product instance
                     $lastname = $objResultOrder->fields['lastname'];
