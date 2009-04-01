@@ -131,114 +131,33 @@ function _accessUpdate()
     }
 
     $arrSettings = array(
-        'user_activation' => array(
-            'value'    => '',
-            'status'    => $arrCommunityConfig['user_activation']['status']
-        ),
-        'user_activation_timeout' => array(
-            'value'        => $arrCommunityConfig['user_activation_timeout']['value'],
-            'status'    => $arrCommunityConfig['user_activation_timeout']['status']
-        ),
-        'assigne_to_groups' => array(
-            'value'        => $arrCommunityConfig['community_groups']['value'],
-            'status'    => 1
-        ),
-        'max_profile_pic_width' => array(
-            'value'        => '160',
-            'status'    => 1
-        ),
-        'max_profile_pic_height' => array(
-            'value'        => '160',
-            'status'    => 1
-        ),
-        'profile_thumbnail_pic_width' => array(
-            'value'        => '50',
-            'status'    => 1
-        ),
-        'profile_thumbnail_pic_height' => array(
-            'value'        => '50',
-            'status'    => 1
-        ),
-        'max_profile_pic_size' => array(
-            'value'        => '30000',
-            'status'    => 1
-        ),
-        'max_pic_width' => array(
-            'value'        => '600',
-            'status'    => 1
-        ),
-        'max_pic_height' => array(
-            'value'        => '600',
-            'status'    => 1
-        ),
-        'max_thumbnail_pic_width' => array(
-            'value'        => '130',
-            'status'    => 1
-        ),
-        'max_thumbnail_pic_height' => array(
-            'value'        => '130',
-            'status'    => 1
-        ),
-        'max_pic_size' => array(
-            'value'        => '200000',
-            'status'    => 1
-        ),
-        'notification_address' => array(
-            'value'        => addslashes($_CONFIG['coreAdminEmail']),
-            'status'    => 1
-        ),
-        'user_config_email_access' => array(
-            'value'        => '',
-            'status'    => 1
-        ),
-        'user_config_profile_access' => array(
-            'value'        => '',
-            'status'    => 1
-        ),
-        'default_email_access' => array(
-            'value'        => 'members_only',
-            'status'    => 1
-        ),
-        'default_profile_access' => array(
-            'value'        => 'members_only',
-            'status'    => 1
-        ),
-        'user_delete_account' => array(
-            'value'        => '',
-            'status'    => 1
-        ),
-        'block_currently_online_users' => array(
-            'value'        => '10',
-            'status'    => 0
-        ),
-        'block_currently_online_users_pic' => array(
-            'value'        => '',
-            'status'    => 0
-        ),
-        'block_last_active_users' => array(
-            'value'        => '10',
-            'status'    => 0
-        ),
-        'block_last_active_users_pic' => array(
-            'value'        => '',
-            'status'    => 0
-        ),
-        'block_latest_reg_users' => array(
-            'value'        => '10',
-            'status'    => 0
-        ),
-        'block_latest_reg_users_pic' => array(
-            'value'        => '',
-            'status'    => 0
-        ),
-        'block_birthday_users' => array(
-            'value'        => '10',
-            'status'    => 0
-        ),
-        'block_birthday_users_pic' => array(
-            'value'        => '',
-            'status'    => 0
-        ),
+        'user_activation'                 =>array('value'=> '',               'status'    => $arrCommunityConfig['user_activation']['status']),
+        'user_activation_timeout'         =>array('value'=> $arrCommunityConfig['user_activation_timeout']['value'], 'status'    => $arrCommunityConfig['user_activation_timeout']['status']),
+        'assigne_to_groups'               =>array('value'=> $arrCommunityConfig['community_groups']['value'], 'status'    => 1),
+        'max_profile_pic_width'           =>array('value'=>'160',            'status'  => 1),
+        'max_profile_pic_height'          =>array('value'=>'160',            'status'  => 1),
+        'profile_thumbnail_pic_width'     =>array('value'=>'50',             'status'  => 1),
+        'profile_thumbnail_pic_height'    =>array('value'=>'50',             'status'  => 1),
+        'max_profile_pic_size'            =>array('value'=>'30000',          'status'  => 1),
+        'max_pic_width'                   =>array('value'=>'600',            'status'  => 1),
+        'max_pic_height'                  =>array('value'=>'600',            'status'  => 1),
+        'max_thumbnail_pic_width'         =>array('value'=>'130',            'status'  => 1),
+        'max_thumbnail_pic_height'        =>array('value'=>'130',            'status'  => 1),
+        'max_pic_size'                    =>array('value'=>'200000',         'status'  => 1),
+        'notification_address'            =>array('value'=>addslashes($_CONFIG['coreAdminEmail']), 'status'=>1),
+        'user_config_email_access'        =>array('value'=> '',              'status'    => 1),
+        'user_config_profile_access'      =>array('value'=> '',              'status'    => 1),
+        'default_email_access'            =>array('value'=> 'members_only',  'status'    => 1),
+        'default_profile_access'          =>array('value'=> 'members_only',  'status'    => 1),
+        'user_delete_account'             =>array('value'=> '',              'status'    => 1),
+        'block_currently_online_users'    =>array('value'=> '10',            'status'    => 0),
+        'block_currently_online_users_pic'=>array('value'=> '',              'status'    => 0),
+        'block_last_active_users'         =>array('value'=> '10',            'status'    => 0),
+        'block_last_active_users_pic'     =>array('value'=> '',              'status'    => 0),
+        'block_latest_reg_users'          =>array('value'=> '10',            'status'    => 0),
+        'block_latest_reg_users_pic'      =>array('value'=> '',              'status'    => 0),
+        'block_birthday_users'            =>array('value'=> '10',            'status'    => 0),
+        'block_birthday_users_pic'        =>array('value'=> '',              'status'    => 0),
     );
 
     foreach ($arrSettings as $key => $arrSetting) {
@@ -264,7 +183,44 @@ function _accessUpdate()
         }
     }
 
-
+    // Currently, this is only here to create the u2u_active field.. but instead of adding
+    // 10 lines for each new field in the future, why not just extend this block
+    DBG::trace();
+    try{
+        DBG::trace();
+        UpdateUtil::table(
+            DBPREFIX . 'access_users',
+            array(
+                'id'               => array('type' => 'INT',            'primary'     => true,    'auto_increment' => true),
+                'is_admin'         => array('type' => 'INT(1)',                                   'default'        => 0),
+                'username'         => array('type' => 'VARCHAR(40)'     ),
+                'password'         => array('type' => 'VARCHAR(32)'     ),
+                'regdate'          => array('type' => 'INT(14)'         ),
+                'expiration'       => array('type' => 'INT(14) UNSIGNED',                         'default'        => 0),
+                'validity'         => array('type' => 'INT(10) UNSIGNED',                         'default'        => 0),
+                'last_auth'        => array('type' => 'INT(14) UNSIGNED',                         'default'        => 0),
+                'last_activity'    => array('type' => 'INT(14) UNSIGNED',                         'default'        => 0),
+                'email'            => array('type' => 'VARCHAR(255)'    ),
+                'email_access'     => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'nobody'),
+                'frontend_lang_id' => array('type' => 'INT(2) UNSIGNED',                          'default'        => 0),
+                'backend_lang_id'  => array('type' => 'INT(2) UNSIGNED',                          'default'        => 0),
+                'active'           => array('type' => 'INT(1) UNSIGNED',                          'default'        => 0),
+                'profile_access'   => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'members_only'),
+                'restore_key'      => array('type' => 'VARCHAR(32)'     ),
+                'restore_key_time' => array('type' => 'INT(14)'         ),
+                'u2u_active'       => array('type' => "ENUM('0','1')",                            'default'        => '1'),
+            ),
+            array( # indexes
+                'username' => array( 'fields'=>array('username'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+    DBG::trace();
 
     /********************
      *
