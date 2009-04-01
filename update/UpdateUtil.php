@@ -81,13 +81,41 @@ class UpdateUtil {
         if ($col_info === false) {
             throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
         }
+        // Drop columns that are not specified
+        self::_drop_unspecified_columns($name, $struc, $col_info);
+
+        // Create columns that don't exist yet
         foreach ($struc as $col => $spec) {
             self::_check_column($name, $col_info, $col, $spec);
         }
     }
 
+    private function _drop_unspecified_columns($name, $struc, $col_info) {
+        global $objDatabase;
+
+        foreach (array_keys($col_info) as $col) {
+            // we have to do a stupid loop here as we don't know
+            // the exact case of the name in $spec ;(
+            $exists = false;
+            foreach (array_keys($struc) as $col_exists) {
+                if (strtolower($col) == strtolower($col_exists)) {
+                    $exists = true;
+                    break;
+                }
+            }
+            if (!$exists) {
+                $col_name = $col_info[$col]->name;
+                $query = "ALTER TABLE `$name` DROP COLUMN `$col_name`";
+                if ($objDatabase->Execute($query) === false) {
+                    throw new Update_DatabaseException($objDatabase->ErrorMsg, $query);
+                }
+            }
+        }
+    }
+
     private function _check_column($name, $col_info, $col, $spec) {
         global $objDatabase;
+        
         if (!isset($col_info[strtoupper($col)])) {
             $colspec = self::_colspec($spec);
             // check if we need to rename the column
