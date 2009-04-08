@@ -195,14 +195,17 @@ class UpdateUtil {
         $notnull      = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
         $autoinc      = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
-        $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : '';
+        $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
 
         $default_st = '';
-        if ($default != '') {
-            $default_st = " DEFAULT '".addslashes($default)."'";
-        }
-        elseif($default_expr != '') {
-            $default_st = " DEFAULT $default_expr";
+        if (strtoupper($spec['type']) != 'BLOB' and strtoupper($spec['type']) != 'TEXT') {
+            // BLOB/TEXT can't have a default value... sez MySQL
+            if (!is_null($default)) {
+                $default_st = " DEFAULT '".addslashes($default)."'";
+            }
+            elseif($default_expr != '') {
+                $default_st = " DEFAULT $default_expr";
+            }
         }
 
         $descr  = $spec['type'];
