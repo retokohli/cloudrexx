@@ -140,7 +140,7 @@ function _downloadsUpdate()
     );
 
     foreach ($arrSettings as $name => $value) {
-        $query = "SELECT 1 FROM `".DBPREFIX."module_downloads_settings` WHERE `name` = '".name."'";
+        $query = "SELECT 1 FROM `".DBPREFIX."module_downloads_settings` WHERE `name` = '".$name."'";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult) {
             if ($objResult->RecordCount() == 0) {
