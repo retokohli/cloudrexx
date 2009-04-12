@@ -30,10 +30,19 @@ class DBG
         self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
     }
 
+
+    public static function enable_file()
+    {
+        self::setup('dbg.log', 'w');
+        set_error_handler('DBG::phpErrorHandler');
+    }
+
+
     static function enable_firephp()
     {
         if (require_once('firephp/FirePHP.class.php')) {
             self::$firephp = FirePHP::getInstance(true);
+            self::$firephp->registerErrorHandler();
         }
     }
 
@@ -82,7 +91,7 @@ class DBG
 
     // Redirect ADODB output to us instead of STDOUT.
     static function enable_adodb() {
-        self::setup('php://output');
+        if (!(_DEBUG & DBG_LOG_FILE)) self::setup('php://output');
         define('ADODB_OUTP', 'DBG_log_adodb');
     }
 
@@ -151,13 +160,13 @@ class DBG
         if (self::$enable_trace) {
             $level = 1;
             $callers = debug_backtrace();
-            $c = $callers[$level]['class'];
+            $c = isset($callers[$level]['class']) ? $callers[$level]['class'] : null;
             $f = $callers[$level]['function'];
             self::trace($level);
 
             $sf = self::_cleanfile($callers[$level]['file']);
             $sl = $callers[$level]['line'];
-            self::_log("        $c::$f FROM $sf : $sl");
+            self::_log("        ".(empty($c) ? $c : "$c::$f")." FROM $sf : $sl");
         }
     }
 
@@ -189,7 +198,7 @@ class DBG
             $line = $c['line'];
             $class= $c['class'];
             $func = $c['function'];
-            self::_log("        $file : $line ($class::$func)");
+            self::_log("        $file : $line (".(empty($class) ? $func : "$class::$func").")");
         }
         error_reporting($err);
         self::_log("        === STACKTRACE END ====");
@@ -202,6 +211,37 @@ class DBG
             self::_log('LOGMSG: '.$message);
         }
 
+    }
+
+
+    public static function phpErrorHandler($errno, $errstr, $errfile, $errline)
+    {
+        // this error handler methode is only used if we are logging to a file
+        if (error_reporting() & $errno) {
+            switch ($errno) {
+                case E_ERROR:
+                    $type = 'FATAL ERROR';
+                    break;
+
+                case E_WARNING:
+                    $type = 'WARNING';
+                    break;
+
+                case E_PARSE:
+                    $type = 'PARSE ERROR';
+                    break;
+
+                case E_NOTICE:
+                    $type = 'NOTICE';
+                    break;
+
+                default:
+                    $type = $errno;
+                    break;
+            }
+
+            self::_log("$type: $errstr in $errfile on line $errline");
+        }
     }
 
 
