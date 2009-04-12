@@ -62,7 +62,7 @@ class FirePHP {
    *
    * @var string
    */
-  const VERSION = '0.2.0';
+  const VERSION = '0.2.1';
   
   /**
    * Firebug LOG level
@@ -309,7 +309,7 @@ class FirePHP {
     }
     // Only throw exceptions for errors we are asking for
     if (error_reporting() & $errno) {
-      throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+      self::exceptionHandler(new ErrorException($errstr, 0, $errno, $errfile, $errline));
     }
   }
   
@@ -814,7 +814,7 @@ class FirePHP {
    * @param object $Object The object to be encoded
    * @return string The JSON string
    */
-  protected function jsonEncode($Object, $skipObjectEncode=false)
+  public function jsonEncode($Object, $skipObjectEncode=false)
   {
     if(!$skipObjectEncode) {
       $Object = $this->encodeObject($Object);
@@ -859,6 +859,11 @@ class FirePHP {
   {
     $return = array();
     
+    if (is_resource($Object)) {
+
+      return '** '.(string)$Object.' **';
+
+    } else
     if (is_object($Object)) {
 
         if ($ObjectDepth > $this->options['maxObjectDepth']) {
