@@ -13,7 +13,7 @@ function _docsysUpdate()
             )
         );
 
-        if (UpdateUtil::column_exist('catid')) {
+        if (UpdateUtil::column_exist(DBPREFIX . 'module_docsys', 'catid')) {
             $query = "SELECT `id`, `catid` FROM `".DBPREFIX."module_docsys`";
             $objResult = $objDatabase->Execute($query);
             if ($objResult !== false) {
@@ -50,7 +50,7 @@ function _docsysUpdate()
                     'url1'      => array('type' => 'VARCHAR(250)'),
                     'url2'      => array('type' => 'VARCHAR(250)'),
                     'lang'      => array('type' => 'INT(2)', 'unsigned' => true, 'default_expr' => '0'),
-                    'userid'    => array('type' => 'INT(6)', 'unsigned' => true, 'default_expr' -> '0'),
+                    'userid'    => array('type' => 'INT(6)', 'unsigned' => true, 'default_expr' => '0'),
                     'startdate' => array('type' => 'DATE', 'default_expr' => '0000-00-00'),
                     'enddate'   => array('type' => 'DATE', 'default_expr' => '0000-00-00'),
                     'status'    => array('type' => 'TINYINT(4)', 'default_expr' => '1'),
