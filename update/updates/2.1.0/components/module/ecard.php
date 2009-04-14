@@ -9,11 +9,11 @@ function _ecardUpdate()
                 'code'          => array('type' => 'VARCHAR(35)',  'notnull' => true, 'default'=>'', 'primary'=> true),
                 'date'          => array('type' => 'INT(10)',      'notnull' => true, 'default'=> 0, 'unsigned' => true),
                 'TTL'           => array('type' => 'INT(10)',      'notnull' => true, 'default'=> 0, 'unsigned' => true),
-                'salutation'    => array('type' => 'VARCHAR(100)', 'notnull' => true),
-                'senderName'    => array('type' => 'VARCHAR(100)', 'notnull' => true),
-                'senderEmail'   => array('type' => 'VARCHAR(100)', 'notnull' => true),
-                'recipientName' => array('type' => 'VARCHAR(100)', 'notnull' => true),
-                'recipientEmail'=> array('type' => 'VARCHAR(100)', 'notnull' => true),
+                'salutation'    => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=>''),
+                'senderName'    => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=>''),
+                'senderEmail'   => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=>''),
+                'recipientName' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=>''),
+                'recipientEmail'=> array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=>''),
                 'message'       => array('type' => 'TEXT',         'notnull' => true),
             )
         );
