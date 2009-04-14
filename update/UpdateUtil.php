@@ -12,7 +12,7 @@ class Update_DatabaseException extends UpdateException {
 class UpdateUtil {
     /**
      * Creates or modifies a table to the given specification.
-     * 
+     *
      * @param string name - the name of the table. do not forget DBPREFIX!
      * @param array struc - the structure of the columns. This is an associative
      *     array with the keys being the column names and the values being an array
@@ -40,7 +40,7 @@ class UpdateUtil {
         if ($tableinfo === false) {
             throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
         }
-        
+
         if (in_array($name, $tableinfo)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx);
@@ -48,6 +48,30 @@ class UpdateUtil {
         else {
             self::create_table($name, $struc, $idx);
         }
+    }
+
+    public static function drop_table($name) {
+        global $objDatabase, $_ARRAYLANG;
+        $tableinfo = $objDatabase->MetaTables();
+        if ($tableinfo === false) {
+            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+        }
+
+        if (in_array($name, $tableinfo)) {
+            $table_stmt = "DROP TABLE `$name`";
+            if ($objDatabase->Execute($table_stmt) === false) {
+                throw new Update_DatabaseException($objDatabase->ErrorMsg, $table_stmt);
+            }
+        }
+    }
+
+    public static function column_exist($name, $col) {
+        global $objDatabase;
+        $col_info = $objDatabase->MetaColumns($name);
+        if ($col_info === false) {
+            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+        }
+        return isset($col_info[strtoupper($col)]);
     }
 
     private static function create_table($name, array $struc, $idx) {
@@ -115,7 +139,7 @@ class UpdateUtil {
 
     private function _check_column($name, $col_info, $col, $spec) {
         global $objDatabase;
-        
+
         if (!isset($col_info[strtoupper($col)])) {
             $colspec = self::_colspec($spec);
             // check if we need to rename the column
@@ -130,7 +154,7 @@ class UpdateUtil {
                 //       rename was requested but not possible?
                 $query = "ALTER TABLE `$name` ADD `$col` $colspec";
             }
- 
+
             if ($objDatabase->Execute($query) === false) {
                 throw new Update_DatabaseException($objDatabase->ErrorMsg, $query);
             }
@@ -192,6 +216,7 @@ class UpdateUtil {
         return $descr;
     }
     private function _colspec($spec) {
+        $unsigned     = (array_key_exists('unsigned',       $spec)) ? $spec['unsigned']       : false;
         $notnull      = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
         $autoinc      = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
@@ -209,6 +234,7 @@ class UpdateUtil {
         }
 
         $descr  = $spec['type'];
+        $descr .= $unsigned ? " unsigned"      : '';
         $descr .= $notnull ? " NOT NULL"       : '';
         $descr .= $autoinc ? " auto_increment" : '';
         $descr .= $default_st;
