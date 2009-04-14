@@ -21,7 +21,7 @@ function _calendarUpdate()
 			'after' 	=> 'notification_address',
     	),
     	'series_type' => array(
-			'type' 		=> 'TINYINT',
+			'type' 		=> 'INT (11)',
 			'after' 	=> 'series_status',
     	),
     	'series_pattern_count' => array(
@@ -61,7 +61,7 @@ function _calendarUpdate()
 			'after' 	=> 'series_pattern_end',
     	),
     	'series_pattern_exceptions' => array(
-			'type' 		=> 'INT',
+			'type' 		=> 'longtext',
 			'after' 	=> 'series_pattern_begin',
     	)
 	);

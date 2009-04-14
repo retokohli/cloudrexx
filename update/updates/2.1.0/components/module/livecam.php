@@ -15,7 +15,7 @@ function _livecamUpdate()
                   `thumbnailPath`    varchar(255)     NOT NULL default '/webcam/cam1/thumbs/',
                   `maxImageWidth`    int(10) unsigned NOT NULL default '400',
                   `thumbMaxSize`     int(10) unsigned NOT NULL default '200',
-                  `lightboxActivate` set('1','0')     NOT NULL default '1',
+                  `shadowboxActivate` set('1','0')     NOT NULL default '1',
                   `showFrom`         int(14)          NOT NULL,
                   `showTill`         int(14)          NOT NULL,
                   PRIMARY KEY  (`id`)

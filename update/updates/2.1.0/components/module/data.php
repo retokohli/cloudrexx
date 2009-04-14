@@ -61,7 +61,7 @@ function _dataUpdate()
               `thumbnail_width` tinyint(3) unsigned NOT NULL default '0',
               `thumbnail_height` tinyint(3) unsigned NOT NULL default '0',
               `attachment` varchar(255)  NOT NULL default '',
-              `attachment_description` varchar(255)  NOT NULL default 'normal',
+              `attachment_description` varchar(255)  NOT NULL default '',
               `mode` set('normal','forward')  NOT NULL default 'normal',
               `forward_url` varchar(255)  NOT NULL default '',
               `forward_target` varchar(40)  default NULL,
@@ -74,7 +74,8 @@ function _dataUpdate()
               `ref_id` int(11) NOT NULL default '0',
               `placeholder` varchar(255) NOT NULL default '',
               PRIMARY KEY (`id`),
-              UNIQUE KEY `placeholder` (`placeholder`)
+              UNIQUE KEY `placeholder` (`placeholder`),
+              UNIQUE KEY `type` (`type`,`ref_id`)
             ) ENGINE=MyISAM",
         #################################################################################
         'module_data_settings' => "CREATE TABLE `".DBPREFIX."module_data_settings` (

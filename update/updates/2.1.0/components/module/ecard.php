@@ -7,14 +7,14 @@ function _ecardUpdate()
             DBPREFIX . 'module_ecard_ecards',
             array(
                 'code'          => array('type' => 'VARCHAR(35)',  'notnull' => true, 'default'=>'', 'primary'=> true),
-                'date'          => array('type' => 'INT(10)',      'notnull' => true, 'default'=> 0),
-                'TTL'           => array('type' => 'INT(10)',      'notnull' => true, 'default'=> 0),
-                'salutation'    => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=> 0),
-                'senderName'    => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=> 0),
-                'senderEmail'   => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=> 0),
-                'recipientName' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=> 0),
-                'recipientEmail'=> array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=> 0),
-                'message'       => array('type' => 'TEXT',         'notnull' => true, 'default'=> 0),
+                'date'          => array('type' => 'INT(10)',      'notnull' => true, 'default'=> 0, 'unsigned' => true),
+                'TTL'           => array('type' => 'INT(10)',      'notnull' => true, 'default'=> 0, 'unsigned' => true),
+                'salutation'    => array('type' => 'VARCHAR(100)', 'notnull' => true),
+                'senderName'    => array('type' => 'VARCHAR(100)', 'notnull' => true),
+                'senderEmail'   => array('type' => 'VARCHAR(100)', 'notnull' => true),
+                'recipientName' => array('type' => 'VARCHAR(100)', 'notnull' => true),
+                'recipientEmail'=> array('type' => 'VARCHAR(100)', 'notnull' => true),
+                'message'       => array('type' => 'TEXT',         'notnull' => true),
             )
         );
         UpdateUtil::table(
