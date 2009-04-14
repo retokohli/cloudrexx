@@ -49,7 +49,7 @@ function _knowledgeUpdate()
             array(
                 'id'           => array('type' => 'INT(10)',    'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
                 'category'     => array('type' => 'INT(10)', 'notnull' => true, 'default' => 0, 'unsigned' => true),
-                'name'         => array('type' => 'VARCHAR(255)',    'notnull' => true),
+                'name'         => array('type' => 'VARCHAR(255)',    'notnull' => true, 'default' => ''),
                 'lang'         => array('type' => 'INT(11)',    'notnull' => true, 'default' => 1),
             )
         );
@@ -57,7 +57,7 @@ function _knowledgeUpdate()
             DBPREFIX . 'module_knowledge_settings',
             array(
                 'id'    => array('type' => 'INT(10)',          'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
-                'name'  => array('type' => 'VARCHAR(255)', 'notnull' => true),
+                'name'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'value' => array('type' => 'TEXT',         'notnull' => true, 'default' => 0),
             ),
             array( # indexes
@@ -68,7 +68,7 @@ function _knowledgeUpdate()
             DBPREFIX . 'module_knowledge_tags',
             array(
                 'id'    => array('type' => 'INT(10)',          'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
-                'name'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => 1),
+                'name'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'lang'  => array('type' => 'INT(10)',          'notnull' => true, 'default' => 1, 'unsigned' => true),
             ),
             array( # indexes
