@@ -240,7 +240,7 @@ class DBG
                     break;
             }
 
-            self::_log("$type: $errstr in $errfile on line $errline");
+            self::_log("(php): $type: $errstr in $errfile on line $errline");
         }
     }
 
