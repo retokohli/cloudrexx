@@ -40,10 +40,10 @@ class Mail
      */
     static function init($lang_id=0)
     {
-        global $objDatabase;
+        global $objDatabase, $objLanguage;
 
         // The array has been initialized with that language already
-        if (self::$lang_id == $lang_id) return true;
+        if (self::$lang_id === $lang_id) return true;
 
         // Reset the language ID used
         self::$lang_id = false;
@@ -51,6 +51,18 @@ class Mail
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
 //echo("Mail::init($lang_id): init()ing<br />");
         self::$arrTemplate = array();
+
+        if (!isset($objLanguage))
+            $objLanguage = new FWLanguage();
+
+        $arrLanguages = $objLanguage->getLanguageArray();
+        foreach ($arrLanguages as $arrLanguage) {
+            if ($arrLanguage['frontend'] && $arrLanguage['is_default'] == 'true') {
+                $defaultLangId = $arrLanguage['id'];
+                break;
+            }
+        }
+
 //        $arrSqlName = Text::getSqlSnippets(
 //            '`mail`.`text_name_id`', $lang_id,
 //            MODULE_ID, TEXT_SHOP_MAIL_NAME
@@ -104,7 +116,7 @@ class Mail
                    `content`.`from_mail`, `content`.`xsender`,
                    `content`.`subject`, `content`.`message`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_mail_content` AS `content`
-             WHERE `content`.`lang_id`=$lang_id
+            ORDER BY FIELD(`content`.`lang_id`, $defaultLangId, $lang_id) DESC
         ");
         if (!$objResult) return false;
         while (!$objResult->EOF) {
@@ -172,11 +184,13 @@ class Mail
 //                'message' => $objResult->fields['message'],
 //            );
         	$id = $objResult->fields['tpl_id'];
+            if (!self::$arrTemplate[$id]['available']) {
             self::$arrTemplate[$id]['available'] = true;
             self::$arrTemplate[$id]['from'] = $objResult->fields['from_mail'];
             self::$arrTemplate[$id]['sender'] = $objResult->fields['xsender'];
             self::$arrTemplate[$id]['subject'] = $objResult->fields['subject'];
             self::$arrTemplate[$id]['message'] = $objResult->fields['message'];
+            }
             $objResult->MoveNext();
         }
         // Remember the language used
