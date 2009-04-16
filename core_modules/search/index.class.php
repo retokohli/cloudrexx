@@ -444,8 +444,8 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
     if ($objResult !== false) {
 	    while (!$objResult->EOF) {
 	        $i++;
-	        $cmd=$objResult->fields['cmd'];
-	        $section=$objResult->fields['section'];
+	        $cmd=!empty($objResult->fields['cmd']) ? $objResult->fields['cmd'] : "";
+	        $section=!empty($objResult->fields['section']) ? $objResult->fields['section'] : "";
 
 	        if ($section=="" && $section_var<>""){
 	            $section=$section_var;
@@ -499,7 +499,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        $arrelem= array_pop($arrayShortContent);
 	        $shortcontent=str_replace("&nbsp;","",join(" ",$arrayShortContent));
 	        //$shortcontent = preg_replace("'$term'i","<b><i>\\0</i></b>",$shortcontent);
-	        $score=$objResult->fields['score'];
+	        $score=!empty($objResult->fields['score']) ? $objResult->fields['score'] : 0;
 	        $score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
 	        //Muss noch ge�ndert werden, sobald das Ranking bei News funktioniert!!!
 	        $score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
