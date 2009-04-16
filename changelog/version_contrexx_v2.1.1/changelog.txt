@@ -16,6 +16,15 @@ Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
 Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
 - Geschwindigkeitsoptimierung der Benutzerverwaltung.
 
+Module: Shop
+- E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
+- Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
+  Benutzerkonto mit der entsprechend definierten Gültigkeitsdauer erstellt.
+- Beim Versand der Bestellbestätigung per E-Mail wird, falls die benötigte
+  E-Mail Vorlage in der ausgewählten Sprache vorhanden ist, die in der
+  Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
+  vorhanden ist, wird die nächste vorhandene Sprache verwendet.
+
 
 ****************************************
 * Neue Module **************************

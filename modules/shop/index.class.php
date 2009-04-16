@@ -124,6 +124,7 @@ class Shop extends ShopLibrary
 {
     const noPictureName = 'no_picture.gif';
     const thumbnailSuffix = '.thumb';
+    const usernamePrefix = 'user';
 
     private $pageContent;
 
@@ -4640,7 +4641,7 @@ right after the customer logs in!
                     // verify their presence and use the original name
                     $optionValueStripped = ShopLibrary::stripUniqidFromFilename($optionValue);
                     if (   $optionValue != $optionValueStripped
-                        && file_exists(ASCMS_PATH.'/'.$this->uploadDir.'/'.$optionValue)) {
+                        && file_exists(ASCMS_PATH.'/'.self::$uploadDir.'/'.$optionValue)) {
                             $optionValue = $optionValueStripped;
                     }
 
@@ -4697,8 +4698,7 @@ right after the customer logs in!
                     $body = $arrTemplate['message'];
                     // The login names are created separately for
                     // each product instance
-                    $lastname = $objResultOrder->fields['lastname'];
-                    $username = "$lastname-$orderId-$productId-$instance";
+                    $username = self::usernamePrefix."-$orderId-$productId-$instance";
                     $userpass = uniqid();
                     $userEmail =
                         "shop_customer_${orderId}_${productId}_${instance}-".
@@ -4715,19 +4715,20 @@ right after the customer logs in!
                     $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
                     $objUser->setBackendLanguage(FRONTEND_LANG_ID);
                     $objUser->setProfile(array(
-                        'firstname'    => $objResultOrder->fields['firstname'],
-                        'lastname'     => $lastname,
-                        'company'      => $objResultOrder->fields['company'],
-                        'address'      => $objResultOrder->fields['address'],
-                        'zip'          => $objResultOrder->fields['zip'],
-                        'city'         => $objResultOrder->fields['city'],
-                        'country'      => $objResultOrder->fields['country_id'],
-                        'phone_office' => $objResultOrder->fields['phone'],
-                        'phone_fax'    => $objResultOrder->fields['fax']
+                        'firstname'    => array(0 => $objResultOrder->fields['firstname']),
+                        'lastname'     => array(0 => $objResultOrder->fields['lastname']),
+                        'company'      => array(0 => $objResultOrder->fields['company']),
+                        'address'      => array(0 => $objResultOrder->fields['address']),
+                        'zip'          => array(0 => $objResultOrder->fields['zip']),
+                        'city'         => array(0 => $objResultOrder->fields['city']),
+                        'country'      => array(0 => $objResultOrder->fields['country_id']),
+                        'phone_office' => array(0 => $objResultOrder->fields['phone']),
+                        'phone_fax'    => array(0 => $objResultOrder->fields['fax'])
                     ));
 
                     if (!$objUser->store()) {
-                        $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
+                        // TODO: $this can't be used here due that this is a static function. There is so far no way to report an error in case one had occured.
+                        // $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
                         return false;
                     }
                     $loginData .=
