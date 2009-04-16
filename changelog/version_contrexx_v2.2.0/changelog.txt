@@ -21,7 +21,7 @@ Module: Shop
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
   Benutzerkonto mit der entsprechend definierten Gültigkeitsdauer erstellt.
 - Beim Versand der Bestellbestätigung per E-Mail wird, falls die benötigte
-  E-Mail Vorlage in der ausgewählten Sprache vorhanden ist, die in der
+  E-Mail Vorlage in der ausgewählten Sprache nicht vorhanden ist, die, in der
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
   vorhanden ist, wird die nächste vorhandene Sprache verwendet.
 
