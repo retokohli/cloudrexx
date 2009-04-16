@@ -998,7 +998,7 @@ CREATE TABLE `contrexx_module_downloads_category` (
 CREATE TABLE `contrexx_module_downloads_category_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `category_id` int(11) unsigned NOT NULL default '0',
-  `name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL default '',
   `description` text NOT NULL,
   PRIMARY KEY  (`lang_id`,`category_id`),
   FULLTEXT KEY `name` (`name`),
@@ -1008,17 +1008,17 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` enum('file','url') NOT NULL default 'file',
   `mime_type` enum('image','document','pdf','media','archive','application','link') NOT NULL default 'image',
-  `source` varchar(255) NOT NULL,
-  `source_name` varchar(255) NOT NULL,
+  `source` varchar(255) NOT NULL default '',
+  `source_name` varchar(255) NOT NULL default '',
   `icon` enum('_blank','avi','bmp','css','doc','dot','exe','fla','gif','htm','html','inc','jpg','js','mp3','nfo','pdf','php','png','pps','ppt','rar','swf','txt','wma','xls','zip') NOT NULL default '_blank',
   `size` int(10) unsigned NOT NULL default '0',
-  `image` varchar(255) NOT NULL,
+  `image` varchar(255) NOT NULL default '',
   `owner_id` int(5) unsigned NOT NULL default '0',
   `access_id` int(10) unsigned NOT NULL default '0',
-  `license` varchar(255) NOT NULL,
-  `version` varchar(10) NOT NULL,
-  `author` varchar(100) NOT NULL,
-  `website` varchar(255) NOT NULL,
+  `license` varchar(255) NOT NULL default '',
+  `version` varchar(10) NOT NULL default '',
+  `author` varchar(100) NOT NULL default '',
+  `website` varchar(255) NOT NULL default '',
   `ctime` int(14) unsigned NOT NULL default '0',
   `mtime` int(14) unsigned NOT NULL default '0',
   `is_active` tinyint(3) unsigned NOT NULL default '0',
@@ -1033,7 +1033,7 @@ CREATE TABLE `contrexx_module_downloads_download` (
 CREATE TABLE `contrexx_module_downloads_download_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `download_id` int(11) unsigned NOT NULL default '0',
-  `name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL default '',
   `description` text NOT NULL,
   PRIMARY KEY  (`lang_id`,`download_id`),
   FULLTEXT KEY `name` (`name`),
@@ -1052,7 +1052,7 @@ CREATE TABLE `contrexx_module_downloads_rel_download_download` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_settings` (
   `id` int(11) NOT NULL auto_increment,
-  `name` varchar(32) NOT NULL,
+  `name` varchar(32) NOT NULL default '',
   `value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
