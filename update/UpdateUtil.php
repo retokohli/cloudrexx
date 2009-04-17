@@ -60,7 +60,7 @@ class UpdateUtil {
         if (in_array($name, $tableinfo)) {
             $table_stmt = "DROP TABLE `$name`";
             if ($objDatabase->Execute($table_stmt) === false) {
-                throw new Update_DatabaseException($objDatabase->ErrorMsg, $table_stmt);
+                throw new Update_DatabaseException($objDatabase->ErrorMsg(), $table_stmt);
             }
         }
     }
@@ -91,7 +91,7 @@ class UpdateUtil {
         )";
 
         if ($objDatabase->Execute($table_stmt) === false) {
-            throw new Update_DatabaseException($objDatabase->ErrorMsg, $table_stmt);
+            throw new Update_DatabaseException($objDatabase->ErrorMsg(), $table_stmt);
         }
         // index statements. as we just created the table
         // we can now just do check_indexes() to take care
@@ -131,7 +131,7 @@ class UpdateUtil {
                 $col_name = $col_info[$col]->name;
                 $query = "ALTER TABLE `$name` DROP COLUMN `$col_name`";
                 if ($objDatabase->Execute($query) === false) {
-                    throw new Update_DatabaseException($objDatabase->ErrorMsg, $query);
+                    throw new Update_DatabaseException($objDatabase->ErrorMsg(), $query);
                 }
             }
         }
@@ -156,7 +156,7 @@ class UpdateUtil {
             }
 
             if ($objDatabase->Execute($query) === false) {
-                throw new Update_DatabaseException($objDatabase->ErrorMsg, $query);
+                throw new Update_DatabaseException($objDatabase->ErrorMsg(), $query);
             }
 		}
 
@@ -170,7 +170,7 @@ class UpdateUtil {
         $key_qry = "SHOW INDEX FROM `$name`";
         $keyinfo = $objDatabase->Execute($key_qry);
         if ($keyinfo === false) {
-            throw new Update_DatabaseException($objDatabase->ErrorMsg, $key_qry);
+            throw new Update_DatabaseException($objDatabase->ErrorMsg(), $key_qry);
         }
 
         // Find already existing keys, drop unused keys
@@ -187,7 +187,7 @@ class UpdateUtil {
             // primary keys should NOT be dropped :P
             $drop_st = self::_dropkey($name, $keyinfo->fields['Key_name']);
             if($objDatabase->Execute($drop_st)===false) {
-                throw new Update_DatabaseException($objDatabase->ErrorMsg, $drop_st);
+                throw new Update_DatabaseException($objDatabase->ErrorMsg(), $drop_st);
             }
             $keyinfo->MoveNext();
         }
@@ -197,7 +197,7 @@ class UpdateUtil {
             if (!array_key_exists('exists', $spec)) {
                 $new_st = self::_keyspec($name, $keyname, $spec);
                 if($objDatabase->Execute($new_st)===false) {
-                    throw new Update_DatabaseException($objDatabase->ErrorMsg, $new_st);
+                    throw new Update_DatabaseException($objDatabase->ErrorMsg(), $new_st);
                 }
             }
         }
