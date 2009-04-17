@@ -197,13 +197,14 @@ function _statsUpdate()
         UpdateUtil::table(
             DBPREFIX.'stats_search',
             array(
-                'id'     => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'name'   => array('type' => 'VARCHAR(100)'),
-                'count'  => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'sid'    => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '')
+                'id'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'       => array('type' => 'VARCHAR(100)'),
+                'count'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'sid'        => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
+                'external'   => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0')
             ),
             array(
-                'unique' => array('fields' => array('name','external'), 'type' => 'UNIQUE')
+                'unique'     => array('fields' => array('name','external'), 'type' => 'UNIQUE')
             )
         );
     }

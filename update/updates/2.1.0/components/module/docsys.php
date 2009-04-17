@@ -41,7 +41,7 @@ function _docsysUpdate()
             UpdateUtil::table(
                 DBPREFIX . 'module_docsys',
                 array(
-                    'id'        => array('type' => 'INT(6)', 'unsigned' => true, 'auto_increment' => true),
+                    'id'        => array('type' => 'INT(6)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
                     'date'      => array('type' => 'INT(14)', 'notnull' => false),
                     'title'     => array('type' => 'VARCHAR(250)'),
                     'author'    => array('type' => 'VARCHAR(150)'),
