@@ -60,7 +60,7 @@ class UpdateUtil {
         if (in_array($name, $tableinfo)) {
             $table_stmt = "DROP TABLE `$name`";
             if ($objDatabase->Execute($table_stmt) === false) {
-                throw new Update_DatabaseException($objDatabase->ErrorMsg(), $table_stmt);
+                self::cry($objDatabase->ErrorMsg(), $table_stmt);
             }
         }
     }
@@ -110,14 +110,20 @@ class UpdateUtil {
         global $objDatabase;
         $col_info = $objDatabase->MetaColumns($name);
         if ($col_info === false) {
-            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+            self::cry(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
         }
         // Drop columns that are not specified
         self::_drop_unspecified_columns($name, $struc, $col_info);
 
         // Create columns that don't exist yet
         foreach ($struc as $col => $spec) {
-            self::_check_column($name, $col_info, $col, $spec);
+            if (self::_check_column($name, $col_info, $col, $spec)) {
+                // col_info NEEDS to be reloaded, as _check_column() has changed the table
+                $col_info = $objDatabase->MetaColumns($name);
+                if ($col_info === false) {
+                    self::cry(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+                }
+            }
         }
     }
 
@@ -142,6 +148,10 @@ class UpdateUtil {
         }
     }
 
+    /**
+     * Checks the given column and ALTERS what's needed. Returns true
+     * if a change has been done.
+     */
     private function _check_column($name, $col_info, $col, $spec) {
         global $objDatabase;
 
@@ -161,7 +171,9 @@ class UpdateUtil {
             }
 
             self::sql($query);
+            return true;
 		}
+        return false;
 
         // TODO: maybe we should check for the type of the
         // existing column here and adjust it too?
@@ -173,7 +185,7 @@ class UpdateUtil {
         $key_qry = "SHOW INDEX FROM `$name`";
         $keyinfo = $objDatabase->Execute($key_qry);
         if ($keyinfo === false) {
-            throw new Update_DatabaseException($objDatabase->ErrorMsg(), $key_qry);
+            self::cry($objDatabase->ErrorMsg(), $key_qry);
         }
 
         // Find already existing keys, drop unused keys
