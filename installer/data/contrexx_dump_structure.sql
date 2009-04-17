@@ -961,7 +961,7 @@ CREATE TABLE `contrexx_module_docsys` (
   `enddate` date NOT NULL default '0000-00-00',
   `status` tinyint(4) NOT NULL default '1',
   `changelog` int(14) NOT NULL default '0',
-  KEY `ID` (`id`),
+  PRIMARY KEY  (`id`),
   FULLTEXT KEY `newsindex` (`title`,`text`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_docsys_categories` (
