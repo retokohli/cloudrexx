@@ -115,115 +115,12 @@ function _shopUpdate()
     }
 
 
-    // Products table fields
-
-    $arrProductColumns = $objDatabase->MetaColumns(DBPREFIX.'module_shop_products');
-    if ($arrProductColumns === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_shop_products'));
-        return false;
-    }
-
-    // Expand title to 255 characters
-    $query = "
-        ALTER TABLE `".DBPREFIX."module_shop_products`
-        CHANGE `title` `title` varchar(255) NOT NULL default ''
-    ";
-    if ($objDatabase->Execute($query) === false) {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    // Add flags field and index to Product table
-    if (!isset($arrProductColumns['FLAGS'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_shop_products
-            ADD flags varchar(255) NOT NULL default ''
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
-    $arrIndexes = $objDatabase->MetaIndexes(DBPREFIX.'module_shop_products');
-    if ($arrIndexes === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_shop_products'));
-        return false;
-    }
-    if (!isset($arrIndexes['flags']['columns'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_shop_products
-            ADD FULLTEXT (flags)
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
-
-    // Add usergroups field to Product table
-    if (!isset($arrProductColumns['USERGROUPS'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_shop_products
-            ADD usergroups varchar(255) NOT NULL default ''
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
 
 
-
-    // Categories table fields
-
-    $arrCategoriesColumns = $objDatabase->MetaColumns(DBPREFIX.'module_shop_categories');
-    if ($arrCategoriesColumns === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_shop_categories'));
-        return false;
-    }
-
-    // Add picture field to Shop Category table
-    if (!isset($arrCategoriesColumns['PICTURE'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_shop_categories
-            ADD picture varchar(255) NOT NULL default ''
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
-
-    // Add flags field and index to Shop Category table
-    if (!isset($arrCategoriesColumns['FLAGS'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_shop_categories
-            ADD flags varchar (255) NOT NULL default ''
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
-    $arrIndexes = $objDatabase->MetaIndexes(DBPREFIX.'module_shop_categories');
-    if ($arrIndexes === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_shop_categories'));
-        return false;
-    }
-    if (!isset($arrIndexes['flags']['columns'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_shop_categories
-            ADD FULLTEXT (flags)
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
 
 
 
     // Shop settings
-
     // Shop thumbnail default settings: shop_thumbnail_max_width
     $query = "
         SELECT 1 FROM ".DBPREFIX."module_shop_config
@@ -567,15 +464,6 @@ function _shopUpdate()
     }
 
 
-    // Fix Product Attribute table to handle new option types
-    $query = "
-        ALTER TABLE `".DBPREFIX."module_shop_products_attributes_name`
-        CHANGE `display_type` `display_type` TINYINT UNSIGNED NOT NULL DEFAULT '0' ;
-    ";
-    $objResult = $objDatabase->Execute($query);
-    if (!$objResult) {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
 
 
 
@@ -624,62 +512,9 @@ function _shopUpdate()
     // - Fix order fields to full integer size
     // - Add default values, mainly empty strings ('')
     $arrQuery = array("
-            ALTER TABLE `".DBPREFIX."module_shop_orders`
-            CHANGE `order_sum` `order_sum` DECIMAL(9, 2) NOT NULL DEFAULT '0.00',
-            CHANGE `currency_order_sum` `currency_order_sum` DECIMAL(9, 2) NOT NULL DEFAULT '0.00',
-            CHANGE `tax_price` `tax_price` DECIMAL(9, 2) NOT NULL DEFAULT '0.00',
-            CHANGE `currency_ship_price` `currency_ship_price` DECIMAL(9, 2) NOT NULL DEFAULT '0.00',
-            CHANGE `currency_payment_price` `currency_payment_price` DECIMAL(9, 2) NOT NULL DEFAULT '0.00'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_order_items`
-            CHANGE `price` `price` DECIMAL(9, 2) NOT NULL DEFAULT '0.00'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_order_items_attributes`
-            CHANGE `product_option_values_price` `product_option_values_price` DECIMAL(9, 2) NOT NULL DEFAULT '0.00'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products`
-            CHANGE `normalprice` `normalprice` DECIMAL(9, 2) NOT NULL DEFAULT '0.00',
-            CHANGE `resellerprice` `resellerprice` DECIMAL(9, 2) NOT NULL DEFAULT '0.00',
-            CHANGE `discountprice` `discountprice` DECIMAL(9, 2) NOT NULL DEFAULT '0.00'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products_attributes_value`
-            CHANGE `price` `price` DECIMAL(9, 2) NULL DEFAULT '0.00'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_payment`
-            CHANGE `costs` `costs` DECIMAL(9,2) NOT NULL DEFAULT '0.00',
-            CHANGE `costs_free_sum` `costs_free_sum` DECIMAL(9,2) NOT NULL DEFAULT '0.00',
-            CHANGE `sort_order` `sort_order` INT(5) UNSIGNED DEFAULT '0'
-        ", "
             ALTER TABLE `".DBPREFIX."module_shop_shipment_cost`
             CHANGE `cost` `cost` decimal(10,2) unsigned default NULL,
             CHANGE `price_free` `price_free` decimal(10,2) unsigned default NULL
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_currencies`
-            CHANGE `sort_order` `sort_order` int(5) unsigned NOT NULL default '0'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_importimg`
-            CHANGE `img_cats` `img_cats` text NOT NULL default '',
-            CHANGE `img_fields_file` `img_fields_file` text NOT NULL default ''
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_order_items`
-            CHANGE `productid` `productid` varchar(100) NOT NULL default ''
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products`
-            CHANGE `product_id` `product_id` varchar(100) NOT NULL,
-            CHANGE `picture` `picture` text NOT NULL default '',
-            CHANGE `title` `title` varchar(255) NOT NULL default '',
-            CHANGE `shortdesc` `shortdesc` text NOT NULL default '',
-            CHANGE `description` `description` text NOT NULL default '',
-            CHANGE `stock` `stock` int(10) NOT NULL default '10',
-            CHANGE `stock_visibility` `stock_visibility` tinyint(1) unsigned NOT NULL default '1',
-            CHANGE `status` `status` tinyint(1) unsigned NOT NULL default '1',
-            CHANGE `sort_order` `sort_order` int(5) unsigned NOT NULL default '0'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products_attributes`
-            CHANGE `sort_id` `sort_id` int(5) unsigned NOT NULL default '0'
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_products_attributes_name`
-            CHANGE `display_type` `display_type` tinyint(3) unsigned NOT NULL default '0'
         ", "
             ALTER TABLE `".DBPREFIX."module_shop_shipper`
             CHANGE `status` `status` tinyint(1) unsigned NOT NULL default '0'
@@ -691,6 +526,410 @@ function _shopUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     }
+
+
+
+
+    try {
+        // Countries table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_countries',
+            array(
+                'countries_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'countries_name'        => array('type' => 'VARCHAR(64)', 'notnull' => true, 'default' => ''),
+                'countries_iso_code_2'  => array('type' => 'CHAR(2)', 'notnull' => true, 'default' => ''),
+                'countries_iso_code_3'  => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
+                'activation_status'     => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+            ),
+            array(
+                'INDEX_COUNTRIES_NAME'  => array('fields' => array('countries_name'))
+            )
+        );
+
+
+        // Categories table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_categories',
+            array(
+                'catid'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'parentid'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'catname'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'catsorting'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '100'),
+                'catstatus'     => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'picture'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'flags'         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'flags'         => array('fields' => array('flags'), 'type' => 'FULLTEXT')
+            )
+        );
+
+
+        // Settings table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_config',
+            array(
+                'id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'name'      => array('type' => 'VARCHAR(64)', 'notnull' => true, 'default' => ''),
+                'value'     => array('type' => 'VARCHAR(255)', 'notnull', 'default' => ''),
+                'status'    => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1')
+            )
+        );
+
+
+        // Currencies table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_currencies',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'code'           => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
+                'symbol'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'name'           => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'rate'           => array('type' => 'DECIMAL(10,6)', 'unsigned' => true, 'notnull' => true, 'default' => '1.000000'),
+                'sort_order'     => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'status'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'is_default'     => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
+        // Customers table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_customers',
+            array(
+                'customerid'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'username'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'password'           => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
+                'prefix'             => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'company'            => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'firstname'          => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'lastname'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'address'            => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                'city'               => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'zip'                => array('type' => 'VARCHAR(10)', 'notnull' => false),
+                'country_id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'phone'              => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'fax'                => array('type' => 'VARCHAR(25)', 'notnull' => true, 'default' => ''),
+                'email'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'ccnumber'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'ccdate'             => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
+                'ccname'             => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'cvc_code'           => array('type' => 'VARCHAR(5)', 'notnull' => true, 'default' => ''),
+                'is_reseller'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'register_date'      => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
+                'customer_status'    => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'group_id'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false)
+            )
+        );
+
+
+        // Importimg table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_importimg',
+            array(
+                'img_id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'img_name'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'img_fields_db'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            )
+        );
+
+
+        // Mail table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_mail',
+            array(
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'tplname'    => array('type' => 'VARCHAR(60)', 'notnull' => true, 'default' => ''),
+                'protected'  => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
+        // Mail Content table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_mail_content',
+            array(
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'tpl_id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'lang_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'from_mail'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'xsender'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'subject'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            )
+        );
+
+
+        // Manufacturer table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_manufacturer',
+            array(
+                'id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'url'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            )
+        );
+
+
+        // Order items table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_order_items',
+            array(
+                'order_items_id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'orderid'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'productid'          => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'product_name'       => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'price'              => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'quantity'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'vat_percent'        => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => false),
+                'weight'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false)
+            )
+        );
+
+
+        // Order items attributes table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_order_items_attributes',
+            array(
+                'orders_items_attributes_id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'order_items_id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'order_id'                       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'product_id'                     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'product_option_name'            => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
+                'product_option_value'           => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
+                'product_option_values_price'    => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00')
+            )
+        );
+
+
+        // Order table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_orders',
+            array(
+                'orderid'                    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'customerid'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'selected_currency_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'order_sum'                  => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'currency_order_sum'         => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'order_date'                 => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
+                'order_status'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'ship_prefix'                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'ship_company'               => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'ship_firstname'             => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                'ship_lastname'              => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'ship_address'               => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                'ship_city'                  => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'ship_zip'                   => array('type' => 'VARCHAR(10)', 'notnull' => false),
+                'ship_country_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'ship_phone'                 => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'tax_price'                  => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'currency_ship_price'        => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'shipping_id'                => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'payment_id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'currency_payment_price'     => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'customer_ip'                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'customer_host'              => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'customer_lang'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'customer_browser'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'customer_note'              => array('type' => 'TEXT'),
+                'last_modified'              => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
+                'modified_by'                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'order_status'               => array('fields' => array('order_status'))
+            )
+        );
+
+
+        // Payment table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_payment',
+            array(
+                'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'               => array('type' => 'VARCHAR(50)', 'notnull' => false),
+                'processor_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'costs'              => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'costs_free_sum'     => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'sort_order'         => array('type' => 'INT(5)', 'unsigned' => true, 'default' => '0'),
+                'status'             => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1')
+            )
+        );
+
+
+        // Payment processors table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_payment_processors',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'description'    => array('type' => 'TEXT'),
+                'company_url'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'status'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1'),
+                'picture'        => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'text'           => array('type' => 'TEXT')
+            )
+        );
+
+
+        // Pricelists table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_pricelists',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'           => array('type' => 'VARCHAR(25)', 'notnull' => true, 'default' => ''),
+                'lang_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'border_on'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'header_on'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'footer_on'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'categories'     => array('type' => 'TEXT')
+            )
+        );
+
+
+        // Products table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_products',
+            array(
+                'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'product_id'         => array('type' => 'VARCHAR(100)'),
+                'picture'            => array('type' => 'TEXT'),
+                'title'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'catid'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'normalprice'        => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'resellerprice'      => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'shortdesc'          => array('type' => 'TEXT'),
+                'description'        => array('type' => 'TEXT'),
+                'stock'              => array('type' => 'INT(10)', 'notnull' => true, 'default' => '10'),
+                'stock_visibility'   => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'discountprice'      => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                'is_special_offer'   => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'property1'          => array('type' => 'VARCHAR(100)', 'default' => ''),
+                'property2'          => array('type' => 'VARCHAR(100)', 'default' => ''),
+                'status'             => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'b2b'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'b2c'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'startdate'          => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
+                'enddate'            => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
+                'thumbnail_percent'  => array('type' => 'TINYINT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'thumbnail_quality'  => array('type' => 'TINYINT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'manufacturer'       => array('type' => 'INT(10)', 'unsigned' => true),
+                'manufacturer_url'   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'external_link'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'sort_order'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'vat_id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'weight'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'flags'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'usergroups'         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'usergroup_ids'      => array('type' => 'VARCHAR(255)'),
+                'group_id'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'article_id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'keywords'           => array('type' => 'TEXT')
+            ),
+            array(
+                'shopindex'          => array('fields' => array('title','description'), 'type' => 'FULLTEXT'),
+                'flags'              => array('fields' => array('flags'), 'type' => 'FULLTEXT'),
+                'keywords'           => array('fields' => array('keywords'), 'type' => 'FULLTEXT')
+            )
+        );
+
+
+        // Products attributes table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_products_attributes',
+            array(
+                'attribute_id'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'product_id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'attributes_name_id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'attributes_value_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'sort_id'                => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
+        // Products attributes name table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_products_attributes_name',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'display_type'   => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
+        // Products attributes value table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_products_attributes_value',
+            array(
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'value'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'price'      => array('type' => 'DECIMAL(9,2)', 'default' => '0.00')
+            )
+        );
+
+
+        // Products downloads table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_products_downloads',
+            array(
+                'products_downloads_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'products_downloads_name'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'products_downloads_filename'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'products_downloads_maxdays'     => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+                'products_downloads_maxcount'    => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0')
+            )
+        );
+
+
+        // Rel countries table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_rel_countries',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'zones_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'countries_id'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
+        // Rel payment table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_rel_payment',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'zones_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'payment_id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
+        // Rel shipment table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_rel_shipment',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'zones_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'shipment_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
+        // Zones table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_zones',
+            array(
+                'zones_id'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'zones_name'         => array('type' => 'VARCHAR(64)', 'notnull' => true, 'default' => ''),
+                'activation_status'  => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+
 
 
 /*

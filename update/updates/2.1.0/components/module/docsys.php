@@ -57,7 +57,6 @@ function _docsysUpdate()
                     'changelog' => array('type' => 'INT(14)', 'default_expr' => '0')
                 ),
                 array(
-                    'ID'        => array('fields' => array('id'), 'type' => 'KEY'),
                     'newsindex' => array('fields' => array('title', 'text'), 'type' => 'FULLTEXT')
                 )
             );
