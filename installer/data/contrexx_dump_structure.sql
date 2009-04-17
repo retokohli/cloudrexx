@@ -2552,7 +2552,7 @@ CREATE TABLE `contrexx_module_shop_pricelists` (
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `product_id` tinytext NOT NULL,
+  `product_id` varchar(100) NOT NULL,
   `picture` text NOT NULL,
   `title` varchar(255) NOT NULL default '',
   `catid` int(10) unsigned NOT NULL default '1',
@@ -2561,7 +2561,7 @@ CREATE TABLE `contrexx_module_shop_products` (
   `resellerprice` decimal(9,2) NOT NULL default '0.00',
   `shortdesc` text NOT NULL,
   `description` text NOT NULL,
-  `stock` int(11) NOT NULL default '10',
+  `stock` int(10) NOT NULL default '10',
   `stock_visibility` tinyint(1) unsigned NOT NULL default '1',
   `discountprice` decimal(9,2) NOT NULL default '0.00',
   `is_special_offer` tinyint(1) unsigned NOT NULL default '0',
@@ -2577,7 +2577,7 @@ CREATE TABLE `contrexx_module_shop_products` (
   `manufacturer` int(10) unsigned NOT NULL,
   `manufacturer_url` varchar(255) NOT NULL default '',
   `external_link` varchar(255) NOT NULL default '',
-  `sort_order` int(10) unsigned NOT NULL default '0',
+  `sort_order` int(5) unsigned NOT NULL default '0',
   `vat_id` int(10) unsigned default NULL,
   `weight` int(10) unsigned default NULL,
   `flags` varchar(255) NOT NULL default '',
