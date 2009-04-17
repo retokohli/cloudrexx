@@ -116,24 +116,26 @@ function _accessUpdate()
         }
     }
 
-    $query = 'SELECT `name`, `value`, `status` FROM `'.DBPREFIX.'community_config`';
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        while (!$objResult->EOF) {
-            $arrCommunityConfig[$objResult->fields['name']] = array(
-                'value'        => $objResult->fields['value'],
-                'status'    => $objResult->fields['status']
-            );
-            $objResult->MoveNext();
+    if (in_array(DBPREFIX."communit_config", $arrTables)) {
+        $query = 'SELECT `name`, `value`, `status` FROM `'.DBPREFIX.'community_config`';
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $arrCommunityConfig[$objResult->fields['name']] = array(
+                    'value'        => $objResult->fields['value'],
+                    'status'    => $objResult->fields['status']
+                );
+                $objResult->MoveNext();
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
         }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
     $arrSettings = array(
-        'user_activation'                 =>array('value'=> '',               'status'    => $arrCommunityConfig['user_activation']['status']),
-        'user_activation_timeout'         =>array('value'=> $arrCommunityConfig['user_activation_timeout']['value'], 'status'    => $arrCommunityConfig['user_activation_timeout']['status']),
-        'assigne_to_groups'               =>array('value'=> $arrCommunityConfig['community_groups']['value'], 'status'    => 1),
+        'user_activation'                 =>array('value'=> '',               'status'    => isset($arrCommunityConfig['user_activation']['status']) ? $arrCommunityConfig['user_activation']['status'] : 0),
+        'user_activation_timeout'         =>array('value'=> isset($arrCommunityConfig['user_activation_timeout']['value']) ? $arrCommunityConfig['user_activation_timeout']['value'] : 0, 'status'    => isset($arrCommunityConfig['user_activation_timeout']['status']) ? $arrCommunityConfig['user_activation_timeout']['status'] : 0),
+        'assigne_to_groups'               =>array('value'=> isset($arrCommunityConfig['community_groups']['value']) ? $arrCommunityConfig['community_groups']['value'] : '', 'status'    => 1),
         'max_profile_pic_width'           =>array('value'=>'160',            'status'  => 1),
         'max_profile_pic_height'          =>array('value'=>'160',            'status'  => 1),
         'profile_thumbnail_pic_width'     =>array('value'=>'50',             'status'  => 1),
