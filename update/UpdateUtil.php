@@ -43,7 +43,7 @@ class UpdateUtil {
 
         if (in_array($name, $tableinfo)) {
             self::check_columns($name, $struc);
-            self::check_indexes($name, $idx);
+            self::check_indexes($name, $idx, $struc);
         }
         else {
             self::create_table($name, $struc, $idx);
@@ -179,7 +179,7 @@ class UpdateUtil {
         // existing column here and adjust it too?
     }
 
-    private function check_indexes($name, $idx) {
+    private function check_indexes($name, $idx, $struc = null) {
         global $objDatabase;
         # mysql> show index from contrexx_access_user_mail;
         $key_qry = "SHOW INDEX FROM `$name`";
@@ -189,6 +189,8 @@ class UpdateUtil {
         }
 
         // Find already existing keys, drop unused keys
+        $arr_keys_to_drop = array();
+        $arr_primaries = array();
         while (!$keyinfo->EOF) {
             if (isset($idx[ $keyinfo->fields['Key_name'] ])) {
                 $idx[$keyinfo->fields['Key_name']]['exists'] = true;
@@ -196,13 +198,39 @@ class UpdateUtil {
                 continue;
             }
             if ($keyinfo->fields['Key_name'] == 'PRIMARY') {
+                $arr_primaries[] = $keyinfo->fields['Column_name'];
+                // primary keys should NOT be dropped :P
                 $keyinfo->MoveNext();
                 continue;
             }
-            // primary keys should NOT be dropped :P
-            $drop_st = self::_dropkey($name, $keyinfo->fields['Key_name']);
-            self::sql($drop_st);
+            $arr_keys_to_drop[] = $keyinfo->fields['Key_name'];
             $keyinfo->MoveNext();
+        }
+
+        if ($struc) {
+            $new_primaries = self::_getprimaries($struc);
+            // recreate the primary key in case it changed
+            if (count(array_diff($new_primaries, $arr_primaries)) || count(array_diff($arr_primaries, $new_primaries))) {
+                // delete current primary key, in case there is one
+                if (count($arr_primaries)) {
+                    $drop_st = "ALTER TABLE `$name` DROP PRIMARY KEY";
+                    self::sql($drop_st);
+                }
+
+                // add new primary key, in case one is defined
+                if (count($new_primaries)) {
+                    $new_st = "ALTER TABLE `$name` ADD PRIMARY KEY (`".join("`, `", $new_primaries)."`)";
+                    self::sql($new_st);
+                }
+            }
+        }
+
+        // drop obsolete keys
+        if (count($arr_keys_to_drop)) {
+            foreach ($arr_keys_to_drop as $key) {
+                $drop_st = self::_dropkey($name, $key);
+                self::sql($drop_st);
+            }
         }
 
         // create new keys
