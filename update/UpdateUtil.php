@@ -90,13 +90,20 @@ class UpdateUtil {
             PRIMARY KEY ($primaries)
         )";
 
-        if ($objDatabase->Execute($table_stmt) === false) {
-            throw new Update_DatabaseException($objDatabase->ErrorMsg(), $table_stmt);
-        }
+        self::sql($table_stmt);
         // index statements. as we just created the table
         // we can now just do check_indexes() to take care
         // of the "problem".
         self::check_indexes($name, $idx);
+    }
+    private static function cry($msg, $sql) {
+        throw new Update_DatabaseException($msg, $sql);
+    }
+    private static function sql($statement) {
+        global $objDatabase;
+        if ($objDatabase->Execute($statement) === false) {
+            self::cry($objDatabase->ErrorMsg(), $statement);
+        }
     }
 
     private function check_columns($name, $struc) {
@@ -130,9 +137,7 @@ class UpdateUtil {
             if (!$exists) {
                 $col_name = $col_info[$col]->name;
                 $query = "ALTER TABLE `$name` DROP COLUMN `$col_name`";
-                if ($objDatabase->Execute($query) === false) {
-                    throw new Update_DatabaseException($objDatabase->ErrorMsg(), $query);
-                }
+                self::sql($query);
             }
         }
     }
@@ -155,9 +160,7 @@ class UpdateUtil {
                 $query = "ALTER TABLE `$name` ADD `$col` $colspec";
             }
 
-            if ($objDatabase->Execute($query) === false) {
-                throw new Update_DatabaseException($objDatabase->ErrorMsg(), $query);
-            }
+            self::sql($query);
 		}
 
         // TODO: maybe we should check for the type of the
@@ -186,9 +189,7 @@ class UpdateUtil {
             }
             // primary keys should NOT be dropped :P
             $drop_st = self::_dropkey($name, $keyinfo->fields['Key_name']);
-            if($objDatabase->Execute($drop_st)===false) {
-                throw new Update_DatabaseException($objDatabase->ErrorMsg(), $drop_st);
-            }
+            self::sql($drop_st);
             $keyinfo->MoveNext();
         }
 
@@ -196,9 +197,7 @@ class UpdateUtil {
         foreach ($idx as $keyname => $spec) {
             if (!array_key_exists('exists', $spec)) {
                 $new_st = self::_keyspec($name, $keyname, $spec);
-                if($objDatabase->Execute($new_st)===false) {
-                    throw new Update_DatabaseException($objDatabase->ErrorMsg(), $new_st);
-                }
+                self::sql($new_st);
             }
         }
         // okay, that's it, have a nice day!
