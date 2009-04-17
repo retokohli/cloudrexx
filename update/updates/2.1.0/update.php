@@ -87,13 +87,13 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
 			while (($file = readdir($dh)) !== false) {
 				if (!in_array($file, $_SESSION['contrexx_update']['update']['done'])) {
 					if (substr($file, -4) == '.php') {
+                        DBG::msg("--------- updating $file ------");
 						if (!@include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
 							setUpdateMsg('Update Fehler', 'title');
 							setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
 							return false;
 						}
 						$function = '_'.substr($file, 0, -4).'Update';
-                        DBG::msg("--------- calling $function()------");
 						if (function_exists($function)) {
 							$result = $function();
 							if ($result === false) {
