@@ -2872,7 +2872,7 @@ CREATE TABLE `contrexx_stats_visitors` (
   `proxy_host` varchar(255) default NULL,
   `proxy_useragent` varchar(255) default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `sid` (`sid`)
+  UNIQUE KEY `unique` (`sid`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_visitors_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -2884,17 +2884,17 @@ CREATE TABLE `contrexx_stats_visitors_summary` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL auto_increment,
-  `nickname` varchar(80) NOT NULL,
-  `surname` varchar(80) NOT NULL,
-  `phone` varchar(80) NOT NULL,
-  `street` varchar(80) NOT NULL,
-  `zip` varchar(30) NOT NULL,
-  `city` varchar(80) NOT NULL,
-  `email` varchar(80) NOT NULL,
+  `nickname` varchar(80) NOT NULL default '',
+  `surname` varchar(80) NOT NULL default '',
+  `phone` varchar(80) NOT NULL default '',
+  `street` varchar(80) NOT NULL default '',
+  `zip` varchar(30) NOT NULL default '',
+  `city` varchar(80) NOT NULL default '',
+  `email` varchar(80) NOT NULL default '',
   `comment` text NOT NULL,
   `voting_system_id` int(11) NOT NULL,
   `date_entered` timestamp NOT NULL,
-  `forename` varchar(80) NOT NULL,
+  `forename` varchar(80) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `voting_sytem_id` (`voting_system_id`)
 ) TYPE=MyISAM ;
