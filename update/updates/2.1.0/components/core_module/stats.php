@@ -191,6 +191,27 @@ function _statsUpdate()
 		return false;
 	}
 
+
+
+    try {
+        UpdateUtil::table(
+            DBPREFIX.'stats_search',
+            array(
+                'id'     => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'   => array('type' => 'VARCHAR(100)'),
+                'count'  => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'sid'    => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'unique' => array('fields' => array('name','external'), 'type' => 'UNIQUE')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
 	return true;
 }
 ?>
