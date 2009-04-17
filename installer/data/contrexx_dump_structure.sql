@@ -2375,7 +2375,7 @@ CREATE TABLE `contrexx_module_shop_currencies` (
   `symbol` varchar(20) NOT NULL default '',
   `name` varchar(50) NOT NULL default '',
   `rate` decimal(10,6) unsigned NOT NULL default '1.000000',
-  `sort_order` int(10) unsigned NOT NULL default '0',
+  `sort_order` int(5) unsigned NOT NULL default '0',
   `status` tinyint(1) unsigned NOT NULL default '1',
   `is_default` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
