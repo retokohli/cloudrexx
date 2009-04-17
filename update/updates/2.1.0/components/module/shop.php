@@ -468,24 +468,29 @@ function _shopUpdate()
 
 
     // Update Attribute price to signed.
-    // This modification is consistent if run multiple times!
-    $objResult = $objDatabase->Execute("
-        UPDATE `".DBPREFIX."module_shop_products_attributes_value`
-           SET `price`=-`price`
-        WHERE `price`>0
-          AND `price_prefix`='-';
-    ");
-    if (!$objResult)
-        return _databaseError($query, $objDatabase->ErrorMsg());
+    if (UpdateUtil::column_exist(DBPREFIX.'module_shop_products_attributes_value', 'price_prefix')) {
+        $query = "
+            UPDATE `".DBPREFIX."module_shop_products_attributes_value`
+               SET `price`=-`price`
+            WHERE `price`>0
+              AND `price_prefix`='-';
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult)
+            return _databaseError($query, $objDatabase->ErrorMsg());
+    }
 
-    $objResult = $objDatabase->Execute("
-        UPDATE `".DBPREFIX."module_shop_order_items_attributes`
-           SET `product_option_values_price`=-`product_option_values_price`
-        WHERE `product_option_values_price`>0
-          AND `price_prefix`='-';
-    ");
-    if (!$objResult)
-        return _databaseError($query, $objDatabase->ErrorMsg());
+    if (UpdateUtil::column_exist(DBPREFIX.'module_shop_order_items_attributes', 'price_prefix')) {
+        $query = "
+            UPDATE `".DBPREFIX."module_shop_order_items_attributes`
+               SET `product_option_values_price`=-`product_option_values_price`
+            WHERE `product_option_values_price`>0
+              AND `price_prefix`='-';
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult)
+            return _databaseError($query, $objDatabase->ErrorMsg());
+    }
 
 /**
     // Leave those for now; update is easier like that:

@@ -57,6 +57,30 @@ function _docsysUpdate()
                     'changelog' => array('type' => 'INT(14)', 'default_expr' => '0')
                 ),
                 array(
+                    'ID'        => array('fields' => array('id')),
+                    'newsindex' => array('fields' => array('title', 'text'), 'type' => 'FULLTEXT')
+                )
+            );
+            // this is required to remove the key ID which couldn't be removed before due that the primery key is created at the very end
+            UpdateUtil::table(
+                DBPREFIX . 'module_docsys',
+                array(
+                    'id'        => array('type' => 'INT(6)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+                    'date'      => array('type' => 'INT(14)', 'notnull' => false),
+                    'title'     => array('type' => 'VARCHAR(250)'),
+                    'author'    => array('type' => 'VARCHAR(150)'),
+                    'text'      => array('type' => 'MEDIUMTEXT', 'notnull' => false),
+                    'source'    => array('type' => 'VARCHAR(250)'),
+                    'url1'      => array('type' => 'VARCHAR(250)'),
+                    'url2'      => array('type' => 'VARCHAR(250)'),
+                    'lang'      => array('type' => 'INT(2)', 'unsigned' => true, 'default_expr' => '0'),
+                    'userid'    => array('type' => 'INT(6)', 'unsigned' => true, 'default_expr' => '0'),
+                    'startdate' => array('type' => 'DATE', 'default_expr' => '0000-00-00'),
+                    'enddate'   => array('type' => 'DATE', 'default_expr' => '0000-00-00'),
+                    'status'    => array('type' => 'TINYINT(4)', 'default_expr' => '1'),
+                    'changelog' => array('type' => 'INT(14)', 'default_expr' => '0')
+                ),
+                array(
                     'newsindex' => array('fields' => array('title', 'text'), 'type' => 'FULLTEXT')
                 )
             );

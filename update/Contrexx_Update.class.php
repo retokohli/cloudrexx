@@ -42,6 +42,13 @@ class Contrexx_Update
         if (!$objDatabase) {
             die($errorMsg);
         }
+        if (_DEBUG & DBG_ADODB_TRACE) {
+            $objDatabase->debug = 99;
+        } elseif (_DEBUG & DBG_ADODB) {
+            $objDatabase->debug = 1;
+        } else {
+            $objDatabase->debug = 0;
+        }
         $this->_loadLanguage();
         if (!empty($_GET['ajax'])) {
             $this->ajax = true;
