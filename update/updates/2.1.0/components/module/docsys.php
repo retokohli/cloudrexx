@@ -45,7 +45,7 @@ function _docsysUpdate()
                 'date'      => array('type' => 'INT(14)', 'notnull' => false),
                 'title'     => array('type' => 'VARCHAR(250)'),
                 'author'    => array('type' => 'VARCHAR(150)'),
-                'text'      => array('type' => 'MEDIUMTEXT', 'notnull' => false),
+                'text'      => array('type' => 'MEDIUMTEXT', 'notnull' => true),
                 'source'    => array('type' => 'VARCHAR(250)'),
                 'url1'      => array('type' => 'VARCHAR(250)'),
                 'url2'      => array('type' => 'VARCHAR(250)'),

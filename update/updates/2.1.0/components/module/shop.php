@@ -407,7 +407,7 @@ function _shopUpdate()
         UpdateUtil::table(/*{{{module_shop_article_group*/
             DBPREFIX . 'module_shop_article_group',
             array(
-                'id'               => array('type' =>    'INT',          'notnull' => true, 'primary'     => true,      'auto_increment' => true),
+                'id'               => array('type' =>    'INT(10)', 'unsigned' => true,          'notnull' => true, 'primary'     => true,      'auto_increment' => true),
                 'name'             => array('type' =>    'VARCHAR(255)', 'notnull' => true, 'default'     => '',        'renamefrom' => 'name'),
             )
         );/*}}}*/
@@ -416,7 +416,7 @@ function _shopUpdate()
 		UpdateUtil::table(/*{{{module_shop_customer_group*/
             DBPREFIX . 'module_shop_customer_group',
             array(
-                'id'   => array('type' => 'INT(10)',      'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'id'   => array('type' => 'INT(10)', 'unsigned' => true,      'notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
             )
         );/*}}}*/
@@ -425,7 +425,7 @@ function _shopUpdate()
         UpdateUtil::table(/*{{{module_shop_discountgroup_count_name*/
             DBPREFIX . 'module_shop_discountgroup_count_name',
             array(
-                'id'   => array('type' => 'INT(10)',      'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'id'   => array('type' => 'INT(10)', 'unsigned' => true,      'notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'unit' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
             )
@@ -435,9 +435,9 @@ function _shopUpdate()
         UpdateUtil::table(/*{{{module_shop_discountgroup_count_rate*/
             DBPREFIX . 'module_shop_discountgroup_count_rate',
             array(
-                'group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true),
                 'count'    => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default'        => '1'),
-                'rate'     => array('type' => 'DECIMAL(5,2)',     'notnull' => true, 'default' => '0.0'),
+                'rate'     => array('type' => 'DECIMAL(5,2)', 'unsigned' => true,     'notnull' => true, 'default' => '0.0'),
             )
         );/*}}}*/
 
@@ -456,7 +456,7 @@ function _shopUpdate()
             DBPREFIX . 'module_shop_lsv',
             array(
                 'id'       => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true, 'renamefrom' => 'order_id'),
-                'order_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'default' => '0'),
+                'order_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true),
                 'holder'   => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
                 'bank'     => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
                 'blz'      => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
@@ -578,6 +578,7 @@ function _shopUpdate()
                 'ccdate'             => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
                 'ccname'             => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
                 'cvc_code'           => array('type' => 'VARCHAR(5)', 'notnull' => true, 'default' => ''),
+                'company_note'       => array('type' => 'TEXT', 'notnull' => true),
                 'is_reseller'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'register_date'      => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
                 'customer_status'    => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
@@ -618,7 +619,8 @@ function _shopUpdate()
                 'lang_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'from_mail'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'xsender'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'subject'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+                'subject'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'message'    => array('type' => 'TEXT', 'notnull' => true)
             )
         );
 
@@ -713,8 +715,8 @@ function _shopUpdate()
                 'processor_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'costs'              => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
                 'costs_free_sum'     => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
-                'sort_order'         => array('type' => 'INT(5)', 'unsigned' => true, 'default' => '0'),
-                'status'             => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1')
+                'sort_order'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => false, 'default' => '0'),
+                'status'             => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1')
             )
         );
 
@@ -724,10 +726,11 @@ function _shopUpdate()
             DBPREFIX.'module_shop_payment_processors',
             array(
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'type'           => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
                 'name'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
                 'description'    => array('type' => 'TEXT'),
                 'company_url'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'status'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1'),
+                'status'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
                 'picture'        => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
                 'text'           => array('type' => 'TEXT')
             )
@@ -743,7 +746,11 @@ function _shopUpdate()
                 'lang_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'border_on'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
                 'header_on'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'header_left'    => array('type' => 'TEXT', 'notnull' => false),
+                'header_right'   => array('type' => 'TEXT', 'notnull' => false),
                 'footer_on'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'footer_left'    => array('type' => 'TEXT', 'notnull' => false),
+                'footer_right'   => array('type' => 'TEXT', 'notnull' => false),
                 'categories'     => array('type' => 'TEXT')
             )
         );
@@ -758,6 +765,7 @@ function _shopUpdate()
                 'picture'            => array('type' => 'TEXT'),
                 'title'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'catid'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'handler'            => array('type' => 'ENUM(\'none\',\'delivery\',\'download\')', 'notnull' => true, 'default' => 'delivery'),
                 'normalprice'        => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
                 'resellerprice'      => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
                 'shortdesc'          => array('type' => 'TEXT'),
@@ -766,8 +774,8 @@ function _shopUpdate()
                 'stock_visibility'   => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
                 'discountprice'      => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
                 'is_special_offer'   => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'property1'          => array('type' => 'VARCHAR(100)', 'default' => ''),
-                'property2'          => array('type' => 'VARCHAR(100)', 'default' => ''),
+                'property1'          => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => ''),
+                'property2'          => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => ''),
                 'status'             => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
                 'b2b'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
                 'b2c'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
@@ -839,8 +847,8 @@ function _shopUpdate()
                 'products_downloads_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'products_downloads_name'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'products_downloads_filename'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'products_downloads_maxdays'     => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
-                'products_downloads_maxcount'    => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0')
+                'products_downloads_maxdays'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => '0'),
+                'products_downloads_maxcount'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => '0')
             )
         );
 
