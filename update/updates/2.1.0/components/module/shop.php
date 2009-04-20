@@ -1,123 +1,8 @@
 <?php
 
-/**
-
-Add table:
-CREATE TABLE `".DBPREFIX."module_shop_article_group` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
-
-CREATE TABLE `".DBPREFIX."module_shop_customer_group` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
-
-CREATE TABLE `".DBPREFIX."module_shop_discountgroup_count_name` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  `unit` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
-
-CREATE TABLE `".DBPREFIX."module_shop_discountgroup_count_rate` (
-  `group_id` int(11) unsigned NOT NULL default '0',
-  `count` int(11) unsigned NOT NULL default '1',
-  `rate` decimal(5,2) unsigned NOT NULL default '0.00',
-  PRIMARY KEY  (`group_id`,`count`)
-) TYPE=MyISAM;
-
-CREATE TABLE `".DBPREFIX."module_shop_rel_discount_group` (
-  `customer_group_id` int(11) unsigned NOT NULL default '0',
-  `article_group_id` int(11) unsigned NOT NULL default '0',
-  `rate` decimal(5,2) NOT NULL default '0.00',
-  PRIMARY KEY  (`customer_group_id`,`article_group_id`)
-) TYPE=MyISAM;
-
-
-ADD COLUMN:
-TABLE `".DBPREFIX."module_shop_customers` (
-    ADD  `group_id` int(10) unsigned default NULL,
-TABLE `".DBPREFIX."module_shop_products` (
-  `group_id` int(10) unsigned default NULL,
-  `article_id` int(10) unsigned default NULL,
-  `keywords` text NOT NULL,
-  FULLTEXT KEY `keywords` (`keywords`)
-
-
-
-
-
-
-*/
-
-
-
 function _shopUpdate()
 {
     global $objDatabase, $_ARRAYLANG;
-
-
-    /*
-     * Add missing tables
-     */
-    $arrTables = $objDatabase->MetaTables('TABLES');
-    if (!sizeof($arrTables)) {
-        return _databaseError("MetaTables('TABLES')", 'Could not read Table metadata');
-    }
-    $tables = array(
-        //'table' => 'ddl',
-        'module_shop_article_group' => "
-            CREATE TABLE `".DBPREFIX."module_shop_article_group` (
-              `id` int(11) unsigned NOT NULL auto_increment,
-              `name` varchar(255) NOT NULL default '',
-              PRIMARY KEY  (`id`)
-            ) TYPE=MyISAM;
-        ",
-        'module_shop_customer_group' => "
-            CREATE TABLE `".DBPREFIX."module_shop_customer_group` (
-              `id` int(10) unsigned NOT NULL auto_increment,
-              `name` varchar(255) NOT NULL default '',
-              PRIMARY KEY  (`id`)
-            ) TYPE=MyISAM;
-        ",
-        'module_shop_discountgroup_count_name' => "
-            CREATE TABLE `".DBPREFIX."module_shop_discountgroup_count_name` (
-              `id` int(10) unsigned NOT NULL auto_increment,
-              `name` varchar(255) NOT NULL default '',
-              `unit` varchar(255) NOT NULL default '',
-              PRIMARY KEY  (`id`)
-            ) TYPE=MyISAM;
-        ",
-        'module_shop_discountgroup_count_rate' => "
-            CREATE TABLE `".DBPREFIX."module_shop_discountgroup_count_rate` (
-              `group_id` int(10) unsigned NOT NULL default '0',
-              `count` int(10) unsigned NOT NULL default '1',
-              `rate` decimal(5,2) unsigned NOT NULL default '0.00',
-              PRIMARY KEY  (`group_id`,`count`)
-            ) TYPE=MyISAM;
-        ",
-        'module_shop_rel_discount_group' => "
-            CREATE TABLE `".DBPREFIX."module_shop_rel_discount_group` (
-              `customer_group_id` int(10) unsigned NOT NULL default '0',
-              `article_group_id` int(10) unsigned NOT NULL default '0',
-              `rate` decimal(5,2) NOT NULL default '0.00',
-              PRIMARY KEY  (`customer_group_id`,`article_group_id`)
-            ) TYPE=MyISAM;
-        ",
-    );
-    foreach ($tables as $name => $query) {
-        if (in_array(DBPREFIX.$name, $arrTables)) continue;
-        if (!$objDatabase->Execute($query))
-            return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-
-
-
-
 
 
     // Shop settings
@@ -513,29 +398,102 @@ function _shopUpdate()
     }
 */
 
-    // - Change price fields to larger value range
-    // - Fix order fields to full integer size
-    // - Add default values, mainly empty strings ('')
-    $arrQuery = array("
-            ALTER TABLE `".DBPREFIX."module_shop_shipment_cost`
-            CHANGE `cost` `cost` decimal(10,2) unsigned default NULL,
-            CHANGE `price_free` `price_free` decimal(10,2) unsigned default NULL
-        ", "
-            ALTER TABLE `".DBPREFIX."module_shop_shipper`
-            CHANGE `status` `status` tinyint(1) unsigned NOT NULL default '0'
-        ",
-    );
-    foreach ($arrQuery as $query) {
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+
 
 
 
 
     try {
+        UpdateUtil::table(/*{{{module_shop_article_group*/
+            DBPREFIX . 'module_shop_article_group',
+            array(
+                'id'               => array('type' =>    'INT',          'notnull' => true, 'primary'     => true,      'auto_increment' => true),
+                'name'             => array('type' =>    'VARCHAR(255)', 'notnull' => true, 'default'     => '',        'renamefrom' => 'name'),
+            )
+        );/*}}}*/
+
+
+		UpdateUtil::table(/*{{{module_shop_customer_group*/
+            DBPREFIX . 'module_shop_customer_group',
+            array(
+                'id'   => array('type' => 'INT(10)',      'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+            )
+        );/*}}}*/
+
+
+        UpdateUtil::table(/*{{{module_shop_discountgroup_count_name*/
+            DBPREFIX . 'module_shop_discountgroup_count_name',
+            array(
+                'id'   => array('type' => 'INT(10)',      'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'unit' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+            )
+        );/*}}}*/
+
+
+        UpdateUtil::table(/*{{{module_shop_discountgroup_count_rate*/
+            DBPREFIX . 'module_shop_discountgroup_count_rate',
+            array(
+                'group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'count'    => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default'        => '1'),
+                'rate'     => array('type' => 'DECIMAL(5,2)',     'notnull' => true, 'default' => '0.0'),
+            )
+        );/*}}}*/
+
+
+        UpdateUtil::table(/*{{{module_shop_rel_discount_group*/
+            DBPREFIX . 'module_shop_rel_discount_group',
+            array(
+                'customer_group_id'    => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => '0'),
+                'article_group_id'     => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => '0'),
+                'rate'                 => array('type' => 'DECIMAL(9,2)',     'notnull' => true, 'default' => '0.0'),
+            )
+        );/*}}}*/
+
+
+        UpdateUtil::table(/*{{{module_shop_lsv*/
+            DBPREFIX . 'module_shop_lsv',
+            array(
+                'id'       => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true, 'renamefrom' => 'order_id'),
+                'order_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'default' => '0'),
+                'holder'   => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
+                'bank'     => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
+                'blz'      => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
+            ),
+            array( # indexes
+                'order_id' => array(
+                    'fields'=>array('order_id'),
+                    'type'  =>'UNIQUE'
+                )
+            )
+        );/*}}}*/
+
+
+        // Shipment cost table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_shipment_cost',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'shipper_id'     => array('type' => 'INT(10)', 'unsigned' => true),
+                'max_weight'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                'cost'           => array('type' => 'DECIMAL(10,2)', 'unsigned' => true, 'notnull' => false),
+                'price_free'     => array('type' => 'DECIMAL(10,2)', 'unsigned' => true, 'notnull' => false)
+            )
+        );
+
+
+        // Shipper table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_shipper',
+            array(
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'       => array('type' => 'TINYTEXT'),
+                'status'     => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+
+
         // Countries table fields
         UpdateUtil::table(
             DBPREFIX.'module_shop_countries',
@@ -628,15 +586,16 @@ function _shopUpdate()
         );
 
 
-        // Importimg table fields
-        UpdateUtil::table(
-            DBPREFIX.'module_shop_importimg',
+        UpdateUtil::table(/*{{{module_shop_importimg*/
+            DBPREFIX . 'module_shop_importimg',
             array(
-                'img_id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'img_name'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'img_fields_db'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+                'img_id'          => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'img_name'        => array('type' => 'VARCHAR(255)',     'notnull' => true, 'default' => ''),
+                'img_cats'        => array('type' => 'TEXT',             'notnull' => true, 'default' => ''),
+                'img_fields_file' => array('type' => 'TEXT',             'notnull' => true, 'default' => ''),
+                'img_fields_db'   => array('type' => 'VARCHAR(255)',     'notnull' => true, 'default' => ''),
             )
-        );
+        );/*}}}*/
 
 
         // Mail table fields
@@ -932,7 +891,6 @@ function _shopUpdate()
     catch (UpdateException $e) {
         return UpdateUtil::DefaultActionHandler($e);
     }
-
 
 
 
