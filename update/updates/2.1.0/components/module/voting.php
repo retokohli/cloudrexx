@@ -7,7 +7,7 @@ function _votingUpdate()
             DBPREFIX . 'voting_system',
             array(
                 'id'               => array('type' =>    'INT',         'notnull' => true, 'primary'     => true,      'auto_increment' => true),
-                'date'             => array('type' =>    'TIMESTAMP',   'notnull' => true, 'default_expr'=> 'CURRENT_TIMESTAMP'),
+                'date'             => array('type' =>    'TIMESTAMP',   'notnull' => true, 'default'=> 'CURRENT_TIMESTAMP'),
                 'title'            => array('type' =>    'VARCHAR(60)', 'notnull' => true, 'default'     => '',        'renamefrom' => 'name'),
                 'question'         => array('type' =>    'TEXT',        'notnull' => true, 'default'     => ''),
                 'status'           => array('type' =>    'INT(1)',      'notnull' => true, 'default'     => ''),
@@ -30,7 +30,7 @@ function _votingUpdate()
                 'id'               => array('type' => 'INT',         'notnull' => true,  'primary'     => true,    'auto_increment' => true),
                 'voting_system_id' => array('type' => 'INT(14)',     'notnull' => true,                            'renamefrom'   => 'voting_sytem_id'),
                 'nickname'         => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => '',      'renamefrom'   => 'name'),
-                'date_entered'     => array('type' => 'TIMESTAMP',   'notnull' => false, 'default_expr'=> 'CURRENT_TIMESTAMP'),
+                'date_entered'     => array('type' => 'TIMESTAMP',   'notnull' => false, 'default'=> 'CURRENT_TIMESTAMP'),
                 'surname'          => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
                 'forename'         => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
                 'phone'            => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),

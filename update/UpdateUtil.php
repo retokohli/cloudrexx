@@ -173,6 +173,24 @@ class UpdateUtil {
             self::sql($query);
             return true;
 		}
+        else {
+            $col_spec = $col_info[strtoupper($col)];
+            $type = $col_spec->type . (preg_match('@[a-z]+\([0-9]+\)@i', $spec['type']) && $col_spec->max_length > 0 ? "($col_spec->max_length)" : '');
+            $default = isset($spec['default']) ? $spec['default'] : (isset($spec['default_expr']) ? $spec['default_expr'] : '');
+            if ($type <> strtolower($spec['type'])
+                || $col_spec->unsigned <> (isset($spec['unsigned']) && $spec['unsigned'])
+                || $col_spec->not_null <> (!isset($spec['notnull']) || $spec['notnull'])
+                || $col_spec->has_default <> (isset($spec['default']) || isset($spec['default_expr']))
+                || $col_spec->has_default && ($col_spec->default_value <> $default)
+                || $col_spec->auto_increment <> (isset($spec['auto_increment']) && $spec['auto_increment'])
+            ) {
+                $colspec = self::_colspec($spec);
+                $query = "ALTER TABLE `$name` CHANGE `$col` `$col` $colspec";
+                self::sql($query);
+                return true;
+            }
+
+        }
         return false;
 
         // TODO: maybe we should check for the type of the

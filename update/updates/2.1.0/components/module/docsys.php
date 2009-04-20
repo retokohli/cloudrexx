@@ -49,12 +49,12 @@ function _docsysUpdate()
                 'source'    => array('type' => 'VARCHAR(250)'),
                 'url1'      => array('type' => 'VARCHAR(250)'),
                 'url2'      => array('type' => 'VARCHAR(250)'),
-                'lang'      => array('type' => 'INT(2)', 'unsigned' => true, 'default_expr' => '0'),
-                'userid'    => array('type' => 'INT(6)', 'unsigned' => true, 'default_expr' => '0'),
-                'startdate' => array('type' => 'DATE', 'default_expr' => '0000-00-00'),
-                'enddate'   => array('type' => 'DATE', 'default_expr' => '0000-00-00'),
-                'status'    => array('type' => 'TINYINT(4)', 'default_expr' => '1'),
-                'changelog' => array('type' => 'INT(14)', 'default_expr' => '0')
+                'lang'      => array('type' => 'INT(2)', 'unsigned' => true, 'default' => '0'),
+                'userid'    => array('type' => 'INT(6)', 'unsigned' => true, 'default' => '0'),
+                'startdate' => array('type' => 'DATE', 'default' => '0000-00-00'),
+                'enddate'   => array('type' => 'DATE', 'default' => '0000-00-00'),
+                'status'    => array('type' => 'TINYINT(4)', 'default' => '1'),
+                'changelog' => array('type' => 'INT(14)', 'default' => '0')
             ),
             array(
                 'newsindex' => array('fields' => array('title', 'text'), 'type' => 'FULLTEXT')
