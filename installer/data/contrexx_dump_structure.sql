@@ -2895,7 +2895,7 @@ CREATE TABLE `contrexx_voting_additionaldata` (
   `date_entered` timestamp NOT NULL,
   `forename` varchar(80) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `voting_sytem_id` (`voting_system_id`)
+  KEY `voting_system_id` (`voting_system_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_voting_email` (
   `id` int(10) unsigned NOT NULL auto_increment,
