@@ -34,7 +34,7 @@ class UpdateUtil {
      *            'type'   => 'UNIQUE/FULLTEXT', # optional. If left out, a normal search index is created
      *        )
      */
-    public static function table($name, array $struc, array $idx = array()) {
+    public static function table($name, array $struc, array $idx = array(), $engine = 'MyISAM') {
         global $_CORELANG, $objDatabase, $_ARRAYLANG;
         $tableinfo = $objDatabase->MetaTables();
         if ($tableinfo === false) {
@@ -46,7 +46,7 @@ class UpdateUtil {
             self::check_indexes($name, $idx, $struc);
         }
         else {
-            self::create_table($name, $struc, $idx);
+            self::create_table($name, $struc, $idx, $engine);
         }
     }
 
@@ -74,7 +74,7 @@ class UpdateUtil {
         return isset($col_info[strtoupper($col)]);
     }
 
-    private static function create_table($name, array $struc, $idx) {
+    private static function create_table($name, array $struc, $idx, $engine) {
         global $_CORELANG, $objDatabase, $_ARRAYLANG;
 
         // create table statement
@@ -88,7 +88,7 @@ class UpdateUtil {
         $table_stmt = "CREATE TABLE `$name`(
             $colspec,
             PRIMARY KEY ($primaries)
-        )";
+        ) ENGINE=$engine";
 
         self::sql($table_stmt);
         // index statements. as we just created the table
@@ -175,7 +175,7 @@ class UpdateUtil {
 		}
         else {
             $col_spec = $col_info[strtoupper($col)];
-            $type = $col_spec->type . (preg_match('@[a-z]+\([0-9]+\)@i', $spec['type']) && $col_spec->max_length > 0 ? "($col_spec->max_length)" : '');
+            $type = $col_spec->type . (preg_match('@[a-z]+\([0-9]+\)@i', $spec['type']) && $col_spec->max_length > 0 ? "($col_spec->max_length)" : ($col_spec->type == 'enum' ? "(".implode(",", $col_spec->enums).")" : ''));
             $default = isset($spec['default']) ? $spec['default'] : (isset($spec['default_expr']) ? $spec['default_expr'] : '');
             if ($type <> strtolower($spec['type'])
                 || $col_spec->unsigned <> (isset($spec['unsigned']) && $spec['unsigned'])

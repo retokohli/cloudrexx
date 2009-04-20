@@ -9,7 +9,9 @@ function _u2uUpdate()
                 'id'               => array('type' => 'INT(11)',     'notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'user_id'          => array('type' => 'INT(11)',     'notnull' => true),
                 'buddies_id'       => array('type' => 'INT(11)',     'notnull' => true),
-            )
+            ),
+            array(),
+            'InnoDB'
         );
         UpdateUtil::table(
             DBPREFIX . 'module_u2u_message_log',
@@ -17,7 +19,9 @@ function _u2uUpdate()
                 'message_id'       => array('type' => 'INT(11) UNSIGNED','notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'message_text'     => array('type' => 'TEXT',            'notnull' => true),
                 'message_title'    => array('type' => 'TEXT',            'notnull' => true),
-            )
+            ),
+            array(),
+            'InnoDB'
         );
         UpdateUtil::table(
             DBPREFIX . 'module_u2u_sent_messages',
@@ -28,7 +32,9 @@ function _u2uUpdate()
                 'receiver_id'         => array('type' => 'INT(11) UNSIGNED',      'notnull' => true),
                 'mesage_open_status'  => array('type' => "ENUM('0','1')",         'notnull' => true, 'default' => '0'),
                 'date_time'           => array('type' => "DATETIME",              'notnull' => true),
-            )
+            ),
+            array(),
+            'InnoDB'
         );
         UpdateUtil::table(
             DBPREFIX . 'module_u2u_settings',
@@ -36,7 +42,9 @@ function _u2uUpdate()
                 'id'                  => array('type' => 'INT(11) UNSIGNED','notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'name'                => array('type' => 'VARCHAR(50)',     'notnull' => true),
                 'value'               => array('type' => 'TEXT',            'notnull' => true),
-            )
+            ),
+            array(),
+            'InnoDB'
         );
         UpdateUtil::table(
             DBPREFIX . 'module_u2u_user_log',
@@ -46,7 +54,9 @@ function _u2uUpdate()
                 'user_sent_items'     => array('type' => 'INT(11) UNSIGNED', 'notnull' => true),
                 'user_unread_items'   => array('type' => 'INT(11) UNSIGNED', 'notnull' => true),
                 'user_status'         => array('type' => "ENUM('0','1')",    'notnull' => true, 'default' => '1'),
-            )
+            ),
+            array(),
+            'InnoDB'
         );
     }
     catch (UpdateException $e) {

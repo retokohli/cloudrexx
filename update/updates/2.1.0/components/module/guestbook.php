@@ -33,10 +33,10 @@ function _guestbookUpdate()
             DBPREFIX . 'module_guestbook',
             array(
                 'id'        => array('type' => 'INT(6)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
-                'status'    => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default_exp' => 0),
+                'status'    => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => 0),
                 'name'      => array('type' => 'VARCHAR(255)'),
                 'forename'  => array('type' => 'VARCHAR(255)'),
-                'gender'    => array('type' => 'CHAR(1)', 'notnull' => false),
+                'gender'    => array('type' => 'CHAR(1)', 'notnull' => true, 'default' => ''),
                 'url'       => array('type' => 'TINYTEXT'),
                 'email'     => array('type' => 'TINYTEXT'),
                 'comment'   => array('type' => 'TEXT'),
