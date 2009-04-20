@@ -154,13 +154,6 @@ CREATE TABLE `contrexx_backups` (
   PRIMARY KEY  (`id`),
   KEY `date` (`date`)
 ) TYPE=MyISAM ;
-CREATE TABLE `contrexx_community_config` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(64) NOT NULL default '',
-  `value` varchar(255) NOT NULL default '',
-  `status` int(1) default '1',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
 CREATE TABLE `contrexx_content` (
   `id` int(6) unsigned NOT NULL default '0',
   `content` mediumtext NOT NULL,
