@@ -435,7 +435,7 @@ function _shopUpdate()
         UpdateUtil::table(/*{{{module_shop_discountgroup_count_rate*/
             DBPREFIX . 'module_shop_discountgroup_count_rate',
             array(
-                'group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true),
+                'group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => 0),
                 'count'    => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default'        => '1'),
                 'rate'     => array('type' => 'DECIMAL(5,2)', 'unsigned' => true,     'notnull' => true, 'default' => '0.0'),
             )
@@ -835,7 +835,7 @@ function _shopUpdate()
                 'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'name_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'value'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'price'      => array('type' => 'DECIMAL(9,2)', 'default' => '0.00')
+                'price'      => array('type' => 'DECIMAL(9,2)', 'notnull' => false, 'default' => '0.00')
             )
         );
 

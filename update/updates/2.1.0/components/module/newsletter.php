@@ -23,6 +23,34 @@ function _newsletterUpdate()
         }
     }
 
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'module_newsletter_category',
+            array(
+                'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'status'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0'),
+                'name'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'notification_email'     => array('type' => 'VARCHAR(250)')
+            ),
+            array(
+                'name'                   => array('fields' => array('name'))
+            )
+        );
+
+        UpdateUtil::table(
+            DBPREFIX.'module_newsletter_confirm_mail',
+            array(
+                'id'             => array('type' => 'INT(1)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'title'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'content'        => array('type' => 'LONGTEXT'),
+                'recipients'     => array('type' => 'TEXT')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
 
