@@ -167,7 +167,7 @@ function _statsUpdate()
                 $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET binary NOT NULL";
                 if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 1 && $objDatabase->Execute($query)){
                     $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 2;
-                    $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) BINARY CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
+                    $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
                     if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 2 && $objDatabase->Execute($query)){
                         $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 3;
                         if (!isset($arrIndexes['unique'])) {
@@ -198,7 +198,7 @@ function _statsUpdate()
             DBPREFIX.'stats_search',
             array(
                 'id'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'name'       => array('type' => 'VARCHAR(100)', 'default' => ''),
+                'name'       => array('type' => 'VARCHAR(100)', 'binary' => true, 'default' => ''),
                 'count'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'sid'        => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
                 'external'   => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0')

@@ -278,6 +278,7 @@ class UpdateUtil {
         $autoinc      = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
         $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
+        $binary       = (array_key_exists('binary',         $spec)) ? $spec['binary']         : null;
 
         $default_st = '';
         if (strtoupper($spec['type']) != 'BLOB' and strtoupper($spec['type']) != 'TEXT') {
@@ -291,6 +292,7 @@ class UpdateUtil {
         }
 
         $descr  = $spec['type'];
+        $descr .= $binary ? " BINARY" : '';
         $descr .= $unsigned ? " unsigned"      : '';
         $descr .= $notnull ? " NOT NULL"       : '';
         $descr .= $autoinc ? " auto_increment" : '';
