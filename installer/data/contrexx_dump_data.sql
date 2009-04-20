@@ -3375,8 +3375,8 @@ INSERT INTO `contrexx_module_shop_products` (`id`, `product_id`, `picture`, `tit
 INSERT INTO `contrexx_module_shop_products_attributes` (`attribute_id`, `product_id`, `attributes_name_id`, `attributes_value_id`, `sort_id`) VALUES (48,1,1,2,0);
 INSERT INTO `contrexx_module_shop_products_attributes` (`attribute_id`, `product_id`, `attributes_name_id`, `attributes_value_id`, `sort_id`) VALUES (47,1,1,1,0);
 INSERT INTO `contrexx_module_shop_products_attributes_name` (`id`, `name`, `display_type`) VALUES (1,'Zusatzleistungen',2);
-INSERT INTO `contrexx_module_shop_products_attributes_value` (`id`, `name_id`, `value`, `price`, `price_prefix`) VALUES (1,1,'Leder-Etui','19.00','+');
-INSERT INTO `contrexx_module_shop_products_attributes_value` (`id`, `name_id`, `value`, `price`, `price_prefix`) VALUES (2,1,'Pimp my Handy Kit','400.00','+');
+INSERT INTO `contrexx_module_shop_products_attributes_value` (`id`, `name_id`, `value`, `price`) VALUES (1,1,'Leder-Etui','19.00');
+INSERT INTO `contrexx_module_shop_products_attributes_value` (`id`, `name_id`, `value`, `price`) VALUES (2,1,'Pimp my Handy Kit','400.00');
 INSERT INTO `contrexx_module_shop_rel_countries` (`id`, `zones_id`, `countries_id`) VALUES (1,1,1);
 INSERT INTO `contrexx_module_shop_rel_countries` (`id`, `zones_id`, `countries_id`) VALUES (2,1,2);
 INSERT INTO `contrexx_module_shop_rel_countries` (`id`, `zones_id`, `countries_id`) VALUES (3,1,3);

@@ -2521,7 +2521,7 @@ CREATE TABLE `contrexx_module_shop_payment` (
   `processor_id` int(10) unsigned NOT NULL default '0',
   `costs` decimal(9,2) NOT NULL default '0.00',
   `costs_free_sum` decimal(9,2) NOT NULL default '0.00',
-  `sort_order` int(10) unsigned default '0',
+  `sort_order` int(5) unsigned default '0',
   `status` tinyint(1) unsigned default '1',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
@@ -2596,13 +2596,13 @@ CREATE TABLE `contrexx_module_shop_products_attributes` (
   `product_id` int(10) unsigned NOT NULL default '0',
   `attributes_name_id` int(10) unsigned NOT NULL default '0',
   `attributes_value_id` int(10) unsigned NOT NULL default '0',
-  `sort_id` int(10) unsigned NOT NULL default '0',
+  `sort_id` int(5) unsigned NOT NULL default '0',
   PRIMARY KEY  (`attribute_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products_attributes_name` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
-  `display_type` tinyint(1) unsigned NOT NULL default '0',
+  `display_type` tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products_attributes_value` (
@@ -2610,7 +2610,6 @@ CREATE TABLE `contrexx_module_shop_products_attributes_value` (
   `name_id` int(10) unsigned NOT NULL default '0',
   `value` varchar(255) NOT NULL default '',
   `price` decimal(9,2) default '0.00',
-  `price_prefix` enum('+','-') NOT NULL default '+',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_products_downloads` (
@@ -2630,7 +2629,7 @@ CREATE TABLE `contrexx_module_shop_rel_countries` (
 CREATE TABLE `contrexx_module_shop_rel_discount_group` (
   `customer_group_id` int(10) unsigned NOT NULL default '0',
   `article_group_id` int(10) unsigned NOT NULL default '0',
-  `rate` decimal(5,2) NOT NULL default '0.00',
+  `rate` decimal(9,2) NOT NULL default '0.00',
   PRIMARY KEY  (`customer_group_id`,`article_group_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_shop_rel_payment` (
