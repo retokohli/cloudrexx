@@ -167,7 +167,7 @@ function _statsUpdate()
                 $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET binary NOT NULL";
                 if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 1 && $objDatabase->Execute($query)){
                     $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 2;
-                    $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
+                    $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) BINARY CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
                     if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 2 && $objDatabase->Execute($query)){
                         $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 3;
                         if (!isset($arrIndexes['unique'])) {

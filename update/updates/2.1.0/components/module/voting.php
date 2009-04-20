@@ -11,7 +11,7 @@ function _votingUpdate()
                 'title'            => array('type' =>    'VARCHAR(60)', 'notnull' => true, 'default'     => '',        'renamefrom' => 'name'),
                 'question'         => array('type' =>    'TEXT',        'notnull' => false),
                 'status'           => array('type' =>    'TINYINT(1)',      'notnull' => false, 'default'     => 1),
-                'votes'            => array('type' =>    'INT(11)',     'notnull' => true, 'default'     => 0),
+                'votes'            => array('type' =>    'INT(11)',     'notnull' => false, 'default'     => 0),
                 'submit_check'     => array('type' => "ENUM('cookie','email')", 'notnull' => true,  'default'    => 'cookie'),
                 'additional_nickname' => array('type' => 'TINYINT(1)',      'notnull' => true, 'default'     => 0),
                 'additional_forename' => array('type' => 'TINYINT(1)',      'notnull' => true, 'default'     => 0),

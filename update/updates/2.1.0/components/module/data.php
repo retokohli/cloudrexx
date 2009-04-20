@@ -25,7 +25,7 @@ function _dataUpdate()
               `box_width` int(11) NOT NULL default '350',
               `template` text NOT NULL,
               PRIMARY KEY (`category_id`,`lang_id`)
-            ) ENGINE=MyISAM",
+            ) ENGINE=InnoDB",
         #################################################################################
         'module_data_message_to_category' => "CREATE TABLE `".DBPREFIX."module_data_message_to_category` (
               `message_id` int(6) unsigned NOT NULL default '0',
@@ -33,7 +33,7 @@ function _dataUpdate()
               `lang_id` int(2) unsigned NOT NULL default '0',
               PRIMARY KEY (`message_id`,`category_id`,`lang_id`),
               KEY `category_id` (`category_id`)
-            ) ENGINE=MyISAM ",
+            ) ENGINE=InnoDB",
         #################################################################################
         'module_data_messages' => "CREATE TABLE `".DBPREFIX."module_data_messages` (
               `message_id` int(6) unsigned NOT NULL auto_increment,
@@ -47,7 +47,7 @@ function _dataUpdate()
               `release_time` int(15) NOT NULL default '0',
               `release_time_end` int(15) NOT NULL default '0',
               PRIMARY KEY (`message_id`)
-            ) ENGINE=MyISAM",
+            ) ENGINE=InnoDB",
         #################################################################################
             'module_data_messages_lang' => "CREATE TABLE `contrexx_module_data_messages_lang` (
               `message_id` int(6) unsigned NOT NULL default '0',
@@ -66,7 +66,7 @@ function _dataUpdate()
               `forward_url` varchar(255)  NOT NULL default '',
               `forward_target` varchar(40)  default NULL,
               PRIMARY KEY  (`message_id`,`lang_id`)
-            ) ENGINE=MyISAM ",
+            ) ENGINE=InnoDB",
         #################################################################################
         'module_data_placeholders' => "CREATE TABLE `".DBPREFIX."module_data_placeholders` (
               `id` int(10) unsigned NOT NULL auto_increment,
@@ -82,7 +82,7 @@ function _dataUpdate()
               `name` varchar(50) NOT NULL default '',
               `value` text NOT NULL,
               PRIMARY KEY (`name`)
-            ) ENGINE=MyISAM"
+            ) ENGINE=InnoDB"
     );
 
       ///////////////////////////////////////////////////////////////////
