@@ -68,16 +68,6 @@ function _dataUpdate()
               PRIMARY KEY  (`message_id`,`lang_id`)
             ) ENGINE=InnoDB",
         #################################################################################
-        'module_data_placeholders' => "CREATE TABLE `".DBPREFIX."module_data_placeholders` (
-              `id` int(10) unsigned NOT NULL auto_increment,
-              `type` set('cat','entry') NOT NULL default '',
-              `ref_id` int(11) NOT NULL default '0',
-              `placeholder` varchar(255) NOT NULL default '',
-              PRIMARY KEY (`id`),
-              UNIQUE KEY `placeholder` (`placeholder`),
-              UNIQUE KEY `type` (`type`,`ref_id`)
-            ) ENGINE=MyISAM",
-        #################################################################################
         'module_data_settings' => "CREATE TABLE `".DBPREFIX."module_data_settings` (
               `name` varchar(50) NOT NULL default '',
               `value` text NOT NULL,
@@ -96,6 +86,29 @@ function _dataUpdate()
 // TODO: Unused
 //        $installed[] = $name;
     }
+
+
+
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'module_data_placeholders',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'type'           => array('type' => 'SET(\'cat\',\'entry\')', 'notnull' => true, 'default' => ''),
+                'ref_id'         => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'placeholder'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'placeholder'    => array('fields' => array('placeholder'), 'type' => 'UNIQUE'),
+                'type'           => array('fields' => array('type','ref_id'), 'type' => 'UNIQUE')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
 
       ///////////////////////////////////////////////////////////////////
      // Backend areas                                                 //

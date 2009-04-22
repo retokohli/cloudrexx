@@ -886,6 +886,17 @@ function _shopUpdate()
         );
 
 
+        // Vat table fields
+        UpdateUtil::table(
+            DBPREFIX.'module_shop_vat',
+            array(
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'class'      => array('type' => 'TINYTEXT'),
+                'percent'    => array('type' => 'DECIMAL(5,2)', 'unsigned' => true)
+            )
+        );
+
+
         // Zones table fields
         UpdateUtil::table(
             DBPREFIX.'module_shop_zones',
