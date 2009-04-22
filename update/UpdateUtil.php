@@ -112,8 +112,6 @@ class UpdateUtil {
         if ($col_info === false) {
             self::cry(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
         }
-        // Drop columns that are not specified
-        self::_drop_unspecified_columns($name, $struc, $col_info);
 
         // Create columns that don't exist yet
         foreach ($struc as $col => $spec) {
@@ -125,6 +123,9 @@ class UpdateUtil {
                 }
             }
         }
+
+        // Drop columns that are not specified
+        self::_drop_unspecified_columns($name, $struc, $col_info);
     }
 
     private function _drop_unspecified_columns($name, $struc, $col_info) {
