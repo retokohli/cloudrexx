@@ -186,50 +186,19 @@ function _accessUpdate()
     }
 
 
-    // delete obsolete table community_config
-    UpdateUtil::drop_table(DBPREFIX.'community_config');
-
-    // delete obsolete table community_config
-    UpdateUtil::drop_table(DBPREFIX.'user_validity');
-
-    // Currently, this is only here to create the u2u_active field.. but instead of adding
-    // 10 lines for each new field in the future, why not just extend this block
-    DBG::trace();
     try{
-        DBG::trace();
-        UpdateUtil::table(
-            DBPREFIX . 'access_users',
-            array(
-                'id'               => array('type' => 'INT(5)',            'unsigned' => true, 'primary'     => true,    'auto_increment' => true),
-                'is_admin'         => array('type' => 'INT(1)',                                   'default'        => 0),
-                'username'         => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default_expr' => 'NULL'     ),
-                'password'         => array('type' => 'VARCHAR(32)', 'notnull' => false, 'default_expr' => 'NULL'     ),
-                'regdate'          => array('type' => 'INT(14)', 'unsigned' => true, 'default' => 0         ),
-                'expiration'       => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
-                'validity'         => array('type' => 'INT(10)', 'unsigned' => true,                         'default'        => 0),
-                'last_auth'        => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
-                'last_activity'    => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
-                'email'            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'default_expr' => 'NULL'    ),
-                'email_access'     => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'nobody'),
-                'frontend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true,                          'default'        => 0),
-                'backend_lang_id'  => array('type' => 'INT(2)', 'unsigned' => true,                          'default'        => 0),
-                'active'           => array('type' => 'TINYINT(1)', 'default'        => 0),
-                'profile_access'   => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'members_only'),
-                'restore_key'      => array('type' => 'VARCHAR(32)'     ),
-                'restore_key_time' => array('type' => 'INT(14)', 'unsigned' => true, 'default' => 0         ),
-                'u2u_active'       => array('type' => "ENUM('0','1')",                            'default'        => '1'),
-            ),
-            array( # indexes
-                'username' => array( 'fields'=>array('username'))
-            )
-        );
+        // delete obsolete table community_config
+        UpdateUtil::drop_table(DBPREFIX.'community_config');
+
+        // delete obsolete table community_config
+        UpdateUtil::drop_table(DBPREFIX.'user_validity');
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
         return UpdateUtil::DefaultActionHandler($e);
     }
-    DBG::trace();
+
 
     /********************
      *
@@ -791,6 +760,47 @@ function _accessUpdate()
     if ($objDatabase->Execute($query) === false) {
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
+
+
+
+    // Currently, this is only here to create the u2u_active field.. but instead of adding
+    // 10 lines for each new field in the future, why not just extend this block
+    try{
+        DBG::trace();
+        UpdateUtil::table(
+            DBPREFIX . 'access_users',
+            array(
+                'id'               => array('type' => 'INT(5)',            'unsigned' => true, 'primary'     => true,    'auto_increment' => true),
+                'is_admin'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default'        => 0),
+                'username'         => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default_expr' => 'NULL'     ),
+                'password'         => array('type' => 'VARCHAR(32)', 'notnull' => false, 'default_expr' => 'NULL'     ),
+                'regdate'          => array('type' => 'INT(14)', 'unsigned' => true, 'default' => 0         ),
+                'expiration'       => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
+                'validity'         => array('type' => 'INT(10)', 'unsigned' => true,                         'default'        => 0),
+                'last_auth'        => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
+                'last_activity'    => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
+                'email'            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'default_expr' => 'NULL'    ),
+                'email_access'     => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'nobody'),
+                'frontend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true,                          'default'        => 0),
+                'backend_lang_id'  => array('type' => 'INT(2)', 'unsigned' => true,                          'default'        => 0),
+                'active'           => array('type' => 'TINYINT(1)', 'default'        => 0),
+                'profile_access'   => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'members_only'),
+                'restore_key'      => array('type' => 'VARCHAR(32)'     ),
+                'restore_key_time' => array('type' => 'INT(14)', 'unsigned' => true, 'default' => 0         ),
+                'u2u_active'       => array('type' => "ENUM('0','1')",                            'default'        => '1'),
+            ),
+            array( # indexes
+                'username' => array( 'fields'=>array('username'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
 
     return true;
 }
