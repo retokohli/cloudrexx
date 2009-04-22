@@ -76,7 +76,8 @@ function _statsUpdate()
         * ADDED:		Contrexx v2.1.0					*
         ************************************************/
 		'stats_visitors' => array(
-			'unique' => array('sid')
+            'unique' => array('sid'),
+            'count'  => 'timestamp'
 		)
 
 	) as $table => $arrUnique) {
