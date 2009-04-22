@@ -189,6 +189,8 @@ function _accessUpdate()
     // delete obsolete table community_config
     UpdateUtil::drop_table(DBPREFIX.'community_config');
 
+    // delete obsolete table community_config
+    UpdateUtil::drop_table(DBPREFIX.'user_validity');
 
     // Currently, this is only here to create the u2u_active field.. but instead of adding
     // 10 lines for each new field in the future, why not just extend this block
