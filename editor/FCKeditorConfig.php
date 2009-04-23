@@ -1,4 +1,8 @@
-<?php require_once('../config/configuration.php') ?>
+<?php
+	require_once('../config/configuration.php');
+	require_once('../core/settings.class.php');
+	$objSettings = new settingsManager();
+?>
 /*
  * FCKeditor config file
  */
@@ -8,6 +12,8 @@ FCKConfig.SkinPath = FCKConfig.BasePath + 'skins/default/' ;
 FCKConfig.EnterMode = 'br';
 FCKConfig.ShiftEnterMode = 'p';
 FCKConfig.StartupShowBlocks = true;
+FCKConfig.ForcePasteAsPlainText = true;
+<?=$objSettings->useOwnCSS();?>
 
 FCKConfig.ToolbarSets["Default"] = [
 	['Source','DocProps','-','NewPage','Preview','-','Templates'],
