@@ -123,7 +123,6 @@ $_ARRAYLANG['TXT_CONTACT_LANG'] = "Sprog";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Beskeder";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA beskyttelse";
-$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Ved at aktivere denne option bliver gæsterne tvunget til at indtaste en grafisk afbildet tegnfølge for at kunne sende kontaktanmodningen. Dette muliggør, at den stor del af anmodninger, som genereres af såkaldte spambots, kan blokeres.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Er denne option valgt, bliver et yderligere kopi af de indtastede formulardata sendt til afsenderen.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie til afsender";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Hvis der anwendes et eget CSS-design, så har dette formular IDet og CSS-klassen <strong>'contactForm_\$FormularNummer'</strong> F.eks. contactForm_2, som standard er kun 'contactForm' sat for disse attributer";

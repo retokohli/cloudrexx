@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_SUBMIT'] = "Enviar ";
 $_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Direcci&oacute;n de notificaci&oacute;n";
 $_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "Noticias esperando confirmaci&oacute;";
 $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Una entrada de noticias ha sido a&ntilde;adida. Puede revisar dicha entrada en la siguiente URL:";
-$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Der eingegebene Captcha-Code ist nicht korrekt!";
-$_ARRAYLANG['TXT_CAPTCHA'] = "Bitte geben Sie die abgebildeten Zeichen ein:";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "El c&oacute;digo captcha no es correcto.";
+$_ARRAYLANG['TXT_CAPTCHA'] = "Por favor, introduzca los caracteres mostrados:";
 $_ARRAYLANG['TXT_NEWS_MORE'] = "M&aacute;s";
 ?>

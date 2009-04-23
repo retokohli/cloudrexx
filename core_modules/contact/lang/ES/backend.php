@@ -123,12 +123,11 @@ $_ARRAYLANG['TXT_CONTACT_LANG'] = "Idioma";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Detalles";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Entradas";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "protecci&oacute;n CAPTCHA";
-$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Al activar esta opci&oacute;n, los usuarios necesitar&aacute;n introducir una secuencia de caracteres, que se muestra como una imagen, para enviar una solicitud de contacto. Este filtro permite evitar un gran n&uacute;mero de entradas que se generan por medio de robots de publicidad basura.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Activando esta opci&oacute;n se asegura de que una copia exacta de los datos del formulario ser&aacute; enviada al remitente.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Copia al remitente CC";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Si estilo propio de CSS est&aacute; en uso, este formulario tiene el ID y CSS clase: <strong> 'contactForm_ \ $ FormularNummer' </ strong>, por ejemplo, contactForm_2. Por defecto, s&oacute;lo 'contactForm' es usado por estos atributos.";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Usar su propio estilo";
-$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
-$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
-$_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "Die E-Mail Adresse '%s' ist nicht gültig!";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reiniciar";
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Seleccionar direcci&oacute;n del destinatario";
+$_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "\¡La direcci&oacute;n de email '%s' no es v&aacute;lida!";
 ?>

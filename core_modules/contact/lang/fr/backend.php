@@ -123,7 +123,6 @@ $_ARRAYLANG['TXT_CONTACT_LANG'] = "Langue";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Messages";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "Protection CAPTCHA";
-$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Cette option permet de se prémunir contre la génération automatique de faux contacts par des spambots (robots de spam). Lorsqu'elle est activée, l'utilisateur doit saisir un code (CAPTCHA) pour pouvoir envoyer un message.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Si cette option est activée, l'expéditeur d'un formulaire en recevra automatiquement une copie.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Copie à l'expéditeur";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "En cas d'utilisation d'un style CSS personnalisé, le formulaire prend l'ID et la classe CSS suivants:<strong>'contactForm_\$NuméroFormulaire'</strong> p.ex. contactForm_2. En standard, le nom est simplement 'contactForm'";
