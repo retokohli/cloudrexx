@@ -3,8 +3,13 @@
 ////////////////////////////////////////
 
 ****************************************
-* Neue Funktionen / Änderungen *********
+* Neue Funktionen / Ã„nderungen *********
 ****************************************
+Grundeinstellungen / WYSIWYG Editor
+- In den Grundeinstellungen gibt es neu die Option "Eigenen Style im WYSIWYG Editor verwenden".
+Ist diese aktiviert, wird die Datei "style.css" des aktuellen Standard-Template in den WYSIWYG Editor
+eingebunden. Somit kann der Style bereits schon wÃ¤hrend dem editieren geladen und angeschaut werden.
+Wird diese Option deaktivert, wird der normale WYSIWYG Editor Style geladen.
 
 
 ****************************************
@@ -13,7 +18,7 @@
 Allgemein
 - Die im Benutzerprofil definierte bevorzugte Frontend-Sprache wird nach der
 Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
-Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
+Vorfeld nicht bereits die Frontend Sprache manuell ausgewï¿½hlt hat.
 - Geschwindigkeitsoptimierung der Benutzerverwaltung.
 
 Module: Shop
