@@ -6,26 +6,26 @@
  * @package     contrexx
  * @subpackage  module_guestbook
  */
-$_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_COMMENT'] = "Kommentar";
-$_ARRAYLANG['TXT_LOCATION'] = "Wohnort";
-$_ARRAYLANG['TXT_SEX'] = "Geschlecht";
+$_ARRAYLANG['TXT_NAME'] = "Nombre";
+$_ARRAYLANG['TXT_COMMENT'] = "Comentar";
+$_ARRAYLANG['TXT_LOCATION'] = "Localizaci&oacute;n";
+$_ARRAYLANG['TXT_SEX'] = "Sexo";
 $_ARRAYLANG['TXT_EMAIL'] = "e-mail";
-$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Ihre E-Mail Adresse ist ungültig!";
-$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Bitte füllen Sie alle erforderlichen Felder aus.";
-$_ARRAYLANG['TXT_IP_ADDRESS'] = "IP Adresse";
-$_ARRAYLANG['TXT_RESET'] = "Zurücksetzen";
-$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "Fehlerhafte Internetadresse";
-$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Der Datensatz wurde erfolgreich gespeichert";
-$_ARRAYLANG['TXT_DATE'] = "Datum";
-$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Eingetragene Personen";
-$_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY'] = "Bitte überprüfen Sie den Eintrag auf Ihrer Webseite.";
-$_ARRAYLANG['TXT_ENTRY_READS'] = "Der Eintrag lautet:";
-$_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "Neuer Eintrag auf";
-$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Beachten Sie bitte, dass der Administrator alle einkommenden Beiträge zuerst überprüft, bevor diese auf der Seite erscheinen.";
-$_ARRAYLANG['txt_captcha'] = "Bitte geben Sie die abgebildeten Ziffern ein";
-$_ARRAYLANG['TXT_ALT_STRING'] = "Der Wert dieses Bildes lautet: , ohne Leerzeichen zwischen den Ziffern.";
-$_ARRAYLANG['captcha_error'] = "Die eingegebene Nummer stimmt nicht!";
-$_ARRAYLANG['TXT_IS_INVALID'] = "ist leer oder nicht gültig!";
-$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Die eingegebene Zahl stimmt nicht!";
+$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "La direcci&oacute;n de E-mail no es v&aacute;lida";
+$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Por favor rellene todos los campos obligatorios";
+$_ARRAYLANG['TXT_IP_ADDRESS'] = "Direcci&oacute;n IP";
+$_ARRAYLANG['TXT_RESET'] = "Reiniciar";
+$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "Direcci&oacute;n de internet no v&aacute;lida";
+$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "La entrada ha sido guardada";
+$_ARRAYLANG['TXT_DATE'] = "Fecha";
+$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Personas con firma";
+$_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY'] = "Por favor compruebe la entrada en su Web";
+$_ARRAYLANG['TXT_ENTRY_READS'] = "La entrada ha quedado de la siguiente forma:";
+$_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "Nueva entrada";
+$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Todas las entradas ser&aacute;n comprobadas por el administrador antes de ser publicadas.";
+$_ARRAYLANG['txt_captcha'] = "Por favor escriba las letras que ve arriba";
+$_ARRAYLANG['TXT_ALT_STRING'] = "El valor de esta imagen es: sin espacios entre los d&iacute;gitos.";
+$_ARRAYLANG['captcha_error'] = "El n&uacute;mero introducido no es correcto!";
+$_ARRAYLANG['TXT_IS_INVALID'] = "vacia o no v&aacute;lida";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "El n&uacute;mero introducido no es correcto!";
 ?>

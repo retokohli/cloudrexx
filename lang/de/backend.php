@@ -158,7 +158,7 @@ $_ARRAYLANG['TXT_DOWNLOAD'] = "Herunterladen";
 $_ARRAYLANG['TXT_RESTORE'] = "Wiederherstellen";
 $_ARRAYLANG['TXT_SHOP_BACKUP'] = "Shop Sicherung";
 $_ARRAYLANG['TXT_TEMPLATE'] = "Als Vorlage";
-$_ARRAYLANG['TXT_OVERVIEW'] = "Überblick";
+$_ARRAYLANG['TXT_OVERVIEW'] = "Übersicht";
 $_ARRAYLANG['TXT_LOG_ADMINISTRATION'] = "Login Informationen";
 $_ARRAYLANG['TXT_LOG_INDEX'] = "Logging Index";
 $_ARRAYLANG['TXT_LOG_ENTRIES'] = "Login Einträge";
@@ -1015,4 +1015,6 @@ $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "Diese Funktion setzt vora
 $_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Fehler:  Konnte keine Informationen über vorhandene Tabellen lesen";
 $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Verzeichnis: '%1\$s'";
 $_ARRAYLANG['TXT_CONTENT_ASSIGN_BLOCK'] = "Blöcke zuweisen";
+$_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR'] = "Eigenen Style im WYSIWYG Editor verwenden";
+$_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'] = "Ist diese Funktion aktiviert, wird im WYSIWYG-Editor die Datei <b>style.css</b> des aktuellen Standard-Templates eingebunden.";
 ?>

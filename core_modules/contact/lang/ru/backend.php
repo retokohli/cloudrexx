@@ -123,7 +123,6 @@ $_ARRAYLANG['TXT_CONTACT_LANG'] = "Язык";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Детали";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Входы";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA защита";
-$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Для активации этой опции пользователь должен ввести код изображенный на картинке, чтобы иметь возможность отправть контактную форму. Это необходимо для блокирования автоматических записей генерируемых спамботами.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "ДЛя активации этой опции, копия это формы должна быть дополнительно послана отправителю.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Копия отправителю";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "При использовании собственного CSS стиля, эта форма должна иметь ID и CSS-класс <strong>'contactForm_\$FormularNummer'</strong> например contactForm_2, стандартно устанавливает атрибуты только для 'contactForm'";

@@ -8,7 +8,7 @@
  */
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_TITLE'] = "Général";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION'] = "Nombre de caractères dans le texte d'introduction";
-$_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "Nombre de caractères dams le texte d'accroche. Pour afficher systématiquement le texte complet, saisir 0.";
+$_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "Nombre de caractères dans le texte d'accroche. Pour afficher systématiquement le texte complet, saisir 0.";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_COMMENTS_TITLE'] = "Commentaires";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_COMMENTS_ALLOW'] = "Autoriser commentaires";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_COMMENTS_ALLOW_HELP'] = "Permettre aux visiteurs d'écrire des commentaires sur vos articles.";
