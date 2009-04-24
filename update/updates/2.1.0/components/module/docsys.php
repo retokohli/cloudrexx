@@ -48,7 +48,7 @@ function _docsysUpdate()
         $fix_queries = array();
         while (!$duplicateIDs->EOF) {
             $id    = $duplicateIDs->fields['id'];
-            $entries_sql = "SELECT * FROM ".DBPREFIX."module_docsys WHERE id = $id LIMIT $count";
+            $entries_sql = "SELECT * FROM ".DBPREFIX."module_docsys WHERE id = $id";
             $entries     = $objDatabase->Execute($entries_sql);
             if ($entries === false) {
                 return _databaseError($entries_sql, $objDatabase->ErrorMsg());
@@ -62,12 +62,18 @@ function _docsysUpdate()
                 return _databaseError($entries_sql, $objDatabase->ErrorMsg());
             }
             $is_first = true;
+            $fix_queries[] = "DELETE FROM ".DBPREFIX."module_docsys WHERE id = $id";
             while (!$entries->EOF) {
                 $pairs = array();
                 foreach ($entries->fields as $k => $v) {
                     // only first may keep it's id
-                    if ($k == 'id' and !$is_first) {
-                        continue;
+                    if ($k == 'id') {
+                        if ($is_first) {
+                            $v = $id;
+                        }
+                        else {
+                            continue;
+                        }
                     }
                     $pairs[] = "$k = '" . addslashes($v) . "'";
                 }
@@ -76,7 +82,6 @@ function _docsysUpdate()
                 $is_first = false;
                 $entries->MoveNext();
             }
-            $fix_queries[] = "DELETE FROM ".DBPREFIX."module_docsys WHERE id = $id";
             $duplicateIDs->MoveNext();
         }
 
