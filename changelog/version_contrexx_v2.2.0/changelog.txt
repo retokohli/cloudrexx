@@ -10,6 +10,8 @@ Grundeinstellungen / WYSIWYG Editor
 Ist diese aktiviert, wird die Datei "style.css" des aktuellen Standard-Template in den WYSIWYG Editor
 eingebunden. Somit kann der Style bereits schon wÃ¤hrend dem editieren geladen und angeschaut werden.
 Wird diese Option deaktivert, wird der normale WYSIWYG Editor Style geladen.
+- Aus sicherheits- und benutzerfreundlichen GrÃ¼nden wird nun standardmÃ¤ssig jeder Text der in den
+WYSIWYG Editor kopiert wird, als Plaintext eingefÃ¼gt. (FCKConfig.ForcePasteAsPlainText = true;)
 
 
 ****************************************
@@ -22,13 +24,13 @@ Vorfeld nicht bereits die Frontend Sprache manuell ausgewï¿½hlt hat.
 - Geschwindigkeitsoptimierung der Benutzerverwaltung.
 
 Module: Shop
-- E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
+- E-Mail Vorlagen vom Typ Systemvorlage sind nicht Lï¿½schbar.
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
-  Benutzerkonto mit der entsprechend definierten Gültigkeitsdauer erstellt.
-- Beim Versand der Bestellbestätigung per E-Mail wird, falls die benötigte
-  E-Mail Vorlage in der ausgewählten Sprache nicht vorhanden ist, die, in der
+  Benutzerkonto mit der entsprechend definierten Gï¿½ltigkeitsdauer erstellt.
+- Beim Versand der Bestellbestï¿½tigung per E-Mail wird, falls die benï¿½tigte
+  E-Mail Vorlage in der ausgewï¿½hlten Sprache nicht vorhanden ist, die, in der
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
-  vorhanden ist, wird die nächste vorhandene Sprache verwendet.
+  vorhanden ist, wird die nï¿½chste vorhandene Sprache verwendet.
 
 
 ****************************************
