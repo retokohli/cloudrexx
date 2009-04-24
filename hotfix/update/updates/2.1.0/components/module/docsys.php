@@ -67,13 +67,8 @@ function _docsysUpdate()
                 $pairs = array();
                 foreach ($entries->fields as $k => $v) {
                     // only first may keep it's id
-                    if ($k == 'id') {
-                        if ($is_first) {
-                            $v = $id;
-                        }
-                        else {
+                    if ($k == 'id' and !$is_first) {
                             continue;
-                        }
                     }
                     $pairs[] = "$k = '" . addslashes($v) . "'";
                 }
