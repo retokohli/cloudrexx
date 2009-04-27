@@ -287,6 +287,8 @@ class settingsManager
     {
         global $objDatabase, $_CORELANG, $_CONFIG;
 
+        $formerUseVirtualLanguagePathValue = $_CONFIG['useVirtualLanguagePath'];
+
         foreach ($_POST['setvalue'] as $intId => $strValue) {
             if (intval($intId) == 43 ||
                 intval($intId) == 50 ||
@@ -318,6 +320,14 @@ class settingsManager
                     break;
                 case 67:
                     $_CONFIG['useVirtualLanguagePath'] = $strValue;
+                    // update the .htaccess rewrite rules in case the function was de-/activated
+                    if ($formerUseVirtualLanguagePathValue != $_CONFIG['useVirtualLanguagePath']) {
+						// deactivate the function in case the .htaccess file couldn't be written 
+                        if (!$this->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on')) {
+                            $_CONFIG['useVirtualLanguagePath'] = 'off';
+                            $strValue = 'off';
+                        }
+                    }
                     break;
             }
 
@@ -330,8 +340,6 @@ class settingsManager
         if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
             $this->strErrMessage[] = $result;
         }
-
-        $this->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on');
 
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
     }
@@ -377,13 +385,14 @@ class settingsManager
         $objFWHtAccess = new FWHtAccess();
         if (($result = $objFWHtAccess->loadHtAccessFile('/.htaccess')) !== true) {
             $this->strErrMessage[] = $result;
+            return false;
         }
 
         // remove RewriteRules from HtAccess file if the function has been disabled
         if (!$use) {
             $objFWHtAccess->removeSection('core__language');
             $objFWHtAccess->write();
-            return;
+            return true;
         }
 
         // generate RewriteRules
@@ -442,6 +451,8 @@ class settingsManager
 
         $objFWHtAccess->setSection('core__language', $arrRules);
         $objFWHtAccess->write();
+
+        return true;
     }
 
     /**
