@@ -12,9 +12,11 @@
 ****************************************
 Allgemein
 - Die im Benutzerprofil definierte bevorzugte Frontend-Sprache wird nach der
-Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
-Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
+  Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
+  Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
 - Geschwindigkeitsoptimierung der Benutzerverwaltung.
+- Die Verwendung des Apache Moduls mod_rewrite wird nur aktiviert, sofern die
+  Option 'Virtuelle Sprachverzeichnisse verwenden' aktiviert wurde.
 
 Module: Shop
 - E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
