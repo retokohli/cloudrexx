@@ -1022,9 +1022,11 @@ class LanguageManager
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
 
             $objLanguage->loadLangConfig();
-            $settings = new settingsManager();
-            DBG::msg("setting virtual lang paths: ".($_CONFIG['useVirtualLanguagePath'] == 'on'));
-            $settings->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on');
+
+            if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                $settings = new settingsManager();
+                $settings->setVirtualLanguagePath(true);
+            }
 
             return true;
        }

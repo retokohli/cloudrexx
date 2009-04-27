@@ -19,18 +19,20 @@ WYSIWYG Editor kopiert wird, als Plaintext eingefügt. (FCKConfig.ForcePasteAsPl
 ****************************************
 Allgemein
 - Die im Benutzerprofil definierte bevorzugte Frontend-Sprache wird nach der
-Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
-Vorfeld nicht bereits die Frontend Sprache manuell ausgew�hlt hat.
+  Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
+  Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
 - Geschwindigkeitsoptimierung der Benutzerverwaltung.
+- Die Verwendung des Apache Moduls mod_rewrite wird nur aktiviert, sofern die
+  Option 'Virtuelle Sprachverzeichnisse verwenden' aktiviert wurde.
 
 Module: Shop
-- E-Mail Vorlagen vom Typ Systemvorlage sind nicht L�schbar.
+- E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
-  Benutzerkonto mit der entsprechend definierten G�ltigkeitsdauer erstellt.
-- Beim Versand der Bestellbest�tigung per E-Mail wird, falls die ben�tigte
-  E-Mail Vorlage in der ausgew�hlten Sprache nicht vorhanden ist, die, in der
+  Benutzerkonto mit der entsprechend definierten Gültigkeitsdauer erstellt.
+- Beim Versand der Bestellbestätigung per E-Mail wird, falls die benötigte
+  E-Mail Vorlage in der ausgewählten Sprache nicht vorhanden ist, die, in der
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
-  vorhanden ist, wird die n�chste vorhandene Sprache verwendet.
+  vorhanden ist, wird die nächste vorhandene Sprache verwendet.
 
 
 ****************************************
