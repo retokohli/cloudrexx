@@ -395,13 +395,15 @@ class counter
     function _countVisitor() {
         global $objDb;
 
-        // update client online time
-        $query = "UPDATE `".DBPREFIX."stats_visitors` SET `timestamp` = '".$this->currentTime."'
-                   WHERE `sid` = '".$this->md5Id."' AND `timestamp` >= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."'";
-        $objDb->Execute($query);
-
-        // add client to stats
-        if ($objDb->Affected_Rows() == 0) {
+        $query = "SELECT `timestamp` FROM `".DBPREFIX."stats_visitors` WHERE `sid` = '".$this->md5Id."'";
+        $objResult = $objDb->Execute($query);
+        if ($objResult->RecordCount() == 1) {
+            if ($objResult->fields['timestamp'] < $this->currentTime - $this->arrConfig['reload_block_time']['value']) {
+                $this->isNewVisitor = true;
+            }
+            $query = "UPDATE `".DBPREFIX."stats_visitors` SET `timestamp` = '".$this->currentTime."' WHERE `sid` = '".$this->md5Id."'";
+            $objDb->Execute($query);
+        } else {
             $this->isNewVisitor = true;
             $query = "INSERT INTO `".DBPREFIX."stats_visitors` (
                                   `sid`,
