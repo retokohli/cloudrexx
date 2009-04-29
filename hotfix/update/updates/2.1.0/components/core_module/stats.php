@@ -76,6 +76,7 @@ function _statsUpdate()
         * ADDED:		Contrexx v2.1.0					*
         ************************************************/
 		'stats_visitors' => array(
+			'obsoleteIndex'	=> 'sid',
             'unique' => array('sid'),
             'count'  => 'timestamp'
 		)
@@ -211,28 +212,6 @@ function _statsUpdate()
     }
     catch (UpdateException $e) {
         return UpdateUtil::DefaultActionHandler($e);
-    }
-
-    /* Drop a mistakenly created UNIQUE key on contrexx_stats_visitors.
-     * This caused the statistics module to re-count every CLICK as a
-     * new visitor.
-     */
-    $key_qry = "
-        SHOW INDEX 
-        FROM `".DBPREFIX."stats_visitors` 
-        WHERE `Key_name`   = 'sid'
-        AND   `Non_unique` = 0
-    ";
-    $keyinfo = $objDatabase->Execute($key_qry);
-    if ($keyinfo->RecordCount() == 1) {
-        $sql = "ALTER TABLE `".DBPREFIX."stats_visitors` DROP KEY `sid`;";
-        $objDatabase->Execute($sql);
-        // NOTE: we don't care if the dropping fails - could be it has 
-        // already been removed.
-        $sql = "CREATE INDEX `sid` ON `".DBPREFIX."stats_visitors`(`sid`);";
-        if ($objDatabase->Execute($sql) === false) {
-            return _databaseError($sql, $objDatabase->ErrorMsg());
-        }
     }
 
 
