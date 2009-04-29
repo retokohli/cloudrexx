@@ -4,10 +4,9 @@ function check_stats_index() {
 	global $objDatabase;
 
     $key_qry = "
-        SHOW INDEX 
-        FROM `".DBPREFIX."stats_visitors` 
+        SHOW INDEX
+        FROM `".DBPREFIX."stats_visitors`
         WHERE `Key_name`   = 'sid'
-        AND   `Non_unique` = 0
     ";
     $keyinfo = $objDatabase->Execute($key_qry);
     if ($keyinfo->RecordCount() == 1) {
@@ -24,7 +23,7 @@ function fix_stats_index() {
         return fix_status(false, "SQL failed: $sql");
     }
 
-	$sql = "CREATE INDEX `sid` ON `".DBPREFIX."stats_visitors`(`sid`);";
+	$sql = "ALTER IGNORE TABLE `".DBPREFIX."stats_visitors` ADD UNIQUE `unique` (`sid`);";
 	$res = $objDatabase->Execute($sql);
 
     return fix_status($res !== false, "SQL failed: $sql");

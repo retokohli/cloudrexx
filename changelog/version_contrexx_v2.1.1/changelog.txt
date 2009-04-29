@@ -27,6 +27,9 @@ Module: Shop
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
   vorhanden ist, wird die nächste vorhandene Sprache verwendet.
 
+Statistik
+- Die Zählung der Besucher erfolgt korrekt.
+
 
 ****************************************
 * Neue Module **************************
