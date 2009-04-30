@@ -273,4 +273,6 @@ $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'] = "Seleccionar Categor&iacute;a";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'] = "Por favor, seleccione una categor&iacute;a";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_BEST_RATED_DESCRIPTION'] = "Puntuaci&oacute;n";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_MOST_READ_DESCRIPTION'] = "Art&iacute;los m&aacute;s le&iacute;dos";
+$_ARRAYLANG['TXT_KNOWLEDGE_INDEX'] = "Glossar-Indexbuchstabe";
+$_ARRAYLANG['TXT_KNOWLEDGE_NO_INDEX'] = "Kein Eintrag im Glossar";
 ?>
