@@ -273,4 +273,6 @@ $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'] = "Sélectionner catégorie";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'] = "Veuillez sélectionner une catégorie";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_BEST_RATED_DESCRIPTION'] = "Articles les mieux évalués";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_MOST_READ_DESCRIPTION'] = "Articles les plus lus";
+$_ARRAYLANG['TXT_KNOWLEDGE_INDEX'] = "Glossar-Indexbuchstabe";
+$_ARRAYLANG['TXT_KNOWLEDGE_NO_INDEX'] = "Kein Eintrag im Glossar";
 ?>

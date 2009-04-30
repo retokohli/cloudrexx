@@ -1016,6 +1016,6 @@ $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "Cette fonctionalité n'es
 $_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Impossible d'obtenir les données des tables";
 $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Dossier: '%1\$s'";
 $_ARRAYLANG['TXT_CONTENT_ASSIGN_BLOCK'] = "Assign blocks";
-$_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR'] = "Eigenen Style im WYSIWYG Editor verwenden";
-$_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'] = "Ist diese Funktion aktiviert, wird im WYSIWYG-Editor die Datei <b>style.css</b> des aktuellen Standard-Templates eingebunden.";
+$_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR'] = "Utiliser les propres styles dans l'éditeur WYSIWYG";
+$_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'] = "Permet d'utiliser le fichier <b>style.css</b> comme modèle standard dans l'éditeur WYSIWYG.";
 ?>
