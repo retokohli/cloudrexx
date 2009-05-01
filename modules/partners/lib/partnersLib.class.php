@@ -2211,15 +2211,15 @@ class PartnersLibrary {
     */
 	
     function _getStatus($status) {
-
+      global $_ARRAYLANG;
       switch($status)
       {
        case '0':
-         $status = "Inactive";
+         $status = $_ARRAYLANG['TXT_PARTNERS_INACTIVE'];
        break;
 
        default:
-         $status = "Active";
+         $status = $_ARRAYLANG['TXT_PARTNERS_ACTIVE'];
       }
       return $status;
     }
@@ -2230,15 +2230,15 @@ class PartnersLibrary {
     */
 
     function _checkStatus($status,$attr,$Id,$jscript){
-   
+      global $_ARRAYLANG;
       switch($status)
       {
        case '0':
-         $status = '<input type="radio" '.$attr.' '.$Id.' value="1" '.$jscript.'>Active &nbsp;&nbsp;&nbsp; <input type="radio" '.$attr.' '.$Id.' checked value="0" '.$jscript.'>In active';
+         $status = '<input type="radio" '.$attr.' '.$Id.' value="1" '.$jscript.'>'.$_ARRAYLANG['TXT_PARTNERS_ACTIVE'].'&nbsp;&nbsp;&nbsp; <input type="radio" '.$attr.' '.$Id.' checked value="0" '.$jscript.'>'.$_ARRAYLANG['TXT_PARTNERS_INACTIVE'];
        break;
 
        default:
-         $status = '<input type="radio" '.$attr.' '.$Id.' checked value="1" '.$jscript.'>Active &nbsp;&nbsp;&nbsp; <input type="radio" '.$attr.' '.$Id.' value="0" '.$jscript.'>In active';
+         $status = '<input type="radio" '.$attr.' '.$Id.' checked value="1" '.$jscript.'>'.$_ARRAYLANG['TXT_PARTNERS_ACTIVE'].'&nbsp;&nbsp;&nbsp; <input type="radio" '.$attr.' '.$Id.' value="0" '.$jscript.'>'.$_ARRAYLANG['TXT_PARTNERS_INACTIVE'];
       }
       return $status;
     }

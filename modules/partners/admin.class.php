@@ -388,7 +388,7 @@ class PartnersAdmin extends PartnersLibrary {
     function showCategories($category,$cat_id) {
       	global $_CORELANG, $_ARRAYLANG;
 
-       	$this->_strPageTitle = $_CORELANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
+       	$this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
 	    $this->_objTpl->addBlockfile('PARTNERS_SUBCATEGORY_FILE', 'settings_block', 'module_partners_categories.html');
     	$this->_objTpl->setVariable(array(
        		'TXT_OVERVIEW_SUBTITLE_NAME'		=>	$_ARRAYLANG['TXT_PARTNERS_CATEGORY_ADD_NAME'],
@@ -1950,7 +1950,7 @@ class PartnersAdmin extends PartnersLibrary {
 
 
         $this->_objTpl->setVariable(array(
-            'TXT_ENTRIES_TITLE'                 =>  $_CORELANG['TXT_PARTNERS_ENTRY_MANAGE_TITLE'],
+            'TXT_ENTRIES_TITLE'                 =>  $_ARRAYLANG['TXT_ENTRIES_TITLE'],
             'TXT_ENTRIES_SUBTITLE_DATE'         =>  $_ARRAYLANG['TXT_PARTNERS_ENTRY_MANAGE_DATE'],
             'TXT_ENTRIES_SUBTITLE_SUBJECT'      =>  $_ARRAYLANG['TXT_PARTNERS_ENTRY_ADD_SUBJECT'],
             'TXT_ENTRIES_SUBTITLE_LANGUAGES'    =>  $_ARRAYLANG['TXT_PARTNERS_CATEGORY_ADD_LANGUAGES'],
