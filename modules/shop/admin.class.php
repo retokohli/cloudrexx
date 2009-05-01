@@ -1593,12 +1593,14 @@ class shopmanager extends ShopLibrary
             'TXT_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
             'TXT_SELECTED_COUNTRIES' => $_ARRAYLANG['TXT_SELECTED_COUNTRIES'],
             'TXT_AVAILABLE_COUNTRIES' => $_ARRAYLANG['TXT_AVAILABLE_COUNTRIES'],
-            // weight
+            // Shipping
             'TXT_SHIPPING_MAX_WEIGHT' => $_ARRAYLANG['TXT_SHIPPING_MAX_WEIGHT'],
             'TXT_MAX_WEIGHT_TIP' => $_ARRAYLANG['TXT_MAX_WEIGHT_TIP'],
             'TXT_FREE_OF_CHARGE' => $_ARRAYLANG['TXT_FREE_OF_CHARGE'],
             'TXT_SHIPPING_FEE' => $_ARRAYLANG['TXT_SHIPPING_FEE'],
             'TXT_SHOP_SETTING_WEIGHT_ENABLE' => $_ARRAYLANG['TXT_SHOP_SETTING_WEIGHT_ENABLE'],
+            'TXT_SHOP_SHIPMENT_NEW' => $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'],
+            'TXT_SHOP_SHIPMENT_NEW_TIP' => $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'],
             // VAT (Value Added Tax)
             'TXT_SHOP_VAT' => $_ARRAYLANG['TXT_SHOP_VAT'],
             // Image settings
