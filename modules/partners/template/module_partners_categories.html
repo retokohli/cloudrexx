@@ -2,7 +2,6 @@
 <script language="JavaScript" type="text/javascript">
 //<![CDATA[
 function showOrHide(strElement) {
-
 	if (document.getElementById(strElement).style.display == 'none') {
 		document.getElementById(strElement).style.display = 'block';
 	} else {
@@ -30,32 +29,32 @@ function deleteCategory(catId,cat_Id){
   if(catName=="level")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=level&id="+catId);
+            location.href="index.php?cmd=partners&act=deleteCategory&catnames=level&id="+catId;
             }
   else if(catName=="profile")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=profile&id="+catId);
+            location.href="index.php?cmd=partners&act=deleteCategory&catnames=profile&id="+catId;
             }
   else if(catName=="country")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=country&id="+catId);
+            location.href="index.php?cmd=partners&act=deleteCategory&catnames=country&id="+catId;
             }
   else if(catName=="vertical")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=vertical&id="+catId);
+            location.href="index.php?cmd=partners&act=deleteCategory&catnames=vertical&id="+catId;
             }
   else if(catName=="Regions")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
+            location.href="index.php?cmd=partners&act=deleteCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id;
             }
   else if(catName=="category")
             {
             if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&id="+catId);
+            location.href="index.php?cmd=partners&act=deleteCategory&id="+catId;
             }
 }
 
@@ -63,27 +62,27 @@ function editCategory(catId,cat_Id){
   var catName = document.getElementById('cat_name_del').value;
   if(catName=="level")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=level&id="+catId);
+             location.href="index.php?cmd=partners&act=editCategory&catnames=level&id="+catId;
   }
   else if(catName=="profile")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=profile&id="+catId);
+             location.href="index.php?cmd=partners&act=editCategory&catnames=profile&id="+catId;
   }
   else if(catName=="country")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=country&id="+catId);
+             location.href="index.php?cmd=partners&act=editCategory&catnames=country&id="+catId;
   }
   else if(catName=="vertical")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=vertical&id="+catId);
+             location.href="index.php?cmd=partners&act=editCategory&catnames=vertical&id="+catId;
   }
   else if(catName=="Regions")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
+             location.href="index.php?cmd=partners&act=editCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id;
   }
   else if(catName=="category")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&id="+catId);
+             location.href="index.php?cmd=partners&act=editCategory&id="+catId;
   }
 }
 
@@ -111,7 +110,7 @@ function SetUrl(url, width, height, alt) {
 function newsGetFileBrowser(elInsertBox) {
 
 	newsElInsertBox = elInsertBox;
-	openWindow('?cmd=fileBrowser&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	openWindow('index.php?cmd=fileBrowser&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function openWindow(theURL,winName,features){
@@ -165,7 +164,7 @@ return false;
 </ul>
 
 <div id="Overview" class="categories" style="display: block;">
-	<form name="frmShowCategories" method="post" action="?cmd=partners&amp;act=insertSort">
+	<form name="frmShowCategories" method="post" action="index.php?cmd=partners&amp;act=insertSort">
 	<input type="hidden"  id="cat_name_del" name="cat_name_del" value="{PARTNERS_CAT_NAME_DEL}">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 			<tr>
@@ -226,7 +225,7 @@ return false;
  </div>
 
 <div id="AddCategory" class="categories" style="display: none;">
-	<form name="frmAddCategory" method="post" action="?cmd=partners&amp;act=insertCategory">
+	<form name="frmAddCategory" method="post" action="index.php?cmd=partners&amp;act=insertCategory">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 			<tr>
 				<th colspan="4">{TXT_ADD_TITLE}</th>
@@ -282,7 +281,7 @@ return false;
 	</form>
 </div>
  <div id="RenameCategory" class="categories" style="display: none;">
-	<form name="frmRenameCategory" method="post" action="?cmd=partners&amp;act=insertCategory">
+	<form name="frmRenameCategory" method="post" action="index.php?cmd=partners&amp;act=insertCategory">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 			<tr>
 				<th colspan="4">{TXT_RENAME_TITLE}</th>

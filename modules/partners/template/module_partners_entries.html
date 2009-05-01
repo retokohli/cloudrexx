@@ -4,20 +4,18 @@
 
 function deleteEntry(entryId){ 
     if(confirm('{TXT_ENTRIES_DELETE_ENTRY_JS}')) 
-        window.location.replace("?cmd=partners&act=deletePartners&id="+entryId);
+        location.href="index.php?cmd=partners&act=deletePartners&id="+entryId;
 }
 
 function selectMultiAction() {
-
 	with (document.frmShowPartnersEntries) {
 		switch (frmShowEntries_MultiAction.value) {
 			case 'delete':
 				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
-					action='?cmd=partners&act=multiactionEntry';
+					action='index.php?cmd=partners&act=multiactionEntry';
 					submit();
-				}
-				else{
-                frmShowEntries_MultiAction.value=0;
+				}else{
+					frmShowEntries_MultiAction.value=0;
                 }
 			break;
 			default: //do nothing
@@ -26,8 +24,7 @@ function selectMultiAction() {
 }
 
 function showList(id) {
-
-    document.getElementById(id).style.display="block";
+    document.getElementById(id).style.display = "block";
     return false;
 }
 
