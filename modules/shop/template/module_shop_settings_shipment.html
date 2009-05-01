@@ -11,10 +11,10 @@ function deleteShipment(cid)
   if(confirm('{TXT_CONFIRM_DELETE_SHIPMENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=shipment&shipmentId="+cid);
 }
-Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
+Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];
 Text[1]=["","{TXT_MAX_WEIGHT_TIP}"];
-Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
+Text[2]=["","{TXT_SHOP_SHIPMENT_NEW_TIP}"];
 // -->
 </script>
 <!-- BEGIN statusBar -->
@@ -36,7 +36,7 @@ Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <td width="20%" nowrap="nowrap"><strong>{TXT_SHIPPING_METHOD}</strong></td>
 <td width="10%" nowrap="nowrap"><strong>{TXT_ZONE}</strong></td>
 <td width="10%" nowrap="nowrap"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
-<td width="20%" nowrap="nowrap"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[1],Style[1])">{TXT_SHIPPING_MAX_WEIGHT}</strong></td>
+<td width="20%" nowrap="nowrap"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])">{TXT_SHIPPING_MAX_WEIGHT}</strong></td>
 <td width="20%" nowrap="nowrap"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
 <td width="20%" nowrap="nowrap"><strong>{TXT_SHIPPING_FEE}</strong></td>
 <td nowrap="nowrap" width="5%">&nbsp;</td>
@@ -59,7 +59,8 @@ Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </tr>
 <!-- END shopShipment -->
 <tr>
-<td colspan="3"></td>
+<td colspan="3">
+<strong class="note" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])">{TXT_SHOP_SHIPMENT_NEW}</strong></td>
 <td nowrap="nowrap"><input type="text" name="shipmentMaxWeightNew[{SHOP_SHIPPER_ID}]" value="0 g" size="15" maxlength="50" /></td>
 <td nowrap="nowrap"><input type="text" name="shipmentPriceFreeNew[{SHOP_SHIPPER_ID}]" value="0.00" size="15" maxlength="50" />&nbsp;{SHOP_CURRENCY}</td>
 <td nowrap="nowrap"><input type="text" name="shipmentCostNew[{SHOP_SHIPPER_ID}]" value="0.00" size="15" maxlength="50" />&nbsp;{SHOP_CURRENCY}</td>
