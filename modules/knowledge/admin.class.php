@@ -7,6 +7,7 @@
  * @subpackage  module_knowledge
  */
 
+
 /**
  * Includes
  */
@@ -563,7 +564,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "TXT_SUBMIT"            => $_ARRAYLANG['TXT_KNOWLEDGE_SUBMIT'],
             "TXT_NAME"              => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_NAME'],
             "TXT_EDIT_EXTENDED"     => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_ADD_EXTENDED'],
-            "TXT_TOP_CATEGORY"      => $_ARRAYLANG['TXT_KNOWLEDGE_TOP_CATEGORY']
+            "TXT_TOP_CATEGORY"      => $_ARRAYLANG['TXT_KNOWLEDGE_TOP_CATEGORY'],
     	));
     	
     	$languages = $this->createLanguageArray();
@@ -620,6 +621,22 @@ class KnowledgeAdmin extends KnowledgeLibrary
         }
     	  	
     	return $this->tpl->get();
+    }
+
+    private function getIndexOptionList($index = 0)
+    {
+        $opts = "";
+        for ($i = 0; $i < 26; $i++) {
+            $letter = chr($i + 65);
+            if ($index === $letter) {
+                $select = "selected=\"selected\"";
+            } else {
+                $select = "";
+            }
+            $opts .= "<option value=\"".$letter."\" $select>".$letter."</option>";
+        }
+
+        return $opts;
     }
     
     
@@ -919,7 +936,11 @@ class KnowledgeAdmin extends KnowledgeLibrary
         
         $this->pageTitle = $_ARRAYLANG['TXT_EDIT_ARTICLE'];
     	$this->tpl->loadTemplateFile('module_knowledge_articles_edit.html', true, true);
-    	$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+        $this->tpl->setGlobalVariable(array(
+            "MODULE_INDEX"          =>  MODULE_INDEX,
+            "TXT_INDEX"             => $_ARRAYLANG['TXT_KNOWLEDGE_INDEX'],
+            "TXT_NO_INDEX"          => $_ARRAYLANG['TXT_KNOWLEDGE_NO_INDEX'],
+        ));
     	
     	$id = (empty($_GET['id'])) ? 0 : $_GET['id'];
     	
@@ -952,7 +973,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	    foreach ($languages as $key => $value) {
     	        $article['content'][$key] = array(
     	           'question' => "",
-    	           'answer' => ""
+                   'answer' => "",
+                   'index' => 0
     	        );
     	    }
     	}
@@ -977,6 +999,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	
     	   "ACTIVE_CHECKED"    => $article['active'] ? "checked=\"checked\"" : "",
     	   "INACTIVE_CHECKED"  => $article['active'] ? "" : "checked=\"checked\"",
+
     	));
 
     	$first = true;
@@ -1017,8 +1040,15 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	       "LANG_ID"           => $langId,
     	       "DISPLAY"           => ($first) ? "block" : "none",
     	       "ID"                => $lang['long'],
-    	       "QUESTION"          => (isset($article['content'][$langId]) ? $article['content'][$langId]['question'] : ''),
-    	       "ANSWER"            => get_wysiwyg_editor('answer_'.$langId, (isset($article['content'][$langId]) ? $article['content'][$langId]['answer'] : '')),
+               "QUESTION"          => (isset($article['content'][$langId]) ? 
+                                       $article['content'][$langId]['question'] 
+                                       : ''),
+               "ANSWER"            => get_wysiwyg_editor('answer_'.$langId, 
+                                       (isset($article['content'][$langId]) ? 
+                                       $article['content'][$langId]['answer'] 
+                                       : '')),
+               "TXT_INDEX_OPTIONS"  => $this->getIndexOptionList(
+                   $article['content'][$langId]['index'])
     	    ));
     	    $this->tpl->parse("langDiv");
     	    $first = false;
@@ -1051,8 +1081,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
         foreach ($languages as $langId => $lang) {
             $question = $_POST['question_'.$langId];
             $answer = $_POST['answer_'.$langId];
+            $index = $_POST['index_'.$langId];
             
-            $this->articles->addContent($langId, $question, $answer);
+            $this->articles->addContent($langId, $question, $answer, $index);
             $tags[$langId] = $_POST['tags_'.$langId];
         }
         
@@ -1089,8 +1120,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
         foreach ($languages as $langId => $lang) {
             $question = $_POST['question_'.$langId];
             $answer = $_POST['answer_'.$langId];
+            $index = $_POST['index_'.$langId];
             
-            $this->articles->addContent($langId, $question, $answer);
+            $this->articles->addContent($langId, $question, $answer, $index);
             $tags[$langId] = $_POST['tags_'.$langId];
         }
         

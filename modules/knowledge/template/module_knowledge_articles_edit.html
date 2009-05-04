@@ -93,10 +93,21 @@ var checkCategory = function()
                     <a href="javascript: void(0);" onclick="Tags_{LANG_ID}.getTags('alphabetical')">{TXT_ALPHABETICAL}</a>
             </td>
         </tr>
+        <tr class="row2">
+            <td>
+                {TXT_INDEX}
+            </td>
+            <td>
+                <select name="index_{LANG_ID}">
+                    <option value="0">{TXT_NO_INDEX}</option>
+                    {TXT_INDEX_OPTIONS}
+                </select>
+            </td>
+        </tr>
         <tr>
             <th colspan="3">{TXT_ANSWER}</th>
         </tr>
-        <tr class="row2">
+        <tr class="row1">
             <td colspan="3">
                 {ANSWER}
            </td>
