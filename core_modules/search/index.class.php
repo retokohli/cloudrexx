@@ -6,7 +6,6 @@
 class  Search {
 	var $objTpl;
 	
-	
 	/**
 	* Constructor
 	* @param  string  $pageContent
@@ -294,14 +293,12 @@ class  Search {
 	}
 	
 	
-	
-	
-		
 	/**
 	 * builds sql statement
 	 *
 	 * @param  string $section
 	 * @param  string $searchTerm
+	 * @param  string $searchOption
 	 * @return string $query
 	 */
 	function buildQuery($section, $searchTerm, $searchOption) {
@@ -631,9 +628,9 @@ class  Search {
 	/**
 	 * returns where clause
 	 *
-	 * @param  string $term
-	 * @param  string $options
-	 * @param  arr $arrField
+	 * @param  string $term					searchterm
+	 * @param  string $options				any/all/exact
+	 * @param  array  $arrField				fields in table
 	 * @return string $arrReplacedField
 	 */
 	function getWhereSnippet($term, $options, $arrField) {
@@ -676,16 +673,17 @@ class  Search {
 	* @global array
 	* @global ADONewConnection
 	* @global array
-	* @param  string    $query            the searching query
+	* @param  string    $query          the searching query
 	* @param  string    $section_var    needed for section
 	* @param  string    $cmd_var        needed for cmd
 	* @param  string    $pagevar
-	* @param  string    $searchTerm            search term
-	* @return array                    search results
+	* @param  string    $searchTerm     search term
+	* @return array                     search results
 	*/
 	function getResultArray($query,$section_var,$cmd_var,$pagevar,$searchTerm) {
 		global $_CONFIG, $objDatabase, $_ARRAYLANG;
-
+		
+				
 		$arrSearchResults = array();
 		$objResult          = $objDatabase->Execute($query);
 		$i=0;
@@ -736,18 +734,23 @@ class  Search {
 				$arrSearchTerm = preg_split("/\s+/", $searchTerm);
 				$shortcontent  = substr(ltrim($searchcontent), strripos($searchcontent, $arrSearchTerm[0])-25,intval($_CONFIG['searchDescriptionLength']));
 //				$shortcontent  = substr(ltrim($searchcontent), 0,intval($_CONFIG['searchDescriptionLength']));
-				$shortcontent  = preg_replace("/".$arrSearchTerm[0]."/i", '<font class="searchModuleSTFounded">'.$arrSearchTerm[0].'</font>', $shortcontent);
+				
+				//highlight searchterm
+				foreach ($arrSearchTerm as $singleST) {
+					$shortcontent  = preg_replace("/".$singleST."/i", '<font class="searchModuleSTFounded">'.$singleST.'</font>', $shortcontent);	
+				}
+				
+							
+				
 				$arrShortContent = explode(" ",$shortcontent);
-				
 				$arrelem= array_pop($arrShortContent);
-				
 				$shortcontent = str_replace("&nbsp;","",join(" ",$arrShortContent));
 				$score =!empty($objResult->fields['score']) ? $objResult->fields['score'] : 0;
 				$score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
 				//Muss noch ge�ndert werden, sobald das Ranking bei News funktioniert!!!
 				$score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
-				$searchtitle           = !empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];
-				$date           = !empty($objResult->fields['date']) ? $objResult->fields['date'] : "";
+				$searchtitle = !empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];
+				$date        = !empty($objResult->fields['date']) ? $objResult->fields['date'] : "";
 											
 				$arrSearchResults[$i] = array(	"score"   => $scorePercent,
 												"title"	  => $searchtitle,
@@ -763,8 +766,7 @@ class  Search {
 		return $arrSearchResults;
 	}
 	
-	
-	
+		
 	/**
 	 * returns translated modul name
 	 *
@@ -803,6 +805,4 @@ class  Search {
 		return !empty($arrModules) ? $arrModules : "";
 	}
 }
-
-
 ?>
