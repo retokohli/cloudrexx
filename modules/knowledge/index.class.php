@@ -102,6 +102,9 @@ class Knowledge extends KnowledgeLibrary
     	    case 'search':
     	        $this->search();
     	        break;
+            case 'glossary':
+                $this->glossary();
+                break;
     	    case 'start':
     	    default:
     	        if ($_GET['act'] == "mostRead") {
@@ -530,6 +533,30 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS("modules/knowledge/frontend/search.js");
         JS::registerJS("modules/knowledge/frontend/slider.js");
 	}
+
+    /**
+     * Show the glossary
+     */
+    private function glossary()
+    {
+        global $_ARRAYLANG, $_LANGID;
+
+        $articles = $this->articles->getGlossary($_LANGID);
+
+        foreach ($articles as $letter => $letterarticles) {
+            $this->tpl->setVariable(array(
+                "LETTER"        => $letter,
+            ));
+            foreach ($letterarticles as $articleid => $article) {
+                $this->tpl->setVariable(array(
+                   'ARTICLE'    => $article['content'][$_LANGID]['question'],
+                   'ID'         => $article['id']
+                ));
+                $this->tpl->parse("entry");
+            }
+            $this->tpl->parse("letter");
+        }
+    }
 	
 	/**
 	 * Show an article list

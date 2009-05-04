@@ -41,7 +41,8 @@ class KnowledgeArticles
                             articles.date_updated as date_updated,
                             content.lang as lang,
                             content.answer as answer,
-                            content.question as question
+                            content.question as question,
+                            content.`index` as `index`
                     FROM `".DBPREFIX."module_knowledge_articles` AS articles
                     INNER JOIN `".DBPREFIX."module_knowledge_article_content` 
                     AS content ON articles.id = content.article";
@@ -108,8 +109,10 @@ class KnowledgeArticles
             if (isset($articles[$curId])) {
                 $articles[$curId]['content'][$objRs->fields['lang']]['question'] = $objRs->fields['question'];
                 $articles[$curId]['content'][$objRs->fields['lang']]['answer'] = $objRs->fields['answer'];
+                $articles[$curId]['content'][$objRs->fields['lang']]['index'] = $objRs->fields['index'];
             } else {
                 $articles[$curId] = array(
+                    'id'            => intval($objRs->fields['id']),
                     'active'        => intval($objRs->fields['active']),
                     'hits'          => intval($objRs->fields['hits']),
                     'votes'         => intval($objRs->fields['votes']),
@@ -120,7 +123,8 @@ class KnowledgeArticles
                     'content'       => array(
                         $objRs->fields['lang'] => array(
                             'question'      => stripslashes($objRs->fields['question']),
-                            'answer'        => stripslashes($objRs->fields['answer']) 
+                            'answer'        => stripslashes($objRs->fields['answer']),
+                            'index'         => $objRs->fields['index'],
                         )
                     )
                 );
@@ -321,12 +325,13 @@ class KnowledgeArticles
      * @param string $question
      * @param string $answer
      */
-    public function addContent($lang, $question, $answer)
+    public function addContent($lang, $question, $answer, $index)
     {
         $this->insertContent[] = array(
             'lang' => intval($lang),
             'question' => addslashes($question),
-            'answer' => addslashes($answer)
+            'answer' => addslashes($answer),
+            'index' => $index
         );
     }
     
@@ -486,6 +491,7 @@ class KnowledgeArticles
                             content.lang AS lang, 
                             content.answer AS answer, 
                             content.question AS question, 
+                            content.`index` as `index`,
                             rating
                     FROM (
                         SELECT * , (votevalue / votes) AS rating
@@ -528,16 +534,18 @@ class KnowledgeArticles
     private function insertContent($id)
     {
         global $objDatabase;
-        
+
         foreach ($this->insertContent as $values) {
     	    $lang = $values['lang'];
     	    $question = $values['question'];
     	    $answer = $values['answer'];
+            $index = $values['index'];
     	    
     	    $query = " INSERT INTO ".DBPREFIX."module_knowledge_article_content
-    	                   (article, lang, question, answer)
+    	                   (article, lang, question, answer, `index`)
     	               VALUES
-    	                   (".$id.", ".$lang.", '".$question."', '".$answer."')";
+                       (".$id.", ".$lang.", '".$question."', 
+                        '".$answer."', '".$index."')";
             if ($objDatabase->Execute($query) === false) {
                 throw new DatabaseError("inserting category content failed");
             }
@@ -562,5 +570,29 @@ class KnowledgeArticles
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("deleting article content failed");
         }
+    }
+
+
+    public function getGlossary($lang)
+    {
+        global $objDatabase;
+
+        $query = $this->basequery  ."
+            WHERE content.`index` != '0'
+            ORDER BY content.`index`";
+
+        $articles = $this->readArticles(true, $lang, 0, $query);
+
+        $ret = array();
+        foreach ($articles as $articlekey =>  $article) {
+            $index = $article['content'][$lang]['index'];
+            if (array_key_exists($index, $ret)) {
+                $ret[$index][] = $article;
+            } else {
+                $ret[$index] = array($article);
+            }
+        }
+
+        return $ret;
     }
 }
