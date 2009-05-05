@@ -124,7 +124,7 @@ class DownloadsLibrary
     protected function updateSettings()
     {
         global $objDatabase;
-$objDatabase->debug=true;
+
         foreach ($this->arrConfig as $key => $value) {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }
