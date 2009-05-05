@@ -1040,12 +1040,12 @@ class directoryLibrary
 
         //get user data
         if(is_numeric($userId)){
-            $objFWUser = new FWUser();
-            if ($objFWUser->objUser->getUser($userId)) {
-                $userMail           = $objFWUser->objUser->getEmail();
-                $userFirstname      = $objFWUser->objUser->getProfileAttribute('firstname');
-                $userLastname       = $objFWUser->objUser->getProfileAttribute('lastname');
-                $userUsername       = $objFWUser->objUser->getUsername();
+            $objFWUser = FWUser::getFWUserObject();
+            if ($objUser = $objFWUser->objUser->getUser($userId)) {
+                $userMail           = $objUser->getEmail();
+                $userFirstname      = $objUser->getProfileAttribute('firstname');
+                $userLastname       = $objUser->getProfileAttribute('lastname');
+                $userUsername       = $objUser->getUsername();
             }
         }
 
