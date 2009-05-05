@@ -671,4 +671,6 @@ $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_2'] = "New window";
 $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "e-mail address";
 $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "recipient e-mail address";
 $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Please enter the recipient e-mail address";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "Neue Versandoption hinzufügen";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "Diese Zeile wird ignoriert, solange Maximalgewicht und Versandgebühr einen Nullwert enthalten.";
 ?>
