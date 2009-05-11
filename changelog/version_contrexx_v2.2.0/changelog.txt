@@ -37,6 +37,8 @@ Module: Shop
 Statistik
 - Die Zählung der Besucher erfolgt korrekt.
 
+Webinstaller
+- Kontrollkästchen werden beim Browser Opera angezeigt.
 
 ****************************************
 * Neue Module **************************
