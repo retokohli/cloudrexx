@@ -25,6 +25,10 @@ Allgemein
 - Die Verwendung des Apache Moduls mod_rewrite wird nur aktiviert, sofern die
   Option 'Virtuelle Sprachverzeichnisse verwenden' aktiviert wurde.
 
+Benutzerverwaltung
+- Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
+  erfasst werden.
+
 Module: Shop
 - E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
