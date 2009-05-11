@@ -1,7 +1,7 @@
 /*
    Base Style Sheet for the Contrexx Web Installer.
 
-   Copyright 2005 COMVATION AG. 
+   Copyright 2005 COMVATION AG.
    All Rights Reserved.
 
 */
@@ -23,59 +23,59 @@ html, body {
 
 
 body {
-	SCROLLBAR-FACE-COLOR: #dadada; 
-	SCROLLBAR-HIGHLIGHT-COLOR: #dadada; 
-	SCROLLBAR-SHADOW-COLOR: #dadada; 
-	SCROLLBAR-3DLIGHT-COLOR: #dadada; 
-	SCROLLBAR-ARROW-COLOR: #000000; 
-	SCROLLBAR-TRACK-COLOR: #dadada; 
-	SCROLLBAR-DARKSHADOW-COLOR: #2f4f4f; 
+	SCROLLBAR-FACE-COLOR: #dadada;
+	SCROLLBAR-HIGHLIGHT-COLOR: #dadada;
+	SCROLLBAR-SHADOW-COLOR: #dadada;
+	SCROLLBAR-3DLIGHT-COLOR: #dadada;
+	SCROLLBAR-ARROW-COLOR: #000000;
+	SCROLLBAR-TRACK-COLOR: #dadada;
+	SCROLLBAR-DARKSHADOW-COLOR: #2f4f4f;
 	SCROLLBAR-BASE-COLOR: #dadada
 }
 
 td {
 	font-size: 11px;
-	text-align: left; 
+	text-align: left;
 }
 
 form {
-	margin: 0px; 
+	margin: 0px;
 }
 
 textarea,
 input,
 object,
 select {
-	BORDER-RIGHT: 1px solid; 
-	BORDER-TOP: 1px solid; 
-	FONT-SIZE: 12px; 
-	BORDER-LEFT: 1px solid; 
-	COLOR: black; 
-	BORDER-BOTTOM: 1px solid; 
+	BORDER-RIGHT: 1px solid;
+	BORDER-TOP: 1px solid;
+	FONT-SIZE: 12px;
+	BORDER-LEFT: 1px solid;
+	COLOR: black;
+	BORDER-BOTTOM: 1px solid;
 	BACKGROUND-COLOR: white;
 	border-color: #0A50A1
 }
 
 A {
-	FONT-SIZE: 11px; 
-	COLOR: #000099; 
+	FONT-SIZE: 11px;
+	COLOR: #000099;
 	TEXT-DECORATION: none
 }
 A:link {
-	COLOR: #000099; 
+	COLOR: #000099;
 	TEXT-DECORATION: none
 }
 A:visited {
-	COLOR: #000099; 
+	COLOR: #000099;
 	TEXT-DECORATION: none
 }
 A:hover {
-	COLOR: #000099; 
+	COLOR: #000099;
 	BACKGROUND-COLOR: #ffffcc;
 	TEXT-DECORATION: none
 }
 A:active {
-	COLOR: #000099; 
+	COLOR: #000099;
 	TEXT-DECORATION: none
 }
 
@@ -88,7 +88,7 @@ A:active {
 div#footer {
   FONT-SIZE: 11px;
   margin-right: 4px;
-  text-align: right; 
+  text-align: right;
 }
 
 table.top {
@@ -117,7 +117,7 @@ table.top {
 	font-size: 11px;
 	padding: 3px 0px 3px 15px;
 	color: #333333;
-	text-decoration: none; 
+	text-decoration: none;
 }
 
 .navigation li a:link {
@@ -168,12 +168,12 @@ table.top {
 
 
 table.adminlist {
-	FONT-SIZE: 11px; 
+	FONT-SIZE: 11px;
 	BACKGROUND-COLOR: #ffffff;
 }
 table.adminlist th {
-	COLOR: white; 
-	HEIGHT: 16px; 
+	COLOR: white;
+	HEIGHT: 16px;
 	BACKGROUND-COLOR: #0A50A1;
 	text-align: left;
 	padding: 0px 0px 0px 5px;
@@ -181,24 +181,24 @@ table.adminlist th {
 	vertical-align: middle;
 }
 table.adminlist th A {
-	COLOR: white; 
+	COLOR: white;
 	TEXT-DECORATION: underline
 }
 table.adminlist th A:active {
-	COLOR: white; 
+	COLOR: white;
 	TEXT-DECORATION: underline
 }
 table.adminlist th A:visited {
-	COLOR: white; 
+	COLOR: white;
 	TEXT-DECORATION: underline
 }
 table.adminlist TH A:hover {
-	COLOR: #0A50A1; 
-	BACKGROUND-COLOR: #DCE4FF; 
+	COLOR: #0A50A1;
+	BACKGROUND-COLOR: #DCE4FF;
 	TEXT-DECORATION: none
 }
 table.adminlist TH.title {
-	COLOR: #333333; 
+	COLOR: #333333;
 	TEXT-ALIGN: left
 }
 table.adminlist tr.row1 {
@@ -229,14 +229,14 @@ table.adminlist tr.row2:hover {
 	BACKGROUND-COLOR: #f1f1f1
 }
 table.adminlist td.options {
-	FONT-SIZE: 10px; 
+	FONT-SIZE: 10px;
 	BACKGROUND-COLOR: #ffffff
 }
 
 
 td.title {
 	vertical-align: middle;
-	FONT-SIZE: 16px; 
+	FONT-SIZE: 16px;
 	BORDER-BOTTOM: 1px solid rgb(220, 228, 255);
 	FONT-FAMILY: Arial, Helvetica, sans-serif;
 }
@@ -295,8 +295,8 @@ table.installer td.title{
 
 table.installer th {
 	font-size: 11px;
-	COLOR: white; 
-	HEIGHT: 22px; 
+	COLOR: white;
+	HEIGHT: 22px;
 	BACKGROUND-COLOR: #0A50A1;
 	text-align: left;
 	padding: 0px 0px 0px 5px;
