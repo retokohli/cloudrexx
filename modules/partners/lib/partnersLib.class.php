@@ -3003,13 +3003,13 @@ function _initlistregionLevel_3($levelname,$intLanguageId,$ajaxRequest,$intRegio
      function _getcertificateText($catid){
              global $objDatabase,$_ARRAYLANG;
 
-             $objData = $objDatabase->Execute('SELECT  name
+             $objData = $objDatabase->Execute('SELECT  name, lang_id
 									   FROM		'.DBPREFIX.'module_partners_categories
 									   WHERE `category_id`="'.$catid.'"
                                        ');
              while (!$objData->EOF) {
-             $cert = $objData->fields['name'];
-             $objData->MoveNext();
+		         $cert[$objData->fields['lang_id']] = $objData->fields['name'];
+		         $objData->MoveNext();
              }
              return $cert;
      }
@@ -3024,13 +3024,13 @@ function _initlistregionLevel_3($levelname,$intLanguageId,$ajaxRequest,$intRegio
      function _getcertificateImage($catid){
              global $objDatabase,$_ARRAYLANG;
 
-             $objData = $objDatabase->Execute('SELECT  imgpath
+             $objData = $objDatabase->Execute('SELECT  imgpath, lang_id
 									   FROM		'.DBPREFIX.'module_partners_categories
 									   WHERE `category_id`="'.$catid.'"
                                        ');
              while (!$objData->EOF) {
-             $cert = $objData->fields['imgpath'];
-             $objData->MoveNext();
+	             $cert[$objData->fields['lang_id']] = $objData->fields['imgpath'];
+	             $objData->MoveNext();
              }
              return $cert;
      }

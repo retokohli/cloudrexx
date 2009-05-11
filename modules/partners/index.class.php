@@ -74,7 +74,7 @@ class Partners extends PartnersLibrary  {
      * @global  object      $objDatabase
      */
    function showEntries() {
-        global $_ARRAYLANG,$objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
         $recipientTitle_Level    = trim($_REQUEST['level']);
         $recipientTitle_Profile  = trim($_REQUEST['profile']);
@@ -90,10 +90,10 @@ class Partners extends PartnersLibrary  {
             'TXT_PARTNERS_LEVEL'        => $_ARRAYLANG['TXT_PARTNERS_LEVEL'],
             'TXT_PARTNERS_PROFILE'      => $_ARRAYLANG['TXT_PARTNERS_PROFILE'],
             'TXT_PARTNERS_COUNTRY'      => $_ARRAYLANG['TXT_PARTNERS_COUNTRY'],
-            'PARTNERS_LEVEL'    		=> $this->_getListLevelMenu($recipientTitle_Level,$titleName_level,'name="level" size="1" style="width:90px;"','All'),
-            'PARTNERS_PROFILE'    		=> $this->_getListLevelMenu($recipientTitle_Profile,$titleName_profile,'name="profile" size="1"','All'),
-            'PARTNERS_COUNTRY'    		=> $this->_getListLevelMenu($recipientTitle_Country,$titleName_country,'name="country" size="1"','All'),
-            'PARTNERS_VERTICAL'    		=> $this->_getListLevelMenu($recipientTitle_Vertical,$titleName_vertical,'name="vertical" size="1"','All'),
+            'PARTNERS_LEVEL'    		=> $this->_getListLevelMenu($recipientTitle_Level,$titleName_level,'name="level" size="1" style="width:90px;"', $_ARRAYLANG['TXT_PARTNERS_ALL']),
+            'PARTNERS_PROFILE'    		=> $this->_getListLevelMenu($recipientTitle_Profile,$titleName_profile,'name="profile" size="1"', $_ARRAYLANG['TXT_PARTNERS_ALL']),
+            'PARTNERS_COUNTRY'    		=> $this->_getListLevelMenu($recipientTitle_Country,$titleName_country,'name="country" size="1"', $_ARRAYLANG['TXT_PARTNERS_ALL']),
+            'PARTNERS_VERTICAL'    		=> $this->_getListLevelMenu($recipientTitle_Vertical,$titleName_vertical,'name="vertical" size="1"', $_ARRAYLANG['TXT_PARTNERS_ALL']),
             'TXT_PARTNERS_VERTICAL'     => $_ARRAYLANG['TXT_PARTNERS_VERTICAL']
         ));
 
@@ -103,18 +103,18 @@ class Partners extends PartnersLibrary  {
         /**Array of result returned from the Partnerlib.class...
           *It contains the ordered form of level...
           */
-
    		$arrEntries = $this->createEntryArrayFrontEnd(0, $intPagingPosition, $this->getPagingLimit());
-
         $cert_catid =  $this->_getcertificateId();
         foreach($cert_catid as $iicertKey => $iicertValue){
-              $this->_objTpl->setVariable(array(
-                                          'PARTNERS_CERTIFICATE_ALL'     => $this->_getcertificateText($iicertValue),
-                                          'PARTNERS_CERTIFICATE_IMG'     => $this->_getcertificateImage($iicertValue),
-                                          'PARTNERS_IMAGE_WIDTH_CERT'    => $this->_getImageWidth('cert'),
-                                          'PARTNERS_IMAGE_HEIGHT_CERT'   => $this->_getImageHeight('cert')
-                 ));
-                 $this->_objTpl->parse('partnersCertificate');
+			$certText 		= $this->_getcertificateText($iicertValue);
+			$certImagePath 	= $this->_getcertificateImage($iicertValue);
+			$this->_objTpl->setVariable(array(
+			      'PARTNERS_CERTIFICATE_ALL'     => $certText[FRONTEND_LANG_ID],
+			      'PARTNERS_CERTIFICATE_IMG'     => $certImagePath[FRONTEND_LANG_ID],
+			      'PARTNERS_IMAGE_WIDTH_CERT'    => $this->_getImageWidth('cert'),
+			      'PARTNERS_IMAGE_HEIGHT_CERT'   => $this->_getImageHeight('cert')
+			));
+			$this->_objTpl->parse('partnersCertificate');
          }
    		 if (count($arrEntries) > 0) {
 
@@ -124,19 +124,14 @@ class Partners extends PartnersLibrary  {
          /**$intEntryId => is the variable of the Message ID of the Partners...
            *$LevelMsgID => is the Particular level of the Message ID.....
            */
-
         foreach ($arrEntries as $intEntryId => $newarrEntryValues) {
-
             foreach($newarrEntryValues as $LevelMsgID=>$arrEntryValues) {
-
                   if(!empty($arrEntryValues['subject'])) {
-
 	   			                 $this->_objTpl->setVariable(array(
 	   				                                        'TXT_IMGALT_EDIT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_TITLE'],
 	   				                                        'TXT_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_DELETE_TITLE']
                                  ));
-
-               	        //Check active languages
+                      //Check active languages
                       $strActiveLanguages = '';
 	   			      foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
 	   			        $this->_objTpl->setVariable(array('ENTRY_STATUS' =>  $this->_getStatus($arrEntryTranslations['status'])));
@@ -146,17 +141,15 @@ class Partners extends PartnersLibrary  {
 	   				    }
 	   			     }
 
-
                      /**Checking with the Active State of the Message ID....
                        */
 
-	   			     $is_active = $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['status'];
-
+	   			     $is_active = $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['status'];
 	   			     if($is_active!=0)  {
 
      			        $strActiveLanguages = substr($strActiveLanguages,0,-12);
 
-                        $level_id = $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['level'];
+                        $level_id = $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['level'];
 
                          /**Selecting the Display Properties of the Particular Message Id form the Table...
                            */
@@ -183,37 +176,36 @@ class Partners extends PartnersLibrary  {
                         }
 
                         if($Displaytitle!=0) {
-
                             $this->_objTpl->setVariable(array(
-                	                  'PARTNERS_TITLE'  => $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['subject']
+                	                  'PARTNERS_TITLE'  => $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['subject']
                             ));
                         }
                         if($Displaycontent!=0) {
 
                             $this->_objTpl->setVariable(array(
-                                      'PARTNERS_CONTENT'=> $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['content']
+                                      'PARTNERS_CONTENT'=> $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['content']
                             ));
                         }
 
                         if($Displaycontactname!=0) {
 
                             $this->_objTpl->setVariable(array(
-                                     'PARTNERS_CONTACTNAME' =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['contactname']
+                                     'PARTNERS_CONTACTNAME' =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['contactname']
                             ));
                         }
 
                         if($Displaycountry!=0) {
 
                             $this->_objTpl->setVariable(array(
-                                    'PARTNERS_COUNTRY_TXT'  =>  $this->_getText('country',$arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['country'])
+                                    'PARTNERS_COUNTRY_TXT'  =>  $this->_getText('country',$arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['country'])
                            ));
                         }
 
                         if($Displayphone!=0) {
-                            if($arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['phone']!= ""){
+                            if($arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['phone']!= ""){
                             $this->_objTpl->setVariable(array(
                                     'TXT_PARTNERS_PHONE'    => $_ARRAYLANG['TXT_PARTNERS_PHONES'],
-                                    'PARTNERS_PHONE'        =>  $_ARRAYLANG['TXT_PARTNERS_PHONES_PLUS'].$arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['phone']
+                                    'PARTNERS_PHONE'        =>  $_ARRAYLANG['TXT_PARTNERS_PHONES_PLUS'].$arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['phone']
                             ));
                             }
                         }
@@ -221,28 +213,28 @@ class Partners extends PartnersLibrary  {
                         if($Displayaddress1!=0) {
 
                             $this->_objTpl->setVariable(array(
-                                    'PARTNERS_ADDRESS1'    =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['address1']
+                                    'PARTNERS_ADDRESS1'    =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['address1']
                             ));
                         }
 
                         if($Displayaddress2!=0)  {
 
                             $this->_objTpl->setVariable(array(
-                                     'PARTNERS_ADDRESS2'    =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['address2'],
+                                     'PARTNERS_ADDRESS2'    =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['address2'],
                             ));
                         }
 
                         if($Displaycity!=0)  {
 
                             $this->_objTpl->setVariable(array(
-                                    'PARTNERS_CITY'         =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['city']
+                                    'PARTNERS_CITY'         =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['city']
                             ));
                         }
 
                         if($Displayzipcode!=0)  {
 
                             $this->_objTpl->setVariable(array(
-                                   'PARTNERS_ZIPCODE'        =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['zipcode']
+                                   'PARTNERS_ZIPCODE'        =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['zipcode']
                            ));
                         }
 
@@ -250,7 +242,7 @@ class Partners extends PartnersLibrary  {
                         if($Displaylogo!=0)  {
 
                             $this->_objTpl->setVariable(array(
-                                   'PARTNERS_LOGO_PATH' =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['image']
+                                   'PARTNERS_LOGO_PATH' =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['image']
                            ));
                            $this->_objTpl->parse('showLogo');
                         }
@@ -259,7 +251,7 @@ class Partners extends PartnersLibrary  {
                         if($Displayllogo!=0)  {
 
                             $this->_objTpl->setVariable(array(
-                                  'PARTNERS_LEVEL_IMAGE'          =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['level_image']
+                                  'PARTNERS_LEVEL_IMAGE'          =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['level_image']
                             ));
                         }
 
@@ -268,7 +260,7 @@ class Partners extends PartnersLibrary  {
 
 
                             $this->_objTpl->setVariable(array(
-                                 'PARTNERS_LEVEL_TXT'  =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['level']."&nbsp;Partner"
+                                 'PARTNERS_LEVEL_TXT'  =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['level']."&nbsp;Partner"
                             ));
                            $this->_objTpl->parse('showLogo');
                         }
@@ -277,7 +269,7 @@ class Partners extends PartnersLibrary  {
                         if($Displayquote!=0)   {
 
                             $this->_objTpl->setVariable(array(
-                                  'PARTNERS_QUOTE'       =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['quote']
+                                  'PARTNERS_QUOTE'       =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['quote']
                             ));
                         }
 
@@ -288,12 +280,12 @@ class Partners extends PartnersLibrary  {
                         'PARTNERS_IMAGE_HEIGHT'         =>  $this->_getImageHeight(),
                         'PARTNERS_IMAGE_WIDTH_LEVEL'    =>  $this->_getImageWidth('level'),
                         'PARTNERS_IMAGE_HEIGHT_LEVEL'   =>  $this->_getImageHeight('level'),
-                        'PARTNERS_VERTICAL_TXT'         =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['vertical'],
-                        'PARTNERS_PROFILE_TXT'          =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['profile'],
-                        'PARTNERS_EMAIL'                =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['email'],
-                        'PARTNERS_WEBSITE'              =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['website'],
-                        'PARTNERS_FAX'                  =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['fax'],
-                        'PARTNERS_REFERENCE'            =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['reference'],
+                        'PARTNERS_VERTICAL_TXT'         =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['vertical'],
+                        'PARTNERS_PROFILE_TXT'          =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['profile'],
+                        'PARTNERS_EMAIL'                =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['email'],
+                        'PARTNERS_WEBSITE'              =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['website'],
+                        'PARTNERS_FAX'                  =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['fax'],
+                        'PARTNERS_REFERENCE'            =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][FRONTEND_LANG_ID]['reference'],
 	   				    'ENTRY_LANGUAGES'		        =>	$strActiveLanguages,
                         'ENTRY_USER'			        =>	$arrEntryValues['user_name']
 	   			        ));
@@ -301,7 +293,7 @@ class Partners extends PartnersLibrary  {
 
                         if($Displayclogo!=0)  {
 
-                            $cert_ind  = $this->_getCertIndImage('certificate_image',$intEntryId,$intLangId);
+                            $cert_ind  = $this->_getCertIndImage('certificate_image',$intEntryId,FRONTEND_LANG_ID);
 
                             foreach($cert_ind as $cert_indKey => $cert_indValue) {
 
@@ -322,20 +314,12 @@ class Partners extends PartnersLibrary  {
             }
         }
 
-
-        if($intRowClass>1) {
-
-            $this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT']."&nbsp;".$intRowClass."&nbsp;".$_ARRAYLANG['PARTNERS_NAME']));
-
-        }
-        else if($intRowClass==1) {
-
-  		    $this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT']."&nbsp;".$intRowClass."&nbsp;".$_ARRAYLANG['PARTNERS_NAME']));
-       	}
-        else {
+        if($intRowClass == 0) {
   		    $this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT_ERROR']));
         }
-
+        else {
+			$this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT']."&nbsp;".$intRowClass."&nbsp;".$_ARRAYLANG['PARTNERS_NAME']));
+       	}
 	   	//	Show paging if needed
    		if ($this->PaginactionCount > $this->getPagingLimit()) {
 		  		$strPaging = getPaging( $this->PaginactionCount, $intPagingPosition, '&amp;section=partners', '<strong>'.$_ARRAYLANG['TXT_PARTNERS_ENTRY_MANAGE_PAGING'].'</strong>', true, $this->getPagingLimit());
@@ -393,41 +377,40 @@ class Partners extends PartnersLibrary  {
 	   				if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
 	   					$strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
 	   				}
-	   			 }
+	   			 }	   			 
 	   			 $strActiveLanguages = substr($strActiveLanguages,0,-12);
                  $this->_objTpl->setVariable(array(
                     'ENTRY_ROWCLASS'		     =>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
 	   				'ENTRY_ID'				     =>	 $intEntryId,
-	   				'PARTNERS_TITLE'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['subject'],
-                    'PARTNERS_LEVEL_TXT'         =>  $this->_getText('level',$arrEntries[$intEntryId]['translation'][$intLangId]['level']),
-                    'PARTNERS_COUNTRY_TXT'       =>  $this->_getText('country',$arrEntries[$intEntryId]['translation'][$intLangId]['country']),
-                    'PARTNERS_LEVEL_IMAGE'       =>  $this->_getText('level_image',$arrEntries[$intEntryId]['translation'][$intLangId]['level']),
+	   				'PARTNERS_TITLE'             =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['subject'],
+                    'PARTNERS_LEVEL_TXT'         =>  $this->_getText('level',$arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['level']),
+                    'PARTNERS_COUNTRY_TXT'       =>  $this->_getText('country',$arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['country']),
+                    'PARTNERS_LEVEL_IMAGE'       =>  $this->_getText('level_image',$arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['level']),
                     'PARTNERS_CERTIFICATE_IMAGE' =>  $this->_getText('certificate_image',$intEntryId),
-                    'PARTNERS_VERTICAL_TXT'      =>  $arrEntries[$intEntryId]['translation'][$intLangId]['vertical'],
-                    'PARTNERS_PROFILE_TXT'       =>  $arrEntries[$intEntryId]['translation'][$intLangId]['profile'],
-                    'PARTNERS_CONTACTNAME'       =>  $arrEntries[$intEntryId]['translation'][$intLangId]['contactname'],
-                    'PARTNERS_EMAIL'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['email'],
-                    'PARTNERS_WEBSITE'           =>  $arrEntries[$intEntryId]['translation'][$intLangId]['website'],
-                    'PARTNERS_ADDRESS1'          =>  $arrEntries[$intEntryId]['translation'][$intLangId]['address1'],
-                    'PARTNERS_ADDRESS2'          =>  $arrEntries[$intEntryId]['translation'][$intLangId]['address2'],
-                    'PARTNERS_CITY'              =>  $arrEntries[$intEntryId]['translation'][$intLangId]['city'],
-                    'PARTNERS_ZIPCODE'           =>  $arrEntries[$intEntryId]['translation'][$intLangId]['zipcode'],
-                    'PARTNERS_PHONE'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['phone'],
-                    'PARTNERS_FAX'               =>  $arrEntries[$intEntryId]['translation'][$intLangId]['fax'],
-                    'PARTNERS_REFERENCE'         =>  $arrEntries[$intEntryId]['translation'][$intLangId]['reference'],
-                    'PARTNERS_QUOTE'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['quote'],
-                    'PARTNERS_LOGO_PATH'         =>  $arrEntries[$intEntryId]['translation'][$intLangId]['image'],
-                    'PARTNERS_CONTENT'			 =>	 $arrEntries[$intEntryId]['translation'][$intLangId]['content'],
+                    'PARTNERS_VERTICAL_TXT'      =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['vertical'],
+                    'PARTNERS_PROFILE_TXT'       =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['profile'],
+                    'PARTNERS_CONTACTNAME'       =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['contactname'],
+                    'PARTNERS_EMAIL'             =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['email'],
+                    'PARTNERS_WEBSITE'           =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['website'],
+                    'PARTNERS_ADDRESS1'          =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['address1'],
+                    'PARTNERS_ADDRESS2'          =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['address2'],
+                    'PARTNERS_CITY'              =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['city'],
+                    'PARTNERS_ZIPCODE'           =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['zipcode'],
+                    'PARTNERS_PHONE'             =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['phone'],
+                    'PARTNERS_FAX'               =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['fax'],
+                    'PARTNERS_REFERENCE'         =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['reference'],
+                    'PARTNERS_QUOTE'             =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['quote'],
+                    'PARTNERS_LOGO_PATH'         =>  $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['image'],
+                    'PARTNERS_CONTENT'			 =>	 $arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['content'],
 	   				'ENTRY_LANGUAGES'		     =>	 $strActiveLanguages,
                  	'ENTRY_USER'			     =>	 $arrEntryValues['user_name']
 	   			));
 
 
 	   			$intRowClass++;
-	   				}
-
+	   		    }
 	   		}
-
-	   		}
+   		}
     }
 }
+?>

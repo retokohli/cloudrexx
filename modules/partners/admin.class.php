@@ -40,11 +40,11 @@ class PartnersAdmin extends PartnersLibrary {
         $objFWUser = FWUser::getFWUserObject();
         $this->_intCurrentUserId = $objFWUser->objUser->getId();
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=partners">'.$_ARRAYLANG['TXT_PARTNERS_OVERVIEW_TITLE'].'</a>
-                                                            <a href="?cmd=partners&amp;act=addPartners">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CPARTNERS'].'</a>
-                                                            <a href="?cmd=partners&amp;act=manageCategory">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CATEGORY'].'</a>
-                                                            <a href="?cmd=partners&amp;act=settings">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_TITLE'].'</a>
-                                                            <a href="?cmd=partners&amp;act=users">'.$_ARRAYLANG['TXT_PARTNERS_IMPORT_TITLE'].'</a>
+        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="index.php?cmd=partners">'.$_ARRAYLANG['TXT_PARTNERS_OVERVIEW_TITLE'].'</a>
+                                                            <a href="index.php?cmd=partners&amp;act=addPartners">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CPARTNERS'].'</a>
+                                                            <a href="index.php?cmd=partners&amp;act=manageCategory">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CATEGORY'].'</a>
+                                                            <a href="index.php?cmd=partners&amp;act=settings">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_TITLE'].'</a>
+                                                            <a href="index.php?cmd=partners&amp;act=users">'.$_ARRAYLANG['TXT_PARTNERS_IMPORT_TITLE'].'</a>
                                                             ');
     }
 
@@ -387,8 +387,7 @@ class PartnersAdmin extends PartnersLibrary {
    
     function showCategories($category,$cat_id) {
       	global $_CORELANG, $_ARRAYLANG;
-
-       	$this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
+       	$this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_SETTINGS_CATEGORY'];
 	    $this->_objTpl->addBlockfile('PARTNERS_SUBCATEGORY_FILE', 'settings_block', 'module_partners_categories.html');
     	$this->_objTpl->setVariable(array(
        		'TXT_OVERVIEW_SUBTITLE_NAME'		=>	$_ARRAYLANG['TXT_PARTNERS_CATEGORY_ADD_NAME'],
@@ -448,7 +447,7 @@ class PartnersAdmin extends PartnersLibrary {
         $category = "certificate";
         $arrRenameCategories = $this->CreateRegionArray($catId = 1);
                  $this->_objTpl->setVariable(array('PARTNERS_CAT_NAME'     => "",
-                                                   'PARTNERS_CAT_NAME_DEL' => $_ARRAYLANG['PARTNERS_CATNAME_CATEGORY'],
+                                                   'PARTNERS_CAT_NAME_DEL' => "category",
                                                    'TXT_OVERVIEW_TITLE'    => $_ARRAYLANG['PARTNERS_CATNAME_MANAGE'].$this->_getCategoryname('1'),
                                                    'TXT_ADD_TITLE'         => $_ARRAYLANG['PARTNERS_CATNAME_ADD'].$this->_getCategoryname('1'),
                                                    'TXT_RENAME_TITLE'      => $_ARRAYLANG['PARTNERS_CATNAME_RENAME'].$this->_getCategoryname('1'),
@@ -542,7 +541,7 @@ class PartnersAdmin extends PartnersLibrary {
      function addRegions($category,$id) {
       	global $_CORELANG, $_ARRAYLANG,$objDatabase;
         $cat_id = intval(trim(strip_tags($id)));
-		$this->_strPageTitle = $_CORELANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
+		$this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
 	    $this->_objTpl->addBlockfile('PARTNERS_SUBCATEGORY_FILE', 'settings_block', 'module_partners_categories_regions.html');
        	$this->_objTpl->setVariable(array(
        		'TXT_OVERVIEW_SUBTITLE_NAME'		=>	$_ARRAYLANG['TXT_PARTNERS_CATEGORY_ADD_NAME'],
@@ -1376,7 +1375,7 @@ class PartnersAdmin extends PartnersLibrary {
      function editCategory($intCategoryId,$category) {
     	global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $cat_id = intval(trim(strip_tags($_REQUEST['cat_id'])));
-        $this->_strPageTitle = $_CORELANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
       	$this->_objTpl->addBlockfile('PARTNERS_SUBCATEGORY_FILE', 'settings_block', 'module_partners_categories_edit.htm');
         $this->_objTpl->setVariable(array(
     		'TXT_EDIT_TITLE'		=>	$_ARRAYLANG['TXT_PARTNERS_CATEGORY_EDIT_TITLE'],
@@ -1903,7 +1902,7 @@ class PartnersAdmin extends PartnersLibrary {
         $titleName_country  = "country";
         $titleName_vertical = "vertical";
 
-        $this->_strPageTitle = $_CORELANG['TXT_PARTNERS_OVERVIEW_TITLE'];
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_OVERVIEW_TITLE'];
         $this->_objTpl->loadTemplateFile('module_partners_entries.html',true,true);
 
          $arrSettings   = $this->_getSettings();
@@ -1987,21 +1986,20 @@ class PartnersAdmin extends PartnersLibrary {
         $intLanguageCounter = 0;
    		$arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit());
    	    $arrLanguagesName = array(0 => '', 1 => '', 2 => '');
-       	foreach ($arrRenameCategories as $intCategoryId => $arrLanguages){
-     	  foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-     	      $arrLanguagesName[$intCounter%3] .= '<input '.(($arrRenameCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmRenameCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
-     	      $this->_objTpl->setVariable(array(
-	    			                'RE_NAME_LANGID'	=>	$intLanguageId,
-	    			                'RE_NAME_LANG'		=>	$arrTranslations['long'].' ['.$arrTranslations['short'].']'
-	    		                 ));
-                                $this->_objTpl->parse('reCategoryNameFields');
-     	      ++$intCounter;
-     	  }
-          $this->_objTpl->setVariable(array(
-     	      'PARTNERS_OLD_NAME'		=>	$arrLanguages[$this->_intLanguageId]['name']
-
-     	  ));
-        }
+		foreach ($arrRenameCategories as $intCategoryId => $arrLanguages){
+			foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+				$arrLanguagesName[$intCounter%3] .= '<input '.(($arrRenameCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmRenameCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
+				$this->_objTpl->setVariable(array(
+					'RE_NAME_LANGID'	=>	$intLanguageId,
+					'RE_NAME_LANG'		=>	$arrTranslations['long'].' ['.$arrTranslations['short'].']'
+				));
+				$this->_objTpl->parse('reCategoryNameFields');
+				++$intCounter;
+			}
+		$this->_objTpl->setVariable(array(
+			'PARTNERS_OLD_NAME'		=>	$arrLanguages[$this->_intLanguageId]['name'],			
+			));
+		}
 
 
    $arrLanguages = array(0 => '', 1 => '', 2 => '');
@@ -2035,9 +2033,8 @@ class PartnersAdmin extends PartnersLibrary {
 	   			     //Check active languages
 	   			     $strActiveLanguages = '';
 	   			     foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
-
 	   			         $this->_objTpl->setVariable(array('ENTRY_STATUS' =>  $this->_getStatus($arrEntryTranslations['status'])));
-	   				     if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
+	   				     if ($arrEntryTranslations['is_active'] && key_exists($intLangId, $this->_arrLanguages)) {
 	   					       $strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
 	   				     }
 	   			     }
@@ -2124,7 +2121,7 @@ class PartnersAdmin extends PartnersLibrary {
         $titleName_vertical = "vertical";
         $titleName_region = "regions";
 
-    	$this->_strPageTitle = $_CORELANG['TXT_PARTNERS_OVERVIEW_TITLE'];
+    	$this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_SETTINGS_CPARTNERS'];
     	$this->_objTpl->loadTemplateFile('module_partners_create.html',true,true);
 
     	$arrCategories = $this->createCategoryArray();
@@ -2659,24 +2656,24 @@ class PartnersAdmin extends PartnersLibrary {
 			if (substr($strKey,0,strlen('partnersTitle_')) == 'partnersTitle_') {
 			    $intLanguageId = intval(substr($strKey,strlen('partnersTitle_')));
 
-       			$arrValues[$intLanguageId] = array(	'subject' 		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['partnersTitle_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'level'		    => contrexx_addslashes(strip_tags(trim(htmlentities($_POST['level_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'profile'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['profile_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'country'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['country_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'region'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['region_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'vertical'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['vertical_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'contactname'   => contrexx_addslashes(strip_tags(trim(htmlentities($_POST['contactname_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'email'	    	=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['email_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'website'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['website_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'address1'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['address1_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'address2'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['address2_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'city'	    	=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['city_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'zipcode'		=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['zipcode_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'phone'		    => contrexx_addslashes(strip_tags(trim(htmlentities($_POST['phone_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'fax'	    	=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['fax_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'reference'	  	=> contrexx_addslashes(strip_tags(trim(htmlentities($_POST['reference_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-													'quote'	  	    => contrexx_addslashes(strip_tags(trim(htmlentities($_POST['quote_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET)))),
-             										'content'		=> contrexx_addslashes($_POST['partnersText_'.$intLanguageId],ENT_QUOTES,CONTREXX_CHARSET),
+       			$arrValues[$intLanguageId] = array(	'subject' 		=> contrexx_addslashes(strip_tags(trim($_POST['partnersTitle_'.$intLanguageId]))),
+													'level'		    => contrexx_addslashes(strip_tags(trim($_POST['level_'.$intLanguageId]))),
+													'profile'		=> contrexx_addslashes(strip_tags(trim($_POST['profile_'.$intLanguageId]))),
+													'country'		=> contrexx_addslashes(strip_tags(trim($_POST['country_'.$intLanguageId]))),
+													'region'		=> contrexx_addslashes(strip_tags(trim($_POST['region_'.$intLanguageId]))),
+													'vertical'		=> contrexx_addslashes(strip_tags(trim($_POST['vertical_'.$intLanguageId]))),
+													'contactname'   => contrexx_addslashes(strip_tags(trim($_POST['contactname_'.$intLanguageId]))),
+													'email'	    	=> contrexx_addslashes(strip_tags(trim($_POST['email_'.$intLanguageId]))),
+													'website'		=> contrexx_addslashes(strip_tags(trim($_POST['website_'.$intLanguageId]))),
+													'address1'		=> contrexx_addslashes(strip_tags(trim($_POST['address1_'.$intLanguageId]))),
+													'address2'		=> contrexx_addslashes(strip_tags(trim($_POST['address2_'.$intLanguageId]))),
+													'city'	    	=> contrexx_addslashes(strip_tags(trim($_POST['city_'.$intLanguageId]))),
+													'zipcode'		=> contrexx_addslashes(strip_tags(trim($_POST['zipcode_'.$intLanguageId]))),
+													'phone'		    => contrexx_addslashes(strip_tags(trim($_POST['phone_'.$intLanguageId]))),
+													'fax'	    	=> contrexx_addslashes(strip_tags(trim($_POST['fax_'.$intLanguageId]))),
+													'reference'	  	=> contrexx_addslashes(strip_tags(trim($_POST['reference_'.$intLanguageId]))),
+													'quote'	  	    => contrexx_addslashes(strip_tags(trim($_POST['quote_'.$intLanguageId]))),
+             										'content'		=> contrexx_addslashes($_POST['partnersText_'.$intLanguageId]),
              										'is_active'     => (array_key_exists($intLanguageId,$arrActiveLanguages) ? '1' : '0'),
 													'status'		=> $_POST['active_'.$intLanguageId][0],
 													'categories'	=> (isset($_POST['frmEditEntry_Categories_'.$intLanguageId])) ? $_POST['frmEditEntry_Categories_'.$intLanguageId] : array(),
@@ -3316,6 +3313,7 @@ class PartnersAdmin extends PartnersLibrary {
     function showSettings(){
        global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
+       $this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_SETTINGS_TITLE'];
        $this->_objTpl->loadTemplateFile('module_partners_settings.htm',true,true);
        $this->_objTpl->setVariable(array(
        'TXT_GENERAL_TITLE'             => $_ARRAYLANG['TXT_PARTNERS_SETTINGS_GENERAL_TITLE'],
@@ -3810,7 +3808,7 @@ class PartnersAdmin extends PartnersLibrary {
         global $objDatabase, $_ARRAYLANG,$_CORELANG;
         $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/partners/template');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
+		$this->_strPageTitle = $_ARRAYLANG['TXT_PARTNERS_IMPORT_TITLE'];
         require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";
         $arrCategories = $this->createCategoryArray();
         $objImport = new Import();
