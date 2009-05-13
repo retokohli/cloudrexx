@@ -2668,7 +2668,7 @@ CREATE TABLE `contrexx_module_u2u_address_list` (
   `user_id` int(11) NOT NULL,
   `buddies_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_u2u_message_log` (
   `message_id` int(11) unsigned NOT NULL auto_increment,
   `message_text` text NOT NULL,
