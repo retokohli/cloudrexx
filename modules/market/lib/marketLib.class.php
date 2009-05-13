@@ -84,7 +84,7 @@ class marketLibrary
         }
 
         if($where != '' && $like != ''){
-            $where = "WHERE ".contrexx_addslashes($where)." LIKE ".contrexx_addslashes($like);
+            $where = "WHERE $where LIKE $like";
         }
 
         $objResultEntries = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market '.$where.' '.$orderBy);

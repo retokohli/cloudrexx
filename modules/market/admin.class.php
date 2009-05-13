@@ -460,13 +460,13 @@ class Market extends marketLibrary
             $sortId    = '';
         }else{
             $where     = 'catid';
-            $like     = $_GET['catid'];
+            $like     = intval($_GET['catid']);
             $sortId    = '&catid='.$_GET['catid'];
         }
 
         if (isset($_POST['term'])) {
             $where     = 'title';
-            $like     = "'%".$_POST['term']."%' OR description LIKE '%".$_POST['term']."%' OR id LIKE '%".$_POST['term']."%'";
+            $like     = "'%".contrexx_addslashes($_POST['term'])."%' OR description LIKE '%".contrexx_addslashes($_POST['term'])."%' OR id LIKE '%".intval($_POST['term'])."%'";
         }
 
         // Sort
