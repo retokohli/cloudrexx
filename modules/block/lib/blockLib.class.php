@@ -287,37 +287,37 @@ class blockLibrary
     * @global ADONewConnection
     * @global integer
     */
+
     function _setBlock($id, &$code)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase, $_LANGID, $pageId;
 
-//      $objDatabase->debug = true;
-        /*$objBlock = $objDatabase->SelectLimit("   SELECT  tblBlock.content
-                                                FROM    ".DBPREFIX."module_block_blocks AS tblBlock
-                                                WHERE   tblBlock.id=".$id."
-                                                AND     tblBlock.active=1", 1
-                                                );*/    
-                                                
-        $query = "  SELECT tblBlock.content, tblLang.lang_id
-                    FROM ".DBPREFIX."module_block_blocks AS tblBlock
-                    INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang 
-                    ON tblLang.block_id = tblBlock.id
-                    WHERE tblBlock.id = ".$id."
-                    AND tblBlock.active = 1
-                    AND tblLang.lang_id = ".$_LANGID;
-        $objRs = $objDatabase->Execute($query);
-        if ($objRs !== false) {
-            if ($objRs->RecordCount()) {
-                $code = str_replace("{".$this->blockNamePrefix.$id."}", $objRs->fields['content'], $code);
+        $qStr = "
+            SELECT     tblBlock.`content`  AS  content,
+                       tblPages.`page_id`  AS  page_id
+            FROM       `" . DBPREFIX . "module_block_blocks`     AS  tblBlock,
+                       `" . DBPREFIX . "module_block_rel_lang`   AS  tblLang
+            LEFT JOIN  `" . DBPREFIX . "module_block_rel_pages`  AS  tblPages
+            ON         tblPages.`block_id`  =  '" . $id . "'
+            AND        tblPages.`lang_id`   =  '" . $_LANGID . "'
+
+            WHERE      tblBlock.`id`        =  '" . $id . "'
+            AND        tblBlock.`active`    =  '1'
+
+            AND        tblLang.`lang_id`    =  '" . $_LANGID . "'
+            AND        tblLang.`block_id`   =  '" . $id . "'
+        ";
+        $q = $objDatabase->query($qStr);
+
+        if ($q->numRows() > 0) {
+            while ($f = $q->fetchRow()) {
+                if ($f['page_id'] == NULL || $f['page_id'] == $pageId) {
+                    $code = str_replace('{' . $this->blockNamePrefix . $id . '}', $f['content'], $code);
+                }
             }
         }
-        
-        /*
-        if ($objBlock !== false) {
-            $code = str_replace("{".$this->blockNamePrefix.$id."}", $objBlock->fields['content'], $code);
-        }*/
-    }
 
+    }
     /**
     * Set block Global
     *
