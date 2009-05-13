@@ -99,10 +99,10 @@ class Market extends marketLibrary
 
         switch ($_GET['cmd']) {
             case 'detail':
-                $this->entryDetails($_GET['id']);
+                $this->entryDetails(intval($_GET['id']));
             break;
             case 'send':
-                $this->sendMessage($_GET['id']);
+                $this->sendMessage(intval($_GET['id']));
             break;
             case 'add':
                 $this->addEntry();
