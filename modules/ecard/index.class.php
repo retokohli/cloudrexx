@@ -174,7 +174,7 @@ class ecard
             $objResult->MoveNext();
         }
         $this->_objTpl->setVariable(
-            'ECARD_JAVASCRIPT', self::getJavascript()
+            'ECARD_JAVASCRIPT', self::getJavascript($maxCharacters)
         );
     }
 
