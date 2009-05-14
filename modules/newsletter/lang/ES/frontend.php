@@ -74,11 +74,12 @@ $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "El Registro no s
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "\¡Se ha producido un error mientras se borraba su email del sistema de boletines!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sexo";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Desconocido";
+$_ARRAYLANG['TXT_NEWSLETTER_URI'] = "URI";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'] = "Entrada";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Aviso de salida";
-$_ARRAYLANG['TXT_ACCESS_MESSAGE'] = "Message";
-$_ARRAYLANG['TXT_ACCESS_SITE'] = "Site";
-$_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Send Message";
-$_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Add to address book";
-$_ARRAYLANG['TXT_ADD_ADDRESS'] = "Add to address book";
+$_ARRAYLANG['TXT_ACCESS_MESSAGE'] = "Mensaje";
+$_ARRAYLANG['TXT_ACCESS_SITE'] = "Web";
+$_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Enviar mensaje";
+$_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "A&ntilde;adir a la agenda";
+$_ARRAYLANG['TXT_ADD_ADDRESS'] = "A&ntilde;adir a la agenda";
 ?>
