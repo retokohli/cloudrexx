@@ -498,6 +498,7 @@ class statsLibrary
             $this->totalRequests +=$objResult->fields['count'];
             $objResult->MoveNext();
         }
+        ksort($this->arrRequests);
     }
 
     function _initMostViewedPages() {
