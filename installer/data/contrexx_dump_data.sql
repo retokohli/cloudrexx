@@ -2160,6 +2160,18 @@ INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (3,'D
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (4,'Dear Mr');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (5,'Madame');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (6,'Monsieur');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (1,1,1,'Bereich');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (1,2,1,'Certificate');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (2,1,1,'Stufen');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (2,2,1,'Levels');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (3,1,1,'Profile');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (3,2,1,'Profile');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (4,1,1,'Länder');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (4,2,1,'Countries');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (5,1,1,'Betätigungsfeld');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (5,2,1,'Verticals');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (6,1,1,'Regional');
+INSERT INTO `contrexx_module_partners_categories_name` (`id`, `lang_id`, `is_active`, `name`) VALUES (6,2,1,'Regional');
 INSERT INTO `contrexx_module_partners_settings` (`id`, `sortorder`, `width`, `height`, `lwidth`, `lheight`, `cwidth`, `cheight`, `lis_active`, `pis_active`, `cis_active`, `vis_active`, `ctis_active`) VALUES (1,'Subject','100','100','30','30','30','30','1','1','1','1','1');
 INSERT INTO `contrexx_module_partners_user_country` (`id`, `lang_id`, `is_active`, `reg_id`, `sort_id`, `country`) VALUES (1,1,1,0,1,'Afghanistan');
 INSERT INTO `contrexx_module_partners_user_country` (`id`, `lang_id`, `is_active`, `reg_id`, `sort_id`, `country`) VALUES (2,1,1,0,2,'Aland islands');
