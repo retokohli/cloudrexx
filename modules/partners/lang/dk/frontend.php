@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  module_partners
  */
+$_ARRAYLANG['TXT_PARTNERS_ALL'] = "Alle";
 $_ARRAYLANG['TXT_PARTNERS_PHONES'] = "Phone:";
 $_ARRAYLANG['TXT_HELLO_WORLD'] = "Hello World";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "Alle";
