@@ -25,6 +25,9 @@ Benutzerverwaltung
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 
+Modul: Newsletter
+- Die Anmeldung und Bearbeitung des Profils funktioniert korrekt.
+
 Modul: Shop
 - E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
