@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  module_partners
  */
+$_ARRAYLANG['TXT_PARTNERS_ALL'] = "Alle";
 $_ARRAYLANG['TXT_PARTNERS_PHONES'] = "Telefon:";
 $_ARRAYLANG['TXT_HELLO_WORLD'] = "Hello World";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "Alle";
@@ -22,7 +23,7 @@ $_ARRAYLANG['PARTNERS_COUNT_ERROR'] = "Keine Partner gefunden.";
 $_ARRAYLANG['TXT_PARTNERS_LEVEL'] = "Level";
 $_ARRAYLANG['TXT_PARTNERS_PROFILE'] = "Profil";
 $_ARRAYLANG['TXT_PARTNERS_COUNTRY'] = "Land";
-$_ARRAYLANG['TXT_PARTNERS_VERTICAL'] = "Vertikale";
+$_ARRAYLANG['TXT_PARTNERS_VERTICAL'] = "Betätigungsfeld";
 $_ARRAYLANG['TXT_PARTNERS_INACTIVE'] = "Inaktiv";
 $_ARRAYLANG['TXT_ENTRIES_TITLE'] = "Einträge";
 ?>
