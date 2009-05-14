@@ -2758,7 +2758,7 @@ class newsletter extends NewsletterLib
         $objImport = new Import();
         $arrFields = array(
             'email'     => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-            'uri' => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
+            'uri'       => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
             'sex'       => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
             'title'     => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
             'lastname'  => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
@@ -2820,7 +2820,7 @@ class newsletter extends NewsletterLib
                             $recipientTitleId = $this->_addRecipientTitle($arrRecipient['title']);
                         }
 
-                        if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['sex'], $recipientTitleId, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['company'], $arrRecipient['street'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country'],'', '', 1, $arrLists)) {
+                        if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientTitleId, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['company'], $arrRecipient['street'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country'],'', '', 1, $arrLists)) {
                             array_push($arrBadEmails, $arrRecipient['email']);
                         }
                     }
@@ -3342,7 +3342,7 @@ class newsletter extends NewsletterLib
         ));
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_EMAIL_ADDRESS'    => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-            'TXT_NEWSLETTER_URI'    => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
+            'TXT_NEWSLETTER_URI'              => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
             'TXT_NEWSLETTER_TITLE'            => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
             'TXT_NEWSLETTER_SEX'              => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
             'TXT_NEWSLETTER_FEMALE'           => $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'],

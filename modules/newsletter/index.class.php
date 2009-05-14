@@ -307,6 +307,7 @@ class newsletter extends NewsletterLib
 
         $recipientId = 0;
         $recipientEmail = '';
+        $recipientUri = '';
         $recipientSex = '';
         $recipientTitle = 0;
         $recipientLastname = '';
@@ -334,6 +335,9 @@ class newsletter extends NewsletterLib
         if (isset($_POST['recipient_save'])) {
             if (isset($_POST['email'])) {
                 $recipientEmail = $_POST['email'];
+            }
+            if (isset($_POST['uri'])) {
+                $recipientUri = $_POST['uri'];
             }
             if (isset($_POST['sex'])) {
                 $recipientSex = in_array($_POST['sex'], array('f', 'm')) ? $_POST['sex'] : '';
@@ -386,14 +390,14 @@ class newsletter extends NewsletterLib
                 if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                     if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                         if ($recipientId > 0) {
-                            if ($this->_updateRecipient($recipientId, $recipientEmail, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, 1, $arrAssociatedLists)) {
+                            if ($this->_updateRecipient($recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, 1, $arrAssociatedLists)) {
                                 array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
                                 $showForm = false;
                             } else {
                                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA']);
                             }
                         } else {
-                            if ($this->_addRecipient($recipientEmail, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, $recipientStatus, $arrAssociatedLists)) {
+                            if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, $recipientStatus, $arrAssociatedLists)) {
                                 if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientTitle, $recipientFirstname, $recipientLastname)) {
                                     array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
                                     $showForm = false;
@@ -415,9 +419,10 @@ class newsletter extends NewsletterLib
                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NOT_VALID_EMAIL']);
             }
         } elseif ($recipientId > 0) {
-            $objRecipient = $objDatabase->SelectLimit("SELECT sex, title, lastname, firstname, company, street, zip, city, country, phone, birthday FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
+            $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, title, lastname, firstname, company, street, zip, city, country, phone, birthday FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
                 $recipientEmail = urldecode($_REQUEST['mail']);
+                $recipientUri = $objRecipient->fields['uri'];
                 $recipientSex = $objRecipient->fields['sex'];
                 $recipientTitle = $objRecipient->fields['title'];
                 $recipientLastname = $objRecipient->fields['lastname'];
@@ -480,6 +485,7 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_PROFILE_MAIL'    => urlencode($requestedMail),
                 'NEWSLETTER_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_USER_CODE'    => $code,
+                'NEWSLETTER_URI'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',
                  'NEWSLETTER_SEX_M'        => $recipientSex == 'm' ? 'checked="checked"' : '',
                 'NEWSLETTER_TITLE'        => $this->_getRecipientTitleMenu($recipientTitle, 'name="title" size="1"'),
@@ -495,6 +501,7 @@ class newsletter extends NewsletterLib
 
             $this->_objTpl->setVariable(array(
                 'TXT_NEWSLETTER_EMAIL_ADDRESS'    => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+                'TXT_NEWSLETTER_URI'            => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
                 'TXT_NEWSLETTER_TITLE'            => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
                 'TXT_NEWSLETTER_SEX'            => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
                 'TXT_NEWSLETTER_FEMALE'            => $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'],
