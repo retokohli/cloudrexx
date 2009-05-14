@@ -433,10 +433,10 @@ class u2u extends u2uLibrary
      *
      * @global   $_ARRAYLANG $objDatabase $_CORELANG
      */
-    function sendMsg()  {
+    function sendMsg() {
         global $_ARRAYLANG, $objDatabase,$_CORELANG;
 
-        if(!empty($_REQUEST['id'])) {
+        if (!empty($_REQUEST['id'])) {
             $objFWUser = FWUser::getFWUserObject();
             $id=intval($_REQUEST['id']);
             $selUserName='SELECT username FROM '.DBPREFIX.'access_users WHERE id = "'.$id.'"';
@@ -658,7 +658,7 @@ class u2u extends u2uLibrary
                         $successVar=1;
                         $this->strMessages="";
                         //Send notification to users
-                        $this->sendNotificationMail();
+                        $this->sendNotificationMail($ID);
                     }
                 }
             }
@@ -680,7 +680,7 @@ class u2u extends u2uLibrary
      * send notification email
      *
      */
-    function sendNotificationMail() {
+    function sendNotificationMail($ID) {
         global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
@@ -801,7 +801,6 @@ class u2u extends u2uLibrary
             $messageID=$_GET["msgID"];
         }
         $arrMessage=$this->createEntryShowMessage($messageID);
-
         if($_REQUEST['status']=="outboxmsg") {
             $this->_objTpl->setVariable(array(
                                           'PRIVATE_MESSAGE_ID'                 =>  $messageID,
