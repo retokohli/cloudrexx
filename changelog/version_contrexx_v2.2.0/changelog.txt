@@ -29,10 +29,10 @@ Benutzerverwaltung
 - Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
   erfasst werden.
 
-Module: Kleinanzeigemarkt
+Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 
-Module: Shop
+Modul: Shop
 - E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
   Benutzerkonto mit der entsprechend definierten Gültigkeitsdauer erstellt.
@@ -40,6 +40,9 @@ Module: Shop
   E-Mail Vorlage in der ausgewählten Sprache nicht vorhanden ist, die, in der
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
   vorhanden ist, wird die nächste vorhandene Sprache verwendet.
+
+Modul: User to User Nachrichten
+- Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.
 
 Statistik
 - Die Zählung der Besucher erfolgt korrekt.
