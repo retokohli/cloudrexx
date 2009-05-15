@@ -45,8 +45,7 @@ function _livecamUpdate()
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult !== false) {
         if ($objResult->RecordCount() == 0) {
-            $query = "INSERT INTO `".DBPREFIX."module_livecam_settings` (`setid`, `setname`, `setvalue`) VALUES
-('1', 'amount_of_cams', '1')";
+            $query = "INSERT INTO `".DBPREFIX."module_livecam_settings` (`setname`, `setvalue`) VALUES ('amount_of_cams', '1')";
             if ($objDatabase->Execute($query) === false) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
