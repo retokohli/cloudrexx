@@ -29,6 +29,9 @@ Benutzerverwaltung
 - Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
   erfasst werden.
 
+News Manager
+- Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
+
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 
