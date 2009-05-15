@@ -215,9 +215,13 @@ function accessSetScrollPos()
 					<table cellspacing="0" cellpadding="3" border="0" class="adminlist" style="cursor:default;">
 					<!-- BEGIN access_permission_area -->
 						<tr class="row{ACCESS_AREA_STYLE_NR}">
-							<td width="1%"><input type="checkbox" name="access_area_id[]" id="access_area_id_{ACCESS_AREA_ID}" value="{ACCESS_AREA_ID}" {ACCESS_AREA_ALLOWED} /></td>
+							<td width="1%" height="25">
+                                <!-- BEGIN access_permission_in_scope -->
+                                    <input type="checkbox" name="access_area_id[]" id="access_area_id_{ACCESS_AREA_ID}" value="{ACCESS_AREA_ID}" {ACCESS_AREA_ALLOWED} />
+                                <!-- END access_permission_in_scope -->
+                            </td>
 							<td style="text-indent:{ACCESS_AREA_TEXT_INDENT}px;{ACCESS_AREA_EXTRA_STYLE}" onclick="accessSwitchCheckboxStatus('access_area_id_{ACCESS_AREA_ID}')">
-								{ACCESS_AREA_NAME} <font size="1">[{ACCESS_AREA_ID}]</font>
+								{ACCESS_AREA_NAME}<!-- BEGIN access_permission_access_id --> <font size="1">[{ACCESS_AREA_ID}]</font><!-- END access_permission_access_id -->
 							</td>
 						</tr>
 					<!-- END access_permission_area -->

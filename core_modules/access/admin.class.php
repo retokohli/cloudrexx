@@ -617,9 +617,10 @@ class AccessManager extends AccessLib
                 `access_id`,
                 `is_active`,
                 `type`,
+                `scope`,
                 `parent_area_id`
             FROM `".DBPREFIX."backend_areas`
-            WHERE `is_active` = 1 AND (`scope` = '".$objGroup->getType()."' OR `scope` = 'global')
+            WHERE `is_active` = 1
             ORDER BY `parent_area_id`, `order_id`
             ");
         if ($objResult) {
@@ -629,6 +630,7 @@ class AccessManager extends AccessLib
                     'access_id' => $objResult->fields['access_id'],
                     'status'    => $objResult->fields['is_active'],
                     'type'      => $objResult->fields['type'],
+                    'scope'     => $objResult->fields['scope'],
                     'group_id'  => $objResult->fields['parent_area_id'],
                     'allowed'   => in_array($objResult->fields['access_id'], $objGroup->getStaticPermissionIds()) ? 1 : 0
                 );
@@ -639,24 +641,54 @@ class AccessManager extends AccessLib
         $tabNr = 1;
         foreach ($arrAreas AS $groupId => $arrAreaGroup ) {
             if ($arrAreaGroup['type'] == 'group') {
-                $this->_parsePermissionAreas($arrAreas, $groupId);
+                $arrAreaTree = array();
+                if ($arrAreaGroup['scope'] == $objGroup->getType() || $arrAreaGroup['scope'] == 'global') {
+                    $arrAreaTree[] = array($groupId, $objGroup->getType());
+                    $groupParsed = true;
+                } else {
+                    $groupParsed = false;
+                }
                 foreach ($arrAreas AS $navigationId => $arrAreaNavigation) {
                     if ($groupId == $arrAreaNavigation['group_id'] && $arrAreaNavigation['type'] == 'navigation') {
-                        $this->_parsePermissionAreas($arrAreas, $navigationId);
+                        if ($arrAreaNavigation['scope'] == $objGroup->getType() || $arrAreaNavigation['scope'] == 'global') {
+                            if (!$groupParsed) {
+                                $arrAreaTree[] = array($groupId, $objGroup->getType());
+                                $groupParsed = true;
+                            }
+                            $arrAreaTree[] = array($navigationId, $objGroup->getType());
+                            $navigationParsed = true;
+                        } else {
+                            $navigationParsed = false;
+                        }
                         foreach ($arrAreas AS $functionId => $arrAreaFunction) {
                             if ($navigationId == $arrAreaFunction['group_id'] && $arrAreaFunction['type'] == 'function') {
-                                $this->_parsePermissionAreas($arrAreas, $functionId);
+                                if ($arrAreaFunction['scope'] == $objGroup->getType() || $arrAreaFunction['scope'] == 'global') {
+                                    if (!$navigationParsed) {
+                                        if (!$groupParsed) {
+                                            $arrAreaTree[] = array($groupId, $objGroup->getType());
+                                            $groupParsed = true;
+                                        }
+                                        $arrAreaTree[] = array($navigationId, $objGroup->getType());
+                                        $navigationParsed = true;
+                                    }
+                                    $arrAreaTree[] = array($functionId, $objGroup->getType());
+                                }
                             }
                         }
                     }
                 }
+
+                if ($groupParsed) {
+                    foreach ($arrAreaTree as $arrArea) {
+                        $this->_parsePermissionAreas($arrAreas, $arrArea[0], $arrArea[1]);
+                    }
+
                 $this->_objTpl->setGlobalVariable('ACCESS_TAB_NR', $tabNr);
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_TAB_NAME'           => isset($_CORELANG[$arrAreaGroup['name']]) ? htmlentities($_CORELANG[$arrAreaGroup['name']], ENT_QUOTES, CONTREXX_CHARSET) : $arrAreaGroup['name'],
-                ));
+                    $this->_objTpl->setVariable('ACCESS_TAB_NAME', isset($_CORELANG[$arrAreaGroup['name']]) ? htmlentities($_CORELANG[$arrAreaGroup['name']], ENT_QUOTES, CONTREXX_CHARSET) : $arrAreaGroup['name']);
                 $this->_objTpl->parse('access_permission_tab_menu');
                 $this->_objTpl->parse('access_permission_tabs');
                 $tabNr++;
+                }
             }
         }
         if ($tabNr > 1) {
@@ -742,7 +774,7 @@ class AccessManager extends AccessLib
     }
 
 
-    function _parsePermissionAreas($arrAreas, $areaId)
+    function _parsePermissionAreas($arrAreas, $areaId, $scope)
     {
         global $_CORELANG;
 
@@ -752,8 +784,22 @@ class AccessManager extends AccessLib
             'ACCESS_AREA_STYLE_NR'      => $arrAreas[$areaId]['type'] == 'group' ? 3 : ($arrAreas[$areaId]['type'] == 'navigation' ? 1 : 2),
             'ACCESS_AREA_TEXT_INDENT'   => $arrAreas[$areaId]['type'] == 'group' ? 0 : ($arrAreas[$areaId]['type'] == 'navigation' ? 20 : 40),
             'ACCESS_AREA_EXTRA_STYLE'   => $arrAreas[$areaId]['type'] == 'group' ? 'font-weight:bold;' : '',
+        ));
+
+        if ($arrAreas[$areaId]['scope'] == $scope || $arrAreas[$areaId]['scope'] == 'global') {
+            $this->_objTpl->setVariable(array(
+                'ACCESS_AREA_ID'            => $arrAreas[$areaId]['access_id'],
             'ACCESS_AREA_ALLOWED'       => $arrAreas[$areaId]['allowed'] ? 'checked="checked"' : ''
         ));
+            $this->_objTpl->parse('access_permission_in_scope');
+
+            $this->_objTpl->setVariable('ACCESS_AREA_ID', $arrAreas[$areaId]['access_id']);
+            $this->_objTpl->parse('access_permission_access_id');
+        } else {
+            $this->_objTpl->hideBlock('access_permission_in_scope');
+            $this->_objTpl->hideBlock('access_permission_access_id');
+        }
+
         $this->_objTpl->parse('access_permission_area');
     }
 
