@@ -55,6 +55,18 @@ function _marketUpdate()
 		}
 	}
 
+
+
+    try{
+        // delete obsolete table  contrexx_module_market_access
+        UpdateUtil::drop_table(DBPREFIX.'module_market_access');
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
 ?>

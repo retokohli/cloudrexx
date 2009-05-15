@@ -898,7 +898,12 @@ class Market extends marketLibrary
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if (!$objFWUser->objUser->login()) {
+            if ($objFWUser->objUser->login()) {
+                if (!Permission::checkAccess(99, 'static', true)) {
+                    header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
+                    exit;
+                }
+            }else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
                 header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
@@ -1368,7 +1373,12 @@ class Market extends marketLibrary
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if (!$objFWUser->objUser->login()) {
+            if ($objFWUser->objUser->login()) {
+                if (!Permission::checkAccess(100, 'static', true)) {
+                    header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
+                    exit;
+                }
+            }else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
                 header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
@@ -1591,7 +1601,12 @@ class Market extends marketLibrary
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if (!$objFWUser->objUser->login()) {
+            if ($objFWUser->objUser->login()) {
+                if (!Permission::checkAccess(101, 'static', true)) {
+                    header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
+                    exit;
+                }
+            }else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
                 header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;

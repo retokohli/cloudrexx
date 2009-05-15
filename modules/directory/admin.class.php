@@ -110,115 +110,118 @@ class rssDirectory extends directoryLibrary
     {
         global $objDatabase, $objTemplate;
 
+		// general module access check
+		Permission::checkAccess(59, 'static');
+
         if(!isset($_GET['act'])){
             $_GET['act']="";
         }
 
         switch($_GET['act']){
             case "add":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->addCategorie();
                 $this->showCategories();
             break;
 
             case "del":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->delete();
                 $this->showCategories();
             break;
 
             case "move":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->move();
                 $this->showCategories();
             break;
 
             case "edit":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->editCategorie();
             break;
 
             case "catOrder":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->catOrder();
                 $this->showCategories();
             break;
 
             case "confirm":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(94, 'static');
                 $this->showConfirm();
             break;
 
             case "detailfile":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(94, 'static');
                 $this->detailEntry(intval($_GET['id']));
             break;
 
             case "confirmfile":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(96, 'static');
                 $this->confirmEntry_step1();
                 $this->showConfirm();
             break;
 
             case "files":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(96, 'static');
                 $this->showFiles(intval($_GET['cat']), intval($_GET['level']));
             break;
 
             case "delfile":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(94, 'static');
                 $this->delete();
                 $this->showFiles('', '');
             break;
 
             case "editfile":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(94, 'static');
                 $this->editFile(intval($_GET['id']));
             break;
 
             case "movefile":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(94, 'static');
                 $this->move();
             break;
 
             case "restorevoting":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(94, 'static');
                 $this->restoreVoting(intval($_GET['id']));
             break;
             case "new":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(96, 'static');
                 $this->newEntry();
             break;
             case "settings":
-                Permission::checkAccess(59, 'static');
+                Permission::checkAccess(92, 'static');
                 $this->updateSettings();
                 $this->showSettings();
                 break;
             case "levels":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->showLevels();
                 break;
             case "addlevel":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->addLevel();
                 $this->showLevels();
                 break;
             case "editlevel":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->editLevel();
             break;
             case "dellevel":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->delete();
                 $this->showLevels();
             break;
             case "levelOrder":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->levelOrder();
                 $this->showLevels();
             break;
             case "moveLevel":
-                Permission::checkAccess(59, 'static');
+				Permission::checkAccess(97, 'static');
                 $this->move();
                 $this->showLevels();
             break;
@@ -229,7 +232,7 @@ class rssDirectory extends directoryLibrary
                     $objResult = $objDatabase->Execute($query);
 
                     if ($objResult !== false && $objResult->RecordCount()==1) {
-                        Permission::checkAccess(59, 'static');
+				    	Permission::checkAccess(96, 'static');
                         $this->showConfirm();
                     }else{
                         $this->showCategories();

@@ -191,6 +191,17 @@ function _directoryUpdate() {
 	}
 
 
+    try{
+        // delete obsolete table  contrexx_module_directory_access
+        UpdateUtil::drop_table(DBPREFIX.'module_directory_access');
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     return true;
 }
 ?>
