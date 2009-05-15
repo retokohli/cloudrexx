@@ -1018,4 +1018,12 @@ $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Dossier: '%1\$s'";
 $_ARRAYLANG['TXT_CONTENT_ASSIGN_BLOCK'] = "Assign blocks";
 $_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR'] = "Utiliser les propres styles dans l'éditeur WYSIWYG";
 $_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'] = "Permet d'utiliser le fichier <b>style.css</b> comme modèle standard dans l'éditeur WYSIWYG.";
+$_ARRAYLANG['TXT_SUBMIT_NEWS'] = "Submit news";
+$_ARRAYLANG['TXT_CATEGORY_AND_LEVEL_MANAGEMENT'] = "Category and level management";
+$_ARRAYLANG['TXT_DELETE_ADVERTISEMENT'] = "Delete advertisement";
+$_ARRAYLANG['TXT_MODIFY_ADVERTISEMENT'] = "Modify advertisement";
+$_ARRAYLANG['TXT_ADD_ADVERTISEMENT'] = "Add advertisement";
+$_ARRAYLANG['TXT_MANAGE_CONFIGURATION'] = "Manage configuration";
+$_ARRAYLANG['TXT_ADD_FILES'] = "Add files";
+$_ARRAYLANG['TXT_ACCESS_COMMUNITY_EVENTS'] = "Access community events";
 ?>
