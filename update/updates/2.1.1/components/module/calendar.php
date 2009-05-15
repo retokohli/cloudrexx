@@ -3,11 +3,6 @@ function _calendarUpdate()
 {
 	global $objDatabase, $_ARRAYLANG;
 
-	$query = "UPDATE `".DBPREFIX."module_calendar_access` SET `type` = 'frontend' WHERE `name` = 'showNote'";
-	if ($objDatabase->Execute($query) === false) {
-		return _databaseError($query, $objDatabase->ErrorMsg());
-	}
-
 	$arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_calendar');
 	if ($arrColumns === false) {
 		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_calendar'));
@@ -75,6 +70,15 @@ function _calendarUpdate()
 		}
 	}
 
+    try{
+        // delete obsolete table  contrexx_module_calendar_access
+        UpdateUtil::drop_table(DBPREFIX.'module_calendar_access');
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
+    }
 
     return true;
 }

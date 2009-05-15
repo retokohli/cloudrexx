@@ -1361,7 +1361,12 @@ $this->arrRows[2] = '';
             exit;
         } elseif ($this->settings['addFeed_only_community']['value'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if (!$objFWUser->objUser->login()) {
+			if ($objFWUser->objUser->login()) {
+				if (!Permission::checkAccess(96, 'static', true)) {
+                    header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
+					exit;
+				}
+			}else {
                 $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
                 header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
                 exit;
@@ -1491,7 +1496,12 @@ $this->arrRows[2] = '';
         }
 
         $objFWUser = FWUser::getFWUserObject();
-        if (!$objFWUser->objUser->login()) {
+		if ($objFWUser->objUser->login()) {
+			if (!Permission::checkAccess(94, 'static', true)) {
+                header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
+				exit;
+			}
+		}else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
             header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
             exit;
@@ -1570,7 +1580,12 @@ $this->arrRows[2] = '';
         }
 
         $objFWUser = FWUser::getFWUserObject();
-        if (!$objFWUser->objUser->login()) {
+		if ($objFWUser->objUser->login()) {
+			if (!Permission::checkAccess(94, 'static', true)) {
+                header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
+				exit;
+			}
+		}else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
             header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
             exit;

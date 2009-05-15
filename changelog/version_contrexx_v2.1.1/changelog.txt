@@ -17,6 +17,8 @@ Allgemein
 - Geschwindigkeitsoptimierung der Benutzerverwaltung.
 - Die Verwendung des Apache Moduls mod_rewrite wird nur aktiviert, sofern die
   Option 'Virtuelle Sprachverzeichnisse verwenden' aktiviert wurde.
+- Erweiterte Berechtigungen beim News Manager und den Modulen Kalender,
+  Inserate Mark und Verzeichnis.
 
 Benutzerverwaltung
 - Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
