@@ -567,7 +567,7 @@ class newsManager extends newsLibrary {
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
         $newsTeaserImagePath    = contrexx_addslashes($_POST['newsTeaserImagePath']);
-        $newsTeaserImageThumbnailPath    = contrexx_addslashes($_POST['newsTeaserThumbnailImagePath']);
+        $newsTeaserImageThumbnailPath    = contrexx_addslashes($_POST['newsTeaserImageThumbnailPath']);
         $newsTeaserShowLink     = isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : intval(!count($_POST));
         $newsTeaserFrames       = '';
         $arrNewsTeaserFrames = array();
@@ -940,7 +940,7 @@ class newsManager extends newsLibrary {
                                                         teaser_image_thumbnail_path
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
-        if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true))) {
+        if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true))) {
             $newsCat=$objResult->fields['catid'];
             $id = $objResult->fields['id'];
             $newsText = stripslashes($objResult->fields['text']);
