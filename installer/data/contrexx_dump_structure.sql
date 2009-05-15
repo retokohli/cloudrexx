@@ -553,14 +553,6 @@ CREATE TABLE `contrexx_module_calendar` (
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `name` (`name`,`comment`,`placeName`)
 ) TYPE=MyISAM ;
-CREATE TABLE `contrexx_module_calendar_access` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(64) NOT NULL default '',
-  `description` varchar(255) NOT NULL default '',
-  `access_id` int(11) unsigned NOT NULL default '0',
-  `type` enum('global','frontend','backend') NOT NULL default 'global',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_categories` (
   `id` int(5) NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',
