@@ -1017,4 +1017,12 @@ $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Verzeichnis: '%1\$s'";
 $_ARRAYLANG['TXT_CONTENT_ASSIGN_BLOCK'] = "Blöcke zuweisen";
 $_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR'] = "Eigenen Style im WYSIWYG Editor verwenden";
 $_ARRAYLANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'] = "Ist diese Funktion aktiviert, wird im WYSIWYG-Editor die Datei <b>style.css</b> des aktuellen Standard-Templates eingebunden.";
+$_ARRAYLANG['TXT_SUBMIT_NEWS'] = "News anmelden";
+$_ARRAYLANG['TXT_CATEGORY_AND_LEVEL_MANAGEMENT'] = "Kategorien und Ebenen verwalten";
+$_ARRAYLANG['TXT_DELETE_ADVERTISEMENT'] = "Inserate löschen";
+$_ARRAYLANG['TXT_MODIFY_ADVERTISEMENT'] = "Inserate bearbeiten";
+$_ARRAYLANG['TXT_ADD_ADVERTISEMENT'] = "Inserat hinzufügen";
+$_ARRAYLANG['TXT_MANAGE_CONFIGURATION'] = "Einstellungen verwalten";
+$_ARRAYLANG['TXT_ADD_FILES'] = "Dateien hinzufügen";
+$_ARRAYLANG['TXT_ACCESS_COMMUNITY_EVENTS'] = "Community Events einsehen";
 ?>
