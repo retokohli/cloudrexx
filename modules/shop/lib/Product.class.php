@@ -464,7 +464,7 @@ class Product
      */
     function setshortdesc($shortdesc)
     {
-        $this->shortdesc = trim(strip_tags($shortdesc));
+        $this->shortdesc = trim($shortdesc);
     }
 
     /**
@@ -483,7 +483,7 @@ class Product
      */
     function setDescription($description)
     {
-        $this->description = trim(strip_tags($description));
+        $this->description = trim($description);
     }
 
     /**
