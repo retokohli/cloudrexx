@@ -175,20 +175,20 @@ class Livecam extends LivecamLibrary
         $this->_objTpl->setGlobalVariable('LIVECAM_DATE', $this->date);
 
         switch ($this->_action) {
-        case 'today':
-            $this->_objTpl->hideBlock('livecamPicture');
-            $this->_showArchive($this->date);
-            break;
+            case 'today':
+                $this->_objTpl->hideBlock('livecamPicture');
+                $this->_showArchive($this->date);
+                break;
 
-        case 'archive':
-            $this->_objTpl->hideBlock('livecamPicture');
-            $this->_showArchive($this->date);
-            break;
+            case 'archive':
+                $this->_objTpl->hideBlock('livecamPicture');
+                $this->_showArchive($this->date);
+                break;
 
-        default:
-            $this->_objTpl->hideBlock('livecamArchive');
-            $this->_showPicture();
-            break;
+            default:
+                $this->_objTpl->hideBlock('livecamArchive');
+                $this->_showPicture();
+                break;
         }
 
         if (isset($this->statusMessage)) {
