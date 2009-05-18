@@ -4,7 +4,7 @@
  * User Object
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
- * @version     2.0.0
+ * @version     2.1.1
  * @package     contrexx
  * @subpackage  lib_framework
  */
