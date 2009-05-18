@@ -24,6 +24,9 @@ Benutzerverwaltung
 - Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
   erfasst werden.
 
+Block System
+- Das Interface zur Auswahl der Frontend Seiten funktioniert korrekt.
+
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
 
@@ -57,4 +60,3 @@ Webinstaller
 ****************************************
 
 
->>>>>>> .r5175
