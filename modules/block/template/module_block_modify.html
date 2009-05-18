@@ -1,62 +1,24 @@
 <!-- START module_block_block.html -->
 <script language="JavaScript" type="text/javascript">
-function add(from,dest,add,remove)
+function move(from, dest, add, remove)
 {
-    if ( from.selectedIndex < 0)
-	{
-		if (from.options[0] != null)
-			from.options[0].selected = true;
-		from.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<from.options.length; i++)
-		{
-			if (from.options[i].selected)
-			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--)
-		{
-			if (from.options[i].selected)
-			{
-		       from.options[i] = null;
-   			}
-		}
-	}
-    //disableButtons(from,dest,add,remove);
-}
-
-
-function remove(from,dest,add,remove)
-{
-	if ( dest.selectedIndex < 0)
-	{
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
-		dest.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<dest.options.length; i++)
-		{
-			if (dest.options[i].selected)
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--)
-		{
-			if (dest.options[i].selected)
-			{
-		       dest.options[i] = null;
-   			}
-		}
-	}
-	//disableButtons(from,dest,add,remove);
+  if (from.selectedIndex < 0) {
+    if (from.options[0] != null) from.options[0].selected = true;
+    from.focus();
+    return false;
+  } else {
+    for (i = 0; i < from.length; ++i) {
+      if (from.options[i].selected) {
+        dest.options[dest.options.length] = new Option(from.options[i].text, from.options[i].value, false, false);
+      }
+    }
+    for (i = from.options.length-1; i >= 0; --i) {
+      if (from.options[i].selected) {
+        from.options[i] = null;
+      }
+    }
+  }
+  disableButtons(from, dest, add, remove);
 }
 
 function disableButtons(from,dest,add,remove)
@@ -210,9 +172,9 @@ function showOrHide(strElement, strShortCut)
 						    </td>
 						    <td width="4%">
 						      <div align="center">
-						        <input type="button" value=" &gt;&gt; " name="{BLOCK_LANG_ID}_addpages" onclick="add(document.getElementById('{BLOCK_LANG_ID}notSelectedPages'),document.getElementById('{BLOCK_LANG_ID}SelectedPages'),document.getElementsByName('{BLOCK_LANG_ID}_addpages')[0],document.getElementsByName('{BLOCK_LANG_ID}_removepages')[0]);" />
+						        <input type="button" value=" &gt;&gt; " name="{BLOCK_LANG_ID}_addpages" onclick="move(document.getElementById('{BLOCK_LANG_ID}notSelectedPages'),document.getElementById('{BLOCK_LANG_ID}SelectedPages'),document.getElementsByName('{BLOCK_LANG_ID}_addpages')[0],document.getElementsByName('{BLOCK_LANG_ID}_removepages')[0]);" />
 						        <br />
-						        <input type="button" value=" &lt;&lt; " name="{BLOCK_LANG_ID}_removepages" onclick="remove(document.getElementById('{BLOCK_LANG_ID}notSelectedPages'),document.getElementById('{BLOCK_LANG_ID}SelectedPages'),document.getElementsByName('{BLOCK_LANG_ID}_addpages')[0],document.getElementsByName('{BLOCK_LANG_ID}_removepages')[0]);" />
+						        <input type="button" value=" &lt;&lt; " name="{BLOCK_LANG_ID}_removepages" onclick="move(document.getElementById('{BLOCK_LANG_ID}SelectedPages'),document.getElementById('{BLOCK_LANG_ID}notSelectedPages'),document.getElementsByName('{BLOCK_LANG_ID}_removepages')[0],document.getElementsByName('{BLOCK_LANG_ID}_addpages')[0]);" />
 						        <br /><br />
 						      </div>
 						    </td>
