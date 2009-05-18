@@ -13,7 +13,7 @@
 * Set installation status
 * -------------------------------------------------------------------------
 */
-define('CONTEXX_INSTALLED', false);
+define('CONTEXX_INSTALLED', true);
 
 /**
 * -------------------------------------------------------------------------
@@ -21,19 +21,19 @@ define('CONTEXX_INSTALLED', false);
 * -------------------------------------------------------------------------
 */
 $_DBCONFIG['host'] = 'localhost'; // This is normally set to localhost
-$_DBCONFIG['database'] = ''; // Database name
+$_DBCONFIG['database'] = 'contrexx_trunk'; // Database name
 $_DBCONFIG['tablePrefix'] = 'contrexx_'; // Database table prefix
-$_DBCONFIG['user'] = ''; // Database username
-$_DBCONFIG['password'] = ''; // Database password
+$_DBCONFIG['user'] = 'trunk'; // Database username
+$_DBCONFIG['password'] = 'mysql4contrexx'; // Database password
 $_DBCONFIG['dbType'] = 'mysql';	// Database type (e.g. mysql,postgres ..)
-$_DBCONFIG['charset'] = 'default'; // Charset (default, latin1, utf8, ..)
+$_DBCONFIG['charset'] = 'utf8'; // Charset (default, latin1, utf8, ..)
 
 /**
 * -------------------------------------------------------------------------
 * Site path specific configuration
 * -------------------------------------------------------------------------
 */
-$_PATHCONFIG['ascms_root'] = '';
+$_PATHCONFIG['ascms_root'] = '/home/kon/svn/contrexx';
 $_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
 
 /**
@@ -61,7 +61,7 @@ $_CONFIGURATION['custom']['shopJsCart'] = false; // true|false
 /**
 * Set character encoding
 */
-$_CONFIG['coreCharacterEncoding'] = ''; // example 'UTF-8'
+$_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
 
 /*
