@@ -92,6 +92,9 @@ if (_DEBUG) {
     if (_DEBUG & DBG_LOG_FILE)                              DBG::enable_file();
     if (_DEBUG & DBG_LOG_FIREPHP)                           DBG::enable_firephp();
     if ((_DEBUG & DBG_ADODB) or (_DEBUG & DBG_ADODB_TRACE)) DBG::enable_adodb();
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
 }
 
 
@@ -1705,8 +1708,8 @@ break;
                $modulespath = "modules/u2u/index.class.php";
                if (file_exists($modulespath)) require_once($modulespath);
                else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-               $objAccess = new u2u($page_content);
-               $objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
+               $objU2u = new u2u($page_content);
+               $objTemplate->setVariable('CONTENT_TEXT', $objU2u->getPage($page_metatitle, $page_title));
        break;
 
 //-------------------------------------------------------
