@@ -30,6 +30,9 @@ Block System
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
 
+Modul: Bildergalerie
+- Die Shadowbox funktioniert nun auch mit dem Internet Explorer 8
+
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 
