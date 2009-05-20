@@ -38,6 +38,7 @@ Modul: Bildergalerie
 
 Modul: Digital Asset Management
 - Die Benutzerdefinierte Sortierung funktioniert.
+- Kategorien können keinen Unterkategorien zugeordnet werden.
 
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
