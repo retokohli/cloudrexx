@@ -40,14 +40,15 @@ function selectMultiAction()
 <form name="frmRegList"  method="post">
 <table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
 	<tr>
-		<th colspan="6">
+		<th colspan="7">
 			{TXT_CALENDAR_REGISTRATIONS}
 		</th>
 	</tr>
 	<tr class="row3">
 		<td style="width: 20px"><span style="font-weight:bold;">#</span></td>
 		<td style="width: 40px"><span style="font-weight:bold;">{TXT_CALENDAR_REG_TYPE}</span></td>
-		<td style="width: 170px"><span style="font-weight:bold;">{TXT_CALENDAR_DATE}</span></td>
+		<td style="width: 170px"><span style="font-weight:bold;">{TXT_CALENDAR_DATE} {TXT_CALENDAR_TERMIN}</span></td>
+		<td style="width: 170px"><span style="font-weight:bold;">{TXT_CALENDAR_DATE} {TXT_CALENDAR_REGISTRATION}</span></td>
 		<td style="width: 270px"><span style="font-weight:bold;">{TXT_CALENDAR_NAME}</span></td>
 		<td><span style="font-weight:bold;">{TXT_CALENDAR_EMAIL}</span></td>
 		<td style="width: 16px; text-align: right;"><b>{TXT_CALENDAR_ACTION}</b></td>
@@ -58,6 +59,7 @@ function selectMultiAction()
 			<input type="checkbox" name="selectedRegId[]" id="selectedRegId" value="{CALENDAR_REG_ID}" />
 		</td>
 		<td style="text-align: center;"><img src="images/icons/led_{CALENDAR_REG_TYPE_IMG}.gif" border="0" alt="{CALENDAR_REG_TYPE_TXT}" title="{CALENDAR_REG_TYPE_TXT}" /></td>
+		<td>{CALENDAR_REG_NOTE_DATE}</td>
 		<td>{CALENDAR_REG_DATE}</td>
 		<td>{CALENDAR_REG_NAME}</td>
 		<td><a href="mailto:{CALENDAR_REG_MAIL}">{CALENDAR_REG_MAIL}</a></td>

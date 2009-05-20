@@ -382,7 +382,7 @@ class seriesManager
                     $i      = 0;
                     while (!$match) {
                         if(substr($weekday_pattern, $i, 1) == 1) {
-                            $weekday = $i+1;
+                            $weekday = $i;
                             $match = true;
                         } else {
                             $i++;
@@ -392,7 +392,7 @@ class seriesManager
                         $weekday = 0;
                     }
                     $match  = false;
-                    $d      = 1;
+                    $d      = 0;
                     while (!$match) {
                         $check_date     = mktime($hour, $minutes, $seconds, $next_month, $d, $year);
                         $check_day      = date("w", $check_date);
