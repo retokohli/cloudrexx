@@ -1497,7 +1497,7 @@ EOF;
                 case '1':
                     if($arrInputfieldsActive['read_only'][$inputKey] == 1){
                         $disabled = "disabled";
-                        $inputValueField = "<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250'>";
+                        $inputValueField = "<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250' />";
                     }
                     if($inputName == "addedby"){
                         $value = $this->getAuthor($arrInputfieldsValue[$inputName]);
@@ -1508,7 +1508,7 @@ EOF;
                         $value = $arrInputfieldsValue[$inputName];
                     }
 
-                    $inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName.$disabled."]\" value=\"".$value."\" style=\"width:".$width."px;\" maxlength='250' ".$disabled.">";
+                    $inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName.$disabled."]\" value=\"".$value."\" style=\"width:".$width."px;\" maxlength='250' ".$disabled." />";
                     break;
                 case '2':
                     $inputValueField = "<textarea name=\"inputValue[".$inputName."]\" style=\"width:".$width."px; overflow: auto;\" rows='7'>".$arrInputfieldsValue[$inputName]."</textarea>";
@@ -1522,24 +1522,24 @@ EOF;
                             $inputValueField = "<img src='".$this->mediaWebPath."images/no_picture.gif' alt='' /><br /><br />";
                         }else{
                             if ($action !== "confirm"){
-                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\" />".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
                             } else {
-                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\" />".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
                             }
                         }
                     }
                     if ($action !== "confirm"){
-                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
+                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"' />";
 
                         if(empty($arrInputfieldsValue[$inputName])) {
                             $arrInputfieldsValue[$inputName] = "no_picture.gif";
                         }
 
-                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."' />";
                     }
                     break;
                 case '5':
-                    $inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250'>";
+                    $inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250' />";
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
                     break;
                 case '6':
@@ -1552,20 +1552,20 @@ EOF;
                             $inputValueField = "<img src='".$this->mediaWebPath."images/no_picture.gif' alt='' /><br /><br />";
                         }else{
                             if ($action !== "confirm"){
-                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\" />".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
                             } else {
-                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+                                $inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\" />".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
                             }
                         }
                     }
                     if ($action !== "confirm"){
-                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
+                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\" />";
 
                         if(empty($arrInputfieldsValue[$inputName])) {
                             $arrInputfieldsValue[$inputName] = "no_picture.gif";
                         }
 
-                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value=\"{$arrInputfieldsValue[$inputName]}\" />";
                     }
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
                     break;
@@ -1583,20 +1583,20 @@ EOF;
                             $inputValueField = "-<br /><br />";
                         }else{
                             if ($action !== "confirm"){
-                                $inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+                                $inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\" />".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
                             } else {
-                                $inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+                                $inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\" />".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
                             }
                         }
                     }
                     if ($action !== "confirm"){
-                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
+                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"' />";
 
                         if(empty($arrInputfieldsValue[$inputName])) {
                             $arrInputfieldsValue[$inputName] = "no_picture.gif";
                         }
 
-                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."' />";
                     }
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
                     break;
@@ -1606,7 +1606,7 @@ EOF;
                             $inputValueField = "-<br /><br />";
                         }else{
                             if ($action !== "confirm"){
-                                $inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+                                $inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\" />".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
                             } else {
                                 $inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a>";
                             }
@@ -1614,25 +1614,25 @@ EOF;
                     }
 
                     if ($action !== "confirm"){
-                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
+                        $inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"' />";
 
                         if(empty($arrInputfieldsValue[$inputName])) {
                             $arrInputfieldsValue[$inputName] = "no_picture.gif";
                         }
 
-                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+                        $inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."' />";
                     }
                      break;
                 case '12':
-                     $inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250'>";
+                     $inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250' />";
                      break;
 
                 case '13':
-                     $inputValueField .= $_ARRAYLANG['TXT_DIR_LON'].': <input type="text" name="inputValue[lon]" value="'.$arrInputfieldsValue["lon"].'" style="width:22px;" maxlength="3">';
-                     $inputValueField .= '.<input type="text" name="inputValue[lon_fraction]" value="'.$arrInputfieldsValue["lon_fraction"].'" style="width:92px;" maxlength="15"> ';
-                     $inputValueField .= $_ARRAYLANG['TXT_DIR_LAT'].': <input type="text" name="inputValue[lat]" value="'.$arrInputfieldsValue["lat"].'" style="width:22px;" maxlength="15">';
-                     $inputValueField .= '.<input type="text" name="inputValue[lat_fraction]" value="'.$arrInputfieldsValue["lat_fraction"].'" style="width:92px;" maxlength="15"> ';
-                     $inputValueField .= $_ARRAYLANG['TXT_DIR_ZOOM'].': <input type="text" name="inputValue[zoom]" value="'.$arrInputfieldsValue["zoom"].'" style="width:15px;" maxlength="2">';
+                     $inputValueField .= $_ARRAYLANG['TXT_DIR_LON'].': <input type="text" name="inputValue[lon]" value="'.$arrInputfieldsValue["lon"].'" style="width:22px;" maxlength="3" />';
+                     $inputValueField .= '.<input type="text" name="inputValue[lon_fraction]" value="'.$arrInputfieldsValue["lon_fraction"].'" style="width:92px;" maxlength="15" /> ';
+                     $inputValueField .= $_ARRAYLANG['TXT_DIR_LAT'].': <input type="text" name="inputValue[lat]" value="'.$arrInputfieldsValue["lat"].'" style="width:22px;" maxlength="15" />';
+                     $inputValueField .= '.<input type="text" name="inputValue[lat_fraction]" value="'.$arrInputfieldsValue["lat_fraction"].'" style="width:92px;" maxlength="15" /> ';
+                     $inputValueField .= $_ARRAYLANG['TXT_DIR_ZOOM'].': <input type="text" name="inputValue[zoom]" value="'.$arrInputfieldsValue["zoom"].'" style="width:15px;" maxlength="2" />';
                      $inputValueField .= '<a href="javascript:void(0);" onclick="getAddress();"> '.$_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'].'</a><br />';
                      $inputValueField .= '<span id="geostatus"></span>';
                      $inputValueField .= '<div id="gmap" style="margin:2px; border:1px solid;width: 400px; height: 300px;"></div>';
