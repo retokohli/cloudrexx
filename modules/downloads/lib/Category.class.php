@@ -1211,6 +1211,22 @@ class Category {
         }
     }
 
+    /**
+     * Check if the category is a subcategory of a specific category
+     */
+    public function check4Subcategory($categoryId)
+    {
+        $objCategory = Category::getCategory($this->getParentId());
+        while (!$objCategory->EOF) {
+            if ($objCategory->getId() == $categoryId) {
+                return true;
+            }
+            $objCategory = Category::getCategory($objCategory->getParentId());
+        }
+
+        return false;
+    }
+
     public function setParentId($parentId)
     {
         global $_ARRAYLANG, $_LANGID;
@@ -1245,6 +1261,10 @@ class Category {
             }
         } else {
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_ADD_MAIN_CATEGORY_PROHIBITED'];
+            return false;
+        }
+
+        if ($objParentCategory->check4Subcategory($this->getId())) {
             return false;
         }
 
