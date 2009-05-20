@@ -1507,7 +1507,7 @@ EOF;
     function _getDetailsJS(){
         global $_CONFIG;
         $domainUrl = $_CONFIG['domainUrl'];
-        return <<< EOF
+        return "
     var openMap = function(id){
         try{
             if(! popUp.closed){
@@ -1515,7 +1515,7 @@ EOF;
             }
         }catch(e){}
 
-        url='http://{$domainUrl}/?section=immo&standalone=1&bigone=1&highlight='+id;
+                url='".ASCMS_PATH_OFFSET."/index.php?section=immo&standalone=1&bigone=1&highlight='+id;
         if (!window.focus){
             return true;
         }
@@ -1541,8 +1541,7 @@ EOF;
         imgPopUp.focus();
         imgPopUp.moveTo(0,0);
         return false;
-    }
-EOF;
+            }";
     }
 
 
