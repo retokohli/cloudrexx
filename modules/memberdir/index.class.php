@@ -58,6 +58,8 @@ class memberDir extends MemberDirLibrary
      */
     function getPage()
     {
+        global $_ARRAYLANG;
+
         if (!isset($_GET['cmd'])){
             $_GET['cmd'] = '';
         }
@@ -66,11 +68,17 @@ class memberDir extends MemberDirLibrary
             $this->_show();
         } elseif($_GET['exportvcf']){
             $this->_exportVCard(intval($_GET['id']));
-        } elseif (isset($_GET['id'])) {
+        } elseif (isset($_GET['id']) || isset($_GET['search'])) {
             $this->_memberList();
         } else {
             $this->_categoryList();
         }
+
+        $this->_objTpl->setGlobalVariable(array(
+            "MEMBERDIR_KEYWORD"       => (empty($_GET['keyword'])) ? "" : htmlentities(contrexx_stripslashes($_GET['keyword']), ENT_QUOTES, CONTREXX_CHARSET),
+            "MEMBERDIR_SEARCH"        => $_ARRAYLANG['TXT_SEARCH'],
+            "MEMBERDIR_DROPDOWN"      => $this->dirList("id", isset($_GET['id']) ? intval($_GET['id']) : 0, 200)
+        ));
 
         return $this->_objTpl->get();
     }
@@ -169,10 +177,7 @@ class memberDir extends MemberDirLibrary
             $this->_objTpl->setGlobalVariable(array(
                 "MEMBERDIR_DIRID"         => $dirid,
                 "MEMBERDIR_CHAR_LIST"     => $this->_getCharList("?section=memberdir&amp;id=".$dirid."&amp;sort=$sort"),
-                "MEMBERDIR_KEYWORD"       => (empty($_GET['keyword'])) ? "" : htmlentities(contrexx_stripslashes($_GET['keyword']), ENT_QUOTES, CONTREXX_CHARSET),
-                "MEMBERDIR_SEARCH"        => $_ARRAYLANG['TXT_SEARCH'],
                 "MEMBERDIR_DESCRIPTION"   => nl2br($this->directories[$dirid]['description']),
-                "MEMBERDIR_DROPDOWN"      => $this->dirList("id", $dirid, 200)
             ));
 
             $sortField = $this->directories[$dirid]['sort'];
@@ -487,10 +492,6 @@ class memberDir extends MemberDirLibrary
                 $this->_objTpl->parse("category");
             }
         }
-
-        $this->_objTpl->setVariable(array(
-            "MEMBERDIR_SEARCH"      => $_ARRAYLANG['TXT_SEARCH'],
-        ));
 
         $this->_objTpl->parse("category_list");
         $this->_objTpl->hideBlock("category_show");
