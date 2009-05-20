@@ -1,4 +1,9 @@
 /***************************************************/
+/* Fix the PNG transparency in IE6                 */
+/***************************************************/
+img,a { behavior: url(themes/contrexx_theme_2_1/iepngfix.htc) }
+
+/***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
 
@@ -583,7 +588,7 @@ div#livecam #CALBUTTONDPC_datum {
 #directory div.link {
 	width: 100%;
 	padding: 5px 0px 0px 0px;
-	margin: 5px 0px 0px 0px;	
+	margin: 5px 0px 0px 0px;
 	float: left;
 	border-top: 1px solid #cccccc;
 }
@@ -1162,22 +1167,12 @@ div#livecam #CALBUTTONDPC_datum {
 
 #shop div.category {
 	padding: 0px 0px 0px 0px;
-	margin: 15px 45px 0px 0px;
-	float:left;
-	height: auto !important;
-	min-height: 120px;
-	height: 120px;
-	width: 33%;
-}
-
-#shop div.category {
-	padding: 0px 0px 0px 0px;
 	margin: 15px 0px 0px 0px;
 	float:left;
 	height: auto !important;
 	min-height: 120px;
 	height: 120px;
-	width: 33%;
+	width: 25%;
 }
 
 #shop div.discount {
@@ -1810,18 +1805,18 @@ dl.data_module {
     font-family:"Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
     font-size:75%;
     line-height:1.5;
-    
+
 }
 
 dl.data_module dt {
-   font-weight: bold; 
+   font-weight: bold;
 }
 
 dl.data_module dd {
     margin: 5px 0;
 }
 
-dl.data_module img { 
+dl.data_module img {
     margin-right: 20px;
     margin-bottom: 10px;
 }
@@ -1948,7 +1943,7 @@ dl.data_module img {
 
 #downloads div.infos .file_info {
 	padding: 5px 0px 5px 5px;
-	margin: 0px 0px 0px 0px;	
+	margin: 0px 0px 0px 0px;
 }
 
 #downloads div.infos .file_info img {
