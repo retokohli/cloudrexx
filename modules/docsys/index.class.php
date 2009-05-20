@@ -227,7 +227,7 @@ class docSys extends docSysLibrary
                     'DOCSYS_STYLE'      => ($row++) % 2 + 1,
                     'DOCSYS_LONG_DATE'  => date($this->dateLongFormat, $entry['date']),
                     'DOCSYS_DATE'       => date($this->dateFormat, $entry['date']),
-                    'DOCSYS_LINK'	    => "<a href=\"?section=docsys".MODULE_INDEX."&amp;cmd=$cmd&amp;id=".
+                    'DOCSYS_LINK'	    => "<a href=\"".CONTREXX_SCRIPT_PATH."?section=docsys".MODULE_INDEX."&amp;cmd=$cmd&amp;id=".
                                             $entry['id']."\" title=\"".stripslashes($entry['title'])."\">".stripslashes($entry['title'])."</a>",
                     'DOCSYS_CATEGORY'   => stripslashes($entry['name']),
                     'DOCSYS_AUTHOR'     => stripslashes($entry['author']),               
