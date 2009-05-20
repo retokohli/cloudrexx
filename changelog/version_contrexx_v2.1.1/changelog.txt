@@ -30,6 +30,9 @@ Block System
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
 
+Modul: Adressverzeichnis
+- Die Suche funktioniert in jedem Bereich.
+
 Modul: Bildergalerie
 - Die Shadowbox funktioniert nun auch mit dem Internet Explorer 8
 
