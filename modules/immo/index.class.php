@@ -1263,6 +1263,7 @@ class Immo extends ImmoLib
      * @return array containing the style string, the width and the height
      */
     function _getImageDim($img, $max = 60){
+        $img = str_replace(ASCMS_PATH_OFFSET, '', $img);
         if($img != ''){
             $size         = getimagesize(ASCMS_DOCUMENT_ROOT.$img);
             $height     = '';
