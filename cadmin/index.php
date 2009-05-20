@@ -102,6 +102,9 @@ if (_DEBUG & DBG_ADODB_TRACE) {
     $objDatabase->debug = 0;
 }
 
+//uncomment if users should be imported from shop, system and voting tables on every page request. (careful, slows down your website)
+//include_once(dirname(__FILE__).'/nlimport.inc.php');
+
 //-------------------------------------------------------
 // Load settings and configuration
 //-------------------------------------------------------
