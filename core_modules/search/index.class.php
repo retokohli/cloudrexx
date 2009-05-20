@@ -74,7 +74,6 @@ function search_getSearchPage($pos, $page_content)
 		}
 		if (in_array('calendar', $arrActiveModules)) {
 			$queryCalendar = search_searchQuery("calendar", $term);
-			$queryCalendarCats = search_searchQuery("calendar_cats", $term);
 		}
 		if (in_array('forum', $arrActiveModules)) {
 			$queryForum = search_searchQuery("forum", $term);
@@ -122,7 +121,6 @@ function search_getSearchPage($pos, $page_content)
     }
 	if (!empty($queryCalendar)) {
     	$arrayCalendar = search_getResultArray($queryCalendar, "calendar", "event", "id=", $term);
-    	$arrayCalendarCats = search_getResultArray($queryCalendarCats, "calendar", "", "catid=", $term);
     }
     if (!empty($queryForum)) {
     	$arrayForum = search_getResultArray($queryForum, "forum", "thread", "id=", $term);
@@ -381,33 +379,14 @@ function search_searchQuery($section, $searchTerm)
 		case "calendar":
 			$query = "	SELECT `id` AS id,
 							 `name` AS title,
-							 `comment` AS content
+							 `comment` AS content,
+							 `startdate` AS startdate
 						FROM `".DBPREFIX."module_calendar`
 						WHERE `active` = '1'
 						AND (
 								`name` LIKE ('%$searchTerm%')
 							OR 	`comment` LIKE ('%$searchTerm%')
 							OR 	`placeName` LIKE ('%$searchTerm%')
-						)";
-						break;
-		case "calendar_cats":
-			$query = "	SELECT id AS id,
-							 name AS title
-						FROM ".DBPREFIX."module_calendar_categories
-						WHERE status = '1'
-						AND (name LIKE ('%$searchTerm%'))";
-			break;
-
-			case "forum":
-			$query = "	SELECT thread_id AS id,
-							 subject AS title,
-							 content AS content,
-						MATCH (subject, keywords, content) AGAINST ('%$searchTerm%') AS score
-						FROM ".DBPREFIX."module_forum_postings
-						WHERE (
-								subject LIKE ('%$searchTerm%')
-							OR  content LIKE ('%$searchTerm%')
-							OR  keywords LIKE ('%$searchTerm%')
 						)";
 			break;
 
@@ -465,9 +444,17 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        	case 'gallery':
 	        	case 'memberdir':
 	        	case 'directory':
-	        	case 'calendar':
 	        	case 'forum':
 	        		$temp_pagelink  = '?'.$pagevar.$objResult->fields['id'].$temp_section.$temp_cmd;
+	        		break;
+
+	            case 'calendar':
+
+        			$day 	=  '&amp;dayID='.date("d", intval($objResult->fields['startdate']));
+    	    		$month 	=  '&amp;monthID='.date("m", intval($objResult->fields['startdate']));
+    	    		$year 	=  '&amp;yearID='.date("Y", intval($objResult->fields['startdate']));
+
+	        		$temp_pagelink  = '?'.$pagevar."0".$temp_section.$day.$month.$year.$temp_cmd;
 	        		break;
 
 	        	case 'news':
