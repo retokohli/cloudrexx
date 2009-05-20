@@ -88,7 +88,7 @@ function _jobsUpdate() {
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 0) {
-                $query = "INSERT INTO `".DBPREFIX."module_jobs_settings` (`name`, `value`) VALUES ('".$arrSetting['name']."', '".addslashes($arrSetting['value'])."')";
+                $query = "INSERT INTO `".DBPREFIX."module_jobs_settings` (`name`, `value`) VALUES ('".$arrSetting['name']."', '".$arrSetting['value']."')";
                 if ($objDatabase->Execute($query) === false) {
                     return _databaseError($query, $objDatabase->ErrorMsg());
                 }

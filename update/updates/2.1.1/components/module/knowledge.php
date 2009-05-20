@@ -112,7 +112,7 @@ function _knowledgeUpdate()
         ),
         array(
             'name'  => 'best_rated_sidebar_template',
-            'value' => '<h2>Bestbewertete Artikel</h2>\r\n<div class=\"clearfix\">\r\n<ul class=\"knowledge_sidebar\">\r\n<!-- BEGIN article -->\r\n<li><a href=\"[[URL]]\">[[ARTICLE]]</a></li>\r\n<!-- END article -->\r\n</ul>\r\n</div>'
+            'value' => '<h2>Bestbewertete Artikel</h2>\r\n<div class="clearfix">\r\n<ul class="knowledge_sidebar">\r\n<!-- BEGIN article -->\r\n<li><a href="[[URL]]">[[ARTICLE]]</a></li>\r\n<!-- END article -->\r\n</ul>\r\n</div>'
         ),
         array(
             'name'  => 'best_rated_sidebar_length',
@@ -124,11 +124,11 @@ function _knowledgeUpdate()
         ),
         array(
             'name'  => 'tag_cloud_sidebar_template',
-            'value' => '[[CLOUD]] <br style=\"clear: both;\" />'
+            'value' => '[[CLOUD]] <br style="clear: both;" />'
         ),
         array(
             'name'  => 'most_read_sidebar_template',
-            'value' => '<h2>Bestbewertete Artikel 2</h2>\r\n<div class=\"clearfix\">\r\n<ul class=\"knowledge_sidebar\">\r\n<!-- BEGIN article -->\r\n<li><a href=\"[[URL]]\">[[ARTICLE]]</a></li>\r\n<!-- END article -->\r\n</ul>\r\n</div>'
+            'value' => '<h2>Bestbewertete Artikel 2</h2>\r\n<div class="clearfix">\r\n<ul class="knowledge_sidebar">\r\n<!-- BEGIN article -->\r\n<li><a href="[[URL]]">[[ARTICLE]]</a></li>\r\n<!-- END article -->\r\n</ul>\r\n</div>'
         ),
         array(
             'name'  => 'most_read_sidebar_length',
@@ -156,7 +156,7 @@ function _knowledgeUpdate()
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 0) {
-                $query = "INSERT INTO `".DBPREFIX."module_knowledge_settings` (`name`, `value`) VALUES ('".$arrSetting['name']."', '".addslashes($arrSetting['value'])."')";
+                $query = "INSERT INTO `".DBPREFIX."module_knowledge_settings` (`name`, `value`) VALUES ('".$arrSetting['name']."', '".$arrSetting['value']."')";
                 if ($objDatabase->Execute($query) === false) {
                     return _databaseError($query, $objDatabase->ErrorMsg());
                 }
