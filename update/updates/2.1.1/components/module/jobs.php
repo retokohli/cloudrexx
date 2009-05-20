@@ -1,5 +1,6 @@
 <?php
 function _jobsUpdate() {
+    global $objDatabase;
 
     try {
         UpdateUtil::table(
@@ -62,6 +63,41 @@ function _jobsUpdate() {
         // we COULD do something else here..
         return UpdateUtil::DefaultActionHandler($e);
     }
+
+
+    $arrSettings = array(
+        array(
+            'name'  => 'footnote',
+            'value' => 'Hat Ihnen diese Bewerbung zugesagt? \r\nDann können Sie sich sogleich telefonisch, per E-mail oder Web Formular bewerben.'
+        ),
+        array(
+            'name'  => 'link',
+            'value' => 'Online für diese Stelle bewerben.'
+        ),
+        array(
+            'name'  => 'url',
+            'value' => 'index.php?section=contact&cmd=5&44=%URL%&43=%TITLE%'
+        ),
+        array(
+            'name'  => 'show_location_fe',
+            'value' => '1'
+        )
+    );
+    foreach ($arrSettings as $arrSetting) {
+        $query = "SELECT 1 FROM `".DBPREFIX."module_jobs_settings` WHERE `name` = '".$arrSetting['name']."'";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult !== false) {
+            if ($objResult->RecordCount() == 0) {
+                $query = "INSERT INTO `".DBPREFIX."module_jobs_settings` (`name`, `value`) VALUES ('".$arrSetting['name']."', '".addslashes($arrSetting['value'])."')";
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
 
 	// Everything went fine. Return without any errors.
     return true;
