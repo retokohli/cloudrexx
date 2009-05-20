@@ -258,7 +258,7 @@ function votingShowCurrent($page_content){
 			$votingVotes=$objResult->fields['votes'];
 			$votingDate=$objResult->fields['datesec'];
 
-			if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
+			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
 			$objTpl->setVariable(array(
 				'VOTING_OLDER_TEXT'		=> '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
 				'VOTING_OLDER_DATE'		=> showFormattedDate($votingDate),
