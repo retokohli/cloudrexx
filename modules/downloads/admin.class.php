@@ -1572,7 +1572,7 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
         ) {
             $this->_objTpl->setVariable(array(
                 'DOWNLOADS_CATEGORY_ID'                     => $objCategory->getId(),
-                'TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'   => $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'],
+                'TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'   => sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_DOWNLOAD_CATEGORY_SORT'          => $categoryOrderDirection,
                 'DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY'       => $categoryOrderBy,
                 'DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT'          => $downloadOrderDirection,
