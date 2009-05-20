@@ -253,8 +253,8 @@ class calendarManager extends calendarLibrary
 			$year 	= date("Y");
 		}
 
-		$startdate = mktime(0, 0, 0, $month, $day, $year);
-    	$enddate = mktime(23, 59, 59, $month+3, $day, $year);
+		$startdate = mktime(0, 0, 0, $month, 1, $year);
+    	$enddate = mktime(23, 59, 59, $month+3, 1, $year);
 
     	//get category
         if (!empty($_GET['catid']) && $_GET['catid'] != 0) {
@@ -477,6 +477,8 @@ class calendarManager extends calendarLibrary
         // Variable assignement
         $this->_objTpl->setVariable(array(
             'TXT_CALENDAR_REGISTRATIONS'    => $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'],
+            'TXT_CALENDAR_REGISTRATION'     => $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'],
+            'TXT_CALENDAR_TERMIN'           => $_ARRAYLANG['TXT_CALENDAR_TERMIN'],
             'TXT_CALENDAR_ACTION'           => $_ARRAYLANG['TXT_CALENDAR_ACTION'],
             'TXT_SUBMIT_SELECT'             => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
             'TXT_SUBMIT_DELETE'             => $_ARRAYLANG['TXT_SUBMIT_DELETE'],

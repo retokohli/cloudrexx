@@ -670,7 +670,7 @@ class calendarLibrary
         $seriesPatternWeeklyFri = '';
         $seriesPatternWeeklySat = '';
         $seriesPatternWeeklySun = '';
- 
+
         $seriesPatternMonthlyType1 = '';
         $seriesPatternMonthlyType2 = '';
         $seriesPatternMonthlyDay = '';
@@ -678,24 +678,6 @@ class calendarLibrary
         $seriesPatternMonthlyMonth2 = '';
         $count = '';
         $weekdays = '';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 		$query = "SELECT 	id,
@@ -1160,7 +1142,6 @@ class calendarLibrary
 			'CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP'	=> $registrationsAddresserSelectGroup,
 			'CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED' 		=> $this->_getUserGroups($objResultNote->fields['id'], 0),
 			'CALENDAR_REGISTRATIONS_GROUPS_SELECTED' 		=> $this->_getUserGroups($objResultNote->fields['id'], 1),
-			'CALENDAR_REGISTRATION_LINK'					=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=sign&amp;id='.$objResultNote->fields['id'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
 
 			'CALENDAR_MAIL_TITLE' 			=> htmlentities($objResultNote->fields['mailTitle'], ENT_QUOTES, CONTREXX_CHARSET),
 			'CALENDAR_MAIL_CONTENT' 		=> htmlentities($objResultNote->fields['mailContent'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1222,7 +1203,7 @@ class calendarLibrary
 		global  $objDatabase, $_ARRAYLANG, $_CORELANG;
 
 		//get reg data
-		$queryReg = "SELECT id,note_id,time,host,ip_address,type
+		$queryReg = "SELECT id,note_id,note_date,time,host,ip_address,type
 		               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
 		              WHERE id='".$regId."'";
 
@@ -1245,6 +1226,7 @@ class calendarLibrary
 				'CALENDAR_REG_TYPE_TXT' 		=> $statusTxt,
 				'CALENDAR_REG_TYPE_IMG' 		=> $statusImg,
 				'CALENDAR_REG_DATE' 			=> date("d.m.Y H:i:s", $objResultReg->fields['time']),
+				'CALENDAR_REG_NOTE_DATE' 		=> date("d.m.Y H:i:s", $objResultReg->fields['note_date']),
 				'CALENDAR_REG_HOST'		 		=> htmlentities($objResultReg->fields['host'], ENT_QUOTES, CONTREXX_CHARSET),
 				'CALENDAR_REG_IP'			 	=> htmlentities($objResultReg->fields['ip_address'], ENT_QUOTES, CONTREXX_CHARSET),
 			));
@@ -1574,6 +1556,7 @@ class calendarLibrary
 
 					$this->_objTpl->setVariable(array(
 						'CALENDAR_NOTE_ID'			  			=> $noteId,
+						'CALENDAR_NOTE_DATE'                    => intval($_GET['date']),
 						'CALENDAR_FIELD_NAME'				  	=> $objResultField->fields['name'].$required,
 						'CALENDAR_FIELD_INPUT'				  	=> $inputField,
 					));
