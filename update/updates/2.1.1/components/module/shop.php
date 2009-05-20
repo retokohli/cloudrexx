@@ -457,9 +457,9 @@ function _shopUpdate()
             array(
                 'id'       => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true, 'renamefrom' => 'order_id'),
                 'order_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true),
-                'holder'   => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
-                'bank'     => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
-                'blz'      => array('type' => 'TINYTEXT',         'notnull' => true, 'default' => ''),
+                'holder'   => array('type' => 'TINYTEXT',         'notnull' => true),
+                'bank'     => array('type' => 'TINYTEXT',         'notnull' => true),
+                'blz'      => array('type' => 'TINYTEXT',         'notnull' => true),
             ),
             array( # indexes
                 'order_id' => array(
