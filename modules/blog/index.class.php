@@ -472,7 +472,7 @@ class Blog extends BlogLibrary  {
         //Get general-input
         $intMessageId   = intval($_POST['frmAddComment_MessageId']);
         $strSubject     = contrexx_addslashes(strip_tags($_POST['frmAddComment_Subject']));
-        $strComment     = contrexx_addslashes($_POST['frmAddComment_Comment']);
+        $strComment     = $_POST['frmAddComment_Comment'];
         $strOffset      = $_POST['frmAddComment_Offset'];
         $strCaptcha     = strtoupper($_POST['frmAddComment_Captcha']);
 
@@ -482,6 +482,7 @@ class Blog extends BlogLibrary  {
         } else {
             $strComment = html_entity_decode($strComment, ENT_QUOTES, CONTREXX_CHARSET);
         }
+        $strComment = contrexx_addslashes($strComment);
 
         //Get specified-input
         if ($this->_intCurrentUserId == 0) {
