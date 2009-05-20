@@ -37,6 +37,9 @@ Benutzerverwaltung
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
 
+Modul: Adressverzeichnis
+- Die Suche funktioniert in jedem Bereich.
+
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 
