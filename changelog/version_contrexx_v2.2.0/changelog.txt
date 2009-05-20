@@ -40,6 +40,9 @@ News Manager
 Modul: Adressverzeichnis
 - Die Suche funktioniert in jedem Bereich.
 
+Modul: Digital Asset Management
+- Die Benutzerdefinierte Sortierung funktioniert.
+
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 
