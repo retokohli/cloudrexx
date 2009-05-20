@@ -1507,42 +1507,41 @@ EOF;
     function _getDetailsJS(){
         global $_CONFIG;
         $domainUrl = $_CONFIG['domainUrl'];
-        return <<< EOF
-    var openMap = function(id){
-        try{
-            if(! popUp.closed){
-                return popUp.focus();
+        return "
+            var openMap = function(id){
+                try{
+                    if(! popUp.closed){
+                        return popUp.focus();
+                    }
+                }catch(e){}
+
+                url='".ASCMS_PATH_OFFSET."/index.php?section=immo&standalone=1&bigone=1&highlight='+id;
+                if (!window.focus){
+                    return true;
+                }
+                popUp = window.open(url, 'Map', 'width=820,height=620,scrollbars=no');
+                popUp.focus();
+                return false;
             }
-        }catch(e){}
 
-        url='http://{$domainUrl}/?section=immo&standalone=1&bigone=1&highlight='+id;
-        if (!window.focus){
-            return true;
-        }
-        popUp = window.open(url, 'Map', 'width=820,height=620,scrollbars=no');
-        popUp.focus();
-        return false;
-    }
+             var openPreview = function(immoid, imageIndex){
+                try{
+                    if(! imgPopUp.closed){
+                        imgPopUp.index = parseInt(imageIndex);
+                        imgPopUp.showImage();
+                        imgPopUp.focus();
+                        return;
+                    }
+                }catch(e){}
+                if (!window.focus){
+                    return true;
+                }
+                imgPopUp = window.open('?section=immo&img=1&id='+immoid+'&index='+imageIndex, '', 'width=500,height=500,scrollbars=no');
 
-     var openPreview = function(immoid, imageIndex){
-        try{
-            if(! imgPopUp.closed){
-                imgPopUp.index = parseInt(imageIndex);
-                imgPopUp.showImage();
                 imgPopUp.focus();
-                return;
-            }
-        }catch(e){}
-        if (!window.focus){
-            return true;
-        }
-        imgPopUp = window.open('?section=immo&img=1&id='+immoid+'&index='+imageIndex, '', 'width=500,height=500,scrollbars=no');
-
-        imgPopUp.focus();
-        imgPopUp.moveTo(0,0);
-        return false;
-    }
-EOF;
+                imgPopUp.moveTo(0,0);
+                return false;
+            }";
     }
 
 
