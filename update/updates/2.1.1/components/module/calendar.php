@@ -80,6 +80,125 @@ function _calendarUpdate()
         return UpdateUtil::DefaultActionHandler($e);
     }
 
+    //2.1.1
+
+
+    $query = "SELECT status FROM ".DBPREFIX."modules WHERE id='21'";
+	$objResultCheck = $objDatabase->SelectLimit($query, 1);
+
+	if ($objResultCheck !== false) {
+	    if($objResultCheck->fields['status'] == 'y') {
+	        $calendarStatus = true;
+	    } else {
+            $calendarStatus = false;
+	    }
+	} else {
+		return _databaseError($query, $objDatabase->ErrorMsg());
+	}
+
+	if($calendarStatus) {
+	    $arrContentSites = array();
+
+	    $arrContentSites[0]['module_id'] = 21;
+	    $arrContentSites[0]['cmd'] = '';
+	    $arrContentSites[1]['module_id'] = 21;
+	    $arrContentSites[1]['cmd'] = 'eventlist';
+	    $arrContentSites[2]['module_id'] = 21;
+	    $arrContentSites[2]['cmd'] = 'boxes';
+
+
+	    //insert new link placeholder in content, if module is active
+	    foreach ($arrContentSites as $key => $siteArray) {
+    	    $arrContentCatIds = array();
+
+	        $module_id = $siteArray['module_id'];
+	        $cmd = $siteArray['cmd'];
+
+    	    $query = "SELECT catid FROM ".DBPREFIX."content_navigation WHERE module='".$module_id."' AND cmd='".$cmd."'";
+        	$objResultCatId = $objDatabase->Execute($query);
+
+        	if ($objResultCatId !== false) {
+        		while (!$objResultCatId->EOF) {
+        		    $arrContentCatIds[] = $objResultCatId->fields['catid'];
+        		    $objResultCatId->MoveNext();
+        		}
+        	} else {
+        		return _databaseError($query, $objDatabase->ErrorMsg());
+        	}
+
+        	foreach ($arrContentCatIds as $key => $catId) {
+        	    $query = "SELECT content FROM ".DBPREFIX."content WHERE id='".$catId."'";
+            	$objResultContent = $objDatabase->SelectLimit($query, 1);
+
+            	if ($objResultContent !== false) {
+            		$oldColntent  = $objResultContent->fields['content'];
+            		$newContent   = str_replace('<a href="index.php?section=calendar&amp;cmd=event&amp;id={CALENDAR_ID}">{CALENDAR_TITLE}</a>', '{CALENDAR_DETAIL_LINK}', $oldColntent);
+
+            		$query = "UPDATE ".DBPREFIX."content SET content='".$newContent."' WHERE id='".$catId."'";
+            	    $objResultUpdate = $objDatabase->Execute($query);
+
+            	    if ($objResultUpdate === false) {
+        				return _databaseError($query, $objDatabase->ErrorMsg());
+        			}
+            	} else {
+            		return _databaseError($query, $objDatabase->ErrorMsg());
+            	}
+        	}
+	    }
+
+
+    	//add new colum
+    	$arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_calendar_registrations');
+    	if ($arrColumns === false) {
+    		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_calendar_registrations'));
+    		return false;
+    	}
+
+    	if (!array_key_exists("NOTE_DATE", $arrColumns)) {
+    	    $query = "ALTER TABLE `".DBPREFIX."module_calendar_registrations` ADD `note_date` INT(11) NOT NULL;";
+    	    if ($objDatabase->Execute($query) === false) {
+    			return _databaseError($query, $objDatabase->ErrorMsg());
+    		}
+    	}
+
+    	//insert new BACKLIN placeholder in sign form
+    	$arrContentCatIds = array();
+
+    	$query = "SELECT catid FROM ".DBPREFIX."content_navigation WHERE module='21' AND cmd='sign'";
+    	$objResultCatId = $objDatabase->Execute($query);
+
+    	if ($objResultCatId !== false) {
+    		while (!$objResultCatId->EOF) {
+    		    $arrContentCatIds[] = $objResultCatId->fields['catid'];
+    		    $objResultCatId->MoveNext();
+    		}
+    	} else {
+    		return _databaseError($query, $objDatabase->ErrorMsg());
+    	}
+
+    	foreach ($arrContentCatIds as $key => $catId) {
+    	    $query = "SELECT content FROM ".DBPREFIX."content WHERE id='".$catId."'";
+        	$objResultContent = $objDatabase->SelectLimit($query, 1);
+
+        	if ($objResultContent !== false) {
+        		$oldColntent  = $objResultContent->fields['content'];
+        		$newContent   = str_replace('<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" />', '<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" /><input type="hidden" name="date" value="{CALENDAR_NOTE_DATE}" />', $oldColntent);
+
+        		$newContent   = str_replace('<a href="index.php?section=calendar&amp;id={CALENDAR_NOTE_ID}">{TXT_CALENDAR_BACK}</a>', '{CALENDAR_LINK_BACK}', $newContent);
+
+        		$query = "UPDATE ".DBPREFIX."content SET content='".$newContent."' WHERE id='".$catId."'";
+        	    $objResultUpdate = $objDatabase->Execute($query);
+
+        	    if ($objResultUpdate === false) {
+    				return _databaseError($query, $objDatabase->ErrorMsg());
+    			}
+        	} else {
+        		return _databaseError($query, $objDatabase->ErrorMsg());
+        	}
+    	}
+
+	}
+
     return true;
 }
 ?>
