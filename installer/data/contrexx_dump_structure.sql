@@ -579,6 +579,7 @@ CREATE TABLE `contrexx_module_calendar_form_fields` (
 CREATE TABLE `contrexx_module_calendar_registrations` (
   `id` int(7) NOT NULL auto_increment,
   `note_id` int(7) NOT NULL,
+  `note_date` int(11) NOT NULL,
   `time` int(14) NOT NULL,
   `host` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
