@@ -180,8 +180,8 @@ class Calendar extends calendarLibrary
     	}
 
     	//get search term
-    	if (!empty($_GET['act']) && $_GET['act'] == "search") {
-    		$term = htmlentities(addslashes($_POST['keyword']), ENT_QUOTES, CONTREXX_CHARSET);
+    	if (isset($_REQUEST['keyword'])) {
+    		$term = htmlentities(addslashes($_REQUEST['keyword']), ENT_QUOTES, CONTREXX_CHARSET);
     	} else {
     		$term = null;
     	}
@@ -272,11 +272,24 @@ class Calendar extends calendarLibrary
 						break;
 				}
 
-				$day 	= isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '';
-	    		$month 	= isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '';
-	    		$year 	= isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '';
+				if (empty($_POST['startDate'])) {
+				    $day 	= isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '';
+    	    		$month 	= isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '';
+    	    		$year 	= isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '';
+            	} else {
+            		$datearr = explode("-", $_POST['startDate']);
+            		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
 
-				$link = '<a href="?section=calendar&amp;cmd=event'.$year.$month.$day.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+            		$day 	=  '&amp;dayID='.date("d", $startdate);
+    	    		$month 	=  '&amp;monthID='.date("m", $startdate);
+    	    		$year 	=  '&amp;yearID='.date("Y", $startdate);
+            	}
+
+
+                $category 	= isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
+            	$term 	    = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
+
+				$link = '<a href="?section=calendar&amp;cmd=event'.$year.$month.$day.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
 
 				$this->_objTpl->setVariable(array(
 					'CALENDAR_PRIORITY' 			=> $priority,
@@ -498,6 +511,7 @@ class Calendar extends calendarLibrary
             'TXT_CALENDAR_BACK'         	=> $_ARRAYLANG['TXT_CALENDAR_BACK'],
             'TXT_CALENDAR_REGISTRATION'     => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION'],
             'TXT_CALENDAR_REGISTRATION_INFO'=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO'],
+			'CALENDAR_REGISTRATION_LINK'	=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=sign&amp;id='.$id.'&amp;date='.$this->eventList[$key]['startdate'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
 
             'CALENDAR_ICAL_EXPORT'      	=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$key.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
             									'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
@@ -562,16 +576,19 @@ class Calendar extends calendarLibrary
 			//insert registration data
 			$time	= mktime();
 			$noteId	= intval($_POST['id']);
-			$type	= intval($_POST['type']);
-			$ip		= "";
-			$host 	= "";
+			$noteDate	= intval($_POST['date']);
+			$type       = intval($_POST['type']);
+			$ip		    = "";
+			$host 	    = "";
 
 			$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_registrations   (`note_id`,
+			                                                                   `note_date`,
 																		       `time`,
 																		   	   `host`,
 																			   `ip_address`,
 																			   `type`)
 														   			   VALUES ('$noteId',
+														   			   		   '$noteDate',
 														   			   		   '$time',
 														   			   		   '$host',
 														   			   		   '$ip',
@@ -640,9 +657,13 @@ class Calendar extends calendarLibrary
 
 					$this->_sendNotification($_POST['signForm'][$mailId], $_POST['signForm'][$firstnameId], $_POST['signForm'][$lastnameId], $noteId, $regId);
 
+					$day 	= '&amp;dayID='.date("d", $noteDate);
+    	    		$month 	= '&amp;monthID='.date("m", $noteDate);
+    	    		$year 	= '&amp;yearID='.date("Y", $noteDate);
+
 					$this->_objTpl->setVariable(array(
 						'CALENDAR_REGISTRATIONS_STATUS'          => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFUL'],
-						'TXT_CALENDAR_BACK'         			 => $_CORELANG['TXT_BACK'],
+						'CALENDAR_LINK_BACK'         			 => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=event&amp;id='.$id.$day.$month.$year.'">'.$_CORELANG['TXT_BACK'].'</a>',
 			        ));
 
 			        $this->_objTpl->hideBlock("signForm");
