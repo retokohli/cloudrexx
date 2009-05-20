@@ -193,6 +193,7 @@ class downloads extends DownloadsLibrary
             $this->parseCrumbtrail($objCategory);
 
             if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) {
+                /* DOWNLOAD DETAIL PAGE */
                 $this->pageTitle = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
                 $this->parseRelatedCategories($objDownload);
@@ -217,6 +218,7 @@ class downloads extends DownloadsLibrary
                     $this->objTemplate->hideBlock('downloads_advanced_file_upload');
                 }
             } else {
+                /* CATEGORY DETAIL PAGE */
                 $this->pageTitle = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
                 // process upload
@@ -269,7 +271,7 @@ class downloads extends DownloadsLibrary
                 $this->objTemplate->hideBlock('downloads_updated_file_list');
             }
         } else {
-            // parse category overview
+            /* CATEGORY OVERVIEW PAGE */
             $this->parseCategories($objCategory, array('downloads_overview', 'downloads_overview_category'), null, null, 'downloads_overview_row', array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $this->arrConfig['overview_max_subcats']);
 
             if (!empty($this->searchKeyword)) {
@@ -280,13 +282,13 @@ class downloads extends DownloadsLibrary
                 }
             }
 
-            // parse most viewed downloads
+            /* PARSE MOST VIEWED DOWNLOADS */
             $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
 
-            // parse most downloaded downloads
+            /* PARSE MOST DOWNLOADED DOWNLOADS */
             $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
 
-            // parse most popular downloads
+            /* PARSE MOST POPULAR DOWNLOADS */
             // TODO: Rating system has to be implemented first!
             //$this->parseSpecialDownloads(array('downloads_most_popular_file_list', 'downloads_most_popular_file'), null, array('rating' => 'desc'), $this->arrConfig['most_popular_file_count']);
 
@@ -298,7 +300,7 @@ class downloads extends DownloadsLibrary
             );
             $this->parseSpecialDownloads(array('downloads_newest_file_list', 'downloads_newest_file'), $filter, array('ctime' => 'desc'), $this->arrConfig['newest_file_count']);
 
-            // parse recently updated downloads
+            /* PARSE RECENTLY UPDATED DOWNLOADS */
             $filter = array(
                 'mtime' => array(
                     '>=' => time() - $this->arrConfig['updated_file_time_limit']

@@ -798,7 +798,7 @@ class Download {
             foreach ($arrSort as $attribute => $direction) {
                 if (in_array(strtolower($direction), array('asc', 'desc'))) {
                     if (isset($this->arrAttributes['core'][$attribute])) {
-                        $arrSortExpressions[] = 'tblD.`'.$attribute.'` '.$direction;
+                        $arrSortExpressions[] = ($attribute == 'order' && $joinCategoryTbl ? 'tblRC' : 'tblD').'.`'.$attribute.'` '.$direction;
                     } elseif (isset($this->arrAttributes['locale'][$attribute])) {
                         $arrSortExpressions[] = 'tblL.`'.$attribute.'` '.$direction;
                         $joinLocaleTbl = true;
@@ -808,10 +808,16 @@ class Download {
                 }
             }
 
+            if (!isset($arrSort['order'])) {
+                $arrSortExpressions[] = ($joinCategoryTbl ? 'tblRC' : 'tblD').'.`order`';
+            }
             if (!in_array('id', $arrSort)) {
                 $arrSortExpressions[] = 'tblD.`id`';
             }
-        }
+        } else {
+            $arrSortExpressions[] = ($joinCategoryTbl ? 'tblRC' : 'tblD').'.`order`';
+            $arrSortExpressions[] = 'tblD.`id`';
+		}
 
         $query = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT tblD.`id`
             FROM `'.DBPREFIX.'module_downloads_download` AS tblD'
