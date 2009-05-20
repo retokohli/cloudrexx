@@ -2,6 +2,8 @@
 
 function _knowledgeUpdate()
 {
+    global $objDatabase;
+
     try{
         UpdateUtil::table(
             DBPREFIX . 'module_knowledge_article_content',
@@ -93,6 +95,77 @@ function _knowledgeUpdate()
         // we COULD do something else here..
         return UpdateUtil::DefaultActionHandler($e);
     }
+
+
+    $arrSettings = array(
+        array(
+            'name'  => 'max_subcategories',
+            'value' => '5'
+        ),
+        array(
+            'name'  => 'column_number',
+            'value' => '2'
+        ),
+        array(
+            'name'  => 'max_rating',
+            'value' => '8'
+        ),
+        array(
+            'name'  => 'best_rated_sidebar_template',
+            'value' => '<h2>Bestbewertete Artikel</h2>\r\n<div class=\"clearfix\">\r\n<ul class=\"knowledge_sidebar\">\r\n<!-- BEGIN article -->\r\n<li><a href=\"[[URL]]\">[[ARTICLE]]</a></li>\r\n<!-- END article -->\r\n</ul>\r\n</div>'
+        ),
+        array(
+            'name'  => 'best_rated_sidebar_length',
+            'value' => '82'
+        ),
+        array(
+            'name'  => 'best_rated_sidebar_amount',
+            'value' => '5'
+        ),
+        array(
+            'name'  => 'tag_cloud_sidebar_template',
+            'value' => '[[CLOUD]] <br style=\"clear: both;\" />'
+        ),
+        array(
+            'name'  => 'most_read_sidebar_template',
+            'value' => '<h2>Bestbewertete Artikel 2</h2>\r\n<div class=\"clearfix\">\r\n<ul class=\"knowledge_sidebar\">\r\n<!-- BEGIN article -->\r\n<li><a href=\"[[URL]]\">[[ARTICLE]]</a></li>\r\n<!-- END article -->\r\n</ul>\r\n</div>'
+        ),
+        array(
+            'name'  => 'most_read_sidebar_length',
+            'value' => '79'
+        ),
+        array(
+            'name'  => 'most_read_sidebar_amount',
+            'value' => '5'
+        ),
+        array(
+            'name'  => 'best_rated_siderbar_template',
+            'value' => ''
+        ),
+        array(
+            'name'  => 'most_read_amount',
+            'value' => '5'
+        ),
+        array(
+            'name'  => 'best_rated_amount',
+            'value' => '5'
+        )
+    );
+    foreach ($arrSettings as $arrSetting) {
+        $query = "SELECT 1 FROM `".DBPREFIX."module_knowledge_settings` WHERE `name` = '".$arrSetting['name']."'";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult !== false) {
+            if ($objResult->RecordCount() == 0) {
+                $query = "INSERT INTO `".DBPREFIX."module_knowledge_settings` (`name`, `value`) VALUES ('".$arrSetting['name']."', '".addslashes($arrSetting['value'])."')";
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
 
     return true;
 }
