@@ -3236,7 +3236,8 @@ die("YYY");
         // - post, if present,
         // - session, if present,
         // - none.
-        if (empty($_SESSION['shop']['shipperId'])) {
+        if (   empty($_SESSION['shop']['shipperId'])
+            || isset($_POST['shipperId'])) {
             $_SESSION['shop']['shipperId'] =
                 (isset($_POST['shipperId'])
                   ? intval($_POST['shipperId'])
