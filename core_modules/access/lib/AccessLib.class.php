@@ -1,4 +1,8 @@
 <?php
+
+   	$_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'] = "SESSION Intervals";
+   	$_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'] = "SESSION";
+   	
 /**
  * User Management
  * @copyright   CONTREXX CMS - COMVATION AG
