@@ -1627,6 +1627,8 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_MISCELLANEOUS'                          => $_ARRAYLANG['TXT_ACCESS_MISCELLANEOUS'],
             'TXT_ACCESS_STANDARD'                               => $_ARRAYLANG['TXT_ACCESS_STANDARD'],
             'TXT_ACCESS_EMAIL'                                  => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+            'TXT_ACCESS_SESSION_ON_INTERVAL'				    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
+            'TXT_ACCESS_SESSION_TITLE' 				            => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
             'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE']
         ));
 
@@ -1715,6 +1717,17 @@ class AccessManager extends AccessLib
                 $arrSettings['max_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']);
             }
 
+            $session_on_interval =  intval($_POST['sessioninterval']);
+   			if(trim($session_on_interval) != null) {
+
+				if ($session_on_interval >=0 && $session_on_interval <= 300) {
+
+				 $arrSettings['session_user_interval']['value'] = $session_on_interval;
+				}
+			}
+
+
+
             if ($status) {
                 if (User_Setting::setSettings($arrSettings)) {
                     $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_SUCCESSFULLY_SAVED'];
@@ -1772,6 +1785,7 @@ class AccessManager extends AccessLib
             'ACCESS_MAX_PIC_HEIGHT'                                 => $arrSettings['max_pic_height']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_WIDTH'                        => $arrSettings['max_thumbnail_pic_width']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_HEIGHT'                       => $arrSettings['max_thumbnail_pic_height']['value'],
+            'ACCESS_SESSION_USER_INTERVAL'			    => $arrSettings['session_user_interval']['value'],
             'ACCESS_MAX_PIC_SIZE'                                   => $this->getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
         ));
         $this->_objTpl->parse('module_access_config_general');
