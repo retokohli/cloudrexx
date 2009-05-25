@@ -1494,7 +1494,33 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
+         $q = "SELECT `key`,`value` FROM `".DBPREFIX."access_settings` WHERE `key` = 'session_user_interval'";
+         $objAccesskey = $objDatabase->Execute($q);
+
+                if ($objAccesskey !== false) {
+                       		while (!$objAccesskey->EOF) {
+		              		$value = $objAccesskey->fields['value'];
+				            $objAccesskey->MoveNext();
+			                 }
+        		}
+
+
+        $r = "SELECT `last_activity` FROM `".DBPREFIX."access_users` WHERE `id` =".$this->id;
+        $objactivitytime = $objDatabase->Execute($r);
+		if ($objactivitytime !== false) {
+                         while (!$objactivitytime->EOF) {
+				        $activityvalue = $objactivitytime->fields['last_activity'];
+        				$objactivitytime->MoveNext();
+		              	}
+        		}
+         $diff= strtotime(date("D M j G:i:s")) - $activityvalue ;
+
+        if($diff>$value)
+          return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
+		else
+          return $objDatabase;
+
+       //  return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
     }
 
     private function updateLastAuthTime()
