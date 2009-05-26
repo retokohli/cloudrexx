@@ -669,6 +669,6 @@ $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_2'] = "Nouvelle fenêtre";
 $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "Adresse E-mail";
 $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "Adresse E-mail du destinataire";
 $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Veuillez saisir une adresse E-mail pour le destinataire";
-$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "Neue Versandoption hinzufügen";
-$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "Diese Zeile wird ignoriert, solange Maximalgewicht und Versandgebühr einen Nullwert enthalten.";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "Nouveau mode de livraison";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "Cette ligne est ignorée si le poid maximal et les frais de livraisons sont nuls.";
 ?>
