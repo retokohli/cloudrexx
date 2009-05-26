@@ -1495,14 +1495,12 @@ class User extends User_Profile
         global $objDatabase;
 
         $ltime=$this->last_activity;
-        print $ltime;
-        print "<br />";
 
         $arrSettings = User_Setting::getSettings();
-        print $intervalvalue=$arrSettings['session_user_interval']['value'];
-        print "<br />";
+        $intervalvalue=$arrSettings['session_user_interval']['value'];
 
-        print $diff= strtotime(date("D M j G:i:s")) - $ltime ;
+
+        $diff= strtotime(date("D M j G:i:s")) - $ltime ;
 
         if($diff>$intervalvalue)
           return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
