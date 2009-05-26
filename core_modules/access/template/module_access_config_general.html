@@ -3,7 +3,7 @@
 	<li><a id="generalTab_permissions" class="active" href="javascript:void(0);" onclick="selectTab('permissions')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
 	<li><a id="generalTab_block_functions" href="javascript:void(0);" onclick="selectTab('block_functions')" title="{TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS}">{TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS}</a></li>
 	<li><a id="generalTab_pictures" href="javascript:void(0);" onclick="selectTab('pictures')" title="{TXT_ACCESS_PICTURES}">{TXT_ACCESS_PICTURES}</a></li>
-    <li><a id="generalTab_session" href="javascript:void(0);" onclick="selectTab('session')" title="{TXT_ACCESS_SESSION}">{TXT_ACCESS_SESSION_TITLE}</a></li>
+    <li><a id="generalTab_session" href="javascript:void(0);" onclick="selectTab('session')" title="{TXT_ACCESS_SESSION_TITLE}">{TXT_ACCESS_SESSION_TITLE}</a></li>
 </ul>
 <form action="index.php?cmd=access&amp;act=config" method="post">
 	<!-- start permissions div -->
@@ -207,25 +207,23 @@
 	
 	<!-- start session div-->
 	<div id="session" class="generalTab" style="display:none;">
-
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="margin-bottom:1px;">
-			<thead>
-				<tr>
-					<th colspan="2">{TXT_ACCESS_SESSION_ON_INTERVAL}</th>
-				</tr>
-			</thead>
-			<tbody style="vertical-align:top;">
-				<tr class="row3">
-					<td colspan="2"><strong>{TXT_ACCESS_SESSION}</strong></td>
-				</tr>
-				<tr class="row2">
-					<td width="15%">{TXT_ACCESS_SESSION_ON_INTERVAL}</td>
-					<td width="85%"><input type="text" name="sessioninterval" style="width:300px;" value="{ACCESS_SESSION_USER_INTERVAL}" /></td>
-				</tr>
-
-			</tbody>
-		</table>
-	</div>
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="margin-bottom:1px;">
+        <thead>
+            <tr>
+                <th colspan="2">{TXT_ACCESS_SESSION_ON_INTERVAL}</th>
+            </tr>
+        </thead>
+        <tbody style="vertical-align:top;">
+            <tr class="row3">
+                <td colspan="2"></td>
+            </tr>
+            <tr class="row2">
+                <td width="15%">{TXT_ACCESS_SESSION_ON_INTERVAL}</td>
+                <td width="85%"><input type="text" name="sessioninterval" style="width:300px;" value="{ACCESS_SESSION_USER_INTERVAL}" /></td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
 
 	<!-- end session div-->
 
