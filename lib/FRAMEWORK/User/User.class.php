@@ -1494,33 +1494,20 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-         $q = "SELECT `key`,`value` FROM `".DBPREFIX."access_settings` WHERE `key` = 'session_user_interval'";
-         $objAccesskey = $objDatabase->Execute($q);
+        $ltime=$this->last_activity;
+        print $ltime;
+        print "<br />";
 
-                if ($objAccesskey !== false) {
-                       		while (!$objAccesskey->EOF) {
-		              		$value = $objAccesskey->fields['value'];
-				            $objAccesskey->MoveNext();
-			                 }
-        		}
+        $arrSettings = User_Setting::getSettings();
+        print $intervalvalue=$arrSettings['session_user_interval']['value'];
+        print "<br />";
 
+        print $diff= strtotime(date("D M j G:i:s")) - $ltime ;
 
-        $r = "SELECT `last_activity` FROM `".DBPREFIX."access_users` WHERE `id` =".$this->id;
-        $objactivitytime = $objDatabase->Execute($r);
-		if ($objactivitytime !== false) {
-                         while (!$objactivitytime->EOF) {
-				        $activityvalue = $objactivitytime->fields['last_activity'];
-        				$objactivitytime->MoveNext();
-		              	}
-        		}
-         $diff= strtotime(date("D M j G:i:s")) - $activityvalue ;
-
-        if($diff>$value)
+        if($diff>$intervalvalue)
           return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
 		else
           return $objDatabase;
-
-       //  return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
     }
 
     private function updateLastAuthTime()
