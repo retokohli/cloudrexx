@@ -245,7 +245,7 @@ class frontendEditing extends frontendEditingLib {
 				$_POST['PASSWORD'] 	= $_POST['password'];
 				$_POST['secid2'] 	= strtoupper($_POST['seckey']);
 
-				if ($this->objUser->checkAuth() && $this->isUserInBackendGroup()) {
+				if ($this->objUser->checkAuth() && (Permission::hasAllAccess() || $this->isUserInBackendGroup())) {
 					//Login successfull
 					$_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
 					$this->setToolbarVisibility(true);
