@@ -11,8 +11,41 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-@error_reporting (0);
-@ini_set('display_errors', 0);
+include_once('../lib/DBG.php');
+/**
+ * Debug level, see lib/DBG.php
+ *   DBG_NONE            - Turn debugging off
+ *   DBG_PHP             - show PHP errors/warnings/notices
+ *   DBG_ADODB           - show ADODB queries
+ *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
+ *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
+ *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
+ *   DBG_ALL             - sets all debug flags
+ */
+define('_DEBUG', DBG_NONE);
+
+//-------------------------------------------------------
+// Set error reporting
+//-------------------------------------------------------
+if (_DEBUG) {
+    if (_DEBUG & DBG_PHP) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+    } else {
+        error_reporting(0);
+        ini_set('display_errors', 0);
+    }
+
+    DBG::enable_all();
+    if (_DEBUG & DBG_LOG_FILE)                              DBG::enable_file();
+    if (_DEBUG & DBG_LOG_FIREPHP)                           DBG::enable_firephp();
+    if ((_DEBUG & DBG_ADODB) or (_DEBUG & DBG_ADODB_TRACE)) DBG::enable_adodb();
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
+
+require_once 'UpdateUtil.php';
 
 define('UPDATE_PATH', dirname(__FILE__));
 
