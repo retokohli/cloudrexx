@@ -1,7 +1,7 @@
 <?php
 function _downloadsUpdate()
 {
-	global $objDatabase, $_ARRAYLANG;
+	global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
 	/************************************************
 	* EXTENSION:	Initial creation of the         *
