@@ -261,7 +261,7 @@ class NewsletterLib
         }
 
         if ($objResult !== false) {
-            $html .= '<form name="newsletter" action="?section=newsletter&amp;act=subscribe" method="post">'."\n";
+            $html .= '<form name="newsletter" action="'.CONTREXX_DIRECTORY_INDEX.'?section=newsletter&amp;act=subscribe" method="post">'."\n";
 
             if ($onlyId || $objResult->RecordCount() == 1) {
                 $html .= '<input type="hidden" name="list['.($onlyId ? $onlyId : $objResult->fields['id']).']" value="1" />'."\n";
