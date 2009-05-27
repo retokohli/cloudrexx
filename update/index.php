@@ -40,6 +40,9 @@ if (_DEBUG) {
     if (_DEBUG & DBG_LOG_FILE)                              DBG::enable_file();
     if (_DEBUG & DBG_LOG_FIREPHP)                           DBG::enable_firephp();
     if ((_DEBUG & DBG_ADODB) or (_DEBUG & DBG_ADODB_TRACE)) DBG::enable_adodb();
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
 }
 
 require_once 'UpdateUtil.php';
