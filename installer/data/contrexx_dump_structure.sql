@@ -1718,8 +1718,8 @@ CREATE TABLE `contrexx_module_livecam` (
   `maxImageWidth` int(10) unsigned NOT NULL default '400',
   `thumbMaxSize` int(10) unsigned NOT NULL default '200',
   `shadowboxActivate` set('1','0') NOT NULL default '1',
-  `showFrom` int(14) NOT NULL,
-  `showTill` int(14) NOT NULL,
+  `showFrom` int(14) NOT NULL default '0',
+  `showTill` int(14) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_livecam_settings` (
