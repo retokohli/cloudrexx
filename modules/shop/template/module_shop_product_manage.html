@@ -54,7 +54,6 @@ var SetUrl = function(url, width, height, alt)
 {
   notDefined[fieldID] = true;
   var elInput = document.getElementById("hi_"+fieldID);
-  elInput.setAttribute('type', 'hidden');
   elInput.setAttribute('name', 'productImage'+fieldID);
   elInput.setAttribute('id', 'hi_'+fieldID);
   elInput.setAttribute('value', url);
@@ -81,12 +80,10 @@ var SetUrl = function(url, width, height, alt)
 
   // set resized width and height in hidden fields
   elInput_w = document.getElementById('hi_'+fieldID+'_w');
-  elInput_w.setAttribute('type', 'hidden');
   elInput_w.setAttribute('name', 'productImage'+fieldID+'_width');
   elInput_w.setAttribute('value', width);
 
   elInput_h = document.getElementById('hi_'+fieldID+'_h');
-  elInput_h.setAttribute('type', 'hidden');
   elInput_h.setAttribute('name', 'productImage'+fieldID+'_height');
   elInput_h.setAttribute('value', height);
 
