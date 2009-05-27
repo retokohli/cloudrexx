@@ -63,4 +63,5 @@ $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'] = "Geändert";
 $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'] = "Anzahl Bewertungen";
 $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'] = "Durchschnittliche Bewertung";
 $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'] = "Your Rating";
+$_ARRAYLANG['TXT_KNOWLEDGE_NO_GLOSSARY_ENTRIES'] = "There are no entries in the glossary";
 ?>

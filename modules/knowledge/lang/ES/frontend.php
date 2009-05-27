@@ -63,4 +63,5 @@ $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'] = "Actualizado";
 $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'] = "Puntuaci&oacute;n";
 $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'] = "Puntuaci&oacute;n media";
 $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'] = "Su puntuaci&oacute;n";
+$_ARRAYLANG['TXT_KNOWLEDGE_NO_GLOSSARY_ENTRIES'] = "There are no entries in the glossary";
 ?>
