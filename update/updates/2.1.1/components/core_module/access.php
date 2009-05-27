@@ -205,40 +205,37 @@ function _accessUpdate()
      * ADD USER PROFILE
      *
      *******************/
-    if (!in_array(DBPREFIX."access_user_profile", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_profile` (
-                `user_id` INT UNSIGNED NOT NULL ,
-                `gender` ENUM( 'gender_undefined', 'gender_female', 'gender_male' ) NOT NULL DEFAULT 'gender_undefined',
-                `title` INT UNSIGNED NOT NULL DEFAULT '0',
-                `firstname` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                `lastname` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                `company` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                `address` VARCHAR( 255) NOT NULL DEFAULT '',
-                `city` VARCHAR( 50 ) NOT NULL DEFAULT '',
-                `zip` VARCHAR( 10 ) NOT NULL DEFAULT '',
-                `country` SMALLINT UNSIGNED NOT NULL DEFAULT '0',
-                `phone_office` VARCHAR( 20 ) NOT NULL DEFAULT '',
-                `phone_private` VARCHAR( 20 ) NOT NULL DEFAULT '',
-                `phone_mobile` VARCHAR( 20 ) NOT NULL DEFAULT '',
-                `phone_fax` VARCHAR( 20 ) NOT NULL DEFAULT '',
-                `birthday` VARCHAR ( 10 ) NULL DEFAULT '',
-                `website` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                `profession` VARCHAR( 150 ) NOT NULL DEFAULT '',
-                `interests` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                `signature` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                `picture` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                PRIMARY KEY ( `user_id` ) ,
-                INDEX `profile` (
-                    `firstname`(100) ,
-                    `lastname`(100) ,
-                    `company`(50)
-                )
-            ) TYPE=InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
+    try {
+        UpdateUtil::table(
+            DBPREFIX.'access_user_profile',
+            array(
+                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true),
+                'title'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'firstname'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'lastname'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'company'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'address'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'city'           => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'zip'            => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
+                'country'        => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'phone_office'   => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'phone_private'  => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'phone_mobile'   => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'phone_fax'      => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'birthday'       => array('type' => 'VARCHAR(11)', 'notnull' => false),
+                'website'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'profession'     => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => ''),
+                'interests'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'signature'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'picture'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'profile'        => array('fields' => array('firstname'(100))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
     }
 
 
