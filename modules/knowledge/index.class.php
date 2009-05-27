@@ -543,18 +543,26 @@ class Knowledge extends KnowledgeLibrary
 
         $articles = $this->articles->getGlossary($_LANGID);
 
-        foreach ($articles as $letter => $letterarticles) {
-            $this->tpl->setVariable(array(
-                "LETTER"        => $letter,
-            ));
-            foreach ($letterarticles as $articleid => $article) {
+        if (count($articles)) {
+            foreach ($articles as $letter => $letterarticles) {
                 $this->tpl->setVariable(array(
-                   'ARTICLE'    => $article['content'][$_LANGID]['question'],
-                   'ID'         => $article['id']
+                    "LETTER"        => $letter,
                 ));
-                $this->tpl->parse("entry");
+                foreach ($letterarticles as $articleid => $article) {
+                    $this->tpl->setVariable(array(
+                       'ARTICLE'    => $article['content'][$_LANGID]['question'],
+                       'ID'         => $article['id']
+                    ));
+                    $this->tpl->parse("entry");
+                }
+                $this->tpl->parse("letter");
             }
-            $this->tpl->parse("letter");
+        } else {
+            // no articles
+            $this->tpl->setVariable(array(
+                "TXT_NO_ENTRIES"     => $_ARRAYLANG['TXT_KNOWLEDGE_NO_GLOSSARY_ENTRIES']
+            )); 
+            $this->tpl->parse("no_entries");
         }
     }
 	

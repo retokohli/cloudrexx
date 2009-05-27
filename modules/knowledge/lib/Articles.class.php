@@ -573,12 +573,20 @@ class KnowledgeArticles
     }
 
 
+    /**
+     * Return the glossary entries
+     *
+     * @access public
+     * @param $lang The Language id
+     * @return array
+     */
     public function getGlossary($lang)
     {
         global $objDatabase;
 
         $query = $this->basequery  ."
             WHERE content.`index` != '0'
+            AND articles.active = 1
             ORDER BY content.`index`";
 
         $articles = $this->readArticles(true, $lang, 0, $query);
