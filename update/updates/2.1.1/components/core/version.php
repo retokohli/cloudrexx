@@ -11,8 +11,8 @@ function _createVersionFile()
  * Version informations
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Comvation Development Team <info@comvation.com>
- * @version		1.3.0
+ * @author      Comvation Development Team
+ * @version     2.1.1
  * @package     contrexx
  * @subpackage  config
  * @todo        Edit PHP DocBlocks!
@@ -33,6 +33,16 @@ function _createVersionFile()
 \$_CONFIG['coreCmsEdition']	    = "Premium";
 \$_CONFIG['coreCmsCodeName']    = "None";
 \$_CONFIG['coreCmsReleaseDate']	= "-";
+
+if (strstr(str_replace('\\', '/',__FILE__), \$_SERVER['PHP_SELF'])) {
+    header('Content-type: text/html; charset="utf-8"',true);
+    echo \$_CONFIG['coreCmsName']
+        . ' ' . \$_CONFIG['coreCmsVersion']
+        . ' ' . \$_CONFIG['coreCmsEdition']
+        . ' ' . \$_CONFIG['coreCmsStatus']
+        ;
+}
+
 ?>
 VERSION
 ;
