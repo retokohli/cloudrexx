@@ -2136,6 +2136,7 @@ class shopmanager extends ShopLibrary
                 } // end: Load template or show template overview
                 break;
             case 'vat':
+                Vat::init();
                 // Shop general settings template
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_vat.html');
 

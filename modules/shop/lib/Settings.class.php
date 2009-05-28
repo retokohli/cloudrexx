@@ -780,8 +780,9 @@ class Settings
                 $success &= Settings::storeSetting('vat_included_foreign_reseller',
                     (empty($_POST['vat_included_foreign_reseller']) ? 0 : 1));
 
-            $success &= $this->_deleteVat();
             $success &= $this->_updateVat();
+        } else {
+            $success &= $this->_deleteVat();
             $success &= $this->_setProductsVat();
         }
         return $success;
