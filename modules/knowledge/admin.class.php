@@ -967,7 +967,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	   "TXT_STATUS"        => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
     	   "TXT_INACTIVE"      => $_ARRAYLANG['TXT_KNOWLEDGE_INACTIVE'],
     	   "TXT_SUBMIT"        => $_ARRAYLANG['TXT_KNOWLEDGE_SUBMIT'],
-    	   "TXT_COMMA_SEPARATED" => $_ARRAYLANG['TXT_KNOWLEDGE_COMMA_SEPARATED'],
     	   "TXT_CHOOSE_CATEGORY"   => $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'],
     	   "TXT_PLEASE_CHOOSE_CATEGORY" => $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'],
     	   
@@ -1009,6 +1008,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	       "TXT_ANSWER"        => $_ARRAYLANG['TXT_KNOWLEDGE_ANSWER'],
     	       "TXT_SORT_BY"       => $_ARRAYLANG['TXT_KNOWLEDGE_SORT_BY'],
     	       "TXT_TAGS"          => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
+    	       "TXT_COMMA_SEPARATED" => $_ARRAYLANG['TXT_KNOWLEDGE_COMMA_SEPARATED'],
     	       "TXT_AVAILABLE_TAGS" => $_ARRAYLANG['TXT_KNOWLEDGE_AVAILABLE_TAGS'],
     	       "TXT_POPULARITY"    => $_ARRAYLANG['TXT_KNOWLEDGE_POPULARITY'],
     	       "TXT_ALPHABETICAL"  => $_ARRAYLANG['TXT_KNOWLEDGE_ALPHABETICAL'],
@@ -1017,8 +1017,15 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	       "LANG_ID"           => $langId,
     	       "DISPLAY"           => ($first) ? "block" : "none",
     	       "ID"                => $lang['long'],
-    	       "QUESTION"          => (isset($article['content'][$langId]) ? $article['content'][$langId]['question'] : ''),
-    	       "ANSWER"            => get_wysiwyg_editor('answer_'.$langId, (isset($article['content'][$langId]) ? $article['content'][$langId]['answer'] : '')),
+               "QUESTION"          => (isset($article['content'][$langId]) ? 
+                                       $article['content'][$langId]['question'] 
+                                       : ''),
+               "ANSWER"            => get_wysiwyg_editor('answer_'.$langId, 
+                                       (isset($article['content'][$langId]) ? 
+                                       $article['content'][$langId]['answer'] 
+                                       : '')),
+               "TXT_INDEX_OPTIONS"  => $this->getIndexOptionList(
+                   $article['content'][$langId]['index'])
     	    ));
     	    $this->tpl->parse("langDiv");
     	    $first = false;
