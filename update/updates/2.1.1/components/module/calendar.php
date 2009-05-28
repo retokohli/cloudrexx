@@ -155,7 +155,7 @@ function _calendarUpdate()
     	}
 
     	if (!array_key_exists("NOTE_DATE", $arrColumns)) {
-    	    $query = "ALTER TABLE `".DBPREFIX."module_calendar_registrations` ADD `note_date` INT(11) NOT NULL;";
+    	    $query = "ALTER TABLE `".DBPREFIX."module_calendar_registrations` ADD `note_date` INT(11) NOT NULL AFTER `note_id`";
     	    if ($objDatabase->Execute($query) === false) {
     			return _databaseError($query, $objDatabase->ErrorMsg());
     		}

@@ -163,13 +163,13 @@ function _statsUpdate()
 			}
 		}
     	if(empty($_SESSION['contrexx_update']['update']['update_stats']['utf8'])){
-            $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL";
+            $query = "ALTER IGNORE TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL";
             if($objDatabase->Execute($query)){
                 $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 1;
-                $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET binary NOT NULL";
+                $query = "ALTER IGNORE TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET binary NOT NULL";
                 if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 1 && $objDatabase->Execute($query)){
                     $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 2;
-                    $query = "ALTER TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
+                    $query = "ALTER IGNORE TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
                     if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 2 && $objDatabase->Execute($query)){
                         $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 3;
                         if (!isset($arrIndexes['unique'])) {
