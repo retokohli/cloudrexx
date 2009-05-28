@@ -52,7 +52,6 @@ class Gallery
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
-        var_dump($this->strImagePath);
         $this->strImageWebPath = ASCMS_GALLERY_WEB_PATH . '/';
         $this->strThumbnailPath = ASCMS_GALLERY_THUMBNAIL_PATH . '/';
         $this->strThumbnailWebPath = ASCMS_GALLERY_THUMBNAIL_WEB_PATH . '/';
