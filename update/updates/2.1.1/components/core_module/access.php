@@ -210,6 +210,7 @@ function _accessUpdate()
             DBPREFIX.'access_user_profile',
             array(
                 'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true),
+                'gender'         => array('type' => 'ENUM(\'gender_undefined\', \'gender_female\', \'gender_male\')', 'notnull' => true, 'default' => 'gender_undefined'),
                 'title'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'firstname'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'lastname'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
@@ -230,7 +231,7 @@ function _accessUpdate()
                 'picture'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
             ),
             array(
-                'profile'        => array('fields' => array('firstname'(100))
+                'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'comppany' => 50))
             )
         );
     }
