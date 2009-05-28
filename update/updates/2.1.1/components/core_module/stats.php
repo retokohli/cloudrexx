@@ -172,11 +172,9 @@ function _statsUpdate()
                     $query = "ALTER IGNORE TABLE `".DBPREFIX."stats_search` CHANGE `name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL";
                     if($_SESSION['contrexx_update']['update']['update_stats']['utf8'] == 2 && $objDatabase->Execute($query)){
                         $_SESSION['contrexx_update']['update']['update_stats']['utf8'] = 3;
-                        if (!isset($arrIndexes['unique'])) {
-                			$query = 'ALTER IGNORE TABLE `'.DBPREFIX.'stats_search` ADD UNIQUE `unique` (`name`, `external`)';
-                			if ($objDatabase->Execute($query) === false) {
-                				return _databaseError($query, $objDatabase->ErrorMsg());
-                			}
+                		$query = 'ALTER IGNORE TABLE `'.DBPREFIX.'stats_search` ADD UNIQUE `unique` (`name`, `external`)';
+                		if ($objDatabase->Execute($query) === false) {
+                			return _databaseError($query, $objDatabase->ErrorMsg());
                 		}
                     }else{
                         return _databaseError($query, $objDatabase->ErrorMsg());
