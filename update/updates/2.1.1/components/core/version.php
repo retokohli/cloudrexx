@@ -34,7 +34,7 @@ function _createVersionFile()
 \$_CONFIG['coreCmsCodeName']    = "None";
 \$_CONFIG['coreCmsReleaseDate']	= "-";
 
-if (strstr(str_replace('\\\\', '/',__FILE__), \$_SERVER['PHP_SELF'])) {
+if (strstr(str_replace('\\\\\\', '/',__FILE__), \$_SERVER['PHP_SELF'])) {
     header('Content-type: text/html; charset="utf-8"',true);
     echo \$_CONFIG['coreCmsName']
         . ' ' . \$_CONFIG['coreCmsVersion']
