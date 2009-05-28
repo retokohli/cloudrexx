@@ -267,7 +267,14 @@ class UpdateUtil {
     }
 
     private function _keyspec($table, $name, $spec) {
-        $fields = '`'. join('`, `', $spec['fields']) . '`';
+        foreach ($spec['fields'] as $fieldInfo1 => $fieldInfo2) {
+            if (intval($fieldInfo1) !== $fieldInfo1) {
+                $arrFields[] = '`'.$fieldInfo1.'`('.$fieldInfo2.')';
+            } else {
+                $arrFields[] = '`'.$fieldInfo2.'`';
+            }
+        }
+        $fields = join(',', $arrFields);
         $type   = array_key_exists('type', $spec) ? $spec['type'] : '';
 
         $descr  = "CREATE $type INDEX `$name` ON $table ($fields)";
@@ -280,6 +287,7 @@ class UpdateUtil {
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
         $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
         $binary       = (array_key_exists('binary',         $spec)) ? $spec['binary']         : null;
+        $after        = (array_key_exists('after',          $spec)) ? $spec['after']          : false;
 
         $default_st = '';
         if (strtoupper($spec['type']) != 'BLOB' and strtoupper($spec['type']) != 'TEXT') {
@@ -298,6 +306,7 @@ class UpdateUtil {
         $descr .= $notnull ? " NOT NULL"       : '';
         $descr .= $autoinc ? " auto_increment" : '';
         $descr .= $default_st;
+        $descr .= $after ? " AFTER `".$after."`" : '';
         return $descr;
     }
     private function _getprimaries($struc) {
