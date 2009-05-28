@@ -68,6 +68,15 @@ class Vat
     private static $vatDefaultId = false;
 
     /**
+     * @var     double  $vatDefaultRate The default VAT rate, determined by the tax_default_id entry
+     *                                  in the shop_config table.  See {@see init()},
+     *                                  {@see  calculateDefaultTax()}.
+     * @static
+     * @access  private
+     */
+    private static $vatDefaultRate;
+
+    /**
      * @var     double  $vatOtherId     The other VAT ID
      *                                  for fees and post & package
      * @static
@@ -192,6 +201,7 @@ class Vat
             ),
         );
         self::$vatDefaultId = Settings::getValueByName('vat_default_id');
+        self::$vatDefaultRate = self::getRate(self::$vatDefaultId);
         self::$vatOtherId = Settings::getValueByName('vat_other_id');
         return true;
     }
