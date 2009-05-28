@@ -19,8 +19,8 @@ function _votingUpdate()
                 'additional_phone'    => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
                 'additional_street'   => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
                 'additional_zip'      => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
-                'additional_city'     => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
                 'additional_email'    => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
+                'additional_city'     => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
                 'additional_comment'  => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
             )
         );
@@ -28,17 +28,17 @@ function _votingUpdate()
             DBPREFIX . 'voting_additionaldata',
             array(
                 'id'               => array('type' => 'INT',         'notnull' => true,  'primary'     => true,    'auto_increment' => true),
-                'voting_system_id' => array('type' => 'INT(11)',     'notnull' => true,                            'renamefrom'   => 'voting_sytem_id'),
                 'nickname'         => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => '',      'renamefrom'   => 'name'),
-                'date_entered'     => array('type' => 'TIMESTAMP',   'notnull' => true, 'default_expr'=> 'CURRENT_TIMESTAMP'),
                 'surname'          => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
-                'forename'         => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
                 'phone'            => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
                 'street'           => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
                 'zip'              => array('type' => 'VARCHAR(30)', 'notnull' => true,  'default'     => ''),
                 'city'             => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
                 'email'            => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
                 'comment'          => array('type' => 'TEXT',        'notnull' => true),
+                'voting_system_id' => array('type' => 'INT(11)',     'notnull' => true,                            'renamefrom'   => 'voting_sytem_id'),
+                'date_entered'     => array('type' => 'TIMESTAMP',   'notnull' => true, 'default_expr'=> 'CURRENT_TIMESTAMP'),
+                'forename'         => array('type' => 'VARCHAR(80)', 'notnull' => true,  'default'     => ''),
             ),
             array( # indexes
                 'voting_system_id' => array(
