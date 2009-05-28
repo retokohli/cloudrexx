@@ -231,7 +231,7 @@ function _accessUpdate()
                 'picture'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
             ),
             array(
-                'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'comppany' => 50))
+                'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
             )
         );
     }
