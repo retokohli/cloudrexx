@@ -193,6 +193,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
                         Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
                         $this->getTags();
                         break;
+                    case 'delete':
+                        $this->checkAjaxAccess(ACCESS_ID_EDIT_ARTICLES);
+                        $this->deleteArticle();
+                        break;
                     case 'overview':
                     default:
                         Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
@@ -336,7 +340,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
      * This function is called through ajax and deletes
      * a category.
      * @param int $catId
-     * @global $objDatabase
      */
     private function deleteCategory($catId=null)
     {
@@ -357,6 +360,20 @@ class KnowledgeAdmin extends KnowledgeLibrary
         die();
     }
     
+    /**
+     * Delete an article
+     */
+    private function deleteArticle()
+    {
+        $id = intval($_GET['id']);
+
+        try {
+            $this->articles->deleteOneArticle($id);
+        } catch (DatabaseError $e) {
+            $this->sendAjaxError($e->formatted());
+        }
+    }
+
     /**
      * Update an existing category.
      *

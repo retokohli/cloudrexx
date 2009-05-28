@@ -212,10 +212,11 @@ class KnowledgeArticles
     public function deleteOneArticle($id)
     {
         global $objDatabase;
+
         
         $id = intval($id);
         $query = "  DELETE FROM ".DBPREFIX."module_knowledge_article_content
-                    WHERE id = ".$id;
+                    WHERE article = ".$id;
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to delete the content of a article");
         }
