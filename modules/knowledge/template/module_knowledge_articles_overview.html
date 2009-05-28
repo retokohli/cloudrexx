@@ -190,7 +190,7 @@ var deleteArticle = function(id)
     if (confirm("{TXT_CONFIRM_ARTICLE_DELETION}")) {
         new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "knowledge{MODULE_INDEX}", section : "categories", act : "delete", id : id},
+            parameters: {cmd : "knowledge{MODULE_INDEX}", section : "articles", act : "delete", id : id},
             onSuccess: function() {
                 articles.deleteRow(id);
             }
