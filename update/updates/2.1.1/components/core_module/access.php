@@ -2,7 +2,7 @@
 
 function _accessUpdate()
 {
-    global $objDatabase, $_CONFIG, $_ARRAYLANG;
+    global $objDatabase, $_CONFIG, $_ARRAYLANG, $_CORELANG;
 
     $arrTables = $objDatabase->MetaTables('TABLES');
     if (!$arrTables) {
