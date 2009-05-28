@@ -2427,7 +2427,7 @@ class shopmanager extends ShopLibrary
                 'TXT_ADD_NEW_SHOP_GROUP' => $_ARRAYLANG['TXT_ADD_NEW_PRODUCT_GROUP'],
                 'SHOP_MOD_CAT_ID' => '',
                 'SHOP_SELECTED_CAT_NAME' => '',
-                'SHOP_CAT_MENUOPTIONS' => ShopCategories::getShopCategoriesMenu(0, false),
+                'SHOP_CAT_MENUOPTIONS' => ShopCategories::getShopCategoriesMenuoptions(0, false),
                 'SHOP_PICTURE_IMG_HREF' => self::$defaultImage,
                 'SHOP_SELECTED_CATEGORY_VIRTUAL_CHECKED' => '',
                 'SHOP_SELECTED_CATEGORY_STATUS_CHECKED' => ' checked="checked"',
