@@ -1628,6 +1628,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_STANDARD'                               => $_ARRAYLANG['TXT_ACCESS_STANDARD'],
             'TXT_ACCESS_EMAIL'                                  => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
             'TXT_ACCESS_SESSION_ON_INTERVAL'				    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
+            'TXT_ACCESS_SESSION_DESCRIPTION'                    =>$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'],
             'TXT_ACCESS_SESSION_TITLE' 				            => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
             'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE']
         ));

@@ -1499,13 +1499,13 @@ class User extends User_Profile
         $arrSettings = User_Setting::getSettings();
         $intervalvalue=$arrSettings['session_user_interval']['value'];
 
-
-        $diff= strtotime(date("D M j G:i:s")) - $ltime ;
+        $currenttime=time();
+        $diff=$currenttime-$ltime ;
 
         if($diff>$intervalvalue)
           return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
-		else
-          return $objDatabase;
+        else
+          return true;
     }
 
     private function updateLastAuthTime()
