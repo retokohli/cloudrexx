@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Directory
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -29,14 +30,12 @@ require_once ASCMS_CORE_PATH . '/settings.class.php';
 class rssDirectory extends directoryLibrary
 {
     var $_objTpl;
-    var $pageTitle;
     var $pageContent;
     var $strErrMessage = '';
     var $strOkMessage = '';
     var $_selectedLang;
     var $langId;
     var $categories = array();
-    var $levels = array();
     var $getLevels = array();
     var $getCategories = array();
     var $getPlatforms = array();
@@ -90,12 +89,12 @@ class rssDirectory extends directoryLibrary
         //get settings
         $this->settings = $this->getSettings();
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=directory'>".$_ARRAYLANG['TXT_DIR_CATEGORIES']."</a>
-                                                        ".($this->settings['levels']['value'] == '1' ? "<a href='?cmd=directory&amp;act=levels'>".$_ARRAYLANG['TXT_LEVELS']."</a>" : "")."
-                                                        <a href='?cmd=directory&amp;act=new'>".$_ARRAYLANG['TXT_DIR_CREATE_ENTREE']."</a>
-                                                        <a href='?cmd=directory&amp;act=confirm'>".$_ARRAYLANG['TXT_DIR_CONFIRM_ENTREE']."</a>
-                                                        <a href='?cmd=directory&amp;act=files'>".$_ARRAYLANG['TXT_DIR_FILE_MANAGEMENT']."</a>
-                                                        <a href='?cmd=directory&amp;act=settings'>".$_ARRAYLANG['TXT_DIR_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=directory'>".$_ARRAYLANG['TXT_DIR_CATEGORIES']."</a>
+                                                        ".($this->settings['levels']['value'] == '1' ? "<a href='index.php?cmd=directory&amp;act=levels'>".$_ARRAYLANG['TXT_LEVELS']."</a>" : "")."
+                                                        <a href='index.php?cmd=directory&amp;act=new'>".$_ARRAYLANG['TXT_DIR_CREATE_ENTREE']."</a>
+                                                        <a href='index.php?cmd=directory&amp;act=confirm'>".$_ARRAYLANG['TXT_DIR_CONFIRM_ENTREE']."</a>
+                                                        <a href='index.php?cmd=directory&amp;act=files'>".$_ARRAYLANG['TXT_DIR_FILE_MANAGEMENT']."</a>
+                                                        <a href='index.php?cmd=directory&amp;act=settings'>".$_ARRAYLANG['TXT_DIR_SETTINGS']."</a>");
     }
 
 
@@ -110,134 +109,122 @@ class rssDirectory extends directoryLibrary
     {
         global $objDatabase, $objTemplate;
 
-		// general module access check
-		Permission::checkAccess(59, 'static');
+        // general module access check
+        Permission::checkAccess(59, 'static');
 
-        if(!isset($_GET['act'])){
+        if (!isset($_GET['act'])) {
             $_GET['act']="";
         }
 
-        switch($_GET['act']){
+        switch($_GET['act']) {
             case "add":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->addCategorie();
                 $this->showCategories();
-            break;
-
+                break;
             case "del":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->delete();
                 $this->showCategories();
-            break;
-
+                break;
             case "move":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->move();
                 $this->showCategories();
-            break;
-
+                break;
             case "edit":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->editCategorie();
-            break;
-
+                break;
             case "catOrder":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->catOrder();
                 $this->showCategories();
-            break;
-
+                break;
             case "confirm":
-				Permission::checkAccess(94, 'static');
+                Permission::checkAccess(94, 'static');
                 $this->showConfirm();
-            break;
-
+                break;
             case "detailfile":
-				Permission::checkAccess(94, 'static');
+                Permission::checkAccess(94, 'static');
                 $this->detailEntry(intval($_GET['id']));
-            break;
-
+                break;
             case "confirmfile":
-				Permission::checkAccess(96, 'static');
+                Permission::checkAccess(96, 'static');
                 $this->confirmEntry_step1();
                 $this->showConfirm();
-            break;
-
+                break;
             case "files":
-				Permission::checkAccess(96, 'static');
+                Permission::checkAccess(96, 'static');
                 $this->showFiles(intval($_GET['cat']), intval($_GET['level']));
-            break;
-
+                break;
             case "delfile":
-				Permission::checkAccess(94, 'static');
+                Permission::checkAccess(94, 'static');
                 $this->delete();
                 $this->showFiles('', '');
-            break;
-
+                break;
             case "editfile":
-				Permission::checkAccess(94, 'static');
+                Permission::checkAccess(94, 'static');
                 $this->editFile(intval($_GET['id']));
-            break;
-
+                break;
             case "movefile":
-				Permission::checkAccess(94, 'static');
+                Permission::checkAccess(94, 'static');
                 $this->move();
-            break;
-
+                break;
             case "restorevoting":
-				Permission::checkAccess(94, 'static');
+                Permission::checkAccess(94, 'static');
                 $this->restoreVoting(intval($_GET['id']));
-            break;
+                break;
             case "new":
-				Permission::checkAccess(96, 'static');
+                Permission::checkAccess(96, 'static');
                 $this->newEntry();
-            break;
+                break;
             case "settings":
                 Permission::checkAccess(92, 'static');
                 $this->updateSettings();
                 $this->showSettings();
                 break;
             case "levels":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->showLevels();
                 break;
             case "addlevel":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->addLevel();
                 $this->showLevels();
                 break;
             case "editlevel":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->editLevel();
-            break;
+                break;
             case "dellevel":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->delete();
                 $this->showLevels();
-            break;
+                break;
             case "levelOrder":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->levelOrder();
                 $this->showLevels();
-            break;
+                break;
             case "moveLevel":
-				Permission::checkAccess(97, 'static');
+                Permission::checkAccess(97, 'static');
                 $this->move();
                 $this->showLevels();
-            break;
+                break;
             default:
                 //check confirm feeds
-                if($this->settings['showConfirm']['value'] == 1){
+                if ($this->settings['showConfirm']['value'] == 1) {
                     $query = "SELECT id FROM ".DBPREFIX."module_directory_dir WHERE status ='0' LIMIT 1";
                     $objResult = $objDatabase->Execute($query);
 
                     if ($objResult !== false && $objResult->RecordCount()==1) {
-				    	Permission::checkAccess(96, 'static');
+                        Permission::checkAccess(96, 'static');
                         $this->showConfirm();
-                    }else{
+                    } else {
                         $this->showCategories();
                     }
-                }else{
+                } else {
                     $this->showCategories();
                 }
         }
@@ -253,10 +240,7 @@ class rssDirectory extends directoryLibrary
 
 
     /**
-    * show levels
-    *
     * shows all levels
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -312,7 +296,7 @@ class rssDirectory extends directoryLibrary
 
         //get all levels
         $objResult = $objDatabase->Execute("SELECT id, name, parentid, metadesc, metakeys, description, displayorder, status, showcategories FROM ".DBPREFIX."module_directory_levels ORDER BY displayorder");
-        if($objResult !== false){
+        if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $this->levels['name'][$objResult->fields['id']] =$objResult->fields['name'];
                 $this->levels['parentid'][$objResult->fields['id']] =$objResult->fields['parentid'];
@@ -338,29 +322,29 @@ class rssDirectory extends directoryLibrary
         $this->_objTpl->setCurrentBlock('levelsRow');
 
         //shows all level 1 categories
-        if(in_array(0, $this->levels['parentid'])){
-            foreach($this->levels['name'] as $levelKey => $levelName){
-                if($this->levels['parentid'][$levelKey] == $parentId){
+        if (in_array(0, $this->levels['parentid'])) {
+            foreach($this->levels['name'] as $levelKey => $levelName) {
+                if ($this->levels['parentid'][$levelKey] == $parentId) {
                     //set categorie icon
-                    if($_SESSION['expLevel'][$levelKey] == 1){
-                        $icon = "<a href='?cmd=directory&amp;act=levels&amp;collaps=$levelKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
-                    }elseif(!in_array($levelKey, $this->levels['parentid'])){
+                    if ($_SESSION['expLevel'][$levelKey] == 1) {
+                        $icon = "<a href='index.php?cmd=directory&amp;act=levels&amp;collaps=$levelKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
+                    } elseif (!in_array($levelKey, $this->levels['parentid'])) {
                         $icon = "<img src='".$this->imageWebPath."directory/pixel.gif' width='11' height='1' border='0' alt='' />";
-                    }else{
-                        $icon = "<a href='?cmd=directory&amp;act=levels&amp;expand=$levelKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
+                    } else {
+                        $icon = "<a href='index.php?cmd=directory&amp;act=levels&amp;expand=$levelKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
                     }
 
                     //set folderimage (active/inactive)
-                    if($this->levels['status'][$levelKey] == 1){
+                    if ($this->levels['status'][$levelKey] == 1) {
                         $folder = "<a href='javascript:statusLevel(".$levelKey.", 0)'><img src='".$this->imageWebPath."directory/_folder.gif' border='0' alt='' /></a>";
-                    }else{
+                    } else {
                         $folder = "<a href='javascript:statusLevel(".$levelKey.", 1)'><img src='".$this->imageWebPath."directory/_folder_off.gif' border='0' alt='' /></a>";
                     }
 
                     //set showcategories (active/inactive)
-                    if($this->levels['showcategories'][$levelKey] == 1){
+                    if ($this->levels['showcategories'][$levelKey] == 1) {
                         $showCategories = "<img src='".$this->imageWebPath."directory/led_green.gif' border='0' alt='' />";
-                    }else{
+                    } else {
                         $showCategories = "<img src='".$this->imageWebPath."directory/led_red.gif' border='0' alt='' />";
                     }
 
@@ -371,7 +355,7 @@ class rssDirectory extends directoryLibrary
                     $this->_objTpl->setVariable(array(
                         'LEVEL_ROW'             => $class,
                         'LEVEL_ID'              => $levelKey,
-                        'LEVEL_NAME'            => "<a href='?cmd=directory&amp;act=files&amp;level=$levelKey'>".$levelName."</a>",
+                        'LEVEL_NAME'            => "<a href='index.php?cmd=directory&amp;act=files&amp;level=$levelKey'>".$levelName."</a>",
                         'LEVEL_DESCRIPTION'     => $this->levels['description'][$levelKey],
                         'LEVEL_DISPLAYORDER'    => $this->levels['displayorder'][$levelKey],
                         'LEVEL_METADESC'        => $this->levels['metadesc'][$levelKey],
@@ -381,7 +365,10 @@ class rssDirectory extends directoryLibrary
                         'LEVEL_FOLDER'          => $folder,
                         'LEVEL_COUNTENTRIES'    => $count,
                         'LEVEL_CATEGORIES'      => $showCategories,
-                        'LEVEL_CHECKBOX'        =>  "<input type=\"checkbox\" title=\"Select ".$levelName."\" name=\"formSelected[]\" value=\"".$levelKey."\" />",
+                        'LEVEL_CHECKBOX'        =>
+                            "<input type=\"checkbox\" title=\"Select ".
+                            $levelName."\" name=\"formSelected[]\" value=\"".
+                            $levelKey."\" />",
                     ));
                     $i++;
                     $this->_objTpl->parseCurrentBlock("levelsRow");
@@ -403,7 +390,7 @@ class rssDirectory extends directoryLibrary
             ));
 
             $this->_objTpl->parse('importSelectAction');
-        }else{
+        } else {
             //no levels found
             $this->_objTpl->setVariable(array(
                 'NO_LEVEL_FOUND'    => $_ARRAYLANG['TXT_NO_LEVELS_FOUND'],
@@ -419,9 +406,6 @@ class rssDirectory extends directoryLibrary
 
     /**
     * show sublevels
-    *
-    * shows all sublevels
-    *
     * @access   public
     * @param    string  $parentId
     * @param    string  $padding
@@ -437,29 +421,29 @@ class rssDirectory extends directoryLibrary
         $padding= $padding + 20;
 
         //shows all subcategories
-        foreach($this->levels['name'] as $levelKey => $levelName){
-            if($this->levels['parentid'][$levelKey] == $parentId){
-                if($_SESSION['expLevel'][$parentId] == 1){
+        foreach($this->levels['name'] as $levelKey => $levelName) {
+            if ($this->levels['parentid'][$levelKey] == $parentId) {
+                if ($_SESSION['expLevel'][$parentId] == 1) {
                     //set subcategorie icon
-                    if($_SESSION['expLevel'][$levelKey] == 1){
-                        $link = "<a href='?cmd=directory&amp;act=levels&amp;collaps=$levelKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
-                    }elseif(!in_array($levelKey, $this->levels['parentid'])){
+                    if ($_SESSION['expLevel'][$levelKey] == 1) {
+                        $link = "<a href='index.php?cmd=directory&amp;act=levels&amp;collaps=$levelKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
+                    } elseif (!in_array($levelKey, $this->levels['parentid'])) {
                         $link = "<img src='".$this->imageWebPath."directory/pixel.gif' width='11' height='1' border='0' alt='' />";
-                    }else{
-                        $link = "<a href='?cmd=directory&amp;act=levels&amp;expand=$levelKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
+                    } else {
+                        $link = "<a href='index.php?cmd=directory&amp;act=levels&amp;expand=$levelKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
                     }
 
                     //set folderimage (active/inactive)
-                    if($this->levels['status'][$levelKey] == 1){
+                    if ($this->levels['status'][$levelKey] == 1) {
                         $folder = "<a href='javascript:statusLevel(".$levelKey.", 0)'><img src='".$this->imageWebPath."directory/_folder.gif' border='0' alt='' /></a>";
-                    }else{
+                    } else {
                         $folder = "<a href='javascript:statusLevel(".$levelKey.", 1)'><img src='".$this->imageWebPath."directory/_folder_off.gif' border='0' alt='' /></a>";
                     }
 
                     //set showcategories (active/inactive)
-                    if($this->levels['showcategories'][$levelKey] == 1){
+                    if ($this->levels['showcategories'][$levelKey] == 1) {
                         $showCategories = "<img src='".$this->imageWebPath."directory/led_green.gif' border='0' alt='' />";
-                    }else{
+                    } else {
                         $showCategories = "<img src='".$this->imageWebPath."directory/led_red.gif' border='0' alt='' />";
                     }
 
@@ -470,7 +454,7 @@ class rssDirectory extends directoryLibrary
                     $this->_objTpl->setVariable(array(
                         'LEVEL_ROW'             => $class,
                         'LEVEL_ID'              => $levelKey,
-                        'LEVEL_NAME'            => "<a href='?cmd=directory&amp;act=files&amp;level=$levelKey'>".$levelName."</a>",
+                        'LEVEL_NAME'            => "<a href='index.php?cmd=directory&amp;act=files&amp;level=$levelKey'>".$levelName."</a>",
                         'LEVEL_DESCRIPTION'     => $this->levels['description'][$levelKey],
                         'LEVEL_DISPLAYORDER'    => $this->levels['displayorder'][$levelKey],
                         'LEVEL_METADESC'        => $this->levels['metadesc'][$levelKey],
@@ -480,7 +464,10 @@ class rssDirectory extends directoryLibrary
                         'LEVEL_FOLDER'          => $folder,
                         'LEVEL_COUNTENTRIES'    => $count,
                         'LEVEL_CATEGORIES'      => $showCategories,
-                        'LEVEL_CHECKBOX'        =>  "<input type=\"checkbox\" title=\"Select ".$levelName."\" name=\"formSelected[]\" value=\"".$levelKey."\" />",
+                        'LEVEL_CHECKBOX'        =>
+                            "<input type=\"checkbox\" title=\"Select ".
+                            $levelName."\" name=\"formSelected[]\" value=\"".
+                            $levelKey."\" />",
                     ));
                     $i++;
                     $this->_objTpl->parseCurrentBlock("levelsRow");
@@ -494,10 +481,7 @@ class rssDirectory extends directoryLibrary
 
 
     /**
-    * add level
-    *
     * add a new level
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -550,19 +534,16 @@ class rssDirectory extends directoryLibrary
                                 showlevels='".$levShowLevels."',
                                 showcategories='".$levShowCategories."',
                                 onlyentries='".$levOnlyEntries."'");
-        if($objResult !== false){
+        if ($objResult !== false) {
             $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSULL_ADDED'];
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_ADD_LEVEL_ERROR'];
         }
     }
 
 
     /**
-    * edit level
-    *
     * edit selected level
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -603,8 +584,8 @@ class rssDirectory extends directoryLibrary
 
         //get categorie data
         $objResult = $objDatabase->Execute("SELECT name, description, metakeys, metadesc, parentid, showlevels, showcategories, onlyentries FROM ".DBPREFIX."module_directory_levels WHERE id = '$levelId'");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $levelName              = $objResult->fields['name'];
                 $levelDescription       = $objResult->fields['description'];
                 $levelMetadesc          = $objResult->fields['metadesc'];
@@ -617,19 +598,19 @@ class rssDirectory extends directoryLibrary
             }
         }
 
-        if($levelOnlyEntries == '1'){
+        if ($levelOnlyEntries == '1') {
             $checkedEntries = 'checked';
         }
 
-        if($levelShowLevels == '1'){
+        if ($levelShowLevels == '1') {
             $checkedLevels  = 'checked';
         }
 
-        if($levelShowCategories == '1'){
+        if ($levelShowCategories == '1') {
             $checkedCategories  = 'checked';
         }
 
-        if($levelShowCategories == '1' && $levelShowLevels == '1'){
+        if ($levelShowCategories == '1' && $levelShowLevels == '1') {
             $checkedCategories  = '';
             $checkedLevels  = '';
             $checkedBoth    = 'checked';
@@ -657,9 +638,6 @@ class rssDirectory extends directoryLibrary
 
     /**
     * update level
-    *
-    * save changes
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -669,7 +647,7 @@ class rssDirectory extends directoryLibrary
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        if(isset($_POST['edit_submit'])){
+        if (isset($_POST['edit_submit'])) {
         //get post data
             $levLevel           = intval($_POST['edit_level']);
             $levId              = intval($_POST['edit_id']);
@@ -705,9 +683,9 @@ class rssDirectory extends directoryLibrary
             }
 
             //check parent id
-            if($levLevel == $levId){
+            if ($levLevel == $levId) {
                 $levParentId = $levParentId;
-            }else{
+            } else {
                 $levParentId = $levLevel;
             }
 
@@ -723,20 +701,17 @@ class rssDirectory extends directoryLibrary
                                     showcategories='".$levShowCategories."',
                                     onlyentries='".$levOnlyEntries."' WHERE id='".$levId."'");
 
-            if($objResult !== false){
+            if ($objResult !== false) {
                 $this->showLevels();
                 $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_EDIT'];
-            }else{
+            } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_LEVEL_EDIT_ERROR'];
             }
         }
     }
 
     /**
-    * show categories
-    *
-    * shows all categories
-    *
+    * show all categories
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -785,7 +760,7 @@ class rssDirectory extends directoryLibrary
 
         //get all categories
         $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_categories ORDER BY displayorder");
-        if($objResult !== false){
+        if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $this->categories['name'][$objResult->fields['id']] =$objResult->fields['name'];
                 $this->categories['parentid'][$objResult->fields['id']] =$objResult->fields['parentid'];
@@ -811,29 +786,29 @@ class rssDirectory extends directoryLibrary
         $parentId= 0;
 
         //shows all level 1 categories
-        if(in_array(0, $this->categories['parentid'])){
-            foreach($this->categories['name'] as $catKey => $catName){
-                if($this->categories['parentid'][$catKey] == $parentId){
+        if (in_array(0, $this->categories['parentid'])) {
+            foreach($this->categories['name'] as $catKey => $catName) {
+                if ($this->categories['parentid'][$catKey] == $parentId) {
                     //set categorie icon
-                    if($_SESSION['expCat'][$catKey] == 1){
-                        $icon = "<a href='?cmd=directory&amp;collaps=$catKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
-                    }elseif(!in_array($catKey, $this->categories['parentid'])){
+                    if ($_SESSION['expCat'][$catKey] == 1) {
+                        $icon = "<a href='index.php?cmd=directory&amp;collaps=$catKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
+                    } elseif (!in_array($catKey, $this->categories['parentid'])) {
                         $icon = "<img src='".$this->imageWebPath."directory/pixel.gif' width='11' height='1' border='0' alt='' />";
-                    }else{
-                        $icon = "<a href='?cmd=directory&amp;expand=$catKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
+                    } else {
+                        $icon = "<a href='index.php?cmd=directory&amp;expand=$catKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
                     }
 
                     //set folderimage (active/inactive)
-                    if($this->categories['status'][$catKey] == 1){
-                        $folder = "<a href='javascript:statusCategory(".$catKey.", 0)'><img src='".$this->imageWebPath."directory/_folder.gif' border='0' alt='' /></a>";
-                    }else{
-                        $folder = "<a href='javascript:statusCategory(".$catKey.", 1)'><img src='".$this->imageWebPath."directory/_folder_off.gif' border='0' alt='' /></a>";
+                    if ($this->categories['status'][$catKey] == 1) {
+                        $folder = "<a href='javascript:statusCategory(".$catKey.",0)'><img src='".$this->imageWebPath."directory/_folder.gif' border='0' alt='' /></a>";
+                    } else {
+                        $folder = "<a href='javascript:statusCategory(".$catKey.",1)'><img src='".$this->imageWebPath."directory/_folder_off.gif' border='0' alt='' /></a>";
                     }
 
                     //set showcategories (active/inactive)
-                    if($this->categories['showentries'][$catKey] == 1){
+                    if ($this->categories['showentries'][$catKey] == 1) {
                         $showEntries = "<img src='".$this->imageWebPath."directory/led_green.gif' border='0' alt='' />";
-                    }else{
+                    } else {
                         $showEntries = "<img src='".$this->imageWebPath."directory/led_red.gif' border='0' alt='' />";
                     }
 
@@ -844,7 +819,7 @@ class rssDirectory extends directoryLibrary
                     $this->_objTpl->setVariable(array(
                         'CATEGORIES_ROW'            => $class,
                         'CATEGORIES_ID'             => $catKey,
-                        'CATEGORIES_NAME'           => "<a href='?cmd=directory&amp;act=files&amp;cat=$catKey'>".$catName."</a>",
+                        'CATEGORIES_NAME'           => "<a href='index.php?cmd=directory&amp;act=files&amp;cat=$catKey'>".$catName."</a>",
                         'CATEGORIES_DESCRIPTION'    => $this->categories['description'][$catKey],
                         'CATEGORIES_DISPLAYORDER'   => $this->categories['displayorder'][$catKey],
                         'CATEGORIES_METADESC'       => $this->categories['metadesc'][$catKey],
@@ -854,7 +829,10 @@ class rssDirectory extends directoryLibrary
                         'CATEGORIES_FOLDER'         => $folder,
                         'CATEGORIES_COUNTENTREES'   => $count,
                         'CATEGORIES_SHOW_ENTRIES'   => $showEntries,
-                        'CATEGORIES_CHECKBOX'       =>  "<input type=\"checkbox\" title=\"Select ".$catName."\" name=\"formSelected[]\" value=\"".$catKey."\" />",
+                        'CATEGORIES_CHECKBOX'       =>
+                            "<input type=\"checkbox\" title=\"Select ".
+                            $catName."\" name=\"formSelected[]\" value=\"".
+                            $catKey."\" />",
                     ));
                     $i++;
                     $this->_objTpl->parseCurrentBlock("categoriesRow");
@@ -876,7 +854,7 @@ class rssDirectory extends directoryLibrary
             ));
 
             $this->_objTpl->parse('importSelectAction');
-        }else{
+        } else {
             //no categories found
             $this->_objTpl->setVariable(array(
                 'NO_CAT_FOUND'      => $_ARRAYLANG['TXT_DIR_NO_CATEGORIE_FOUND'],
@@ -891,10 +869,7 @@ class rssDirectory extends directoryLibrary
 
 
     /**
-    * show subcategories
-    *
-    * shows all subcategories per categorie
-    *
+    * shows all subcategories of any category
     * @access   public
     * @param    string  $parentId
     * @param    string  $padding
@@ -910,23 +885,23 @@ class rssDirectory extends directoryLibrary
         $padding= $padding + 20;
 
         //shows all subcategories
-        foreach($this->categories['name'] as $catKey => $catName){
-            if($this->categories['parentid'][$catKey] == $parentId){
-                if($_SESSION['expCat'][$parentId] == 1){
+        foreach($this->categories['name'] as $catKey => $catName) {
+            if ($this->categories['parentid'][$catKey] == $parentId) {
+                if ($_SESSION['expCat'][$parentId] == 1) {
                     //set subcategorie icon
-                    if($_SESSION['expCat'][$catKey] == 1){
-                        $link = "<a href='?cmd=directory&amp;collaps=$catKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
-                    }elseif(!in_array($catKey, $this->categories['parentid'])){
+                    if ($_SESSION['expCat'][$catKey] == 1) {
+                        $link = "<a href='index.php?cmd=directory&amp;collaps=$catKey'><img src='".$this->imageWebPath."directory/minuslink.gif' border='0' alt='' /></a>";
+                    } elseif (!in_array($catKey, $this->categories['parentid'])) {
                         $link = "<img src='".$this->imageWebPath."directory/pixel.gif' width='11' height='1' border='0' alt='' />";
-                    }else{
-                        $link = "<a href='?cmd=directory&amp;expand=$catKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
+                    } else {
+                        $link = "<a href='index.php?cmd=directory&amp;expand=$catKey'><img src='".$this->imageWebPath."directory/pluslink.gif' border='0' alt='' /></a>";
                     }
 
                     //set folderimage (active/inactive)
-                    if($this->categories['status'][$catKey] == 1){
-                        $folder = "<a href='javascript:statusCategory(".$catKey.", 0)'><img src='".$this->imageWebPath."directory/_folder.gif' border='0' alt='' /></a>";
-                    }else{
-                        $folder = "<a href='javascript:statusCategory(".$catKey.", 1)'><img src='".$this->imageWebPath."directory/_folder_off.gif' border='0' alt='' /></a>";
+                    if ($this->categories['status'][$catKey] == 1) {
+                        $folder = "<a href='javascript:statusCategory(".$catKey.",0)'><img src='".$this->imageWebPath."directory/_folder.gif' border='0' alt='' /></a>";
+                    } else {
+                        $folder = "<a href='javascript:statusCategory(".$catKey.",1)'><img src='".$this->imageWebPath."directory/_folder_off.gif' border='0' alt='' /></a>";
                     }
 
                     //count feeds
@@ -936,7 +911,7 @@ class rssDirectory extends directoryLibrary
                     $this->_objTpl->setVariable(array(
                         'CATEGORIES_ROW'            => $class,
                         'CATEGORIES_ID'             => $catKey,
-                        'CATEGORIES_NAME'           => "<a href='?cmd=directory&amp;act=files&amp;cat=$catKey'>".$catName."</a>",
+                        'CATEGORIES_NAME'           => "<a href='index.php?cmd=directory&amp;act=files&amp;cat=$catKey'>".$catName."</a>",
                         'CATEGORIES_DESCRIPTION'    => $this->categories['description'][$catKey],
                         'CATEGORIES_DISPLAYORDER'   => $this->categories['displayorder'][$catKey],
                         'CATEGORIES_METADESC'       => $this->categories['metadesc'][$catKey],
@@ -945,7 +920,10 @@ class rssDirectory extends directoryLibrary
                         'CATEGORIES_ICON'           => $link,
                         'CATEGORIES_FOLDER'         => $folder,
                         'CATEGORIES_COUNTENTREES'   => $count,
-                        'CATEGORIES_CHECKBOX'       =>  "<input type=\"checkbox\" title=\"Select ".$catName."\" name=\"formSelected[]\" value=\"".$catKey."\" />",
+                        'CATEGORIES_CHECKBOX'       =>
+                            "<input type=\"checkbox\" title=\"Select ".
+                            $catName."\" name=\"formSelected[]\" value=\"".
+                            $catKey."\" />",
                     ));
                     $i++;
                     $this->_objTpl->parseCurrentBlock("categoriesRow");
@@ -958,31 +936,27 @@ class rssDirectory extends directoryLibrary
     }
 
 
-
     /**
-    * expand tree
-    *
-    * expand selected folder
-    *
+    * expand selected folder tree
     * @access   public
     */
     function expand()
     {
-        if(isset($_GET['expand'])){
-            if($_GET['expand'] == "all"){
-                if($_GET['act'] == "levels"){
-                    foreach($this->levels['name'] as $levelKey => $levelName){
+        if (isset($_GET['expand'])) {
+            if ($_GET['expand'] == "all") {
+                if ($_GET['act'] == "levels") {
+                    foreach($this->levels['name'] as $levelKey => $levelName) {
                         $_SESSION['expLevel'][$levelKey] = 1;
                     }
-                }else{
-                    foreach($this->categories['name'] as $catKey => $catName){
+                } else {
+                    foreach($this->categories['name'] as $catKey => $catName) {
                         $_SESSION['expCat'][$catKey] = 1;
                     }
                 }
-            }else{
-                if($_GET['act'] == "levels"){
+            } else {
+                if ($_GET['act'] == "levels") {
                     $_SESSION['expLevel'][$_GET['expand']] = "1";
-                }else{
+                } else {
                     $_SESSION['expCat'][$_GET['expand']] = "1";
                 }
             }
@@ -991,27 +965,23 @@ class rssDirectory extends directoryLibrary
     }
 
 
-
     /**
-    * collaps tree
-    *
-    * collaps selected folder
-    *
+    * collapse selected folder tree
     * @access   public
     */
     function collaps()
     {
-        if(isset($_GET['collaps'])){
-            if($_GET['collaps'] == "all"){
-                if($_GET['act'] == "levels"){
+        if (isset($_GET['collaps'])) {
+            if ($_GET['collaps'] == "all") {
+                if ($_GET['act'] == "levels") {
                     $_SESSION['expLevel'] = "";
-                }else{
+                } else {
                     $_SESSION['expCat'] = "";
                 }
-            }else{
-                if($_GET['act'] == "levels"){
+            } else {
+                if ($_GET['act'] == "levels") {
                     $_SESSION['expLevel'][$_GET['collaps']] = "";
-                }else{
+                } else {
                     $_SESSION['expCat'][$_GET['collaps']] = "";
                 }
             }
@@ -1020,12 +990,8 @@ class rssDirectory extends directoryLibrary
     }
 
 
-
     /**
-    * add categorie
-    *
-    * add a new categorie
-    *
+    * add a new category
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1058,12 +1024,8 @@ class rssDirectory extends directoryLibrary
     }
 
 
-
     /**
-    * delete all
-    *
-    * delete management
-    *
+    * Move categories, levels, and files
     * @access   public
     * @global    ADONewConnection
     * @global    array
@@ -1072,24 +1034,23 @@ class rssDirectory extends directoryLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        switch ($_GET['act'])
-        {
+        switch ($_GET['act']) {
             case'move':
-                foreach($_POST["formSelected"] as $catName => $catKey){
+                foreach($_POST["formSelected"] as $catName => $catKey) {
                     $parentId = intval($_POST['selectCat']);
                     if ($parentId != $catKey) {
                         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_categories SET parentid=".$parentId." WHERE id='".$catKey."'");
                     }
                 }
-            break;
+                break;
             case'movelevel':
-                foreach($_POST["formSelected"] as $levelName => $levelKey){
+                foreach($_POST["formSelected"] as $levelName => $levelKey) {
                     $parentId = intval($_POST['selectLevel']);
                     if ($parentId != $levelKey) {
                         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_levels SET parentid=".$parentId." WHERE id='".$levelKey."'");
                     }
                 }
-            break;
+                break;
             case'movefile':
                 // initialize variables
                 $this->_objTpl->loadTemplateFile('module_directory_entry_move.html',true,true);
@@ -1103,13 +1064,9 @@ class rssDirectory extends directoryLibrary
                     $_SESSION['formSelected'] = $_POST["formSelected"];
                 }
 
-                                $java = <<< EOF
+                $java = <<< EOF
 <script language="JavaScript" type="text/javascript">
 /* <![CDATA[ */
-
-EOF;
-                $java .= <<< EOF
-
 function move(from, dest, add, remove)
 {
   if (from.selectedIndex < 0) {
@@ -1161,8 +1118,7 @@ function deselectAll(control)
 
 EOF;
 
-
-                if($this->settings['levels']['value']=='1'){
+                if ($this->settings['levels']['value']=='1') {
                     $this->_objTpl->parse('levels');
                     $java .=    'function CheckFields() {
                                     var errorMsg = "";
@@ -1175,13 +1131,13 @@ EOF;
                                     if (errorMsg != "") {
                                         alert ("'.$_ARRAYLANG['TXT_DIR_FILL_ALL'].'\n\n");
                                         return false;
-                                    }else{
+                                    } else {
                                         return true;
                                     }
                                 }
                                 ';
                     $action = 'selectAll(document.moveForm.elements[\'selectedCat[]\']); selectAll(document.moveForm.elements[\'selectedLevel[]\']); return CheckFields();';
-                }else{
+                } else {
                     $this->_objTpl->hideBlock('levels');
                     $java .=    'function CheckFields() {
                                     var errorMsg = "";
@@ -1194,19 +1150,17 @@ EOF;
                                     if (errorMsg != "") {
                                         alert ("'.$_ARRAYLANG['TXT_DIR_FILL_ALL'].'\n\n" + errorMsg);
                                         return false;
-                                    }else{
+                                    } else {
                                         return true;
                                     }
                                 }
                                 ';
                     $action = 'selectAll(document.moveForm.elements[\'selectedCat[]\']); return CheckFields();';
                 }
-
                 $java .= <<< EOF
 /* ]]> */
 </script>
 EOF;
-
                 $this->_objTpl->setVariable(array(
                     'TXT_MOVE_ENTRY'            => $_ARRAYLANG['TXT_MOVE_ENTRIES'],
                     'TXT_CATEGORY'              => $_ARRAYLANG['TXT_DIR_CATEGORIE'],
@@ -1220,14 +1174,13 @@ EOF;
                     'DIRECTORY_FORM_ACTION'     => $action,
                 ));
 
-
                 if (isset($_POST['move_submit'])) {
-                    foreach($_SESSION['formSelected'] as $fileName => $fileKey){
+                    foreach($_SESSION['formSelected'] as $fileName => $fileKey) {
                         //save categories
                         if (!empty($_POST["selectedCat"])) {
                             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE dir_id='".$fileKey."'");
 
-                            foreach($_POST["selectedCat"] as $catName => $catKey){
+                            foreach($_POST["selectedCat"] as $catName => $catKey) {
                                 $query = "INSERT INTO ".DBPREFIX."module_directory_rel_dir_cat SET dir_id='".$fileKey."', cat_id='".$catKey."'";
                                 $objDatabase->query($query);
                             }
@@ -1237,64 +1190,60 @@ EOF;
                         if (!empty($_POST["selectedLevel"])) {
                             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_level WHERE dir_id='".$fileKey."'");
 
-                            foreach($_POST["selectedLevel"] as $levelName => $levelKey){
+                            foreach($_POST["selectedLevel"] as $levelName => $levelKey) {
                                 $query = "INSERT INTO ".DBPREFIX."module_directory_rel_dir_level SET dir_id='".$fileKey."', level_id='".$levelKey."'";
                                 $objDatabase->query($query);
                             }
                         }
                     }
-
                     $_SESSION['formSelected'] = null;
                     $this->showFiles('', '');
                 }
-            break;
+                break;
         }
     }
 
+
     /**
-    * delete all
-    *
-    * delete management
+    * Deletes categories, levels, and files
     */
     function delete()
     {
         switch ($_GET['act'])
         {
             case'delfile':
-                if(!isset($_GET['id'])){
-                    foreach($_POST["formSelected"] as $feedName => $feedKey){
+                if (!isset($_GET['id'])) {
+                    foreach($_POST["formSelected"] as $feedName => $feedKey) {
                         $this->delFile(intval($feedKey));
                     }
-                }else{
+                } else {
                     $this->delFile(intval($_GET['id']));
                 }
-            break;
+                break;
             case'dellevel':
-                if(!isset($_GET['id'])){
-                    foreach($_POST["formSelected"] as $levelName => $levelKey){
+                if (!isset($_GET['id'])) {
+                    foreach($_POST["formSelected"] as $levelName => $levelKey) {
                         $this->delLevel(intval($levelKey));
                     }
-                }else{
+                } else {
                     $this->delLevel(intval($_GET['id']));
                 }
-            break;
+                break;
             case'del':
-                if(!isset($_GET['id'])){
-                    foreach($_POST["formSelected"] as $catName => $catKey){
+                if (!isset($_GET['id'])) {
+                    foreach($_POST["formSelected"] as $catName => $catKey) {
                         $this->delCategorie(intval($catKey));
                     }
-                }else{
+                } else {
                     $this->delCategorie(intval($_GET['id']));
                 }
-            break;
+                break;
         }
     }
 
+
     /**
-    * del file
-    *
     * delete selected file
-    *
     * @access   public
     * @param    string  $id
     * @global    array
@@ -1331,8 +1280,8 @@ EOF;
                                                     spez_field_27,
                                                     spez_field_28,
                                                     spez_field_29 FROM ".DBPREFIX."module_directory_dir WHERE id='$id'");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $name = $objResult->fields['title'];
                 $file = $objResult->fields['filename'];
                 $typ = $objResult->fields['typ'];
@@ -1366,49 +1315,49 @@ EOF;
         $obj_file = new File();
 
         //del images
-        foreach($arrImages as $arrKey => $arrFile){
+        foreach($arrImages as $arrKey => $arrFile) {
             //thumb
-            if (file_exists($this->mediaPath."thumbs/".$arrFile) && !empty($arrFile)){
+            if (file_exists($this->mediaPath."thumbs/".$arrFile) && !empty($arrFile)) {
                 $this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "thumbs/".$arrFile);
             }
 
             //picture
-            if (file_exists($this->mediaPath."images/".$arrFile) && !empty($arrFile)){
+            if (file_exists($this->mediaPath."images/".$arrFile) && !empty($arrFile)) {
                 $this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$arrFile);
             }
         }
 
         //del uploads
-        foreach($arrUploads as $arrKey => $arrFile){
+        foreach($arrUploads as $arrKey => $arrFile) {
             //file
-            if (file_exists($this->mediaPath."uploads/".$arrFile) && !empty($arrFile)){
+            if (file_exists($this->mediaPath."uploads/".$arrFile) && !empty($arrFile)) {
                 $this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$arrFile);
             }
         }
 
         //del rss
-        foreach($arrRSS as $arrKey => $arrFile){
+        foreach($arrRSS as $arrKey => $arrFile) {
             //file
-            if (file_exists($this->mediaPath."ext_feeds/".$arrFile) && !empty($arrFile)){
+            if (file_exists($this->mediaPath."ext_feeds/".$arrFile) && !empty($arrFile)) {
                 $this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$arrFile);
             }
         }
 
-        if($this->dirLog != "error") {
+        if ($this->dirLog != "error") {
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_dir WHERE id='$id'");
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE dir_id='".$id."'");
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_level WHERE dir_id='".$id."'");
             $this->restoreVoting($id);
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_FEED_SUCCESSFULL_DEL'];
             $this->dirLog ="";
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DIR_CORRUPT_DEL'];
         }
     }
 
+
     /**
     * delete level
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1422,16 +1371,16 @@ EOF;
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_levels WHERE id='$levelId'");
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_level WHERE level_id='".$levelId."'");
 
-        if($objResult !== false){
+        if ($objResult !== false) {
             //del subLevel
             $status = $this->delSublevel($levelId);
-        }else{
+        } else {
             $status =  $_ARRAYLANG['TXT_LEVEL_CORRUPT_DEL'];
         }
 
-        if($status == ''){
+        if ($status == '') {
             $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_DEL'];;
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_LEVEL_CORRUPT_DEL'];
         }
     }
@@ -1439,7 +1388,6 @@ EOF;
 
     /**
     * delete sublevel
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1459,8 +1407,8 @@ EOF;
         }
 
         //search sublevels
-        if(!empty($sublevelId)){
-            foreach($sublevelId as $i => $sublevelId2){
+        if (!empty($sublevelId)) {
+            foreach($sublevelId as $i => $sublevelId2) {
                 //check next subLevel id
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_levels WHERE parentid='".$sublevelId2."'");
 
@@ -1472,12 +1420,12 @@ EOF;
         }
 
         //del sublevels
-        if(!empty($sublevelId)){
-            foreach($sublevelId as $i => $sublevelId2){
+        if (!empty($sublevelId)) {
+            foreach($sublevelId as $i => $sublevelId2) {
                 //del level
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_levels WHERE id='".$sublevelId2."'");
 
-                if($objResult === false){
+                if ($objResult === false) {
                     $status .=  "error";
                 }
             }
@@ -1485,10 +1433,7 @@ EOF;
     }
 
     /**
-    * delete categorie
-    *
-    * delete selected categorie
-    *
+    * delete selected category
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1524,8 +1469,8 @@ EOF;
 
 
         //search subcats
-        if(!empty($subcatId)){
-            foreach($subcatId as $i => $subcatId2){
+        if (!empty($subcatId)) {
+            foreach($subcatId as $i => $subcatId2) {
                 //check next subcat id
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_categories WHERE parentid='$subcatId2'");
 
@@ -1537,8 +1482,8 @@ EOF;
         }
 
         //del subcats and files
-        if(!empty($subcatId)){
-            foreach($subcatId as $i => $subcatId2){
+        if (!empty($subcatId)) {
+            foreach($subcatId as $i => $subcatId2) {
                 //del categorie
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_categories WHERE id='$subcatId2'");
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE cat_id='".$subcatId2."'");
@@ -1547,14 +1492,8 @@ EOF;
     }
 
 
-
-
-
     /**
-    * status
-    *
-    * change status from categorie/level
-    *
+    * change status of category or level
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1564,8 +1503,8 @@ EOF;
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        if(isset($_GET['status'])){
-            if($_GET['act'] == "levels"){
+        if (isset($_GET['status'])) {
+            if ($_GET['act'] == "levels") {
                 //get id and status
                 $levelId        = intval($_GET['id']);
                 $levelStatus    = intval($_GET['status']);
@@ -1575,7 +1514,7 @@ EOF;
 
                 header('Location: index.php?cmd=directory&act=levels');
                 exit;
-            }else{
+            } else {
                 //get id and status
                 $catId      = intval($_GET['id']);
                 $catStatus  = intval($_GET['status']);
@@ -1590,12 +1529,8 @@ EOF;
     }
 
 
-
     /**
-    * display changes
-    *
-    * save display changes
-    *
+    * Save changes to the display order of categories
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1611,17 +1546,13 @@ EOF;
             //update changes
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_categories SET displayorder=".intval($value)." WHERE id=".intval($catKey));
         }
-
         //status
         $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CHANGES_SAVED'];
     }
 
 
     /**
-    * level order
-    *
-    * save display changes
-    *
+    * Save changes to the display order of levels
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1639,20 +1570,16 @@ EOF;
         }
 
         //status
-        if($objResult !== false){
+        if ($objResult !== false) {
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CHANGES_SAVED'];
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_ORDER_CORRUPT_EDIT'];
         }
     }
 
 
-
     /**
-    * edit categorie
-    *
-    * edit selected categorie
-    *
+    * edit selected category
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1668,8 +1595,8 @@ EOF;
 
         //get categorie data
         $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_categories WHERE id = '$catId'");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $catName            = $objResult->fields['name'];
                 $catDescription     = $objResult->fields['description'];
                 $catMetadesc        = $objResult->fields['metadesc'];
@@ -1680,10 +1607,10 @@ EOF;
             }
         }
 
-        if($catShowEntries == '1'){
+        if ($catShowEntries == '1') {
             $chechedNo  = '';
             $chechedYes = 'checked';
-        }else{
+        } else {
             $chechedNo  = 'checked';
             $chechedYes = '';
         }
@@ -1716,18 +1643,13 @@ EOF;
             'CHECKED_NO'                    => $chechedNo,
             'CHECKED_YES'                   => $chechedYes,
         ));
-
         //save changes
         $this->updateCategorie();
     }
 
 
-
     /**
-    * update categorie
-    *
-    * save changes
-    *
+    * update category
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1738,7 +1660,7 @@ EOF;
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         //get post data
-        if(isset($_POST['edit_submit'])){
+        if (isset($_POST['edit_submit'])) {
             $catCategorie       = intval($_POST['edit_category']);
             $catParentid        = intval($_POST['edit_parentid']);
             $catName            = contrexx_strip_tags($_POST['edit_name']);
@@ -1749,9 +1671,9 @@ EOF;
             $catId              = intval($_POST['edit_id']);
 
             //check parent id
-            if($catCategorie == $catId){
+            if ($catCategorie == $catId) {
                 $catParentid = $catParentid;
-            }else{
+            } else {
                 $catParentid = $catCategorie;
             }
 
@@ -1764,22 +1686,18 @@ EOF;
                                                           metakeys='".$catMetakeys."',
                                                           showentries='".$catShowEntries."' WHERE id='".$catId."'");
             //status and back to ooverview
-            if($objResult !== false){
+            if ($objResult !== false) {
                 $this->showCategories();
                 $this->strOkMessage = $_ARRAYLANG['TXT_CAT_SUCCESSFULL_EDIT'];
-            }else{
+            } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_CAT_CORRUPT_EDIT'];;
             }
         }
     }
 
 
-
     /**
-    * new entry
-    *
-    * create new entry
-    *
+    * Create a new entry
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -1796,7 +1714,7 @@ EOF;
 
         $this->_objTpl->loadTemplateFile('module_directory_entry_add.html',true,true);
 
-        if($this->_isGoogleMapEnabled()){
+        if ($this->_isGoogleMapEnabled()) {
             $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'module_directory_googlemap_include.html');
         }
 
@@ -1853,27 +1771,27 @@ EOF;
             'IS_BACKEND'                => 'true',
         ));
 
-        if($this->settings['levels']['value']=='1'){
+        if ($this->settings['levels']['value']=='1') {
             $this->_objTpl->parse('levels');
-        }else{
+        } else {
             $this->_objTpl->hideBlock('levels');
         }
 
-        if(isset($_POST['new_submit'])){
+        if (isset($_POST['new_submit'])) {
             //add entry
             $status = $this->addFeed();
 
-            if($status == "ok"){
+            if ($status == "ok") {
                 $this->createRSS();
 
                 //back to categories
-                if($this->settings['showConfirm']['value'] == 1){
-                    if($this->settings['status']['value'] == 0){
+                if ($this->settings['showConfirm']['value'] == 1) {
+                    if ($this->settings['status']['value'] == 0) {
                         $this->showConfirm();
-                    }else{
+                    } else {
                         $this->showFiles('','');
                     }
-                }else{
+                } else {
                     $this->showCategories();
                 }
             }
@@ -1881,12 +1799,8 @@ EOF;
     }
 
 
-
     /**
-    * show files
-    *
-    * show all added files
-    *
+    * Show all added files
     * @access   public
     * @param    string  $catId
     * @global    array
@@ -1897,11 +1811,11 @@ EOF;
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        if(isset($catId)){
+        if (isset($catId)) {
             $catIdSort = "&amp;cid=".$catId;
         }
 
-        if(isset($catId)){
+        if (isset($catId)) {
             $levelIdSort = "&amp;lid=".$levelId;
         }
 
@@ -1930,7 +1844,7 @@ EOF;
         ));
 
         // Sort
-        if(isset($_GET['sort']) || empty($_SESSION['order'])) {
+        if (isset($_GET['sort']) || empty($_SESSION['order'])) {
             switch ($_GET['sort'])
             {
                 case 'date':
@@ -1957,15 +1871,15 @@ EOF;
         if ($catId != '') {
             $where  = " AND files.id = rel_cat.dir_id AND rel_cat.cat_id = '".$catId."'";
             $db     = DBPREFIX."module_directory_rel_dir_cat AS rel_cat,";
-        }elseif ($levelId != ''){
+        } elseif ($levelId != '') {
             $where=" AND files.id = rel_level.dir_id AND rel_level.level_id = '".$levelId."'";
             $db     = DBPREFIX."module_directory_rel_dir_level AS rel_level,";
-        }elseif ($_REQUEST['term']){
+        } elseif ($_REQUEST['term']) {
             //search term
             $term= htmlspecialchars($_REQUEST['term'], ENT_QUOTES, CONTREXX_CHARSET);
             $where.=" AND (files.title LIKE '%".$term."%' OR files.searchkeys LIKE '%".$term."%' OR files.description LIKE '%".$term."%') ";
         }
-        else{
+        else {
             $where='';
         }
 
@@ -1994,7 +1908,7 @@ EOF;
         $count = $objResult->RecordCount();
 
         $i=0;
-        if($objResult !== false){
+        if ($objResult !== false) {
             while (!$objResult->EOF)
             {
                 $file_array[$i]['filename']=$objResult->fields['filename'];
@@ -2012,7 +1926,7 @@ EOF;
 
         $i=0;
         $this->_objTpl->setCurrentBlock('filesRow');
-        if(!empty($file_array))
+        if (!empty($file_array))
         {
             //show files
             foreach ($file_array as $file)
@@ -2030,7 +1944,7 @@ EOF;
                 }
 
                 //check paging
-                if (!$count>$pagingLimit){
+                if (!$count>$pagingLimit) {
                     $paging = "";
                 }
 
@@ -2053,7 +1967,10 @@ EOF;
                     'FILES_PAGING'              => $paging,
                     'FILES_CAT'                 => $catName,
                     'FILES_CAT_ID'              => $catId,
-                    'FILES_CHECKBOX'            =>  "<input type=\"checkbox\" title=\"Select ".$file['filename']."\" name=\"formSelected[]\" value=\"".$file['id']."\" />",
+                    'FILES_CHECKBOX'            =>
+                        "<input type=\"checkbox\" title=\"Select ".
+                        $file['filename']."\" name=\"formSelected[]\" value=\"".
+                        $file['id']."\" />",
                 ));
 
                 $this->_objTpl->parseCurrentBlock('filesRow');
@@ -2070,7 +1987,7 @@ EOF;
             ));
             $this->_objTpl->parse('importSelectAction');
         }
-        else{
+        else {
             // initialize variables
             $this->_objTpl->setVariable(array(
                 'NO_FILES_FOUND'                => $_ARRAYLANG['TXT_DIR_NO_FILES_FOUND'],
@@ -2082,12 +1999,8 @@ EOF;
     }
 
 
-
     /**
-    * get extension
-    *
     * get fileextension
-    *
     * @access   public
     * @param    string  $file
     * @return   string  $icon
@@ -2099,13 +2012,13 @@ EOF;
         $exte   = $info['extension'];
 
         //check extension
-        if(empty($exte)) {
+        if (empty($exte)) {
             $icon = "";
-        }else{
+        } else {
             $icon = $exte.".gif";
-            if(!file_exists( $this->imagePath."directory/".$icon)){
+            if (!file_exists( $this->imagePath."directory/".$icon)) {
                 $icon = $this->imageWebPath."directory/_blank.gif";
-            }else{
+            } else {
                 $icon = $this->imageWebPath."directory/".$exte.".gif";;
             }
         }
@@ -2113,11 +2026,9 @@ EOF;
         return $icon;
     }
 
+
     /**
-    * edit file
-    *
     * edit selected file
-    *
     * @access   public
     * @param    string  $id
     * @global    array
@@ -2129,17 +2040,17 @@ EOF;
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute("SELECT  spezial, premium FROM ".DBPREFIX."module_directory_dir WHERE id = '$id'");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $spezSort       = $objResult->fields['spezial'];
                 $premium        = $objResult->fields['premium'];
                 $objResult->MoveNext();
             }
         }
 
-        if($premium == 1){
+        if ($premium == 1) {
             $premium = "checked";
-        }else{
+        } else {
             $premium = "";
         }
 
@@ -2156,7 +2067,7 @@ EOF;
         //get inputfields
         $this->getInputfields("", "edit", $id, "backend");
 
-        if($this->_isGoogleMapEnabled()){
+        if ($this->_isGoogleMapEnabled()) {
             $this->_objTpl->addBlockfile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'module_directory_googlemap_include.html');
         }
 
@@ -2196,28 +2107,24 @@ EOF;
             'IS_BACKEND'                => 'true',
         ));
 
-        if($this->settings['levels']['value']=='1'){
+        if ($this->settings['levels']['value']=='1') {
             $this->_objTpl->parse('levels');
-        }else{
+        } else {
             $this->_objTpl->hideBlock('levels');
         }
 
         //update file
         $this->updateFile('');
 
-        if(isset($_POST['edit_submit'])){
+        if (isset($_POST['edit_submit'])) {
             $this->showFiles('','');
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_FEED_SUCCESSFULL_EDIT'];
         }
     }
 
 
-
     /**
-    * show confirm
-    *
     * show confirm form
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -2228,7 +2135,7 @@ EOF;
         global $_CONFIG, $objDatabase,  $_ARRAYLANG;
 
         //check paging position
-        if (!isset($_GET['pos'])){
+        if (!isset($_GET['pos'])) {
             $_GET['pos']='';
         }
 
@@ -2259,7 +2166,7 @@ EOF;
 
 
         // Sort
-        if(isset($_GET['sort']) || empty($_SESSION['order'])) {
+        if (isset($_GET['sort']) || empty($_SESSION['order'])) {
             switch ($_GET['sort'])
             {
                 case 'date':
@@ -2279,14 +2186,14 @@ EOF;
 
         $pos= intval($_GET['pos']);
 
-        if (isset($catId)){
+        if (isset($catId)) {
             $where=" AND catid=".$catId;
-        }elseif ($_POST['term']){
+        } elseif ($_POST['term']) {
             //check search term
             $term= htmlspecialchars($_POST['term'], ENT_QUOTES, CONTREXX_CHARSET);
             $where.=" AND (title LIKE '%".$term."%' OR filename LIKE '%".$term."%' OR description LIKE '%".$term."%') ";
         }
-        else{
+        else {
             $where=$term='';
         }
 
@@ -2296,7 +2203,7 @@ EOF;
         ////// paging start /////////
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
-        if(!is_numeric($pos)){
+        if (!is_numeric($pos)) {
           $pos = 0;
         }
         if ($count>intval($_CONFIG['corePagingLimit'])) {
@@ -2311,8 +2218,8 @@ EOF;
 
         //get files
         $i=0;
-        if($objResult !== false){
-            while (!$objResult->EOF){
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
                 $file_array[$i]['title']=$objResult->fields['title'];
                 $file_array[$i]['id']=$objResult->fields['id'];
                 $file_array[$i]['description']=$objResult->fields['description'];
@@ -2330,10 +2237,10 @@ EOF;
         //show files
         $i=0;
         $this->_objTpl->setCurrentBlock('filesRow');
-        if(!empty($file_array)){
+        if (!empty($file_array)) {
             foreach ($file_array as $file) {
                 //check paging
-                if (!$count>intval($_CONFIG['corePagingLimit'])){
+                if (!$count>intval($_CONFIG['corePagingLimit'])) {
                     $paging = "";
                 }
 
@@ -2353,7 +2260,10 @@ EOF;
                     'FILES_DATE'                => date("d.m.Y H:i:s",$file['date']),
                     'FILES_ADDEDBY'             => $addedBy,
                     'FILES_PAGING'              => $paging,
-                    'FILES_CHECKBOX'            =>  "<input type=\"checkbox\" title=\"Select ".$file['filename']."\" name=\"formSelected[]\" value=\"".$file['id']."\" />",
+                    'FILES_CHECKBOX'            =>
+                        "<input type=\"checkbox\" title=\"Select ".
+                        $file['filename']."\" name=\"formSelected[]\" value=\"".
+                        $file['id']."\" />",
                 ));
 
                 $this->_objTpl->parseCurrentBlock('filesRow');
@@ -2369,7 +2279,7 @@ EOF;
 
             ));
             $this->_objTpl->parse('importSelectAction');
-        }else{
+        } else {
             // initialize variables
             $this->_objTpl->setVariable(array(
                 'NO_FILES_FOUND'                => $_ARRAYLANG['TXT_DIRECTORY_EMPTY_CONFIRMLIST'],
@@ -2381,12 +2291,10 @@ EOF;
     }
 
 
-
     /**
     * detail entry
     *
     * show confirm form
-    *
     * @access   public
     * @param    string    $id
     * @global    array
@@ -2422,9 +2330,9 @@ EOF;
             'FILE'                      => $file,
         ));
 
-        if($this->settings['levels']['value']=='1'){
+        if ($this->settings['levels']['value']=='1') {
             $this->_objTpl->parse('levels');
-        }else{
+        } else {
             $this->_objTpl->hideBlock('levels');
         }
     }
@@ -2432,22 +2340,18 @@ EOF;
 
     function confirmEntry_step1()
     {
-        if(!isset($_GET['id'])){
-            foreach($_POST["formSelected"] as $feedName => $feedKey){
+        if (!isset($_GET['id'])) {
+            foreach($_POST["formSelected"] as $feedName => $feedKey) {
                 $this->confirmEntry_step2(intval($feedKey));
             }
-        }else{
+        } else {
             $this->confirmEntry_step2(intval($_GET['id']));
         }
     }
 
 
-
     /**
     * show settings
-    *
-    * show settings form
-    *
     * @access   public
     * @global    array
     */
@@ -2467,7 +2371,7 @@ EOF;
 
         ));
 
-        if(!isset($_GET['tpl'])){
+        if (!isset($_GET['tpl'])) {
             $_GET['tpl'] = "";
         }
 
@@ -2522,24 +2426,36 @@ EOF;
         //get settings
         $i=0;
         $objResult = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings WHERE settyp != '0' AND setid != '30' AND setname != 'googlemap_start_location' ORDER BY settyp DESC");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $allow_url_fopen = '';
                 $this->_objTpl->setCurrentBlock('settingsOutput');
-                if ($objResult->fields['settyp']== 1){
-                    $setValueField = "<input type=\"text\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"".$objResult->fields['setvalue']."\" size='50' maxlength='250'>";
-                }elseif ($objResult->fields['settyp']== 2){
+                if ($objResult->fields['settyp']== 1) {
+                    $setValueField =
+                        "<input type=\"text\" name=\"setvalue[".
+                        $objResult->fields['setid']."]\" value=\"".
+                        $objResult->fields['setvalue'].
+                        "\" size='50' maxlength='250' />";
+                } elseif ($objResult->fields['settyp']== 2) {
                     $true = "";
                     $false = "";
-                    if($objResult->fields['setvalue'] == 1){
+                    if ($objResult->fields['setvalue'] == 1) {
                         $true = "checked";
-                    }else{
+                    } else {
                         $false = "checked";
                     }
                     if (ini_get('allow_url_fopen') == false && $objResult->fields['setid'] == 19) {
                         $allow_url_fopen = "<font color='#ff0000'><i>(Please set the variable 'allow_url_fopen' to the value 1)</i></font>";
                     }
-                    $setValueField = "<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"1\" ".$true.">&nbsp;Aktiviert&nbsp;<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"0\"".$false.">&nbsp;Deaktiviert&nbsp;&nbsp;&nbsp;".$allow_url_fopen;
+                    $setValueField =
+                        "<input type=\"radio\" name=\"setvalue[".
+                        $objResult->fields['setid']."]\" value=\"1\" ".
+                        $true." />&nbsp;".
+// TODO:  Use language variable here
+                        "Aktiviert&nbsp;<input type=\"radio\" name=\"setvalue[".
+                        $objResult->fields['setid']."]\" value=\"0\"".$false." />&nbsp;".
+// TODO:  Use language variable here
+                        "Deaktiviert&nbsp;&nbsp;&nbsp;".$allow_url_fopen;
                 }
 
                 ($i % 2)? $class = "row2" : $class = "row1";
@@ -2559,21 +2475,42 @@ EOF;
         $arrLon = explode('.', $this->googleMapStartPoint['lon']);
         $arrLat = explode('.', $this->googleMapStartPoint['lat']);
 
-        $googleMapHTML = '<tr><td style="vertical-align: top;">'.$_ARRAYLANG['TXT_DIR_GOOGLEMAP_STARTPOINT'].'</td><td><table border="0" cellspacing="0" cellpadding="0"><tr><td width="120">';
-        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_F_STREET'].':</td><td> <input style="width: 148px;" type="text" name="inputValue[street]" value=""></td></tr><tr><td>';
-        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_F_PLZ'].':</td><td> <input style="width: 148px;" type="text" name="inputValue[zip]" value=""></td></tr><tr><td>';
-        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_CITY'].':</td><td> <input style="width: 148px;" type="text" name="inputValue[city]" value=""></td></tr><tr><td>';
-        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_F_COUNTRY'].':</td><td> <select style="width: 148px;" name="inputValue[country]">'.$this->getCountry().'</select></td></tr></table><br />';
-        $googleMapHTML .= '<input type="button" onclick="getAddress();" value="'.$_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'].'"><br /><br />';
-        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_LON'].': <input type="text" name="inputValue[lon]" value="'.$arrLon[0].'" style="width:22px;" maxlength="3">';
-        $googleMapHTML .= '.<input type="text" name="inputValue[lon_fraction]" value="'.$arrLon[1].'" style="width:92px;" maxlength="15"> ';
-        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_LAT'].': <input type="text" name="inputValue[lat]" value="'.$arrLat[0].'" style="width:22px;" maxlength="15">';
-        $googleMapHTML .= '.<input type="text" name="inputValue[lat_fraction]" value="'.$arrLat[1].'" style="width:92px;" maxlength="15"> ';
-        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_ZOOM'].': <input type="text" name="inputValue[zoom]" value="'.$this->googleMapStartPoint['zoom'].'" style="width:15px;" maxlength="2"><br />';
-        $googleMapHTML .= '<span id="geostatus"></span>';
-        $googleMapHTML .= '<div id="gmap" style="margin:2px; border:1px solid;width: 400px; height: 300px;"></div>';
-        $googleMapHTML .= '<div id="loclayer" style="-moz-opacity: 0.85; filter: alpha(opacity=85); background-color: #dedede;padding:2px; border:1px solid;width: 198px; height: 48px; position:relative; top: -270px; left: 200px; "></div>';
-        $googleMapHTML .= '</td></tr>';
+        $googleMapHTML =
+            '<tr><td style="vertical-align: top;">'.
+            $_ARRAYLANG['TXT_DIR_GOOGLEMAP_STARTPOINT'].
+            '</td><td><table border="0" cellspacing="0" cellpadding="0"><tr><td width="120">'.
+            $_ARRAYLANG['TXT_DIR_F_STREET'].
+            ':</td><td> <input style="width: 148px;" type="text" name="inputValue[street]" value="" /></td></tr><tr><td>'.
+            $_ARRAYLANG['TXT_DIR_F_PLZ'].
+            ':</td><td> <input style="width: 148px;" type="text" name="inputValue[zip]" value="" /></td></tr><tr><td>'.
+            $_ARRAYLANG['TXT_DIR_CITY'].
+            ':</td><td> <input style="width: 148px;" type="text" name="inputValue[city]" value="" /></td></tr><tr><td>'.
+            $_ARRAYLANG['TXT_DIR_F_COUNTRY'].
+            ':</td><td> <select style="width: 148px;" name="inputValue[country]">'.
+            $this->getCountryMenuoptions().'</select></td></tr></table><br />'.
+            '<input type="button" onclick="getAddress();" value="'.
+            $_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'].'" /><br /><br />'.
+            $_ARRAYLANG['TXT_DIR_LON'].
+            ': <input type="text" name="inputValue[lon]" value="'.
+            $arrLon[0].'" style="width:22px;" maxlength="3" />'.
+            '.<input type="text" name="inputValue[lon_fraction]" value="'.
+            $arrLon[1].'" style="width:92px;" maxlength="15" /> '.
+            $_ARRAYLANG['TXT_DIR_LAT'].
+            ': <input type="text" name="inputValue[lat]" value="'.
+            $arrLat[0].'" style="width:22px;" maxlength="15" />'.
+            '.<input type="text" name="inputValue[lat_fraction]" value="'.
+            $arrLat[1].'" style="width:92px;" maxlength="15" /> '.
+            $_ARRAYLANG['TXT_DIR_ZOOM'].
+            ': <input type="text" name="inputValue[zoom]" value="'.
+            $this->googleMapStartPoint['zoom'].
+            '" style="width:15px;" maxlength="2" /><br />'.
+            '<span id="geostatus"></span>'.
+            '<div id="gmap" style="margin:2px; border:1px solid;width: 400px; height: 300px;"></div>'.
+            '<div id="loclayer" style="-moz-opacity: 0.85; '.
+            'filter: alpha(opacity=85); background-color: #dedede; '.
+            'padding: 2px; border: 1px solid; width: 198px; height: 48px; '.
+            'position: relative; top: -270px; left: 200px;"></div>'.
+            '</td></tr>';
 
         $this->_objTpl->setVariable(array(
             'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'   => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
@@ -2606,6 +2543,7 @@ EOF;
         $this->_objTpl->parse('direcoryGoogleMapJavascript');
     }
 
+
     function showSettings_google()
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
@@ -2623,20 +2561,29 @@ EOF;
         //get settings
         $i=0;
         $objResult = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings_google ORDER BY setid");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $this->_objTpl->setCurrentBlock('settingsOutput');
-                if ($objResult->fields['settyp']== 1){
-                    $setValueField = "<input type=\"text\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"".$objResult->fields['setvalue']."\" size='90' maxlength='250'>";
-                }elseif ($objResult->fields['settyp']== 2){
+                if ($objResult->fields['settyp']== 1) {
+                    $setValueField =
+                        "<input type=\"text\" name=\"setvalue[".
+                        $objResult->fields['setid']."]\" value=\"".
+                        $objResult->fields['setvalue'].
+                        "\" size='90' maxlength='250' />";
+                } elseif ($objResult->fields['settyp']== 2) {
                     $true = "";
                     $false = "";
-                    if($objResult->fields['setvalue'] == 1){
+                    if ($objResult->fields['setvalue'] == 1) {
                         $true = "checked";
-                    }else{
+                    } else {
                         $false = "checked";
                     }
-                    $setValueField = "<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"1\" ".$true.">&nbsp;true&nbsp;<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"0\"".$false.">&nbsp;false&nbsp;";
+                    $setValueField =
+                        "<input type=\"radio\" name=\"setvalue[".
+                        $objResult->fields['setid']."]\" value=\"1\" ".$true.
+                        " />&nbsp;true&nbsp;<input type=\"radio\" name=\"setvalue[".
+                        $objResult->fields['setid']."]\" value=\"0\"".$false.
+                        " />&nbsp;false&nbsp;";
                 }
 
                 ($i % 2)? $class = "row2" : $class = "row1";
@@ -2655,6 +2602,7 @@ EOF;
 
         $this->_objTpl->parse('requests_block');
     }
+
 
     function showSettings_inputs()
     {
@@ -2681,49 +2629,63 @@ EOF;
         //get inputs
         $i=1;
         $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_inputfields ORDER BY active DESC, active_backend DESC,sort, typ, name");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $checked  = "";
                 $disabled = "";
                 $this->_objTpl->setCurrentBlock('settingsOutput');
 
                 //search
-                if($objResult->fields['exp_search'] == 1){
-                    if($objResult->fields['is_search'] == 1){
-                        $checked    = "checked";
+                if ($objResult->fields['exp_search'] == 1) {
+                    if ($objResult->fields['is_search'] == 1) {
+                        $checked = 'checked="checked"';
                     }
-                    $setSearch = "<input type=\"checkbox\" name=\"setSearch[".$objResult->fields['id']."]\" value=\"1\" ".$checked.">";
-                }else{
+                    $setSearch =
+                        "<input type=\"checkbox\" name=\"setSearch[".
+                        $objResult->fields['id']."]\" value=\"1\" ".
+                        $checked." />";
+                } else {
                     $setSearch = "&nbsp;";
                 }
 
-                if($objResult->fields['name'] == "title" || $objResult->fields['name'] == "description"){
-                    $setSearch = '<input type="checkbox" disabled checked>';
+                if ($objResult->fields['name'] == "title" || $objResult->fields['name'] == "description") {
+                    $setSearch =
+                        '<input type="checkbox" '.
+                        'disabled="disabled" checked="checked">';
                     $disabled  = "disabled";
                 }
 
                 //required
-                if($objResult->fields['is_required'] == 1){
-                    $checked    = "checked";
-                }else{
-                    $checked    = "";
+                if ($objResult->fields['is_required'] == 1) {
+                    $checked = 'checked="checked"';
+                } else {
+                    $checked = "";
                 }
-                $setRequired = "<input type=\"checkbox\" name=\"setRequired[".$objResult->fields['id']."]\" value=\"1\" ".$checked." ".$disabled.">";
+                $setRequired =
+                    "<input type=\"checkbox\" name=\"setRequired[".
+                    $objResult->fields['id']."]\" value=\"1\" ".
+                    $checked." ".$disabled." />";
 
                 //order
-                $setSortField   = "<input type=\"text\" name=\"setSort[".$objResult->fields['id']."]\" value=\"".$objResult->fields['sort']."\" size='2' maxlength='4'>";
+                $setSortField =
+                    "<input type=\"text\" name=\"setSort[".
+                    $objResult->fields['id']."]\" value=\"".
+                    $objResult->fields['sort']."\" size='2' maxlength='4' />";
 
                 //backgroundcolor
-                if($objResult->fields['active'] == 1){
-                    $checked    = "checked";
+                if ($objResult->fields['active'] == 1) {
+                    $checked    = 'checked="checked"';
                     $rowColor   = "#d8ffca";
-                }else{
+                } else {
                     $checked    = "";
                     $rowColor   = "#ffe7e7";
                 }
 
                 //status
-                $setStatusField = "<input type=\"checkbox\" name=\"setStatus[".$objResult->fields['id']."]\" value=\"1\" ".$disabled." ".$checked.">";
+                $setStatusField =
+                    "<input type=\"checkbox\" name=\"setStatus[".
+                    $objResult->fields['id']."]\" value=\"1\" ".
+                    $disabled." ".$checked." />";
 
 
                 //type
@@ -2758,31 +2720,38 @@ EOF;
                 }
 
                 //status backend
-                if($objResult->fields['active_backend'] == 1){
-                    $checked    = "checked";
-                }else{
-                    $checked    = "";
+                if ($objResult->fields['active_backend'] == 1) {
+                    $checked = 'checked="checked"';
+                } else {
+                    $checked = "";
                 }
 
-                $setStatusBackendField  = "<input type=\"checkbox\" name=\"setStatusBackend[".$objResult->fields['id']."]\" value=\"1\" ".$disabled." ".$checked.">";
-
+                $setStatusBackendField =
+                    "<input type=\"checkbox\" name=\"setStatusBackend[".
+                    $objResult->fields['id']."]\" value=\"1\" ".
+                    $disabled." ".$checked." />";
 
                 //is dropdown
                 if ($objResult->fields['typ'] == 3 || $objResult->fields['typ'] == 8 || $objResult->fields['typ'] == 9) {
                     $dropdown = '';
                     $objResultDropdown = $objDatabase->Execute("SELECT setid, setvalue FROM ".DBPREFIX."module_directory_settings WHERE setname = '".$objResult->fields['name']."'");
-
-                    if($objResultDropdown !== false){
-                        while(!$objResultDropdown->EOF){
-                            $textarea = "<textarea name=\"setDropdown[".$objResultDropdown->fields['setid']."]\" style=\"width:440px; overflow: auto;\" rows='5'>".$objResultDropdown->fields['setvalue']."</textarea>";
+                    if ($objResultDropdown !== false) {
+                        while(!$objResultDropdown->EOF) {
+                            $textarea =
+                                "<textarea name=\"setDropdown[".
+                                $objResultDropdown->fields['setid'].
+                                "]\" style=\"width:440px; overflow: auto;\" rows='5'>".
+                                $objResultDropdown->fields['setvalue']."</textarea>";
                             $objResultDropdown->MoveNext();
                         }
                     }
-                    $dropdown = '<tr class="'.$class.'" style="background-color: '.$rowColor.';">
-                                    <td>&nbsp;</td>
-                                    <td valign="top"><div align="right"><i>Auswahlfelder:</i>&nbsp;</div></td>
-                                    <td valign="top" colspan="7">'.$textarea.'</td>
-                                </tr>';
+                    $dropdown =
+                        '<tr class="'.$class.'" style="background-color: '.
+                        $rowColor.';"><td>&nbsp;</td><td valign="top">'.
+// TODO:  Use language variable here
+                        '<div align="right"><i>Auswahlfelder:</i>&nbsp;</div>'.
+                        '</td><td valign="top" colspan="7">'.$textarea.'</td>'.
+                        '</tr>';
                     $rowStyle = 'style="border-bottom: 0px"';
                 } else {
                     $dropdown = '';
@@ -2791,7 +2760,11 @@ EOF;
 
                 //is spez field
                 if ($objResult->fields['typ'] >= 5 &&  $objResult->fields['typ'] <= 10 ) {
-                    $setName = "<input type=\"text\" name=\"setSpezFields[".$objResult->fields['id']."]\" value=\"".$objResult->fields['title']."\" style=\"width:130px;\" maxlength='250'>";
+                    $setName =
+                        "<input type=\"text\" name=\"setSpezFields[".
+                        $objResult->fields['id']."]\" value=\"".
+                        $objResult->fields['title'].
+                        "\" style=\"width:130px;\" maxlength='250' />";
                 } else {
                     $setName = $_ARRAYLANG[$objResult->fields['title']];
                 }
@@ -2823,8 +2796,6 @@ EOF;
     }
 
 
-
-
     function showSettings_mail()
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
@@ -2834,8 +2805,8 @@ EOF;
 
         //get content
         $objResult = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id = '1'");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $mailConfirmContent = $objResult->fields['content'];
                 $mailConfirmTitle = $objResult->fields['title'];
                 $objResult->MoveNext();
@@ -2843,8 +2814,8 @@ EOF;
         }
 
         $objResult = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id = '2'");
-        if($objResult !== false){
-            while(!$objResult->EOF){
+        if ($objResult !== false) {
+            while(!$objResult->EOF) {
                 $mailRememberContent = $objResult->fields['content'];
                 $mailRememberTitle = $objResult->fields['title'];
                 $objResult->MoveNext();
@@ -2852,7 +2823,7 @@ EOF;
         }
 
         $objResult = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."module_directory_settings WHERE setid = '30'");
-        if($objResult !== false){
+        if ($objResult !== false) {
             $mailRememberAdress = $objResult->fields['setvalue'];
         }
 
@@ -2908,7 +2879,7 @@ EOF;
 
         //get settings
         $objResult = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."settings WHERE setid = '49'");
-        if($objResult !== false){
+        if ($objResult !== false) {
             $homeContent = $objResult->fields['setvalue'];
         }
 
@@ -2945,9 +2916,6 @@ EOF;
 
     /**
     * update settings
-    *
-    * update settings
-    *
     * @access   public
     * @global    array
     * @global    ADONewConnection
@@ -2958,7 +2926,7 @@ EOF;
     {
         global $_CONFIG, $objDatabase, $_CORELANG, $_ARRAYLANG;
 
-        if (isset($_POST['set_sys_submit'])){
+        if (isset($_POST['set_sys_submit'])) {
             //get post data
             foreach ($_POST['setvalue'] as $id => $value) {
                 //update settings
@@ -2972,7 +2940,7 @@ EOF;
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
         }
 
-        if (isset($_POST['set_google_submit'])){
+        if (isset($_POST['set_google_submit'])) {
             //get post data
             foreach ($_POST['setvalue'] as $id => $value) {
                 //update settings
@@ -2982,7 +2950,7 @@ EOF;
         }
 
 
-        if (isset($_POST['set_homecontent_submit'])){
+        if (isset($_POST['set_homecontent_submit'])) {
             //update settings
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".contrexx_addslashes($_POST['setHomeContent'])."' WHERE setid='49'");
 
@@ -2997,7 +2965,7 @@ EOF;
         }
 
 
-        if (isset($_POST['set_mail_submit'])){
+        if (isset($_POST['set_mail_submit'])) {
             //update settings
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_mail SET title='".contrexx_addslashes($_POST['mailConfirmTitle'])."', content='".$_POST['mailConfirmContent']."' WHERE id='1'");
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_mail SET title='".contrexx_addslashes($_POST['mailRememberTitle'])."', content='".$_POST['mailRememberContent']."' WHERE id='2'");
@@ -3005,7 +2973,7 @@ EOF;
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
         }
 
-        if (isset($_POST['set_inputs_submit'])){
+        if (isset($_POST['set_inputs_submit'])) {
             //update settings
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' Where id !='1'");
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_search='0' Where id !='1'");
@@ -3013,7 +2981,7 @@ EOF;
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' Where id !='1' AND id !='2'");
 
             //get post data
-            if($_POST['setStatus'] != ""){
+            if ($_POST['setStatus'] != "") {
                 $addressElements = 0;
                 $googleMapIsEnabled = false;
                 foreach ($_POST['setStatus'] as $id => $value) {
@@ -3035,7 +3003,7 @@ EOF;
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='".contrexx_addslashes($value)."' WHERE id=".intval($id));
                 }
 
-                if ($googleMapIsEnabled && $addressElements < 4){
+                if ($googleMapIsEnabled && $addressElements < 4) {
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='country'");
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='zip'");
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='street'");
@@ -3045,7 +3013,7 @@ EOF;
             }
 
             //get post data
-            if($_POST['setStatusBackend'] != ""){
+            if ($_POST['setStatusBackend'] != "") {
                 $addressElements = 0;
                 $googleMapIsEnabled = false;
                 foreach ($_POST['setStatusBackend'] as $id => $value) {
@@ -3066,7 +3034,7 @@ EOF;
                     }
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='".contrexx_addslashes($value)."' WHERE id=".intval($id));
                 }
-                if($googleMapIsEnabled && $addressElements < 4){
+                if ($googleMapIsEnabled && $addressElements < 4) {
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='country'");
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='zip'");
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='street'");
@@ -3076,7 +3044,7 @@ EOF;
             }
 
             //get post data
-            if($_POST['setSort'] != ""){
+            if ($_POST['setSort'] != "") {
                 foreach ($_POST['setSort'] as $id => $sort) {
                     $sort = $sort;
 
@@ -3086,7 +3054,7 @@ EOF;
             }
 
             //get post data
-            if($_POST['setSearch'] != ""){
+            if ($_POST['setSearch'] != "") {
                 foreach ($_POST['setSearch'] as $id => $search) {
 
                     //update settings
@@ -3095,7 +3063,7 @@ EOF;
             }
 
             //get post data
-            if($_POST['setRequired'] != ""){
+            if ($_POST['setRequired'] != "") {
                 foreach ($_POST['setRequired'] as $id => $required) {
 
                     //update settings
@@ -3104,7 +3072,7 @@ EOF;
             }
 
             //get post data
-            if($_POST['setSpezFields'] != ""){
+            if ($_POST['setSpezFields'] != "") {
                 foreach ($_POST['setSpezFields'] as $id => $value) {
                     //update settings
                     $objReult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET title='".contrexx_addslashes($value)."' WHERE id=".intval($id));
@@ -3123,7 +3091,7 @@ EOF;
 
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
         }
-        if($_POST['inputValue']['zoom'] != ""){
+        if ($_POST['inputValue']['zoom'] != "") {
             $googleStartPoint  = intval($_POST['inputValue']['lat']);
             $googleStartPoint .= '.'.intval($_POST['inputValue']['lat_fraction']);
             $googleStartPoint .= ':'.intval($_POST['inputValue']['lon']);
@@ -3133,16 +3101,20 @@ EOF;
         }
     }
 
-    function restoreVoting($id){
+
+    function restoreVoting($id)
+    {
         global $objDatabase, $_ARRAYLANG;
 
-        if(isset($id)){
+        if (isset($id)) {
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_vote WHERE feed_id ='$id'");
-            if($objResult !== false){
+            if ($objResult !== false) {
                 $this->showFiles('','');
                 $this->strOkMessage = $_ARRAYLANG['TXT_DIRECTORY_VOTING_RESTORED'];
             }
         }
     }
+
 }
+
 ?>

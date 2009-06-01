@@ -3,12 +3,12 @@
 function deleteFile(id)
 {
    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("?cmd=directory&act=delfile&id="+id);
+        window.location.replace("index.php?cmd=directory&act=delfile&id="+id);
 }
 
 function confirmFile(id)
 {
-   window.location.replace("?cmd=directory&act=confirmfile&id="+id);
+   window.location.replace("index.php?cmd=directory&act=confirmfile&id="+id);
 }
 
 
@@ -40,13 +40,13 @@ function confirmDoAction()
     {
 	    if(document.fileList.selectAction.value == "confirm")
 	    {
-	        document.fileList.action = "?cmd=directory&act=confirmfile";
+	        document.fileList.action = "index.php?cmd=directory&act=confirmfile";
 	        document.fileList.submit();
 	    }
         if(document.fileList.selectAction.value == "delete")
 	    {
 	    	if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-	        	document.fileList.action = "?cmd=directory&act=delfile";
+	        	document.fileList.action = "index.php?cmd=directory&act=delfile";
         		document.fileList.submit();
 	    }
     }
@@ -64,7 +64,7 @@ function confirmDoAction()
   </tr>
   <tr class="row1">
     <td nowrap>
-      <form method=post action='?cmd=directory&act=files'>
+      <form method=post action='index.php?cmd=directory&amp;act=files'>
         {TXT_FILE_SEARCH}:
         <input type="text" name="term">
         <input type="submit" name="Submit" value="{TXT_SEARCH}">
@@ -73,7 +73,7 @@ function confirmDoAction()
   </tr>
 </table>
 <br />
-<form name="fileList" method="post" action="index.php?cmd=directory&act=confirm">
+<form name="fileList" method="post" action="index.php?cmd=directory&amp;act=confirm">
 <table width="100%" cellspacing=0 cellpadding=3 border="0" class="adminlist" align="center">
   <tr>
     <th colspan="11">{TXT_CONFIRMLIST}</th>
@@ -82,9 +82,9 @@ function confirmDoAction()
   	<td width="16">
        <center><b>#</b></center>
     </td>
-    <td width="55%"><b><a href="?cmd=directory&act=confirm&sort=name{CATID_SORT}">{TXT_NAME}</a></b></td>
-    <td width="20%"><b><a href="?cmd=directory&act=confirm&sort=date{CATID_SORT}">{TXT_DATE}</a></b></td>
-    <td width="20%"><b><a href="?cmd=directory&act=confirm&sort=addby{CATID_SORT}">{TXT_ADDEDBY}</a></b></td>
+    <td width="55%"><b><a href="index.php?cmd=directory&amp;act=confirm&amp;sort=name{CATID_SORT}">{TXT_NAME}</a></b></td>
+    <td width="20%"><b><a href="index.php?cmd=directory&amp;act=confirm&amp;sort=date{CATID_SORT}">{TXT_DATE}</a></b></td>
+    <td width="20%"><b><a href="index.php?cmd=directory&amp;act=confirm&amp;sort=addby{CATID_SORT}">{TXT_ADDEDBY}</a></b></td>
     <td width="5%"><b>&nbsp;</b></td>
   </tr>
   <!-- BEGIN filesRow -->
@@ -99,7 +99,7 @@ function confirmDoAction()
     <td width="20%" valign="top">{FILES_ADDEDBY}&nbsp;</td>
     <td width="1%" valign="top" nowrap>
       <div align="right"><a href="javascript:confirmFile({FILES_ID})"><img src="images/icons/refresh.gif" alt='{TXT_CONFIRMFILE}' border="0"></a>
-      <a href="?cmd=directory&act=detailfile&id={FILES_ID}"><img src="images/icons/details.gif" alt='{TXT_DETAILS}' border="0"></a>
+      <a href="index.php?cmd=directory&amp;act=detailfile&amp;id={FILES_ID}"><img src="images/icons/details.gif" alt='{TXT_DETAILS}' border="0"></a>
       <a href="javascript:deleteFile({FILES_ID})"><img src="images/icons/delete.gif" alt='{TXT_DELETE}' border="0"></a>
       </div>
     </td>

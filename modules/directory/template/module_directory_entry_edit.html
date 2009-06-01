@@ -2,8 +2,8 @@
 
 {DIRECTORY_JAVASCRIPT}
 
-<form name="addForm" enctype="multipart/form-data" method="post" action="?cmd=directory&act=editfile" onSubmit="{DIRECTORY_FORM_ONSUBMIT}">
-<input type="hidden" name="edit_id" size="10" value="{ID}">
+<form name="addForm" enctype="multipart/form-data" method="post" action="index.php?cmd=directory&amp;act=editfile" onSubmit="{DIRECTORY_FORM_ONSUBMIT}">
+<input type="hidden" name="edit_id" size="10" value="{ID}" />
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
     <tr>
       <th colspan="2">{TXT_EDIT_ENTREE}</th>
@@ -80,15 +80,15 @@
     </tr>
     <tr class="row2">
       <td width="150" valign="top">{TXT_DIRECTORY_SORT}:</td>
-      <td ><input type="text" name="inputValue[spezial]" value="{DIRECTORY_SORT}" style="width:300px;" maxlength="4"></td>
+      <td ><input type="text" name="inputValue[spezial]" value="{DIRECTORY_SORT}" style="width:300px;" maxlength="4" /></td>
     </tr>
      <tr class="row1">
       <td width="150" valign="top">{TXT_DIRECTORY_PREMIUM}:</td>
-      <td ><input type="checkbox" name="premium" value="1" {DIRECTORY_PREMIUM}></td>
+      <td ><input type="checkbox" name="premium" value="1" {DIRECTORY_PREMIUM} /></td>
     </tr>
 </table>
 <br />
-<input id="directorySubmit" type="submit" name="edit_submit" value="{TXT_UPDATE}">&nbsp;<font color="red">*</font> = {TXT_REQUIRED_FIELDS}
+<input id="directorySubmit" type="submit" name="edit_submit" value="{TXT_UPDATE}" />&nbsp;<font color="red">*</font> = {TXT_REQUIRED_FIELDS}
 </form>
 <br />
 
