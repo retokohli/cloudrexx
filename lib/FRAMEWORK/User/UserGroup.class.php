@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Group Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -65,16 +66,19 @@ class UserGroup {
         $this->clean();
     }
 
-    public function getGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
+    public function getGroups(
+        $filter=null, $arrSort=null, $arrAttributes=null,
+        $limit=null, $offset=null)
     {
         $objGroup = clone $this;
         $objGroup->arrCache = &$this->arrCache;
         $objGroup->loadGroups($filter, $arrSort, $arrAttributes, $limit, $offset);
-
         return $objGroup;
     }
 
-    private function loadGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
+    private function loadGroups(
+        $filter=null, $arrSort=null, $arrAttributes=null,
+        $limit=null, $offset=null)
     {
         global $objDatabase;
 
@@ -87,38 +91,44 @@ class UserGroup {
         if (is_array($filter)) {
             $arrWhereExpressions = $this->parseFilterConditions($filter);
         } elseif (!empty($filter)) {
-            $arrWhereExpressions['conditions'][] = 'tblG.`group_id` = '.intval($filter);
+            $arrWhereExpressions['conditions'][] =
+                '`tblG`.`group_id`='.intval($filter);
         }
 
         // set sort order
         if (is_array($arrSort)) {
             foreach ($arrSort as $attribute => $direction) {
-                if (in_array($attribute, $this->arrAttributes) && in_array(strtolower($direction), array('asc', 'desc'))) {
+                if (   in_array($attribute, $this->arrAttributes)
+                    && in_array(strtolower($direction), array('asc', 'desc'))) {
                     $arrSortExpressions[] = 'tblG.`'.$attribute.'` '.$direction;
                 }
             }
         }
 
         // set field list
-        if (is_array($arrAttributes)) {
-            foreach ($arrAttributes as $attribute) {
-                if (in_array($attribute, $this->arrAttributes) && !in_array($attribute, $arrSelectExpressions)) {
-                    $arrSelectExpressions[] = $attribute;
-                }
+        if (!is_array($arrAttributes)) {
+            $arrAttributes = $this->arrAttributes;
+        }
+        foreach ($arrAttributes as $attribute) {
+            if (   in_array($attribute, $this->arrAttributes)
+                && !in_array($attribute, $arrSelectExpressions)) {
+                $arrSelectExpressions[] = '`tblG`.`'.$attribute.'`';
             }
-
-            if (!in_array('group_id', $arrSelectExpressions)) {
-                $arrSelectExpressions[] = 'group_id';
-            }
-        } else {
-            $arrSelectExpressions = $this->arrAttributes;
+        }
+        if (!in_array('`tblG`.`group_id`', $arrSelectExpressions)) {
+            $arrSelectExpressions[] = '`tblG`.`group_id`';
         }
 
-        $query = 'SELECT `'.implode('`, `', $arrSelectExpressions).'`
-            FROM `'.DBPREFIX.'access_user_groups` AS tblG'
-            .(count($arrWhereExpressions['joins']) ? implode(' ', $arrWhereExpressions['joins']) : '')
-            .(count($arrWhereExpressions['conditions']) ? ' WHERE '.implode(' AND ', $arrWhereExpressions['conditions']) : '')
-            .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
+        $query = '
+            SELECT '.implode(', ', $arrSelectExpressions).'
+              FROM `'.DBPREFIX.'access_user_groups` AS tblG'
+            .(count($arrWhereExpressions['joins'])
+                ? implode(' ', $arrWhereExpressions['joins']) : '')
+            .(count($arrWhereExpressions['conditions'])
+                ? ' WHERE '.implode(' AND ', $arrWhereExpressions['conditions'])
+                : '')
+            .(count($arrSortExpressions)
+                ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
         if (empty($limit)) {
             $objGroup = $objDatabase->Execute($query);
@@ -131,7 +141,6 @@ class UserGroup {
                 $this->arrCache[$objGroup->fields['group_id']] = $this->arrLoadedGroups[$objGroup->fields['group_id']] = $objGroup->fields;
                 $objGroup->MoveNext();
             }
-
             $this->first();
             return true;
         } else {
@@ -139,6 +148,7 @@ class UserGroup {
             return false;
         }
     }
+
 
     private function parseFilterConditions($arrFilter)
     {
@@ -174,7 +184,6 @@ class UserGroup {
         $objGroup = clone $this;
         $objGroup->arrCache = &$this->arrCache;
         $objGroup->load($id);
-
         return $objGroup;
     }
 
@@ -622,3 +631,5 @@ class UserGroup {
         }
     }
 }
+
+?>
