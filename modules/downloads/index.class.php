@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Digital Asset Management
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -25,50 +26,41 @@ class downloads extends DownloadsLibrary
 {
     private $htmlLinkTemplate = '<a href="%s" title="%s">%s</a>';
     private $htmlImgTemplate = '<img src="%s" alt="%s" />';
-
     private $moduleParamsHtml = '?section=downloads';
     private $moduleParamsJs = '?section=downloads';
-
     private $userId;
     private $categoryId;
     private $cmd = '';
     private $pageTitle;
-
     /**
      * @var HTML_Template_Sigma
      */
     private $objTemplate;
-
-
     /**
      * Contains the info messages about done operations
-     *
      * @var array
      * @access private
      */
     private $arrStatusMsg = array('ok' => array(), 'error' => array());
 
 
-
     /**
-    * Constructor    -> Call parent-constructor, set language id and create local template-object
-    * @global    integer        $_LANGID
+    * Constructor
+    *
+    * Calls the parent constructor and creates a local template object
     */
     function __construct($strPageContent)
     {
-        global $_ARRAYLANG;
-
         parent::__construct();
 
         $objFWUser = FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
-
         $this->parseURLModifiers();
-
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);
     }
+
 
     private function parseURLModifiers()
     {
@@ -95,6 +87,7 @@ class downloads extends DownloadsLibrary
             $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0;
         }
     }
+
 
     /**
     * Reads $this->cmd and selects (depending on the value) an action
@@ -128,6 +121,7 @@ class downloads extends DownloadsLibrary
         return $this->objTemplate->get();
     }
 
+
     private function parseMessages()
     {
         $this->objTemplate->setVariable(array(
@@ -135,6 +129,7 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_MSG_ERROR'   => count($this->arrStatusMsg['error']) ? implode('<br />', $this->arrStatusMsg['error']) : ''
         ));
     }
+
 
     private function deleteDownload()
     {
@@ -153,6 +148,7 @@ class downloads extends DownloadsLibrary
         }
     }
 
+
     private function deleteCategory()
     {
         global $_LANGID, $_ARRAYLANG;
@@ -168,6 +164,7 @@ class downloads extends DownloadsLibrary
             }
         }
     }
+
 
     private function overview()
     {
@@ -193,7 +190,6 @@ class downloads extends DownloadsLibrary
             $this->parseCrumbtrail($objCategory);
 
             if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) {
-                /* DOWNLOAD DETAIL PAGE */
                 $this->pageTitle = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
                 $this->parseRelatedCategories($objDownload);
@@ -218,7 +214,6 @@ class downloads extends DownloadsLibrary
                     $this->objTemplate->hideBlock('downloads_advanced_file_upload');
                 }
             } else {
-                /* CATEGORY DETAIL PAGE */
                 $this->pageTitle = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
                 // process upload
@@ -271,7 +266,7 @@ class downloads extends DownloadsLibrary
                 $this->objTemplate->hideBlock('downloads_updated_file_list');
             }
         } else {
-            /* CATEGORY OVERVIEW PAGE */
+            // parse category overview
             $this->parseCategories($objCategory, array('downloads_overview', 'downloads_overview_category'), null, null, 'downloads_overview_row', array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $this->arrConfig['overview_max_subcats']);
 
             if (!empty($this->searchKeyword)) {
@@ -282,13 +277,13 @@ class downloads extends DownloadsLibrary
                 }
             }
 
-            /* PARSE MOST VIEWED DOWNLOADS */
+            // parse most viewed downloads
             $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
 
-            /* PARSE MOST DOWNLOADED DOWNLOADS */
+            // parse most downloaded downloads
             $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
 
-            /* PARSE MOST POPULAR DOWNLOADS */
+            // parse most popular downloads
             // TODO: Rating system has to be implemented first!
             //$this->parseSpecialDownloads(array('downloads_most_popular_file_list', 'downloads_most_popular_file'), null, array('rating' => 'desc'), $this->arrConfig['most_popular_file_count']);
 
@@ -300,7 +295,7 @@ class downloads extends DownloadsLibrary
             );
             $this->parseSpecialDownloads(array('downloads_newest_file_list', 'downloads_newest_file'), $filter, array('ctime' => 'desc'), $this->arrConfig['newest_file_count']);
 
-            /* PARSE RECENTLY UPDATED DOWNLOADS */
+            // parse recently updated downloads
             $filter = array(
                 'mtime' => array(
                     '>=' => time() - $this->arrConfig['updated_file_time_limit']
@@ -337,6 +332,7 @@ class downloads extends DownloadsLibrary
         $this->parseGlobalStuff($objCategory);
 
     }
+
 
     private function processUpload($objCategory)
     {
@@ -446,6 +442,7 @@ class downloads extends DownloadsLibrary
         }
     }
 
+
     private function processCreateDirectory($objCategory)
     {
         global $objLanguage;
@@ -519,6 +516,7 @@ class downloads extends DownloadsLibrary
         }
     }
 
+
     private function parseUploadForm($objCategory)
     {
         global $_CONFIG, $_ARRAYLANG;
@@ -578,6 +576,7 @@ class downloads extends DownloadsLibrary
         }
     }
 
+
     private function parseCreateCategoryForm($objCategory)
     {
         global $_ARRAYLANG;
@@ -604,6 +603,7 @@ class downloads extends DownloadsLibrary
         ));
         $this->objTemplate->parse('downloads_create_category');
     }
+
 
     private function parseCategory($objCategory)
     {
@@ -646,7 +646,6 @@ class downloads extends DownloadsLibrary
     }
 
 
-
     private function parseCrumbtrail($objParentCategory)
     {
         global $_ARRAYLANG, $_LANGID;
@@ -680,6 +679,7 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->parse('downloads_crumbtrail');
     }
 
+
     private function parseGlobalStuff($objCategory)
     {
         $this->objTemplate->setVariable(array(
@@ -688,6 +688,7 @@ class downloads extends DownloadsLibrary
 
         $this->parseSearchForm($objCategory);
     }
+
 
     private function getJavaScriptCode($objCategory)
     {
@@ -724,10 +725,12 @@ JS_CODE;
         return $javascript;
     }
 
+
     public function getPageTitle()
     {
         return $this->pageTitle;
     }
+
 
     private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null)
     {
@@ -774,6 +777,7 @@ JS_CODE;
         }
     }
 
+
     private function parseRelatedCategories($objDownload)
     {
         global $_ARRAYLANG;
@@ -804,6 +808,7 @@ JS_CODE;
         }
     }
 
+
     private function parseCategoryAttributes($objCategory, $row, $variablePrefix, $allowDeleteCategory = false)
     {
         global $_LANGID, $_ARRAYLANG;
@@ -829,7 +834,11 @@ JS_CODE;
 
         // parse delete icon link
         if ($allowDeleteCategory || $objCategory->getOwnerId() == $this->userId && $objCategory->getDeletableByOwner()) {
-            $deleteIcon = $this->getHtmlDeleteLinkIcon($objCategory->getId(), htmlspecialchars(str_replace("'", "\'", $objCategory->getName($_LANGID)), ENT_QUOTES, CONTREXX_CHARSET), 'downloadsDeleteCategory');
+            $deleteIcon = $this->getHtmlDeleteLinkIcon(
+                $objCategory->getId(),
+                htmlspecialchars(str_replace("'", "\\'", $objCategory->getName($_LANGID)), ENT_QUOTES, CONTREXX_CHARSET),
+                'downloadsDeleteCategory'
+            );
         } else {
             $deleteIcon = '';
         }
@@ -852,26 +861,32 @@ JS_CODE;
         ));
     }
 
+
     private function getHtmlDeleteLinkIcon($id, $name, $method)
     {
         global $_ARRAYLANG;
 
         return sprintf($this->htmlLinkTemplate, "javascript:void(0)\" onclick=\"$method($id,'$name')", $_ARRAYLANG['TXT_DOWNLOADS_DELETE'], sprintf($this->htmlImgTemplate, 'cadmin/images/icons/delete.gif', $_ARRAYLANG['TXT_DOWNLOADS_DELETE']));
     }
+
+
     private function getHtmlLinkTag($href, $title, $value)
     {
         return sprintf($this->htmlLinkTemplate, $href, $title, $value);
     }
+
 
     private function getHtmlImageTag($src, $alt)
     {
         return sprintf($this->htmlImgTemplate, $src, $alt);
     }
 
+
     private function getHtmlFolderLinkTag($href, $title, $value)
     {
         return sprintf($this->htmlLinkTemplate, $href, $title, sprintf($this->htmlImgTemplate, 'images/modules/downloads/folder_front.gif', $title).' '.$value);
     }
+
 
     private function parseDownloads($objCategory)
     {
@@ -921,6 +936,7 @@ JS_CODE;
         }
     }
 
+
     private function parseSpecialDownloads($arrBlocks, $arrFilter, $arrSort, $limit)
     {
         global $_ARRAYLANG;
@@ -960,6 +976,7 @@ JS_CODE;
         }
     }
 
+
     private function parseDownloadAttributes($objDownload, $categoryId, $allowDeleteFilesFromCategory = false)
     {
         global $_ARRAYLANG, $_LANGID;
@@ -990,7 +1007,11 @@ JS_CODE;
 
         // parse delete icon link
         if ($allowDeleteFilesFromCategory || $objDownload->getOwnerId() == $this->userId) {
-            $deleteIcon = $this->getHtmlDeleteLinkIcon($objDownload->getId(), htmlspecialchars(str_replace("'", "\'", $objDownload->getName($_LANGID)), ENT_QUOTES, CONTREXX_CHARSET), 'downloadsDeleteFile');
+            $deleteIcon = $this->getHtmlDeleteLinkIcon(
+                $objDownload->getId(),
+                htmlspecialchars(str_replace("'", "\\'", $objDownload->getName($_LANGID)), ENT_QUOTES, CONTREXX_CHARSET),
+                'downloadsDeleteFile'
+            );
         } else {
             $deleteIcon = '';
         }
@@ -1062,6 +1083,7 @@ JS_CODE;
             ));
         }
     }
+
 
     private function parseRelatedDownloads($objDownload, $currentCategoryId)
     {
@@ -1158,6 +1180,7 @@ JS_CODE;
         }
     }
 
+
     private function parseDownload($objDownload, $categoryId)
     {
         global $_LANGID, $_ARRAYLANG;
@@ -1173,6 +1196,7 @@ JS_CODE;
         $objDownload->incrementViewCount();
     }
 
+
     private function parseSearchForm($objCategory)
     {
         global $_ARRAYLANG;
@@ -1183,6 +1207,7 @@ JS_CODE;
             'TXT_DOWNLOADS_SEARCH'      => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH']
         ));
     }
+
 
     private function download()
     {
@@ -1215,6 +1240,7 @@ JS_CODE;
         }
     }
 
+
     private function getFormatedFileSize($bytes)
     {
         global $_ARRAYLANG;
@@ -1236,4 +1262,5 @@ JS_CODE;
         }
     }
 }
+
 ?>
