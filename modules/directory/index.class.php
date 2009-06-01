@@ -33,7 +33,7 @@ require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
  */
 class rssDirectory extends directoryLibrary
 {
-   public $ArraySettings;
+    public $ArraySettings;
     public $statusMessage;
     public $folderImageLarge;
     public $folderImageSmall;
@@ -60,11 +60,11 @@ class rssDirectory extends directoryLibrary
     public $communityModul;
 
     //local settings
-    public $rows                 = 2;
-    public $subLimit             = 5;
-    public $rowWidth             = "50%";
-    public $arrRows            = array();
-    public $arrRowsIndex        = array();
+    public $rows = 2;
+    public $subLimit = 5;
+    public $rowWidth = "50%";
+    public $arrRows = array();
+    public $arrRowsIndex = array();
 
 
     /**
@@ -276,18 +276,18 @@ $this->arrRows[2] = '';
 
         // set variables
         $this->_objTpl->setVariable(array(
-            'DIRECTORY_TREE'          => $this->navtree,
-            'DIRECTORY_DESCRIPTION'   => "<br />".$arrAttributes['description'],
-            'TYPE_SELECTION'          => $this->typeSelection,
-            'TXT_DIRECTORY_DIR'       => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'DIRECTORY_TREE' => $this->navtree,
+            'DIRECTORY_DESCRIPTION' => "<br />".$arrAttributes['description'],
+            'TYPE_SELECTION' => $this->typeSelection,
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
 // TODO: Not defined
 //            'DIRECTORY_SEARCH_PAGING' => $paging,
-            'DIRECTORY_ROW_WIDTH'     => $this->rowWidth,
-            'DIRECTORY_ROW1'          => $this->arrRows[1]."<br />",
-            'DIRECTORY_ROW2'          => $this->arrRows[2]."<br />",
-            'DIRECTORY_TITLE'         => htmlentities($arrAttributes['title'], ENT_QUOTES, CONTREXX_CHARSET),
-            'DIRECTORY_XML_LINK'      => $xmlLink,
-            'DIRECTORY_INSERT_FEEDS'  => $insertFeeds,
+            'DIRECTORY_ROW_WIDTH' => $this->rowWidth,
+            'DIRECTORY_ROW1' => $this->arrRows[1]."<br />",
+            'DIRECTORY_ROW2' => $this->arrRows[2]."<br />",
+            'DIRECTORY_TITLE' => htmlentities($arrAttributes['title'], ENT_QUOTES, CONTREXX_CHARSET),
+            'DIRECTORY_XML_LINK' => $xmlLink,
+            'DIRECTORY_INSERT_FEEDS' => $insertFeeds,
         ));
     }
 
@@ -327,12 +327,12 @@ $this->arrRows[2] = '';
         $objResult = $objDatabase->Execute($query);
         if($objResult !== false){
             while(!$objResult->EOF){
-                $arrLevel['title']             = $objResult->fields['name'];
-                $arrLevel['description']      = $objResult->fields['description'];
-                $arrLevel['showentries']      = $objResult->fields['showentries'];
+                $arrLevel['title'] = $objResult->fields['name'];
+                $arrLevel['description'] = $objResult->fields['description'];
+                $arrLevel['showentries'] = $objResult->fields['showentries'];
                 $arrLevel['showcategories'] = $objResult->fields['showcategories'];
-                $arrLevel['showlevels']     = $objResult->fields['showlevels'];
-                $arrLevel['onlyentries']     = $objResult->fields['onlyentries'];
+                $arrLevel['showlevels'] = $objResult->fields['showlevels'];
+                $arrLevel['onlyentries'] = $objResult->fields['onlyentries'];
                 $objResult->MoveNext();
             }
         }
@@ -346,7 +346,7 @@ $this->arrRows[2] = '';
                 $count = $this->count($levelKey, '');
 // TODO: Never used
 //                $class = $parentId == 0 ? "catLink" : "subcatLink";
-                $this->arrRows[$i]     .= "<a class='catLink' href='".CONTREXX_SCRIPT_PATH."?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+                $this->arrRows[$i] .= "<a class='catLink' href='".CONTREXX_SCRIPT_PATH."?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
                 $this->arrRowsIndex[strtoupper(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET).$levelKey)] = strtoupper(substr(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='".CONTREXX_SCRIPT_PATH."?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 
                 //get sublevel
@@ -390,10 +390,10 @@ $this->arrRows[2] = '';
 
         if ($arrLevel['showcategories'] == 1 || empty($this->levels)) {
             if (isset($_GET['cid'])) {
-                $arrCategories                 = $this->showCategories(intval($_GET['cid']));
-                $arrLevel['title']             = $arrCategories['title'];
-                $arrLevel['description']      = $arrCategories['description'];
-                $arrLevel['showentries']      = $arrCategories['showentries'];
+                $arrCategories = $this->showCategories(intval($_GET['cid']));
+                $arrLevel['title'] = $arrCategories['title'];
+                $arrLevel['description'] = $arrCategories['description'];
+                $arrLevel['showentries'] = $arrCategories['showentries'];
             } else {
                 $this->showCategories(0);
             }
@@ -437,7 +437,7 @@ $this->arrRows[2] = '';
         ");
         if ($objResult) {
             while (!$objResult->EOF) {
-                $arrCategories['title']       = $objResult->fields['name'];
+                $arrCategories['title'] = $objResult->fields['name'];
                 $arrCategories['description'] = $objResult->fields['description'];
                 $arrCategories['showentries'] = $objResult->fields['showentries'];
                 $objResult->MoveNext();
@@ -543,13 +543,13 @@ $this->arrRows[2] = '';
         if (!empty($lid) && !empty($cid)) {
             $where = "WHERE (rel_cat.cat_id='".$cid."' AND rel_cat.dir_id=files.id)
                       AND   (rel_level.level_id='".$lid."' AND rel_level.dir_id=files.id) ";
-            $db    = DBPREFIX."module_directory_rel_dir_cat AS rel_cat, ".DBPREFIX."module_directory_rel_dir_level AS rel_level,";
+            $db = DBPREFIX."module_directory_rel_dir_cat AS rel_cat, ".DBPREFIX."module_directory_rel_dir_level AS rel_level,";
         } elseif (!empty($cid)) {
             $where = "WHERE (rel_cat.cat_id='".$cid."' AND rel_cat.dir_id=files.id)";
-            $db    = DBPREFIX."module_directory_rel_dir_cat AS rel_cat,";
+            $db = DBPREFIX."module_directory_rel_dir_cat AS rel_cat,";
         } else {
             $where = "WHERE (rel_level.level_id='".$lid."' AND rel_level.dir_id=files.id) ";
-            $db    = DBPREFIX."module_directory_rel_dir_level AS rel_level,";
+            $db = DBPREFIX."module_directory_rel_dir_level AS rel_level,";
         }
 
         //create query
@@ -563,10 +563,10 @@ $this->arrRows[2] = '';
 
         ////// paging start /////////
         $pagingLimit = intval($this->settings['pagingLimit']['value']);
-        $objResult   = $objDatabase->Execute($query);
-        $count       = $objResult->RecordCount();
-        $pos         = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
-        $paging      = getPaging($count, $pos, "&amp;section=directory".$levelLink.$catLink, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+        $objResult = $objDatabase->Execute($query);
+        $count = $objResult->RecordCount();
+        $pos = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
+        $paging = getPaging($count, $pos, "&amp;section=directory".$levelLink.$catLink, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
         ////// paging end /////////
 
         $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
@@ -599,18 +599,18 @@ $this->arrRows[2] = '';
 
         // set variables
         $this->_objTpl->setVariable(array(
-            'SEARCH_PAGING'                => $paging,
-            'DIRECTORY_CAT_ID'            => $cid,
-            'DIRECTORY_LEVEL_ID'           => $lid,
-            'DIRECTORY_MAIN_CAT_ID'        => $cid,
-            'DIRECTORY_MAIN_LEVEL_ID'   => $lid,
+            'SEARCH_PAGING' => $paging,
+            'DIRECTORY_CAT_ID' => $cid,
+            'DIRECTORY_LEVEL_ID' => $lid,
+            'DIRECTORY_MAIN_CAT_ID' => $cid,
+            'DIRECTORY_MAIN_LEVEL_ID' => $lid,
         ));
 
 
         if ($count == 0) {
             // set variables
             $this->_objTpl->setVariable(array(
-                'DIRECTORY_NO_FEEDS_FOUND'            => $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'],
+                'DIRECTORY_NO_FEEDS_FOUND' => $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'],
             ));
 
             $this->_objTpl->parse('noFeeds');
@@ -657,15 +657,15 @@ $this->arrRows[2] = '';
 
         $language = (isset($_REQUEST['language']) ? $_REQUEST['language'] : '');
         $platform = (isset($_REQUEST['platform']) ? $_REQUEST['platform'] : '');
-        $canton   = (isset($_REQUEST['canton'])   ? $_REQUEST['canton']   : '');
+        $canton = (isset($_REQUEST['canton'])   ? $_REQUEST['canton']   : '');
         $spezField21 = (isset($_REQUEST['spez_field_21']) ? $_REQUEST['spez_field_21'] : '');
         $spezField22 = (isset($_REQUEST['spez_field_22']) ? $_REQUEST['spez_field_22'] : '');
         $spezField23 = (isset($_REQUEST['spez_field_23']) ? $_REQUEST['spez_field_23'] : '');
         $spezField24 = (isset($_REQUEST['spez_field_24']) ? $_REQUEST['spez_field_24'] : '');
 
-        $arrDropdown['language']      = $this->getLanguages(contrexx_addslashes($language));
-        $arrDropdown['platform']      = $this->getPlatforms(contrexx_addslashes($platform));
-        $arrDropdown['canton']        = $this->getCantons(contrexx_addslashes($canton));
+        $arrDropdown['language'] = $this->getLanguages(contrexx_addslashes($language));
+        $arrDropdown['platform'] = $this->getPlatforms(contrexx_addslashes($platform));
+        $arrDropdown['canton'] = $this->getCantons(contrexx_addslashes($canton));
         $arrDropdown['spez_field_21'] = $this->getSpezDropdown(contrexx_addslashes($spezField21),'spez_field_21');
         $arrDropdown['spez_field_22'] = $this->getSpezDropdown(contrexx_addslashes($spezField22),'spez_field_22');
         $arrDropdown['spez_field_23'] = $this->getSpezVotes(contrexx_addslashes($spezField23),'spez_field_23');
@@ -689,10 +689,10 @@ $this->arrRows[2] = '';
 
         //get levels
         if ($this->settings['levels']['value'] == 1) {
-            $lid     = (isset($_REQUEST['lid']) ? intval($_REQUEST['lid']) : 0);
+            $lid = (isset($_REQUEST['lid']) ? intval($_REQUEST['lid']) : 0);
             $options = $this->getSearchLevels($lid);
-            $name    = $_ARRAYLANG['TXT_LEVEL'];
-            $field   = '<select name="lid" style="width:194px;"><option value="">&nbsp;</option>'.$options.'</select>';
+            $name = $_ARRAYLANG['TXT_LEVEL'];
+            $field = '<select name="lid" style="width:194px;"><option value="">&nbsp;</option>'.$options.'</select>';
 
             // set variables
             $expSearch .=
@@ -703,10 +703,10 @@ $this->arrRows[2] = '';
         }
 
         //get categories
-        $cid     = (isset($_REQUEST['cid']) ? intval($_REQUEST['cid']) : 0);
+        $cid = (isset($_REQUEST['cid']) ? intval($_REQUEST['cid']) : 0);
         $options = $this->getSearchCategories($cid);
-        $name    = $_ARRAYLANG['TXT_DIR_F_CATEGORIE'];
-        $field   = '<select name="cid" style="width:194px;"><option value="">&nbsp;</option>'.$options.'</select>';
+        $name = $_ARRAYLANG['TXT_DIR_F_CATEGORIE'];
+        $field = '<select name="cid" style="width:194px;"><option value="">&nbsp;</option>'.$options.'</select>';
 
         // set variables
         $expSearch .=
@@ -734,10 +734,22 @@ $this->arrRows[2] = '';
                         $name = $objResult->fields['title'];
                     }
                 }
-                if ($objResult->fields['typ'] == 1 || $objResult->fields['typ'] == 2 || $objResult->fields['typ'] == 5 || $objResult->fields['typ'] == 6) {
-                    $field = '<input maxlength="100" size="30" name="'.$objResult->fields['name'].'" value="'.contrexx_addslashes($_REQUEST[$objResult->fields['name']]).'" />';
+                if (   $objResult->fields['typ'] == 1
+                    || $objResult->fields['typ'] == 2
+                    || $objResult->fields['typ'] == 5
+                    || $objResult->fields['typ'] == 6) {
+                    $field =
+                        '<input maxlength="100" size="30" name="'.
+                        $objResult->fields['name'].'" value="'.
+                          (empty($_REQUEST[$objResult->fields['name']])
+                            ? ''
+                            : contrexx_addslashes($_REQUEST[$objResult->fields['name']])).
+                        '" />';
                 } else {
-                    $field = '<select name="'.$objResult->fields['name'].'" style="width:194px;">'.$arrDropdown[$objResult->fields['name']].'</select>';
+                    $field =
+                        '<select name="'.$objResult->fields['name'].
+                        '" style="width:194px;">'.
+                        $arrDropdown[$objResult->fields['name']].'</select>';
                 }
                 // set variables
                 $expSearch .=
@@ -774,10 +786,7 @@ $this->arrRows[2] = '';
 
 
     /**
-     * refresh feeds
-     *
      * refresh xml from selected feed
-     *
      * @access   public
      * @param    string  $id
      */
@@ -785,7 +794,6 @@ $this->arrRows[2] = '';
     {
         $this->refreshXML($id);
     }
-
 
 
     /**
@@ -813,38 +821,41 @@ $this->arrRows[2] = '';
         $this->getNavtree($lid, $cid);
 
        $this->_objTpl->setVariable(array(
-            'TXT_DIRECTORY_DIR'                    => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
-            'DIRECTORY_CATEGORY_NAVI'             => $this->navtree,
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'DIRECTORY_CATEGORY_NAVI' => $this->navtree,
         ));
 
-        $objResult = $objDatabase->Execute("SELECT `country` FROM ".DBPREFIX."module_directory_dir WHERE id = '".intval($id)."'");
-        $country   = $objResult->fields['country'];
+        $objResult = $objDatabase->Execute("
+            SELECT `country`
+              FROM ".DBPREFIX."module_directory_dir
+             WHERE id='".intval($id)."'");
+        $country = $objResult->fields['country'];
 
         if ($this->_isGoogleMapEnabled('frontend')) {
             $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/directory/template/module_directory_googlemap_include.html');
             $this->_objTpl->setVariable(array(
-                'DIRECTORY_GOOGLE_API_KEY'   => $_CONFIG["googleMapsAPIKey"],
+                'DIRECTORY_GOOGLE_API_KEY' => $_CONFIG["googleMapsAPIKey"],
                 'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
                 'TXT_DIR_GEO_TOO_MANY_QUERIES' => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
-                'TXT_DIR_GEO_SERVER_ERROR'   => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
-                'TXT_DIR_GEO_NOT_FOUND'      => $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
-                'TXT_DIR_GEO_SUCCESS'        => $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
-                'TXT_DIR_GEO_MISSING'        => $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
-                'TXT_DIR_GEO_UNKNOWN'        => $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
-                'TXT_DIR_GEO_UNAVAILABLE'    => $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
-                'TXT_DIR_GEO_BAD_KEY'        => $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
-                'DIRECTORY_START_X'          => 'null',
-                'DIRECTORY_START_Y'          => 'null',
-                'DIRECTORY_START_ZOOM'       => 'null',
-                'DIRECTORY_ENTRY_NAME'       => 'null',
-                'DIRECTORY_ENTRY_COMPANY'    => 'null',
-                'DIRECTORY_ENTRY_STREET'     => 'null',
-                'DIRECTORY_ENTRY_ZIP'        => 'null',
-                'DIRECTORY_ENTRY_LOCATION'   => 'null',
-                'DIRECTORY_MAP_LON_BACKEND'  => $this->googleMapStartPoint['lon'],
-                'DIRECTORY_MAP_LAT_BACKEND'  => $this->googleMapStartPoint['lat'],
+                'TXT_DIR_GEO_SERVER_ERROR' => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
+                'TXT_DIR_GEO_NOT_FOUND' => $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+                'TXT_DIR_GEO_SUCCESS' => $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+                'TXT_DIR_GEO_MISSING' => $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+                'TXT_DIR_GEO_UNKNOWN' => $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+                'TXT_DIR_GEO_UNAVAILABLE' => $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+                'TXT_DIR_GEO_BAD_KEY' => $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
+                'DIRECTORY_START_X' => 'null',
+                'DIRECTORY_START_Y' => 'null',
+                'DIRECTORY_START_ZOOM' => 'null',
+                'DIRECTORY_ENTRY_NAME' => 'null',
+                'DIRECTORY_ENTRY_COMPANY' => 'null',
+                'DIRECTORY_ENTRY_STREET' => 'null',
+                'DIRECTORY_ENTRY_ZIP' => 'null',
+                'DIRECTORY_ENTRY_LOCATION' => 'null',
+                'DIRECTORY_MAP_LON_BACKEND' => $this->googleMapStartPoint['lon'],
+                'DIRECTORY_MAP_LAT_BACKEND' => $this->googleMapStartPoint['lat'],
                 'DIRECTORY_MAP_ZOOM_BACKEND' => $this->googleMapStartPoint['zoom'],
-                'IS_BACKEND'                 => 'false',
+                'IS_BACKEND' => 'false',
             ));
             if ($this->_objTpl->blockExists('direcoryGoogleMapJavascript')) {
                 $this->_objTpl->parse('direcoryGoogleMapJavascript');
@@ -868,12 +879,15 @@ $this->arrRows[2] = '';
     }
 
 
-
-    function getAttributes($id) {
+    function getAttributes($id)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         //get attributes
-        $objResult = $objDatabase->Execute("SELECT id, validatedate, date, hits FROM ".DBPREFIX."module_directory_dir WHERE id = '".$id."'");
+        $objResult = $objDatabase->Execute("
+            SELECT id, validatedate, date, hits
+              FROM ".DBPREFIX."module_directory_dir
+             WHERE id=$id");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $validatedate = $objResult->fields['validatedate'];
@@ -884,7 +898,10 @@ $this->arrRows[2] = '';
         }
 
         //get categories
-        $objResult = $objDatabase->Execute("SELECT cat_id FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE dir_id = '".$id."'");
+        $objResult = $objDatabase->Execute("
+            SELECT cat_id
+              FROM ".DBPREFIX."module_directory_rel_dir_cat
+             WHERE dir_id=$id");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $arrCatId[] = $objResult->fields['cat_id'];
@@ -895,20 +912,26 @@ $this->arrRows[2] = '';
         if (!empty($arrCatId)) {
             $categories = "<ul>";
             foreach ($arrCatId as $catId) {
-                $objResult      = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_directory_categories WHERE id = '".$catId."'",1);
+                $objResult = $objDatabase->Execute("
+                    SELECT name
+                      FROM ".DBPREFIX."module_directory_categories
+                     WHERE id=$catId");
                 $categories .= "<li>".$objResult->fields['name']."</li>";
             }
             $categories .= "</ul>";
 
             $this->_objTpl->setVariable(array(
-                'TXT_DIRECTORY_FEED_CATEGORIES'        => $_ARRAYLANG['TXT_DIR_CATEGORIE'],
-                'DIRECTORY_FEED_CATEGORIES'            => $categories,
+                'TXT_DIRECTORY_FEED_CATEGORIES' => $_ARRAYLANG['TXT_DIR_CATEGORIE'],
+                'DIRECTORY_FEED_CATEGORIES' => $categories,
             ));
         }
 
         //get levels
         if ($this->settings['levels']['value'] == 1) {
-            $objResult = $objDatabase->Execute("SELECT level_id FROM ".DBPREFIX."module_directory_rel_dir_level WHERE dir_id = '".$id."'");
+            $objResult = $objDatabase->Execute("
+                SELECT level_id
+                  FROM ".DBPREFIX."module_directory_rel_dir_level
+                 WHERE dir_id=$id");
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $arrLevelId[] = $objResult->fields['level_id'];
@@ -919,32 +942,32 @@ $this->arrRows[2] = '';
             if (!empty($arrLevelId)) {
                 $levels = "<ul>";
                 foreach ($arrLevelId as $levelId) {
-                    $objResult      = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_directory_levels WHERE id = '".$levelId."'",1);
-                    $levels     .= "<li>".$objResult->fields['name']."</li>";
+                    $objResult = $objDatabase->Execute("
+                        SELECT name
+                          FROM ".DBPREFIX."module_directory_levels
+                         WHERE id=$levelId");
+                    $levels .= "<li>".$objResult->fields['name']."</li>";
                 }
                 $levels .= "</ul>";
 
                 $this->_objTpl->setVariable(array(
-                    'TXT_DIRECTORY_FEED_LEVELS'        => $_ARRAYLANG['TXT_LEVELS'],
-                    'DIRECTORY_FEED_LEVELS'            => $levels,
+                    'TXT_DIRECTORY_FEED_LEVELS' => $_ARRAYLANG['TXT_LEVELS'],
+                    'DIRECTORY_FEED_LEVELS' => $levels,
                 ));
             }
         }
 
         // set variables
         $this->_objTpl->setVariable(array(
-            'DIRECTORY_FEED_VALIDATE_DATE'        => date("d. M Y", $validatedate),
-            'DIRECTORY_FEED_DATE'                => date("d. M Y", $date),
-            'DIRECTORY_FEED_HITS'                => $hits,
+            'DIRECTORY_FEED_VALIDATE_DATE' => date("d. M Y", $validatedate),
+            'DIRECTORY_FEED_DATE' => date("d. M Y", $date),
+            'DIRECTORY_FEED_HITS' => $hits,
         ));
     }
 
 
     /**
      * get Feed content
-     *
-     * get Feed content
-     *
      * @access   public
      * @param    string  $id
      * @global    ADONewConnection
@@ -955,105 +978,105 @@ $this->arrRows[2] = '';
         global $objDatabase, $_ARRAYLANG;
 
         //get feed content
-        $objResult   = $objDatabase->Execute("
+        $objResult = $objDatabase->Execute("
             SELECT *
               FROM ".DBPREFIX."module_directory_dir
              WHERE id=$id
         ");
         if ($objResult) {
             while (!$objResult->EOF) {
-                $arrFeedContent['id']                 = stripslashes($objResult->fields['id']);
-                $arrFeedContent['title']                 = stripslashes($objResult->fields['title']);
-                $arrFeedContent['date']                     = $objResult->fields['date'];
-                $arrFeedContent['description']             = stripslashes($objResult->fields['description']);
-                $arrFeedContent['relatedlinks']            = $objResult->fields['relatedlinks'];
-                $arrFeedContent['status']                 = $objResult->fields['status'];
-                $arrFeedContent['addedby']                 = $objResult->fields['addedby'];
-                $arrFeedContent['provider']             = $objResult->fields['provider'];
-                $arrFeedContent['ip']                     = $objResult->fields['ip'];
-                $arrFeedContent['validatedate']         = $objResult->fields['validatedate'];
-                $arrFeedContent['link']                 = $objResult->fields['link'];
-                $arrFeedContent['rss_link']             = $objResult->fields['rss_link'];
-                $rss_link                                 = $objResult->fields['rss_file'];
-                $arrFeedContent['attachment']             = $objResult->fields['attachment'];
-                $arrFeedContent['platform']             = $objResult->fields['platform'];
-                $arrFeedContent['language']             = $objResult->fields['language'];
-                $arrFeedContent['canton']                 = $objResult->fields['canton'];
-                $arrFeedContent['searchkeys']             = $objResult->fields['searchkeys'];
-                $arrFeedContent['company_name']         = $objResult->fields['company_name'];
-                $arrFeedContent['street']                 = $objResult->fields['street'];
-                $arrFeedContent['zip']                     = $objResult->fields['zip'];
-                $arrFeedContent['phone']                 = $objResult->fields['phone'];
+                $arrFeedContent['id'] = stripslashes($objResult->fields['id']);
+                $arrFeedContent['title'] = stripslashes($objResult->fields['title']);
+                $arrFeedContent['date'] = $objResult->fields['date'];
+                $arrFeedContent['description'] = stripslashes($objResult->fields['description']);
+                $arrFeedContent['relatedlinks'] = $objResult->fields['relatedlinks'];
+                $arrFeedContent['status'] = $objResult->fields['status'];
+                $arrFeedContent['addedby'] = $objResult->fields['addedby'];
+                $arrFeedContent['provider'] = $objResult->fields['provider'];
+                $arrFeedContent['ip'] = $objResult->fields['ip'];
+                $arrFeedContent['validatedate'] = $objResult->fields['validatedate'];
+                $arrFeedContent['link'] = $objResult->fields['link'];
+                $arrFeedContent['rss_link'] = $objResult->fields['rss_link'];
+                $rss_link = $objResult->fields['rss_file'];
+                $arrFeedContent['attachment'] = $objResult->fields['attachment'];
+                $arrFeedContent['platform'] = $objResult->fields['platform'];
+                $arrFeedContent['language'] = $objResult->fields['language'];
+                $arrFeedContent['canton'] = $objResult->fields['canton'];
+                $arrFeedContent['searchkeys'] = $objResult->fields['searchkeys'];
+                $arrFeedContent['company_name'] = $objResult->fields['company_name'];
+                $arrFeedContent['street'] = $objResult->fields['street'];
+                $arrFeedContent['zip'] = $objResult->fields['zip'];
+                $arrFeedContent['phone'] = $objResult->fields['phone'];
 
-                $arrFeedContent['longitude']             = $objResult->fields['longitude'];
-                $arrFeedContent['latitude']             = $objResult->fields['latitude'];
-                $arrFeedContent["lon"]                    = substr($objResult->fields['longitude'], 0, strpos($objResult->fields['longitude'], '.'));
-                $arrFeedContent["lon_fraction"]            = substr($objResult->fields['longitude'],      strpos($objResult->fields['longitude'], '.')+1);
-                $arrFeedContent["lat"]                    = substr($objResult->fields['latitude'],  0, strpos($objResult->fields['latitude'], '.'));
-                $arrFeedContent["lat_fraction"]            = substr($objResult->fields['latitude'],      strpos($objResult->fields['latitude'], '.')+1);
+                $arrFeedContent['longitude'] = $objResult->fields['longitude'];
+                $arrFeedContent['latitude'] = $objResult->fields['latitude'];
+                $arrFeedContent["lon"] = substr($objResult->fields['longitude'], 0, strpos($objResult->fields['longitude'], '.'));
+                $arrFeedContent["lon_fraction"] = substr($objResult->fields['longitude'],      strpos($objResult->fields['longitude'], '.')+1);
+                $arrFeedContent["lat"] = substr($objResult->fields['latitude'],  0, strpos($objResult->fields['latitude'], '.'));
+                $arrFeedContent["lat_fraction"] = substr($objResult->fields['latitude'],      strpos($objResult->fields['latitude'], '.')+1);
 
-                $arrFeedContent['zoom']                 = $objResult->fields['zoom'];
-                $arrFeedContent['country']                 = $objResult->fields['country'];
-                $arrFeedContent['googlemap']             = "googlemap";
+                $arrFeedContent['zoom'] = $objResult->fields['zoom'];
+                $arrFeedContent['country'] = $objResult->fields['country'];
+                $arrFeedContent['googlemap'] = "googlemap";
 
-                $arrFeedContent['contact']                 = $objResult->fields['contact'];
-                $arrFeedContent['hits']                 = $objResult->fields['hits'];
-                $arrFeedContent['xml_refresh']             = $objResult->fields['xml_refresh'];
+                $arrFeedContent['contact'] = $objResult->fields['contact'];
+                $arrFeedContent['hits'] = $objResult->fields['hits'];
+                $arrFeedContent['xml_refresh'] = $objResult->fields['xml_refresh'];
 // TODO: Field does not exist
-//                $arrFeedContent['checksum']             = $objResult->fields['checksum'];
-                $arrFeedContent['city']                 = $objResult->fields['city'];
-                $arrFeedContent['information']             = $objResult->fields['information'];
-                $arrFeedContent['fax']                     = $objResult->fields['fax'];
-                $arrFeedContent['mobile']                 = $objResult->fields['mobile'];
-                $arrFeedContent['mail']                 = $objResult->fields['mail'];
-                $arrFeedContent['homepage']             = $objResult->fields['homepage'];
-                $arrFeedContent['industry']             = $objResult->fields['industry'];
-                $arrFeedContent['legalform']             = $objResult->fields['legalform'];
-                $arrFeedContent['conversion']             = $objResult->fields['conversion'];
-                $arrFeedContent['employee']             = $objResult->fields['employee'];
-                $arrFeedContent['foundation']             = $objResult->fields['foundation'];
-                $arrFeedContent['mwst']                 = $objResult->fields['mwst'];
-                $arrFeedContent['opening']                 = $objResult->fields['opening'];
-                $arrFeedContent['holidays']             = $objResult->fields['holidays'];
-                $arrFeedContent['places']                 = $objResult->fields['places'];
-                $arrFeedContent['logo']                 = $objResult->fields['logo'];
-                $arrFeedContent['team']                 = $objResult->fields['team'];
-                $arrFeedContent['portfolio']             = $objResult->fields['portfolio'];
-                $arrFeedContent['offers']                 = $objResult->fields['offers'];
-                $arrFeedContent['concept']                 = $objResult->fields['concept'];
-                $arrFeedContent['map']                     = $objResult->fields['map'];
-                $arrFeedContent['premium']                 = $objResult->fields['premium'];
-                $arrFeedContent['lokal']                 = $objResult->fields['lokal'];
-                $arrFeedContent['spez_field_1']         = $objResult->fields['spez_field_1'];
-                $arrFeedContent['spez_field_2']         = $objResult->fields['spez_field_2'];
-                $arrFeedContent['spez_field_3']         = $objResult->fields['spez_field_3'];
-                $arrFeedContent['spez_field_4']         = $objResult->fields['spez_field_4'];
-                $arrFeedContent['spez_field_5']         = $objResult->fields['spez_field_5'];
-                $arrFeedContent['spez_field_6']         = $objResult->fields['spez_field_6'];
-                $arrFeedContent['spez_field_7']         = $objResult->fields['spez_field_7'];
-                $arrFeedContent['spez_field_8']         = $objResult->fields['spez_field_8'];
-                $arrFeedContent['spez_field_9']         = $objResult->fields['spez_field_9'];
-                $arrFeedContent['spez_field_10']         = $objResult->fields['spez_field_10'];
-                $arrFeedContent['spez_field_11']         = $objResult->fields['spez_field_11'];
-                $arrFeedContent['spez_field_12']         = $objResult->fields['spez_field_12'];
-                $arrFeedContent['spez_field_13']         = $objResult->fields['spez_field_13'];
-                $arrFeedContent['spez_field_14']         = $objResult->fields['spez_field_14'];
-                $arrFeedContent['spez_field_15']         = $objResult->fields['spez_field_15'];
-                $arrFeedContent['spez_field_16']         = $objResult->fields['spez_field_16'];
-                $arrFeedContent['spez_field_17']         = $objResult->fields['spez_field_17'];
-                $arrFeedContent['spez_field_18']         = $objResult->fields['spez_field_18'];
-                $arrFeedContent['spez_field_19']         = $objResult->fields['spez_field_19'];
-                $arrFeedContent['spez_field_20']         = $objResult->fields['spez_field_20'];
-                $arrFeedContent['spez_field_21']         = $objResult->fields['spez_field_21'];
-                $arrFeedContent['spez_field_22']         = $objResult->fields['spez_field_22'];
-                $arrFeedContent['spez_field_23']         = $objResult->fields['spez_field_23'];
-                $arrFeedContent['spez_field_24']         = $objResult->fields['spez_field_24'];
-                $arrFeedContent['spez_field_25']         = $objResult->fields['spez_field_25'];
-                $arrFeedContent['spez_field_26']         = $objResult->fields['spez_field_26'];
-                $arrFeedContent['spez_field_27']         = $objResult->fields['spez_field_27'];
-                $arrFeedContent['spez_field_28']         = $objResult->fields['spez_field_28'];
-                $arrFeedContent['spez_field_29']         = $objResult->fields['spez_field_29'];
-                $arrFeedContent['youtube']               = $objResult->fields['youtube'];
+//                $arrFeedContent['checksum'] = $objResult->fields['checksum'];
+                $arrFeedContent['city'] = $objResult->fields['city'];
+                $arrFeedContent['information'] = $objResult->fields['information'];
+                $arrFeedContent['fax'] = $objResult->fields['fax'];
+                $arrFeedContent['mobile'] = $objResult->fields['mobile'];
+                $arrFeedContent['mail'] = $objResult->fields['mail'];
+                $arrFeedContent['homepage'] = $objResult->fields['homepage'];
+                $arrFeedContent['industry'] = $objResult->fields['industry'];
+                $arrFeedContent['legalform'] = $objResult->fields['legalform'];
+                $arrFeedContent['conversion'] = $objResult->fields['conversion'];
+                $arrFeedContent['employee'] = $objResult->fields['employee'];
+                $arrFeedContent['foundation'] = $objResult->fields['foundation'];
+                $arrFeedContent['mwst'] = $objResult->fields['mwst'];
+                $arrFeedContent['opening'] = $objResult->fields['opening'];
+                $arrFeedContent['holidays'] = $objResult->fields['holidays'];
+                $arrFeedContent['places'] = $objResult->fields['places'];
+                $arrFeedContent['logo'] = $objResult->fields['logo'];
+                $arrFeedContent['team'] = $objResult->fields['team'];
+                $arrFeedContent['portfolio'] = $objResult->fields['portfolio'];
+                $arrFeedContent['offers'] = $objResult->fields['offers'];
+                $arrFeedContent['concept'] = $objResult->fields['concept'];
+                $arrFeedContent['map'] = $objResult->fields['map'];
+                $arrFeedContent['premium'] = $objResult->fields['premium'];
+                $arrFeedContent['lokal'] = $objResult->fields['lokal'];
+                $arrFeedContent['spez_field_1'] = $objResult->fields['spez_field_1'];
+                $arrFeedContent['spez_field_2'] = $objResult->fields['spez_field_2'];
+                $arrFeedContent['spez_field_3'] = $objResult->fields['spez_field_3'];
+                $arrFeedContent['spez_field_4'] = $objResult->fields['spez_field_4'];
+                $arrFeedContent['spez_field_5'] = $objResult->fields['spez_field_5'];
+                $arrFeedContent['spez_field_6'] = $objResult->fields['spez_field_6'];
+                $arrFeedContent['spez_field_7'] = $objResult->fields['spez_field_7'];
+                $arrFeedContent['spez_field_8'] = $objResult->fields['spez_field_8'];
+                $arrFeedContent['spez_field_9'] = $objResult->fields['spez_field_9'];
+                $arrFeedContent['spez_field_10'] = $objResult->fields['spez_field_10'];
+                $arrFeedContent['spez_field_11'] = $objResult->fields['spez_field_11'];
+                $arrFeedContent['spez_field_12'] = $objResult->fields['spez_field_12'];
+                $arrFeedContent['spez_field_13'] = $objResult->fields['spez_field_13'];
+                $arrFeedContent['spez_field_14'] = $objResult->fields['spez_field_14'];
+                $arrFeedContent['spez_field_15'] = $objResult->fields['spez_field_15'];
+                $arrFeedContent['spez_field_16'] = $objResult->fields['spez_field_16'];
+                $arrFeedContent['spez_field_17'] = $objResult->fields['spez_field_17'];
+                $arrFeedContent['spez_field_18'] = $objResult->fields['spez_field_18'];
+                $arrFeedContent['spez_field_19'] = $objResult->fields['spez_field_19'];
+                $arrFeedContent['spez_field_20'] = $objResult->fields['spez_field_20'];
+                $arrFeedContent['spez_field_21'] = $objResult->fields['spez_field_21'];
+                $arrFeedContent['spez_field_22'] = $objResult->fields['spez_field_22'];
+                $arrFeedContent['spez_field_23'] = $objResult->fields['spez_field_23'];
+                $arrFeedContent['spez_field_24'] = $objResult->fields['spez_field_24'];
+                $arrFeedContent['spez_field_25'] = $objResult->fields['spez_field_25'];
+                $arrFeedContent['spez_field_26'] = $objResult->fields['spez_field_26'];
+                $arrFeedContent['spez_field_27'] = $objResult->fields['spez_field_27'];
+                $arrFeedContent['spez_field_28'] = $objResult->fields['spez_field_28'];
+                $arrFeedContent['spez_field_29'] = $objResult->fields['spez_field_29'];
+                $arrFeedContent['youtube'] = $objResult->fields['youtube'];
                 $objResult->MoveNext();
             }
         }
@@ -1090,14 +1113,14 @@ $this->arrRows[2] = '';
                         preg_match($youTubeIdRegex, $arrFeedContent[$fieldName], $youTubeArray);
                         $youTubeID = $youTubeArray[1];
 
-                        $content =  '<object width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"><param name="wmode" value="transparent"><param name="movie" value="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed wmode="transparent" src="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"></embed></object>';
+                        $content ='<object width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"><param name="movie" value="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"></embed></object>';
                     }
 
                     //get pics
                     if ($fieldName == "logo") {
                         $content = '<img src="'.$this->mediaWebPath.'images/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" />&nbsp;&nbsp;';
-                        $info   = getimagesize($this->mediaPath."images/".$arrFeedContent[$fieldName]);
-                        $width  = $info[0]+20;
+                        $info = getimagesize($this->mediaPath."images/".$arrFeedContent[$fieldName]);
+                        $width = $info[0]+20;
                         $height = $info[1]+20;
                         if (!file_exists($this->mediaPath.'thumbs/'.$arrFeedContent[$fieldName])) {
                             $path = "images/";
@@ -1138,9 +1161,9 @@ $this->arrRows[2] = '';
                         $fieldName == "spez_field_19" ||
                         $fieldName == "spez_field_20") {
 
-                        $info         = getimagesize($this->mediaPath."images/".$arrFeedContent[$fieldName]);
-                        $width        = $info[0]+20;
-                        $height        = $info[1]+20;
+                        $info = getimagesize($this->mediaPath."images/".$arrFeedContent[$fieldName]);
+                        $width = $info[0]+20;
+                        $height = $info[1]+20;
 
                         if (!file_exists($this->mediaPath.'thumbs/'.$arrFeedContent[$fieldName])) {
                             $path = "images/";
@@ -1162,7 +1185,7 @@ $this->arrRows[2] = '';
                     }
 
                     if (strtolower($fieldName) == "googlemap") {
-                        $inputValueField  = '<input type="hidden" name="inputValue[lon]" value="'.$arrFeedContent["lon"].'" style="width:22px;" maxlength="3" />';
+                        $inputValueField = '<input type="hidden" name="inputValue[lon]" value="'.$arrFeedContent["lon"].'" style="width:22px;" maxlength="3" />';
                         $inputValueField .= '<input type="hidden" name="inputValue[lon_fraction]" value="'.$arrFeedContent["lon_fraction"].'" style="width:92px;" maxlength="15" />';
                         $inputValueField .= '<input type="hidden" name="inputValue[lat]" value="'.$arrFeedContent["lat"].'" style="width:22px;" maxlength="15" />';
                         $inputValueField .= '<input type="hidden" name="inputValue[lat_fraction]" value="'.$arrFeedContent["lat_fraction"].'" style="width:92px;" maxlength="15" />';
@@ -1260,19 +1283,19 @@ $this->arrRows[2] = '';
         $points = (strlen($arrFeedContent['description']) > 400 ? '...' : '');
         $parts = explode("\n", wordwrap($arrFeedContent['description'], 400, "\n"));
         $setVariable["DIRECTORY_FEED_SHORT_DESCRIPTION"] = $parts[0].$points;
-        $setVariable["DIRECTORY_FEED_ID"]                = $arrFeedContent['id'];
-        $setVariable["DIRECTORY_FEED_DETAIL"]            = $_ARRAYLANG['TXT_DIRECTORY_DETAIL'];
-        $setVariable["DIRECTORY_FEED_DETAIL_LINK"]       = CONTREXX_SCRIPT_PATH."?section=directory&amp;cmd=detail&amp;id=".$arrFeedContent['id'].$lid.$cid;
-        $setVariable["DIRECTORY_FEED_EDIT"]              = $_ARRAYLANG['TXT_DIRECTORY_EDIT'];
-        $setVariable["DIRECTORY_FEED_EDIT_LINK"]         = CONTREXX_SCRIPT_PATH."?section=directory&amp;cmd=edit&amp;id=".$arrFeedContent['id'];
-        $setVariable["DIRECTORY_FEED_HITS"]              = $arrFeedContent['hits'];
+        $setVariable["DIRECTORY_FEED_ID"] = $arrFeedContent['id'];
+        $setVariable["DIRECTORY_FEED_DETAIL"] = $_ARRAYLANG['TXT_DIRECTORY_DETAIL'];
+        $setVariable["DIRECTORY_FEED_DETAIL_LINK"] = CONTREXX_SCRIPT_PATH."?section=directory&amp;cmd=detail&amp;id=".$arrFeedContent['id'].$lid.$cid;
+        $setVariable["DIRECTORY_FEED_EDIT"] = $_ARRAYLANG['TXT_DIRECTORY_EDIT'];
+        $setVariable["DIRECTORY_FEED_EDIT_LINK"] = CONTREXX_SCRIPT_PATH."?section=directory&amp;cmd=edit&amp;id=".$arrFeedContent['id'];
+        $setVariable["DIRECTORY_FEED_HITS"] = $arrFeedContent['hits'];
 
         if ($arrFeedContent['premium'] == '1') {
             $content = 'class="premium"';
         } else {
             $content = 'class="normal"';
         }
-        $setVariable["DIRECTORY_FEED_PREMIUM"]     = $content;
+        $setVariable["DIRECTORY_FEED_PREMIUM"] = $content;
 
         //metatitle
         $cmd = (isset($_GET['cmd']) ? $_GET['cmd'] : '');
@@ -1340,10 +1363,7 @@ $this->arrRows[2] = '';
 
 
     /**
-     * new entry
-     *
-     * add entry
-     *
+     * Add a new entry
      * @access   public
      * @param    string  $parentId
      * @global    ADONewConnection
@@ -1384,21 +1404,23 @@ $this->arrRows[2] = '';
         $this->getSearch();
 
         //get categories, languages, platforms and username
-        $catId   = 0;
+        $catId = 0;
         $levelId = 0;
         $categories = $this->getCategories($catId, 1);
-        $levels     = $this->getLevels($levelId, 1);
+        $levels = $this->getLevels($levelId, 1);
 // TODO: $osId is not defined
 //$osId = 0;
 // TODO: Never used
-//        $platforms  = $this->getPlatforms($osId);
+//        $platforms = $this->getPlatforms($osId);
 // TODO: $langId is not defined
 //$langId = 0;
 // TODO: Never used
-//        $languages  = $this->getLanguages($langId);
+//        $languages = $this->getLanguages($langId);
 
         //get inputfields
-        $this->getInputfields($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0, "add", "", "frontend");
+        $this->getInputfields(
+            ($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0),
+            "add", "", "frontend");
 
         //add feed
         if (isset($_POST['addSubmit'])) {
@@ -1406,8 +1428,8 @@ $this->arrRows[2] = '';
         }
 
         $this->_objTpl->setVariable(array(
-            'DIRECTORY_CATEGORY_NAVI'            => $verlauf,
-            'TXT_DIRECTORY_DIR'                 => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'DIRECTORY_CATEGORY_NAVI' => $verlauf,
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
         ));
 
         if ($status != "error") {
@@ -1418,8 +1440,8 @@ $this->arrRows[2] = '';
 
             // set variables
             $this->_objTpl->setVariable(array(
-                'DIRECTORY_FEED_ADDED'            => $_ARRAYLANG['DIRECTORY_FEED_ADDED'],
-                'TXT_DIRECTORY_BACK'            => '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+                'DIRECTORY_FEED_ADDED' => $_ARRAYLANG['DIRECTORY_FEED_ADDED'],
+                'TXT_DIRECTORY_BACK' => '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
             ));
 
 
@@ -1428,20 +1450,20 @@ $this->arrRows[2] = '';
         } else {
             // set variables
             $this->_objTpl->setVariable(array(
-                'TXT_DIRECTORY_ADD'                     => $_ARRAYLANG['TXT_DIR_F_ADD'],
-                'TXT_DIRECTORY_RSSLINK'                => $_ARRAYLANG['TXT_DIRECTORY_RSS'],
-                'TXT_DIRECTORY_FILE'                => $_ARRAYLANG['TXT_DIRECTORY_UPLOAD'],
-                'TXT_DIRECTORY_LINK'                => $_ARRAYLANG['TXT_DIRECTORY_LINK'],
-                'TXT_DIRECTORY_ATTACHMENT'            => $_ARRAYLANG['TXT_DIRECTORY_ATTACHMENT'],
-                'TXT_DIRECTORY_MAKE_SELECTION'        => $_ARRAYLANG['TXT_DIRECTORY_PLEASE_CHOSE'],
-                'TXT_DIRECTORY_FILETYPE'            => $_ARRAYLANG['TXT_DIRECTORY_FILETYP'],
+                'TXT_DIRECTORY_ADD' => $_ARRAYLANG['TXT_DIR_F_ADD'],
+                'TXT_DIRECTORY_RSSLINK' => $_ARRAYLANG['TXT_DIRECTORY_RSS'],
+                'TXT_DIRECTORY_FILE' => $_ARRAYLANG['TXT_DIRECTORY_UPLOAD'],
+                'TXT_DIRECTORY_LINK' => $_ARRAYLANG['TXT_DIRECTORY_LINK'],
+                'TXT_DIRECTORY_ATTACHMENT' => $_ARRAYLANG['TXT_DIRECTORY_ATTACHMENT'],
+                'TXT_DIRECTORY_MAKE_SELECTION' => $_ARRAYLANG['TXT_DIRECTORY_PLEASE_CHOSE'],
+                'TXT_DIRECTORY_FILETYPE' => $_ARRAYLANG['TXT_DIRECTORY_FILETYP'],
 // TODO: Not defined
-//                'DIRECTORY_CHECK'                    => $check,
-                'TXT_FIELDS_REQUIRED'                => $_ARRAYLANG['DIRECTORY_CHECK_REQIERED'],
-                'TXT_DIRECTORY_LEVEL'                 => $_ARRAYLANG['TXT_LEVEL'],
-                'TXT_DIRECTORY_CATEGORY'             => $_ARRAYLANG['TXT_DIR_F_CATEGORIE'],
-                'DIRECTORY_CATEGORIES_DESELECTED'     => $categories,
-                'DIRECTORY_LEVELS_DESELECTED'         => $levels,
+//                'DIRECTORY_CHECK' => $check,
+                'TXT_FIELDS_REQUIRED' => $_ARRAYLANG['DIRECTORY_CHECK_REQIERED'],
+                'TXT_DIRECTORY_LEVEL' => $_ARRAYLANG['TXT_LEVEL'],
+                'TXT_DIRECTORY_CATEGORY' => $_ARRAYLANG['TXT_DIR_F_CATEGORIE'],
+                'DIRECTORY_CATEGORIES_DESELECTED' => $categories,
+                'DIRECTORY_LEVELS_DESELECTED' => $levels,
             ));
 
             if ($this->settings['levels']['value']=='0') {
@@ -1451,35 +1473,33 @@ $this->arrRows[2] = '';
             if ($this->_isGoogleMapEnabled('frontend')) {
                 $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
                 $this->_objTpl->setVariable(array(
-                    'DIRECTORY_GOOGLE_API_KEY'   => $_CONFIG["googleMapsAPIKey"],
+                    'DIRECTORY_GOOGLE_API_KEY' => $_CONFIG["googleMapsAPIKey"],
                     'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
                     'TXT_DIR_GEO_TOO_MANY_QUERIES' => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
-                    'TXT_DIR_GEO_SERVER_ERROR'   => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
-                    'TXT_DIR_GEO_NOT_FOUND'      => $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
-                    'TXT_DIR_GEO_SUCCESS'        => $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
-                    'TXT_DIR_GEO_MISSING'        => $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
-                    'TXT_DIR_GEO_UNKNOWN'        => $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
-                    'TXT_DIR_GEO_UNAVAILABLE'    => $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
-                    'TXT_DIR_GEO_BAD_KEY'        => $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
-                    'DIRECTORY_START_X'          => 'null',
-                    'DIRECTORY_START_Y'          => 'null',
-                    'DIRECTORY_START_ZOOM'       => 'null',
-                    'DIRECTORY_ENTRY_NAME'       => 'null',
-                    'DIRECTORY_ENTRY_COMPANY'    => 'null',
-                    'DIRECTORY_ENTRY_STREET'     => 'null',
-                    'DIRECTORY_ENTRY_ZIP'        => 'null',
-                    'DIRECTORY_ENTRY_LOCATION'   => 'null',
-                    'DIRECTORY_MAP_LON_BACKEND'  => $this->googleMapStartPoint['lon'],
-                    'DIRECTORY_MAP_LAT_BACKEND'  => $this->googleMapStartPoint['lat'],
+                    'TXT_DIR_GEO_SERVER_ERROR' => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
+                    'TXT_DIR_GEO_NOT_FOUND' => $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+                    'TXT_DIR_GEO_SUCCESS' => $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+                    'TXT_DIR_GEO_MISSING' => $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+                    'TXT_DIR_GEO_UNKNOWN' => $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+                    'TXT_DIR_GEO_UNAVAILABLE' => $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+                    'TXT_DIR_GEO_BAD_KEY' => $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
+                    'DIRECTORY_START_X' => 'null',
+                    'DIRECTORY_START_Y' => 'null',
+                    'DIRECTORY_START_ZOOM' => 'null',
+                    'DIRECTORY_ENTRY_NAME' => 'null',
+                    'DIRECTORY_ENTRY_COMPANY' => 'null',
+                    'DIRECTORY_ENTRY_STREET' => 'null',
+                    'DIRECTORY_ENTRY_ZIP' => 'null',
+                    'DIRECTORY_ENTRY_LOCATION' => 'null',
+                    'DIRECTORY_MAP_LON_BACKEND' => $this->googleMapStartPoint['lon'],
+                    'DIRECTORY_MAP_LAT_BACKEND' => $this->googleMapStartPoint['lat'],
                     'DIRECTORY_MAP_ZOOM_BACKEND' => $this->googleMapStartPoint['zoom'],
-                    'IS_BACKEND'                 => 'true',
+                    'IS_BACKEND' => 'true',
                 ));
                 if ($this->_objTpl->blockExists('direcoryGoogleMapJavascript')) {
                     $this->_objTpl->parse('direcoryGoogleMapJavascript');
                 }
             }
-
-
             $this->_objTpl->hideBlock('directoryMessage');
             $this->_objTpl->parse('directoryInputFields');
         }
@@ -1515,13 +1535,13 @@ $this->arrRows[2] = '';
         //get search
         $this->getSearch();
 
-        $objCount         = $objDatabase->Execute("SELECT COUNT(1) AS entryCount FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND addedby = ".$objFWUser->objUser->getId()." ORDER BY spezial DESC");
+        $objCount = $objDatabase->Execute("SELECT COUNT(1) AS entryCount FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND addedby = ".$objFWUser->objUser->getId()." ORDER BY spezial DESC");
 
         ////// paging start /////////
-        $pagingLimit     = intval($this->settings['pagingLimit']['value']);
-        $count             = $objCount->fields['entryCount'];
-        $pos             = intval($_GET['pos']);
-        $paging         = getPaging($count, $pos, "&amp;section=directory&amp;cmd=myfeeds", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+        $pagingLimit = intval($this->settings['pagingLimit']['value']);
+        $count = $objCount->fields['entryCount'];
+        $pos = intval($_GET['pos']);
+        $paging = getPaging($count, $pos, "&amp;section=directory&amp;cmd=myfeeds", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
         ////// paging end /////////
 
         if ($count < $pagingLimit) {
@@ -1530,9 +1550,9 @@ $this->arrRows[2] = '';
 
         // set variables
         $this->_objTpl->setVariable(array(
-            'DIRECTORY_CATEGORY_NAVI'        => $verlauf,
-            'TXT_DIRECTORY_DIR'             => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
-            'SEARCH_PAGING'                    => $paging
+            'DIRECTORY_CATEGORY_NAVI' => $verlauf,
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'SEARCH_PAGING' => $paging
         ));
 
         $id = $objFWUser->objUser->getId();
@@ -1609,7 +1629,7 @@ $this->arrRows[2] = '';
             while (!$objResult->EOF) {
 // TODO: Never used
 //                $spezSort = $objResult->fields['spezial'];
-                $author   = $objResult->fields['addedby'];
+                $author = $objResult->fields['addedby'];
                 $objResult->MoveNext();
             }
         }
@@ -1638,7 +1658,7 @@ $this->arrRows[2] = '';
         // set variables
         $this->_objTpl->setVariable(array(
             'DIRECTORY_CATEGORY_NAVI' => $verlauf,
-            'TXT_DIRECTORY_DIR'       => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
         ));
 
         if ($status != "error") {
@@ -1648,7 +1668,7 @@ $this->arrRows[2] = '';
             }
             $this->_objTpl->setVariable(array(
                 'DIRECTORY_FEED_UPDATED' => $_ARRAYLANG['TXT_DIRECTORY_UPDATE_SUCCESSFULL'],
-                'TXT_DIRECTORY_BACK'     => '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=myfeeds">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+                'TXT_DIRECTORY_BACK' => '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=myfeeds">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
             ));
             $this->_objTpl->parse('directoryMessage');
             $this->_objTpl->hideBlock('directoryInputFields');
@@ -1656,31 +1676,31 @@ $this->arrRows[2] = '';
             // set variables
             $this->_objTpl->setVariable(array(
                 'DIRECTORY_CATEGORY_DESELECTED' => $categorieDe,
-                'DIRECTORY_CATEGORY_SELECTED'   => $categorieSe,
-                'DIRECTORY_LEVELS_DESELECTED'   => $levelsDe,
-                'DIRECTORY_LEVELS_SELECTED'     => $levelsSe,
+                'DIRECTORY_CATEGORY_SELECTED' => $categorieSe,
+                'DIRECTORY_LEVELS_DESELECTED' => $levelsDe,
+                'DIRECTORY_LEVELS_SELECTED' => $levelsSe,
 // TODO: Not defined
-//                'DIRECTORY_OS'                  => $platforms,
+//                'DIRECTORY_OS' => $platforms,
 // TODO: Not defined
-//                'DIRECTORY_IP'                    => $dirIp,
+//                'DIRECTORY_IP' => $dirIp,
 // TODO: Not defined
-//                'DIRECTORY_HOST'                => $dirProvider,
-                'DIRECTORY_ID'                    => $id,
+//                'DIRECTORY_HOST' => $dirProvider,
+                'DIRECTORY_ID' => $id,
 // TODO: Not defined
-//                'DIRECTORY_EDIT_FILE'            => $filename,
-                'DIRECTORY_LINK'                => $link,
+//                'DIRECTORY_EDIT_FILE' => $filename,
+                'DIRECTORY_LINK' => $link,
 // TODO: Not defined
-//                'DIRECTORY_ATTACHMENT'            => $attachment,
-                'TXT_DIRECTORY_LEVEL'           => $_ARRAYLANG['TXT_LEVEL'],
-                'TXT_DIRECTORY_RSSLINK'         => $_ARRAYLANG['TXT_DIRECTORY_RSS'],
-                'TXT_DIRECTORY_FILE'            => $_ARRAYLANG['TXT_DIRECTORY_UPLOAD'],
-                'TXT_DIRECTORY_LINK'            => $_ARRAYLANG['TXT_DIRECTORY_LINK'],
-                'TXT_DIRECTORY_ATTACHMENT'      => $_ARRAYLANG['TXT_DIRECTORY_ATTACHMENT'],
-                'TXT_DIRECTORY_MAKE_SELECTION'  => $_ARRAYLANG['TXT_DIRECTORY_PLEASE_CHOSE'],
-                'TXT_DIRECTORY_FILETYPE'        => $_ARRAYLANG['TXT_DIRECTORY_FILETYP'],
-                'TXT_DIRECTORY_CATEGORY'        => $_ARRAYLANG['TXT_DIR_F_CATEGORIE'],
-                'TXT_DIRECTORY_UPDATE'          => $_ARRAYLANG['TXT_DIRECTORY_SAVE'],
-                'TXT_FIELDS_REQUIRED'           => $_ARRAYLANG['DIRECTORY_CHECK_REQIERED'],
+//                'DIRECTORY_ATTACHMENT' => $attachment,
+                'TXT_DIRECTORY_LEVEL' => $_ARRAYLANG['TXT_LEVEL'],
+                'TXT_DIRECTORY_RSSLINK' => $_ARRAYLANG['TXT_DIRECTORY_RSS'],
+                'TXT_DIRECTORY_FILE' => $_ARRAYLANG['TXT_DIRECTORY_UPLOAD'],
+                'TXT_DIRECTORY_LINK' => $_ARRAYLANG['TXT_DIRECTORY_LINK'],
+                'TXT_DIRECTORY_ATTACHMENT' => $_ARRAYLANG['TXT_DIRECTORY_ATTACHMENT'],
+                'TXT_DIRECTORY_MAKE_SELECTION' => $_ARRAYLANG['TXT_DIRECTORY_PLEASE_CHOSE'],
+                'TXT_DIRECTORY_FILETYPE' => $_ARRAYLANG['TXT_DIRECTORY_FILETYP'],
+                'TXT_DIRECTORY_CATEGORY' => $_ARRAYLANG['TXT_DIR_F_CATEGORIE'],
+                'TXT_DIRECTORY_UPDATE' => $_ARRAYLANG['TXT_DIRECTORY_SAVE'],
+                'TXT_FIELDS_REQUIRED' => $_ARRAYLANG['DIRECTORY_CHECK_REQIERED'],
             ));
             if ($this->settings['levels']['value']=='0') {
                 $this->_objTpl->hideBlock('directoryLevels');
@@ -1689,28 +1709,28 @@ $this->arrRows[2] = '';
             if ($this->_isGoogleMapEnabled('frontend')) {
                 $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
                 $this->_objTpl->setVariable(array(
-                    'DIRECTORY_GOOGLE_API_KEY'   => $_CONFIG["googleMapsAPIKey"],
+                    'DIRECTORY_GOOGLE_API_KEY' => $_CONFIG["googleMapsAPIKey"],
                     'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
                     'TXT_DIR_GEO_TOO_MANY_QUERIES' => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
-                    'TXT_DIR_GEO_SERVER_ERROR'   => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
-                    'TXT_DIR_GEO_NOT_FOUND'      => $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
-                    'TXT_DIR_GEO_SUCCESS'        => $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
-                    'TXT_DIR_GEO_MISSING'        => $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
-                    'TXT_DIR_GEO_UNKNOWN'        => $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
-                    'TXT_DIR_GEO_UNAVAILABLE'    => $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
-                    'TXT_DIR_GEO_BAD_KEY'        => $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
-                    'DIRECTORY_START_X'          => 'null',
-                    'DIRECTORY_START_Y'          => 'null',
-                    'DIRECTORY_START_ZOOM'       => 'null',
-                    'DIRECTORY_ENTRY_NAME'       => 'null',
-                    'DIRECTORY_ENTRY_COMPANY'    => 'null',
-                    'DIRECTORY_ENTRY_STREET'     => 'null',
-                    'DIRECTORY_ENTRY_ZIP'        => 'null',
-                    'DIRECTORY_ENTRY_LOCATION'   => 'null',
-                    'DIRECTORY_MAP_LON_BACKEND'  => $this->googleMapStartPoint['lon'],
-                    'DIRECTORY_MAP_LAT_BACKEND'  => $this->googleMapStartPoint['lat'],
+                    'TXT_DIR_GEO_SERVER_ERROR' => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
+                    'TXT_DIR_GEO_NOT_FOUND' => $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+                    'TXT_DIR_GEO_SUCCESS' => $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+                    'TXT_DIR_GEO_MISSING' => $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+                    'TXT_DIR_GEO_UNKNOWN' => $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+                    'TXT_DIR_GEO_UNAVAILABLE' => $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+                    'TXT_DIR_GEO_BAD_KEY' => $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
+                    'DIRECTORY_START_X' => 'null',
+                    'DIRECTORY_START_Y' => 'null',
+                    'DIRECTORY_START_ZOOM' => 'null',
+                    'DIRECTORY_ENTRY_NAME' => 'null',
+                    'DIRECTORY_ENTRY_COMPANY' => 'null',
+                    'DIRECTORY_ENTRY_STREET' => 'null',
+                    'DIRECTORY_ENTRY_ZIP' => 'null',
+                    'DIRECTORY_ENTRY_LOCATION' => 'null',
+                    'DIRECTORY_MAP_LON_BACKEND' => $this->googleMapStartPoint['lon'],
+                    'DIRECTORY_MAP_LAT_BACKEND' => $this->googleMapStartPoint['lat'],
                     'DIRECTORY_MAP_ZOOM_BACKEND' => $this->googleMapStartPoint['zoom'],
-                    'IS_BACKEND'                 => 'true',
+                    'IS_BACKEND' => 'true',
                 ));
                 if ($this->_objTpl->blockExists('direcoryGoogleMapJavascript')) {
                     $this->_objTpl->parse('direcoryGoogleMapJavascript');
@@ -1761,9 +1781,9 @@ $this->arrRows[2] = '';
         if ($objResult) {
             while (!$objResult->EOF) {
                 if (!empty($_GET[$objResult->fields['name']]) && $_GET['check'] == 'exp') {
-                    $query_search     .= "AND ".$objResult->fields['name']." LIKE ('%".contrexx_addslashes($_GET[$objResult->fields['name']])."%') ";
+                    $query_search .= "AND ".$objResult->fields['name']." LIKE ('%".contrexx_addslashes($_GET[$objResult->fields['name']])."%') ";
                     $searchTermGoogle .= "+".contrexx_addslashes($_GET[$objResult->fields['name']]);
-                    $searchTermExp    .= "&amp;".$objResult->fields['name']."=".contrexx_addslashes($_GET[$objResult->fields['name']]);
+                    $searchTermExp .= "&amp;".$objResult->fields['name']."=".contrexx_addslashes($_GET[$objResult->fields['name']]);
                 }
                 $objResult->MoveNext();
             }
@@ -1778,9 +1798,9 @@ $this->arrRows[2] = '';
                     $categories .= "(rel_cat.cat_id='".$catId."' AND rel_cat.dir_id=files.id) OR ";
                 }
             }
-            $query_search  .= " AND (".$categories."  (rel_cat.cat_id='".intval($_GET['cid'])."' AND rel_cat.dir_id=files.id))";
+            $query_search .= " AND (".$categories."  (rel_cat.cat_id='".intval($_GET['cid'])."' AND rel_cat.dir_id=files.id))";
             $searchTermExp .= "&amp;cid=".intval($_GET['cid']);
-            $db            .= DBPREFIX."module_directory_rel_dir_cat AS rel_cat, ";
+            $db .= DBPREFIX."module_directory_rel_dir_cat AS rel_cat, ";
         }
 
         if ($_GET['lid'] != "" && $_GET['check'] == 'exp') {
@@ -1791,9 +1811,9 @@ $this->arrRows[2] = '';
                     $levels .= "(rel_level.level_id='".$levelId."' AND rel_level.dir_id=files.id) OR ";
                 }
             }
-            $query_search  .=" AND (".$levels."  (rel_level.level_id='".intval($_GET['lid'])."' AND rel_level.dir_id=files.id))";
+            $query_search .=" AND (".$levels."  (rel_level.level_id='".intval($_GET['lid'])."' AND rel_level.dir_id=files.id))";
             $searchTermExp .= "&amp;lid=".intval($_GET['lid']);
-            $db            .= DBPREFIX."module_directory_rel_dir_level AS rel_level, ";
+            $db .= DBPREFIX."module_directory_rel_dir_level AS rel_level, ";
         }
 
         if ($_GET['check'] == 'norm') {
@@ -1839,14 +1859,14 @@ $this->arrRows[2] = '';
 
             ////// paging start /////////
             $pagingLimit = intval($this->settings['pagingLimit']['value']);
-            $objResult   = $objDatabase->Execute($query);
-            $count       = $objResult->RecordCount();
-            $pos         = intval($_GET['pos']);
+            $objResult = $objDatabase->Execute($query);
+            $count = $objResult->RecordCount();
+            $pos = intval($_GET['pos']);
 
 // TODO: $term is not defined, possibly $searchTerm?
 // TODO: $check is not defined
-//            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$term."&amp;check=".$check.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
-            $paging      = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$searchTerm.$searchTermExp."&amp;check=".$_GET['check'], "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+//            $paging = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$term."&amp;check=".$check.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+            $paging = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$searchTerm.$searchTermExp."&amp;check=".$_GET['check'], "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
             ////// paging end /////////
             $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
 
@@ -1908,10 +1928,10 @@ $this->arrRows[2] = '';
   */
         // set variables
         $this->_objTpl->setVariable(array(
-            'DIRECTORY_CATEGORY_NAVI'  => $tree,
-            'TXT_DIRECTORY_DIR'        => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'DIRECTORY_CATEGORY_NAVI' => $tree,
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
             'TXT_DIRECTORY_SEARCHTERM' => str_replace('%', ' ', $searchTerm),
-            'SEARCH_PAGING'            => $paging,
+            'SEARCH_PAGING' => $paging,
         ));
     }
 
@@ -1991,18 +2011,18 @@ $this->arrRows[2] = '';
         $re = $search_result->getResultElements();
         if (!empty($re)) {
             foreach ($re as $element) {
-                $title       = "<a href='".$element->getURL()."' target='_blank'>".$element->getTitle()."</a>";
-                $url         = "<a href='".$element->getURL()."' target='_blank'>".substr($element->getURL(), 0, 80)."</a>";
+                $title = "<a href='".$element->getURL()."' target='_blank'>".$element->getTitle()."</a>";
+                $url = "<a href='".$element->getURL()."' target='_blank'>".substr($element->getURL(), 0, 80)."</a>";
                 $description = $element->getSnippet();
                 // set variables
                 $this->_objTpl->setVariable(array(
-                    'DIRECTORY_FEED_DESCRIPTION'  => strip_tags(substr($description, 0, 600)),
-                    'DIRECTORY_FEED_TITLE'        => $title,
-                    'DIRECTORY_FEED_URL'          => $url,
-                    'DIRECTORY_FEED_DETAIL'       => $_ARRAYLANG['TXT_DIRECTORY_DETAIL'],
-                    'DIRECTORY_FEED_DETAIL_LINK'  => $element->getURL(),
-                    'DIRECTORY_FEED_VOTE'         => $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'],
-                    'DIRECTORY_FEED_VOTE_LINK'    => $element->getURL(),
+                    'DIRECTORY_FEED_DESCRIPTION' => strip_tags(substr($description, 0, 600)),
+                    'DIRECTORY_FEED_TITLE' => $title,
+                    'DIRECTORY_FEED_URL' => $url,
+                    'DIRECTORY_FEED_DETAIL' => $_ARRAYLANG['TXT_DIRECTORY_DETAIL'],
+                    'DIRECTORY_FEED_DETAIL_LINK' => $element->getURL(),
+                    'DIRECTORY_FEED_VOTE' => $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'],
+                    'DIRECTORY_FEED_VOTE_LINK' => $element->getURL(),
                     'DIRECTORY_FEED_AVERAGE_VOTE' => $url,
                 ));
                 $this->_objTpl->parse('showResults');
@@ -2078,7 +2098,10 @@ $this->arrRows[2] = '';
         if ($objResult) {
             while (!$objResult->EOF) {
                 if (!empty($objResult->fields['logo'])) {
-                    $logo = '<img src="'.$this->mediaWebPath.'thumbs/'.$objResult->fields['logo'].'" border="0" alt="'.stripslashes($objResult->fields['title']).'" />';
+                    $logo =
+                        '<img src="'.$this->mediaWebPath.'thumbs/'.
+                        $objResult->fields['logo'].'" border="0" alt="'.
+                        stripslashes($objResult->fields['title']).'" />';
                 } else {
                     $logo = '';
                 }
@@ -2127,12 +2150,12 @@ $this->arrRows[2] = '';
         }
         $this->arrClient['language'] = htmlspecialchars($_SERVER['HTTP_ACCEPT_LANGUAGE'], ENT_QUOTES, CONTREXX_CHARSET);
         $this->_getProxyInformations();
-        $client  = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
-        $time    = time();
+        $client = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
+        $time = time();
         $voteNEW = intval($_GET['vote']);
-        $id      = intval($_GET['id']);
-        $cid     = intval($_GET['cid']);
-        $lid     = intval($_GET['lid']);
+        $id = intval($_GET['id']);
+        $cid = intval($_GET['cid']);
+        $lid = intval($_GET['lid']);
 
         //get clients
         $objResult = $objDatabase->SelectLimit("
@@ -2143,8 +2166,8 @@ $this->arrRows[2] = '';
         if ($objResult) {
             while (!$objResult->EOF) {
                 $clientOLD = $objResult->fields['client'];
-                $voteOLD   = $objResult->fields['vote'];
-                $countOLD  = $objResult->fields['count'];
+                $voteOLD = $objResult->fields['vote'];
+                $countOLD = $objResult->fields['count'];
                 $objResult->MoveNext();
             }
         }
@@ -2159,8 +2182,8 @@ $this->arrRows[2] = '';
             if (id !== "") {
                 //insert votes
                 if ($objResult->RecordCount() != 0) {
-                    $vote     = $voteNEW+$voteOLD;
-                    $count    = $countOLD+1;
+                    $vote = $voteNEW+$voteOLD;
+                    $count = $countOLD+1;
                     $objResult = $objDatabase->Execute("
                         UPDATE ".DBPREFIX."module_directory_vote
                            SET vote='".contrexx_addslashes($vote)."',
@@ -2182,13 +2205,13 @@ $this->arrRows[2] = '';
             }
             $title = $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL'];
 // TODO: $feedTitle is not defined!  No idea on what to place there.
-            $link  = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=detail&id='.$id.'" target="_blank">'.$feedTitle.'</a>';
-//            $link  = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=detail&id='.$id.'" target="_blank">???</a>';
-            $text  = str_replace('%LINK%', $link, $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL_TEXT']);
-            $text  = str_replace('%VOTE%', $voteNEW, $text);
+            $link = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=detail&id='.$id.'" target="_blank">'.$feedTitle.'</a>';
+//            $link = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=detail&id='.$id.'" target="_blank">???</a>';
+            $text = str_replace('%LINK%', $link, $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL_TEXT']);
+            $text = str_replace('%VOTE%', $voteNEW, $text);
         } else {
             $title = $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED'];
-            $text  = $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'];
+            $text = $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'];
         }
         //get navtree
         $this->getNavtree($lid, $cid);
@@ -2197,10 +2220,10 @@ $this->arrRows[2] = '';
         // set variables
         $this->_objTpl->setVariable(array(
             'DIRECTORY_CATEGORY_NAVI' => $this->navtree,
-            'DIRECTORY_VOTE_TITLE'    => $title,
-            'DIRECTORY_VOTE_TEXT'     => $text,
-            'DIRECTORY_BACK'          => '<a href="javascript:history.go(-1);">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
-            'TXT_DIRECTORY_DIR'       => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'DIRECTORY_VOTE_TITLE' => $title,
+            'DIRECTORY_VOTE_TEXT' => $text,
+            'DIRECTORY_BACK' => '<a href="javascript:history.go(-1);">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
         ));
     }
 
@@ -2226,9 +2249,9 @@ $this->arrRows[2] = '';
         }
         // set variables
         $this->_objTpl->setVariable(array(
-            'DIRECTORY_FEED_VOTE_ID'   => $id,
-            'DIRECTORY_FEED_VOTE'      => $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'],
-            'DIRECTORY_FEED_VOTE_IMG'  => $voteImg,
+            'DIRECTORY_FEED_VOTE_ID' => $id,
+            'DIRECTORY_FEED_VOTE' => $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'],
+            'DIRECTORY_FEED_VOTE_IMG' => $voteImg,
             'DIRECTORY_FEED_VOTE_LINK' => "javascript:toggle('voting_$id');",
         ));
     }
@@ -2282,7 +2305,7 @@ $this->arrRows[2] = '';
         // set variables
         $this->_objTpl->setVariable(array(
             'DIRECTORY_CATEGORY_NAVI' => $verlauf,
-            'TXT_DIRECTORY_DIR'       => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
         ));
         $objResult = $objDatabase->SelectLimit("
             SELECT id
@@ -2311,20 +2334,20 @@ $this->arrRows[2] = '';
         }
         $this->_objTpl->setVariable(array(
             'DIRECTORY_CATEGORY_NAVI' => $verlauf,
-            'TXT_DIRECTORY_DIR'       => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
+            'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
         ));
     }
 
 
     function getPageTitle()
     {
-         global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $lid = (isset($_GET['lid']) ? intval($_GET['lid']) : 0);
         $cid = (isset($_GET['cid']) ? intval($_GET['cid']) : 0);
         $this->getNavtreeLevels($lid);
         $this->getNavtreeCategories($cid);
-        $navtree =  '';
+        $navtree = '';
 
         $arr_levels = $this->navtreeLevels;
         $arr_cats = $this->navtreeCategories;
@@ -2343,7 +2366,6 @@ $this->arrRows[2] = '';
         if(!empty($navtree) && !empty($this->pageTitle)) {
             $navtree .= "&nbsp;-&nbsp;";
         }
-
         $this->pageTitle = $navtree.$this->pageTitle;
         return $this->pageTitle;
     }

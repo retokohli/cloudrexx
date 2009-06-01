@@ -1,35 +1,35 @@
 <!-- START module_directory_levels.html -->
 <script language="JavaScript">
 function deleteLevel(levelid)
-{ 
-    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')) 
-        window.location.replace("?cmd=directory&act=dellevel&id="+levelid);
+{
+    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+        window.location.replace("index.php?cmd=directory&act=dellevel&id="+levelid);
 }
 
 
 function statusLevel(levelid, status)
-{ 
-    window.location.replace("?cmd=directory&act=levels&id="+levelid+"&status="+status);
+{
+    window.location.replace("index.php?cmd=directory&act=levels&id="+levelid+"&status="+status);
 }
 
 
 function CheckForm() {
   with( document.addForm ) {
-    if (description.value == "" || name.value == "") 
+    if (description.value == "" || name.value == "")
     {
-        alert ("{TXT_FIELDS_REQUIRED}");       
+        alert ("{TXT_FIELDS_REQUIRED}");
         return false;
-    }   	
+    }
     return true;
   }
 }
 
 function setText(){
-	with(document.addForm ) 
-	{	
+	with(document.addForm )
+	{
 		var txtValue = name.value;
 		if(description.value == "")
-			description.value=txtValue;	
+			description.value=txtValue;
 	}
 }
 
@@ -57,7 +57,7 @@ function levelIsChecked(fieldName){
 function levelDoAction(){
 	if(levelIsChecked("formSelected[]") == true)
     {
-    	
+
 	    if(document.orderForm.selectAction.value == "move")
 	    {
 	        obj = document.getElementById('showmove');
@@ -68,7 +68,7 @@ function levelDoAction(){
 	    	obj = document.getElementById('showmove');
 	    	obj.style.display = 'none';
 	    	if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-        		document.orderForm.action = "?cmd=directory&act=dellevel";
+        		document.orderForm.action = "index.php?cmd=directory&act=dellevel";
         		document.orderForm.submit();
 	    	}else{
 	    		document.displayForm.selectAction.value = "0";
@@ -93,7 +93,7 @@ function levelDoMove(){
 	if(levelIsChecked("formSelected[]") == true)
     {
     	if(confirm('Wollen Sie diese Levels wirklich verschieben?')) {
-    		document.orderForm.action = "?cmd=directory&act=moveLevel";
+    		document.orderForm.action = "index.php?cmd=directory&act=moveLevel";
             document.orderForm.submit();
     	}else{
     		document.displayForm.selectAction.value = "0";
@@ -112,13 +112,13 @@ function levelDoMove(){
 
 </script>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
-  <tr> 
+  <tr>
     <th nowrap>{TXT_OPTIONS}</th>
   </tr>
-  <tr class="row1"> 
-    <td nowrap> 
-      <form method=post action='?cmd=directory&act=files'>
-        {TXT_FILE_SEARCH}: 
+  <tr class="row1">
+    <td nowrap>
+      <form method=post action='index.php?cmd=directory&act=files'>
+        {TXT_FILE_SEARCH}:
         <input type="text" name="term">
         <input type="submit" name="Submit" value="{TXT_SEARCH}">
       </form>
@@ -132,12 +132,12 @@ function levelDoMove(){
 </ul>
 
 <div id="newlevel" class="dirTab" style="display:none;">
-<form name="addForm" method="post" action="?cmd=directory&act=addlevel" onSubmit="return CheckForm()">
+<form name="addForm" method="post" action="index.php?cmd=directory&amp;act=addlevel" onSubmit="return CheckForm()">
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
-    <tr> 
+    <tr>
       <th colspan="2">{TXT_ADD_LEVEL}</th>
     </tr>
-    <tr class="row2"> 
+    <tr class="row2">
       <td width="150">{TXT_LEVEL}<font color="red"> *</font></td>
       <td>
         <select name="level" style="width:471px;">
@@ -146,31 +146,31 @@ function levelDoMove(){
         </select>
       </td>
     </tr>
-    <tr class="row1"> 
+    <tr class="row1">
       <td width="150">{TXT_NAME}:<font color="red">*</font></td>
-      <td> 
+      <td>
         <input name="name" size="90" onchange="setText()">
         </td>
     </tr>
-    <tr class="row2"> 
+    <tr class="row2">
       <td width="150">{TXT_DESCRIPTION}:<font color="red">*</font></td>
-      <td> 
+      <td>
         <input name="description" size="90">
         </td>
     </tr>
-    <!--<tr class="row1"> 
+    <!--<tr class="row1">
       <td width="150">{TXT_METADESC}:</td>
       <td>
         <input name="metadesc" size="90">
         </td>
     </tr>
-    <tr class="row2"> 
+    <tr class="row2">
       <td width="150">{TXT_METAKEYS}:</td>
       <td>
         <input size="90" name="metakeys">
         </td>
     </tr> -->
-    <tr class="row1"> 
+    <tr class="row1">
       <td width="150" valign="top">{TXT_SHOW_TYPE}:</td>
       <td>
         <input type="radio" name="showtype" value="1" checked>&nbsp;{TXT_KIND_LEVEL_AND_CATEGORIES}<br />
@@ -185,13 +185,13 @@ function levelDoMove(){
 </form>
 <br /><br />
 </div>
-<form name="orderForm" method="post" action="?cmd=directory&act=levelOrder">
+<form name="orderForm" method="post" action="index.php?cmd=directory&amp;act=levelOrder">
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%" class="adminlist">
-    <tr> 
-    <th colspan="5">{TXT_LIST} [ <a href="?cmd=directory&act=levels&expand=all">{TXT_EXPAND_ALL}</a> 
-      | <a href="?cmd=directory&act=levels&collaps=all">{TXT_COLLAPS_ALL}</a> ]</th>
+    <tr>
+    <th colspan="5">{TXT_LIST} [ <a href="index.php?cmd=directory&amp;act=levels&amp;expand=all">{TXT_EXPAND_ALL}</a>
+      | <a href="index.php?cmd=directory&amp;act=levels&amp;collaps=all">{TXT_COLLAPS_ALL}</a> ]</th>
   </tr>
-  <tr class="row3"> 
+  <tr class="row3">
     <td width="16">
        <center><b>#</b></center>
     </td>
@@ -201,7 +201,7 @@ function levelDoMove(){
     <td width="5%"><div align="right"><b>{TXT_ACTION}</b></div></td>
   </tr>
   <!-- BEGIN levelsRow -->
-  <tr class={LEVEL_ROW}> 
+  <tr class={LEVEL_ROW}>
     <td width="16" valign="top">
         <center>
         {LEVEL_CHECKBOX}
@@ -212,13 +212,13 @@ function levelDoMove(){
         {LEVEL_NAME} ({LEVEL_COUNTENTRIES})</td>
     <td width="25%" valign="top">{LEVEL_DESCRIPTION} </td>
     <td width="45%" valign="top">{LEVEL_CATEGORIES}</td>
-    <td  width="5%" valign="top" nowrap><div align="right"><a href="?cmd=directory&act=editlevel&id={LEVEL_ID}"><img src="images/icons/edit.gif" alt='{TXT_EDIT}' border="0"></a> 
-      <a href="javascript:deleteLevel({LEVEL_ID})"><img src="images/icons/delete.gif" alt='{TXT_DELETE}' border="0"></a></div> 
+    <td  width="5%" valign="top" nowrap><div align="right"><a href="index.php?cmd=directory&amp;act=editlevel&amp;id={LEVEL_ID}"><img src="images/icons/edit.gif" alt='{TXT_EDIT}' border="0"></a>
+      <a href="javascript:deleteLevel({LEVEL_ID})"><img src="images/icons/delete.gif" alt='{TXT_DELETE}' border="0"></a></div>
     </td>
   </tr>
   <!-- END levelsRow -->
   <!-- BEGIN nolevelsRow -->
-  <tr class={LEVEL_ROW}> 
+  <tr class={LEVEL_ROW}>
     <td width="16" valign="top">
         <br />
     </td>
