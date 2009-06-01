@@ -42,12 +42,9 @@ class Download {
     private $download_count;
     private $downloads;
     private $categories;
-
     private $names;
     private $descriptions;
-
     private $access_groups;
-
     private $arrAttributes = array(
         'core' => array(
             'id'                                => 'int',
@@ -77,10 +74,8 @@ class Download {
             'description'                       => 'string'
          )
     );
-
     private $arrTypes = array('file', 'url');
     private $defaultType = 'file';
-
     private $arrIcons = array(
         'avi',
         'bmp',
@@ -111,7 +106,6 @@ class Download {
     );
     private $defaultIcon = '_blank';
     private $urlIcon = 'htm';
-
     private $isFrontendMode;
 
     public static $arrMimeTypes = array(
@@ -159,7 +153,6 @@ class Download {
         )
     );
 
-
     private $defaultMimeType = 'document';
 
     /**
@@ -181,7 +174,7 @@ class Download {
      * @var array
      * @access protected
      */
-    protected  $arrCachedDownloads = array();
+    protected $arrCachedDownloads = array();
 
     /**
      * Contains the number of currently loaded downloads
@@ -197,8 +190,8 @@ class Download {
      */
     public $error_msg = array();
 
-
     private $userId;
+
 
     public function __construct()
     {
@@ -791,7 +784,6 @@ class Download {
                     $joinDownloadTbl = true;
                 }
             }
-
         }
 
         if (is_array($arrSort)) {
@@ -817,7 +809,7 @@ class Download {
         } else {
             $arrSortExpressions[] = ($joinCategoryTbl ? 'tblRC' : 'tblD').'.`order`';
             $arrSortExpressions[] = 'tblD.`id`';
-		}
+        }
 
         $query = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT tblD.`id`
             FROM `'.DBPREFIX.'module_downloads_download` AS tblD'
@@ -1550,7 +1542,6 @@ class Download {
     {
         $this->downloads = $arrDownloads;
     }
-
 
 }
 ?>
