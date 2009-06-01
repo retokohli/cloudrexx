@@ -293,10 +293,10 @@ class ContentWorkflow {
                 }
 
                 if ($objResult->fields['navBAccess'] != 0) {
-                    $objSubResult = $objDatabase->Execute(' SELECT  group_id
-                                                            FROM    '.DBPREFIX.'access_group_dynamic_ids
-                                                            WHERE   access_id='.$objResult->fields['navBAccess'].'
-                                                        ');
+                    $objSubResult = $objDatabase->Execute('
+                        SELECT group_id
+                          FROM '.DBPREFIX.'access_group_dynamic_ids
+                         WHERE access_id='.$objResult->fields['navBAccess']);
                     while (!$objSubResult->EOF) {
                         $strBackendGroups .= $arrGroups[$objSubResult->fields['group_id']].',';
                         $objSubResult->MoveNext();
@@ -307,10 +307,10 @@ class ContentWorkflow {
                 }
 
                 if ($objResult->fields['navFAccess'] != 0) {
-                    $objSubResult = $objDatabase->Execute(' SELECT  group_id
-                                                            FROM    '.DBPREFIX.'access_group_dynamic_ids
-                                                            WHERE   access_id='.$objResult->fields['navFAccess'].'
-                                                        ');
+                    $objSubResult = $objDatabase->Execute('
+                        SELECT group_id
+                          FROM '.DBPREFIX.'access_group_dynamic_ids
+                         WHERE access_id='.$objResult->fields['navFAccess']);
                     while (!$objSubResult->EOF) {
                         $strFrontendGroups .= $arrGroups[$objSubResult->fields['group_id']].',';
                         $objSubResult->MoveNext();
