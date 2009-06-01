@@ -12,7 +12,6 @@
  * @subpackage  admin
  */
 
-include_once('../lib/DBG.php');
 /**
  * Debug level, see lib/DBG.php
  *   DBG_NONE            - Turn debugging off
@@ -24,31 +23,7 @@ include_once('../lib/DBG.php');
  *   DBG_ALL             - sets all debug flags
  */
 define('_DEBUG', DBG_NONE);
-
-//-------------------------------------------------------
-// Set error reporting
-//-------------------------------------------------------
-if (_DEBUG) {
-// These globals are both unused and unnecessary.  Please use the constants.
-//    $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP         ? true : false);
-//    $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB       ? true : false);
-//    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE ? true : false);
-//    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE    ? true : false);
-//    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP ? true : false);
-    DBG::enable_all();
-    if (_DEBUG & DBG_LOG_FILE)                              DBG::setup('dbg.log', 'w');
-    if (_DEBUG & DBG_LOG_FIREPHP)                           DBG::enable_firephp();
-    if ((_DEBUG & DBG_ADODB) or (_DEBUG & DBG_ADODB_TRACE)) DBG::enable_adodb();
-}
-
-if (_DEBUG & DBG_PHP) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-} else {
-    error_reporting(0);
-    ini_set('display_errors', 0);
-}
-
+include_once('../lib/DBG.php');
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
