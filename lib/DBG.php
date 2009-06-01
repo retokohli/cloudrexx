@@ -26,15 +26,30 @@ class DBG
         throw new Exception('This is a static class! No need to create an object!');
     }
 
-    public static function __internal__setup() {
+    public static function __internal__setup()
+    {
         self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
+
+        if (!defined(_DEBUG))
+            define('_DEBUG', DBG_NONE);
+
+        self::enable_all();
+        if (_DEBUG & DBG_LOG_FILE)
+            self::setup('dbg.log', 'w');
+        if (_DEBUG & DBG_LOG_FIREPHP)
+            self::enable_firephp();
+        if ((_DEBUG & DBG_ADODB) || (_DEBUG & DBG_ADODB_TRACE))
+            self::enable_adodb();
+        if (_DEBUG & DBG_PHP) {
+            self::enable_error_reporting();
+        }
     }
 
 
     public static function enable_file()
     {
         self::setup('dbg.log', 'w');
-        set_error_handler('DBG::phpErrorHandler');
+        set_error_handler('self::phpErrorHandler');
     }
 
 
@@ -58,7 +73,7 @@ class DBG
 
     static function time()
     {
-        if(self::$enable_time) {
+        if (self::$enable_time) {
             $t = self::$last_time;
             self::$last_time = microtime(true);
             $diff_last  = round(self::$last_time  - $t, 5);
@@ -67,7 +82,6 @@ class DBG
             $f = self::_cleanfile($callers[0]['file']);
             $l = $callers[0]['line'];
             $d = date('H:i:s');
-
             self::_log("TIME AT: $f:$l $d (diff: $diff_last, startdiff: $diff_start)");
         }
     }
@@ -76,9 +90,8 @@ class DBG
     static function setup($file, $mode='a')
     {
         if (self::$dbg_fh) fclose(self::$dbg_fh);
-        if(!is_null(self::$firephp)) return true; //no need to setup ressources, we're using firephp
+        if (!is_null(self::$firephp)) return true; //no need to setup ressources, we're using firephp
         self::$dbg_fh = fopen($file, $mode);
-
         return true;
     }
 
@@ -89,11 +102,33 @@ class DBG
         self::$enable_trace = 1;
     }
 
+
     // Redirect ADODB output to us instead of STDOUT.
     static function enable_adodb() {
         if (!(_DEBUG & DBG_LOG_FILE)) self::setup('php://output');
         define('ADODB_OUTP', 'DBG_log_adodb');
     }
+
+
+    static function enable_adodb_debug($flagTrace=false)
+    {
+        global $objDatabase;
+
+        if ($flagTrace) {
+            $objDatabase->debug = 99;
+        } else {
+            $objDatabase->debug = 1;
+        }
+    }
+
+
+    static function disable_adodb_debug()
+    {
+        global $objDatabase;
+
+        $objDatabase->debug = 0;
+    }
+
 
     static function disable_trace()
     {
@@ -138,6 +173,20 @@ class DBG
     }
 
 
+    static function enable_error_reporting()
+    {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+    }
+
+
+    static function disable_error_reporting()
+    {
+        error_reporting(0);
+        ini_set('display_errors', 0);
+    }
+
+
     static function _cleanfile($f)
     {
         return substr($f, self::$fileskiplength);
@@ -163,7 +212,6 @@ class DBG
             $c = isset($callers[$level]['class']) ? $callers[$level]['class'] : null;
             $f = $callers[$level]['function'];
             self::trace($level);
-
             $sf = self::_cleanfile($callers[$level]['file']);
             $sl = $callers[$level]['line'];
             self::_log("        ".(empty($c) ? $c : "$c::$f")." FROM $sf : $sl");
@@ -174,12 +222,10 @@ class DBG
     static function dump($val)
     {
         if (!self::$enable_dump) return;
-
-        if(!is_null(self::$firephp)){
+        if (!is_null(self::$firephp)) {
             self::$firephp->log($val);
             return;
         }
-
         ob_start();
         print_r($val);
         $out = ob_get_clean();
@@ -194,10 +240,10 @@ class DBG
         self::_log("TRACE:  === STACKTRACE BEGIN ===");
         $err = error_reporting(E_ALL ^ E_NOTICE);
         foreach ($callers as $c) {
-            $file = self::_cleanfile($c['file']);
-            $line = $c['line'];
-            $class= $c['class'];
-            $func = $c['function'];
+            $file  = self::_cleanfile($c['file']);
+            $line  = $c['line'];
+            $class = $c['class'];
+            $func  = $c['function'];
             self::_log("        $file : $line (".(empty($class) ? $func : "$class::$func").")");
         }
         error_reporting($err);
@@ -207,10 +253,9 @@ class DBG
 
     static function msg($message)
     {
-        if(self::$enable_msg) {
+        if (self::$enable_msg) {
             self::_log('LOGMSG: '.$message);
         }
-
     }
 
 
@@ -222,40 +267,36 @@ class DBG
                 case E_ERROR:
                     $type = 'FATAL ERROR';
                     break;
-
                 case E_WARNING:
                     $type = 'WARNING';
                     break;
-
                 case E_PARSE:
                     $type = 'PARSE ERROR';
                     break;
-
                 case E_NOTICE:
                     $type = 'NOTICE';
                     break;
-
                 default:
                     $type = $errno;
                     break;
             }
-
             self::_log("(php): $type: $errstr in $errfile on line $errline");
         }
     }
 
 
-    static function log($text, $firephp_action = 'log', $additional_args = null)
+    static function log($text, $firephp_action='log', $additional_args=null)
     {
         self::_log($text, $firephp_action, $additional_args);
     }
 
 
-    private static function _log($text, $firephp_action = 'log', $additional_args = null)
+    private static function _log($text, $firephp_action='log', $additional_args=null)
     {
-        if(!is_null(self::$firephp) && method_exists(self::$firephp, $firephp_action)){
+        if (   !is_null(self::$firephp)
+            && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
-        }else{
+        } else {
             if (self::$dbg_fh) {
                 fputs(self::$dbg_fh, $text."\n");
             }
@@ -268,6 +309,9 @@ DBG::__internal__setup();
 
 function DBG_log_adodb($msg)
 {
-    DBG::log(_DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP ? strip_tags($msg) : $msg);
+    self::log(
+        _DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP
+            ? strip_tags($msg) : $msg);
 }
 
+?>

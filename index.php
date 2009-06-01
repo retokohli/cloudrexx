@@ -57,7 +57,6 @@
  * @uses        /modules/blog/index.class.php
  */
 
-include_once('lib/DBG.php');
 /**
  * Debug level, see lib/DBG.php
  *   DBG_NONE            - Turn debugging off
@@ -69,35 +68,7 @@ include_once('lib/DBG.php');
  *   DBG_ALL             - sets all debug flags
  */
 define('_DEBUG', DBG_NONE);
-
-//-------------------------------------------------------
-// Set error reporting
-//-------------------------------------------------------
-if (_DEBUG) {
-    if (_DEBUG & DBG_PHP) {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-    } else {
-        error_reporting(0);
-        ini_set('display_errors', 0);
-    }
-
-// These globals are both unused and unnecessary.  Please use the constants.
-//    $_DBG['dbgPHP']         = (_DEBUG & DBG_PHP         ? true : false);
-//    $_DBG['dbgADODB']       = (_DEBUG & DBG_ADODB       ? true : false);
-//    $_DBG['dbgADODBTrace']  = (_DEBUG & DBG_ADODB_TRACE ? true : false);
-//    $_DBG['dbgLogFile']     = (_DEBUG & DBG_LOG_FILE    ? true : false);
-//    $_DBG['dbgLogFirePHP']  = (_DEBUG & DBG_LOG_FIREPHP ? true : false);
-    DBG::enable_all();
-    if (_DEBUG & DBG_LOG_FILE)                              DBG::enable_file();
-    if (_DEBUG & DBG_LOG_FIREPHP)                           DBG::enable_firephp();
-    if ((_DEBUG & DBG_ADODB) or (_DEBUG & DBG_ADODB_TRACE)) DBG::enable_adodb();
-} else {
-    error_reporting(0);
-    ini_set('display_errors', 0);
-}
-
-
+include_once('lib/DBG.php');
 
 //iconv_set_encoding("output_encoding", "utf-8");
 //iconv_set_encoding("input_encoding", "utf-8");
@@ -709,7 +680,7 @@ if (!empty($_CONFIG['useKnowledgePlaceholders'])) {
     $modulespath = "modules/knowledge/interface.class.php";
     if (file_exists($modulespath)) {
         require_once($modulespath);
-        $knowledgeInterface = &new KnowledgeInterface();
+        $knowledgeInterface = new KnowledgeInterface();
         if (preg_match("/{KNOWLEDGE_[A-Za-z0-9_]+}/i", $page_content)) {
             $knowledgeInterface->parse($page_content);
         }
@@ -1606,7 +1577,7 @@ break;
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objKnowledge = &new Knowledge($page_content);
+        $objKnowledge = new Knowledge($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objKnowledge->getPage());
         if (!empty($objKnowledge->pageTitle)) {
             $page_title = $objKnowledge->pageTitle;
