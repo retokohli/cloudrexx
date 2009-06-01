@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Digital Asset Management
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -31,7 +32,6 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
  */
 class DownloadsLibrary
 {
-
     /**
      * File extensions that are allowed to upload
      *
@@ -40,7 +40,7 @@ class DownloadsLibrary
      * in this array then the contact request will be blocked and
      * a error message will be return instead.
      */
-    var $enabledUploadFileExtensions = array(
+    public  $enabledUploadFileExtensions = array(
         "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
         "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
         "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
@@ -61,7 +61,6 @@ class DownloadsLibrary
         'getAddFilesAccessId'               => 'add_files',
         'getManageFilesAccessId'            => 'manage_files'
     );
-
     protected $searchKeyword;
     protected $arrConfig = array(
         'overview_cols_count'           => 2,
@@ -80,6 +79,7 @@ class DownloadsLibrary
         'updated_file_time_limit'       => 604800
     );
 
+
     public function __construct()
     {
         $this->initSettings();
@@ -87,6 +87,7 @@ class DownloadsLibrary
         $this->initDefaultCategoryImage();
         $this->initDefaultDownloadImage();
     }
+
 
     private function initSettings()
     {
@@ -101,10 +102,12 @@ class DownloadsLibrary
         }
     }
 
+
     protected function initSearch()
     {
         $this->searchKeyword = empty($_REQUEST['downloads_search_keyword']) ? '' : $_REQUEST['downloads_search_keyword'];
     }
+
 
     protected function initDefaultCategoryImage()
     {
@@ -116,23 +119,27 @@ class DownloadsLibrary
         $this->defaultCategoryImage['height'] = $imageSize[1];
     }
 
+
     protected function initDefaultDownloadImage()
     {
         $this->defaultDownloadImage = $this->defaultCategoryImage;
     }
 
+
     protected function updateSettings()
     {
         global $objDatabase;
-
         foreach ($this->arrConfig as $key => $value) {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }
     }
 
-    protected function getCategoryMenu($accessType, $selectedCategory, $selectionText, $attrs = null, $categoryId = null)
+
+    protected function getCategoryMenu(
+        $accessType, $selectedCategory, $selectionText,
+        $attrs=null, $categoryId=null)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_LANGID;
 
         $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
         $arrCategories = array();
@@ -154,8 +161,7 @@ class DownloadsLibrary
                     'id'        => $objCategory->getId(),
                     'name'      => $objCategory->getName($_LANGID),
                     'owner_id'  => $objCategory->getOwnerId(),
-                    'access_id' => $objCategory->{$accessCheckFunction}(),
-                    'is_child'  => $objCategory->check4Subcategory($categoryId)
+                    'access_id' => $objCategory->{$accessCheckFunction}()
                 );
             }
 
@@ -176,6 +182,7 @@ class DownloadsLibrary
         return $menu;
     }
 
+
     private function parseCategoryTreeForMenu(&$arrCategories, $selectedCategory, $categoryId = null, $parentId = 0, $level = 0)
     {
         $options = '';
@@ -188,7 +195,7 @@ class DownloadsLibrary
         for ($i = 0; $i < $length; $i++) {
             $options .= '<option value="'.$arrCategories[$parentId][$i]['id'].'"'
                     .($arrCategories[$parentId][$i]['id'] == $selectedCategory ? ' selected="selected"' : '')
-                    .($arrCategories[$parentId][$i]['id'] == $categoryId || $arrCategories[$parentId][$i]['is_child'] ? ' disabled="disabled"' : (
+                    .($arrCategories[$parentId][$i]['id'] == $categoryId ? ' disabled="disabled"' : (
                         // managers are allowed to see the content of every category
                         Permission::checkAccess(142, 'static', true)
                         // the category isn't protected => everyone is allowed to the it's content
@@ -211,9 +218,10 @@ class DownloadsLibrary
         return $options;
     }
 
+
     protected function getParsedCategoryListForDownloadAssociation( )
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_LANGID;
 
         $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
         $arrCategories = array();
@@ -239,6 +247,7 @@ class DownloadsLibrary
 
         return $arrParsedCategories;
     }
+
 
     private function parseCategoryTreeForDownloadAssociation(&$arrCategories, $parentId = 0, $level = 0)
     {
@@ -267,7 +276,8 @@ class DownloadsLibrary
         global $_ARRAYLANG;
 
         $objFWUser = FWUser::getFWUserObject();
-        if ($objUser = $objFWUser->objUser->getUser($userId)) {
+        $objUser = $objFWUser->objUser->getUser($userId);
+        if ($objUser) {
             if ($objUser->getProfileAttribute('firstname') || $objUser->getProfileAttribute('lastname')) {
                 $author = $objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname').' ('.$objUser->getUsername().')';
             } else {
@@ -277,9 +287,9 @@ class DownloadsLibrary
         } else {
             $author = $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'];
         }
-
         return $author;
     }
+
 
     protected function getUserDropDownMenu($selectedUserId, $userId)
     {
@@ -295,6 +305,7 @@ class DownloadsLibrary
         return $menu;
     }
 
+
     protected function getDownloadMimeTypeMenu($selectedType)
     {
         global $_ARRAYLANG;
@@ -307,5 +318,7 @@ class DownloadsLibrary
 
         return $menu;
     }
+
 }
+
 ?>
