@@ -49,7 +49,7 @@ function _dataUpdate()
               PRIMARY KEY (`message_id`)
             ) ENGINE=InnoDB",
         #################################################################################
-            'module_data_messages_lang' => "CREATE TABLE `contrexx_module_data_messages_lang` (
+            'module_data_messages_lang' => "CREATE TABLE `".DBPREFIX."module_data_messages_lang` (
               `message_id` int(6) unsigned NOT NULL default '0',
               `lang_id` int(2) unsigned NOT NULL default '0',
               `is_active` enum('0','1')  NOT NULL default '1',
