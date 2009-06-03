@@ -1056,7 +1056,13 @@ class CommonFunctions
 							 `active` = 1
 					   WHERE `id` = 1";
 			if ($objDb->Execute($query) !== false) {
-				return true;
+                $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_user_profile`
+                             SET `firstname` = '".$_SESSION['installer']['sysConfig']['adminName']."',
+                                 `lastname` = ''
+                           WHERE `user_id` = 1";
+                if ($objDb->Execute($query) !== false) {
+                    return true;
+                }
 			}
 		}
 		return $_ARRLANG['TXT_COULD_NOT_CREATE_ADMIN_ACCOUNT'];
