@@ -22,8 +22,9 @@
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
  */
-define('_DEBUG', DBG_NONE);
 include_once('../lib/DBG.php');
+define('_DEBUG', DBG_NONE);
+DBG::__internal__setup();
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -70,11 +71,11 @@ if ($objDatabase === false) {
 }
 
 if (_DEBUG & DBG_ADODB_TRACE) {
-    $objDatabase->debug = 99;
+    DBG::enable_adodb_debug(true);
 } elseif (_DEBUG & DBG_ADODB) {
-    $objDatabase->debug = 1;
+    DBG::enable_adodb_debug();
 } else {
-    $objDatabase->debug = 0;
+    DBG::disable_adodb_debug();
 }
 
 //uncomment if users should be imported from shop, system and voting tables on every page request. (careful, slows down your website)
