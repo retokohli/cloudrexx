@@ -1403,7 +1403,7 @@ table.news_meta td {
     margin: 0px;
     padding: 0px;
     list-style: none;
-    display: inline;
+    /*display: inline;*/
     border: none;
 }
 
@@ -1411,7 +1411,7 @@ table.news_meta td {
 #knowledge_new .articlelist .tags li {
     margin: 0px;
     padding: 0px;
-    display: inline;
+    /*display: inline;*/
     list-style: none;
     border: none;
 }
@@ -1651,14 +1651,15 @@ table.news_meta td {
     margin: 0px;
     padding: 0px;
     list-style: none;
-    display: inline;
+    /*display: inline;*/
     border: none;
 }
 
 #knowledge .tags li, #knowledge .articlelist .tags li {
     margin: 0px;
     padding: 0px;
-    display: inline;
+    float: left;
+    /*display: inline;*/
     list-style: none;
     border: none;
 }

@@ -133,6 +133,7 @@
     display: inline;
     margin: 0px;
     padding: 0px;
+    margin-left: 3px;
 }
 
 .knowledge_taglist ul li.tag_1 a {
