@@ -35,13 +35,15 @@ class DBG
 
         self::enable_all();
         if (_DEBUG & DBG_LOG_FILE)
-            self::setup('dbg.log', 'w');
+            self::enable_file();
         if (_DEBUG & DBG_LOG_FIREPHP)
             self::enable_firephp();
         if ((_DEBUG & DBG_ADODB) || (_DEBUG & DBG_ADODB_TRACE))
             self::enable_adodb();
         if (_DEBUG & DBG_PHP) {
             self::enable_error_reporting();
+        } else {
+            self::disable_error_reporting();
         }
     }
 
@@ -49,13 +51,14 @@ class DBG
     public static function enable_file()
     {
         self::setup('dbg.log', 'w');
-        set_error_handler('self::phpErrorHandler');
+        set_error_handler('DBG::phpErrorHandler');
     }
 
 
     static function enable_firephp()
     {
         if (require_once('firephp/FirePHP.class.php')) {
+            ob_start();
             self::$firephp = FirePHP::getInstance(true);
             self::$firephp->registerErrorHandler();
         }
@@ -305,11 +308,9 @@ class DBG
 
 }
 
-DBG::__internal__setup();
-
 function DBG_log_adodb($msg)
 {
-    self::log(
+    DBG::log(
         _DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP
             ? strip_tags($msg) : $msg);
 }
