@@ -7,7 +7,6 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create New Themes";
-$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Feed successfull confirm";
 $_ARRAYLANG['TXT_DIR_MAIL_NEW_ACCOUNT'] = "New Account on";
 $_ARRAYLANG['TXT_DIR_MAIL_LOST_PASSWORD'] = "Lost Password";
 $_ARRAYLANG['TXT_DIR_MAIL_CONFIRM_PASSWORD'] = "Confirm Password";
