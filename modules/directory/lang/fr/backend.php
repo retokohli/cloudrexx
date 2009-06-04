@@ -7,7 +7,6 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Nouveau modèle";
-$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Inscription confirmée";
 $_ARRAYLANG['TXT_DIR_MAIL_NEW_ACCOUNT'] = "Nouveau compte chez ";
 $_ARRAYLANG['TXT_DIR_MAIL_LOST_PASSWORD'] = "Mot de passe oublié";
 $_ARRAYLANG['TXT_DIR_MAIL_CONFIRM_PASSWORD'] = "Confirmer mot de de passe";

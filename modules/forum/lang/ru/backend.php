@@ -114,4 +114,5 @@ $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "Самые новые зап�
 $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "Если эта опция активирована, самые новые взносы будут только за тему (resp. Thread) указанны. Если опция деактивирована, все новые взносы сообщаются, даже если Вы являетесь в от той же самой темы.";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Запятыми разделенный список позволенных расширений файла для обновления";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Позволенное разширение файла";
+$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'] = "Set the time in seconds (0-300) on how often the session of a user should be updated. A value of 0 seconds means that the session will be updated with every request the users send.";
 ?>

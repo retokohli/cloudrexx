@@ -114,4 +114,5 @@ $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "&Uacute;ltimas entradas s&oac
 $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "Si esta opci&oacute;n est&aacute; activada, se mostrar&aacute;n las &uacute;ltimas entradas por tema en lugar de todas las entradas de cualquier tema.";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Lista separada por comas de extensiones de ficheros permitidas para subir";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Extensiones de fichero permitidas";
+$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'] = "Set the time in seconds (0-300) on how often the session of a user should be updated. A value of 0 seconds means that the session will be updated with every request the users send.";
 ?>
