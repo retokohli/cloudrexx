@@ -670,4 +670,5 @@ $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_2'] = "Neues Fenster";
 $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "E-Mail Adresse";
 $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "Empfänger E-Mail Adresse";
 $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Bitte geben Sie eine E-Mail Adresse für den Empfänger an";
+$_ARRAYLANG['TXT_SHOP_DEL_ICON'] = "Remove Image";
 ?>

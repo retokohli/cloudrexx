@@ -2136,7 +2136,6 @@ class shopmanager extends ShopLibrary
                 } // end: Load template or show template overview
                 break;
             case 'vat':
-                Vat::init();
                 // Shop general settings template
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_vat.html');
 
@@ -3141,6 +3140,10 @@ class shopmanager extends ShopLibrary
             'TXT_SHOP_DISCOUNT_GROUP_COUNT' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_COUNT'],
             'TXT_SHOP_DISCOUNT_GROUP_ARTICLE' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_ARTICLE'],
             'TXT_SHOP_KEYWORDS' => $_ARRAYLANG['TXT_SHOP_KEYWORDS'],
+            'TXT_SHOP_DEL_ICON' => $_ARRAYLANG['TXT_SHOP_DEL_ICON'],
+            // Assign Delete Symbol Path
+            'SHOP_DELETE_ICON'  => ASCMS_PATH_OFFSET.'/cadmin/images/icons/delete.gif',
+            'SHOP_NO_PICTURE_ICON' => self::$defaultImage
         ));
         // end language variables
 
