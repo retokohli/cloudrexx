@@ -896,47 +896,37 @@ class Category
         $objParentCategory = Category::getCategory($this->parent_id);
         if (!Permission::checkAccess(142, 'static', true)
             // the user isn't the owner of the category
-            && (   !$this->id
-                || (   ($objFWUser = FWUser::getFWUserObject()) == false
-                    || !$objFWUser->objUser->login()
-                    || $this->owner_id != $objFWUser->objUser->getId()))
-            // updating a category
-            && (   $this->id
-                // trying to update a main category -> this is prohibited
-                && (   !$objParentCategory->getId()
+            && (!$this->id || (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId()))
+            && (
+                // updating a category
+                $this->id && (
+                    // trying to update a main category -> this is prohibited
+                    !$objParentCategory->getId()
                     // trying to update a subcategory
-                    || (   $objParentCategory->getId()
+                    || $objParentCategory->getId() && (
                         // updating subcategories of the parent category is restricted
-                        && (   $objParentCategory->getManageSubcategoriesAccessId()
-                            // the user doesn't have enough permissions
-                            && !Permission::checkAccess(
-                                  $objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
-                            // the user isn't the owner of the parent category
-                            && (   ($objFWUser = FWUser::getFWUserObject()) == false
-                                || !$objFWUser->objUser->login()
-                                || $objParentCategory->getOwnerId() != $objFWUser->objUser->getId())
-                           )
-                       )
-                   )
+                        $objParentCategory->getManageSubcategoriesAccessId()
+                        // the user doesn't have enough permissions
+                        && !Permission::checkAccess($objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
+                        // the user isn't the owner of the parent category
+                        && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objParentCategory->getOwnerId() != $objFWUser->objUser->getId())
+                    )
+                )
                 // adding a new category
-                || (!$this->id
+                || !$this->id && (
                    // trying to add a new main category -> this is prohibited
-                   && (   !$objParentCategory->getId()
-                      // trying to add a subcategory
-                       || $objParentCategory->getId()
-                      // adding subcategories to the parent category is restricted
-                       && (   $objParentCategory->getAddSubcategoriesAccessId()
-                          // the user doesn't have enough permissions
-                          && !Permission::checkAccess(
-                                $objParentCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
-                          // the user isn't the owner of the parent category
-                          && (   ($objFWUser = FWUser::getFWUserObject()) == false
-                              || !$objFWUser->objUser->login()
-                              || $objParentCategory->getOwnerId() != $objFWUser->objUser->getId())
-                          )
-                      )
-                  )
-              )
+                    !$objParentCategory->getId()
+                    // trying to add a subcategory
+                    || $objParentCategory->getId() && (
+                        // adding subcategories to the parent category is restricted
+                        $objParentCategory->getAddSubcategoriesAccessId()
+                        // the user doesn't have enough permissions
+                        && !Permission::checkAccess($objParentCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
+                        // the user isn't the owner of the parent category
+                        && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objParentCategory->getOwnerId() != $objFWUser->objUser->getId())
+                    )
+                )
+            )
         ) {
             $this->error_msg[] = $objParentCategory->getId() ? ($this->id ? sprintf($_ARRAYLANG['TXT_DOWNLOADS_UPDATE_CATEGORY_PROHIBITED'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)) : sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORY_TO_CATEGORY_PROHIBITED'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET))) : $_ARRAYLANG['TXT_DOWNLOADS_ADD_MAIN_CATEGORY_PROHIBITED'];
             return false;
