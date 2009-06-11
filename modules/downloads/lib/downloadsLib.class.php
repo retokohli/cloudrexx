@@ -129,6 +129,7 @@ class DownloadsLibrary
     protected function updateSettings()
     {
         global $objDatabase;
+
         foreach ($this->arrConfig as $key => $value) {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }
@@ -161,7 +162,8 @@ class DownloadsLibrary
                     'id'        => $objCategory->getId(),
                     'name'      => $objCategory->getName($_LANGID),
                     'owner_id'  => $objCategory->getOwnerId(),
-                    'access_id' => $objCategory->{$accessCheckFunction}()
+                    'access_id' => $objCategory->{$accessCheckFunction}(),
+                    'is_child'  => $objCategory->check4Subcategory($categoryId)
                 );
             }
 
@@ -195,7 +197,7 @@ class DownloadsLibrary
         for ($i = 0; $i < $length; $i++) {
             $options .= '<option value="'.$arrCategories[$parentId][$i]['id'].'"'
                     .($arrCategories[$parentId][$i]['id'] == $selectedCategory ? ' selected="selected"' : '')
-                    .($arrCategories[$parentId][$i]['id'] == $categoryId ? ' disabled="disabled"' : (
+                    .($arrCategories[$parentId][$i]['id'] == $categoryId || $arrCategories[$parentId][$i]['is_child'] ? ' disabled="disabled"' : (
                         // managers are allowed to see the content of every category
                         Permission::checkAccess(142, 'static', true)
                         // the category isn't protected => everyone is allowed to the it's content
