@@ -257,4 +257,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'] = "Herunter geladen";
 $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = "Angeschaut";
 $_ARRAYLANG['TXT_DOWNLOADS_SELECTED_CATEGORY'] = "Ausgewählte Kategorie";
 $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'] = "Kategorie im Frontend anzeigen";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'] = "Neuer Download zur Kategorie hinzufügen";
 ?>

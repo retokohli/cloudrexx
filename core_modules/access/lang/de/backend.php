@@ -250,5 +250,4 @@ $_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'] = "Für den Benutzer %s w
 $_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS'] = "Zusätzliche Funktionen";
 $_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Für diesen Benutzer eine neue, persönliche und nur für ihn zugängliche Kategorie beim Digital Asset Management Modul hinzufügen.";
-$_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'] = "Neuer Download zur Kategorie hinzufügen";
 ?>
