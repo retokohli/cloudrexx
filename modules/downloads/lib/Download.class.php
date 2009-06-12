@@ -111,7 +111,7 @@ class Download {
     public static $arrMimeTypes = array(
         'image'         => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_IMAGE',
-            'extensions'    => array('jpg', 'jpeg', 'gif', 'png'),
+            'extensions'    => array('jpg', 'jpeg', 'gif', 'png', 'bmp'),
             'icon'          => 'picture.png',
             'icon_small'    => 'picture_small.png'
         ),

@@ -1128,6 +1128,9 @@ class AccessManager extends AccessLib
                     $this->notifyUserAboutAccountStatusChange($objUser);
                 }
 
+                // process module specific extensions
+                $this->processModuleSpecificExtensions($objUser);
+
                 if (Permission::checkAccess(18, 'static', true)) {
                     return $this->userList();
                 }
@@ -1244,10 +1247,137 @@ class AccessManager extends AccessLib
             $objUser->objAttribute->next();
         }
 
+
+        $this->parseModuleSpecificExtensions();
+
         $this->_objTpl->parse('module_access_user_modify');
         return true;
     }
 
+    private function parseModuleSpecificExtensions()
+    {
+        global $_ARRAYLANG;
+
+        $status = false;
+        $rowNr = 0;
+        $objModuleChecker = new ModuleChecker();
+
+        // add a category in the digital asset management module
+        if ($objModuleChecker->getModuleStatusById(53)) {
+            $this->parseDigitalAssetManagementExtension($rowNr);
+            $status = true;
+            $this->_objTpl->parse('access_additional_functions_dma');
+        } else {
+            $this->_objTpl->hideBlock('access_additional_functions_dma');
+        }
+
+        if ($status) {
+            $this->_objTpl->setGlobalVariable('TXT_ACCESS_ADDITIONAL_FUNCTIONS', $_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS']);
+            $this->_objTpl->touchBlock('access_additional_functions_tab');
+        } else {
+            $this->_objTpl->hideBlock('access_additional_functions_tab');
+        }
+    }
+
+    private function parseDigitalAssetManagementExtension(&$rowNr)
+    {
+        global $_ARRAYLANG;
+
+        $this->_objTpl->setVariable(array(
+            'TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'   => $_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'],
+            'TXT_ACCESS_ADD_DAM_CATEGORY'           => $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'],
+            'ACCESS_ADDITIONAL_FUNCTION_ROW_CLASS'  => $rowNr++ % 2 ? 0 : 1,
+            'ACCESS_USER_ADD_DMA_CATEGORY_CKECKED'  => !empty($_POST['access_user_add_dma_category']) ? 'checked="checked"' : ''
+        ));
+    }
+
+    private function processModuleSpecificExtensions($objUser)
+    {
+        // add a category in the digital asset management module
+        $objModuleChecker = new ModuleChecker();
+        if ($objModuleChecker->getModuleStatusById(53)) {
+            $this->processDigitalAssetManagementExtension($objUser);
+        }
+    }
+
+    private function processDigitalAssetManagementExtension($objUser)
+    {
+        global $_ARRAYLANG, $objLanguage, $_CONFIG;
+
+        if (empty($_POST['access_user_add_dma_category'])) {
+            return true;
+        }
+
+        include_once ASCMS_MODULE_PATH.'/downloads/lib/Download.class.php';
+        include_once ASCMS_MODULE_PATH.'/downloads/lib/Category.class.php';
+
+        $firstname = $objUser->getProfileAttribute('firstname');
+        $lastname = $objUser->getProfileAttribute('lastname');
+        $userName = !empty($firstname) || !empty($lastname) ? trim($firstname.' '.$lastname) : $objUser->getUsername();
+
+        $objGroup = new UserGroup();
+        $objGroup->setName(sprintf($_ARRAYLANG['TXT_ACCESS_CUSTOMER_TITLE'], $userName));
+        $objGroup->setDescription(sprintf($_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_GROUP_DESC'], $userName));
+        $objGroup->setActiveStatus(true);
+        $objGroup->setType('frontend');
+        $objGroup->setUsers(array($objUser->getId()));
+        $objGroup->setDynamicPermissionIds(array());
+        $objGroup->setStaticPermissionIds(array());
+
+        if (!$objGroup->store()) {
+            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objGroup->getErrorMsg());
+            return false;
+        }
+
+        $arrLanguageIds = array_keys($objLanguage->getLanguageArray());
+        $arrNames = array();
+        $arrDescription = array();
+        foreach ($arrLanguageIds as $langId) {
+            $arrNames[$langId] = sprintf($_ARRAYLANG['TXT_ACCESS_CUSTOMER_TITLE'], $userName);
+            $arrDescription[$langId] = '';
+        }
+
+        $objCategory = new Category();
+        $objCategory->setActiveStatus(true);
+        $objCategory->setVisibility(false);
+        $objCategory->setNames($arrNames);
+        $objCategory->setDescriptions($arrDescription);
+        $objCategory->setOwner($objUser->getId());
+        $objCategory->setDeletableByOwner(false);
+        $objCategory->setModifyAccessByOwner(false);
+        $objCategory->setPermissions(array(
+            'read'  => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'add_subcategories' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'manage_subcategories' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'add_files' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'manage_files' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            )
+        ));
+
+        if (!$objCategory->store()) {
+            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
+            return false;
+        }
+
+        $damCategoryUri = '?cmd=downloads&amp;act=categories&amp;parent_id='.$objCategory->getId();
+        $damCategoryAnchor = '<a href="'.$damCategoryUri.'">'.htmlentities($objCategory->getName(LANG_ID), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+        $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET), $damCategoryAnchor);
+        return true;
+    }
 
     private function notifyUserAboutAccountStatusChange($objUser)
     {
