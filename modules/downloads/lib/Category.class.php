@@ -345,6 +345,7 @@ class Category
             '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ? 'INNER JOIN `'.DBPREFIX.'module_downloads_download` AS tblD ON tblD.`id` = tblR.`download_id`' : '').'
             WHERE   tblR.`category_id` IN ('.implode(',', $arrCategoryIds).')
                     '.($this->isFrontendMode ? 'AND tblD.`is_active` = 1' : '').'
+                    '.($this->isFrontendMode ? 'AND (tblD.`expiration` = 0 || tblD.`expiration` > '.time().')' : '').'
                     '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ?
                             'AND (tblD.`visibility` = 1'.(
                                 $objFWUser->objUser->login() ?

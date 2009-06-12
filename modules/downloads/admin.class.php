@@ -933,6 +933,7 @@ class downloads extends DownloadsLibrary
             $this->arrConfig['use_attr_author'] ? $objDownload->setAuthor(isset($_POST['downloads_download_author']) ? contrexx_stripslashes($_POST['downloads_download_author']) : '') : null;
             $this->arrConfig['use_attr_website'] ? $objDownload->setWebsite(isset($_POST['downloads_download_website']) ? contrexx_stripslashes($_POST['downloads_download_website']) : '') : null;
             $objDownload->setImage(isset($_POST['downloads_download_image']) ? contrexx_stripslashes($_POST['downloads_download_image']) : '');
+            $objDownload->setValidityTimePeriod(!empty($_POST['downloads_download_validity']) ? intval($_POST['downloads_download_validity']) : 0);
             $objDownload->setVisibility(!empty($_POST['downloads_download_visibility']));
             $objDownload->setProtection(!empty($_POST['downloads_download_access']));
             $objDownload->setGroups(
@@ -973,6 +974,7 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_URL'                             => $_ARRAYLANG['TXT_DOWNLOADS_URL'],
             'TXT_DOWNLOADS_BROWSE'                          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
             'TXT_DOWNLOADS_STATUS'                          => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            'TXT_DOWNLOADS_VALIDITY_EXPIRATION'             => $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'],
             'TXT_DOWNLOADS_ACTIVE'                          => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
             'TXT_DOWNLOADS_TYPE'                            => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
             'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
@@ -1121,9 +1123,15 @@ class downloads extends DownloadsLibrary
             $this->objTemplate->hideBlock('downloads_download_attr_website');
         }
 
+        // parse validity expiration menu
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'              => $attrRow++ % 2 + 1,
+            'DOWNLOADS_DOWNLOAD_VALIDITY_EXPIRATION_MENU'   => $this->getValidityMenu($objDownload->getValidityTimePeriod(), $objDownload->getExpirationDate())
+        ));
+
         // parse active status
         $this->objTemplate->setVariable(array(
-            'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'      => $attrRow++ % 2 + 1,
+            'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW_ODD'      => $attrRow++ % 2 + 1,
             'DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED'  => $objDownload->getActiveStatus() ? 'checked="checked"' : ''
         ));
 

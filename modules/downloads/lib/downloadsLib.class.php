@@ -321,6 +321,18 @@ class DownloadsLibrary
         return $menu;
     }
 
+    protected function getValidityMenu($validity, $expirationDate)
+    {
+//TODO:Use own methods instead of FWUser::getValidityString() and FWUser::getValidityMenuOptions()
+        $menu = '<select name="downloads_download_validity" '.($validity && $expirationDate < time() ? 'onchange="this.style.color = this.value == \'current\' ? \'#f00\' : \'#000\'"' : null).' style="width:300px;'.($validity && $expirationDate < time() ? 'color:#f00;font-weight:normal;' : 'color:#000;').'">';
+        if ($validity) {
+            $menu .= '<option value="current" selected="selected" style="border-bottom:1px solid #000;'.($expirationDate < time() ? 'color:#f00;font-weight:normal;' : null).'">'.FWUser::getValidityString($validity).' ('.date(ASCMS_DATE_SHORT_FORMAT, $expirationDate).')</option>';
+        }
+        $menu .= FWUser::getValidityMenuOptions(null, 'style="color:#000; font-weight:normal;"');
+        $menu .= '</select>';
+        return $menu;
+    }
+
 }
 
 ?>
