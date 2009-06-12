@@ -1,4 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>Contrexx File Uploader</title>
@@ -26,18 +25,16 @@ function closeWindow()
 function resizeApplet()
 {
     var applet = document.jumpLoaderApplet;
-    var dx = 0;
-    var dy = 7;
     var w_newWidth, w_newHeight;
     var w_maxWidth = 2600, w_maxHeight = 2200;
     var dx = 0;
-    var dy = 2;
+    var dy = 50;
     if( navigator.appName.indexOf( "Microsoft" ) != -1 ) {
         w_newWidth = document.body.clientWidth;
         w_newHeight = document.body.clientHeight;
     } else {
         w_newWidth = window.innerWidth;
-        w_newHeight = window.innerHeight - 35;
+        w_newHeight = window.innerHeight;
     }
     if( w_newWidth > w_maxWidth ) {
         w_newWidth = w_maxWidth;
@@ -111,7 +108,7 @@ function appletInitialized(applet)
 
         <param name="uc_uploadUrl" value="{FILEUPLOADER_HANDLER_PATH}" />
         <param name="uc_partitionLength" value="{FILEUPLOADER_PARTITION_LENGTH}" />
-		<param name="gc_loggingLevel" value="NONE" />
+		<param name="gc_loggingLevel" value="FATAL" />
         <param name="ac_fireAppletInitialized" value="true"/>
         <param name="ac_fireUploaderFileStatusChanged" value="true"/>
         <param name="ac_fireUploaderStatusChanged" value="true"/>
