@@ -250,5 +250,4 @@ $_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'] = "A new category has bee
 $_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS'] = "Additional Functions";
 $_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Add a new, personal category to the Digital Asset Management module which is only accessable by this user.";
-$_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'] = "Add a new download to this category";
 ?>
