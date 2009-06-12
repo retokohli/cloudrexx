@@ -189,7 +189,9 @@ class downloads extends DownloadsLibrary
             // parse crumbtrail
             $this->parseCrumbtrail($objCategory);
 
-            if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) {
+            if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)
+                && (!$objDownload->getExpirationDate() || $objDownload->getExpirationDate() > time())
+            ) {
                 /* DOWNLOAD DETAIL PAGE */
                 $this->pageTitle = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
@@ -280,10 +282,10 @@ class downloads extends DownloadsLibrary
             }
 
             /* PARSE MOST VIEWED DOWNLOADS */
-            $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
+            $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true, 'expiration' => array('=' => 0, '>' => time())) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
 
             /* PARSE MOST DOWNLOADED DOWNLOADS */
-            $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
+            $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), array('is_active' => true, 'expiration' => array('=' => 0, '>' => time())) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
 
             /* PARSE MOST POPULAR DOWNLOADS */
             // TODO: Rating system has to be implemented first!
@@ -293,6 +295,10 @@ class downloads extends DownloadsLibrary
             $filter = array(
                 'ctime' => array(
                     '>=' => time() - $this->arrConfig['new_file_time_limit']
+                ),
+                'expiration' => array(
+                    '=' => 0,
+                    '>' => time()
                 )
             );
             $this->parseSpecialDownloads(array('downloads_newest_file_list', 'downloads_newest_file'), $filter, array('ctime' => 'desc'), $this->arrConfig['newest_file_count']);
@@ -306,6 +312,10 @@ class downloads extends DownloadsLibrary
                 'ctime' => array(
                     '<' => time() - $this->arrConfig['new_file_time_limit']
                 ),
+                'expiration' => array(
+                    '=' => 0,
+                    '>' => time()
+                )
             );
             $this->parseSpecialDownloads(array('downloads_updated_file_list', 'downloads_updated_file'), $filter, array('mtime' => 'desc'), $this->arrConfig['updated_file_count']);
 
@@ -944,7 +954,7 @@ JS_CODE;
 
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $objDownload = new Download();
-        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'expiration' => array('=' => 0, '>' => time())), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
         $categoryId = $objCategory->getId();
         $allowdDeleteFiles = !$objCategory->getManageFilesAccessId()
                             || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
@@ -1260,6 +1270,12 @@ JS_CODE;
         $objDownload = new Download();
         $objDownload->load(!empty($_GET['download']) ? intval($_GET['download']) : 0);
         if (!$objDownload->EOF) {
+            // check if the download is expired
+            if ($objDownload->getExpirationDate() && $objDownload->getExpirationDate() < time()) {
+                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=error&id=404");
+                exit;
+            }
+
             if (// download is protected
                 $objDownload->getAccessId()
                 // the user isn't a admin
