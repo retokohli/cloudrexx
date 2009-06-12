@@ -7,4 +7,5 @@
  * @subpackage  module_fileUploader
  */
 $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'] = "Schliessen";
+$_ARRAYLANG['TXT_FILEUPLOADER_FILE_EXTENSION_NOT_ALLOWED'] = "Die Datei %s wurde abgelehnt, da sie eine unerlaubte Dateiendung aufweist!";
 ?>

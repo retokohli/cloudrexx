@@ -7,4 +7,5 @@
  * @subpackage  module_fileUploader
  */
 $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'] = "Close";
+$_ARRAYLANG['TXT_FILEUPLOADER_FILE_EXTENSION_NOT_ALLOWED'] = "Filen %s blev afvist, da filendelsen ikke er tilladt!";
 ?>
