@@ -64,21 +64,12 @@ class FileUploader extends FileUploaderLib {
     private function showUploadApplet()
     {
         global $_ARRAYLANG, $_LANGID, $objLanguage, $objInit;
-/*        $arrLanguage = $objLanguage->getLanguageArray();
-        if (file_exists(ASCMS_MODULE_PATH.'/b/applets/messages_'.$arrLanguage[$_LANGID]['lang'].'.zip')) {
-            $lang = $arrLanguage[$_LANGID]['lang'];
-        } elseif (file_exists(ASCMS_DOCUMENT_ROOT.'/lib/applets/messages_'.$arrLanguage[$objInit->defaultBackendLangId]['lang'].'.zip')) {
-            $lang = $arrLanguage[$objInit->defaultBackendLangId]['lang'];
-        } else {
-            $lang = $this->defaultInterfaceLanguage;
-        }*/
 
         $objFWUser = FWUser::getFWUserObject();
         $lang = $objLanguage->getLanguageParameter($objFWUser->objUser->getBackendLanguage(), 'lang');
         if (!file_exists(ASCMS_MODULE_PATH.'/fileUploader/lib/lang/messages_'.$lang.'.zip')) {
             $lang = $this->defaultInterfaceLanguage;
         }
-
 
         $this->objTpl->loadTemplateFile('module_fileUploader_frame.html');
 
