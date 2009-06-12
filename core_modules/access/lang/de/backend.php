@@ -244,4 +244,11 @@ $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto 
 $_ARRAYLANG['TXT_ACCESS_CHECKBOX'] = "Kontrollkästchen";
 $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'] = "SESSION Intervals";
 $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'] = "SESSION";
+$_ARRAYLANG['TXT_ACCESS_CUSTOMER_TITLE'] = "Kunde: %s";
+$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_GROUP_DESC'] = "Persönliche Gruppe des Benutzers %s";
+$_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'] = "Für den Benutzer %s wurde die neue persönliche Kategorie %s im Digital Asset Management Modul erstellt.";
+$_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS'] = "Zusätzliche Funktionen";
+$_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'] = "Digital Asset Management";
+$_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Für diesen Benutzer eine neue, persönliche und nur für ihn zugängliche Kategorie beim Digital Asset Management Modul hinzufügen.";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'] = "Neuer Download zur Kategorie hinzufügen";
 ?>
