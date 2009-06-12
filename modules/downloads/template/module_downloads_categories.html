@@ -68,8 +68,8 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <input type="hidden" name="downloads_category_delete_recursive" id="downloads_category_delete_recursive" value="0" />
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="category list">
     <tr>
-        <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}" style="padding:3px;">Ausgewählte Kategorie: {DOWNLOADS_CATEGORY_MENU}</th>
-    </tr> 
+        <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}" style="padding:3px;">{TXT_DOWNLOADS_SELECTED_CATEGORY}: {DOWNLOADS_CATEGORY_MENU} <!-- BEGIN downloads_category_frontend_link --><a href="{DOWNLOADS_CATEGORY_FRONTEND_URI}" title="{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}" target="_blank">{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}</a><!-- END downloads_category_frontend_link --></th>
+    </tr>
 <!-- BEGIN downloads_category_data -->
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
         <!-- BEGIN downloads_category_select_label -->
@@ -166,7 +166,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
         <th colspan="10" style="padding:3px;">{DOWNLOADS_OF_CATEGORY_TXT}</th>
-    </tr> 
+    </tr>
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
         <td width="1%" style="text-align: center;">#</td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_ID}&amp;download_by=id&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_ID_LABEL}</a></td>
@@ -257,6 +257,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <!-- END downloads_category_downloads -->
 <!-- BEGIN downloads_add_downloads_button -->
 <br />
+<input type="button" name="downloads_category_add_new_download" value="{TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&amp;act=add_new_download_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
 <input type="button" name="downloads_category_add_downloads" value="{TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&amp;act=add_downloads_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
 <!-- END downloads_add_downloads_button -->
 <!-- end module_downloads_categories.html -->

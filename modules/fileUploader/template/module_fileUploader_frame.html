@@ -65,7 +65,7 @@ function uploaderStatusChanged(uploader)
              * packed into the url modifier "highlightFiles".
              */
             sFiles = '&highlightFiles=';
-            sFiles += encodeURIComponent(aUploadedFiles.toSource());
+            sFiles += encodeURIComponent('["' + aUploadedFiles.join('", "') + '"]');
             window.opener.location.replace(window.opener.location.href+sFiles);
 
             // enable close button
@@ -105,18 +105,19 @@ function appletInitialized(applet)
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onResize="resizeApplet()" onLoad="resizeApplet()">
     <applet name="jumpLoaderApplet"
             code="jmaster.jumploader.app.JumpLoaderApplet.class"
-            archive="{FILEUPLOADER_APPLET_PATH}"
+            archive="{FILEUPLOADER_LANG_PATH},{FILEUPLOADER_APPLET_PATH}"
             width="800"
             height="600" mayscript>
 
         <param name="uc_uploadUrl" value="{FILEUPLOADER_HANDLER_PATH}" />
         <param name="uc_partitionLength" value="{FILEUPLOADER_PARTITION_LENGTH}" />
-        <param name="gc_loggingLevel" value="INFO" />
+		<param name="gc_loggingLevel" value="NONE" />
         <param name="ac_fireAppletInitialized" value="true"/>
         <param name="ac_fireUploaderFileStatusChanged" value="true"/>
         <param name="ac_fireUploaderStatusChanged" value="true"/>
 		<param name="vc_uploadListViewName" value="_compact"/>
 		<param name="vc_useThumbs" value="false"/>
+		<param name="vc_lookAndFeel" value="system"/>
     </applet>
     <div style="text-align:right; margin:10px;">
         <input type="button" id="fileUploaderClose" onclick="window.close();" value="{TXT_FILEUPLOADER_CLOSE}" />

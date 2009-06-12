@@ -29,7 +29,8 @@ class cmsSession
 {
 	var $sessionid;
 	var $status;
-    var $tempPath;
+    var $sessionPath;
+    var $sessionPathPrefix = 'session_';
 	var $userId;
 	var $lifetime;
 	var $_objDb;
@@ -82,7 +83,7 @@ class cmsSession
 	function cmsSessionRead( $aKey )
 	{
 		   $this->sessionid=$aKey;
-           $this->sessionPath = ASCMS_TEMP_PATH.'/'.$this->sessionid;
+           $this->sessionPath = ASCMS_TEMP_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
 	       $query = "SELECT datavalue, user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
 	       if ($this->compatibelitiyMode) {
 			$query = "SELECT datavalue, username as user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
@@ -122,7 +123,7 @@ class cmsSession
 
            if (file_exists($this->sessionPath)) {
                 $objFile = new File();
-                $objFile->delDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionid);
+                $objFile->delDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionPathPrefix.$this->sessionid);
            }
 
 	       return true;
@@ -161,18 +162,51 @@ class cmsSession
 
     function getTempPath()
     {
+        $this->cleanTempPaths();
+
         $objFile = new File();
 
-        if (!is_dir($this->sessionPath) && !$objFile->mkdir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionid)) {
+        if (!is_dir($this->sessionPath) && !$objFile->mkdir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionPathPrefix.$this->sessionid)) {
             return false;
         }
 
-        if (!is_writable($this->sessionPath) && !$objFile->setChmod(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionid)) {
+        if (!is_writable($this->sessionPath) && !$objFile->setChmod(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionPathPrefix.$this->sessionid)) {
             return false;
         }
 
         return $this->sessionPath;
     }
 
+    public function cleanTempPaths()
+    {
+        $dirs = array();
+        if ($dh = opendir(ASCMS_TEMP_PATH)) {
+            while (($file = readdir($dh)) !== false) {
+                if (is_dir(ASCMS_TEMP_PATH.'/'.$file)) {
+                    $dirs[] = $file;
+                }
+            }
+            closedir($dh);
+        }
+
+        $sessionPaths = preg_grep('#^'.$this->sessionPathPrefix.'[0-9A-F]{32}$#i', $dirs);
+        $sessions = array();
+        $query = 'SELECT `sessionid` FROM `'.DBPREFIX.'sessions`';
+        $objResult = $this->_objDb->Execute($query);
+        while (!$objResult->EOF) {
+            $sessions[] = $objResult->fields['sessionid'];
+            $objResult->MoveNext();
+        }
+
+        foreach ($sessionPaths as $sessionPath) {
+            if (!in_array(substr($sessionPath, strlen($this->sessionPathPrefix)), $sessions)) {
+                if (!isset($objFile)) {
+                    $objFile = new File();
+                }
+
+                $objFile->delDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$sessionPath);
+            }
+        }
+    }
 }
 ?>
