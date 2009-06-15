@@ -1026,4 +1026,5 @@ $_ARRAYLANG['TXT_ADD_ADVERTISEMENT'] = "Nouvelle annonce";
 $_ARRAYLANG['TXT_MANAGE_CONFIGURATION'] = "Gérer les paramètres";
 $_ARRAYLANG['TXT_ADD_FILES'] = "Nouveaux fichiers";
 $_ARRAYLANG['TXT_ACCESS_COMMUNITY_EVENTS'] = "Accéder aux manifestations communautaires";
+$_ARRAYLANG['TXT_MEDIADIR_MODULE'] = "Meda Directory";
 ?>

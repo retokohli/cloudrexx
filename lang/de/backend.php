@@ -1025,4 +1025,5 @@ $_ARRAYLANG['TXT_ADD_ADVERTISEMENT'] = "Inserat hinzufügen";
 $_ARRAYLANG['TXT_MANAGE_CONFIGURATION'] = "Einstellungen verwalten";
 $_ARRAYLANG['TXT_ADD_FILES'] = "Dateien hinzufügen";
 $_ARRAYLANG['TXT_ACCESS_COMMUNITY_EVENTS'] = "Community Events einsehen";
+$_ARRAYLANG['TXT_MEDIADIR_MODULE'] = "Medien Verzeichnis";
 ?>
