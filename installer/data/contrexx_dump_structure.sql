@@ -996,6 +996,8 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `order` int(3) unsigned NOT NULL default '0',
   `views` int(10) unsigned NOT NULL default '0',
   `download_count` int(10) unsigned NOT NULL default '0',
+  `expiration` int(14) unsigned NOT NULL default '0',
+  `validity` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `is_active` (`is_active`),
   KEY `visibility` (`visibility`)
