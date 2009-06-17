@@ -587,11 +587,13 @@ class Download {
             if (!isset($arrFilter['is_active'])) {
                 $arrConditions[] = 'tblD.`is_active` = 1';
             }
-            $arrConditions[] = 'tblD.`visibility` = 1'.(
-                $objFWUser->objUser->login() ?
-                ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
-                .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
-                : '');
+            if (!Permission::checkAccess(142, 'static', true)) {
+                $arrConditions[] = 'tblD.`visibility` = 1'.(
+                    $objFWUser->objUser->login() ?
+                    ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
+                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                    : '');
+            }
 
 
             // category access
@@ -599,11 +601,13 @@ class Download {
                 $arrTables[] = 'category';
             }
             $arrConditions[] = 'tblC.`is_active` = 1';
-            $arrConditions[] = 'tblC.`visibility` = 1'.(
-                $objFWUser->objUser->login() ?
-                    ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
-                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
-                : '');
+            if (!Permission::checkAccess(142, 'static', true)) {
+                $arrConditions[] = 'tblC.`visibility` = 1'.(
+                    $objFWUser->objUser->login() ?
+                        ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
+                        .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                    : '');
+            }
         } elseif (!Permission::checkAccess(142, 'static', true)) {
             $objFWUser = FWUser::getFWUserObject();
 

@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * User Management
  * @copyright   CONTREXX CMS - COMVATION AG
