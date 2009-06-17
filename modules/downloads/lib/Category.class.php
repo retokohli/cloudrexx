@@ -207,8 +207,9 @@ class Category
             !$this->parent_id && !Permission::checkAccess(142, 'static', true)
             // the category isn't a main category and...
             || $this->parent_id && (
+                !Permission::checkAccess(142, 'static', true)
                 // ...the owner has the permission to delete it by himself
-                (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
+                && (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
                 // ...or the user has the right the delete subcategories of the current parent category
                 && (
                     !($objParentCategory = Category::getCategory($this->parent_id))
