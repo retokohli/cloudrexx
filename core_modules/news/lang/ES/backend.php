@@ -206,4 +206,6 @@ $_ARRAYLANG['TXT_NEWS_ACTIVE'] = "Activar";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = "Si un usuario protege un mensaje, s&oacute;lo los miembros de su grupo tienen acceso al mismo.";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "S&oacule;lo los usuarios seleccionados pueden leer este mensaje.";
 $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Miniatura";
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
 ?>

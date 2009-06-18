@@ -6,22 +6,22 @@
  * @package     contrexx
  * @subpackage  module_dataviewer
  */
-$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Bestätigung erfolgreich! Sie werden ab sofort den Newsletter erhalten.";
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Confirmation successful! From now on, you will receive the Newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_ERROR'] = "Die angegebenen Daten treffen nicht zu. <br>Bitte überprüfen Sie die ID und die angemeldete e-mail Adresse aus dem Newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_SEND_TO_ALL_SUBSCRIBERS_SUCCESSFUL'] = "Der Newsletter wurde an alle Abonnenten gesendet";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "Ihre E-Mail Adresse wurde im System eingetragen. Sie erhalten in wenigen Minuten eine Bestätigungsnachricht.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION'] = "Newsletter Anmeldung";
-$_ARRAYLANG['TXT_NEWSLETTER_MUST_CONFIRM'] = "Bitte bestätigen Sie Ihre Anmeldung durch das Anklicken des folgenden Links:";
+$_ARRAYLANG['TXT_NEWSLETTER_MUST_CONFIRM'] = "Please confirm your login by clicking onto the following link:";
 $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "Newsmeldungen";
 $_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "Email Adresse";
 $_ARRAYLANG['TXT_TITLE'] = "Titel";
 $_ARRAYLANG['TXT_TEXT'] = "Text";
-$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Bitte füllen Sie alle erforderlichen Felder aus.";
+$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Diese Felder sind erforderlich";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "Die Daten wurden erfolgreich aktualisiert";
-$_ARRAYLANG['TXT_DATABASE_ERROR'] = "Datenbank Fehler. Das System wurde angehalten!";
+$_ARRAYLANG['TXT_DATABASE_ERROR'] = "Database error. The system has been halted!";
 $_ARRAYLANG['TXT_FROM'] = "von";
-$_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "Der Datensatz wurde erfolgreich gelöscht!";
+$_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The record has been successfully deleted!";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Fehler beim löschen des Datensatzes!";
 $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'] = "Fehler beim Senden der Nachricht";
 $_ARRAYLANG['TXT_EMAIL'] = "E-Mail";
@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_NOT_VALID_EMAIL'] = "Diese E-Mail Adresse ist nicht gültig.";
 $_ARRAYLANG['TXT_EMAL_ALLREDY_EXIST'] = "E-Mail Adresse wurde schon einmal eingetragen";
 $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Ihre E-Mail Adresse wurde erfolgreich aus dem System gelöscht.";
 $_ARRAYLANG['TXT_STATISTICS'] = "Statistik";
-$_ARRAYLANG['TXT_GENERALLY'] = "Generally";
+$_ARRAYLANG['TXT_GENERALLY'] = "General";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "All";
 $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'] = "Templates";
 $_ARRAYLANG['TXT_USER_TITLE'] = "Title";
@@ -65,13 +65,13 @@ $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
 $_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Sie müssen mindestens eine Liste auswählen!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Ihre Daten wurden erfolgreich aktualisiert.";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Beim aktualisieren Ihrer Daten trat ein Fehler auf!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Beim hinzufügen zum Newsletter-System trat ein Fehler auf!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "During teh update of your data, an error occurred!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "During adding to the Newletter system, an error occurred!";
 $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentication failed";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "Der Anmeldevorgang wurde abgebrochen, da das Aktivierungsemail nicht gesendet werden konnte!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Beim löschen Ihrer E-Mail Adresse aus dem Newsletter System trat ein Fehler auf!";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "The subscription procedure has been canceled, because the aActivation email could not be sent!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "At deleting your Email address from the Newsletter system, an error occurred!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Geschlecht";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unbekannt";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'] = "Eintragung";
-$_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Log out";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Logout";
 ?>

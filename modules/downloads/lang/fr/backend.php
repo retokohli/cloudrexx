@@ -259,4 +259,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_SELECTED_CATEGORY'] = "Selected category";
 $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'] = "Open category in the frontend";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'] = "Add a new download to this category";
 $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'] = "Expiration";
+$_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'] = "You must set a file or url as a source!";
 ?>

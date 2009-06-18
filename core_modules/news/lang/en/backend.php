@@ -162,7 +162,7 @@ $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'] = "Do you really want to erase the
 $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'] = "Do you really want to delete the selected ticker?";
 $_ARRAYLANG['TXT_NEWS_DELETE_TICKER'] = "Delete Ticker %s";
 $_ARRAYLANG['TXT_NEWS_NO_TICKER_AVAILABLE'] = "No Ticker Available";
-$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Select all";
+$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Select All";
 $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'] = "Deselect All";
 $_ARRAYLANG['TXT_NEWS_WITH_SELECTED'] = "Selected";
 $_ARRAYLANG['TXT_NEWS_DELETE'] = "Delete";
@@ -207,4 +207,6 @@ $_ARRAYLANG['TXT_NEWS_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = "If a user protects a news message he is then only allowed to allow the access to his group members.";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "Only selected users are allowed to read this news message.";
 $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Thumbnail";
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
 ?>

@@ -8,7 +8,7 @@
  */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Login username";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Login password";
-$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
+$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
 $_ARRAYLANG['TXT_VERIFY_PASSWORD'] = "Verify password";
 $_ARRAYLANG['TXT_LAST_NAME'] = "Last name";
 $_ARRAYLANG['TXT_FIRST_NAME'] = "First name";
@@ -35,7 +35,7 @@ $_ARRAYLANG['TXT_COULD_NOT_SEND_EMAIL'] = "Couldn't send a confirmation mail!<br
 $_ARRAYLANG['TXT_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registration error: couldn't send a confirmation mail";
 $_ARRAYLANG['TXT_ACTIVATION_TIME_EXPIRED'] = "This user account cannot be activated no more because the activation period ran off.";
 $_ARRAYLANG['TXT_REGISTER_NEW_ACCOUNT'] = "Click here to start a new registration";
-$_ARRAYLANG['TXT_ACTIVATION_TIMEOUT'] = " within %TIMEOUT%";
+$_ARRAYLANG['TXT_ACTIVATION_TIMEOUT'] = " within333 %TIMEOUT%";
 $_ARRAYLANG['TXT_HOUR_IN_STR'] = "one hour";
 $_ARRAYLANG['TXT_HOURS_IN_STR'] = "hours";
 $_ARRAYLANG['TXT_USERNAME'] = "Username";
