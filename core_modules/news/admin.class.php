@@ -317,6 +317,7 @@ class newsManager extends newsLibrary {
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
             'TXT_EDIT_NEWS_ID'           => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
+            'TXT_ID'                     => $_ARRAYLANG['TXT_ID'],
             'TXT_DATE'                   => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'                  => $_ARRAYLANG['TXT_TITLE'],
             'TXT_USER'                   => $_ARRAYLANG['TXT_USER'],
