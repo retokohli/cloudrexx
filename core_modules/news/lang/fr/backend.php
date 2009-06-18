@@ -26,7 +26,7 @@ $_ARRAYLANG['TXT_EDIT'] = "Editer";
 $_ARRAYLANG['TXT_MARKED'] = "sélectionné";
 $_ARRAYLANG['TXT_ACTIVATE'] = "Activer";
 $_ARRAYLANG['TXT_DEACTIVATE'] = "Désactiver";
-$_ARRAYLANG['TXT_STATUS'] = "Status";
+$_ARRAYLANG['TXT_STATUS'] = "Statut";
 $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "Articles";
 $_ARRAYLANG['TXT_NEWS_MESSAGE'] = "Article";
 $_ARRAYLANG['TXT_HYPERLINKS'] = "Liens hypertexte";
@@ -205,4 +205,6 @@ $_ARRAYLANG['TXT_NEWS_ACTIVE'] = "Actif";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = "Si un utilisateur protège un article, il ne peut alors y autoriser l'accès qu'aux membres de son groupe.";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "L'accès à cet article est restreint à aux utilisateurs sélectionnés.";
 $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Vignette";
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
 ?>
