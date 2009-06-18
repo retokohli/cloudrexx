@@ -1026,16 +1026,62 @@ function _updateBackendAreas()
 		}
 	}
 
-    $query = "
-    ALTER TABLE ".DBPREFIX."backend_areas
-    CHANGE area_id area_id integer(6) UNSIGNED NOT NULL auto_increment,
-    CHANGE parent_area_id parent_area_id integer(6) UNSIGNED NOT NULL default '0',
-    CHANGE module_id module_id integer(6) UNSIGNED NOT NULL default '0',
-    CHANGE order_id order_id integer(6) UNSIGNED NOT NULL default '0',
-    CHANGE `access_id` `access_id` int(11) unsigned NOT NULL default '0'
-    ";
-    if (!$objDatabase->Execute($query)) {
-    	return _databaseError($query, $objDatabase->ErrorMsg());
+
+
+	/************************************************
+	* BUGFIX:	Add UNIQUE key on access_id         *
+	************************************************/
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'backend_areas',
+            array(
+                'area_id'            => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'parent_area_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'type'               => array('type' => 'ENUM(\'group\',\'function\',\'navigation\')'),
+                'scope'              => array('type' => 'ENUM(\'global\',\'frontend\',\'backend\')'),
+                'area_name'          => array('type' => 'VARCHAR(100)'),
+                'is_active'          => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1'),
+                'uri'                => array('type' => 'VARCHAR(255)'),
+                'target'             => array('type' => 'VARCHAR(50)'),
+                'module_id'          => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'order_id'           => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'access_id'          => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            ),
+            array(
+                'access_id'          => array('fields' => array('access_id'), 'type' => 'UNIQUE'),
+                'area_name'          => array('fields' => array('area_name'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+
+	/***************************************************
+	* BUGFIX:	Clean up duplicate usage of access ids *
+	***************************************************/
+    $arrAccessIds = array(
+        116 => 145,
+        122 => 146,
+        123 => 147,
+        140 => 148,
+        141 => 149
+    );
+    $query = 'SELECT `group_id`, `access_id` FROM `'.DBPREFIX.'access_group_static_ids` WHERE `access_id` IN ('.implode(',', array_keys($arrAccessIds)).')';
+    $objResult = $objDatabase->Execute($query);
+    if ($objResult) {
+        while (!$objResult->EOF) {
+            $query = 'INSERT INTO `'.DBPREFIX.'access_group_static_ids` (`access_id`, `group_id`) VALUES ('.$arrAccessIds[$objResult->fields['access_id']].', '.$objResult->fields['group_id'].')';
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+            $objResult->MoveNext();
+        }
+    } else {
+        return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
     return true;
