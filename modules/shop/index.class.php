@@ -2134,7 +2134,7 @@ function shopUpdateCart()
 function shopGenerateCart()
 {
     cart = '';
-    if (countObjects(objCart.products)) {
+    if (objCart.products.length>0) {
         for (i = 0; i < objCart.products.length; i++) {
             cartProduct = cartProductsTpl.replace('[[SHOP_JS_PRODUCT_QUANTITY]]', objCart.products[i].quantity);
             cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', objCart.products[i].title+objCart.products[i].options);
