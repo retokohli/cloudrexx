@@ -51,7 +51,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'] = "Fehler beim löschen";
 $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] = "Download bearbeiten";
 $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'] = "Verfügbare Benutzergruppen";
 $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'] = "Zugewiesene Benutzergruppen";
-$_ARRAYLANG['TXT_DOWNLOADS_SOURCE'] = "Source";
+$_ARRAYLANG['TXT_DOWNLOADS_SOURCE'] = "Quelle";
 $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'] = "Verfügbare Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'] = "Zugewiesene Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'] = "Downloads";
@@ -243,5 +243,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'] = "Herunter geladen";
 $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = "Angeschaut";
 $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'] = "Zeitbegrenzung";
-$_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'] = "Sie müssen zwingend eine Datei oder eine URL als Source definieren!";
+$_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'] = "Sie müssen zwingend eine Datei oder eine URL als Quelle angeben!";
 ?>
