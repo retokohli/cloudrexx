@@ -210,15 +210,16 @@ class SmtpSettings
      * be returned instead.
      * @see _getSmtpAccount()
      * @param   integer $accountId  The ID of the account settings
+     * @param boolean $getPassword
      * @return  mixed           Array with the details of the requested account
      *                          on success, false otherwise
      * @static
      */
-    static function getSmtpAccount($accountId=0)
+    static function getSmtpAccount($accountId=0, $getPassword=true)
     {
         global $objDatabase;
 
-        return SmtpSettings::_getSmtpAccount($accountId);
+        return SmtpSettings::_getSmtpAccount($accountId, $getPassword);
     }
 }
 

@@ -20,6 +20,9 @@ Modul: Digital Asset Management
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Allgemein:
+- Das Versenden von E-Mails bei der Verwendung eines separaten SMTP-Servers
+  funktioniert.
 
 ****************************************
 * Neue Module **************************
