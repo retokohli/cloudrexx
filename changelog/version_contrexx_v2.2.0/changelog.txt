@@ -16,6 +16,11 @@ WYSIWYG Editor kopiert wird, als Plaintext eingefügt. (FCKConfig.ForcePasteAsPl
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
 
+News Manager:
+- Die ID der Newsmeldungen wird bei der Übersicht im Backend aufgelistet.
+- Die Platzhalter [[NEWS_TEASER_TEXT]] und [[NEWS_CATEGORY_NAME]] werden beim
+  Platzhalterverzeichnis im Backend aufgelistet.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************

@@ -50,10 +50,11 @@ function deletePages(form)
 <form name="formNews" id="formNews" method="post" action="index.php?cmd=news&amp;act=changeStatus">
 	<table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
 		<tr> 
-			<th valign="top" colspan="8" nowrap="nowrap">{TXT_ARCHIVE}</th>
+			<th valign="top" colspan="9" nowrap="nowrap">{TXT_ARCHIVE}</th>
 		</tr>
 		<tr class="row2"> 
 			<td valign="top" nowrap="nowrap" width="1%"><b>#</b></td> 
+			<td valign="top" nowrap="nowrap" width="1%"><b>{TXT_ID}</b></td>
 			<td valign="top" nowrap="nowrap" width="1%"><b>{TXT_STATUS}</b></td> 
 			<td valign="top" nowrap="nowrap" width="5%"><b>{TXT_DATE}</b></td>
 			<td valign="top" nowrap="nowrap"><b>{TXT_TITLE}</b></td>
@@ -65,6 +66,7 @@ function deletePages(form)
 		<!-- BEGIN newsrow -->
 			<tr class="{NEWS_CLASS}">    
 				<td nowrap="nowrap"><input type="checkbox" name="selectedNewsId[]" id="selectedNewsId" value="{NEWS_ID}" /></td>   
+				<td nowrap="nowrap">{NEWS_ID}</td>
 				<td nowrap="nowrap">
 					<a href="?cmd=news&amp;act=invertStatus&amp;newsId={NEWS_ID}" title="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}">
 					<img src="images/icons/{NEWS_STATUS_PICTURE}" border="0" alt="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}" title="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}"/>
