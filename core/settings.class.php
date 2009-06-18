@@ -317,7 +317,7 @@ class settingsManager
                     $_CONFIG['useVirtualLanguagePath'] = $strValue;
                     // update the .htaccess rewrite rules in case the function was de-/activated
                     if ($formerUseVirtualLanguagePathValue != $_CONFIG['useVirtualLanguagePath']) {
-						// deactivate the function in case the .htaccess file couldn't be written 
+						// deactivate the function in case the .htaccess file couldn't be written
                         if (!$this->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on')) {
                             $_CONFIG['useVirtualLanguagePath'] = 'off';
                             $strValue = 'off';
@@ -563,7 +563,7 @@ class settingsManager
         global $objDatabase, $_CORELANG, $_CONFIG;
 
         $id = intval($_GET['id']);
-        $arrSmtp = SmtpSettings::getSmtpAccount($id);
+        $arrSmtp = SmtpSettings::getSmtpAccount($id, false);
         if ($arrSmtp || ($id = 0) !== false) {
             $objResult = $objDatabase->Execute("
                 UPDATE `".DBPREFIX."settings`
@@ -588,7 +588,7 @@ class settingsManager
         global $objDatabase, $_CONFIG, $_CORELANG;
 
         $id = intval($_GET['id']);
-        $arrSmtp = SmtpSettings::getSmtpAccount($id);
+        $arrSmtp = SmtpSettings::getSmtpAccount($id, false);
         if ($arrSmtp !== false) {
             if ($id != $_CONFIG['coreSmtpServer']) {
                 if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'settings_smtp` WHERE `id`='.$id) !== false) {
@@ -705,7 +705,7 @@ class settingsManager
                 }
             }
         } else {
-            $arrSmtp = SmtpSettings::getSmtpAccount($id);
+            $arrSmtp = SmtpSettings::getSmtpAccount($id, false);
             if ($arrSmtp === false) {
                 $id = 0;
                 $arrSmtp = array(
