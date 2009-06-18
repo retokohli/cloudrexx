@@ -903,6 +903,10 @@ class Download {
             return false;
         }
 
+        if (empty($this->source) || $this->type == 'url' && preg_match('#^[a-z]+://$#i', $this->source)) {
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'];
+            return false;
+        }
 
         if (isset($this->names) && !$this->validateName()) {
             return false;

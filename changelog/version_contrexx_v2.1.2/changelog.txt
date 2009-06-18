@@ -13,6 +13,10 @@ News Manager:
 - Die Platzhalter [[NEWS_TEASER_TEXT]] und [[NEWS_CATEGORY_NAME]] werden beim
   Platzhalterverzeichnis im Backend aufgelistet.
 
+Modul: Digital Asset Management
+- Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
+  werden.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
