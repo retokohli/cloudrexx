@@ -37,6 +37,8 @@ Allgemein
   Option 'Virtuelle Sprachverzeichnisse verwenden' aktiviert wurde.
 - Erweiterte Berechtigungen beim News Manager und den Modulen Kalender,
   Inserate Mark und Verzeichnis.
+- Das Versenden von E-Mails bei der Verwendung eines separaten SMTP-Servers
+  funktioniert.
 
 Block System
 - Das Interface zur Auswahl der Frontend Seiten funktioniert korrekt.
