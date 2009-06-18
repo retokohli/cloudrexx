@@ -140,6 +140,7 @@ CREATE TABLE `contrexx_backend_areas` (
   `order_id` int(6) unsigned NOT NULL default '0',
   `access_id` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`area_id`),
+  UNIQUE KEY `access_id` (`access_id`),
   KEY `area_name` (`area_name`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_backups` (
