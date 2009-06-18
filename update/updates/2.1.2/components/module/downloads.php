@@ -45,33 +45,6 @@ function _downloadsUpdate()
               FULLTEXT KEY `description` (`description`)
             ) ENGINE=MyISAM",
         #################################################################################
-        DBPREFIX.'module_downloads_download' => "CREATE TABLE `".DBPREFIX."module_downloads_download` (
-             `id` int(10) unsigned NOT NULL auto_increment,
-             `type` enum('file','url') NOT NULL default 'file',
-             `mime_type` enum('image','document','pdf','media','archive','application','link') NOT NULL default 'image',
-             `source` varchar(255) NOT NULL default '',
-             `source_name` varchar(255) NOT NULL default '',
-             `icon` enum('_blank','avi','bmp','css','doc','dot','exe','fla','gif','htm','html','inc','jpg','js','mp3','nfo','pdf','php','png','pps','ppt','rar','swf','txt','wma','xls','zip') NOT NULL default '_blank',
-             `size` int(10) unsigned NOT NULL default '0',
-             `image` varchar(255) NOT NULL default '',
-             `owner_id` int(5) unsigned NOT NULL default '0',
-             `access_id` int(10) unsigned NOT NULL default '0',
-             `license` varchar(255) NOT NULL default '',
-             `version` varchar(10) NOT NULL default '',
-             `author` varchar(100) NOT NULL default '',
-             `website` varchar(255) NOT NULL default '',
-             `ctime` int(14) unsigned NOT NULL default '0',
-             `mtime` int(14) unsigned NOT NULL default '0',
-             `is_active` tinyint(3) unsigned NOT NULL default '0',
-             `visibility` tinyint(1) unsigned NOT NULL default '1',
-             `order` int(3) unsigned NOT NULL default '0',
-             `views` int(10) unsigned NOT NULL default '0',
-             `download_count` int(10) unsigned NOT NULL default '0',
-              PRIMARY KEY (`id`),
-              KEY `is_active` (`is_active`),
-              KEY `visibility` (`visibility`)
-            ) ENGINE=MyISAM",
-        #################################################################################
         DBPREFIX.'module_downloads_download_locale' => "CREATE TABLE `".DBPREFIX."module_downloads_download_locale` (
              `lang_id` int(11) unsigned NOT NULL default '0',
              `download_id` int(11) unsigned NOT NULL default '0',
@@ -114,6 +87,44 @@ function _downloadsUpdate()
     }
 
 
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'module_downloads_download',
+            array(
+                'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'type'               => array('type' => 'ENUM(\'file\',\'url\')', 'notnull' => true, 'default' => 'file'),
+                'mime_type'          => array('type' => 'ENUM(\'image\',\'document\',\'pdf\',\'media\',\'archive\',\'application\',\'link\')', 'notnull' => true, 'default' => 'image'),
+                'source'             => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'source_name'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'icon'               => array('type' => 'ENUM(\'_blank\',\'avi\',\'bmp\',\'css\',\'doc\',\'dot\',\'exe\',\'fla\',\'gif\',\'htm\',\'html\',\'inc\',\'jpg\',\'js\',\'mp3\',\'nfo\',\'pdf\',\'php\',\'png\',\'pps\',\'ppt\',\'rar\',\'swf\',\'txt\',\'wma\',\'xls\',\'zip\')', 'notnull' => true, 'default' => '_blank'),
+                'size'               => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'image'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'owner_id'           => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'access_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'license'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'version'            => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
+                'author'             => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'website'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'ctime'              => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'mtime'              => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'is_active'          => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'visibility'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'order'              => array('type' => 'INT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'views'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'download_count'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'expiration'         => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'validity'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            ),
+            array(
+                'is_active'          => array('fields' => array('is_active')),
+                'visibility'         => array('fields' => array('visibility'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
+    }
 
 
 
