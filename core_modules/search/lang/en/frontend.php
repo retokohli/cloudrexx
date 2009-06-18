@@ -6,16 +6,16 @@
  * @package     contrexx
  * @subpackage  core_module_search
  */
-$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Suchresultate";
-$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "Your search by <strong>%s</strong>  came up to %d hits (sort by relevance)";
+$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Search Results";
+$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "Your search for <strong>%s</strong> resulted in %d hits (sorted by relevance)";
 $_ARRAYLANG['TXT_RELEVANCE'] = "Relevance";
-$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "Mit dem Suchbegriff <strong>%s</strong> wurden keine Resultate gefunden.";
-$_ARRAYLANG['TXT_SEARCH'] = "Suchen";
-$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Bitte geben Sie ein Suchwort ein.";
-$_ARRAYLANG['TXT_UNTITLED'] = "Ohne Titel";
-$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_HITS'] = "Ihre Suche nach <strong>%s</strong> ergab %d Treffer";
-$_ARRAYLANG['TXT_SEARCH_RESULTS_SORT_BY'] = "sortiert nach";
-$_ARRAYLANG['TXT_HITS'] = "Treffer";
+$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "The search key <strong>%s</strong> did not yield any results.";
+$_ARRAYLANG['TXT_SEARCH'] = "Search";
+$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Please enter a keyword.";
+$_ARRAYLANG['TXT_UNTITLED'] = "Untitled";
+$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_HITS'] = "Your search for <strong>%s</strong> resulted in %d hits";
+$_ARRAYLANG['TXT_SEARCH_RESULTS_SORT_BY'] = "Sorted by";
+$_ARRAYLANG['TXT_HITS'] = "Hits";
 $_ARRAYLANG['TXT_DATE'] = "Date";
-$_ARRAYLANG['TXT_WHAT_ARE_YOU_SEARCHING_FOR'] = "Nach was möchten Sie suchen?";
+$_ARRAYLANG['TXT_WHAT_ARE_YOU_SEARCHING_FOR'] = "What are you searching for?";
 ?>

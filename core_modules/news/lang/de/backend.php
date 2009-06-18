@@ -206,4 +206,6 @@ $_ARRAYLANG['TXT_NEWS_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'] = "Schützt ein Benutzer eine News Meldung, so kann er nur den Mitgliedern seiner Gruppen den Zugriff darauf erlauben.";
 $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "Diese News Meldung dürfen nur bestimmte Benutzer ansehen.";
 $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Thumbnail";
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser Text der Newsmeldung";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name der zugehörigen Kategorie";
 ?>

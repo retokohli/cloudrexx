@@ -54,7 +54,7 @@ $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'] = "Delete selected from global Conten
 $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'] = "Display in global block";
 $_ARRAYLANG['TXT_BLOCK_STATUS'] = "Status";
 $_ARRAYLANG['TXT_BLOCK_BLOCK'] = "Content Block";
-$_ARRAYLANG['TXT_BLOCK_ACTIVATE'] = "activate";
+$_ARRAYLANG['TXT_BLOCK_ACTIVATE'] = "Activate";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Show Content Block on all pages in this language";
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Frontend pages";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Display Content Block in this language";
@@ -65,6 +65,6 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_ON_ALL_PAGES'] = "Show Content Block on all pages in
 $_ARRAYLANG['TXT_BLOCK_FRONTEND_PAGES'] = "Frontend pages";
 $_ARRAYLANG['TXT_BLOCK_LANG_SHOW'] = "Display Content Block in this language";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_NO'] = "Block #%s";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_ALL'] = "alle";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_ALL'] = "All";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_NONE'] = "-";
 ?>

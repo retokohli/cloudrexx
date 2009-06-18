@@ -243,4 +243,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'] = "Herunter geladen";
 $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = "Angeschaut";
 $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'] = "Zeitbegrenzung";
+$_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'] = "Sie müssen zwingend eine Datei oder eine URL als Source definieren!";
 ?>

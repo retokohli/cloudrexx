@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
-$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
+$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";
 $_ARRAYLANG['TXT_PASSWORD_NOT_USERNAME_TEXT'] = "The password and the login name cannot be identical";
@@ -38,7 +38,7 @@ $_ARRAYLANG['TXT_HOSTNAME'] = "Hostname";
 $_ARRAYLANG['TXT_COLLAPS_LINK'] = "Close All";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
 $_ARRAYLANG['TXT_LOG_OUT'] = "Logout";
-$_ARRAYLANG['TXT_EXPAND_LINK'] = "Expand";
+$_ARRAYLANG['TXT_EXPAND_LINK'] = "Expand All";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "This module does not exist.";
 $_ARRAYLANG['TXT_STATUS'] = "Status";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Deselect All";
