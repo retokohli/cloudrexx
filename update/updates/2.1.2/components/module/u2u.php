@@ -2,6 +2,8 @@
 
 function _u2uUpdate()
 {
+    global $objDatabase;
+
     try{
         UpdateUtil::table(
             DBPREFIX . 'module_u2u_address_list',
@@ -58,6 +60,38 @@ function _u2uUpdate()
     catch (UpdateException $e) {
         // we COULD do something else here..
         return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+
+
+	/************************************************
+	* EXTENSION:	Initial adding of the           *
+    *               settings values                 *
+	* ADDED:		Contrexx v2.1.2					*
+	************************************************/
+    $arrSettings = array(
+        'max_posting_size'           => '2000',
+        'max_posting_chars'          => '2000',
+        'wysiwyg_editor'                 => '1',
+        'subject'              => 'Eine neue Nachricht von [senderName]',
+        'from'              => 'Contrexx U2U Nachrichtensystem',
+        'email_message'               => 'Hallo <strong>[receiverName]</strong>,<br />\r\n<br />\r\n<strong>[senderName]</strong> hat Ihnen eine private Nachricht gesendet. Um die Nachricht zu lesen, folgen Sie bitte folgendem Link:<br />\r\n<br />\r\nhttp://[domainName]/index.php?section=u2u&amp;cmd=notification<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />\r\n<br />'
+    );
+
+    foreach ($arrSettings as $name => $value) {
+        $query = "SELECT 1 FROM `".DBPREFIX."module_u2u_settings` WHERE `name` = '".$name."'";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult) {
+            if ($objResult->RecordCount() == 0) {
+                $query = "INSERT INTO `".DBPREFIX."module_u2u_settings` (`name`, `value`) VALUES ('".$name."', '".$value."')";
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
     }
 
     return true;
