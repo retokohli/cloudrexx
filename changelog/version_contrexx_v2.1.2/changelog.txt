@@ -24,6 +24,10 @@ Allgemein:
 - Das Versenden von E-Mails bei der Verwendung eines separaten SMTP-Servers
   funktioniert.
 
+Benutzerverwaltung:
+- Beim Export werden Benutzer, welche als Frontend Sprache die Standard
+  Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
+
 ****************************************
 * Neue Module **************************
 ****************************************
