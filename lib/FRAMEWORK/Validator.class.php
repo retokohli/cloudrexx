@@ -13,17 +13,10 @@
  * Regular Expression for an e-mail address
  *
  * TKaelin @ 2.0.2: wrote new regex based on http://en.wikipedia.org/wiki/E-mail_address
+ * Dave V, @ 2.1.2: re-wrote regex according to http://www.regular-expressions.info/email.html 
 */
 define('VALIDATOR_REGEX_EMAIL',
-          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])'.     //user
-          '(([.]?[a-z0-9!#$%*\/?|^{}`~&\'+\-=_])*)'.
-          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])*'.
-          '@(?:'.
-              '([a-z0-9]+([-.][a-z0-9]+)*)+'.      //domain
-              '\.[a-z]{2,6}'.                      //sld, tld
-            '|'.
-              'localhost'.                         //or localhost
-          ')'
+    "[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
 );
 
 /**
@@ -46,7 +39,7 @@ class FWValidator
      */
     function isEmail($string)
     {
-        return preg_match('/^'.VALIDATOR_REGEX_EMAIL.'$/i', stripslashes($string)) ? true : false;
+        return preg_match('"^'.VALIDATOR_REGEX_EMAIL.'$"i', stripslashes($string)) ? true : false;
     }
 
     /**
