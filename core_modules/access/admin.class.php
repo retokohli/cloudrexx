@@ -61,101 +61,106 @@ class AccessManager extends AccessLib
     }
 
 
-   /**
+  /**
     * export users of a group as CSV
     *
     * @param integer $groupId
     */
     function _exportUsers($groupId = 0, $langId = null)
     {
-        global $objDatabase, $_CORELANG, $objLanguage;
+        global $objDatabase, $_CORELANG, $objLanguage, $objInit;
 
         $csvSeparator = ";";
         $groupId = intval($groupId);
 
-        $objRS = $objDatabase->Execute("SELECT `id`, `title` FROM `".DBPREFIX."access_user_title`");
-        if ($objRS !== false) {
-            while (!$objRS->EOF) {
-                $arrTitles[$objRS->fields['id']] = $objRS->fields['title'];
-                $objRS->MoveNext();
-            }
-        }
+        $objFWUser = FWUser::getFWUserObject();
+        $arrLangs = $objLanguage->getLanguageArray();
 
         if($groupId){
-            $objRS = $objDatabase->SelectLimit("SELECT group_name FROM ".DBPREFIX."access_user_groups WHERE group_id = $groupId", 1);
-            $groupName = $objRS->fields['group_name'];
+            $objGroup = $objFWUser->objGroup->getGroup($groupId);
+            $groupName = $objGroup->getName(LANG_ID);
         }else{
             $groupName = $_CORELANG['TXT_USER_ALL'];
         }
-        header("Content-Type: text/comma-separated-values", true);
-        header("Content-Disposition: attachment; filename=\"".str_replace(array(' ',',','.','\'','"'), '_', $groupName).'_'.($langId != null ? 'lang_'.$langId : '').'.csv"', true);
 
-        $value = '';
+        header("Content-Type: text/comma-separated-values", true);
+        header("Content-Disposition: attachment; filename=\"".str_replace(array(' ',',','.','\'','"'), '_', $groupName).($langId != null ? '_lang_'.$arrLangs[$langId]['lang'] : '').'.csv"', true);
+
         $arrFields = array ('active', 'frontend lang', 'backend lang', 'gender', 'title', 'firstname', 'lastname', 'username', 'email');
         foreach ($arrFields as $field) {
             print $this->_escapeCsvValue($field).$csvSeparator;
         }
         print "\n";
-        $arrLangs = $objLanguage->getLanguageArray();
 
-        $objRS = $objDatabase->Execute('
-            SELECT
-                tblUser.active, tblUser.frontend_lang_id, tblUser.backend_lang_id, tblProfile.gender, tblProfile.title, tblProfile.firstname, tblProfile.lastname, tblUser.`username`, tblUser.email
-            FROM
-                `'.DBPREFIX.'access_rel_user_group` AS tblRel
-            INNER JOIN `'.DBPREFIX.'access_users` AS tblUser
-            ON tblUser.`id` = tblRel.`user_id`
-            INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblProfile
-            ON tblProfile.`user_id` = tblRel.`user_id`
-            WHERE TRUE
-            '.(!empty($groupId) ? ' AND tblRel.`group_id` = '.$groupId : '').'
-            '.(!empty($langId) ? ' AND tblUser.frontend_lang_id = ' .$langId : '').'
-            GROUP BY tblUser.`username`
-            ORDER BY tblUser.`username`' );
-
-        if ($objRS !== false) {
-            while (!$objRS->EOF) {
-                    foreach ($objRS->fields as $key => $value) {
-                        switch($key){
-                            case 'gender':
-                                switch ($value) {
-                                	case 'gender_male':
-                                	   $value = $_CORELANG['TXT_ACCESS_MALE'];
-                               		break;
-
-                               		case 'gender_female':
-                                	   $value = $_CORELANG['TXT_ACCESS_FEMALE'];
-                              	    break;
-
-                              	    default:
-                                	   $value = $_CORELANG['TXT_ACCESS_UNKNOWN'];
-                              	    break;
-                                }
-                            break;
-
-                            case 'frontend_lang_id':
-                            case 'backend_lang_id':
-                               $value = !empty($arrLangs[$value]['lang']) ? $arrLangs[$value]['name']." (".$arrLangs[$value]['lang'].")" : $_CORELANG['TXT_ACCESS_UNKNOWN'];
-                       		break;
-
-                            case 'title':
-                                $value = $arrTitles[$value];
-                            break;
-
-                            case 'active':
-                                $value = $value == 1 ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
-                            break;
-
-                            default:
-                            break;
-                        }
-                        print $this->_escapeCsvValue($value).$csvSeparator;
-                    }
-                    print "\n";
-                    $objRS->MoveNext();
+        $filter = array();
+        if (!empty($groupId)) {
+            $filter['group_id'] = $groupId;
+        }
+        if (!empty($langId)) {
+            if ($objLanguage->getLanguageParameter($langId, 'is_default') == 'true') {
+                $filter['frontend_lang_id'] = array($langId, 0);
+            } else {
+                $filter['frontend_lang_id'] = $langId;
             }
         }
-        exit();
+        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array('active', 'frontend_lang_id', 'backend_lang_id', 'gender', 'title', 'firstname', 'lastname', 'username', 'email'));
+        if ($objUser) {
+            while (!$objUser->EOF) {
+                $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
+
+                $frontendLangId = $objUser->getFrontendLanguage();
+                if (empty($frontendLangId)) {
+                    $frontendLangId = $objInit->getDefaultFrontendLangId();
+                }
+                $frontendLang = $arrLangs[$frontendLangId]['name']." (".$arrLangs[$frontendLangId]['lang'].")";
+
+                $backendLangId = $objUser->getBackendLanguage();
+                if (empty($backendLangId)) {
+                    $backendLangId = $objInit->getDefaultBackendLangId();
+                }
+                $backendLang = $arrLangs[$backendLangId]['name']." (".$arrLangs[$backendLangId]['lang'].")";
+
+                // gender
+                switch ($objUser->getProfileAttribute('gender')) {
+                    case 'gender_male':
+                       $gender = $_CORELANG['TXT_ACCESS_MALE'];
+                    break;
+
+                    case 'gender_female':
+                       $gender = $_CORELANG['TXT_ACCESS_FEMALE'];
+                    break;
+
+                    default:
+                       $gender = $_CORELANG['TXT_ACCESS_UNKNOWN'];
+                    break;
+                }
+
+                // title
+                $title = '';
+                $objAttribute = $objFWUser->objUser->objAttribute->getById('title');
+                foreach ($objAttribute->getChildren() as $childAttributeId) {
+                    $objChildAtrribute = $objAttribute->getById($childAttributeId);
+                    if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute('title')) {
+                        $title = $objChildAtrribute->getName();
+                        break;
+                    }
+                }
+
+                print $this->_escapeCsvValue($activeStatus).$csvSeparator;
+                print $this->_escapeCsvValue($frontendLang).$csvSeparator;
+                print $this->_escapeCsvValue($backendLang).$csvSeparator;
+                print $this->_escapeCsvValue($gender).$csvSeparator;
+                print $this->_escapeCsvValue($title).$csvSeparator;
+                print $this->_escapeCsvValue($objUser->getProfileAttribute('firstname')).$csvSeparator;
+                print $this->_escapeCsvValue($objUser->getProfileAttribute('lastname')).$csvSeparator;
+                print $this->_escapeCsvValue($objUser->getUsername()).$csvSeparator;
+                print $this->_escapeCsvValue($objUser->getEmail()).$csvSeparator;
+                print "\n";
+
+                $objUser->next();
+            }
+        }
+        exit;
     }
 
 
@@ -165,7 +170,7 @@ class AccessManager extends AccessLib
      * @param string $value
      * @return string
      */
-    function _escapeCsvValue(&$value)
+    function _escapeCsvValue($value)
     {
         $csvSeparator = ";";
         $value = in_array(strtolower(CONTREXX_CHARSET), array('utf8', 'utf-8')) ? utf8_decode($value) : $value;
