@@ -84,6 +84,10 @@ Statistik
 Webinstaller
 - Kontrollkästchen werden beim Browser Opera angezeigt.
 
+Benutzerverwaltung:
+- Beim Export werden Benutzer, welche als Frontend Sprache die Standard
+  Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
+
 ****************************************
 * Neue Module **************************
 ****************************************
