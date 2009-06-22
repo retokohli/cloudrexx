@@ -1027,4 +1027,10 @@ $_ARRAYLANG['TXT_MANAGE_CONFIGURATION'] = "Gérer les paramètres";
 $_ARRAYLANG['TXT_ADD_FILES'] = "Nouveaux fichiers";
 $_ARRAYLANG['TXT_ACCESS_COMMUNITY_EVENTS'] = "Accéder aux manifestations communautaires";
 $_ARRAYLANG['TXT_MEDIADIR_MODULE'] = "Meda Directory";
+$_ARRAYLANG['TXT_LANGUAGES'] = "Sprachen";
+$_ARRAYLANG['TXT_CONTENT_NO_TITLE'] = "Unbenannt";
+$_ARRAYLANG['TXT_ERROR_COULD_NOT_INSERT_PAGE'] = "Seite konnte nicht in die Datenbank eingefügt werden";
+$_ARRAYLANG['TXT_SUCCESS_PAGE_SAVED'] = "Seite gespeichert:";
+$_ARRAYLANG['TXT_ERROR_COULD_NOT_GET_DATA'] = "Daten konnten nicht vom Server geholt werden";
+$_ARRAYLANG['TXT_CONTENT_PLEASE_WAIT'] = "Bitte warten...";
 ?>
