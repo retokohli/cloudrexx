@@ -157,6 +157,7 @@ CREATE TABLE `contrexx_backups` (
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_content` (
   `id` int(6) unsigned NOT NULL default '0',
+  `lang_id` int(11) NOT NULL default '1',
   `content` mediumtext NOT NULL,
   `title` varchar(250) NOT NULL default '',
   `metatitle` varchar(250) NOT NULL default '',
@@ -166,12 +167,13 @@ CREATE TABLE `contrexx_content` (
   `css_name` varchar(50) NOT NULL default '',
   `redirect` varchar(255) NOT NULL default '',
   `expertmode` set('y','n') NOT NULL default 'n',
-  UNIQUE KEY `contentid` (`id`),
+  PRIMARY KEY  (`id`,`lang_id`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_history` (
   `id` int(8) unsigned NOT NULL default '0',
   `page_id` int(7) unsigned NOT NULL default '0',
+  `lang_id` int(11) NOT NULL default '1',
   `content` mediumtext NOT NULL,
   `title` varchar(250) NOT NULL default '',
   `metatitle` varchar(250) NOT NULL default '',
@@ -182,7 +184,7 @@ CREATE TABLE `contrexx_content_history` (
   `redirect` varchar(255) NOT NULL default '',
   `expertmode` set('y','n') NOT NULL default 'n',
   PRIMARY KEY  (`id`),
-  KEY `page_id` (`page_id`),
+  KEY `page_id` (`page_id`,`lang_id`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_logfile` (
@@ -194,7 +196,7 @@ CREATE TABLE `contrexx_content_logfile` (
   KEY `history_id` (`history_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_navigation` (
-  `catid` int(6) unsigned NOT NULL auto_increment,
+  `catid` int(6) unsigned NOT NULL,
   `is_validated` set('0','1') NOT NULL default '1',
   `parcat` int(6) unsigned NOT NULL default '0',
   `catname` varchar(100) NOT NULL default '',
@@ -215,7 +217,7 @@ CREATE TABLE `contrexx_content_navigation` (
   `backend_access_id` int(11) unsigned NOT NULL default '0',
   `themes_id` int(4) NOT NULL default '0',
   `css_name` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`catid`),
+  PRIMARY KEY  (`catid`,`lang`),
   KEY `parcat` (`parcat`),
   KEY `module` (`module`),
   KEY `catname` (`catname`)
@@ -244,7 +246,7 @@ CREATE TABLE `contrexx_content_navigation_history` (
   `themes_id` int(4) NOT NULL default '0',
   `css_name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `catid` (`catid`)
+  KEY `catid` (`catid`,`lang`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
@@ -300,6 +302,7 @@ CREATE TABLE `contrexx_log` (
 CREATE TABLE `contrexx_module_alias_source` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `target_id` int(10) unsigned NOT NULL,
+  `lang_id` int(10) unsigned NOT NULL default '1',
   `url` varchar(255) NOT NULL,
   `isdefault` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
