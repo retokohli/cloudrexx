@@ -38,7 +38,7 @@ function updateAliasPreview(text) {
 
 function preSubmitCheck(){
 	if (document.formContent.newpage.value == "") {
-		document.getElementById('errormessagetarget').innerHTML = '<div id="alertbox">{TXT_ERROR_NO_TITLE}</div><p/>';
+		document.getElementById('errormessagetarget').innerHTML = '<div id="alertbox">{TXT_ERROR_NO_TITLE}</div><br />';
 		return false;
 	}
 	SelectAllList(document.formContent.elements['assignedGroups[]']);
@@ -281,13 +281,436 @@ function openWindow(theURL,winName,features){
 	galleryPopup = window.open(theURL,"gallery",features);
 	galleryPopup.focus();
 }
+
+(function(){  //wrap in anonyomous function to avoid polluting the global namespace
+var getFrameContent = function(){
+    var $frame = $J('form[name=formContent] iframe').contents();
+    return $frame.find('textarea').val() || $frame.find('iframe').contents().find('body').html();
+}
+
+var setFrameContent = function(html){
+    var $frame = $J('form[name=formContent] iframe').contents();
+    $frame.find('textarea').length == 0
+        ? $frame.find('iframe').contents().find('body').html(html)
+        : $frame.find('textarea').val(html);
+}
+
+var submitForm = function(event){
+    event.preventDefault();
+    $J('#contentLanguages li a').each(function(){
+        $J(this).click();
+        if($J('form[name=formContent] input[name=newpage]').val() == ''){
+            $J('form[name=formContent] input[name=newpage]').val('{TXT_CONTENT_NO_TITLE}')
+        }
+        $J('form[name=formContent] input[name=html]').remove();
+        $J('form[name=formContent]').find('select[name=assignedGroups\[\]]').children().attr('selected', 'selected');
+        $J('form[name=formContent]').find('select[name=assignedBackendGroups\[\]]').children().attr('selected', 'selected');
+        $J('form[name=formContent]').serialize();
+        var postData = $J('form[name=formContent]').serialize();
+        var contentData = getFrameContent();
+        postData += '&'+$J.param({  html:   contentData,
+                                    langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
+                                    langName: $J(this).attr('title').replace(/(.*?)_\d+$/, '$1')});
+        $J.ajax({
+            async:       false,
+            cache:       false,
+            complete:    submitComplete,
+            data:        postData,
+            processData: false,
+            dataType:    'json',
+            success:     submitSuccess,
+            error:       submitError,
+            type:        'POST',
+            url:         'index.php?cmd=content&act={CONTENT_FORM_ACTION}'
+        });
+    });
+    return false;
+}
+
+var submitError = function(xhr, textStatus, errorThrown){
+     $J('#errormessagetarget').append('<div id="alertbox">AJAX['+textStatus+']: '+errorThrown+'</div>').find(':last-child')
+                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+}
+
+var submitComplete = function(xhr, textStatus){
+    window._CONTREXX_REQUEST_ACTIVE = false;
+}
+
+var submitSuccess = function(data, textStatus){
+    var pageId = data.pageId;
+    var lang   = data.langName;
+    if(pageId < 0){
+        $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_INSERT_PAGE}</div>').find(':last-child')
+                                .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+    }else{
+        $J('#errormessagetarget').append('<div id="okbox">{TXT_SUCCESS_PAGE_SAVED}'+lang+'</div>').find(':last-child')
+                                .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+        //location.href='index.php?cmd=content&act=edit&pageId='+data.pageId;
+    }
+}
+
+var makeTabActive = function(aElement){
+    var $a = $J(aElement);
+    $J('#contentLanguages li a').removeClass('active');
+    $a.addClass('active');
+}
+
+var getTabData = function(a){
+    var langName = $J(a).text();
+    if($J('form[name=formContent] select[name=category]').data(langName) !== undefined){  //return if we have already fetched the data for this language
+        return false;
+    }
+    getNavMenu(a); //get nav menu dropdown
+    if(location.href.match(/act=edit/)){//fill contents from DB if we are editiing
+        getContentData(a);
+    }
+}
+
+var swapContent = function(aElement){
+    var $a = $J(aElement);
+    var lastActive = $J('#contentLanguages li a.active').text();
+    var $container = $J('form[name=formContent]');
+    var $iFrame    = $container.find('iframe');
+    $J('form[name=formContent] th').each(
+        function(){
+            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$a.text()+')')
+        }
+    )
+
+
+    $J('#aliastarget').data(lastActive, $J('#aliastarget').text());
+    $J('#aliastarget').data($a.text()) === undefined
+      ? $J('#aliastarget').text('')
+      : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
+
+    $iFrame.data(lastActive, getFrameContent());    //save frame contents for current lang
+    $iFrame.data($a.text()) === undefined           //load frame contents for new lang
+      ?  setFrameContent('')
+      :  setFrameContent($iFrame.data($a.text()));
+
+    $container.find('input[type=text]').each(function(){ //swap input text contents
+        $J(this).data(lastActive, $J(this).val());
+        $J(this).data($a.text()) === undefined
+            ? $J(this).val('')
+            : $J(this).val($J(this).data($a.text()));
+    });
+
+    $container.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
+        var $radio = $J($container.find('input[name='+$J(this).attr('name')+']:first'));
+        $radio.data(lastActive, $J(this).val());
+        $radio.data($a.text()) === undefined
+            ? $radio.click()
+            : $container.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']').click();
+    });
+
+    var $unchecked = $J($container.find('input[type=checkbox]:not(:checked)'));
+    $container.find('input[type=checkbox]:checked').each(function(){ //swap input checkboxes which are checked
+        $J(this).data(lastActive, $J(this).attr('checked'));
+        $J(this).data($a.text()) === undefined
+            ? $J(this).attr('checked', 'checked')
+            : $J(this).attr('checked', (
+                                         $J(this).data($a.text())
+                                         ? 'checked'
+                                         : false
+                                       )
+            );
+    });
+
+    $unchecked.each(function(){ //swap input checkboxes which are not checked
+        $J(this).data(lastActive, $J(this).attr('checked'));
+        $J(this).data($a.text()) === undefined
+            ? $J(this).attr('checked', false)
+            : $J(this).attr('checked', (
+                                         $J(this).data($a.text())
+                                         ? 'checked'
+                                         : false
+                                       )
+            );
+    });
+
+    $container.find('select').each(function(){
+        var $options = $J(this).find('option');
+        var value    = $J(this).find('option:selected').val();
+        $J(this).data(lastActive, {'options': $options, 'value': value});
+        if($J(this).data($a.text()) === undefined){//set default options and value if not yet
+            $J(this)
+            .data($a.text(), {
+                                'options' : $J(this).data('default').options,
+                                'value'   : $J(this).data('default').value
+                             }
+            );
+        }
+        $J(this).empty();
+        $J(this).append($J(this).data($a.text()).options);
+        $J(this).val($J(this).data($a.text()).value);
+    });
+}
+
+var switchLangTab = function(inputLangElement){
+    var $tab = $J(inputLangElement);
+    if($J("tr#availableLanguages :checked").length == 0){ //if only one language is enabled don't uncheck
+        return $tab.attr('checked', 'checked');
+    }
+    var done        = false;
+    var tabName     = $tab.parent().find('label').text().replace(/\s\(\w\w\)/, '');
+    var $tabActive  = $J("#contentLanguages a.active");
+
+    if($tab.attr('checked')){
+        var id      = $tab.attr('id').replace(/.*?(\d+)$/, "$1");
+        var insNode = '<li><a title="'+tabName+'_'+id+'">'+tabName+'</a></li>';
+        var index   = $J('#availableLanguages input').index(inputLangElement);
+        var len     = $J('#availableLanguages input').length;
+
+        if(index == 0){ //if it's the first language always insert it before the first child
+            $J('#contentLanguages li:first-child').before(insNode);
+        } else if(index == len-1){ //if it's the last language always insert after the last child
+           $J('#contentLanguages li:last').after(insNode);
+        } else {
+            //otherwise get all checked after the clicked input and insert it at the correct position
+            var numberOfCheckedBefore = $J('#availableLanguages input:gt('+index+'):checked').length
+            var $insertAt = $J($J('#contentLanguages li').get().reverse()).eq(numberOfCheckedBefore);
+            if($insertAt.length == 0){
+                $J('#contentLanguages li:first').before(insNode);
+            }else{
+                $insertAt.after(insNode);
+            }
+        }
+        $tab.trigger('setData', [tabName]); //click all language tabs to set the data
+        $tabActive.click(); //back to newly added tab
+    } else {
+        $tab = $J('#contentLanguages li:contains('+tabName+')');
+        if($tab.find('a').is('.active')){
+            if($tab.next().find('a').length > 0){
+                $tab.next().find('a').click();
+            }else{
+                $tab.prev().find('a').click();
+            }
+        }
+        $tab.remove();
+    }
+}
+
+var getContentData = function(a){
+    var pageId = $J('form[name=formContent] input[name=pageId]').val();
+    var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
+    var langName = $J(a).text();
+    $J.ajax({
+       url: 'index.php?cmd=content&act=JSON&data=inputText',
+       type: 'POST',
+       async: false,
+       cache: false,
+       data: {page: pageId , lang: langId, langName: langName},
+       dataType: 'json',
+       success: setInputText,
+       error: setDataFetchError
+    });
+    $J.ajax({
+       url: 'index.php?cmd=content&act=JSON&data=inputRadio',
+       type: 'POST',
+       async: false,
+       cache: false,
+       data: {page: pageId , lang: langId, langName: langName},
+       dataType: 'json',
+       success: setInputRadio,
+       error: setDataFetchError
+    });
+    $J.ajax({
+       url: 'index.php?cmd=content&act=JSON&data=inputCheckbox',
+       type: 'POST',
+       async: false,
+       cache: false,
+       data: {page: pageId , lang: langId, langName: langName},
+       dataType: 'json',
+       success: setInputCheckbox,
+       error: setDataFetchError
+    });
+    $J.ajax({
+       url: 'index.php?cmd=content&act=JSON&data=select',
+       type: 'POST',
+       async: false,
+       cache: false,
+       data: {page: pageId , lang: langId, langName: langName},
+       dataType: 'json',
+       success: setSelect,
+       error: setDataFetchError
+    });
+
+}
+
+var setSelect = function(data, textStatus){
+    var name;
+    var langName = data.langName;
+    var $container = $J('form[name=formContent]');
+    for(name in data){
+        $container.find('select[name='+name+']')
+        .data(langName, {
+                            'options' : data[name].options,
+                            'value'   : data[name].value
+                        }
+        );
+    }
+}
+
+var setInputCheckbox = function(data, textStatus){
+    var name;
+    var langName = data.langName;
+    var $container = $J('form[name=formContent]');
+    for(name in data){
+        $container.find('input[name='+name+']').data(langName, data[name]);
+    }
+}
+
+
+var setInputRadio = function(data, textStatus){
+    var name;
+    var langName = data.langName;
+    var $container = $J('form[name=formContent]');
+    for(name in data){
+        $container.find('input[name='+name+']:first').data(langName, data[name]);
+    }
+}
+
+var setInputText = function(data, textStatus){
+    var name;
+    var langName = data.langName;
+    var $container = $J('form[name=formContent]');
+    for(name in data){
+        if(name == 'content'){
+            $container.find('iframe').data(langName, data[name]);
+        }
+        $container.find('input[name='+name+']').data(langName, data[name]);
+    }
+}
+
+var getNavMenu = function(a){
+    var langName = $J(a).text();
+    var pageId = $J('form[name=formContent] input[name=pageId]').val();
+    var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
+    $J.ajax({
+        url: 'index.php?cmd=content&act=JSON&data=navMenu',
+        type: 'POST',
+        async: false,
+        cache: false,
+        data: {page: pageId , lang: langId, langName: langName},
+        dataType: 'json',
+        success: setNavMenu,
+        error: setDataFetchError
+    });
+    return true;
+}
+
+
+var setNavMenu = function(data, textStatus){
+    var langName = data.langName;
+    var $container = $J('form[name=formContent]');
+    $container.find('select[name=category]')
+    .data(langName, {
+                        'options' : data['options'],
+                        'value'   : data['value']
+                    }
+    );
+}
+
+var setDataFetchError = function(xhr, textStatus, errorThrown){
+    $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_GET_DATA}</div>').find(':last-child')
+                             .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+
+}
+
+
+
+var saveFormElementData = function(event, lang){
+    //var $container = $J('form[name=formContent]');
+    //skeleton for custom event handler, might be useful later
+}
+
+$J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
+    c = function(str){window.status=str};
+    //add global ajax evenet handlers
+    $("#ajaxbusy").bind("ajaxStart", function(){
+        window._CONTREXX_REQUEST_ACTIVE = true;
+        $(this).css({opacity: 0.5});
+        $(this).show();
+    }).bind("ajaxStop", function(){
+        $(this).hide();
+    });
+    $('form[name=formContent]').submit(submitForm);
+    $('#availableLanguages input').each(function(){
+        var lang = $(this).next().text().replace(/\s\(.*?\)$/, '');
+        $(this).bind('setData', lang, function(event){ //add custom event handler, not used yet
+            saveFormElementData(event, lang);
+        });
+        $(this).bind('click', function(){
+            switchLangTab(this);
+        });
+
+    });
+
+    if(location.href.match(/act=edit/)){ //if we're editing get tab data for all tabs except first one, which is already loaded
+        $J('#contentLanguages li:not(:first-child) a').each(function(){
+            getTabData(this);
+        });
+    }
+    //get default values for select elements
+    //commented code is buggy in ie, maybe useful for other browsers
+    //    $('form[name=formContent] select').each(function(){
+    //        var $defaultOptions = $(this).find('option');
+    //        var defaultValue    = $(this).find('option :selected').val();
+    //        $(this).data('default', {'options': $defaultOptions, 'value': defaultValue});
+    //    });
+     $('form[name=formContent] select').each(function(){
+        var defaultOptions  = $(this).html();
+        var defaultValue    = $(this).find('option:selected').val();
+        $(this).data('default', {'options': defaultOptions, 'value': defaultValue});
+    });
+
+    //add click eventhandler to all new tab links
+    $('#contentLanguages li a').live('click', function(){
+        swapContent(this);
+        makeTabActive(this);
+    });
+    swapContent($('#contentLanguages li a:first'));
+});
+})();//execute anonymous function
+
+if(typeof console === "undefined"){
+    console = {};
+    console.log = function(s){window.status=s;}
+}
 // ]]>
 </script>
+
+<div id="ajaxbusy">
+    <div>{TXT_CONTENT_PLEASE_WAIT}</div>
+</div>
+
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
-<form name="formContent" method="post" onsubmit="return preSubmitCheck()" action="index.php?cmd=content&amp;act={CONTENT_FORM_ACTION}">
-	<input type="hidden" name="pageId" value="{CONTENT_CATID}" />
-	<input type="hidden" name="date" value="{CONTENT_DATE}" />
-	<input type="hidden" name="pagetitle" value="{CONTENT_TOP_TITLE}" />
+<br />
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+	<tr>
+		<th colspan="{LANGUAGE_COUNT}">{TXT_LANGUAGES}</th>
+	</tr>
+	<tr class="row1" id="availableLanguages">
+    <!-- BEGIN languages_activate -->
+		<td style="white-space: nowrap; min-width: 100px;" valign="top">{LANGUAGE_CHECKBOX}</td>
+    <!-- END languages_activate -->
+        <td width="70%">&nbsp;</td>
+	</tr>
+</table>
+<br />
+
+<form name="formContent" method="post" action="index.php?cmd=content&amp;act={CONTENT_FORM_ACTION}">
+<input type="hidden" name="pageId" value="{CONTENT_CATID}" />
+<input type="hidden" name="date" value="{CONTENT_DATE}" />
+<input type="hidden" name="pagetitle" value="{CONTENT_TOP_TITLE}" />
+<ul id="contentLanguages" class="tabmenu">
+<!-- BEGIN languages_tab -->
+    <li><a class="{TAB_CLASS}" title="{LANGUAGE_TITLE}">{LANGUAGE_NAME}</a></li>
+<!-- END languages_tab -->
+</ul>
+
+<div class="tabContainer">
+    <br />
 	<ul id="tabmenu">
 		<li><a id="editorTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_BASIC_DATA}">{TXT_BASIC_DATA}</a></li>
 		<li><a id="editorTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_MORE_OPTIONS}">{TXT_MORE_OPTIONS}</a></li>
@@ -298,6 +721,7 @@ function openWindow(theURL,winName,features){
 		<!-- END changelog1 -->
 		<li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>
 	</ul>
+</div>
 	<div id="content1" class="editorTab" style="display:block">
 		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
 			<tbody style="vertical-align:top; white-space:nowrap;">
@@ -314,14 +738,6 @@ function openWindow(theURL,winName,features){
 								onchange="if (this.options[this.selectedIndex].disabled) {this.selectedIndex = this.lastSelectedOption;}">
 								<option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_NEW_CATEGORY}</option>
 								{CONTENT_CAT_MENU}
-							</select>
-							{TXT_TARGET}
-							<select name="redirectTarget" style="margin-right:5px;">
-								<option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
-								<option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
-								<option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
-								<option value="_self">{TXT_TARGET_SELF} (_self)</option>
-								<option value="_top">{TXT_TARGET_TOP} (_top)</option>
 							</select>
 							{TXT_VISIBLE}
 							<input type="checkbox" name="displaystatus" value="on" {CONTENT_DISPLAYSTATUS} />
@@ -448,6 +864,18 @@ function openWindow(theURL,winName,features){
 					<td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
 					<td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" /></td>
 				</tr>
+		   <tr class="row1">
+		      <td>{TXT_TARGET}</td>
+		      <td>
+	             <select name="redirectTarget" style="margin-right:5px;">
+					<option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
+    				<option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
+					<option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
+					<option value="_self">{TXT_TARGET_SELF} (_self)</option>
+					<option value="_top">{TXT_TARGET_TOP} (_top)</option>
+				</select>
+			 </td>
+		   </tr>
 		</table>
 		<br />
 		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">

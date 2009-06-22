@@ -44,9 +44,24 @@ function changeStatus(pageId)
       }
     }
   }
+
+(function(){ //wrap in anonyomous function to avoid polluting the global namespace
+    $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
+        $J('#tabmenu li a').click(function(){
+                $J('form[name=userFrontendLangIdForm] :selected').val($J(this).attr('id').replace(/.*?(\d+)$/, '$1'));
+                $J('form[name=userFrontendLangIdForm]').submit();
+        });
+    });
+})();//execute anonymous function
+
 // -->
 </script>
 <form name="form" action="index.php?cmd=content&amp;act=mod" method="post">
+<ul id="tabmenu">
+<!-- BEGIN languages_tab -->
+    <li><a class="{TAB_CLASS}" title="{LANGUAGE_TITLE}" id="langTab_{LANGUAGE_ID}">{LANGUAGE_NAME}</a></li>
+<!-- END languages_tab -->
+</ul>
 <table summary="" class="adminlist" width="100%" cellspacing="0" cellpadding="3" border="0">
 <tr>
 <th width="50%">

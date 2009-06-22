@@ -273,7 +273,7 @@ class FileBrowser {
         ));
 
         $this->_setNavigation();
-        $this->_setContent();
+        $this->_setContent($_GET['noAliases']);
         $this->_setUploadForm();
         $this->_showStatus();
         $this->_objTpl->show();
@@ -550,7 +550,7 @@ class FileBrowser {
     * Shows all files / pages in filebrowser
     *
     */
-    function _setContent()
+    function _setContent($noAliases=false)
     {
         global $objDatabase, $objLanguage, $_CONFIG;
 
@@ -586,7 +586,8 @@ class FileBrowser {
                 $link = $scriptPath.CONTREXX_DIRECTORY_INDEX.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
 
                 $url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
-                if($arrPage['alias']) {
+
+                if($arrPage['alias'] && !$noAliases) {
                     $url = "'" . $scriptPath . $arrPage['alias'] . "'";
                 }
 
