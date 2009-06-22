@@ -42,7 +42,7 @@ $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "Takma isim Yönetimi sadece <stron
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Takma isim yönetimi kullan";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "Apacheden başka Webserveri kullandığınızdan, Takma isim Yönetimi bu serverde çalışmıyor!";
 $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "<strong>mod_rewrite</strong>Uzantısı Serverde etkin olup olmadığı öğrenilemedi.<br /><strong>mod_rewrite</strong> eksik olma ihtimalinden Takma isim Yönetimi risk sebeplerinden dolayı etkinlenmedi .<br /><br />Eğer <strong>mod_rewrite</strong> uzantısının olduğundan eminseniz Takma isim Yönetimini bu sayfanın temel dizininde  <strong>.htaccess</strong> isminde bir veri oluşturarak ve şu::<br /><div style=\"margin:10px;\"><code>RewriteEngine On</code></div> içeriği ekleyerek kendiniz etkinleyebilirsiniz.Böylelikle gelecek seferde Takma isim Yönetimi otomatik olarak etkinlenecektir.";
-$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Serverde <strong.htaccess</strong> verilerinin desteklendiğinden iyice emin olun .";
+$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Serverde <strong>.htaccess</strong> verilerinin desteklendiğinden iyice emin olun .";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "Ayarlar başarıyla kabul edildi.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "Ayarları kaydederken hata oldu!";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Bu hedef sayfa yok!";
