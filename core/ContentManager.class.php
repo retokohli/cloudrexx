@@ -3126,12 +3126,14 @@ ON DUPLICATE KEY
                       FROM ".DBPREFIX."content_navigation
                      WHERE catid = ".$pageId." AND `lang`=".$langId, 1);
                 $targets = '<option value="'.$objRS->fields['target'].'" selected="selected">'.$objRS->fields['target'].'</option>';
+                if(empty($target)){ $targets = '<option value=""></option>'; }
                 foreach ($this->_arrRedirectTargets as $target){
+                    if(empty($target)){ continue; }
                     $targets .= '<option value="'.$target.'">'.$_CORELANG['TXT_TARGET'.strtoupper($target)].' ('.$target.')</option>';
                 }
                 $selects['themesId']['options']                 = $this->_getThemesMenu($objRS->fields['themes_id']);
                 $selects['themesId']['value']                   = $objRS->fields['themes_id'];
-                $selects['selectmodule']['options']             = $this->_getModuleMenu($objRS->fields['module']);
+                $selects['selectmodule']['options']             = '<option value="">'.$_CORELANG['TXT_NO_MODULE'].'</option>'.$this->_getModuleMenu($objRS->fields['module']);
                 $selects['selectmodule']['value']               = $objRS->fields['module'];
                 $selects['redirectTarget']['options']           = $targets;
                 $selects['redirectTarget']['value']             = $objRS->fields['target'];
