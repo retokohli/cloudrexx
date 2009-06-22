@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_TITLE'] = "Comentarios";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "N&uacute;mero de caracteres que se muestran en el texto de introducci&oacute;n. Para mostrar el texto completo se debe introducir el valor 0.";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_INTRODUCTION'] = "N&uacute;mero de caracteres en el texto de introducci&oacute;n";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_TITLE'] = "General";
+$_ARRAYLANG['TXT_KNOWLEDGE_HITS'] = "Vistas";
 $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'] = "Art&iacute;culo";
 $_ARRAYLANG['TXT_KNOWLEDGE_RATING'] = "Puntuaci&oacute;n";
 $_ARRAYLANG['TXT_KNOWLEDGE_LIB_POSTED_BY'] = "Posteada por [USER] el [DATE]";

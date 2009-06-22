@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_TITLE'] = "Kommentare";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "Dieser Wert legt die Anzahl der Zeichen im Einleitungstext fest. Wenn Sie immer den kompletten Text anzeigen lassen wollen, so setzen Sie hier die Zahl 0 ein.";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_INTRODUCTION'] = "Anzahl Zeichen in Einleitungstext";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_GENERAL_TITLE'] = "Allgemein";
+$_ARRAYLANG['TXT_KNOWLEDGE_HITS'] = "Views";
 $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'] = "Artikel";
 $_ARRAYLANG['TXT_KNOWLEDGE_RATING'] = "Bewertung";
 $_ARRAYLANG['TXT_KNOWLEDGE_LIB_POSTED_BY'] = "gepostet von [USER] um [DATE]";
