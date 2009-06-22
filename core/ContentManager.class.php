@@ -2777,7 +2777,7 @@ ON DUPLICATE KEY
                     $objDatabase->Execute('
                         UPDATE '.DBPREFIX.'content_navigation
                                             SET        parcat='.$subSubRow['catid'].'
-                         WHERE catid='.$row['catid']
+                         WHERE catid='.$row['catid'].' AND lang='.$this->langId
                     );
                 }
                 $row = $objResult->FetchRow();
