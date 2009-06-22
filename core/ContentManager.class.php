@@ -2634,7 +2634,7 @@ ON DUPLICATE KEY
 
         $intPageId = intval($intPageId);
 
-        $objResult = $objDatabase->SelectLimit("SELECT backend_access_id FROM ".DBPREFIX."content_navigation WHERE catid=".$intPageId." AND backend_access_id!=0", 1);
+        $objResult = $objDatabase->SelectLimit("SELECT backend_access_id FROM ".DBPREFIX."content_navigation WHERE catid=".$intPageId." AND backend_access_id!=0 AND `lang`=".$this->langId, 1);
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1 && !Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
                 header('Location: index.php?cmd=noaccess');
@@ -2649,7 +2649,7 @@ ON DUPLICATE KEY
             if (empty($intNewStatus)) {
                 $objResult = $objDatabase->Execute('SELECT    activestatus
                                                     FROM    '.DBPREFIX.'content_navigation
-                                                    WHERE    catid='.$intPageId.'
+                                                    WHERE    catid='.$intPageId.' AND `lang`='.$this->langId.'
                                                     LIMIT    1
                                                 ');
                 if ($objResult->fields['activestatus'] == 1) {
@@ -2663,8 +2663,7 @@ ON DUPLICATE KEY
 
             $objResult = $objDatabase->Execute('SELECT    catid
                                                 FROM    '.DBPREFIX.'content_navigation
-                                                WHERE    parcat='.$intPageId.'
-                                            ');
+                                                WHERE    parcat='.$intPageId.' AND `lang`='.$this->langId);
             if ($objResult->RecordCount() > 0) {
                 while (!$objResult->EOF) {
                     $this->changeActiveStatus($objResult->fields['catid'],$intNewStatus);
