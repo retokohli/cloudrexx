@@ -577,6 +577,10 @@ var setInputText = function(data, textStatus){
     for(name in data){
         if(name == 'content'){
             $container.find('iframe').data(langName, data[name]);
+            continue;
+        }
+        if(name == 'alias'){
+            $container.find('#aliastarget').data(langName, data[name]);
         }
         $container.find('input[name='+name+']').data(langName, data[name]);
     }
