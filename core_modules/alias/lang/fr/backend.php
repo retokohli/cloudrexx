@@ -42,7 +42,7 @@ $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "Le gestion d'alias fonctionne uniq
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Utiliser la gestion d'alias";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "La gestion des alias ne peut pas fonctionner sur ce serveur, car il ne s'agit pas d'un serveur Apache";
 $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Impossible de déterminer si le module <strong>mod_rewrite</strong> est actif.<br />Par précaution, la gestion des alias n'a pas été activée, car, si le module <strong>mod_rewrite</strong> n'était pas actif, le site deviendrait inaccessible.<br /><br />Si vous êtes sûr que le module <strong>mod_rewrite</strong> est actif, vous pouvez activer manuellement la gestion des alias en créant un fichier <strong>.htaccess</strong> dans le répertoire racine du site avec le contenu suivant:<br /><div style=\"margin:10px;\"><code>RewriteEngine On</code></div>Ainsi, à votre prochaine visite de la gestion des alias, celle-ci sera automatiquement activée ";
-$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Assurez-vous que l'utilisation de <strong.htaccess</strong> est supportée par ce serveur.";
+$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Assurez-vous que l'utilisation de <strong>.htaccess</strong> est supportée par ce serveur.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "Paramètres appliqués.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "Erreur lors de l'enregistrement de la configuration";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Page cible inexistante";
