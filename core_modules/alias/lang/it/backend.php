@@ -42,7 +42,7 @@ $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "La gestione di alias gira solo su 
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Utilizzando l'alias di gestione";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "La gestione di alias non può essere eseguito su questo server, perché non si tratta di un server Apache";
 $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Es konnte nicht ermittelt werden ob auf diesem Server die Erweiterung <strong>mod_rewrite</strong> aktiv ist.<br />Aus Risikogründen kann daher die Alias Verwaltung nicht aktiviert werden, da ansonsten die Webseite nicht mehr erreichbar wäre, wenn die Erweiterung <strong>mod_rewrite</strong> auf diesem Server fehlen würde.<br /><br />Wenn Sie aber sicher sind, dass auf diesem Server die Erweiterung <strong>mod_rewrite</strong> zur Verfügung steht, können Sie die Alias Verwaltung manuell aktivieren, indem Sie im Hauptverzeichnis dieser Webseite eine Datei mit dem Namen <strong>.htaccess</strong> anlegen und den folgenden Inhalt einfügen:<br /><div style=\"margin:10px;\"><code>RewriteEngine On</code></div>Das nächste Mal, wenn Sie sich dann in die Alias Verwaltung begeben, wird diese automatisch aktiviert.";
-$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Assicurarsi che l'uso di <strong.htaccess </ strong> è supportato dal server.";
+$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Assicurarsi che l'uso di <strong>.htaccess</ strong> è supportato dal server.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "Parametri richiesti.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "Errore durante il salvataggio della configurazione";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Pagina di destinazione inesistente";
