@@ -314,7 +314,8 @@ $query="SELECT c.content,
            AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
            AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
            AND n.activestatus='1'
-           AND n.is_validated='1'");
+           AND n.is_validated='1'
+           AND c.lang_id=".FRONTEND_LANG_ID);
 $objResult = $objDatabase->SelectLimit($query, 1);
 
 if ($objResult === false || $objResult->EOF) {
@@ -341,7 +342,7 @@ if ($objResult === false || $objResult->EOF) {
     $page_template  = $themesPages['content'];
 
     if ($history) {
-        $objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0', 1);
+        $objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0 AND lang='.FRONTEND_LANG_ID, 1);
         if ($objPageProtection !== false) {
             if ($objPageProtection->RecordCount() == 1) {
                 $page_protected = 1;

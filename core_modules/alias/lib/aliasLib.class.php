@@ -33,16 +33,19 @@ class aliasLib
         'url'
     );
 
+    var $langId;
+
     var $_arrConfig = null;
 
     var $objFWHtAccess;
 
-    function __construct()
+    function __construct($langId = 0)
     {
         $this->objFWHtAccess = new FWHtAccess();
         if (($result = $this->objFWHtAccess->loadHtAccessFile('/.htaccess')) !== true) {;
             $this->arrStatusMsg['error'][] = $result;
         }
+        $this->langId = intval($langId) > 0 ? $langId : FRONTEND_LANG_ID;
     }
 
     function _getConfig()
@@ -68,7 +71,7 @@ class aliasLib
         }
     }
 
-    function _getAliases($limit = null)
+    function _getAliases($limit = null, $allLanguages = false)
     {
         global $objDatabase, $_CONFIG;
 
@@ -85,7 +88,8 @@ class aliasLib
                 s.`isdefault` AS isdefault,
                 s.`url`       AS sourceUrl
             FROM `".DBPREFIX."module_alias_target` AS t
-            INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
+            INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`"
+            .(!$allLanguages ? "WHERE s.`lang_id` = ".$this->langId : ' ')."
             ORDER BY sourceUrl ASC";
 
         if (!empty($limit)) {
@@ -127,7 +131,7 @@ class aliasLib
                     FROM
                         `".DBPREFIX."content_navigation` AS n
                     LEFT OUTER JOIN `".DBPREFIX."modules` AS m ON m.`id` = n.`module`
-                    WHERE n.`catid` = ".implode(' OR n.`catid` = ', $arrLocalAliasIds)
+                    WHERE n.`catid` = ".implode(' OR n.`catid` = ', $arrLocalAliasIds)." AND n.`lang` = ".$this->langId
                 );
                 if ($objAlias !== false) {
                     while (!$objAlias->EOF) {
@@ -157,7 +161,7 @@ class aliasLib
             SELECT SUM(1) AS aliasCount
             FROM `".DBPREFIX."module_alias_target` AS t
             INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
-        ");
+            WHERE s.`lang_id`=".$this->langId);
 
         if ($objAlias !== false) {
             return $objAlias->fields['aliasCount'];
@@ -179,7 +183,7 @@ class aliasLib
                 s.`url` AS sourceUrl
             FROM `".DBPREFIX."module_alias_target` AS t
             LEFT OUTER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
-            WHERE t.`id` = ".$aliasId."
+            WHERE t.`id` = ".$aliasId." AND s.`lang_id` = ".$this->langId."
             ORDER BY sourceUrl ASC"
         );
 
@@ -238,11 +242,24 @@ class aliasLib
     function _addAlias($arrAlias)
     {
         global $objDatabase;
-        if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_alias_target` (`type`, `url`) VALUES ('".addslashes($arrAlias['type'])."','".addslashes($arrAlias['url'])."')") !== false) {
-            return $this->_setAliasSources($objDatabase->Insert_ID(), $arrAlias);
+
+        $objRS = $objDatabase->SelectLimit("
+            SELECT `id` FROM `".DBPREFIX."module_alias_target`
+            WHERE `url` = '".addslashes($arrAlias['url'])."'", 1);
+        if ($objRS !== false && $objRS->RecordCount() == 1){
+            $aliasId = $objRS->fields['id'];
         } else {
-            return false;
+            if ($objDatabase->Execute("
+                INSERT INTO `".DBPREFIX."module_alias_target` (`type`, `url`)
+                VALUES ('".addslashes($arrAlias['type'])."','".addslashes($arrAlias['url'])."')
+                ON DUPLICATE KEY
+                UPDATE `type`='".addslashes($arrAlias['type'])."', `url`='".addslashes($arrAlias['url'])."'") !== false) {
+                $aliasId = $objDatabase->Insert_ID();
+            } else {
+                return false;
+            }
         }
+        return $this->_setAliasSources($aliasId, $arrAlias);
     }
 
     function _updateAlias($aliasId, $arrAlias)
@@ -256,7 +273,6 @@ class aliasLib
             WHERE `id` =       ".intval    ($aliasId);
 
         if ($objDatabase->Execute($upd_query) !== false) {
-
             return $this->_setAliasSources($aliasId, $arrAlias);
         } else {
             return false;
@@ -278,7 +294,8 @@ class aliasLib
                             $qry_update = "
                                 UPDATE `".DBPREFIX."module_alias_source`
                                     SET `url`       = '".addslashes($arrSource['url'])      ."',
-                                        `isdefault` = '".intval    ($arrSource['isdefault'])."'
+                                        `isdefault` = '".intval    ($arrSource['isdefault'])."',
+                                        `lang_id`   = ".$this->langId."
                                 WHERE `id` = ".intval($arrSource['id'])."
                                     AND `target_id` = ".intval($aliasId)
                                 ;
@@ -293,7 +310,7 @@ class aliasLib
                 }
 
                 if (!$stillPresent) {
-                    if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_alias_source` WHERE `id` = ".intval($arrOldSource['id'])." AND `target_id` = ".intval($aliasId)) === false) {
+                    if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_alias_source` WHERE `id` = ".intval($arrOldSource['id'])." AND `target_id` = ".intval($aliasId).' AND `lang_id`='.$this->langId) === false) {
                         $error = true;
                     }
                 }
@@ -306,8 +323,8 @@ class aliasLib
                 $isdefault = intval($arrSource['isdefault']);
                 $url       = addslashes($arrSource['url']);
                 $qry_insert = "
-                    INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`, `isdefault`)
-                    VALUES ($alias_id, '$url', $isdefault)
+                    INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`, `isdefault`, `lang_id`)
+                    VALUES ($alias_id, '$url', $isdefault, $this->langId)
                     ";
                 if ($objDatabase->Execute($qry_insert) === false) {
                     $error = true;
@@ -359,8 +376,9 @@ class aliasLib
     function _activateRewriteEngine()
     {
         $arrRewriteRules = array();
-
-        $arrDefinedAliases = $this->_getAliases();
+        $limit = null;
+        $allLanguages = true;
+        $arrDefinedAliases = $this->_getAliases($limit, $allLanguages);
 
         foreach ($arrDefinedAliases as $arrDefinedAlias) {
             if ($arrDefinedAlias['type'] == 'local') {
@@ -395,8 +413,7 @@ class aliasLib
         if (($arrUsedAliasesInHtaccessFile = $this->_getUsedAlisesInHtaccessFile()) === false || (isset($arrUsedAliasesInHtaccessFile[$url]) && $arrUsedAliasesInHtaccessFile[$url] != $target && $arrUsedAliasesInHtaccessFile[$url] != $oldTarget)) {
             return false;
         }
-
-        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_source` WHERE `id` != ".intval($sourceId)." AND `url` = '".addslashes($url)."'", 1);
+        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_source` WHERE `id` != ".intval($sourceId)." AND `url` = '".addslashes($url)."' AND `lang_id`=".$this->langId, 1);
         if ($objResult !== false && $objResult->RecordCount() == 0) {
             return true;
         } else{
@@ -408,7 +425,12 @@ class aliasLib
     {
         global $objDatabase;
 
-        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_target` WHERE `id` != ".intval($targetId)." AND `url` = '".addslashes($url)."'", 1);
+        $objResult = $objDatabase->SelectLimit("
+            SELECT 1 FROM `".DBPREFIX."module_alias_target` AS `t`
+            LEFT JOIN `".DBPREFIX."module_alias_source` AS `s` ON (`s`.`target_id` = `t`.`id`)
+            WHERE `t`.`id` != ".intval($targetId)."
+            AND `t`.`url` = '".addslashes($url)."'
+            AND `s`.`lang_id`=".$this->langId, 1);
         if ($objResult !== false && $objResult->RecordCount() == 0) {
             return true;
         } else{
@@ -421,7 +443,7 @@ class aliasLib
         global $objDatabase, $_CONFIG;
 
         if (($arrAlias = $this->_getAlias($aliasId)) !== false) {
-            if ($objDatabase->Execute("DELETE s,t FROM `".DBPREFIX."module_alias_source` AS s INNER JOIN `".DBPREFIX."module_alias_target` AS t ON t.`id` = s.`target_id` WHERE s.`target_id` = ".intval($aliasId)) !== false && $this->_activateRewriteEngine()) {
+            if ($objDatabase->Execute("DELETE s,t FROM `".DBPREFIX."module_alias_source` AS s INNER JOIN `".DBPREFIX."module_alias_target` AS t ON t.`id` = s.`target_id` WHERE s.`target_id` = ".intval($aliasId).' AND s.`lang_id`='.$this->langId) !== false && $this->_activateRewriteEngine()) {
                 if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
                     $this->arrStatusMsg['error'][] = $result;
                 }
@@ -452,7 +474,6 @@ class aliasLib
                 }
             }
         }
-
         return $arrUsedAliases;
     }
 }

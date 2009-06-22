@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Content Sitemap
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -69,7 +68,6 @@ class ContentSitemap
 			$arrModules[$objResult->fields['id']]=$objResult->fields['name'];
 			$objResult->MoveNext();
 		}
-
 		$query = "SELECT n.cmd AS cmd,
 						 n.catid AS catid,
 						 n.catname AS catname,
@@ -86,6 +84,7 @@ class ContentSitemap
 		           WHERE n.lang=".$this->langId."
 		        ORDER BY n.parcat ASC, n.displayorder ASC";
 		$objResult = $objDatabase->Execute($query);
+
 		if ($objResult === false) {
 			return "contentManager::contentManager() database error";
 		}
@@ -116,7 +115,7 @@ class ContentSitemap
             $objSubResult = $objDatabase->Execute("
                 SELECT redirect
                   FROM ".DBPREFIX."content
-                 WHERE id=".$objResult->fields['catid']
+                 WHERE id=".$objResult->fields['catid'].' AND lang_id='.$this->langId
             );
 			$this->navIsRedirect[$objResult->fields['catid']] = (empty($objSubResult->fields['redirect'])) ? false : true;
 			$objResult->MoveNext();
@@ -208,6 +207,27 @@ class ContentSitemap
 	    	'TXT_SUBMIT_ACTIVATE'		 =>	$_CORELANG['TXT_MULTISELECT_ACTIVATE'],
 	    	'TXT_SUBMIT_DEACTIVATE'		 =>	$_CORELANG['TXT_MULTISELECT_DEACTIVATE'],
 		));
+
+        foreach ($objLanguage->getLanguageArray() as $arrLang){
+            $checked = '';
+            if($arrLang['frontend'] == 0){
+                continue;
+            }
+            if($this->langId == $arrLang['id']){
+                $tabClass = 'active';
+            } else {
+                $tabClass = '';
+            }
+            $defaultLang = $arrLang['id'];
+            $objTpl->setVariable(array(
+                'LANGUAGE_ID'               => $arrLang['id'],
+                'LANGUAGE_NAME'             => $arrLang['name'],
+                'LANGUAGE_TITLE'            => $arrLang['name'].'_'.$arrLang['id'],
+                'TAB_CLASS'                 => $tabClass,
+            ));
+            $objTpl->parse('languages_tab');
+        }
+
 
 		$objTpl->setCurrentBlock('siteRow');
 		$objTpl->setVariable(array(
