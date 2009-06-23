@@ -658,7 +658,7 @@ class u2u extends u2uLibrary
                         $successVar=1;
                         $this->strMessages="";
                         //Send notification to users
-                        $this->sendNotificationMail($ID);
+                        $this->sendNotificationMail($objFWUser->objUser->getId(), $ID);
                     }
                 }
             }
@@ -680,8 +680,8 @@ class u2u extends u2uLibrary
      * send notification email
      *
      */
-    function sendNotificationMail($ID) {
-        global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
+	function sendNotificationMail($fromId, $toId) {
+		global $_CONFIG;
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
@@ -697,9 +697,9 @@ class u2u extends u2uLibrary
                  }
             }
 
-            $strName = $this->_getName($Posters_id);
-            $strReceiverName = $this->_getName($ID);
-            $toEmail=$this->_getEmail($ID);
+            $strName = $this->_getName($fromId);
+            $strReceiverName = $this->_getName($toId);
+            $toEmail=$this->_getEmail($toId);
 
             $from            = $this->_getEmailFromDetails();
             $subject         = $this->_getEmailSubjectDetails();
