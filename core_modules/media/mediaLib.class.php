@@ -41,7 +41,7 @@ class MediaLibrary {
         "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
         "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
         "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
-        "html","shtml","css","js","tpl","thumb","ico"
+        "html","shtml","css","js","tpl","thumb","ico", "log",
     );
 
     protected $sortBy = 'name';
