@@ -163,6 +163,14 @@ class KnowledgeArticles
         
         return $arr;
     }
+
+    public function getNewestArticles()
+    {
+        $query = $this->basequery;
+
+        $query .= " ORDER BY id DESC LIMIT 10";
+        return $this->readArticles(true, 0, 0, $query);
+    }
     
     /**
      * Activate an article

@@ -33,7 +33,7 @@ Articles.prototype.getCategory = function(id) {
         onSuccess : function(transport) {
             response = transport.responseText.evalJSON();
             $('articles').update(response.list);
-            $('head').update(response.category);
+            /*$('head').update(response.category);*/
             setRows();
             initSortableArea();
         }
@@ -139,13 +139,18 @@ var catTree = {
         obj.parentNode.cleanWhitespace();
         var subLists = $A(obj.parentNode.parentNode.childNodes);
         subLists.each(function(elem) {
-                try {
-            if (elem.tagName == "UL") {
-                elem.show();
-            }
+            try {
+                if (elem.tagName == "UL") {
+                    //elem.show();
+                /* show doesn't work in ie6 */
+                    elem.style.display = "";
+                }
             } catch(e) {}
         });
 
+        if (obj.select == undefined) {
+            Element.extend(obj);
+        }
         obj.select('.openClosePicture')[0].src = "images/icons/minuslink.gif";
         obj.nextSibling.src = "../images/modules/knowledge/folder-open.small.png";
         obj.onclick = function() { catTree.closePart(obj); }
@@ -158,9 +163,15 @@ var catTree = {
         var subLists = $A(obj.parentNode.parentNode.childNodes);
         subLists.each(function(elem) {
             if (elem.tagName == "UL") {
+                if (elem.hide == undefined) {
+                    Element.extend(elem);
+                }
                 elem.hide();
             }
         });
+        if (obj.select == undefined) {
+            Element.extend(obj);
+        }
         obj.select('.openClosePicture')[0].src = "images/icons/pluslink.gif";
         obj.nextSibling.src = "../images/modules/knowledge/folder.small.png";
         obj.onclick = function() { catTree.openPart(obj); }
@@ -210,24 +221,16 @@ var deleteArticle = function(id)
 <div id="knowledge_articles">
 
 
+<form action="index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=edit&id=18" method="get">
+    {TXT_JUMP_TO_ARTICLE}
+        <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
+        <input type="hidden" name="act" value="edit" />
+    <input type="text" style="width: 3em;" name="id" />
+    <input type="submit" value="Go"  style=" margin-right: 4px;"/>
+</form>
 
-<div style="position: relative">
-<table class="adminlist" style="width: 100%; border-collapse: collapse;">
-    <tr>
-        <th>
-            <div id="head">&nbsp;</div>
-        </th>
-        <th style="text-align: right; width: 50%;">
-            <form action="index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=edit&id=18" method="get">
-                {TXT_JUMP_TO_ARTICLE}
-                    <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
-                    <input type="hidden" name="act" value="edit" />
-                <input type="text" style="width: 3em;" name="id" />
-                <input type="submit" value="Go"  style=" margin-right: 4px;"/>
-            </form>
-        </th>
-    </tr>
-</table>
+<div style="position: relative; width: 232px;">
+
 <div class="alertbox" id="error_box" style="display: none; position: absolute; top: 22px; left: 240px; z-index: 10; right: 0px; padding: 0px;">
 <div id="error_box_content" style="padding: 4px;">
 </div>
@@ -236,6 +239,15 @@ var deleteArticle = function(id)
 </div>
 
 <div id="categories">
+    <table class="adminlist" style="width: 232px; border-collapse: collapse;">
+        <tr>
+            <th>
+                <div >{TXT_CATEGORIES}</div>
+            </th>
+            <th style="text-align: right; width: 50%;">
+            </th>
+        </tr>
+    </table>
     <div id="catlist">
     
         <!-- BEGIN remove_area -->
@@ -270,6 +282,8 @@ var deleteArticle = function(id)
 </div>
 
 <div id="articles">
+    {TXT_ARTICLES}
+    <!--
     <table id="inner_right" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%">
         <tbody>
             <tr>
@@ -277,6 +291,7 @@ var deleteArticle = function(id)
             </tr>
         </tbody>
     </table>
+    -->
 </div>
 
 <br style="clear: both;" />
