@@ -9,8 +9,13 @@
         </tr>
     </thead>
 </table>-->
-<div>
+<div style="min-height: 1%; height: 1%; float:left; width: 100%;">
     <table style="width: 100%; font-weight: bold;" class="adminlist" cellspacing="0" cellpadding="3">
+        <tr>
+            <th colspan="6">
+                <div >{TXT_CATEGORY_NAME}</div>
+            </th>
+        </tr>
         <tr class="row3">
             <td style="width: 75px;">{TXT_SORT}</td>
             <td style="width: 50px;">{TXT_STATE}</td>
@@ -93,6 +98,21 @@
     </ul>-->
 </div>
 
+<!-- BEGIN jsinit -->
+<!-- parsed only when neede because the content is not given through ajax -->
+
+<script type="text/javascript">
+/* <![CDATA[  */
+
+setRows();
+initSortableArea();
+
+/* ]]> */
+</script>
+
+<!-- END jsinit -->
+
+{PAGING}
 <!-- END content -->
 
 <!-- END module_knowledge_articles_overview_articlelist.html -->
