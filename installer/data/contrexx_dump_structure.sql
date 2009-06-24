@@ -1661,6 +1661,7 @@ CREATE TABLE `contrexx_module_knowledge_article_content` (
   `lang` int(10) unsigned NOT NULL default '0',
   `question` text NOT NULL,
   `answer` text NOT NULL,
+  `index` varchar(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `module_knowledge_article_content_lang` (`lang`),
   KEY `module_knowledge_article_content_article` (`article`)
