@@ -101,6 +101,11 @@ class calHeadlines extends calendarLibrary
                     } else {
                         $points = '';
                     }
+
+
+                    $category 	= isset($this->category) ? '&amp;catid='.intval($this->category) : '';
+                    $link = 'index.php?section=calendar&amp;cmd=event'.$category.'&amp;id='.intval($key);
+
                     $parts= explode("\n", wordwrap($array['comment'], 100, "\n"));
                     $this->_objTemplate->setVariable(array(
                         'CALENDAR_EVENT_ENDTIME'        => date('H:i', $array['enddate']),
@@ -114,7 +119,8 @@ class calHeadlines extends calendarLibrary
                             htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).
                             '" />',
                         'CALENDAR_EVENT_THUMB_SOURCE'     => $array['pic'],
-                        'CALENDAR_EVENT_ID'             => $key,
+                        'CALENDAR_EVENT_DETAIL_LINK'      => $link,
+                        'CALENDAR_EVENT_ID'      => $key.$category,
                         'CALENDAR_EVENT_COMMENT'        => $array['comment'],
                         'CALENDAR_EVENT_SHORT_COMMENT'    => $parts[0].$points,
                         'CALENDAR_EVENT_ROW'            => (++$i % 2 ? 'row1' : 'row2'),
