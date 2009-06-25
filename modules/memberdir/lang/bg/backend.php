@@ -84,4 +84,5 @@ $_ARRAYLANG['TXT_MEMBERDIR_LANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_MEMBERDIR_COPY_DIR'] = "Verzeichnis kopieren";
 $_ARRAYLANG['TXT_ORDER'] = "Reihenfolge";
 $_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'] = "Kontakt als VCard exportieren";
+$_ARRAYLANG['ERR_FILL_AT_LEAST_ONE_OF_THE_FIRST'] = "At least one of the 3 first fields must be filled in, because these fields are shown in the overview.";
 ?>
