@@ -2277,6 +2277,20 @@ class newsletter extends NewsletterLib
         $NewsletterBody_TEXT = $this->ParseNewsletter($UserID, $subject, $content_text, $TEXT_TemplateSource, "text", $TargetEmail);
         $NewsletterBody_TEXT = wordwrap($NewsletterBody_TEXT, $break);
 
+        // Work around an oddity in phpmailer: it detects 
+        // whether it's multipart/alternative by checking
+        // the length of the AltBody attribute. Now if we
+        // set it to empty (because it's not entered), it
+        // fucks up and uses the HTML content and handles
+        // it as plaintext. So we try to extract the text
+        // from the HTML code and use this.
+        if (($format == 'text/html' or $format == 'html/text' ) and $content_text == '') {
+            $new_textcontent = preg_replace('#<br/?>#i', "\r\n",     html_entity_decode($content, ENT_COMPAT, CONTREXX_CHARSET));
+            $new_textcontent = preg_replace('#<p/?>#i',  "\r\n\r\n", $new_textcontent);
+            $new_textcontent = strip_tags($new_textcontent);
+            # TODO: if there's tables, we probably should handle them in a special way...
+            $NewsletterBody_TEXT = $this->ParseNewsletter($UserID, $subject, $new_textcontent, $TEXT_TemplateSource, "text", $TargetEmail);
+        }
 
         $mail = new phpmailer();
 
@@ -2300,7 +2314,8 @@ class newsletter extends NewsletterLib
         $mail->Priority = $priority;
         //$mail->AddBCC($bcc, '');
         switch ($format) {
-            case "text/html":
+            case "text/html": # Some joker decided that we need to make the format spec as a string. Cause Constants 
+            case "html/text": # are for idiots, right? Everybody can remember the right way to specify a string.. RIGHT?
                 $mail->Body     = $NewsletterBody_HTML;
                 $mail->AltBody     = $NewsletterBody_TEXT;
             break;
