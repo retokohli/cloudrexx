@@ -1153,6 +1153,11 @@ class MemberDirManager extends MemberDirLibrary
 
         $fields = $this->getFieldData($dirid);
 
+        if (!$this->_validate_post($fields)) {
+            $this->statusMessage = $_ARRAYLANG['ERR_FILL_AT_LEAST_ONE_OF_THE_FIRST'];
+            return $this->_newMember();
+        }
+
         foreach ($fields as $fieldid => $field) {
             if ($field['active']) {
                 $values[$fieldid] = contrexx_addslashes($_POST['field_'.$fieldid]);
@@ -1202,6 +1207,23 @@ class MemberDirManager extends MemberDirLibrary
         }
     }
 
+
+    function _validate_post($fields) {
+        $fields_to_check = 3;
+
+        foreach ($fields as $fieldid => $field) {
+            if ($field['active']) {
+                // As the first 3 fields are shown in overviews,
+                // we can assume that at least one of them needs to be set. So, if
+                // all three are empty, the form is NOT valid.
+                if ($fields_to_check-- > 0 and 0 < strlen($_POST['field_'.$fieldid])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Save Edited Member
      *
@@ -1227,6 +1249,11 @@ class MemberDirManager extends MemberDirLibrary
         $picture1 = (!empty($_POST['image1'])) ? $_POST['image1'] : "none";
 
         $picture2 = (!empty($_POST['image2'])) ? $_POST['image2'] : "none";
+
+        if (!$this->_validate_post($fields)) {
+            $this->statusMessage = $_ARRAYLANG['ERR_FILL_AT_LEAST_ONE_OF_THE_FIRST'];
+            return $this->_editMember();
+        }
 
         foreach ($fields as $fieldid => $field) {
             if ($field['active']) {
