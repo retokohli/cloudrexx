@@ -76,8 +76,8 @@ class downloads extends DownloadsLibrary
             $_ARRAYLANG['TXT_DOWNLOADS_NEW'].'</a>'.
             '<a href="index.php?cmd=downloads&amp;act=categories">'.
             $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'].'</a>'.
-            '<a href="index.php?cmd=downloads&amp;act=settings">'.
-            $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>'
+            (Permission::checkAccess(142, 'static', true) ? '<a href="index.php?cmd=downloads&amp;act=settings">'.
+            $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
         );
         parent::__construct();
     }
@@ -914,11 +914,6 @@ class downloads extends DownloadsLibrary
         $arrAssociatedCategories = array();
         $arrAssociatedDownloadOptions = array();
         $arrNotAssociatedDownloadOptions = array();
-// TODO: Never used
-//        $arrAssociatedDownloads = array();
-
-// TODO: Never used
-//        $objLanguages = new FWLanguage();
 
         if (isset($_POST['downloads_download_save'])) {
             $objDownload->setNames(isset($_POST['downloads_download_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name'])) : array());
@@ -1185,7 +1180,7 @@ class downloads extends DownloadsLibrary
             } else {
                 $disabled = true;
             }
-            $option = '<option value="'.$arrCategories[$i]['id'].'"'.($disabled ? ' disabled="disabled"' : '').'>'.str_repeat('&nbsp;', $arrCategories[$i]['level'] * 4).htmlentities($arrCategories[$i]['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+            $option = '<option value="'.$arrCategories[$i]['id'].'"'.($disabled ? ' disabled="disabled"' : '').'>'.htmlentities($arrCategories[$i]['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
 
             if (in_array($arrCategories[$i]['id'], $arrAssociatedCategories) || $arrCategories[$i]['id'] == $categoryId) {
                 $arrAssociatedCategoryOptions[] = $option;
@@ -2086,6 +2081,9 @@ class downloads extends DownloadsLibrary
     private function settings()
     {
         global $_ARRAYLANG;
+
+        Permission::checkAccess(142, 'static');
+
 
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
         $this->objTemplate->loadTemplateFile('module_downloads_settings.html');

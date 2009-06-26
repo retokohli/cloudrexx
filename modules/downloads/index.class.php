@@ -600,7 +600,7 @@ class downloads extends DownloadsLibrary
         $objModulChecker = new ModuleChecker();
         if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
             if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
-                $path = 'index.php?section=fileUploader&standalone=true&type=downloads&catId='.$objCategory->getId();
+                $path = 'index.php?section=fileUploader&amp;standalone=true&amp;type=downloads&catId='.$objCategory->getId();
                 $this->objTemplate->setVariable(array(
                     'DOWNLOADS_FILE_UPLOAD_BUTTON'  => '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_DOWNLOADS_BROWSE'].'" />',
                     'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE']

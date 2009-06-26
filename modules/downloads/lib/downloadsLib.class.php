@@ -251,7 +251,7 @@ class DownloadsLibrary
     }
 
 
-    private function parseCategoryTreeForDownloadAssociation(&$arrCategories, $parentId = 0, $level = 0)
+    private function parseCategoryTreeForDownloadAssociation(&$arrCategories, $parentId = 0, $level = 0, $parentName = '')
     {
         $arrParsedCategories = array();
 
@@ -261,9 +261,10 @@ class DownloadsLibrary
 
         $length = count($arrCategories[$parentId]);
         for ($i = 0; $i < $length; $i++) {
+            $arrCategories[$parentId][$i]['name'] = $parentName.$arrCategories[$parentId][$i]['name'];
             $arrParsedCategories[] = array_merge($arrCategories[$parentId][$i], array('level' => $level));
             if (isset($arrCategories[$arrCategories[$parentId][$i]['id']])) {
-                $arrParsedCategories = array_merge($arrParsedCategories, $this->parseCategoryTreeForDownloadAssociation($arrCategories, $arrCategories[$parentId][$i]['id'], $level + 1));
+                $arrParsedCategories = array_merge($arrParsedCategories, $this->parseCategoryTreeForDownloadAssociation($arrCategories, $arrCategories[$parentId][$i]['id'], $level + 1, $arrCategories[$parentId][$i]['name'].'\\'));
             }
         }
 
