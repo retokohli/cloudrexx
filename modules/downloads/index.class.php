@@ -189,7 +189,10 @@ class downloads extends DownloadsLibrary
             // parse crumbtrail
             $this->parseCrumbtrail($objCategory);
 
-            if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) {
+            if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)
+                && (!$objDownload->getExpirationDate() || $objDownload->getExpirationDate() > time())
+            ) {
+                /* DOWNLOAD DETAIL PAGE */
                 $this->pageTitle = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
                 $this->parseRelatedCategories($objDownload);
@@ -214,6 +217,7 @@ class downloads extends DownloadsLibrary
                     $this->objTemplate->hideBlock('downloads_advanced_file_upload');
                 }
             } else {
+                /* CATEGORY DETAIL PAGE */
                 $this->pageTitle = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
                 // process upload
@@ -266,7 +270,7 @@ class downloads extends DownloadsLibrary
                 $this->objTemplate->hideBlock('downloads_updated_file_list');
             }
         } else {
-            // parse category overview
+            /* CATEGORY OVERVIEW PAGE */
             $this->parseCategories($objCategory, array('downloads_overview', 'downloads_overview_category'), null, null, 'downloads_overview_row', array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $this->arrConfig['overview_max_subcats']);
 
             if (!empty($this->searchKeyword)) {
@@ -277,20 +281,24 @@ class downloads extends DownloadsLibrary
                 }
             }
 
-            // parse most viewed downloads
-            $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
+            /* PARSE MOST VIEWED DOWNLOADS */
+            $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true, 'expiration' => array('=' => 0, '>' => time())) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
 
-            // parse most downloaded downloads
-            $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), array('is_active' => true) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
+            /* PARSE MOST DOWNLOADED DOWNLOADS */
+            $this->parseSpecialDownloads(array('downloads_most_downloaded_file_list', 'downloads_most_downloaded_file'), array('is_active' => true, 'expiration' => array('=' => 0, '>' => time())) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('download_count' => 'desc'), $this->arrConfig['most_downloaded_file_count']);
 
-            // parse most popular downloads
+            /* PARSE MOST POPULAR DOWNLOADS */
             // TODO: Rating system has to be implemented first!
             //$this->parseSpecialDownloads(array('downloads_most_popular_file_list', 'downloads_most_popular_file'), null, array('rating' => 'desc'), $this->arrConfig['most_popular_file_count']);
 
-            // parse newest downloads
+            /* PARSE RECENTLY UPDATED DOWNLOADS */
             $filter = array(
                 'ctime' => array(
                     '>=' => time() - $this->arrConfig['new_file_time_limit']
+                ),
+                'expiration' => array(
+                    '=' => 0,
+                    '>' => time()
                 )
             );
             $this->parseSpecialDownloads(array('downloads_newest_file_list', 'downloads_newest_file'), $filter, array('ctime' => 'desc'), $this->arrConfig['newest_file_count']);
@@ -304,6 +312,10 @@ class downloads extends DownloadsLibrary
                 'ctime' => array(
                     '<' => time() - $this->arrConfig['new_file_time_limit']
                 ),
+                'expiration' => array(
+                    '=' => 0,
+                    '>' => time()
+                )
             );
             $this->parseSpecialDownloads(array('downloads_updated_file_list', 'downloads_updated_file'), $filter, array('mtime' => 'desc'), $this->arrConfig['updated_file_count']);
 
@@ -333,21 +345,12 @@ class downloads extends DownloadsLibrary
 
     }
 
-
-    private function processUpload($objCategory)
+    private function processFormUpload(&$fileName, &$fileExtension, &$suffix)
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
         $inputField = 'downloads_upload_file';
         if (!isset($_FILES[$inputField]) || !is_array($_FILES[$inputField])) {
-            return;
-        }
-
-        // check for sufficient permissions
-        if ($objCategory->getAddFilesAccessId()
-            && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true)
-            && $objCategory->getOwnerId() != $this->userId
-        ) {
             return;
         }
 
@@ -378,59 +381,22 @@ class downloads extends DownloadsLibrary
 
             default:
                 if (!empty($fileTmpName)) {
-                    $prefix = '';
-                    while (file_exists(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$prefix.$fileName)) {
-                        if (empty($prefix)) {
-                            $prefix = 0;
-                        }
-                        $prefix++;
+                    $suffix = '';
+                    $file = ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$fileName;
+                    $arrFile = pathinfo($file);
+                    $i = 0;
+                    while (file_exists($file)) {
+                        $suffix = '-'.++$i;
+                        $file = ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
                     }
 
                     $arrMatch = array();
                     if (preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $fileName, $arrMatch) && in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)) {
                         $fileExtension = strtolower($arrMatch[1]);
 
-                        if (@move_uploaded_file($fileTmpName, ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$prefix.$fileName)) {
-                            $objDownload = new Download();
-
-                            // parse name and description attributres
-                            if (!isset($objLanguage)) {
-                                $objLanguage = new FWLanguage();
-                            }
-                            $arrLanguageIds = array_keys($objLanguage->getLanguageArray());
-
-                            foreach ($arrLanguageIds as $langId) {
-                                $arrNames[$langId] = $fileName;
-                                $arrDescriptions[$langId] = '';
-                            }
-
-                            $fileMimeType = null;
-                            foreach (Download::$arrMimeTypes as $mimeType => $arrMimeType) {
-                                if (!count($arrMimeType['extensions'])) {
-                                    continue;
-                                }
-                                if (in_array($fileExtension, $arrMimeType['extensions'])) {
-                                    $fileMimeType = $mimeType;
-                                    break;
-                                }
-                            }
-
-                            $objDownload->setNames($arrNames);
-                            $objDownload->setDescriptions($arrDescriptions);
-                            $objDownload->setType('file');
-                            $objDownload->setSource(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$prefix.$fileName, $fileName);
-                            $objDownload->setActiveStatus(true);
-                            $objDownload->setMimeType($fileMimeType);
-                            $this->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$prefix.$fileName)) : null;
-                            $objDownload->setVisibility(true);
-                            $objDownload->setProtection(false);
-                            $objDownload->setGroups(array());
-                            $objDownload->setCategories(array($objCategory->getId()));
-                            $objDownload->setDownloads(array());
-
-                            if (!$objDownload->store($objCategory)) {
-                                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
-                            }
+                        if (@move_uploaded_file($fileTmpName, $file)) {
+                            $fileName = $arrFile['filename'];
+                            return true;
                         } else {
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
                         }
@@ -440,7 +406,97 @@ class downloads extends DownloadsLibrary
                 }
                 break;
         }
+
+        return false;
     }
+
+    private function processFileUploaderUpload(&$fileName, &$fileExtension, &$suffix)
+    {
+        require_once ASCMS_MODULE_PATH.'/fileUploader/lib/FileUploaderLib.class.php';
+        $objFileUploader = new FileUploaderLib();
+        $objFileUploader->upload(true);
+        $fileName = $objFileUploader->getUploadFileName();
+        $fileExtension = $objFileUploader->getUploadFileExtension();
+        $suffix = $objFileUploader->getUploadFileSuffix();
+    }
+
+    private function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory)
+    {
+        global $objLanguage;
+
+        $objDownload = new Download();
+
+        // parse name and description attributres
+        if (!isset($objLanguage)) {
+            $objLanguage = new FWLanguage();
+        }
+        $arrLanguageIds = array_keys($objLanguage->getLanguageArray());
+
+        foreach ($arrLanguageIds as $langId) {
+            $arrNames[$langId] = $fileName.'.'.$fileExtension;
+            $arrDescriptions[$langId] = '';
+        }
+
+        $fileMimeType = null;
+        foreach (Download::$arrMimeTypes as $mimeType => $arrMimeType) {
+            if (!count($arrMimeType['extensions'])) {
+                continue;
+            }
+            if (in_array($fileExtension, $arrMimeType['extensions'])) {
+                $fileMimeType = $mimeType;
+                break;
+            }
+        }
+
+        $objDownload->setNames($arrNames);
+        $objDownload->setDescriptions($arrDescriptions);
+        $objDownload->setType('file');
+        $objDownload->setSource(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension, $fileName.'.'.$fileExtension);
+        $objDownload->setActiveStatus(true);
+        $objDownload->setMimeType($fileMimeType);
+        $this->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$fileName.$suffix.'.'.$fileExtension)) : null;
+        $objDownload->setVisibility(true);
+        $objDownload->setProtection(false);
+        $objDownload->setGroups(array());
+        $objDownload->setCategories(array($objCategory->getId()));
+        $objDownload->setDownloads(array());
+
+        if (!$objDownload->store($objCategory)) {
+            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private function processUpload($objCategory)
+    {
+        global $_ARRAYLANG, $objLanguage;
+
+        // check for sufficient permissions
+        if ($objCategory->getAddFilesAccessId()
+            && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true)
+            && $objCategory->getOwnerId() != $this->userId
+        ) {
+            return;
+        }
+
+        $fileName = '';
+        $fileExtension = '';
+        $suffix = '';
+        if (isset($_REQUEST['fileUploader'])) {
+            $this->processFileUploaderUpload($fileName, $fileExtension, $suffix, $objCategory);
+        } else {
+            if (!$this->processFormUpload($fileName, $fileExtension, $suffix, $objCategory)) {
+                return;
+            }
+        }
+
+        $this->addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory);
+        if (isset($_REQUEST['fileUploader'])) {
+            die($fileName.'.'.$fileExtension);
+        }
+   }
 
 
     private function processCreateDirectory($objCategory)
@@ -476,12 +532,12 @@ class downloads extends DownloadsLibrary
         $objSubcategory = new Category();
         $objSubcategory->setParentId($objCategory->getId());
         $objSubcategory->setActiveStatus(true);
-        $objSubcategory->setVisibility(true);
+        $objSubcategory->setVisibility($objCategory->getVisibility());
         $objSubcategory->setNames($arrNames);
         $objSubcategory->setDescriptions($arrDescriptions);
         $objSubcategory->setPermissions(array(
             'read' => array(
-                'protected' => false,
+                'protected' => (bool) $objCategory->getAddSubcategoriesAccessId(),
                 'groups'    => array()
             ),
             'add_subcategories' => array(
@@ -544,7 +600,7 @@ class downloads extends DownloadsLibrary
         $objModulChecker = new ModuleChecker();
         if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
             if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
-                $path = 'index.php?section=fileUploader&standalone=true&type=downloads';
+                $path = 'index.php?section=fileUploader&amp;standalone=true&amp;type=downloads&catId='.$objCategory->getId();
                 $this->objTemplate->setVariable(array(
                     'DOWNLOADS_FILE_UPLOAD_BUTTON'  => '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_DOWNLOADS_BROWSE'].'" />',
                     'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE']
@@ -898,7 +954,7 @@ JS_CODE;
 
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $objDownload = new Download();
-        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'expiration' => array('=' => 0, '>' => time())), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
         $categoryId = $objCategory->getId();
         $allowdDeleteFiles = !$objCategory->getManageFilesAccessId()
                             || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
@@ -1214,6 +1270,12 @@ JS_CODE;
         $objDownload = new Download();
         $objDownload->load(!empty($_GET['download']) ? intval($_GET['download']) : 0);
         if (!$objDownload->EOF) {
+            // check if the download is expired
+            if ($objDownload->getExpirationDate() && $objDownload->getExpirationDate() < time()) {
+                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=error&id=404");
+                exit;
+            }
+
             if (// download is protected
                 $objDownload->getAccessId()
                 // the user isn't a admin

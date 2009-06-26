@@ -61,7 +61,7 @@ class AccessManager extends AccessLib
     }
 
 
-   /**
+  /**
     * export users of a group as CSV
     *
     * @param integer $groupId
@@ -688,11 +688,11 @@ class AccessManager extends AccessLib
                         $this->_parsePermissionAreas($arrAreas, $arrArea[0], $arrArea[1]);
                     }
 
-                    $this->_objTpl->setGlobalVariable('ACCESS_TAB_NR', $tabNr);
+                $this->_objTpl->setGlobalVariable('ACCESS_TAB_NR', $tabNr);
                     $this->_objTpl->setVariable('ACCESS_TAB_NAME', isset($_CORELANG[$arrAreaGroup['name']]) ? htmlentities($_CORELANG[$arrAreaGroup['name']], ENT_QUOTES, CONTREXX_CHARSET) : $arrAreaGroup['name']);
-                    $this->_objTpl->parse('access_permission_tab_menu');
-                    $this->_objTpl->parse('access_permission_tabs');
-                    $tabNr++;
+                $this->_objTpl->parse('access_permission_tab_menu');
+                $this->_objTpl->parse('access_permission_tabs');
+                $tabNr++;
                 }
             }
         }
@@ -794,8 +794,8 @@ class AccessManager extends AccessLib
         if ($arrAreas[$areaId]['scope'] == $scope || $arrAreas[$areaId]['scope'] == 'global') {
             $this->_objTpl->setVariable(array(
                 'ACCESS_AREA_ID'            => $arrAreas[$areaId]['access_id'],
-                'ACCESS_AREA_ALLOWED'       => $arrAreas[$areaId]['allowed'] ? 'checked="checked"' : ''
-            ));
+            'ACCESS_AREA_ALLOWED'       => $arrAreas[$areaId]['allowed'] ? 'checked="checked"' : ''
+        ));
             $this->_objTpl->parse('access_permission_in_scope');
 
             $this->_objTpl->setVariable('ACCESS_AREA_ID', $arrAreas[$areaId]['access_id']);
@@ -1133,6 +1133,9 @@ class AccessManager extends AccessLib
                     $this->notifyUserAboutAccountStatusChange($objUser);
                 }
 
+                // process module specific extensions
+                $this->processModuleSpecificExtensions($objUser);
+
                 if (Permission::checkAccess(18, 'static', true)) {
                     return $this->userList();
                 }
@@ -1249,10 +1252,137 @@ class AccessManager extends AccessLib
             $objUser->objAttribute->next();
         }
 
+
+        $this->parseModuleSpecificExtensions();
+
         $this->_objTpl->parse('module_access_user_modify');
         return true;
     }
 
+    private function parseModuleSpecificExtensions()
+    {
+        global $_ARRAYLANG;
+
+        $status = false;
+        $rowNr = 0;
+        $objModuleChecker = new ModuleChecker();
+
+        // add a category in the digital asset management module
+        if ($objModuleChecker->getModuleStatusById(53)) {
+            $this->parseDigitalAssetManagementExtension($rowNr);
+            $status = true;
+            $this->_objTpl->parse('access_additional_functions_dma');
+        } else {
+            $this->_objTpl->hideBlock('access_additional_functions_dma');
+        }
+
+        if ($status) {
+            $this->_objTpl->setGlobalVariable('TXT_ACCESS_ADDITIONAL_FUNCTIONS', $_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS']);
+            $this->_objTpl->touchBlock('access_additional_functions_tab');
+        } else {
+            $this->_objTpl->hideBlock('access_additional_functions_tab');
+        }
+    }
+
+    private function parseDigitalAssetManagementExtension(&$rowNr)
+    {
+        global $_ARRAYLANG;
+
+        $this->_objTpl->setVariable(array(
+            'TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'   => $_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'],
+            'TXT_ACCESS_ADD_DAM_CATEGORY'           => $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'],
+            'ACCESS_ADDITIONAL_FUNCTION_ROW_CLASS'  => $rowNr++ % 2 ? 0 : 1,
+            'ACCESS_USER_ADD_DMA_CATEGORY_CKECKED'  => !empty($_POST['access_user_add_dma_category']) ? 'checked="checked"' : ''
+        ));
+    }
+
+    private function processModuleSpecificExtensions($objUser)
+    {
+        // add a category in the digital asset management module
+        $objModuleChecker = new ModuleChecker();
+        if ($objModuleChecker->getModuleStatusById(53)) {
+            $this->processDigitalAssetManagementExtension($objUser);
+        }
+    }
+
+    private function processDigitalAssetManagementExtension($objUser)
+    {
+        global $_ARRAYLANG, $objLanguage, $_CONFIG;
+
+        if (empty($_POST['access_user_add_dma_category'])) {
+            return true;
+        }
+
+        include_once ASCMS_MODULE_PATH.'/downloads/lib/Download.class.php';
+        include_once ASCMS_MODULE_PATH.'/downloads/lib/Category.class.php';
+
+        $firstname = $objUser->getProfileAttribute('firstname');
+        $lastname = $objUser->getProfileAttribute('lastname');
+        $userName = !empty($firstname) || !empty($lastname) ? trim($firstname.' '.$lastname) : $objUser->getUsername();
+
+        $objGroup = new UserGroup();
+        $objGroup->setName(sprintf($_ARRAYLANG['TXT_ACCESS_CUSTOMER_TITLE'], $userName));
+        $objGroup->setDescription(sprintf($_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_GROUP_DESC'], $userName));
+        $objGroup->setActiveStatus(true);
+        $objGroup->setType('frontend');
+        $objGroup->setUsers(array($objUser->getId()));
+        $objGroup->setDynamicPermissionIds(array());
+        $objGroup->setStaticPermissionIds(array());
+
+        if (!$objGroup->store()) {
+            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objGroup->getErrorMsg());
+            return false;
+        }
+
+        $arrLanguageIds = array_keys($objLanguage->getLanguageArray());
+        $arrNames = array();
+        $arrDescription = array();
+        foreach ($arrLanguageIds as $langId) {
+            $arrNames[$langId] = sprintf($_ARRAYLANG['TXT_ACCESS_CUSTOMER_TITLE'], $userName);
+            $arrDescription[$langId] = '';
+        }
+
+        $objCategory = new Category();
+        $objCategory->setActiveStatus(true);
+        $objCategory->setVisibility(false);
+        $objCategory->setNames($arrNames);
+        $objCategory->setDescriptions($arrDescription);
+        $objCategory->setOwner($objUser->getId());
+        $objCategory->setDeletableByOwner(false);
+        $objCategory->setModifyAccessByOwner(false);
+        $objCategory->setPermissions(array(
+            'read'  => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'add_subcategories' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'manage_subcategories' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'add_files' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            ),
+            'manage_files' => array(
+                'protected' => true,
+                'groups'    => array($objGroup->getId())
+            )
+        ));
+
+        if (!$objCategory->store()) {
+            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
+            return false;
+        }
+
+        $damCategoryUri = '?cmd=downloads&amp;act=categories&amp;parent_id='.$objCategory->getId();
+        $damCategoryAnchor = '<a href="'.$damCategoryUri.'">'.htmlentities($objCategory->getName(LANG_ID), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+        $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET), $damCategoryAnchor);
+        return true;
+    }
 
     private function notifyUserAboutAccountStatusChange($objUser)
     {
@@ -1632,6 +1762,9 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_MISCELLANEOUS'                          => $_ARRAYLANG['TXT_ACCESS_MISCELLANEOUS'],
             'TXT_ACCESS_STANDARD'                               => $_ARRAYLANG['TXT_ACCESS_STANDARD'],
             'TXT_ACCESS_EMAIL'                                  => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+            'TXT_ACCESS_SESSION_ON_INTERVAL'				    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
+            'TXT_ACCESS_SESSION_DESCRIPTION'                    =>$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'],
+            'TXT_ACCESS_SESSION_TITLE' 				            => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
             'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE']
         ));
 
@@ -1720,6 +1853,17 @@ class AccessManager extends AccessLib
                 $arrSettings['max_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']);
             }
 
+            $session_on_interval =  intval($_POST['sessioninterval']);
+   			if(trim($session_on_interval) != null) {
+
+				if ($session_on_interval >=0 && $session_on_interval <= 300) {
+
+				 $arrSettings['session_user_interval']['value'] = $session_on_interval;
+				}
+			}
+
+
+
             if ($status) {
                 if (User_Setting::setSettings($arrSettings)) {
                     $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_SUCCESSFULLY_SAVED'];
@@ -1777,6 +1921,7 @@ class AccessManager extends AccessLib
             'ACCESS_MAX_PIC_HEIGHT'                                 => $arrSettings['max_pic_height']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_WIDTH'                        => $arrSettings['max_thumbnail_pic_width']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_HEIGHT'                       => $arrSettings['max_thumbnail_pic_height']['value'],
+            'ACCESS_SESSION_USER_INTERVAL'			    => $arrSettings['session_user_interval']['value'],
             'ACCESS_MAX_PIC_SIZE'                                   => $this->getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
         ));
         $this->_objTpl->parse('module_access_config_general');

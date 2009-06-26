@@ -4,7 +4,7 @@
  * User Object
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
- * @version     2.0.0
+ * @version     2.1.1
  * @package     contrexx
  * @subpackage  lib_framework
  */
@@ -1494,7 +1494,18 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
+        $ltime=$this->last_activity;
+
+        $arrSettings = User_Setting::getSettings();
+        $intervalvalue=$arrSettings['session_user_interval']['value'];
+
+        $currenttime=time();
+        $diff=$currenttime-$ltime ;
+
+        if($diff>$intervalvalue)
+          return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
+        else
+          return true;
     }
 
     private function updateLastAuthTime()
