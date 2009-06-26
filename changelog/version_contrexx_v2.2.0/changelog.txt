@@ -16,8 +16,10 @@ WYSIWYG Editor kopiert wird, als Plaintext eingefügt. (FCKConfig.ForcePasteAsPl
 Benutzerverwaltung
 - Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
   Kategorie beim Digital Asset Management Modul erstellt werden.
+- Das Aktualisierungsintervall der Benutzersitzungen in der Datenbank
+  kann definiert werden.
 
-News Manager:
+News Manager
 - Die ID der Newsmeldungen wird bei der Übersicht im Backend aufgelistet.
 - Die Platzhalter [[NEWS_TEASER_TEXT]] und [[NEWS_CATEGORY_NAME]] werden beim
   Platzhalterverzeichnis im Backend aufgelistet.
@@ -25,6 +27,7 @@ News Manager:
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
   werden.
+- Die Gültigkeit (Zeitdauer) eines Downloads kann definiert werden.
 
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
@@ -32,7 +35,7 @@ Modul: Shop
 ****************************************
 * Behobene Fehler **********************
 ****************************************
-Allgemein
+Allgemein:
 - Die im Benutzerprofil definierte bevorzugte Frontend-Sprache wird nach der
   Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
   Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
@@ -50,6 +53,8 @@ Block System
 Benutzerverwaltung
 - Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
   erfasst werden.
+- Beim Export werden Benutzer, welche als Frontend Sprache die Standard
+  Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
 
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
@@ -90,10 +95,6 @@ Statistik
 
 Webinstaller
 - Kontrollkästchen werden beim Browser Opera angezeigt.
-
-Benutzerverwaltung:
-- Beim Export werden Benutzer, welche als Frontend Sprache die Standard
-  Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
 
 ****************************************
 * Neue Module **************************
