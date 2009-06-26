@@ -5,10 +5,13 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
-Modul: Shop
-- Bilder können von einem Produkt wieder entfernt werden.
+Benutzerverwaltung
+- Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
+  Kategorie beim Digital Asset Management Modul erstellt werden.
+- Das Aktualisierungsintervall der Benutzersitzungen in der Datenbank
+  kann definiert werden.
 
-News Manager:
+News Manager
 - Die ID der Newsmeldungen wird bei der Übersicht im Backend aufgelistet.
 - Die Platzhalter [[NEWS_TEASER_TEXT]] und [[NEWS_CATEGORY_NAME]] werden beim
   Platzhalterverzeichnis im Backend aufgelistet.
@@ -16,6 +19,10 @@ News Manager:
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
   werden.
+- Die Gültigkeit (Zeitdauer) eines Downloads kann definiert werden.
+
+Modul: Shop
+- Bilder können von einem Produkt wieder entfernt werden.
 
 ****************************************
 * Behobene Fehler **********************
@@ -24,10 +31,14 @@ Allgemein:
 - Das Versenden von E-Mails bei der Verwendung eines separaten SMTP-Servers
   funktioniert.
 
-Benutzerverwaltung:
+Benutzerverwaltung
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
   Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
   
+Modul: Digital Asset Management
+- Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
+- XHTML validierte Ausgabe.
+
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 

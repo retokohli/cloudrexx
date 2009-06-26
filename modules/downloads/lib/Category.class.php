@@ -207,8 +207,9 @@ class Category
             !$this->parent_id && !Permission::checkAccess(142, 'static', true)
             // the category isn't a main category and...
             || $this->parent_id && (
+                !Permission::checkAccess(142, 'static', true)
                 // ...the owner has the permission to delete it by himself
-                (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
+                && (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
                 // ...or the user has the right the delete subcategories of the current parent category
                 && (
                     !($objParentCategory = Category::getCategory($this->parent_id))
@@ -345,6 +346,7 @@ class Category
             '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ? 'INNER JOIN `'.DBPREFIX.'module_downloads_download` AS tblD ON tblD.`id` = tblR.`download_id`' : '').'
             WHERE   tblR.`category_id` IN ('.implode(',', $arrCategoryIds).')
                     '.($this->isFrontendMode ? 'AND tblD.`is_active` = 1' : '').'
+                    '.($this->isFrontendMode ? 'AND (tblD.`expiration` = 0 || tblD.`expiration` > '.time().')' : '').'
                     '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ?
                             'AND (tblD.`visibility` = 1'.(
                                 $objFWUser->objUser->login() ?

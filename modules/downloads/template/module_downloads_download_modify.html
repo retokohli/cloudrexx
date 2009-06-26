@@ -106,7 +106,7 @@ function downloadsOpenWindow(theURL,winName,features)
 	downloadsPopup = window.open(theURL,"Downloads",features);
 	downloadsPopup.focus();
 }
-		
+
 function SetUrl(url, width, height, alt)
 {
     fileExtRegExp = new Array();
@@ -122,8 +122,8 @@ function SetUrl(url, width, height, alt)
             }
         }
     }
-    
-    
+
+
     downloadsElInsertBox.value = url;
 
     if (downloadsElImagePreview != null) {
@@ -145,27 +145,27 @@ function downloadsAdjustSourceConfig()
     }
 }
 
-		
+
 		/* ----------------------------------------- */
-		
-		
+
+
 		arrTabToDiv = new Array();
 		{JS_ARR}
-		
+
 		function switchBoxAndTab(objElement, strTabId) {
-	
+
 			if (countActiveLanguages() == 0) {
 				//We just "unchecked" the last language, disallow this
-				objElement.checked = true;	
+				objElement.checked = true;
 			} else {
 				//There are more active languages, hide the tab
 				switchTabVisibility(strTabId);
 			}
-			
+
 			//Now make sure that a possible div is shown
 			activateAnyActiveDiv();
 		}
-		
+
 		function switchTabVisibility(strTabId) {
 			if (document.getElementById(strTabId).style.display == 'none') {
 				document.getElementById(strTabId).style.display = 'inline';
@@ -173,11 +173,11 @@ function downloadsAdjustSourceConfig()
 				document.getElementById(strTabId).style.display = 'none';
 			}
 		}
-		
-		
+
+
 		function countActiveLanguages() {
 			var activeLanguages = 0;
-			
+
 			for (var h=0; h < document.forms.length;h++) {
 				for (var i=0; i < document.forms[h].elements.length;i++) {
 					//read out all form-elements with the loop
@@ -187,18 +187,18 @@ function downloadsAdjustSourceConfig()
 						}
 					}
 				}
-			}	
-			
+			}
+
 			return activeLanguages;
 		}
-		
+
 		function activateAnyActiveDiv() {
 			//Deactivate every div first first
 			for (var TabName in arrTabToDiv) {
 				document.getElementById(TabName).className = 'inactive';
 				document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
 			}
-			
+
 			//Activate the first possible div with an acitvated checkbox
 			for (var TabName in arrTabToDiv) {
 				if (document.getElementById(TabName).style.display == 'inline') {
@@ -206,11 +206,11 @@ function downloadsAdjustSourceConfig()
 					document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
 					break;
 				}
-			}	
+			}
 		}
-		
+
 		// ---------------------------------------------------------------------------------------
-		
+
 		function AddToTheList(from,dest,add,remove) {
 		    if ( from.selectedIndex < 0){
 				if (from.options[0] != null)
@@ -233,7 +233,7 @@ function downloadsAdjustSourceConfig()
 			}
 		    disapleButtons(from,dest,add,remove);
 		}
-		
+
 		function RemoveFromTheList(from,dest,add,remove) {
 			if ( dest.selectedIndex < 0){
 				if (dest.options[0] != null)
@@ -259,7 +259,7 @@ function downloadsAdjustSourceConfig()
 			}
 			disapleButtons(from,dest,add,remove);
 		}
-		
+
 		function disapleButtons(from,dest,add,remove) {
 			if (from.options.length > 0 )
 			{
@@ -267,40 +267,40 @@ function downloadsAdjustSourceConfig()
 			}
 			else
 				add.disabled = 1;
-		
+
 			if (dest.options.length > 0)
 				remove.disabled = 0;
 			else
 				remove.disabled = 1;
 		}
-		
+
 		function SelectAllList(CONTROL) {
 //			for(var i = 0;i < CONTROL.length;i++)
 //			{
 //				CONTROL.options[i].selected = true;
 //			}
-			
+
 			CONTROL1 = document.AddFileForm.elements['assignedCategories[]'];
 			for(var i = 0;i < CONTROL1.length;i++)
 			{
 				CONTROL1.options[i].selected = true;
 			}
-			
+
 			CONTROL2 = document.AddFileForm.elements['assignedGroups[]'];
 			for(var i = 0;i < CONTROL2.length;i++)
 			{
 				CONTROL2.options[i].selected = true;
 			}
-			
+
 			CONTROL3 = document.AddFileForm.elements['assignedDownloads[]'];
 			for(var i = 0;i < CONTROL3.length;i++)
 			{
 				CONTROL3.options[i].selected = true;
 			}
 		}
-		
+
 		// ----------------------------------------------------------------------------------- //
-		
+
 		function downloadsFilesDoAction(strForm,strCheckbox,objSelect,strAct)
 		{
 			if(checkboxIsChecked(strForm,strCheckbox) == true){
@@ -319,26 +319,26 @@ function downloadsAdjustSourceConfig()
 		}
 
 		// ----------------------------------------------------------------------------------- //
-		
+
 		function FileSwitch(IDname1, IDname2){
 			document.getElementById(IDname1).style.display = 'block';
 			document.getElementById(IDname2).style.display = 'none';
 		}
-		
+
 		function ShowGroupSelect(){
 			document.getElementById('DIVgroupSelect').style.display = 'block';
 		}
-		
+
 		function HideGroupSelect(){
 			document.getElementById('DIVgroupSelect').style.display = 'none';
 		}
-		
+
 		function deleteFile(FileID){
 			if(confirm('{TXT_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
 				document.location.href = 'index.php?cmd=downloads&act=files&mode=delete&download='+FileID;
 			}
 		}
-		
+
 // ]]>
 </script>
 
@@ -432,6 +432,10 @@ function downloadsAdjustSourceConfig()
                 </tr>
                 <!-- END downloads_download_attr_website -->
                 <tr class="row{DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW}">
+                    <td>{TXT_DOWNLOADS_VALIDITY_EXPIRATION}</td>
+                    <td>{DOWNLOADS_DOWNLOAD_VALIDITY_EXPIRATION_MENU}</td>
+                </tr>
+                <tr class="row{DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW_ODD}">
                     <td>{TXT_DOWNLOADS_STATUS}</td>
                     <td><input type="checkbox" name="downloads_download_is_active" id="downloads_download_is_active" value="1" {DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED} /> <label for="downloads_download_is_active">{TXT_DOWNLOADS_ACTIVE}</label></td>
                 </tr>

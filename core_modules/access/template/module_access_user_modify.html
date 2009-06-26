@@ -28,6 +28,7 @@
 <li><a id="userTab_modifyUser1" class="active" href="javascript:void(0);" onclick="selectTab('modifyUser1')" title="{TXT_ACCESS_USER_ACCOUNT}">{TXT_ACCESS_USER_ACCOUNT}</a></li>
 <!-- BEGIN access_profile_group_assignment --><li><a id="userTab_modifyUser2" href="javascript:void(0);" onclick="selectTab('modifyUser2')" title="{TXT_ACCESS_USER_GROUP_S}">{TXT_ACCESS_USER_GROUP_S}</a></li><!-- END access_profile_group_assignment -->
 <li><a id="userTab_modifyUser3" href="javascript:void(0);" onclick="selectTab('modifyUser3')" title="{TXT_ACCESS_PROFILE}">{TXT_ACCESS_PROFILE}</a></li>
+<!-- BEGIN access_additional_functions_tab --><li><a id="userTab_modifyUser4" href="javascript:void(0);" onclick="selectTab('modifyUser4')" title="{TXT_ACCESS_ADDITIONAL_FUNCTIONS}">{TXT_ACCESS_ADDITIONAL_FUNCTIONS}</a></li><!-- END access_additional_functions_tab -->
 </ul>
 
 <form action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessSelectAllGroups(document.getElementById('access_user_associated_groups'))" method="post" enctype="multipart/form-data" id="access">
@@ -157,6 +158,26 @@
 	<br />
 </div>
 <!-- end modifyUser3 div -->
+<!-- start modifyUser4 div -->
+<div id="modifyUser4" class="userTab" style="display:none">
+	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="additional functions">
+		<thead>
+			<tr>
+				<th colspan="2">{TXT_ACCESS_ADDITIONAL_FUNCTIONS}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- BEGIN access_additional_functions_dma -->
+			<tr class="row{ACCESS_ADDITIONAL_FUNCTION_ROW_CLASS}">
+				<td width="15%">{TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT}</td>
+				<td width="85%"><input type="checkbox" name="access_user_add_dma_category" id="access_user_add_dma_category" {ACCESS_USER_ADD_DMA_CATEGORY_CKECKED} style="vertical-align:middle;" /> <label for="access_user_add_dma_category">{TXT_ACCESS_ADD_DAM_CATEGORY}</label></td>
+			</tr>
+			<!-- END access_additional_functions_dma -->
+		</tbody>
+	</table>
+	<br />
+</div>
+<!-- end modifyUser4 div -->
 <input type="button" value="{TXT_ACCESS_CANCEL}" name="access_cancel" onclick="window.location.href='index.php?cmd=access&amp;act=user'" />
 <input type="submit" value="{TXT_ACCESS_SAVE}" name="access_save_user" />
 </form>

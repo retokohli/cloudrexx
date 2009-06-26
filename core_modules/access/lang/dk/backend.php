@@ -242,4 +242,12 @@ $_ARRAYLANG['TXT_ACCESS_YES'] = "Ja";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Gem";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Brugerkontoen er blevet gemt med succes";
 $_ARRAYLANG['TXT_ACCESS_CHECKBOX'] = "Kontrollkasse";
+$_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'] = "SESSION Intervals";
+$_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'] = "SESSION";
+$_ARRAYLANG['TXT_ACCESS_CUSTOMER_TITLE'] = "Customer: %s";
+$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_GROUP_DESC'] = "Personal group of the user %s";
+$_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'] = "A new category has been created for the user %s in the Digital Asset Management module. The category's name is %s.";
+$_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS'] = "Additional Functions";
+$_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'] = "Digital Asset Management";
+$_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Add a new, personal category to the Digital Asset Management module which is only accessable by this user.";
 ?>

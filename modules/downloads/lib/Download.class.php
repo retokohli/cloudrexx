@@ -44,6 +44,8 @@ class Download {
     private $categories;
     private $names;
     private $descriptions;
+    private $expiration;
+    private $validity;
     private $access_groups;
     private $arrAttributes = array(
         'core' => array(
@@ -67,7 +69,9 @@ class Download {
             'visibility'                        => 'int',
             'order'                             => 'int',
             'views'                             => 'int',
-            'download_count'                    => 'int'
+            'download_count'                    => 'int',
+            'expiration'                        => 'int',
+            'validity'                          => 'int'
            ),
         'locale' => array(
             'name'                              => 'string',
@@ -111,7 +115,7 @@ class Download {
     public static $arrMimeTypes = array(
         'image'         => array(
             'description'   => 'TXT_DOWNLOADS_TYPE_IMAGE',
-            'extensions'    => array('jpg', 'jpeg', 'gif', 'png'),
+            'extensions'    => array('jpg', 'jpeg', 'gif', 'png', 'bmp'),
             'icon'          => 'picture.png',
             'icon_small'    => 'picture_small.png'
         ),
@@ -241,6 +245,8 @@ class Download {
         $this->order = 0;
         $this->views = 0;
         $this->download_count = 0;
+        $this->expiration = 0;
+        $this->validity = 0;
         $this->downloads = null;
         $this->categories = null;
         $this->names = array();
@@ -444,6 +450,8 @@ class Download {
                 $this->views = isset($this->arrLoadedDownloads[$id]['views']) ? $this->arrLoadedDownloads[$id]['views'] : 0;
                 $this->download_count = isset($this->arrLoadedDownloads[$id]['download_count']) ? $this->arrLoadedDownloads[$id]['download_count'] : 0;
                 $this->downloads = isset($this->arrLoadedDownloads[$id]['downloads']) ? $this->arrLoadedDownloads[$id]['downloads'] : null;
+                $this->expiration = isset($this->arrLoadedDownloads[$id]['expiration']) ? $this->arrLoadedDownloads[$id]['expiration'] : 0;
+                $this->validity = isset($this->arrLoadedDownloads[$id]['validity']) ? $this->arrLoadedDownloads[$id]['validity'] : 0;
                 $this->categories = isset($this->arrLoadedDownloads[$id]['categories']) ? $this->arrLoadedDownloads[$id]['categories'] : null;
                 $this->names = isset($this->arrLoadedDownloads[$id]['names']) ? $this->arrLoadedDownloads[$id]['names'] : null;
                 $this->descriptions = isset($this->arrLoadedDownloads[$id]['descriptions']) ? $this->arrLoadedDownloads[$id]['descriptions'] : null;
@@ -579,11 +587,13 @@ class Download {
             if (!isset($arrFilter['is_active'])) {
                 $arrConditions[] = 'tblD.`is_active` = 1';
             }
-            $arrConditions[] = 'tblD.`visibility` = 1'.(
-                $objFWUser->objUser->login() ?
-                ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
-                .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
-                : '');
+            if (!Permission::checkAccess(142, 'static', true)) {
+                $arrConditions[] = 'tblD.`visibility` = 1'.(
+                    $objFWUser->objUser->login() ?
+                    ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
+                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                    : '');
+            }
 
 
             // category access
@@ -591,11 +601,13 @@ class Download {
                 $arrTables[] = 'category';
             }
             $arrConditions[] = 'tblC.`is_active` = 1';
-            $arrConditions[] = 'tblC.`visibility` = 1'.(
-                $objFWUser->objUser->login() ?
-                    ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
-                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
-                : '');
+            if (!Permission::checkAccess(142, 'static', true)) {
+                $arrConditions[] = 'tblC.`visibility` = 1'.(
+                    $objFWUser->objUser->login() ?
+                        ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
+                        .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                    : '');
+            }
         } elseif (!Permission::checkAccess(142, 'static', true)) {
             $objFWUser = FWUser::getFWUserObject();
 
@@ -931,7 +943,9 @@ class Download {
                     `mtime` = ".$this->mtime.",
                     `is_active` = ".intval($this->is_active).",
                     `visibility` = ".intval($this->visibility).",
-                    `order` = ".intval($this->order)."
+                    `order` = ".intval($this->order).",
+                    `expiration` = ".intval($this->expiration).",
+                    `validity` = ".intval($this->validity)."
                 WHERE `id` = ".$this->id
             ) === false) {
                 $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_DOWNLOAD'];
@@ -956,7 +970,9 @@ class Download {
                     `mtime`,
                     `is_active`,
                     `visibility`,
-                    `order`
+                    `order`,
+                    `expiration`,
+                    `validity`
                 ) VALUES (
                     '".$this->type."',
                     '".$this->mime_type."',
@@ -974,7 +990,9 @@ class Download {
                     ".$this->mtime.",
                     ".intval($this->is_active).",
                     ".intval($this->visibility).",
-                    ".intval($this->order)."
+                    ".intval($this->order).",
+                    ".intval($this->expiration).",
+                    ".intval($this->validity)."
                 )") !== false) {
                 $this->id = $objDatabase->Insert_ID();
             } else {
@@ -1352,6 +1370,16 @@ class Download {
         return $this->download_count;
     }
 
+    public function getExpirationDate()
+    {
+        return $this->expiration;
+    }
+
+    public function getValidityTimePeriod()
+    {
+        return $this->validity;
+    }
+
     public function getAssociatedCategoryIds()
     {
         if (!isset($this->categories)) {
@@ -1501,6 +1529,19 @@ class Download {
     public function setVisibility($visibility)
     {
         $this->visibility = $visibility;
+    }
+
+    public function setValidityTimePeriod($validity)
+    {
+        $this->validity = $validity;
+        $this->setExpirationDate(($validitySeconds = $validity*60*60*24) ? mktime(23, 59, 59, date('m', time() + $validitySeconds), date('d', time() + $validitySeconds), date('Y', time() + $validitySeconds)) : 0);
+
+        return true;
+    }
+
+    private function setExpirationDate($expiration)
+    {
+        $this->expiration = $expiration;
     }
 
     public function setOrder($order)
