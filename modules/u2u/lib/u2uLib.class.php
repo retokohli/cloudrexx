@@ -51,26 +51,6 @@ class u2uLibrary {
 
     /**
      *
-     * Selects the username with the id of the user who has loggged on.
-     * @global      $objDatabase
-     */
-    function getUserID($userName) {
-        global $objDatabase;
-
-        $userName = contrexx_addslashes($userName);
-        $selUserID  = 'SELECT id FROM '.DBPREFIX.'access_users
-                       WHERE username="'.$userName.'" AND
-                       active=1';
-        $objResult = $objDatabase->Execute($selUserID);
-        while (!$objResult->EOF) {
-          $ID=$objResult->fields['id'];
-          $objResult->MoveNext();
-        }
-        return $ID;
-    }
-
-    /**
-     *
      * creates the Array of messages for the users..
      * @global      $objDatabase
      */
