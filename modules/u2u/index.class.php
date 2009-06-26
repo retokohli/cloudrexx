@@ -430,21 +430,13 @@ class u2u extends u2uLibrary
 
     /**
      * Used to send a message...
-     *
-     * @global   $_ARRAYLANG $objDatabase $_CORELANG
      */
-    function sendMsg() {
-        global $_ARRAYLANG, $objDatabase,$_CORELANG;
-
+    function sendMsg()  {
         if (!empty($_REQUEST['id'])) {
             $objFWUser = FWUser::getFWUserObject();
-            $id=intval($_REQUEST['id']);
-            $selUserName='SELECT username FROM '.DBPREFIX.'access_users WHERE id = "'.$id.'"';
-            $objResult = $objDatabase->Execute($selUserName);
-            $_ARRAYLANG["u2u_message_user_name"]=$objResult->fields['username'];
-            $this->_objTpl->setVariable(array(
-                'TXT_RECEPIENT'                 => $_ARRAYLANG["u2u_message_user_name"]
-            ));
+            $objUser = $objFWUser->objUser->getUser(intval($_REQUEST['id']));
+            if ($objUser)
+                $this->_objTpl->setVariable('TXT_RECEPIENT', htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET));
         }
         $this->showEntries();
     }
@@ -639,8 +631,8 @@ class u2u extends u2uLibrary
                 $errorMessage = true;
             } else {
                 for($i=0;$i<count($arrayRecepients);$i++) {
-                    $ID = $this->getUserID($arrayRecepients[$i]);
-                    if(empty($ID)) {
+                    $objUser = $objFWUser->objUser->getUsers(array('username' => $arrayRecepients[$i], 'is_active' => true), null, null, null, 1);
+                    if (!$objUser) {
                         $errorString=str_replace("[userName]",$arrayRecepients[$i],$_ARRAYLANG['TXT_U2U_ENTRY_ADD_ERROR_EMAIL']);
                         $this->arrStatusMsg['error'][] = $errorString;
                         $errorMessage = true;
@@ -649,7 +641,7 @@ class u2u extends u2uLibrary
                        $this->arrStatusMsg['error'][] = $errorString;
                        $errorMessage = true;
                     } else {
-                        $errArray[0]['receipents_userid']  =  $ID;
+                        $errArray[0]['receipents_userid']  =  $objUser->getId();
                         $errArray[0]['sending_userid']     =  $objFWUser->objUser->getId();
                         $errArray[0]['title']              =  contrexx_addslashes(strip_tags(trim(htmlentities($_REQUEST['title'],ENT_QUOTES,CONTREXX_CHARSET))));
                         $errArray[0]['private_message']    =  addslashes($_REQUEST['private_message']);
@@ -658,7 +650,7 @@ class u2u extends u2uLibrary
                         $successVar=1;
                         $this->strMessages="";
                         //Send notification to users
-                        $this->sendNotificationMail($objFWUser->objUser->getId(), $ID);
+                        $this->sendNotificationMail($objFWUser->objUser->getId(), $objUser->getId());
                     }
                 }
             }
