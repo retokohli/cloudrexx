@@ -42,7 +42,7 @@ class MediaLibrary {
         "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
         "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
         "html","shtml","css","js","tpl","thumb","ico", "log",
-        "mp3", "m4a", "m4v", "avi", "mpeg", "mpg", "mov"
+        "mp3", "m4a", "m4v", "avi", "mpeg", "mpg", "mov", "mpe"
     );
 
     protected $sortBy = 'name';
