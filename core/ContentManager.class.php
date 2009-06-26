@@ -2760,9 +2760,9 @@ ON DUPLICATE KEY
                 $objSubResult = $objDatabase->Execute('
                     SELECT 1
                                                         FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE    catid='.$row['parcat'].' AND `lang`='.$this->langId.'
+                                                        WHERE    catid='.$row['parcat'].' AND `lang`='.$row['lang'].'
                                                     ');
-                if ($objSubResult->RecordCount() != 1) {
+                if ($objSubResult->RecordCount() == 0) {
                     // This is a "lost" category.
                     // Assign it to "lost and found"
                     $objSubSubResult = $objDatabase->SelectLimit('
@@ -2777,7 +2777,7 @@ ON DUPLICATE KEY
                     $objDatabase->Execute('
                         UPDATE '.DBPREFIX.'content_navigation
                                             SET        parcat='.$subSubRow['catid'].'
-                         WHERE catid='.$row['catid'].' AND lang='.$this->langId
+                         WHERE catid='.$row['catid'].' AND lang='.$row['lang']
                     );
                 }
                 $row = $objResult->FetchRow();
