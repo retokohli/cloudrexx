@@ -139,7 +139,7 @@ class GalleryHomeContent extends GalleryLibrary
 
                     if ($objResult !== false) {
                         $strReturn =    '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].($picNr >= $paging ? '&amp;pos='.(floor($picNr/$paging)*$paging) : '').'" target="_self">';
-                        $strReturn .=   '<img border="0" alt="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" title="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
+                        $strReturn .=   '<img alt="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" title="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
                         return $strReturn;
                     } else {
                         return '';
@@ -203,7 +203,7 @@ class GalleryHomeContent extends GalleryLibrary
             }
 
             $strReturn =    '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].($picNr >= $paging ? '&amp;pos='.floor(($picNr) / $paging) : '').'" target="_self">';
-            $strReturn .=   '<img border="0" alt="'.$objResult->fields['NAME'].'" title="'.$objResult->fields['NAME'].'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
+            $strReturn .=   '<img alt="'.$objResult->fields['NAME'].'" title="'.$objResult->fields['NAME'].'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
             return $strReturn;
         } else {
             return '';

@@ -971,7 +971,7 @@ class Gallery
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
                         '}"  title="'.$titleLink.'" href="'.
-                        $strImagePath.'"><img border="2" title="'.$imageName.'" src="'.
+                        $strImagePath.'"><img title="'.$imageName.'" src="'.
                         $imageThumbPath.'" alt="'.$imageName.'" /></a>';
                     /*
                     $strImageOutput =
