@@ -171,7 +171,7 @@ class Calendar extends calendarLibrary
 
     			$enddate = mktime(23, 59, 59, $month, $day, $year);
     		} else {
-    			$enddate = 0;
+                $enddate = mktime(23, 59, 59, $month, $day, $year+10);
     		}
     	} else {
     		$datearr = explode("-", $_POST['endDate']);
@@ -475,8 +475,6 @@ class Calendar extends calendarLibrary
 			}
 		}
 
-		//delet old series events
-		//$this->objSeries->updateMainEvent($id);
 
 		$this->_objTpl->setVariable(array(
 			'CALENDAR_START'		 		=> date("Y-m-d", $this->eventList[$key]['startdate']),
@@ -520,6 +518,10 @@ class Calendar extends calendarLibrary
             									<img border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
         ));
+
+
+        //delet old series events
+        $this->objSeries->updateMainEvent($id);
 
        return $this->_objTpl->get();
 	}
