@@ -472,9 +472,6 @@ class Calendar extends calendarLibrary
 			}
 		}
 
-		//delet old series events
-		//$this->objSeries->updateMainEvent($id);
-
 		$this->_objTpl->setVariable(array(
 			'CALENDAR_START'		 		=> date("Y-m-d", $this->eventList[$key]['startdate']),
 			'CALENDAR_END'			 		=> date("Y-m-d", $this->eventList[$key]['enddate']),
@@ -517,6 +514,11 @@ class Calendar extends calendarLibrary
             									<img border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
         ));
+
+
+
+		//delet old series events
+		//$this->objSeries->updateMainEvent($id);
 
        return $this->_objTpl->get();
 	}

@@ -6,19 +6,19 @@ function checkNote()
 {
 	if(document.modifyCalendarNote.inputCategory.value == 0)
 	{
-		alert("{TXT_CALENDAR_ERROR_CATEGORY}");
+		alert('{TXT_CALENDAR_ERROR_CATEGORY}');
 		document.modifyCalendarNote.inputCategory.focus();
 		return false;
 	}
 	if(document.modifyCalendarNote.inputTitle.value == "")
 	{
-		alert("{TXT_CALENDAR_ERROR_NAME}");
+		alert('{TXT_CALENDAR_ERROR_NAME}');
 		document.modifyCalendarNote.inputTitle.focus();
 		return false;
 	}
 	if(document.modifyCalendarNote.inputEndDate.value < document.modifyCalendarNote.inputStartDate.value)
 	{
-		alert("{TXT_CALENDAR_ERROR_DATE}");
+		alert('{TXT_CALENDAR_ERROR_DATE}');
 		document.modifyCalendarNote.inputEndDate.focus();
 		return false;
 	}
