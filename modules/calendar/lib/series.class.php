@@ -94,14 +94,16 @@ class seriesManager
         }
         $active_where = ($this->eventList_active == true ? ' AND active=1' : '');
         if (isset($this->eventList_enddate) && $this->eventList_enddate != 0) {
-            $date_where = '((
-                ((cal.enddate <= '.$this->eventList_enddate.') AND (cal.enddate >= '.$this->eventList_startdate.')) OR
-                ((cal.startdate <= '.$this->eventList_enddate.') AND (cal.startdate >= '.$this->eventList_startdate.')) OR
-                ((cal.startdate >= '.$this->eventList_startdate.') AND (cal.enddate <= '.$this->eventList_enddate.'))
-            ) OR (
-                (cal.series_status = 1) AND (cal.startdate <= '.$this->eventList_enddate.')
-            ))';
-        } else {
+			$date_where = '((
+			    ((cal.startdate <= '.$this->eventList_startdate.') AND ('.$this->eventList_enddate.' <= cal.enddate)) OR
+			    ((('.$this->eventList_startdate.' <= cal.startdate) AND ('.$this->eventList_enddate.' <= cal.enddate)) AND ((cal.startdate <= '.$this->eventList_enddate.') AND ('.$this->eventList_enddate.' <= cal.enddate))) OR
+			    (((cal.startdate <= '.$this->eventList_startdate.') AND (cal.enddate <= '.$this->eventList_enddate.')) AND (('.$this->eventList_startdate.' <= cal.enddate) AND (cal.enddate <= '.$this->eventList_enddate.'))) OR
+			    (('.$this->eventList_startdate.' <= cal.startdate) AND (cal.enddate <= '.$this->eventList_enddate.'))
+			) OR (
+				(cal.series_status = 1) AND (cal.startdate <= '.$this->eventList_enddate.')
+			))';
+
+    	} else {
             $date_where = '((
                 ((cal.enddate >= '.$this->eventList_startdate.') AND (cal.startdate <= '.$this->eventList_startdate.')) OR
                 ((cal.startdate >= '.$this->eventList_startdate.') AND (cal.enddate >= '.$this->eventList_startdate.'))
@@ -237,14 +239,39 @@ class seriesManager
     }
 
 
-    function _cleanupEventList($key)
-    {
-        if (isset($key) && isset($this->eventList_startdate) && $this->eventList_startdate != 0) {
-            if (   isset($this->eventList[$key]['startdate'])
-                && $this->eventList[$key]['startdate'] < $this->eventList_startdate) {
-                unset($this->eventList[$key]);
-            }
-        }
+    function _cleanupEventList($key) {
+
+		if (isset($key) && isset($this->eventList_startdate) && $this->eventList_startdate != 0) {
+		    $unset = false;
+		    $startdate = $this->eventList[$key]['startdate'];
+		    $enddate = $this->eventList[$key]['enddate'];
+
+		    if((($startdate <= $this->eventList_startdate) && ($this->eventList_enddate <= $enddate))) {
+		        $unset = false;
+		    } else {
+		        if((($this->eventList_startdate <= $startdate) && ($this->eventList_enddate <= $enddate)) && (($startdate <= $this->eventList_enddate) && ($this->eventList_enddate <= $enddate))) {
+    		        $unset = false;
+    		    } else {
+    		        if((($startdate <= $this->eventList_startdate) && ($enddate <= $this->eventList_enddate)) && (($this->eventList_startdate <= $enddate) && ($enddate <= $this->eventList_enddate))) {
+        		        $unset = false;
+        		    } else {
+        		        if((($this->eventList_startdate <= $startdate) && ($enddate <= $this->eventList_enddate))) {
+            		        $unset = false;
+            		    } else {
+            		        if($this->eventList_startdate <= $enddate) {
+            		              $unset = false;
+                		    } else {
+                		          $unset = true;
+                		    }
+            		    }
+        		    }
+    		    }
+		    }
+
+		    if($unset) {
+				unset($this->eventList[$key]);
+			}
+		}
     }
 
 
