@@ -1413,11 +1413,13 @@ class Download {
                 FROM    `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR
                         '.($this->isFrontendMode ? 'INNER JOIN `'.DBPREFIX.'module_downloads_category` AS tblC ON tblC.`id` = tblR.`category_id`' : '').'
                 WHERE   tblR.`download_id` IN ('.implode(',', array_keys($this->arrLoadedDownloads)).')
-                        '.($this->isFrontendMode ? 'AND tblC.`is_active` = 1 AND (tblC.`visibility` = 1'.(
+                        '.($this->isFrontendMode ? 'AND tblC.`is_active` = 1'
+                            .(!Permission::checkAccess(142, 'static', true) ? ' AND (tblC.`visibility` = 1'.(
                             $objFWUser->objUser->login() ?
                                 ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
                                 .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
-                                : '').')
+                                    : '').')'
+                                : '').'
                         ORDER BY tblC.`parent_id`, tblC.`order`'
                         : '')
             );
