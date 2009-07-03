@@ -34,7 +34,11 @@ Allgemein:
 Benutzerverwaltung
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
   Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
-  
+
+News Manager
+- Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
+  diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
+
 Modul: Digital Asset Management
 - Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
 - XHTML validierte Ausgabe.

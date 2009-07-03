@@ -121,7 +121,7 @@ class Teasers extends newsLibrary
                                                  AND (news.startdate<='".date('Y-m-d H:i:s')."' OR news.startdate='0000-00-00 00:00:00') AND (news.enddate>='".date('Y-m-d H:i:s')."' OR news.enddate='0000-00-00 00:00:00')" : "" )
                                                    .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                                         ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
-                                                            " AND news.frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") "
+                                                            " AND (news.frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
                                                             :   " AND news.frontend_access_id=0 ")
                                                         :   '')."
                                             ORDER BY date DESC");
