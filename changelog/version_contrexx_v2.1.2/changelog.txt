@@ -30,6 +30,9 @@ Modul: Shop
 Allgemein:
 - Das Versenden von E-Mails bei der Verwendung eines separaten SMTP-Servers
   funktioniert.
+- Datei-Upload: Anstatt einer Whitelist wird nun eine Blacklist eingesetzt.
+  Dies ermöglicht auch den Upload von Dateien, die nicht explizit von Contrexx
+  erlaubt wurden.
 
 Benutzerverwaltung
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
