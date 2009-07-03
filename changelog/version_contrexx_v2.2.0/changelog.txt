@@ -58,6 +58,8 @@ Benutzerverwaltung
 
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
+- Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
+  diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
 
 Modul: Adressverzeichnis
 - Die Suche funktioniert in jedem Bereich.
