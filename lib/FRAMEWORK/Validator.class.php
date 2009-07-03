@@ -74,5 +74,31 @@ class FWValidator
             return "http://".$string;
         }
     }
+
+
+    /**
+     * Returns true if the ending of the given file name
+     * is harmless. We consider all executable as well as
+     * all scripts (server and client side) as harmful.
+     * You should NOT allow to upload these.
+     *
+     * This function returns true if the given filename
+     * is safe to upload.
+     *
+     * @param string file
+     */
+    static function is_file_ending_harmless($file) {
+        $evil = array(
+            'exe','bat','pif', 'com', # windows executables
+            'vs', 'vbs','js',         # client scripts
+            'php','cgi','pl',         # server scripts
+        );
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+    
+        if (in_array($ext, $evil)) {
+            return false;
+        }
+        return true;
+    }
 }
 ?>
