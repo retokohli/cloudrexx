@@ -13,6 +13,7 @@
  * @ignore
  */
 require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
+require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 
 /**
 * Digital Asset Management Frontend
@@ -391,7 +392,7 @@ class downloads extends DownloadsLibrary
                     }
 
                     $arrMatch = array();
-                    if (preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $fileName, $arrMatch) && in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)) {
+                    if (FWValidator::is_file_ending_harmless($fileName)) {
                         $fileExtension = strtolower($arrMatch[1]);
 
                         if (@move_uploaded_file($fileTmpName, $file)) {

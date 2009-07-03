@@ -18,6 +18,7 @@
  * Includes
  */
 require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
+require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 
 /**
  * Contact
@@ -34,26 +35,6 @@ require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
  */
 class Contact extends ContactLib
 {
-    /**
-     * File extensions that are allowed to upload
-     *
-     * This array contains all file extensions that are allowed
-     * to be uploaded. If a file's file extensions is not listed
-     * in this array then the contact request will be blocked and
-     * a error message will be return instead.
-     */
-    var $enabledUploadFileExtensions = array(
-        "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
-        "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
-        "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
-        "xlw","xlt","sdc","vor","sdc","cvs","slk","wk1","wks",
-        "123","odp","otp","sxi","sti","pps","pot","sxd","sda",
-        "sdd","sdp","cgm","odg","otg","sxd","std","dxf","emf",
-        "eps","met","pct","sgf","sgv","svm","wmf","bmp","jpeg",
-        "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
-        "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
-        "sgl","odb","odf","sxm","smf","mml","zip","rar"
-    );
 
     /**
      * List with the names of the formular fields
@@ -254,7 +235,7 @@ class Contact extends ContactLib
      * @access private
      * @global array
      * @param array Files that have been submited
-     * @see getSettings(), _cleanFileName(), enabledUploadFileExtensions, errorMsg, FWSystem::getMaxUploadFileSize()
+     * @see getSettings(), _cleanFileName(), errorMsg, FWSystem::getMaxUploadFileSize()
      * @return array A list of files that have been stored successfully in the system
      */
     function _uploadFiles($arrFields)
@@ -302,7 +283,7 @@ class Contact extends ContactLib
                             }
 
                             $arrMatch = array();
-                            if (preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $fileName, $arrMatch) && in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)) {
+                            if (FWValidator::is_file_ending_harmless($fileName)) {
                                 if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$arrSettings['fileUploadDepositionPath'].'/'.$prefix.$fileName)) {
                                     $id = intval(substr($file, 17));
                                     if (isset($arrFields[$id])) {
