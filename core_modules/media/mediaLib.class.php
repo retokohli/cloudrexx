@@ -10,6 +10,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 /**
  * Media Library
  *
@@ -22,28 +23,6 @@
  * @subpackage  core_module_media
  */
 class MediaLibrary {
-    /**
-     * File extensions that are allowed to upload
-     *
-     * This array contains all file extensions that are allowed
-     * to be uploaded. If a file's file extensions is not listed
-     * in this array then the contact request will be blocked and
-     * a error message will be return instead.
-     */
-    private $enabledUploadFileExtensions = array(
-        "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
-        "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
-        "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
-        "xlw","xlt","sdc","vor","sdc","cvs","slk","wk1","wks",
-        "123","odp","otp","sxi","sti","pps","pot","sxd","sda",
-        "sdd","sdp","cgm","odg","otg","sxd","std","dxf","emf",
-        "eps","met","pct","sgf","sgv","svm","wmf","bmp","jpeg",
-        "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
-        "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
-        "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
-        "html","shtml","css","js","tpl","thumb","ico", "log",
-        "mp3", "m4a", "m4v", "avi", "mpeg", "mpg", "mov", "mpe"
-    );
 
     protected $sortBy = 'name';
     protected $sortDesc = false;
@@ -128,7 +107,7 @@ class MediaLibrary {
                     $fileName = $this->_replaceCharacters($file['name'][$x]);
 
                     if(!empty($fileName)){
-                        if (!preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $fileName, $arrMatch) || !in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)) {
+                        if (!FWValidator::is_file_ending_harmless($fileName)) {
                             continue;
                         }
 
@@ -429,7 +408,7 @@ class MediaLibrary {
 
         // file or dir
         if(isset($_POST['oldExt']) && !empty($_POST['oldExt'])){
-            $ext      = !empty($_POST['renExt']) && in_array(strtolower($_POST['renExt']), $this->enabledUploadFileExtensions) ? $_POST['renExt'] : 'txt';
+            $ext      = !empty($_POST['renExt']) && FWValidator::is_file_ending_harmless($_POST['renName'].".$ext") ? $_POST['renExt'] : 'txt';
             $fileName = $_POST['renName'] . '.' . $ext;
             $oldName  = $_POST['oldName'] . '.' . $_POST['oldExt'];
         }else{

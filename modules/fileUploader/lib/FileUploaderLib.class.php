@@ -15,6 +15,7 @@
  */
 require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
+require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 
 /**
@@ -40,27 +41,6 @@ class FileUploaderLib {
     private $uploadFileName;
     private $uploadFileExtension;
     private $uploadFileSuffix;
-
-    /**
-     * File extensions that are allowed to upload
-     *
-     * This array contains all file extensions that are allowed
-     * to be uploaded. If a file's file extensions is not listed
-     * in this array then the contact request will be blocked and
-     * a error message will be return instead.
-     */
-    public  $enabledUploadFileExtensions = array(
-        "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
-        "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
-        "jtt","hwp","wps","ods","ots","sxc","stc","dif","dbf",
-        "xlw","xlt","sdc","vor","sdc","cvs","slk","wk1","wks",
-        "123","odp","otp","sxi","sti","pps","pot","sxd","sda",
-        "sdd","sdp","cgm","odg","otg","sxd","std","dxf","emf",
-        "eps","met","pct","sgf","sgv","svm","wmf","bmp","jpeg",
-        "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
-        "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
-        "sgl","odb","odf","sxm","smf","mml","zip","rar"
-    );
 
     /**
     * Constructor
@@ -153,7 +133,7 @@ class FileUploaderLib {
         }
 
         // check if the file has a valid file extension
-        if (!preg_match('/\.([a-zA-Z0-9_]{1,4})$/', $fileName, $arrMatch) || !in_array(strtolower($arrMatch[1]), $this->enabledUploadFileExtensions)) {
+        if (!Validator::is_file_ending_harmless($fileName)) {
             die('Error:'.sprintf('The file %s was refused due to its file extension which is not allowed!', htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET)));
         }
 
