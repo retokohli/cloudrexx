@@ -363,7 +363,7 @@ class newsManager extends newsLibrary {
                      AND n.lang=".$this->langId."
                      AND nc.catid=n.catid
                      AND n.validated='1'"
-                     .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") " : '')
+                     .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
                 ."ORDER BY date DESC";
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
@@ -932,6 +932,7 @@ class newsManager extends newsLibrary {
                                                         startdate,
                                                         enddate,
                                                         status,
+														userid,
                                                         frontend_access_id,
                                                         backend_access_id,
                                                         teaser_only,
@@ -941,7 +942,7 @@ class newsManager extends newsLibrary {
                                                         teaser_image_thumbnail_path
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
-        if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true))) {
+        if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true) || $objResult->fields['userid'] == $objFWUser->objUser->getId())) {
             $newsCat=$objResult->fields['catid'];
             $id = $objResult->fields['id'];
             $newsText = stripslashes($objResult->fields['text']);
@@ -1165,17 +1166,19 @@ class newsManager extends newsLibrary {
             $newsBackendAccess     = !empty($_POST['news_modify_access']);
             $newsBackendGroups     = $newsBackendAccess && isset($_POST['news_modify_access_associated_groups']) && is_array($_POST['news_modify_access_associated_groups']) ? array_map('intval', $_POST['news_modify_access_associated_groups']) : array();
 
-            $objResult = $objDatabase->SelectLimit('SELECT `frontend_access_id`, `backend_access_id` FROM `'.DBPREFIX.'module_news` WHERE `id` = '.$id, 1);
+            $objResult = $objDatabase->SelectLimit('SELECT `frontend_access_id`, `backend_access_id`, `userid` FROM `'.DBPREFIX.'module_news` WHERE `id` = '.$id, 1);
             if ($objResult && $objResult->RecordCount() == 1) {
                 $newsFrontendAccessId = $objResult->fields['frontend_access_id'];
                 $newsBackendAccessId = $objResult->fields['backend_access_id'];
+                $newsUserId = $objResult->fields['userid'];
             } else {
                 $newsFrontendAccessId = 0;
                 $newsBackendAccessId = 0;
+                $newsUserId = 0;
             }
 
             if ($this->arrSettings['news_message_protection'] == '1') {
-                if ($newsBackendAccessId && !Permission::hasAllAccess() && !Permission::checkAccess($newsBackendAccessId, 'dynamic', true)) {
+                if ($newsBackendAccessId && !Permission::hasAllAccess() && !Permission::checkAccess($newsBackendAccessId, 'dynamic', true) && $newsUserId != $objFWUser->objUser->getId()) {
                     return false;
                 }
 
