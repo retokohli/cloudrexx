@@ -5459,28 +5459,30 @@ class shopmanager extends ShopLibrary
 
         //set general language variables
         self::$objTemplate->setVariable(array(
-        'TXT_TOTAL_TURNOVER' => $_ARRAYLANG['TXT_TOTAL_TURNOVER'],
-        'TXT_OVERVIEW' => $_ARRAYLANG['TXT_OVERVIEW'],
-        'TXT_BEST_MONTH' => $_ARRAYLANG['TXT_BEST_MONTH'],
-        'TXT_TURNOVER' => $_ARRAYLANG['TXT_TURNOVER'],
-        'TXT_TOTAL_ORDERS' => $_ARRAYLANG['TXT_TOTAL_ORDERS'],
-        'TXT_TOTAL_SOLD_ARITCLES' => $_ARRAYLANG['TXT_TOTAL_SOLD_ARITCLES'],
-        'TXT_SELECT_STATISTIC' => $_ARRAYLANG['TXT_SELECT_STATISTIC'],
-        'TXT_FROM' => $_ARRAYLANG['TXT_FROM'],
-        'TXT_TO' => $_ARRAYLANG['TXT_TO'],
-        'TXT_ORDERS' => $_ARRAYLANG['TXT_ORDERS'],
-        'TXT_COUNT_ARTICLES' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-        'TXT_CUSTOMERS_PARTNERS' => $_ARRAYLANG['TXT_CUSTOMERS_PARTNERS'],
-        'TXT_PERIOD' => $_ARRAYLANG['TXT_PERIOD'],
-        'TXT_PERFORM' => $_ARRAYLANG['TXT_PERFORM'],
-        'TXT_ORDER_SUM' => $_ARRAYLANG['TXT_ORDER_SUM'],
-        'TXT_SUM' => $_ARRAYLANG['TXT_SUM'],
+            'TXT_TOTAL_TURNOVER' => $_ARRAYLANG['TXT_TOTAL_TURNOVER'],
+            'TXT_OVERVIEW' => $_ARRAYLANG['TXT_OVERVIEW'],
+            'TXT_BEST_MONTH' => $_ARRAYLANG['TXT_BEST_MONTH'],
+            'TXT_TURNOVER' => $_ARRAYLANG['TXT_TURNOVER'],
+            'TXT_TOTAL_ORDERS' => $_ARRAYLANG['TXT_TOTAL_ORDERS'],
+            'TXT_TOTAL_SOLD_ARITCLES' => $_ARRAYLANG['TXT_TOTAL_SOLD_ARITCLES'],
+            'TXT_SELECT_STATISTIC' => $_ARRAYLANG['TXT_SELECT_STATISTIC'],
+            'TXT_FROM' => $_ARRAYLANG['TXT_FROM'],
+            'TXT_TO' => $_ARRAYLANG['TXT_TO'],
+            'TXT_ORDERS' => $_ARRAYLANG['TXT_ORDERS'],
+            'TXT_COUNT_ARTICLES' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
+            'TXT_CUSTOMERS_PARTNERS' => $_ARRAYLANG['TXT_CUSTOMERS_PARTNERS'],
+            'TXT_PERIOD' => $_ARRAYLANG['TXT_PERIOD'],
+            'TXT_PERFORM' => $_ARRAYLANG['TXT_PERFORM'],
+            'TXT_ORDER_SUM' => $_ARRAYLANG['TXT_ORDER_SUM'],
+            'TXT_SUM' => $_ARRAYLANG['TXT_SUM'],
         ));
         // Get the first order date, if its empty, no order has been made yet!
-        $query = "SELECT DATE_FORMAT(order_date,'%Y') AS year, DATE_FORMAT(order_date,'%m') AS month
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-                  WHERE order_status = '1' OR order_status = '4'
-                  ORDER BY order_date asc";
+        $query = "
+            SELECT DATE_FORMAT(order_date,'%Y') AS year, DATE_FORMAT(order_date,'%m') AS month
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             WHERE order_status=".SHOP_ORDER_STATUS_CONFIRMED."
+                OR order_status=".SHOP_ORDER_STATUS_COMPLETED."
+             ORDER BY order_date asc";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if (!$objResult) {
             $this->errorHandling();
@@ -5490,15 +5492,17 @@ class shopmanager extends ShopLibrary
             $shopOrderStartyear = $objResult->fields['year'];
             $shopOrderStartmonth = $objResult->fields['month'];
         }
+        $i = 0;
         if ($shopOrders) { //some orders has been made
             //query to get the ordersum, total orders, best month
-            $query = "SELECT selected_currency_id,
-                             currency_order_sum,
-                             DATE_FORMAT(order_date,'%m') AS month,
-                             DATE_FORMAT(order_date,'%Y') AS year
-                        FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-                       WHERE order_status = '1' OR order_status = '4'
-                       ORDER BY order_date DESC";
+            $query = "
+                SELECT selected_currency_id, currency_order_sum,
+                       DATE_FORMAT(order_date,'%m') AS month,
+                       DATE_FORMAT(order_date,'%Y') AS year
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+                 WHERE order_status=".SHOP_ORDER_STATUS_CONFIRMED."
+                    OR order_status=".SHOP_ORDER_STATUS_COMPLETED."
+                 ORDER BY order_date DESC";
             if (($objResult = $objDatabase->Execute($query)) !== false) {
                 while (!$objResult->EOF) {
                     $orderSum = Currency::getDefaultCurrencyPrice($objResult->fields['currency_order_sum']);
@@ -5524,11 +5528,13 @@ class shopmanager extends ShopLibrary
             }
 
             //get the total sum of sold products
-            $query = "SELECT sum(A.quantity) AS shopTotalSoldProducts
-                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
-                             ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
-                      WHERE A.orderid = B.orderid
-                      AND (B.order_status = '1' OR B.order_status = '4')";
+            $query = "
+                SELECT sum(A.quantity) AS shopTotalSoldProducts
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
+                       ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
+                 WHERE A.orderid=B.orderid
+                   AND (   B.order_status=".SHOP_ORDER_STATUS_CONFIRMED."
+                        OR B.order_status=".SHOP_ORDER_STATUS_COMPLETED.")";
             $objResult = $objDatabase->SelectLimit($query, 1);
             if ($objResult) {
                 if (!$objResult->EOF) {
@@ -5568,63 +5574,76 @@ class shopmanager extends ShopLibrary
             if ($shopSelectedStat == 2) {
                 //query for articles stats
                 self::$objTemplate->setVariable(array(
-                'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_PRODUCT_NAME'],
-                'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-                'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_STOCK'],
-                'SHOP_ORDERS_SELECTED' => "",
-                'SHOP_ARTICLES_SELECTED' => "selected=\"selected\"",
-                'SHOP_CUSTOMERS_SELECTED' => "",
+                    'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_PRODUCT_NAME'],
+                    'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
+                    'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_STOCK'],
+                    'SHOP_ORDERS_SELECTED' => "",
+                    'SHOP_ARTICLES_SELECTED' => "selected=\"selected\"",
+                    'SHOP_CUSTOMERS_SELECTED' => "",
                 ));
-                $query =  "SELECT A.quantity AS shopColumn2, A.productid AS id, A.price AS sum, B.title AS title, B.stock AS shopColumn3, C.selected_currency_id
-                          FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
-                                ".DBPREFIX."module_shop".MODULE_INDEX."_products AS B,
-                                ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS C
-                          WHERE A.productid = B.id AND A.orderid = C.orderid
-                          AND C.order_date >= '$shopStartDate'
-                          AND C.order_date <= '$shopStopDate'
-                          AND (C.order_status = '1' OR C.order_status = '4')
-                          ORDER BY shopColumn2 DESC";
+                $query = "
+                    SELECT A.quantity AS shopColumn2, A.productid AS id,
+                           A.price AS sum,
+                           B.title AS title, B.stock AS shopColumn3,
+                           C.selected_currency_id
+                      FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
+                            ".DBPREFIX."module_shop".MODULE_INDEX."_products AS B,
+                            ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS C
+                      WHERE A.productid=B.id AND A.orderid=C.orderid
+                        AND C.order_date >= '$shopStartDate'
+                        AND C.order_date <= '$shopStopDate'
+                        AND (   C.order_status=".SHOP_ORDER_STATUS_CONFIRMED."
+                             OR C.order_status=".SHOP_ORDER_STATUS_COMPLETED.")
+                      ORDER BY shopColumn2 DESC";
             } elseif ( $shopSelectedStat ==3) {
                 //query for customers stats
                 self::$objTemplate->setVariable(array(
-                'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_NAME'],
-                'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COMPANY'],
-                'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-                'SHOP_ORDERS_SELECTED' => "",
-                'SHOP_ARTICLES_SELECTED' => "",
-                'SHOP_CUSTOMERS_SELECTED' => "selected=\"selected\"",
+                    'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_NAME'],
+                    'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COMPANY'],
+                    'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
+                    'SHOP_ORDERS_SELECTED' => "",
+                    'SHOP_ARTICLES_SELECTED' => "",
+                    'SHOP_CUSTOMERS_SELECTED' => "selected=\"selected\"",
                 ));
-                $query = "SELECT A.currency_order_sum AS sum, A.selected_currency_id AS currency_id, C.company AS shopColumn2,sum(B.quantity) AS shopColumn3, C.lastname As lastname, C.firstname AS firstname, C.prefix AS prefix, C.customerid AS id
-                           FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS A,
-                                ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS B,
-                                ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS C
-                           WHERE A.orderid = B.orderid
-                          AND A.customerid = C.customerid
-                          AND A.order_date >= '$shopStartDate'
-                          AND A.order_date <= '$shopStopDate'
-                          AND (A.order_status = '1' OR A.order_status = '4')
-                          GROUP BY B.orderid
-                           ORDER BY sum DESC";
+                $query = "
+                    SELECT A.currency_order_sum AS sum, A.selected_currency_id AS currency_id, C.company AS shopColumn2,sum(B.quantity) AS shopColumn3, C.lastname As lastname, C.firstname AS firstname, C.prefix AS prefix, C.customerid AS id
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS A,
+                           ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS B,
+                           ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS C
+                     WHERE A.orderid=B.orderid
+                       AND A.customerid=C.customerid
+                       AND A.order_date>='$shopStartDate'
+                       AND A.order_date<='$shopStopDate'
+                       AND (   A.order_status=".SHOP_ORDER_STATUS_CONFIRMED."
+                            OR A.order_status=".SHOP_ORDER_STATUS_COMPLETED.")
+                     GROUP BY B.orderid
+                     ORDER BY sum DESC";
             } else {
                 //query for order stats (default)
                 //sells per month
                 self::$objTemplate->setVariable(array(
-                'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_DATE'],
-                'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ORDERS'],
-                'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-                'SHOP_ORDERS_SELECTED' => "selected=\"selected\"",
-                'SHOP_ARTICLES_SELECTED' => "",
-                'SHOP_CUSTOMERS_SELECTED' => "",
+                    'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_DATE'],
+                    'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ORDERS'],
+                    'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
+                    'SHOP_ORDERS_SELECTED' => "selected=\"selected\"",
+                    'SHOP_ARTICLES_SELECTED' => "",
+                    'SHOP_CUSTOMERS_SELECTED' => "",
                 ));
-                $query = "SELECT sum(A.quantity) AS shopColumn3, count(A.orderid) AS shopColumn2, B.selected_currency_id, B.currency_order_sum AS sum, DATE_FORMAT(B.order_date,'%m') AS month, DATE_FORMAT(B.order_date,'%Y') AS year
-                           FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
-                               ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
-                          WHERE A.orderid = B.orderid
-                          AND B.order_date >= '$shopStartDate'
-                          AND B.order_date <= '$shopStopDate'
-                          AND (B.order_status='1' OR B.order_status='4')
-                           GROUP BY B.orderid
-                           ORDER BY year, month DESC";
+                $query = "
+                    SELECT sum(A.quantity) AS shopColumn3,
+                           count(A.orderid) AS shopColumn2,
+                           B.selected_currency_id, B.currency_order_sum AS sum,
+                           DATE_FORMAT(B.order_date,'%m') AS month,
+                           DATE_FORMAT(B.order_date,'%Y') AS year
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
+                           ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
+                     WHERE A.orderid = B.orderid
+                       AND B.order_date >= '$shopStartDate'
+                       AND B.order_date <= '$shopStopDate'
+                       AND (   B.order_status=".SHOP_ORDER_STATUS_CONFIRMED."
+                            OR B.order_status=".SHOP_ORDER_STATUS_COMPLETED.")
+                     GROUP BY B.orderid
+                     ORDER BY year, month DESC";
             }
 
             $arrayResults = array();
@@ -5709,20 +5728,17 @@ class shopmanager extends ShopLibrary
                 }
                 //set block an read whole array out
                 self::$objTemplate->setCurrentBlock('statisticRow');
-                $i=0; //used for row-class
                 if (is_array($arrayResults)) {
                     foreach ($arrayResults as $entry) {
-                        if (($i % 2) == 0) {$class='row1';} else {$class='row2';}
                         self::$objTemplate->setVariable(array(
-	                        'SHOP_ROWCLASS' => $class,
-	                        'SHOP_COLUMN_1' => $entry['column1'],
-	                        'SHOP_COLUMN_2' => $entry['column2'],
-	                        'SHOP_COLUMN_3' => $entry['column3'],
-	                        'SHOP_COLUMN_4' => Currency::formatPrice($entry['column4']).' '.
-	                            Currency::getDefaultCurrencySymbol(),
+  	                        'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
+  	                        'SHOP_COLUMN_1' => $entry['column1'],
+  	                        'SHOP_COLUMN_2' => $entry['column2'],
+  	                        'SHOP_COLUMN_3' => $entry['column3'],
+  	                        'SHOP_COLUMN_4' => Currency::formatPrice($entry['column4']).' '.
+  	                            Currency::getDefaultCurrencySymbol(),
                         ));
                         self::$objTemplate->parse('statisticRow');
-                        ++$i;
                     }
                 }
             }
@@ -5732,30 +5748,30 @@ class shopmanager extends ShopLibrary
             $shopActualMonth = "<option value=\"".Date('m')."\">".$arrayMonths[Date('m')-1]."</option>\n";
             $shopActualYear = "<option value=\"".Date('Y')."\">".Date('Y')."</option>\n";
             self::$objTemplate->setVariable(array(
-            'SHOP_START_MONTH' => $shopActualMonth,
-            'SHOP_END_MONTH' => $shopActualMonth,
-            'SHOP_START_YEAR' => $shopActualYear,
-            'SHOP_END_YEAR' => $shopActualYear,
-            'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_DATE'],
-            'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ORDERS'],
-            'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-            'SHOP_ORDERS_SELECTED' => "selected=\"selected\"",
-            'SHOP_ARTICLES_SELECTED' => "",
-            'SHOP_CUSTOMERS_SELECTED' => "",
+                'SHOP_START_MONTH' => $shopActualMonth,
+                'SHOP_END_MONTH' => $shopActualMonth,
+                'SHOP_START_YEAR' => $shopActualYear,
+                'SHOP_END_YEAR' => $shopActualYear,
+                'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_DATE'],
+                'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ORDERS'],
+                'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
+                'SHOP_ORDERS_SELECTED' => "selected=\"selected\"",
+                'SHOP_ARTICLES_SELECTED' => "",
+                'SHOP_CUSTOMERS_SELECTED' => "",
             ));
         }
         //set the variables for the sum
         self::$objTemplate->setVariable(array(
-        'SHOP_ROWCLASS' => $i % 2 == 0 ? 'row1' : 'row2',
-        'SHOP_TOTAL_SUM' => Currency::formatPrice($shopTotalOrderSum).' '.Currency::getDefaultCurrencySymbol(),
-        'SHOP_MONTH' => $shopBestMonthDate,
-        'SHOP_MONTH_SUM' => Currency::formatPrice($shopBestMonthSum).' '.Currency::getDefaultCurrencySymbol(),
-        'SHOP_TOTAL_ORDERS' => $shopTotalOrders,
-        'SHOP_SOLD_ARTICLES' => $shopTotalSoldProducts,
-        'SHOP_SUM_COLUMN_2' => $sumColumn2,
-        'SHOP_SUM_COLUMN_3' => $sumColumn3,
-        'SHOP_SUM_COLUMN_4' => Currency::formatPrice($sumColumn4).' '.Currency::getDefaultCurrencySymbol(),
-        'SHOP_STATISTIC_PAGING' => $paging
+            'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
+            'SHOP_TOTAL_SUM' => Currency::formatPrice($shopTotalOrderSum).' '.Currency::getDefaultCurrencySymbol(),
+            'SHOP_MONTH' => $shopBestMonthDate,
+            'SHOP_MONTH_SUM' => Currency::formatPrice($shopBestMonthSum).' '.Currency::getDefaultCurrencySymbol(),
+            'SHOP_TOTAL_ORDERS' => $shopTotalOrders,
+            'SHOP_SOLD_ARTICLES' => $shopTotalSoldProducts,
+            'SHOP_SUM_COLUMN_2' => $sumColumn2,
+            'SHOP_SUM_COLUMN_3' => $sumColumn3,
+            'SHOP_SUM_COLUMN_4' => Currency::formatPrice($sumColumn4).' '.Currency::getDefaultCurrencySymbol(),
+            'SHOP_STATISTIC_PAGING' => $paging
         ));
     }
 
