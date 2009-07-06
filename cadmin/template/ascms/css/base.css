@@ -437,20 +437,56 @@ div.tabContainer {
     left: 0px;
     width: 100%;
     height: 100%;
-    background: grey;
-    z-index: 1000;
+    background: #aeaeae;
     display: none;
 }
 
-#ajaxbusy div {
+#ajaxwait {
     position: absolute;
     top: 45%;
     left: 45%;
     text-align: center;
-    z-index: 1001;
+    font-weight: bold;
+    z-index: 3;
     width: 10%;
     margin: auto;
-    background
-    border: 3px green solid;
-    background-color: #339933;
+    border: 3px #E4E7FA solid;
+    background-color: #F4F7FF;
+    display: none;
+}
+
+#previewTitle {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 26px;
+    text-align: right;
+    background-color: #ffffff;
+    border: 1px solid black;
+}
+
+#previewTitle input {
+    padding: 2px;
+}
+
+
+#previewContent {
+    position:absolute;
+    top: 26px;
+    left: 0px;
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    z-index: 5;
+    background-color: #ffffff;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+#previewIFrame{
+    border: 0px;
+    width: 100%;
+    height: 100%;
 }

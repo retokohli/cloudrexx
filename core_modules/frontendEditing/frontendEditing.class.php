@@ -78,6 +78,11 @@ class frontendEditing extends frontendEditingLib {
 	private $intPageId;
 
 	/**
+	 * Lang ID of the requested page.
+	 */
+	private $intLangId;
+
+	/**
 	 * Section of the requested page.
 	 */
 	private $strPageSection;
@@ -150,6 +155,7 @@ class frontendEditing extends frontendEditingLib {
 	private function getParameters() {
 		$this->strAction 			= isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
 		$this->intPageId 			= intval($_REQUEST['page']);
+		$this->intLangId 			= intval($_REQUEST['lang']);
 		$this->strPageSection 		= isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
 		$this->strPageCommand		= isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
 	}
@@ -167,14 +173,20 @@ class frontendEditing extends frontendEditingLib {
 															navigation.backend_access_id
 												FROM		'.DBPREFIX.'content				AS content
 												INNER JOIN	'.DBPREFIX.'content_navigation	AS navigation
-												ON			content.id = navigation.catid
+												ON			content.id = navigation.catid AND content.lang_id = navigation.lang
 												WHERE		id='.$this->intPageId.'
+												AND         lang_id='.$this->intLangId.'
 												LIMIT		1
 											');
 
 		if ($objResult->RecordCount() == 1) {
-			$this->strTitle 			= html_entity_decode($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
-			$this->strContent			= $objResult->fields['content'];
+			$this->strTitle 			= (!empty($_REQUEST['frontPreview']) && intval($_REQUEST['frontPreview']) == 1)
+			                               ? $_SESSION['content']['previewTitle']
+			                               : html_entity_decode($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
+
+			$this->strContent			= (!empty($_REQUEST['frontPreview']) && intval($_REQUEST['frontPreview']) == 1)
+			                               ? $_SESSION['content']['previewContent']
+			                               : $objResult->fields['content'];
 			$this->intBackendAccessId	= intval($objResult->fields['backend_access_id']);
 		}
 	}
@@ -509,9 +521,10 @@ class frontendEditing extends frontendEditingLib {
 															navigation.css_name AS n_css_name
 												FROM		'.DBPREFIX.'content				AS content
 												INNER JOIN	'.DBPREFIX.'content_navigation	AS navigation
-												ON			content.id = navigation.catid
+												ON			content.id = navigation.catid AND content.lang_id = navigation.lang
 												WHERE		id='.$this->intPageId.'
-												LIMIT		1
+	                                            AND         lang_id='.$this->intLangId.'
+											    LIMIT		1
 											');
 
 		$strOld_C_Content 		= $objResult->fields['content'];
@@ -555,19 +568,22 @@ class frontendEditing extends frontendEditingLib {
 		//Update database
 		$objResult = $objDatabase->Execute('	UPDATE		'.DBPREFIX.'content 			AS content
 												INNER JOIN	'.DBPREFIX.'content_navigation	AS navigation
-												ON			content.id = navigation.catid
+												ON			content.id = navigation.catid AND content.lang_id = navigation.lang
 												SET			content.title = "'.$strNew_C_Title.'",
 															content.content = "'.$strNew_C_Content.'",
 															navigation.username = "'.$strNew_N_UserName.'",
 															navigation.changelog = '.$strNew_N_ChangeLog.'
 												WHERE		content.id='.$this->intPageId.'
+    											AND         lang_id='.$this->intLangId.'
 											');
 
 		//Write history
 		if ($this->boolHistoryEnabled) {
 			$objDatabase->Execute('	UPDATE	'.DBPREFIX.'content_navigation_history
 									SET		is_active="0"
-									WHERE	catid='.$this->intPageId);
+									WHERE	catid='.$this->intPageId.'
+    								AND     lang='.$this->intLangId.'
+									');
 
 			$objDatabase->Execute('	INSERT
 									INTO	'.DBPREFIX.'content_navigation_history
@@ -600,6 +616,7 @@ class frontendEditing extends frontendEditingLib {
 									INTO	'.DBPREFIX.'content_history
 						            SET 	id='.$intHistoryId.',
 						            		page_id='.$this->intPageId.',
+						            		lang_id='.$this->intLangId.',
 						                   	content="'.$strNew_C_Content.'",
 						                   	title="'.$strNew_C_Title.'",
 						                   	metatitle="'.$strOld_C_MetaTitle.'",

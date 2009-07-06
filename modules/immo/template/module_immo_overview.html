@@ -149,7 +149,7 @@ function deleteImmo(immoID) {
 		}
 
 		if(type == 1){
-			http.open('get', '?cmd=immo&act=rpcov&field='+arrField.toString()+'&order='+arrOrder.toString()+'&limit='+limit+'&pos='+pos+'&logo='+logo+'&searchTerm='+searchTerm);
+			http.open('get', '?cmd=immo&act=rpcov&field='+arrField[1][0]+'&order='+arrOrder[1][0]+'&limit='+limit+'&pos='+pos+'&logo='+logo+'&searchTerm='+searchTerm);
 			http.onreadystatechange = updateOverview;
 		}else{//if ..
 		    //more requests here...
@@ -238,7 +238,7 @@ function deleteImmo(immoID) {
 	            		bin = tBody.removeChild(tBody.childNodes[i]);
 	            	}catch(e){}
 	            }
-	            for(i in objects){
+	            for(i=0;i<objects.length;i++){
 	            	row = document.createElement("tr");
 	            	row.className = 'row' + ((i%2) + 1);
 	            	row.appendChild(createTdWithText(unescape(objects[i].immo_id)));

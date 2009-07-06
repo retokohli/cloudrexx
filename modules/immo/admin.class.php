@@ -280,17 +280,17 @@ class Immo extends ImmoLib{
 		for($i=0; $i<$limit; $i++){
 			$contacts .= 'contacts['.$i.'] = { ';
 			//escape string and replace space escape
-			$contacts .= 'immo_id:"'.str_replace('+',' ', urlencode($objRS->fields['immo_id']))."\",";
-			$contacts .= 'contact_id:"'.str_replace('+',' ', urlencode($objRS->fields['contact_id']))."\",";
-			$contacts .= 'email:"'.str_replace('+',' ', urlencode($objRS->fields['email']))."\",";
-			$contacts .= 'name:"'.str_replace('+',' ', urlencode($objRS->fields['name']))."\",";
-			$contacts .= 'firstname:"'.str_replace('+',' ', urlencode($objRS->fields['firstname']))."\",";
-			$contacts .= 'street:"'.str_replace('+',' ', urlencode($objRS->fields['street']))."\",";
-			$contacts .= 'zip:"'.str_replace('+',' ', urlencode($objRS->fields['zip']))."\",";
-			$contacts .= 'location:"'.str_replace('+',' ', urlencode($objRS->fields['location']))."\",";
-			$contacts .= 'telephone:"'.str_replace('+',' ', urlencode($objRS->fields['phone_home']))."\",";
-			$contacts .= 'comment:"'.str_replace('+',' ', urlencode($objRS->fields['comment']))."\",";
-			$contacts .= 'timestamp:"'.str_replace('+',' ', urlencode(date(ASCMS_DATE_FORMAT, $objRS->fields['time'])))."\"};\n\n";
+			$contacts .= 'immo_id:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['immo_id'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'contact_id:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['contact_id'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'email:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['email'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'name:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['name'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'firstname:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['firstname'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'street:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['street'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'zip:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['zip'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'location:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['location'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'telephone:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['phone_home'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'comment:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['comment'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'timestamp:"'.str_replace('+',' ', htmlspecialchars(date(ASCMS_DATE_FORMAT, $objRS->fields['time'], ENT_COMPAT, CONTREXX_CHARSET)))."\"};\n\n";
 			$objRS->MoveNext();
 		}
 		die($contacts);
@@ -1171,11 +1171,11 @@ class Immo extends ImmoLib{
 		for($i=0; $i<$limit; $i++){
 			$interests .= 'interests['.$i.'] = { ';
 			//escape string and replace space escape
-			$interests .= '"int_count":"'.str_replace('+',' ', urlencode($objRS->fields['int_count']))."\",";
-			$interests .= '"int_reference":"'.str_replace('+',' ', urlencode($objRS->fields['int_reference']))."\",";
-			$interests .= '"int_ref_note":"'.str_replace('+',' ', urlencode($objRS->fields['int_ref_note']))."\",";
-			$interests .= '"int_header":"'.str_replace('+',' ', urlencode($objRS->fields['int_header']))."\",";
-			$interests .= '"int_immoid":"'.str_replace('+',' ', urlencode($objRS->fields['int_immoid']))."\"};\n\n";
+			$interests .= '"int_count":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['int_count'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$interests .= '"int_reference":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['int_reference'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$interests .= '"int_ref_note":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['int_ref_note'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$interests .= '"int_header":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['int_header'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$interests .= '"int_immoid":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['int_immoid'], ENT_COMPAT, CONTREXX_CHARSET))."\"};\n\n";
 			$objRS->MoveNext();
 		}
 		die($interests);
@@ -1247,22 +1247,22 @@ class Immo extends ImmoLib{
 		for($i=0; $i<$limit; $i++){
 			$contacts .= 'contacts['.$i.'] = { ';
 			//escape string and replace space escape
-			$contacts .= 'immo_id:"'.str_replace('+',' ', urlencode($objRS->fields['immo_id']))."\",";
-			$contacts .= 'contact_id:"'.str_replace('+',' ', urlencode($objRS->fields['contact_id']))."\",";
-			$contacts .= 'email:"'.str_replace('+',' ', urlencode($objRS->fields['email']))."\",";
-			$contacts .= 'name:"'.str_replace('+',' ', urlencode($objRS->fields['name']))."\",";
-			$contacts .= 'firstname:"'.str_replace('+',' ', urlencode($objRS->fields['firstname']))."\",";
-			$contacts .= 'company:"'.str_replace('+',' ', urlencode($objRS->fields['company']))."\",";
-			$contacts .= 'street:"'.str_replace('+',' ', urlencode($objRS->fields['street']))."\",";
-			$contacts .= 'zip:"'.str_replace('+',' ', urlencode($objRS->fields['zip']))."\",";
-			$contacts .= 'location:"'.str_replace('+',' ', urlencode($objRS->fields['location']))."\",";
-			$contacts .= 'telephone:"'.str_replace('+',' ', urlencode($objRS->fields['telephone']))."\",";
-			$contacts .= 'telephone_office:"'.str_replace('+',' ', urlencode($objRS->fields['telephone_office']))."\",";
-			$contacts .= 'telephone_mobile:"'.str_replace('+',' ', urlencode($objRS->fields['telephone_mobile']))."\",";
-			$contacts .= 'purchase:"'.str_replace('+',' ', urlencode($objRS->fields['purchase']))."\",";
-			$contacts .= 'funding:"'.str_replace('+',' ', urlencode($objRS->fields['funding']))."\",";
-			$contacts .= 'comment:"'.str_replace('+',' ', urlencode($objRS->fields['comment']))."\",";
-			$contacts .= 'timestamp:"'.str_replace('+',' ', urlencode(date(ASCMS_DATE_FORMAT, $objRS->fields['timestamp'])))."\"};\n\n";
+			$contacts .= 'immo_id:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['immo_id'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'contact_id:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['contact_id'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'email:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['email'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'name:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['name'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'firstname:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['firstname'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'company:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['company'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'street:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['street'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'zip:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['zip'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'location:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['location'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'telephone:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['telephone'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'telephone_office:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['telephone_office'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'telephone_mobile:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['telephone_mobile'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'purchase:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['purchase'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'funding:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['funding'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'comment:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['comment'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$contacts .= 'timestamp:"'.str_replace('+',' ', htmlspecialchars(date(ASCMS_DATE_FORMAT, $objRS->fields['timestamp'], ENT_COMPAT, CONTREXX_CHARSET)))."\"};\n\n";
 			$objRS->MoveNext();
 		}
 		die($contacts);
@@ -1388,17 +1388,17 @@ class Immo extends ImmoLib{
 		for($i=0; $i<$limit; $i++){
 			$objects .= 'objects['.$i.'] = { ';
 			//escape string and replace space escape
-			$objects .= 'immo_id:"'.str_replace('+',' ', urlencode($objRS->fields['immo_id']))."\",";
-			$objects .= 'reference:"'.str_replace('+',' ', urlencode($objRS->fields['reference']))."\",";
-			$objects .= 'ref_nr_note:"'.str_replace('+',' ', urlencode($objRS->fields['ref_nr_note']))."\",";
-			$objects .= 'address:"'.str_replace('+',' ', urlencode($objRS->fields['address']))."\",";
-			$objects .= 'visibility:"'.str_replace('+',' ', urlencode($_ARRAYLANG['TXT_IMMO_'.strtoupper($objRS->fields['visibility'])]))."\",";
-			$objects .= 'otype:"'.str_replace('+',' ', urlencode($_ARRAYLANG['TXT_IMMO_OBJECTTYPE_'.strtoupper($objRS->fields['object_type'])]))."\",";
-			$objects .= 'ptype:"'.str_replace('+',' ', urlencode($_ARRAYLANG['TXT_IMMO_PROPERTYTYPE_'.strtoupper($objRS->fields['property_type'])]))."\",";
+			$objects .= 'immo_id:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['immo_id'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$objects .= 'reference:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['reference'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$objects .= 'ref_nr_note:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['ref_nr_note'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$objects .= 'address:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['address'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$objects .= 'visibility:"'.str_replace('+',' ', htmlspecialchars($_ARRAYLANG['TXT_IMMO_'.strtoupper($objRS->fields['visibility'])], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$objects .= 'otype:"'.str_replace('+',' ', htmlspecialchars($_ARRAYLANG['TXT_IMMO_OBJECTTYPE_'.strtoupper($objRS->fields['object_type'])], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$objects .= 'ptype:"'.str_replace('+',' ', htmlspecialchars($_ARRAYLANG['TXT_IMMO_PROPERTYTYPE_'.strtoupper($objRS->fields['property_type'])], ENT_COMPAT, CONTREXX_CHARSET))."\",";
 			$objects .= 'newobj:"'.(($objRS->fields['new_building']) ? $_ARRAYLANG['TXT_IMMO_YES'] : $_ARRAYLANG['TXT_IMMO_NO'])."\",";
 			$objects .= 'so:"'.(($objRS->fields['special_offer']) ? $_ARRAYLANG['TXT_IMMO_YES'] : $_ARRAYLANG['TXT_IMMO_NO'])."\",";
-			$objects .= 'fa:"'.str_replace('+',' ', urlencode($objRS->fields['foreigner_authorization']))."\",";
-			$objects .= 'location:"'.str_replace('+',' ', urlencode($objRS->fields['location']))."\"};\n\n";
+			$objects .= 'fa:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['foreigner_authorization'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$objects .= 'location:"'.str_replace('+',' ', htmlspecialchars($objRS->fields['location'], ENT_COMPAT, CONTREXX_CHARSET))."\"};\n\n";
 			$objRS->MoveNext();
 		}
 		die($objects);
@@ -1455,12 +1455,12 @@ class Immo extends ImmoLib{
 		for($i=0; $i<$limit; $i++){
 			$requests .= 'requests['.$i.'] = { ';
 			//escape string and replace space escape
-			$requests .= '"visits":"'.str_replace('+',' ', urlencode($objRS->fields['visits']))."\",";
-			$requests .= '"reference":"'.str_replace('+',' ', urlencode($objRS->fields['reference']))."\",";
-			$requests .= '"ref_note":"'.str_replace('+',' ', urlencode($objRS->fields['ref_note']))."\",";
-			$requests .= '"header":"'.str_replace('+',' ', urlencode($objRS->fields['header']))."\",";
-			$requests .= '"page":"'.str_replace('+',' ', urlencode($objRS->fields['page']))."\",";
-			$requests .= '"location":"'.str_replace('+',' ', urlencode($objRS->fields['location']))."\"};\n\n";
+			$requests .= '"visits":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['visits'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"reference":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['reference'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"ref_note":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['ref_note'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"header":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['header'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"page":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['page'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"location":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['location'], ENT_COMPAT, CONTREXX_CHARSET))."\"};\n\n";
 			$objRS->MoveNext();
 		}
 		die($requests);
@@ -1515,12 +1515,12 @@ class Immo extends ImmoLib{
 		for($i=0; $i<$limit; $i++){
 			$requests .= 'requests['.$i.'] = { ';
 			//escape string and replace space escape
-			$requests .= '"dl_count":"'.str_replace('+',' ', urlencode($objRS->fields['dl_count']))."\",";
-			$requests .= '"dl_reference":"'.str_replace('+',' ', urlencode($objRS->fields['dl_reference']))."\",";
-			$requests .= '"dl_ref_note":"'.str_replace('+',' ', urlencode($objRS->fields['dl_ref_note']))."\",";
-			$requests .= '"dl_header":"'.str_replace('+',' ', urlencode($objRS->fields['dl_header']))."\",";
-			$requests .= '"dl_immoid":"'.str_replace('+',' ', urlencode($objRS->fields['dl_immoid']))."\",";
-			$requests .= '"dl_linkname":"'.str_replace('+',' ', urlencode($objRS->fields['dl_linkname']))."\"};\n\n";
+			$requests .= '"dl_count":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['dl_count'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"dl_reference":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['dl_reference'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"dl_ref_note":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['dl_ref_note'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"dl_header":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['dl_header'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"dl_immoid":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['dl_immoid'], ENT_COMPAT, CONTREXX_CHARSET))."\",";
+			$requests .= '"dl_linkname":"'.str_replace('+',' ', htmlspecialchars($objRS->fields['dl_linkname'], ENT_COMPAT, CONTREXX_CHARSET))."\"};\n\n";
 			$objRS->MoveNext();
 		}
 		die($requests);
@@ -1862,7 +1862,7 @@ WHERE id = $immoID )";
 			$sugg = 'sugg = { ';
 			while(!$objRS->EOF){
 				//escape string and replace space escape
-				$sugg .= $i.':"'.str_replace('+',' ', urlencode($objRS->fields['suggestion'])).'",';
+				$sugg .= $i.':"'.str_replace('+',' ', htmlspecialchars($objRS->fields['suggestion'], ENT_COMPAT, CONTREXX_CHARSET)).'",';
 				$objRS->MoveNext();
 				$i++;
 			}

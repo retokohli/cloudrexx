@@ -8,7 +8,7 @@
     		window.location.href = "?cmd=immo&act=downloads&del="+contactID;
     	}
     }
-    
+
     /*
 	 Tooltip stuff
 	 */
@@ -30,17 +30,17 @@
 	var fields 		= new Array();
 	var comment 	= new Array();
 	fields[1] 	= new Array('immo_id', 'name', 'firstname', 'street', 'zip', 'location', 'telephone', 'comment', 'timestamp');
-	var clearArrows = function(index){	
+	var clearArrows = function(index){
 		for (i=0; i<fields[index].length; i++){
 			document.getElementById(fields[index][i]+"order").innerHTML = '';
 		}
 	}
-	
+
 	if (document.ELEMENT_NODE == null) {
 	  document.ELEMENT_NODE = 1;
 	  document.TEXT_NODE = 3;
 	}
-	
+
 	function getXMLHttpRequestObj() {
 	  var objXHR;
 	  if(window.XMLHttpRequest) {
@@ -52,7 +52,7 @@
 	}
 
 	http = getXMLHttpRequestObj();
-	
+
 	var imgDetails = new Image();
 	imgDetails.src = 'images/icons/details.gif';
 	imgDetails.title = '{TXT_IMMO_DETAILS}';
@@ -70,15 +70,15 @@
 	imgComment.title = '{TXT_IMMO_DELETE}';
 	imgComment.alt = '{TXT_IMMO_DELETE}';
 	imgComment.border = '0';
-	 
+
 	var addEvent, removeEvent;
-	addEvent = function(obj, type, fn){ 
+	addEvent = function(obj, type, fn){
 		if (obj.addEventListener){
 			addEvent = function(obj, type, fn){ //self-redeclaration
 				obj.addEventListener( type, fn, false );
 			}
 		}else if (obj.attachEvent){
-			addEvent = function(obj, type, fn){ 
+			addEvent = function(obj, type, fn){
 				obj["e"+type+fn] = fn;
 				obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
 				obj.attachEvent( "on"+type, obj[type+fn] );
@@ -95,10 +95,10 @@
 			removeEvent = function(obj, type, fn){
 				obj.detachEvent( "on"+type, obj[type+fn] );
 				obj[type+fn] = null;
-				obj["e"+type+fn] = null;				
+				obj["e"+type+fn] = null;
 			}
 		}
-	}		
+	}
 	function sendReq(field, type) {
 		if(request_active){
 			return false;
@@ -125,7 +125,7 @@
 		}else{
 			orderspan.innerHTML = '\u2193';
 		}
-		
+
 		if(type == 1){
 			http.open('get', '?cmd=immo&act=rpcs&field='+field+'&order='+orderspan.order+'&limit='+limit+'&pos='+pos+'&search='+search+'&searchField='+searchField);
 			http.onreadystatechange = updateDownloadList
@@ -133,7 +133,7 @@
 		}
 	    http.send(null);
 	}
-	
+
 	function createTdWithText(text){
 		td = document.createElement("td");
 		td.style.whiteSpace = 'nowrap';
@@ -142,7 +142,7 @@
 		td.appendChild(textNode);
 		return td;
 	}
-	
+
 	var findPosX = function(obj){
 		var curleft = 0;
 		if (obj.offsetParent)
@@ -157,7 +157,7 @@
 			curleft += obj.x;
 		return curleft;
 	}
-	
+
 	var findPosY = function(obj){
 		var curtop = 0;
 		if (obj.offsetParent)
@@ -172,7 +172,7 @@
 			curtop += obj.y;
 		return curtop;
 	}
-	
+
 	var getInputPosition = function(obj){
 		try{
 			x = findPosX(obj);
@@ -181,7 +181,7 @@
 		y-=25;
 		return {X: x+'px', Y: y+'px'};
 	}
-	
+
 	function showTip(message, obj){
 		try{
 			pos = getInputPosition(obj);
@@ -196,18 +196,18 @@
 			obj.parentNode.appendChild(div);
 		}catch(e){}
 	}
-	
+
 	function hideTip(){
 		try{
 			document.getElementById('commentTip').parentNode.removeChild(document.getElementById('commentTip'));
 		}catch(e){}
 	}
-	
+
 	function updateDownloadList() {
 	    if(http.readyState == 4 && http.status == 200){
 	    	requests = new Array();
 	        var response = http.responseText;
-	        eval(response); // create contacts array  
+	        eval(response); // create contacts array
 	        tbl = document.getElementById('downloadlist');
 				tBody = tbl.tBodies[0];
 				for(i = tBody.childNodes.length-1; i>=0; i--){
@@ -215,7 +215,7 @@
 	            		bin = tBody.removeChild(tBody.childNodes[i]);
 	            	}catch(e){}
 	            }
-	            for(i in contacts){
+	            for(i=0;i<contacts.length;i++){
 	            	row = document.createElement("tr");
 	            	row.className = 'row' + ((i%2) + 1);
         			aOpen = document.createElement("a");
@@ -236,7 +236,7 @@
 	            	commentTD = document.createElement("td");
 	            	commentTD.style.whiteSpace="nowrap";
 	            	commentTD.innerHTML = '<img onmouseout="hideTip();" onmouseover="showTip(\''+comment[i]+'\', this);" src="images/icons/note.gif" alt="comment" width="12" height="12" />';
-	            	
+
 	            	row.appendChild(commentTD);
 	            	row.appendChild(createTdWithText(unescape(contacts[i].timestamp)));
 	            	aDetails = document.createElement("a");
@@ -252,7 +252,7 @@
 					tdFunc.appendChild(aDetails);
 					tdFunc.appendChild(aDelete);
 					row.appendChild(tdFunc);
-	            	
+
 					tBody.appendChild(row);
 	            }
 	            request_active = false;
@@ -267,7 +267,7 @@
         }
     }
 //]]>
-    
+
 </script>
 
 <<table id="downloadlist" border="0" cellspacing="0" class="adminlist" style="width: 100%" cellpadding="3">
@@ -305,7 +305,7 @@
 	</td>
 	<td>
 	   {TXT_IMMO_FUNCTIONS}
-	</td>	
+	</td>
 </tr>
 </thead>
 <tbody>

@@ -436,15 +436,14 @@ class ContentWorkflow {
         $intHistoryId = intval($intHistoryId);
 
         if ($intHistoryId > 0) {
-            $objResult = $objDatabase->Execute('SELECT  catid
+            $objResult = $objDatabase->Execute('SELECT  `catid`, `lang`
                                                 FROM    '.DBPREFIX.'content_navigation_history
                                                 WHERE   id='.$intHistoryId.'
                                                 LIMIT   1
                                             ');
             $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
                                     SET     is_active="0"
-                                    WHERE   catid='.$objResult->fields['catid'].'
-                                ');
+                                    WHERE   catid='.$objResult->fields['catid'].' AND lang='.$objResult->fields['lang']);
 
             $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
                                     SET     is_active="1"
@@ -462,7 +461,7 @@ class ContentWorkflow {
             $arrCategory = $objContentTree->getThisNode($objResult->fields['parcat']);
 
             if (!is_array($arrCategory) && $boolInsert) {
-                    $objSubResult = $objDatabase->Execute(' SELECT  catid
+                    $objSubResult = $objDatabase->Execute(' SELECT  `catid`
                                                             FROM    '.DBPREFIX.'content_navigation
                                                             WHERE   module=1 AND
                                                                     cmd="lost_and_found" AND
@@ -513,6 +512,7 @@ class ContentWorkflow {
                 $objDatabase->Execute(' INSERT
                                         INTO    '.DBPREFIX.'content
                                         SET     id='.$objResult->fields['page_id'].',
+                                                lang_id="'.addslashes($objResult->fields['lang_id']).'",
                                                 content="'.addslashes($objResult->fields['content']).'",
                                                 title="'.addslashes($objResult->fields['title']).'",
                                                 metatitle="'.addslashes($objResult->fields['metatitle']).'",
@@ -553,6 +553,7 @@ class ContentWorkflow {
                                                 ');
                 $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content
                                         SET     content="'.addslashes($objResult->fields['content']).'",
+                                                lang_id="'.addslashes($objResult->fields['lang_id']).'",
                                                 title="'.addslashes($objResult->fields['title']).'",
                                                 metatitle="'.addslashes($objResult->fields['metatitle']).'",
                                                 metadesc="'.addslashes($objResult->fields['metadesc']).'",
@@ -667,13 +668,14 @@ class ContentWorkflow {
             $intHistoryId = $objResult->fields['history_id'];
             $strAction = $objResult->fields['action'];
 
-            $objResult = $objDatabase->Execute('SELECT  page_id
+            $objResult = $objDatabase->Execute('SELECT  page_id, lang_id
                                                 FROM    '.DBPREFIX.'content_history
                                                 WHERE   id = '.$intHistoryId.'
                                                 LIMIT   1
                                             ');
             $row = $objResult->FetchRow();
             $intPageId = $row['page_id'];
+            $langId    = $row['lang_id'];
 
             switch ($strAction) {
                 case 'new':
@@ -687,6 +689,7 @@ class ContentWorkflow {
                                                 SET     changelog='.time().'
                                                 WHERE   id='.$intHistoryId.' AND
                                                         catid='.$intPageId.'
+                                                  AND   lang='.$langId.'
                                                 LIMIT   1
                                             ');
                         $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
@@ -694,6 +697,7 @@ class ContentWorkflow {
                                                         activestatus="1",
                                                         changelog='.time().'
                                                 WHERE   catid='.$intPageId.'
+                                                AND     lang='.$langId.'
                                                 LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_NEW_ACCEPT'];
@@ -716,11 +720,13 @@ class ContentWorkflow {
                         $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content
                                                 WHERE   id='.$intPageId.'
+                                                  AND   lang_id='.$langId.'
                                                 LIMIT   1
                                             ');
                         $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_navigation
                                                 WHERE   catid='.$intPageId.'
+                                                  AND   lang='.$langId.'
                                                 LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_NEW_DECLINE'];
@@ -737,11 +743,13 @@ class ContentWorkflow {
                         $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content
                                                 WHERE   id='.$intPageId.'
+                                                  AND   lang_id='.$langId.'
                                                 LIMIT   1
                                             ');
                         $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_navigation
                                                 WHERE   catid='.$intPageId.'
+                                                  AND   lang='.$langId.'
                                                 LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
@@ -775,11 +783,13 @@ class ContentWorkflow {
                         $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_navigation_history
                                                 WHERE   id='.$intHistoryId.'
+                                                  AND   lang='.$langId.'
                                                 LIMIT   1
                                             ');
                         $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_history
                                                 WHERE   id='.$intHistoryId.'
+                                                  AND   lang_id='.$langId.'
                                                 LIMIT   1
                                             ');
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_DECLINE'];
