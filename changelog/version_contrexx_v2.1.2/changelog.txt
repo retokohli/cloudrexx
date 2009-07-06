@@ -44,6 +44,7 @@ News Manager
 
 Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
+- Anführungszeichen werden bei Kommentaren akzeptiert.
 
 Modul: Digital Asset Management
 - Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.

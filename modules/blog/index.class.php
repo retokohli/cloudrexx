@@ -479,10 +479,11 @@ class Blog extends BlogLibrary  {
         //Check for editor
         if ($this->_arrSettings['blog_comments_editor'] == 'textarea') {
             $strComment = strip_tags($strComment);
+            $strComment = contrexx_addslashes($strComment);
         } else {
             $strComment = html_entity_decode($strComment, ENT_QUOTES, CONTREXX_CHARSET);
+            $strComment = addslashes($strComment);
         }
-        $strComment = contrexx_addslashes($strComment);
 
         //Get specified-input
         if ($this->_intCurrentUserId == 0) {
