@@ -165,7 +165,7 @@ class AliasAdmin extends aliasLib
 
         $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit']);
         $nr = 1;
-        if (count($arrAliases)) {
+        if (count($arrAliases[$this->langId])) {
             $this->_objTpl->setVariable(array(
                 'TXT_ALIAS_PAGE'        => $_ARRAYLANG['TXT_ALIAS_PAGE'],
                 'TXT_ALIAS_ALIAS'    => $_ARRAYLANG['TXT_ALIAS_ALIAS'],
@@ -181,7 +181,7 @@ class AliasAdmin extends aliasLib
 
             $arrRewriteInfo = $this->_getRewriteInfo();
 
-            foreach ($arrAliases as $aliasId => $arrAlias) {
+            foreach ($arrAliases[$this->langId] as $aliasId => $arrAlias) {
                 foreach ($arrAlias['sources'] as $arrAliasSource) {
 
                     $this->_objTpl->setVariable(array(
@@ -208,7 +208,7 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->parse('alias_data');
             $this->_objTpl->hideBlock('alias_no_data');
 
-            if ($this->_getAliasesCount() > count($arrAliases)) {
+            if ($this->_getAliasesCount() > count($arrAliases[$this->langId])) {
                 $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&amp;cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {

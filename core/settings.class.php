@@ -322,7 +322,7 @@ class settingsManager
                     $_CONFIG['useVirtualLanguagePath'] = $strValue;
                     // update the .htaccess rewrite rules in case the function was de-/activated
                     if ($formerUseVirtualLanguagePathValue != $_CONFIG['useVirtualLanguagePath']) {
-						// deactivate the function in case the .htaccess file couldn't be written 
+						// deactivate the function in case the .htaccess file couldn't be written
                         if (!$this->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on')) {
                             $_CONFIG['useVirtualLanguagePath'] = 'off';
                             $strValue = 'off';
@@ -339,6 +339,11 @@ class settingsManager
 
         if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
             $this->strErrMessage[] = $result;
+        }
+
+        if ($_CONFIG['aliasStatus'] && include_once(ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php')) {
+            $objAlias = new aliasLib();
+            $objAlias->_activateRewriteEngine();
         }
 
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
@@ -753,7 +758,7 @@ class settingsManager
         $objTemplate->parse('settings_smtp_modify');
         return true;
     }
-    
+
     /**
      * returns configuration parameter for writing into FCKeditorConfig.php
      * @return string
@@ -770,14 +775,14 @@ class settingsManager
 		if ($objDatabase === false) {
 			die('Database error: '.$strErrMessage);
 		}
-		
+
 		//get current setting
         $query = "SELECT setvalue FROM ".DBPREFIX."settings WHERE setid = '73'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             $useCSS = $objResult->fields['setvalue'];
 		}
-		
+
 		//get default theme
 		if ($useCSS == "on") {
 			$query = "	SELECT
@@ -791,13 +796,13 @@ class settingsManager
 							".DBPREFIX."skins.id=".DBPREFIX."languages.themesid
 						WHERE
 							".DBPREFIX."languages.is_default = 'true';";
-	
+
 			$objResult = $objDatabase->Execute($query);
 	        if ($objResult) {
 	            $folderName = $objResult->fields['foldername'];
 	        }
-        }           
-		
+        }
+
 		return ($useCSS == "on" && !empty($folderName)) ? "FCKConfig.EditorAreaCSS = FCKConfig.BasePath + '../../../themes/".$folderName."/style.css';" : "";
     }
 }
