@@ -8,7 +8,7 @@
  */
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_TITLE'] = "Général";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION'] = "Nombre de caractères dans le texte d'introduction";
-$_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "Nombre de caractères dams le texte d'accroche. Pour afficher systématiquement le texte complet, saisir 0.";
+$_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "Nombre de caractères dans le texte d'accroche. Pour afficher systématiquement le texte complet, saisir 0.";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_COMMENTS_TITLE'] = "Commentaires";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_COMMENTS_ALLOW'] = "Autoriser commentaires";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_COMMENTS_ALLOW_HELP'] = "Permettre aux visiteurs d'écrire des commentaires sur vos articles.";
@@ -115,7 +115,7 @@ $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_DELETE_SUCCESSFULL'] = "Commentaire supprim
 $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_DELETE_JS'] = "Voulez-vous vraiment supprimer ce commentaire?";
 $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_DELETE_JS_ALL'] = "Voulez-vous vraiment supprimer tous les commentaires sélectionnés?";
 $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_ERROR'] = "Il n'existe aucun commentaire avec cet ID.";
-$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_STATUS'] = "Status utilisateur";
+$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_STATUS'] = "Statut utilisateur";
 $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_STATUS_REGISTERED'] = "Utilisateur inscrit";
 $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_STATUS_UNREGISTERED'] = "Utilisateur non inscrit";
 $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_NAME'] = "Identifiant";

@@ -42,6 +42,9 @@ News Manager
 - Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
   diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
 
+Modul: Blog
+- Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
+
 Modul: Digital Asset Management
 - Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
 - XHTML validierte Ausgabe.
