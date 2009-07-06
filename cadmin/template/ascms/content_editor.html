@@ -168,7 +168,7 @@ function DeselectAllList(CONTROL) {
 
 function deletePage(intId) {
 	if (confirm('{TXT_DELETE_MESSAGE}')) {
-		window.location.href = "index.php?cmd=content&act=delete&pageId="+intId;
+		window.location.href = "{DIRECTORY_INDEX}?cmd=content&act=delete&pageId="+intId;
 	}
 }
 
@@ -182,13 +182,13 @@ function showOrHide(strElement) {
 
 function deleteHistory(intId) {
 	if (confirm('{TXT_DELETE_HISTORY_MSG}')) {
-		window.location.replace("index.php?cmd=workflow&act=deleteHistory&hId="+intId);
+		window.location.replace("{DIRECTORY_INDEX}?cmd=workflow&act=deleteHistory&hId="+intId);
 	}
 }
 
 function activateHistory(intId) {
 	if (confirm('{TXT_ACTIVATE_HISTORY_MSG}')) {
-		window.location.replace("index.php?cmd=workflow&act=activateHistory&hId="+intId);
+		window.location.replace("{DIRECTORY_INDEX}?cmd=workflow&act=activateHistory&hId="+intId);
 	}
 }
 
@@ -284,30 +284,89 @@ function openWindow(theURL,winName,features){
 
 (function(){  //wrap in anonyomous function to avoid polluting the global namespace
 var getFrameContent = function(){
-    var $frame = $J('form[name=formContent] iframe').contents();
-    return $frame.find('textarea').val() || $frame.find('iframe').contents().find('body').html();
+    var $form = $J('form[name=formContent]');
+    if($J('iframe', $form).contents().length == 1 && $J('iframe:visible', $form).length == 1){
+        var $frame = $J('form[name=formContent] iframe').contents();
+        return $frame.find('textarea').length == 0
+                ? $frame.find('iframe').contents().find('body').html()
+                : $frame.find('textarea').val();
+    }else if($J('iframe:hidden', $form).length == 1){
+        return $J('textarea[name=html]', $form).val();
+    }
+}
+
+
+
+var previewContent = function(){
+    var content = getFrameContent();
+    var $form   = $J('form[name=formContent]');
+    var pageId  = $J('input[name=pageId]', $form).val();
+    var langId  = $J('#contentLanguages a.active', $form).attr('title').replace(/.*?(\d+)$/, '$1');
+    var cmd     = $J('input[name=command]', $form).val();
+    var section = $J('select[name=selectmodule] option:selected', $form).text();
+    var title   = $J('input[name=title]', $form).val();
+    previewWindow = null;
+
+    if(section == '{TXT_NO_MODULE}'){
+        section = '';
+    }
+    $J.ajax({
+        url: '{DIRECTORY_INDEX}?cmd=content&act=setPreviewContent',
+        type: 'POST',
+        async: false,
+        global: true,
+        cache: false,
+        data: {page: pageId , lang: langId, previewContent: content, previewTitle: title},
+        dataType: 'json',
+        success: function(data, textStatus){
+            previewWindow = window.open('../{DIRECTORY_INDEX}?frontPreview=1&page='+pageId+'&cmd='+cmd+'&section='+section+'&lang='+langId)
+        },
+        error: setDataFetchError
+    });
 }
 
 var setFrameContent = function(html){
+    $J('form[name=formContent] input[name=html]').val(html);
+    $J('form[name=formContent] textarea[name=html]').val(html);
     var $frame = $J('form[name=formContent] iframe').contents();
     $frame.find('textarea').length == 0
         ? $frame.find('iframe').contents().find('body').html(html)
         : $frame.find('textarea').val(html);
 }
 
+var setEditor = function(){
+    var $form = $J('form[name=formContent]');
+    var html  = getFrameContent();
+    if($J('input[name=expertmode]', $form).attr('checked')){
+        $frame  = $J('iframe', $form);
+        $J('iframe', $form).hide();
+        $J('textarea[name=html]', $form).show();
+    }else{
+        $frame  = $J('textarea[name=html]', $form);
+        $J('iframe', $form).show();
+        $frame.hide();
+    }
+    setFrameContent(html);
+}
+
 var submitForm = function(event){
     event.preventDefault();
+    selectTab('content1');
+    var pageId = $J('form[name=formContent] input[name=pageId]').val();
     $J('#contentLanguages li a').each(function(){
+        var langId   = $J(this).attr('title').replace(/.*?(\d+)$/, '$1');
+        var langName = $J(this).text();
         $J(this).click();
         if($J('form[name=formContent] input[name=newpage]').val() == ''){
             $J('form[name=formContent] input[name=newpage]').val('{TXT_CONTENT_NO_TITLE}')
         }
-        $J('form[name=formContent] input[name=html]').remove();
         $J('form[name=formContent]').find('select[name=assignedGroups\[\]]').children().attr('selected', 'selected');
         $J('form[name=formContent]').find('select[name=assignedBackendGroups\[\]]').children().attr('selected', 'selected');
+        $J('form[name=formContent]').find('select[name=assignedBlocks\[\]]').children().attr('selected', 'selected');
         $J('form[name=formContent]').serialize();
         var postData = $J('form[name=formContent]').serialize();
         var contentData = getFrameContent();
+//        $J('form[name=formContent] input[name=html]').remove();
         postData += '&'+$J.param({  html:   contentData,
                                     langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
                                     langName: $J(this).attr('title').replace(/(.*?)_\d+$/, '$1')});
@@ -321,7 +380,22 @@ var submitForm = function(event){
             success:     submitSuccess,
             error:       submitError,
             type:        'POST',
-            url:         'index.php?cmd=content&act={CONTENT_FORM_ACTION}'
+            url:         '{DIRECTORY_INDEX}?cmd=content&act={CONTENT_FORM_ACTION}'
+        });
+
+        $J.ajax({
+           url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=history',
+           type: 'POST',
+           async: true,
+           cache: false,
+           data: {page: pageId , lang: langId},
+           dataType: 'html',
+           success:
+               function(data){
+                    $J('#content5').data(langName, data);
+                    $J('#content5').html(data);
+               },
+           error: setDataFetchError
         });
     });
     return false;
@@ -345,7 +419,6 @@ var submitSuccess = function(data, textStatus){
     }else{
         $J('#errormessagetarget').append('<div id="okbox">{TXT_SUCCESS_PAGE_SAVED}'+lang+'</div>').find(':last-child')
                                 .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
-        //location.href='index.php?cmd=content&act=edit&pageId='+data.pageId;
     }
 }
 
@@ -357,10 +430,10 @@ var makeTabActive = function(aElement){
 
 var getTabData = function(a){
     var langName = $J(a).text();
-    if($J('form[name=formContent] select[name=category]').data(langName) !== undefined){  //return if we have already fetched the data for this language
+    if($J('form[name=formContent] select[name=category]').data(langName) !== undefined || $J(a).parent().is('li:first-child')){  //return if we have already have the data for this language
         return false;
     }
-    getNavMenu(a); //get nav menu dropdown
+    getNavMenu(a);
     if(location.href.match(/act=edit/)){//fill contents from DB if we are editiing
         getContentData(a);
     }
@@ -371,22 +444,32 @@ var swapContent = function(aElement){
     var lastActive = $J('#contentLanguages li a.active').text();
     var $container = $J('form[name=formContent]');
     var $iFrame    = $container.find('iframe');
-    $J('form[name=formContent] th').each(
+    var $html      = $container.find('input[name=html]');
+    var $textarea  = $container.find('textarea[name=html]');
+
+    getTabData(aElement); //get nav menu dropdown
+
+    if(location.href.match(/act=edit/)){
+        $J('#content5').data(lastActive, $J('#content5').html());
+        $J('#content5').html($J('#content5').data($a.text()));
+    }
+
+    $J('form[name=formContent] th:first-child').each(
         function(){
             $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$a.text()+')')
         }
     )
-
 
     $J('#aliastarget').data(lastActive, $J('#aliastarget').text());
     $J('#aliastarget').data($a.text()) === undefined
       ? $J('#aliastarget').text('')
       : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
 
-    $iFrame.data(lastActive, getFrameContent());    //save frame contents for current lang
-    $iFrame.data($a.text()) === undefined           //load frame contents for new lang
+    $html.data(lastActive, getFrameContent());    //save frame contents for current lang
+    $html.data($a.text()) === undefined           //load frame contents for new lang
       ?  setFrameContent('')
-      :  setFrameContent($iFrame.data($a.text()));
+      :  setFrameContent($html.data($a.text()));
+
 
     $container.find('input[type=text]').each(function(){ //swap input text contents
         $J(this).data(lastActive, $J(this).val());
@@ -428,15 +511,18 @@ var swapContent = function(aElement){
             );
     });
 
+    setEditor();
+
     $container.find('select').each(function(){
+        if($J(this).attr('name') === 'formContent_HistoryMultiAction'){return;}
         var $options = $J(this).find('option');
         var value    = $J(this).find('option:selected').val();
-        $J(this).data(lastActive, {'options': $options, 'value': value});
+        $J(this).data(lastActive, {options: $options, value: value});
         if($J(this).data($a.text()) === undefined){//set default options and value if not yet
             $J(this)
             .data($a.text(), {
-                                'options' : $J(this).data('default').options,
-                                'value'   : $J(this).data('default').value
+                                options : $J(this).data('default').options,
+                                value   : $J(this).data('default').value
                              }
             );
         }
@@ -495,9 +581,9 @@ var getContentData = function(a){
     var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
     var langName = $J(a).text();
     $J.ajax({
-       url: 'index.php?cmd=content&act=JSON&data=inputText',
+       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputText',
        type: 'POST',
-       async: false,
+       async: true,
        cache: false,
        data: {page: pageId , lang: langId, langName: langName},
        dataType: 'json',
@@ -505,9 +591,9 @@ var getContentData = function(a){
        error: setDataFetchError
     });
     $J.ajax({
-       url: 'index.php?cmd=content&act=JSON&data=inputRadio',
+       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputRadio',
        type: 'POST',
-       async: false,
+       async: true,
        cache: false,
        data: {page: pageId , lang: langId, langName: langName},
        dataType: 'json',
@@ -515,9 +601,9 @@ var getContentData = function(a){
        error: setDataFetchError
     });
     $J.ajax({
-       url: 'index.php?cmd=content&act=JSON&data=inputCheckbox',
+       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputCheckbox',
        type: 'POST',
-       async: false,
+       async: true,
        cache: false,
        data: {page: pageId , lang: langId, langName: langName},
        dataType: 'json',
@@ -525,16 +611,25 @@ var getContentData = function(a){
        error: setDataFetchError
     });
     $J.ajax({
-       url: 'index.php?cmd=content&act=JSON&data=select',
+       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=select',
        type: 'POST',
-       async: false,
+       async: true,
        cache: false,
        data: {page: pageId , lang: langId, langName: langName},
        dataType: 'json',
        success: setSelect,
        error: setDataFetchError
     });
-
+    $J.ajax({
+       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=history',
+       type: 'POST',
+       async: true,
+       cache: false,
+       data: {page: pageId , lang: langId},
+       dataType: 'html',
+       success: function(data){$J('#content5').data(langName, data)},
+       error: setDataFetchError
+    });
 }
 
 var setSelect = function(data, textStatus){
@@ -542,10 +637,11 @@ var setSelect = function(data, textStatus){
     var langName = data.langName;
     var $container = $J('form[name=formContent]');
     for(name in data){
+        if(name == 'langName'){ continue; }
         $container.find('select[name='+name+']')
         .data(langName, {
-                            'options' : data[name].options,
-                            'value'   : data[name].value
+                            options : data[name].options,
+                            value   : data[name].value
                         }
         );
     }
@@ -576,7 +672,7 @@ var setInputText = function(data, textStatus){
     var $container = $J('form[name=formContent]');
     for(name in data){
         if(name == 'content'){
-            $container.find('iframe').data(langName, data[name]);
+            $J('form[name=formContent] input[name=html]').data(langName, data[name]);
             continue;
         }
         if(name == 'alias'){
@@ -591,7 +687,7 @@ var getNavMenu = function(a){
     var pageId = $J('form[name=formContent] input[name=pageId]').val();
     var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
     $J.ajax({
-        url: 'index.php?cmd=content&act=JSON&data=navMenu',
+        url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=navMenu',
         type: 'POST',
         async: false,
         cache: false,
@@ -609,8 +705,8 @@ var setNavMenu = function(data, textStatus){
     var $container = $J('form[name=formContent]');
     $container.find('select[name=category]')
     .data(langName, {
-                        'options' : data['options'],
-                        'value'   : data['value']
+                        options : data['options'],
+                        value   : data['value']
                     }
     );
 }
@@ -630,15 +726,50 @@ var saveFormElementData = function(event, lang){
 
 $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
     c = function(str){window.status=str};
+    var $form = $('form[name=formContent]');
+
     //add global ajax evenet handlers
-    $("#ajaxbusy").bind("ajaxStart", function(){
+    $("#ajaxbusy")
+    .bind("ajaxStart", function(){
         window._CONTREXX_REQUEST_ACTIVE = true;
-        $(this).css({opacity: 0.5});
-        $(this).show();
-    }).bind("ajaxStop", function(){
+        $(this)
+         .css({opacity: 0.75})
+         .show();
+        $('#ajaxwait')
+         .show();
+    })
+    .bind("ajaxStop", function(){
         $(this).hide();
+        $('#ajaxwait').hide();
     });
-    $('form[name=formContent]').submit(submitForm);
+
+     //set default options
+    $('select', $form).each(function(){
+        var defaultOptions  = $(this).html();
+        var defaultValue    = $(this).find('option:selected').val();
+        $(this).data('default', {options: defaultOptions, value: defaultValue});
+    });
+
+    if($('input[name=expertmode]', $form).attr('checked')){
+        var $frame = $('textarea[name=html]', $form);
+        $frame.after('<input type="hidden" id="html" name="html" style="display:none" />');
+        $('input[name=html]', $form).val($frame.val());
+        $frame.after('<input  type="hidden" id="html___Config"\
+                              value="CustomConfigurationsPath=/editor/FCKeditorConfig.php?langId%3D%26absoluteURIs%3D" style="display:none" />\
+                      <iframe id="html___Frame" src="/editor/fckeditor/editor/fckeditor.html?InstanceName=html&amp;Toolbar=Default"\
+                              width="100%" height="450" frameborder="0" scrolling="no"></iframe>');
+        $frame  = $('iframe', $form);
+        $('iframe', $form).hide();
+    }else{
+        html = $('input[name=html]', $form).val();
+        var $frame  = $('iframe', $form);
+        $frame.after('<textarea style="height:450px;width:100%;" name="html">'+html+'</textarea>');
+        $('textarea[name=html]', $form).hide();
+    }
+
+    //swapContent($('#contentLanguages li a:first'));
+
+    //set language checkbox handlers
     $('#availableLanguages input').each(function(){
         var lang = $(this).next().text().replace(/\s\(.*?\)$/, '');
         $(this).bind('setData', lang, function(event){ //add custom event handler, not used yet
@@ -647,33 +778,23 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         $(this).bind('click', function(){
             switchLangTab(this);
         });
-
     });
 
     if(location.href.match(/act=edit/)){ //if we're editing get tab data for all tabs except first one, which is already loaded
-        $J('#contentLanguages li:not(:first-child) a').each(function(){
+        $('#contentLanguages li:not(:first-child) a').each(function(){
             getTabData(this);
         });
     }
-    //get default values for select elements
-    //commented code is buggy in ie, maybe useful for other browsers
-    //    $('form[name=formContent] select').each(function(){
-    //        var $defaultOptions = $(this).find('option');
-    //        var defaultValue    = $(this).find('option :selected').val();
-    //        $(this).data('default', {'options': $defaultOptions, 'value': defaultValue});
-    //    });
-     $('form[name=formContent] select').each(function(){
-        var defaultOptions  = $(this).html();
-        var defaultValue    = $(this).find('option:selected').val();
-        $(this).data('default', {'options': defaultOptions, 'value': defaultValue});
-    });
 
     //add click eventhandler to all new tab links
     $('#contentLanguages li a').live('click', function(){
         swapContent(this);
         makeTabActive(this);
     });
-    swapContent($('#contentLanguages li a:first'));
+
+    $('[name=expertmode]', $form).click(setEditor);
+    $('[name=preview]', $form).click(previewContent);
+    $form.submit(submitForm);
 });
 })();//execute anonymous function
 
@@ -684,9 +805,8 @@ if(typeof console === "undefined"){
 // ]]>
 </script>
 
-<div id="ajaxbusy">
-    <div>{TXT_CONTENT_PLEASE_WAIT}</div>
-</div>
+<div id="ajaxbusy"></div>
+<div id="ajaxwait"><img src="../../../../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}</p></div>
 
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />
@@ -702,8 +822,7 @@ if(typeof console === "undefined"){
 	</tr>
 </table>
 <br />
-
-<form name="formContent" method="post" action="index.php?cmd=content&amp;act={CONTENT_FORM_ACTION}">
+<form name="formContent" method="post" action="{DIRECTORY_INDEX}?cmd=content&amp;act={CONTENT_FORM_ACTION}">
 <input type="hidden" name="pageId" value="{CONTENT_CATID}" />
 <input type="hidden" name="date" value="{CONTENT_DATE}" />
 <input type="hidden" name="pagetitle" value="{CONTENT_TOP_TITLE}" />
@@ -795,13 +914,13 @@ if(typeof console === "undefined"){
 		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
 			<thead style="vertical-align:top;">
 				<tr>
-					<th>{TXT_CONTENT}</th>
+					<th>{TXT_CONTENT}</th><th style="text-align: right;">{TXT_SOURCE_MODE} <input type="checkbox" name="expertmode" value="y" {CONTENT_SHOW_EXPERTMODE} /></th>
 				</tr>
 				<tr class="row2">
-					<td>{CONTENT_HTML}</td>
+					<td colspan="2">{CONTENT_HTML}</td>
 				</tr>
 				<tr class="row1">
-					<td height="26">&nbsp;</td>
+					<td colspan="2" height="26">&nbsp;</td>
 				</tr>
 			</thead>
 		</table>
@@ -898,10 +1017,6 @@ if(typeof console === "undefined"){
 				</td>
 			</tr>
 			<tr class="row1">
-				<td>{TXT_SOURCE_MODE}</td>
-				<td><input type="checkbox" name="expertmode" value="y" {CONTENT_SHOW_EXPERTMODE} /></td>
-			</tr>
-			<tr class="row2">
 				<td>{TXT_CACHING_STATUS}</td>
 				<td><input type="checkbox" name="cachingstatus" value="1" {CONTENT_CACHING_STATUS} /></td>
 			</tr>
@@ -1167,6 +1282,7 @@ if(typeof console === "undefined"){
 	<!-- end content6 div -->
 	<br />
 	<input type="submit" name="Submit" value="{TXT_STORE}" />
+	<input type="button" name="preview" value="{TXT_THEME_PREVIEW}" />
 	<br />
 </form>
 

@@ -144,7 +144,6 @@ if (_DEBUG & DBG_ADODB_TRACE) {
 } else {
     DBG::disable_adodb_debug();
 }
-
 ## Test stuff..
 #if (isset($objDBG) && $objDBG instanceof DBG) {
 #    // see: http://www.firephp.org/HQ/Use.htm for firephp usage examples.
@@ -193,8 +192,6 @@ if (   isset($_GET['handler'])
         }
     }
 }
-
-
 
 $section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section']) : '';
 
@@ -271,8 +268,8 @@ $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
-$page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
-$history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
+$page    = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 0;
+$history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 
 $pageId  = $objInit->getPageID($page, $section, $command, $history);
 $is_home = $objInit->is_home;
@@ -286,13 +283,25 @@ require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
 //-------------------------------------------------------
 // Frontend Editing: Collect parameters
 //-------------------------------------------------------
-$frontEditing           = isset($_REQUEST['frontEditing']) ? intval($_GET['frontEditing']) : 0;
-$frontEditingContent    = isset($_REQUEST['previewContent']) ? preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' , html_entity_decode(stripslashes($_GET['previewContent']), ENT_QUOTES, CONTREXX_CHARSET)) : '';
+$frontEditing           = isset($_REQUEST['frontEditing']) ? intval($_REQUEST['frontEditing']) : 0;
+$frontPreview           = isset($_REQUEST['frontPreview']) ? intval($_REQUEST['frontPreview']) : 0;
+$frontEditingContent    = isset($_REQUEST['previewContent']) ? preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' , html_entity_decode(stripslashes($_REQUEST['previewContent']), ENT_QUOTES, CONTREXX_CHARSET)) : '';
 
 if($frontEditing) {
+    $_GET['cmd']     = $_REQUEST['cmd'];
+    $_GET['section'] = $_REQUEST['section'];
     $themesPages['index']   = '{CONTENT_FILE}';
     $themesPages['content'] = '{CONTENT_TEXT}';
     $themesPages['home']    = '{CONTENT_TEXT}';
+}
+
+if($frontPreview == 1){
+    $sessionObj=new cmsSession();
+    $_GET['cmd']     = $_REQUEST['cmd'];
+    $_GET['section'] = $_REQUEST['section'];
+    $langId          = intval($_REQUEST['lang']);
+    $page_title      = $_SESSION['content']['previewTitle'];
+    $page_content    = '<div id="fe_PreviewContent">'.$_SESSION['content']['previewContent'].'</div>';
 }
 
 $query="SELECT c.content,
@@ -315,7 +324,7 @@ $query="SELECT c.content,
            AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
            AND n.activestatus='1'
            AND n.is_validated='1'
-           AND c.lang_id=".FRONTEND_LANG_ID);
+           AND c.lang_id=".(!empty($langId) ? $langId : FRONTEND_LANG_ID));
 $objResult = $objDatabase->SelectLimit($query, 1);
 
 if ($objResult === false || $objResult->EOF) {
@@ -328,8 +337,14 @@ if ($objResult === false || $objResult->EOF) {
     exit;
 } else {
     //Frontend Editing: content has to be replaced with preview-code if needed.
-    $page_content   = ($frontEditing) ? ( ($frontEditingContent != '') ? $frontEditingContent : $objResult->fields["content"]) : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>';
-    $page_title     = htmlentities($objResult->fields["title"], ENT_QUOTES, CONTREXX_CHARSET);
+    if($frontPreview != 1){
+        $page_content   = ($frontEditing)
+                            ? ( ($frontEditingContent != '')
+                                ? $frontEditingContent
+                                : $objResult->fields["content"])
+                            : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>';
+        $page_title     = htmlentities($objResult->fields["title"], ENT_QUOTES, CONTREXX_CHARSET);
+    }
     $page_catname   = $objResult->fields["catname"];
     $page_metatitle = htmlentities($objResult->fields["metatitle"], ENT_QUOTES, CONTREXX_CHARSET);
     $page_keywords  = htmlentities($objResult->fields["metakeys"], ENT_QUOTES, CONTREXX_CHARSET);
@@ -354,11 +369,12 @@ if ($objResult === false || $objResult->EOF) {
     }
 }
 
+
 //-------------------------------------------------------
 // authentification for protected pages
 //-------------------------------------------------------
 if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_REQUEST['section']) || $_REQUEST['section'] != 'login')) {
-    $sessionObj=new cmsSession();
+    if (!isset($sessionObj) || !is_object($sessionObj)){ $sessionObj=new cmsSession(); }
     $sessionObj->cmsSessionStatusUpdate("frontend");
 
     $objFWUser = FWUser::getFWUserObject();
@@ -382,6 +398,10 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
         header ("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
         exit;
     }
+}
+
+if( ($frontEditing || $frontPreview) && (!$objFWUser->objUser->login() || !Permission::hasAllAccess()) ){
+    $page_content = '';
 }
 
 if (!empty($page_redirect)){
@@ -953,7 +973,6 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 $modulespath = 'modules/blog/homeContent.class.php';
 if (file_exists($modulespath)) {
-
     /**
      * @ignore
      */

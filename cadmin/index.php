@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Modul Admin Index
  *
@@ -23,7 +22,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('../lib/DBG.php');
-define('_DEBUG', DBG_NONE);
+define('_DEBUG', DBG_LOG_FIREPHP);
 DBG::__internal__setup();
 
 $startTime = explode(' ', microtime());
@@ -312,6 +311,7 @@ if (isset($_POST['redirect']) && preg_match('/\.php/',($_POST['redirect']))) {
 // Site start
 //-------------------------------------------------------
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
+    $standAlone = false;
     $objTemplate->loadTemplateFile('index.html');
     if (Permission::checkAccess(35, 'static', true)) {
     $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
@@ -323,6 +323,9 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         )
     );
     $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+}else{
+    $standAlone = true;
+    $objTemplate->loadTemplateFile('content_master.html');
 }
 
 switch ($plainCmd) {
@@ -1078,9 +1081,11 @@ switch ($plainCmd) {
 $finishTime = explode(' ', microtime());
 $parsingTime = round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$startTime[0] + (float)$startTime[1]), 5);
 
-$objAdminNav = new adminMenu();
-$objAdminNav->getAdminNavbar();
-$objTemplate->setVariable(array(
+if(!$standAlone){
+    $objAdminNav = new adminMenu();
+    $objAdminNav->getAdminNavbar();
+}
+$objTemplate->setGlobalVariable(array(
 'SUB_MENU_TITLE' => $subMenuTitle,
 'FRONTEND_LANG_MENU' => $objInit->getUserFrontendLangMenu(),
 'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
@@ -1094,7 +1099,8 @@ $objTemplate->setVariable(array(
     // Mind: The module index is not used in any non-module template
     // for the time being, but is provided for future use and convenience.
     'MODULE_INDEX'         => MODULE_INDEX,
-    'JAVASCRIPT'            => JS::getCode()
+    'JAVASCRIPT'            => JS::getCode(),
+    'DIRECTORY_INDEX'       => CONTREXX_DIRECTORY_INDEX
 ));
 
 if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {

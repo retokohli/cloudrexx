@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -545,7 +544,7 @@ class ContactManager extends ContactLib
         global $objDatabase;
 
         $objDatabase->Execute("
-            DELETE FROM `".DBPREFIX."module_contact_recipient` 
+            DELETE FROM `".DBPREFIX."module_contact_recipient`
             WHERE `id_form` = ". intval($_REQUEST['formId'])
         );
 
@@ -748,6 +747,19 @@ class ContactManager extends ContactLib
             'CONTACT_FORM_SEND_COPY_YES'                    => $formSendCopy ? 'checked="checked"' : '',
             'CONTACT_FORM_SEND_COPY_NO'                     => $formSendCopy ? '' : 'checked="checked"',
         ));
+    }
+
+    function _getContentSiteLang($formId)
+    {
+        global $objDatabase;
+
+        $objContentSite = $objDatabase->SelectLimit("SELECT `lang` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
+        if ($objContentSite !== false) {
+            if ($objContentSite->RecordCount() == 1) {
+                return $objContentSite->fields['lang'];
+            }
+        }
+        return false;
     }
 
     function _getContentSiteId($formId)
@@ -958,13 +970,15 @@ class ContactManager extends ContactLib
 
         $formId = intval($_REQUEST['formId']);
         $pageId = $this->_getContentSiteId($formId);
+        $langId = $this->_getContentSiteLang($formId);
 
         if ($pageId != 0) {
             if ($this->boolHistoryEnabled) {
                 $objResult = $objDatabase->Execute('SELECT  id
                                                     FROM    '.DBPREFIX.'content_navigation_history
                                                     WHERE   is_active="1" AND
-                                                            catid='.$pageId.'
+                                                            catid='.$pageId.' AND
+                                                            `lang`='.$langId.'
                                                     LIMIT   1
                                                 ');
                 $objDatabase->Execute(' INSERT
@@ -976,7 +990,8 @@ class ContactManager extends ContactLib
                 $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
                                         SET     changelog='.time().'
                                         WHERE   catid='.$pageId.' AND
-                                                is_active="1"
+                                                is_active="1" AND
+                                                `lang`='.$langId.'
                                         LIMIT   1
                                     ');
             }
@@ -993,8 +1008,8 @@ class ContactManager extends ContactLib
             }
 
             if ($boolDelete) {
-                $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId;
-                $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId;
+                $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId.' AND `lang_id`='.$langId;
+                $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId.' AND `lang`='.$langId;
                 if ($objDatabase->Execute($q1) === false || $objDatabase->Execute($q2) === false) {
                     $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
                 } else {
@@ -1025,7 +1040,7 @@ class ContactManager extends ContactLib
             while ($row = $objResult->FetchRow()) {
                 $objSubResult = $objDatabase->Execute(' SELECT  catid
                                                         FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE   catid='.$row['parcat'].'
+                                                        WHERE   catid='.$row['parcat'].' AND `lang`='.$row['lang'].'
                                                         LIMIT   1
                                                     ');
                 if ($objSubResult->RecordCount() != 1) {
@@ -1040,7 +1055,7 @@ class ContactManager extends ContactLib
                     $subSubRow = $objSubSubResult->FetchRow();
                     $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
                                             SET     parcat='.$subSubRow['catid'].'
-                                            WHERE   catid='.$row['catid'].'
+                                            WHERE   catid='.$row['catid'].' AND `lang`='.$row['lang'].'
                                             LIMIT   1
                                         ');
                 }
@@ -1617,8 +1632,14 @@ class ContactManager extends ContactLib
 
             $currentTime = time();
             $content = addslashes($this->_getSourceCode($formId));
-
+            if(!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0){
+                $pageId = intval($_REQUEST['pageId']);
+            }else{
+                $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
+                $pageId = $objRS->fields['nextId'];
+            }
             $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
+                                        catid,
                                         catname,
                                         displayorder,
                                         displaystatus,
@@ -1628,6 +1649,7 @@ class ContactManager extends ContactLib
                                         lang,
                                         module
                                         ) VALUES(
+                                        '".$pageId."',
                                         '".$catname."',
                                         '1',
                                         'on',
@@ -1637,15 +1659,16 @@ class ContactManager extends ContactLib
                                         '".$_FRONTEND_LANGID."',
                                         '6')";
             $objDatabase->Execute($q1);
-            $pageId = $objDatabase->Insert_ID();
 
-            $q2 ="INSERT INTO ".DBPREFIX."content (id,
+            $q2 ="INSERT INTO ".DBPREFIX."content ( id,
+                                                    lang_id,
                                                     content,
                                                     title,
                                                     metatitle,
                                                     metadesc,
                                                     metakeys)
                                             VALUES (".$pageId.",
+                                                    ".$_FRONTEND_LANGID.",
                                                     '".$content."',
                                                     '".$catname."',
                                                     '".$catname."',
@@ -1659,7 +1682,7 @@ class ContactManager extends ContactLib
                     $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
                                             SET     is_validated="0",
                                                     activestatus="0"
-                                            WHERE   catid='.$pageId.'
+                                            WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID.'
                                             LIMIT   1
                                         ');
                 }
@@ -1669,7 +1692,7 @@ class ContactManager extends ContactLib
                                                                 frontend_access_id,
                                                                 backend_access_id
                                                         FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE   catid='.$pageId.'
+                                                        WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID.'
                                                         LIMIT   1
                                                     ');
                     $objDatabase->Execute(' INSERT
@@ -1689,6 +1712,7 @@ class ContactManager extends ContactLib
                                             INTO    '.DBPREFIX.'content_history
                                             SET     id='.$intHistoryId.',
                                                     page_id='.$pageId.',
+                                                    lang_id="'.$_FRONTEND_LANGID.'",
                                                     content="'.$content.'",
                                                     title="'.$catname.'",
                                                     metatitle="'.$catname.'",
@@ -1741,7 +1765,7 @@ class ContactManager extends ContactLib
             if ($boolDirectUpdate) {
                 $objDatabase->Execute("UPDATE   ".DBPREFIX."content
                                        SET      content='".$content."'
-                                        WHERE   id=".$pageId);
+                                        WHERE   id=".$pageId.' AND `lang_id`='.$_FRONTEND_LANGID);
             }
 
             if ($parcat!=$pageId) {
@@ -1751,7 +1775,7 @@ class ContactManager extends ContactLib
                     $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
                                             SET     username='".$objFWUser->objUser->getUsername()."',
                                                     changelog='".$currentTime."'
-                                            WHERE catid=".$pageId);
+                                            WHERE catid=".$pageId.' AND `lang`='.$_FRONTEND_LANGID);
                 }
             } else {
                 //create copy of parcat (for history)
@@ -1760,7 +1784,7 @@ class ContactManager extends ContactLib
                     $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
                                             SET     username='".$objFWUser->objUser->getUsername()."',
                                                     changelog='".$currentTime."'
-                                            WHERE   catid=".$pageId);
+                                            WHERE   catid=".$pageId.' AND `lang`='.$_FRONTEND_LANGID);
                 }
             }
 
@@ -1777,13 +1801,13 @@ class ContactManager extends ContactLib
                                                             frontend_access_id,
                                                             backend_access_id
                                                     FROM    '.DBPREFIX.'content_navigation
-                                                    WHERE   catid='.$pageId.'
+                                                    WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID.'
                                                     LIMIT   1
                                                 ');
                 if ($boolDirectUpdate) {
                     $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
                                             SET     is_active="0"
-                                            WHERE   catid='.$pageId);
+                                            WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID);
                 }
 
                 $objDatabase->Execute(' INSERT
@@ -1803,6 +1827,7 @@ class ContactManager extends ContactLib
                                         INTO    '.DBPREFIX.'content_history
                                         SET     id='.$intHistoryId.',
                                                 page_id='.$pageId.',
+                                                lang_id='.$_FRONTEND_LANGID.',
                                                 content="'.$content.'",
                                                 title="'.$catname.'",
                                                 metatitle="'.$catname.'",
@@ -1862,9 +1887,9 @@ class ContactManager extends ContactLib
                     $thxId = $objDatabase->Insert_ID();
 
                     $thxQuery = "INSERT INTO ".DBPREFIX."content
-                                 (id, content, title, metatitle, metadesc, metakeys, expertmode)
+                                 (id, lang_id, content, title, metatitle, metadesc, metakeys, expertmode)
                                  VALUES
-                                 (".$thxId.", '".$content."', '".$title."', '".$title."', '".$title."', '".$title."',
+                                 (".$thxId.", ".$_FRONTEND_LANGID.", '".$content."', '".$title."', '".$title."', '".$title."', '".$title."',
                                   '".$expertmode."')";
 
                     $objDatabase->Execute($thxQuery);
