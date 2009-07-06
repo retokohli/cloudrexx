@@ -385,13 +385,22 @@ class ecard
         $width_org = $size[0];
         $height_org = $size[1];
         /* Set new height / width */
-        if ($width_org < $height_org) {
-            $width_new = $maxWidth;
-            $height_new = intval($height_org*$width_new/$width_org);
+        if ($width_org > $maxWidth || $height_org > $maxHeight) {
+            $width_zoom = $maxWidth / $width_org ;
+            $height_zoom =  $maxHeight / $height_org;
+
+            if ($width_zoom < $height_zoom) {
+                $width_new = $maxWidth;
+                $height_new = intval($height_org*$width_zoom);
+            } else {
+                $height_new = $maxHeight;
+                $width_new = intval($width_org*$height_zoom);
+            }
         } else {
-            $height_new = $maxHeight;
-            $width_new = intval($width_org*$height_new/$height_org);
+            $width_new = $width_org;
+            $height_new = $height_org;
         }
+
         /* Resample */
         $motiveOptimizedFile = imagecreatetruecolor($width_new, $height_new);
         /* Save the new file */
