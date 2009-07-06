@@ -1001,7 +1001,7 @@ class BlogLibrary {
 
                     foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                         $objRSSWriter->addItem(
-                            htmlspecialchars($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
+                            html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
                             $strItemLink.$intEntryId,
                             htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1146,7 +1146,7 @@ class BlogLibrary {
                                 if ($this->categoryMatches($intCategoryId, $arrEntryValues['categories'][$intLanguageId])) {
                                     //Message is in category, add to feed
                                     $objRSSWriter->addItem(
-                                        htmlspecialchars($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
+                                        html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
                                         $strItemLink.$intEntryId,
                                         htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                                         htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
