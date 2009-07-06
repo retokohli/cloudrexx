@@ -686,7 +686,7 @@ class ContentManager
             // Never used
             //$arrAssignedFrontendGroups = $this->_getAssignedGroups('frontend');
             $objTemplate->setVariable(array(
-                'CONTENT_HTML'        => get_wysiwyg_editor('html', $contenthtml).'<text',
+                'CONTENT_HTML'        => get_wysiwyg_editor('html', $contenthtml),
                 'CONTENT_MODULE_MENU' => $this->_getModuleMenu(''),
                 'CONTENT_DATE'        => date('Y-m-d'),
                 'CONTENT_TABLE_STYLE'              => $tablestatus
