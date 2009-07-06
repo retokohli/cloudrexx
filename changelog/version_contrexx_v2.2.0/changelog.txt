@@ -64,6 +64,9 @@ News Manager
 Modul: Adressverzeichnis
 - Die Suche funktioniert in jedem Bereich.
 
+Modul: Bildergalerie
+- Die ToolTips der Bilder sind korrekt.
+
 Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
 - Anführungszeichen werden bei Kommentaren akzeptiert.
