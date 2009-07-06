@@ -66,6 +66,7 @@ Modul: Adressverzeichnis
 
 Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
+- Anführungszeichen werden bei Kommentaren akzeptiert.
 
 Modul: Digital Asset Management
 - Die Benutzerdefinierte Sortierung funktioniert.
