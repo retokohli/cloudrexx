@@ -78,10 +78,21 @@ class JS
      * @var array
      */
     private static $available = array(
+        'frontendediting' => array(
+            'jsfiles' =>    array(
+                'core_modules/frontendEditing/js/frontEditing.js'
+            )
+        ),
         'prototype'     => array(
             'jsfiles'       => array(
                 'lib/javascript/prototype.js'
             ),
+        ),
+        'jquery'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery-1.3.2.min.js'
+            ),
+            'specialcode'  => 'var $J = jQuery.noConflict();',
         ),
         'scriptaculous' => array(
             'jsfiles'       => array(
