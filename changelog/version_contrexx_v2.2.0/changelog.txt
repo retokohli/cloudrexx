@@ -71,6 +71,9 @@ Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
 - Anführungszeichen werden bei Kommentaren akzeptiert.
 
+Modul: E-Card
+- Die Bilder werden gemäss den Einstellungen verkleinert.
+
 Modul: Digital Asset Management
 - Die Benutzerdefinierte Sortierung funktioniert.
 - Kategorien können keinen Unterkategorien zugeordnet werden.
