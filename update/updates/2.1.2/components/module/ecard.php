@@ -2,7 +2,7 @@
 
 function _ecardUpdate()
 {
-    global $objDatabase;
+    global $objDatabase, $_ARRAYLANG, $_CORELANG;
     try{
         UpdateUtil::table(
             DBPREFIX . 'module_ecard_ecards',
@@ -59,6 +59,40 @@ function _ecardUpdate()
             if (! $objDatabase->Execute($query)) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
+    }
+
+	/************************************************
+	* BUGFIX:	Set write access to the image dir   *
+	************************************************/
+    $arrImagePaths = array(
+        array(ASCMS_DOCUMENT_ROOT.'/images/modules/ecard', ASCMS_PATH_OFFSET.'/images/modules/ecard'),
+        array(ASCMS_ECARD_OPTIMIZED_PATH, ASCMS_ECARD_OPTIMIZED_WEB_PATH),
+        array(ASCMS_ECARD_SEND_ECARDS_PATH, ASCMS_ECARD_SEND_ECARDS_WEB_PATH),
+        array(ASCMS_ECARD_THUMBNAIL_PATH, ASCMS_ECARD_THUMBNAIL_WEB_PATH)
+    );
+
+	require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
+	$objFile = new File();
+
+    foreach ($arrImagePaths as $arrImagePath) {
+        if (is_writeable($arrImagePath[0]) || $objFile->setChmod($arrImagePath[0], $arrImagePath[1], '')) {
+            if ($mediaDir = @opendir($arrImagePath[0])) {
+                while($file = readdir($mediaDir)) {
+                    if ($file != '.' && $file != '..') {
+                        if (!is_writeable($arrImagePath[0].'/'.$file) && !$objFile->setChmod($arrImagePath[0].'/', $arrImagePath[1].'/', $file)) {
+                            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], $arrImagePath[0].'/'.$file, $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], $arrImagePath[0].'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+                return false;
+            }
+        } else {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], $arrImagePath[0].'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+            return false;
+        }
     }
 
     return true;
