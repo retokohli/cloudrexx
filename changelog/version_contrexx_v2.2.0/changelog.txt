@@ -64,6 +64,9 @@ News Manager
 Modul: Adressverzeichnis
 - Die Suche funktioniert in jedem Bereich.
 
+Modul: Blog
+- Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
+
 Modul: Digital Asset Management
 - Die Benutzerdefinierte Sortierung funktioniert.
 - Kategorien können keinen Unterkategorien zugeordnet werden.
