@@ -1316,7 +1316,7 @@ class Immo extends ImmoLib{
     																AND a.field_id = (
     																	SELECT field_id
     																	FROM ".DBPREFIX."module_immo_fieldname
-    																	WHERE name = 'ausl�nder-bewilligung'
+    																	WHERE name = 'ausländer-bewilligung'
     																	AND lang_id = 1 )
     																AND a.lang_id = 1 )
                     LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
@@ -1348,7 +1348,7 @@ class Immo extends ImmoLib{
         																AND a.field_id = (
         																	SELECT field_id
         																	FROM ".DBPREFIX."module_immo_fieldname
-        																	WHERE name = 'ausl�nder-bewilligung'
+        																	WHERE name = 'ausländer-bewilligung'
         																	AND lang_id = 1 )
         																AND a.lang_id = 1 )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
@@ -1562,7 +1562,7 @@ class Immo extends ImmoLib{
         																AND a.field_id = (
         																	SELECT field_id
         																	FROM ".DBPREFIX."module_immo_fieldname
-        																	WHERE name = 'ausl�nder-bewilligung'
+        																	WHERE name = 'ausländer-bewilligung'
         																	AND lang_id = 1 )
         																AND a.lang_id = 1 )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
@@ -1597,7 +1597,7 @@ class Immo extends ImmoLib{
         																AND a.field_id = (
         																	SELECT field_id
         																	FROM ".DBPREFIX."module_immo_fieldname
-        																	WHERE name = 'ausl�nder-bewilligung'
+        																	WHERE name = 'ausländer-bewilligung'
         																	AND lang_id = 1 )
         																AND a.lang_id = 1 )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
