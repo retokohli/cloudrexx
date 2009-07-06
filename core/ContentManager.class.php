@@ -2347,7 +2347,7 @@ ON DUPLICATE KEY
                 if ($selectedid==$key) {
                     $selected= 'selected="selected"';
                 }
-                $result.= '<option value="'.$key.'" '.$selected.($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true) ? ' disabled="disabled" style="color:graytext;"' : null).'>'.$output.$val['name'].'</option>'."\n";
+                $result.= '<option value="'.$key.'" '.$selected.($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true) ? ' disabled="disabled" style="color:graytext;"' : null).'>'.$output.(empty($val['name']) ? '&nbsp;' : $val['name']).'</option>'."\n";
                 if (isset($this->_navtable[$key])) {
                     $result.= $this->_getNavigationMenu($key,$level+1,$selectedid);
                 }
