@@ -295,80 +295,81 @@ if($frontEditing) {
     $themesPages['home']    = '{CONTENT_TEXT}';
 }
 
-if($frontPreview == 1){
-    $sessionObj=new cmsSession();
-    $_GET['cmd']     = $_REQUEST['cmd'];
-    $_GET['section'] = $_REQUEST['section'];
-    $langId          = intval($_REQUEST['lang']);
-    $page_title      = $_SESSION['content']['previewTitle'];
-    $page_content    = '<div id="fe_PreviewContent">'.$_SESSION['content']['previewContent'].'</div>';
-}
-
-$query="SELECT c.content,
-               c.title,
-               n.catname,
-               c.redirect,
-               c.metatitle,
-               c.metadesc,
-               c.metakeys,
-               c.metarobots,
-               c.css_name,
-               n.protected,
-               n.frontend_access_id
-               ".(!empty($history) ? ',n.catid' : '')."
-          FROM ".DBPREFIX.(empty($history) ? 'content' : 'content_history')." AS c,
-               ".DBPREFIX.(empty($history) ? 'content_navigation' : 'content_navigation_history')." AS n
-         WHERE c.id = ".(empty($history) ? $pageId : $history)."
-           AND c.id = ".(!empty($history) ? 'n.id' : "n.catid
-           AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
-           AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
-           AND n.activestatus='1'
-           AND n.is_validated='1'
-           AND c.lang_id=".(!empty($langId) ? $langId : FRONTEND_LANG_ID));
-$objResult = $objDatabase->SelectLimit($query, 1);
-
-if ($objResult === false || $objResult->EOF) {
-    if ($plainSection == "error") {
-        // If the error module is not installed, show this
-        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-    } else {
-        header("Location: index.php?section=error&id=404");
+if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
+    if($frontPreview == 1){
+        $sessionObj=new cmsSession();
+        $_GET['cmd']     = $_REQUEST['cmd'];
+        $_GET['section'] = $_REQUEST['section'];
+        $langId          = intval($_REQUEST['lang']);
+        $page_title      = $_SESSION['content']['previewTitle'];
+        $page_content    = '<div id="fe_PreviewContent">'.$_SESSION['content']['previewContent'].'</div>';
     }
-    exit;
-} else {
-    //Frontend Editing: content has to be replaced with preview-code if needed.
-    if($frontPreview != 1){
-        $page_content   = ($frontEditing)
-                            ? ( ($frontEditingContent != '')
-                                ? $frontEditingContent
-                                : $objResult->fields["content"])
-                            : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>';
-        $page_title     = htmlentities($objResult->fields["title"], ENT_QUOTES, CONTREXX_CHARSET);
-    }
-    $page_catname   = $objResult->fields["catname"];
-    $page_metatitle = htmlentities($objResult->fields["metatitle"], ENT_QUOTES, CONTREXX_CHARSET);
-    $page_keywords  = htmlentities($objResult->fields["metakeys"], ENT_QUOTES, CONTREXX_CHARSET);
-    $page_robots    = $objResult->fields["metarobots"];
-    $pageCssName    = $objResult->fields["css_name"];
-    $page_desc      = htmlentities($objResult->fields["metadesc"], ENT_QUOTES, CONTREXX_CHARSET);
-    $page_redirect  = $objResult->fields["redirect"];
-    $page_protected = $objResult->fields["protected"];
-    $page_access_id = $objResult->fields["frontend_access_id"];
-    $page_template  = $themesPages['content'];
 
-    if ($history) {
-        $objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0 AND lang='.FRONTEND_LANG_ID, 1);
-        if ($objPageProtection !== false) {
-            if ($objPageProtection->RecordCount() == 1) {
-                $page_protected = 1;
-                $page_access_id = $objPageProtection->fields['backend_access_id'];
-            }
+    $query="SELECT c.content,
+                   c.title,
+                   n.catname,
+                   c.redirect,
+                   c.metatitle,
+                   c.metadesc,
+                   c.metakeys,
+                   c.metarobots,
+                   c.css_name,
+                   n.protected,
+                   n.frontend_access_id
+                   ".(!empty($history) ? ',n.catid' : '')."
+              FROM ".DBPREFIX.(empty($history) ? 'content' : 'content_history')." AS c,
+                   ".DBPREFIX.(empty($history) ? 'content_navigation' : 'content_navigation_history')." AS n
+             WHERE c.id = ".(empty($history) ? $pageId : $history)."
+               AND c.id = ".(!empty($history) ? 'n.id' : "n.catid
+               AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
+               AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
+               AND n.activestatus='1'
+               AND n.is_validated='1'
+               AND c.lang_id=".(!empty($langId) ? $langId : FRONTEND_LANG_ID));
+    $objResult = $objDatabase->SelectLimit($query, 1);
+
+    if ($objResult === false || $objResult->EOF) {
+        if ($plainSection == "error") {
+            // If the error module is not installed, show this
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         } else {
-            $page_protected = 1;
+            header("Location: index.php?section=error&id=404");
+        }
+        exit;
+    } else {
+        //Frontend Editing: content has to be replaced with preview-code if needed.
+        if($frontPreview != 1){
+            $page_content   = ($frontEditing)
+                                ? ( ($frontEditingContent != '')
+                                    ? $frontEditingContent
+                                    : $objResult->fields["content"])
+                                : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>';
+            $page_title     = htmlentities($objResult->fields["title"], ENT_QUOTES, CONTREXX_CHARSET);
+        }
+        $page_catname   = $objResult->fields["catname"];
+        $page_metatitle = htmlentities($objResult->fields["metatitle"], ENT_QUOTES, CONTREXX_CHARSET);
+        $page_keywords  = htmlentities($objResult->fields["metakeys"], ENT_QUOTES, CONTREXX_CHARSET);
+        $page_robots    = $objResult->fields["metarobots"];
+        $pageCssName    = $objResult->fields["css_name"];
+        $page_desc      = htmlentities($objResult->fields["metadesc"], ENT_QUOTES, CONTREXX_CHARSET);
+        $page_redirect  = $objResult->fields["redirect"];
+        $page_protected = $objResult->fields["protected"];
+        $page_access_id = $objResult->fields["frontend_access_id"];
+        $page_template  = $themesPages['content'];
+
+        if ($history) {
+            $objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0 AND lang='.FRONTEND_LANG_ID, 1);
+            if ($objPageProtection !== false) {
+                if ($objPageProtection->RecordCount() == 1) {
+                    $page_protected = 1;
+                    $page_access_id = $objPageProtection->fields['backend_access_id'];
+                }
+            } else {
+                $page_protected = 1;
+            }
         }
     }
 }
-
 
 //-------------------------------------------------------
 // authentification for protected pages
@@ -405,6 +406,10 @@ if( ($frontEditing || $frontPreview) && (!$objFWUser->objUser->login() || !Permi
 }
 
 if (!empty($page_redirect)){
+    if (strpos($page_redirect, 'langId') === false) {
+        $page_redirect .= (strpos($page_redirect, '?') ? '&' : '?').'langId='.LANG_ID;
+    }
+
     header("Location: " . $page_redirect);
     exit;
 }

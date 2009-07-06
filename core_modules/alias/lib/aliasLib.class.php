@@ -73,7 +73,7 @@ class aliasLib
 
     function _getAliases($limit = null, $allLanguages = false)
     {
-        global $objDatabase, $_CONFIG;
+        global $objDatabase, $_CONFIG, $objLanguage;
 
         $arrAliases = array();
         $arrLocalAliases = array();
@@ -86,7 +86,8 @@ class aliasLib
                 t.`url`       AS targetUrl,
                 s.`id`        AS sourceId,
                 s.`isdefault` AS isdefault,
-                s.`url`       AS sourceUrl
+                s.`url`       AS sourceUrl,
+                s.`lang_id`   AS langId
             FROM `".DBPREFIX."module_alias_target` AS t
             INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`"
             .(!$allLanguages ? "WHERE s.`lang_id` = ".$this->langId : ' ')."
@@ -100,8 +101,8 @@ class aliasLib
 
         if ($objAlias !== false) {
             while (!$objAlias->EOF) {
-                if (!isset($arrAliases[$objAlias->fields['targetId']])) {
-                    $arrAliases[$objAlias->fields['targetId']] = array(
+                if (!isset($arrAliases[$objAlias->fields['langId']][$objAlias->fields['targetId']])) {
+                    $arrAliases[$objAlias->fields['langId']][$objAlias->fields['targetId']] = array(
                         'type'        => $objAlias->fields['targetType'],
                         'url'        => $objAlias->fields['targetUrl'],
                         'sources'    => array()
@@ -111,7 +112,7 @@ class aliasLib
                         $arrLocalAliases[intval($objAlias->fields['targetUrl'])] = $objAlias->fields['targetId'];
                     }
                 }
-                array_push($arrAliases[$objAlias->fields['targetId']]['sources'], array(
+                array_push($arrAliases[$objAlias->fields['langId']][$objAlias->fields['targetId']]['sources'], array(
                     'id'        => $objAlias->fields['sourceId'],
                     'isdefault' => $objAlias->fields['isdefault'],
                     'url'        => $objAlias->fields['sourceUrl']
@@ -127,18 +128,23 @@ class aliasLib
                         n.`catid`,
                         n.`catname`,
                         n.`cmd`,
+                        n.`lang`,
                         m.`name`
                     FROM
                         `".DBPREFIX."content_navigation` AS n
                     LEFT OUTER JOIN `".DBPREFIX."modules` AS m ON m.`id` = n.`module`
-                    WHERE n.`catid` = ".implode(' OR n.`catid` = ', $arrLocalAliasIds)." AND n.`lang` = ".$this->langId
+                    WHERE (n.`catid` = ".implode(' OR n.`catid` = ', $arrLocalAliasIds).")".(!$allLanguages ? " AND n.`lang` = ".$this->langId : ' ')
                 );
                 if ($objAlias !== false) {
                     while (!$objAlias->EOF) {
-                        $arrAliases[$arrLocalAliases[$objAlias->fields['catid']]]['title'] = $objAlias->fields['catname'];
-                        $arrAliases[$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET.'/index.php'
-                            .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
-                            .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
+                        if (isset($arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]])) {
+                            $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['title'] = $objAlias->fields['catname'];
+                            $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET
+                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($objAlias->fields['lang'], 'lang') : null)
+                                .'/'.CONTREXX_DIRECTORY_INDEX
+                                .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
+                                .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
+                        }
 
                         $objAlias->MoveNext();
                     }
@@ -180,7 +186,8 @@ class aliasLib
                 t.`url` AS targetUrl,
                 s.`id` AS sourceId,
                 s.`isdefault` AS isdefault,
-                s.`url` AS sourceUrl
+                s.`url` AS sourceUrl,
+                s.`lang_id` AS langId
             FROM `".DBPREFIX."module_alias_target` AS t
             LEFT OUTER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
             WHERE t.`id` = ".$aliasId." AND s.`lang_id` = ".$this->langId."
@@ -191,9 +198,10 @@ class aliasLib
             while (!$objAlias->EOF) {
                 if (!isset($arrAlias)) {
                     $arrAlias = array(
-                        'type'        => $objAlias->fields['targetType'],
+                        'type'       => $objAlias->fields['targetType'],
                         'url'        => $objAlias->fields['targetUrl'],
-                        'sources'    => array()
+                        'sources'    => array(),
+                        'lang'       => $objAlias->fields['langId']
                     );
                 }
 
@@ -216,7 +224,7 @@ class aliasLib
 
     function _setAliasTarget(&$arrAlias)
     {
-        global $objDatabase;
+        global $objDatabase, $objLanguage, $_CONFIG;
 
         if ($arrAlias['type'] == 'local') {
             $objAlias = $objDatabase->SelectLimit("
@@ -232,7 +240,9 @@ class aliasLib
             );
             if ($objAlias !== false && $objAlias->RecordCount() == 1) {
                 $arrAlias['title'] = $objAlias->fields['catname'];
-                $arrAlias['pageUrl'] = ASCMS_PATH_OFFSET.'/index.php'
+                $arrAlias['pageUrl'] = ASCMS_PATH_OFFSET
+                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($arrAlias['lang'], 'lang') : null)
+                    .'/'.CONTREXX_DIRECTORY_INDEX
                     .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
                     .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
             }
@@ -378,21 +388,23 @@ class aliasLib
         $arrRewriteRules = array();
         $limit = null;
         $allLanguages = true;
-        $arrDefinedAliases = $this->_getAliases($limit, $allLanguages);
+        $arrDefinedAliasesByLang = $this->_getAliases($limit, $allLanguages);
 
-        foreach ($arrDefinedAliases as $arrDefinedAlias) {
-            if ($arrDefinedAlias['type'] == 'local') {
-                if (!empty($arrDefinedAlias['pageUrl'])) {
-                    $target = $arrDefinedAlias['pageUrl'];
+        foreach ($arrDefinedAliasesByLang as $langId => $arrDefinedAliases) {
+            foreach ($arrDefinedAliases as $arrDefinedAlias) {
+                if ($arrDefinedAlias['type'] == 'local') {
+                    if (!empty($arrDefinedAlias['pageUrl'])) {
+                        $target = $arrDefinedAlias['pageUrl'];
+                    } else {
+                        continue;
+                    }
                 } else {
-                    continue;
+                    $target = $arrDefinedAlias['url'];
                 }
-            } else {
-                $target = $arrDefinedAlias['url'];
-            }
 
-            foreach ($arrDefinedAlias['sources'] as $arrSource) {
-                $arrRewriteRules[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC]';
+                foreach ($arrDefinedAlias['sources'] as $arrSource) {
+                    $arrRewriteRules[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC]';
+                }
             }
         }
 
