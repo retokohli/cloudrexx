@@ -1,6 +1,4 @@
 <?php
-$objDatabase->debug=99;
-error_reporting(E_ALL);ini_set('display_errors',1);
 /**
  * Content Sitemap
  * @copyright   CONTREXX CMS - COMVATION AG
