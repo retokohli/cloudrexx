@@ -44,16 +44,10 @@ class seriesManager
         $this->eventList_term       = $term;
         $this->eventList_category   = $category;
         $this->eventList_active     = $onlyActive;
-        /*echo "start: ".date("D d.m.Y H:i:s", $this->eventList_startdate)." - ".$this->eventList_startdate."<br >";
-        echo "ende: ".date("D d.m.Y H:i:s", $this->eventList_enddate)." - ".$endDate."<br >";
-        echo "size: ".$this->eventList_maxsize."<br >";
-        echo "cat: ".$this->eventList_category."<br >";
-        echo "term: ".$this->eventList_term."<br >";*/
+
         $this->_getMainEvents();
         $this->_checkEventList();
-        /*print_r("<pre>");
-        print_r($this->eventList);
-        print_r("</pre>");*/
+
         if (isset($this->eventList_maxsize)) {
             $this->eventList = array_slice($this->eventList, 0, $this->eventList_maxsize);
         }
@@ -79,6 +73,7 @@ class seriesManager
                         enddate = '".$new_enddate."',
                         series_pattern_begin = '".$new_patern_end."'
                 WHERE   id = '".$id."'";
+
         $objDatabase->Execute($query);
     }
 
@@ -92,7 +87,9 @@ class seriesManager
         } else {
             $auth_where = " AND access='0' ";
         }
+
         $active_where = ($this->eventList_active == true ? ' AND active=1' : '');
+
         if (isset($this->eventList_enddate) && $this->eventList_enddate != 0) {
 			$date_where = '((
 			    ((cal.startdate <= '.$this->eventList_startdate.') AND ('.$this->eventList_enddate.' <= cal.enddate)) OR
@@ -104,26 +101,31 @@ class seriesManager
 			))';
 
     	} else {
-            $date_where = '((
-                ((cal.enddate >= '.$this->eventList_startdate.') AND (cal.startdate <= '.$this->eventList_startdate.')) OR
-                ((cal.startdate >= '.$this->eventList_startdate.') AND (cal.enddate >= '.$this->eventList_startdate.'))
-            ) OR (
-                (cal.series_status = 1)
-            ))';
-        }
-        if (!empty($this->eventList_term)) {
-            $term_where =   ", MATCH (cal.name,cal.comment,cal.placeName) AGAINST ('%$this->eventList_term%') AS score
-                            FROM ".DBPREFIX."module_calendar".MODULE_INDEX." as cal
-                            LEFT JOIN ".DBPREFIX."module_calendar".MODULE_INDEX."_categories AS cat ON (cat.id = cal.catid)
-                            WHERE
-                            cat.lang = $_LANGID AND (cal.`name` LIKE '%$this->eventList_term%' OR
-                            cal.`comment` LIKE '%$this->eventList_term%' OR
-                            cal.`placeName` LIKE '%$this->eventList_term%') AND ";
-        } else {
-            $term_where =   "FROM ".DBPREFIX."module_calendar".MODULE_INDEX." AS cal
-                            LEFT JOIN ".DBPREFIX."module_calendar".MODULE_INDEX."_categories AS cat ON (cat.id = cal.catid)
-                            WHERE (cat.lang = '".$_LANGID."') AND ";
-        }
+    		$date_where = '((
+    			((cal.enddate >= '.$this->eventList_startdate.') AND (cal.startdate <= '.$this->eventList_startdate.')) OR
+    			((cal.startdate >= '.$this->eventList_startdate.') AND (cal.enddate >= '.$this->eventList_startdate.'))
+    		) OR (
+    			(cal.series_status = 1)
+    		))';
+    	}
+
+    	if (!empty($this->eventList_term)) {
+			$term_where = 	", MATCH (cal.name,cal.comment,cal.placeName) AGAINST ('%$this->eventList_term%') AS score
+							FROM ".DBPREFIX."module_calendar".$this->mandateLink." as cal
+							LEFT JOIN ".DBPREFIX."module_calendar".$this->mandateLink."_categories AS cat ON (cat.id = cal.catid)
+
+					  		WHERE
+
+					  		cat.lang = $_LANGID AND (cal.`name` LIKE '%$this->eventList_term%' OR
+					  		cal.`comment` LIKE '%$this->eventList_term%' OR
+					  		cal.`placeName` LIKE '%$this->eventList_term%') AND ";
+		} else {
+			$term_where = 	"FROM ".DBPREFIX."module_calendar".$this->mandateLink." AS cal
+						    LEFT JOIN ".DBPREFIX."module_calendar".$this->mandateLink."_categories AS cat ON (cat.id = cal.catid)
+
+							WHERE (cat.lang = '".$_LANGID."') AND ";
+		}
+
         if (isset($this->eventList_category) && $this->eventList_category != 0) {
             $cat_where = " AND cal.catid='$this->eventList_category' ";
         } else {
@@ -279,180 +281,228 @@ class seriesManager
     {
         $old_startdate      = $this->eventList[$key]['startdate'];
         $old_enddate        = $this->eventList[$key]['enddate'];
-        switch ($this->eventList[$key]['series_type']) {
-            case 1:
-                //daily
-                if ($this->eventList[$key]['series_pattern_type'] == 1) {
-                    $hour       = date("H", $old_startdate);
-                    $minutes    = date("i", $old_startdate);
-                    $seconds    = date("s", $old_startdate);
-                    $day        = date("d", $old_startdate)+$this->eventList[$key]['series_pattern_day'];
-                    $month      = date("m", $old_startdate);
-                    $year       = date("Y", $old_startdate);
 
-                    $new_startdate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+        switch ($this->eventList[$key]['series_type']){
+			case 1:
+				//daily
+				if ($this->eventList[$key]['series_pattern_type'] == 1) {
+					$hour 		= date("H", $old_startdate);
+					$minutes 	= date("i", $old_startdate);
+					$seconds 	= date("s", $old_startdate);
+					$day 		= date("d", $old_startdate)+$this->eventList[$key]['series_pattern_day'];
+					$month 		= date("m", $old_startdate);
+					$year 		= date("Y", $old_startdate);
 
-                    $hour       = date("H", $old_enddate);
-                    $minutes    = date("i", $old_enddate);
-                    $seconds    = date("s", $old_enddate);
-                    $day        = date("d", $old_enddate)+$this->eventList[$key]['series_pattern_day'];
-                    $month      = date("m", $old_enddate);
-                    $year       = date("Y", $old_enddate);
+					$new_startdate = mktime($hour, $minutes, $seconds, $month, $day, $year);
 
-                    $new_enddate = mktime($hour, $minutes, $seconds, $month, $day, $year);
-                } else {
-                    $old_weekday = date("w", $old_startdate);
+					$hour 		= date("H", $old_enddate);
+					$minutes 	= date("i", $old_enddate);
+					$seconds 	= date("s", $old_enddate);
+					$day 		= date("d", $old_enddate)+$this->eventList[$key]['series_pattern_day'];
+					$month 		= date("m", $old_enddate);
+					$year 		= date("Y", $old_enddate);
 
-                    if ($old_weekday == 5) {
-                        $add_days = 3;
-                    } else {
-                        $add_days = 1;
-                    }
+					$new_enddate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+				} else {
+					$old_weekday = date("w", $old_startdate);
 
-                    $hour       = date("H", $old_startdate);
-                    $minutes    = date("i", $old_startdate);
-                    $seconds    = date("s", $old_startdate);
-                    $day        = date("d", $old_startdate)+$add_days;
-                    $month      = date("m", $old_startdate);
-                    $year       = date("Y", $old_startdate);
+					if ($old_weekday == 5) {
+						$add_days = 3;
+					} else {
+						$add_days = 1;
+					}
 
-                    $new_startdate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+					$hour 		= date("H", $old_startdate);
+					$minutes 	= date("i", $old_startdate);
+					$seconds 	= date("s", $old_startdate);
+					$day 		= date("d", $old_startdate)+$add_days;
+					$month 		= date("m", $old_startdate);
+					$year 		= date("Y", $old_startdate);
 
-                    $hour       = date("H", $old_enddate);
-                    $minutes    = date("i", $old_enddate);
-                    $seconds    = date("s", $old_enddate);
-                    $day        = date("d", $old_enddate)+$add_days;
-                    $month      = date("m", $old_enddate);
-                    $year       = date("Y", $old_enddate);
+					$new_startdate = mktime($hour, $minutes, $seconds, $month, $day, $year);
 
-                    $new_enddate = mktime($hour, $minutes, $seconds, $month, $day, $year);
-                }
-            break;
-            case 2:
-                //weekly
-                $old_weekday        = date("w", $old_startdate);
-                $weekday_pattern    = $this->eventList[$key]['series_pattern_weekday'];
-                $match              = false;
-                $i                  = 0;
-                $old_kw             = date("W", $old_startdate);
+					$hour 		= date("H", $old_enddate);
+					$minutes 	= date("i", $old_enddate);
+					$seconds 	= date("s", $old_enddate);
+					$day 		= date("d", $old_enddate)+$add_days;
+					$month 		= date("m", $old_enddate);
+					$year 		= date("Y", $old_enddate);
 
-                while (!$match) {
-                    $i++;
+					$new_enddate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+				}
+			break;
+			case 2:
+				//weekly
+				$old_weekday 		= date("w", $old_startdate);
+				$weekday_pattern 	= $this->eventList[$key]['series_pattern_weekday'];
+				$match 				= false;
+				$i 					= 0;
+				$old_kw				= date("W", $old_startdate);
 
-                    if(substr($weekday_pattern, $old_weekday, 1) == 1) {
-                        $add_days = $i;
-                        $match = true;
-                    } else {
-                        $old_weekday++;
-                    }
-                    if ($old_weekday > 6) {
-                        $old_weekday = 0;
-                    }
-                }
-                $hour    = date("H", $old_startdate);
-                $minutes = date("i", $old_startdate);
-                $seconds = date("s", $old_startdate);
-                $day     = date("d", $old_startdate)+$add_days;
-                $month   = date("m", $old_startdate);
-                $year    = date("Y", $old_startdate);
-                $new_kw  = date("W", mktime($hour, $minutes, $seconds, $month, $day, $year));
+				while(!$match){
+					$i++;
 
-                if ($this->eventList[$key]['series_pattern_week'] > 1) {
-                    if ($old_kw < $new_kw) {
-                        $add_weeks = ($this->eventList[$key]['series_pattern_week']-1)*7;
-                    }
-                }
+					if(substr($weekday_pattern, $old_weekday, 1) == 1) {
+						$add_days = $i;
+						$match = true;
+					} else {
+						$old_weekday++;
+					}
 
-                $new_startdate = mktime($hour, $minutes, $seconds, $month, $day+$add_weeks, $year);
-
-                $hour       = date("H", $old_enddate);
-                $minutes    = date("i", $old_enddate);
-                $seconds    = date("s", $old_enddate);
-                $day        = date("d", $old_enddate)+$add_days+$add_weeks;
-                $month      = date("m", $old_enddate);
-                $year       = date("Y", $old_enddate);
-
-                $new_enddate = mktime($hour, $minutes, $seconds, $month, $day, $year);
-                break;
-            case 3:
-                //monthly
-                if ($this->eventList[$key]['series_pattern_type'] == 1) {
-                    $month_days = 0;
-                    $hour       = date("H", $old_startdate);
-                    $minutes    = date("i", $old_startdate);
-                    $seconds    = date("s", $old_startdate);
-                    $day        = date("d", $old_startdate);
-                    $month      = date("m", $old_startdate);
-                    $year       = date("Y", $old_startdate);
-                    $month_days = date("t", $old_startdate);
-                    $add_days   = $month_days-$day+$this->eventList[$key]['series_pattern_day'];
-                    $new_startdate = mktime($hour, $minutes, $seconds, $month, $day+$add_days, $year);
-                    $hour       = date("H", $old_enddate);
-                    $minutes    = date("i", $old_enddate);
-                    $seconds    = date("s", $old_enddate);
-                    $day        = date("d", $old_enddate);
-                    $month      = date("m", $old_enddate);
-                    $year       = date("Y", $old_enddate);
-                    $new_enddate = mktime($hour, $minutes, $seconds, $month, $day+$add_days, $year);
-                } else {
-                    $hour       = date("H", $old_startdate);
-                    $minutes    = date("i", $old_startdate);
-                    $seconds    = date("s", $old_startdate);
-                    $day        = date("d", $old_startdate);
-                    $month      = date("m", $old_startdate);
-                    $year       = date("Y", $old_startdate);
-                    $weekday_pattern    = $this->eventList[$key]['series_pattern_weekday'];
-                    $count_pattern      = $this->eventList[$key]['series_pattern_count'];
-                    $month_pattern      = $this->eventList[$key]['series_pattern_month'];
-                    $next_month         = $month + $month_pattern;
-                    $match  = false;
-                    $i      = 0;
+					if ($old_weekday > 6) {
+						$old_weekday = 0;
+					}
 
 
+				}
+				$hour 		= date("H", $old_startdate);
+				$minutes 	= date("i", $old_startdate);
+				$seconds 	= date("s", $old_startdate);
+				$day 		= date("d", $old_startdate)+$add_days;
+				$month 		= date("m", $old_startdate);
+				$year 		= date("Y", $old_startdate);
 
 
-                    while (!$match) {
-                        if(substr($weekday_pattern, $i, 1) == 1) {
-                            $weekday = $i;
-                            $match = true;
-                        } else {
-                            $i++;
-                        }
-                    }
+				$new_kw = date("W", mktime($hour, $minutes, $seconds, $month, $day, $year));
 
-                    if ($weekday > 6) {
-                        $weekday = 0;
-                    }
+				if ($this->eventList[$key]['series_pattern_week'] > 1) {
+					if ($old_kw < $new_kw) {
+						$add_weeks = ($this->eventList[$key]['series_pattern_week']-1)*7;
+					}
+				}
 
-                    $match  = false;
-                    $d      = 0;
-                    while (!$match) {
-                        $check_date     = mktime($hour, $minutes, $seconds, $next_month, $d, $year);
-                        $check_day      = date("w", $check_date);
-                        if ($check_day == $weekday) {
-                            $match = true;
-                        } else {
-                            $d++;
-                        }
-                    }
+				$new_startdate = mktime($hour, $minutes, $seconds, $month, $day+$add_weeks, $year);
 
-                    if($count_pattern > 1) {
-                        $count_pattern = 7*($count_pattern-1);
-                    }
-                    $add_days   = ($count_pattern+$d)-$day;
-                    $add_month  = $next_month-$month;
-                    $new_startdate = mktime($hour, $minutes, $seconds, $month+$add_month, $day+$add_days, $year);
-                    $hour       = date("H", $old_enddate);
-                    $minutes    = date("i", $old_enddate);
-                    $seconds    = date("s", $old_enddate);
-                    $day        = date("d", $old_enddate);
-                    $month      = date("m", $old_enddate);
-                    $year       = date("Y", $old_enddate);
-                    $new_enddate = mktime($hour, $minutes, $seconds, $month+$add_month, $day+$add_days, $year);
-                }
-            break;
-        }
+				$hour 		= date("H", $old_enddate);
+				$minutes 	= date("i", $old_enddate);
+				$seconds 	= date("s", $old_enddate);
+				$day 		= date("d", $old_enddate)+$add_days+$add_weeks;
+				$month 		= date("m", $old_enddate);
+				$year 		= date("Y", $old_enddate);
+
+				$new_enddate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+			break;
+			case 3:
+				//monthly
+
+				if ($this->eventList[$key]['series_pattern_type'] == 1) {
+					$month_days = 0;
+
+
+					$hour 		= date("H", $old_startdate);
+					$minutes 	= date("i", $old_startdate);
+					$seconds 	= date("s", $old_startdate);
+					$day 		= date("d", $old_startdate);
+					$month 		= date("m", $old_startdate);
+					$year 		= date("Y", $old_startdate);
+
+					$month_days = date("t", $old_startdate);
+
+					$add_days 	= $month_days-$day+$this->eventList[$key]['series_pattern_day'];
+					$add_months = $this->eventList[$key]['series_pattern_month'];
+
+					if($add_months > 1) {
+					    for ($i = 1; $i < $add_months; $i++) {
+					       $next_month_days = date("t", mktime($hour, $minutes, $seconds, $month+$i, $day, $year));
+					       $add_days = $add_days+$next_month_days;
+					    }
+					}
+
+					$new_startdate = mktime($hour, $minutes, $seconds, $month, $day+$add_days, $year);
+
+					$hour 		= date("H", $old_enddate);
+					$minutes 	= date("i", $old_enddate);
+					$seconds 	= date("s", $old_enddate);
+					$day 		= date("d", $old_enddate);
+					$month 		= date("m", $old_enddate);
+					$year 		= date("Y", $old_enddate);
+
+					$new_enddate = mktime($hour, $minutes, $seconds, $month, $day+$add_days, $year);
+				} else {
+					$hour 		= date("H", $old_startdate);
+					$minutes 	= date("i", $old_startdate);
+					$seconds 	= date("s", $old_startdate);
+					$day 		= date("d", $old_startdate);
+					$month 		= date("m", $old_startdate);
+					$year 		= date("Y", $old_startdate);
+
+					$weekday_pattern 	= $this->eventList[$key]['series_pattern_weekday'];
+					$count_pattern 		= $this->eventList[$key]['series_pattern_count'];
+					$month_pattern 		= $this->eventList[$key]['series_pattern_month'];
+					$next_month			= $month + $month_pattern;
+
+					$match 	= false;
+					$i		= 0;
+					while (!$match) {
+						if(substr($weekday_pattern, $i, 1) == 1) {
+							$weekday = $i+1;
+							$match = true;
+						} else {
+							$i++;
+						}
+					}
+
+					if ($weekday > 6) {
+						$weekday = 0;
+					}
+
+					if($count_pattern < 5) {
+					    $match 	= false;
+    					$d		= 1;
+
+    					while (!$match) {
+    						$check_date 	= mktime($hour, $minutes, $seconds, $next_month, $d, $year);
+    						$check_day 		= date("w", $check_date);
+    						if ($check_day == $weekday) {
+    							$match = true;
+    						} else {
+    							$d++;
+    						}
+    					}
+
+    					if($count_pattern > 1) {
+    					   $count_pattern = 7*($count_pattern-1);
+    					} else {
+    					   $count_pattern = 0;
+    					}
+					} else {
+                        $match 	= false;
+    					$d		= date("t", mktime($hour, $minutes, $seconds, $next_month, $day, $year));
+    					$count_pattern = 0;
+
+    					while (!$match) {
+    						$check_date 	= mktime($hour, $minutes, $seconds, $next_month, $d, $year);
+    						$check_day 		= date("w", $check_date);
+
+    						if ($check_day == $weekday) {
+    							$match = true;
+    						} else {
+    							$d--;
+    						}
+    					}
+					}
+
+					$add_month	= $next_month-$month;
+					$new_day = $d+$count_pattern;
+
+					$new_startdate = mktime($hour, $minutes, $seconds, $month+$add_month, $new_day, $year);
+
+					$hour 		= date("H", $old_enddate);
+					$minutes 	= date("i", $old_enddate);
+					$seconds 	= date("s", $old_enddate);
+					$day_start  = $old_startdate;
+					$day_end    = $old_enddate;
+					$day_diff   = date("d",$day_end-$day_start)-1;
+					$month 		= date("m", $old_enddate);
+					$year 		= date("Y", $old_enddate);
+
+					$new_enddate = mktime($hour, $minutes, $seconds, $month+$add_month, $new_day+$day_diff, $year);
+				}
+			break;
+		}
+
         $this->_checkCallback(null, $new_startdate, null);
+
         if ($this->eventList_callback) {
             switch($this->eventList[$key]['series_pattern_dourance_type']) {
                 case 1:
