@@ -163,13 +163,17 @@ class Calendar extends calendarLibrary
 	    		$year 	= isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
 
 	    		if(empty($_GET['act'])){
-	    			$month = $month+2;
-	    			$day = 31;
-	    		}
+                    $month = $month+2;
+                    $day = 31;
+                } else if ($_GET['act'] == 'list') {
+                    $day     = isset($_GET['dayID']) ? $_GET['dayID'] :  date("t", mktime());
+                    $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
+                    $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
+                }
 
     			$enddate = mktime(23, 59, 59, $month, $day, $year);
     		} else {
-    			$enddate = 0;
+                $enddate = mktime(23, 59, 59, $month, $day, $year+10);
     		}
     	} else {
     		$datearr = explode("-", $_POST['endDate']);
