@@ -44,16 +44,10 @@ class seriesManager
         $this->eventList_term       = $term;
         $this->eventList_category   = $category;
         $this->eventList_active     = $onlyActive;
-        /*echo "start: ".date("D d.m.Y H:i:s", $this->eventList_startdate)." - ".$this->eventList_startdate."<br >";
-        echo "ende: ".date("D d.m.Y H:i:s", $this->eventList_enddate)." - ".$endDate."<br >";
-        echo "size: ".$this->eventList_maxsize."<br >";
-        echo "cat: ".$this->eventList_category."<br >";
-        echo "term: ".$this->eventList_term."<br >";*/
+
         $this->_getMainEvents();
         $this->_checkEventList();
-        /*print_r("<pre>");
-        print_r($this->eventList);
-        print_r("</pre>");*/
+
         if (isset($this->eventList_maxsize)) {
             $this->eventList = array_slice($this->eventList, 0, $this->eventList_maxsize);
         }
@@ -61,26 +55,26 @@ class seriesManager
     }
 
 
-    function updateMainEvent($id) {
-    	global $objDatabase, $_ARRAYLANG, $_LANGID;
-		foreach ($this->eventList as $key => $array) {
-			if (array_search($id,$array)) {
+    function updateMainEvent($id)
+    {
+        global $objDatabase;
 
-				$new_startdate 	= $array['startdate'];
-				$new_enddate 	= $array['enddate'];
-				$new_pattern_end = $array['series_pattern_end'];
+        foreach ($this->eventList as $array) {
+            if (array_search($id, $array)) {
+                $new_startdate  = $array['startdate'];
+                $new_enddate    = $array['enddate'];
+                $new_patern_end = $array['series_pattern_end'];
+                break;
+            }
+        }
+        $query = "UPDATE ".DBPREFIX."module_calendar".MODULE_INDEX." SET
+                        active = '1',
+                        startdate = '".$new_startdate."',
+                        enddate = '".$new_enddate."',
+                        series_pattern_begin = '".$new_patern_end."'
+                WHERE   id = '".$id."'";
 
-			    break;
-			}
-		}
-
-		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET
-						active = '1',
-						startdate = '".$new_startdate."',
-						enddate = '".$new_enddate."',
-						series_pattern_end = '".$new_pattern_end."'
-				WHERE   id = '".$id."'";
-		$objResult = $objDatabase->Execute($query);
+        $objDatabase->Execute($query);
     }
 
 
@@ -107,26 +101,31 @@ class seriesManager
 			))';
 
     	} else {
-            $date_where = '((
-                ((cal.enddate >= '.$this->eventList_startdate.') AND (cal.startdate <= '.$this->eventList_startdate.')) OR
-                ((cal.startdate >= '.$this->eventList_startdate.') AND (cal.enddate >= '.$this->eventList_startdate.'))
-            ) OR (
-                (cal.series_status = 1)
-            ))';
-        }
-        if (!empty($this->eventList_term)) {
-            $term_where =   ", MATCH (cal.name,cal.comment,cal.placeName) AGAINST ('%$this->eventList_term%') AS score
-                            FROM ".DBPREFIX."module_calendar".MODULE_INDEX." as cal
-                            LEFT JOIN ".DBPREFIX."module_calendar".MODULE_INDEX."_categories AS cat ON (cat.id = cal.catid)
-                            WHERE
-                            cat.lang = $_LANGID AND (cal.`name` LIKE '%$this->eventList_term%' OR
-                            cal.`comment` LIKE '%$this->eventList_term%' OR
-                            cal.`placeName` LIKE '%$this->eventList_term%') AND ";
-        } else {
-            $term_where =   "FROM ".DBPREFIX."module_calendar".MODULE_INDEX." AS cal
-                            LEFT JOIN ".DBPREFIX."module_calendar".MODULE_INDEX."_categories AS cat ON (cat.id = cal.catid)
-                            WHERE (cat.lang = '".$_LANGID."') AND ";
-        }
+    		$date_where = '((
+    			((cal.enddate >= '.$this->eventList_startdate.') AND (cal.startdate <= '.$this->eventList_startdate.')) OR
+    			((cal.startdate >= '.$this->eventList_startdate.') AND (cal.enddate >= '.$this->eventList_startdate.'))
+    		) OR (
+    			(cal.series_status = 1)
+    		))';
+    	}
+
+    	if (!empty($this->eventList_term)) {
+			$term_where = 	", MATCH (cal.name,cal.comment,cal.placeName) AGAINST ('%$this->eventList_term%') AS score
+							FROM ".DBPREFIX."module_calendar".$this->mandateLink." as cal
+							LEFT JOIN ".DBPREFIX."module_calendar".$this->mandateLink."_categories AS cat ON (cat.id = cal.catid)
+
+					  		WHERE
+
+					  		cat.lang = $_LANGID AND (cal.`name` LIKE '%$this->eventList_term%' OR
+					  		cal.`comment` LIKE '%$this->eventList_term%' OR
+					  		cal.`placeName` LIKE '%$this->eventList_term%') AND ";
+		} else {
+			$term_where = 	"FROM ".DBPREFIX."module_calendar".$this->mandateLink." AS cal
+						    LEFT JOIN ".DBPREFIX."module_calendar".$this->mandateLink."_categories AS cat ON (cat.id = cal.catid)
+
+							WHERE (cat.lang = '".$_LANGID."') AND ";
+		}
+
         if (isset($this->eventList_category) && $this->eventList_category != 0) {
             $cat_where = " AND cal.catid='$this->eventList_category' ";
         } else {
@@ -278,11 +277,12 @@ class seriesManager
     }
 
 
-    function _getNextSeriesEvent($key) {
-		$old_startdate	 	= $this->eventList[$key]['startdate'];
-		$old_enddate 		= $this->eventList[$key]['enddate'];
+    function _getNextSeriesEvent($key)
+    {
+        $old_startdate      = $this->eventList[$key]['startdate'];
+        $old_enddate        = $this->eventList[$key]['enddate'];
 
-		switch ($this->eventList[$key]['series_type']){
+        switch ($this->eventList[$key]['series_type']){
 			case 1:
 				//daily
 				if ($this->eventList[$key]['series_pattern_type'] == 1) {
@@ -501,33 +501,32 @@ class seriesManager
 			break;
 		}
 
-		$this->_checkCallback(null, $new_startdate, null);
+        $this->_checkCallback(null, $new_startdate, null);
 
-		if ($this->eventList_callback) {
-			switch($this->eventList[$key]['series_pattern_dourance_type']) {
-	    		case 1:
-	    			$status = 1;
-	    			$end 	= $this->eventList[$key]['series_pattern_end'];
-	    			$this->_addEventToEventList($key, $new_startdate, $new_enddate, $end, $status);
-	    		break;
-	    		case 2:
-	    			if ($this->eventList[$key]['series_pattern_end'] >= 2) {
-	    				$status = 1;
-	    				$end 	= $this->eventList[$key]['series_pattern_end']-1;
-	    				$this->_addEventToEventList($key, $new_startdate, $new_enddate, $end, $status);
-	    			}
-	    		break;
-	    		case 3:
-	    			$end = $this->eventList[$key]['series_pattern_end'];
-	    			if($new_startdate <= $this->eventList[$key]['series_pattern_end']) {
-			    		$status = 1;
-			    		$this->_addEventToEventList($key, $new_startdate, $new_enddate, $end, $status);
-			    	}
-	    		break;
-	    	}
-		}
-
-		$this->eventList_callback = true;
+        if ($this->eventList_callback) {
+            switch($this->eventList[$key]['series_pattern_dourance_type']) {
+                case 1:
+                    $status = 1;
+                    $end    = $this->eventList[$key]['series_pattern_end'];
+                    $this->_addEventToEventList($key, $new_startdate, $new_enddate, $end, $status);
+                break;
+                case 2:
+                    if ($this->eventList[$key]['series_pattern_end'] >= 2) {
+                        $status = 1;
+                        $end    = $this->eventList[$key]['series_pattern_end']-1;
+                        $this->_addEventToEventList($key, $new_startdate, $new_enddate, $end, $status);
+                    }
+                break;
+                case 3:
+                    $end = $this->eventList[$key]['series_pattern_end'];
+                    if($new_startdate <= $this->eventList[$key]['series_pattern_end']) {
+                        $status = 1;
+                        $this->_addEventToEventList($key, $new_startdate, $new_enddate, $end, $status);
+                    }
+                break;
+            }
+        }
+        $this->eventList_callback = true;
     }
 
 

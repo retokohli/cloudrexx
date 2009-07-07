@@ -139,7 +139,6 @@ class Calendar extends calendarLibrary
 
     	//get startdates
     	if (empty($_POST['startDate'])) {
-
     		$day 	= isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("d", mktime());
     		$month 	= isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
     		$year 	= isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
@@ -150,7 +149,6 @@ class Calendar extends calendarLibrary
 
     		$startdate = mktime(0, 0, 0, $month, $day, $year);
     	} else {
-
     		$datearr = explode("-", $_POST['startDate']);
     		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
     		unset($datearr);
@@ -165,9 +163,13 @@ class Calendar extends calendarLibrary
 	    		$year 	= isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
 
 	    		if(empty($_GET['act'])){
-	    			$month = $month+2;
-	    			$day = 31;
-	    		}
+                    $month = $month+2;
+                    $day = 31;
+                } else if ($_GET['act'] == 'list') {
+                    $day     = isset($_GET['dayID']) ? $_GET['dayID'] :  date("t", mktime());
+                    $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
+                    $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
+                }
 
     			$enddate = mktime(23, 59, 59, $month, $day, $year);
     		} else {
@@ -284,7 +286,6 @@ class Calendar extends calendarLibrary
     	    		$month 	=  '&amp;monthID='.date("m", $startdate);
     	    		$year 	=  '&amp;yearID='.date("Y", $startdate);
             	}
-
 
                 $category 	= isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
             	$term 	    = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
@@ -475,7 +476,6 @@ class Calendar extends calendarLibrary
 			}
 		}
 
-
 		$this->_objTpl->setVariable(array(
 			'CALENDAR_START'		 		=> date("Y-m-d", $this->eventList[$key]['startdate']),
 			'CALENDAR_END'			 		=> date("Y-m-d", $this->eventList[$key]['enddate']),
@@ -520,8 +520,9 @@ class Calendar extends calendarLibrary
         ));
 
 
-        //delet old series events
-        $this->objSeries->updateMainEvent($id);
+
+		//delet old series events
+		//$this->objSeries->updateMainEvent($id);
 
        return $this->_objTpl->get();
 	}
@@ -576,8 +577,8 @@ class Calendar extends calendarLibrary
 
 		if (!empty($_POST['id'])){
 			//insert registration data
-			$time	= mktime();
-			$noteId	= intval($_POST['id']);
+			$time	    = mktime();
+            $noteId	    = intval($_POST['id']);
 			$noteDate	= intval($_POST['date']);
 			$type       = intval($_POST['type']);
 			$ip		    = "";
