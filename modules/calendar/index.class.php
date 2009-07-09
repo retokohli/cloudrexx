@@ -166,7 +166,7 @@ class Calendar extends calendarLibrary
                     $month = $month+2;
                     $day = 31;
                 } else if ($_GET['act'] == 'list') {
-                    $day     = isset($_GET['dayID']) ? $_GET['dayID'] :  date("t", mktime());
+                    $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("t", mktime(0, 0, 0, $month, $day, $year));
                     $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
                     $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
                 }
@@ -519,10 +519,18 @@ class Calendar extends calendarLibrary
             								</a>',
         ));
 
-
-
 		//delet old series events
-		//$this->objSeries->updateMainEvent($id);
+        /*if(!empty($this->eventList[$key]['series_type'])) {
+            $startdate = mktime(0, 0, 0, date("m", mktime()), date("d", mktime()), date("Y", mktime()));
+            $enddate = mktime(23, 59, 59, date("m", mktime()), date("d", mktime()), date("Y", mktime())+10);
+            $count = $_CONFIG['calendar'.$this->mandateLink.'defaultcount'];
+            $auth = $this->_checkAccess();
+
+
+            $this->objSeries     = new seriesManager();
+            $this->objSeries->getEventList($startdate,$enddate,$count, $auth, null, null, false, false);
+            $this->objSeries->updateMainEvent($id);
+        }*/
 
        return $this->_objTpl->get();
 	}
