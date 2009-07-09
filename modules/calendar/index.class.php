@@ -143,8 +143,10 @@ class Calendar extends calendarLibrary
     		$month 	= isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
     		$year 	= isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
 
-    		if($_GET['cmd'] == 'boxes' && empty($_GET['act'])){
-	    		$day = 1;
+    		if($_GET['cmd'] == 'boxes'){
+    		    if(empty($_GET['act']) || empty($_REQUEST['dayID'])) {
+    	    		$day = 1;
+    		    }
     		}
 
     		$startdate = mktime(0, 0, 0, $month, $day, $year);
@@ -165,7 +167,7 @@ class Calendar extends calendarLibrary
                     $month = $month+2;
                     $day = 31;
                 } else if ($_GET['act'] == 'list') {
-                    $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("d", mktime());
+                    $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("t", mktime(0, 0, 0, $month, $day, $year));
                     $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
                     $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
                 }
