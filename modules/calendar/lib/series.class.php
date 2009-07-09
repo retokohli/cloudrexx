@@ -55,26 +55,27 @@ class seriesManager
     }
 
 
-    function updateMainEvent($id)
-    {
-        global $objDatabase;
+    function updateMainEvent($id) {
+    	global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-        foreach ($this->eventList as $array) {
-            if (array_search($id, $array)) {
-                $new_startdate  = $array['startdate'];
-                $new_enddate    = $array['enddate'];
-                $new_patern_end = $array['series_pattern_end'];
-                break;
-            }
-        }
-        $query = "UPDATE ".DBPREFIX."module_calendar".MODULE_INDEX." SET
-                        active = '1',
-                        startdate = '".$new_startdate."',
-                        enddate = '".$new_enddate."',
-                        series_pattern_begin = '".$new_patern_end."'
-                WHERE   id = '".$id."'";
+		foreach ($this->eventList as $key => $array) {
+			if (array_search($id,$array)) {
 
-        $objDatabase->Execute($query);
+				$new_startdate 	= $array['startdate'];
+				$new_enddate 	= $array['enddate'];
+				$new_pattern_end = $array['series_pattern_end'];
+
+			    break;
+			}
+		}
+
+		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET
+						startdate = '".$new_startdate."',
+						enddate = '".$new_enddate."',
+						series_pattern_end = '".$new_pattern_end."'
+				WHERE   id = '".$id."'";
+
+		$objResult = $objDatabase->Execute($query);
     }
 
 

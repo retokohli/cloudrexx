@@ -155,31 +155,34 @@ class Calendar extends calendarLibrary
     	}
 
     	//get enddates
-    	if (empty($_POST['endDate'])) {
-    		if($_GET['cmd'] == 'boxes'){
-    			$day 	= isset($_GET['dayID']) ? $_GET['dayID'] : date("d", mktime());
-    			//$day 	= isset($_GET['dayID']) ? $_GET['dayID'] : 31;
-	    		$month 	= isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
-	    		$year 	= isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
+        if (empty($_POST['endDate'])) {
+            $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("d", mktime());
+            $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
+            $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
 
-	    		if(empty($_GET['act'])){
+            if($_GET['cmd'] == 'boxes'){
+                if(empty($_GET['act'])){
                     $month = $month+2;
                     $day = 31;
                 } else if ($_GET['act'] == 'list') {
-                    $day     = isset($_GET['dayID']) ? $_GET['dayID'] :  date("t", mktime());
+                    $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("d", mktime());
                     $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
                     $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
                 }
 
-    			$enddate = mktime(23, 59, 59, $month, $day, $year);
-    		} else {
-                $enddate = mktime(23, 59, 59, $month, $day, $year+10);
-    		}
-    	} else {
-    		$datearr = explode("-", $_POST['endDate']);
-    		$enddate = mktime(23, 59, 59, $datearr[1], $datearr[2], $datearr[0]);
-    		unset($datearr);
-    	}
+                $enddate = mktime(23, 59, 59, $month, $day, $year);
+            } else {
+                if(empty($_REQUEST['yearID']) && empty($_REQUEST['monthID'])) {
+                    $year = $year+10;
+                }
+
+                $enddate = mktime(23, 59, 59, $month, $day, $year);
+            }
+        } else {
+            $datearr = explode("-", $_POST['endDate']);
+            $enddate = mktime(23, 59, 59, $datearr[1], $datearr[2], $datearr[0]);
+            unset($datearr);
+        }
 
     	//get search term
     	if (isset($_REQUEST['keyword'])) {
@@ -522,7 +525,17 @@ class Calendar extends calendarLibrary
 
 
 		//delet old series events
-		//$this->objSeries->updateMainEvent($id);
+        /*if(!empty($this->eventList[$key]['series_type'])) {
+            $startdate = mktime(0, 0, 0, date("m", mktime()), date("d", mktime()), date("Y", mktime()));
+            $enddate = mktime(23, 59, 59, date("m", mktime()), date("d", mktime()), date("Y", mktime())+10);
+            $count = $_CONFIG['calendar'.$this->mandateLink.'defaultcount'];
+            $auth = $this->_checkAccess();
+
+
+            $this->objSeries     = new seriesManager();
+            $this->objSeries->getEventList($startdate,$enddate,$count, $auth, null, null, false, false);
+            $this->objSeries->updateMainEvent($id);
+        }*/
 
        return $this->_objTpl->get();
 	}
