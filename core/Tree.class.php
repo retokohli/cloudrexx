@@ -88,9 +88,10 @@ class ContentTree
 		               FROM ".DBPREFIX."content_navigation AS n
 							LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
 							LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-								ON  a_t.id        = a_s.target_id
-								AND a_s.isdefault = 1
-						    LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+								ON ( a_s.target_id = a_t.id
+								AND  a_s.lang_id   = n.lang
+								AND  a_s.isdefault = 1 )
+						    LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
 						        ON settings.setmodule = 41
 						       AND settings.setname   = 'aliasStatus'
 
@@ -115,7 +116,7 @@ class ContentTree
 				    'protected' => $objResult->fields['protected'],
 				    'frontend_access_id' => $objResult->fields['frontend_access_id'],
 				    'backend_access_id' => $objResult->fields['backend_access_id'],
-                    'alias'             => $objResult->fields['alias_enable'] ? $objResult->fields['alias_url'] : '' 
+                    'alias'             => $objResult->fields['alias_enable'] ? $objResult->fields['alias_url'] : ''
 				    );
 
 				$this->table[$objResult->fields['parcat']][$objResult->fields['catid']]= array(

@@ -592,7 +592,10 @@ class ContentManager
         $this->pageTitle = $_CORELANG['TXT_NEW_PAGE'];
 
         $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
-        $pageId = $objRS->fields['nextId'];
+        $navHighId = $objRS->fields['nextId'];
+        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation_history`');
+        $hisHighId = $objRS->fields['nextId'];
+        $pageId = $navHighId > $hisHighId ? $navHighId : $hisHighId;
 
         $langCount = 0;
 
@@ -1983,8 +1986,7 @@ ON DUPLICATE KEY
             $objResult = $objDatabase->Execute('
                 SELECT catid
                                                 FROM    '.DBPREFIX.'content_navigation
-                 WHERE parcat='.$pageId.' AND `lang`='.$this->langId
-            );
+                 WHERE parcat='.$pageId);//.' AND `lang`='.$this->langId);
             if ($objResult->RecordCount() > 0) {
                 while (!$objResult->EOF) {
                     $this->deleteContent($objResult->fields['catid']);
@@ -1997,17 +1999,17 @@ ON DUPLICATE KEY
                           FROM ".DBPREFIX."content_navigation
                          WHERE ( parcat=".$pageId."
                             OR catid=".$pageId.")
-                            AND `lang`=".$this->langId."
+                            /*AND `lang`=".$this->langId."*/
               ORDER BY catid
             ");
-
+            $numLangsForThisPage = $objResult->RecordCount();
             if ($objResult !== false && $objResult->RecordCount()>0) {
                 $moduleId = $objResult->fields['module'];
                 // needed for recordcount
                 while (!$objResult->EOF) {
                     $objResult->MoveNext();
                 }
-                if ($objResult->RecordCount()>1) {
+                if ($objResult->RecordCount() > $numLangsForThisPage) {
                     $this->strErrMessage[] =
                         $_CORELANG['TXT_PAGE_NOT_DELETED_DELETE_SUBCATEGORIES_FIRST'];
                 } else {
@@ -2020,21 +2022,24 @@ ON DUPLICATE KEY
                                        SELECT id
                                             FROM     '.DBPREFIX.'content_navigation_history
                                             WHERE    is_active="1" AND
-                                       catid='.$pageId.' AND `lang`='.$this->langId
+                                       catid='.$pageId//.' AND `lang`='.$this->langId
                             );
-                            $objDatabase->Execute('
-                                INSERT INTO '.DBPREFIX.'content_logfile
+                            while(!$objResult->EOF){
+                                $objDatabase->Execute('
+                                    INSERT INTO '.DBPREFIX.'content_logfile
                                                     SET        action="delete",
                                                             history_id='.$objResult->fields['id'].',
                                        is_validated="'.($this->boolHistoryActivate ? 1 : 0).'"
                                                 ');
+                                $objResult->MoveNext();
+                            }
                             $objDatabase->Execute('
                                 UPDATE '.DBPREFIX.'content_navigation_history
                                                     SET        changelog='.time().'
                                                     WHERE    catid='.$pageId.' AND
-                                                            is_active="1"
-                                                    AND     `lang`='.$this->langId.'
-                                                ');
+                                                            is_active="1"'
+//                                                    AND     `lang`='.$this->langId
+                            );
                         }
 
                         $boolDelete = true;
@@ -2047,8 +2052,8 @@ ON DUPLICATE KEY
                         }
 
                         if ($boolDelete) {
-                            $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId.' AND lang_id='.$this->langId;
-                            $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId.' AND `lang`='.$this->langId;
+                            $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId;//.' AND lang_id='.$this->langId;
+                            $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId;//.' AND `lang`='.$this->langId;
 
                             if ($objDatabase->Execute($q1) === false
                              || $objDatabase->Execute($q2) === false) {
@@ -2347,7 +2352,8 @@ ON DUPLICATE KEY
                 if ($selectedid==$key) {
                     $selected= 'selected="selected"';
                 }
-                $result.= '<option value="'.$key.'" '.$selected.($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true) ? ' disabled="disabled" style="color:graytext;"' : null).'>'.$output.(empty($val['name']) ? '&nbsp;' : $val['name']).'</option>'."\n";
+                $val['name'] = trim($val['name']);
+                $result.= '<option value="'.$key.'" '.$selected.($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true) ? ' disabled="disabled" style="color:graytext;"' : null).'>'.$output.(empty($val['name']) ? '-' : $val['name']).'</option>'."\n";
                 if (isset($this->_navtable[$key])) {
                     $result.= $this->_getNavigationMenu($key,$level+1,$selectedid);
                 }
@@ -2793,7 +2799,6 @@ ON DUPLICATE KEY
 
     function getBlocks($pageId = null, $langId = 0) {
         global $objDatabase;
-
         if($langId == 0){ $langId = $this->firstActiveLang; }
 
         $blocks = array('', ''); // initialize to empty strings to avoid notice
@@ -2826,9 +2831,8 @@ ON DUPLICATE KEY
                 $objResult->MoveNext();
             }
         }
-
         foreach ($arrBlocks as $arrData) {
-            if (array_key_exists($arrData['id'],$arrRelationBlocks)) {
+            if (array_key_exists($arrData['id'], $arrRelationBlocks)) {
                 $blocks[0] .= '<option value="'.$arrData['id'].'">'.$arrData['name'].' ('.$arrData['id'].') </option>'."\n";
             } else {
                 $blocks[1] .= '<option value="'.$arrData['id'].'">'.$arrData['name'].' ('.$arrData['id'].') </option>'."\n";
@@ -2971,7 +2975,6 @@ ON DUPLICATE KEY
     function modifyBlocks($associatedBlockIds, $pageId, $langId = 0)
     {
         global $objDatabase, $_FRONTEND_LANGID;
-
         if($langId == 0){ $langId = $_FRONTEND_LANGID; }
 
         $objResult = $objDatabase->Execute("
@@ -3050,6 +3053,7 @@ ON DUPLICATE KEY
                                       AND `c`.`lang_id` = '.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
                 $objRS->fields['langName'] = $langName;
+                $objRS->fields['content']  = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $objRS->fields['content']);
                 $objRS->fields['alias']    = $alias;
                 header('Content-Type: application/json');
                 die(json_encode($objRS->fields));
@@ -3156,8 +3160,8 @@ ON DUPLICATE KEY
                 $selects['assignedGroups[]']['options']         = $assignedGroups;
                 $selects['existingBackendGroups[]']['options']  = $existingBackendGroups;
                 $selects['assignedBackendGroups[]']['options']  = $assignedBackendGroups;
-                $selects['existingBlocks[]']['options']         = $blocks[0];
-                $selects['assignedBlocks[]']['options']         = $blocks[1];
+                $selects['existingBlocks[]']['options']         = $blocks[1];
+                $selects['assignedBlocks[]']['options']         = $blocks[0];
                 $selects['langName']                            = $langName;
                 header('Content-Type: application/json');
                 die(json_encode($selects));
@@ -3263,8 +3267,8 @@ ON DUPLICATE KEY
     			<a href="#" onclick="changeCheckboxes(\'formContent\',\'selectedChangelogId[]\',false); return false;">'.$_CORELANG['TXT_DESELECT_ALL'].'</a>
     			<img src="images/icons/strike.gif" alt="layout" />
     			<select name="formContent_HistoryMultiAction" onchange="historyMultiAction();">
-    				<option value="0">'.$_CORELANG['TXT_CHANGELOG_SUBMIT'].'</option>
-    				<option value="delete">'.$_CORELANG['TXT_CHANGELOG_SUBMIT_DEL'].'</option>
+    				<option value="0">'.$_CORELANG['TXT_MULTISELECT_SELECT'].'</option>
+    				<option value="delete">'.$_CORELANG['TXT_MULTISELECT_DELETE'].'</option>
     			</select>
     		</td>
     	</tr>

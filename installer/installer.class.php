@@ -492,6 +492,10 @@ class Installer
 				$this->arrStatusMsg['config'] .= $_ARRLANG['TXT_ALLOW_URL_FOPEN_FOR_RSS_REQUIRED']."<br />";
 			}
 
+			if(ini_get('register_globals')){
+				$this->arrStatusMsg['config'] .= $_ARRLANG['TXT_REGISTER_GLOBALS_ON']."<br />";
+			}
+
 			$objTpl->setVariable(array(
 				'ALLOW_URL_FOPEN'		=> $allowUrlFopen ? $_ARRLANG['TXT_ON'] : $_ARRLANG['TXT_OFF'],
 				'ALLOW_URL_FOPEN_CLASS'	=> $allowUrlFopen ? "successful" : "failed"

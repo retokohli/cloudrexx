@@ -86,14 +86,14 @@ class Navigation
                          m.name AS section,
                          a_s.url AS alias_url
                     FROM ".DBPREFIX."content_navigation     AS n
-              INNER JOIN ".DBPREFIX."content                AS c    ON c.id = n.catid
+              INNER JOIN ".DBPREFIX."content                AS c    ON (c.id = n.catid AND c.lang_id = n.lang)
               INNER JOIN ".DBPREFIX."modules                AS m    ON m.id = n.module
          LEFT OUTER JOIN ".DBPREFIX."module_alias_target    AS a_t  ON a_t.url = n.catid
-         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s  ON a_s.target_id = a_t.id AND a_s.isdefault = 1
+         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s  ON (a_s.target_id = a_t.id AND a_s.lang_id=n.lang AND a_s.isdefault = 1)
                    WHERE (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
+                     AND n.lang='".$this->langId."'
                      AND n.activestatus='1'
                      AND n.is_validated='1'
-                     AND n.lang='".$this->langId."'
                          ".(
                             $objFWUser->objUser->login() ?
                                 // user is authenticated
@@ -252,7 +252,7 @@ class Navigation
     * @param boolean $boolShop: Is there a shop on this page? If "true", fill the navigation into {SHOPNAVBAR_FILE}
     * @return mixed parsed navigation
     */
-    function getNavigation($templateContent,$boolShop=false)
+    function getNavigation($templateContent, $boolShop=false)
     {
         $this->_objTpl = &new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -614,16 +614,73 @@ class Navigation
 
     function getFrontendLangNavigation()
     {
-          global $objInit;
-          $this->arrLang = $objInit->getLanguageArray();
+        global $objInit, $objDatabase;
+        $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = "";
-          if(count($this->arrLang)>1) {
-                foreach($this->arrLang as $id=>$value) {
-                    if($this->arrLang[$id]['frontend']==1) {
-                        $langNavigation .= " [ <a href='".CONTREXX_SCRIPT_PATH."?setLang=".$id."' title='".$value['name']."' >".$value['name']."</a> ] ";
+
+        $URLquery	= $_SERVER['QUERY_STRING'];
+        $URLbase	= $_SERVER['PHP_SELF'];
+        // Workaround contact
+        $tmpCID 	= 0;
+        if(isset($_REQUEST['section'])){
+        	if($_REQUEST['section']=='contact'){
+        		$cmd = $_REQUEST['cmd'];
+    			$query 		= "SELECT catid FROM ".DBPREFIX."content_navigation WHERE cmd=".intval($_REQUEST['cmd'])." AND lang=".$_LANGID." ";
+    			$objResult 	= $objDatabase->SelectLimit($query, 1);
+    			if ($objResult === true || !$objResult->EOF) {
+    			    $tmpCID = $objResult->fields["catid"];
+    			}else{
+    				$URLquery 	= ereg_replace("\&?section\=[a-zA-Z]+", "", $URLquery);
+    				$URLquery 	= ereg_replace("\&?cmd\=[0-9]+", "", $URLquery);
+    			}
+        	}
+        }
+
+        if(count($this->arrLang)>1) {
+            foreach($this->arrLang as $id => $value) {
+                if($this->arrLang[$id]['frontend']==1) {
+                    $GETquery = '';
+                	$URLquery 	= ereg_replace("\&?fromLang\=[0-9]+", "", $URLquery);
+                	$URLquery 	= ereg_replace("\&?langId\=[0-9]+", "", $URLquery);
+                	$URLquery 	= ereg_replace("\&?setLang\=[0-9]+", "", $URLquery);
+                	$FromQuery	= 'fromLang='.$_LANGID;
+
+                	// workaround contact
+                	if($tmpCID!=0){
+                		$URLquery 	= ereg_replace("\&?cmd\=[0-9]", "", $URLquery);
+                		$tmpCMD		= 0;
+                		$query		= "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
+                		$objResult 	= $objDatabase->SelectLimit($query, 1);
+                		if ($objResult === true || !$objResult->EOF) {
+                		    $tmpCMD = $objResult->fields["cmd"];
+                		}
+                		if($tmpCMD!=0){
+                			$URLquery .= ($URLquery!='') ? '&cmd='.$tmpCMD : '?section='.$_REQUEST['section'].'&cmd='.$tmpCMD;
+                		}
+                	}
+
+                	if($_CONFIG['useVirtualLanguagePath']=='on'){
+                		if($URLquery!=''){
+                			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$URLquery.'&'.$FromQuery;
+                		}else{
+                			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$FromQuery;
+                		}
+                	}else{
+                		if($URLquery!=''){
+                			$URLquery 	= $URLquery.'&setLang='.$value['id'];
+                		}else{
+                			$URLquery 	= 'setLang='.$value['id'];
+                		}
+                		$LangURL		= $URLbase.'?'.$URLquery.'&'.$FromQuery;
+                	}
+                    foreach ($_GET as $k => $v) {
+                    	if(in_array($k, array('fromLang', 'setLang', 'langId'))) continue;
+                    	$GETquery .= '&amp;'.$k.'='.$v;
                     }
+                    $langNavigation .= ' [ <a href="'.$LangURL.$GETquery.'" title="'.$value['name'].'" >'.$value['name'].'</a> ] ';
                 }
-          }
+            }
+        }
         return $langNavigation;
     }
 

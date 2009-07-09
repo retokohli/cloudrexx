@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -300,7 +299,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $sessionObj=new cmsSession();
         $_GET['cmd']     = $_REQUEST['cmd'];
         $_GET['section'] = $_REQUEST['section'];
-        $langId          = intval($_REQUEST['lang']);
+        $previewLangId   = intval($_REQUEST['lang']);
         $page_title      = $_SESSION['content']['previewTitle'];
         $page_content    = '<div id="fe_PreviewContent">'.$_SESSION['content']['previewContent'].'</div>';
     }
@@ -321,13 +320,13 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
                    ".DBPREFIX.(empty($history) ? 'content_navigation' : 'content_navigation_history')." AS n
              WHERE c.id = ".(empty($history) ? $pageId : $history)."
                AND c.id = ".(!empty($history) ? 'n.id' : "n.catid
+               AND c.lang_id = n.lang
                AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
                AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
                AND n.activestatus='1'
                AND n.is_validated='1'
-               AND c.lang_id=".(!empty($langId) ? $langId : FRONTEND_LANG_ID));
+           AND c.lang_id=".(!empty($previewLangId) ? $previewLangId : FRONTEND_LANG_ID));
     $objResult = $objDatabase->SelectLimit($query, 1);
-
     if ($objResult === false || $objResult->EOF) {
         if ($plainSection == "error") {
             // If the error module is not installed, show this
@@ -1904,6 +1903,67 @@ if ($_CONFIG['frontendEditingStatus'] == 'on') {
 $contrexxCmsName = $_CONFIG['coreCmsName'];
 $contrexxCmsName[8] = ' ';
 $contrexxCmsName[9] = ' ';
+
+
+// ------------------------------------------------------
+// URL change lang
+// ------------------------------------------------------
+$URLquery	= $_SERVER['QUERY_STRING'];
+$URLbase	= $_SERVER['PHP_SELF'];
+// Workaround contact
+$tmpCID 	= 0;
+
+if(isset($_REQUEST['section'])){
+	if($_REQUEST['section']=='contact'){
+		$cmd = $_REQUEST['cmd'];
+			$query 		= "SELECT catid FROM ".DBPREFIX."content_navigation WHERE cmd=".intval($_REQUEST['cmd'])." AND lang=".$_LANGID." ";
+			$objResult 	= $objDatabase->SelectLimit($query, 1);
+			if ($objResult === true || !$objResult->EOF) {
+			    $tmpCID = $objResult->fields["catid"];
+			}else{
+				$URLquery 	= ereg_replace("\&?section\=[a-zA-Z]+", "", $URLquery);
+				$URLquery 	= ereg_replace("\&?cmd\=[0-9]+", "", $URLquery);
+			}
+	}
+}
+
+foreach ($objInit->arrLang as $key => $value) {
+	$URLquery 	= ereg_replace("\&?fromLang\=[0-9]+", "", $URLquery);
+	$URLquery 	= ereg_replace("\&?langId\=[0-9]+", "", $URLquery);
+	$URLquery 	= ereg_replace("\&?setLang\=[0-9]+", "", $URLquery);
+	$FromQuery	= 'fromLang='.$_LANGID;
+
+	// workaround contact
+	if($tmpCID!=0){
+		$URLquery 	= ereg_replace("\&?cmd\=[0-9]+", "", $URLquery);
+		$tmpCMD		= 0;
+		$query		= "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
+		$objResult 	= $objDatabase->SelectLimit($query, 1);
+		if ($objResult === true || !$objResult->EOF) {
+		    $tmpCMD = $objResult->fields["cmd"];
+		}
+		if($tmpCMD!=0){
+			$URLquery .= ($URLquery!='') ? '&cmd='.$tmpCMD : '?section='.$_REQUEST['section'].'&cmd='.$tmpCMD;
+		}
+	}
+
+	if($_CONFIG['useVirtualLanguagePath']=='on'){
+		if($URLquery!=''){
+			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$URLquery.'&'.$FromQuery;
+		}else{
+			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$FromQuery;
+		}
+	}else{
+		if($URLquery!=''){
+			$URLquery 	= $URLquery.'&setLang='.$value['id'];
+		}else{
+			$URLquery 	= 'setLang='.$value['id'];
+		}
+		$LangURL		= $URLbase.'?'.$URLquery.'&'.$FromQuery;
+	}
+	$objTemplate->setVariable(array('LANG_CHANGE_'.strtoupper($value['lang']) => $LangURL));
+}
+
 
 //-------------------------------------------------------
 // set global template variables

@@ -46,7 +46,7 @@ var fe_previewSaveIcon			= 'fe_saveIcon';
 var fe_previewSaveIconIsVisible	= false;
 
 function fe_checkForLogin() {
-	if(fe_userIsLoggedIn) {
+	if(typeof fe_userIsLoggedIn != 'undefined' && fe_userIsLoggedIn) {
 		fe_loadToolbar(false);
 	}
 }

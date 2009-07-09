@@ -296,11 +296,11 @@ class blockLibrary
                                                 FROM    ".DBPREFIX."module_block_blocks AS tblBlock
                                                 WHERE   tblBlock.id=".$id."
                                                 AND     tblBlock.active=1", 1
-                                                );*/    
-                                                
+                                                );*/
+
         $query = "  SELECT tblBlock.content, tblLang.lang_id
                     FROM ".DBPREFIX."module_block_blocks AS tblBlock
-                    INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang 
+                    INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.id = ".$id."
                     AND tblBlock.active = 1
@@ -311,7 +311,7 @@ class blockLibrary
                 $code = str_replace("{".$this->blockNamePrefix.$id."}", $objRs->fields['content'], $code);
             }
         }
-        
+
         /*
         if ($objBlock !== false) {
             $code = str_replace("{".$this->blockNamePrefix.$id."}", $objBlock->fields['content'], $code);
@@ -354,7 +354,7 @@ class blockLibrary
         } else {
             $tables = DBPREFIX."module_block_rel_lang AS tblLang,
                     ".DBPREFIX."module_block_rel_pages AS tblPage";
-            $where  = "AND  ((tblPage.page_id=".intval($pageId)." AND tblPage.block_id=tblBlock.id) OR tblLang.all_pages='1')";
+            $where  = "  AND tblPage.lang_id=".$_LANGID." AND ((tblPage.block_id=tblBlock.id AND tblPage.page_id=".intval($pageId).") OR tblLang.all_pages='1')";
         }
 
         $objBlock = $objDatabase->Execute(" SELECT  tblBlock.id, tblBlock.content
@@ -390,15 +390,15 @@ class blockLibrary
     function _setBlockRandom(&$code, $id)
     {
         global $objDatabase, $_LANGID;
-        
-        
-        $query = "  SELECT tblBlock.id 
-                    FROM ".DBPREFIX."module_block_blocks AS tblBlock 
+
+
+        $query = "  SELECT tblBlock.id
+                    FROM ".DBPREFIX."module_block_blocks AS tblBlock
                     INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.active= 1
                     AND tblLang.lang_id = ".$_LANGID." ";
-        
+
         //Get Block Name and Status
         switch($id) {
             case '1':

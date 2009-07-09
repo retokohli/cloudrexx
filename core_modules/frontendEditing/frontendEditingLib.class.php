@@ -83,11 +83,11 @@ class frontendEditingLib {
 	 *
 	 * @return html-code with all include-statements
 	 */
-	public static function getIncludeCode() {
-		$strFeInclude =		'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css) all;</style>'."\n";
-		$strFeInclude .=	'<!--[if lte IE 7]>'."\n";
-   		$strFeInclude .=	'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie.css);</style>'."\n";
-  		$strFeInclude .=	'<![endif]-->'."\n";
+    public static function getIncludeCode() {
+        $strFeInclude =		'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css) all;</style>'."\n";
+        $strFeInclude .=	'<!--[if lte IE 7]>'."\n";
+        $strFeInclude .=	'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie.css);</style>'."\n";
+        $strFeInclude .=	'<![endif]-->'."\n";
         JS::activate('prototype');
         JS::activate('scriptaculous');
         JS::activate('frontendediting');
@@ -99,8 +99,8 @@ class frontendEditingLib {
                                   fe_loadToolbar();
                               });
                           });');
-		return $strFeInclude;
-	}
+        return $strFeInclude;
+    }
 
 
 	/**
