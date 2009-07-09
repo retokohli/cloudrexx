@@ -893,12 +893,14 @@ if(typeof console === "undefined"){
 }
 
 (function(){ //poll if editor is loaded
-    str=''
-    if(typeof FCKeditorAPI == 'undefined' && FCKeditorAPI.GetInstance('html').Status != FCK_STATUS_COMPLETE){
+    if(typeof FCKeditorAPI == 'undefined'){
         var x = setTimeout(arguments.callee, 200);
         return false;
+    }else{
+        if(FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE){
+            $J('#ajaxbusy,#ajaxwait').hide();
+        }
     }
-    $J('#ajaxbusy,#ajaxwait').hide();
 })();
 
 function FCKeditor_OnComplete( editor ){ //hide wait layer on editor load
