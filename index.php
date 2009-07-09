@@ -1509,6 +1509,12 @@ break;
             $page_title = $directory_pagetitle;
         }
 
+        if($_GET['cmd'] == 'detail' && isset($_GET['id'])) {
+            $objTemplate->setVariable(array(
+                'DIRECTORY_ENTRY_ID' => intval($_GET['id']),
+            ));
+        }
+
         break;
 
 //-------------------------------------------------------
