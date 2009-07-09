@@ -282,14 +282,6 @@ function openWindow(theURL,winName,features){
 	galleryPopup.focus();
 }
 
-function FCKeditor_OnComplete(editor){
-    console.log( "+"+FCKeditorAPI.GetInstance('html').Status ) ;
-}
-
-//console.log("s");
-//document.getElementById("html");
-
-
 (function(){  //wrap in anonyomous function to avoid polluting the global namespace
 
 var getFrameContent = function(){
@@ -458,11 +450,17 @@ var makeTabActive = function(aElement){
     }, 800);
 }
 
+var filterInputs = function(){
+    return $J(this).attr('id') != 'selectedChangelogId';
+}
+
 //TODO settimeout arguments callee switchTab
 var switchTab = function(aElement){
+    var $form = $J('form[name=formContent]');
+    var $inputs = $J('input[type=checkbox],input[type=radio]', $form).filter(filterInputs);
+    $inputs.removeAttr('disabled', 'disabled');
     $J('#ajaxbusy,#ajaxwait').show();
     $J('#contentLanguages li a').unbind('click');
-    $J('form[name=formContent] input').attr('disabled', 'disabled');
     swapLanguage(aElement);
     makeTabActive(aElement);
     $J('form[name=formContent] input').removeAttr('disabled');
@@ -487,10 +485,10 @@ var swapLanguage = function(aElement){
     }
     $J('#ajaxbusy,#ajaxwait').show();
     var lastActive = $J('#contentLanguages li a.active').text();
-    var $container = $J('form[name=formContent]');
-    var $iFrame    = $container.find('iframe');
-    var $html      = $container.find('input[name=html]');
-    var $textarea  = $container.find('textarea[name=html]');
+    var $form = $J('form[name=formContent]');
+    var $iFrame    = $form.find('iframe');
+    var $html      = $form.find('input[name=html]');
+    var $textarea  = $form.find('textarea[name=html]');
 
     $html.data(lastActive, getFrameContent());    //save frame contents for current lang
     $html.data($a.text()) === undefined           //load frame contents for new lang
@@ -517,23 +515,23 @@ var swapLanguage = function(aElement){
       ? $J('#aliastarget').text('')
       : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
 
-    $container.find('input[type=text]').each(function(){ //swap input text contents
+    $form.find('input[type=text]').each(function(){ //swap input text contents
         $J(this).data(lastActive, $J(this).val());
         $J(this).data($a.text()) === undefined
             ? $J(this).val('')
             : $J(this).val($J(this).data($a.text()));
     });
 
-    $container.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
-        var $radio = $J($container.find('input[name='+$J(this).attr('name')+']:first'));
+    $form.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
+        var $radio = $J($form.find('input[name='+$J(this).attr('name')+']:first'));
         $radio.data(lastActive, $J(this).val());
         $radio.data($a.text()) === undefined
             ? $radio.click()
-            : $container.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']').click();
+            : $form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']').click();
     });
 
-    var $unchecked = $J($container.find('input[type=checkbox]:not(:checked)'));
-    $container.find('input[type=checkbox]:checked').each(function(){ //swap input checkboxes which are checked
+    var $unchecked = $form.find('input[type=checkbox]:not(:checked)');
+    $form.find('input[type=checkbox]:checked').each(function(){ //swap input checkboxes which are checked
         if($J(this).attr('name') == 'expertmode'){
             return;
         }
@@ -572,16 +570,16 @@ var swapLanguage = function(aElement){
         if($J(this).data($a.text()) === undefined){
             $J(this).attr('checked', false);
         }else{
-            if($J(this).data($a.text()) != $J(this).data(lastActive)){
+            if( !( ($J(this).data($a.text()) && $J(this).data(lastActive)) || (!$J(this).data($a.text()) && !$J(this).data(lastActive)) ) ){
                 $J(this).click();
             }
         }
     });
 
 //    setEditor();
-    $J('form[name=formContent] input').attr('disabled', 'disabled');
+    $J('input', $form).attr('disabled', 'disabled');
 
-    $container.find('select').each(function(){
+    $form.find('select').each(function(){
         if($J(this).attr('name') == 'formContent_HistoryMultiAction'){
             return;
         }
@@ -802,7 +800,7 @@ var saveFormElementData = function(event, lang){
     //skeleton for custom event handler, might be useful later
 }
 
-//(function(){console.log('dd');setTimeout(arguments.callee,20)})();
+//(function(){$J('#contentLanguages li a.inactive').eq(0).click();setTimeout(arguments.callee,100)})();
 
 $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
     $("#ajaxbusy").css({opacity: 0.75}).show();
@@ -821,11 +819,10 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     })
     .bind("ajaxStop", function(){
         window._CONTREXX_REQUEST_ACTIVE = false;
-//        var x = setTimeout(function(){
-//            $('#ajaxbusy,#ajaxwait').hide();
-//        }, 3000);
-    }
-    });
+        var x = setTimeout(function(){
+            $('#ajaxbusy,#ajaxwait').hide();
+        }, 3000);//hide after 3 secs if still visible
+    }   );
 
      //set default options
     $('select', $form).each(function(){
@@ -851,14 +848,11 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         $('textarea[name=html]', $form).hide();
     }
 
-    //swapLanguage($('#contentLanguages li a:first'));
     $J('form[name=formContent] th:first-child').each(
         function(){
             $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$('#contentLanguages li a.active').text()+')')
         }
     )
-
-
 
     if(location.href.match(/act=edit/)){ //if we're editing get tab data for all tabs except first one, which is already loaded
         $('#contentLanguages li:not(:first-child) a').each(function(){
@@ -886,20 +880,34 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     });
 
-    (function(){
-        if(!window['FCKeditorAPI']){
-            var x = setTimeout(arguments.callee, 50);
-            return false;
-        }
-        $('#ajaxbusy,#ajaxwait').hide();
-    })();
-});
+    if($('input[name=expertmode]').attr('checked')){
+        $J('#ajaxbusy,#ajaxwait').hide(); //no need to wait for editor if in source mode
+    }
+
+    });
 })();//execute anonymous function
 
 if(typeof console === "undefined"){
     console = {};
     console.log = function(s){window.status=s;}
 }
+
+(function(){ //poll if editor is loaded
+    str=''
+    if(typeof FCKeditorAPI == 'undefined' && FCKeditorAPI.GetInstance('html').Status != FCK_STATUS_COMPLETE){
+        var x = setTimeout(arguments.callee, 200);
+        return false;
+    }
+    $J('#ajaxbusy,#ajaxwait').hide();
+})();
+
+function FCKeditor_OnComplete( editor ){ //hide wait layer on editor load
+    if(editor.Name == 'html'){
+        $J('#ajaxbusy,#ajaxwait').hide();
+    }
+}
+
+
 // ]]>
 </script>
 
