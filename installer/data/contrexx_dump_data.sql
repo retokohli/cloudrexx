@@ -3846,27 +3846,3 @@ INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status
 	VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,0,0,'','nobody',
 		      1,1,1,'members_only','',0,''); 
     
-
-
-/*ALTER TABLE `contrexx_content` DROP INDEX `contentid` ;
-ALTER TABLE `contrexx_content` ADD `lang_id` INT NOT NULL DEFAULT '1' AFTER `id`;
-ALTER TABLE `contrexx_content` ADD PRIMARY KEY ( `id` , `lang_id` ) ;
-
-
-ALTER TABLE `contrexx_content_history` DROP INDEX `page_id` ;
-ALTER TABLE `contrexx_content_history` ADD `lang_id` INT NOT NULL DEFAULT '1' AFTER `page_id`;
-ALTER TABLE `contrexx_content_history` ADD INDEX ( `page_id` , `lang_id` ) ;
-
-
-ALTER TABLE `contrexx_content_navigation` CHANGE `catid` `catid` INT( 6 ) UNSIGNED NOT NULL;
-ALTER TABLE `contrexx_content_navigation` DROP PRIMARY KEY;
-ALTER TABLE `contrexx_content_navigation` ADD PRIMARY KEY ( `catid` , `lang` ) ;
-
-
-ALTER TABLE `contrexx_content_navigation_history` DROP INDEX `catid`;
-ALTER TABLE `contrexx_content_navigation_history` ADD INDEX ( `catid` , `lang` ) ;
-
-ALTER TABLE `contrexx_module_alias_source` ADD `lang_id` INT( 10 ) UNSIGNED NOT NULL DEFAULT '1' AFTER `target_id`;
-
-INSERT INTO `contrexx_sessions` VALUES ('5adc2df86bf8c902e040568503e96d0a','1245597802','1245597855','backend',1,'userFrontendLangId|i:1;auth|a:2:{s:5:\"secid\";s:4:\"EFGM\";s:3:\"log\";b:1;}content|a:2:{s:9:\"expandAll\";b:0;s:9:\"expandCat\";i:0;}');
-/*
