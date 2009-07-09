@@ -30,7 +30,7 @@ class DBG
     {
         self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
 
-        if (!defined(_DEBUG))
+        if (!defined('_DEBUG'))
             define('_DEBUG', DBG_NONE);
 
         self::enable_all();

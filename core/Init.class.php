@@ -632,7 +632,7 @@ class InitCMS
             $query = "
                 SELECT themes_id
                   FROM ".DBPREFIX."content_navigation
-                 WHERE catid=$page_id
+                 WHERE catid=$page_id AND lang=".FRONTEND_LANG_ID."
             ";
         } else {
             $query = "
