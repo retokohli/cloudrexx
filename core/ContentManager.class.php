@@ -930,6 +930,7 @@ class ContentManager
         if (empty($pageId)) {
             $pageId = intval($_REQUEST['pageId']);
         }
+        if($pageId == 0){ header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); }
 
         if ($this->_checkModificationPermission($pageId, $langId)) {
             $_backendPermissions = true;
