@@ -420,6 +420,122 @@ class ContentWorkflow {
         }
     }
 
+    function restoreHistory($intHistoryId, $boolInsert=false){
+        global $objDatabase;
+        $objResult = $objDatabase->Execute('SELECT  `catid`, `lang`
+                                            FROM    '.DBPREFIX.'content_navigation_history
+                                            WHERE   id='.$intHistoryId.'
+                                            LIMIT   1');
+
+        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                SET     is_active="0"
+                                WHERE   catid='.$objResult->fields['catid'].' AND lang='.$objResult->fields['lang']);
+
+        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                SET     is_active="1"
+                                WHERE   id='.$intHistoryId.'
+                                LIMIT   1');
+
+        $objResult = $objDatabase->Execute('SELECT  *
+                                            FROM    '.DBPREFIX.'content_navigation_history
+                                            WHERE   id='.$intHistoryId.'
+                                            LIMIT   1');
+
+        $objContentTree = new ContentTree();
+        $arrCategory = $objContentTree->getThisNode($objResult->fields['parcat']);
+
+        if (!is_array($arrCategory) && $boolInsert) {
+                $objSubResult = $objDatabase->Execute(' SELECT  `catid`
+                                                        FROM    '.DBPREFIX.'content_navigation
+                                                        WHERE   module=1 AND
+                                                                cmd="lost_and_found" AND
+                                                                lang='.$objResult->fields['lang'].'
+                                                        LIMIT   1
+                                                    ');
+                $intParcat = intval($objSubResult->fields['catid']);
+            } else {
+                $intParcat = ($objResult->fields['parcat']);
+            }
+
+        if ($boolInsert) {
+            //remove entry from logfile first
+            $objDatabase->Execute(' DELETE
+                                    FROM    '.DBPREFIX.'content_logfile
+                                    WHERE   `action`="delete" AND
+                                            history_id='.$intHistoryId.'
+                                    LIMIT   1
+                                ');
+        }
+        $objDatabase->Execute(' INSERT
+                                INTO    '.DBPREFIX.'content_navigation
+                                SET     catid='.$objResult->fields['catid'].',
+                                        parcat='.$intParcat.',
+                                        catname="'.addslashes($objResult->fields['catname']).'",
+                                        target="'.addslashes($objResult->fields['target']).'",
+                                        displayorder='.$objResult->fields['displayorder'].',
+                                        displaystatus="'.$objResult->fields['displaystatus'].'",
+                                        cachingstatus="'.$objResult->fields['cachingstatus'].'",
+                                        username="'.addslashes($objResult->fields['username']).'",
+                                        changelog='.time().',
+                                        cmd="'.addslashes($objResult->fields['cmd']).'",
+                                        lang='.$objResult->fields['lang'].',
+                                        module='.$objResult->fields['module'].',
+                                        startdate="'.$objResult->fields['startdate'].'",
+                                        enddate="'.$objResult->fields['enddate'].'",
+                                        protected='.$objResult->fields['protected'].',
+                                        frontend_access_id='.$objResult->fields['frontend_access_id'].',
+                                        backend_access_id='.$objResult->fields['backend_access_id'].',
+                                        themes_id='.$objResult->fields['themes_id'].'
+                ON DUPLICATE KEY UPDATE catid='.$objResult->fields['catid'].',
+                                        parcat='.$intParcat.',
+                                        catname="'.addslashes($objResult->fields['catname']).'",
+                                        target="'.addslashes($objResult->fields['target']).'",
+                                        displayorder='.$objResult->fields['displayorder'].',
+                                        displaystatus="'.$objResult->fields['displaystatus'].'",
+                                        cachingstatus="'.$objResult->fields['cachingstatus'].'",
+                                        username="'.addslashes($objResult->fields['username']).'",
+                                        changelog='.time().',
+                                        cmd="'.addslashes($objResult->fields['cmd']).'",
+                                        lang='.$objResult->fields['lang'].',
+                                        module='.$objResult->fields['module'].',
+                                        startdate="'.$objResult->fields['startdate'].'",
+                                        enddate="'.$objResult->fields['enddate'].'",
+                                        protected='.$objResult->fields['protected'].',
+                                        frontend_access_id='.$objResult->fields['frontend_access_id'].',
+                                        backend_access_id='.$objResult->fields['backend_access_id'].',
+                                        themes_id='.$objResult->fields['themes_id']);
+
+        $objResult = $objDatabase->Execute('SELECT  *
+                                            FROM    '.DBPREFIX.'content_history
+                                            WHERE   id='.$intHistoryId.'
+                                            LIMIT   1
+                                        ');
+        $objDatabase->Execute(' INSERT
+                                INTO    '.DBPREFIX.'content
+                                SET     id='.$objResult->fields['page_id'].',
+                                        lang_id="'.addslashes($objResult->fields['lang_id']).'",
+                                        content="'.addslashes($objResult->fields['content']).'",
+                                        title="'.addslashes($objResult->fields['title']).'",
+                                        metatitle="'.addslashes($objResult->fields['metatitle']).'",
+                                        metadesc="'.addslashes($objResult->fields['metadesc']).'",
+                                        metakeys="'.addslashes($objResult->fields['metakeys']).'",
+                                        metarobots="'.addslashes($objResult->fields['metarobots']).'",
+                                        css_name="'.addslashes($objResult->fields['css_name']).'",
+                                        redirect="'.addslashes($objResult->fields['redirect']).'",
+                                        expertmode="'.addslashes($objResult->fields['expertmode']).'"
+                ON DUPLICATE KEY UPDATE id='.$objResult->fields['page_id'].',
+                                        lang_id="'.addslashes($objResult->fields['lang_id']).'",
+                                        content="'.addslashes($objResult->fields['content']).'",
+                                        title="'.addslashes($objResult->fields['title']).'",
+                                        metatitle="'.addslashes($objResult->fields['metatitle']).'",
+                                        metadesc="'.addslashes($objResult->fields['metadesc']).'",
+                                        metakeys="'.addslashes($objResult->fields['metakeys']).'",
+                                        metarobots="'.addslashes($objResult->fields['metarobots']).'",
+                                        css_name="'.addslashes($objResult->fields['css_name']).'",
+                                        redirect="'.addslashes($objResult->fields['redirect']).'",
+                                        expertmode="'.addslashes($objResult->fields['expertmode']).'"');
+    }
+
     /**
     * Load a page from history
     *
@@ -436,174 +552,29 @@ class ContentWorkflow {
         $intHistoryId = intval($intHistoryId);
 
         if ($intHistoryId > 0) {
-            $objResult = $objDatabase->Execute('SELECT  `catid`, `lang`
-                                                FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE   id='.$intHistoryId.'
-                                                LIMIT   1
-                                            ');
+            $objRSAction = $objDatabase->Execute('SELECT 1
+                                                  FROM    '.DBPREFIX.'content_logfile
+                                                  WHERE   history_id='.$intHistoryId."
+                                                  AND     `action` = 'delete'
+                                                  LIMIT   1");
+            $objResult   = $objDatabase->Execute('SELECT  `catid`, `lang`
+                                                  FROM    '.DBPREFIX.'content_navigation_history
+                                                  WHERE   id='.$intHistoryId.'
+                                                  LIMIT   1');
 
+            if($objRSAction->RecordCount() == 1){
+                $objHistoryResult = $objDatabase->Execute("SELECT `h`.`id`
+                                                           FROM `".DBPREFIX."content_navigation_history` AS `h`
+                                                           LEFT JOIN `".DBPREFIX."content_logfile` AS `l` ON ( `l`.`history_id` = `h`.`id` )
+                                                           WHERE catid=".$objResult->fields['catid']."
+                                                           AND `action` = 'delete'");
 
-            $objHistoryResult = $objDatabase->Execute("SELECT `h`.`id`
-                                                       FROM `".DBPREFIX."content_navigation_history` AS `h`
-                                                       LEFT JOIN `".DBPREFIX."content_logfile` AS `l` ON ( `l`.`history_id` = `h`.`id` )
-                                                       WHERE catid=".$objResult->fields['catid']."
-                                                       AND `action` = 'delete'");
-
-            while (!$objHistoryResult->EOF) {
-            	$intHistoryId = $objHistoryResult->fields['id'];
-	            $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
-                        SET     is_active="0"
-                        WHERE   catid='.$objResult->fields['catid'].' AND lang='.$objResult->fields['lang']);
-
-                $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
-                                        SET     is_active="1"
-                                        WHERE   id='.$intHistoryId.'
-                                        LIMIT   1
-                                    ');
-
-                $objResult = $objDatabase->Execute('SELECT  *
-                                                    FROM    '.DBPREFIX.'content_navigation_history
-                                                    WHERE   id='.$intHistoryId.'
-                                                    LIMIT   1
-                                                ');
-
-                $objContentTree = new ContentTree();
-                $arrCategory = $objContentTree->getThisNode($objResult->fields['parcat']);
-
-                if (!is_array($arrCategory) && $boolInsert) {
-                        $objSubResult = $objDatabase->Execute(' SELECT  `catid`
-                                                                FROM    '.DBPREFIX.'content_navigation
-                                                                WHERE   module=1 AND
-                                                                        cmd="lost_and_found" AND
-                                                                        lang='.$objResult->fields['lang'].'
-                                                                LIMIT   1
-                                                            ');
-                        $intParcat = intval($objSubResult->fields['catid']);
-                    } else {
-                        $intParcat = ($objResult->fields['parcat']);
-                    }
-
-                if ($boolInsert) {
-                    //remove entry from logfile first
-                    $objDatabase->Execute(' DELETE
-                                            FROM    '.DBPREFIX.'content_logfile
-                                            WHERE   `action`="delete" AND
-                                                    history_id='.$intHistoryId.'
-                                            LIMIT   1
-                                        ');
-
-                    $objDatabase->Execute(' INSERT
-                                            INTO    '.DBPREFIX.'content_navigation
-                                            SET     catid='.$objResult->fields['catid'].',
-                                                    parcat='.$intParcat.',
-                                                    catname="'.addslashes($objResult->fields['catname']).'",
-                                                    target="'.addslashes($objResult->fields['target']).'",
-                                                    displayorder='.$objResult->fields['displayorder'].',
-                                                    displaystatus="'.$objResult->fields['displaystatus'].'",
-                                                    cachingstatus="'.$objResult->fields['cachingstatus'].'",
-                                                    username="'.addslashes($objResult->fields['username']).'",
-                                                    changelog='.time().',
-                                                    cmd="'.addslashes($objResult->fields['cmd']).'",
-                                                    lang='.$objResult->fields['lang'].',
-                                                    module='.$objResult->fields['module'].',
-                                                    startdate="'.$objResult->fields['startdate'].'",
-                                                    enddate="'.$objResult->fields['enddate'].'",
-                                                    protected='.$objResult->fields['protected'].',
-                                                    frontend_access_id='.$objResult->fields['frontend_access_id'].',
-                                                    backend_access_id='.$objResult->fields['backend_access_id'].',
-                                                    themes_id='.$objResult->fields['themes_id'].'
-                            ON DUPLICATE KEY UPDATE catid='.$objResult->fields['catid'].',
-                                                    parcat='.$intParcat.',
-                                                    catname="'.addslashes($objResult->fields['catname']).'",
-                                                    target="'.addslashes($objResult->fields['target']).'",
-                                                    displayorder='.$objResult->fields['displayorder'].',
-                                                    displaystatus="'.$objResult->fields['displaystatus'].'",
-                                                    cachingstatus="'.$objResult->fields['cachingstatus'].'",
-                                                    username="'.addslashes($objResult->fields['username']).'",
-                                                    changelog='.time().',
-                                                    cmd="'.addslashes($objResult->fields['cmd']).'",
-                                                    lang='.$objResult->fields['lang'].',
-                                                    module='.$objResult->fields['module'].',
-                                                    startdate="'.$objResult->fields['startdate'].'",
-                                                    enddate="'.$objResult->fields['enddate'].'",
-                                                    protected='.$objResult->fields['protected'].',
-                                                    frontend_access_id='.$objResult->fields['frontend_access_id'].',
-                                                    backend_access_id='.$objResult->fields['backend_access_id'].',
-                                                    themes_id='.$objResult->fields['themes_id']);
-
-                    $objResult = $objDatabase->Execute('SELECT  *
-                                                        FROM    '.DBPREFIX.'content_history
-                                                        WHERE   id='.$intHistoryId.'
-                                                        LIMIT   1
-                                                    ');
-                    $objDatabase->Execute(' INSERT
-                                            INTO    '.DBPREFIX.'content
-                                            SET     id='.$objResult->fields['page_id'].',
-                                                    lang_id="'.addslashes($objResult->fields['lang_id']).'",
-                                                    content="'.addslashes($objResult->fields['content']).'",
-                                                    title="'.addslashes($objResult->fields['title']).'",
-                                                    metatitle="'.addslashes($objResult->fields['metatitle']).'",
-                                                    metadesc="'.addslashes($objResult->fields['metadesc']).'",
-                                                    metakeys="'.addslashes($objResult->fields['metakeys']).'",
-                                                    metarobots="'.addslashes($objResult->fields['metarobots']).'",
-                                                    css_name="'.addslashes($objResult->fields['css_name']).'",
-                                                    redirect="'.addslashes($objResult->fields['redirect']).'",
-                                                    expertmode="'.addslashes($objResult->fields['expertmode']).'"
-                            ON DUPLICATE KEY UPDATE id='.$objResult->fields['page_id'].',
-                                                    lang_id="'.addslashes($objResult->fields['lang_id']).'",
-                                                    content="'.addslashes($objResult->fields['content']).'",
-                                                    title="'.addslashes($objResult->fields['title']).'",
-                                                    metatitle="'.addslashes($objResult->fields['metatitle']).'",
-                                                    metadesc="'.addslashes($objResult->fields['metadesc']).'",
-                                                    metakeys="'.addslashes($objResult->fields['metakeys']).'",
-                                                    metarobots="'.addslashes($objResult->fields['metarobots']).'",
-                                                    css_name="'.addslashes($objResult->fields['css_name']).'",
-                                                    redirect="'.addslashes($objResult->fields['redirect']).'",
-                                                    expertmode="'.addslashes($objResult->fields['expertmode']).'"');
-                } else {
-                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
-                                            SET     parcat='.$intParcat.',
-                                                    catname="'.addslashes($objResult->fields['catname']).'",
-                                                    target="'.addslashes($objResult->fields['target']).'",
-                                                    displayorder='.$objResult->fields['displayorder'].',
-                                                    displaystatus="'.$objResult->fields['displaystatus'].'",
-                                                    cachingstatus="'.$objResult->fields['cachingstatus'].'",
-                                                    username="'.addslashes($objResult->fields['username']).'",
-                                                    changelog='.time().',
-                                                    cmd="'.addslashes($objResult->fields['cmd']).'",
-                                                    module='.$objResult->fields['module'].',
-                                                    startdate="'.$objResult->fields['startdate'].'",
-                                                    enddate="'.$objResult->fields['enddate'].'",
-                                                    protected='.$objResult->fields['protected'].',
-                                                    frontend_access_id='.$objResult->fields['frontend_access_id'].',
-                                                    backend_access_id='.$objResult->fields['backend_access_id'].',
-                                                    themes_id='.$objResult->fields['themes_id'].'
-                                            WHERE   catid='.$objResult->fields['catid'].'
-                                            AND     lang='.$objResult->fields['lang'].'
-                                            LIMIT   1
-                                        ');
-
-                    $objResult = $objDatabase->Execute('SELECT  *
-                                                        FROM    '.DBPREFIX.'content_history
-                                                        WHERE   id='.$intHistoryId.'
-                                                        LIMIT   1
-                                                    ');
-                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content
-                                            SET     content="'.addslashes($objResult->fields['content']).'",
-                                                    title="'.addslashes($objResult->fields['title']).'",
-                                                    metatitle="'.addslashes($objResult->fields['metatitle']).'",
-                                                    metadesc="'.addslashes($objResult->fields['metadesc']).'",
-                                                    metakeys="'.addslashes($objResult->fields['metakeys']).'",
-                                                    metarobots="'.addslashes($objResult->fields['metarobots']).'",
-                                                    css_name="'.addslashes($objResult->fields['css_name']).'",
-                                                    redirect="'.addslashes($objResult->fields['redirect']).'",
-                                                    expertmode="'.addslashes($objResult->fields['expertmode']).'"
-                                            WHERE   id='.$objResult->fields['page_id'].'
-                                            AND     lang_id='.addslashes($objResult->fields['lang_id']).'
-                                            LIMIT   1
-                                        ');
+                while (!$objHistoryResult->EOF) {
+                    $this->restoreHistory($objHistoryResult->fields['id'], $boolInsert);
+                    $objHistoryResult->MoveNext();
                 }
-                $objHistoryResult->MoveNext();
+            }else{
+                $this->restoreHistory($intHistoryId, $boolInsert);
             }
 
            //write caching-file if enabled
@@ -617,8 +588,7 @@ class ContentWorkflow {
 
             $this->strOkMessage = $_CORELANG['TXT_HISTORY_RESTORED'];
         }
-
-        return intval($objResult->fields['page_id']);
+        return intval($objResult->fields['catid']);
     }
 
 
