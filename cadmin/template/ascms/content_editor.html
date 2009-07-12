@@ -283,21 +283,14 @@ function openWindow(theURL,winName,features){
 }
 
 (function(){  //wrap in anonyomous function to avoid polluting the global namespace
-
 var getFrameContent = function(){
     var $form = $J('form[name=formContent]');
-    if($J('iframe:visible', $form).length == 1){
-//        var $frame = $J('form[name=formContent] iframe').contents();
-//        return $frame.find('textarea').length == 0
-//                ? $frame.find('iframe').contents().find('body').html()
-//                : $frame.find('textarea').val();
-          return FCKeditorAPI.GetInstance('html').GetData(true);
+    if(!_CONTREXX_EXPERT_MODE){
+        return FCKeditorAPI.GetInstance('html').GetData(true);
     }else if($J('iframe:hidden', $form).length == 1){
         return $J('textarea[name=html]', $form).val();
     }
 }
-
-
 
 var previewContent = function(){
     var content = getFrameContent();
@@ -332,10 +325,6 @@ var setFrameContent = function(html){
     $J('form[name=formContent] input[name=html]').val(html);
     $J('form[name=formContent] textarea[name=html]').val(html);
     FCKeditorAPI.GetInstance('html').SetData(html);
-//    var $frame = $J('form[name=formContent] iframe').contents();
-//    $frame.find('textarea').length == 0
-//        ? $frame.find('iframe').contents().find('body').html(html)
-//        : $frame.find('textarea').val(html);
 }
 
 var setEditor = function(){
@@ -377,6 +366,7 @@ var submitForm = function(event){
         $J('select[name=assignedBlocks\[\]]', $form).children().attr('selected', 'selected');
         var postData = $form.serialize();
         var contentData = $J('input[name=html]').val();
+//        var contentData = getFrameContent();
 
         postData += '&'+$J.param({  html:   contentData,
                                     langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
@@ -454,13 +444,12 @@ var filterInputs = function(){
     return $J(this).attr('id') != 'selectedChangelogId';
 }
 
-//TODO settimeout arguments callee switchTab
 var switchTab = function(aElement){
+    $J('#contentLanguages li a').unbind('click');
+    $J('#ajaxbusy,#ajaxwait').show();
     var $form = $J('form[name=formContent]');
     var $inputs = $J('input[type=checkbox],input[type=radio]', $form).filter(filterInputs);
     $inputs.removeAttr('disabled', 'disabled');
-    $J('#ajaxbusy,#ajaxwait').show();
-    $J('#contentLanguages li a').unbind('click');
     swapLanguage(aElement);
     makeTabActive(aElement);
     $J('form[name=formContent] input').removeAttr('disabled');
@@ -536,14 +525,6 @@ var swapLanguage = function(aElement){
             return;
         }
         $J(this).data(lastActive, $J(this).attr('checked'));
-//        $J(this).data($a.text()) === undefined
-//            ? $J(this).attr('checked', 'checked')
-//            : $J(this).attr('checked', (
-//                                         $J(this).data($a.text())
-//                                         ? 'checked'
-//                                         : false
-//                                       )
-//            );
         if($J(this).data($a.text()) === undefined){
             $J(this).attr('checked', 'checked');
         }else{
@@ -558,15 +539,6 @@ var swapLanguage = function(aElement){
             return;
         }
         $J(this).data(lastActive, $J(this).attr('checked'));
-//        $J(this).data($a.text()) === undefined
-//            ? $J(this).attr('checked', false)
-//            : $J(this).attr('checked', (
-//                                         $J(this).data($a.text())
-//                                         ? 'checked'
-//                                         : false
-//                                       )
-//            );
-
         if($J(this).data($a.text()) === undefined){
             $J(this).attr('checked', false);
         }else{
@@ -576,7 +548,6 @@ var swapLanguage = function(aElement){
         }
     });
 
-//    setEditor();
     $J('input', $form).attr('disabled', 'disabled');
 
     $form.find('select').each(function(){
@@ -801,12 +772,11 @@ var saveFormElementData = function(event, lang){
 }
 
 //(function(){$J('#contentLanguages li a.inactive').eq(0).click();setTimeout(arguments.callee,100)})();
-
 $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
     $("#ajaxbusy").css({opacity: 0.75}).show();
     $('#ajaxwait').show();
     var $form = $('form[name=formContent]');
-
+    window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
     //add global ajax evenet handlers
     $("#ajaxbusy")
     .bind("ajaxStart", function(){
@@ -821,7 +791,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         window._CONTREXX_REQUEST_ACTIVE = false;
         var x = setTimeout(function(){
             $('#ajaxbusy,#ajaxwait').hide();
-        }, 3000);//hide after 3 secs if still visible
+        }, 5000);//hide after 5 secs if still visible
     }   );
 
      //set default options
@@ -897,7 +867,7 @@ if(typeof console === "undefined"){
         var x = setTimeout(arguments.callee, 200);
         return false;
     }else{
-        if(FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE){
+        if(FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE || $J('form[name=formContent] input[name=TypeSelection]:checked').val() == 'redirect'){
             $J('#ajaxbusy,#ajaxwait').hide();
         }
     }
