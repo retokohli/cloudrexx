@@ -12,6 +12,7 @@
  * Includes
  */
 require_once ASCMS_MODULE_PATH.'/knowledge/lib/knowledgeLib.class.php';
+require_once ASCMS_MODULE_PATH.'/knowledge/lib/knowledgePaging.class.php';
 
 define("ACCESS_ID_KNOWLEDGE", 129);
 define("ACCESS_ID_OVERVIEW", 130);
@@ -801,7 +802,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
         } catch (DatabaseError $e) {
 
         }
-        $articlelist = $this->parseArticleList($articles, null, count($articles), 0, true);
+        $paging = "";
+        $articlelist = $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_LAST_ENTRIES'], 
+            $paging, true);
 
 
         $this->pageTitle = $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'];
@@ -882,7 +885,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
      * @param $category Category information
      * @return String
      */
-    private function parseArticleList($articles, $categoryname="", $count, $position, $standalone=false)
+    private function parseArticleList($articles, $categoryname="", $paging, $standalone=false)
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
@@ -904,7 +907,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "TXT_ACTIONS"       => $_ARRAYLANG['TXT_KNOWLEDGE_ACTIONS'],
             "TXT_CATEGORY_NAME" => $categoryname ,
             // getPaging(count, position, extraargv, paging-text, showeverytime, limit)
-            //"PAGING"            => getPaging()
+            "PAGING"            => $paging
         ));
         
         if (!empty($articles)) {
@@ -936,6 +939,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $tpl->parse("content");
         return $tpl->get("content");
     }
+
     
     /**
      * Get Articles
@@ -949,9 +953,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
      */
     private function getArticles()
     {
-        global $_LANGID, $_ARRAYLANG, $_CORELANG;
+        global $_LANGID, $_ARRAYLANG, $_CORELANG, $_CONFIG;
         
         $id = intval($_GET['id']);
+        $position = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
         
         try {
             $articles = $this->articles->getArticlesByCategory($id);
@@ -960,7 +965,12 @@ class KnowledgeAdmin extends KnowledgeLibrary
             die($e->plain());
         }
 
-        $content = $this->parseArticleList($articles, $category['content'][$_LANGID]['name']);
+        $paging = getKnowledgePaging(count($articles), $position, 
+            'javascript: articles.getCategory('.$id.', %POS%)', '', true, 0);
+
+        $content = $this->parseArticleList(array_slice($articles, $position, $_CONFIG['corePagingLimit']),
+            $category['content'][$_LANGID]['name'], $paging);
+
         $response = Array();
         $response['list'] = $content;
         
