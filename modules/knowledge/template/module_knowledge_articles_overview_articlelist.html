@@ -9,6 +9,12 @@
         </tr>
     </thead>
 </table>-->
+<script type="text/javascript">
+/* <![CDATA[ */
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_SORT}"];
+/* ]]> */
+</script>
 <div style="min-height: 1%; height: 1%; float:left; width: 100%;">
     <table style="width: 100%; font-weight: bold;" class="adminlist" cellspacing="0" cellpadding="3">
         <tr>
@@ -17,7 +23,9 @@
             </th>
         </tr>
         <tr class="row3">
-            <td style="width: 75px;">{TXT_SORT}</td>
+            <td style="width: 20px;">
+                <img src="images/icons/note.gif" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+            </td>
             <td style="width: 50px;">{TXT_STATE}</td>
             <td>{TXT_QUESTION}</td>
             <td style="width: 50px;">{TXT_HITS}</td>
@@ -30,19 +38,21 @@
         <li id="article_{ARTICLEID}">
             <table style="width: 100%;">
                 <tr>
-                    <td class="drag_handle" style="width: 75px;" onmousedown="lastDragged={ARTICLEID}; handlerEvent();">
+                    <td class="drag_handle" style="width: 20px; vertical-align: top;" onmousedown="lastDragged={ARTICLEID}; handlerEvent();">
                         <img src="../images/modules/knowledge/sort.gif" style="boder: none;" />
                     </td>
-                    <td style="width: 50px;">
+                    <td style="width: 50px; vertical-align: top; padding-top: 6px;">
                         <a href="javascript: void(0);" onclick="switchActive({ARTICLEID}, this, {ACTIVE_STATE})">
                            <img src="images/icons/led_{CATEGORY_ACTIVE_LED}.gif"  alt="switch active state" style="border: none;" />
                         </a>
                     </td>
-                    <td style="padding-right: 15px;"><a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}">{QUESTION}</a></td>
-                    <td style="width: 50px;">
+                    <td style="padding-right: 15px; vertical-align: top;">
+                        <a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}">{QUESTION}</a>
+                    </td>
+                    <td style="width: 50px; vertical-align: top;">
                         {HITS}
                     </td>
-                    <td style="width: 180px;">
+                    <td style="width: 180px; vertical-align: top;">
                         <div id="rating{ARTICLEID}"></div>
                         <script type="text/javascript">
                             /* <![CDATA[ */
@@ -54,7 +64,7 @@
                             /* ]]> */
                         </script>
                     </td>
-                    <td style="width: 50px; text-align: right;">
+                    <td style="width: 50px; text-align: right; vertical-align: top;">
                         <a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}" title="{TXT_IMGALT_EDIT}">
                             <img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" />
                         </a>
