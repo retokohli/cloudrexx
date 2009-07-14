@@ -216,6 +216,10 @@ var updateSort = function(id)
         });
 }
 
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_SORT}"];
+
+
 //]]>
 </script>
 
@@ -229,7 +233,9 @@ var updateSort = function(id)
         </thead>
         <tbody>
             <tr class="row3">
-                <td style="width: 75px;"><strong>{TXT_SORT}</strong></td>
+                <td style="width: 20px;">   
+                    <img src="images/icons/note.gif" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+                </td>
                 <td style="width: 50px;"><strong>#</strong></td>
                 <td><strong>{TXT_NAME}</strong></td>
                 <td style="width: 100px;"><strong>{TXT_ENTRIES_AMOUNT}</strong></td>
@@ -250,7 +256,7 @@ var updateSort = function(id)
                     <li id="category_{CATEGORY_ID}" style="background-color: {CSS_BGCOLOR};">
                         <table style="width: 100%;">
                             <tr>
-                                <td style="width: 75px;   cursor: move;" class="drag_handle_{SORTABLE_ID}" onmousedown="lastDragged = {CATEGORY_ID}; handlerEvent();">
+                                <td style="width: 20px; cursor: move;" class="drag_handle_{SORTABLE_ID}" onmousedown="lastDragged = {CATEGORY_ID}; handlerEvent();">
                                     <img src="../images/modules/knowledge/sort.gif" style="boder: none;" />
                                 </td>
                                 <td style="width: 50px;">
