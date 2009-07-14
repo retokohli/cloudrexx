@@ -18,7 +18,7 @@ var Articles = function() {
 /**
  * Get the categorie's articles
  */
-Articles.prototype.getCategory = function(id) {
+Articles.prototype.getCategory = function(id, pos) {
     
     this.setLoading();
     
@@ -28,7 +28,8 @@ Articles.prototype.getCategory = function(id) {
             cmd     : "knowledge",
             section : "articles",
             act     : "getArticles",
-            id      : id
+            id      : id,
+            pos     : pos
         },
         onSuccess : function(transport) {
             response = transport.responseText.evalJSON();
