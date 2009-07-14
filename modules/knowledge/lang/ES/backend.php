@@ -276,4 +276,5 @@ $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_BEST_RATED_DESCRIPTION'] = "Puntuaci&oacu
 $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_MOST_READ_DESCRIPTION'] = "Art&iacute;los m&aacute;s le&iacute;dos";
 $_ARRAYLANG['TXT_KNOWLEDGE_INDEX'] = "Glossar-Indexbuchstabe";
 $_ARRAYLANG['TXT_KNOWLEDGE_NO_INDEX'] = "Kein Eintrag im Glossar";
+$_ARRAYLANG['TXT_KNOWLEDGE_LAST_ENTRIES'] = "10 newest entries";
 ?>
