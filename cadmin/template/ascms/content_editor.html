@@ -346,6 +346,7 @@ var submitForm = function(event){
     event.preventDefault();
     $J('#contentLanguages li a').unbind('click');
     selectTab('content1');
+    _CONTREXX_FORCE_SWAP = true;
     var $form   = $J('form[name=formContent]');
     var pageId  = $J('input[name=pageId]', $form).val();
     var $active = $J('#contentLanguages li a.active', $form);
@@ -365,8 +366,8 @@ var submitForm = function(event){
         $J('select[name=assignedBackendGroups\[\]]', $form).children().attr('selected', 'selected');
         $J('select[name=assignedBlocks\[\]]', $form).children().attr('selected', 'selected');
         var postData = $form.serialize();
-        var contentData = $J('input[name=html]').val();
-//        var contentData = getFrameContent();
+
+        var contentData = $J('input[name=html]', $form).data(langName);
 
         postData += '&'+$J.param({  html:   contentData,
                                     langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
@@ -404,6 +405,7 @@ var submitForm = function(event){
         });
     });
     switchTab($active.get(0));
+    _CONTREXX_FORCE_SWAP = false;
     $J("#ajaxbusy,#ajaxwait").hide();
     return false;
 }
@@ -469,9 +471,11 @@ var getTabData = function(a){
 
 var swapLanguage = function(aElement){
     var $a = $J(aElement);
-    if($a.is('.active')){
+    if($a.is('.active') && !_CONTREXX_FORCE_SWAP){
         return false;
     }
+
+
     $J('#ajaxbusy,#ajaxwait').show();
     var lastActive = $J('#contentLanguages li a.active').text();
     var $form = $J('form[name=formContent]');
@@ -777,6 +781,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     $('#ajaxwait').show();
     var $form = $('form[name=formContent]');
     window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
+    window._CONTREXX_FORCE_SWAP = false;
     //add global ajax evenet handlers
     $("#ajaxbusy")
     .bind("ajaxStart", function(){
@@ -875,6 +880,11 @@ if(typeof console === "undefined"){
 
 function FCKeditor_OnComplete( editor ){ //hide wait layer on editor load
     if(editor.Name == 'html'){
+//        editor.Events.AttachEvent( 'OnSelectionChange', function(){
+//            html = editor.GetData(true);
+//            $J('form[name=formContent] input[name=html]').val(html);
+//            $J('form[name=formContent] textarea[name=html]').val(html);
+//        });
         $J('#ajaxbusy,#ajaxwait').hide();
     }
 }
