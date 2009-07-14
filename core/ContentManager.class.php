@@ -932,14 +932,15 @@ class ContentManager
         }
         if($pageId == 0){ header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); }
 
+        $objRS = $objDatabase->Execute('SELECT `lang` FROM `'.DBPREFIX.'content_navigation` WHERE `catid`='.$pageId.' ORDER BY `lang` ASC');
+        $arrContentLanguages = array();
+        $this->firstActiveLang = $langId = $objRS->fields['lang'];
+
         if ($this->_checkModificationPermission($pageId, $langId)) {
             $_backendPermissions = true;
         } else {
             $_backendPermissions = false;
         }
-        $objRS = $objDatabase->Execute('SELECT `lang` FROM `'.DBPREFIX.'content_navigation` WHERE `catid`='.$pageId.' ORDER BY `lang` ASC');
-        $arrContentLanguages = array();
-        $this->firstActiveLang = $langId = $objRS->fields['lang'];
         while(!$objRS->EOF){
             $arrContentLanguages[$objRS->fields['lang']] = array('id' => $objRS->fields['lang']);
             $objRS->MoveNext();
