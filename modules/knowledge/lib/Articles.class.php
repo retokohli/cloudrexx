@@ -460,7 +460,7 @@ class KnowledgeArticles
      * Instead of doing a new request PHP could do the job itself, but
      * for performance reasons I let MySQL do it.
      * @param int $lang 
-     * @param int $amount
+     * @param int $amount If amount is null, all rows are returned
      * @return array
      */
     public function getMostRead($lang=1, $amount=5)
@@ -469,8 +469,12 @@ class KnowledgeArticles
         $lang = intval($lang);
         
         $query = $this->basequery;
-        $query .= " WHERE lang = ".$lang." ORDER BY hits DESC LIMIT ".$amount;
-        
+        $query .= " WHERE lang = ".$lang." ORDER BY hits DESC";
+       
+        if ($amount != null) {
+           $query .= " LIMIT ".$amount;
+        }         
+
         $articles = $this->readArticles(true, 0, 0, $query);
         return $articles;
     }
@@ -479,10 +483,10 @@ class KnowledgeArticles
      * Return the best reted articles
      *
      * @param int $lang
-     * @param int $amount
+     * @param int $amount if amount is null, all rows are returned
      * @return array
      */
-    public function getBestRated($lang=0, $amount=5)
+    public function getBestRated($lang=1, $amount=5)
     {
         $amount = intval($amount);
         $lang = intval($lang);
@@ -508,8 +512,11 @@ class KnowledgeArticles
                     INNER JOIN  `".DBPREFIX."module_knowledge_article_content` 
                                 AS content ON articles.id = content.article
                     WHERE lang = ".$lang."
-                    ORDER BY rating DESC
-                    LIMIT ".$amount;
+                    ORDER BY rating DESC";
+        if ($amount != null) {
+            $query .= " LIMIT ".$amount;
+
+        }
         $articles = $this->readArticles(true, 0, 0, $query);
         return $articles;
     }

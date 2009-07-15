@@ -2,7 +2,7 @@
 /**
  * Knowledge backend stuff
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Stefan Heinemann <sh@comvation.com>
+* @author      Stefan Heinemann <sh@comvation.com>
  * @package     contrexx
  * @subpackage  module_knowledge
  */
@@ -182,6 +182,14 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     case 'getArticles':
                         Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
                         $this->getArticles();
+                        break;
+                    case 'getArticlesByRating':
+                        Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
+                        $this->getArticlesByRating();
+                        break;
+                    case 'getArticlesByViews':
+                        Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
+                        $this->getArticlesByViews();
                         break;
                     case 'sort':
                         $this->checkAjaxAccess(ACCESS_ID_EDIT_ARTICLES);
@@ -804,7 +812,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         }
         $paging = "";
         $articlelist = $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_LAST_ENTRIES'], 
-            $paging, true);
+            $paging, true, false);
 
 
         $this->pageTitle = $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'];
@@ -814,7 +822,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         try {
             $this->categories->readCategories(); 
-            $catTree = $this->overviewCategoryTree($this->categories->categoryTree);
+            $catTree = $this->overviewCategoryTreeSpawner($this->categories->categoryTree);
         } catch (DatabaseError $e) {
             $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];
             $this->errorMessage .= $e->formatted();
@@ -836,6 +844,21 @@ class KnowledgeAdmin extends KnowledgeLibrary
         ));
         
         return $this->tpl->get();
+    }
+
+    /**
+     * The spawner for the category tree
+     */
+    private function overviewCategoryTreeSpawner($catTree)
+    {
+        global $_ARRAYLANG;
+
+        $this->tpl->setGlobalVariable(array(
+            'BEST_RATED'        => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'],
+            'MOST_READ'         => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES']
+        ));
+
+        return $this->overviewCategoryTree($catTree);
     }
     
     /**
@@ -885,9 +908,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
      * @param $category Category information
      * @return String
      */
-    private function parseArticleList($articles, $categoryname="", $paging, $standalone=false)
+    private function parseArticleList($articles, $categoryname="", $paging, $standalone=false, $showSort=true)
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
+
 
         $tpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH."/knowledge/template/");
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -909,6 +933,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
             // getPaging(count, position, extraargv, paging-text, showeverytime, limit)
             "PAGING"            => $paging
         ));
+
+        if ($showSort) {
+            $tpl->touchBlock('sort-th');
+        }
         
         if (!empty($articles)) {
             foreach ($articles as $key => $article) {
@@ -922,6 +950,14 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     "VOTECOUNT"             => $article['votes'],
                     "MAX_RATING"            => $this->settings->get("max_rating")
                 ));
+
+                if ($showSort) {
+                    $tpl->setVariable(array(
+                        'ARTICLEID_DRAG'    =>  $key
+                    ));
+                    $tpl->parse('sort-td');
+                }
+
                 $tpl->parse("row");
             }
         } else {
@@ -980,7 +1016,78 @@ class KnowledgeAdmin extends KnowledgeLibrary
         
         die($jsonResponse);
     }
-    
+
+    /**
+     * Return articles according to their rating
+     *
+     * This function is called through ajax.
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     * @global $_CORELANG
+     */
+    private function getArticlesByRating()
+    {
+        global $_LANGID, $_ARRAYLANG, $_CORELANG, $_CONFIG;
+
+        $position = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+
+        try {
+            $articles = $this->articles->getBestRated($_LANGID, null);
+        } catch (DatabaseError $e) {
+            die($e->plain());
+        }
+
+        $paging = getKnowledgePaging(count($articles), $position,
+            'javascript: articles.getBestRated(%POS%)', '', true, 0);
+
+        $content = $this->parseArticleList(array_slice($articles, $position, $_CONFIG['corePagingLimit']),
+            $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], $paging, false, false);
+
+        $response = Array();
+        $response['list'] = $content;
+
+        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
+        $objJson = new Services_JSON();
+        $jsonResponse = $objJson->encode($response);
+
+        die($jsonResponse);
+    }
+
+    /**
+    * Return articles according to their rating
+    *
+    * This function is called through ajax.
+    * @global $_LANGID
+    * @global $_ARRAYLANG
+    * @global $_CORELANG
+    */
+    private function getArticlesByViews()
+    {
+        global $_LANGID, $_ARRAYLANG, $_CORELANG, $_CONFIG;
+
+        $position = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+
+        try {
+            $articles = $this->articles->getMostRead($_LANGID, null);
+        } catch (DatabaseError $e) {
+            die($e->plain());
+        }
+
+        $paging = getKnowledgePaging(count($articles), $position,
+            'javascript: articles.getMostRead(%POS%)', '', true, 0);
+
+        $content = $this->parseArticleList(array_slice($articles, $position, $_CONFIG['corePagingLimit']),
+            $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], $paging, false, false);
+
+        $response = Array();
+        $response['list'] = $content;
+
+        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
+        $objJson = new Services_JSON();
+        $jsonResponse = $objJson->encode($response);
+
+        die($jsonResponse);
+    } 
     
     /**
      * Show the edit form

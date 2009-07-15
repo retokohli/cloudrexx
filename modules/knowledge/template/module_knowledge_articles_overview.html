@@ -39,7 +39,44 @@ Articles.prototype.getCategory = function(id, pos) {
             initSortableArea();
         }
     })
-     
+}
+
+Articles.prototype.getBestRated = function(pos) {
+    this.setLoading();
+
+    new Ajax.Request('index.php', {
+        method : 'get',
+        parameters : {
+            cmd     : 'knowledge',
+            section : 'articles',
+            act     : 'getArticlesByRating',
+            pos     : pos
+        },
+        onSuccess : function(transport) {
+            response = transport.responseText.evalJSON();
+            $('articles').update(response.list);
+            setRows();
+        }
+    });
+}
+
+Articles.prototype.getMostRead = function(pos) {
+    this.setLoading();
+
+    new Ajax.Request('index.php', {
+        method : 'get',
+        parameters : {
+            cmd     : 'knowledge',
+            section : 'articles',
+            act     : 'getArticlesByViews',
+            pos     : pos
+        },
+        onSuccess : function(transport) {
+            response = transport.responseText.evalJSON();
+            $('articles').update(response.list);
+            setRows();
+        }
+    });
 }
 
 /**
@@ -49,25 +86,28 @@ Articles.prototype.getCategory = function(id, pos) {
  */
 Articles.prototype.setLoading = function()
 {
+    /*
     if (loading) {
         return;
     }
+    */
     
     if ($('inner_right')) {
         $('articles').removeChild($('inner_right'));
     }
     
-    var overlay = document.createElement("div");
-    overlay.id = "overlay";
-    $('articles').appendChild(overlay);
+    //var overlay = document.createElement("div");
+    //overlay.id = "overlay";
+    //$('articles').appendChild(overlay);
+    $('articles').update('<div id="loading">&nbsp;</div>');
     
-    var loading = document.createElement("div");
-    var text = document.createTextNode(" ");
-    loading.appendChild(text);
-    loading.id = "loading";
+    //var loading = document.createElement("div");
+    //var text = document.createTextNode(" ");
+    //loading.appendChild(text);
+    //loading.id = "loading";
     
-    $('articles').appendChild(loading);
-    this.loading = true;
+    //$('articles').appendChild(loading);
+    //this.loading = true;
 }
 
 Articles.prototype.deleteRow = function(id)
@@ -112,6 +152,7 @@ var initSortableArea = function()
     if (editAllowed) {
         Sortable.create("articlelist", {
            onUpdate: function() {
+                console.log("hier");
                 setRows();
                 new Ajax.Request("index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=sort", {
                     method : "post",
@@ -238,7 +279,6 @@ var deleteArticle = function(id)
 
 </div>
 </div>
-
 <div id="categories">
     <table class="adminlist" style="width: 232px; border-collapse: collapse;">
         <tr>
@@ -255,7 +295,7 @@ var deleteArticle = function(id)
             <!-- BEGIN list -->
             <ul style="display: {CSS_DISPLAY};">
                 <!-- BEGIN row -->
-                <li style="{LAST_ROW}; clear: both;">
+                <li style="clear: both;">
                    <div style="float: left;">
                     <!-- BEGIN arrow -->
                     <img src="images/icons/sub_arrow.gif" class="sub_arrow" />
@@ -279,6 +319,24 @@ var deleteArticle = function(id)
             <!-- END list -->   
         <!-- END remove_area -->
         {CATLIST}
+        <ul>
+            <li style="clear: both; padding-top: 10px;">
+                <div style="float: left; margin-left: 33px;">
+                    <img src="../images/modules/knowledge/favorites.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
+                </div>
+                <div>
+                    <a href="javascript: void(0);" onclick="articles.getBestRated(0)">{BEST_RATED}</a>
+                </div>
+            </li>
+            <li style="clear: both; padding-top: 5px;">
+                <div style="float: left; margin-left: 33px;">
+                    <img src="../images/modules/knowledge/favorites.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
+                </div>
+                <div>
+                    <a href="javascript: void(0);" onclick="articles.getMostRead()">{MOST_READ}</a>
+                </div>
+            </li>
+        </ul>
     </div>
 </div>
 

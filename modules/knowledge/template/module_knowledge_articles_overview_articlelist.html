@@ -23,9 +23,11 @@ Text[0]=["","{TXT_SORT}"];
             </th>
         </tr>
         <tr class="row3">
+            <!-- BEGIN sort-th -->
             <td style="width: 20px;">
                 <img src="images/icons/note.gif" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
             </td>
+            <!-- END sort-th -->
             <td style="width: 50px;">{TXT_STATE}</td>
             <td>{TXT_QUESTION}</td>
             <td style="width: 50px;">{TXT_HITS}</td>
@@ -38,9 +40,11 @@ Text[0]=["","{TXT_SORT}"];
         <li id="article_{ARTICLEID}">
             <table style="width: 100%;">
                 <tr>
-                    <td class="drag_handle" style="width: 20px; vertical-align: top;" onmousedown="lastDragged={ARTICLEID}; handlerEvent();">
+                    <!-- BEGIN sort-td -->
+                    <td class="drag_handle" style="width: 20px; vertical-align: top;" onmousedown="lastDragged={ARTICLEID_DRAG}; handlerEvent();">
                         <img src="../images/modules/knowledge/sort.gif" style="boder: none;" />
                     </td>
+                    <!-- END sort-td -->
                     <td style="width: 50px; vertical-align: top; padding-top: 6px;">
                         <a href="javascript: void(0);" onclick="switchActive({ARTICLEID}, this, {ACTIVE_STATE})">
                            <img src="images/icons/led_{CATEGORY_ACTIVE_LED}.gif"  alt="switch active state" style="border: none;" />
@@ -115,7 +119,7 @@ Text[0]=["","{TXT_SORT}"];
 /* <![CDATA[  */
 
 setRows();
-initSortableArea();
+//initSortableArea();
 
 /* ]]> */
 </script>
