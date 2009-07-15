@@ -22,6 +22,7 @@
     background-position: center;
 }
 
+/*
 #knowledge_articles #overlay {
     background-image: url(overlay_grey.png);
     width: 100%;
@@ -30,6 +31,7 @@
     top:0px;
     left: 0px;
 }
+*/
 
 #knowledge_articles #articlelist {
     list-style: none;
@@ -75,8 +77,8 @@
 
 #knowledge_articles #catlist {
     width: 230px;
-    height: 270px;
-    overflow: scroll;
+    height: 400px;
+    overflow: auto;
     border: 1px solid #0A50A1;
     padding: 5px 0px;
     border-top: none;
