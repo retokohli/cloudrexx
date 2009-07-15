@@ -1032,4 +1032,6 @@ $_ARRAYLANG['TXT_SUCCESS_PAGE_SAVED'] = "Seite gespeichert:";
 $_ARRAYLANG['TXT_ERROR_COULD_NOT_GET_DATA'] = "Daten konnten nicht vom Server geholt werden";
 $_ARRAYLANG['TXT_CONTENT_PLEASE_WAIT'] = "Bitte warten...";
 $_ARRAYLANG['TXT_DETAIL'] = "Details";
+$_ARRAYLANG['TXT_PRINTSHOP_MODULE_DESCRIPTION'] = "Online Shop für Drucksachen";
+$_ARRAYLANG['TXT_PRINTSHOP_MODULE'] = "Printshop";
 ?>
