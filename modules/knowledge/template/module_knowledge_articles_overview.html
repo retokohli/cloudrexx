@@ -152,7 +152,6 @@ var initSortableArea = function()
     if (editAllowed) {
         Sortable.create("articlelist", {
            onUpdate: function() {
-                console.log("hier");
                 setRows();
                 new Ajax.Request("index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=sort", {
                     method : "post",
