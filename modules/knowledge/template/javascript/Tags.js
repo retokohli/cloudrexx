@@ -41,6 +41,7 @@ function Tags(id, lang)
      * The event handler
      */
     var ref = this;
+
     this.tags.onkeyup = function() {
         ref.typing();
     }
@@ -166,7 +167,6 @@ Tags.prototype.typing = function()
  */
 Tags.prototype.searchValue = function(val)
 {
-    console.log(val);
     var keys = this.availableTags.keys();
     var response = $H();
     for (var i = 0; i < keys.length; i++) {
