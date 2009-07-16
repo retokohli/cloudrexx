@@ -61,6 +61,9 @@ Modul: Digital Asset Management
 - Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
 - XHTML validierte Ausgabe.
 
+Modul: Forum
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
+
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 
