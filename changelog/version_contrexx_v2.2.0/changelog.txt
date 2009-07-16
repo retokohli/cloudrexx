@@ -88,6 +88,9 @@ Modul: Digital Asset Management
 Modul: Dokumenten System
 - Kompatibel mit der Alias Verwaltung.
 
+Modul: Forum
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
+
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 
