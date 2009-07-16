@@ -207,4 +207,5 @@ $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'] = "Denne nyhed kan kun ses af bestemte
 $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Thumbnail";
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
+$_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Image-Link to the news message";
 ?>
