@@ -12,6 +12,10 @@
  * @ignore
  */
 require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/u2u/lib/u2uLib.class.php';
 
 /**
 * Frontend for the user management
@@ -159,6 +163,8 @@ class Access extends AccessLib
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', ($objGroup = $objFWUser->objGroup->getGroup($groupId) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
 
+            $arrBuddyIds = u2uLibrary::getIdsOfBuddies();
+
             $nr = 0;
             while (!$objUser->EOF) {
                 $this->parseAccountAttributes($objUser);
@@ -186,7 +192,7 @@ class Access extends AccessLib
                 }
 
                 if($this->_objTpl->blockExists('u2u_addaddress')){
-                    if($objUser->getId() == $objFWUser->objUser->getId()){
+                    if($objUser->getId() == $objFWUser->objUser->getId() || in_array($objUser->getId(), $arrBuddyIds)){
                         $this->_objTpl->hideBlock('u2u_addaddress');
                     }else{
                         $this->_objTpl->touchBlock('u2u_addaddress');
