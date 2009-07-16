@@ -3,10 +3,28 @@
 /* <![CDATA[ */
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_SORT}"];
+
+
+var hoverIn = function(obj) {
+	if (navigator.appName.indexOf("Explorer") == -1) {
+		obj.style.background = '#ffffcc';
+	}
+}
+
+var hoverOut = function(obj) {
+	if (navigator.appName.indexOf("Explorer") == -1) {
+		obj.style.background = 'transparent';
+	}
+}
+
+if (navigator.appName.indexOf("Explorer") == -1) {
+	$('not_ie').style.width = "100%";
+}
+
 /* ]]> */
 </script>
 
-<div style="min-height: 1%; height: 1%; float:left; width: 100%;">
+<div style="min-height: 1%; height: 1%; float:left; " id="not_ie">
     <table style="width: 100%; font-weight: bold;" class="adminlist" cellspacing="0" cellpadding="3">
         <tr>
             <th colspan="6">
@@ -22,14 +40,15 @@ Text[0]=["","{TXT_SORT}"];
             <td style="width: 50px;">{TXT_STATE}</td>
             <td>{TXT_QUESTION}</td>
             <td style="width: 50px;">{TXT_HITS}</td>
-            <td style="width: 180px;">{TXT_RATING}</td>
+            <td style="width: 120px;">{TXT_RATING}</td>
             <td style="width: 50px;">{TXT_ACTIONS}</td>
         </tr>
     </table>
-    <ul id="articlelist">
-	<!-- BEGIN row -->
-	<li id="article_{ARTICLEID}" class="article_row">
-            <table style="width: 100%;">
+    <div>
+	    <ul id="articlelist"  >
+		<!-- BEGIN row -->
+			<li id="article_{ARTICLEID}" style=" z-index: 1000;">
+	            <table style="width: 100%">
                 <tr>
                     <!-- BEGIN sort-td -->
                     <td class="drag_handle" style="width: 20px; vertical-align: top;" onmousedown="lastDragged={ARTICLEID_DRAG}; handlerEvent();">
@@ -42,22 +61,27 @@ Text[0]=["","{TXT_SORT}"];
                         </a>
                     </td>
                     <td style="padding-right: 15px; vertical-align: top;">
-                        <a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}">{QUESTION}</a>
+                        <span onclick="location.href='index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}'" 
+							onmouseover="hoverIn(this)" onmouseout="hoverOut(this)" style="cursor: pointer; color: #000099;">{QUESTION}</span>
                     </td>
                     <td style="width: 50px; vertical-align: top;">
                         {HITS}
                     </td>
-                    <td style="width: 180px; vertical-align: top;">
-                        <div id="rating{ARTICLEID}"></div>
+                    <td style="width: 120px; vertical-align: top;">
+                    {VOTEVALUE} {TXT_BY} {VOTECOUNT} {TXT_VOTINGS}
+                    <!--!
+                       <div id="rating{ARTICLEID}"> </div>
                         <script type="text/javascript">
                             /* <![CDATA[ */
+                            
                             var rating{ARTICLEID} = new Rating({ARTICLEID}, {VOTEVALUE}, {
                                 stars : {MAX_RATING},
                                 locked : true,
                                 starPath : '../images/modules/knowledge/'
                             });
+                            
                             /* ]]> */
-                        </script>
+                        </script> -->
                     </td>
                     <td style="width: 50px; text-align: right; vertical-align: top;">
                         <a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}" title="{TXT_IMGALT_EDIT}">
@@ -70,15 +94,19 @@ Text[0]=["","{TXT_SORT}"];
                     </td>
                 </tr>
             </table>
-        </li>
-        <!-- END row -->
-        
-        <!-- BEGIN no_articles -->
-        <li>
-            {TXT_NO_ARTICLES}
-        </li>   
-        <!-- END no_articles -->
-    </ul>
+	        </li>
+	        <!-- END row -->
+	        
+	        <!-- BEGIN no_articles -->
+	        <li>
+	            {TXT_NO_ARTICLES}
+	        </li>   
+	        <!-- END no_articles -->
+	    </ul>
+    </div>
+    <br />
+    <br />
+    {PAGING}
 </div>
 
 <!-- BEGIN jsinit -->
@@ -86,17 +114,15 @@ Text[0]=["","{TXT_SORT}"];
 
 <script type="text/javascript">
 /* <![CDATA[  */
-
 setRows();
-initSortableArea();
+//initSortableArea();
 
 /* ]]> */
 </script>
 
  <!-- END jsinit -->
  <br style="clear: both;"/>
- <br />
-{PAGING}
+
 <!-- END content -->
 
 <!-- END module_knowledge_articles_overview_articlelist.html -->
