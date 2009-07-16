@@ -1131,6 +1131,10 @@ class ForumLibrary
     function updateViews($intThreadId, $postId = 0) {
         global $objDatabase;
 
+        if (checkForSpider()) {
+            return true;
+        }
+
         $where = '';
         if ($postId > 0) {
             $where = ' AND id='.intval($postId);
