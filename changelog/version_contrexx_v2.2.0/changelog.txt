@@ -26,6 +26,8 @@ News Manager
 - Die ID der Newsmeldungen wird bei der Übersicht im Backend aufgelistet.
 - Die Platzhalter [[NEWS_TEASER_TEXT]] und [[NEWS_CATEGORY_NAME]] werden beim
   Platzhalterverzeichnis im Backend aufgelistet.
+- Der neue Platzhalter [[NEWS_IMAGE_LINK]] erzeugt einen Bild-Link auf die
+  Detailseite der Newsmeldung.
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
