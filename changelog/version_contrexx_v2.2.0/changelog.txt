@@ -18,6 +18,9 @@ Benutzerverwaltung
   Kategorie beim Digital Asset Management Modul erstellt werden.
 - Das Aktualisierungsintervall der Benutzersitzungen in der Datenbank
   kann definiert werden.
+- Bei der Auflistung der Benutzer wird der Link 'zum Adressbuch hinzufügen'
+  nur dann angezeigt, sofern der jeweilige Benutzer nicht bereits im Adressbuch
+  enthalten ist.
 
 News Manager
 - Die ID der Newsmeldungen wird bei der Übersicht im Backend aufgelistet.
