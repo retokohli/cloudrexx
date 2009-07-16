@@ -509,8 +509,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     'SORTABLE_ID'               => $ul_id
 	   			));
             if ($level) {
-                $this->tpl->touchBlock("arrow");
-                $this->tpl->parse("arrow");
+//                $this->tpl->touchBlock("arrow");
+//                $this->tpl->parse("arrow");
             }
             $this->tpl->parse("row");
             $rows .= $this->tpl->get("row", true);
@@ -890,8 +890,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 "CSS_DISPLAY"               => ($level == 0) ? "" : "none",
                 "ENTRY_COUNT"               => $this->articles->countEntriesByCategory($key),
             ));
-            $this->tpl->touchBlock("arrow");
-            $this->tpl->parse("arrow");  
+//            $this->tpl->touchBlock("arrow");
+//            $this->tpl->parse("arrow");  
             $this->tpl->parse("row");
             $rows .= $this->tpl->get("row", true);
         }
@@ -1009,12 +1009,12 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         $response = Array();
         $response['list'] = $content;
-        
+       
         require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
         $jsonResponse = $objJson->encode($response);
-        
-        die($jsonResponse);
+        echo $jsonResponse;
+        die();
     }
 
     /**

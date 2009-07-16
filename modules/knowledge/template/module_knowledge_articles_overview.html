@@ -12,7 +12,7 @@ var editAllowed = {EDIT_ALLOWED};
 var notAllowedMsg = "{NOT_ALLOWED_MSG}";
 
 var Articles = function() {
-    
+   // constructor 
 }
 
 /**
@@ -33,7 +33,7 @@ Articles.prototype.getCategory = function(id, pos) {
         },
         onSuccess : function(transport) {
             response = transport.responseText.evalJSON();
-            $('articles').update(response.list);
+            $('articles').innerHTML= response.list;
             /*$('head').update(response.category);*/
             setRows();
             initSortableArea();
@@ -54,7 +54,7 @@ Articles.prototype.getBestRated = function(pos) {
         },
         onSuccess : function(transport) {
             response = transport.responseText.evalJSON();
-            $('articles').update(response.list);
+            $('articles').innerHTML = (response.list);
             setRows();
         }
     });
@@ -140,6 +140,9 @@ var setRows = function()
     nr = 1;
     rows.each(function(row) {
             row.style.backgroundColor = "";
+            if (row.removeClassName == undefined) {
+                Element.extend(row);
+            }
             row.removeClassName("li_row1");
             row.removeClassName("li_row2");
             row.addClassName("li_row"+((nr % 2) + 1));
@@ -294,20 +297,12 @@ var deleteArticle = function(id)
             <!-- BEGIN list -->
             <ul style="display: {CSS_DISPLAY};">
                 <!-- BEGIN row -->
-                <li style="clear: both;">
-                   <div style="float: left;">
-                    <!-- BEGIN arrow -->
-                    <img src="images/icons/sub_arrow.gif" class="sub_arrow" />
-                    <!-- END arrow -->
-                    
-                    <a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};">
-                        <img alt="" class="openClosePicture" src="images/icons/pluslink.gif" style="border: none;" />
-                    </a>
-                    
-                    <img src="../images/modules/knowledge/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
+                <li style="clear: both; width: 95%;">
+                    <div style="float: left; ">
+                        <img src="images/icons/sub_arrow.gif" class="sub_arrow" style="border: none;" /><a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};"><img alt="" class="openClosePicture" src="images/icons/pluslink.gif" style="border: none; margin: 2px;" /></a><img src="../images/modules/knowledge/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
                     </div>
                     
-                    <div>
+                    <div style="float: left;">
                         <a href="javascript: void(0);" onclick="articles.getCategory({ID})">{NAME}</a> ({ENTRY_COUNT})
                     </div>
                     {SUB}
@@ -319,16 +314,16 @@ var deleteArticle = function(id)
         <!-- END remove_area -->
         {CATLIST}
         <ul>
-            <li style="clear: both; padding-top: 10px;">
-                <div style="float: left; margin-left: 33px;">
+            <li style="clear: both; padding-top: 10px; width: 95%;">
+                <div style="float: left; margin-left: 33px; margin-left:16px\9;">
                     <img src="../images/modules/knowledge/favorites.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
                 </div>
                 <div>
                     <a href="javascript: void(0);" onclick="articles.getBestRated(0)">{BEST_RATED}</a>
                 </div>
             </li>
-            <li style="clear: both; padding-top: 5px;">
-                <div style="float: left; margin-left: 33px;">
+            <li style="clear: both; padding-top: 5px; width: 95%;">
+                    <div style="float: left; margin-left: 33px; margin-left:16px\9;">
                     <img src="../images/modules/knowledge/favorites.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
                 </div>
                 <div>
@@ -342,7 +337,7 @@ var deleteArticle = function(id)
 <div id="articles">
     {TXT_ARTICLES}
     <!--
-    <table id="inner_right" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%">
+    <table id="inner_right" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 95%">
         <tbody>
             <tr>
                 <td>{TXT_SELECT_CATEGORY}</td>
