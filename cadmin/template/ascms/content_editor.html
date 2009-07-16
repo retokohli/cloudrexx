@@ -345,6 +345,7 @@ var setEditor = function(){
 var submitForm = function(event){
     event.preventDefault();
     $J('#contentLanguages li a').unbind('click');
+    var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
     selectTab('content1');
     _CONTREXX_FORCE_SWAP = true;
     var $form   = $J('form[name=formContent]');
@@ -406,6 +407,10 @@ var submitForm = function(event){
     });
     switchTab($active.get(0));
     _CONTREXX_FORCE_SWAP = false;
+    if($J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
+        location.href = '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId;
+    }
+    selectTab(activeContentTab);
     $J("#ajaxbusy,#ajaxwait").hide();
     return false;
 }
@@ -475,6 +480,14 @@ var swapLanguage = function(aElement){
         return false;
     }
 
+    //reset undo history
+    var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
+    FCKUndo.SavedData = new Array() ;
+    FCKUndo.CurrentIndex = -1 ;
+    FCKUndo.TypesCount = 0 ;
+    FCKUndo.Changed = false ;
+    FCKUndo.Typing = false ;
+    FCKUndo.SaveLocked = false ;
 
     $J('#ajaxbusy,#ajaxwait').show();
     var lastActive = $J('#contentLanguages li a.active').text();
