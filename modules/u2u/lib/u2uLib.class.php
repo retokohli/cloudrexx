@@ -480,5 +480,33 @@ class u2uLibrary {
        //print_r($arrShowbuddies);
         return $arrShowbuddies;
     }
+
+    /**
+     * Get the User IDs of the currently logged-in user's buddies
+     *
+     * @global ADONewConnection
+     */
+    static function getIdsOfBuddies()
+    {
+        global $objDatabase;
+        static $arrIds;
+
+        if (!isset($arrIds)) {
+            $arrIds = array();
+
+            $objFWUser = FWUser::getFWUserObject();
+            if ($objFWUser->objUser->login()) {
+                $objResult = $objDatabase->Execute('SELECT `buddies_id` FROM `'.DBPREFIX.'module_u2u_address_list` WHERE `user_id` = '.$objFWUser->objUser->getId());
+                if ($objResult !== false) {
+                    while (!$objResult->EOF) {
+                        $arrIds[] = $objResult->fields['buddies_id'];
+                        $objResult->MoveNext();
+                    }
+                }
+            }
+        }
+
+        return $arrIds;
+    }
 }
 ?>
