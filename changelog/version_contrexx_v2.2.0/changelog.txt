@@ -22,6 +22,12 @@ Benutzerverwaltung
   nur dann angezeigt, sofern der jeweilige Benutzer nicht bereits im Adressbuch
   enthalten ist.
 
+Korrespondierende Mehrsprachigkeit 
+- Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
+
+Content Manager
+- Editeren einer Seite in mehreren Sprachen auf einmal
+
 News Manager
 - Die ID der Newsmeldungen wird bei der Übersicht im Backend aufgelistet.
 - Die Platzhalter [[NEWS_TEASER_TEXT]] und [[NEWS_CATEGORY_NAME]] werden beim
@@ -36,6 +42,9 @@ Modul: Digital Asset Management
 
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
+
+FCKEditor
+- Neue Version 2.6.4.1
 
 ****************************************
 * Behobene Fehler **********************
