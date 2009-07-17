@@ -886,10 +886,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     });
 
-    if($('input[name=expertmode]').attr('checked')){
-        $J('#ajaxbusy,#ajaxwait').hide(); //no need to wait for editor if in source mode
+    if($('input[name=expertmode]').attr('checked') || FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE){
+        $J('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
     }
-
     });
 })();//execute anonymous function
 
@@ -909,7 +908,7 @@ if(typeof console === "undefined"){
     }
 })();
 
-function FCKeditor_OnComplete( editor ){ //hide wait layer on editor load
+function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
     if(editor.Name == 'html'){
 //        editor.Events.AttachEvent( 'OnSelectionChange', function(){
 //            html = editor.GetData(true);
