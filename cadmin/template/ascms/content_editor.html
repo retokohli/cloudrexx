@@ -369,6 +369,10 @@ var submitForm = function(event){
         var postData = $form.serialize();
 
         var contentData = $J('input[name=html]', $form).data(langName);
+        if($J(this).closest('li').is(':last-child')){
+            postData += '&'+$J.param({lastUpdate: 1});
+            $J('#ajaxstatus').text('{TXT_PLEASE_WAIT_SITEMAP}');
+        }
 
         postData += '&'+$J.param({  html:   contentData,
                                     langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
@@ -376,6 +380,7 @@ var submitForm = function(event){
         $J('input[name=html]', $form).removeAttr('disabled');
         $J('textarea[name=html]', $form).removeAttr('disabled');
 
+        var last = false;
 
         $J.ajax({
             async:       false,
@@ -384,7 +389,12 @@ var submitForm = function(event){
             data:        postData,
             processData: false,
             dataType:    'json',
-            success:     submitSuccess,
+            success:     function(data, textStatus){
+                            submitSuccess(data, textStatus);
+                            if(typeof data == 'undefined' || data.lastUpdate){
+                                last = true;
+                            }
+                         },
             error:       submitError,
             type:        'POST',
             url:         '{DIRECTORY_INDEX}?cmd=content&act={CONTENT_FORM_ACTION}'
@@ -401,6 +411,12 @@ var submitForm = function(event){
                function(data){
                     $J('#content5').data(langName, data);
                     $J('#content5').html(data);
+                    if(last){ //only hide if it was the last update request
+                        $J("#ajaxbusy,#ajaxwait").hide();
+                        $J('#ajaxstatus').text('');
+                    }else{
+                        $J("#ajaxbusy,#ajaxwait").show();
+                    }
                },
            error: setDataFetchError
         });
@@ -411,7 +427,7 @@ var submitForm = function(event){
         location.href = '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId;
     }
     selectTab(activeContentTab);
-    $J("#ajaxbusy,#ajaxwait").hide();
+    $J("#ajaxbusy,#ajaxwait").show();
     return false;
 }
 
@@ -479,6 +495,8 @@ var swapLanguage = function(aElement){
     if($a.is('.active') && !_CONTREXX_FORCE_SWAP){
         return false;
     }
+
+//    $J('#ajaxstatus').text('Loading '+$a.text());
 
     //reset undo history
     var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
@@ -807,9 +825,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     })
     .bind("ajaxStop", function(){
         window._CONTREXX_REQUEST_ACTIVE = false;
-        var x = setTimeout(function(){
-            $('#ajaxbusy,#ajaxwait').hide();
-        }, 5000);//hide after 5 secs if still visible
+//        var x = setTimeout(function(){
+//            $('#ajaxbusy,#ajaxwait').hide();
+//        }, 5000);//hide after 5 secs if still visible
     }   );
 
      //set default options
@@ -907,7 +925,7 @@ function FCKeditor_OnComplete( editor ){ //hide wait layer on editor load
 </script>
 
 <div id="ajaxbusy"></div>
-<div id="ajaxwait"><img src="../../../../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}</p></div>
+<div id="ajaxwait"><img src="../../../../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}<br /><span id="ajaxstatus"> <span> </p></div>
 
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />

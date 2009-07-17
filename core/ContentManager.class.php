@@ -719,6 +719,7 @@ class ContentManager
             'TXT_CONTENT_PLEASE_WAIT'           => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
             'TXT_CONTENT_NO_TITLE'              => $_CORELANG['TXT_CONTENT_NO_TITLE'],
             'TXT_LANGUAGES'                     => $_CORELANG['TXT_LANGUAGES'],
+            'TXT_PLEASE_WAIT_SITEMAP'           => $_CORELANG['TXT_PLEASE_WAIT_SITEMAP'],
             'TXT_THEME_PREVIEW'                 => $_CORELANG['TXT_THEME_PREVIEW'],
             'TXT_TARGET'                        => $_CORELANG['TXT_TARGET'],
             'TXT_MORE_OPTIONS'                  => $_CORELANG['TXT_MORE_OPTIONS'],
@@ -978,6 +979,7 @@ class ContentManager
         $objTemplate->setVariable(array(
             'LANGUAGE_COUNT'                   => $langCount+1,
             'DIRECTORY_INDEX'                  => CONTREXX_DIRECTORY_INDEX,
+            'TXT_PLEASE_WAIT_SITEMAP'          => $_CORELANG['TXT_PLEASE_WAIT_SITEMAP'],
             'TXT_LANGUAGES'                    => $_CORELANG['TXT_LANGUAGES'],
             'TXT_THEME_PREVIEW'                => $_CORELANG['TXT_THEME_PREVIEW'],
             'TXT_CONTENT_PLEASE_WAIT'          => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
@@ -1631,21 +1633,6 @@ class ContentManager
         $backendInherit = isset($_POST['backendInherit']) ? (bool) $_POST['backendInherit'] : false;
         $this->_setPageProtection($pageId, $parcat, $protect, $assignedBackendGroups, 'backend', $backendInherit, $langId);
 
-        //write caching-file, delete exisiting cache-files
-        $objCache = new Cache();
-        $objCache->writeCacheablePagesFile();
-
-        // write xml sitemap
-        if (($result = XMLSitemap::write()) !== true) {
-            $this->strErrMessage[] = $result;
-        }
-
-        if (empty($command) && intval($moduleId) == 0) {
-            $objCache->deleteSingleFile($pageId);
-        } else {
-            $objCache->deleteAllFiles();
-        }
-
         //create backup for history
         if ($this->boolHistoryEnabled) {
             $objResult = $objDatabase->Execute('SELECT    parcat,
@@ -1717,7 +1704,26 @@ class ContentManager
                                 ');
         }
         $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
-        die('{pageId: '.$pageId.', langName:"'.$langName.'", needsValidation: '.$needsValidation.'}');
+        $JSON = ', lastUpdate: false';
+        if(!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0){
+            $JSON = ', lastUpdate: true';
+            //write caching-file, delete exisiting cache-files
+            $objCache = new Cache();
+            $objCache->writeCacheablePagesFile();
+
+            // write xml sitemap
+            if (($result = XMLSitemap::write()) !== true) {
+                $this->strErrMessage[] = $result;
+            }
+
+            if (empty($command) && intval($moduleId) == 0) {
+                $objCache->deleteSingleFile($pageId);
+            } else {
+                $objCache->deleteAllFiles();
+            }
+        }
+
+        die('{pageId: '.$pageId.', langName:"'.$langName.'", needsValidation: '.$needsValidation.$JSON.'}');
     }
 
     static function mkurl($absolute_local_path) {
