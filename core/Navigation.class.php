@@ -614,7 +614,7 @@ class Navigation
 
     function getFrontendLangNavigation()
     {
-        global $objInit, $objDatabase;
+        global $objInit, $objDatabase, $_LANGID, $_CONFIG;
         $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = "";
 
