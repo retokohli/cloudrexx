@@ -168,6 +168,7 @@ CREATE TABLE `contrexx_content` (
   `redirect` varchar(255) NOT NULL default '',
   `expertmode` set('y','n') NOT NULL default 'n',
   PRIMARY KEY  (`id`,`lang_id`),
+  KEY `lang_id` (`lang_id`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_history` (
@@ -220,7 +221,8 @@ CREATE TABLE `contrexx_content_navigation` (
   PRIMARY KEY  (`catid`,`lang`),
   KEY `parcat` (`parcat`),
   KEY `module` (`module`),
-  KEY `catname` (`catname`)
+  KEY `catname` (`catname`),
+  KEY `lang` (`lang`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_navigation_history` (
   `id` int(7) unsigned NOT NULL auto_increment,
