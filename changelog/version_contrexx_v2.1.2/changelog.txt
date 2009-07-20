@@ -67,6 +67,10 @@ Modul: Forum
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 
+Statistik
+- Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter
+  Verwendung eines Alias getätigt wurden, korrekt aufgelistet.
+
 ****************************************
 * Neue Module **************************
 ****************************************
