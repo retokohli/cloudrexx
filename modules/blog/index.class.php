@@ -384,6 +384,10 @@ class Blog extends BlogLibrary  {
     function addHit($intMessageId) {
         global $objDatabase;
 
+        if (checkForSpider()) {
+            return;
+        }
+
         $intMessageId = intval($intMessageId);
 
         if ($intMessageId > 0 && !$this->hasUserJustCommented() && !$this->hasUserAlreadyVoted($intMessageId)) {
