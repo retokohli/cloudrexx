@@ -84,6 +84,7 @@ Modul: Bildergalerie
 Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
 - Anführungszeichen werden bei Kommentaren akzeptiert.
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
 Modul: E-Card
 - Die Bilder werden gemäss den Einstellungen verkleinert.
