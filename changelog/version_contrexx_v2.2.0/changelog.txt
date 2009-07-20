@@ -22,7 +22,7 @@ Benutzerverwaltung
   nur dann angezeigt, sofern der jeweilige Benutzer nicht bereits im Adressbuch
   enthalten ist.
 
-Korrespondierende Mehrsprachigkeit 
+Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
 
 Content Manager
@@ -121,6 +121,8 @@ Modul: User to User Nachrichten
 
 Statistik
 - Die Zählung der Besucher erfolgt korrekt.
+- Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter
+  Verwendung eines Alias getätigt wurden, korrekt aufgelistet.
 
 Webinstaller
 - Kontrollkästchen werden beim Browser Opera angezeigt.
