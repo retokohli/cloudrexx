@@ -219,9 +219,17 @@ class counter
     */
     function _getRequestedUrl() {
         $uriString="";
+        $isAlias = false;
+
         if (preg_match("/".$_SERVER['HTTP_HOST']."/",$_SERVER['HTTP_REFERER'])) {
-            //check domain and return GET-String after ?
-            $completeUriString = substr(strstr($_SERVER['HTTP_REFERER'], "?"),1);
+            if (strpos($_SERVER['HTTP_REFERER'], '?') === false) {
+                $completeUriString = substr(strrchr($_SERVER['HTTP_REFERER'], "/"),1);
+                $isAlias = true;
+            } else {
+                //check domain and return GET-String after ?
+                $completeUriString = substr(strstr($_SERVER['HTTP_REFERER'], "?"),1);
+            }
+
             //creates an array for each GET-pair
             $arrUriGets = explode("&", $completeUriString);
 
@@ -245,6 +253,8 @@ class counter
 
         if ($uriString == "") { // only uninteresting vars in uri (faked?)
             $this->requestedUrl = "/index.php";
+        } elseif ($isAlias) {
+            $this->requestedUrl = "/".addslashes(substr($uriString,1));
         } else {
             $this->requestedUrl = "/index.php?".(get_magic_quotes_gpc() ? substr($uriString,1) : addslashes(substr($uriString,1)));
         }
