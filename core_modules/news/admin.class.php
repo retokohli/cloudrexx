@@ -1119,11 +1119,11 @@ class newsManager extends newsLibrary {
             return $this->manageCategories();
         }
 
-        if (isset($_GET['newsId'])) {
+        if (isset($_POST['newsId'])) {
             $objValidator = &new FWValidator();
             $objFWUser = FWUser::getFWUserObject();
 
-            $id = intval($_GET['newsId']);
+            $id = intval($_POST['newsId']);
             $userId = $objFWUser->objUser->getId();
             $changelog = mktime();
 
