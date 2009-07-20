@@ -121,7 +121,7 @@ class directoryLibrary
         $ip = $_SERVER['REMOTE_ADDR'];
 
         //update hits
-        if ($lastip != $ip) {
+        if (!checkForSpider() && $lastip != $ip) {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_dir SET
                     hits='".$hits."', popular_hits='".$popular_hits."', lastip='".$ip."' WHERE id='".contrexx_addslashes($id)."'");
         }

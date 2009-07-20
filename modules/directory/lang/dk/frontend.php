@@ -7,6 +7,7 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Lav nyt design";
+$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Der Eintrag wurde erfolgreich bestätigt.";
 $_ARRAYLANG['TXT_DIR_FILETYP'] = "Filetyp";
 $_ARRAYLANG['TXT_DIR_CATEGORIE'] = "Categorie";
 $_ARRAYLANG['TXT_DIR_EMPTY_DIR'] = "Das Verzeichnis ist leer.";

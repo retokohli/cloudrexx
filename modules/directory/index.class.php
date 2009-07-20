@@ -2173,7 +2173,7 @@ $this->arrRows[2] = '';
         }
 
         $feedTitle = '';
-        if (isset($id) && isset($voteNEW) && $client != $clientOLD) {
+        if (!checkForSpider() && isset($id) && isset($voteNEW) && $client != $clientOLD) {
             if ($voteNEW > 10) {
                 $voteNEW = 10;
             } elseif ($voteNEW < 1) {

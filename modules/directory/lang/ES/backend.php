@@ -7,7 +7,6 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Crear Nuevas Plantillas";
-$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Confirmar entrada con &eacute;xito";
 $_ARRAYLANG['TXT_DIR_MAIL_NEW_ACCOUNT'] = "Nueva Cuenta en";
 $_ARRAYLANG['TXT_DIR_MAIL_LOST_PASSWORD'] = "Contrase&ntilde;a Perdida";
 $_ARRAYLANG['TXT_DIR_MAIL_CONFIRM_PASSWORD'] = "Confirmar Contrase&ntilde;a";
@@ -305,7 +304,7 @@ $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Demasiadas peticiones: Se ha sobr
 $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Error del Servidor: La consulta de b&uacute;squeda (Geocoding) no se pudo manejar correctamente. ";
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Por favor, introduzca una direcci&oacute;n &uacute;nica o mueva el mapa al punto deseado.";
 $_ARRAYLANG['TXT_MAKE_SELECTION'] = "Seleccione una opci&oacute;n";
-$_ARRAYLANG['TXT_YOUTUBEWIDTH'] = "YouTube Height";
-$_ARRAYLANG['TXT_YOUTUBEHEIGHT'] = "YouTube Height";
+$_ARRAYLANG['TXT_YOUTUBEWIDTH'] = "Ancho para YouTube";
+$_ARRAYLANG['TXT_YOUTUBEHEIGHT'] = "Altura para YouTube ";
 $_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

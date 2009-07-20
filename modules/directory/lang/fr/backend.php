@@ -7,7 +7,6 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Nouveau modèle";
-$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Inscription confirmée";
 $_ARRAYLANG['TXT_DIR_MAIL_NEW_ACCOUNT'] = "Nouveau compte chez ";
 $_ARRAYLANG['TXT_DIR_MAIL_LOST_PASSWORD'] = "Mot de passe oublié";
 $_ARRAYLANG['TXT_DIR_MAIL_CONFIRM_PASSWORD'] = "Confirmer mot de de passe";
@@ -73,7 +72,7 @@ $_ARRAYLANG['TXT_DIR_FILL_ALL'] = "Veuillez compléter tous les champs";
 $_ARRAYLANG['TXT_DIR_NO_CATEGORIE_FOUND'] = "Aucune catégorie trouvée.";
 $_ARRAYLANG['TXT_DIR_CAT_SUCCESSFULL_ADDED'] = "Catégorie créée";
 $_ARRAYLANG['TXT_DIR_CAT_SUCCESSFULL_DEL'] = "Catégorie supprimée";
-$_ARRAYLANG['TXT_DIR_STATUS_CHANGED'] = "Status mis à jour";
+$_ARRAYLANG['TXT_DIR_STATUS_CHANGED'] = "Statut mis à jour";
 $_ARRAYLANG['TXT_DIR_CHANGES_SAVED'] = "Modifications enregistrées";
 $_ARRAYLANG['TXT_DIR_EDIT_CATEGORIE'] = "Editer catégorie";
 $_ARRAYLANG['TXT_DIR_NEW_CATEGORIE'] = "Nouvelle catégorie";

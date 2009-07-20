@@ -7,6 +7,7 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Nouveau modèle";
+$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Der Eintrag wurde erfolgreich bestätigt.";
 $_ARRAYLANG['TXT_DIR_FILETYP'] = "Extension";
 $_ARRAYLANG['TXT_DIR_CATEGORIE'] = "Catégorie";
 $_ARRAYLANG['TXT_DIR_EMPTY_DIR'] = "Le répertoire est vide.";
@@ -65,7 +66,7 @@ $_ARRAYLANG['TXT_DIR_F_EMPTY_DIR'] = "Le répertoire est vide.";
 $_ARRAYLANG['TXT_DIR_USERNAME'] = "Identifiant";
 $_ARRAYLANG['TXT_DIR_BACK'] = "Retour";
 $_ARRAYLANG['TXT_DIR_SETTINGS'] = "Paramètres";
-$_ARRAYLANG['TXT_DIR_F_RSS_FEEDS'] = "Flux RSS§";
+$_ARRAYLANG['TXT_DIR_F_RSS_FEEDS'] = "Flux RSS";
 $_ARRAYLANG['TXT_DIR_F_LINKS'] = "Liens";
 $_ARRAYLANG['TXT_DIR_F_FILES'] = "Fichiers";
 $_ARRAYLANG['TXT_DIR_LOST_PASSWORD'] = "Oublié le mot de passe?";

@@ -7,6 +7,7 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create New Themes";
+$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "The entry has been successfully confirmed.";
 $_ARRAYLANG['TXT_DIR_FILETYP'] = "Filetyp";
 $_ARRAYLANG['TXT_DIR_CATEGORIE'] = "Category";
 $_ARRAYLANG['TXT_DIR_EMPTY_DIR'] = "This directory is empty.";
@@ -82,7 +83,7 @@ $_ARRAYLANG['TXT_DIR_CITY'] = "City";
 $_ARRAYLANG['TXT_RESTORE_MAIL_TITLE'] = "Restore your password";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART1'] = "Someone has requested a new password for your ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " RSS Directory Useraccount, Username:";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = "\\n\\nIn the case that you haven't requested a new password you can simply ignore this message. This message was only sent to the address of this useraccount.";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = "a reset of the password was requested.\\n\\nIn case that you haven't requested a new password you can simply ignore this message. This message was only sent to the address of this user account.";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = "Follow this link to set a new password:";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART5'] = "This message was requested from : ";
 $_ARRAYLANG['TXT_DIR_LAST_UPDATE'] = "Last update";
@@ -138,7 +139,7 @@ $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'] = "Vote";
 $_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS'] = "My Feeds";
 $_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED'] = "Edit Feed";
 $_ARRAYLANG['TXT_DIRECTORY_UPDATE_SUCCESSFULL'] = "Entries succesfull edited. Actiation after verification.";
-$_ARRAYLANG['TXT_DIRECTORY_CHECK_REQUIRED'] = "Fill all fields correctly.";
+$_ARRAYLANG['TXT_DIRECTORY_CHECK_REQUIRED'] = "Please Fill out all fields correctly.";
 $_ARRAYLANG['TXT_DIRECTORY_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'] = "Special Order";
 $_ARRAYLANG['TXT_DIRECTORY_FEEDS'] = "Feeds";

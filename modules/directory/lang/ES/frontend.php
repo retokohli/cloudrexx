@@ -7,6 +7,7 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Crear Nuevas Plantillas";
+$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Der Eintrag wurde erfolgreich bestätigt.";
 $_ARRAYLANG['TXT_DIR_FILETYP'] = "Tipo";
 $_ARRAYLANG['TXT_DIR_CATEGORIE'] = "Categor&iacute;a";
 $_ARRAYLANG['TXT_DIR_EMPTY_DIR'] = "Este directorio est&aacute; vac&iacute;o.";

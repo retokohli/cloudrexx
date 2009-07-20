@@ -7,7 +7,6 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create New Themes";
-$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Feed successfull confirm";
 $_ARRAYLANG['TXT_DIR_MAIL_NEW_ACCOUNT'] = "New Account on";
 $_ARRAYLANG['TXT_DIR_MAIL_LOST_PASSWORD'] = "Lost Password";
 $_ARRAYLANG['TXT_DIR_MAIL_CONFIRM_PASSWORD'] = "Confirm Password";
@@ -178,7 +177,7 @@ $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'] = "Vote";
 $_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS'] = "My Feeds";
 $_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED'] = "Edit Feed";
 $_ARRAYLANG['TXT_DIRECTORY_UPDATE_SUCCESSFULL'] = "Entries succesfull edited. Actiation after verification.";
-$_ARRAYLANG['TXT_DIRECTORY_CHECK_REQUIRED'] = "Fill all fields correctly.";
+$_ARRAYLANG['TXT_DIRECTORY_CHECK_REQUIRED'] = "Please Fill out all fields correctly.";
 $_ARRAYLANG['TXT_DIRECTORY_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'] = "Special Order";
 $_ARRAYLANG['TXT_DIRECTORY_FEEDS'] = "Feeds";
@@ -255,7 +254,7 @@ $_ARRAYLANG['TXTX_GOOGLELANG'] = "Language Parameter";
 $_ARRAYLANG['TXT_XMLLIMIT'] = "XML Limit";
 $_ARRAYLANG['TXT_PLATFORM'] = "Platforms";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Languages";
-$_ARRAYLANG['TXT_LATEST_CONTENT'] = "Number of entries (Headlines)";
+$_ARRAYLANG['TXT_LATEST_CONTENT'] = " ";
 $_ARRAYLANG['TXT_LATEST_XML'] = "Number of entries (XML)";
 $_ARRAYLANG['TXT_CATDESCRIPTION'] = "Category Description";
 $_ARRAYLANG['TXT_ENTRYSTATUS'] = "Entry automatically activated";

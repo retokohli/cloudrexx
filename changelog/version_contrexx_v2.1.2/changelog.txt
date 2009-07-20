@@ -65,6 +65,9 @@ Modul: Digital Asset Management
 Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
+Modul: Linkverzeichnis
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
+
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 
