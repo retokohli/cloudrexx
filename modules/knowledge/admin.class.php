@@ -195,6 +195,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
                         Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
                         $this->getArticlesGlossary();
                         break;
+                    case 'searchArticles':
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
+                        $this->searchArticles();
+                        break;
                     case 'sort':
                         $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES);
                         $this->sortArticles();
@@ -839,6 +843,11 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "TXT_CONFIRM_ARTICLE_DELETION"  => $_ARRAYLANG['TXT_CONFIRM_ARTICLE_DELETION'],
             "TXT_JUMP_TO_ARTICLE"           => $_ARRAYLANG['TXT_KNOWLEDGE_JUMP_TO_ARTICLE'],
             'TXT_CATEGORIES'                => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'],
+            'TXT_OVERVIEW'                  => $_ARRAYLANG['TXT_OVERVIEW'],
+            'TXT_SEARCH_INPUT'              => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_INPUT'],
+            'TXT_SEARCH_ARTICLES'           => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_ARTICLES'],
+            'TXT_SEARCH'                    => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH'],
+            'TXT_JUMP'                      => $_ARRAYLANG['TXT_JUMP'],
         
             // other stuff
             "CATLIST"                       => $catTree,
@@ -1119,10 +1128,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
         try {
             $articles = $this->articles->getGlossary($_LANGID);
         } catch (DatabaseError $e) {
-            die($e->plaing);
+            die($e->plain());
         }
-
-
 
         $content = "";
         if (empty($articles)) {
@@ -1149,6 +1156,39 @@ class KnowledgeAdmin extends KnowledgeLibrary
             'javascript: articles.getGlossary(%POS%)', '', true, 0);
 
         $content .= $paging;
+
+        $response = Array();
+        $response['list'] = $content;
+
+        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
+        $objJson = new Services_JSON();
+        $jsonResponse = $objJson->encode($response);
+
+        die($jsonResponse);
+    }
+
+    private function searchArticles()
+    {
+        global $_LANGID, $_ARRAYLANG, $_CORELANG, $_CONFIG;
+
+        $searchterm = $_GET['term'];
+        if (empty($searchterm)) {
+            die();
+        }
+
+        try {
+            $articles = $this->articles->searchArticles($searchterm, $_LANGID);
+        } catch (DatabaseError $e) {
+            die($e->plain());
+        }
+        
+        $paging = getKnowledgePaging(count($articles), $position,
+            'javascript: articles.searchArticles(\''.$searchterm.'\', %POS%)', '', true, 0);
+
+        $title = $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_RESULTS_OF']." '".$searchterm."'";
+
+        $content = $this->parseArticleList(array_slice($articles, $position, $_CONFIG['corePagingLimit']),
+            $title, $paging, false, false);
 
         $response = Array();
         $response['list'] = $content;

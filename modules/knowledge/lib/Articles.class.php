@@ -621,4 +621,31 @@ class KnowledgeArticles
 
         return $ret;
     }
+
+    /**
+     * Search in the articles for names
+     *
+     * Search the question  for the given
+     * searchterm. Why not the answer? Well, if the system finds somethign
+     * because the word is contained in the answer, the user doesn't see
+     * that and could get confused.
+     * @param string $searchterm
+     * @param int $lang
+     * @global $objDatabase
+     * @return array
+     */
+    public function searchArticles($searchterm, $lang)
+    {
+        global $objDatabase;
+
+        $searchterm = addslashes($searchterm);
+        
+        $query = $this->basequery ."
+            WHERE question LIKE '%".$searchterm."%'
+        ";
+
+        $articles = $this->readArticles(true, $lang, 0, $query);
+
+        return $articles;
+    }
 }
