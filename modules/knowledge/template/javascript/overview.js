@@ -30,6 +30,13 @@ Articles.prototype.getCategory = function(id, pos) {
     })
 }
 
+/**
+ * The success function for the getter methods
+ *
+ * It puts the content on the page and calls all
+ * necessary functions to update the row colors
+ * and width for non-ie browsers.
+ */
 Articles.prototype.getterSucess = function(transport) {
     response = transport.responseText.evalJSON();
     $('articles').update(response.list);
@@ -37,7 +44,9 @@ Articles.prototype.getterSucess = function(transport) {
     notIe();
 }
 
-
+/**
+ * Get the best rated articles
+ */
 Articles.prototype.getBestRated = function(pos) {
     this.setLoading();
 
@@ -53,6 +62,9 @@ Articles.prototype.getBestRated = function(pos) {
     });
 }
 
+/*
+ * Get the most read articles
+ */
 Articles.prototype.getMostRead = function(pos) {
     this.setLoading();
 
@@ -68,6 +80,9 @@ Articles.prototype.getMostRead = function(pos) {
     });
 }
 
+/*
+ * Get the glossary
+ */
 Articles.prototype.getGlossary = function(pos) {
     this.setLoading();
 
@@ -83,6 +98,9 @@ Articles.prototype.getGlossary = function(pos) {
     });
 }
 
+/*
+ * Search the articles
+ */
 Articles.prototype.searchArticles = function(term, pos) {
     this.setLoading();
 
@@ -106,31 +124,16 @@ Articles.prototype.searchArticles = function(term, pos) {
  */
 Articles.prototype.setLoading = function()
 {
-    /*
-    if (loading) {
-        return;
-    }
-    */
-    
     if ($('inner_right')) {
         $('articles').removeChild($('inner_right'));
     }
     
-    //var overlay = document.createElement("div");
-    //overlay.id = "overlay";
-    //$('articles').appendChild(overlay);
-    //$('articles').update('<div id="loading">&nbsp;</div>');
     $('articles').update('<center><img src="../modules/knowledge/template/loading.gif" alt="" id="loading"  /></center>');
-    
-    //var loading = document.createElement("div");
-    //var text = document.createTextNode(" ");
-    //loading.appendChild(text);
-    //loading.id = "loading";
-    
-    //$('articles').appendChild(loading);
-    //this.loading = true;
 }
 
+/**
+ * Remove a row from the list (for when it's deleted)
+ */
 Articles.prototype.deleteRow = function(id)
 {
     new Effect.Highlight('article_'+id, {
@@ -147,6 +150,9 @@ Articles.prototype.deleteRow = function(id)
     delete obj;
 }
 
+/**
+ * The instance of the object (what for actually??)
+ */
 var articles = new Articles();
 
 /**
@@ -171,6 +177,11 @@ var setRows = function()
     });
 }
 
+/**
+ * Make the ul list sortable
+ *
+ * Uses the scriptaculous sortable feature
+ */
 var initSortableArea = function(offset)
 {  
     if (editAllowed) {
@@ -192,6 +203,9 @@ var initSortableArea = function(offset)
     }
 }
 
+/**
+ * The functionality for the category tree on the left
+ */
 var catTree = {
     /**
      * Open a category
@@ -267,6 +281,9 @@ var switchActive = function(id, obj, action)
     });
 }
 
+/**
+ * Delete an article
+ */
 var deleteArticle = function(id)
 {
     if (confirm("{TXT_CONFIRM_ARTICLE_DELETION}")) {

@@ -847,7 +847,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             'TXT_SEARCH_INPUT'              => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_INPUT'],
             'TXT_SEARCH_ARTICLES'           => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_ARTICLES'],
             'TXT_SEARCH'                    => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH'],
-            'TXT_JUMP'                      => $_ARRAYLANG['TXT_JUMP'],
+            'TXT_JUMP'                      => $_ARRAYLANG['TXT_KNOWLEDGE_JUMP'],
         
             // other stuff
             "CATLIST"                       => $catTree,
@@ -1112,7 +1112,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
     } 
 
     /**
-     * Return articles in a glossy form
+     * Return articles in a glossary form
      *
      * This function is galled throught ajax
      * @global $_LANGID
@@ -1167,6 +1167,15 @@ class KnowledgeAdmin extends KnowledgeLibrary
         die($jsonResponse);
     }
 
+    /**
+     * Search for arcticles
+     *
+     * This function is called throug ajax
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     * @global $_CORELANG
+     * @global $_CONFIG
+     */
     private function searchArticles()
     {
         global $_LANGID, $_ARRAYLANG, $_CORELANG, $_CONFIG;
