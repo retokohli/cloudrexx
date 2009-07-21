@@ -23,8 +23,7 @@ if (navigator.appName.indexOf("Explorer") == -1) {
 
 /* ]]> */
 </script>
-
-<div style="min-height: 1%; height: 1%; float:left; " id="not_ie">
+<div style="min-height: 1%; height: 1%; float:left; " class="not_ie">
     <table style="width: 100%; font-weight: bold;" class="adminlist" cellspacing="0" cellpadding="3">
         <tr>
             <th colspan="6">
@@ -68,7 +67,7 @@ if (navigator.appName.indexOf("Explorer") == -1) {
                         {HITS}
                     </td>
                     <td style="width: 120px; vertical-align: top;">
-                    {VOTEVALUE} {TXT_BY} {VOTECOUNT} {TXT_VOTINGS}
+                        &Oslash; {VOTEVALUE} {TXT_BY} {VOTECOUNT} {TXT_VOTINGS}
                     <!--!
                        <div id="rating{ARTICLEID}"> </div>
                         <script type="text/javascript">
@@ -108,7 +107,6 @@ if (navigator.appName.indexOf("Explorer") == -1) {
     <br />
     {PAGING}
 </div>
-
 <!-- BEGIN jsinit -->
 <!-- parsed only when neede because the content is not given through ajax -->
 
@@ -120,8 +118,9 @@ setRows();
 /* ]]> */
 </script>
 
- <!-- END jsinit -->
- <br style="clear: both;"/>
+<!-- END jsinit -->
+
+<!--<br style="clear: both;"/>-->
 
 <!-- END content -->
 
