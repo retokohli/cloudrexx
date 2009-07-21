@@ -949,13 +949,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
         die();
     }
 
-        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
-        $objJson = new Services_JSON();
-        $jsonResponse = $objJson->encode($response);
-
-        die($jsonResponse);
-    }
-
 
     /**
      * Show the edit form
