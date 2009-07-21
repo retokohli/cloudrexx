@@ -104,7 +104,10 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
           <input type="checkbox" name="shownonstartpage[{SHOP_PRODUCT_ID}]" value="1"{SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED} />
           <input type="hidden" name="shownonstartpageOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD}" />
         </td>
-        <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME}">{SHOP_PRODUCT_NAME}</a></td>
+        <td>
+          <input type="text" name="title[{SHOP_PRODUCT_ID}]" size="60" maxlength="255" value="{SHOP_TITLE}" />
+          <input type="hidden" name="titleOld[{SHOP_PRODUCT_ID}]" value="{SHOP_TITLE}" />
+        </td>
         <td><input maxlength="255" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="10" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
         <td>
           <input type="checkbox" name="specialOffer[{SHOP_PRODUCT_ID}]" value="1"{SHOP_PRODUCT_SPECIAL_OFFER} />

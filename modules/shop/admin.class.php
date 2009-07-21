@@ -111,29 +111,8 @@ class shopmanager extends ShopLibrary
     private static $strOkMessage  = '';
     private static $pageTitle = '';
     private static $arrCategoryTreeName = array();
-    // OBSOLETE: private $categoryTreeSorting   = array();
-    // OBSOLETE: private $categoryTreeStatus    = array();
     private static $defaultImage = '';
     private static $uploadDir = false;
-
-    // ProductAttributes
-    // OBSOLETE: private $defaultAttributeOption = 0;
-    // OBSOLETE: private $arrAttributes = array();
-    // OBSOLETE: private $defaultCurrency = '';
-    /**
-     * OBSOLETE
-     * The highest ProductAttribute value ID present
-     * @var   integer
-    private $highestIndex = 0;
-     */
-
-    /**
-     * OBSOLETE
-     * Exchange object
-     * @access  public
-     * @var     Exchange
-    private $objExchange;
-     */
 
     /**
      * Settings object
@@ -158,12 +137,10 @@ class shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG, $objTemplate;
 
-        // sigma template
-        self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
-        self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
 
+        self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
+        self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
             "<a href='index.php?cmd=shop".MODULE_INDEX."'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
@@ -178,18 +155,9 @@ class shopmanager extends ShopLibrary
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
         );
 
-        // Settings object
         $this->objSettings = new Settings();
-
-        // Exchange object
-        // OBSOLETE: $this->objExchange = new Exchange();
-
         $this->objCSVimport = new CSVimport();
-
-        // initialize array of all countries
-        //$this->_initCountries();
         $this->_initConfiguration();
-
     }
 
 
@@ -212,11 +180,6 @@ class shopmanager extends ShopLibrary
             case 'settings':
                 $this->_showSettings();
                 break;
-/* OBSOLETE
-            case 'exchange':
-                $this->showExchange();
-                break;
-*/
             case 'cat':
                 $this->showCategories();
                 break;
@@ -900,7 +863,7 @@ class shopmanager extends ShopLibrary
                     }
                     $fileContent .= '"'.join('";"', $arrReplaced)."\"\n";
                 }
-// Test the output for UTF8!
+                // Test the output for UTF8!
                 if (strtoupper(CONTREXX_CHARSET) == 'UTF-8') {
                     $fileContent = utf8_decode($fileContent);
                 }
@@ -1398,7 +1361,7 @@ class shopmanager extends ShopLibrary
             foreach (array_keys($arrValueObj) as $value_id) {
                 if (!in_array($value_id, $arrAttributeList[$name_id])) {
 //echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_id], true)."<br />");
-                	$objAttribute->deleteValueById($value_id);
+                    $objAttribute->deleteValueById($value_id);
                 }
             }
 
@@ -1925,7 +1888,7 @@ class shopmanager extends ShopLibrary
                 $arrAvailable = array();
                 foreach ($arrLanguage as $lang_id => $langValues) {
 //echo("Language ID $lang_id<br />");
-                	if ($langValues['frontend']) {
+                    if ($langValues['frontend']) {
                         self::$objTemplate->setVariable(array('SHOP_MAIL_LANGUAGE' => $langValues['name'],));
                         self::$objTemplate->parse('shopMailLanguages');
                         // Get the availability of all templates
@@ -3391,19 +3354,19 @@ class shopmanager extends ShopLibrary
             }
         }
         if (isset($_POST['shopOrderStatus'])) {
-        	$shopOrderStatus = $_POST['shopOrderStatus'];
+            $shopOrderStatus = $_POST['shopOrderStatus'];
             if (   is_numeric($shopOrderStatus)
                 && $_POST['shopOrderStatus'] >= 0
                 && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
                 $shopOrderStatus = intval($_POST['shopOrderStatus']);
                 $shopSearchPattern .= " AND order_status='$shopOrderStatus'";
-	            // Check "Show pending orders" as well if these are selected
-	            if ($shopOrderStatus == SHOP_ORDER_STATUS_PENDING) {
-	                $_POST['shopShowPendingOrders'] = 1;
-	            }
+                // Check "Show pending orders" as well if these are selected
+                if ($shopOrderStatus == SHOP_ORDER_STATUS_PENDING) {
+                    $_POST['shopShowPendingOrders'] = 1;
+                }
             } else {
-            	// Ignore.
-            	$shopOrderStatus = '';
+                // Ignore.
+                $shopOrderStatus = '';
             }
         }
         if (isset($_POST['shopListSort'])) {
@@ -3446,9 +3409,9 @@ class shopmanager extends ShopLibrary
             'TXT_CONFIRM_CHANGE_STATUS' => $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'],
             'TXT_SEARCH' => $_ARRAYLANG['TXT_SEARCH'],
             'TXT_SEND_TEMPLATE_TO_CUSTOMER' => str_replace('TXT_ORDER_COMPLETE',
-                            $_ARRAYLANG['TXT_ORDER_COMPLETE'],
-                            $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']
-                ),
+                $_ARRAYLANG['TXT_ORDER_COMPLETE'],
+                $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']
+            ),
             'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
             'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
@@ -3528,8 +3491,10 @@ class shopmanager extends ShopLibrary
                     }
                     // Determine end date
                     $endDate =
-                        ($objResultAccount->fields['expiration'] > 0 ? date('d.m.Y', $objResultAccount->fields['expiration']) : '-');
-
+                        ($objResultAccount->fields['expiration'] > 0
+                            ? date('d.m.Y', $objResultAccount->fields['expiration'])
+                            : '-'
+                        );
                     // PHP5! $tipNote = (strlen($objResult['customer_note'])>0) ? php_strip_whitespace($objResult['customer_note']) : '';
                     $tipNote = $objResult->fields['customer_note'];
                     $tipLink = (!empty($tipNote)
@@ -3643,8 +3608,7 @@ class shopmanager extends ShopLibrary
                    c.customerid, c.prefix, c.company, c.firstname, c.lastname,
                    c.address, c.zip, c.city, c.country_id, c.phone, c.fax,
                    c.ccnumber, c.cvc_code, c.ccdate, c.ccname,
-                   c.company_note, c.email, c.is_reseller,
-                   group_id
+                   c.company_note, c.email, c.is_reseller, c.group_id
               FROM ".DBPREFIX."module_shop_customers AS c,
                    ".DBPREFIX."module_shop_orders AS o
              WHERE c.customerid=o.customerid
@@ -3675,73 +3639,73 @@ class shopmanager extends ShopLibrary
 		            || $this->arrConfig['country_id']['value'] == $ship_to_country_id
 		        );
                 self::$objTemplate->setVariable(array(
-	                'SHOP_CUSTOMER_ID' => $objResult->fields['customerid' ],
-	                'SHOP_ORDERID' => $objResult->fields['orderid'],
-	                'SHOP_DATE' => $objResult->fields['order_date'],
-	                'SHOP_ORDER_STATUS' => ($type == 1
-	                    ? $this->getOrderStatusMenu(
-	                        $orderStatus,
-	                        'shopOrderStatusId',
-	                        'swapSendToStatus(this.value)'
-	                      )
-	                    : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus]),
-	                'SHOP_SEND_MAIL_STYLE' => ($orderStatus == SHOP_ORDER_STATUS_CONFIRMED
-	                        ? 'display: inline;'
-	                        : 'display: none;'
-	                    ),
-	                'SHOP_SEND_MAIL_STATUS' => ($type == 1
-	                        ? ($orderStatus != SHOP_ORDER_STATUS_CONFIRMED
-	                            ? ' checked="checked"'
-	                            : ''
-	                          )
-	                        : ''
-	                    ),
-	                'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($shopCurrencyOrderSum),
-	                'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
-	                'SHOP_PREFIX' => $objResult->fields['prefix'],
-	                'SHOP_COMPANY' => $objResult->fields['company'],
-	                'SHOP_FIRSTNAME' => $objResult->fields['firstname'],
-	                'SHOP_LASTNAME' => $objResult->fields['lastname'],
-	                'SHOP_ADDRESS' => $objResult->fields['address'],
-	                'SHOP_ZIP' => $objResult->fields['zip'],
-	                'SHOP_CITY' => $objResult->fields['city'],
-	                'SHOP_COUNTRY' => Country::getNameById($countryId),
-	                'SHOP_SHIP_PREFIX' => $objResult->fields['ship_prefix'],
-	                'SHOP_SHIP_COMPANY' => $objResult->fields['ship_company'],
-	                'SHOP_SHIP_FIRSTNAME' => $objResult->fields['ship_firstname'],
-	                'SHOP_SHIP_LASTNAME' => $objResult->fields['ship_lastname'],
-	                'SHOP_SHIP_ADDRESS' => $objResult->fields['ship_address'],
-	                'SHOP_SHIP_ZIP' => $objResult->fields['ship_zip'],
-	                'SHOP_SHIP_CITY' => $objResult->fields['ship_city'],
-	                'SHOP_SHIP_COUNTRY' => ($type == 1
-	                        ? $this->_getCountriesMenu('shopShipCountry', $ship_to_country_id)
-	                        : Country::getNameById($ship_to_country_id)
-	                    ),
-	                'SHOP_SHIP_PHONE' => $objResult->fields['ship_phone'],
-	                'SHOP_PHONE' => $objResult->fields['phone'],
-	                'SHOP_FAX' => $objResult->fields['fax'],
-	                'SHOP_EMAIL' => $shopMailTo,
-	                    'SHOP_PAYMENTTYPE' => Payment::getProperty($paymentId, 'name'),
-	                'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
-	                'SHOP_CCDATE' => $objResult->fields['ccdate'],
-	                'SHOP_CCNAME' => $objResult->fields['ccname'],
-	                'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
-	                'SHOP_CUSTOMER_NOTE' => $objResult->fields['customer_note'],
-	                'SHOP_CUSTOMER_IP' => $objResult->fields['customer_ip'] == ''
-	                        ? '&nbsp;'
-	                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
-	                          $objResult->fields['customer_ip'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-	                          $objResult->fields['customer_ip'].'</a>',
-	                'SHOP_CUSTOMER_HOST' => $objResult->fields['customer_host'] == ''
-	                        ? '&nbsp;'
-	                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
-	                          $objResult->fields['customer_host'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-	                          $objResult->fields['customer_host'].'</a>',
-	                'SHOP_CUSTOMER_LANG' => $objResult->fields['customer_lang'] == '' ? '&nbsp;' : $objResult->fields['customer_lang'],
-	                'SHOP_CUSTOMER_BROWSER' => $objResult->fields['customer_browser'] == '' ? '&nbsp;' : $objResult->fields['customer_browser'],
-	                'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'],
-	                'SHOP_LAST_MODIFIED' => ($shopLastModified == 0 ? $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED'] : $shopLastModified.'&nbsp;'.$_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.$objResult->fields['modified_by']),
-	                'SHOP_SHIPPING_TYPE' => $shipperName,
+                    'SHOP_CUSTOMER_ID' => $objResult->fields['customerid' ],
+                    'SHOP_ORDERID' => $objResult->fields['orderid'],
+                    'SHOP_DATE' => $objResult->fields['order_date'],
+                    'SHOP_ORDER_STATUS' => ($type == 1
+                        ? $this->getOrderStatusMenu(
+                            $orderStatus,
+                            'shopOrderStatusId',
+                            'swapSendToStatus(this.value)'
+                          )
+                        : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus]),
+                    'SHOP_SEND_MAIL_STYLE' => ($orderStatus == SHOP_ORDER_STATUS_CONFIRMED
+                            ? 'display: inline;'
+                            : 'display: none;'
+                        ),
+                    'SHOP_SEND_MAIL_STATUS' => ($type == 1
+                            ? ($orderStatus != SHOP_ORDER_STATUS_CONFIRMED
+                                ? ' checked="checked"'
+                                : ''
+                              )
+                            : ''
+                        ),
+                    'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($shopCurrencyOrderSum),
+                    'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
+                    'SHOP_PREFIX' => $objResult->fields['prefix'],
+                    'SHOP_COMPANY' => $objResult->fields['company'],
+                    'SHOP_FIRSTNAME' => $objResult->fields['firstname'],
+                    'SHOP_LASTNAME' => $objResult->fields['lastname'],
+                    'SHOP_ADDRESS' => $objResult->fields['address'],
+                    'SHOP_ZIP' => $objResult->fields['zip'],
+                    'SHOP_CITY' => $objResult->fields['city'],
+                    'SHOP_COUNTRY' => Country::getNameById($countryId),
+                    'SHOP_SHIP_PREFIX' => $objResult->fields['ship_prefix'],
+                    'SHOP_SHIP_COMPANY' => $objResult->fields['ship_company'],
+                    'SHOP_SHIP_FIRSTNAME' => $objResult->fields['ship_firstname'],
+                    'SHOP_SHIP_LASTNAME' => $objResult->fields['ship_lastname'],
+                    'SHOP_SHIP_ADDRESS' => $objResult->fields['ship_address'],
+                    'SHOP_SHIP_ZIP' => $objResult->fields['ship_zip'],
+                    'SHOP_SHIP_CITY' => $objResult->fields['ship_city'],
+                    'SHOP_SHIP_COUNTRY' => ($type == 1
+                        ? $this->_getCountriesMenu('shopShipCountry', $ship_to_country_id)
+                        : Country::getNameById($ship_to_country_id)
+                    ),
+                    'SHOP_SHIP_PHONE' => $objResult->fields['ship_phone'],
+                    'SHOP_PHONE' => $objResult->fields['phone'],
+                    'SHOP_FAX' => $objResult->fields['fax'],
+                    'SHOP_EMAIL' => $shopMailTo,
+                        'SHOP_PAYMENTTYPE' => Payment::getProperty($paymentId, 'name'),
+                    'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
+                    'SHOP_CCDATE' => $objResult->fields['ccdate'],
+                    'SHOP_CCNAME' => $objResult->fields['ccname'],
+                    'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
+                    'SHOP_CUSTOMER_NOTE' => $objResult->fields['customer_note'],
+                    'SHOP_CUSTOMER_IP' => $objResult->fields['customer_ip'] == ''
+                        ? '&nbsp;'
+                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+                          $objResult->fields['customer_ip'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+                          $objResult->fields['customer_ip'].'</a>',
+                    'SHOP_CUSTOMER_HOST' => $objResult->fields['customer_host'] == ''
+                        ? '&nbsp;'
+                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+                          $objResult->fields['customer_host'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+                          $objResult->fields['customer_host'].'</a>',
+                    'SHOP_CUSTOMER_LANG' => $objResult->fields['customer_lang'] == '' ? '&nbsp;' : $objResult->fields['customer_lang'],
+                    'SHOP_CUSTOMER_BROWSER' => $objResult->fields['customer_browser'] == '' ? '&nbsp;' : $objResult->fields['customer_browser'],
+                    'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'],
+                    'SHOP_LAST_MODIFIED' => ($shopLastModified == 0 ? $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED'] : $shopLastModified.'&nbsp;'.$_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.$objResult->fields['modified_by']),
+                    'SHOP_SHIPPING_TYPE' => $shipperName,
                 ));
 
                 // set shipment price or remove it from the details overview if empty
@@ -4062,8 +4026,8 @@ class shopmanager extends ShopLibrary
             //if ($total_vat_amount) {
                 // distinguish between included VAT, and additional VAT added to sum
                 $tax_part_percentaged = (Vat::isIncluded()
-	                    ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-	                    : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                    ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                    : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
                 );
                 self::$objTemplate->setVariable(array(
                     'SHOP_TAX_PRICE' => Currency::formatPrice($total_vat_amount),
@@ -4763,7 +4727,7 @@ class shopmanager extends ShopLibrary
             //if query has errors, call errorhandling
             $this->errorHandling();
         } else {
-        	Currency::init($objResult->fields['selected_currency_id']);
+            Currency::init($objResult->fields['selected_currency_id']);
             self::$objTemplate->setCurrentBlock('orderRow');
             while (!$objResult->EOF) {
                 $class = (++$i % 2 ? 'row1' : 'row2');
@@ -5288,6 +5252,8 @@ class shopmanager extends ShopLibrary
                     strtoupper($objProduct->getDistribution())],
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED' => ($objProduct->isShownOnStartpage() ? ' checked="checked"' : ''),
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD' => ($objProduct->isShownOnStartpage() ? '1' : ''),
+// rocking.ch
+                'SHOP_TITLE' => htmlentities($objProduct->getName(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
             self::$objTemplate->parse('productRow');
         }
@@ -5330,6 +5296,10 @@ class shopmanager extends ShopLibrary
             $shopTaxIdOld         = $_POST['taxIdOld'][$id];
             $shownOnStartpage = (isset($_POST['shownonstartpage'][$id]) ? $_POST['shownonstartpage'][$id] : 0);
             $shownOnStartpageOld = (isset($_POST['shownonstartpageOld'][$id]) ? $_POST['shownonstartpageOld'][$id] : 0);
+// rocking.ch
+            $shopTitle    = $_POST['title'][$id];
+            $shopTitleOld = $_POST['titleOld'][$id];
+
 /*
     Distribution and weight have been removed from the overview due to the
     changes made to the delivery options.
@@ -5385,13 +5355,14 @@ class shopmanager extends ShopLibrary
                 || $shopStatus != $shopStatusOld
                 || $shopTaxId != $shopTaxIdOld
                 || $shownOnStartpage != $shownOnStartpageOld
+// rocking.ch
+                || $shopTitle != $shopTitleOld
 /*
                 || $shopDistribution != $shopDistributionOld
                 // Weight, see above
                 || $updateProduct
 */
             ) {
-
                 $arrProducts =
 //                    ($shopProductIdentifierOld != ''
 //                        ? Products::getByCustomId($shopProductIdentifierOld) :
@@ -5418,6 +5389,8 @@ class shopmanager extends ShopLibrary
 //                    $objProduct->setDistribution($shopDistribution);
 //                    $objProduct->setWeight($shopWeight);
                     $objProduct->setShownOnStartpage($shownOnStartpage);
+// rocking.ch
+                    $objProduct->setName(contrexx_stripslashes($shopTitle));
                     if (!$objProduct->store()) {
                         $arrError[$shopProductIdentifier] = true;
                     }
@@ -5731,12 +5704,12 @@ class shopmanager extends ShopLibrary
                 if (is_array($arrayResults)) {
                     foreach ($arrayResults as $entry) {
                         self::$objTemplate->setVariable(array(
-  	                        'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
-  	                        'SHOP_COLUMN_1' => $entry['column1'],
-  	                        'SHOP_COLUMN_2' => $entry['column2'],
-  	                        'SHOP_COLUMN_3' => $entry['column3'],
-  	                        'SHOP_COLUMN_4' => Currency::formatPrice($entry['column4']).' '.
-  	                            Currency::getDefaultCurrencySymbol(),
+                            'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
+                            'SHOP_COLUMN_1' => $entry['column1'],
+                            'SHOP_COLUMN_2' => $entry['column2'],
+                            'SHOP_COLUMN_3' => $entry['column3'],
+                            'SHOP_COLUMN_4' => Currency::formatPrice($entry['column4']).' '.
+                                Currency::getDefaultCurrencySymbol(),
                         ));
                         self::$objTemplate->parse('statisticRow');
                     }
@@ -5987,9 +5960,9 @@ class shopmanager extends ShopLibrary
             }
             self::$objTemplate->setVariable(array(
                 'PDF_CATEGORY_ID' => $objResult->fields['catid'],
-	            'PDF_CATEGORY_ID2' => $objResult->fields['catid'],
-	            'PDF_CATEGORY_ID3' => $objResult->fields['catid'],
-	            'CATEGORY_OVERVIEW_ROWCOLOR' => (++$row_color % 2 ? 'row1' : 'row2'),
+                'PDF_CATEGORY_ID2' => $objResult->fields['catid'],
+                'PDF_CATEGORY_ID3' => $objResult->fields['catid'],
+                'CATEGORY_OVERVIEW_ROWCOLOR' => (++$row_color % 2 ? 'row1' : 'row2'),
             ));
             self::$objTemplate->parse('showShopCategories');
             self::$objTemplate->parse('showShopCategories2');
@@ -6012,7 +5985,7 @@ class shopmanager extends ShopLibrary
         if ($_POST['productsAll']) {
             $selectedCategories = '*';
         } else {
-        	foreach ($_POST as $key => $value) {
+            foreach ($_POST as $key => $value) {
                 if (substr($key,0,14) == 'categoryNumber') {
                     $arrSelectedMainCats[$value] = $value;
                 }
@@ -6087,10 +6060,11 @@ class shopmanager extends ShopLibrary
         $lang_id = $objResult->fields['lang_id'];
         self::$objTemplate->setVariable(array(
             'SHOP_PRICELIST_DETAILS_ACT' => 'pricelist_update&amp;id='.$objResult->fields['id'],
-            'SHOP_PRICELIST_PDFLINK' => '<a href="'.ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.
-	            $objResult->fields['id'].'" target="_blank" title="PDF">'.
-	            'http://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET.
-	            '/modules/shop/pdf.php?plid='.$objResult->fields['id'].'</a>',
+            'SHOP_PRICELIST_PDFLINK' =>
+                '<a href="'.ASCMS_PATH_OFFSET.'/modules/shop/pdf.php?plid='.
+                $objResult->fields['id'].'" target="_blank" title="PDF">'.
+                'http://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET.
+                '/modules/shop/pdf.php?plid='.$objResult->fields['id'].'</a>',
             'SHOP_PRICELIST_DETAILS_NAME' => $objResult->fields['name'],
         ));
         //are the borders on?
