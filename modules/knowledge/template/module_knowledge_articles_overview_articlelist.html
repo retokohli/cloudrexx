@@ -1,14 +1,5 @@
-<!-- START module_knowledge_articles_overview_articlelist.html --> 
 <!-- BEGIN content -->
 
-<!--
-<table>
-    <thead>
-        <tr>
-            <th>{CATEGORY}</th>
-        </tr>
-    </thead>
-</table>-->
 <div style="min-height: 1%; height: 1%; float:left; width: 100%;">
     <table style="width: 100%; font-weight: bold;" class="adminlist" cellspacing="0" cellpadding="3">
         <tr>
@@ -26,8 +17,8 @@
         </tr>
     </table>
     <ul id="articlelist">
-        <!-- BEGIN row -->
-        <li id="article_{ARTICLEID}">
+	<!-- BEGIN row -->
+	<li id="article_{ARTICLEID}" class="article_row">
             <table style="width: 100%;">
                 <tr>
                     <td class="drag_handle" style="width: 75px;" onmousedown="lastDragged={ARTICLEID}; handlerEvent();">
@@ -74,28 +65,6 @@
         </li>   
         <!-- END no_articles -->
     </ul>
-   <!--<ul id="articlelist">
-        <li>
-            <div class="drag_area">drag</div>
-            Testblabal
-            <ul id="article2">
-                <li><div class="drag_area2">drag</div>unter halb</li>
-                <li><div class="drag_area2">drag</div>blah</li>
-            </ul>
-        </li>
-        <li>
-            <div class="drag_area">drag</div>
-            zweitens
-        </li>
-        <li>
-        <div class="drag_area">drag</div>
-            drittens
-            <ul id="article3">
-                <li><div class="drag_area3">drag</div>unter</li>
-                <li><div class="drag_area3">drag</div>test</li>
-            </ul>
-        </li>
-    </ul>-->
 </div>
 
 <!-- BEGIN jsinit -->
