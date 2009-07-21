@@ -124,6 +124,9 @@ Modul: User to User Nachrichten
 - Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 
+Modul: Wissensdatenbank
+- Verbesserte Live-Suche.
+
 Statistik
 - Die Zählung der Besucher erfolgt korrekt.
 - Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter

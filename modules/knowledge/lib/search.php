@@ -200,7 +200,7 @@ class Search {
     
     private function formatTitle($string)
     {
-        return $string;
+        return htmlspecialchars($string, ENT_QUOTES, CONTREXX_CHARSET);
     }
 }
 
