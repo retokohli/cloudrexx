@@ -52,9 +52,11 @@ Articles.prototype.setLoading = function()
         return;
     }
     
+    /*
     if ($('inner_right')) {
         $('articles').removeChild($('inner_right'));
     }
+    */
     
     var overlay = document.createElement("div");
     overlay.id = "overlay";
@@ -145,6 +147,7 @@ var catTree = {
                 /* show doesn't work in ie6 */
                     elem.style.display = "";
                 }
+            } catch (e) {}
         });
         if (obj.select == undefined) {
             Element.extend(obj);
@@ -273,7 +276,14 @@ var deleteArticle = function(id)
 
 <div id="articles">
     {TXT_ARTICLES}
-    <!--
+    <div style="position: relative">
+    <table class="adminlist" style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <th>
+                <div id="head">&nbsp;</div>
+            </th>
+            </tr>
+    </table>
     <table id="inner_right" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 95%">
         <tbody>
             <tr>
@@ -281,7 +291,6 @@ var deleteArticle = function(id)
             </tr>
         </tbody>
     </table>
-    -->
 </div>
 
 <br style="clear: both;" />
