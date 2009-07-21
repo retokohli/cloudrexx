@@ -99,6 +99,7 @@ var deleteCategory = function(entryId, amount)
 
 }
 
+
 /**
  * Makes a category tree extentable
  */
@@ -254,7 +255,7 @@ var updateSort = function(id)
                                     <img src="../images/modules/knowledge/sort.gif" style="boder: none;" />
                                 </td>
                                 <td style="width: 50px;">
-                                    <input type="checkbox" name="selectedEntriesId[]" value="category_{CATEGORY_ID}" />
+                                    <!--<input type="checkbox" name="selectedEntriesId[]" value="category_{CATEGORY_ID}" />-->
                                     <a href="javascript: void(0);" onclick="switchActive({CATEGORY_ID}, this, {CATEGORY_ACTIVE_STATE})">
                                         <img src="images/icons/led_{CATEGORY_ACTIVE_LED}.gif"  alt="switch active state" style="border: none;" />
                                     </a>
@@ -270,7 +271,7 @@ var updateSort = function(id)
 
                                     <img src="../images/modules/knowledge/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
 
-                                    <!--<a href="index.php?cmd=knowledge&amp;section=articles&amp;cid={CATEGORY_ID}">-->{CATEGORY_SUBJECT}<!--</a>-->
+                                    <a href="?cmd=knowledge{MODULE_INDEX}&amp;section=categories&amp;act=edit&amp;id={CATEGORY_ID}">{CATEGORY_SUBJECT}</a>
                                 </td>
                                 <td style="width: 100px;">
                                     {ENTRIES_AMOUNT}
