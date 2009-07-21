@@ -27,13 +27,13 @@ class searchKnowledge extends SearchInterface  {
     {
         global $objDatabase;
                     
-        $query = "  SELECT articles.id as id, content.question as title, MATCH (content.answer, content.question) AGAINST ('%".htmlentities($this->term, ENT_QUOTES, CONTREXX_CHARSET)."%' IN BOOLEAN MODE) as Relevance 
+        $query = "  SELECT articles.id as id, content.question as title, MATCH (content.answer, content.question) AGAINST ('%".$this->term."%' IN BOOLEAN MODE) as Relevance
                     FROM `contrexx_module_knowledge".MODULE_INDEX."_articles` AS articles
                     INNER JOIN `contrexx_module_knowledge".MODULE_INDEX."_article_content` AS content ON articles.id = content.article
                     WHERE lang = 1
                     AND active = 1
-                    AND (   content.answer like '%".htmlentities($this->term, ENT_QUOTES, CONTREXX_CHARSET)."%' OR
-                            content.question like '%".htmlentities($this->term, ENT_QUOTES, CONTREXX_CHARSET)."%')
+                    AND (   content.answer like '%".$this->term."%' OR
+                            content.question like '%".$this->term."%')
                     ORDER BY Relevance DESC";
        
         if (($rs = $objDatabase->Execute($query)) === false) {
