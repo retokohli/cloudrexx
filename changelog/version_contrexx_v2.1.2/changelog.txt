@@ -72,6 +72,9 @@ Modul: Linkverzeichnis
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 
+Modul: Wissensdatenbank
+- Verbesserte Live-Suche.
+
 Statistik
 - Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter
   Verwendung eines Alias getätigt wurden, korrekt aufgelistet.
