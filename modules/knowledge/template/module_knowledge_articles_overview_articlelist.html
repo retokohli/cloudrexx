@@ -36,7 +36,7 @@ var hoverOut = function(obj) {
             <td style="width: 50px;">{TXT_STATE}</td>
             <td>{TXT_QUESTION}</td>
             <td style="width: 50px;">{TXT_HITS}</td>
-            <td style="width: 120px;">{TXT_RATING}</td>
+            <td style="width: 150px;">{TXT_RATING}</td>
             <td style="width: 50px;">{TXT_ACTIONS}</td>
         </tr>
     </table>
@@ -63,21 +63,8 @@ var hoverOut = function(obj) {
                     <td style="width: 50px; vertical-align: top;">
                         {HITS}
                     </td>
-                    <td style="width: 120px; vertical-align: top;">
+                    <td style="width: 150px; vertical-align: top;">
                         &Oslash; {VOTEVALUE} {TXT_BY} {VOTECOUNT} {TXT_VOTINGS}
-                    <!--!
-                       <div id="rating{ARTICLEID}"> </div>
-                        <script type="text/javascript">
-                            /* <![CDATA[ */
-                            
-                            var rating{ARTICLEID} = new Rating({ARTICLEID}, {VOTEVALUE}, {
-                                stars : {MAX_RATING},
-                                locked : true,
-                                starPath : '../images/modules/knowledge/'
-                            });
-                            
-                            /* ]]> */
-                        </script> -->
                     </td>
                     <td style="width: 50px; text-align: right; vertical-align: top;">
                         <a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}" title="{TXT_IMGALT_EDIT}">
