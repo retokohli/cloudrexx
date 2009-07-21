@@ -114,7 +114,7 @@ var Rating = function(nr, currentRate, options)
  
 
     // ad the style
-    //obj.style.position = "relative"; 
+    obj.style.position = "relative"; 
     obj.style.width = this.width + 'px';
     obj.style.height = this.starHeight + 'px';
     obj.style.overlay = "hidden";
