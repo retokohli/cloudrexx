@@ -34,13 +34,20 @@ Articles.prototype.getCategory = function(id, pos) {
             response = transport.responseText.evalJSON();
             $('articles').update(response.list);
             pos = response.position;
-            /*$('head').update(response.category);*/
             setRows();
             initSortableArea(pos);
             notIe();
         }
     })
 }
+
+Articles.prototype.getterSucess = function(transport) {
+    response = transport.responseText.evalJSON();
+    $('articles').update(response.list);
+    setRows();
+    notIe();
+}
+
 
 Articles.prototype.getBestRated = function(pos) {
     this.setLoading();
@@ -53,12 +60,7 @@ Articles.prototype.getBestRated = function(pos) {
             act     : 'getArticlesByRating',
             pos     : pos
         },
-        onSuccess : function(transport) {
-            response = transport.responseText.evalJSON();
-            $('articles').update(response.list);
-            setRows();
-            notIe();
-        }
+        onSuccess : this.getterSucess
     });
 }
 
@@ -73,12 +75,7 @@ Articles.prototype.getMostRead = function(pos) {
             act     : 'getArticlesByViews',
             pos     : pos
         },
-        onSuccess : function(transport) {
-            response = transport.responseText.evalJSON();
-            $('articles').update(response.list);
-            setRows();
-            notIe();
-        }
+        onSuccess : this.getterSucess
     });
 }
 
@@ -93,12 +90,23 @@ Articles.prototype.getGlossary = function(pos) {
             act     : 'getArticlesGlossary',
             pos     : pos
         },
-        onSuccess : function(transport) {
-            response = transport.responseText.evalJSON();
-            $('articles').update(response.list);
-            setRows();
-            notIe();
-        }
+        onSuccess : this.getterSucess
+    });
+}
+
+Articles.prototype.searchArticles = function(term, pos) {
+    this.setLoading();
+
+    new Ajax.Request('index.php', {
+        method : 'get',
+        parameters : {
+            cmd     : 'knowledge',
+            section : 'articles',
+            act     : 'searchArticles',
+            term    : term,
+            pos     : pos
+        },
+        onSuccess : this.getterSucess
     });
 }
 
@@ -288,14 +296,44 @@ var deleteArticle = function(id)
 
 <div id="knowledge_articles">
 
+    <table class="adminlist" style="width: 100%;">
+        <tr>
+            <th>
+                {TXT_OVERVIEW}
+            </th>
+        </tr>
+    </table>
 
-<form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id=18" method="get">
-    {TXT_JUMP_TO_ARTICLE}
-        <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
-        <input type="hidden" name="act" value="edit" />
-    <input type="text" style="width: 3em;" name="id" />
-    <input type="submit" value="Go"  style=" margin-right: 4px;"/>
-</form>
+    <div style="width: 100%;" >
+        <div style="float: left; width: 50%">
+            <div style="padding: 5px;">
+                {TXT_SEARCH_ARTICLES}:<br />
+                <form action="javascript: void(0)" onsubmit="articles.searchArticles($('searchterm').value, 0)">
+                    <input type="text" value="{TXT_SEARCH_INPUT}" onfocus="if (this.value == '{TXT_SEARCH_INPUT}')  { this.value =''; } " 
+                        onblur='if (this.value == "") { this.value = "{TXT_SEARCH_INPUT}" }' 
+                        style="width: 300px;" id="searchterm" />
+                        <input type="submit" value="{TXT_SEARCH}" />
+                </form>
+            </div>
+        </div>
+        <div style="float: left; width: 50%">
+            <div style="padding: 5px;">
+                 <form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id=18" method="get">
+                     {TXT_JUMP_TO_ARTICLE}<br />
+                        <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
+                        <input type="hidden" name="act" value="edit" />
+                        <input type="text" style="width: 3em;" name="id" value="id"
+                            onfocus="if (this.value == 'id') { this.value = ''; }" onblur="if (this.value == '') { this.value = 'id';}"/>
+                    <input type="submit" value="{TXT_JUMP}"  style=" margin-right: 4px;"/>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <br style="clear: both" />
+    <br />
+
+
 
 <div style="position: relative; width: 232px;">
 
