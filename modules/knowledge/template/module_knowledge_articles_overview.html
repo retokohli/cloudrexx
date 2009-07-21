@@ -37,6 +37,7 @@ Articles.prototype.getCategory = function(id, pos) {
             /*$('head').update(response.category);*/
             setRows();
             initSortableArea(pos);
+            notIe();
         }
     })
 }
@@ -56,6 +57,7 @@ Articles.prototype.getBestRated = function(pos) {
             response = transport.responseText.evalJSON();
             $('articles').update(response.list);
             setRows();
+            notIe();
         }
     });
 }
@@ -75,6 +77,7 @@ Articles.prototype.getMostRead = function(pos) {
             response = transport.responseText.evalJSON();
             $('articles').update(response.list);
             setRows();
+            notIe();
         }
     });
 }
@@ -94,6 +97,7 @@ Articles.prototype.getGlossary = function(pos) {
             response = transport.responseText.evalJSON();
             $('articles').update(response.list);
             setRows();
+            notIe();
         }
     });
 }
@@ -172,7 +176,6 @@ var setRows = function()
 
 var initSortableArea = function(offset)
 {  
-    console.log(offset);
     if (editAllowed) {
         Sortable.create("articlelist", {
            onUpdate: function() {
@@ -370,11 +373,15 @@ var deleteArticle = function(id)
 <script type="text/javascript">
 /* <![CDATA[  */
     // in case it's not Internet Explorer, the width needs to be set
+var notIe = function() {
     if (navigator.appName.indexOf("Explorer") == -1) {
         $$('.not_ie').each(function(obj) {
                 obj.style.width = '100%';
         });
     }
+}
+
+notIe();
 
 /* ]]> */
 
