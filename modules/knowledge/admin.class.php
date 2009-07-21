@@ -955,7 +955,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     "ACTIVE_STATE"          => abs($article['active']-1),
                     "CATEGORY_ACTIVE_LED"   => ($article['active']) ? "green" : "red",
                     "HITS"                  => $article['hits'],
-                    "VOTEVALUE"             => ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0,
+                    "VOTEVALUE"             => round(
+                        (($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0), 
+                        2),
                     "VOTECOUNT"             => $article['votes'],
                     "MAX_RATING"            => $this->settings->get("max_rating")
                 ));
@@ -1120,20 +1122,26 @@ class KnowledgeAdmin extends KnowledgeLibrary
             die($e->plaing);
         }
 
+
+
         $content = "";
-        $articlecounter = 0;
-        $step = $_CONFIG['corePagingLimit'];
-        foreach ($articles as $key => $entries) {
-            $parseEntries = array();
-            foreach ($entries as $entry) {
-                $articlecounter++;
-                if ($articlecounter > ($position / 30) * $step && 
-                        $articlecounter <= (($position / 30) + 1) * $step) {
-                    $parseEntries[] = $entry;
+        if (empty($articles)) {
+            $content = $this->parseArticleList(array(), '', false, false);
+        } else {
+            $articlecounter = 0;
+            $step = $_CONFIG['corePagingLimit'];
+            foreach ($articles as $key => $entries) {
+                $parseEntries = array();
+                foreach ($entries as $entry) {
+                    $articlecounter++;
+                    if ($articlecounter > ($position / 30) * $step && 
+                            $articlecounter <= (($position / 30) + 1) * $step) {
+                        $parseEntries[] = $entry;
+                    }
                 }
-            }
-            if (count($parseEntries)) {
-                $content .= $this->parseArticleList($entries, $key, '', false, false);
+                if (count($parseEntries)) {
+                    $content .= $this->parseArticleList($entries, $key, '', false, false);
+                }
             }
         }
 
