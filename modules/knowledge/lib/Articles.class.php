@@ -168,8 +168,11 @@ class KnowledgeArticles
     {
         $query = $this->basequery;
 
-        $query .= " ORDER BY id DESC LIMIT 10";
-        return $this->readArticles(true, 0, 0, $query);
+        //$query .= " ORDER BY id DESC LIMIT 10";
+        // cannot be done like this, because there are several rows
+        // because all languages are returned
+        $query .= " ORDER BY id";
+        return array_slice($this->readArticles(true, 0, 0, $query), 0, 10);
     }
     
     /**

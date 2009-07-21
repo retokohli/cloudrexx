@@ -14,12 +14,12 @@
 require_once ASCMS_MODULE_PATH.'/knowledge/lib/knowledgeLib.class.php';
 require_once ASCMS_MODULE_PATH.'/knowledge/lib/knowledgePaging.class.php';
 
-define("ACCESS_ID_KNOWLEDGE", 129);
-define("ACCESS_ID_OVERVIEW", 130);
-define("ACCESS_ID_EDIT_ARTICLES", 131);
-define("ACCESS_ID_CATEGORIES", 132);
-define("ACCESS_ID_EDIT_CATEGORIES", 133);
-define("ACCESS_ID_SETTINGS", 134);
+define("KNOWLEDGE_ACCESS_ID_KNOWLEDGE", 129);
+define("KNOWLEDGE_ACCESS_ID_OVERVIEW", 130);
+define("KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES", 131);
+define("KNOWLEDGE_ACCESS_ID_CATEGORIES", 132);
+define("KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES", 133);
+define("KNOWLEDGE_ACCESS_ID_SETTINGS", 134);
 
 /**
  * All the backend stuff of the Knowledgemodul
@@ -77,7 +77,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 	{
 		global $objInit, $objTemplate, $_ARRAYLANG;
 		
-		Permission::checkAccess(ACCESS_ID_KNOWLEDGE, 'static');
+		Permission::checkAccess(KNOWLEDGE_ACCESS_ID_KNOWLEDGE, 'static');
 		
 		KnowledgeLibrary::__construct();
 		$this->tpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/knowledge'.MODULE_INDEX.'/template');
@@ -113,40 +113,40 @@ class KnowledgeAdmin extends KnowledgeLibrary
             case 'categories':
     	        switch ($_GET['act']) {
     	            case 'add':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+    	                Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
     	                $content = $this->editCategory(true);
     	                $active = "add";
     	                break;
     	            case 'edit':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+    	                Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
                         $content = $this->editCategory();
                         $active = "";
                         break;
     	            case 'update':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+    	                Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
     	                $id = $this->updateCategory();
     	                header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
     	                break;
     	            case 'insert':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+    	                Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
         	            $id = $this->insertCategory();
     	                header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
     	                break;
     	            case 'delete':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+    	                Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
     	                $this->deleteCategory();
     	                break;
     	            case 'switchState':
-    	                $this->checkAjaxAccess(ACCESS_ID_EDIT_CATEGORIES);
+    	                $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES);
     	                $this->switchCategoryState();
     	                break;
     	            case 'sort':
-    	                $this->checkAjaxAccess(ACCESS_ID_EDIT_CATEGORIES);
+    	                $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES);
     	                $this->sortCategory();
     	                break;
     	            case 'overview':
     	            default: 
-    	               Permission::checkAccess(ACCESS_ID_CATEGORIES, 'static');
+    	               Permission::checkAccess(KNOWLEDGE_ACCESS_ID_CATEGORIES, 'static');
     	               $content = $this->categoriesOverview();
     	               $active = "overview";
     	               break;
@@ -158,58 +158,62 @@ class KnowledgeAdmin extends KnowledgeLibrary
             case 'articles':
                 switch ($_GET['act']) {
                     case 'add':
-                        Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES, 'static');
                         $content = $this->editArticle(true);
                         $active = "add";
                         break;
                     case 'edit':
-                        Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES, 'static');
                         $content = $this->editArticle();
                         $active = "";
                         break;
                     case 'insert':
-                        Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES, 'static');
                         $id = $this->insertArticle();
                         $content = $this->articleOverview();
                         $active = "overview";
                         break;
                     case 'update':
-                        Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES, 'static');
                         $id = $this->updateArticle();
                         $content = $this->articleOverview();
                         header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles&act=edit&id=".$id."&updated=true");
                         break;
                     case 'getArticles':
-                        Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
                         $this->getArticles();
                         break;
                     case 'getArticlesByRating':
-                        Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
                         $this->getArticlesByRating();
                         break;
                     case 'getArticlesByViews':
-                        Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
                         $this->getArticlesByViews();
                         break;
+                    case 'getArticlesGlossary':
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
+                        $this->getArticlesGlossary();
+                        break;
                     case 'sort':
-                        $this->checkAjaxAccess(ACCESS_ID_EDIT_ARTICLES);
+                        $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES);
                         $this->sortArticles();
                         break;
                     case 'switchState':
-                        $this->checkAjaxAccess(ACCESS_ID_EDIT_ARTICLES);
+                        $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES);
                         $this->switchArticleState();
                         break;
                     case 'getTags':
-                        Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
                         $this->getTags();
                         break;
                     case 'delete':
-                        $this->checkAjaxAccess(ACCESS_ID_EDIT_ARTICLES);
+                        $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES);
                         $this->deleteArticle();
                         break;
                     case 'overview':
                     default:
-                        Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
+                        Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
                         $content = $this->articleOverview();
                         $active = "overview";
                         break;
@@ -217,7 +221,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 $this->articles($content, $active);
                 break;
             case 'settings':
-                Permission::checkAccess(ACCESS_ID_SETTINGS, 'static');
+                Permission::checkAccess(KNOWLEDGE_ACCESS_ID_SETTINGS, 'static');
                 switch ($_GET['act']) {
                     case 'tidyTags':
                         $this->tidyTags();
@@ -451,7 +455,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
     		'TXT_ENTRIES_SUBMIT_DELETE'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_DELETE'],
    			'TXT_ENTRIES_SUBMIT_DELETE_JS'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
    			
-   			"EDIT_ALLOWED"                        => (Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static', true)) ? "true" : "false",
+   			"EDIT_ALLOWED"                        => (Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static', true)) ? "true" : "false",
             'NOT_ALLOWED_MSG'                   => $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED']
    		));
    		
@@ -838,7 +842,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         
             // other stuff
             "CATLIST"                       => $catTree,
-            "EDIT_ALLOWED"                  => (Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static', true)) ? "true" : "false",
+            "EDIT_ALLOWED"                  => (Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES, 'static', true)) ? "true" : "false",
             'NOT_ALLOWED_MSG'               => $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED'],
             'TXT_ARTICLES'                  => $articlelist 
         ));
@@ -855,7 +859,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         $this->tpl->setGlobalVariable(array(
             'BEST_RATED'        => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'],
-            'MOST_READ'         => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES']
+            'MOST_READ'         => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'],
+            'GLOSSARY'          => $_ARRAYLANG['TXT_KNOWLEDGE_GLOSSARY_VIEW']
         ));
 
         return $this->overviewCategoryTree($catTree);
@@ -945,7 +950,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         if (!empty($articles)) {
             foreach ($articles as $key => $article) {
                 $tpl->setVariable(array(
-                    "ARTICLEID"             => $key,
+                    "ARTICLEID"             => $article['id'],
                     "QUESTION"              => utf8_encode($article['content'][$_LANGID]['question']),
                     "ACTIVE_STATE"          => abs($article['active']-1),
                     "CATEGORY_ACTIVE_LED"   => ($article['active']) ? "green" : "red",
@@ -957,7 +962,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
                 if ($showSort) {
                     $tpl->setVariable(array(
-                        'ARTICLEID_DRAG'    =>  $key
+                        'ARTICLEID_DRAG'    =>  $article['id']
                     ));
                     $tpl->parse('sort-td');
                 }
@@ -1008,11 +1013,13 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $paging = getKnowledgePaging(count($articles), $position, 
             'javascript: articles.getCategory('.$id.', %POS%)', '', true, 0);
 
-        $content = $this->parseArticleList(array_slice($articles, $position, $_CONFIG['corePagingLimit']),
+        $position = ($position > 0) ? $position -= 3 : $position;
+        $content = $this->parseArticleList(array_slice($articles, $position, $_CONFIG['corePagingLimit']+3),
             $category['content'][$_LANGID]['name'], $paging);
 
         $response = Array();
         $response['list'] = $content;
+        $response['position'] = $position;
        
         require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
@@ -1092,6 +1099,58 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         die($jsonResponse);
     } 
+
+    /**
+     * Return articles in a glossy form
+     *
+     * This function is galled throught ajax
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     * @global $_CORELANG
+     */
+    private function getArticlesGlossary()
+    {
+        global $_LANGID, $_ARRAYLANG, $_CORELANG, $_CONFIG;
+
+        $position = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+
+        try {
+            $articles = $this->articles->getGlossary($_LANGID);
+        } catch (DatabaseError $e) {
+            die($e->plaing);
+        }
+
+        $content = "";
+        $articlecounter = 0;
+        $step = $_CONFIG['corePagingLimit'];
+        foreach ($articles as $key => $entries) {
+            $parseEntries = array();
+            foreach ($entries as $entry) {
+                $articlecounter++;
+                if ($articlecounter > ($position / 30) * $step && 
+                        $articlecounter <= (($position / 30) + 1) * $step) {
+                    $parseEntries[] = $entry;
+                }
+            }
+            if (count($parseEntries)) {
+                $content .= $this->parseArticleList($entries, $key, '', false, false);
+            }
+        }
+
+        $paging = getKnowledgePaging($articlecounter, $position,
+            'javascript: articles.getGlossary(%POS%)', '', true, 0);
+
+        $content .= $paging;
+
+        $response = Array();
+        $response['list'] = $content;
+
+        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
+        $objJson = new Services_JSON();
+        $jsonResponse = $objJson->encode($response);
+
+        die($jsonResponse);
+    }
     
     /**
      * Show the edit form
@@ -1322,10 +1381,12 @@ class KnowledgeAdmin extends KnowledgeLibrary
         if (empty($_POST['articlelist'])) {
             die();
         }
-        
+
+        $offset = (isset($_GET['offset'])) ? intval($_GET['offset']) : 0;
+
         try {
             foreach ($_POST['articlelist'] as $position => $id) {
-                $this->articles->setSort($id, $position);
+                $this->articles->setSort($id, $position + $offset);
             }
         } catch (DatabaseError $e) {
             $this->sendAjaxError($e->formatted());
@@ -1333,6 +1394,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         
         die();
         
+        /*
         print $_GET['order'];
         $order = split("articlelist\[\]=", $_GET['order']);
         
@@ -1344,6 +1406,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         }
         
         die();
+        */
     }
     
     /**

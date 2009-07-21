@@ -33,9 +33,10 @@ Articles.prototype.getCategory = function(id, pos) {
         onSuccess : function(transport) {
             response = transport.responseText.evalJSON();
             $('articles').update(response.list);
+            pos = response.position;
             /*$('head').update(response.category);*/
             setRows();
-            initSortableArea();
+            initSortableArea(pos);
         }
     })
 }
@@ -68,6 +69,25 @@ Articles.prototype.getMostRead = function(pos) {
             cmd     : 'knowledge',
             section : 'articles',
             act     : 'getArticlesByViews',
+            pos     : pos
+        },
+        onSuccess : function(transport) {
+            response = transport.responseText.evalJSON();
+            $('articles').update(response.list);
+            setRows();
+        }
+    });
+}
+
+Articles.prototype.getGlossary = function(pos) {
+    this.setLoading();
+
+    new Ajax.Request('index.php', {
+        method : 'get',
+        parameters : {
+            cmd     : 'knowledge',
+            section : 'articles',
+            act     : 'getArticlesGlossary',
             pos     : pos
         },
         onSuccess : function(transport) {
@@ -150,13 +170,14 @@ var setRows = function()
     });
 }
 
-var initSortableArea = function()
+var initSortableArea = function(offset)
 {  
+    console.log(offset);
     if (editAllowed) {
         Sortable.create("articlelist", {
            onUpdate: function() {
                 setRows();
-                new Ajax.Request("index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=sort", {
+                new Ajax.Request("index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=sort&offset="+offset, {
                     method : "post",
                     parameters : Sortable.serialize("articlelist"),
                     onSuccess : function(transport) {
@@ -329,6 +350,14 @@ var deleteArticle = function(id)
                     <a href="javascript: void(0);" onclick="articles.getMostRead()">{MOST_READ}</a>
                 </div>
             </li>
+            <li style="clear: both; padding-top: 5px; width: 95%;">
+                <div style="float: left; margin-left: 33px;" class="standalone_row">
+                    <img src="../images/modules/knowledge/glossary.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
+                </div>
+                <div>
+                    <a href="javascript: void(0);" onclick="articles.getGlossary()">{GLOSSARY}</a>
+                </div>
+            </li>
         </ul>
     </div>
 </div>
@@ -337,6 +366,19 @@ var deleteArticle = function(id)
 	    {TXT_ARTICLES}
 	</div>
 <!--</div>-->
+
+<script type="text/javascript">
+/* <![CDATA[  */
+    // in case it's not Internet Explorer, the width needs to be set
+    if (navigator.appName.indexOf("Explorer") == -1) {
+        $$('.not_ie').each(function(obj) {
+                obj.style.width = '100%';
+        });
+    }
+
+/* ]]> */
+
+</script>
 
 <br style="clear: both;" />
 </div>
