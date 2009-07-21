@@ -1198,6 +1198,10 @@ END;
     {
         global $objDatabase, $objCache;
 
+        if (checkForSpider()) {
+            return;
+        }
+
         $intPicId = intval($intPicId);
         $intMark = intval($intMark);
         $strMd5 = md5($_SERVER['REMOTE_ADDR'].$_SERVER['HTTP_USER_AGENT']);

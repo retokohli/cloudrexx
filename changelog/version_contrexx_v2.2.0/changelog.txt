@@ -80,6 +80,7 @@ Modul: Adressverzeichnis
 
 Modul: Bildergalerie
 - Die ToolTips der Bilder sind korrekt.
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
 Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
