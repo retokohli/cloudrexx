@@ -95,6 +95,10 @@
     padding-left: 5px;
 }
 
+* html #knowledge_articles #catlist ul li {
+    float: left;
+}
+
 #knowledge_articles #catlist ul li ul {
     margin-left: 27px;
 }

@@ -793,7 +793,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
             return;
         }
 
-        $this->tpl->replaceBlock("remove_area", "");
         $this->tpl->setVariable(array(
             // language variables
             "TXT_SELECT_CATEGORY"           => $_ARRAYLANG['TXT_KNOWLEDGE_SELECT_CATEGORY'],
@@ -803,7 +802,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
             // other stuff
             "CATLIST"                       => $catTree,
             "EDIT_ALLOWED"                  => (Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static', true)) ? "true" : "false",
-            'NOT_ALLOWED_MSG'               => $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED']
+            'NOT_ALLOWED_MSG'               => $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED'],
+            'TXT_ARTICLES'                  => $articlelist 
         ));
 
         return $this->tpl->get();
@@ -850,16 +850,13 @@ class KnowledgeAdmin extends KnowledgeLibrary
     }
 
     /**
-     * Get Articles
+     * Generate an articlelist
      *
-     * This function is called through ajax.
-     * Return a JSON object with all the needed information for the
-     * article overview.
-     * @global $_LANGID
-     * @global $_ARRAYLANG
-     * @global $_CORELANG
+     * @param $articles An array of articles
+     * @param $category Category information
+     * @return String
      */
-    private function getArticles()
+    private function parseArticleList($articles, $categoryname="", $count, $position, $standalone=false)
     {
         global $_LANGID, $_ARRAYLANG, $_CORELANG;
 
@@ -872,24 +869,30 @@ class KnowledgeAdmin extends KnowledgeLibrary
             die($e->plain());
         }
 
-        $this->tpl->loadTemplateFile("module_knowledge_articles_overview_articlelist.html");
-        $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+        $tpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH."/knowledge/template/");
+        $tpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->tpl->setGlobalVariable(array(
+        $tpl->loadTemplateFile("module_knowledge_articles_overview_articlelist.html");
+        $tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+
+        $tpl->setGlobalVariable(array(
             // language variables
-            "TXT_NAME"      => $_ARRAYLANG['TXT_NAME'],
-            "TXT_VIEWED"    => $_ARRAYLANG['TXT_KNOWLEDGE_VIEWED'],
-            "TXT_SORT"      => $_ARRAYLANG['TXT_KNOWLEDGE_SORT'],
-            "TXT_STATE"     => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
-            "TXT_QUESTION"  => $_ARRAYLANG['TXT_KNOWLEDGE_QUESTION'],
-            "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
-            "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
-            "TXT_ACTIONS"   => $_ARRAYLANG['TXT_KNOWLEDGE_ACTIONS']
+            "TXT_NAME"          => $_ARRAYLANG['TXT_NAME'],
+            "TXT_VIEWED"        => $_ARRAYLANG['TXT_KNOWLEDGE_VIEWED'],
+            "TXT_SORT"          => $_ARRAYLANG['TXT_KNOWLEDGE_SORT'],
+            "TXT_STATE"         => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
+            "TXT_QUESTION"      => $_ARRAYLANG['TXT_KNOWLEDGE_QUESTION'],
+            "TXT_HITS"          => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
+            "TXT_RATING"        => $_ARRAYLANG['TXT_KNOWLEDGE_RATING'],
+            "TXT_ACTIONS"       => $_ARRAYLANG['TXT_KNOWLEDGE_ACTIONS'],
+            "TXT_CATEGORY_NAME" => $categoryname ,
+            // getPaging(count, position, extraargv, paging-text, showeverytime, limit)
+            //"PAGING"            => getPaging()
         ));
 
         if (!empty($articles)) {
             foreach ($articles as $key => $article) {
-                $this->tpl->setVariable(array(
+                $tpl->setVariable(array(
                     "ARTICLEID"             => $key,
                     "QUESTION"              => $article['content'][$_LANGID]['question'],
                     "ACTIVE_STATE"          => abs($article['active']-1),
@@ -899,20 +902,45 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     "VOTECOUNT"             => $article['votes'],
                     "MAX_RATING"            => $this->settings->get("max_rating")
                 ));
-                $this->tpl->parse("row");
+                $tpl->parse("row");
             }
         } else {
-            $this->tpl->setVariable(array(
+            $tpl->setVariable(array(
                 "TXT_NO_ARTICLES"       => $_ARRAYLANG['TXT_KNOWLEDGE_NO_ARTICLES_IN_CAT']
             ));
-            $this->tpl->parse("no_articles");
+            $tpl->parse("no_articles");
         }
 
-        $this->tpl->parse("content");
-        $content = $this->tpl->get("content");
+        $tpl->parse("content");
+        return $tpl->get("content");
+    }
+    
+    /**
+     * Get Articles
+     *
+     * This function is called through ajax.
+     * Return a JSON object with all the needed information for the
+     * article overview.
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     * @global $_CORELANG
+     */
+    private function getArticles()
+    {
+        global $_LANGID, $_ARRAYLANG, $_CORELANG;
+        
+        $id = intval($_GET['id']);
+        
+        try {
+            $articles = $this->articles->getArticlesByCategory($id);
+            $category = $this->categories->getOneCategory($id);
+        } catch (DatabaseError $e) {
+            die($e->plain());
+        }
+
+        $content = $this->parseArticleList($articles, $category['content'][$_LANGID]['name']);
         $response = Array();
         $response['list'] = $content;
-        $response['category'] = $category['content'][$_LANGID]['name'];
 
         require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
