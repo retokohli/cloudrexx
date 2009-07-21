@@ -546,7 +546,7 @@ class JS
      */
     public function findJavascripts(&$content) {
         JS::grabComments($content);
-        $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $content);
+        $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
         JS::restoreComments($content);
     }
 
@@ -558,7 +558,7 @@ class JS
      * @param string $content
      */
     private static function grabComments(&$content) {
-        $content = preg_replace_callback('#<!--.*?-->#ms', 'JS::_storeComment', $content);
+        $content = preg_replace_callback('#<!--.*?-->#ms', array('JS', '_storeComment'), $content);
     }
 
     /**
