@@ -1,7 +1,7 @@
 <?php
 /**
  * Contains the search object
- * 
+ *
  * @author Stefan Heinemann <sh@comvation.com>
  * @copyright Comvation AG <info@comvation.com>
  */
@@ -21,14 +21,14 @@ class Search {
      * @var array
      */
     private $interfaces = array();
-    
+
     /**
      * The path where the interfaces lie
      *
      * @var string
      */
     private $interfacesPath;
-    
+
     /**
      * The maximum amount of search results to return
      *
@@ -37,35 +37,35 @@ class Search {
      * @var int
      */
     private $maxSearchResults = 6;
-    
+
     /**
      * Path to the template file
      *
      * @var string
      */
     private $templateFile;
-    
+
     /**
      * Template object
      *
      * @var object
      */
     private $tpl;
-    
+
     /**
      * JSON object
      *
      * @var object
      */
     private $json;
-    
+
     /**
      * The response object
      *
      * @var object
      */
     private $response;
-    
+
     /**
      * Initialise the whole stuff
      *
@@ -78,18 +78,18 @@ class Search {
 
         require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $this->json = new Services_JSON();
-        
+
         // the template system
         $this->tpl = &new HTML_Template_Sigma('');
 		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->tpl->loadTemplateFile($this->templateFile);
-		
+
 		// make a response object
 		$this->response = new searchResponse();
-		
+
 		// get all available interfaces
 		$dir = opendir($this->interfacesPath);
-        
+
         // is this a security issue?
         while (false !== ($file = readdir($dir))) {
             if (preg_match("/^[a-z]+\.php$/i", $file)) {
@@ -98,27 +98,27 @@ class Search {
                 $this->interfaces[] = new $name;
             }
         }
-        
+
         closedir($dir);
     }
-    
+
     /**
      * Get the result and return them so they can be displayed
      * at the frontend
      */
     public function performSearch()
-    {        
+    {
         global $objDBG;
         $status = 1;
-        
-        
+
+
         if (empty($_GET['searchterm'])) {
             // no search term given
             $status = 2;
         } else{
             $searchterm = $_GET['searchterm'];
     		$results = $this->getResults($searchterm);
-    		
+
     		if (count($results) == 0) {
     		    // nothing found
     		    $status = 0;
@@ -133,13 +133,13 @@ class Search {
                 $this->response->content = $this->tpl->get();
     		}
         }
-		
+
 		$this->response->status = $status;
         $response = $this->json->encode($this->response);
 
 		die($response);
     }
-    
+
     /**
      * Get the results from the interfaces
      *
@@ -153,14 +153,14 @@ class Search {
         $results = array();
         $amount = 0;
         $endResult = array();
-        
+
         $searchterm = $this->formatSearchString($searchterm);
         foreach ($this->interfaces as $interface) {
             $trove = $interface->search($searchterm);
             $amount = $amount + count($trove);
             $results[] = array_reverse($trove);
-        } 
-        
+        }
+
         $j = 0;
         for ($i = 0; $i < $this->maxSearchResults; $i++) {
             if (!empty($results[$j])) {
@@ -168,10 +168,10 @@ class Search {
                 $j = (count($results == $j)) ? 0 : $j + 1;
             }
         }
-        
+
         return $endResult;
     }
-    
+
     /**
      * Format the URI if needed
      *
@@ -183,7 +183,7 @@ class Search {
     {
         return $uri;
     }
-    
+
     /**
      * Format the search string
      *
@@ -197,10 +197,10 @@ class Search {
     {
         return $string;
     }
-    
+
     private function formatTitle($string)
     {
-        return $string;
+        return htmlspecialchars($string, ENT_QUOTES, CONTREXX_CHARSET);
     }
 }
 
@@ -220,7 +220,7 @@ class searchResponse
      * @var int
      */
     public $status = 1;
-    
+
     /**
      * Response
      *

@@ -26,12 +26,12 @@ if (_DEBUG) {
 require_once "../../config/configuration.php";
 require_once "../../config/set_constants.php";
 require_once "../../core/validator.inc.php";
+require_once "../../core/database.php";
 require_once "lib/databaseError.class.php";
 
 require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php';
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
-$objDb = ADONewConnection($_DBCONFIG['dbType']);
-@$objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
+$objDb = getDatabaseObject($errorMsg);
 $objDatabase = &$objDb;
 include("lib/search.php");
 $search = new Search();
