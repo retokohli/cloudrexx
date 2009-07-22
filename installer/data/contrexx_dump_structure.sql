@@ -2544,11 +2544,12 @@ CREATE TABLE `contrexx_module_shop_products` (
   `weight` int(10) unsigned default NULL,
   `flags` varchar(255) NOT NULL default '',
   `usergroups` varchar(255) NOT NULL default '',
-  `usergroup_ids` varchar(255) NOT NULL,
   `group_id` int(10) unsigned default NULL,
   `article_id` int(10) unsigned default NULL,
   `keywords` text NOT NULL,
   PRIMARY KEY  (`id`),
+  KEY `group_id` (`group_id`),
+  KEY `article_id` (`article_id`),
   FULLTEXT KEY `shopindex` (`title`,`description`),
   FULLTEXT KEY `flags` (`flags`),
   FULLTEXT KEY `keywords` (`keywords`)
