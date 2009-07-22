@@ -280,4 +280,8 @@ $_ARRAYLANG['TXT_KNOWLEDGE_INDEX'] = "Glossar-Indexbuchstabe";
 $_ARRAYLANG['TXT_KNOWLEDGE_NO_INDEX'] = "Kein Eintrag im Glossar";
 $_ARRAYLANG['TXT_KNOWLEDGE_LAST_ENTRIES'] = "10 neueste Einträge";
 $_ARRAYLANG['TXT_KNOWLEDGE_GLOSSARY_VIEW'] = "Glossaransicht";
+$_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_RESULTS_OF'] = "Suchergebnisse von";
+$_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_INPUT'] = "Suchbegriff...";
+$_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_ARTICLES'] = "Artikel suchen";
+$_ARRAYLANG['TXT_KNOWLEDGE_JUMP'] = "Springen";
 ?>

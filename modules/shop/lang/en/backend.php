@@ -674,4 +674,5 @@ $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Please enter the recipie
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "Add new shipping option";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "This row will be ignored, as long as maximum weight and shipping fee are zero.";
 $_ARRAYLANG['TXT_SHOP_DEL_ICON'] = "Remove Image";
+$_ARRAYLANG['TXT_SHOP_ORDER_ABBREV'] = "Reihenf.";
 ?>
