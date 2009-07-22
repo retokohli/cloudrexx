@@ -832,11 +832,13 @@ class KnowledgeAdmin extends KnowledgeLibrary
             }
             $this->tpl->setVariable(array(
                 "ID"                        => $key,
+                "CATEGORY_ID"               => $key,
                 "NAME"                      => $this->categories->categories[$key]['content'][$_LANGID]['name'],
                 "SUB"                       => $sub,
                 "CATEGORY_PLUS_VISIBLITY"   => (count($subcategories)) ? "visible" : "hidden",
                 "CSS_DISPLAY"               => ($level == 0) ? "" : "none",
                 "ENTRY_COUNT"               => $this->articles->countEntriesByCategory($key),
+//                "CAT_ROW_WIDTH"				=> 230 + $level ,
             ));
 //            $this->tpl->touchBlock("arrow");
 //            $this->tpl->parse("arrow");  
@@ -888,13 +890,15 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "TXT_CATEGORY_NAME" => $categoryname ,
             // getPaging(count, position, extraargv, paging-text, showeverytime, limit)
             //"PAGING"            => getPaging()
+            "TXT_BY" 			=> "bei",
+            "TXT_VOTINGS" 		=> "Abstimmungen"
         ));
 
         if (!empty($articles)) {
             foreach ($articles as $key => $article) {
                 $tpl->setVariable(array(
                     "ARTICLEID"             => $key,
-                    "QUESTION"              => $article['content'][$_LANGID]['question'],
+                    "QUESTION"              => utf8_encode($article['content'][$_LANGID]['question']),
                     "ACTIVE_STATE"          => abs($article['active']-1),
                     "CATEGORY_ACTIVE_LED"   => ($article['active']) ? "green" : "red",
                     "HITS"                  => $article['hits'],

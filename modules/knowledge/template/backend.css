@@ -1,5 +1,6 @@
 @import url(starbox/css/starbox.css);
 
+ 
 #knowledge_articles #categories {
     float: left;
     width: 250px;
@@ -8,18 +9,23 @@
 
 #knowledge_articles #articles {
     margin-left: 250px;
-    position: relative;
+    /*position: relative;*/
+    min-height: 360px;
 }
 
+*+html #knowledge_articles #articles {
+	/*width: 80%;*/
+}
+
+* html #knowledge_articles #articles {
+	margin: 0; 
+	/*width: 82%;*/
+}
+
+
+
 #knowledge_articles #loading {
-    height: 270px;
-    width: 100%;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    background-image: url(loading.gif);
-    background-repeat: no-repeat;
-    background-position: center;
+   margin-top: 100px;
 }
 
 #knowledge_articles #overlay {
@@ -32,7 +38,7 @@
 }
 
 .article_row {
-	position: static !important;
+	/*position: static !important;*/
 }
 
 #knowledge_articles #articlelist {
@@ -128,6 +134,10 @@
 #knowledge_categories #catlist ul li ul {
     margin: 0px;
     border-top: #DDE4FF 1px solid;
+}
+
+* html .standalone_row {
+	margin-left: 16px !important;
 }
 
 .knowledge_taglist ul {
