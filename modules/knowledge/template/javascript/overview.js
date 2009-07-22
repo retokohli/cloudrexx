@@ -286,7 +286,7 @@ var switchActive = function(id, obj, action)
  */
 var deleteArticle = function(id)
 {
-    if (confirm("{TXT_CONFIRM_ARTICLE_DELETION}")) {
+    if (confirm(confirmDeletion)) {
         new Ajax.Request('index.php', {
             method: 'get',
             parameters: {cmd : "knowledge"+moduleIndex, section : "articles", act : "delete", id : id},
