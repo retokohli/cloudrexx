@@ -13,7 +13,7 @@ Articles.prototype.getCategory = function(id, pos) {
     new Ajax.Request('index.php', {
         method : "get",
         parameters : {
-            cmd     : "knowledge",
+            cmd     : "knowledge"+moduleIndex,
             section : "articles",
             act     : "getArticles",
             id      : id,
@@ -53,7 +53,7 @@ Articles.prototype.getBestRated = function(pos) {
     new Ajax.Request('index.php', {
         method : 'get',
         parameters : {
-            cmd     : 'knowledge',
+            cmd     : 'knowledge'+moduleIndex,
             section : 'articles',
             act     : 'getArticlesByRating',
             pos     : pos
@@ -71,7 +71,7 @@ Articles.prototype.getMostRead = function(pos) {
     new Ajax.Request('index.php', {
         method : 'get',
         parameters : {
-            cmd     : 'knowledge',
+            cmd     : 'knowledge'+moduleIndex,
             section : 'articles',
             act     : 'getArticlesByViews',
             pos     : pos
@@ -89,7 +89,7 @@ Articles.prototype.getGlossary = function(pos) {
     new Ajax.Request('index.php', {
         method : 'get',
         parameters : {
-            cmd     : 'knowledge',
+            cmd     : 'knowledge'+moduleIndex,
             section : 'articles',
             act     : 'getArticlesGlossary',
             pos     : pos
@@ -107,7 +107,7 @@ Articles.prototype.searchArticles = function(term, pos) {
     new Ajax.Request('index.php', {
         method : 'get',
         parameters : {
-            cmd     : 'knowledge',
+            cmd     : 'knowledge'+moduleIndex,
             section : 'articles',
             act     : 'searchArticles',
             term    : term,
@@ -188,7 +188,7 @@ var initSortableArea = function(offset)
         Sortable.create("articlelist", {
            onUpdate: function() {
                 setRows();
-                new Ajax.Request("index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=sort&offset="+offset, {
+                new Ajax.Request("index.php?cmd=knowledge"+moduleIndex+"&section=articles&act=sort&offset="+offset, {
                     method : "post",
                     parameters : Sortable.serialize("articlelist"),
                     onSuccess : function(transport) {
@@ -264,7 +264,7 @@ var switchActive = function(id, obj, action)
 {
     new Ajax.Request('index.php', {
         method: 'get',
-        parameters: {cmd : "knowledge{MODULE_INDEX}", section : "articles", act : "switchState", id : id, switchTo : action},
+        parameters: {cmd : "knowledge"+moduleIndex, section : "articles", act : "switchState", id : id, switchTo : action},
         onSuccess: function(transport) {
             if (statusMsg(transport.responseText)) {
                 var img = obj.getElementsByTagName("img")[0];
@@ -289,7 +289,7 @@ var deleteArticle = function(id)
     if (confirm("{TXT_CONFIRM_ARTICLE_DELETION}")) {
         new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "knowledge{MODULE_INDEX}", section : "articles", act : "delete", id : id},
+            parameters: {cmd : "knowledge"+moduleIndex, section : "articles", act : "delete", id : id},
             onSuccess: function() {
                 articles.deleteRow(id);
             }
