@@ -1281,7 +1281,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
     
 
     	$first = true;
-        var_dump($languages);
     	foreach ($languages as $langId => $lang) {
            	// tags
         	if (!$new) {
