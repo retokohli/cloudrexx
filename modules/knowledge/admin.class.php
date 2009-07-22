@@ -686,21 +686,19 @@ class KnowledgeAdmin extends KnowledgeLibrary
      * @global $_LANGID
      * @return string The option-tags of the dropdown
      */
-    private function categoryDropdown($categories, $select = 0, $level = 0)
+    private function categoryDropdown($categories, $select = 0, $level = 0, $lang=1)
     {        
-        global $_LANGID;
-        
         $options = "";
         foreach ($categories as $category => $subcats) {
             // the option line
-            $name = $this->categories->categories[$category]['content'][$_LANGID]['name'];
+            $name = $this->categories->categories[$category]['content'][$lang]['name'];
             $selected = ($select == $category) ? "selected=\"selected\"" : "";
             
             $options .= "<option value=\"".$category."\" ".$selected.">".str_repeat("..", $level).$name."</option>";
             
             // do the subcategories
             if (count($subcats)) {
-                $options .= $this->categoryDropdown($subcats, $select, $level+1);
+                $options .= $this->categoryDropdown($subcats, $select, $level+1, $lang);
             }
         }
         return $options;
@@ -1184,6 +1182,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         if (empty($searchterm)) {
             die();
         }
+        $position = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 
         try {
             $articles = $this->articles->searchArticles($searchterm, $_LANGID);
@@ -1270,25 +1269,19 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	   $this->okMessage = $_ARRAYLANG['TXT_KNOWLEDGE_SUCCESSFULLY_SAVED'];
     	}
         
-    	$this->tpl->setVariable(array(
-    	   "TXT_CATEGORY"      => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY'],
-    	   "TXT_ACTIVE"        => $_ARRAYLANG['TXT_KNOWLEDGE_ACTIVE'],
-    	   "TXT_STATUS"        => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
-    	   "TXT_INACTIVE"      => $_ARRAYLANG['TXT_KNOWLEDGE_INACTIVE'],
-    	   "TXT_SUBMIT"        => $_ARRAYLANG['TXT_KNOWLEDGE_SUBMIT'],
-    	   "TXT_CHOOSE_CATEGORY"   => $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'],
-    	   "TXT_PLEASE_CHOOSE_CATEGORY" => $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'],
-    	   
-    	   "CATEGORIES"        => $this->categoryDropdown($this->categories->categoryTree, $article['category']),
-    	   "ACTION"            => ($new) ? "insert" : "update",
-    	   "TITLE"             => ($new) ? $_ARRAYLANG['TXT_KNOWLEDGE_ADD'] : $_ARRAYLANG['TXT_KNOWLEDGE_EDIT'],
-    	
-    	   "ACTIVE_CHECKED"    => $article['active'] ? "checked=\"checked\"" : "",
-    	   "INACTIVE_CHECKED"  => $article['active'] ? "" : "checked=\"checked\"",
-
-    	));
+    	$this->tpl->setGlobalVariable(array(
+    	   "TXT_CATEGORY"               => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY'],
+    	   "TXT_ACTIVE"                 => $_ARRAYLANG['TXT_KNOWLEDGE_ACTIVE'],
+    	   "TXT_STATUS"                 => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
+    	   "TXT_INACTIVE"               => $_ARRAYLANG['TXT_KNOWLEDGE_INACTIVE'],
+    	   "TXT_SUBMIT"                 => $_ARRAYLANG['TXT_KNOWLEDGE_SUBMIT'],
+    	   "TXT_CHOOSE_CATEGORY"        => $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'],
+           "TXT_PLEASE_CHOOSE_CATEGORY" => $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY']
+       ));
+    
 
     	$first = true;
+        var_dump($languages);
     	foreach ($languages as $langId => $lang) {
            	// tags
         	if (!$new) {
@@ -1334,8 +1327,15 @@ class KnowledgeAdmin extends KnowledgeLibrary
                                        (isset($article['content'][$langId]) ? 
                                        $article['content'][$langId]['answer'] 
                                        : '')),
+
                "TXT_INDEX_OPTIONS"  => $this->getIndexOptionList(
-                   $article['content'][$langId]['index'])
+                   $article['content'][$langId]['index']),
+               "CATEGORIES"        => $this->categoryDropdown($this->categories->categoryTree, $article['category'], 0, $langId),
+               "ACTION"            => ($new) ? "insert" : "update",
+               "TITLE"             => ($new) ? $_ARRAYLANG['TXT_KNOWLEDGE_ADD'] : $_ARRAYLANG['TXT_KNOWLEDGE_EDIT'],
+            
+               "ACTIVE_CHECKED"    => $article['active'] ? "checked=\"checked\"" : "",
+               "INACTIVE_CHECKED"  => $article['active'] ? "" : "checked=\"checked\"",
     	    ));
     	    $this->tpl->parse("langDiv");
     	    $first = false;
@@ -1359,12 +1359,20 @@ class KnowledgeAdmin extends KnowledgeLibrary
     {
         global $_ARRAYLANG;
         
-        $category = $_POST['category'];
-        $state = $_POST['state'];
-        
+        //$category = $_POST['category'];
+        //$state = $_POST['state'];
         $languages = $this->createLanguageArray();
         
         $tags = array();
+        // the following is a bit ugly
+        // had to do this because the boss wanted to have those things inside
+        // of all the actions in the edit form, so there are multiple input things
+        // for every language that do the same, and here just the first is selected
+        $lang_keys = array_keys($languages);
+        $firstlang = $lang_keys[0];
+        $state = $_POST['state_'.$firstlang];
+        $category = $_POST['category_'.$firstlang];
+
         foreach ($languages as $langId => $lang) {
             $question = $_POST['question_'.$langId];
             $answer = $_POST['answer_'.$langId];
@@ -1398,11 +1406,21 @@ class KnowledgeAdmin extends KnowledgeLibrary
     {
         global $_ARRAYLANG;
         
-        $category = $_POST['category'];
-        $state = $_POST['state'];
+        //$category = $_POST['category'];
+        //$state = $_POST['state'];
         $id = $_POST['id'];
         
         $languages = $this->createLanguageArray();
+        // the following is a bit ugly
+        // had to do this because the boss wanted to have those things inside
+        // of all the actions in the edit form, so there are multiple input things
+        // for every language that do the same, and here just the first is selected
+        
+        $lang_keys = array_keys($languages);
+        $firstlang = $lang_keys[0];
+        $state = $_POST['state_'.$firstlang];
+        $category = $_POST['category_'.$firstlang];
+
         
         foreach ($languages as $langId => $lang) {
             $question = $_POST['question_'.$langId];
