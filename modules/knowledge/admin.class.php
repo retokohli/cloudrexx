@@ -902,7 +902,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     "ACTIVE_STATE"          => abs($article['active']-1),
                     "CATEGORY_ACTIVE_LED"   => ($article['active']) ? "green" : "red",
                     "HITS"                  => $article['hits'],
-                    "VOTEVALUE"             => ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0,
+                    "VOTEVALUE"             => round((($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0), 2),
                     "VOTECOUNT"             => $article['votes'],
                     "MAX_RATING"            => $this->settings->get("max_rating")
                 ));
