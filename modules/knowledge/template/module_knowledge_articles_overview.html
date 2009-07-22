@@ -21,7 +21,6 @@ var Articles = function() {
 Articles.prototype.getCategory = function(id) {
     
     this.setLoading();
-    
     new Ajax.Request('index.php', {
         method : "get",
         parameters : {
@@ -32,7 +31,7 @@ Articles.prototype.getCategory = function(id) {
         },
         onSuccess : function(transport) {
             response = transport.responseText.evalJSON();
-            $('articles').innerHTML= response.list;
+            $('articles').update(response.list);
             /*$('head').update(response.category);*/
             setRows();
             initSortableArea();
@@ -58,9 +57,11 @@ Articles.prototype.setLoading = function()
     }
     */
     
-    var overlay = document.createElement("div");
-    overlay.id = "overlay";
-    $('articles').appendChild(overlay);
+    //var overlay = document.createElement("div");
+    //overlay.id = "overlay";
+    //$('articles').appendChild(overlay);
+    //$('articles').update('<div id="loading">&nbsp;</div>');
+    $('articles').update('<center><img src="../modules/knowledge/template/loading.gif" alt="" id="loading"  /></center>');
     
     var loading = document.createElement("div");
     var text = document.createTextNode(" ");
@@ -138,6 +139,9 @@ var catTree = {
      */
     openPart : function(obj)
     {
+        if (obj.parentNode.cleanWhitespace == undefined) {
+            Element.extend(obj.parentNode);
+        }
         obj.parentNode.cleanWhitespace();
         var subLists = $A(obj.parentNode.parentNode.childNodes);
         subLists.each(function(elem) {
@@ -222,7 +226,7 @@ var deleteArticle = function(id)
 <div id="knowledge_articles">
 
 
-<form action="index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act=edit&id=18" method="get">
+<form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id=18" method="get">
     {TXT_JUMP_TO_ARTICLE}
         <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
         <input type="hidden" name="act" value="edit" />
@@ -250,10 +254,9 @@ var deleteArticle = function(id)
         </tr>
     </table>
     <div id="catlist">
-    
         <!-- BEGIN remove_area -->
             <!-- BEGIN list -->
-            <ul style="display: {CSS_DISPLAY};">
+            <ul style="display: {CSS_DISPLAY}; width: 230px;">
                 <!-- BEGIN row -->
                 <li style="clear: both; width: 95%;">
                     <div style="float: left; ">
@@ -273,6 +276,11 @@ var deleteArticle = function(id)
         {CATLIST}
     </div>
 </div>
+<!--<div style="position: relative;">-->
+	<div id="articles">
+	    {TXT_ARTICLES}
+	</div>
+<!--</div>-->
 
 <div id="articles">
     {TXT_ARTICLES}
