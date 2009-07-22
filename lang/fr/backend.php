@@ -1036,4 +1036,5 @@ $_ARRAYLANG['TXT_CONTENT_PLEASE_WAIT'] = "Bitte warten...";
 $_ARRAYLANG['TXT_DETAIL'] = "Details";
 $_ARRAYLANG['TXT_PRINTSHOP_MODULE_DESCRIPTION'] = "Online Shop für Drucksachen";
 $_ARRAYLANG['TXT_PRINTSHOP_MODULE'] = "Printshop";
+$_ARRAYLANG['TXT_PLEASE_WAIT_SITEMAP'] = "Sitemap wird geschrieben. Dies kann je nach Anzahl Sprachen eine Weile dauern.";
 ?>

@@ -672,4 +672,5 @@ $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Veuillez saisir une adre
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "Nouveau mode de livraison";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "Cette ligne est ignorée si le poid maximal et les frais de livraisons sont nuls.";
 $_ARRAYLANG['TXT_SHOP_DEL_ICON'] = "Remove Image";
+$_ARRAYLANG['TXT_SHOP_ORDER_ABBREV'] = "Reihenf.";
 ?>
