@@ -19,39 +19,42 @@ var confirmDeletion = '{TXT_CONFIRM_ARTICLE_DELETION}';
 
 <div id="knowledge_articles">
 
-    <table class="adminlist" style="width: 100%;">
+    <table class="adminlist" style="width: 100%; float: left;" cellpadding="0" cellspacing="0">
         <tr>
             <th>
                 {TXT_OVERVIEW}
             </th>
         </tr>
+        <tr class="row1">
+            <td>
+                <div style="width: 100%; " >
+                    <div style="float: left; width: 49%">
+                        <div style="padding: 5px;">
+                            {TXT_SEARCH_ARTICLES}:<br />
+                            <form action="javascript: void(0)" onsubmit="articles.searchArticles($('searchterm').value, 0)">
+                                <input type="text" value="{TXT_SEARCH_INPUT}" onfocus="if (this.value == '{TXT_SEARCH_INPUT}')  { this.value =''; } " 
+                                    onblur='if (this.value == "") { this.value = "{TXT_SEARCH_INPUT}" }' 
+                                    style="width: 300px;" id="searchterm" />
+                                    <input type="submit" value="{TXT_SEARCH}" />
+                            </form>
+                        </div>
+                    </div>
+                    <div style="float: left; width: 49%">
+                        <div style="padding: 5px;">
+                             <form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id=18" method="get">
+                                 {TXT_JUMP_TO_ARTICLE}<br />
+                                    <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
+                                    <input type="hidden" name="act" value="edit" />
+                                    <input type="text" style="width: 3em;" name="id" value="id"
+                                        onfocus="if (this.value == 'id') { this.value = ''; }" onblur="if (this.value == '') { this.value = 'id';}"/>
+                                <input type="submit" value="{TXT_JUMP}"  style=" margin-right: 4px;"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
     </table>
-
-    <div style="width: 100%;" >
-        <div style="float: left; width: 50%">
-            <div style="padding: 5px;">
-                {TXT_SEARCH_ARTICLES}:<br />
-                <form action="javascript: void(0)" onsubmit="articles.searchArticles($('searchterm').value, 0)">
-                    <input type="text" value="{TXT_SEARCH_INPUT}" onfocus="if (this.value == '{TXT_SEARCH_INPUT}')  { this.value =''; } " 
-                        onblur='if (this.value == "") { this.value = "{TXT_SEARCH_INPUT}" }' 
-                        style="width: 300px;" id="searchterm" />
-                        <input type="submit" value="{TXT_SEARCH}" />
-                </form>
-            </div>
-        </div>
-        <div style="float: left; width: 50%">
-            <div style="padding: 5px;">
-                 <form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id=18" method="get">
-                     {TXT_JUMP_TO_ARTICLE}<br />
-                        <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
-                        <input type="hidden" name="act" value="edit" />
-                        <input type="text" style="width: 3em;" name="id" value="id"
-                            onfocus="if (this.value == 'id') { this.value = ''; }" onblur="if (this.value == '') { this.value = 'id';}"/>
-                    <input type="submit" value="{TXT_JUMP}"  style=" margin-right: 4px;"/>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <br style="clear: both" />
     <br />
