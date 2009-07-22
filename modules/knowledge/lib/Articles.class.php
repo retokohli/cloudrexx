@@ -171,7 +171,7 @@ class KnowledgeArticles
         //$query .= " ORDER BY id DESC LIMIT 10";
         // cannot be done like this, because there are several rows
         // because all languages are returned
-        $query .= " ORDER BY id";
+        $query .= " ORDER BY id DESC";
         return array_slice($this->readArticles(true, 0, 0, $query), 0, 10);
     }
     

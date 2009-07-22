@@ -118,7 +118,7 @@
 
 #knowledge_categories #catlist {
     overflow: hidden;
-    width: 95%;
+    width: 100%;
 }
 
 #knowledge_categories #catlist ul {
