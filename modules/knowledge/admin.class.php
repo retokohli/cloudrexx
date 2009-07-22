@@ -958,7 +958,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             foreach ($articles as $key => $article) {
                 $tpl->setVariable(array(
                     "ARTICLEID"             => $article['id'],
-                    "QUESTION"              => utf8_encode($article['content'][$_LANGID]['question']),
+                    "QUESTION"              => $article['content'][$_LANGID]['question'],
                     "ACTIVE_STATE"          => abs($article['active']-1),
                     "CATEGORY_ACTIVE_LED"   => ($article['active']) ? "green" : "red",
                     "HITS"                  => $article['hits'],
