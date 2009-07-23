@@ -77,6 +77,7 @@ class GalleryHomeContent extends GalleryLibrary
     {
         global $objDatabase;
 
+        $objFWUser = FWUser::getFWUserObject();
         $objResult = $objDatabase->Execute('SELECT      SUM(1) AS catCount
                                                     FROM        '.DBPREFIX.'module_gallery_categories       AS categories
                                                     INNER JOIN  '.DBPREFIX.'module_gallery_pictures         AS pics ON pics.catid = categories.id
@@ -85,6 +86,19 @@ class GalleryHomeContent extends GalleryLibrary
                                                             pics.validated="1" AND
                                                             pics.status="1" AND
                                                             lang.lang_id = '.$this->_intLangId.'
+                                                             '.(
+                                                                $objFWUser->objUser->login() ?
+                                                                    // user is authenticated
+                                                                    (
+                                                                        !$objFWUser->objUser->getAdminStatus() ?
+                                                                             // user is not administrator
+                                                                            'AND (categories.frontendProtected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR categories.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
+                                                                            // user is administrator
+                                                                            ''
+                                                                    )
+                                                                    : ( 'AND categories.frontendProtected=0'
+                                                                      )
+                                                                ).'
                                                     GROUP BY categories.id
                                                     ORDER BY categories.id');
 
@@ -101,6 +115,19 @@ class GalleryHomeContent extends GalleryLibrary
                                                             pics.validated="1" AND
                                                             pics.status="1" AND
                                                             lang.lang_id = '.$this->_intLangId.'
+                                                             '.(
+                                                                $objFWUser->objUser->login() ?
+                                                                    // user is authenticated
+                                                                    (
+                                                                        !$objFWUser->objUser->getAdminStatus() ?
+                                                                             // user is not administrator
+                                                                            'AND (categories.frontendProtected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR categories.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
+                                                                            // user is administrator
+                                                                            ''
+                                                                    )
+                                                                    : ( 'AND categories.frontendProtected=0'
+                                                                      )
+                                                                ).'
                                                     GROUP BY categories.id
                                                     ORDER BY categories.id', 1, $catNr);
 
@@ -139,7 +166,7 @@ class GalleryHomeContent extends GalleryLibrary
 
                     if ($objResult !== false) {
                         $strReturn =    '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].($picNr >= $paging ? '&amp;pos='.(floor($picNr/$paging)*$paging) : '').'" target="_self">';
-                        $strReturn .=   '<img border="0" alt="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" title="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
+                        $strReturn .=   '<img alt="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" title="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
                         return $strReturn;
                     } else {
                         return '';
@@ -203,7 +230,7 @@ class GalleryHomeContent extends GalleryLibrary
             }
 
             $strReturn =    '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].($picNr >= $paging ? '&amp;pos='.floor(($picNr) / $paging) : '').'" target="_self">';
-            $strReturn .=   '<img border="0" alt="'.$objResult->fields['NAME'].'" title="'.$objResult->fields['NAME'].'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
+            $strReturn .=   '<img alt="'.$objResult->fields['NAME'].'" title="'.$objResult->fields['NAME'].'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
             return $strReturn;
         } else {
             return '';
