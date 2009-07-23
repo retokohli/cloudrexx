@@ -727,8 +727,8 @@ class galleryManager extends GalleryLibrary
         $voting = $_POST['category_voting'];
         $frontendProtected = $_POST['category_protected_frontend'];
         $backendProtected = $_POST['category_protected_backend'];
-        $frontend_access_id = ++$_CONFIG['lastAccessId'];
-        $backend_access_id = ++$_CONFIG['lastAccessId'];
+        $frontend_access_id = $frontendProtected ? ++$_CONFIG['lastAccessId'] : 0;
+        $backend_access_id = $backendProtected ? ++$_CONFIG['lastAccessId'] : 0;
 
         try {
             $galId = $this->sql->insertNewCategory($pid, $status, $comment, $voting, $frontendProtected, $backendProtected, $frontend_access_id, $backend_access_id);

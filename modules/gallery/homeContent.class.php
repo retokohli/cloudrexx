@@ -77,6 +77,7 @@ class GalleryHomeContent extends GalleryLibrary
     {
         global $objDatabase;
 
+        $objFWUser = FWUser::getFWUserObject();
         $objResult = $objDatabase->Execute('SELECT      SUM(1) AS catCount
                                                     FROM        '.DBPREFIX.'module_gallery_categories       AS categories
                                                     INNER JOIN  '.DBPREFIX.'module_gallery_pictures         AS pics ON pics.catid = categories.id
@@ -85,6 +86,19 @@ class GalleryHomeContent extends GalleryLibrary
                                                             pics.validated="1" AND
                                                             pics.status="1" AND
                                                             lang.lang_id = '.$this->_intLangId.'
+                                                             '.(
+                                                                $objFWUser->objUser->login() ?
+                                                                    // user is authenticated
+                                                                    (
+                                                                        !$objFWUser->objUser->getAdminStatus() ?
+                                                                             // user is not administrator
+                                                                            'AND (categories.frontendProtected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR categories.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
+                                                                            // user is administrator
+                                                                            ''
+                                                                    )
+                                                                    : ( 'AND categories.frontendProtected=0'
+                                                                      )
+                                                                ).'
                                                     GROUP BY categories.id
                                                     ORDER BY categories.id');
 
@@ -101,6 +115,19 @@ class GalleryHomeContent extends GalleryLibrary
                                                             pics.validated="1" AND
                                                             pics.status="1" AND
                                                             lang.lang_id = '.$this->_intLangId.'
+                                                             '.(
+                                                                $objFWUser->objUser->login() ?
+                                                                    // user is authenticated
+                                                                    (
+                                                                        !$objFWUser->objUser->getAdminStatus() ?
+                                                                             // user is not administrator
+                                                                            'AND (categories.frontendProtected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR categories.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
+                                                                            // user is administrator
+                                                                            ''
+                                                                    )
+                                                                    : ( 'AND categories.frontendProtected=0'
+                                                                      )
+                                                                ).'
                                                     GROUP BY categories.id
                                                     ORDER BY categories.id', 1, $catNr);
 
