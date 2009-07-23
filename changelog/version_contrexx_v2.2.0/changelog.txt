@@ -81,6 +81,8 @@ Modul: Adressverzeichnis
 Modul: Bildergalerie
 - Die ToolTips der Bilder sind korrekt.
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
+- Als Zufallsbild [[GALLERY_RANDOM]] wird nur ein Bild aus einer Kategorie
+  verwendet, auf welche der Besucher Zugriffs berechtigt ist.
 
 Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
