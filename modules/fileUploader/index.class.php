@@ -31,7 +31,7 @@ class FileUploader extends FileUploaderLib {
     {
         parent::__construct();
 
-        $this->moduleURI = '?cmd=fileUploader&amp;standalone=true';
+        $this->moduleURI = '?section=fileUploader&amp;standalone=true';
     }
 
     /**
@@ -39,7 +39,6 @@ class FileUploader extends FileUploaderLib {
     */
     public function getPage()
     {
-
         if (!isset($_REQUEST['act'])) {
             $_REQUEST['act'] = '';
         }
@@ -66,19 +65,26 @@ class FileUploader extends FileUploaderLib {
         global $_ARRAYLANG, $_LANGID, $objLanguage, $objInit;
 
         $objFWUser = FWUser::getFWUserObject();
+        if (!isset($objLanguage)) {
+            $objLanguage = new FWLanguage();
+        }
+
         $lang = $objLanguage->getLanguageParameter($objFWUser->objUser->getBackendLanguage(), 'lang');
         if (!file_exists(ASCMS_MODULE_PATH.'/fileUploader/lib/lang/messages_'.$lang.'.zip')) {
             $lang = $this->defaultInterfaceLanguage;
         }
 
+
         $this->objTpl->loadTemplateFile('module_fileUploader_frame.html');
+
+        $handlerPath = CONTREXX_SCRIPT_PATH.($this->mediaType == 'downloads' ? '?section=downloads&standalone=true&type=downloads&fileUploader=1&category='.$_REQUEST['catId'] : $this->moduleURI).'&amp;act=upload&amp;type='.$this->mediaType.'&amp;path='.urlencode($this->path);
 
         $this->objTpl->setVariable(array(
             'TXT_FILEUPLOADER_CLOSE'        => $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'],
             'CONTREXX_CHARSET'              => CONTREXX_CHARSET,
-            'FILEUPLOADER_APPLET_PATH'      => ASCMS_ADMIN_WEB_PATH.'/fileUploader.jar',
+            'FILEUPLOADER_APPLET_PATH'      => ASCMS_MODULE_WEB_PATH.'/fileUploader/lib/fileUploader.jar',
             'FILEUPLOADER_LANG_PATH'        => ASCMS_MODULE_WEB_PATH.'/fileUploader/lib/lang/messages_'.$lang.'.zip',
-            'FILEUPLOADER_HANDLER_PATH'     => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=upload&amp;type='.$this->mediaType.'&amp;path='.urlencode($this->path),
+            'FILEUPLOADER_HANDLER_PATH'     => $handlerPath,
             'FILEUPLOADER_PARTITION_LENGTH' => $this->getPartitionLength()
         ));
 
