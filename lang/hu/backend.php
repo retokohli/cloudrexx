@@ -1033,8 +1033,9 @@ $_ARRAYLANG['TXT_ERROR_COULD_NOT_INSERT_PAGE'] = "Seite konnte nicht in die Date
 $_ARRAYLANG['TXT_SUCCESS_PAGE_SAVED'] = "Seite gespeichert:";
 $_ARRAYLANG['TXT_ERROR_COULD_NOT_GET_DATA'] = "Daten konnten nicht vom Server geholt werden";
 $_ARRAYLANG['TXT_CONTENT_PLEASE_WAIT'] = "Bitte warten...";
-$_ARRAYLANG['TXT_DETAIL'] = "Details";
+$_ARRAYLANG['TXT_DETAIL'] = "Detail";
 $_ARRAYLANG['TXT_PRINTSHOP_MODULE_DESCRIPTION'] = "Online Shop für Drucksachen";
 $_ARRAYLANG['TXT_PRINTSHOP_MODULE'] = "Printshop";
 $_ARRAYLANG['TXT_PLEASE_WAIT_SITEMAP'] = "Sitemap wird geschrieben. Dies kann je nach Anzahl Sprachen eine Weile dauern.";
+$_ARRAYLANG['TXT_LANGUAGE_ALREADY_EXIST'] = "Die Sprache existiert bereits!";
 ?>
