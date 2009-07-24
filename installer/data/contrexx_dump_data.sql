@@ -1963,6 +1963,7 @@ INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (12,'updated_file_count','5');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (13,'new_file_time_limit','604800');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (14,'updated_file_time_limit','604800');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (15,'associate_user_to_groups','');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('emailText','[[ECARD_SENDER_NAME]] hat Ihnen eine E-Card geschickt.<br />\r\nSie können diese während den nächsten [[ECARD_VALID_DAYS]] Tagen unter [[ECARD_URL]] abrufen.');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxCharacters','100');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxHeight','300');
