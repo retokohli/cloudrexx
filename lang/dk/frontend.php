@@ -187,5 +187,4 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Jobannoncer";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Jobannoncer";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
-$_ARRAYLANG['TXT_DETAIL'] = "Details";
 ?>
