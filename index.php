@@ -270,7 +270,9 @@ $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page    = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 
-$pageId  = $objInit->getPageID($page, $section, $command, $history);
+if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
+    $pageId  = $objInit->getPageID($page, $section, $command, $history);
+}
 $is_home = $objInit->is_home;
 
 $objCounter = new statsLibrary();
