@@ -133,7 +133,7 @@ class FileUploaderLib {
         }
 
         // check if the file has a valid file extension
-        if (!Validator::is_file_ending_harmless($fileName)) {
+        if (!FWValidator::is_file_ending_harmless($fileName)) {
             die('Error:'.sprintf('The file %s was refused due to its file extension which is not allowed!', htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET)));
         }
 
