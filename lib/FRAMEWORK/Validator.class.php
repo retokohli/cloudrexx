@@ -89,9 +89,15 @@ class FWValidator
      */
     static function is_file_ending_harmless($file) {
         $evil = array(
-            'exe','bat','pif', 'com', # windows executables
-            'vs', 'vbs','js',         # client scripts
-            'php','cgi','pl',         # server scripts
+            # windows executables:
+            'exe','bat','pif', 'com',
+            # client scripts:
+            'vs', 'vbs','js',
+            # client script containers:
+            'html','xhtml','xml','svg','shtml','htm',
+            # server scripts:
+            'php','cgi','pl','jsp','jspx','asp','aspx', 
+            'jsp','jspx','jhtml','phtml','cfm',
         );
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
     
