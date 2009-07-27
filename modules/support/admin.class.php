@@ -313,7 +313,7 @@ class Support
 
         $this->supportLanguageId = (!empty($_REQUEST['supportLanguageId'])
             ?   $_REQUEST['supportLanguageId']
-            :   $objInit->getBackendLangId()
+            :   BACKEND_LANG_ID
         );
         $this->supportLanguageShowAll = (!empty($_REQUEST['supportLanguageShowAll'])
             ?   1
@@ -1617,7 +1617,7 @@ if (MY_DEBUG) echo("REACHED<br />");exit;
                     $this->objSupportCategories->getAdminMenu(
                         ($objTicket
                             ?   $objTicket->getLanguageId()
-                            :   $objInit->getBackendLangId()
+                            :   BACKEND_LANG_ID
                         ),
                         ($supportCategoryId
                             ?   $supportCategoryId

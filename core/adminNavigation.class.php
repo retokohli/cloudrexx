@@ -2,8 +2,8 @@
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @version		1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -14,9 +14,9 @@
  *
  * Class for the Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @access		public
- * @version		1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @access        public
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -55,7 +55,7 @@ class adminMenu
 
         if (!$objFWUser->objUser->getAdminStatus()) {
             if (count($objFWUser->objUser->getStaticPermissionIds()) > 0) {
-            	$sqlWhereString = " AND (areas.access_id = ".implode(' OR areas.access_id = ', $objFWUser->objUser->getStaticPermissionIds()).")";
+                $sqlWhereString = " AND (areas.access_id = ".implode(' OR areas.access_id = ', $objFWUser->objUser->getStaticPermissionIds()).")";
             } else {
                 $sqlWhereString = " AND areas.access_id='' ";
             }
@@ -71,7 +71,7 @@ class adminMenu
                       FROM  ".DBPREFIX."backend_areas AS areas
                       INNER JOIN ".DBPREFIX."modules AS modules
                       ON modules.id=areas.module_id
-                     WHERE is_active=1 AND (type = 'group' OR type = 'navigation')
+                     WHERE is_active=1
                        ".$sqlWhereString."
                   ORDER BY areas.order_id ASC");
         if ($objResult !== false) {
@@ -82,7 +82,8 @@ class adminMenu
                 $this->arrMenuItems[$objResult->fields['area_id']] =
                 array(
                     $objResult->fields['parent_area_id'],
-                    $_CORELANG[$objResult->fields['area_name']],
+                    (isset($_CORELANG[$objResult->fields['area_name']])
+                      ? $_CORELANG[$objResult->fields['area_name']] : ''),
                     $objResult->fields['uri'],
                     $objResult->fields['target'],
                     $objResult->fields['module_name']
@@ -98,8 +99,8 @@ class adminMenu
      * creates the navigation by userright
      *
      * @global array $_CORELANG
-	 * @global object $objTemplate
-	 * @global object $objModules
+     * @global object $objTemplate
+     * @global object $objModules
      */
     function getMenu()
     {
@@ -110,9 +111,13 @@ class adminMenu
 
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
-            if ($group_id==2 && !$objModules->existsModuleFolders) {
+// TODO:
+// $objModules->existsModuleFolders is bollocks.  Ignore.
+/*
+            if ($group_id == 2 && !$objModules->existsModuleFolders) {
                 continue;
             }
+*/
 
             $navigation = '';
             foreach ($this->arrMenuItems as $link_data) {
@@ -125,17 +130,17 @@ class adminMenu
             }
 
             if (!empty($navigation)) {
-				$objTemplate->setVariable(array(
-					'NAVIGATION_GROUP_NAME'	=> htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
-					'NAVIGATION_ID'			=> $group_id,
-					'NAVIGATION_MENU'		=> $navigation,
-					'NAVIGATION_STYLE'		=> isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
-				));
+                $objTemplate->setVariable(array(
+                    'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
+                    'NAVIGATION_ID'            => $group_id,
+                    'NAVIGATION_MENU'        => $navigation,
+                    'NAVIGATION_STYLE'        => isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
+                ));
                 $objTemplate->parse('navigationRow');
         }
         }
 
-		$objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
+        $objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
         $objTemplate->parse('navigation_output');
     }
 
