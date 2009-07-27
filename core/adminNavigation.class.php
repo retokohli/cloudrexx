@@ -71,7 +71,7 @@ class adminMenu
                       FROM  ".DBPREFIX."backend_areas AS areas
                       INNER JOIN ".DBPREFIX."modules AS modules
                       ON modules.id=areas.module_id
-                     WHERE is_active=1
+                     WHERE is_active=1 AND (type = 'group' OR type = 'navigation')
                        ".$sqlWhereString."
                   ORDER BY areas.order_id ASC");
         if ($objResult !== false) {
@@ -111,13 +111,9 @@ class adminMenu
 
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
-// TODO:
-// $objModules->existsModuleFolders is bollocks.  Ignore.
-/*
-            if ($group_id == 2 && !$objModules->existsModuleFolders) {
+            if ($group_id==2 && !$objModules->existsModuleFolders) {
                 continue;
             }
-*/
 
             $navigation = '';
             foreach ($this->arrMenuItems as $link_data) {
