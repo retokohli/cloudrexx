@@ -205,8 +205,7 @@ class FWLanguage
      *                                  or false
      * @static
      */
-    //static
-    function getLanguageCodeById($langId)
+    static function getLanguageCodeById($langId)
     {
         global $objDatabase;
 
