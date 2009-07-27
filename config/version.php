@@ -5,7 +5,7 @@
  * Version informations
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team
+ * @author       Comvation Development Team <info@comvation.com>
  * @version		1.0.0
  * @package     contrexx
  * @subpackage  config
@@ -21,10 +21,11 @@
 //	Mature
 //	Inactive
 
-$_CONFIG['coreCmsName']			= "Contrexx® Web Content Management System";
-$_CONFIG['coreCmsVersion']		= "1.2.0";
-$_CONFIG['coreCmsStatus']		= "RC1";
+$_CONFIG['coreCmsName']	     	= "Contrexx® Web Content Management System";
+$_CONFIG['coreCmsVersion']	  	= "1.1-dev";
+$_CONFIG['coreCmsStatus']	  	= "Unstable";
 $_CONFIG['coreCmsEdition']		= "Premium";
-$_CONFIG['coreCmsCodeName']		= "Cow Feeder";
-$_CONFIG['coreCmsReleaseDate']	= "22.10.2007";
+$_CONFIG['coreCmsCodeName']	  	= "None";
+$_CONFIG['coreCmsReleaseDate'] 	= "-";
+
 ?>
