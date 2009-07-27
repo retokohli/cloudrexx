@@ -102,7 +102,7 @@ CREATE TABLE `contrexx_access_user_title` (
   UNIQUE KEY `title` (`title`)
 ) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_validity` (
-  `validity` int(10) unsigned NOT NULL,
+  `validity` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`validity`)
 ) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_users` (
@@ -303,7 +303,7 @@ CREATE TABLE `contrexx_log` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_alias_source` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `target_id` int(10) unsigned NOT NULL,
+  `target_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '1',
   `url` varchar(255) NOT NULL,
   `isdefault` tinyint(1) NOT NULL default '0',
@@ -313,7 +313,7 @@ CREATE TABLE `contrexx_module_alias_source` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_alias_target` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `type` enum('url','local') NOT NULL,
+  `type` enum('url','local') NOT NULL default 'url',
   `url` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `url` (`url`)
@@ -435,16 +435,16 @@ CREATE TABLE `contrexx_module_block_settings` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_blog_categories` (
-  `category_id` int(4) unsigned NOT NULL,
-  `lang_id` int(2) unsigned NOT NULL,
+  `category_id` int(4) unsigned NOT NULL default '0',
+  `lang_id` int(2) unsigned NOT NULL default '0',
   `is_active` enum('0','1') NOT NULL default '1',
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`category_id`,`lang_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_blog_comments` (
   `comment_id` int(7) unsigned NOT NULL auto_increment,
-  `message_id` int(6) unsigned NOT NULL,
-  `lang_id` int(2) unsigned NOT NULL,
+  `message_id` int(6) unsigned NOT NULL default '0',
+  `lang_id` int(2) unsigned NOT NULL default '0',
   `is_active` enum('0','1') NOT NULL default '1',
   `time_created` int(14) unsigned NOT NULL default '0',
   `ip_address` varchar(15) NOT NULL default '0.0.0.0',
@@ -458,23 +458,23 @@ CREATE TABLE `contrexx_module_blog_comments` (
   KEY `message_id` (`message_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_blog_message_to_category` (
-  `message_id` int(6) unsigned NOT NULL,
-  `category_id` int(4) unsigned NOT NULL,
-  `lang_id` int(2) unsigned NOT NULL,
+  `message_id` int(6) unsigned NOT NULL default '0',
+  `category_id` int(4) unsigned NOT NULL default '0',
+  `lang_id` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
   KEY `category_id` (`category_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_blog_messages` (
   `message_id` int(6) unsigned NOT NULL auto_increment,
-  `user_id` int(5) unsigned NOT NULL,
+  `user_id` int(5) unsigned NOT NULL default '0',
   `time_created` int(14) unsigned NOT NULL default '0',
   `time_edited` int(14) unsigned NOT NULL default '0',
   `hits` int(7) unsigned NOT NULL default '0',
   PRIMARY KEY  (`message_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_blog_messages_lang` (
-  `message_id` int(6) unsigned NOT NULL,
-  `lang_id` int(2) unsigned NOT NULL,
+  `message_id` int(6) unsigned NOT NULL default '0',
+  `lang_id` int(2) unsigned NOT NULL default '0',
   `is_active` enum('0','1') NOT NULL default '1',
   `subject` varchar(250) NOT NULL default '',
   `content` text NOT NULL,
@@ -491,8 +491,8 @@ CREATE TABLE `contrexx_module_blog_networks` (
   PRIMARY KEY  (`network_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_blog_networks_lang` (
-  `network_id` int(8) unsigned NOT NULL,
-  `lang_id` int(2) unsigned NOT NULL,
+  `network_id` int(8) unsigned NOT NULL default '0',
+  `lang_id` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`network_id`,`lang_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_blog_settings` (
@@ -502,7 +502,7 @@ CREATE TABLE `contrexx_module_blog_settings` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_blog_votes` (
   `vote_id` int(8) unsigned NOT NULL auto_increment,
-  `message_id` int(6) unsigned NOT NULL,
+  `message_id` int(6) unsigned NOT NULL default '0',
   `time_voted` int(14) unsigned NOT NULL default '0',
   `ip_address` varchar(15) NOT NULL default '0.0.0.0',
   `vote` enum('1','2','3','4','5','6','7','8','9','10') NOT NULL default '1',
@@ -542,19 +542,19 @@ CREATE TABLE `contrexx_module_calendar` (
   `groups` text NOT NULL,
   `all_groups` int(1) NOT NULL default '0',
   `public` int(1) NOT NULL default '0',
-  `notification` int(1) NOT NULL,
+  `notification` int(1) NOT NULL default '0',
   `notification_address` varchar(255) NOT NULL default '',
-  `series_status` tinyint(4) NOT NULL,
-  `series_type` int(11) NOT NULL,
-  `series_pattern_count` int(11) NOT NULL,
+  `series_status` tinyint(4) NOT NULL default '0',
+  `series_type` int(11) NOT NULL default '0',
+  `series_pattern_count` int(11) NOT NULL default '0',
   `series_pattern_weekday` varchar(7) NOT NULL,
-  `series_pattern_day` int(11) NOT NULL,
-  `series_pattern_week` int(11) NOT NULL,
-  `series_pattern_month` int(11) NOT NULL,
-  `series_pattern_type` int(11) NOT NULL,
-  `series_pattern_dourance_type` int(11) NOT NULL,
-  `series_pattern_end` int(11) NOT NULL,
-  `series_pattern_begin` int(11) NOT NULL,
+  `series_pattern_day` int(11) NOT NULL default '0',
+  `series_pattern_week` int(11) NOT NULL default '0',
+  `series_pattern_month` int(11) NOT NULL default '0',
+  `series_pattern_type` int(11) NOT NULL default '0',
+  `series_pattern_dourance_type` int(11) NOT NULL default '0',
+  `series_pattern_end` int(11) NOT NULL default '0',
+  `series_pattern_begin` int(11) NOT NULL default '0',
   `series_pattern_exceptions` longtext NOT NULL,
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `name` (`name`,`comment`,`placeName`)
@@ -568,8 +568,8 @@ CREATE TABLE `contrexx_module_calendar_categories` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_form_data` (
-  `reg_id` int(10) NOT NULL,
-  `field_id` int(10) NOT NULL,
+  `reg_id` int(10) NOT NULL default '0',
+  `field_id` int(10) NOT NULL default '0',
   `data` text NOT NULL
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_calendar_form_fields` (
