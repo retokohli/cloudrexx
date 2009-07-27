@@ -109,8 +109,10 @@ class ShopCategories
         $selected_id=0, $parentCategoryId=0, $maxlevel=0
     ) {
         // Return the same array if it's already been initialized
-        if (is_array(self::$arrShopCategory))
-            return self::$arrShopCategory;
+// TODO:  This won't work for the shopnavbar, as the categories menu is built first.
+// This needs to be able to detect whether the arguments are the same.
+//        if (is_array(self::$arrShopCategory))
+//            return self::$arrShopCategory;
         // Otherwise, initialize it now
         if (self::buildTreeArray(
             $flagFull, $flagActiveOnly, $flagVirtual,
