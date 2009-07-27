@@ -1016,6 +1016,20 @@ CREATE TABLE `contrexx_module_downloads_download_locale` (
   FULLTEXT KEY `name` (`name`),
   FULLTEXT KEY `description` (`description`)
 ) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_downloads_group` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `is_active` tinyint(1) NOT NULL default '1',
+  `type` enum('file','url') NOT NULL default 'file',
+  `info_page` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_downloads_group_locale` (
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `group_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`lang_id`,`group_id`),
+  FULLTEXT KEY `name` (`name`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_rel_download_category` (
   `download_id` int(10) unsigned NOT NULL default '0',
   `category_id` int(10) unsigned NOT NULL default '0',
