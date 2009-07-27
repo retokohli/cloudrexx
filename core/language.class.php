@@ -212,8 +212,7 @@ class LanguageManager
         }
         if ($objResult->RecordCount() > 0) {
             // Language exists already.
-// TODO: Add a more suitable error message here.
-            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+            $this->strErrMessage = $_CORELANG['TXT_LANGUAGE_ALREADY_EXIST'];
             return false;
         }
         $objDatabase->Execute("
@@ -344,7 +343,7 @@ class LanguageManager
                 if (!empty($result[1]) && !empty($result[2])) {
                     $backendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungï¿½ltiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
                 }
             }
 
@@ -364,7 +363,7 @@ class LanguageManager
                     }
                     $frontendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungï¿½ltiges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
                 }
             }
 
@@ -1006,6 +1005,7 @@ class LanguageManager
             //-----------------------------------------------
             foreach ($_POST['langName'] as $id => $name) {
                 $active = 0;
+                $_POST['langActiveStatus'][$_POST['langDefaultStatus']] = 1; //make sure the default language is enabled
                 if (isset($_POST['langActiveStatus'][$id]) && $_POST['langActiveStatus'][$id]==1 ) {
                     $active = 1;
                 }

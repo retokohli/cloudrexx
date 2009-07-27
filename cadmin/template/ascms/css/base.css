@@ -438,11 +438,10 @@ div.tabContainer {
     width: 100%;
     height: 100%;
     background: #aeaeae;
-    display: none;
 }
 
 #ajaxwait {
-    position: absolute;
+    position: fixed;
     top: 45%;
     left: 45%;
     text-align: center;
@@ -452,7 +451,6 @@ div.tabContainer {
     margin: auto;
     border: 3px #E4E7FA solid;
     background-color: #F4F7FF;
-    display: none;
 }
 
 #previewTitle {
