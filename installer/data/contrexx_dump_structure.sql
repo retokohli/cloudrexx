@@ -60,7 +60,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   PRIMARY KEY  (`group_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
-  `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user') NOT NULL,
+  `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user') NOT NULL default 'reg_confirm',
   `lang_id` tinyint(2) unsigned NOT NULL default '0',
   `sender_mail` varchar(255) NOT NULL default '',
   `sender_name` varchar(255) NOT NULL default '',
@@ -71,7 +71,7 @@ CREATE TABLE `contrexx_access_user_mail` (
   UNIQUE KEY `mail` (`type`,`lang_id`)
 ) TYPE=InnoDB;
 CREATE TABLE `contrexx_access_user_profile` (
-  `user_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL default '0',
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL default 'gender_undefined',
   `title` int(10) unsigned NOT NULL default '0',
   `firstname` varchar(255) NOT NULL default '',
