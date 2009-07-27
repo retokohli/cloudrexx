@@ -228,9 +228,9 @@ class Support
         $this->objTemplate->setTemplate($strTemplate);
 
         $this->objSupportCategories =
-            new SupportCategories($objInit->getFrontendLangId());
+            new SupportCategories(FRONTEND_LANG_ID);
         $this->objInfoFields =
-            new InfoFields($objInit->getFrontendLangId());
+            new InfoFields(FRONTEND_LANG_ID);
 if (MY_DEBUG) { echo("Support::__construct(): POST: ");var_export($_POST);echo("<br />"); }
     }
 
@@ -287,7 +287,7 @@ if (MY_DEBUG) { echo("Support::__construct(): POST: ");var_export($_POST);echo("
         global $_ARRAYLANG, $objInit;
 
         // Needs to be initialized for InfoFields::isComplete()
-        $this->objInfoFields->getInfoFieldArray($objInit->getFrontendLangId());
+        $this->objInfoFields->getInfoFieldArray(FRONTEND_LANG_ID);
 
         // The status is at its default, START, before this.
         if (!empty($_REQUEST['supportCategoryId'])) {
@@ -404,9 +404,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
         // Index inside of infofieldRow
         $infoFieldIndex = 0;
         // The array of all available InfoFields
-        $arrInfoFields = $this->objInfoFields->getInfoFieldArray(
-                        $objInit->getFrontendLangId()
-        );
+        $arrInfoFields = $this->objInfoFields->getInfoFieldArray(FRONTEND_LANG_ID);
         foreach ($arrInfoFields as $count => $arrInfoField) {
             // Is it the last InfoField?
             $flagIsLast = ($count == count($arrInfoFields));
@@ -524,7 +522,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 $this->supportEmail,
                 SUPPORT_TICKET_SOURCE_WEB,
                 $this->supportCategoryId,
-                $objInit->getFrontendLangId()
+                FRONTEND_LANG_ID
             );
             // Need to store it, so it gets an ID.
             if (!$objTicket->store()) {
@@ -538,7 +536,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 $this->supportBody.
                 $this->objInfoFields->arrayToText(
                     $this->arrSupportInfoField,
-                    $objInit->getFrontendLangId()
+                    FRONTEND_LANG_ID
                 )
             );
             if ($messageId == 0) {

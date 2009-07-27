@@ -109,8 +109,10 @@ class ShopCategories
         $selected_id=0, $parentCategoryId=0, $maxlevel=0
     ) {
         // Return the same array if it's already been initialized
-        if (is_array(self::$arrShopCategory))
-            return self::$arrShopCategory;
+// TODO:  This won't work for the shopnavbar, as the categories menu is built first.
+// This needs to be able to detect whether the arguments are the same.
+//        if (is_array(self::$arrShopCategory))
+//            return self::$arrShopCategory;
         // Otherwise, initialize it now
         if (self::buildTreeArray(
             $flagFull, $flagActiveOnly, $flagVirtual,
@@ -322,6 +324,14 @@ class ShopCategories
                       parentid IN ($tempList)
              ORDER BY catsorting ASC
             ";
+/*
+TODO:  For 2.2.0
+               SELECT id
+                 FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+                WHERE ".($flagActiveOnly ? 'status=1 AND' : '')."
+                      parent_id IN ($tempList)
+             ORDER BY sort_order ASC
+*/
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
                 return false;
@@ -335,6 +345,8 @@ class ShopCategories
                 $tempList .=
                     ($tempList ? ',' : '').
                     $objResult->fields['catid'];
+// 2.2.0
+//                    $objResult->fields['id'];
                 $objResult->MoveNext();
             }
         }
@@ -368,7 +380,7 @@ class ShopCategories
      *
      * Sets up an array of ShopCategories IDs of the $shopCategoryId,
      * and all its ancestors.
-     * @param   integer  $shopCategoryId    The ShopCategories ID
+     * @param   integer   $shopCategoryId   The ShopCategories ID
      * @return  mixed                       The array of all ancestor
      *                                      ShopCategories on success,
      *                                      false otherwise.
@@ -379,7 +391,7 @@ class ShopCategories
     {
         self::$arrTrail = array($shopCategoryId);
         while ($shopCategoryId != 0) {
-            $objShopCategory = ShopCategory::getById($shopCategoryId);
+            $objShopCategory = ShopCategory::getById($shopCategoryId, FRONTEND_LANG_ID);
             if (!$objShopCategory) {
                 // Probably du to an illegal or unknown ID.
                 // Use a dummy array so the work can go on anyway.
@@ -459,7 +471,7 @@ class ShopCategories
     {
         $arrChildCategoryId = ShopCategories::getChildCategoryIdArray(0, false);
         foreach ($arrChildCategoryId as $id) {
-            $objShopCategory = ShopCategory::getById($id);
+            $objShopCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
             // delete siblings and Products as well; delete images if desired.
 // TODO: Add deleteById() method
             if (!$objShopCategory->delete($flagDeleteImages)) return false;
@@ -497,6 +509,14 @@ class ShopCategories
                AND picture!=''
           ORDER BY catsorting ASC
         ";
+/*
+2.2.0
+            SELECT picture, id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+             WHERE parent_id=$catId
+               AND picture!=''
+          ORDER BY sort_order ASC
+*/
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture
@@ -536,7 +556,8 @@ class ShopCategories
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getChildCategoriesById(
-        $parentCategoryId=0, $flagActiveOnly=true, $flagVirtual=true
+        $parentCategoryId=0,
+        $flagActiveOnly=true, $flagVirtual=true
     ) {
         $arrChildShopCategoriesId =
             ShopCategories::getChildCategoryIdArray(
@@ -592,37 +613,6 @@ class ShopCategories
             self::getShopCategoriesMenuoptions($selected_id, $flagActiveOnly).
             "</select>";
     }
-
-
-    /**
-     * OBSOLETE
-     * Returns the HTML code for a dropdown menu listing all ShopCategories.
-     *
-     * The <select> tag pair
-     * with the menu name will be included, plus an option for the root
-     * ShopCategory.
-     * @global  array       $_ARRAYLANG     Language array
-     * @param   integer     $selectedid     The selected ShopCategories ID
-     * @param   string      $name           The optional menu name,
-     *                                      defaults to 'catId'.
-     * @return  string                      The HTML dropdown menu code
-     * @static
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-    static function getShopCategoriesMenuNamed($selectedId=0, $name='catId')
-    {
-        global $_ARRAYLANG;
-
-        $result =
-            self::getShopCategoriesMenu($selectedId);
-        if ($name) {
-            $result =
-                "<select name='$name'>".
-                "<option value='0'>{$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS']}</option>".
-                "$result</select>";
-        }
-        return $result;
-    }
-     */
 
 
     /**
@@ -712,11 +702,22 @@ class ShopCategories
                   parentid=$parentShopCategoryId
          ORDER BY catsorting ASC
         "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
+/*
+2.2.0
+           SELECT `id`
+             FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories`
+            WHERE parent_id=$parentShopCategoryId".
+                  ($flagActiveOnly ? ' AND `status`=1' : '')."
+            ORDER BY sort_order ASC
+        "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
+*/
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrChildShopCategoryId = array();
         while (!$objResult->EOF) {
             $arrChildShopCategoryId[] = $objResult->fields['catid'];
+// 2.2.0
+//            $arrChildShopCategoryId[] = $objResult->fields['id'];
             $objResult->MoveNext();
         }
         return $arrChildShopCategoryId;
@@ -755,7 +756,21 @@ class ShopCategories
                   catname='".addslashes($strName)."'
          ORDER BY catsorting ASC
         "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
-
+/*
+2.2.0
+        $strTextId = join(',', array_keys(Text::getIdArrayBySearch(
+            $strName, MODULE_ID, TEXT_SHOP_CATEGORIES_NAME, FRONTEND_LANG_ID
+        )));
+        if (empty($strTextId)) return false;
+        $query = "
+           SELECT id
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+            WHERE parent_id=$parentId
+              AND text_name_id IN ($strTextId)".
+            ($flagActiveOnly ? ' AND status=1' : '')."
+            ORDER BY sort_order ASC
+        "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
+*/
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF || $objResult->RecordCount() > 1)
             return false;
@@ -789,7 +804,7 @@ class ShopCategories
      * @param   integer $shopCategoryId     The ShopCategories ID
      * @return  integer                     The next ShopCategories ID
      * @static
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getNextShopCategoriesId($shopCategoryId=0)
     {
@@ -804,10 +819,10 @@ class ShopCategories
             ShopCategories::getChildCategoryIdArray($parentShopCategoryId, true);
         return
             (isset($arrChildShopCategoriesId[
-                        array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
-                   ])
+                array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+             ])
                 ? $arrChildShopCategoriesId[
-                        array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+                    array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
                   ]
                 : $arrChildShopCategoriesId[0]
             );
@@ -840,6 +855,34 @@ class ShopCategories
             $objResult->MoveNext();
         }
         return $arrVirtual;
+/*
+2.2.0
+        $arrSqlName = Text::getSqlSnippets('text_name_id', FRONTEND_LANG_ID);
+        $query = "
+           SELECT ".$arrSqlName['field']."
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+            ".$arrSqlName['join']."
+            WHERE flags LIKE '%__VIRTUAL__%'
+            ORDER BY sort_order ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        $arrVirtual = array();
+        while (!$objResult->EOF) {
+            $text_name_id = $objResult->fields[$arrSqlName['name']];
+            $strName = $objResult->fields[$arrSqlName['text']];
+            // Replace Text in a missing language by another, if available
+            if ($text_name_id && $strName === null) {
+                $objText = Text::getById($text_name_id, 0);
+                if ($objText)
+                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+                    $strName = $objText->getText();
+            }
+            $arrVirtual[] = $strName;
+            $objResult->MoveNext();
+        }
+        return $arrVirtual;
+*/
     }
 
 
@@ -882,6 +925,29 @@ class ShopCategories
             $objResult->MoveNext();
         }
         return $arrVirtual;
+/*
+2.2.0
+        $arrSqlName = Text::getSqlSnippets('`categories`.`text_name_id`', FRONTEND_LANG_ID);
+        $query = "
+            SELECT `categories`.`id`".$arrSqlName['field']."
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS `categories`".
+                   $arrSqlName['join']."
+             WHERE `categories`.`flags` LIKE '%__VIRTUAL__%'
+             ORDER BY `categories`.`sort_order` ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        $arrVirtual = array();
+        while (!$objResult->EOF) {
+            $arrVirtual[] = array(
+                'id'   => $objResult->fields['id'],
+                'name' => $objResult->fields[$arrSqlName['text']],
+                'text_name_id' => $objResult->fields[$arrSqlName['name']],
+            );
+            $objResult->MoveNext();
+        }
+        return $arrVirtual;
+*/
     }
 
 
@@ -954,7 +1020,7 @@ class ShopCategories
         if ($id <= 0) {
             return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
         }
-        $objShopCategory = ShopCategory::getById($id);
+        $objShopCategory = ShopCategory::getById($id, LANGID);
         if (!$objShopCategory) {
             return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
         }
