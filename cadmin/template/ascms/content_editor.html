@@ -294,12 +294,25 @@ var getFrameContent = function(){
 
 var previewContent = function(){
     var content = getFrameContent();
-    var $form   = $J('form[name=formContent]');
+    var $form = $J('form[name=formContent]');
+
+    if($J('input[name=TypeSelection]:checked', $form).val() == 'redirect'){
+        if($J('input[name=redirectUrl]', $form).val().match(/^\w{2,6}:\/\//)){ //if is absolute uri
+            previewWindow = window.open(+$J('input[name=redirectUrl]', $form).val());
+        }else{
+            previewWindow = window.open('../'+$J('input[name=redirectUrl]', $form).val());
+        }
+        return false;
+    }
+
     var pageId  = $J('input[name=pageId]', $form).val();
     var langId  = $J('#contentLanguages a.active', $form).attr('title').replace(/.*?(\d+)$/, '$1');
     var cmd     = $J('input[name=command]', $form).val();
     var section = $J('select[name=selectmodule] option:selected', $form).text();
     var title   = $J('input[name=title]', $form).val();
+
+    var cssName = $J('input[name=cssName]', $form).val();
+    var themeId = $J('select[name=themesId] option:selected', $form).val();
     previewWindow = null;
 
     if(section == '{TXT_NO_MODULE}'){
@@ -314,17 +327,32 @@ var previewContent = function(){
         data: {page: pageId , lang: langId, previewContent: content, previewTitle: title},
         dataType: 'json',
         success: function(data, textStatus){
-            previewWindow = window.open('../{DIRECTORY_INDEX}?frontPreview=1&page='+pageId+'&cmd='+cmd+'&section='+section+'&lang='+langId);
+            previewWindow = window.open('../{DIRECTORY_INDEX}?frontPreview=1&page='+pageId+'&cmd='+cmd+'&section='+section+
+                                        '&lang='+langId+'&css='+cssName+'&preview='+themeId);
             $J("#ajaxbusy,#ajaxwait").hide();
         },
         error: setDataFetchError
     });
+    return false;
+}
+
+var waitMillisecs = function(millis){
+    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < millis);
+    return true;
 }
 
 var setFrameContent = function(html){
     $J('form[name=formContent] input[name=html]').val(html);
     $J('form[name=formContent] textarea[name=html]').val(html);
-    FCKeditorAPI.GetInstance('html').SetData(html);
+    if(!_CONTREXX_EXPERT_MODE){
+        var $frame = $J('form[name=formContent] iframe').contents();
+        $frame.find('iframe').contents().find('body').html(html);
+        //don't use the FCKeditor SetData method, as it causes the weird permission denied error in IE
+        //FCKeditorAPI.GetInstance('html').SetData(html);
+    }
 }
 
 var setEditor = function(){
@@ -343,7 +371,9 @@ var setEditor = function(){
 }
 
 var submitForm = function(event){
+    $J('#ajaxbusy,#ajaxwait').show();
     event.preventDefault();
+    event.stopImmediatePropagation();
     $J('#contentLanguages li a').unbind('click');
     var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
     selectTab('content1');
@@ -351,6 +381,7 @@ var submitForm = function(event){
     var $form   = $J('form[name=formContent]');
     var pageId  = $J('input[name=pageId]', $form).val();
     var $active = $J('#contentLanguages li a.active', $form);
+    var last = false;
     $J('#contentLanguages li a').each(function(){
         var langId   = $J(this).attr('title').replace(/.*?(\d+)$/, '$1');
         var langName = $J(this).text();
@@ -371,7 +402,9 @@ var submitForm = function(event){
         var contentData = $J('input[name=html]', $form).data(langName);
         if($J(this).closest('li').is(':last-child')){
             postData += '&'+$J.param({lastUpdate: 1});
-            $J('#ajaxstatus').text('{TXT_PLEASE_WAIT_SITEMAP}');
+            if(_CONTREXX_SITEMAP_ENABLED){
+                $J('#ajaxstatus').text('{TXT_PLEASE_WAIT_SITEMAP}');
+            }
         }
 
         postData += '&'+$J.param({  html:   contentData,
@@ -379,8 +412,6 @@ var submitForm = function(event){
                                     langName: $J(this).attr('title').replace(/(.*?)_\d+$/, '$1')});
         $J('input[name=html]', $form).removeAttr('disabled');
         $J('textarea[name=html]', $form).removeAttr('disabled');
-
-        var last = false;
 
         $J.ajax({
             async:       false,
@@ -391,7 +422,7 @@ var submitForm = function(event){
             dataType:    'json',
             success:     function(data, textStatus){
                             submitSuccess(data, textStatus);
-                            if(typeof data == 'undefined' || data.lastUpdate){
+                            if(typeof data != 'undefined' && data.lastUpdate){
                                 last = true;
                             }
                          },
@@ -425,6 +456,7 @@ var submitForm = function(event){
     _CONTREXX_FORCE_SWAP = false;
     if($J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
         location.href = '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId;
+        return false;
     }
     selectTab(activeContentTab);
     $J("#ajaxbusy,#ajaxwait").show();
@@ -437,7 +469,7 @@ var submitError = function(xhr, textStatus, errorThrown){
 }
 
 var submitComplete = function(xhr, textStatus){
-    window._CONTREXX_REQUEST_ACTIVE = false;
+    _CONTREXX_REQUEST_ACTIVE = false;
 }
 
 var submitSuccess = function(data, textStatus){
@@ -472,7 +504,7 @@ var switchTab = function(aElement){
     $J('#ajaxbusy,#ajaxwait').show();
     var $form = $J('form[name=formContent]');
     var $inputs = $J('input[type=checkbox],input[type=radio]', $form).filter(filterInputs);
-    $inputs.removeAttr('disabled', 'disabled');
+    $inputs.attr('disabled', 'disabled');
     swapLanguage(aElement);
     makeTabActive(aElement);
     $J('form[name=formContent] input').removeAttr('disabled');
@@ -480,8 +512,9 @@ var switchTab = function(aElement){
 }
 
 var getTabData = function(a){
+    var $form = $J('form[name=formContent]');
     var langName = $J(a).text();
-    if($J('form[name=formContent] select[name=category]').data(langName) !== undefined || $J(a).parent().is('li:first-child')){  //return if we have already have the data for this language
+    if(typeof $J('select[name=category]', $form).data(langName) != 'undefined' || $J(a).attr('title') == _CONTREXX_FIRST_ACTIVE_TAB){ //return if we have already have the data for this language
         return false;
     }
     getNavMenu(a);
@@ -499,15 +532,16 @@ var swapLanguage = function(aElement){
 //    $J('#ajaxstatus').text('Loading '+$a.text());
 
     //reset undo history
-    var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
-    FCKUndo.SavedData = new Array() ;
-    FCKUndo.CurrentIndex = -1 ;
-    FCKUndo.TypesCount = 0 ;
-    FCKUndo.Changed = false ;
-    FCKUndo.Typing = false ;
-    FCKUndo.SaveLocked = false ;
+    if(!_CONTREXX_EXPERT_MODE && typeof FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo != 'undefined'){
+        var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
+        FCKUndo.SavedData = new Array() ;
+        FCKUndo.CurrentIndex = -1 ;
+        FCKUndo.TypesCount = 0 ;
+        FCKUndo.Changed = false ;
+        FCKUndo.Typing = false ;
+        FCKUndo.SaveLocked = false ;
+    }
 
-    $J('#ajaxbusy,#ajaxwait').show();
     var lastActive = $J('#contentLanguages li a.active').text();
     var $form = $J('form[name=formContent]');
     var $iFrame    = $form.find('iframe');
@@ -515,7 +549,8 @@ var swapLanguage = function(aElement){
     var $textarea  = $form.find('textarea[name=html]');
 
     $html.data(lastActive, getFrameContent());    //save frame contents for current lang
-    $html.data($a.text()) === undefined           //load frame contents for new lang
+
+    typeof $html.data($a.text()) == 'undefined'   //load frame contents for new lang
       ?  setFrameContent('')
       :  setFrameContent($html.data($a.text()));
 
@@ -535,13 +570,13 @@ var swapLanguage = function(aElement){
     $J('form[name=formContent] input').removeAttr('disabled');
 
     $J('#aliastarget').data(lastActive, $J('#aliastarget').text());
-    $J('#aliastarget').data($a.text()) === undefined
+    typeof $J('#aliastarget').data($a.text()) == 'undefined'
       ? $J('#aliastarget').text('')
       : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
 
     $form.find('input[type=text]').each(function(){ //swap input text contents
         $J(this).data(lastActive, $J(this).val());
-        $J(this).data($a.text()) === undefined
+        typeof $J(this).data($a.text()) == 'undefined'
             ? $J(this).val('')
             : $J(this).val($J(this).data($a.text()));
     });
@@ -549,7 +584,7 @@ var swapLanguage = function(aElement){
     $form.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
         var $radio = $J($form.find('input[name='+$J(this).attr('name')+']:first'));
         $radio.data(lastActive, $J(this).val());
-        $radio.data($a.text()) === undefined
+        typeof $radio.data($a.text()) == 'undefined'
             ? $radio.click()
             : $form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']').click();
     });
@@ -560,7 +595,7 @@ var swapLanguage = function(aElement){
             return;
         }
         $J(this).data(lastActive, $J(this).attr('checked'));
-        if($J(this).data($a.text()) === undefined){
+        if(typeof $J(this).data($a.text()) == 'undefined'){
             $J(this).attr('checked', 'checked');
         }else{
             if( !(($J(this).data($a.text()) && $J(this).data(lastActive)) || (!$J(this).data($a.text()) && !$J(this).data(lastActive))) ){
@@ -574,7 +609,7 @@ var swapLanguage = function(aElement){
             return;
         }
         $J(this).data(lastActive, $J(this).attr('checked'));
-        if($J(this).data($a.text()) === undefined){
+        if(typeof $J(this).data($a.text()) == 'undefined'){
             $J(this).attr('checked', false);
         }else{
             if( !( ($J(this).data($a.text()) && $J(this).data(lastActive)) || (!$J(this).data($a.text()) && !$J(this).data(lastActive)) ) ){
@@ -592,7 +627,7 @@ var swapLanguage = function(aElement){
         var $options = $J(this).find('option');
         var value    = $J(this).find('option:selected').val();
         $J(this).data(lastActive, {options: $options, value: value});
-        if($J(this).data($a.text()) === undefined){//set default options and value if not yet
+        if(typeof $J(this).data($a.text()) == 'undefined'){//set default options and value if not yet
             $J(this)
             .data($a.text(), {
                                 options : $J(this).data('default').options,
@@ -604,7 +639,13 @@ var swapLanguage = function(aElement){
         $J(this).append($J(this).data($a.text()).options);
         $J(this).val($J(this).data($a.text()).value);
     });
-    $J('#ajaxbusy,#ajaxwait').hide();
+
+    if($J.browser.msie && $J.browser.version.match(/^\d/)[0] == 6 ){ //redraw tabs because of buggy IE shit ("display: none;" bugs)
+        var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
+        var inactiveContentTab = $J('#tabmenu a:not(.active)').attr('id').replace('editorTab_', '');
+        selectTab(inactiveContentTab);
+        selectTab(activeContentTab);
+    }
 }
 
 var switchLangTab = function(inputLangElement){
@@ -813,6 +854,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     var $form = $('form[name=formContent]');
     window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
     window._CONTREXX_FORCE_SWAP = false;
+    window._CONTREXX_SITEMAP_ENABLED = false;
+    window._CONTREXX_FIRST_ACTIVE_TAB = $('#contentLanguages li a.active').attr('title');
+
     //add global ajax evenet handlers
     $("#ajaxbusy")
     .bind("ajaxStart", function(){
@@ -828,7 +872,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 //        var x = setTimeout(function(){
 //            $('#ajaxbusy,#ajaxwait').hide();
 //        }, 5000);//hide after 5 secs if still visible
-    }   );
+    });
 
      //set default options
     $('select', $form).each(function(){
@@ -861,7 +905,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     )
 
     if(location.href.match(/act=edit/)){ //if we're editing get tab data for all tabs except first one, which is already loaded
-        $('#contentLanguages li:not(:first-child) a').each(function(){
+        $('#contentLanguages li a.inactive').each(function(){
             getTabData(this);
         });
     }
@@ -886,19 +930,25 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     });
 
-    if($('input[name=expertmode]').attr('checked') || FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE){
+    if($('input[name=expertmode]').attr('checked') || (typeof FCKeditorAPI != 'undefined' && FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE)){
         $J('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
     }
-    });
+});
+
 })();//execute anonymous function
 
-if(typeof console === "undefined"){
+if(typeof console === 'undefined'){
     console = {};
     console.log = function(s){window.status=s;}
 }
 
+var numTry = 0;
 (function(){ //poll if editor is loaded
     if(typeof FCKeditorAPI == 'undefined'){
+        if(numTry > 50){ //give up after 50 tries, something seems to be REALLY slow.
+            $J('#ajaxbusy,#ajaxwait').hide();
+            return false;
+        }
         var x = setTimeout(arguments.callee, 200);
         return false;
     }else{
@@ -910,11 +960,32 @@ if(typeof console === "undefined"){
 
 function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
     if(editor.Name == 'html'){
+//# OnAfterLinkedFieldUpdate - fired right after the hidden linked field attached to the editor has its contents updated. It happens usually when the form is being posted.
+//# OnAfterSetHTML - fired once the HTML is loaded in the editor (including when changing views).
+//# OnStatusChange - fired when the editor status changes. The following constants are also available globally in the page: FCK_STATUS_NOTLOADED, FCK_STATUS_ACTIVE and FCK_STATUS_COMPLETE.
+//# OnSelectionChange - fired when the actual selection in the editor area changes (including cursor position and keystrokes). Note: In IE, this event does not fire on every keystroke, but only on some random keystrokes.
 //        editor.Events.AttachEvent( 'OnSelectionChange', function(){
 //            html = editor.GetData(true);
 //            $J('form[name=formContent] input[name=html]').val(html);
 //            $J('form[name=formContent] textarea[name=html]').val(html);
 //        });
+//        editor.Events.AttachEvent( 'OnSelectionChange', function(){
+//            console.log('selection');
+//        });
+//        editor.Events.AttachEvent( 'OnStatusChange', function(){
+//            console.log('status');
+//        });
+//        editor.Events.AttachEvent( 'OnAfterSetHTML', function(){
+//            console.log('set');
+//        });
+//        editor.Events.AttachEvent( 'OnAfterLinkedFieldUpdate', function(){
+//            console.log('linked');
+//        });
+//
+        editorParent = FCKeditorAPI.GetInstance('html').EditorWindow.parent;
+        FCK = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCK;
+        form = FCK.GetParentForm();
+        editorParent.FCKTools.RemoveEventListener( form , 'submit',  FCK.UpdateLinkedField);
         $J('#ajaxbusy,#ajaxwait').hide();
     }
 }
@@ -924,7 +995,7 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 </script>
 
 <div id="ajaxbusy"></div>
-<div id="ajaxwait"><img src="../../../../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}<br /><span id="ajaxstatus"> <span> </p></div>
+<div id="ajaxwait"><img src="../../../../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}<br /><span id="ajaxstatus"> </span> </p></div>
 
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />
@@ -965,10 +1036,12 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 </div>
 	<div id="content1" class="editorTab" style="display:block">
 		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-			<tbody style="vertical-align:top; white-space:nowrap;">
-				<tr>
+			<thead style="vertical-align:top; white-space:nowrap;">
+  				<tr>
 					<th colspan="2">{TXT_PAGE_NAME}</th>
 				</tr>
+			</thead>
+			<tbody style="vertical-align:top; white-space:nowrap;">
 				<tr class="row2">
 					<td width="15%">{TXT_MENU_NAME}</td>
 					<td width="85%">
@@ -1023,6 +1096,7 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 					<td>
 						<input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
 						<input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
+						<div style="float:right; text-align:right; min-width: 100%"> <input type="button" name="preview" value="{TXT_THEME_PREVIEW}" /> </div>
 					</td>
 				</tr>
 			</tbody>
@@ -1033,6 +1107,8 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 			<thead style="vertical-align:top;">
 				<tr>
 					<th>{TXT_CONTENT}</th><th style="text-align: right;">{TXT_SOURCE_MODE} <input type="checkbox" name="expertmode" value="y" {CONTENT_SHOW_EXPERTMODE} /></th>
+	       </thead>
+	       <tbody>
 				</tr>
 				<tr class="row2">
 					<td colspan="2">{CONTENT_HTML}</td>
@@ -1040,7 +1116,7 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<tr class="row1">
 					<td colspan="2" height="26">&nbsp;</td>
 				</tr>
-			</thead>
+			</tbody>
 		</table>
 		</div>
 		<div id="type_redirect" {CONTENT_TYPE_STYLE_REDIRECT}>
@@ -1049,20 +1125,24 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<tr>
 					<th colspan="2">{TXT_CONTENT_TYPE_REDIRECT}</th>
 				</tr>
+			</thead>
+ 	        <tbody>
 				<tr class="row2">
 					<td width="15%">{TXT_REDIRECT}</td>
 					<td width="85%"><input type="text" id="typeRedirectValue" name="redirectUrl" value="{TXT_NO_REDIRECT}" maxlength="255" size="80" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="getFileBrowser('typeRedirectValue', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
 				</tr>
-			</thead>
+	       </tbody>
 		</table>
 		</div>
 	</div>
 	<div id="content2" class="editorTab" style="display:none">
 		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-			<tbody>
+			<thead>
 				<tr>
 					<th colspan="2">{TXT_GENERAL_OPTIONS}</th>
 				</tr>
+			</thead>
+			<tbody>
 				<tr class="row2">
 					<td width="15%">{TXT_START_DATE}</td>
 					<td width="85%"><input type="text" name="startdate" size="10" maxlength="10" onclick="setDateToday(startdate);" value="{CONTENT_STARTDATE}" /></td>
@@ -1079,6 +1159,8 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<tr>
 					<th colspan="2">{TXT_THEMES}</th>
 				</tr>
+			</thead>
+			<tbody>
 				<tr class="row2">
 					<td width="15%">{TXT_THEMES}</td>
 					<td width="85%">
@@ -1093,30 +1175,33 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 					<td>{TXT_OPTIONAL_CSS_NAME}</td>
 					<td><input name="cssName" type="text" id="cssName" value="{CONTENT_CSS_NAME}" size="40" maxlength="50" /></td>
 				</tr>
-			</thead>
+			</tbody>
 		</table>
 		<br />
 		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
 			<thead style="white-space:nowrap;">
-			<tr>
-				<th colspan="2">{TXT_NAVIGATION}</th>
-			</tr>
-			<tr class="row2">
-					<td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
-					<td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" /></td>
-				</tr>
-		   <tr class="row1">
-		      <td>{TXT_TARGET}</td>
-		      <td>
-	             <select name="redirectTarget" style="margin-right:5px;">
-					<option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
-    				<option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
-					<option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
-					<option value="_self">{TXT_TARGET_SELF} (_self)</option>
-					<option value="_top">{TXT_TARGET_TOP} (_top)</option>
-				</select>
-			 </td>
-		   </tr>
+    			<tr>
+    				<th colspan="2">{TXT_NAVIGATION}</th>
+    			</tr>
+			</thead>
+			<tbody>
+    			<tr class="row2">
+    					<td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
+    					<td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" /></td>
+    				</tr>
+    		    <tr class="row1">
+    		      <td>{TXT_TARGET}</td>
+    		      <td>
+    	             <select name="redirectTarget" style="margin-right:5px;">
+    					<option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
+        				<option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
+    					<option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
+    					<option value="_self">{TXT_TARGET_SELF} (_self)</option>
+    					<option value="_top">{TXT_TARGET_TOP} (_top)</option>
+    				</select>
+    			 </td>
+    		   </tr>
+		   </tbody>
 		</table>
 		<br />
 		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
@@ -1124,6 +1209,8 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 			<tr>
 				<th colspan="2">{TXT_EXPERT_MODE}</th>
 			</tr>
+			</thead>
+			<tbody>
 			<tr class="row2">
 				<td width="15%">{TXT_MODULE} (cmd | section)</td>
 				<td width="85%">
@@ -1138,6 +1225,7 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<td>{TXT_CACHING_STATUS}</td>
 				<td><input type="checkbox" name="cachingstatus" value="1" {CONTENT_CACHING_STATUS} /></td>
 			</tr>
+            </tbody>
 		</table>
 	</div>
 	<!-- start content3 div -->
@@ -1147,6 +1235,8 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<tr>
 					<th>{TXT_FRONTEND_PERMISSION}</th>
 				</tr>
+			</thead>
+			<tbody>
 				<tr class="row2">
 					<td>
 						<input value="0" id="noFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',0);" {CONTENT_PROTECTION_INACTIVE} /><label for="noFrontendProtection">&nbsp;{TXT_PUBLIC_PAGE}</label><br />
@@ -1156,10 +1246,10 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<tr class="row1">
 					<td><label for="recursive">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="recursive" name="recursive" value="1" /></td>
 				</tr>
-			</thead>
+			</tbody>
 		</table>
 		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="frontendGroups" style="display:{CONTENT_PROTECTION_DISPLAY};">
-			<thead style="vertical-align:top;">
+			<tbody style="vertical-align:top;">
 				<tr class="row2">
 					<td colspan="3">&nbsp;</td>
 				</tr>
@@ -1194,7 +1284,7 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 						</font>
 					</td>
 				</tr>
-			</thead>
+			</tbody>
 		</table>
 	</div>
 	<!-- start content4 div -->
@@ -1204,6 +1294,8 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<tr>
 					<th>{TXT_RELATEDNESS}</th>
 				</tr>
+			</thead>
+			<tbody>
 				<tr class="row2">
 					<td>
 						<input value="0" name="backendPermission" id="noBackendPermission" type="radio" onclick="swapBlock('backendGroups',0);" {CONTENT_CONTROL_BACKEND_INACTIVE} /><label for="noBackendPermission">&nbsp;{TXT_BACKEND_RELEASE}</label><br />
@@ -1213,13 +1305,15 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				<tr class="row1">
 					<td><label for="backendInherit">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="backendInherit" name="backendInherit" value="1" /></td>
 				</tr>
-			</thead>
+			</tbody>
 		</table>
 		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="backendGroups" style="display:{CONTENT_CONTROL_BACKEND_DISPLAY};">
 			<thead style="vertical-align:top">
 				<tr class="row2">
 					<td colspan="3">&nbsp;</td>
 				</tr>
+			</thead>
+			<tbody>
 				<tr class="row1">
 					<td width="15%">{TXT_GROUPS}</td>
 					<td width="1%">&nbsp;</td>
@@ -1251,7 +1345,7 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 						</font>
 					</td>
 				</tr>
-			</thead>
+			</body>
 		</table>
 	</div>
 	<!-- end content4 div -->
@@ -1259,9 +1353,12 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 	<!-- BEGIN changelog2 -->
 	<div id="content5" class="editorTab" style="display: none">
 		<table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top" width="100%" class="adminlist">
-			<tr>
+            <thead>
+		    <tr>
 				<th colspan="5">{TXT_CHANGELOG}</th>
 			</tr>
+			</thead>
+			<tbody>
 			<tr class="row3">
 				<td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
 				<td width="25%"><b>{TXT_CHANGELOG_DATE}</b></td>
@@ -1338,8 +1435,10 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 				</td>
 			</tr>
 			<!-- END showChanges -->
+			</tbody>
 		</table>
 		<table summary="" cellpadding="3" cellspacing="0" border="0">
+		<tbody>
 			<tr>
 				<td>
 					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
@@ -1352,6 +1451,7 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 					</select>
 				</td>
 			</tr>
+    	</tbody>
 		</table>
 	</div>
 	<!-- END changelog2 -->
@@ -1363,6 +1463,8 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 			    <tr>
 					<th colspan="3">{TXT_CONTENT_ASSIGN_BLOCK}</th>
 				</tr>
+		    </thead>
+		    <tbody>
 				<tr class="row2">
 					<td height="22" width="15%">{TXT_GROUPS}</td>
 					<td width="1%">&nbsp;</td>
@@ -1394,13 +1496,12 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 						</font>
 					</td>
 				</tr>
-			</thead>
+			</tbody>
 		</table>
 	</div>
 	<!-- end content6 div -->
 	<br />
 	<input type="submit" name="Submit" value="{TXT_STORE}" />
-	<input type="button" name="preview" value="{TXT_THEME_PREVIEW}" />
 	<br />
 </form>
 

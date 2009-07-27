@@ -1063,6 +1063,18 @@ switch ($plainCmd) {
     break;
 
     //-------------------------------------------------------
+    // printshop
+    //-------------------------------------------------------
+    case 'printshop':
+        $modulespath = ASCMS_MODULE_PATH.'/printshop/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_PRINTSHOP_MODULE'];
+        $objPrintshopModule = new PrintshopAdmin();
+        $objPrintshopModule->getPage();
+    break;
+
+    //-------------------------------------------------------
     // show default admin page
     //-------------------------------------------------------
     default:

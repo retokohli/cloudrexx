@@ -1,0 +1,82 @@
+<!-- START module_printshop_main.html -->
+<script language="JavaScript" type="text/javascript">
+//<![CDATA[
+function deleteEntry(entryId){
+    if(confirm('{TXT_ENTRIES_DELETE_ENTRY_JS}'))
+        window.location.replace("?cmd=printshop&act=deleteEntry&id="+entryId);
+}
+
+function selectMultiAction() {
+	with (document.frmShowEntries) {
+		switch (frmShowEntries_MultiAction.value) {
+			case 'delete':
+				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+					action='?cmd=printshop&act=multiactionEntry';
+					submit();
+				}
+			break;
+			default: //do nothing
+		}
+	}
+}
+//]]>
+</script>
+<form name="frmShowEntries" method="post" action="">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="10">{TXT_PRINTSHOP_PRICES}</th>
+		</tr>
+		<tr class="row3">
+			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{ENTRY_TYPE_DD}</span></td>
+			<td nowrap="nowrap" width="16%"><span style="font-weight:bold;">{ENTRY_FORMAT_DD}</span></td>
+			<td nowrap="nowrap" width="14%"><span style="font-weight:bold;">{ENTRY_FRONT_DD}</span></td>
+			<td nowrap="nowrap" width="14%"><span style="font-weight:bold;">{ENTRY_BACK_DD}</span></td>
+			<td nowrap="nowrap" width="14%"><span style="font-weight:bold;">{ENTRY_WEIGHT_DD}</span></td>
+			<td nowrap="nowrap" width="14%"><span style="font-weight:bold;">{ENTRY_PAPER_DD}</span></td>
+			<td nowrap="nowrap" width="14%"><span style="font-weight:bold;">{TXT_ENTRY_PRICE}</span></td>
+			<td nowrap="nowrap" width="2%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_ACTIONS}</span></td>
+		</tr>
+		<!-- BEGIN showEntry -->
+		<tr class="{ENTRY_ROWCLASS}">
+			<td><input type="checkbox" name="selectedEntriesId[]" value="{ENTRY_ID}" /></td>
+			<td>{ENTRY_DATE}</td>
+			<td><a href="?cmd=blog&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self" title="{ENTRY_SUBJECT}">{ENTRY_SUBJECT}</a></td>
+			<td>{ENTRY_LANGUAGES}</td>
+			<td>{ENTRY_HITS}</td>
+			<td><a href="?cmd=blog&amp;act=showComments&amp;id={ENTRY_ID}" target="_self" title="{ENTRY_SUBJECT}">{ENTRY_COMMENTS}</a></td>
+			<td><a href="?cmd=blog&amp;act=showVoting&amp;id={ENTRY_ID}" target="_self" title="{ENTRY_SUBJECT}">{ENTRY_VOTES}</a></td>
+			<td>{ENTRY_USER}</td>
+			<td>{ENTRY_EDITED}</td>
+			<td nowrap="nowrap">
+				<div align="right">
+					<a href="#" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+					<a href="#" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
+				</div>
+			</td>
+		</tr>
+		<!-- END showEntry -->
+		<!-- BEGIN noEntries -->
+		<tr class="row2">
+			<td colspan="10"><div align="center"><br />{TXT_ENTRIES_NO_ENTRIES_FOUND}<br /><br /></div></td>
+		</tr>
+		<!-- END noEntries -->
+	</table>
+	<br />
+	<table cellpadding="2" cellspacing="0" border="0">
+		<tr>
+			<td>
+				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+				<a href="#" id="selectAllEntries" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a> /
+				<a href="#" id="deselectAllEntries" title="{TXT_DESELECT_ALL}">{TXT_DESELECT_ALL}</a>
+				<img src="images/icons/strike.gif" alt="" />
+				<select name="frmShowEntries_MultiAction" onchange="selectMultiAction();">
+					<option value="0">{TXT_MULTISELECT_SELECT}</option>
+					<option value="delete">{TXT_MULTISELECT_DELETE}</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>
+<br />
+<div align="center">{ENTRIES_PAGING}</div>
+<!-- END module_printshop_main -->

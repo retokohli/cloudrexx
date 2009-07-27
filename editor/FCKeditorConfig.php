@@ -12,8 +12,8 @@ FCKConfig.SkinPath = FCKConfig.BasePath + 'skins/default/' ;
 FCKConfig.EnterMode = 'br';
 FCKConfig.ShiftEnterMode = 'p';
 FCKConfig.StartupShowBlocks = true;
-FCKConfig.ForcePasteAsPlainText = true;
-<?=$objSettings->useOwnCSS();?>
+FCKConfig.ForcePasteAsPlainText = false;
+<? echo $objSettings->useOwnCSS();?>
 
 FCKConfig.ToolbarSets["Default"] = [
 	['Source','DocProps','-','NewPage','Preview','-','Templates'],

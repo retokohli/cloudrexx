@@ -113,7 +113,7 @@ class ContentManager
     function __construct() {
         global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG,$objLanguage;
 
-        $this->langId=$objInit->userFrontendLangId;
+        $this->langId = $objInit->userFrontendLangId;
         foreach($objLanguage->getLanguageArray() as $arrLang){
             if($arrLang['frontend'] == 1){
                 $this->firstActiveLang = $arrLang['id'];
@@ -579,7 +579,7 @@ class ContentManager
      */
     function showNewPage()
     {
-        global $objDatabase, $_CORELANG, $objTemplate, $objLanguage;
+        global $objDatabase, $_CORELANG, $objTemplate, $objLanguage, $_CONFIG;
 
         // init variables
         $contenthtml='';
@@ -600,18 +600,16 @@ class ContentManager
         $langCount = 0;
 
         foreach ($objLanguage->getLanguageArray() as $arrLang){
+            $langCount++;
             $checked = '';
+            $tabClass = 'inactive';
+
             if($arrLang['frontend'] == 0){
                 continue;
             }
 
-            if(++$langCount == 1){ //first active
+            if($arrLang['id'] == $this->langId){
                 $tabClass = 'active';
-            }else{
-                $tabClass = 'inactive';
-            }
-
-            if($arrLang['is_default'] == 'true'){
                 $defaultLang = $arrLang['id'];
                 $checked = 'checked="checked"';
                 $objTemplate->setVariable(array(
@@ -780,6 +778,7 @@ class ContentManager
             'CONTENT_ALIAS_DISABLE'             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
 			'TXT_ERROR_NO_TITLE'                => $_CORELANG['TXT_ERROR_NO_TITLE'],
 			'TXT_BASE_URL'                      => self::mkurl('/'),
+			'CONTREXX_SITEMAP_ENABLED'          => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
         ));
 
         $objTemplate->hideBlock('deleteButton');
@@ -919,7 +918,7 @@ class ContentManager
      */
     function showEditPage($pageId = '')
     {
-        global $objDatabase, $_CORELANG, $objTemplate, $objLanguage;
+        global $objDatabase, $_CORELANG, $objTemplate, $objLanguage, $_CONFIG;
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
         $this->pageTitle = $_CORELANG['TXT_EDIT_PAGE'];
 
@@ -933,9 +932,14 @@ class ContentManager
         }
         if($pageId == 0){ header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); }
 
-        $objRS = $objDatabase->Execute('SELECT `lang` FROM `'.DBPREFIX.'content_navigation` WHERE `catid`='.$pageId.' ORDER BY `lang` ASC');
+        $objRS = $objDatabase->Execute('SELECT `n`.`lang` FROM `'.DBPREFIX.'content_navigation` AS `n`
+                                        INNER JOIN `'.DBPREFIX.'languages` AS `l` on (`l`.`id` = `n`.`lang`)
+                                        WHERE `l`.`frontend` = 1 AND `n`.`catid`='.$pageId.'
+                                        ORDER BY `n`.`lang` ASC');
+
         $arrContentLanguages = array();
-        $this->firstActiveLang = $langId = $objRS->fields['lang'];
+
+        $this->firstActiveLang = $langId = $this->langId;
 
         if ($this->_checkModificationPermission($pageId, $langId)) {
             $_backendPermissions = true;
@@ -948,14 +952,16 @@ class ContentManager
         }
         $langCount = 0;
         $activeLangCount = 0;
+        //TODO selected frontend lang active tab
         foreach ($objLanguage->getLanguageArray() as $arrLang){
             $checked = '';
             $langCount++;
-            if(array_key_exists($arrLang['id'], $arrContentLanguages)){
-                if(++$activeLangCount == 1){
+            $tabClass = 'inactive';
+
+            if(array_key_exists($arrLang['id'], $arrContentLanguages) && $arrLang['frontend'] == 1){
+                $activeLangCount++;
+                if($this->langId == $arrLang['id']){
                     $tabClass = 'active';
-                }else{
-                    $tabClass = 'inactive';
                 }
                 $checked = 'checked="checked"';
                 $objTemplate->setVariable(array(
@@ -983,6 +989,7 @@ class ContentManager
             'TXT_LANGUAGES'                    => $_CORELANG['TXT_LANGUAGES'],
             'TXT_THEME_PREVIEW'                => $_CORELANG['TXT_THEME_PREVIEW'],
             'TXT_CONTENT_PLEASE_WAIT'          => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
+            'TXT_CONTENT_NO_TITLE'             => $_CORELANG['TXT_CONTENT_NO_TITLE'],
             'TXT_ERROR_COULD_NOT_GET_DATA'     => $_CORELANG['TXT_ERROR_COULD_NOT_GET_DATA'],
             'TXT_SUCCESS_PAGE_SAVED'           => $_CORELANG['TXT_SUCCESS_PAGE_SAVED'],
             'TXT_TARGET'                       => $_CORELANG['TXT_TARGET'],
@@ -1056,6 +1063,7 @@ class ContentManager
             'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
 			'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
 			'TXT_BASE_URL'             => self::mkurl('/'),
+			'CONTREXX_SITEMAP_ENABLED' => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
         ));
 
         if (!$this->boolHistoryEnabled) {
@@ -3073,7 +3081,7 @@ ON DUPLICATE KEY
                 $backendPermission = 0;
                 foreach ($this->arrAllBackendGroups as $id => $name) {
                     if (in_array($id, $arrAssignedBackendGroups)) {
-                        $backendPermission = true;
+                        $backendPermission = 1;
                         break;
                     }
                 }
