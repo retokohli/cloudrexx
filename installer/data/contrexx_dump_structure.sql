@@ -1041,6 +1041,11 @@ CREATE TABLE `contrexx_module_downloads_rel_download_download` (
   `id2` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id1`,`id2`)
 ) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_downloads_rel_group_category` (
+  `group_id` int(10) unsigned NOT NULL default '0',
+  `category_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`group_id`,`category_id`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_settings` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(32) NOT NULL default '',
