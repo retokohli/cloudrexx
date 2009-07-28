@@ -263,7 +263,7 @@ class calendarManager extends calendarLibrary
     		$category = null;
     	}
 
-    	$this->objSeries 	= new seriesManager();
+    	$this->objSeries 	= new seriesManager($this->mandateLink);
 		$this->eventList 	= $this->objSeries->getEventList($startdate,$enddate,999, 1, array_key_exists('search', $_POST) ? $_POST['search'] : '', $category);
 
 		$calendarbox 	= $this->getBoxes(3, $year, $month, $day, $catid);
@@ -723,10 +723,12 @@ class calendarManager extends calendarLibrary
 				5 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_LAST'],
 			);
 
+            $weekdays = '';
 			foreach ($arrWeekdays as $value => $name) {
 				$weekdays .= '<option value="'.$value.'">'.$name.'</option>';
 			}
 
+            $count = '';
 			foreach ($arrCount as $value => $name) {
 				$count .= '<option value="'.$value.'">'.$name.'</option>';
 			}

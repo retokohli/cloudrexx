@@ -27,11 +27,15 @@ class seriesManager
     public $eventList_callback = true;
     public $eventList_active;
 
+   	var $mandateLink;
+
     /**
-     * PHP 5 Constructor
+     * PHP 5 Constructor.
+     * Pass the mandateLink as an argument, if available. Default is '' (empty string).
      */
-    function __construct()
+    function __construct($mandateLink = '')
     {
+        $this->mandateLink = $mandateLink;
     }
 
 
@@ -246,8 +250,8 @@ class seriesManager
 
 		if (isset($key) && isset($this->eventList_startdate) && $this->eventList_startdate != 0) {
 		    $unset = false;
-		    $startdate = $this->eventList[$key]['startdate'];
-		    $enddate = $this->eventList[$key]['enddate'];
+		    $startdate = isset($this->eventList[$key]) ? $this->eventList[$key]['startdate'] : '';
+		    $enddate   = isset($this->eventList[$key]) ? $this->eventList[$key]['enddate']   : '';
 
 		    if((($startdate <= $this->eventList_startdate) && ($this->eventList_enddate <= $enddate))) {
 		        $unset = false;
