@@ -3200,10 +3200,10 @@ ON DUPLICATE KEY
     	</tr>
     	<tr class="row3">
     		<td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
-    		<td width="25%"><b>'.$_CORELANG['TXT_CHANGELOG_DATE'].'</b></td>
-    		<td width="48%"><b>'.$_CORELANG['TXT_CHANGELOG_NAME'].'</b></td>
-    		<td width="25%"><b>'.$_CORELANG['TXT_CHANGELOG_USER'].'</b></td>
-    		<td width="1%"><b>'.$_CORELANG['TXT_CHANGELOG_FUNCTIONS'].'</b></td>
+    		<td width="25%"><b>'.$_CORELANG['TXT_DATE'].'</b></td>
+    		<td width="48%"><b>'.$_CORELANG['TXT_PAGETITLE'].'</b></td>
+    		<td width="25%"><b>'.$_CORELANG['TXT_USER'].'</b></td>
+    		<td width="1%"><b>'.$_CORELANG['TXT_FUNCTIONS'].'</b></td>
     	</tr>
     	<!-- BEGIN showChanges -->
     	<tr class="{CHANGELOG_ROWCLASS}">
