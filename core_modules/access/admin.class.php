@@ -1313,8 +1313,13 @@ class AccessManager extends AccessLib
             return true;
         }
 
-        include_once ASCMS_MODULE_PATH.'/downloads/lib/Download.class.php';
-        include_once ASCMS_MODULE_PATH.'/downloads/lib/Category.class.php';
+        include_once ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php';
+
+        $objFWUser = FWUser::getFWUserObject();
+        $objDownloadLib = new DownloadsLibrary();
+        $arrDownloadSettings = $objDownloadLib->getSettings();
+        $objUser->setGroups(array_merge($objUser->getAssociatedGroupIds(), array_map('trim', explode(',', $arrDownloadSettings['associate_user_to_groups']))));
+        $objUser->store();
 
         $firstname = $objUser->getProfileAttribute('firstname');
         $lastname = $objUser->getProfileAttribute('lastname');
@@ -1381,6 +1386,7 @@ class AccessManager extends AccessLib
         $damCategoryUri = '?cmd=downloads&amp;act=categories&amp;parent_id='.$objCategory->getId();
         $damCategoryAnchor = '<a href="'.$damCategoryUri.'">'.htmlentities($objCategory->getName(LANG_ID), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
         $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET), $damCategoryAnchor);
+
         return true;
     }
 
