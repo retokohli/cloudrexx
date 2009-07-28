@@ -25,6 +25,10 @@ Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
   werden.
 - Die Gültigkeit (Zeitdauer) eines Downloads kann definiert werden.
+- Kategorien können in einer Gruppe zusammengefasst werden.
+- Über die Benutzerverwaltung kann beim Erstellen eines neuen Benutzerkontos
+  direkt eine neue persönliche Kategorie im Digital Asset Management Modul
+  für diesen Benutzer erstellt werden.
 
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
