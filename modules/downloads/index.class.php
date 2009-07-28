@@ -699,9 +699,35 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc
         ));
+
+        $this->parseGroups($objCategory);
+
         $this->objTemplate->parse('downloads_category');
     }
 
+    private function parseGroups($objCategory)
+    {
+        global $_LANGID;
+
+        $objGroup = Group::getGroups(array('category_id' => $objCategory->getId()));
+
+        if (!$objGroup->EOF) {
+            while (!$objGroup->EOF) {
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_GROUP_ID'        => $objGroup->getId(),
+                    'DOWNLOADS_GROUP_NAME'      => htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_GROUP_PAGE'      => $objGroup->getInfoPage()
+                ));
+
+                $this->objTemplate->parse('downloads_category_group');
+                $objGroup->next();
+            }
+
+            $this->objTemplate->parse('downloads_category_group_list');
+        } else {
+            $this->objTemplate->hideBlock('downloads_category_group_list');
+        }
+    }
 
     private function parseCrumbtrail($objParentCategory)
     {
