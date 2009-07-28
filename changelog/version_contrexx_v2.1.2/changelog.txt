@@ -38,6 +38,8 @@ Allgemein:
 - Datei-Upload: Anstatt einer Whitelist wird nun eine Blacklist eingesetzt.
   Dies ermöglicht auch den Upload von Dateien, die nicht explizit von Contrexx
   erlaubt wurden.
+- Bei der Inhaltsnavigation wird beim Typ 'dropdown' ab der zweiten Ebene
+  auch ein CSS-Style (active/inactive) ausgegeben.
 
 Benutzerverwaltung
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
