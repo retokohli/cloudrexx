@@ -290,7 +290,7 @@ class Calendar extends calendarLibrary
                 $category 	= isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
             	$term 	    = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
 
-				$link = '<a href="?section=calendar&amp;cmd=event'.$year.$month.$day.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+				$link = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.$year.$month.$day.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
 
 				$this->_objTpl->setVariable(array(
 					'CALENDAR_PRIORITY' 			=> $priority,
