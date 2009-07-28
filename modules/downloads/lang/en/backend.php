@@ -275,4 +275,8 @@ $_ARRAYLANG['TXT_DOWNLOADS_PLACEHOLDER'] = "Placeholder";
 $_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_FAILED'] = "Error while deleting group %s";
 $_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_GROUP'] = "Error while updating the group";
 $_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_GROUP'] = "Error while adding the group!";
+$_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'] = "Interfaces";
+$_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'] = "User Admin";
+$_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatic Category Creation";
+$_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Set the user groups to which a newly created user should be assigned to, if the option to automatically create a category within the Digital Asset Management module has been selected.";
 ?>
