@@ -343,7 +343,7 @@ class LanguageManager
                 if (!empty($result[1]) && !empty($result[2])) {
                     $backendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ung�ltiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
                 }
             }
 
@@ -363,7 +363,7 @@ class LanguageManager
                     }
                     $frontendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ung�ltiges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (frontend)  regex: '.$regex.'<br />';
                 }
             }
 
