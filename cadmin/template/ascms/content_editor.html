@@ -345,11 +345,16 @@ var waitMillisecs = function(millis){
 }
 
 var setFrameContent = function(html){
-    $J('form[name=formContent] input[name=html]').val(html);
-    $J('form[name=formContent] textarea[name=html]').val(html);
-    if(!_CONTREXX_EXPERT_MODE){
-        var $frame = $J('form[name=formContent] iframe').contents();
-        $frame.find('iframe').contents().find('body').html(html);
+    var $form = $J('form[name=formContent]');
+    $J('input[name=html]', $form).val(html);
+    $J('textarea[name=html]', $form).val(html);
+    if(!_CONTREXX_EXPERT_MODE && typeof FCKeditorAPI != 'undefined'){
+        var $frame = $J('iframe', $form).contents();
+        if(FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG){
+            $frame.find('iframe').contents().find('body').html(html);
+        }else{
+            $frame.find('textarea').val(html);
+        }
         //don't use the FCKeditor SetData method, as it causes the weird permission denied error in IE
         //FCKeditorAPI.GetInstance('html').SetData(html);
     }
@@ -394,9 +399,9 @@ var submitForm = function(event){
         $J('input[name=html]', $form).attr('disabled', 'disabled');
         $J('textarea[name=html]', $form).attr('disabled', 'disabled');
 
-        $J('select[name=assignedGroups\[\]]', $form).children().attr('selected', 'selected');
-        $J('select[name=assignedBackendGroups\[\]]', $form).children().attr('selected', 'selected');
-        $J('select[name=assignedBlocks\[\]]', $form).children().attr('selected', 'selected');
+        $J('select[name="assignedGroups[]"]', $form).children().attr('selected', 'selected');
+        $J('select[name="assignedBackendGroups[]"]', $form).children().attr('selected', 'selected');
+        $J('select[name="assignedBlocks[]"]', $form).children().attr('selected', 'selected');
         var postData = $form.serialize();
 
         var contentData = $J('input[name=html]', $form).data(langName);
@@ -532,7 +537,7 @@ var swapLanguage = function(aElement){
 //    $J('#ajaxstatus').text('Loading '+$a.text());
 
     //reset undo history
-    if(!_CONTREXX_EXPERT_MODE && typeof FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo != 'undefined'){
+    if(!_CONTREXX_EXPERT_MODE && FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG && typeof FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo != 'undefined'){
         var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
         FCKUndo.SavedData = new Array() ;
         FCKUndo.CurrentIndex = -1 ;
