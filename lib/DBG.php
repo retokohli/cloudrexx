@@ -312,7 +312,7 @@ function DBG_log_adodb($msg)
 {
     DBG::log(
         _DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP
-            ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET) : $msg);
+            ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET) : $msg, preg_match('#^[0-9]+:#', $msg) ? 'error' : 'log');
 }
 
 ?>
