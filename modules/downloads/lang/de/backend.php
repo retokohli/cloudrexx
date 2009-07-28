@@ -275,4 +275,8 @@ $_ARRAYLANG['TXT_DOWNLOADS_PLACEHOLDER'] = "Platzhalter";
 $_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_FAILED'] = "Beim Löschen der Gruppe %s trat ein Fehler auf!";
 $_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_GROUP'] = "Beim Aktualisieren der Gruppe trat ein Fehler auf!";
 $_ARRAYLANG['TXT_DOWNLOADS_FAILED_ADD_GROUP'] = "Beim Hinzufügen der Gruppe trat ein Fehler auf!";
+$_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'] = "Schnittstellen";
+$_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'] = "Benutzerverwaltung";
+$_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatische Erstellung einer Kategorie";
+$_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Definieren Sie die Benutzergruppen, zu welchen der neu erstellende Benutzer hinzugefügt werden soll, wenn die Option zur automatischen Erstellung einer Kategorie im Digital Asset Management Modul ausgewählt wird.";
 ?>
