@@ -391,9 +391,8 @@ class downloads extends DownloadsLibrary
                         $file = ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
                     }
 
-                    $arrMatch = array();
                     if (FWValidator::is_file_ending_harmless($fileName)) {
-                        $fileExtension = strtolower($arrMatch[1]);
+                        $fileExtension = strtolower($arrFile['extension']);
 
                         if (@move_uploaded_file($fileTmpName, $file)) {
                             $fileName = $arrFile['filename'];
