@@ -76,8 +76,11 @@ class downloads extends DownloadsLibrary
             $_ARRAYLANG['TXT_DOWNLOADS_NEW'].'</a>'.
             '<a href="index.php?cmd=downloads&amp;act=categories">'.
             $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'].'</a>'.
-            (Permission::checkAccess(142, 'static', true) ? '<a href="index.php?cmd=downloads&amp;act=settings">'.
-            $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
+            (Permission::checkAccess(142, 'static', true) ?
+                '<a href="index.php?cmd=downloads&amp;act=groups">'.
+                $_ARRAYLANG['TXT_DOWNLOADS_GROUPS'].'</a>'.
+                '<a href="index.php?cmd=downloads&amp;act=settings">'.
+                $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
         );
         parent::__construct();
     }
@@ -102,6 +105,28 @@ class downloads extends DownloadsLibrary
         switch ($_REQUEST['act']) {
             case 'get':
                 $this->getDownload();
+                break;
+            case 'delete_group':
+                $this->deleteGroup();
+                $this->loadGroupNavigation();
+                $this->groups();
+                $this->parseGroupNavigation();
+                break;
+            case 'switch_group_status':
+                $this->switchGroupStatus();
+                $this->loadGroupNavigation();
+                $this->groups();
+                $this->parseGroupNavigation();
+                break;
+            case 'groups':
+                $this->loadGroupNavigation();
+                $this->groups();
+                $this->parseGroupNavigation();
+                break;
+            case 'group':
+                $this->loadGroupNavigation();
+                $this->group();
+                $this->parseGroupNavigation();
                 break;
             case 'delete_category':
                 $this->deleteCategory();
@@ -204,6 +229,292 @@ class downloads extends DownloadsLibrary
                 header('Location: '.$objDownload->getSource());
             }
         }
+    }
+
+    private function switchGroupStatus()
+    {
+        $objGroup = Group::getGroup(isset($_GET['id']) ? intval($_GET['id']) : 0);
+        if (!$objGroup->EOF) {
+            $objGroup->setActiveStatus(!$objGroup->getActiveStatus());
+            $objGroup->store();
+        }
+    }
+
+    private function deleteGroup()
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $objGroup = Group::getGroup(isset($_GET['id']) ? $_GET['id'] : 0);
+
+        if (!$objGroup->EOF) {
+            $name = '<strong>'.htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
+            if ($objGroup->delete()) {
+                $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_SUCCESS'], $name);
+            } else {
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objGroup->getErrorMsg());
+            }
+        }
+    }
+
+    private function deleteGroups($arrGroupsIds)
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $succeded = true;
+
+        foreach ($arrGroupsIds as $groupId) {
+            $objGroup = Group::getGroup($groupId);
+
+            if (!$objGroup->EOF) {
+                if (!$objGroup->delete()) {
+                    $succeded = false;
+                    $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objGroup->getErrorMsg());
+                }
+            }
+        }
+
+        if ($succeded) {
+            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_GROUPS_DELETE_SUCCESS'];
+        }
+    }
+
+    private function groups()
+    {
+        global $_ARRAYLANG, $_LANGID, $_CONFIG, $objLanguage, $objInit;
+
+        $objFWUser = FWUser::getFWUserObject();
+
+        Permission::checkAccess(142, 'static');
+
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_GROUPS'];
+        $this->objTemplate->addBlockFile('DOWNLOADS_GROUP_TEMPLATE', 'module_downloads_groups', 'module_downloads_groups.html');
+
+        // parse groups multi action
+        if (isset($_POST['downloads_group_select_action'])) {
+            switch ($_POST['downloads_group_select_action']) {
+                case 'delete':
+                    $this->deleteGroups(isset($_POST['downloads_group_id']) && is_array($_POST['downloads_group_id']) ? $_POST['downloads_group_id'] : array());
+                    break;
+            }
+        }
+
+        $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+
+        $groupLimitOffset = isset($_GET['group_pos']) ? intval($_GET['group_pos']) : $pos;
+        $groupOrderDirection = !empty($_GET['group_sort']) ? $_GET['group_sort'] : 'asc';
+        $groupOrderBy = !empty($_GET['group_by']) ? $_GET['group_by'] : 'order';
+
+        if ($groupOrderBy == 'placeholder') {
+            $arrGroupOrder['id'] = $groupOrderDirection;
+        } else {
+            $arrGroupOrder[$groupOrderBy] = $groupOrderDirection;
+        }
+
+        if ($groupOrderBy != 'name') {
+            $arrGroupOrder['name'] = 'asc';
+        }
+        if ($groupOrderBy != 'id' && $groupOrderBy != 'placeholder') {
+            $arrGroupOrder['id'] = 'asc';
+        }
+
+        $objGroup= Group::getGroups(null, null, $arrGroupOrder, null, $_CONFIG['corePagingLimit'], $groupLimitOffset);
+
+        $this->objTemplate->setGlobalVariable(array(
+            'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
+            'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
+        ));
+
+        $nr = 0;
+        if ($objGroup->EOF) {
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_NO_GROUPS_AVAILABLE', $_ARRAYLANG['TXT_DOWNLOADS_NO_GROUPS_AVAILABLE']);
+            $this->objTemplate->parse('downloads_group_no_data');
+            $this->objTemplate->hideBlock('downloads_group_data');
+        } else {
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_CHECK_ALL'       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+                'TXT_DOWNLOADS_UNCHECK_ALL'     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+                'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
+                'TXT_DOWNLOADS_DELETE'          => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
+            ));
+
+            // parse paging
+            $groupCount = $objGroup->getFilteredSearchGroupCount();
+            if ($groupCount > $_CONFIG['corePagingLimit']) {
+                $pagingLink = "&amp;cmd=downloads&amp;act=groups"
+                    ."&amp;group_sort=".htmlspecialchars($groupOrderDirection)
+                    ."&amp;group_by=".htmlspecialchars($groupOrderBy);
+                $this->objTemplate->setVariable('DOWNLOADS_GROUP_PAGING', getPaging($groupCount, $groupLimitOffset, $pagingLink, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_GROUPS']."</b>"));
+            }
+
+            while (!$objGroup->EOF) {
+                // parse status link and modify button
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_GROUP_ID'                     => $objGroup->getId(),
+                    'DOWNLOADS_GROUP_SWITCH_STATUS_DESC'     => $objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_GROUP_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_GROUP_DESC'],
+                    'DOWNLOADS_GROUP_SWITCH_STATUS_IMG_DESC' => $objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_GROUP_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_GROUP_DESC']
+                ));
+
+
+                // parse delete button
+                $this->objTemplate->setVariable(array(
+                    'TXT_DOWNLOADS_DELETE'               => $_ARRAYLANG['TXT_DOWNLOADS_DELETE'],
+                    'DOWNLOADS_GROUP_NAME_JS'            => htmlspecialchars($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)
+                ));
+
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_GROUP_ROW_CLASS'          => $nr++ % 2 ? 'row1' : 'row2',
+                    'DOWNLOADS_GROUP_STATUS_LED'         => $objGroup->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                    'DOWNLOADS_GROUP_NAME'               => htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_GROUP_PLACEHOLDER'        => $objGroup->getPlaceholder()
+                ));
+                $this->objTemplate->parse('downloads_group_list');
+                $objGroup->next();
+            }
+
+            $this->objTemplate->setVariable(array(
+                // parse sorting
+                'DOWNLOADS_GROUP_SORT_DIRECTION'         => $groupOrderDirection,
+                'DOWNLOADS_GROUP_SORT_BY'                => $groupOrderBy,
+                'DOWNLOADS_GROUP_SORT_ID'                => ($groupOrderBy == 'id' && $groupOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_GROUP_SORT_STATUS'            => ($groupOrderBy == 'is_active' && $groupOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_GROUP_SORT_NAME'              => ($groupOrderBy == 'name' && $groupOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_GROUP_SORT_PLACEHOLDER'       => ($groupOrderBy == 'placeholder' && $groupOrderDirection == 'asc') ? 'desc' : 'asc',
+                'DOWNLOADS_GROUP_SORT_ID_LABEL'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'].($groupOrderBy == 'id' ? $groupOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_GROUP_SORT_STATUS_LABEL'      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'].($groupOrderBy == 'is_active' ? $groupOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_GROUP_SORT_NAME_LABEL'        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'].($groupOrderBy == 'name' ? $groupOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'DOWNLOADS_GROUP_SORT_PLACEHOLDER_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_PLACEHOLDER'].($groupOrderBy == 'placeholder' ? $groupOrderDirection == 'asc' ? ' &uarr;' : ' &darr;' : '')
+            ));
+
+            $this->objTemplate->touchBlock('downloads_group_data');
+            $this->objTemplate->hideBlock('downloads_group_no_data');
+
+            $this->objTemplate->setVariable(array(
+                'DOWNLOADS_GROUP_GROUP_SORT'             => $groupOrderDirection,
+                'DOWNLOADS_GROUP_GROUP_SORT_BY'          => $groupOrderBy,
+                'DOWNLOADS_GROUP_GROUP_OFFSET'           => $groupLimitOffset
+            ));
+        }
+
+        $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_GROUPS'                      => $_ARRAYLANG['TXT_DOWNLOADS_GROUPS'],
+            'TXT_DOWNLOADS_PLACEHOLDER'                 => $_ARRAYLANG['TXT_DOWNLOADS_PLACEHOLDER'],
+            'TXT_DOWNLOADS_FUNCTIONS'                   => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
+            'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'],
+            'DOWNLOADS_CONFIRM_DELETE_GROUP_TXT'        => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_GROUP'])),
+            'DOWNLOADS_CONFIRM_DELETE_GROUPS_TXT'       => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_GROUPS']))
+        ));
+
+        return true;
+    }
+
+
+    private function group()
+    {
+        global $_ARRAYLANG, $objLanguage, $_LANGID;
+
+        Permission::checkAccess(142, 'static');
+
+        $arrAssociatedCategoryOptions = array();
+        $arrNotAssociatedCategoryOptions = array();
+
+        $objGroup = Group::getGroup(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+
+        if (isset($_POST['downloads_group_save'])) {
+            $objGroup->setActiveStatus(isset($_POST['downloads_group_active']) && $_POST['downloads_group_active']);
+            $objGroup->setNames(isset($_POST['downloads_group_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_group_name'])) : array());
+            $objGroup->setType(isset($_POST['downloads_group_type']) ? contrexx_stripslashes($_POST['downloads_group_type']) : '');
+            $objGroup->setInfoPage(isset($_POST['downloads_group_'.$objGroup->getType().'_source']) ? contrexx_stripslashes($_POST['downloads_group_'.$objGroup->getType().'_source']) : '');
+            $objGroup->setCategories(isset($_POST['downloads_group_associated_categories']) ? array_map('intval', $_POST['downloads_group_associated_categories']) : array());
+
+            if ($objGroup->store()) {
+                return $this->groups();
+            } else {
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objGroup->getErrorMsg());
+            }
+        }
+
+        $this->_pageTitle = $objGroup->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_GROUP'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_GROUP'];
+        $this->objTemplate->addBlockFile('DOWNLOADS_GROUP_TEMPLATE', 'module_downloads_groups', 'module_downloads_group_modify.html');
+
+        $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_ACTIVE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
+            'TXT_DOWNLOADS_ASSIGNED_CATEGORIES'                         => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_CATEGORIES'],
+            'TXT_DOWNLOADS_AVAILABLE_CATEGORIES'                        => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_CATEGORIES'],
+            'TXT_DOWNLOADS_BROWSE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
+            'TXT_DOWNLOADS_CANCEL'                                      => $_ARRAYLANG['TXT_DOWNLOADS_CANCEL'],
+            'TXT_DOWNLOADS_CATEGORIES'                                  => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
+            'TXT_DOWNLOADS_CHECK_ALL'                                   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+            'TXT_DOWNLOADS_DETAIL_PAGE'                                 => $_ARRAYLANG['TXT_DOWNLOADS_DETAIL_PAGE'],
+            'TXT_DOWNLOADS_EXTENDED'                                    => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED'],
+            'TXT_DOWNLOADS_LOCAL_FILE'                                  => $_ARRAYLANG['TXT_DOWNLOADS_LOCAL_FILE'],
+            'TXT_DOWNLOADS_NAME'                                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            'TXT_DOWNLOADS_SAVE'                                        => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
+            'TXT_DOWNLOADS_STATUS'                                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            'TXT_DOWNLOADS_UNCHECK_ALL'                                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+            'TXT_DOWNLOADS_URL'                                         => $_ARRAYLANG['TXT_DOWNLOADS_URL']
+        ));
+
+        // parse sorting & paging of the groups overview section
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_GROUP_GROUP_SORT'          => !empty($_GET['group_sort']) ? $_GET['group_sort'] : '',
+            'DOWNLOADS_GROUP_GROUP_SORT_BY'       => !empty($_GET['group_by']) ? $_GET['group_by'] : '',
+            'DOWNLOADS_GROUP_GROUP_OFFSET'        => !empty($_GET['group_pos']) ? intval($_GET['group_pos']) : 0,
+        ));
+
+        // parse general attributes
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_GROUP_ID'                         => $objGroup->getId(),
+            'DOWNLOADS_GROUP_OPERATION_TITLE'            => $objGroup->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_GROUP'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_GROUP'],
+            'DOWNLOADS_GROUP_ACTIVE_CHECKED'             => $objGroup->getActiveStatus() ? 'checked="checked"' : ''
+        ));
+
+        // parse type
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_GROUP_TYPE_FILE_CHECKED'          => $objGroup->getType() == 'file' ? 'checked="checked"' : '',
+            'DOWNLOADS_GROUP_TYPE_URL_CHECKED'           => $objGroup->getType() == 'url' ? 'checked="checked"' : '',
+            'DOWNLOADS_GROUP_FILE_SOURCE'                => $objGroup->getType() == 'file' ? htmlentities($objGroup->getInfoPage(), ENT_QUOTES, CONTREXX_CHARSET) : '',
+            'DOWNLOADS_GROUP_URL_SOURCE'                 => $objGroup->getType() == 'url' ? htmlentities($objGroup->getInfoPage(), ENT_QUOTES, CONTREXX_CHARSET) : 'http://',
+            'DOWNLOADS_GROUP_TYPE_FILE_CONFIG_DISPLAY'   => $objGroup->getType() == 'file' ? '' : 'none',
+            'DOWNLOADS_GROUP_TYPE_URL_CONFIG_DISPLAY'    => $objGroup->getType() == 'url' ? '' : 'none'
+        ));
+
+        // parse name and description attributres
+        $arrLanguages = $objLanguage->getLanguageArray();
+        foreach ($arrLanguages as $langId => $arrLanguage) {
+            $this->objTemplate->setVariable(array(
+                'DOWNLOADS_GROUP_NAME'       => htmlentities($objGroup->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_GROUP_LANG_ID'    => $langId,
+                'DOWNLOADS_GROUP_LANG_NAME'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->objTemplate->parse('downloads_group_name_list');
+        }
+
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_GROUP_NAME'   => htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DOWNLOADS_EXTENDED' => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
+        ));
+        $this->objTemplate->parse('downloads_group_name');
+
+        // parse associated categories
+        $arrCategories = $this->getParsedCategoryListForDownloadAssociation();
+        $arrAssociatedCategories = $objGroup->getAssociatedCategoryIds();
+        $length = count($arrCategories);
+        for ($i = 0; $i < $length; $i++) {
+            $option = '<option value="'.$arrCategories[$i]['id'].'">'.htmlentities($arrCategories[$i]['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+
+            if (in_array($arrCategories[$i]['id'], $arrAssociatedCategories)) {
+                $arrAssociatedCategoryOptions[] = $option;
+            } else {
+                $arrNotAssociatedCategoryOptions[] = $option;
+            }
+        }
+
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_GROUP_ASSOCIATED_CATEGORIES'      => implode("\n", $arrAssociatedCategoryOptions),
+            'DOWNLOADS_GROUP_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions)
+        ));
+
+        return true;
     }
 
 
@@ -1306,6 +1617,25 @@ class downloads extends DownloadsLibrary
         } else {
             $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'];
         }
+    }
+
+
+    private function loadGroupNavigation()
+    {
+        $this->objTemplate->loadTemplateFile('module_downloads_group.html');
+    }
+
+
+    private function parseGroupNavigation()
+    {
+        global $_ARRAYLANG;
+
+        $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_OVERVIEW'    => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'],
+            'TXT_DOWNLOADS_ADD_GROUP'   => $_ARRAYLANG['TXT_DOWNLOADS_ADD_GROUP']
+        ));
+
+        $this->objTemplate->parse('module_downloads_groups');
     }
 
 

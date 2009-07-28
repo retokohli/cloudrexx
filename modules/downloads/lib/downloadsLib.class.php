@@ -12,6 +12,10 @@
 /**
  * @ignore
  */
+require_once dirname(__FILE__).'/Group.class.php';
+/**
+ * @ignore
+ */
 require_once dirname(__FILE__).'/Category.class.php';
 /**
  * @ignore
@@ -313,6 +317,26 @@ class DownloadsLibrary
         $menu .= FWUser::getValidityMenuOptions(null, 'style="color:#000; font-weight:normal;"');
         $menu .= '</select>';
         return $menu;
+    }
+
+    public function setGroups($arrGroups, &$page_content)
+    {
+        global $_LANGID;
+
+        $objGroup = Group::getGroups(array('id' => $arrGroups));
+
+        while (!$objGroup->EOF) {
+            $output = "<ul>\n";
+            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()));
+            while (!$objCategory->EOF) {
+                $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=downloads&amp;cmd='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                $objCategory->next();
+            }
+            $output .= "</ul>\n";
+
+            $page_content = str_replace('{'.$objGroup->getPlaceholder().'}', $output, $page_content);
+            $objGroup->next();
+        }
     }
 
 }
