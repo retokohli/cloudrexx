@@ -80,7 +80,7 @@ class downloads extends DownloadsLibrary
                 '<a href="index.php?cmd=downloads&amp;act=groups">'.
                 $_ARRAYLANG['TXT_DOWNLOADS_GROUPS'].'</a>'.
                 '<a href="index.php?cmd=downloads&amp;act=settings">'.
-                $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
+            $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
         );
         parent::__construct();
     }
@@ -2410,7 +2410,7 @@ class downloads extends DownloadsLibrary
      */
     private function settings()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID;
 
         Permission::checkAccess(142, 'static');
 
@@ -2433,9 +2433,28 @@ class downloads extends DownloadsLibrary
             $this->arrConfig['updated_file_count']          = !empty($_POST['downloads_settings_updated_file_count']) ? intval($_POST['downloads_settings_updated_file_count']) : $this->arrConfig['updated_file_count'];
             $this->arrConfig['new_file_time_limit']         = !empty($_POST['downloads_settings_new_file_time_limit']) ? intval($_POST['downloads_settings_new_file_time_limit']) : $this->arrConfig['new_file_time_limit'];
             $this->arrConfig['updated_file_time_limit']     = !empty($_POST['downloads_settings_updated_file_time_limit']) ? intval($_POST['downloads_settings_updated_file_time_limit']) : $this->arrConfig['updated_file_time_limit'];
+            $this->arrConfig['associate_user_to_groups']    = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
 
             $this->updateSettings();
         }
+
+        $objFWUser = FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroups();
+        $arrGroups = explode(',', $this->arrConfig['associate_user_to_groups']);
+        $associatedGroups = '';
+        $notAssociatedGroups = '';
+
+        while (!$objGroup->EOF) {
+            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+            if (in_array($objGroup->getId(), $arrGroups)) {
+                $associatedGroups .= $option;
+            } else {
+                $notAssociatedGroups .= $option;
+            }
+
+            $objGroup->next();
+        }
+
 
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],
@@ -2469,6 +2488,15 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
             'TXT_DOWNLOADS_WEBSITE'                         => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
             'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
+            'TXT_DOWNLOADS_UNCHECK_ALL'                     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+            'TXT_DOWNLOADS_CHECK_ALL'                       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+            'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
+            'TXT_DOWNLOADS_INTERFACES'                      => $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'],
+            'TXT_DOWNLOADS_USER_ADMIN'                      => $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'],
+            'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'     => $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'],
+            'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'=> $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'],
+            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'           => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
+            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'            => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
             'DOWNLOADS_SETTINGS_COL_COUNT'                  => $this->arrConfig['overview_cols_count'],
             'DOWNLOADS_SETTINGS_SUBCAT_COUNT'               => $this->arrConfig['overview_max_subcats'],
             'DOWNLOADS_SETTINGS_ATTRIBUTE_SIZE_CHECKED'     => $this->arrConfig['use_attr_size'] ? 'checked="checked"' : '',
@@ -2482,7 +2510,9 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_SETTINGS_NEWEST_FILE_COUNT'          => $this->arrConfig['newest_file_count'],
             'DOWNLOADS_SETTINGS_UPDATED_FILE_COUNT'         => $this->arrConfig['updated_file_count'],
             'DOWNLOADS_SETTINGS_NEW_FILE_TIME_LIMIT'        => $this->arrConfig['new_file_time_limit'],
-            'DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT'  => $this->arrConfig['updated_file_time_limit']
+            'DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT'  => $this->arrConfig['updated_file_time_limit'],
+            'DOWNLOADS_SETTINGS_NOT_ASSOCIATED_GROUPS'      => $notAssociatedGroups,
+            'DOWNLOADS_SETTINGS_ASSOCIATED_GROUPS'          => $associatedGroups
         ));
     }
 

@@ -61,7 +61,8 @@ class DownloadsLibrary
         'newest_file_count'             => 5,
         'updated_file_count'            => 5,
         'new_file_time_limit'           => 604800,
-        'updated_file_time_limit'       => 604800
+        'updated_file_time_limit'       => 604800,
+        'associate_user_to_groups'      => ''
     );
 
 
@@ -120,6 +121,10 @@ class DownloadsLibrary
         }
     }
 
+    public function getSettings()
+    {
+        return $this->arrConfig;
+    }
 
     protected function getCategoryMenu(
         $accessType, $selectedCategory, $selectionText,
