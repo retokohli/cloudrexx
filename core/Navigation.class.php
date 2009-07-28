@@ -534,6 +534,8 @@ class Navigation
                     } elseif ($level == 1) {
                         $tmpNavigation = str_replace('{STYLE}', "starter_normal", $tmpNavigation);
                         $mainCat++; //inc if new maincat
+                    } else {
+                        $tmpNavigation = str_replace('{STYLE}', $id == $this->pageId ? $this->styleNameActive : $this->styleNameNormal, $tmpNavigation);
                     }
 
                     $tmpNavigation = str_replace('{URL}', $this->data[$id]['url'], $tmpNavigation);

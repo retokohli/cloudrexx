@@ -60,6 +60,8 @@ Allgemein:
   Inserate Mark und Verzeichnis.
 - Das Versenden von E-Mails bei der Verwendung eines separaten SMTP-Servers
   funktioniert.
+- Bei der Inhaltsnavigation wird beim Typ 'dropdown' ab der zweiten Ebene
+  auch ein CSS-Style (active/inactive) ausgegeben.
 
 Block System
 - Das Interface zur Auswahl der Frontend Seiten funktioniert korrekt.
