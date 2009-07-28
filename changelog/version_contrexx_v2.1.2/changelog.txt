@@ -72,6 +72,7 @@ Modul: Forum
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
+- Es werden keine leeren Einträge aufgelistet.
 
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
