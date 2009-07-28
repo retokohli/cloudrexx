@@ -114,6 +114,7 @@ Modul: Newsletter
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
+- Es werden keine leeren Einträge aufgelistet.
 
 Modul: Shop
 - E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.

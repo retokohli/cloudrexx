@@ -598,12 +598,16 @@ $this->arrRows[2] = '';
         }
 
         // set variables
+        $this->_objTpl->setGlobalVariable(array(
+            'DIRECTORY_CAT_ID'            => $cid,
+            'DIRECTORY_LEVEL_ID'           => $lid
+        ));
+
+        // set variables
         $this->_objTpl->setVariable(array(
             'SEARCH_PAGING' => $paging,
-            'DIRECTORY_CAT_ID' => $cid,
-            'DIRECTORY_LEVEL_ID' => $lid,
             'DIRECTORY_MAIN_CAT_ID' => $cid,
-            'DIRECTORY_MAIN_LEVEL_ID' => $lid,
+            'DIRECTORY_MAIN_LEVEL_ID' => $lid
         ));
 
 
