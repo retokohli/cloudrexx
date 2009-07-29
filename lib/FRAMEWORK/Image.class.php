@@ -25,20 +25,20 @@ require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
  */
 class ImageManager
 {
-    var $orgImage;
-    var $orgImageWidth;
-    var $orgImageHeight;
-    var $orgImageType;
-    var $orgImageFile;
+    public $orgImage;
+    public $orgImageWidth;
+    public $orgImageHeight;
+    public $orgImageType;
+    public $orgImageFile;
 
-    var $newImage;
-    var $newImageWidth;
-    var $newImageHeight;
-    var $newImageQuality;
-    var $newImageType;
-    var $newImageFile;
+    public $newImage;
+    public $newImageWidth;
+    public $newImageHeight;
+    public $newImageQuality;
+    public $newImageType;
+    public $newImageFile;
 
-    var $imageCheck       = 1;
+    public $imageCheck = 1;
 
 
     /**
@@ -47,11 +47,6 @@ class ImageManager
      * @access   public
      * @return   void
      */
-    function ImageManager()
-    {
-        $this->__construct();
-    }
-
     function __construct()
     {
         $this->_resetVariables();
@@ -71,38 +66,31 @@ class ImageManager
     {
         $this->_resetVariables();
         $this->orgImageFile = $file;
-
-        if ($this->orgImageType = $this->_isImage($this->orgImageFile)) {
+        $this->orgImageType = $this->_isImage($this->orgImageFile);
+        if ($this->orgImageType) {
             $getImage             = $this->_getImageSize($this->orgImageFile);
             $this->orgImageWidth  = $getImage[0];
             $this->orgImageHeight = $getImage[1];
-
-            if ($this->orgImage = $this->_imageCreateFromFile($this->orgImageFile)) {
-                return true;
-            } else {
-                $this->imageCheck = 0;
-                $this->_resetVariables();
-                return false;
-            }
-
-            return true;
-        } else {
+            $this->orgImage       = $this->_imageCreateFromFile($this->orgImageFile);
+            if ($this->orgImage) return true;
             $this->imageCheck = 0;
             $this->_resetVariables();
             return false;
         }
+        $this->imageCheck = 0;
+        $this->_resetVariables();
+        return false;
     }
 
 
     /**
-     * creates a thumbnail of a picture
-     *
-     * @param string $strPath
-     * @param string $strWebPath
-     * @param string $file
-     * @param int $maxSize the maximum width or height of the image
-     * @param int $quality
-     * @return bool
+     * Creates a thumbnail of a picture
+     * @param   string  $strPath
+     * @param   string  $strWebPath
+     * @param   string  $file
+     * @param   int     $maxSize      The maximum width or height of the image
+     * @param   int     $quality
+     * @return  boolean
      */
     function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90)
     {
@@ -118,18 +106,10 @@ class ImageManager
         }
         $thumbWidth  = $tmpSize[0] * $factor;
         $thumbHeight = $tmpSize[1] * $factor;
-        if (!$_objImage->loadImage($strPath.$file)) {
-            return false;
-        }
-        if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) {
-            return false;
-        }
-        if (!$_objImage->saveNewImage($strPath . $file . '.thumb')) {
-            return false;
-        }
-        if (!$objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
-            return false;
-        }
+        if (!$_objImage->loadImage($strPath.$file)) return false;
+        if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
+        if (!$_objImage->saveNewImage($strPath . $file . '.thumb')) return false;
+        if (!$objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) return false;
         return true;
     }
 
@@ -149,21 +129,24 @@ class ImageManager
      * @param   integer $maxWidth       The maximum width of the image
      * @param   integer $maxHeight      The maximum height of the image
      * @param   integer $quality        The desired jpeg thumbnail quality
-     * @param	string	$thumbNailSuffix	Suffix of the thumbnail. Default is 'thumb'
-	 * @param	string	$strPathNew		Image file store folder. Default is $strPath
-	 * @param	string	$strWebPathNew	Image file web store folder. Default is $strWebPath
-	 * @param	string	$fileNew		Image file store name. Default is $file
+     * @param   string  $thumbNailSuffix  Suffix of the thumbnail. Default is 'thumb'
+     * @param   string  $strPathNew     Image file store folder. Default is $strPath
+     * @param   string  $strWebPathNew  Image file web store folder. Default is $strWebPath
+     * @param   string  $fileNew        Image file store name. Default is $file
      * @return  bool                    True on success, false otherwise.
      */
     function _createThumbWhq(
-        $strPath, $strWebPath, $file, $maxWidth=80, $maxHeight=80, $quality=90, $thumbNailSuffix = '.thumb', $strPathNew = null, $strWebPathNew = null, $fileNew = null
+        $strPath, $strWebPath, $file, $maxWidth=80, $maxHeight=80, $quality=90,
+        $thumbNailSuffix='.thumb', $strPathNew=null, $strWebPathNew=null, $fileNew=null
     ) {
-        $objFile   = &new File();
-        $file      = basename($file);
-        $fileNew   = empty($fileNew) ? $file : basename($fileNew);
-        empty($strPathNew) ? $strPathNew = $strPath : false;
-        empty($strWebPathNew) ? $strWebPathNew = $strWebPath : false;
-        $tmpSize   = getimagesize($strPath.$file);
+        // Do *NOT* strip subfolders from the file name!
+        // This would break correct operation in some places (shop)
+        // Fix your own code to provide the file name only if you need to.
+        //$file      = basename($file);
+        if (empty($fileNew))       $fileNew       = $file;
+        if (empty($strPathNew))    $strPathNew    = $strPath;
+        if (empty($strWebPathNew)) $strWebPathNew = $strWebPath;
+        $tmpSize = getimagesize($strPath.$file);
 
         // reset the ImageManager
         $this->imageCheck = 1;
@@ -183,38 +166,26 @@ class ImageManager
             $thumbHeight = $height*$maxWidth/$width;
         }
 
-        if (!$this->loadImage($strPath.$file)) {
-            return false;
-        }
-        if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) {
-            return false;
-        }
+        if (!$this->loadImage($strPath.$file)) return false;
+        if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
         if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
-            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) {
-                return false;
-            }
+            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         }
-        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) {
-            return false;
-        }
-        if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) {
-            return false;
-        }
+        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) return false;
+        $objFile = new File();
+        if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) return false;
+//echo("_createThumbWhq($strPath, $strWebPath, $file, $maxWidth, $maxHeight, $quality, $thumbNailSuffix, $strPathNew, $strWebPathNew, $fileNew): saved file $strPathNew$fileNew$thumbNailSuffix<br />");
         return true;
     }
 
 
     /**
-     * Resize Image
-     *
-     * Resizes the loaded Image as you wish and creates a variable with
-     * the new image
-     *
-     * @access   public
-     * @param    string [$width]   width of the new image
-     * @param    string [$height]  height of the new image
-     * @param    string [$quality] quality for the new image
-     * @return   bool
+     * Resizes the original Image to the given dimensions and stores it as the new
+     * @access    public
+     * @param     string    $width    The width of the new image
+     * @param     string    $height   The height of the new image
+     * @param     string    $quality  The quality for the new image
+     * @return    booelan             True on success, false otherwise
      */
     function resizeImage($width, $height, $quality)
     {
@@ -233,9 +204,8 @@ class ImageManager
             }
             imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
 
@@ -244,31 +214,26 @@ class ImageManager
      *
      * Resizes the loaded Image as you wish and saves the new image
      *
-     * @access   public
-     * @param    string [$path]         absolute path to the directory where the image is in
-     * @param    string [$webPath]      absolute webpath (in the directory root of the webserver)
-     * @param    string [$fileName]     fileName of the image that needs to be resized
-     * @param    string [$width]        width of the new image
-     * @param    string [$height]       height of the new image
-     * @param    string [$quality]      quality for the new image
-     * @param    string [$newPath]      absolute path to the directory where the image is in (leave empty if same as original)
-     * @param    string [$newWebPath]   absolute webpath (in the directory root of the webserver, leave empty if same as original)
-     * @param    string [$newFileName]  fileName of the image that needs to be resized (leave empty to create default $file.'.thumb')
-     * @return   bool
+     * @access  public
+     * @param   string  $path         Absolute path to the directory where the image is in
+     * @param   string  $webPath      Absolute webpath (in the directory root of the webserver)
+     * @param   string  $fileName     FileName of the image that needs to be resized
+     * @param   string  $width        Width of the new image
+     * @param   string  $height       Height of the new image
+     * @param   string  $quality      Quality for the new image
+     * @param   string  $newPath      Absolute path to the directory where the image is in (leave empty if same as original)
+     * @param   string  $newWebPath   Absolute webpath (in the directory root of the webserver, leave empty if same as original)
+     * @param   string  $newFileName  FileName of the image that needs to be resized (leave empty to create default $file.'.thumb')
+     * @return  bool
      */
-    function resizeImageSave($path, $webPath, $fileName, $width, $height, $quality = 70, $newPath = '', $newWebPath = '', $newFileName = '', $thumbNailSuffix = '.thumb')
-    {
-        if ($newPath = '') { // use same path as the original image for new image, if not set
-            $newPath = $path;
-        }
-
-        if ($newWebPath = '') {
-            $newWebPath = $webPath;
-        }
-
-        if ($newFileName = '') {
-            $newFileName = $fileName.$thumbNailSuffix;
-        }
+    function resizeImageSave(
+        $path, $webPath, $fileName, $width, $height, $quality=70,
+        $newPath='', $newWebPath='', $newFileName='', $thumbNailSuffix='.thumb'
+    ) {
+        // If empty, use the original image path for the new image
+        if ($newPath == '') $newPath = $path;
+        if ($newWebPath == '') $newWebPath = $webPath;
+        if ($newFileName == '') $newFileName = $fileName.$thumbNailSuffix;
 
         $this->_checkTrailingSlash($path);
         $this->_checkTrailingSlash($webPath);
@@ -282,49 +247,47 @@ class ImageManager
             $this->newImageQuality = $quality;
             $this->newImageType    = $this->orgImageType;
 
-            if (function_exists ("imagecreatetruecolor")) {
+            if (function_exists ('imagecreatetruecolor')) {
                 $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
                 // GD > 2 check
-                if (!$this->newImage) {
+                if (!$this->newImage)
                     $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
-                }
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
-            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
-
-            if ($this->saveNewImage($newPath.$newFileName)) {
-                return true;
-            }
-        } else {
-            return false;
+            imagecopyresized(
+                $this->newImage, $this->orgImage,
+                0, 0, 0, 0,
+                $this->newImageWidth+1, $this->newImageHeight+1,
+                $this->orgImageWidth, $this->orgImageHeight
+            );
+            if ($this->saveNewImage($newPath.$newFileName)) return true;
         }
         return false;
     }
 
 
     /**
-     * check whether a path has a trailing slash or not and adjust if necessary
+     * Add a trailing slash to the given path if there's none already
      *
-     * @param string $path
+     * The parameter is given by reference.
+     * @param   string  $path   The directory path
+     * @return  void
      */
     function _checkTrailingSlash(&$path) {
-        if (substr($path, -1) != DIRECTORY_SEPARATOR) { // add directory separator if not already provided
-            $path .= DIRECTORY_SEPARATOR;
-        }
+        // add directory separator if not already provided
+        if (substr($path, -1) != DIRECTORY_SEPARATOR)  $path .= DIRECTORY_SEPARATOR;
     }
 
 
     /**
-     * Saves new image
-     *
      * Saves the new image wherever you want
-     *
-     * @access   public
-     * @param    string [$file] path and filename where to save the new image
-     * @return   bool
+     * @access  public
+     * @param   string    $file             The path for the image file to be written
+     * @param   booelan   $forceOverwrite   Force overwriting existing files if true
+     * @return  boolean                     True on success, false otherwise
      */
-    function saveNewImage($file, $forceOverwrite = false)
+    function saveNewImage($file, $forceOverwrite=false)
     {
         if ($this->imageCheck == 1 && !empty($this->newImage) && (!file_exists($file) || $forceOverwrite)) {
             $this->newImageFile = $file;
@@ -348,20 +311,15 @@ class ImageManager
 
             $function($this->newImage, $this->newImageFile, $this->newImageQuality);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
 
     /**
-     * Show new image
-     *
-     * Outputs the new image into the browser
-     * or inserts it in a <img .. > tag
-     *
+     * Outputs the new image in the browser
      * @access   public
-     * @return   bool
+     * @return   boolean      True on success, false otherwise
      */
     function showNewImage()
     {
@@ -387,17 +345,13 @@ class ImageManager
             }
             $function($this->newImage, '', $this->newImageQuality);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
 
     /**
-     * Reset variables
-     *
-     * Resets all variales
-     *
+     * Resets all object variables
      * @access   private
      * @return   void
      */
@@ -419,32 +373,47 @@ class ImageManager
 
 
     /**
-     * get percentual values of an image dimension
+     * Scale down the original image dimensions to a given maximum pixel size
      *
-     * @param string $img
-     * @param integer $max  maximum size (either width or height, depending on the larger value)
-     * @return array || false on failure
+     * Proportionally scales the width and height, so that both fit within
+     * the maximum size.
+     * The array returned looks like
+     *  array(
+     *    'style'   => 'style="height: <scaled_height>px; width: <scaled_width>px;"'
+     *    'width'   => original width plus one in pixels
+     *    'height'  => original height pluis one in pixels
+     * @todo    Reto asks:  Who wrote this?
+     * @todo    Reto asks:  Why is 1 added to the original size?
+     * @todo    The $webPath argument is not used.  Remove.
+     * @todo    It looks like this method isn't used at all.  Remove.
+     * @param   string  $path       The absolute file path
+     * @param   string  $webPath    The file path relative to the document root
+     * @param   string  $fileName   The file name
+     * @param   integer $max        The maximum size for both width and height
+     * @return  mixed               An array on success, false otherwise
+     * @author  reto.kohli@comvation.com (Added proper documentation, fixed)
      */
-    function getImageDim($path, $webPath, $fileName, $max = 60) {
+    function getImageDim($path, $webPath, $fileName, $max=60)
+    {
         $this->_checkTrailingSlash($path);
         if (is_file($path.$fileName)) {
             $size   = getimagesize($path.$fileName);
-               $height = $size[1];
+            $height = $size[1];
             $width  = $size[0];
             if ($height > $max && $height > $width) {
                 $height = $max;
-                $percent = ($size[1] / $height);
-                $width = ($size[0] / $percent);
+                $ratio  = ($size[1] / $height);
+                $width  = ($size[0] / $ratio);
             } else if ($width > $max) {
-                $width = $max;
-                $percent = ($size[0] / $width);
-                $height = ($size[1] / $percent);
-               }
-               if ($width > 0 && $height > 0) {
-                $imgdim['style'] = 'style="height: '.$height.'px; width:'.$width.'px;"';
-                $imgdim['width'] = $size[0]+1;
+                $width  = $max;
+                $ratio  = ($size[0] / $width);
+                $height = ($size[1] / $ratio);
+            }
+            if ($width > 0 && $height > 0) {
+                $imgdim['style']  = 'style="height: '.$height.'px; width:'.$width.'px;"';
+                $imgdim['width']  = $size[0]+1;
                 $imgdim['height'] = $size[1]+1;
-               }
+            }
             return $imgdim;
         }
         return false;
@@ -452,115 +421,101 @@ class ImageManager
 
 
     /**
-     * Create Image
-     *
-     * Creates a new image from an old image
-     *
+     * Creates an image from an image file
      * @access   private
-     * @param    string [$file] path and filename of the old image
-     * @return   string [$image] image variable
+     * @param    string   $file   The path of the image
+     * @return   resource         The image on success, the empty string otherwise
      */
     function _imageCreateFromFile($file)
     {
-        if ($type = $this->_isImage($file)) {
-            switch($type) {
-                case 1:  // gif
-                    $function = 'imagecreatefromgif';
-                    break;
-                case 2:  // jpg
-                    $function = 'imagecreatefromjpeg';
-                    break;
-                case 3:  // png
-                    $function = 'imagecreatefrompng';
-                    break;
-                default:
-                    return false;
-            }
-
-            @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
-        	$objSystem = new FWSystem();
-        	if ($objSystem === false) {
-        	    return false;
-        	}
-            $arrSizeInfo = getimagesize($file);
-            if (is_array($arrSizeInfo)) {
-            	$memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
-            	if (empty($memoryLimit)) {
-            		// set default php memory limit of 8MBytes
-            		$memoryLimit = 8*pow(1024, 2);
-            	}
-
-            	$potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'] * 1.8;
-            	if (function_exists('memory_get_usage')) {
-            		$potentialRequiredMemory += memory_get_usage();
-            	} else {
-            		// add a default of 3MBytes
-            		$potentialRequiredMemory += 3*pow(1024, 2);
-            	}
-
-            	if ($potentialRequiredMemory > $memoryLimit) {
-            		// try to set a higher memory_limit
-            		if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
-            			return false;
-            		}
-            	}
-            } else {
-            	return false;
-            }
-            $image = $function($file);
-            return $image;
-        } else {
-            return false;
+        $type = $this->_isImage($file);
+        switch($type) {
+            case 1:  // gif
+                $function = 'imagecreatefromgif';
+                break;
+            case 2:  // jpg
+                $function = 'imagecreatefromjpeg';
+                break;
+            case 3:  // png
+                $function = 'imagecreatefrompng';
+                break;
+            default:
+                return '';
         }
+
+        @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
+        $objSystem = new FWSystem();
+        if ($objSystem === false) return false;
+
+        $arrSizeInfo = getimagesize($file);
+        if (!is_array($arrSizeInfo)) return false;
+
+        $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
+        if (empty($memoryLimit)) {
+            // set default php memory limit of 8MBytes
+            $memoryLimit = 8*pow(1024, 2);
+        }
+
+        $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'] * 1.8;
+        if (function_exists('memory_get_usage')) {
+            $potentialRequiredMemory += memory_get_usage();
+        } else {
+            // add a default of 3MBytes
+            $potentialRequiredMemory += 3*pow(1024, 2);
+        }
+
+        if ($potentialRequiredMemory > $memoryLimit) {
+            // try to set a higher memory_limit
+            if (!@ini_set('memory_limit', $potentialRequiredMemory)) return '';
+        }
+        return $function($file);
     }
 
 
     /**
-     * Image Check
+     * Returns the image type as determined by getimagesize() for the given file.
      *
-     * Checks if the file is an image or not
-     *
-     * @access   private
-     * @param    string [$file] path and filename of the old image
-     * @return   string [$imageSize[2]] type of the image
+     * Only accepts web image types (GIF, JPG, or PNG).
+     * If the function imagecreatefromgif() is not available, GIF images aren't
+     * accepted.
+     * False is returned for images/files that are not supported.
+     * @access    private
+     * @param     string    $file   The file path of the image
+     * @return    integer           The file type on success, false otherwise
      */
     function _isImage($file)
     {
         if (file_exists($file)) {
-            $imageSize = $this->_getImageSize($file);
-            // 1 = GIF,  2 = JPG,  3 = PNG,  4 = SWF,  5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order,
-            // 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC
-            if ($imageSize[2] == 1 || $imageSize[2] == 2 || $imageSize[2] == 3) { // gif, jpg, png
-                if ($imageSize[2] == 1) {
-                    if (function_exists('imagecreatefromgif')) { // for test add an !
-                        return $imageSize[2];
-                    }
-                } else {
-                    return $imageSize[2];
-                }
-            }
+            $imageSize = @getimagesize($file);
+            // 1 = GIF,  2 = JPG,  3 = PNG,  4 = SWF,  5 = PSD, 6 = BMP,
+            // 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order,
+            // 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC$
+            // Only accept GIF, JPG, or PNG
+            if ($imageSize[2] == 1 && function_exists('imagecreatefromgif'))
+                return $imageSize[2];
+            if ($imageSize[2] == 2 || $imageSize[2] == 3)
+                return $imageSize[2];
         }
         return false;
     }
 
 
     /**
-     * Image Size
-     *
      * Gets the size of the image
-     *
-     * @access   private
-     * @param    string [$file] path and filename of the old image
-     * @return   array [$getImageSize] function getimagesize() of the image
+     * @access    private
+     * @param     string    $file   The path of the image
+     * @return    array             The array as returned by @getimagesize($file)
+     *                              on success, false otherwise
+     * @todo      This method is completely redundant.  It does exactly the same
+     *            as calling @getimagesize($file) directly! - Remove.
      */
     function _getImageSize($file)
     {
-        if ($getImageSize = @getimagesize($file)) {
-            return $getImageSize;
-        } else {
-            return false;
-        }
+        $getImageSize = @getimagesize($file);
+        if ($getImageSize) return $getImageSize;
+        return false;
     }
+
 }
 
 ?>
