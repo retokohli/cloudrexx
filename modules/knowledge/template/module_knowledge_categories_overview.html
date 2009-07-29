@@ -109,6 +109,9 @@ var catTree = {
      */
     openPart : function(obj)
     {
+        if (obj.parentNode.cleanWhitespace == undefined) {
+            Element.extend(obj.parentNode);
+        }
         obj.parentNode.cleanWhitespace();
         var subLists = $A(obj.parentNode.parentNode.parentNode.parentNode.parentNode.childNodes);
         var div = null;
@@ -118,8 +121,14 @@ var catTree = {
             }
         });
         // div is the last available div element now
+        if (div.cleanWhitespace == undefined) {
+            Element.extend(div);
+        }
         div.cleanWhitespace();
         div.firstChild.show();
+        if (obj.select == undefined) {
+            Element.extend(obj);
+        }
         obj.select('.openClosePicture')[0].src = "images/icons/minuslink.gif";
         obj.nextSibling.src = "../images/modules/knowledge/folder-open.small.png";
         obj.onclick = function() { catTree.closePart(obj); }
