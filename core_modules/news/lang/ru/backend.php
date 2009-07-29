@@ -117,7 +117,9 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Дата со временем"
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Ссылка на новость";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Категория новости";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-класс: row1 или row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Блок определения новостей. Начинается: &lt;!-- BEGIN newsrow --&gt; Endtag: &lt;!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Блок определения новостей.<br />
+Начинается: &lt;!-- BEGIN newsrow --&gt;<br />
+Endtag: &lt;!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Следующие пути к файлам находятся на странице, принадлежащей к  <b>разделу</b> новостей и имеющих <b>cmd</b> детали.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Заголовок новости";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Текст новости";
@@ -208,4 +210,8 @@ $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Thumbnail";
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
 $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Image-Link to the news message";
+$_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
+$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_image --&gt;<br />
+Endtag: &lt!-- END news_image --&gt;";
 ?>

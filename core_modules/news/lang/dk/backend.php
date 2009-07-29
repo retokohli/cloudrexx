@@ -117,7 +117,9 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Dato med tiden";
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Nyhedslink";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Nyhedskategori";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-Klasse: row1 eller row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Blok til definitionen af en nyhed. Starttag: <!-- BEGIN newsrow --> Endtag: <!-- END newsrow -->";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Blok til definitionen af en nyhed.<br />
+Starttag: &lt!-- BEGIN newsrow --&gt;<br />
+Endtag: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Følgende pladsholdere kan anvendes ved siderne, som tilhører <b>section</b> news og som har <b>cmd</b> som detalje.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Nyhedens overskrift";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Nyhedens tekst";
@@ -208,4 +210,8 @@ $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Thumbnail";
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
 $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Image-Link to the news message";
+$_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
+$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_image --&gt;<br />
+Endtag: &lt!-- END news_image --&gt;";
 ?>

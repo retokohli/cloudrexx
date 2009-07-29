@@ -117,7 +117,9 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Datum met tijdsaanduiding";
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Link naar het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Categorie nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-klasse (row1 of row2)";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block voor de definiering van een nieuwsbericht. De starttag: <!-- BEGIN newsrow --> en de eindtag: <!-- END newsrow -->.";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block voor de definiering van een nieuwsbericht.<br />
+De starttag: &lt!-- BEGIN newsrow --&gt;<br />
+en de eindtag: &lt!-- END newsrow --&gt;.";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "De onderstaande placeholders zijn beschikbaar en behoren tot de <b>sectie</b> nieuws en hebben <b>cmd</b> als details.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel van het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Tekst van het nieuwsbericht";
@@ -208,4 +210,8 @@ $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Thumbnail";
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
 $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Image-Link to the news message";
+$_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
+$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_image --&gt;<br />
+Endtag: &lt!-- END news_image --&gt;";
 ?>
