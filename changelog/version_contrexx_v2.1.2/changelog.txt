@@ -52,6 +52,8 @@ Benutzerverwaltung
 News Manager
 - Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
   diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
+- Die Meldungen werden in der Administrationskonsole korrekt aufgelistet,
+  wenn die Erweiterung 'Zugriffsschutz' aktiviert ist.
 
 Modul: Bildergalerie
 - Die ToolTips der Bilder sind korrekt.
