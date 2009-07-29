@@ -363,7 +363,7 @@ class newsManager extends newsLibrary {
                      AND n.lang=".$this->langId."
                      AND nc.catid=n.catid
                      AND n.validated='1'"
-                     .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
+                     .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
                 ."ORDER BY date DESC";
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
