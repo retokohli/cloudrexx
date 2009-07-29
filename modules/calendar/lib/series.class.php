@@ -166,6 +166,7 @@ class seriesManager
                     $tmpArray['enddate']        = $objResult->fields['enddate'];
                     $tmpArray['access']         = $objResult->fields['access'];
                     $tmpArray['series_status']  = $objResult->fields['series_status'];
+                    $tmpArray['catid']          = $objResult->fields['catid'];
                     if ($objResult->fields['series_status'] == 1 ) {
                         $tmpArray['series_type']                    = $objResult->fields['series_type'];
                         $tmpArray['series_pattern_count']           = $objResult->fields['series_pattern_count'];
