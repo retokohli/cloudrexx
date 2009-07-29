@@ -99,12 +99,12 @@ define('ASCMS_MODULE_MEDIA_WEB_PATH',	    ASCMS_PATH_OFFSET.'/media/directory');
 define('ASCMS_MARKET_MEDIA_PATH',	        ASCMS_DOCUMENT_ROOT.'/media/market');
 define('ASCMS_MARKET_MEDIA_WEB_PATH',	    ASCMS_PATH_OFFSET.'/media/market');
 define('ASCMS_CACHE_PATH',	                ASCMS_DOCUMENT_ROOT.'/cache');
-define('ASCMS_ECARD_OPTIMIZED_PATH',	    ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/ecards_optimized/');
-define('ASCMS_ECARD_OPTIMIZED_WEB_PATH',	ASCMS_PATH_OFFSET.'/images/modules/ecard/ecards_optimized/');
-define('ASCMS_ECARD_SEND_ECARDS_PATH',	    ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/send_ecards/');
-define('ASCMS_ECARD_SEND_ECARDS_WEB_PATH',  ASCMS_PATH_OFFSET.'/images/modules/ecard/send_ecards/');
-define('ASCMS_ECARD_THUMBNAIL_PATH',	    ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/thumbnails/');
-define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',	ASCMS_PATH_OFFSET.'/images/modules/ecard/thumbnails/');
+define('ASCMS_ECARD_OPTIMIZED_PATH',	    ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/ecards_optimized');
+define('ASCMS_ECARD_OPTIMIZED_WEB_PATH',	ASCMS_PATH_OFFSET.'/images/modules/ecard/ecards_optimized');
+define('ASCMS_ECARD_SEND_ECARDS_PATH',	    ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/send_ecards');
+define('ASCMS_ECARD_SEND_ECARDS_WEB_PATH',  ASCMS_PATH_OFFSET.'/images/modules/ecard/send_ecards');
+define('ASCMS_ECARD_THUMBNAIL_PATH',	    ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/thumbnails');
+define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',	ASCMS_PATH_OFFSET.'/images/modules/ecard/thumbnails');
 define('ASCMS_PARTNERS_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/partners');
 define('ASCMS_PARTNERS_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/partners');
 ?>
