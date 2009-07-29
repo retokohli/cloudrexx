@@ -675,4 +675,5 @@ $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "Add new shipping option";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "This row will be ignored, as long as maximum weight and shipping fee are zero.";
 $_ARRAYLANG['TXT_SHOP_DEL_ICON'] = "Remove Image";
 $_ARRAYLANG['TXT_SHOP_ORDER_ABBREV'] = "Reihenf.";
+$_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'] = "Hinweis: Die Bilddatei '%1\$s' wurde umbenannt in '%2\$s'";
 ?>
