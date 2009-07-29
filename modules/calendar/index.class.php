@@ -306,6 +306,8 @@ class Calendar extends calendarLibrary
 					"CALENDAR_ROW"	 				=> $i % 2 == 0 ? "row1" : "row2",
 					"CALENDAR_ID"	 				=> intval($key),
 					"CALENDAR_DETAIL_LINK"	 		=> $link,
+                    "CALENDAR_CATEGORIE"            => $this->getCategoryNameFromCategoryId($array['catid']), # backwards comp.
+                    "CALENDAR_CATEGORY"             => $this->getCategoryNameFromCategoryId($array['catid']), # cat name
 				));
 
 				$i++;
