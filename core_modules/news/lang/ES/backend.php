@@ -118,7 +118,8 @@ $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Enlace a la noticia";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Descripci&oacute;n de la Categor&iacute;a";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "Clase CSS: row1 o row2";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Tag para definir nuevas entradas<br />
-Apertura: &lt!-- BEGIN newsrow --&gt;  Cierre: &lt!-- END newsrow --&gt;";
+Apertura: &lt!-- BEGIN newsrow --&gt;<br />
+Cierre: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Las siguientes variables est&aacute;n disponibles en el m&oacute;dulo de noticias.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "T&iacute;tulo de la noticia";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Texto de la noticia";
@@ -210,5 +211,7 @@ $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser text of the message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name of the associated category";
 $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Image-Link to the news message";
 $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
-$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image<br /> Starttag: &lt!-- BEGIN news_image --&gt;  Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_image --&gt;<br />
+Endtag: &lt!-- END news_image --&gt;";
 ?>
