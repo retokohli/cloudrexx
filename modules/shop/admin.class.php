@@ -192,6 +192,7 @@ class shopmanager extends ShopLibrary
                 $this->showCategories();
                 break;
             case 'delProduct':
+            case 'deleteProduct':
                 self::$pageTitle = $_ARRAYLANG['TXT_PRODUCT_CATALOG'];
                 $this->delProduct();
                 $this->_products();
@@ -2726,15 +2727,13 @@ class shopmanager extends ShopLibrary
         if (count($arrProductId) > 0) {
             foreach ($arrProductId as $id) {
                 $objProduct = Product::getById($id);
-                if (!$objProduct) {
-                    continue;
-                }
-                $code = $objProduct->getCode();
-                if (empty($code)) {
+                if (!$objProduct) continue;
+//                $code = $objProduct->getCode();
+//                if (empty($code)) {
                     $result &= $objProduct->delete();
-                } else {
-                    $result &= !Products::deleteByCode($objProduct->getCode());
-                }
+//                } else {
+//                    $result &= !Products::deleteByCode($objProduct->getCode());
+//                }
             }
         }
         return $result;
@@ -2862,37 +2861,57 @@ class shopmanager extends ShopLibrary
             $shopKeywords  = contrexx_addslashes($_POST['shopKeywords']);
 
             // check incoming picture file paths
+            $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
+            $arrMatch = array();
             for ($i = 1; $i <= 3; ++$i) {
-                $imageDir = dirname($_POST['productImage'.$i]).'/';
-                if ($imageDir != ASCMS_SHOP_IMAGES_WEB_PATH.'/') {
-                    // copy image to shop image folder
-                    $imageFile = basename($_POST['productImage'.$i]);
-                    if (file_exists(ASCMS_PATH.ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageFile)) {
-                        self::addError(
-                            ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageFile.': '.
-                            $_ARRAYLANG['TXT_SHOP_FILE_EXISTS']
-                        );
-                    }
-                    if (!copy(ASCMS_PATH.$imageDir.$imageFile,
-                        ASCMS_PATH.ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageFile)) {
-                        self::addError(
-                            $imageDir.$imageFile.': '.
-                            $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE']
-                        );
-                    }
+
+                // Images outside the above directory are copied to the shop image folder.
+                // Note that the image paths below do not include the document root, but
+                // are relative to it.
+                $imageFileSource = contrexx_stripslashes($_POST['productImage'.$i]);
+                $imageFileTarget = $imageFileSource;
+                if (!preg_match($shopImageFolderRe, $imageFileSource))
+                    $imageFileTarget = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.basename($imageFileSource);
+
+                // Update the posted path (used below)
+                $_POST['productImage'.$i] =
+                    preg_replace($shopImageFolderRe, '', $imageFileTarget);
+
+                // If the image is situated in or below the shop image folder,
+                // don't bother to copy it.
+                if (preg_match($shopImageFolderRe, $imageFileSource)) {
+                    continue;
+                }
+
+                if (   file_exists(ASCMS_PATH.$imageFileTarget)
+                    && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
+                    $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
+                    self::addMessage(
+                        sprintf(
+                            $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'],
+                            basename($imageFileSource), basename($imageFileTarget)
+                        )
+                    );
+                }
+                if (!copy(ASCMS_PATH.$imageFileSource, ASCMS_PATH.$imageFileTarget)) {
+                    self::addError(
+                        $imageFileSource.': '.
+                        $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE']
+                    );
+                    continue;
                 }
             }
             // add all to pictures DBstring
             $shopImageName =
-                 base64_encode(basename($_POST['productImage1']))
-            .'?'.base64_encode($_POST['productImage1_width'])
-            .'?'.base64_encode($_POST['productImage1_height'])
-            .':'.base64_encode(basename($_POST['productImage2']))
-            .'?'.base64_encode($_POST['productImage2_width'])
-            .'?'.base64_encode($_POST['productImage2_height'])
-            .':'.base64_encode(basename($_POST['productImage3']))
-            .'?'.base64_encode($_POST['productImage3_width'])
-            .'?'.base64_encode($_POST['productImage3_height']);
+                     base64_encode($_POST['productImage1'])
+                .'?'.base64_encode($_POST['productImage1_width'])
+                .'?'.base64_encode($_POST['productImage1_height'])
+                .':'.base64_encode($_POST['productImage2'])
+                .'?'.base64_encode($_POST['productImage2_width'])
+                .'?'.base64_encode($_POST['productImage2_height'])
+                .':'.base64_encode($_POST['productImage3'])
+                .'?'.base64_encode($_POST['productImage3_width'])
+                .'?'.base64_encode($_POST['productImage3_height']);
 
             // A Product was edited and is about to be stored.
             // Note that the flags of the Product *MUST NOT* be changed
@@ -2922,9 +2941,8 @@ class shopmanager extends ShopLibrary
 //            } else {
                 $arrProduct = array($objProduct);
 //            }
-            if (!is_array($arrProduct)) {
-                return false;
-            }
+            if (!is_array($arrProduct)) return false;
+
             foreach ($arrProduct as $objProduct) {
                 // Update product
                 $objProduct = Product::getById($shopProductId);
