@@ -78,18 +78,30 @@
 			<td>{TXT_NEWS_CATEGORY_DESCRIPTION}</td>
 		</tr>
 		<tr class="row2">
-			<td>[[NEWS_IMAGE]]</td>
-			<td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
-		</tr>
-		<tr class="row1">
-			<td>[[NEWS_IMAGE_LINK]]</td>
-			<td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
-		</tr>
-		<tr class="row2">
 			<td>[[NEWS_CSS]]</td>
 			<td>{TXT_NEWS_CSS_DESCRIPTION}</td>
 		</tr>
 		<tr class="row1">
+			<td>[[NEWS_IMAGE]]</td>
+			<td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
+		</tr>
+		<tr class="row2">
+			<td>[[NEWS_IMAGE_SRC]]</td>
+			<td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
+		</tr>
+		<tr class="row1">
+			<td>[[NEWS_IMAGE_ALT]]</td>
+			<td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+		</tr>
+		<tr class="row2">
+			<td>[[NEWS_IMAGE_LINK]]</td>
+			<td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
+		</tr>
+        <tr class="row1">
+            <td>&lt;-- news_image --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
+		<tr class="row2">
 			<td>&lt;!-- newsrow --&gt;</td>
 			<td>{TXT_NEWSROW_DESCRIPTION}</td>
 		</tr>
@@ -115,6 +127,7 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;&lt;/tr&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN newsrow --&gt;</b><br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;tr&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>&lt;-- BEGIN news_image --&gt;</b>&lt;img src="<b>[[NEWS_IMAGE_SRC]]</b>" alt="<b>[[NEWS_IMAGE_ALT]]</b>" /&gt;<b>&lt;-- END news_image --&gt;</b>&lt;/td&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[NEWS_DATE]]</b>&lt;/td&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[NEWS_LINK]]</b>&lt;/td&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[NEWS_CATEGORY]]</b>&lt;/td&gt;<br />
@@ -177,13 +190,25 @@
 			<td>{TXT_NEWS_URL_DESCRIPTION}</td>
 		</tr>
 		<tr class="row1">
-			<td>[[NEWS_IMAGE]]</td>
-			<td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
-		</tr>
-		<tr class="row2">
 			<td>[[NEWS_CATEGORY_NAME]]</td>
 			<td>{TXT_NEWS_CATEGORY_NAME_DESCRIPTION}</td>
 		</tr>
+		<tr class="row2">
+			<td>[[NEWS_IMAGE]]</td>
+			<td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
+		</tr>
+		<tr class="row1">
+			<td>[[NEWS_IMAGE_SRC]]</td>
+			<td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
+		</tr>
+		<tr class="row2">
+			<td>[[NEWS_IMAGE_ALT]]</td>
+			<td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+		</tr>
+        <tr class="row1">
+            <td>&lt;-- news_image --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
 	</table>
 	<br />
 	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -193,6 +218,7 @@
 		<tr class="row1">
 			<td>{TXT_PUBLISHED_ON} <b>[[NEWS_DATE]]</b><br />
 				&lt;br /&gt;&lt;br /&gt;<br />
+                <b>&lt;-- BEGIN news_image --&gt;</b> &lt;img src="<b>[[NEWS_IMAGE_SRC]]</b>" alt="<b>[[NEWS_IMAGE_ALT]]</b>" align="right" /&gt; <b>&lt;-- END news_image --&gt;</b>&lt;br /&gt;<br />
 				<b>[[NEWS_TEXT]]</b>&lt;br /&gt;<br />
 				<b>[[NEWS_SOURCE]]</b>&lt;br /&gt;<br />
 				<b>[[NEWS_URL]]</b>&lt;br /&gt;<br />

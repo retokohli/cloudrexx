@@ -34,6 +34,10 @@ News Manager
   Platzhalterverzeichnis im Backend aufgelistet.
 - Der neue Platzhalter [[NEWS_IMAGE_LINK]] erzeugt einen Bild-Link auf die
   Detailseite der Newsmeldung.
+- Die Bild Platzhalter [[NEWS_IMAGE]], [[NEWS_IMAGE_LINK]], [[NEWS_IMAGE_SRC]]
+  und [[NEWS_IMAGE_ALT]] können optional mit dem Block news_image umschlossen
+  werden, damit diese nur dann angezeigt werden, wenn auch ein Bild vorhanden
+  ist.
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
