@@ -117,7 +117,9 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Datum mit Zeitangabe";
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Link zur Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Kategorie der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-Klasse: row1 oder row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldung. Starttag: &lt!-- BEGIN newsrow --&gt; Endtag: &lt!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldung.<br />
+Starttag: &lt!-- BEGIN newsrow --&gt;<br />
+Endtag: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Die folgenden Platzhalter stehen bei den Seiten zur Verfügung, welche zur <b>section</b> news gehören und als <b>cmd</b> details haben.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text der Newsmeldung";
@@ -210,5 +212,7 @@ $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser Text der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name der zugehörigen Kategorie";
 $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Bild-Link zur Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Quelle/Pfad des Bildes";
-$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optionaler Block zur Darstellung des Bildes<br />. Starttag: &lt!-- BEGIN news_image --&gt; Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optionaler Block zur Darstellung des Bildes.<br />
+Starttag: &lt!-- BEGIN news_image --&gt;<br />
+Endtag: &lt!-- END news_image --&gt;";
 ?>
