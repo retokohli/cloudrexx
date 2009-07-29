@@ -193,9 +193,24 @@ class news extends newsLibrary {
                        'NEWS_SOURCE'        => $newsSource,
                        'NEWS_URL'           => $newsUrl,
                        'NEWS_AUTHOR'        => $author,
-                       'NEWS_IMAGE'         => (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />',
 					   'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
+
+                    if (!empty($objResult->fields['newsimage'])) {
+                        $this->_objTpl->setVariable(array(
+                            'NEWS_IMAGE'         => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
+                            'NEWS_IMAGE_SRC'     => $objResult->fields['newsimage'],
+                            'NEWS_IMAGE_ALT'     => $newstitle
+                        ));
+
+                        if ($this->_objTpl->blockExists('news_image')) {
+                            $this->_objTpl->parse('news_image');
+                        }
+                    } else {
+                        if ($this->_objTpl->blockExists('news_image')) {
+                            $this->_objTpl->hideBlock('news_image');
+                        }
+                    }
 
                     $objResult->MoveNext();
                 }
@@ -333,11 +348,14 @@ class news extends newsLibrary {
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
                 if (!empty($objResult->fields['newsimage'])) {
                     if (!empty($objResult->fields['newsimagethumbnail'])) {
-                        $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />';
+                        $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
+						$imageSrc = $objResult->fields['newsimagethumbnail'];
                     } elseif (file_exists(ASCMS_PATH.$objResult->fields['newsimage'].".thumb")) {
-                        $image = '<img src="'.$objResult->fields['newsimage'].'.thumb" alt="'.$newstitle.'" title="'.$newstitle.'" />';
+                        $image = '<img src="'.$objResult->fields['newsimage'].'.thumb" alt="'.$newstitle.'" />';
+						$imageSrc = $objResult->fields['newsimage'].'.thumb';
                     } else {
-                        $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />';
+                        $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
+						$imageSrc = $objResult->fields['newsimage'];
                     }
                 } else {
                     $image = "";
@@ -352,11 +370,25 @@ class news extends newsLibrary {
                            'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
                            'NEWS_LINK'         	=> (empty($objResult->fields['newsredirect'])) ? (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ? '' :'<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
-                           'NEWS_AUTHOR'        => $author,
-                           'NEWS_IMAGE'         => $image,
-                           'NEWS_IMAGE_LINK'    => empty($image) ? '' : ((empty($objResult->fields['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$image.'</a>'),
+                           'NEWS_AUTHOR'        => $author
+                ));
 
+                if (!empty($image)) {
+                    $this->_objTpl->setVariable(array(
+                           'NEWS_IMAGE'         => $image,
+                        'NEWS_IMAGE_SRC'     => $imageSrc,
+                        'NEWS_IMAGE_ALT'     => $newstitle,
+                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$image.'</a>'
                         ));
+
+                    if ($this->_objTpl->blockExists('news_image')) {
+                        $this->_objTpl->parse('news_image');
+                    }
+                } else {
+                    if ($this->_objTpl->blockExists('news_image')) {
+                        $this->_objTpl->hideBlock('news_image');
+                    }
+                }
 
                 $this->_objTpl->parse('newsrow');
                 $i++;
