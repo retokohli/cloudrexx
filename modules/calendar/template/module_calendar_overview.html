@@ -90,9 +90,9 @@ function selectMultiAction()
 									{TXT_CALENDAR_SEARCH}:
 								</td>
 								<td style="border: 0px;">
-									<form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=overview" method="post" name="newCalendarNote">
+									<form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=overview&amp;catid={CALENDAR_CATID}" method="post" name="newCalendarNote">
 										 <input type="text" name="inputKeyword" id="searchInputKeyword" value="{TXT_CALENDAR_KEYWORD}" style="width: 200px" onclick="this.value=''" />
-										<input type="submit" value="{TXT_SEARCH}" name="search" onmousedown="document.getElementById('searchInputKeyword').value = ''" />
+										<input type="submit" value="{TXT_SEARCH}" name="search" />
 									</form>
 								</td>
 							</tr>
