@@ -116,6 +116,10 @@ Modul: Dokumenten System
 Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
+Modul: Kalender
+- Die Kategorienauswahl wird bei der Suche in der Administrationskonsole
+  mit einbezogen.
+
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
 

@@ -257,7 +257,7 @@ class calendarManager extends calendarLibrary
     	$enddate = mktime(23, 59, 59, $month+3, 1, $year);
 
     	//get category
-        if (!empty($_GET['catid']) && $_GET['catid'] != 0) {
+        if (!empty($_GET['catid'])) {
     		$category = intval($_GET['catid']);
     	} else {
     		$category = null;
@@ -275,8 +275,9 @@ class calendarManager extends calendarLibrary
 					  	FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					  	WHERE (`name` LIKE '%$keyword%' OR
 					  	`comment` LIKE '%$keyword%' OR
-					  	`id` LIKE '%$keyword%')
-					    ORDER BY startdate";
+					  	`id` LIKE '%$keyword%')"
+                        .($category ? " AND `catid` = $category " : '')
+					    ."ORDER BY startdate";
 		} else {
 			if (empty($_GET['catid'])) {
 				$query = "SELECT active, id, name, catid, startdate, enddate, series_status, series_pattern_dourance_type, series_pattern_end
@@ -289,7 +290,7 @@ class calendarManager extends calendarLibrary
 			} else {
 				$query = "SELECT active, id, name, catid, startdate, enddate, series_status, series_pattern_dourance_type, series_pattern_end
 					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
-					WHERE catid = {$_GET['catid']} AND
+					WHERE catid = $category AND
 					((startdate BETWEEN $startdate AND $enddate) OR
 					(enddate BETWEEN $startdate AND $enddate) OR
 					(startdate < $startdate AND enddate > $startdate) OR
