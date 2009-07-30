@@ -82,6 +82,9 @@ Modul: Digital Asset Management
 Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
+Modul: Gästebuch
+- Der Inhalt des Benachrichtigung-E-Mails wird korrekt dargestellt.
+
 Modul: Kalender
 - Die Kategorienauswahl wird bei der Suche in der Administrationskonsole
   mit einbezogen.
