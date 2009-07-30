@@ -610,19 +610,27 @@ class Navigation
     /**
     * getFrontendLangNavigation()
     *
-    * @param string   language navigation
     * @access public
+    * @global InitCMS
+	* @global array
     */
 
     function getFrontendLangNavigation()
     {
-          global $objInit;
-          $this->arrLang = $objInit->getLanguageArray();
+        global $objInit, $_CONFIG;
+
+        $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = "";
           if(count($this->arrLang)>1) {
                 foreach($this->arrLang as $id=>$value) {
                     if($this->arrLang[$id]['frontend']==1) {
-                        $langNavigation .= " [ <a href='".CONTREXX_SCRIPT_PATH."?setLang=".$id."' title='".$value['name']."' >".$value['name']."</a> ] ";
+                        if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                            $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
+                        } else {
+                            $uri = CONTREXX_SCRIPT_PATH."?setLang=".$id;
+                        }
+
+                        $langNavigation .= " [ <a href='".$uri."' title='".$value['name']."' >".$value['name']."</a> ] ";
                     }
                 }
           }
