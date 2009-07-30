@@ -42,6 +42,13 @@ class Contrexx_Update
         if (!$objDatabase) {
             die($errorMsg);
         }
+        if (_DEBUG & DBG_ADODB_TRACE) {
+            $objDatabase->debug = 99;
+        } elseif (_DEBUG & DBG_ADODB) {
+            $objDatabase->debug = 1;
+        } else {
+            $objDatabase->debug = 0;
+        }
         $this->_loadLanguage();
         if (!empty($_GET['ajax'])) {
             $this->ajax = true;
@@ -420,6 +427,15 @@ class Contrexx_Update
         return $arrVersions;
     }
 
+    /**
+     * Check for newer version
+     *
+     * Returns TRUE if $newVersion has a higher version number than $installedVersion.
+	 *
+	 * @param string $installedVersion
+	 * @param string $newVersion
+	 * @return boolean
+     */
     function _isNewerVersion($installedVersion, $newVersion)
     {
         $arrInstalledVersion = explode('.', $installedVersion);
