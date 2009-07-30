@@ -48,6 +48,8 @@ Allgemein:
   erlaubt wurden.
 - Bei der Inhaltsnavigation wird beim Typ 'dropdown' ab der zweiten Ebene
   auch ein CSS-Style (active/inactive) ausgegeben.
+- Der Platzhalter [[LANGUAGE_NAVBAR]] ist kompatibel mit der Funktion
+  'Virtuelle Sprachverzeichnisse verwenden'.
 
 Benutzerverwaltung
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
