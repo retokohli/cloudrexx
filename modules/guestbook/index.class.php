@@ -377,7 +377,7 @@ class Guestbook extends GuestbookLibrary
         global $_ARRAYLANG, $_CONFIG;
 
         $message = $_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY']."\n\n";
-        $message .= $_ARRAYLANG['TXT_ENTRY_READS']."\n".$forename." ".$name."\n".$comment;
+        $message .= $_ARRAYLANG['TXT_ENTRY_READS']."\n".$forename." ".$name."\n".html_entity_decode($comment, ENT_QUOTES, CONTREXX_CHARSET);
         $mailto = $_CONFIG['coreAdminEmail'];
         $subject = $_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY']." ".$_CONFIG['domainUrl'];
 
