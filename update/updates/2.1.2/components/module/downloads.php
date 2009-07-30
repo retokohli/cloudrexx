@@ -147,7 +147,8 @@ function _downloadsUpdate()
         'newest_file_count'             => '5',
         'updated_file_count'            => '5',
         'new_file_time_limit'           => '604800',
-        'updated_file_time_limit'       => '604800'
+        'updated_file_time_limit'       => '604800',
+        'associate_user_to_groups'      => ''
     );
 
     foreach ($arrSettings as $name => $value) {
@@ -191,6 +192,49 @@ function _downloadsUpdate()
     } else {
     	setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
     	return false;
+    }
+
+
+
+
+	/************************************************
+	* EXTENSION:	Groups                          *
+	* ADDED:		Contrexx v2.1.2					*
+	************************************************/
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'module_downloads_group',
+            array(
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'is_active'  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1'),
+                'type'       => array('type' => 'ENUM(\'file\',\'url\')', 'notnull' => true, 'default' => 'file'),
+                'info_page'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            )
+        );
+
+        UpdateUtil::table(
+            DBPREFIX.'module_downloads_group_locale',
+            array(
+                'lang_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'group_id'   => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'name'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'name'       => array('fields' => array('name'), 'type' => 'FULLTEXT')
+            )
+        );
+
+        UpdateUtil::table(
+            DBPREFIX.'module_downloads_rel_group_category',
+            array(
+                'group_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'category_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;
