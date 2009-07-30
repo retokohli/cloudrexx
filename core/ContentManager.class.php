@@ -14,6 +14,7 @@
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
 require_once ASCMS_CORE_PATH.'/XMLSitemap.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
 
 /**
  * ContentManager
@@ -1339,6 +1340,7 @@ class ContentManager
         $catname = contrexx_addslashes(strip_tags($_POST['newpage']));
         $contenthtml = contrexx_addslashes($_POST['html']);
         $contenthtml = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' ,$contenthtml);
+        $contenthtml = FWValidator::fix_flash_transparency($contenthtml);
         $contenttitle = contrexx_addslashes($_POST['title']);
         $metatitle = contrexx_addslashes(strip_tags($_POST['metatitle']));
         $contentdesc = contrexx_addslashes(strip_tags($_POST['desc']));
