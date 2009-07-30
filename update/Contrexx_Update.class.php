@@ -427,6 +427,15 @@ class Contrexx_Update
         return $arrVersions;
     }
 
+    /**
+     * Check for newer version
+     *
+     * Returns TRUE if $newVersion has a higher version number than $installedVersion.
+	 *
+	 * @param string $installedVersion
+	 * @param string $newVersion
+	 * @return boolean
+     */
     function _isNewerVersion($installedVersion, $newVersion)
     {
         $arrInstalledVersion = explode('.', $installedVersion);
