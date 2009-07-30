@@ -86,8 +86,7 @@ Modul: Gästebuch
 - Der Inhalt des Benachrichtigung-E-Mails wird korrekt dargestellt.
 
 Modul: Kalender
-- Die Kategorienauswahl wird bei der Suche in der Administrationskonsole
-  mit einbezogen.
+- Die Kategorienauswahl wird bei der Suche berücksichtigt.
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
