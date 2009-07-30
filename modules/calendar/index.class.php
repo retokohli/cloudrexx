@@ -222,6 +222,7 @@ class Calendar extends calendarLibrary
 
 
     	$this->_objTpl->setVariable(array(
+            "CALENDAR_CATID"            => isset($_GET['catid']) ? intval($_GET['catid']) : 0,
     		"CALENDAR"					=> $calendarbox,
     		"TXT_CALENDAR_ALL_CAT"		=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
     		"CALENDAR_CATEGORIES"		=> $this->category_list((isset($_GET['catid']) ? $_GET['catid'] : "")),
