@@ -54,6 +54,36 @@ function _livecamUpdate()
 		return _databaseError($query, $objDatabase->ErrorMsg());
 	}
 
+
+
+
+	/************************************************
+	* BUGFIX:	Migrate settings                    *
+    * ADDED:    2.1.2                               *
+	************************************************/
+	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+        $arrFormerSettings = array(
+            'currentImageUrl'   => 'currentImagePath',
+            'archivePath'       => 'archivePath',
+            'thumbnailPath'     => 'thumbnailPath'
+        );
+
+        foreach ($arrFormerSettings as $setting => $attribute) {
+            $query = "SELECT `setvalue` FROM `".DBPREFIX."module_livecam_settings` WHERE `setname` = '$setting'";
+            $objResult = $objDatabase->SelectLimit($query, 1);
+            if ($objResult !== false) {
+                if ($objResult->RecordCount() == 1) {
+                    $query = "UPDATE `".DBPREFIX."module_livecam` SET `$attribute` = '".addslashes($objResult->fields['setvalue'])."' WHERE `id` = 1";
+                    if ($objDatabase->Execute($query) === false) {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+        }
+    }
+
     return true;
 }
 ?>
