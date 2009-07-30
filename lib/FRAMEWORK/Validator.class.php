@@ -106,5 +106,38 @@ class FWValidator
         }
         return true;
     }
+
+    private static function __fix_flash($html) {
+        // we come from a preg_replace_callback
+        $html = $html[0];
+
+        // already done
+        if (strstr($html, 'wmode=')) return $html;
+
+        // INJECT <param> for IE
+        $new_param = '<param name="wmode" value="transparent" />'."\n";
+        $html = preg_replace('/<param/i', "$new_param<param", $html, 1);
+
+        // INJECT <embed> attribute for FF and the rest of the gang
+        $embed_attr = 'wmode="transparent"';
+        return preg_replace('/<embed/i', "<embed $embed_attr", $html, 1);
+    }
+
+    /**
+     * This function fixes the given HTML so that any embedded flash
+     * objects will get the "wmode=transprent" set. This is neccessary
+     * for the frontend login box for example, when a flash object is
+     * on the page.
+     *
+     * Takes un-escaped HTML code as parameter, returns the fixed HTML.
+     */
+    static function fix_flash_transparency($html_code) {
+        $result = preg_replace_callback(
+            '!<object.*?.*?<param.*?</object>!ims',
+            'FWValidator::__fix_flash',
+            $html_code
+        );
+        return $result;
+    }
 }
-?>
+
