@@ -82,6 +82,10 @@ Modul: Digital Asset Management
 Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
+Modul: Kalender
+- Die Kategorienauswahl wird bei der Suche in der Administrationskonsole
+  mit einbezogen.
+
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 - Es werden keine leeren Einträge aufgelistet.
