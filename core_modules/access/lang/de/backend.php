@@ -244,6 +244,7 @@ $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto 
 $_ARRAYLANG['TXT_ACCESS_CHECKBOX'] = "Kontrollkästchen";
 $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'] = "SESSION Intervals";
 $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'] = "SESSION";
+$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'] = "Set the time in seconds (0-300) on how often the session of a user should be updated. A value of 0 seconds means that the session will be updated with every request the users send.";
 $_ARRAYLANG['TXT_ACCESS_CUSTOMER_TITLE'] = "Kunde: %s";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_GROUP_DESC'] = "Persönliche Gruppe des Benutzers %s";
 $_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'] = "Für den Benutzer %s wurde die neue persönliche Kategorie %s im Digital Asset Management Modul erstellt.";

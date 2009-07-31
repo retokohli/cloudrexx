@@ -114,5 +114,4 @@ $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "Messages récents uniquement 
 $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "Cette option permet de n'afficher, par thème , que le message le plus récent. Si elle n'est pas activée, tous les nouveaux messages sont affichés, même s'ils appartiennent au(x) même(s) thème(s).";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Liste des extensions de fichiers autorisées au téléchargement (séparer de multiples valeurs par des virgules).";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Extensions de fichier autorisées";
-$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'] = "Set the time in seconds (0-300) on how often the session of a user should be updated. A value of 0 seconds means that the session will be updated with every request the users send.";
 ?>
