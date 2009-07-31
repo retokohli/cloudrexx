@@ -1012,7 +1012,11 @@ JS_CODE;
                 $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '&amp;'.substr($this->moduleParamsHtml, 1).'&amp;category='.$objCategory->getId().'&amp;downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
             }
 
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_FILES', $_ARRAYLANG['TXT_DOWNLOADS_FILES']);
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_FILES'       => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
+                'TXT_DOWNLOADS_DOWNLOAD'    => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
+                'TXT_DOWNLOADS_DOWNLOADS'   => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']
+            ));
 
             $this->objTemplate->parse('downloads_file_list');
         }
@@ -1099,6 +1103,7 @@ JS_CODE;
         }
 
         $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_DOWNLOAD'            => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
             'TXT_DOWNLOADS_ADDED_BY'            => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'],
             'TXT_DOWNLOADS_LAST_UPDATED'        => $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'],
             'TXT_DOWNLOADS_DOWNLOADED'          => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'],
