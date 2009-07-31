@@ -708,6 +708,10 @@ class downloads extends DownloadsLibrary
     {
         global $_LANGID;
 
+        if (!$this->objTemplate->blockExists('downloads_category_group_list')) {
+            return;
+        }
+
         $objGroup = Group::getGroups(array('category_id' => $objCategory->getId()));
 
         if (!$objGroup->EOF) {
