@@ -809,8 +809,8 @@ class Forum extends ForumLibrary {
             ));
 
             $quoteLink = "id=".$intThreadId."&act=quote&postid=".$postId;
-            $quoteLinkLoggedIn      = "location.href='index.php?section=forum&cmd=thread&".$quoteLink."';";
-            $quoteLinkNotLoggedIn   = "location.href='index.php?section=login&redirect=".base64_encode("index.php?section=forum&cmd=thread&".$quoteLink)."';";
+            $quoteLinkLoggedIn      = "location.href='index.php?section=forum&amp;cmd=thread&amp;".htmlentities($quoteLink)."';";
+            $quoteLinkNotLoggedIn   = "location.href='index.php?section=login&amp;redirect=".base64_encode("index.php?section=forum&cmd=thread&".$quoteLink)."';";
             $this->_objTpl->setVariable(array(
                 'FORUM_POST_DATE'                   => $arrValues['time_created'],
                 'FORUM_POST_LAST_EDITED'            => ($arrValues['time_edited'] != date(ASCMS_DATE_FORMAT, 0))
@@ -841,7 +841,7 @@ class Forum extends ForumLibrary {
                                                         : $quoteLinkNotLoggedIn,
             ));
 
-            if(!$objFWUser->objUser->getId()){
+            if(!$objFWUser->objUser->login() && !$this->_checkAuth($intCatId, 'write')){
                 $button = '<input type="button" value="'.$_ARRAYLANG['TXT_FORUM_CREATE_POST'].'" onclick="location.href=\'index.php?section=login&redirect='.base64_encode($_SERVER['REQUEST_URI']).'\';" />';
                 $this->_objTpl->setVariable(array(
                     'FORUM_POST_REPLY_REDIRECT'     =>  $button,
