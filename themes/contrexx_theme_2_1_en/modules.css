@@ -1884,6 +1884,7 @@ dl.data_module img {
 }
 
 #downloads div.delete {
+    clear: right;
     float: right;
 }
 
