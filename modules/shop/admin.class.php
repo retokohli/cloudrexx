@@ -35,7 +35,6 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/CSVimport.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Csv_bv.class.php';
-// OBSOLETE: require_once ASCMS_MODULE_PATH.'/shop/lib/shop_image.class.php';
 /**
  * Weight
  */
@@ -49,7 +48,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Distribution.class.php';
 /**
- * Customer database layer
+ * Customer database layer -- to be added for version 2.2.0
  */
 //require_once ASCMS_MODULE_PATH.'/shop/lib/Customer.class.php';
 /**
@@ -1038,9 +1037,7 @@ class shopmanager extends ShopLibrary
         global $objDatabase, $_CONFIG;
         require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
-        if (!is_array($arrId)) {
-            return false;
-        }
+        if (!is_array($arrId)) return false;
         $objImageManager = new ImageManager();
         foreach ($arrId as $Id) {
             $shopPicture = '';
@@ -1050,16 +1047,13 @@ class shopmanager extends ShopLibrary
                 WHERE id=$Id
             ";
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                continue;
-            }
+            if (!$objResult) continue;
             $imageName = $objResult->fields['picture'];
             // only try to create thumbs from entries that contain a
             // plain text file name (i.e. from an import)
             if (   $imageName == ''
-                || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
+                || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName))
                 continue;
-            }
             // Note:  Old thumb is deleted in _createThumbWhq()
             // reset the ImageManager
             $objImageManager->imageCheck = 1;
@@ -1248,21 +1242,17 @@ class shopmanager extends ShopLibrary
     {
         $i = 0;
         foreach (ProductAttributes::getNameArray() as $name_id => $arrAttributeName) {
-//echo("name ID: $name_id, arrName: ".var_export($arrAttributeName, true)."<br />");
             $arrRelation = array();
             // If a Product is selected, check those Product Attribute values
             // associated with it
             if ($productId)
                 $arrRelation = ProductAttributes::getRelationArray($productId);
-//echo("arrRelation: ".var_export($arrRelation, true)."<br />");
             // All values available for this Product Attribute
             $arrAttributeValues = ProductAttributes::getValueArrayByNameId($name_id);
-//echo("PA values: ".var_export($arrAttributeValues, true)."<br />");
 
             $nameSelected = false;
             $order = 0;
             foreach ($arrAttributeValues as $value_id => $arrAttributeValue) {
-//echo("value ID: $value_id, arrValue: ".var_export($arrAttributeValue, true)."<br />");
                 if (in_array($value_id, array_keys($arrRelation))) {
                     $valueSelected = true;
                     $nameSelected  = true;
@@ -1304,8 +1294,6 @@ class shopmanager extends ShopLibrary
     function _storeNewAttributeOption()
     {
         global $_ARRAYLANG;
-
-//echo("Skipping _storeNewAttributeOption()<br />");
 
         $arrAttributeList = array();
         $arrAttributeValue = array();
@@ -1362,7 +1350,6 @@ class shopmanager extends ShopLibrary
 
             $name = $arrAttributeName[$name_id];
             $type = $arrAttributeType[$name_id];
-//echo("_updateAttributeOptions(): updating name id $name_id, name $name<br />");
             if (   $name != $objAttribute->getName()
                 || $type != $objAttribute->getType()) {
                 $objAttribute->setName($name);
@@ -1370,13 +1357,8 @@ class shopmanager extends ShopLibrary
                 $flagChanged = true;
             }
 
-//echo("_updateAttributeOptions(): List ".var_export($arrAttributeList, true)."<br />");
-//continue;
-
             $arrValueObj = $objAttribute->getValueArray();
-            foreach ($arrValueIds as $value_id) {   //echo("looping name id $name_id, value ids ".join(',', $arrAttributeValueIds)."<br />");
-//echo("updating:  value id $value_id, arrValueObj[$value_id] ".var_export($arrValueObj[$value_id], true)."<br />");
-//echo("arrAttributeValue[$value_id] ".var_export($arrAttributeValue[$value_id], true)."<br />arrAttributePrice[$value_id] ".var_export($arrAttributePrice[$value_id], true)."<br />");
+            foreach ($arrValueIds as $value_id) {
                 // Make sure these values are defined if empty
                 if (empty($arrAttributeValue[$value_id]))
                     $arrAttributeValue[$value_id] = '';
@@ -1387,18 +1369,15 @@ class shopmanager extends ShopLibrary
                         || $arrAttributePrice[$value_id] != $arrValueObj[$value_id]['price']) {
                         $objAttribute->changeValue($value_id, $arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
                         $flagChanged = true;
-//echo("changed: ".var_export($objAttribute, true)."<br />");
                     }
                 } else {
                     $objAttribute->addValue($arrAttributeValue[$value_id], $arrAttributePrice[$value_id]);
-//echo("added: ".var_export($objAttribute, true)."<br />");
                 }
             }
 
             // Delete values that are no longer present in the post
             foreach (array_keys($arrValueObj) as $value_id) {
                 if (!in_array($value_id, $arrAttributeList[$name_id])) {
-//echo("deleting:  value id $value_id, List ".var_export($arrAttributeList[$name_id], true)."<br />");
                 	$objAttribute->deleteValueById($value_id);
                 }
             }
@@ -1791,7 +1770,6 @@ class shopmanager extends ShopLibrary
                         ($selectFirst ? '' : ' selected="selected"').
                         '>'.$arrZone['name']."</option>\n";
                     $arrCountryInZone = Country::getArraysByZoneId($zone_id);
-//echo("Countries: ".var_export($arrCountryInZone, true)."<br />");
                     $strSelectedCountries = '';
                     foreach ($arrCountryInZone['in'] as $country_id => $arrCountry) {
                         $strSelectedCountries .=
@@ -1828,7 +1806,6 @@ class shopmanager extends ShopLibrary
                 $objLanguage = new FWLanguage();
                 // gets indexed language array
                 $arrLanguage = $objLanguage->getLanguageArray();
-//echo("Language array: ".var_export($arrLanguage, true)."<br />");
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_mail.html');
                 self::$objTemplate->setVariable(array(
                     'TXT_MAIL_TEMPLATES' => $_ARRAYLANG['TXT_MAIL_TEMPLATES'],
@@ -1925,18 +1902,15 @@ class shopmanager extends ShopLibrary
                 // Generate title row of the template list
                 $arrAvailable = array();
                 foreach ($arrLanguage as $lang_id => $langValues) {
-//echo("Language ID $lang_id<br />");
                 	if ($langValues['frontend']) {
                         self::$objTemplate->setVariable(array('SHOP_MAIL_LANGUAGE' => $langValues['name'],));
                         self::$objTemplate->parse('shopMailLanguages');
                         // Get the availability of all templates
                         $arrTemplates = Mail::getTemplateArray($lang_id);
-//echo("Template array: ".var_export($arrTemplates, true)."<br />");
                         foreach ($arrTemplates as $template_id => $arrTemplate) {
                             $arrAvailable[$template_id][$lang_id] =
                                 $arrTemplate['available'];
                         }
-//echo("Availability array: ".var_export($arrAvailable, true)."<br />");
                     }
                     if ($langValues['is_default'] == 'true')
                         $defaultLang = $langValues['id'];
@@ -2009,7 +1983,6 @@ class shopmanager extends ShopLibrary
                                 } else {
                                     $lang_id = $_GET['langId'];
                                 }
-//echo("Template ID $template_id, Language ID $lang_id<br />");
                                 // Generate language menu
                                 $langMenu =
                                     '<select name="langId" size="1" '.
@@ -2028,9 +2001,7 @@ class shopmanager extends ShopLibrary
                                     '&nbsp;<input type="checkbox" id="portMail" name="portMail" value="1" />&nbsp;'.
                                     $_ARRAYLANG['TXT_COPY_TO_NEW_LANGUAGE'];
                                 // Get the content of the template
-//echo("Getting Template array for template ID $template_id, language ID $lang_id<br />");
                                     $arrTemplate = Mail::getTemplate(intval($template_id), $lang_id);
-//echo("Template array: ".var_export($arrTemplates, true)."<br />");
                                 self::$objTemplate->setVariable(array(
                                     'SHOP_MAIL_ID' => (isset($_GET['portLangId']) ? '' : $template_id),
                                     'SHOP_MAIL_NAME' => $arrTemplate['sender'],
@@ -2570,26 +2541,21 @@ class shopmanager extends ShopLibrary
         if ($id > 0) {
             // Update existing ShopCategory
             $objShopCategory = ShopCategory::getById($id);
-            if (!$objShopCategory) {
-                return false;
-            }
+            if (!$objShopCategory) return false;
             // Check validity of the IDs of the category and its parent.
             // If the values are identical, leave the parent ID alone!
-            if ($id != $parentid) {
-                $objShopCategory->setParentId($parentid);
-            }
+            if ($id != $parentid) $objShopCategory->setParentId($parentid);
             $objShopCategory->setName($name);
             $objShopCategory->setStatus($status);
         } else {
             // Add new ShopCategory
-            $objShopCategory = new ShopCategory(
-                $name, $parentid, $status, 0
-            );
+            $objShopCategory = new ShopCategory($name, $parentid, $status, 0);
         }
         // Ignore the picture if it's the default image!
         // Storing it would be pointless, and we should
         // use the picture of a contained Product instead.
-        if ($picture == self::$defaultImage) {
+        if (   $picture == self::$defaultImage
+            || !self::moveImage($picture)) {
             $picture = '';
         } else {
             $objImage = new ImageManager();
@@ -2604,7 +2570,7 @@ class shopmanager extends ShopLibrary
                 self::addError($_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL']);
             }
         }
-        $objShopCategory->setPicture(basename($picture));
+        $objShopCategory->setPicture($picture);
         $objShopCategory->setVirtual($virtual);
         if (!$objShopCategory->store()) {
             self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
@@ -2897,59 +2863,22 @@ class shopmanager extends ShopLibrary
             $shopArticleId = intval($_POST['shopDiscountGroupArticle']);
             $shopKeywords  = contrexx_addslashes($_POST['shopKeywords']);
 
-            // check incoming picture file paths
-            $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
-            $arrMatch = array();
             for ($i = 1; $i <= 3; ++$i) {
-
-//echo("ASCMS_PATH ".ASCMS_PATH.", ASCMS_SHOP_IMAGES_WEB_PATH ".ASCMS_SHOP_IMAGES_WEB_PATH."<br />");
                 // Images outside the above directory are copied to the shop image folder.
                 // Note that the image paths below do not include the document root, but
                 // are relative to it.
-                $imageFileSource = contrexx_stripslashes($_POST['productImage'.$i]);
-                $imageFileTarget = $imageFileSource;
-                if (!preg_match($shopImageFolderRe, $imageFileSource))
-                    $imageFileTarget = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.basename($imageFileSource);
-//echo("Source image path: $imageFileSource<br />target image path: $imageFileSource<br />RE $shopImageFolderRe<br />");
-
+                $picture = contrexx_stripslashes($_POST['productImage'.$i]);
+                // Ignore the picture if it's the default image!
+                // Storing it would be pointless.
+                // Images outside the above directory are copied to the shop image folder.
+                // Note that the image paths below do not include the document root, but
+                // are relative to it.
+                if (   $picture == self::$defaultImage
+                    || !self::moveImage($picture)) {
+                    $picture = '';
+                }
                 // Update the posted path (used below)
-                $_POST['productImage'.$i] =
-                    preg_replace($shopImageFolderRe, '', $imageFileTarget);
-//echo("Updated POST path: ".$_POST['productImage'.$i]."<br />");
-
-                // If the image is situated in or below the shop image folder,
-                // don't bother to copy it.
-                if (preg_match($shopImageFolderRe, $imageFileSource)) {
-//echo("Image is in or below the shop image folder already.<br />");
-                    continue;
-                }
-
-//echo(htmlentities("Copying image from $imageFileSource to $imageFileTarget...")."<br />");
-                if (   file_exists(ASCMS_PATH.$imageFileTarget)
-                    && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
-//echo("File $imageFileTarget exists (extension ".$arrMatch[1]."), renamed to ");
-                    $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
-//echo("$imageFileTarget<br />");
-                    self::addMessage(
-                        sprintf(
-                            $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'],
-                            basename($imageFileSource), basename($imageFileTarget)
-                        )
-                    );
-                }
-//                $objFile = new File();
-                if (!copy(ASCMS_PATH.$imageFileSource, ASCMS_PATH.$imageFileTarget)) {
-//                    dirname($imageFileSource), basename($imageFileSource),
-//                    dirname($imageFileTarget), basename($imageFileTarget)
-//                )) {
-//echo("Error:  Failed to copy $imageFileSource to $imageFileTarget<br />");
-                    self::addError(
-                        $imageFileSource.': '.
-                        $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE']
-                    );
-                    continue;
-                }
-//echo("Added image ".$_POST['productImage'.$i]." - done.<br />");
+                $_POST['productImage'.$i] = $picture;
             }
             // add all to pictures DBstring
             $shopImageName =
@@ -2962,7 +2891,6 @@ class shopmanager extends ShopLibrary
                 .':'.base64_encode($_POST['productImage3'])
                 .'?'.base64_encode($_POST['productImage3_width'])
                 .'?'.base64_encode($_POST['productImage3_height']);
-//echo("Made picture string: $shopImageName<br />");
 
             // A Product was edited and is about to be stored.
             // Note that the flags of the Product *MUST NOT* be changed
@@ -3038,12 +2966,10 @@ class shopmanager extends ShopLibrary
                     && is_array($_POST['productOptionsValues'])) {
                     foreach ($_POST['productOptionsValues'] as $valueId => $nameId) {
                         $order = intval($_POST['productOptionsSortId'][$nameId]);
-//echo("Adding option value ID $valueId with order $order<br />");
                         $objProduct->addAttribute(intval($valueId), $order);
                     }
                 }
                 $objProduct->store();
-//echo("Stored Product, picture string is ".$objProduct->getPictures()."<br />");
             }
 
             // Add/remove Categories and Products to/from
@@ -3083,7 +3009,6 @@ class shopmanager extends ShopLibrary
                         self::addError(sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']));
                     }
                 }
-//echo("Processed image ".$arrImage['img']."<br />");
             }
 
             switch ($_POST['shopAfterStoreAction']) {
@@ -3205,7 +3130,6 @@ class shopmanager extends ShopLibrary
         $arrImages = Products::getShopImagesFromBase64String(
             $objProduct->getPictures()
         );
-//echo("Got current images from ".$objProduct->getPictures().": ".var_export($arrImages, true)."<br />");
 
 //        $shopFlagsSelection =
 //            ShopCategories::getVirtualCategoriesSelectionForFlags(

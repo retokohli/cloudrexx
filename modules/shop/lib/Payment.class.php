@@ -106,7 +106,6 @@ class Payment
     {
         global $objDatabase;
 
-//echo("getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies): Entered<br />");
         if (empty(self::$arrPayment)) self::init();
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $arrAcceptedCurrencyCodes = array();
@@ -142,8 +141,6 @@ class Payment
             }
             $objResult->MoveNext();
         }
-//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
-//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
         return $arrPaymentId;
     }
 

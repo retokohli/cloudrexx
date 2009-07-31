@@ -113,7 +113,6 @@ class ProductAttributes  // friend Product
             );
             $objResult->MoveNext();
         }
-//echo("getNameArrayByProductId($productId): Made: ".var_export(self::$arrName, true)."<hr />");
         return self::$arrName;
     }
 
@@ -284,7 +283,6 @@ class ProductAttributes  // friend Product
             self::$arrRelation[$product_id][$value_id] = $objResult->fields['sort_id'];
             $objResult->MoveNext();
         }
-//echo("initRelationArray($product_id):  Made ".var_export(self::$arrRelation, true)."<br />");
         return true;
     }
 
@@ -576,7 +574,6 @@ class ProductAttributes  // friend Product
         global $_ARRAYLANG;
 
         $arrValues = self::getValueArrayByNameId($name_id);
-//echo("PAs::getAttributeValueMenu($name_id, $name, $selectedId, $onchange, $style):  Values: ".var_export($arrValues, true)."<br />");
         // No options, or an error occurred
         if (!$arrValues) return '';
         $menu =

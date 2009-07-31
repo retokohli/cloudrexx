@@ -755,6 +755,62 @@ class ShopLibrary
         return $strMenuoptions;
     }
 
+
+    /**
+     * Moves Product or Category images to the shop image folder if necessary
+     * and changes the given file path from absolute to relative to the
+     * shop image folder
+     *
+     * Images outside the shop image folder are copied there and all folder
+     * parts are stripped.
+     * Images inside the shop image folder are left where they are.
+     * The path is changed to represent the new location, relative to the
+     * shop image folder.
+     * Leading folder separators are removed.
+     * The changed path *SHOULD* be stored in the picture field as-is.
+     * Examples (suppose the shop image folder ASCMS_SHOP_IMAGES_WEB_PATH
+     * is 'images/shop'):
+     * /var/www/mydomain/upload/test.jpg becomes images/shop/test.jpg
+     * /var/www/mydomain/images/shop/test.jpg becomes images/shop/test.jpg
+     * /var/www/mydomain/images/shop/folder/test.jpg becomes images/shop/folder/test.jpg
+     * @param   string    $imageFileSource    The absolute image path, by reference
+     * @return  boolean                       True on success, false otherwise
+     */
+    static function moveImage(&$imageFileSource)
+    {
+        global $_ARRAYLANG;
+
+        $arrMatch = array();
+        $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
+        $imageFileTarget = $imageFileSource;
+        if (!preg_match($shopImageFolderRe, $imageFileSource))
+            $imageFileTarget = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.basename($imageFileSource);
+        // If the image is situated in or below the shop image folder,
+        // don't bother to copy it.
+        if (!preg_match($shopImageFolderRe, $imageFileSource)) {
+            if (   file_exists(ASCMS_PATH.$imageFileTarget)
+                && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
+                $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
+                self::addMessage(
+                    sprintf(
+                        $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'],
+                        basename($imageFileSource), basename($imageFileTarget)
+                    )
+                );
+            }
+            if (!copy(ASCMS_PATH.$imageFileSource, ASCMS_PATH.$imageFileTarget)) {
+                self::addError(
+                    $imageFileSource.': '.
+                    $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE']
+                );
+                $imageFileSource = false;
+                return false;
+            }
+        }
+        // Fix the original, absolute path to relative to the document root
+        $imageFileSource = preg_replace($shopImageFolderRe, '', $imageFileTarget);
+        return true;
+    }
 }
 
 ?>

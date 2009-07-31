@@ -49,7 +49,6 @@ class Mail
         self::$lang_id = false;
         // Use the current language if none is specified
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
-//echo("Mail::init($lang_id): init()ing<br />");
         self::$arrTemplate = array();
 
         if (!isset($objLanguage))
@@ -83,7 +82,6 @@ class Mail
 //            '`mail`.`text_message_id`', $lang_id,
 //            MODULE_ID, TEXT_SHOP_MAIL_MESSAGE
 //        );
-//echo("Mail::init($lang_id): arrSqlName: ".var_export($arrSqlName, true)."<br />");
 
 //        $objResult = $objDatabase->Execute("
 //            SELECT `mail`.`id`, `mail`.`protected`".
@@ -201,10 +199,8 @@ class Mail
 
     static function getTemplateArray($lang_id=0)
     {
-//echo("getTemplateArray($lang_id): Entered<br />");
         if (empty($lang_id)) return false;
         self::init($lang_id);
-//echo("getTemplateArray($lang_id): returning ".var_export(self::$arrTemplate, true)."<br />");
         return self::$arrTemplate;
     }
 
