@@ -114,5 +114,4 @@ $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "Nyeste indlæg kun per tema";
 $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "Er dette option aktiveret, bliver de nyeste indlæg kun vist per tema (resp. Thread). Er dette option deaktiveret, bliver alle de nye indlæg vist.";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Med komma afgrænsede liste af de tilladete filendelser for upload";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Tilladte filnavner";
-$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'] = "Set the time in seconds (0-300) on how often the session of a user should be updated. A value of 0 seconds means that the session will be updated with every request the users send.";
 ?>

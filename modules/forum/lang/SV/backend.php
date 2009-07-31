@@ -114,5 +114,4 @@ $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "Neuste Einträge nur pro Them
 $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "Ist diese Option aktiviert, werden die neusten Beiträge nur pro Thema (resp. Thread) angezeigt. Ist die Option deaktiviert, werden alle neuen Beiträge angezeigt, auch wenn Sie im vom selben Thema sind.";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Durch Kommas getrennte Liste der erlaubten Dateierweiterungen für den Dateiupload";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Erlaubte Dateierweiterungen";
-$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'] = "Set the time in seconds (0-300) on how often the session of a user should be updated. A value of 0 seconds means that the session will be updated with every request the users send.";
 ?>
