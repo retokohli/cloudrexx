@@ -1326,6 +1326,33 @@ function _coreUpdate()
         }
     }
 
+    /**********************************************************
+     * Add unique index on theme name. Who needs multiple
+     * themes with the same name anyways? Are there people 
+     * who know the difference between "aaa" and "aaa"? Guess
+     * not. It's just useless.
+     * NOTE THIS KICKS OUT ALL DUPLICATE DESIGNS WITH THE 
+     * SAME NAME FROM THE DATABASE. WHICH I CONSIDER A 
+     * NECCESSARY EVIL.
+     **********************************************************/
+    try {
+        UpdateUtil::table(
+            DBPREFIX . 'skins',
+            array(
+                'id'         => array('type' => 'INT(2) UNSIGNED',  'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'themesname' => array('type' => 'VARCHAR(50)',      'notnull' => true),
+                'foldername' => array('type' => 'VARCHAR(50)',      'notnull' => true),
+                'expert'     => array('type' => 'INT(1)',           'notnull' => true, 'default' => '1'),
+            ),
+            array( # indexes
+                'theme_unique'  => array( 'fields'=>array('themesname'), 'type'  =>'UNIQUE', 'force' => true),
+                'folder_unique' => array( 'fields'=>array('foldername'), 'type'  =>'UNIQUE', 'force' => true),
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
 
     return true;
 }
