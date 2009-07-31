@@ -1883,6 +1883,10 @@ dl.data_module img {
 	margin: 0px 0px 15px 0px;
 }
 
+#downloads div.delete {
+    float: right;
+}
+
 #downloads div.file_list .infos {
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
