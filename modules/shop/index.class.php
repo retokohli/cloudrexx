@@ -870,7 +870,6 @@ class Shop extends ShopLibrary
         JS::activate('shadowbox');
 
         $flagSpecialoffer = intval($this->arrConfig['shop_show_products_default']['value']);
-//echo("special: $flagSpecialoffer<br />");
         $flagLastFive =
             (isset($_REQUEST['lastFive'])  ? true                   : false);
         $productId =
@@ -1359,18 +1358,15 @@ class Shop extends ShopLibrary
                 $product_Id =
                     $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
             $arrAttributeNames = ProductAttributes::getNameArrayByProductId($product_Id);
-//echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
             // When there are no ProductAttributes for this Product, hide the
             // options blocks
             if (empty($arrAttributeNames)) {
                 $this->objTemplate->hideBlock('shopProductOptionsRow');
                 $this->objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
-//echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
                 // Loop through the ProductAttribute Names for the Product
                 foreach ($arrAttributeNames as $optionId => $arrAttributeName) {
                     $arrAttributeValues = ProductAttributes::getValueArrayByNameId($optionId);
-//echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($arrAttributeValues, true)."<hr />");
                     $selectValues = '';
                     // create head of option menu/checkbox/radiobutton
                     switch ($arrAttributeName['type']) {
@@ -1765,7 +1761,6 @@ class Shop extends ShopLibrary
     function _getProductPrice(
         $productId, $priceOptions=0, $count=1, $flagIgnoreSpecialoffer=false)
     {
-//echo("_getProductPrice($productId, $priceOptions, $count, $flagIgnoreSpecialoffer): Entered<br />");
         $objProduct = Product::getById($productId);
         if (!$objProduct) return false;
         $normalPrice = $objProduct->getPrice();
@@ -1802,7 +1797,6 @@ class Shop extends ShopLibrary
             $price -= ($price * $rateCount * 0.01);
         }
         $price = Currency::getCurrencyPrice($price);
-//echo("_getProductPrice(): Made /$price/<br />");
         return $price;
     }
 
@@ -2543,9 +2537,7 @@ sendReq('', 1);
                     // Should be tested!
                     //if (!$objProductAttribute) { ... }
                       $arrValues = $objProductAttribute->getValueArray();
-//echo("_parseCart(): Got Values ".var_export($arrValues, true)."<br />");
                     foreach ($arrValueIds as $value_id) {
-//echo("_parseCart(): processing value ID $value_id<br />");
                         // Note that the ProductAttribute values are indexed
                         // starting from 1!
                         // For types 4..7, the value entered in the text box is
@@ -2559,7 +2551,6 @@ sendReq('', 1);
                             //$arrValues = ProductAttributes::getValueArrayByNameId($optionId);
                             $arrValue = $arrValues[$value_id];
                         }
-//echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                         if (!is_array($arrValue)) continue;
                         $optionValue = ShopLibrary::stripUniqidFromFilename($arrValue['value']);
                         if (   $optionValue != $arrValue['value']

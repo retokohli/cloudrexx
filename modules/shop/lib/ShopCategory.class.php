@@ -683,21 +683,13 @@ class ShopCategory
             WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
                   parentid=$this->parentId AND
                   catname='".addslashes($strName)."'
-         ORDER BY catsorting ASC
-        ";
+            ORDER BY catsorting ASC";
 
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-/*
-        if ($objResult->RecordCount() > 1) {
-            echo("ShopCategory::getChildNamed($strName, $flagActiveOnly): ".$_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'].'<br />');
-        }
-*/
-        if (!$objResult->EOF) {
+        if (!$objResult) return false;
+//        if ($objResult->RecordCount() > 1) echo("ShopCategory::getChildNamed($strName, $flagActiveOnly): ".$_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'].'<br />');
+        if (!$objResult->EOF)
             return ShopCategory::getById($objResult->fields['catid']);
-        }
         return false;
     }
 
@@ -747,7 +739,7 @@ class ShopCategory
         $arrCategoryTree[$parentCategoryId] = array();
         // the local parent's children
         foreach ($arrChildShopCategories as $objChildShopCategory) {
-            $childCategoryId = $objChildShopCategory->getId();                 //echo("setting arrCategoryTree[$parentCategoryId][$childCategoryId]<br />");
+            $childCategoryId = $objChildShopCategory->getId();
             $arrCategoryTree[$parentCategoryId][$childCategoryId] = array(
                 'sorting' => $objChildShopCategory->getSorting(),
                 'status'  => $objChildShopCategory->getStatus(),
@@ -926,12 +918,5 @@ class ShopCategory
         return $arrCategory;
     }
 }
-
-
-// Test
-//echo("TEST: getcategoryTree(): <br />");
-//var_export(ShopCategory::getCategoryTree(0, 0, 0));
-//echo("<br />");
-//die();
 
 ?>

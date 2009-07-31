@@ -278,7 +278,6 @@ class Country
             if (   empty(self::$arrCountries[$id])
                 || empty(self::$arrCountries[$id]['status']))
                 continue;
-//echo("Country::getArraysByZoneId($zone_id): Country ID $id, name /$strName/, relation is $flagInZone<br />");
             $arrZoneCountries['in'][$id] = array(
                 'id' => $id,
                 'name' => self::$arrCountries[$id]['name'],
