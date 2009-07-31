@@ -21,8 +21,9 @@
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
  */
-define('_DEBUG', DBG_NONE);
 include_once('../lib/DBG.php');
+define('_DEBUG', DBG_NONE);
+DBG::__internal__setup();
 
 require_once 'UpdateUtil.php';
 

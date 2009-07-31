@@ -2,7 +2,7 @@
 
 function _livecamUpdate()
 {
-    global $objDatabase;
+    global $objDatabase, $objUpdate, $_CONFIG;
 
     try{
         UpdateUtil::table(
