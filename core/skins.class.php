@@ -932,7 +932,10 @@ class skins
                         $this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
                     }
                     $this->strOkMessage  = $_POST['dbName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-                    $_POST['themes'] = $_POST['dbName'];
+
+                    # people, why are you doing such ugly hacks?
+                    #$_POST['themes'] = $_POST['dbName'];
+                    $_POST['themes'] = $this->dirLog;
                     $this->overview();
                 } elseif($_POST['fromTheme'] == "" && $_POST['fromDB'] != "") {
                     $this->dirLog=$this->_objFile->mkDir($this->path, $this->webPath, $dirName);
