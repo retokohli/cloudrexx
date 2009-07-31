@@ -32,6 +32,8 @@ class UpdateUtil {
      *        array(
      *            'fields' => array('field1', 'field2', ..), # field names to be indexed
      *            'type'   => 'UNIQUE/FULLTEXT', # optional. If left out, a normal search index is created
+     *            'force'  => true/false,  # optional. forces creation of unique indexes, even if there
+     *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
     public static function table($name, array $struc, array $idx = array(), $engine = 'MyISAM') {
@@ -277,7 +279,13 @@ class UpdateUtil {
         $fields = join(',', $arrFields);
         $type   = array_key_exists('type', $spec) ? $spec['type'] : '';
 
-        $descr  = "CREATE $type INDEX `$name` ON $table ($fields)";
+        if isset($spec['force'] and $spec['force']) {
+            $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)"
+        }
+        else {
+            $descr  = "CREATE $type INDEX `$name` ON $table ($fields)";
+        }
+
         return $descr;
     }
     private function _colspec($spec) {
