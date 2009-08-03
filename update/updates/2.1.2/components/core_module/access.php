@@ -19,7 +19,7 @@ function _accessUpdate()
         UpdateUtil::table(
             DBPREFIX.'access_user_mail',
             array(
-                'type'           => array('type' => 'ENUM(\'reg_confirm\',\'reset_pw\',\'user_activated\',\'user_deactivated\',\'new_user\)', 'notnull' => true, 'default' => 'reg_confirm'),
+                'type'           => array('type' => 'ENUM(\'reg_confirm\',\'reset_pw\',\'user_activated\',\'user_deactivated\',\'new_user\')', 'notnull' => true, 'default' => 'reg_confirm'),
                 'lang_id'        => array('type' => 'TINYINT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'sender_mail'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'sender_name'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
