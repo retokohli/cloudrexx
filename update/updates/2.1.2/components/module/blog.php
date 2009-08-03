@@ -63,9 +63,9 @@ function _blogUpdate() {
         UpdateUtil::table(
             DBPREFIX.'module_blog_message_to_category',
             array(
-                'message_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'category_id'    => array('type' => 'INT(4)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'lang_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+                'message_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'category_id'    => array('type' => 'INT(4)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'lang_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
             ),
             array(
                 'category_id'    => array('fields' => array('category_id'))
@@ -86,8 +86,8 @@ function _blogUpdate() {
         UpdateUtil::table(
             DBPREFIX.'module_blog_networks_lang',
             array(
-                'network_id'     => array('type' => 'INT(8)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'lang_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+                'network_id'     => array('type' => 'INT(8)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'lang_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
             )
         );
 

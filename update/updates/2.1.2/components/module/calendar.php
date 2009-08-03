@@ -217,7 +217,7 @@ function _calendarUpdate()
             array(
                 'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'note_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
-                'note_date'      => array('type' => 'INT(11)', 'notnull' => true),
+                'note_date'      => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'note_id'),
                 'time'           => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0'),
                 'host'           => array('type' => 'VARCHAR(255)'),
                 'ip_address'     => array('type' => 'VARCHAR(15)'),
