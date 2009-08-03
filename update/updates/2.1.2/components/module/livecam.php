@@ -58,9 +58,9 @@ function _livecamUpdate()
 	************************************************/
 	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
         $arrFormerSettings = array(
-            'currentImageUrl',
-            'archivePath',
-            'thumbnailPath'
+            'currentImageUrl'   => '',
+            'archivePath'       => '',
+            'thumbnailPath'     => ''
         );
 
         $query = "SELECT 1 FROM `".DBPREFIX."module_livecam` WHERE `id` = 1";
@@ -88,7 +88,7 @@ function _livecamUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
 
-        foreach ($arrFormerSettings as $setting) {
+        foreach (array_keys($arrFormerSettings) as $setting) {
             $query = "DELETE FROM `".DBPREFIX."module_livecam_settings` WHERE `setname` = '".$setting."'";
             if ($objDatabase->Execute($query) === false) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
