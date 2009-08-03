@@ -77,20 +77,24 @@ function _forumUpdate()
 		}
 	}
 
-	if(!in_array(DBPREFIX.'module_forum_rating', $arrTables)){
-		$query = "CREATE TABLE `".DBPREFIX."module_forum_rating` (
-						`id` INT NOT NULL auto_increment,
-						`user_id` INT NOT NULL ,
-						`post_id` INT NOT NULL ,
-						`time` INT NOT NULL ,
-						PRIMARY KEY ( `id` ) ,
-						KEY ( `user_id`, `post_id` )
-					) TYPE=MyISAM";
-		if (($objRS = $objDatabase->Execute($query)) === false) {
-			return _databaseError($query, $objDatabase->ErrorMsg());
-		}
-	}
 
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'module_forum_rating',
+            array(
+                'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'user_id'    => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'post_id'    => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'time'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0')
+            ),
+            array(
+                'user_id'    => array('fields' => array('user_id','post_id'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
 
 
     return true;

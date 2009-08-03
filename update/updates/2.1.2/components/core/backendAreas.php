@@ -1028,35 +1028,6 @@ function _updateBackendAreas()
 
 
 
-	/************************************************
-	* BUGFIX:	Add UNIQUE key on access_id         *
-	************************************************/
-    try{
-        UpdateUtil::table(
-            DBPREFIX.'backend_areas',
-            array(
-                'area_id'            => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'parent_area_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'type'               => array('type' => 'ENUM(\'group\',\'function\',\'navigation\')'),
-                'scope'              => array('type' => 'ENUM(\'global\',\'frontend\',\'backend\')'),
-                'area_name'          => array('type' => 'VARCHAR(100)'),
-                'is_active'          => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1'),
-                'uri'                => array('type' => 'VARCHAR(255)'),
-                'target'             => array('type' => 'VARCHAR(50)'),
-                'module_id'          => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'order_id'           => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'access_id'          => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
-            ),
-            array(
-                'access_id'          => array('fields' => array('access_id'), 'type' => 'UNIQUE'),
-                'area_name'          => array('fields' => array('area_name'))
-            )
-        );
-    }
-    catch (UpdateException $e) {
-        // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
-    }
 
 
 

@@ -43,10 +43,10 @@ function _jobsUpdate() {
             )
         );
         UpdateUtil::table(
-            DBPREFIX . 'module_jobs_rel_loc_jobs',
+            DBPREFIX.'module_jobs_rel_loc_jobs',
             array(
-                'job'      => array('type' => 'INT(10)', 'primary' => true, 'unsigned' => true),
-                'location' => array('type' => 'INT(10)', 'primary' => true, 'unsigned' => true)
+                'job'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'location'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
             )
         );
         UpdateUtil::table(

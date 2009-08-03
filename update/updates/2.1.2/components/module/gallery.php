@@ -3,39 +3,26 @@ function _galleryUpdate()
 {
 	global $objDatabase, $_ARRAYLANG;
 
-	$arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_gallery_categories');
-	if ($arrColumns === false) {
-		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_gallery_categories'));
-		return false;
-	}
-
-	if (!isset($arrColumns['BACKENDPROTECTED'])) {
-		$query = "ALTER TABLE `".DBPREFIX."module_gallery_categories` ADD `backendProtected` INT NOT NULL ;" ;
-		if ($objDatabase->Execute($query) === false) {
-			return _databaseError($query, $objDatabase->ErrorMsg());
-		}
-	}
-
-	if (!isset($arrColumns['BACKEND_ACCESS_ID'])) {
-		$query = "ALTER TABLE `".DBPREFIX."module_gallery_categories` ADD `backend_access_id` INT NOT NULL ;" ;
-		if ($objDatabase->Execute($query) === false) {
-			return _databaseError($query, $objDatabase->ErrorMsg());
-		}
-	}
-
-	if (!isset($arrColumns['FRONTENDPROTECTED'])) {
-		$query = "ALTER TABLE `".DBPREFIX."module_gallery_categories` ADD `frontendProtected` INT NOT NULL ;" ;
-		if ($objDatabase->Execute($query) === false) {
-			return _databaseError($query, $objDatabase->ErrorMsg());
-		}
-	}
-
-	if (!isset($arrColumns['FRONTEND_ACCESS_ID'])) {
-		$query = "ALTER TABLE `".DBPREFIX."module_gallery_categories` ADD `frontend_access_id` INT NOT NULL ;" ;
-		if ($objDatabase->Execute($query) === false) {
-			return _databaseError($query, $objDatabase->ErrorMsg());
-		}
-	}
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'module_gallery_categories',
+            array(
+                'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'pid'                    => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'sorting'                => array('type' => 'TINYINT(3)', 'notnull' => true, 'default' => '0'),
+                'status'                 => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'comment'                => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                'voting'                 => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                'backendProtected'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'backend_access_id'      => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'frontendProtected'      => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'frontend_access_id'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
 
 	$arrSettings = array(
         '1'  => array( 'name' => 'max_images_upload',        'value' => '10'),

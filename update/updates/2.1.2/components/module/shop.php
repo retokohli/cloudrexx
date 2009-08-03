@@ -453,19 +453,16 @@ function _shopUpdate()
 
 
         UpdateUtil::table(/*{{{module_shop_lsv*/
-            DBPREFIX . 'module_shop_lsv',
+            DBPREFIX.'module_shop_lsv',
             array(
-                'id'       => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true, 'renamefrom' => 'order_id'),
-                'order_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true),
-                'holder'   => array('type' => 'TINYTEXT',         'notnull' => true),
-                'bank'     => array('type' => 'TINYTEXT',         'notnull' => true),
-                'blz'      => array('type' => 'TINYTEXT',         'notnull' => true),
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'order_id'),
+                'order_id'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'holder'     => array('type' => 'TINYTEXT'),
+                'bank'       => array('type' => 'TINYTEXT'),
+                'blz'        => array('type' => 'TINYTEXT')
             ),
-            array( # indexes
-                'order_id' => array(
-                    'fields'=>array('order_id'),
-                    'type'  =>'UNIQUE'
-                )
+            array(
+                'order_id'   => array('fields' => array('order_id'), 'type' => 'UNIQUE')
             )
         );/*}}}*/
 
@@ -475,7 +472,7 @@ function _shopUpdate()
             DBPREFIX.'module_shop_shipment_cost',
             array(
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'shipper_id'     => array('type' => 'INT(10)', 'unsigned' => true),
+                'shipper_id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'max_weight'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
                 'cost'           => array('type' => 'DECIMAL(10,2)', 'unsigned' => true, 'notnull' => false),
                 'price_free'     => array('type' => 'DECIMAL(10,2)', 'unsigned' => true, 'notnull' => false)
@@ -783,7 +780,7 @@ function _shopUpdate()
                 'enddate'            => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
                 'thumbnail_percent'  => array('type' => 'TINYINT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'thumbnail_quality'  => array('type' => 'TINYINT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'manufacturer'       => array('type' => 'INT(10)', 'unsigned' => true),
+                'manufacturer'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'manufacturer_url'   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'external_link'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'sort_order'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
@@ -791,12 +788,13 @@ function _shopUpdate()
                 'weight'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
                 'flags'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'usergroups'         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'usergroup_ids'      => array('type' => 'VARCHAR(255)'),
                 'group_id'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
                 'article_id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
                 'keywords'           => array('type' => 'TEXT')
             ),
             array(
+                'group_id'           => array('fields' => array('group_id')),
+                'article_id'         => array('fields' => array('article_id')),
                 'shopindex'          => array('fields' => array('title','description'), 'type' => 'FULLTEXT'),
                 'flags'              => array('fields' => array('flags'), 'type' => 'FULLTEXT'),
                 'keywords'           => array('fields' => array('keywords'), 'type' => 'FULLTEXT')
@@ -892,7 +890,7 @@ function _shopUpdate()
             array(
                 'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'class'      => array('type' => 'TINYTEXT'),
-                'percent'    => array('type' => 'DECIMAL(5,2)', 'unsigned' => true)
+                'percent'    => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00')
             )
         );
 

@@ -15,23 +15,28 @@ function _accessUpdate()
      * ADD NOTIFICATION E-MAILS
      *
      ***************************/
-    if (!in_array(DBPREFIX."access_user_mail", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_mail` (
-                `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user') NOT NULL,
-                `lang_id` tinyint(2) unsigned NOT NULL DEFAULT 0,
-                `sender_mail` varchar(255) NOT NULL DEFAULT '',
-                `sender_name` varchar(255) NOT NULL DEFAULT '',
-                `subject` varchar(255) NOT NULL DEFAULT '',
-                `format` ENUM( 'text', 'html', 'multipart' ) NOT NULL DEFAULT 'text',
-                `body_text` text NOT NULL,
-                `body_html` text NOT NULL,
-                UNIQUE KEY `mail` (`type`,`lang_id`)
-            ) TYPE=InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'access_user_mail',
+            array(
+                'type'           => array('type' => 'ENUM(\'reg_confirm\',\'reset_pw\',\'user_activated\',\'user_deactivated\',\'new_user\)', 'notnull' => true, 'default' => 'reg_confirm'),
+                'lang_id'        => array('type' => 'TINYINT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'sender_mail'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'sender_name'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'subject'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'format'         => array('type' => 'ENUM(\'text\',\'html\',\'multipart\')', 'notnull' => true, 'default' => 'text'),
+                'body_text'      => array('type' => 'TEXT'),
+                'body_html'      => array('type' => 'TEXT')
+            ),
+            array(
+                'mail'           => array('fields' => array('type','lang_id'), 'type' => 'UNIQUE')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
     }
 
     $arrMails = array(
@@ -209,7 +214,7 @@ function _accessUpdate()
         UpdateUtil::table(
             DBPREFIX.'access_user_profile',
             array(
-                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true),
+                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true, 'default' => '0'),
                 'gender'         => array('type' => 'ENUM(\'gender_undefined\', \'gender_female\', \'gender_male\')', 'notnull' => true, 'default' => 'gender_undefined'),
                 'title'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'firstname'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
@@ -305,15 +310,16 @@ function _accessUpdate()
      * ADD USER VALIDITY
      *
      ********************/
-    if (!in_array(DBPREFIX."access_user_validity", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_validity` (
-                `validity` INT UNSIGNED PRIMARY KEY
-            ) ENGINE=InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
+    try {
+        UpdateUtil::table(
+            DBPREFIX.'access_user_validity',
+            array(
+                'validity'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
     }
 
     $query = "SELECT 1 FROM `".DBPREFIX."access_user_validity`";
