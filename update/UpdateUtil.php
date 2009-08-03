@@ -88,8 +88,8 @@ class UpdateUtil {
         $primaries  = join(",\n", self::_getprimaries($struc));
 
         $table_stmt = "CREATE TABLE `$name`(
-            $colspec,
-            PRIMARY KEY ($primaries)
+            $colspec".(!empty($primaries) ? ",
+            PRIMARY KEY ($primaries)" : '')."
         ) ENGINE=$engine";
 
         self::sql($table_stmt);
