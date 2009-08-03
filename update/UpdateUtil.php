@@ -279,10 +279,9 @@ class UpdateUtil {
         $fields = join(',', $arrFields);
         $type   = array_key_exists('type', $spec) ? $spec['type'] : '';
 
-        if isset($spec['force'] and $spec['force']) {
-            $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)"
-        }
-        else {
+        if (isset($spec['force']) && $spec['force']) {
+            $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)";
+        } else {
             $descr  = "CREATE $type INDEX `$name` ON $table ($fields)";
         }
 
