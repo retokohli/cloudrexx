@@ -351,7 +351,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $page_metatitle = htmlentities($objResult->fields["metatitle"], ENT_QUOTES, CONTREXX_CHARSET);
         $page_keywords  = htmlentities($objResult->fields["metakeys"], ENT_QUOTES, CONTREXX_CHARSET);
         $page_robots    = $objResult->fields["metarobots"];
-        $pageCssName    = $objResult->fields["css_name"];
+        $pageCssName    = !empty($_GET['css'])? contrexx_addslashes($_GET['css']) : $objResult->fields["css_name"];
         $page_desc      = htmlentities($objResult->fields["metadesc"], ENT_QUOTES, CONTREXX_CHARSET);
         $page_redirect  = $objResult->fields["redirect"];
         $page_protected = $objResult->fields["protected"];
@@ -1746,6 +1746,25 @@ break;
             $page_title = $downloads_pagetitle;
         }
     break;
+
+//-------------------------------------------------------
+// Printshop Module
+//-------------------------------------------------------
+    case "printshop":
+        $modulespath = "modules/printshop/index.class.php";
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objPrintshopModule = new Printshop($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objPrintshopModule->getPage());
+
+        $printshop_pagetitle = $objPrintshopModule->getPageTitle();
+        if(!empty($printshop_pagetitle)) {
+            $page_metatitle = $printshop_pagetitle;
+            $page_title = $printshop_pagetitle;
+        }
+    break;
+
+
 
 //-------------------------------------------------------
 // default case

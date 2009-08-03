@@ -37,7 +37,7 @@ class FWLanguage
      *
      * This used to be in __construct but is also
      * called from core/language.class.php to reload
-     * the config, so core/settings.class.php can 
+     * the config, so core/settings.class.php can
      * rewrite .htaccess (virtual lang dirs).
      */
     function loadLangConfig() {
@@ -46,7 +46,7 @@ class FWLanguage
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default
               FROM ".DBPREFIX."languages
-             ORDER BY id
+             ORDER BY id ASC
          ");
          if ($objResult) {
              while (!$objResult->EOF) {

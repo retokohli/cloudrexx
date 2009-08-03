@@ -52,12 +52,13 @@ class PrintshopAdmin extends PrintshopLibrary {
                                                             <a href="?cmd=printshop&amp;act=back">'.$_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'].'</a>
                                                             <a href="?cmd=printshop&amp;act=weight">'.$_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'].'</a>
                                                             <a href="?cmd=printshop&amp;act=paper">'.$_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'].'</a>
+                                                            <a href="?cmd=printshop&amp;act=orders">'.$_ARRAYLANG['TXT_PRINTSHOP_ORDERS_TITLE'].'</a>
                                                             <a href="?cmd=printshop&amp;act=settings">'.$_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'].'</a>
                                                     ');
     }
 
 
-    /**
+   /**
     * Perform the right operation depending on the $_GET-params
     *
     * @global   HTML_Template_Sigma
@@ -70,15 +71,22 @@ class PrintshopAdmin extends PrintshopLibrary {
         }
 
         switch($_GET['act']){
-            case 'settings':
-                $this->showSettings();
+            case 'addProduct':
+                $this->_addProduct();
             break;
 
-            case 'saveSettings':
-                Permission::checkAccess(150, 'static');
-                $this->saveSettings();
-                $this->showSettings();
+            case 'updateProduct':
+                $this->_updateProduct();
             break;
+
+            case 'delProduct':
+                $this->_delProduct();
+            break;
+
+            case 'getProducts':
+                $this->_getProducts();
+            break;
+
             case 'type':
             case 'format':
             case 'front':
@@ -91,7 +99,7 @@ class PrintshopAdmin extends PrintshopLibrary {
                 if(!empty($_POST['json'])){
                     switch($_POST['json']){
                         case 'save':
-                            $arrEntry = $this->editAttribute($attribute, intval($_POST['id']));
+                            $arrEntry = $this->saveAttribute($attribute, intval($_POST['id']));
                             die(json_encode(array(
                                 'id' => $arrEntry['id'],
                                 'name' => $arrEntry['name'],
@@ -106,6 +114,16 @@ class PrintshopAdmin extends PrintshopLibrary {
                     }
                 }
                 $this->showAttributes($attribute);
+            break;
+
+            case 'settings':
+                $this->showSettings();
+            break;
+
+            case 'saveSettings':
+                Permission::checkAccess(150, 'static');
+                $this->saveSettings();
+                $this->showSettings();
             break;
 
             default:
@@ -131,26 +149,195 @@ class PrintshopAdmin extends PrintshopLibrary {
     function showOverview() {
         global $_CORELANG, $_ARRAYLANG;
 
-        $this->_strPageTitle = $_CORELANG['TXT_PRINTSHOP_OVERVIEW'];
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_OVERVIEW'];
         $this->_objTpl->loadTemplateFile('module_printshop_main.html', true, true);
 
-        $arrEntries = $this->_getEntries();
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_PRINTSHOP_NO_ENTRY'         => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'],
+            'TXT_PRINTSHOP_ADD'              => $_ARRAYLANG['TXT_PRINTSHOP_ADD'],
+            'TXT_PRINTSHOP_ADD_PRODUCT'      => $_ARRAYLANG['TXT_PRINTSHOP_ADD_PRODUCT'],
+            'TXT_PRINTSHOP_PRODUCTS'         => $_ARRAYLANG['TXT_PRINTSHOP_PRODUCTS'],
+            'TXT_PRINTSHOP_PRICE_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_TITLE'],
+            'TXT_PRINTSHOP_FACTOR_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_FACTOR_TITLE'],
+            'TXT_PRINTSHOP_SUBTITLE_ACTIONS' => $_ARRAYLANG['TXT_PRINTSHOP_SUBTITLE_ACTIONS'],
+            'TXT_PRINTSHOP_FIELDS_REQUIRED'  => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'],
+            'TXT_PRINTSHOP_DELETE_ENTRY'     => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_ENTRY'],
+            'TXT_PRINTSHOP_DELETE_SELECTED'  => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_SELECTED'],
+            'TXT_PRINTSHOP_FADE_OUT'         => $_ARRAYLANG['TXT_PRINTSHOP_FADE_OUT'],
+            'TXT_PRINTSHOP_SAVE'             => $_ARRAYLANG['TXT_PRINTSHOP_SAVE'],
+            'TXT_ADD_SUBMIT'                 => $_CORELANG['TXT_SAVE'],
+            'TXT_SELECT_ALL'                 => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'               => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_MULTISELECT_SELECT'         => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_MULTISELECT_DELETE'         => $_CORELANG['TXT_MULTISELECT_DELETE'],
 
+        ));
 
-        foreach ($this->_availableAttributes as $attribute) {
+        foreach ($this->_arrAvailableAttributes as $attribute) {
+            $attr = strtoupper($attribute);
+            $filter[$attribute] = !empty($_POST['psFilter'.$attribute]) ? intval($_POST['psFilter'.$attribute]) : 0;
             $this->_objTpl->setVariable(array(
-                'ENTRY_'.strtoupper($attribute).'_DD' => $_ARRAYLANG['TXT_PRINTSHOP_'.strtoupper($attribute).'_TITLE']." ".$this->createAttribtueDropDown($attribute),
+                'ENTRY_'.$attr.'_DD'            => $this->createAttributeDropDown($attribute, 'ps', $_ARRAYLANG['TXT_PRINTSHOP_CHOOSE']),
+                'ENTRY_'.$attr.'_FILTER_DD'     => $this->createAttributeDropDown($attribute, 'psFilter', $_CORELANG['TXT_USER_ALL'], $filter[$attribute]),
+                'TXT_PRINTSHOP_'.$attr.'_TITLE' => $_ARRAYLANG['TXT_PRINTSHOP_'.$attr.'_TITLE'],
             ));
         }
 
+        $arrEntries = $this->_getEntries($filter, true);
+
         if(count($arrEntries) > 0){
-            foreach ($arrEntries as $arrEntry) {
+            foreach ($arrEntries as $index => $arrEntry) {
                 $this->_objTpl->setVariable(array(
-                    'TXT_ADD_SUBMIT'                    =>  $_CORELANG['TXT_SAVE']
+                    'ENTRY_TYPE'        =>  $arrEntry['type'],
+                    'ENTRY_FORMAT'      =>  $arrEntry['format'],
+                    'ENTRY_FRONT'       =>  $arrEntry['front'],
+                    'ENTRY_BACK'        =>  $arrEntry['back'],
+                    'ENTRY_WEIGHT'      =>  $arrEntry['weight'],
+                    'ENTRY_PAPER'       =>  $arrEntry['paper'],
+                    'ENTRY_PRICE'       =>  $arrEntry['price'],
+                    'ENTRY_FACTOR'      =>  $arrEntry['factor'],
+                    'ENTRY_ROWCLASS'    =>  $index % 2 ? 'row2' : 'row1',
                 ));
 
                 $this->_objTpl->parse('showEntry');
             }
+        }else{
+            $this->_objTpl->touchBlock('noEntry');
+        }
+    }
+
+    /**
+     * return filtered products as JSON string
+     *
+     */
+    function _getProducts(){
+        global $_ARRAYLANG;
+
+        $arrFilter['type']   = !empty($_POST['psFilterType'])   ? contrexx_addslashes($_POST['psFilterType']) : '';
+        $arrFilter['format'] = !empty($_POST['psFilterFormat']) ? contrexx_addslashes($_POST['psFilterFormat']) : '';
+        $arrFilter['front']  = !empty($_POST['psFilterFront'])  ? contrexx_addslashes($_POST['psFilterFront']) : '';
+        $arrFilter['back']   = !empty($_POST['psFilterBack'])   ? contrexx_addslashes($_POST['psFilterBack']) : '';
+        $arrFilter['weight'] = !empty($_POST['psFilterWeight']) ? contrexx_addslashes($_POST['psFilterWeight']) : '';
+        $arrFilter['paper']  = !empty($_POST['psFilterPaper'])  ? contrexx_addslashes($_POST['psFilterPaper']) : '';
+
+        $arrEntries = $this->_getEntries($arrFilter);
+        if(count($arrEntries) == 0){
+            die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'])));
+        }
+        foreach ($arrEntries as $index => $arrEntry) {
+                $arrEntriesData[] =array(
+                'type'          => $arrEntry['type'],
+                'format'        => $arrEntry['format'],
+                'front'         => $arrEntry['front'],
+                'back'          => $arrEntry['back'],
+                'weight'        => $arrEntry['weight'],
+                'paper'         => $arrEntry['paper'],
+                'price'         => $arrEntry['price'],
+                'factor'        => $arrEntry['factor']
+            );
+        }
+        die(json_encode($arrEntriesData));
+    }
+
+
+    function _updateProduct(){
+        global $_ARRAYLANG;
+
+        $type   = !empty($_POST['psType'])   ? contrexx_addslashes($_POST['psType']) : '';
+        $format = !empty($_POST['psFormat']) ? contrexx_addslashes($_POST['psFormat']) : '';
+        $front  = !empty($_POST['psFront'])  ? contrexx_addslashes($_POST['psFront']) : '';
+        $back   = !empty($_POST['psBack'])   ? contrexx_addslashes($_POST['psBack']) : '';
+        $weight = !empty($_POST['psWeight']) ? contrexx_addslashes($_POST['psWeight']) : '';
+        $paper  = !empty($_POST['psPaper'])  ? contrexx_addslashes($_POST['psPaper']) : '';
+        $price  = !empty($_POST['psPrice'])  ? contrexx_addslashes($_POST['psPrice']) : '';
+        $factor = !empty($_POST['psFactor']) ? contrexx_addslashes($_POST['psFactor']) : '';
+
+        if(empty($price) || empty($factor) ){
+            die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'])));
+        }
+
+        if($this->addProduct($type, $format, $front, $back, $weight, $paper, $price, $factor) !== false){
+            die(json_encode(array(
+                'error'     => 'null',
+                'ok'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_UPDATED'],
+                'price'     => $price,
+                'factor'    => $factor,
+            )));
+        }else{
+            die(json_encode(array('error' => 'DB error.'.__FILE__.':'.__LINE__)));
+        }
+
+    }
+
+
+    /**
+     * deletes a product
+     *
+     */
+    function _delProduct(){
+        global $_ARRAYLANG;
+        $type   = !empty($_POST['psType'])   ? contrexx_addslashes($_POST['psType']) : '';
+        $format = !empty($_POST['psFormat']) ? contrexx_addslashes($_POST['psFormat']) : '';
+        $front  = !empty($_POST['psFront'])  ? contrexx_addslashes($_POST['psFront']) : '';
+        $back   = !empty($_POST['psBack'])   ? contrexx_addslashes($_POST['psBack']) : '';
+        $weight = !empty($_POST['psWeight']) ? contrexx_addslashes($_POST['psWeight']) : '';
+        $paper  = !empty($_POST['psPaper'])  ? contrexx_addslashes($_POST['psPaper']) : '';
+
+
+        if(empty($type) || empty($format) || empty($front) || empty($back) || empty($weight) || empty($paper)){
+            die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'])));
+        }
+
+        if($this->delProduct($type, $format, $front, $back, $weight, $paper) !== false){
+            die(json_encode(array(
+                'error'     => 'null',
+                'ok'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_DELETED'],
+            )));
+        }else{
+            die(json_encode(array('error' => 'DB error.'.__FILE__.':'.__LINE__)));
+        }
+    }
+
+    /**
+     * adds a product
+     *
+     */
+    function _addProduct(){
+        global $_ARRAYLANG;
+        $type   = !empty($_POST['psType'])   ? contrexx_addslashes($_POST['psType']) : '';
+        $format = !empty($_POST['psFormat']) ? contrexx_addslashes($_POST['psFormat']) : '';
+        $front  = !empty($_POST['psFront'])  ? contrexx_addslashes($_POST['psFront']) : '';
+        $back   = !empty($_POST['psBack'])   ? contrexx_addslashes($_POST['psBack']) : '';
+        $weight = !empty($_POST['psWeight']) ? contrexx_addslashes($_POST['psWeight']) : '';
+        $paper  = !empty($_POST['psPaper'])  ? contrexx_addslashes($_POST['psPaper']) : '';
+        $price  = !empty($_POST['psPrice'])  ? contrexx_addslashes($_POST['psPrice']) : '';
+        $factor = !empty($_POST['psFactor']) ? contrexx_addslashes($_POST['psFactor']) : '';
+
+        if(empty($type) || empty($format) || empty($front) || empty($back) || empty($weight) || empty($paper) || empty($price) || empty($factor) ){
+            die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'])));
+        }
+
+        if($this->productExists($type, $format, $front, $back, $weight, $paper)){
+             die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_ALREADY_EXISTS'])));
+        }
+
+        $this->_getAttributeTranslation();
+
+        if($this->addProduct($type, $format, $front, $back, $weight, $paper, $price, $factor) !== false){
+            die(json_encode(array(
+                'error'     => 'null',
+                'ok'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_ADDED'],
+                'type'      => $this->_arrAttributeTranslation['type'  ][$type  ]['name'],
+                'format'    => $this->_arrAttributeTranslation['front' ][$front ]['name'],
+                'back'      => $this->_arrAttributeTranslation['back'  ][$back  ]['name'],
+                'front'     => $this->_arrAttributeTranslation['front' ][$front ]['name'],
+                'weight'    => $this->_arrAttributeTranslation['weight'][$weight]['name'],
+                'paper'     => $this->_arrAttributeTranslation['paper' ][$paper ]['name'],
+                'price'     => $price,
+                'factor'    => $factor,
+            )));
+        }else{
+            die(json_encode(array('error' => 'DB error.'.__FILE__.':'.__LINE__)));
         }
     }
 
@@ -164,7 +351,7 @@ class PrintshopAdmin extends PrintshopLibrary {
      */
     function deleteAttribute($attribute, $id){
         global $objDatabase, $_ARRAYLANG;
-$objDatabase->debug=0;
+
         if(!$this->_isValidAtrribute($attribute)){
             return false;
         }
@@ -191,14 +378,13 @@ $objDatabase->debug=0;
      * @param int $id
      * @return array
      */
-    function editAttribute($attribute, $id){
+    function saveAttribute($attribute, $id){
         global $objDatabase;
-$objDatabase->debug=0;
 
         if(!$this->_isValidAtrribute($attribute)){
             return false;
         }
-        $attributeValue = contrexx_addslashes(trim($_POST['ps_attribute_name']));
+        $attributeValue = contrexx_addslashes(trim($_POST['psAttributeName']));
 
         $query = 'SELECT `id` FROM `'.DBPREFIX.'module_printshop_'.$attribute.'`
                   WHERE `'.$attribute."`='$attributeValue'";
@@ -221,7 +407,7 @@ $objDatabase->debug=0;
         $query = 'INSERT INTO `'.DBPREFIX.'module_printshop_'.$attribute.'` (`id`, `'.$attribute."`)
                     VALUES ($id, '$attributeValue')
                   ON DUPLICATE KEY
-                    UPDATE  `id`         = $id,
+                    UPDATE  `id`         = LAST_INSERT_ID(`id`),
                             `$attribute` = '".$attributeValue."'";
         $objDatabase->Execute($query);
         $insertID = $objDatabase->Insert_ID();
@@ -254,6 +440,7 @@ $objDatabase->debug=0;
             'TXT_PRINTSHOP_DELETE_ENTRY'            => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_ENTRY'],
             'TXT_PRINTSHOP_DELETE_SELECTED'         => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_SELECTED'],
             'TXT_PRINTSHOP_ALREADY_EXISTS'          => $_ARRAYLANG['TXT_PRINTSHOP_ALREADY_EXISTS'],
+            'TXT_PRINTSHOP_FADE_OUT'         => $_ARRAYLANG['TXT_PRINTSHOP_FADE_OUT'],
 
             'TXT_SELECT_ALL'                        => $_CORELANG['TXT_SELECT_ALL'],
             'TXT_DESELECT_ALL'                      => $_CORELANG['TXT_DESELECT_ALL'],
@@ -265,10 +452,10 @@ $objDatabase->debug=0;
         $arrAttributes = $this->_getAttributes($attribute);
 
         if($arrAttributes){
-            foreach ($arrAttributes as $index => $arrAttribute) {
-
+            $index = 0;
+            foreach ($arrAttributes as $id => $arrAttribute) {
                 $this->_objTpl->setVariable(array(
-                    'ENTRY_ROWCLASS'            => $index % 2 ? 'row2' : 'row1',
+                    'ENTRY_ROWCLASS'            => $index++ % 2 ? 'row2' : 'row1',
                     'PRINTSHOP_ATTRIBUTE_ID'    => $arrAttribute['id'],
                     'PRINTSHOP_ATTRIBUTE_NAME'  => $arrAttribute['name'],
                 ));

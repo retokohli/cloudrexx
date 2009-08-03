@@ -903,9 +903,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         $('textarea[name=html]', $form).hide();
     }
 
-    $J('form[name=formContent] th:first-child').each(
+    $('form[name=formContent] th:first-child').each(
         function(){
-            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$('#contentLanguages li a.active').text()+')')
+            $(this).text($(this).text().replace(/\s\(.*?\)$/, '')+' ('+$('#contentLanguages li a.active').text()+')')
         }
     )
 
@@ -936,7 +936,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     });
 
     if($('input[name=expertmode]').attr('checked') || (typeof FCKeditorAPI != 'undefined' && FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE)){
-        $J('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
+        $('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
     }
 });
 
