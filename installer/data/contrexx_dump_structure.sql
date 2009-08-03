@@ -2723,8 +2723,9 @@ CREATE TABLE `contrexx_skins` (
   `themesname` varchar(50) NOT NULL default '',
   `foldername` varchar(50) NOT NULL default '',
   `expert` int(1) NOT NULL default '1',
-  UNIQUE KEY `id` (`id`),
-  KEY `id_2` (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `theme_unique` (`themesname`),
+  UNIQUE KEY `folder_unique` (`foldername`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_stats_browser` (
   `id` int(6) unsigned NOT NULL auto_increment,
