@@ -71,7 +71,7 @@ function _coreUpdate()
                 'changelog'              => array('type' => 'INT(14)', 'notnull' => false),
                 'cmd'                    => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
                 'lang'                   => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
-                'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'default' => '0'),
+                'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'startdate'              => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
                 'enddate'                => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
                 'protected'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0'),
@@ -84,6 +84,37 @@ function _coreUpdate()
                 'parcat'                 => array('fields' => array('parcat')),
                 'module'                 => array('fields' => array('module')),
                 'catname'                => array('fields' => array('catname'))
+            )
+        );
+
+        UpdateUtil::table(
+            DBPREFIX.'content_navigation_history',
+            array(
+                'id'                     => array('type' => 'INT(7)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'is_active'              => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                'catid'                  => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'parcat'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'catname'                => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'target'                 => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
+                'displayorder'           => array('type' => 'SMALLINT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '1000'),
+                'displaystatus'          => array('type' => 'SET(\'ON\',\'OFF\')', 'notnull' => true, 'default' => 'on'),
+                'activestatus'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'cachingstatus'          => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'username'               => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                'changelog'              => array('type' => 'INT(14)', 'notnull' => false),
+                'cmd'                    => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'lang'                   => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'startdate'              => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                'enddate'                => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                'protected'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0'),
+                'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
+                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'catid'                  => array('fields' => array('catid'))
             )
         );
     }
@@ -110,8 +141,8 @@ function _coreUpdate()
                 'area_id'            => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'parent_area_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'type'               => array('type' => 'ENUM(\'group\',\'function\',\'navigation\')', 'notnull' => false, 'default' => 'navigation'),
-                'scope'              => array('type' => 'ENUM(\'global\',\'frontend\',\'backend\')', 'notnull' => true, 'default' => 'global'),
-                'area_name'          => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => 'NULL'),
+                'scope'              => array('type' => 'ENUM(\'global\',\'frontend\',\'backend\')', 'notnull' => true, 'default' => 'global', 'after' => 'type'),
+                'area_name'          => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default_expr' => 'NULL'),
                 'is_active'          => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1'),
                 'uri'                => array('type' => 'VARCHAR(255)'),
                 'target'             => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '_self'),
