@@ -64,6 +64,10 @@ $arrOperatingSystems = array(
         'name' => 'IRIX'
     ),
     array(
+        'regExp' => '=Windows NT 6\.1=', # o'rly? not 7? 't least the RC shows 6.1
+        'name' => 'Windows 7'
+    ),
+    array(
         'regExp' => '=OS/2=',
         'name' => 'OS/2'
     )
