@@ -60,6 +60,18 @@ function _marketUpdate()
     try{
         // delete obsolete table  contrexx_module_market_access
         UpdateUtil::drop_table(DBPREFIX.'module_market_access');
+
+        UpdateUtil::table(
+            DBPREFIX.'module_market_spez_fields',
+            array(
+                'id'         => array('type' => 'INT(5)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'       => array('type' => 'VARCHAR(100)'),
+                'value'      => array('type' => 'VARCHAR(100)'),
+                'type'       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1'),
+                'lang_id'    => array('type' => 'INT(2)', 'notnull' => true, 'default' => '0'),
+                'active'     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0')
+            )
+        );
     }
     catch (UpdateException $e) {
         // we COULD do something else here..

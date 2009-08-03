@@ -6,11 +6,11 @@ function _u2uUpdate()
 
     try{
         UpdateUtil::table(
-            DBPREFIX . 'module_u2u_address_list',
+            DBPREFIX.'module_u2u_address_list',
             array(
-                'id'               => array('type' => 'INT(11)',     'notnull' => true, 'primary' => true, 'auto_increment' => true),
-                'user_id'          => array('type' => 'INT(11)',     'notnull' => true),
-                'buddies_id'       => array('type' => 'INT(11)',     'notnull' => true),
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'user_id'        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                'buddies_id'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0')
             )
         );
         UpdateUtil::table(
@@ -24,14 +24,25 @@ function _u2uUpdate()
             'InnoDB'
         );
         UpdateUtil::table(
-            DBPREFIX . 'module_u2u_sent_messages',
+            DBPREFIX.'module_u2u_sent_messages',
             array(
-                'id'                  => array('type' => 'INT(11) UNSIGNED',      'notnull' => true, 'primary' => true, 'auto_increment' => true),
-                'userid'              => array('type' => 'INT(11) UNSIGNED',      'notnull' => true),
-                'message_id'          => array('type' => 'INT(11) UNSIGNED',      'notnull' => true),
-                'receiver_id'         => array('type' => 'INT(11) UNSIGNED',      'notnull' => true),
-                'mesage_open_status'  => array('type' => "ENUM('0','1')",         'notnull' => true, 'default' => '0'),
-                'date_time'           => array('type' => "DATETIME",              'notnull' => true),
+                'id'                     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'userid'                 => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'message_id'             => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'receiver_id'            => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'mesage_open_status'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                'date_time'              => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00')
+            ),
+            array(),
+            'InnoDB'
+
+        );
+        UpdateUtil::table(
+            DBPREFIX.'module_u2u_settings',
+            array(
+                'id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'   => array('type' => 'VARCHAR(50)'),
+                'value'  => array('type' => 'TEXT')
             ),
             array(),
             'InnoDB'
@@ -47,13 +58,13 @@ function _u2uUpdate()
             'InnoDB'
         );
         UpdateUtil::table(
-            DBPREFIX . 'module_u2u_user_log',
+            DBPREFIX.'module_u2u_user_log',
             array(
-                'id'                  => array('type' => 'INT(11) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
-                'userid'              => array('type' => 'INT(11) UNSIGNED', 'notnull' => true),
-                'user_sent_items'     => array('type' => 'INT(11) UNSIGNED', 'notnull' => true),
-                'user_unread_items'   => array('type' => 'INT(11) UNSIGNED', 'notnull' => true),
-                'user_status'         => array('type' => "ENUM('0','1')",    'notnull' => true, 'default' => '1'),
+                'id'                 => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'userid'             => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'user_sent_items'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'user_unread_items'  => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'user_status'        => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1')
             )
         );
     }

@@ -147,19 +147,6 @@ function _calendarUpdate()
 	    }
 
 
-    	//add new colum
-    	$arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_calendar_registrations');
-    	if ($arrColumns === false) {
-    		setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_calendar_registrations'));
-    		return false;
-    	}
-
-    	if (!array_key_exists("NOTE_DATE", $arrColumns)) {
-    	    $query = "ALTER TABLE `".DBPREFIX."module_calendar_registrations` ADD `note_date` INT(11) NOT NULL AFTER `note_id`";
-    	    if ($objDatabase->Execute($query) === false) {
-    			return _databaseError($query, $objDatabase->ErrorMsg());
-    		}
-    	}
 
     	//insert new BACKLIN placeholder in sign form
     	$arrContentCatIds = array();
@@ -198,6 +185,51 @@ function _calendarUpdate()
     	}
 
 	}
+
+    try{
+        // delete obsolete table  contrexx_module_calendar_access
+        UpdateUtil::drop_table(DBPREFIX.'module_calendar_access');
+
+        UpdateUtil::table(
+            DBPREFIX.'module_calendar_form_data',
+            array(
+                'reg_id'     => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
+                'field_id'   => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
+                'data'       => array('type' => 'TEXT', 'notnull' => true)
+            )
+        );
+
+        UpdateUtil::table(
+            DBPREFIX.'module_calendar_form_fields',
+            array(
+                'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'note_id'    => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
+                'name'       => array('type' => 'TEXT'),
+                'type'       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
+                'required'   => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
+                'order'      => array('type' => 'INT(3)', 'notnull' => true, 'default' => '0'),
+                'key'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0')
+            )
+        );
+
+        UpdateUtil::table(
+            DBPREFIX.'module_calendar_registrations',
+            array(
+                'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'note_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
+                'note_date'      => array('type' => 'INT(11)', 'notnull' => true),
+                'time'           => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0'),
+                'host'           => array('type' => 'VARCHAR(255)'),
+                'ip_address'     => array('type' => 'VARCHAR(15)'),
+                'type'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
+    }
 
     return true;
 }

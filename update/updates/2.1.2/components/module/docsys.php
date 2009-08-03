@@ -6,10 +6,10 @@ function _docsysUpdate()
 
     try{
         UpdateUtil::table(
-            DBPREFIX . 'module_docsys_entry_category',
+            DBPREFIX.'module_docsys_entry_category',
             array(
-                'entry'    => array('type' => 'INT', 'unsigned' => true, 'notnull' => true, 'primary'=> true),
-                'category' => array('type' => 'INT', 'unsigned' => true, 'notnull' => true, 'primary'=> true)
+                'entry'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'category'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
             )
         );
 

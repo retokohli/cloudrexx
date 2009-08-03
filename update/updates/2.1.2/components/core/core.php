@@ -51,28 +51,88 @@ function _coreUpdate()
 
 
 
+
+
+
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'content_navigation',
+            array(
+                'catid'                  => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'is_validated'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'parcat'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'catname'                => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'target'                 => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
+                'displayorder'           => array('type' => 'SMALLINT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '1000'),
+                'displaystatus'          => array('type' => 'SET(\'on\',\'off\')', 'notnull' => true, 'default' => 'on'),
+                'activestatus'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'cachingstatus'          => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'username'               => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                'changelog'              => array('type' => 'INT(14)', 'notnull' => false),
+                'cmd'                    => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'lang'                   => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'default' => '0'),
+                'startdate'              => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                'enddate'                => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                'protected'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0'),
+                'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
+                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'parcat'                 => array('fields' => array('parcat')),
+                'module'                 => array('fields' => array('module')),
+                'catname'                => array('fields' => array('catname'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+
+
+
+
     /**********************************************
-     *
-     * MIGRATE BACKEND_AREAS TO NEW ACCESS SYSTEM
-     *
-     **********************************************/
-    $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX."backend_areas");
-    if ($arrColumns === false) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'backend_areas'));
-        return false;
+     *                                            *
+     * MIGRATE BACKEND_AREAS TO NEW ACCESS SYSTEM *
+	 * BUGFIX:	Add UNIQUE key on access_id       *
+     *                                            *
+     *********************************************/
+    try{
+        UpdateUtil::table(
+            DBPREFIX.'backend_areas',
+            array(
+                'area_id'            => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'parent_area_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'type'               => array('type' => 'ENUM(\'group\',\'function\',\'navigation\')', 'notnull' => false, 'default' => 'navigation'),
+                'scope'              => array('type' => 'ENUM(\'global\',\'frontend\',\'backend\')', 'notnull' => true, 'default' => 'global'),
+                'area_name'          => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => 'NULL'),
+                'is_active'          => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1'),
+                'uri'                => array('type' => 'VARCHAR(255)'),
+                'target'             => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '_self'),
+                'module_id'          => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'order_id'           => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'access_id'          => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            ),
+            array(
+                'access_id'          => array('fields' => array('access_id'), 'type' => 'UNIQUE'),
+                'area_name'          => array('fields' => array('area_name'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
     }
 
-    if (!in_array('scope', $arrColumns)) {
-        $query = "ALTER TABLE `".DBPREFIX."backend_areas` ADD `scope` ENUM( 'global', 'frontend', 'backend' ) DEFAULT 'global' NOT NULL AFTER `type`";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
 
-        $query = "UPDATE `".DBPREFIX."backend_areas` SET `scope` = 'backend'";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+
+
 
     /*********************
      *
@@ -1328,11 +1388,11 @@ function _coreUpdate()
 
     /**********************************************************
      * Add unique index on theme name. Who needs multiple
-     * themes with the same name anyways? Are there people 
+     * themes with the same name anyways? Are there people
      * who know the difference between "aaa" and "aaa"? Guess
      * not. It's just useless.
-     * NOTE THIS KICKS OUT ALL DUPLICATE DESIGNS WITH THE 
-     * SAME NAME FROM THE DATABASE. WHICH I CONSIDER A 
+     * NOTE THIS KICKS OUT ALL DUPLICATE DESIGNS WITH THE
+     * SAME NAME FROM THE DATABASE. WHICH I CONSIDER A
      * NECCESSARY EVIL.
      **********************************************************/
     try {
