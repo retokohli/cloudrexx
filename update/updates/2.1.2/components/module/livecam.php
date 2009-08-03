@@ -76,7 +76,7 @@ function _livecamUpdate()
                     }
 
                     $query = "INSERT INTO `".DBPREFIX."module_livecam` (`id`, `currentImagePath`, `archivePath`, `thumbnailPath`, `maxImageWidth`, `thumbMaxSize`, `shadowboxActivate`) VALUES
-                            ('1', '".addslashes($arrFormerSettings['currentImagePath'])."', '".addslashes($arrFormerSettings['archivePath'])."', '".addslashes($arrFormerSettings['thumbnailPath'])."', '400', '120', '0')";
+                            ('1', '".addslashes($arrFormerSettings['currentImageUrl'])."', '".addslashes($arrFormerSettings['archivePath'])."', '".addslashes($arrFormerSettings['thumbnailPath'])."', '400', '120', '0')";
                     if ($objDatabase->Execute($query) === false) {
                         return _databaseError($query, $objDatabase->ErrorMsg());
                     }
