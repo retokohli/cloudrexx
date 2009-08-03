@@ -33,14 +33,6 @@ function _livecamUpdate()
         return UpdateUtil::DefaultActionHandler($e);
     }
 
-	$defaultFrom = mktime(0, 0);
-	$defaultTill = mktime(23, 59);
-    //set new default settings
-	$query = "UPDATE `".DBPREFIX."module_livecam` SET `showFrom`=$defaultFrom, `showTill`=$defaultTill WHERE `showFrom` = '0'";
-	if ($objDatabase->Execute($query) === false) {
-		return _databaseError($query, $objDatabase->ErrorMsg());
-	}
-
     $query = "SELECT 1 FROM `".DBPREFIX."module_livecam_settings` WHERE `setname` = 'amount_of_cams'";
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult !== false) {
@@ -57,32 +49,66 @@ function _livecamUpdate()
 
 
 
+
+
+
 	/************************************************
 	* BUGFIX:	Migrate settings                    *
     * ADDED:    2.1.2                               *
 	************************************************/
 	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
         $arrFormerSettings = array(
-            'currentImageUrl'   => 'currentImagePath',
-            'archivePath'       => 'archivePath',
-            'thumbnailPath'     => 'thumbnailPath'
+            'currentImageUrl',
+            'archivePath',
+            'thumbnailPath'
         );
 
-        foreach ($arrFormerSettings as $setting => $attribute) {
-            $query = "SELECT `setvalue` FROM `".DBPREFIX."module_livecam_settings` WHERE `setname` = '$setting'";
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult !== false) {
-                if ($objResult->RecordCount() == 1) {
-                    $query = "UPDATE `".DBPREFIX."module_livecam` SET `$attribute` = '".addslashes($objResult->fields['setvalue'])."' WHERE `id` = 1";
+        $query = "SELECT 1 FROM `".DBPREFIX."module_livecam` WHERE `id` = 1";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult !== false) {
+            if ($objResult->RecordCount() == 0) {
+                $query = "SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_livecam_settings` WHERE `setname` IN ('".implode("','", array_keys($arrFormerSettings))."')";
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult !== false) {
+                    while (!$objResult->EOF) {
+                        $arrFormerSettings[$objResult->fields['setname']] = $objResult->fields['setvalue'];
+                        $objResult->MoveNext();
+                    }
+
+                    $query = "INSERT INTO `".DBPREFIX."module_livecam` (`id`, `currentImagePath`, `archivePath`, `thumbnailPath`, `maxImageWidth`, `thumbMaxSize`, `shadowboxActivate`) VALUES
+                            ('1', '".addslashes($arrFormerSettings['currentImagePath'])."', '".addslashes($arrFormerSettings['archivePath'])."', '".addslashes($arrFormerSettings['thumbnailPath'])."', '400', '120', '0')";
                     if ($objDatabase->Execute($query) === false) {
                         return _databaseError($query, $objDatabase->ErrorMsg());
                     }
+                } else {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
                 }
-            } else {
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+
+        foreach ($arrFormerSettings as $setting) {
+            $query = "DELETE FROM `".DBPREFIX."module_livecam_settings` WHERE `setname` = '".$setting."'";
+            if ($objDatabase->Execute($query) === false) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
         }
     }
+
+
+
+
+
+
+
+	$defaultFrom = mktime(0, 0);
+	$defaultTill = mktime(23, 59);
+    //set new default settings
+	$query = "UPDATE `".DBPREFIX."module_livecam` SET `showFrom`=$defaultFrom, `showTill`=$defaultTill WHERE `showFrom` = '0'";
+	if ($objDatabase->Execute($query) === false) {
+		return _databaseError($query, $objDatabase->ErrorMsg());
+	}
 
     return true;
 }
