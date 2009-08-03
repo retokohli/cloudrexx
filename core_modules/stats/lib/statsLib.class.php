@@ -119,7 +119,7 @@ class statsLibrary
                     else {
                         c = screen.pixelDepth;
                     }
-                    document.write('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ><\/script>');
+                    document.write('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ><\\/script>');
                     // -->
                     </script>
                     <noscript><div><img src=\"$ascms_core_module_web_path/stats/counter.php?mode=noscript&amp;referer=$referer&amp;pageId=$pageId.$searchTerm\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>
@@ -411,7 +411,7 @@ class statsLibrary
                                 0,
                                 0,
                                 $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
-                                $startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+                                date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
                                 $previousYear
                             )."'";
         $objResult = $objDatabase->Execute($query);
@@ -429,7 +429,7 @@ class statsLibrary
                                 0,
                                 0,
                                 $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
-                                $startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+                                date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
                                 $previousYear
                             )."'";
         $objResult = $objDatabase->Execute($query);
