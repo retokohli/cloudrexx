@@ -55,6 +55,7 @@ $_ARRAYLANG['TXT_MORE_NEWS'] = "M&aacute;s Noticias";
 $_ARRAYLANG['TXT_LOGIN'] = "Entrar";
 $_ARRAYLANG['TXT_BACK'] = "volver";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Las dos contrase&ntilde;as no coinciden.";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "&Uacute;ltimas Entradas en el Directorio";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "\¡No puede enviarse un email a %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Reiniciar clave";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Por favor, introduce tu direcci&oacute;n de email. Se te enviar&aacute; un mensaje con las instrucciones.";
@@ -187,4 +188,5 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Ofertas de empleo";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Ofertas de empleo";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Subastas";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Subastas";
+$_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 ?>

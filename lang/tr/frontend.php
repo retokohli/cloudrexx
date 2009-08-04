@@ -55,6 +55,7 @@ $_ARRAYLANG['TXT_MORE_NEWS'] = "Diğer haberler";
 $_ARRAYLANG['TXT_LOGIN'] = "Giriş";
 $_ARRAYLANG['TXT_BACK'] = "geri";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Şifrelerin ikisi birbiriyle uyuşmuyor";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Neuste Verzeichnis Einträge";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "%EMAIL% e Email  gönedrilemedi!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Şifreyi geri döndür";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "E-mail adresini girin.Size en kısa zamanda diğer adımlarla ilgili açıklayıcı bir yazı gönderilecektir.";
@@ -187,4 +188,5 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
+$_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 ?>

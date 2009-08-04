@@ -150,7 +150,6 @@ $_ARRAYLANG['TXT_MAP'] = "Mapa";
 $_ARRAYLANG['TXT_DIR_MOST_POPULAR'] = "M&aacute;s popular";
 $_ARRAYLANG['TXT_DIR_LAST_ENTREES'] = "&Uacute;ltimas entradas";
 $_ARRAYLANG['TXT_DIR_DIRECTORY'] = "Directorio";
-$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "&Uacute;ltimas Entradas en el Directorio";
 $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'] = "no se encontr&oacute; ninguna entrada";
 $_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'] = "B&uacute;squeda Extendida";
 $_ARRAYLANG['TXT_DIRECTORY_DETAIL'] = "Detalle";

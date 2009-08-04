@@ -55,6 +55,7 @@ $_ARRAYLANG['TXT_MORE_NEWS'] = "Weitere Newsmeldungen";
 $_ARRAYLANG['TXT_LOGIN'] = "Anmelden";
 $_ARRAYLANG['TXT_BACK'] = "zurück";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Die beiden Passwörter stimmen nicht überein.";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Neuste Verzeichnis Einträge";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Konnte keine Email an %EMAIL% gesendet werden!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Passwort zurücksetzen";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Geben Sie bitte Ihre E-Mail Adresse an. Eine Nachricht mit weiteren Anweisungen wird Ihnen dann in kürze zugesandt.";
@@ -187,4 +188,5 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
+$_ARRAYLANG['TXT_MARKET_LATEST'] = "Neuste Inserate";
 ?>
