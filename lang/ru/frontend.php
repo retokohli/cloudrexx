@@ -55,6 +55,7 @@ $_ARRAYLANG['TXT_MORE_NEWS'] = "Дальнейшие новости";
 $_ARRAYLANG['TXT_LOGIN'] = "Войти";
 $_ARRAYLANG['TXT_BACK'] = "Назад";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Пароли не совпадают между собой";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Последние записи в каталоге ";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Невозможно послать e-mail по следующему адресу %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Отменить пароль";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Введите пожалуйста ваш e-mail. Вскоре вы получите сообщение с дальнейшими инструкциями.";
@@ -188,4 +189,5 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
+$_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 ?>

@@ -55,6 +55,7 @@ $_ARRAYLANG['TXT_MORE_NEWS'] = "Flere nyhedsmeldinger";
 $_ARRAYLANG['TXT_LOGIN'] = "Log ind";
 $_ARRAYLANG['TXT_BACK'] = "tilbage";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De to kodeord stemmer ikke overens.";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Latest Directory Entries ";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Kunne ikke sende en e-mail til %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Nulstil kodeord";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Indtast venligst din e-mail adresse. En meddelelse med yderligere instruktioner vil så blive sendt omgående til denne adresse.";
@@ -187,4 +188,5 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Jobannoncer";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Jobannoncer";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
+$_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 ?>
