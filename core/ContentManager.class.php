@@ -1318,6 +1318,8 @@ class ContentManager
                     $objWorkflow->deleteHistory(intval($intHistoryId));
                 }
             }
+
+            return true;
         }
 
         $expertmode = "n";
