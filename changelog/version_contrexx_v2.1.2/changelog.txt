@@ -56,6 +56,11 @@ Benutzerverwaltung
   Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
 - Der Gruppenfilter bei der Auflistung der Benutzer im Frontend funktioniert.
 
+Content Manager
+- Beim Löschen der Seitenänderungen einer Seite (im Bearbeitungsmodus der
+  Seite) gehen die definierten Zugriffsberechtigungen der jeweiligen Seite
+  nicht verloren.
+
 News Manager
 - Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
   diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
