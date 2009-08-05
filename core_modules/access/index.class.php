@@ -161,7 +161,7 @@ class Access extends AccessLib
                 $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&amp;section=access&amp;cmd=members&amp;groupId=".$groupId."&amp;search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&amp;username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
-            $this->_objTpl->setVariable('ACCESS_GROUP_NAME', ($objGroup = $objFWUser->objGroup->getGroup($groupId) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
+            $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
 
             $arrBuddyIds = u2uLibrary::getIdsOfBuddies();
 
