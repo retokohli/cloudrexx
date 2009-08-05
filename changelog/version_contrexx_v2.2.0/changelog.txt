@@ -79,6 +79,7 @@ Benutzerverwaltung
   erfasst werden.
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
   Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
+- Der Gruppenfilter bei der Auflistung der Benutzer im Frontend funktioniert.
 
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
