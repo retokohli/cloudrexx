@@ -68,7 +68,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('lib/DBG.php');
-define('_DEBUG', DBG_NONE);
+define('_DEBUG', DBG_PHP | DBG_ADODB |DBG_LOG_FIREPHP);
 DBG::__internal__setup();
 
 //iconv_set_encoding("output_encoding", "utf-8");
@@ -457,6 +457,21 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
             $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
         }
+    }
+}
+
+//-------------------------------------------------------
+// Set download groups
+//-------------------------------------------------------
+if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/ms', $page_content, $arrMatches)) {
+    $modulespath = "modules/downloads/lib/downloadsLib.class.php";
+    if (file_exists($modulespath)) {
+        /**
+         * @ignore
+         */
+        include_once($modulespath);
+        $objDownloadLib = new DownloadsLibrary();
+        $objDownloadLib->setGroups($arrMatches[1], $page_content);
     }
 }
 
