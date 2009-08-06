@@ -104,6 +104,7 @@ Modul: Blog
 
 Modul: E-Card
 - Die Bilder werden gemäss den Einstellungen verkleinert.
+- Sicherheitslücke geschlossen.
 
 Modul: Digital Asset Management
 - Die Benutzerdefinierte Sortierung funktioniert.
