@@ -36,6 +36,15 @@ Modul: Digital Asset Management
 
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
+- Warenkorb funktioniert jetzt mit IE8
+
+Content Manager
+- Flash-Objekte werden nun "gepatcht", um floating divs darüber darstellen
+  zu können (#268)
+
+Statistik
+- Windows 7 wird nun erkannt
+
 
 ****************************************
 * Behobene Fehler **********************
@@ -50,6 +59,8 @@ Allgemein:
   auch ein CSS-Style (active/inactive) ausgegeben.
 - Der Platzhalter [[LANGUAGE_NAVBAR]] ist kompatibel mit der Funktion
   'Virtuelle Sprachverzeichnisse verwenden'.
+- Fehler mit Weiterleitung in einem neuen Fenster behoben
+- Namen von Designs werden jetzt in jedem Fall korrekt übernommen
 
 Benutzerverwaltung
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
@@ -60,6 +71,8 @@ Content Manager
 - Beim Löschen der Seitenänderungen einer Seite (im Bearbeitungsmodus der
   Seite) gehen die definierten Zugriffsberechtigungen der jeweiligen Seite
   nicht verloren.
+- Flash-Objekte werden nun "gepatcht", um floating divs darüber darstellen
+  zu können (#268)
 
 News Manager
 - Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
@@ -72,19 +85,24 @@ Modul: Bildergalerie
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 - Als Zufallsbild [[GALLERY_RANDOM]] wird nur ein Bild aus einer Kategorie
   verwendet, auf welche der Besucher Zugriffs berechtigt ist.
+- Web-Spider können nun keine Bilder mehr bewerten (#201)
+- Hartcodierter Rahmen bei den IMG-Tags
 
 Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
 - Anführungszeichen werden bei Kommentaren akzeptiert.
-- Die Statistik wird von Suchmaschinen nicht beeinflusst.
+- Die Statistik & Tag Cloud wird von Suchmaschinen nicht mehr beeinflusst.
 
 Modul: E-Card
 - Die Bilder werden gemäss den Einstellungen verkleinert.
 - Sicherheitslücke geschlossen.
+- Fehler in Dateiberechtigungen behoben
 
 Modul: Digital Asset Management
 - Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
 - XHTML validierte Ausgabe.
+- Input-Validierung: beim Erstellen eines Downloads muss nun eine Datei
+  angegeben werden
 
 Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
@@ -94,24 +112,48 @@ Modul: Gästebuch
 
 Modul: Kalender
 - Die Kategorienauswahl wird bei der Suche berücksichtigt.
+- Anzeige von Terminen funktioniert jetzt von der Boxenansicht aus.
+- Anzeigeproblem in IE behoben (Backend)
+- Probleme im Zusammenhang mit Aliases behoben
+- Den Platzhalter CALENDAR_CATEGORIE gibt es wieder.
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 - Es werden keine leeren Einträge aufgelistet.
+- Kleine Korrekturen in der Darstellung
+
+Medienarchiv
+- In gewissen Situationen konnten nach Updates Archive 2-4 nicht installiert
+  werden
+- Direkte verlinkung im Medienarchiv geht jetzt wieder. Für "richtig" zu
+  schützende Dateien bitte Digital Asset Management benutzen.
+
 
 Modul: Shop
 - Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
 
+Modul: Livecam
+- Nach Updates funktionierten unter Umständen die Einstellungen nicht
+
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
+- Die Einstellungen werden nun immer gespeichert
+
+Modul: Newsletter
+- Fehler beim Versenden einer Multipart-Nachricht, wenn nur HTML erfasst
+  wurde, ohne Text
+
 
 Modul: Wissensdatenbank
 - Verbesserte Live-Suche.
+- IE6 stürzt nicht mehr ab
 
-Statistik
+Modul: Memberdir
+- Input-Validierung verbessert
+
+Modul: Statistik
 - Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter
   Verwendung eines Alias getätigt wurden, korrekt aufgelistet.
 
-****************************************
-* Neue Module **************************
-****************************************
+Standard-Design:
+- CSS für Tabellen korrigiert
