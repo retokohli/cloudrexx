@@ -81,17 +81,17 @@ class ecard
 
         $this->_objTpl->setTemplate($this->pageContent);
         // Initialize POST variables
-        $id = (isset($_POST['selectedEcard']) ? $_POST['selectedEcard'] : '');
-        $message = !empty($_POST['ecardMessage']) ? strip_tags($_POST['ecardMessage']) : "";
-        $recipientSalutation = !empty($_POST['ecardRecipientSalutation']) ? $_POST['ecardRecipientSalutation'] : "";
-        $senderName = !empty($_POST['ecardSenderName']) ? $_POST['ecardSenderName'] : "";
-        $senderEmail = !empty($_POST['ecardSenderEmail']) ? $_POST['ecardSenderEmail'] : "";
-        $recipientName = !empty($_POST['ecardRecipientName']) ? $_POST['ecardRecipientName'] : "";
-        $recipientEmail = !empty($_POST['ecardRecipientEmail']) ? $_POST['ecardRecipientEmail'] : "";
+        $selectedId = isset($_POST['selectedEcard']) ? intval($_POST['selectedEcard']) : 0;
+        $message = !empty($_POST['ecardMessage']) ? htmlentities(contrexx_stripslashes($_POST['ecardMessage']), ENT_QUOTES, CONTREXX_CHARSET) : "";
+        $recipientSalutation = !empty($_POST['ecardRecipientSalutation']) ? htmlentities(contrexx_stripslashes($_POST['ecardRecipientSalutation']), ENT_QUOTES, CONTREXX_CHARSET) : "";
+        $senderName = !empty($_POST['ecardSenderName']) ? htmlentities(contrexx_stripslashes($_POST['ecardSenderName']), ENT_QUOTES, CONTREXX_CHARSET) : "";
+        $senderEmail = !empty($_POST['ecardSenderEmail']) && FWValidator::isEmail($_POST['ecardSenderEmail']) ? $_POST['ecardSenderEmail'] : "";
+        $recipientName = !empty($_POST['ecardRecipientName']) ? htmlentities(contrexx_stripslashes($_POST['ecardRecipientName']), ENT_QUOTES, CONTREXX_CHARSET) : "";
+        $recipientEmail = !empty($_POST['ecardRecipientEmail']) && FWValidator::isEmail($_POST['ecardRecipientEmail']) ? $_POST['ecardRecipientEmail'] : "";
 
         // Get max. number of characters and lines per message
         $query = "
-              SELECT *
+              SELECT `setting_name`, `setting_value`
                 FROM ".DBPREFIX."module_ecard_settings";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
@@ -150,21 +150,23 @@ class ecard
         while (!$objResult->EOF) {
             $motive = $objResult->fields['setting_value'];
             $motive = basename($motive);
-            $arrMatch = array();
-            $id = 0;
-            if (preg_match('/(\d+)$/', $objResult->fields['setting_name'], $arrMatch))
-            $id = $arrMatch[1];
             if (empty($motive)) {
                 $objResult->MoveNext();
                 continue;
             }
+
+            $arrMatch = array();
+            $id = 0;
+            if (preg_match('/(\d+)$/', $objResult->fields['setting_name'], $arrMatch))
+                $id = $arrMatch[1];
+
             $this->_objTpl->setVariable(array(
                 'ECARD_MOTIVE_OPTIMIZED_PATH' => ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motive,
                 'ECARD_MOTIVE_ID' => $id,
                 'ECARD_THUMBNAIL_PATH' => ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motive,
                 'ECARD_CSSNUMBER' => ($i % 3) + 1,
                 'ECARD_IMAGE_SELECTED' =>
-                    ($id == $i ? ' checked="checked"' : ''),
+                    ($id == $selectedId ? ' checked="checked"' : ''),
             ));
             $this->_objTpl->parse('motiveBlock');
             if ($i % 3 == 0) {
@@ -185,19 +187,19 @@ class ecard
 
         $this->_objTpl->setTemplate($this->pageContent);
         // Initialize POST variables
-        $id = $_POST['selectedEcard'];
-        $message = nl2br($_POST['ecardMessage']);
-        $recipientSalutation = $_POST['ecardRecipientSalutation'];
-        $senderName = $_POST['ecardSenderName'];
-        $senderEmail = $_POST['ecardSenderEmail'];
-        $recipientName = $_POST['ecardRecipientName'];
-        $recipientEmail = $_POST['ecardRecipientEmail'];
+        $id = intval($_POST['selectedEcard']);
+        $message = nl2br(htmlentities(contrexx_stripslashes($_POST['ecardMessage']), ENT_QUOTES, CONTREXX_CHARSET));
+        $recipientSalutation = htmlentities(contrexx_stripslashes($_POST['ecardRecipientSalutation']), ENT_QUOTES, CONTREXX_CHARSET);
+        $senderName = htmlentities(contrexx_stripslashes($_POST['ecardSenderName']), ENT_QUOTES, CONTREXX_CHARSET);
+        $senderEmail = FWValidator::isEmail($_POST['ecardSenderEmail']) ? $_POST['ecardSenderEmail'] : '';
+        $recipientName = htmlentities(contrexx_stripslashes($_POST['ecardRecipientName']), ENT_QUOTES, CONTREXX_CHARSET);
+        $recipientEmail = FWValidator::isEmail($_POST['ecardRecipientEmail']) ? $_POST['ecardRecipientEmail'] : '';
         // Get path from choosen motive
         $query = "
             SELECT setting_value
               FROM ".DBPREFIX."module_ecard_settings
              WHERE setting_name='motive_$id'";
-        $objResult = $objDatabase->Execute($query);
+        $objResult = $objDatabase->SelectLimit($query, 1);
         $selectedMotive = basename($objResult->fields['setting_value']);
         $this->_objTpl->setVariable(array(
             'ECARD_DATA' =>
@@ -228,21 +230,29 @@ class ecard
 
         // Initialize variables
         $code = substr(md5(rand()), 1, 10);
-        $url = 'http://'.$_CONFIG['domainUrl'].
-            ASCMS_PATH_OFFSET.
+        $url = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].
+            ($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT'])).
+            CONTREXX_SCRIPT_PATH.
             '/index.php?section=ecard&cmd=show&code='.$code;
 
         // Initialize POST variables
-        $id = $_POST['selectedEcard'];
-        $message = $_POST['ecardMessage'];
-        $recipientSalutation = $_POST['ecardRecipientSalutation'];
-        $senderName = $_POST['ecardSenderName'];
-        $senderEmail = $_POST['ecardSenderEmail'];
-        $recipientName = $_POST['ecardRecipientName'];
-        $recipientEmail = $_POST['ecardRecipientEmail'];
+        $id = intval($_POST['selectedEcard']);
+        $message = contrexx_addslashes($_POST['ecardMessage']);
+        $recipientSalutation = contrexx_stripslashes($_POST['ecardRecipientSalutation']);
+        $senderName = contrexx_stripslashes($_POST['ecardSenderName']);
+        $senderEmail = FWValidator::isEmail($_POST['ecardSenderEmail']) ? $_POST['ecardSenderEmail'] : '';
+        $recipientName = contrexx_stripslashes($_POST['ecardRecipientName']);
+        $recipientEmail = FWValidator::isEmail($_POST['ecardRecipientEmail']) ? $_POST['ecardRecipientEmail'] : '';
+
+        if (empty($senderEmail) || empty($recipientEmail)) {
+            $this->_objTpl->setVariable(array(
+                'STATUS_MESSAGE' => $_ARRAYLANG['TXT_ECARD_SENDING_ERROR']
+            ));
+            return false;
+        }
 
         $query = "
-            SELECT *
+            SELECT `setting_name`, `setting_value`
               FROM ".DBPREFIX."module_ecard_settings";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
@@ -285,10 +295,10 @@ class ecard
                 '".$code."',
                 '".time()."',
                 '".$timeToLife."',
-                '".$recipientSalutation."',
-                '".$senderName."',
+                '".addslashes($recipientSalutation)."',
+                '".addslashes($senderName)."',
                 '".$senderEmail."',
-                '".$recipientName."',
+                '".addslashes($recipientName)."',
                 '".$recipientEmail."',
                 '".$message."');";
         if ($objDatabase->Execute($query)) {
@@ -296,7 +306,7 @@ class ecard
                 SELECT setting_value
                   FROM ".DBPREFIX."module_ecard_settings
                  WHERE setting_name='motive_$id'";
-            $objResult = $objDatabase->Execute($query);
+            $objResult = $objDatabase->SelectLimit($query, 1);
 
             // Copy motive to new file with $code as filename
             $fileExtension = preg_replace('/^.+(\.[^\.]+)$/', '$1', $objResult->fields['setting_value']);
@@ -352,7 +362,7 @@ class ecard
         $this->_objTpl->setTemplate($this->pageContent);
 
         // Initialize variables
-        $code = $_GET['code'];
+        $code = contrexx_addslashes($_GET['code']);
         // Get data from DB
         $query = "
             SELECT *
@@ -361,12 +371,12 @@ class ecard
         $objResult = $objDatabase->Execute($query);
         // If entered code does match a record in db
         if (!$objResult->EOF) {
-            $message = $objResult->fields['message'];
-            $senderName = $objResult->fields['senderName'];
+            $message = nl2br(htmlentities($objResult->fields['message'], ENT_QUOTES, CONTREXX_CHARSET));
+            $senderName = htmlentities($objResult->fields['senderName'], ENT_QUOTES, CONTREXX_CHARSET);
             $senderEmail = $objResult->fields['senderEmail'];
-            $recipientName = $objResult->fields['recipientName'];
+            $recipientName = htmlentities($objResult->fields['recipientName'], ENT_QUOTES, CONTREXX_CHARSET);
             $recipientEmail = $objResult->fields['recipientEmail'];
-            $recipientsalutation = $objResult->fields['salutation'];
+            $recipientsalutation = htmlentities($objResult->fields['salutation'], ENT_QUOTES, CONTREXX_CHARSET);
             // Get right file extension
             $globArray = glob(ASCMS_ECARD_SEND_ECARDS_PATH.$code.".*");
             $fileextension = substr($globArray[0], -4);
