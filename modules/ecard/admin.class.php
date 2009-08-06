@@ -111,8 +111,8 @@ class ecard
 
                 /* Create optimized picture for e-card dispatch */
                 if ($filepath != '' && file_exists(ASCMS_PATH.$filepath)) {
-                    $this->resizeMotive(2, ASCMS_PATH.$filepath, ASCMS_ECARD_OPTIMIZED_PATH);
-                    $this->resizeMotive(1, ASCMS_PATH.$filepath, ASCMS_ECARD_THUMBNAIL_PATH);
+                    $this->resizeMotive(2, ASCMS_PATH.$filepath, ASCMS_ECARD_OPTIMIZED_PATH.'/');
+                    $this->resizeMotive(1, ASCMS_PATH.$filepath, ASCMS_ECARD_THUMBNAIL_PATH.'/');
                 }
                 ++$i;
             }
@@ -143,11 +143,11 @@ class ecard
         /* Create thumbnails */
         while (!$objResult->EOF) {
             $motiveFilename = $objResult->fields['setting_value'];
-            $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH."no_picture.gif";
+            $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH.'/'."no_picture.gif";
             $sourcePath = '';
             if ($motiveFilename != '') {
-                $sourcePath = ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motiveFilename;
-                $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motiveFilename;
+                $sourcePath = ASCMS_ECARD_OPTIMIZED_WEB_PATH.'/'.$motiveFilename;
+                $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH.'/'.$motiveFilename;
             }
             /* Initialize DATA placeholder */
             $this->_objTpl->setVariable(array(
@@ -219,7 +219,7 @@ class ecard
             if (!empty($unvalidEcardsArray)) {
                 /* Get the right filextension */
                 foreach ($unvalidEcardsArray as $value) {
-                    $globArray[] = array('ecardWithPath' => glob(ASCMS_ECARD_SEND_ECARDS_PATH.$value['code'].".*"), 'code' => $value['code']);
+                    $globArray[] = array('ecardWithPath' => glob(ASCMS_ECARD_SEND_ECARDS_PATH.'/'.$value['code'].".*"), 'code' => $value['code']);
                 }
 
                 /* Delete the files */
