@@ -3048,6 +3048,7 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_ZIP2'          => (isset($_SESSION['shop']['zip2'])       ? stripslashes($_SESSION['shop']['zip2']) : ''),
                 'SHOP_ACCOUNT_CITY2'         => (isset($_SESSION['shop']['city2'])      ? stripslashes($_SESSION['shop']['city2']) : ''),
                 'SHOP_ACCOUNT_COUNTRY2'      => Country::getNameById($_SESSION['shop']['countryId2']),
+                'SHOP_ACCOUNT_COUNTRY2_ID'   => $_SESSION['shop']['countryId2'],
                 'SHOP_ACCOUNT_PHONE2'        => (isset($_SESSION['shop']['phone2'])     ? stripslashes($_SESSION['shop']['phone2']) : ''),
                 'SHOP_ACCOUNT_EQUAL_ADDRESS' =>
                     (empty($_SESSION['shop']['equalAddress'])
