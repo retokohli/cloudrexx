@@ -80,6 +80,7 @@ Modul: Blog
 
 Modul: E-Card
 - Die Bilder werden gemäss den Einstellungen verkleinert.
+- Sicherheitslücke geschlossen.
 
 Modul: Digital Asset Management
 - Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.

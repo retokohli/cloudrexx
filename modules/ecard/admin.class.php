@@ -65,6 +65,8 @@ class ecard
     {
         global $objTemplate;
 
+        Permission::checkAccess(151, 'static');
+
         $_GET['act'] = (isset($_GET['act'])) ? $_GET['act'] : '';
 
         switch ($_GET['act']) {
@@ -94,11 +96,8 @@ class ecard
         $this->_objTpl->loadTemplateFile('module_ecard_overview.html',true,true);
         $this->_pageTitle = $_ARRAYLANG['TXT_MOTIVE_SELECTION'];
 
-        /* Initialize variables */
-        $_POST['saveMotives'] = isset($_POST['saveMotives']) ? $_POST['saveMotives'] : '';
-
         /* Update progress */
-        if ($_POST['saveMotives']) {
+        if (!empty($_POST['saveMotives'])) {
             $i = 0;
             $motiveInputArray = $_POST['motiveInputArray'];
             while ($i < 9) {
@@ -135,7 +134,7 @@ class ecard
 
         /* Display progress */
         $query = "
-            SELECT *
+            SELECT `setting_value`
               FROM ".DBPREFIX."module_ecard_settings
              WHERE setting_name LIKE 'motive_%'
              ORDER BY setting_name ASC";
@@ -189,8 +188,8 @@ class ecard
                 if ($settingName == 'emailText') {$settingValue = nl2br($settingValue);}
                 $query = "
                     UPDATE ".DBPREFIX."module_ecard_settings
-                       SET setting_value = '" .$settingValue."'
-                     WHERE setting_name = '" .$settingName."';";
+                       SET setting_value = '" .contrexx_addslashes($settingValue)."'
+                     WHERE setting_name = '" .contrexx_addslashes($settingName)."'";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     $this->_objTpl->setVariable(array(
@@ -296,15 +295,15 @@ class ecard
 
             /* Initialize DATA placeholder */
             $this->_objTpl->setVariable(array(
-                'VALID_DAYS' => $validdays,
-                'MAX_WIDTH' => $maxWidth,
-                'MAX_HEIGHT' => $maxHeight,
-                'MAX_WIDTH_THUMB' => $maxWidthThumb,
-                'MAX_HEIGHT_THUMB' => $maxHeightThumb,
-                'SUBJECT' => $subject,
-                'EMAIL_TEXT' => $emailText,
-                'MAX_CHARACTERS' => $maxCharacters,
-                'MAX_LINES' => $maxLines,
+                'VALID_DAYS' => htmlentities($validdays, ENT_QUOTES, CONTREXX_CHARSET),
+                'MAX_WIDTH' => htmlentities($maxWidth, ENT_QUOTES, CONTREXX_CHARSET),
+                'MAX_HEIGHT' => htmlentities($maxHeight, ENT_QUOTES, CONTREXX_CHARSET),
+                'MAX_WIDTH_THUMB' => htmlentities($maxWidthThumb, ENT_QUOTES, CONTREXX_CHARSET),
+                'MAX_HEIGHT_THUMB' => htmlentities($maxHeightThumb, ENT_QUOTES, CONTREXX_CHARSET),
+                'SUBJECT' => htmlentities($subject, ENT_QUOTES, CONTREXX_CHARSET),
+                'EMAIL_TEXT' => htmlentities($emailText, ENT_QUOTES, CONTREXX_CHARSET),
+                'MAX_CHARACTERS' => htmlentities($maxCharacters, ENT_QUOTES, CONTREXX_CHARSET),
+                'MAX_LINES' => htmlentities($maxLines, ENT_QUOTES, CONTREXX_CHARSET)
             ));
             $objResult->MoveNext();
         }
