@@ -161,9 +161,9 @@ class ecard
                 $id = $arrMatch[1];
 
             $this->_objTpl->setVariable(array(
-                'ECARD_MOTIVE_OPTIMIZED_PATH' => ASCMS_ECARD_OPTIMIZED_WEB_PATH.$motive,
+                'ECARD_MOTIVE_OPTIMIZED_PATH' => ASCMS_ECARD_OPTIMIZED_WEB_PATH.'/'.$motive,
                 'ECARD_MOTIVE_ID' => $id,
-                'ECARD_THUMBNAIL_PATH' => ASCMS_ECARD_THUMBNAIL_WEB_PATH.$motive,
+                'ECARD_THUMBNAIL_PATH' => ASCMS_ECARD_THUMBNAIL_WEB_PATH.'/'.$motive,
                 'ECARD_CSSNUMBER' => ($i % 3) + 1,
                 'ECARD_IMAGE_SELECTED' =>
                     ($id == $selectedId ? ' checked="checked"' : ''),
@@ -206,7 +206,7 @@ class ecard
                 '<strong>'.$senderName.'</strong> (<a href="mailto:'.$senderEmail.'">'.
                 $senderEmail.'</a>) '.$_ARRAYLANG['TXT_ECARD_HAS_SENT_YOU_AN_ECARD'],
             'ECARD_MOTIVE' =>
-                '<img src="'.ASCMS_ECARD_OPTIMIZED_WEB_PATH.$selectedMotive.
+                '<img src="'.ASCMS_ECARD_OPTIMIZED_WEB_PATH.'/'.$selectedMotive.
                 '" alt="'.$selectedMotive.'" />',
             'ECARD_MOTIVE_ID' => $id,
             'ECARD_MESSAGE' => $message,
@@ -313,7 +313,7 @@ class ecard
             $fileName = $objResult->fields['setting_value'];
             require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
             $objFile = new File();
-            if ($objFile->copyFile(ASCMS_ECARD_OPTIMIZED_PATH, $fileName, ASCMS_ECARD_SEND_ECARDS_PATH, $code.$fileExtension)) {
+            if ($objFile->copyFile(ASCMS_ECARD_OPTIMIZED_PATH.'/', $fileName, ASCMS_ECARD_SEND_ECARDS_PATH.'/', $code.$fileExtension)) {
                 // Check e-mail settings
                 if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                     $objSmtpSettings = new SmtpSettings();
@@ -378,7 +378,7 @@ class ecard
             $recipientEmail = $objResult->fields['recipientEmail'];
             $recipientsalutation = htmlentities($objResult->fields['salutation'], ENT_QUOTES, CONTREXX_CHARSET);
             // Get right file extension
-            $globArray = glob(ASCMS_ECARD_SEND_ECARDS_PATH.$code.".*");
+            $globArray = glob(ASCMS_ECARD_SEND_ECARDS_PATH.'/'.$code.".*");
             $fileextension = substr($globArray[0], -4);
             $selectedMotive = $code.$fileextension;
             // Initialize DATA placeholder
@@ -387,7 +387,7 @@ class ecard
                     '<strong>'.$senderName.'</strong> (<a href="mailto:'.$senderEmail.'">'.
                     $senderEmail.'</a>) '.$_ARRAYLANG['TXT_ECARD_HAS_SENT_YOU_AN_ECARD'],
                 'ECARD_MOTIVE' =>
-                    '<img src="'.ASCMS_ECARD_SEND_ECARDS_WEB_PATH.$selectedMotive.
+                    '<img src="'.ASCMS_ECARD_SEND_ECARDS_WEB_PATH.'/'.$selectedMotive.
                     '" alt="'.$selectedMotive.'" />',
                 'ECARD_FROM' => $_ARRAYLANG['TXT_ECARD_FROM'].' '.$senderName,
                 'ECARD_MESSAGE' => $message,
