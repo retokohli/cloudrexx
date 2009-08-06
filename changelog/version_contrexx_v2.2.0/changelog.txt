@@ -142,6 +142,7 @@ Modul: Shop
   E-Mail Vorlage in der ausgewählten Sprache nicht vorhanden ist, die, in der
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
   vorhanden ist, wird die nächste vorhandene Sprache verwendet.
+- Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
 
 Modul: User to User Nachrichten
 - Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.
