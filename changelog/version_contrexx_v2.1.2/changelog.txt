@@ -99,6 +99,9 @@ Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 - Es werden keine leeren Einträge aufgelistet.
 
+Modul: Shop
+- Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
+
 Modul: User to User Nachrichten
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 
