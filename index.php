@@ -68,7 +68,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('lib/DBG.php');
-define('_DEBUG', DBG_PHP | DBG_ADODB |DBG_LOG_FIREPHP);
+define('_DEBUG', DBG_NONE);
 DBG::__internal__setup();
 
 //iconv_set_encoding("output_encoding", "utf-8");
