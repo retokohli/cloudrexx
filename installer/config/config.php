@@ -63,7 +63,7 @@ $arrLanguages = array(
 	3	=> array(
 		'id'	=> 2,
 		'lang'	=> 'fr',
-		'name'	=> 'FranÃ§ais',
+		'name'	=> 'Français',
 		'is_default'	=> false
 	)
 );
