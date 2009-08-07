@@ -6266,36 +6266,44 @@ class shopmanager extends ShopLibrary
      */
     function sendConfirmationMail($orderId)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
+        // Determine the customer language ID
         $query = "
-            SELECT email, last_modified, customer_lang, order_status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers c,
-                   ".DBPREFIX."module_shop".MODULE_INDEX."_orders o
-             WHERE o.customerid=c.customerid
-               AND o.orderid=$orderId";
+            SELECT email, last_modified, customer_lang, order_status, order_date
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+             USING (customerid)
+             WHERE orderid=$orderId
+        ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
+        if (!$objResult || $objResult->RecordCount() == 0) {
+            // Order not found
             return false;
         }
-        $shopMailTo = $objResult->fields['email'];
-        $shopLastModified = $objResult->fields['last_modified'];
-        $customerLang = $objResult->fields['customer_lang'];
+        $langId = $objResult->fields['customer_lang'];
+        // Compatibility with old behavior of storing the ISO639-1 code
+        if (!intval($langId))
+            $langId = FWLanguage::getLangIdByIso639_1($langId);
+        $mailTo = $objResult->fields['email'];
         $orderStatus = $objResult->fields['order_status'];
-        $lang_id = FWLanguage::getLangIdByIso639_1($customerLang);
-        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(2, $lang_id);
-        $shopMailFrom = $arrShopMailtemplate['mail_from'];
-        $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
-        $shopMailSubject = $arrShopMailtemplate['mail_subject'];
-        $shopMailSubject = str_replace('<DATE>', $shopLastModified, $shopMailSubject);
-        $shopMailSubject = str_replace('<ORDER_STATUS>', $orderStatus, $shopMailSubject);
-        $shopMailBody = $arrShopMailtemplate['mail_body'];
-        $shopMailBody = str_replace('<DATE>', $shopLastModified, $shopMailBody);
-        $shopMailBody = str_replace('<ORDER_STATUS>', $this->arrOrderStatus[$orderStatus], $shopMailBody);
-        if (shopmanager::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)) {
-            return $shopMailTo;
-        }
-        return '';
+        $lastModified = $objResult->fields['last_modified'];
+        // Select template for order confirmation
+        $arrShopMailtemplate = Mail::getTemplate(2, $langId);
+        $mailFrom = $arrShopMailtemplate['from'];
+        $mailFromText = $arrShopMailtemplate['sender'];
+        $mailSubject = $arrShopMailtemplate['subject'];
+        $mailSubject = str_replace('<DATE>', $lastModified, $mailSubject);
+        $mailSubject = str_replace(
+            '<ORDER_STATUS>',
+            $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus],
+            $mailSubject
+        );
+        $mailBody = $arrShopMailtemplate['message'];
+        $mailBody = self::substituteOrderData($mailBody, $orderId);
+        if (!Mail::send($mailTo, $mailFrom, $mailFromText, $mailSubject, $mailBody))
+            return false;
+        return true;
     }
 
 
@@ -6785,6 +6793,106 @@ class shopmanager extends ShopLibrary
                 '>'.$_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING_'.$sorting].'</option>';
         }
         return $strMenuOptions;
+    }
+
+
+    /**
+     * Replace all placeholders in the e-mail template with the
+     * respective values from the order specified by the order ID.
+     * @access  private
+     * @static
+     * @param   string  $body         The e-mail template
+     * @param   integer $orderId      The order ID
+     * @return  string                The e-mail body
+     */
+    static function substituteOrderData($body, $orderId)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId);
+
+        // Pick the order from the database
+        $query = "
+            SELECT c.customerid, username, email, phone, fax,
+                   prefix, company, firstname, lastname,
+                   address, city, zip, country_id,
+                   selected_currency_id,
+                   order_sum, currency_order_sum,
+                   order_date, order_status,
+                   ship_prefix, ship_company, ship_firstname, ship_lastname,
+                   ship_address, ship_city, ship_zip, ship_country_id, ship_phone,
+                   tax_price,
+                   shipping_id, currency_ship_price,
+                   payment_id, currency_payment_price,
+                   customer_note
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c
+             USING (customerid)
+             WHERE orderid=$orderId
+        ";
+        $objResultOrder = $objDatabase->Execute($query);
+        if (!$objResultOrder || $objResultOrder->RecordCount() == 0) {
+            // Order not found
+            return false;
+        }
+        $order_date = date(ASCMS_DATE_SHORT_FORMAT);
+        $order_time = date(ASCMS_DATE_FORMAT);
+        // Pick names of countries from the database
+        $countryNameCustomer = '';
+        $countryNameShipping = '';
+        $query = "
+            SELECT countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE countries_id=".$objResultOrder->fields['country_id'];
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $countryNameCustomer = $objResult->fields['countries_name'];
+        }
+        $query = "
+            SELECT countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE countries_id=".$objResultOrder->fields['ship_country_id'];
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $countryNameShipping = $objResult->fields['countries_name'];
+        }
+        $search  = array (
+            '<ORDER_ID>', '<ORDER_ID_CUSTOM>', '<DATE>',
+            '<USERNAME>', '<PASSWORD>',
+            '<ORDER_TIME>', '<ORDER_STATUS>', '<REMARKS>',
+            '<CUSTOMER_ID>', '<CUSTOMER_EMAIL>',
+            '<CUSTOMER_COMPANY>', '<CUSTOMER_PREFIX>', '<CUSTOMER_FIRSTNAME>',
+            '<CUSTOMER_LASTNAME>', '<CUSTOMER_ADDRESS>', '<CUSTOMER_ZIP>',
+            '<CUSTOMER_CITY>', '<CUSTOMER_COUNTRY>', '<CUSTOMER_PHONE>',
+            '<CUSTOMER_FAX>',
+            '<SHIPPING_COMPANY>', '<SHIPPING_PREFIX>', '<SHIPPING_FIRSTNAME>',
+            '<SHIPPING_LASTNAME>', '<SHIPPING_ADDRESS>', '<SHIPPING_ZIP>',
+            '<SHIPPING_CITY>', '<SHIPPING_COUNTRY>', '<SHIPPING_PHONE>',
+        );
+        $replace = array (
+            $orderId, $orderIdCustom, $order_date,
+            $objResultOrder->fields['username'],
+            (isset($_SESSION['shop']['password'])
+                ? $_SESSION['shop']['password'] : '******'),
+            $order_time,
+            $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objResultOrder->fields['order_status']],
+            $objResultOrder->fields['customer_note'],
+            $objResultOrder->fields['customerid'], $objResultOrder->fields['email'],
+            $objResultOrder->fields['company'], $objResultOrder->fields['prefix'],
+            $objResultOrder->fields['firstname'], $objResultOrder->fields['lastname'],
+            $objResultOrder->fields['address'], $objResultOrder->fields['zip'],
+            $objResultOrder->fields['city'], $countryNameCustomer,
+            $objResultOrder->fields['phone'], $objResultOrder->fields['fax'],
+            $objResultOrder->fields['ship_company'], $objResultOrder->fields['ship_prefix'],
+            $objResultOrder->fields['ship_firstname'], $objResultOrder->fields['ship_lastname'],
+            $objResultOrder->fields['ship_address'], $objResultOrder->fields['ship_zip'],
+            $objResultOrder->fields['ship_city'], $countryNameShipping,
+            $objResultOrder->fields['ship_phone'],
+        );
+        $body = str_replace($search, $replace, $body);
+        // Strip CRs
+        $body = str_replace("\r", '', $body); //echo("made mail body:<br />".str_replace("\n", '<br />', htmlentities($body))."<br />");
+        return $body;
     }
 
 }
