@@ -233,7 +233,7 @@ class ecard
         $url = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].
             ($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT'])).
             CONTREXX_SCRIPT_PATH.
-            '/index.php?section=ecard&cmd=show&code='.$code;
+            '?section=ecard&cmd=show&code='.$code;
 
         // Initialize POST variables
         $id = intval($_POST['selectedEcard']);
