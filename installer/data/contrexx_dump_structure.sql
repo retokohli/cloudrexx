@@ -639,7 +639,7 @@ CREATE TABLE `contrexx_module_contact_form_data` (
   `ipaddress` varchar(15) NOT NULL default '',
   `data` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
