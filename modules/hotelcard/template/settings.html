@@ -1,0 +1,30 @@
+<!-- start settings.html -->
+<form name="formSettings" method="post" action="{MODULE_BASE_URI}&amp;act=settings">
+  <div class="table">
+    <div class="thead">
+      <div class="tr" style="width: 100%;">
+        <div class="th" style="width: 25%;">
+          <b>{TXT_SETTING_NAME}</b>
+        </div>
+        <div class="th" style="width: 75%;">
+          <b>{TXT_SETTING_VALUE}</b>
+        </div>
+      </div>
+    </div>
+    <div class="tbody">
+      <!-- BEGIN setting -->
+      <div class="trrow{DIETIKER_ROW_CLASS}">
+        <div class="td" style="width: 25%;">
+          {SETTING_NAME}
+        </div>
+        <div class="td" style="width: 75%;">
+          {SETTING_VALUE}
+        </div>
+      </div>
+      <!-- END setting -->
+    </div>
+  </div>
+  <br />
+  <input type="submit" value="{TXT_DIETIKER_STORE}" name="store" style="margin-left:30px;" /><br />
+</form>
+<!-- end settings.html -->
