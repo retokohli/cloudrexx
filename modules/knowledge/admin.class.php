@@ -369,6 +369,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         try {
             $this->articles->deleteOneArticle($id);
+            $this->tags->clearTags($id);
         } catch (DatabaseError $e) {
             $this->sendAjaxError($e->formatted());
         }
@@ -803,7 +804,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "CATLIST"                       => $catTree,
             "EDIT_ALLOWED"                  => (Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static', true)) ? "true" : "false",
             'NOT_ALLOWED_MSG'               => $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED'],
-            'TXT_ARTICLES'                  => $articlelist 
+            'TXT_ARTICLES'                  => $articlelist
         ));
 
         return $this->tpl->get();
@@ -841,7 +842,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 //                "CAT_ROW_WIDTH"				=> 230 + $level ,
             ));
 //            $this->tpl->touchBlock("arrow");
-//            $this->tpl->parse("arrow");  
+//            $this->tpl->parse("arrow");
             $this->tpl->parse("row");
             $rows .= $this->tpl->get("row", true);
         }
@@ -918,7 +919,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $tpl->parse("content");
         return $tpl->get("content");
     }
-    
+
     /**
      * Get Articles
      *
@@ -932,9 +933,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
     private function getArticles()
     {
         global $_LANGID, $_ARRAYLANG, $_CORELANG;
-        
+
         $id = intval($_GET['id']);
-        
+
         try {
             $articles = $this->articles->getArticlesByCategory($id);
             $category = $this->categories->getOneCategory($id);
@@ -945,7 +946,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $content = $this->parseArticleList($articles, $category['content'][$_LANGID]['name']);
         $response = Array();
         $response['list'] = $content;
-       
+
         require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
         $jsonResponse = $objJson->encode($response);
