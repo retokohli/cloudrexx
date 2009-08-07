@@ -245,7 +245,7 @@ class JS
             return true;
         }
 
-        if (!file_exists(ASCMS_DOCUMENT_ROOT.'/'.$file)) {
+        if (!file_exists(($file[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/').$file)) {
             self::$error .= "The file ".$file." doesn't exist\n";
             return false;
         }
