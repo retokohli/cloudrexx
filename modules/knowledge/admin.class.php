@@ -387,6 +387,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         try {
             $this->articles->deleteOneArticle($id);
+            $this->tags->clearTags($id);
         } catch (DatabaseError $e) {
             $this->sendAjaxError($e->formatted());
         }
