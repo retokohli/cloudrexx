@@ -5,6 +5,9 @@
 
 //start anonymous wrapper
 (function(){
+
+var pagingLimit = {PRINTSHOP_PAGING_LIMIT};
+
 var submitForm = function(){
     return false;
 }
@@ -120,6 +123,8 @@ var editEntry = function(){
             var back   = getValueFromText('back', $J.trim($tr.find('td.psback').text()));
             var weight = getValueFromText('weight', $J.trim($tr.find('td.psweight').text()));
             var paper  = getValueFromText('paper', $J.trim($tr.find('td.pspaper').text()));
+            price  = $inputPrice.val();
+            factor = $inputFactor.val();
 
             var params = $J.param({
                 psType:   type,
@@ -163,7 +168,7 @@ var editEntry = function(){
 }
 
 $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
-    var $form = $J('form[name=frmShowEntries]');
+    var $form = $('form[name=frmShowEntries]');
     $form.submit(submitForm);
 
 
@@ -213,13 +218,13 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     });
 
     $('#entriesSelectAll').click(function(){
-        var $form = $J('form[name=frmShowEntries]');
+        var $form = $('form[name=frmShowEntries]');
         $('input[type=checkbox]', $form).attr('checked', 'checked');
         return false;
     });
 
     $('#entriesDeselectAll').click(function(){
-        var $form = $J('form[name=frmShowEntries]');
+        var $form = $('form[name=frmShowEntries]');
         $('input[type=checkbox]', $form).removeAttr('checked');
         return false;
     });
@@ -227,19 +232,39 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 
     $('#entriesMultiAction').change(selectMultiAction);
 
-    $J('select,input').keydown(function(e){
+    $('select,input').keydown(function(e){
         if (e.keyCode == 13) { // click button to save the new attribute when enter is hit
-            $J(this).closest('tr').find('input[type=button]').click();
+            $(this).closest('tr').find('input[type=button]').click();
             return false;
         }
     });
 
-    $J('#psEntriesTable tr.row3').eq(1).find('select').change(function(){
-        getEntries();
+    $('a#pagingPage0,a#pagingPage1,a#pagingPage2,a#pagingPage3,a#pagingPage4,a#pagingPage5,a#pagingPage6').live('click', function(e){
+        e.preventDefault();
+        getEntries(($(this).text()-1) * pagingLimit);
+        return false;
     });
 
-    if($J('#psEntriesTable select').serialize().match(/\b0\b/g).length < 6){ // update entries if a filter is selected
-        getEntries();
+    $('a#pagingFirst').click(function(e){
+        e.preventDefault();
+        getEntries(0);
+        return false;
+    });
+
+    $('a#pagingLast').data('totalEntries', {PRINTSHOP_TOTAL_ENTRIES})
+    .click(function(e){
+        e.preventDefault();
+        getEntries((Math.ceil($('a#pagingLast').data('totalEntries')/pagingLimit)-1)*10);
+        return false;
+    });
+
+
+    $('#psEntriesTable tr.row3').eq(1).find('select').change(function(){
+        getEntries(0); // getEntries($('#pspaging b').text()-1) * pagingLimit)
+    });
+
+    if($('#psEntriesTable select').serialize().match(/\b0\b/g).length < 6){ // update entries if a filter is selected
+        getEntries(0);
     }
 
     $('span.messageFadeout a').live('click', function(){
@@ -249,27 +274,65 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 //end onload
 });
 
+var updatePaging = function(count, pos, limit){
+    var rangeEnd =  count > pos+limit ? pos+limit : count;
+    var pageCount = Math.ceil(count/limit);
+    var activePage = Math.ceil(pageCount-(count-pos)/limit);
+    $J('#pagingLower').html(pos+1);
+    $J('#pagingUpper').html(rangeEnd);
+    $J('#pagingTotal').html(count);
+    $J('#pagingPages').empty();
+
+    $J.each([-3,-2,-1,0,1,2,3], function(index, offset){
+        if(0 < activePage + offset && activePage + offset <= pageCount){
+            addPagingPage(index, offset, pos, limit, activePage);
+        }
+    });
+    if(count > rangeEnd){
+        $J('#pagingLast').attr('href', '{DIRECTORY_INDEX}?pos='+pageCount*limit+'&cmd=printshop');
+    }else{
+        $J('#pagingLast').attr('href', '{DIRECTORY_INDEX}?pos=0&cmd=printshop');
+    }
+}
+
+var addPagingPage = function(index, offset, pos, limit, activePage){
+     var $element = offset == 0 ? $J('<b/>') : $J('<a/>'); //only bold if its the middle page in the paging, otherwise it's a link
+     $element.appendTo('#pagingPages').attr('id', 'pagingPage'+index).html(activePage + offset).append('\u00A0');
+     if(offset > 0){
+        $element.attr('href', '{DIRECTORY_INDEX}?pos='+pos+'&cmd=printshop')
+        .click(function(){
+            getEntries(pos);
+        });
+     }
+}
+
 var updateEntries = function(data, textStatus){
     $J('#psEntriesTable tbody tr.row2,#psEntriesTable tbody tr.row1').remove();
 
     if(typeof data.error != 'undefined'){
-        $J('<tr class="row2">\
-    			<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
-    		</tr>').appendTo($J('#psEntriesTable tbody')).hide().fadeIn(500);
+        setError(data.error);
         return false;
+    }
+    $J('a#pagingLast').data('totalEntries', data.paging.count);
+    updatePaging(data.paging.count, data.paging.pos, data.paging.limit);
+
+    if(data.entries.length == 0){
+        $J('<tr class="row2">\
+    		<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
+    	</tr>').appendTo($J('#psEntriesTable tbody')).hide().fadeIn(500);
     }
 
     var htmlRow = '';
-    for(var row = 0; row < data.length; row++){
+    for(var row = 0; row < data.entries.length; row++){
         var rowClass = row % 2 == 0 ? 'row1' : 'row2';
-        htmlRow += '<tr class="'+rowClass+'"><td class="pstype"><input type="checkbox" value="" name="selectedEntriesId[]"/>'+getTextFromValue('type', data[row]['type'])+'</td>\
-                    <td class="psformat">'+getTextFromValue('format', data[row]['format'])+'</td>\
-                    <td class="psfront">'+getTextFromValue('front', data[row]['front'])+'</td>\
-                    <td class="psback">'+getTextFromValue('back', data[row]['back'])+'</td>\
-                    <td class="psweight">'+getTextFromValue('weight', data[row]['weight'])+'</td>\
-                    <td class="pspaper">'+getTextFromValue('paper', data[row]['paper'])+'</td>\
-                    <td class="psprice">'+data[row]['price']+'</td>\
-                    <td class="psfactor">'+data[row]['factor']+'</td>\
+        htmlRow += '<tr class="'+rowClass+'"><td class="pstype"><input type="checkbox" value="" name="selectedEntriesId[]"/> '+getTextFromValue('type', data.entries[row]['type'])+'</td>\
+                    <td class="psformat">'+getTextFromValue('format', data.entries[row]['format'])+'</td>\
+                    <td class="psfront">'+getTextFromValue('front', data.entries[row]['front'])+'</td>\
+                    <td class="psback">'+getTextFromValue('back', data.entries[row]['back'])+'</td>\
+                    <td class="psweight">'+getTextFromValue('weight', data.entries[row]['weight'])+'</td>\
+                    <td class="pspaper">'+getTextFromValue('paper', data.entries[row]['paper'])+'</td>\
+                    <td class="psprice">'+data.entries[row]['price']+'</td>\
+                    <td class="psfactor">'+data.entries[row]['factor']+'</td>\
                     <td class="psaction" nowrap="nowrap">\
                         <div align="right">\
                             <a class="psedit" title="" target="_self" href="#">\
@@ -284,8 +347,8 @@ var updateEntries = function(data, textStatus){
     $J(htmlRow).appendTo($J('#psEntriesTable tbody')).hide().fadeIn(500);
 }
 
-var getEntries = function(){
-    var params = $J('#psEntriesTable select').serialize();
+var getEntries = function(pos){
+    var params = $J('#psEntriesTable select').serialize()+'&pos='+pos
     $J.ajax({
         url: '{DIRECTORY_INDEX}?cmd=printshop&act=getProducts',
         type: 'POST',
@@ -534,5 +597,5 @@ var setMessage = function(message){
 	</table>
 </form>
 <br />
-<div align="center">{ENTRIES_PAGING}</div>
+<div id="pspaging" align="center">{PRINTSHOP_PAGING}</div>
 <!-- END module_printshop_main -->

@@ -44,7 +44,9 @@ function getPaging($count, $pos, $extargv, $paging_text, $showeverytime = false,
             $p = new Paging( $count, $pos, $int_num_result, $extargv );
             $array_paging = $p->getPagingArray();
             $array_row_paging = $p->getPagingRowArray();
-            $paging = $paging_text.' '.$array_paging['lower'].' '.$_CORELANG['TXT_TO'].' '.$array_paging['upper'].' '.$_CORELANG['TXT_FROM'].' '. $array_paging['total'];
+            $paging = $paging_text.' <span id="pagingLower">'.$array_paging['lower'].'</span> '.$_CORELANG['TXT_TO']
+                                  .' <span id="pagingUpper">'.$array_paging['upper'].'</span> '.$_CORELANG['TXT_FROM']
+                                  .' <span id="pagingTotal">'.$array_paging['total'].'</span>';
 
             //$paging .= '&nbsp;&nbsp;[&nbsp;'. $array_paging['previous_link'] .''.$_CORELANG['txtBack'].'</a>&nbsp;&nbsp;' ;
             $paging .= '&nbsp;&nbsp;[&nbsp;'.$array_paging['first'].'&lt;&lt;</a>&nbsp;&nbsp;' ;
@@ -52,6 +54,8 @@ function getPaging($count, $pos, $extargv, $paging_text, $showeverytime = false,
             $currpage=$p->getCurrentPage();
             $totalpages=sizeof($array_row_paging);
             //if ($currpage>2 && $totalpages>3) $paging .='..';
+
+            $paging .= '<span id="pagingPages">';
 
             if ($currpage > 2) $paging .= $array_row_paging[$currpage-3].'&nbsp;';
             if ($currpage > 1) $paging .= $array_row_paging[$currpage-2].'&nbsp;';
@@ -62,6 +66,8 @@ function getPaging($count, $pos, $extargv, $paging_text, $showeverytime = false,
             if ($currpage < $totalpages-1) $paging .= $array_row_paging[$currpage+1].'&nbsp;';
             if ($currpage < $totalpages-2) $paging .= $array_row_paging[$currpage+2].'&nbsp;';
             if ($currpage < $totalpages-3) $paging .= $array_row_paging[$currpage+3].'&nbsp;';
+
+            $paging .= '</span>';
 
             $paging .= '&nbsp;'.$array_paging['last'] .'&gt;&gt;</a>&nbsp;]';
             return $paging;
@@ -148,14 +154,14 @@ class Paging
         }
 
         $array_paging['total'] = $this->row;
-        $array_paging['first'] = "<a href=\"index.php?pos=0".$this->ext_argv ."\">";
+        $array_paging['first'] = '<a id="pagingFirst" href="index.php?pos=0'.$this->ext_argv.'">';
 
         if ($this->row % $this->result_per_page ==0) {
            $corr_value=$this->result_per_page;
         } else {
            $corr_value=$this->row % $this->result_per_page;
         }
-        $array_paging['last'] = "<a href=\"index.php?pos=". ($this->row - $corr_value).$this->ext_argv ."\">";
+        $array_paging['last'] = '<a id="pagingLast" href="index.php?pos='. ($this->row - $corr_value).$this->ext_argv .'">';
 
         if ($this->cur_position != 0) {
           $array_paging['previous_link'] = "<a href=\"index.php?pos=". ( $this->cur_position - $this->result_per_page ).$this->ext_argv ."\">";
@@ -179,10 +185,10 @@ class Paging
     {
         for ($i=0; $i<$this->getNumberOfPage(); $i++) {
             if ($i == $this->getCurrentPage()) {
-                $array_all_page[$i] = "<b>". ($i+1) ."</b>";
+                $array_all_page[$i] = '<b id="pagingPage'.$i.'">'. ($i+1) ."</b>";
             } else {
                 $int_new_position   = $i * $this->result_per_page;
-                $array_all_page[$i] = "<a href=\"index.php?pos=$int_new_position$this->ext_argv\">". ($i+1) ."</a>";
+                $array_all_page[$i] = '<a id="pagingPage'.$i.'" href="index.php?pos='.$int_new_position.$this->ext_argv.'">'. ($i+1) ."</a>";
             }
         }
         return $array_all_page;

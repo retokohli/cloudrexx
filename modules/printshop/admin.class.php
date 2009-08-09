@@ -170,7 +170,7 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_DESELECT_ALL'               => $_CORELANG['TXT_DESELECT_ALL'],
             'TXT_MULTISELECT_SELECT'         => $_CORELANG['TXT_MULTISELECT_SELECT'],
             'TXT_MULTISELECT_DELETE'         => $_CORELANG['TXT_MULTISELECT_DELETE'],
-
+            'PRINTSHOP_PAGING_LIMIT'         => $this->_arrSettings['entriesPerPage'],
         ));
 
         foreach ($this->_arrAvailableAttributes as $attribute) {
@@ -185,8 +185,8 @@ class PrintshopAdmin extends PrintshopLibrary {
 
         $arrEntries = $this->_getEntries($filter, true);
 
-        if(count($arrEntries) > 0){
-            foreach ($arrEntries as $index => $arrEntry) {
+        if($arrEntries['count'] > 0){
+            foreach ($arrEntries['entries'] as $index => $arrEntry) {
                 $this->_objTpl->setVariable(array(
                     'ENTRY_TYPE'        =>  $arrEntry['type'],
                     'ENTRY_FORMAT'      =>  $arrEntry['format'],
@@ -201,6 +201,10 @@ class PrintshopAdmin extends PrintshopLibrary {
 
                 $this->_objTpl->parse('showEntry');
             }
+            $this->_objTpl->setVariable(array(
+                'PRINTSHOP_PAGING'          => getPaging($arrEntries['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
+                'PRINTSHOP_TOTAL_ENTRIES'   => $arrEntries['count']
+            ));
         }else{
             $this->_objTpl->touchBlock('noEntry');
         }
@@ -221,10 +225,10 @@ class PrintshopAdmin extends PrintshopLibrary {
         $arrFilter['paper']  = !empty($_POST['psFilterPaper'])  ? contrexx_addslashes($_POST['psFilterPaper']) : '';
 
         $arrEntries = $this->_getEntries($arrFilter);
-        if(count($arrEntries) == 0){
+        if($arrEntries['count'] == 0){
             die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'])));
         }
-        foreach ($arrEntries as $index => $arrEntry) {
+        foreach ($arrEntries['entries'] as $index => $arrEntry) {
                 $arrEntriesData[] =array(
                 'type'          => $arrEntry['type'],
                 'format'        => $arrEntry['format'],
@@ -233,10 +237,16 @@ class PrintshopAdmin extends PrintshopLibrary {
                 'weight'        => $arrEntry['weight'],
                 'paper'         => $arrEntry['paper'],
                 'price'         => $arrEntry['price'],
-                'factor'        => $arrEntry['factor']
+                'factor'        => $arrEntry['factor'],
             );
         }
-        die(json_encode($arrEntriesData));
+        die(json_encode(array(
+            'paging' => array(
+                'pos'   => $this->_pos,
+                'limit' => $this->_limit,
+                'count' => intval($arrEntries['count'])
+             ),
+            'entries' => $arrEntriesData)));
     }
 
 
@@ -476,18 +486,20 @@ class PrintshopAdmin extends PrintshopLibrary {
     function showSettings() {
         global $_CORELANG, $_ARRAYLANG;
 
-        $this->_strPageTitle = $_CORELANG['TXT_PRINTSHOP_SETTINGS_TITLE'];
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'];
         $this->_objTpl->loadTemplateFile('module_printshop_settings.html', true, true);
 
         $this->_objTpl->setVariable(array(
             'TXT_PRINTSHOP_SETTINGS_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'],
             'TXT_PRINTSHOP_EMAIL_HELP'          => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_HELP'],
             'TXT_PRINTSHOP_ORDER_EMAIL'         => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_EMAIL'],
+            'TXT_PRINTSHOP_ENTRIES_PER_PAGE'    => $_ARRAYLANG['TXT_PRINTSHOP_ENTRIES_PER_PAGE'],
             'TXT_SAVE'                          => $_CORELANG['TXT_SAVE']
         ));
 
         $this->_objTpl->setVariable(array(
-            'PRINTSHOP_SETTINGS_ORDER_EMAIL'    => $this->_arrSettings['orderEmail'],
+            'PRINTSHOP_SETTINGS_ORDER_EMAIL'        => $this->_arrSettings['orderEmail'],
+            'PRINTSHOP_SETTINGS_ENTRIES_PER_PAGE'   => $this->_arrSettings['entriesPerPage'],
         ));
     }
 
@@ -500,18 +512,26 @@ class PrintshopAdmin extends PrintshopLibrary {
      * @global  array
      */
     function saveSettings() {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        if(!empty($_POST['save_settings'])) {
+            foreach ($this->_settingNames as $setting) {
+                switch($setting){
+                    case 'entriesPerPage':
+                        $_POST[$setting] = !empty($_POST[$setting]) && intval($_POST[$setting]) > 0 ? $_POST[$setting] : $_CONFIG['corePagingLimit'];
+                    break;
+                    default:
+                        $_POST[$setting] = !empty($_POST[$setting]) ? $_POST[$setting] : '';
+                }
 
-        if(!empty($_POST['save_settings']) && !empty($_POST['orderEmail'])) {
-            $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_printshop_settings
-                                    SET `value` = "'.contrexx_addslashes($_POST['orderEmail']).'"
-                                    WHERE `name` = "orderEmail"
-                                ');
+                $objDatabase->Execute('
+                    UPDATE '.DBPREFIX.'module_printshop_settings
+                    SET `value` = "'.contrexx_addslashes($_POST[$setting]).'"
+                    WHERE `name` = "'.$setting.'"
+                ');
+            }
         }
-
         $this->_arrSettings = $this->createSettingsArray();
-
-        $this->_strOkMessage = $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_SAVE_SUCCESSFULL'];
+        $this->_strOkMessage = $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_SAVE_SUCCESSFUL'];
     }
 }

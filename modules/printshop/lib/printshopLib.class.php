@@ -23,8 +23,9 @@ class PrintshopLibrary {
     var $_pos;
     var $_limit;
     var $_arrAvailableAttributes = array('type', 'format', 'front', 'back', 'weight', 'paper');
+    var $_arrAvailableTypes = array();
     var $_arrAttributeTranslation = array();
-
+    var $_settingNames = array('orderEmail', 'entriesPerPage');
 
     /**
     * Constructor
@@ -33,9 +34,10 @@ class PrintshopLibrary {
     function __construct(){
         global $_CONFIG;
 
-        $this->_arrSettings     = $this->createSettingsArray();
-        $this->_limit           = !empty($_GET['count']) ? intval($_GET['count']) : $_CONFIG['corePagingLimit'];
-        $this->_pos             = !empty($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $this->_arrSettings         = $this->createSettingsArray();
+        $this->_arrAvailableTypes   = $this->_getAvailableTypes();
+        $this->_limit               = !empty($_REQUEST['count']) ? intval($_REQUEST['count']) : intval($this->_arrSettings['entriesPerPage']);
+        $this->_pos                 = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
     }
 
 
@@ -64,6 +66,33 @@ class PrintshopLibrary {
         return $arrReturn;
     }
 
+    /**
+     * Get all available attributes of a type
+     *
+     * @param string $attribute
+     * @param integer $type
+     * @return array
+     */
+    function _getAttributesOfType($attribute, $type){
+        global $objDatabase;
+
+        if(!$this->_isValidAtrribute($attribute) || !$this->_isValidType($type)){
+            return false;
+        }
+
+        $arrAttributes = array();
+        $query = 'SELECT DISTINCT `'.$attribute.'` AS `attribute` FROM `'.DBPREFIX.'module_printshop_product` WHERE `type` = '.intval($type);
+        $objRS = $objDatabase->Execute($query);
+        while(!$objRS->EOF){
+            $arrAttributes[$objRS->fields['attribute']] = array(
+                'id'    => $objRS->fields['attribute'],
+                'name'  => $this->_getAttributeName($attribute, $objRS->fields['attribute'])
+            );
+            $objRS->MoveNext();
+        }
+        return $arrAttributes;
+    }
+
 
     /**
      * get the data of an attribute
@@ -74,9 +103,6 @@ class PrintshopLibrary {
     function _getAttributes($attribute){
         global $objDatabase;
 
-        if(!$this->_isValidAtrribute($attribute)){
-            return false;
-        }
         $arrAttributes = array();
 
         $query = 'SELECT `id`, `'.$attribute.'` AS `name`
@@ -99,7 +125,7 @@ class PrintshopLibrary {
      * Get the printshop entries filtered by $arrAttributes
      *
      * @param array $arrAttributes filter (if an attribute is not set it will not be filtered)
-     * @return array entries
+     * @return array entries, count
      */
     function _getEntries($arrAttributesFilter = false, $translated = false){
         global $objDatabase;
@@ -121,12 +147,15 @@ class PrintshopLibrary {
             }
         }
 
-        $query = 'SELECT `p`.`type`, `p`.`format`, `p`.`front`, `p`.`back`, `p`.`weight`, `p`.`paper`, `p`.`price`, `p`.`factor`
+        $query = 'SELECT SQL_CALC_FOUND_ROWS `p`.`type`, `p`.`format`, `p`.`front`, `p`.`back`, `p`.`weight`, `p`.`paper`, `p`.`price`, `p`.`factor`
                   FROM   `'.DBPREFIX.'module_printshop_product` AS `p`
                   WHERE '.$where.'
                   ORDER BY `type`, `format`, `front`, `back`, `weight`, `paper`';
 
         $objRS = $objDatabase->SelectLimit($query, $this->_limit, $this->_pos);
+        $objRSCount = $objDatabase->Execute('SELECT FOUND_ROWS() AS `rows`');
+        $count = $objRSCount->fields['rows'];
+
         while(!$objRS->EOF){
             if($translated){
                 $arrEntries[] = array(
@@ -145,7 +174,7 @@ class PrintshopLibrary {
             $objRS->MoveNext();
         }
 
-        return $arrEntries;
+        return array('count' => $count, 'entries' => $arrEntries);
     }
 
 
@@ -285,6 +314,20 @@ class PrintshopLibrary {
         return $objRS ? $objRS->fields['name'] : '';
     }
 
+
+    function _getAvailableTypes(){
+        global $objDatabase;
+
+        $query = 'SELECT `id`, `type` FROM `'.DBPREFIX.'module_printshop_type`';
+        $objRS = $objDatabase->Execute($query);
+        $arrTypes = array();
+        while(!$objRS->EOF){
+            $arrTypes[$objRS->fields['id']] = $objRS->fields['type'];
+            $objRS->MoveNext();
+        }
+        return $arrTypes;
+    }
+
     /**
      * check if an attribute is valid
      *
@@ -294,6 +337,25 @@ class PrintshopLibrary {
     function _isValidAtrribute($attribute){
         if(!in_array($attribute, $this->_arrAvailableAttributes)){
             return false;
+        }
+        return true;
+    }
+
+    /**
+     * checks if a type is valid
+     *
+     * @param mixed $type
+     * @return bool
+     */
+    function _isValidType($type, $checkName = false){
+        if(intval($type) > 0){
+            if(!array_key_exists($type, $this->_arrAvailableTypes)){
+                return false;
+            }
+        }else{
+            if(!in_array($type, $this->_arrAvailableTypes)){
+                return false;
+            }
         }
         return true;
     }
