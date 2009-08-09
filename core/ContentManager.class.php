@@ -1626,10 +1626,10 @@ class ContentManager
         }
 
         if ($boolDirectUpdate) {
-            $needsValidation = 'false';
+            $needsValidation = false;
 //            $this->strOkMessage =$_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         } else {
-            $needsValidation = 'true';
+            $needsValidation = true;
 //            $this->strErrMessage[] = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'];
         }
 
@@ -1714,9 +1714,9 @@ class ContentManager
                                 ');
         }
         $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
-        $JSON = ', lastUpdate: false';
+        $lastUpdate = false;
         if(!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0){
-            $JSON = ', lastUpdate: true';
+            $lastUpdate = true;
             //write caching-file, delete exisiting cache-files
             $objCache = new Cache();
             $objCache->writeCacheablePagesFile();
@@ -1733,7 +1733,12 @@ class ContentManager
             }
         }
 
-        die('{pageId: '.$pageId.', langName:"'.$langName.'", needsValidation: '.$needsValidation.$JSON.'}');
+        die(json_encode(array(
+            'pageId'            => $pageId,
+            'langName'          => $langName,
+            'needsValidation'   => $needsValidation,
+            'lastUpdate'        => $lastUpdate
+        )));
     }
 
     static function mkurl($absolute_local_path) {
@@ -1762,6 +1767,12 @@ class ContentManager
             $parcat = 0;
         }
         header('Content-Type: application/json');
+
+
+        $lastUpdate = false;
+        if(!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0){
+            $lastUpdate = true;
+        }
 
         $pageId = intval($_POST['pageId']);
         $langId = intval($_POST['langId']);
@@ -1982,9 +1993,13 @@ ON DUPLICATE KEY
                                         );
             }
             $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
-            die('{pageId: '.$pageId.', langName: "'.$langName.'"}');
+            die(json_encode(array(
+                'pageId'        => $pageId,
+                'langName'      => $langName,
+                'lastUpdate'    => $lastUpdate
+            )));
         } else {
-            die('{pageId: -1}');
+            die(json_encode(array('pageId' => -1)));
         }
         return $pageId;
     }

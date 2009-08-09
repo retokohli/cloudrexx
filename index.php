@@ -1758,10 +1758,8 @@ break;
         $objTemplate->setVariable('CONTENT_TEXT', $objPrintshopModule->getPage());
 
         $printshop_pagetitle = $objPrintshopModule->getPageTitle();
-        if(!empty($printshop_pagetitle)) {
-            $page_metatitle = $printshop_pagetitle;
-            $page_title = $printshop_pagetitle;
-        }
+        $page_metatitle = $printshop_pagetitle;
+        $page_title     = $printshop_pagetitle;
     break;
 
 
