@@ -151,7 +151,7 @@ function _coreUpdate()
                 'access_id'          => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
             ),
             array(
-                'access_id'          => array('fields' => array('access_id'), 'type' => 'UNIQUE'),
+                'access_id'          => array('fields' => array('access_id'), 'type' => 'UNIQUE', 'force' => true),
                 'area_name'          => array('fields' => array('area_name'))
             )
         );
