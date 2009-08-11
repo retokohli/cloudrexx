@@ -157,7 +157,6 @@ CREATE TABLE `contrexx_backups` (
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_content` (
   `id` int(6) unsigned NOT NULL default '0',
-  `lang_id` int(11) NOT NULL default '1',
   `content` mediumtext NOT NULL,
   `title` varchar(250) NOT NULL default '',
   `metatitle` varchar(250) NOT NULL default '',
@@ -167,14 +166,12 @@ CREATE TABLE `contrexx_content` (
   `css_name` varchar(50) NOT NULL default '',
   `redirect` varchar(255) NOT NULL default '',
   `expertmode` set('y','n') NOT NULL default 'n',
-  PRIMARY KEY  (`id`,`lang_id`),
-  KEY `lang_id` (`lang_id`),
+  UNIQUE KEY `contentid` (`id`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_history` (
   `id` int(8) unsigned NOT NULL default '0',
   `page_id` int(7) unsigned NOT NULL default '0',
-  `lang_id` int(11) NOT NULL default '1',
   `content` mediumtext NOT NULL,
   `title` varchar(250) NOT NULL default '',
   `metatitle` varchar(250) NOT NULL default '',
@@ -185,7 +182,7 @@ CREATE TABLE `contrexx_content_history` (
   `redirect` varchar(255) NOT NULL default '',
   `expertmode` set('y','n') NOT NULL default 'n',
   PRIMARY KEY  (`id`),
-  KEY `page_id` (`page_id`,`lang_id`),
+  KEY `page_id` (`page_id`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_logfile` (
@@ -197,7 +194,7 @@ CREATE TABLE `contrexx_content_logfile` (
   KEY `history_id` (`history_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_navigation` (
-  `catid` int(6) unsigned NOT NULL,
+  `catid` int(6) unsigned NOT NULL auto_increment,
   `is_validated` set('0','1') NOT NULL default '1',
   `parcat` int(6) unsigned NOT NULL default '0',
   `catname` varchar(100) NOT NULL default '',
@@ -218,12 +215,11 @@ CREATE TABLE `contrexx_content_navigation` (
   `backend_access_id` int(11) unsigned NOT NULL default '0',
   `themes_id` int(4) NOT NULL default '0',
   `css_name` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`catid`,`lang`),
+  PRIMARY KEY  (`catid`),
   KEY `parcat` (`parcat`),
   KEY `module` (`module`),
-  KEY `catname` (`catname`),
-  KEY `lang` (`lang`)
-) TYPE=MyISAM;
+  KEY `catname` (`catname`)
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_content_navigation_history` (
   `id` int(7) unsigned NOT NULL auto_increment,
   `is_active` set('0','1') NOT NULL default '0',
@@ -248,7 +244,7 @@ CREATE TABLE `contrexx_content_navigation_history` (
   `themes_id` int(4) NOT NULL default '0',
   `css_name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `catid` (`catid`,`lang`)
+  KEY `catid` (`catid`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
@@ -304,7 +300,6 @@ CREATE TABLE `contrexx_log` (
 CREATE TABLE `contrexx_module_alias_source` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `target_id` int(10) unsigned NOT NULL default '0',
-  `lang_id` int(10) unsigned NOT NULL default '1',
   `url` varchar(255) NOT NULL,
   `isdefault` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
@@ -473,8 +468,8 @@ CREATE TABLE `contrexx_module_blog_messages` (
   PRIMARY KEY  (`message_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_blog_messages_lang` (
-  `message_id` int(6) unsigned NOT NULL default '0',
-  `lang_id` int(2) unsigned NOT NULL default '0',
+  `message_id` int(6) unsigned NOT NULL,
+  `lang_id` int(2) unsigned NOT NULL,
   `is_active` enum('0','1') NOT NULL default '1',
   `subject` varchar(250) NOT NULL default '',
   `content` text NOT NULL,
@@ -542,19 +537,19 @@ CREATE TABLE `contrexx_module_calendar` (
   `groups` text NOT NULL,
   `all_groups` int(1) NOT NULL default '0',
   `public` int(1) NOT NULL default '0',
-  `notification` int(1) NOT NULL default '0',
+  `notification` int(1) NOT NULL,
   `notification_address` varchar(255) NOT NULL default '',
-  `series_status` tinyint(4) NOT NULL default '0',
-  `series_type` int(11) NOT NULL default '0',
-  `series_pattern_count` int(11) NOT NULL default '0',
+  `series_status` tinyint(4) NOT NULL,
+  `series_type` int(11) NOT NULL,
+  `series_pattern_count` int(11) NOT NULL,
   `series_pattern_weekday` varchar(7) NOT NULL,
-  `series_pattern_day` int(11) NOT NULL default '0',
-  `series_pattern_week` int(11) NOT NULL default '0',
-  `series_pattern_month` int(11) NOT NULL default '0',
-  `series_pattern_type` int(11) NOT NULL default '0',
-  `series_pattern_dourance_type` int(11) NOT NULL default '0',
-  `series_pattern_end` int(11) NOT NULL default '0',
-  `series_pattern_begin` int(11) NOT NULL default '0',
+  `series_pattern_day` int(11) NOT NULL,
+  `series_pattern_week` int(11) NOT NULL,
+  `series_pattern_month` int(11) NOT NULL,
+  `series_pattern_type` int(11) NOT NULL,
+  `series_pattern_dourance_type` int(11) NOT NULL,
+  `series_pattern_end` int(11) NOT NULL,
+  `series_pattern_begin` int(11) NOT NULL,
   `series_pattern_exceptions` longtext NOT NULL,
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `name` (`name`,`comment`,`placeName`)
@@ -585,6 +580,7 @@ CREATE TABLE `contrexx_module_calendar_form_fields` (
 CREATE TABLE `contrexx_module_calendar_registrations` (
   `id` int(7) NOT NULL auto_increment,
   `note_id` int(7) NOT NULL default '0',
+  `note_date` int(11) NOT NULL,
   `time` int(14) NOT NULL default '0',
   `host` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
@@ -643,7 +639,7 @@ CREATE TABLE `contrexx_module_contact_form_data` (
   `ipaddress` varchar(15) NOT NULL default '',
   `data` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
@@ -1650,7 +1646,7 @@ CREATE TABLE `contrexx_module_jobs` (
   `enddate` date NOT NULL default '0000-00-00',
   `status` tinyint(4) NOT NULL default '1',
   `changelog` int(14) NOT NULL default '0',
-  KEY `ID` (`id`),
+  PRIMARY KEY  (`id`),
   FULLTEXT KEY `newsindex` (`title`,`text`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_jobs_categories` (
@@ -1682,7 +1678,6 @@ CREATE TABLE `contrexx_module_knowledge_article_content` (
   `lang` int(10) unsigned NOT NULL default '0',
   `question` text NOT NULL,
   `answer` text NOT NULL,
-  `index` varchar(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `module_knowledge_article_content_lang` (`lang`),
   KEY `module_knowledge_article_content_article` (`article`)
@@ -2729,8 +2724,8 @@ CREATE TABLE `contrexx_skins` (
   `foldername` varchar(50) NOT NULL default '',
   `expert` int(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `folder_unique` (`foldername`),
-  UNIQUE KEY `theme_unique` (`themesname`)
+  UNIQUE KEY `theme_unique` (`themesname`),
+  UNIQUE KEY `folder_unique` (`foldername`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_stats_browser` (
   `id` int(6) unsigned NOT NULL auto_increment,
