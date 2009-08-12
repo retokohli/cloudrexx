@@ -173,8 +173,8 @@ function fe_showToolbar() {
 	if (!fe_toolbarIsVisible && fe_userWantsToolbar) {
 		Effect.Appear(fe_toolbarDivName, {duration: fe_appearanceDuration, from: 0.0, to: 1.0});
 		fe_toolbarIsVisible = true;
+        $J('body,html').animate({paddingTop: '20px'}, 1400);
 	}
-    $J('body,html').animate({paddingTop: '20px'}, 1400);
 }
 
 function fe_closeToolbar() {

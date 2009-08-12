@@ -27,6 +27,7 @@ class Printshop extends PrintshopLibrary {
     var $_strStatusMessage = '';
     var $_strErrorMessage = '';
     var $_type = '';
+    var $_lineColor = 'rgba(153, 204, 0, 0.5)';
 
     /**
     * Constructor   -> Call parent-constructor, set language id and create local template-object
@@ -118,54 +119,161 @@ class Printshop extends PrintshopLibrary {
                 $this->_objTpl->parse('filter'.ucwords($attribute));
             }
         }
-
+        $lineColor = $this->_lineColor;
+        JS::activate('excanvas');
         $JS =<<< EOJ
 (function(){
     \$J(document).ready(function(){
+        var drawDelay = 10; //delay in ms for each rectangle draw step
         var \$last = [];
         \$J.each(['Format', 'Front', 'Back', 'Weight', 'Paper'], function(i, j){
-            setAttributeFilter(\$J('#psAttribute'+j+' li:first'), i, \$last);
+            setAttributeFilter(\$J('#psAttribute'+j+' li:first'), \$last);
             \$last = \$J('#psAttribute'+j+' li:first');
         });
-//            \$J('#psAttributeFormat li:first').css({backgroundColor:'#99CC00', padding:"3px"});
-//            \$J('#psAttributeFront li:first').css({backgroundColor:'#99CC00', padding:"3px"});
-//            \$J('#psAttributeBack li:first').css({backgroundColor:'#99CC00', padding:"3px"});
-//            \$J('#psAttributeWeight li:first').css({backgroundColor:'#99CC00', padding:"3px"});
-//            \$J('#psAttributePaper li:first').css({backgroundColor:'#99CC00', padding:"3px"});
 
-        updateCanvas(\$J("#printshopCanvas"), \$J(".selected"));
+        if(!window.console){
+            window.log = '';
+            window.console = {log: function(msg){window.log+=msg.toString();}}
+        }
+
+        \$J('#printshopCanvas').click(function(e){
+            clickLiAtPos(e);
+        });
+
+        var clickLiAtPos = function(e){
+            for(var i=0; i < arrLis.length; i++){
+                if(e.clientX > arrLis[i].left && e.clientX < arrLis[i].left + arrLis[i].width){
+                    if(e.clientY > arrLis[i].top && e.clientY < arrLis[i].top + arrLis[i].height){
+                        \$J(arrLis[i].li).click();
+                        return false;
+                    }
+                }
+            }
+        }
+
+        //all clickable attribtues
+        \$lis = \$J('.psAttributeContainer li');
+        //get position and dimension of each li
+        var arrLis = [];
+        \$lis.each(function(){
+            var pos = \$J(this).position();
+            arrLis[arrLis.length] = {
+                left: pos.left,
+                top: pos.top,
+                width: \$J(this).outerWidth(),
+                height: \$J(this).outerHeight(),
+                li: this
+            };
+        });
+
+        \$lis.click(function(){
+            var step        = 0;
+            var \$li        = \$J(this);
+            var \$liSel     = \$li.parent().find('.selected');
+            if(\$liSel.attr('id') == \$li.attr('id')){
+                return false;
+            }
+            var \$ul        = \$li.parent();
+            var \$canvas    = \$J('#printshopCanvas');
+            var posLi       = \$li.position();
+            var heightLi    = \$li.outerHeight();
+            var widthLi     = \$li.outerWidth();
+            var posUl       = \$ul.position();
+            var widthUl     = \$ul.outerWidth();
+            var heightUl    = \$ul.outerHeight();
+            var posLiSel    = \$liSel.position();
+            var posCanvas   = \$canvas.position();
+
+            if(posLi.top > posLiSel.top){
+                var gap       = \$lis.index(\$li) - \$lis.index(\$liSel);
+                var targetPos = posLi.top - posLiSel.top;
+                var toTop     = false;
+            }else{
+                var gap       = \$lis.index(\$liSel) - \$lis.index(\$li);
+                var targetPos = posLiSel.top - posLi.top;
+                var toTop     = true;
+            }
+
+            //relative distance of li on canvas
+            var left        = posLi.left - posCanvas.left;
+            var top         = posLi.top - posCanvas.top;
+            \$li.parent().find('li').removeClass('selected');
+
+            ctx.fillStyle = '$lineColor';
+
+            (function(){ //scroll down smoothly
+//                ctx.clearRect(left, posUl.top - posCanvas.top, widthUl, heightUl+100);
+                if(toTop){
+                    ctx.fillRect (left, top + heightLi*gap - step, widthLi, heightLi);
+                }else{
+                    ctx.fillRect (left, top - heightLi*gap + step, widthLi, heightLi);
+                }
+                updateLines(step, [\$li, \$liSel]);
+                step += 2;
+                if(step < targetPos){
+                    x = setTimeout(arguments.callee, drawDelay);
+                    return;
+                }
+                \$li.addClass('selected');
+                setAttributeFilter(\$li, \$liSel);
+            })();
+        });
+        var x = setTimeout(initCanvas, 100); //give poor IE some time
     });
 
-    var setAttributeFilter = function(\$li, index, \$last){
+    var setAttributeFilter = function(\$li, \$last){
         \$li.addClass('selected');
-        console.log(\$last);
+        \$li.parent().find('li').each(function(){
+            \$J('this').removeAttr('rel');
+        });
         if(\$last.length > 0){
-            \$li.attr('rel', \$last.attr('id'));
+            \$prevLi = \$li.parent().parent().prev().find('li.selected'); //get selected li in prev div
+            \$nextLi = \$li.parent().parent().next().find('li.selected'); //get selected li in next div
+            if(\$nextLi.length > 0){
+                \$li.attr('rel', \$nextLi.attr('id'));
+            }
+            if(\$prevLi.length > 0){
+                \$prevLi.parent().find('li').each(function(){
+                    \$J('this').removeAttr('rel');
+                });
+                \$prevLi.attr('rel', \$li.attr('id'));
+            }
+        }
+        if(window.ctx){
+            updateLines();
         }
     }
 
-    var updateCanvas = function(\$canvas, \$elements){
+    var initCanvas = function(){
+		window.ctx = \$J("#printshopCanvas").get(0).getContext("2d");
+        updateLines();
+    }
+
+    var updateLines = function(_offsetTop, _elements){
+        var offsetTop     = _offsetTop || 0;
+        var \$elements    = _elements  || \$J(".selected");
+        var \$canvas      = \$J("#printshopCanvas");
 		var canvasEl      = \$canvas.get(0);
 		canvasEl.width    = \$canvas.width();
 		canvasEl.height   = \$canvas.height();
 		var cOffset       = \$canvas.offset();
-		ctx               = canvasEl.getContext("2d");
-		//var ctx         = canvasEl.getContext("2d");
-		ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+		ctx.lineWidth     = 2;
+		ctx.strokeStyle   = "$lineColor";
 		ctx.beginPath();
+
 		\$elements.each(function(){
 			var \$li=\$J(this);
 			if(\$li.attr("rel"))
 			{
 				var srcOffset      = \$li.offset();
-				var srcMidHeight   = \$li.height()/2;
+				var srcMidHeight   = \$li.outerHeight()/2;
 				var \$targetLi     = \$J("#"+\$li.attr("rel"));
-				if(\$targetLi.length)
-				{
+				var liWidth        = \$targetLi.outerWidth();
+				if(\$targetLi.length > 0){
 					var trgOffset     = \$targetLi.offset();
-					var trgMidHeight  = \$li.height()/2;
-					ctx.moveTo(srcOffset.left - cOffset.left, srcOffset.top - cOffset.top + srcMidHeight);
-					ctx.lineTo(trgOffset.left - cOffset.left + \$targetLi.width(), trgOffset.top - cOffset.top + trgMidHeight);
+					var trgMidHeight  = \$li.outerHeight()/2;
+					ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight + offsetTop);
+					ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight + offsetTop);
 				}
 			}
 		});
