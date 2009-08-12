@@ -121,7 +121,12 @@ class JS
             'specialcode'  => 'var tmpOnLoad = window.onload; window.onload = function() { if(tmpOnLoad){tmpOnLoad();} Shadowbox.init(); }',
             'loadcallback' => 'parseShadowBoxOptions',
             'makecallback' => 'makeShadowBoxOptions'
-        )
+        ),
+        'excanvas'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/excanvas.compiled.js'
+            ),
+        ),
     );
 
     /**
