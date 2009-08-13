@@ -172,18 +172,18 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_MULTISELECT_DELETE'         => $_CORELANG['TXT_MULTISELECT_DELETE'],
             'PRINTSHOP_PAGING_LIMIT'         => $this->_arrSettings['entriesPerPage'],
         ));
-
+        $arrFilter = array();
         foreach ($this->_arrAvailableAttributes as $attribute) {
             $attr = strtoupper($attribute);
-            $filter[$attribute] = !empty($_POST['psFilter'.$attribute]) ? intval($_POST['psFilter'.$attribute]) : 0;
+            $arrFilter[$attribute] = !empty($_POST['psFilter'.$attribute]) ? intval($_POST['psFilter'.$attribute]) : 0;
             $this->_objTpl->setVariable(array(
                 'ENTRY_'.$attr.'_DD'            => $this->createAttributeDropDown($attribute, 'ps', $_ARRAYLANG['TXT_PRINTSHOP_CHOOSE']),
-                'ENTRY_'.$attr.'_FILTER_DD'     => $this->createAttributeDropDown($attribute, 'psFilter', $_CORELANG['TXT_USER_ALL'], $filter[$attribute]),
+                'ENTRY_'.$attr.'_FILTER_DD'     => $this->createAttributeDropDown($attribute, 'psFilter', $_CORELANG['TXT_USER_ALL'], $arrFilter[$attribute]),
                 'TXT_PRINTSHOP_'.$attr.'_TITLE' => $_ARRAYLANG['TXT_PRINTSHOP_'.$attr.'_TITLE'],
             ));
         }
 
-        $arrEntries = $this->_getEntries($filter, true);
+        $arrEntries = $this->_getEntries($arrFilter, true);
 
         if($arrEntries['count'] > 0){
             foreach ($arrEntries['entries'] as $index => $arrEntry) {

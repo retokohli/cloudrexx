@@ -111,15 +111,16 @@ class Printshop extends PrintshopLibrary {
             if($attribute == 'type'){ continue; }
             $arrAttributes = $this->_getAttributesOfType($attribute, $this->_type);
             foreach($arrAttributes as $id => $attr) {
-            	$this->_objTpl->setVariable(array(
+                $this->_objTpl->setVariable(array(
                     'ATTRIBUTE_FILTER_ID'           => $attr['id'],
                     'ATTRIBUTE_FILTER_NAME'         => $attr['name'],
                     'ATTRIBUTE_FILTER_ATTRIBUTE'    => $attribute,
-            	));
+                ));
                 $this->_objTpl->parse('filter'.ucwords($attribute));
             }
         }
         $lineColor = $this->_lineColor;
+        $type = !empty($_REQUEST['type']) ? contrexx_addslashes($_REQUEST['type']) : '';
         JS::activate('excanvas');
         $JS =<<< EOJ
 (function(){
@@ -173,6 +174,18 @@ class Printshop extends PrintshopLibrary {
             if(\$liSel.attr('id') == \$li.attr('id')){
                 return false;
             }
+
+            var filters = getFilters();
+
+            \$J.ajax({
+                type: 'POST',
+                url: 'index.php?standalone=1&cmd=printshop&type=$type',
+                data: filters,
+                dataType: 'json',
+                success: function(data){updatePrice(data.price)},
+                error: function(data){updatePrice('N/A');}
+            });
+
             var \$ul        = \$li.parent();
             var \$canvas    = \$J('#printshopCanvas');
             var posLi       = \$li.position();
@@ -198,28 +211,39 @@ class Printshop extends PrintshopLibrary {
             var left        = posLi.left - posCanvas.left;
             var top         = posLi.top - posCanvas.top;
             \$li.parent().find('li').removeClass('selected');
-
-            ctx.fillStyle = '$lineColor';
-
+            \$liSel.addClass('oldSelected');
             (function(){ //scroll down smoothly
-//                ctx.clearRect(left, posUl.top - posCanvas.top, widthUl, heightUl+100);
+                ctx.clearRect(left , posUl.top - posCanvas.top, widthUl, heightUl+100);
+                updateLines(step, \$liSel, toTop);
+                ctx.fillStyle = "$lineColor";
                 if(toTop){
                     ctx.fillRect (left, top + heightLi*gap - step, widthLi, heightLi);
                 }else{
                     ctx.fillRect (left, top - heightLi*gap + step, widthLi, heightLi);
                 }
-                updateLines(step, [\$li, \$liSel]);
                 step += 2;
                 if(step < targetPos){
                     x = setTimeout(arguments.callee, drawDelay);
                     return;
                 }
                 \$li.addClass('selected');
+                \$liSel.removeClass('oldSelected');
                 setAttributeFilter(\$li, \$liSel);
             })();
         });
         var x = setTimeout(initCanvas, 100); //give poor IE some time
     });
+
+    var getFilters = function(){
+        var filter = {};
+        \$J('.selected').each(function(){
+            var filterMatch = \$J(this).attr('id').match(/(.*?)_(\d+)$/);
+            var attribute   = filterMatch[1];
+            var attributeId = filterMatch[2];
+            filter[attribute] = attributeId;
+        });
+        return \$J.param(filter);
+    }
 
     var setAttributeFilter = function(\$li, \$last){
         \$li.addClass('selected');
@@ -245,46 +269,79 @@ class Printshop extends PrintshopLibrary {
     }
 
     var initCanvas = function(){
-		window.ctx = \$J("#printshopCanvas").get(0).getContext("2d");
+        window.ctx = \$J("#printshopCanvas").get(0).getContext("2d");
         updateLines();
     }
 
-    var updateLines = function(_offsetTop, _elements){
+    var updatePrice = function(price){
+        \$J('#pricePerOne').text(price);
+    }
+
+    var updateLines = function(_offsetTop, \$affectedLi, toTop){
         var offsetTop     = _offsetTop || 0;
-        var \$elements    = _elements  || \$J(".selected");
+        var \$elements    = \$J(".selected,.oldSelected");
         var \$canvas      = \$J("#printshopCanvas");
-		var canvasEl      = \$canvas.get(0);
-		canvasEl.width    = \$canvas.width();
-		canvasEl.height   = \$canvas.height();
-		var cOffset       = \$canvas.offset();
-		ctx.lineWidth     = 2;
-		ctx.strokeStyle   = "$lineColor";
-		ctx.beginPath();
+        var canvasEl      = \$canvas.get(0);
+        canvasEl.width    = \$canvas.width();
+        canvasEl.height   = \$canvas.height();
+        var cOffset       = \$canvas.offset();
+        ctx.lineWidth     = 2;
+        ctx.strokeStyle   = "$lineColor";
+        ctx.beginPath();
 
-		\$elements.each(function(){
-			var \$li=\$J(this);
-			if(\$li.attr("rel"))
-			{
-				var srcOffset      = \$li.offset();
-				var srcMidHeight   = \$li.outerHeight()/2;
-				var \$targetLi     = \$J("#"+\$li.attr("rel"));
-				var liWidth        = \$targetLi.outerWidth();
-				if(\$targetLi.length > 0){
-					var trgOffset     = \$targetLi.offset();
-					var trgMidHeight  = \$li.outerHeight()/2;
-					ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight + offsetTop);
-					ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight + offsetTop);
-				}
-			}
-		});
-		ctx.stroke();
-		ctx.closePath();
-	}
-
+        \$elements.each(function(){
+            var \$li=\$J(this);
+            if(\$li.attr("rel")){
+                var srcOffset      = \$li.offset();
+                var srcMidHeight   = \$li.outerHeight()/2;
+                var \$targetLi     = \$J("#"+\$li.attr("rel"));
+                var liWidth        = \$targetLi.outerWidth();
+                if(\$targetLi.length > 0){
+                    var trgOffset     = \$targetLi.offset();
+                    var trgMidHeight  = \$li.outerHeight()/2;
+                    ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight);
+                    if(\$affectedLi){
+                        var \$prevLi =  \$affectedLi.parent().parent().prev().find('li.selected');
+                        if(\$prevLi.length > 0 && \$li.index(\$prevLi) > -1){
+                            ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight);
+                            if(toTop){
+                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight - offsetTop)
+                            }else{
+                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight + offsetTop);
+                            }
+                        }else if(\$affectedLi.length > 0 && \$affectedLi.index(\$li) > -1){
+                            if(toTop){
+                                ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight - offsetTop);
+                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight)
+                            }else{
+                                ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight + offsetTop);
+                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight);
+                            }
+                        }else{
+                            ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight);
+                        }
+                    }else{
+                        ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight);
+                    }
+                }
+            }
+        });
+        ctx.stroke();
+        ctx.closePath();
+    }
 })();
 EOJ;
         JS::registerCode($JS);
 
+        if(!empty($_REQUEST['standalone'])){ //JSON request
+            foreach ($this->_arrAvailableAttributes as $attribute) {
+                $arrFilter[$attribute] = !empty($_POST[$attribute]) ? intval($_POST[$attribute]) : 0;
+            }
+            $arrEntry = current($this->_getEntries($arrFilter, false));
+            die(json_encode(array(
+                'price' => $arrEntry['price'],
+            )));
+        }
     }
 
 
