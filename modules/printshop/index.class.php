@@ -305,24 +305,19 @@ class Printshop extends PrintshopLibrary {
                         if(\$prevLi.length > 0 && \$li.index(\$prevLi) > -1){
                             ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight);
                             if(toTop){
-                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight - offsetTop)
+                                return ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight - offsetTop);
                             }else{
-                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight + offsetTop);
+                                return ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight + offsetTop);
                             }
                         }else if(\$affectedLi.length > 0 && \$affectedLi.index(\$li) > -1){
                             if(toTop){
                                 ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight - offsetTop);
-                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight)
                             }else{
                                 ctx.moveTo(srcOffset.left - cOffset.left + liWidth - 4, srcOffset.top - cOffset.top + srcMidHeight + offsetTop);
-                                ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight);
                             }
-                        }else{
-                            ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight);
                         }
-                    }else{
-                        ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight);
                     }
+                    return ctx.lineTo(trgOffset.left - cOffset.left, trgOffset.top - cOffset.top + trgMidHeight);
                 }
             }
         });
