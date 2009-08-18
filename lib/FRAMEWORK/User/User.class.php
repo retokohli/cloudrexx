@@ -731,7 +731,7 @@ class User extends User_Profile
         return false;
     }
 
-    private function loadUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
+    private function loadUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = 0)
     {
         global $objDatabase;
 
