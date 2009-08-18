@@ -165,6 +165,7 @@ function _accessUpdate()
         'block_latest_reg_users_pic'      =>array('value'=> '',              'status'    => 0),
         'block_birthday_users'            =>array('value'=> '10',            'status'    => 0),
         'block_birthday_users_pic'        =>array('value'=> '',              'status'    => 0),
+        'session_user_interval'           =>array('value'=> '0',             'status'    => 1)
     );
 
     foreach ($arrSettings as $key => $arrSetting) {
