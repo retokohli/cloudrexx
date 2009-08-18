@@ -68,6 +68,7 @@ class Navigation
     * Initialize the data hash from the database
     *
     * @global ADONewConnection
+    * @global Array
     * @access private
     */
     function _initialize()
@@ -157,7 +158,7 @@ class Navigation
                 if ($objResult->fields['alias_url'] && $_CONFIG['aliasStatus']) {
                     $menu_url = self::mkurl(CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.$objResult->fields['alias_url']);
                 } elseif (!empty($objResult->fields['redirect'])) {
-                    $menu_url = htmlspecialchars($objResult->fields['redirect']);
+                    $menu_url = ASCMS_PATH_OFFSET.CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.htmlspecialchars($objResult->fields['redirect']);
                 } else {
                     $link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
                     $menu_url = CONTREXX_SCRIPT_PATH
@@ -535,7 +536,7 @@ class Navigation
                         $tmpNavigation = str_replace('{STYLE}', "starter_normal", $tmpNavigation);
                         $mainCat++; //inc if new maincat
                     } else {
-                        $tmpNavigation = str_replace('{STYLE}', $id == $this->pageId ? $this->styleNameActive : $this->styleNameNormal, $tmpNavigation);
+                        $tmpNavigation = str_replace('{STYLE}', $id == $this->pageId || in_array($id, $this->parents) ? $this->styleNameActive : $this->styleNameNormal, $tmpNavigation);
                     }
 
                     $tmpNavigation = str_replace('{URL}', $this->data[$id]['url'], $tmpNavigation);
