@@ -68,6 +68,7 @@ class Navigation
     * Initialize the data hash from the database
     *
     * @global ADONewConnection
+    * @global Array
     * @access private
     */
     function _initialize()
@@ -535,7 +536,7 @@ class Navigation
                         $tmpNavigation = str_replace('{STYLE}', "starter_normal", $tmpNavigation);
                         $mainCat++; //inc if new maincat
                     } else {
-                        $tmpNavigation = str_replace('{STYLE}', $id == $this->pageId ? $this->styleNameActive : $this->styleNameNormal, $tmpNavigation);
+                        $tmpNavigation = str_replace('{STYLE}', $id == $this->pageId || in_array($id, $this->parents) ? $this->styleNameActive : $this->styleNameNormal, $tmpNavigation);
                     }
 
                     $tmpNavigation = str_replace('{URL}', $this->data[$id]['url'], $tmpNavigation);
@@ -610,10 +611,12 @@ class Navigation
     /**
     * getFrontendLangNavigation()
     *
-    * @param string   language navigation
     * @access public
+    * @global InitCMS
+    * @global ADONewConnection
+    * @global integer
+	* @global array
     */
-
     function getFrontendLangNavigation()
     {
         global $objInit, $objDatabase, $_LANGID, $_CONFIG;
@@ -663,13 +666,13 @@ class Navigation
 
                 	if($_CONFIG['useVirtualLanguagePath']=='on'){
                 		if($URLquery!=''){
-                			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$URLquery.'&'.$FromQuery;
+                			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$FromQuery;
                 		}else{
                 			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$FromQuery;
                 		}
                 	}else{
                 		if($URLquery!=''){
-                			$URLquery 	= $URLquery.'&setLang='.$value['id'];
+                			$URLquery 	= 'setLang='.$value['id'];
                 		}else{
                 			$URLquery 	= 'setLang='.$value['id'];
                 		}
