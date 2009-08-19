@@ -30,8 +30,8 @@ class ForumLibrary
     public $_arrGroups             = array();
     public $_communityUserGroupId  = array(0);
     public $_anonymousGroupId      = array(0);
-    public $_maxStringLenght       = 50;
-    public $_minPostLenght         = 5;
+    public $_maxStringlength       = 50;
+    public $_minPostlength         = 5;
     public $_topListLimit          = 10;
     public $_rateTimeout;
 
@@ -875,7 +875,7 @@ class ForumLibrary
                                                             ');
 
 
-                        $strLastPost        = $this->_shortenString($objSubResult->fields['pSubject'], $this->_maxStringLenght/2);
+                        $strLastPost        = $this->_shortenString($objSubResult->fields['pSubject'], $this->_maxStringlength/2);
                         $strLastPostDate    = date(ASCMS_DATE_FORMAT,$objSubResult->fields['pTimeCreated']);
                     } else {
                         // no last topic, write text into array
@@ -1210,9 +1210,9 @@ class ForumLibrary
         while($pId > 0) {
             $intForumId = $pId;
             if (in_array($intForumId, $parents)) {
-                $strNavTree = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=cat&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
+                $strNavTree = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=cat&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringlength)."</a> > \n".$strNavTree;
             } else {
-                $strNavTree = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=board&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
+                $strNavTree = '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=board&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringlength)."</a> > \n".$strNavTree;
             }
             $pId = $arrForums[$pId]['parent_id'];
         }
@@ -1253,12 +1253,12 @@ class ForumLibrary
                     $strSpacer .= '&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
                 if ($arrValues['parent_id'] != 0) {
-                    $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level'])).'</option>';
+                    $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringlength+10+($arrValues['level'])).'</option>';
                 } else {
                     if ($useCat) {
-                        $strSource .= '<option value="'.$arrValues['id'].'_cat" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+($arrValues['level'])).'</option>';
+                        $strSource .= '<option value="'.$arrValues['id'].'_cat" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringlength+($arrValues['level'])).'</option>';
                     } else {
-                        $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level'])).'</option>';
+                        $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringlength+10+($arrValues['level'])).'</option>';
                     }
                 }
             }
@@ -1389,8 +1389,8 @@ class ForumLibrary
         foreach ($arrLatestEntries as $entry) {
             $strUserProfileLink = ($entry['user_id'] > 0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=access&amp;cmd=user&amp;id='.$entry['user_id'].'" title="'.$entry['username'].'">'.$entry['username'].'</a>' : $entry['username'] ;
             $this->_objTpl->setVariable(array(
-                'FORUM_THREAD'              =>  '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=thread&amp;postid='.$entry['post_id'].'&amp;l=1&amp;id='.$entry['thread_id'].'#p'.$entry['post_id'].'" title="'.$entry['subject'].'">'.$this->_shortenString($entry['subject'], $this->_maxStringLenght).'</a>',
-                'FORUM_FORUM_NAME'          =>  '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=board&amp;id='.$entry['cat_id'].'" title="'.$entry['category_name'].'">'.$this->_shortenString($entry['category_name'], $this->_maxStringLenght/2).'</a>',
+                'FORUM_THREAD'              =>  '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=thread&amp;postid='.$entry['post_id'].'&amp;l=1&amp;id='.$entry['thread_id'].'#p'.$entry['post_id'].'" title="'.$entry['subject'].'">'.$this->_shortenString($entry['subject'], $this->_maxStringlength).'</a>',
+                'FORUM_FORUM_NAME'          =>  '<a href="'.CONTREXX_SCRIPT_PATH.'?section=forum&amp;cmd=board&amp;id='.$entry['cat_id'].'" title="'.$entry['category_name'].'">'.$this->_shortenString($entry['category_name'], $this->_maxStringlength/2).'</a>',
                 'FORUM_THREAD_STARTER'      =>  $strUserProfileLink,
                 'FORUM_POST_COUNT'          =>  $entry['postcount'],
                 'FORUM_THREAD_CREATE_DATE'  =>  $entry['time'],
@@ -1549,7 +1549,7 @@ class ForumLibrary
      *
      * @param string $str input string
      * @param integer $maxLength desired maximum length
-     * @return string $str shortened string, if longer than specified max lenght
+     * @return string $str shortened string, if longer than specified max length
      */
     function _shortenString($str, $maxLength) {
         if (strlen($str) > $maxLength) {
