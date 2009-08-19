@@ -548,7 +548,7 @@ class directoryLibrary
                 }
 
                 //make thumb
-                if (($fileType == "image/gif" || $fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") && $path != "uploads/") {
+                if (($fileType == "image/pjpeg" || $fileType == "image/gif" || $fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") && $path != "uploads/") {
                     $this->createThumb($fileName, $path);
                 }
             } else {
