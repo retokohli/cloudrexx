@@ -199,10 +199,8 @@ class ShopLibrary
      */
     function _getLanguageMenu($menuName="language", $selectedId="")
     {
-        // init object from the framework
-        $objShopLanguage = new FWLanguage();
         // gets indexed language array
-        $arrLanguage = $objShopLanguage->getLanguageArray();
+        $arrLanguage = FWLanguage::getLanguageArray();
 
         $menu = "\n<select name=\"".$menuName."\">\n";
         $menu .= ($selectedId==0) ? "<option value=\"0\" selected=\"selected\">All</option>\n" : "<option value=\"0\">All</option>\n";

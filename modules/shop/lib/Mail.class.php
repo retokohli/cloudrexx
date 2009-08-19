@@ -40,7 +40,7 @@ class Mail
      */
     static function init($lang_id=0)
     {
-        global $objDatabase, $objLanguage;
+        global $objDatabase;
 
         // The array has been initialized with that language already
         if (self::$lang_id === $lang_id) return true;
@@ -51,10 +51,7 @@ class Mail
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
         self::$arrTemplate = array();
 
-        if (!isset($objLanguage))
-            $objLanguage = new FWLanguage();
-
-        $arrLanguages = $objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         foreach ($arrLanguages as $arrLanguage) {
             if ($arrLanguage['frontend'] && $arrLanguage['is_default'] == 'true') {
                 $defaultLangId = $arrLanguage['id'];

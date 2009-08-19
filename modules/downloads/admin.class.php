@@ -280,7 +280,7 @@ class downloads extends DownloadsLibrary
 
     private function groups()
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG, $objLanguage, $objInit;
+        global $_ARRAYLANG, $_LANGID, $_CONFIG, $objInit;
 
         $objFWUser = FWUser::getFWUserObject();
 
@@ -410,7 +410,7 @@ class downloads extends DownloadsLibrary
 
     private function group()
     {
-        global $_ARRAYLANG, $objLanguage, $_LANGID;
+        global $_ARRAYLANG, $_LANGID;
 
         Permission::checkAccess(142, 'static');
 
@@ -479,7 +479,7 @@ class downloads extends DownloadsLibrary
         ));
 
         // parse name and description attributres
-        $arrLanguages = $objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         foreach ($arrLanguages as $langId => $arrLanguage) {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_GROUP_NAME'       => htmlentities($objGroup->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
@@ -575,14 +575,12 @@ class downloads extends DownloadsLibrary
      */
     private function category()
     {
-        global $_ARRAYLANG, $objLanguage, $_LANGID;
+        global $_ARRAYLANG, $_LANGID;
 
         $status = true;
         $objFWUser = FWUser::getFWUserObject();
         $objCategory = Category::getCategory(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         //$arrCategory = $this->getCategory(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
-// TODO: Never used
-//        $objLanguages = new FWLanguage();
 
         if (isset($_POST['downloads_category_save'])) {
             // check if user is allowed to change that stuff
@@ -713,7 +711,7 @@ class downloads extends DownloadsLibrary
         ));
 
         // parse name and description attributres
-        $arrLanguages = $objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         foreach ($arrLanguages as $langId => $arrLanguage) {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_CATEGORY_NAME'       => htmlentities($objCategory->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
@@ -1201,7 +1199,7 @@ class downloads extends DownloadsLibrary
 
     private function download()
     {
-        global $_ARRAYLANG, $objLanguage, $_LANGID;
+        global $_ARRAYLANG, $_LANGID;
 
         $objFWUser = FWUser::getFWUserObject();
         $objDownload = new Download();
@@ -1319,7 +1317,7 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
 
         // parse name and description attributres
-        $arrLanguages = $objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         foreach ($arrLanguages as $langId => $arrLanguage) {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_DOWNLOAD_NAME'       => htmlentities($objDownload->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
@@ -1683,7 +1681,7 @@ class downloads extends DownloadsLibrary
      */
     private function categories()
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG, $objLanguage, $objInit;
+        global $_ARRAYLANG, $_LANGID, $_CONFIG, $objInit;
 
         $objCategory = Category::getCategory($this->parentCategoryId);
         $objFWUser = FWUser::getFWUserObject();
@@ -2093,7 +2091,7 @@ class downloads extends DownloadsLibrary
 
         if ($objCategory->getId()) {
             $categoryFrontendURI = ASCMS_PATH_OFFSET
-                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($objInit->getFrontendLangId(), 'lang') : null)
+                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($objInit->getFrontendLangId(), 'lang') : null)
                 .'/'.CONTREXX_DIRECTORY_INDEX
                 .'?section=downloads&amp;category='.$objCategory->getId();
             $this->objTemplate->setVariable(array(

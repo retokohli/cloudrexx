@@ -29,10 +29,10 @@ class PartnersAdmin extends PartnersLibrary {
     */
     function __construct()
     {
-        global $objInit, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objInit, $objTemplate, $_ARRAYLANG;
 
         PartnersLibrary::__construct();
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/partners/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/partners/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_intLanguageId = $objInit->userFrontendLangId;
@@ -62,23 +62,23 @@ class PartnersAdmin extends PartnersLibrary {
         }
 
         switch($_GET['act']){
-        
+
            	case 'addPartners':
     			Permission::checkAccess(121, 'static');
     			$this->addPartners();
     		    break;
-    		
+
     		case 'insertPartners':
     		    Permission::checkAccess(121, 'static');
     			$this->insertPartners();
     			break;
-    			
+
     		case 'deletePartners':
     			Permission::checkAccess(120, 'static');
     			$this->deletePartners($_GET['id']);
     			$this->showOverview();
     			break;
-    			
+
       	    case 'editPartners':
     			Permission::checkAccess(120, 'static');
     			$this->editPartners($_GET['id']);
@@ -100,31 +100,31 @@ class PartnersAdmin extends PartnersLibrary {
     		    $this->subCategories();
     			$this->showCategories();
             	break;
-            	
+
     		case 'insertCategory':
     			Permission::checkAccess(123, 'static');
     			$this->subCategories();
                 $this->insertCategory();
          		break;
-       			
+
     		case 'editCategory':
     			Permission::checkAccess(122, 'static');
     			$this->subCategories();
     			$this->editCategory($_REQUEST['id'],$_REQUEST['catnames']);
     			break;
-    			
+
     		case 'updateCategory':
     			Permission::checkAccess(122, 'static');
     			$this->subCategories();
     			$this->updateCategory($_POST['cat_name_edit']);
        			break;
-       			
+
     		case 'deleteCategory':
     			Permission::checkAccess(122, 'static');
     			$this->subCategories();
     			$this->deleteCategory($_GET['id'],$_GET['catnames']);
             	break;
-            	
+
     		case 'multiactionCategory':
     			Permission::checkAccess(122, 'static');
     			$this->subCategories();
@@ -136,18 +136,18 @@ class PartnersAdmin extends PartnersLibrary {
     			$this->subCategories();
     			$this->sortCategories();
     			break;
-    			
+
     		case 'insertSort':
     		    Permission::checkAccess(122, 'static');
           		$this->subCategories();
     			$this->insertSort();
     		    break;
-    		    
+
    	    	case 'settings':
     		    Permission::checkAccess(122, 'static');
            		$this->showSettings();
     		    break;
-    		    
+
     		case 'saveSettings':
     		    Permission::checkAccess(122, 'static');
           		$this->saveSettings();
@@ -198,8 +198,8 @@ class PartnersAdmin extends PartnersLibrary {
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
     }
-    
-    
+
+
     /**
     Showing the main category menus like certificate,profile,level etc
     - Main Template for the Category Part
@@ -207,17 +207,16 @@ class PartnersAdmin extends PartnersLibrary {
     * @global	array		$_CORELANG
     * @global 	array		$_ARRAYLANG
     */
-    function subCategories() {
-    	global $_CORELANG, $_ARRAYLANG;
-    	
+    function subCategories()
+    {
+    	global $_ARRAYLANG;
+
         $this->_objTpl->loadTemplateFile('module_partners_subcategories.html',true,true);
              $this->_objTpl->setVariable(array(
         	 'TXT_CATEGORY'        =>  $this->_getCategoryname('1'),
              ));
             $arrSettings   = $this->_getSettings();
-
-
-       		foreach($arrSettings as $setKey => $setValue){
+       		foreach($arrSettings as $setValue){
             	   		if($arrSettings['lis_active']!=0){
                              $this->_objTpl->setVariable(array(
                             'TXT_LEVEL'           =>  '<li><a href="index.php?cmd=partners&amp;act=manageCategory&amp;category=level" title="'.$this->_getCategoryname('2').'">'.$this->_getCategoryname('2').'</a></li>'
@@ -261,17 +260,18 @@ class PartnersAdmin extends PartnersLibrary {
     * @global	array		$_CORELANG
     * @global 	array		$_ARRAYLANG
     */
-    
-    function ajaxRequest()  {
-    
-        global $_CORELANG, $_ARRAYLANG;
+
+    function ajaxRequest()
+    {
+        global $_ARRAYLANG;
+
         $ajaxRequest = intval($_REQUEST['ajax']);
         $regval  = intval($_REQUEST['regval']);
         $intLanguageId = intval($_REQUEST['lang']);
         $ajaxResult = new PartnersLibrary();
-        $lang_multiple;
+        $lang_multiple = '';
         $intLanguageCounterMultiple = 0;
-        foreach($this->_arrLanguages as $intLanguageIdajax => $arrTranslations) {
+        foreach(array_keys($this->_arrLanguages) as $intLanguageIdajax) {
                	if($intLanguageCounterMultiple >= 1){
 
                 if($intLanguageId == $intLanguageIdajax){
@@ -292,9 +292,10 @@ class PartnersAdmin extends PartnersLibrary {
      * @global 	array		$_ARRAYLANG
      * @global  object      $objDatabase
      */
-     
-   function showImport(){
-     global $objDatabase, $_ARRAYLANG;
+
+   function showImport()
+   {
+     global $_ARRAYLANG;
 
      $csvarr = array();
      $readf = fopen(ASCMS_MODULE_PATH."/partners/upload/".$_FILES['Browse_MultiImport']['name'], "r");
@@ -321,37 +322,34 @@ class PartnersAdmin extends PartnersLibrary {
     }
     $Listval="<select name='Importlist' multiple  style='width:200px;' size='10'>";
     $j = 0;
-    foreach ($csvarr as $key => $value)  {
-   
-    if($j==0)   {
-    
-        if($csvarr['title'][$j]!="") {
-        
-            $Listval.='<option value='.$csvarr['title'][$j].'>'.$csvarr['title'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['status'][$j].'>'.$csvarr['status'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['certificate'][$j].'>'.$csvarr['certificate'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['level'][$j].'>'.$csvarr['level'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['profile'][$j].'>'.$csvarr['profile'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['country'][$j].'>'.$csvarr['country'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['region'][$j].'>'.$csvarr['region'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['vertical'][$j].'>'.$csvarr['vertical'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['name'][$j].'>'.$csvarr['name'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['email'][$j].'>'.$csvarr['email'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['website'][$j].'>'.$csvarr['website'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['addr1'][$j].'>'.$csvarr['addr1'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['addr2'][$j].'>'.$csvarr['addr2'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['city'][$j].'>'.$csvarr['city'][$j].'</option>';
-            $Listval.='<option value='.$csvarr['zipcode'][$j].'>'.$csvarr['zipcode'][$j].'</option>';
+    foreach ($csvarr as $value)  {
+        if($j==0)   {
+            if($csvarr['title'][$j]!="") {
+                $Listval.='<option value='.$csvarr['title'][$j].'>'.$csvarr['title'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['status'][$j].'>'.$csvarr['status'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['certificate'][$j].'>'.$csvarr['certificate'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['level'][$j].'>'.$csvarr['level'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['profile'][$j].'>'.$csvarr['profile'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['country'][$j].'>'.$csvarr['country'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['region'][$j].'>'.$csvarr['region'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['vertical'][$j].'>'.$csvarr['vertical'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['name'][$j].'>'.$csvarr['name'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['email'][$j].'>'.$csvarr['email'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['website'][$j].'>'.$csvarr['website'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['addr1'][$j].'>'.$csvarr['addr1'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['addr2'][$j].'>'.$csvarr['addr2'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['city'][$j].'>'.$csvarr['city'][$j].'</option>';
+                $Listval.='<option value='.$csvarr['zipcode'][$j].'>'.$csvarr['zipcode'][$j].'</option>';
+            }
+            $j++;
         }
-        $j++;
-    }
 
     }
     $Listval.='</select>';
     return $Listval;
    }
-   
-   
+
+
    /**
      * Shows the fieldnames in the list box  of the Partners details.
 
@@ -384,7 +382,7 @@ class PartnersAdmin extends PartnersLibrary {
      * @global	array		$_CORELANG
      * @global 	array		$_ARRAYLANG
      */
-   
+
     function showCategories($category,$cat_id) {
       	global $_CORELANG, $_ARRAYLANG;
 
@@ -414,10 +412,10 @@ class PartnersAdmin extends PartnersLibrary {
     	if(empty($category))
            $category = $_GET['category'];
         if($category == "level"){
-        $arrRenameCategories = $this->CreateRegionArray($catId = 2);
+        $arrRenameCategories = $this->CreateRegionArray(2);
         }
         else if($category == "profile"){
-        $arrRenameCategories = $this->CreateRegionArray($catId = 3);
+        $arrRenameCategories = $this->CreateRegionArray(3);
            $this->_objTpl->setVariable(array('PARTNERS_CAT_NAME'     => "profile",
                                              'PARTNERS_CAT_NAME_DEL' => "profile",
                                              'TXT_OVERVIEW_TITLE'    => $_ARRAYLANG['PARTNERS_CATNAME_MANAGE'].$this->_getCategoryname('3'),
@@ -426,7 +424,7 @@ class PartnersAdmin extends PartnersLibrary {
                                           ));
         }
         else if($category == "country"){
-        $arrRenameCategories = $this->CreateRegionArray($catId = 4);
+        $arrRenameCategories = $this->CreateRegionArray(4);
         $this->_objTpl->setVariable(array('PARTNERS_CAT_NAME'                       => "country",
                                           'PARTNERS_CAT_NAME_DEL'                   => "country",
                                           'TXT_OVERVIEW_SUBTITLE_ADD_REGIONS'		=> $_ARRAYLANG['TXT_PARTNERS_CATEGORY_MANAGE_ADD_REGIONS'],
@@ -436,7 +434,7 @@ class PartnersAdmin extends PartnersLibrary {
                                           ));
         }
         else if($category == "vertical"){
-        $arrRenameCategories = $this->CreateRegionArray($catId = 5);
+        $arrRenameCategories = $this->CreateRegionArray(5);
         $this->_objTpl->setVariable(array('PARTNERS_CAT_NAME'     => "vertical",
                                           'PARTNERS_CAT_NAME_DEL' => "vertical",
                                           'TXT_OVERVIEW_TITLE'    => $_ARRAYLANG['PARTNERS_CATNAME_MANAGE'].$this->_getCategoryname('5'),
@@ -446,7 +444,7 @@ class PartnersAdmin extends PartnersLibrary {
         }
         else {
         $category = "certificate";
-        $arrRenameCategories = $this->CreateRegionArray($catId = 1);
+        $arrRenameCategories = $this->CreateRegionArray(1);
                  $this->_objTpl->setVariable(array('PARTNERS_CAT_NAME'     => "",
                                                    'PARTNERS_CAT_NAME_DEL' => $_ARRAYLANG['PARTNERS_CATNAME_CATEGORY'],
                                                    'TXT_OVERVIEW_TITLE'    => $_ARRAYLANG['PARTNERS_CATNAME_MANAGE'].$this->_getCategoryname('1'),
@@ -456,6 +454,7 @@ class PartnersAdmin extends PartnersLibrary {
                                           ));
         }
        	$arrLanguagesName = array(0 => '', 1 => '', 2 => '');
+       	$intCounter = 0;
      	foreach ($arrRenameCategories as $intCategoryId => $arrLanguages){
      	  foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
      	      $arrLanguagesName[$intCounter%3] .= '<input '.(($arrRenameCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmRenameCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
@@ -539,8 +538,10 @@ class PartnersAdmin extends PartnersLibrary {
      * @global 	array		$_ARRAYLANG
      * @global  object      $objDatabase
      */
-     function addRegions($category,$id) {
-      	global $_CORELANG, $_ARRAYLANG,$objDatabase;
+     function addRegions($category, $id)
+     {
+      	global $_CORELANG, $_ARRAYLANG;
+
         $cat_id = intval(trim(strip_tags($id)));
 		$this->_strPageTitle = $_CORELANG['TXT_PARTNERS_CATEGORY_MANAGE_TITLE'];
 	    $this->_objTpl->addBlockfile('PARTNERS_SUBCATEGORY_FILE', 'settings_block', 'module_partners_categories_regions.html');
@@ -572,8 +573,9 @@ class PartnersAdmin extends PartnersLibrary {
 
         //Show Categories
         $arrCategories = $this->createCategoryArray($intPagingPosition, $this->getPagingLimit(),$category,$intCategoryId=0,$cat_id);
-        $arrRenameCategories = $this->CreateRegionArray($catId = 6);
+        $arrRenameCategories = $this->CreateRegionArray(6);
         $arrLanguagesName = array(0 => '', 1 => '', 2 => '');
+        $intCounter = 0;
      	foreach ($arrRenameCategories as $intCategoryId => $arrLanguages){
      	  foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
      	      $arrLanguagesName[$intCounter%3] .= '<input '.(($arrRenameCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmRenameCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
@@ -660,13 +662,13 @@ class PartnersAdmin extends PartnersLibrary {
      * @global 	array		$_ARRAYLANG
      * @global  object      $objDatabase
      */
-    
+
     function insertSort() {
     global $objDatabase, $_ARRAYLANG;
     $cat_name = $_POST['cat_name_del'];
-    
+
     switch($cat_name){
-    
+
         case 'level':
                if ($_POST['frmAddCategory_Submit']) {
                     foreach($_POST as $strKey => $strValue){
@@ -693,7 +695,7 @@ class PartnersAdmin extends PartnersLibrary {
                 }
                 $this->showCategories($cat_name);
                 break;
-        
+
         case 'profile':
                 if ($_POST['frmAddCategory_Submit']) {
                     foreach($_POST as $strKey => $strValue){
@@ -719,7 +721,7 @@ class PartnersAdmin extends PartnersLibrary {
                 }
                 $this->showCategories($cat_name);
                 break;
-    
+
        case 'country':
                if ($_POST['frmAddCategory_Submit']) {
                     foreach($_POST as $strKey => $strValue){
@@ -783,7 +785,7 @@ class PartnersAdmin extends PartnersLibrary {
     									       ');
 
                                     if($objResult->RecordCount() <= 0){
-                                            $objUpdate = $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_partners_user_region`
+                                            $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_partners_user_region`
     									           SET `sort_id` = "'.$strvalueResult.'" WHERE `id` = "'.$strkeyexplodeResult.'"');
                                     }
                             }
@@ -809,7 +811,7 @@ class PartnersAdmin extends PartnersLibrary {
     									   ');
 
                                 if($objResult->RecordCount() <= 0){
-                                        $objUpdate = $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_partners_categories`
+                                    $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_partners_categories`
     									           SET `sort_id` = "'.$strvalueResult.'" WHERE `category_id` = "'.$strkeyexplodeResult.'"');
                                 }
                             }
@@ -820,7 +822,7 @@ class PartnersAdmin extends PartnersLibrary {
                      $this->_strErrMessage = $_ARRAYLANG['TXT_PARTNERS_SORT_CERTIFICATE_ERROR'];
                 }
                 $this->showCategories();
-    
+
         }
 
     }
@@ -835,7 +837,7 @@ class PartnersAdmin extends PartnersLibrary {
     function insertCategory() {
     	global $objDatabase, $_ARRAYLANG;
         $cat_name = $_POST['cat_name'];
-        
+
         switch($cat_name){
 
         case 'level':
@@ -928,7 +930,7 @@ class PartnersAdmin extends PartnersLibrary {
     	       }
                $this->showCategories($cat_name);
                break;
-        
+
       case 'profile':
                if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
 
@@ -982,7 +984,7 @@ class PartnersAdmin extends PartnersLibrary {
     	        }
                 $this->showCategories($cat_name);
                 break;
-        
+
      case 'country':
                	if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
 
@@ -1036,7 +1038,7 @@ class PartnersAdmin extends PartnersLibrary {
     	         }
                  $this->showCategories($cat_name);
                  break;
-        
+
       case 'vertical':
 
           	if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
@@ -1090,7 +1092,7 @@ class PartnersAdmin extends PartnersLibrary {
     	     }
              $this->showCategories($cat_name);
              break;
-        
+
    case 'Regions':
             $cat_id = intval(trim(strip_tags($_POST['cat_id'])));
            	if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
@@ -1149,7 +1151,7 @@ class PartnersAdmin extends PartnersLibrary {
     	    break;
 
     default:
-        
+
            	if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
 
         		//Get next category-id
@@ -1184,7 +1186,7 @@ class PartnersAdmin extends PartnersLibrary {
            else if (isset($_POST['frmRenameCategory_Languages']) && is_array($_POST['frmRenameCategory_Languages'])) {
               	$arrValues = array();
     	        $arrActiveLanguages = array();
-    	        foreach ($_POST['frmRenameCategory_Languages'] as $intKey => $intLanguageId) {
+    	        foreach ($_POST['frmRenameCategory_Languages'] as $intLanguageId) {
 	    		     $arrActiveLanguages[$intLanguageId] = true;
     		    }
                	foreach($_POST as $strKey => $strValue){
@@ -1220,7 +1222,7 @@ class PartnersAdmin extends PartnersLibrary {
     switch($cat_name)
     {
     case 'level':
-        
+
             if ($intCategoryId > 0) {
     		    $objDatabase->Execute('	DELETE
     								FROM '.DBPREFIX.'module_partners_user_level
@@ -1238,7 +1240,7 @@ class PartnersAdmin extends PartnersLibrary {
     	    if($strAction=="")
     	        $this->showCategories($cat_name);
             break;
-        
+
      case 'profile':
 
         	if ($intCategoryId > 0) {
@@ -1256,9 +1258,9 @@ class PartnersAdmin extends PartnersLibrary {
        	      $this->showCategories($cat_name);
     	    }
             break;
-        
+
       case 'country':
-         
+
             if ($intCategoryId > 0) {
     		  $objDatabase->Execute('	DELETE
     								FROM '.DBPREFIX.'module_partners_user_country
@@ -1279,7 +1281,7 @@ class PartnersAdmin extends PartnersLibrary {
             break;
 
        case 'vertical':
-         
+
            	if ($intCategoryId > 0) {
     		    $objDatabase->Execute('	DELETE
     								FROM '.DBPREFIX.'module_partners_user_vertical
@@ -1294,7 +1296,7 @@ class PartnersAdmin extends PartnersLibrary {
     	    if($strAction=="")
     	        $this->showCategories($cat_name);
             break;
-          
+
         case 'Regions':
             $cat_id = intval(strip_tags(trim($_REQUEST['cat_id'])));
             if($cat_id == 0){
@@ -1314,7 +1316,7 @@ class PartnersAdmin extends PartnersLibrary {
     	    if($strAction=="")
     	        $this->addRegions($cat_name,$cat_id);
              break;
-          
+
         default:
     	    if ($intCategoryId > 0) {
     		  $objDatabase->Execute('	DELETE
@@ -1522,7 +1524,7 @@ class PartnersAdmin extends PartnersLibrary {
     													`lang_id` = '.$intLanguageId.'
     													LIMIT	1
     												');
-    												
+
 
                          $restoreValue;
     				    if ($objResult->RecordCount() == 0) {
@@ -1577,7 +1579,7 @@ class PartnersAdmin extends PartnersLibrary {
 		    								');
 		    				  }
 		    				  else{
-		    								
+
 		    			         $objDatabase->Execute(' UPDATE	`'.DBPREFIX.'module_partners_display`
 		    									SET     `display_title` = "'.contrexx_addslashes(strip_tags($Level_title)).'",
                                                         `display_content` = "'.contrexx_addslashes(strip_tags($Level_content)).'",
@@ -1606,12 +1608,12 @@ class PartnersAdmin extends PartnersLibrary {
     	} else {
     		 $this->_strErrMessage = $_ARRAYLANG['TXT_PARTNERS_CATEGORY_UPDATE_ERROR_ACTIVE'];
     	   }
-       
+
            $this->showCategories($cat_name);
            break;
-        
+
       case 'profile':
-        
+
           if(isset($_POST['frmEditCategory_Submit'])) {
 
  			  $intCategoryId = intval($_POST['frmEditCategory_Id']);
@@ -1665,9 +1667,9 @@ class PartnersAdmin extends PartnersLibrary {
     	   }
            $this->showCategories($cat_name);
            break;
-        
+
      case 'country':
-        
+
         if(isset($_POST['frmEditCategory_Submit'])) {
 
  			$intCategoryId = intval($_POST['frmEditCategory_Id']);
@@ -1720,9 +1722,9 @@ class PartnersAdmin extends PartnersLibrary {
     	}
             $this->showCategories($cat_name);
         break;
-        
+
    case 'vertical':
-        
+
          if(isset($_POST['frmEditCategory_Submit'])) {
 
  			$intCategoryId = intval($_POST['frmEditCategory_Id']);
@@ -1776,7 +1778,7 @@ class PartnersAdmin extends PartnersLibrary {
     	}
             $this->showCategories($cat_name);
         break;
-        
+
    case 'Regions':
          $cat_id = intval(trim(strip_tags($_REQUEST['cat_id'])));
          if(isset($_POST['frmEditCategory_Submit'])) {
@@ -1832,9 +1834,9 @@ class PartnersAdmin extends PartnersLibrary {
     	}
             $this->addRegions($cat_name,$cat_id);
         break;
-        
+
    default:
-        
+
     	if (isset($_POST['frmEditCategory_Languages']) && is_array($_POST['frmEditCategory_Languages'])) {
  			$intCategoryId = intval($_POST['frmEditCategory_Id']);
             $imgpath = $_POST['frmLevel_Image'];
@@ -2016,7 +2018,7 @@ class PartnersAdmin extends PartnersLibrary {
 	   			       'EDIT_LANGUAGES_2'    =>   $arrLanguages[1],
 	   			       'EDIT_LANGUAGES_3'    =>   $arrLanguages[2]
 	   			));
-	   			
+
          if (count($arrEntries) > 0) {
               	$intRowClass = 0;
           		foreach ($arrEntries as $intEntryId => $arrEntryValues) {
@@ -2083,7 +2085,7 @@ class PartnersAdmin extends PartnersLibrary {
 	   		  if ($this->PaginactionCount > $this->getPagingLimit()) {
                  if(!empty($_REQUEST['subject']) || !empty($_REQUEST['level'])
                  || !empty($_REQUEST['profile']) || !empty($_REQUEST['country']) || !empty($_REQUEST['vertical']))   {
-                 
+
                     $searchSubject = contrexx_addslashes(strip_tags($_REQUEST['subject']));
                     $searchLevel =contrexx_addslashes(strip_tags($_REQUEST['level']));
                     $searchProfile =contrexx_addslashes(strip_tags($_REQUEST['profile']));
@@ -2104,9 +2106,9 @@ class PartnersAdmin extends PartnersLibrary {
     		$this->_objTpl->parse('noEntries');
            }
     }
-    
 
-    
+
+
       /**
      * Shows the "Add Partners" page.
      *
@@ -2115,9 +2117,11 @@ class PartnersAdmin extends PartnersLibrary {
      * @global 	object		$_objLanguage
      * @global 	array		$_CONFIG
      */
-     function addPartners($errArray) {
-       	global $_CORELANG, $_ARRAYLANG, $_CONFIG, $objLanguage;
-        $recipientTitle = 0;
+     function addPartners($errArray)
+     {
+       	global $_CORELANG, $_ARRAYLANG, $_CONFIG;
+
+       	$recipientTitle = 0;
         $titleName_level = "level";
         $titleName_profile = "profile";
         $titleName_country = "country";
@@ -2129,8 +2133,8 @@ class PartnersAdmin extends PartnersLibrary {
 
     	$arrCategories = $this->createCategoryArray();
         $arrSettings   = $this->_getSettings();
-        
-        
+
+
     	//Show language-selection
    	    if (count($this->_arrLanguages) > 0) {
     		$intLanguageCounter = 0;
@@ -2250,9 +2254,9 @@ class PartnersAdmin extends PartnersLibrary {
                            }
 
 	   		 }
-	   		 
+
 	   		 if(($arrSettings['lis_active']==0) && ($arrSettings['pis_active']==0) && ($arrSettings['cis_active']==0)&& ($arrSettings['cis_active']==0)) {
-	   		 
+
 	   		 $this->_objTpl->setVariable(array(
                       'PARTNERS_CLASS_LEVEL' => 'row2',
                       'PARTNERS_CLASS_LEVEL1' => 'row2',
@@ -2265,7 +2269,7 @@ class PartnersAdmin extends PartnersLibrary {
                       'PARTNERS_CLASS_ONE' => 'row1',
                       'PARTNERS_CLASS_TWO' => 'row2'
                       ));
-	   		 
+
 	   		 }
 	   		 if(($arrSettings['lis_active']==0) && ($arrSettings['pis_active']==0) && ($arrSettings['cis_active']==0)&& ($arrSettings['cis_active']==1)) {
                      $this->_objTpl->setVariable(array(
@@ -2478,7 +2482,7 @@ class PartnersAdmin extends PartnersLibrary {
                       'PARTNERS_CLASS_TWO' => 'row2'
                       ));
 	   		 }
-	   		 
+
 
 	    		$this->_objTpl->setVariable(array(
 	    			'DIV_ID'			=>	$arrTranslations['long'],
@@ -2520,7 +2524,7 @@ class PartnersAdmin extends PartnersLibrary {
 	   			'EDIT_LANGUAGES_3'		=>	$arrLanguages[2],
 	   			'EDIT_JS_TAB_TO_DIV'	=>	$strJsTabToDiv
        		));
-	   		
+
     	}
     }
 
@@ -2740,7 +2744,7 @@ class PartnersAdmin extends PartnersLibrary {
 												`lang_id`     = '.$intLanguageId.'
 										');
             }
-			
+
 			if (is_array($arrEntryValues['country'])) {
                 $position = 1;
 				foreach ($arrEntryValues['country'] as $intKey => $intCountryId) {
@@ -2857,7 +2861,7 @@ class PartnersAdmin extends PartnersLibrary {
 										');
 				}
 			}
-			
+
 			if((count($arrEntryValues['region_multi_0'])==0) && (count($arrEntryValues['region_multi_1'])==0) && (count($arrEntryValues['region_multi_2'])==0)){
                   $objDatabase->Execute('	INSERT INTO '.DBPREFIX.'module_partners_message_to_region
 											SET `message_id`  = '.$intMessageId.',
@@ -2869,22 +2873,22 @@ class PartnersAdmin extends PartnersLibrary {
 		}
 		return true;
     }
-    
-    
-    
+
+
+
 
         /**
      * Shows the "Edit Entry" page.
      *
      * @global	array		$_CORELANG
      * @global 	array		$_ARRAYLANG
-     * @global  object      $objLanguage
      * @global 	array		$_CONFIG
      * @param 	integer		$intEntryId: The values of this entry will be loaded into the form.
      */
-     function editPartners($intEntryId) {
+     function editPartners($intEntryId)
+     {
+    	global $_CORELANG, $_ARRAYLANG, $_CONFIG;
 
-    	global $_CORELANG, $_ARRAYLANG, $_CONFIG, $objLanguage;
 	    $recipientTitle = 0;
         $titleName_level = "level";
         $titleName_profile = "profile";
@@ -2937,7 +2941,7 @@ class PartnersAdmin extends PartnersLibrary {
 
 		    		));
 		    		$this->_objTpl->parse('showLanguageTabs');
-		    		
+
 		    			    		//Parse the DIVS for every language
                     $this->_objTpl->setVariable(array(
              'TXT_PARTNERS_MESSAGE' =>  $_ARRAYLANG['TXT_PARTNERS_ADD'],
@@ -2977,8 +2981,8 @@ class PartnersAdmin extends PartnersLibrary {
 		    			    $arrCategoriesContent[$intCategoriesCounter%3] .= '<input type="checkbox" name="frmEditEntry_Categories_'.$intLanguageId.'[]" value="'.$intCategoryId.'" '.(key_exists($intCategoryId, $arrEntries[$intEntryId]['categories'][$intLanguageId]) ? 'checked="checked"' : '').' />'.$arrCategoryValues[$intLanguageId]['name'].'<br />';
 		    				++$intCategoriesCounter;
 		    			}
-		    			
-		    			
+
+
 		    			foreach($arrSettings as $setKey => $setValue){
             	   		if($arrSettings['lis_active']!=0){
                            //do Nothing
@@ -3012,7 +3016,7 @@ class PartnersAdmin extends PartnersLibrary {
                            }
 
 	   		 }
-		    			
+
 
 		    		}
 		    		$this->_objTpl->setVariable(array(
@@ -3082,7 +3086,7 @@ class PartnersAdmin extends PartnersLibrary {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_PARTNERS_ENTRY_EDIT_ERROR_ID'];
     	}
     }
-    
+
       /**
      * Collects and validates all values from the edit-partners-form. Updates values in database.
      *
@@ -3192,7 +3196,7 @@ class PartnersAdmin extends PartnersLibrary {
     								FROM	'.DBPREFIX.'module_partners_message_to_category
     								WHERE	message_id='.$intMessageId.'
     							');
-    							
+
     		$objDatabase->Execute('	DELETE
     								FROM	'.DBPREFIX.'module_partners_message_to_level
     								WHERE	message_id='.$intMessageId.'
@@ -3226,11 +3230,11 @@ class PartnersAdmin extends PartnersLibrary {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_PARTNERS_ENTRY_UPDATE_ERROR_LANGUAGES'];
     	}
     }
-    
-    
-    
-    
-    
+
+
+
+
+
      /**
      * Removes the entry for partners with id = $intEntry from database.
      *
@@ -3305,7 +3309,7 @@ class PartnersAdmin extends PartnersLibrary {
     			//do nothing!
     	}
     }
-    
+
     /**
      * Settings module for partners
      * @global 	array		$_CORELANG
@@ -3364,7 +3368,7 @@ class PartnersAdmin extends PartnersLibrary {
               'PARTNERS_SETTINGS_HEIGHT_CERT'  => $arrSettings['cheight']
             ));
         }
-        
+
             //echo "array value".$arrSettings['ctis_active'];
 
          $this->_objTpl->setVariable(array(
@@ -3376,14 +3380,14 @@ class PartnersAdmin extends PartnersLibrary {
             'PARNTERS_ACTIVE_CERTIFICATE' => $this->_getactiveProperties($arrSettings['ctis_active'],'frmSettings_act_certificate')
         ));
     }
-    
+
     /**
     * Settings are saved here
     * @global 	array		$_CORELANG
     * @global 	array		$_ARRAYLANG
     * @global 	object		$objDatabase
     */
-    
+
     function saveSettings(){
        global $_CORELANG, $_ARRAYLANG, $objDatabase;
        $intMessageId = 1;
@@ -3432,16 +3436,16 @@ class PartnersAdmin extends PartnersLibrary {
     	}
 
     }
-    
+
     /*
     * This function is used to concandinate the different Categories..
     * @global 	array		$_CORELANG
     * @global 	array		$_ARRAYLANG
     * @global 	object		$objDatabase
     */
-    
+
     function csvCategory($msgID,$tableName,$mainTable,$fiedlName,$langExport) {
-    
+
       global $_CORELANG, $_ARRAYLANG, $objDatabase;
         /**Selecting the Coutries..*/
 
@@ -3460,9 +3464,9 @@ class PartnersAdmin extends PartnersLibrary {
         /** This should be checked because it contains not id field name,it contain category_id...
           * When the Person certicates option to be exported into the csv
           */
-          
+
         if($mainTable =="module_partners_categories") {
-        
+
             $fieldName="category_id";
         }
         else {
@@ -3489,12 +3493,12 @@ class PartnersAdmin extends PartnersLibrary {
 
           $objResultCategories->MoveNext();
         }
-      
+
         $countCountry=count($arrCountry["catagory"][$langExport]);
         $concadinatedCountry="";
-        
+
          /**Concadinating the & with two or more Country... */
-         
+
         for($k=0;$k<$countCountry;$k++) {
 
            $concadinatedCountry.=$arrCountry["catagory"][$langExport][$k];
@@ -3504,16 +3508,16 @@ class PartnersAdmin extends PartnersLibrary {
             }
         }
         return $concadinatedCountry;
-    
+
     }
-    
+
   /*
     * This function is used to export individual partners entries
     * @global 	array		$_CORELANG
     * @global 	array		$_ARRAYLANG
     * @global 	object		$objDatabase
     */
-    
+
     function getCsv($id,$subject){
     global $_CORELANG,$_ARRAYLANG,$objDatabase;
     unset($data);
@@ -3559,7 +3563,7 @@ class PartnersAdmin extends PartnersLibrary {
 
 
      /**Calling the Category two merge it.. */
-     
+
      $concadinatedCertificate   = $this->csvCategory($id,"module_partners_message_to_category","module_partners_categories","name",$language_export);
      $concadinatedCountry       = $this->csvCategory($id,"module_partners_message_to_country","module_partners_user_country","country",$language_export);
      $concadinatedLevel         = $this->csvCategory($id,"module_partners_message_to_level","module_partners_user_level","level",$language_export);
@@ -3615,7 +3619,7 @@ class PartnersAdmin extends PartnersLibrary {
      $j++;
      $data[$i][$j]=strip_tags($objResultExport->fields['image'])." ";
      $j++;
-     
+
      ++$i;
      }
      $objResultExport->MoveNext();
@@ -3643,7 +3647,7 @@ class PartnersAdmin extends PartnersLibrary {
     * @global 	array		$_ARRAYLANG
     * @global 	object		$objDatabase
     */
-     
+
      function getMultiplecsv($Expval){
       global $_CORELANG,$_ARRAYLANG,$objDatabase;
       unset($data);
@@ -3672,7 +3676,7 @@ class PartnersAdmin extends PartnersLibrary {
          }
 
 		if($objResultExport->RecordCount() > 0){
-		
+
 
 
             //echo "concadinated Certificates".$concadinatedCertificate."message Id".$objResultExport->fields['message_id']."<br>";
@@ -3693,7 +3697,7 @@ class PartnersAdmin extends PartnersLibrary {
            }
 
      if($objResultExport->fields['is_active']!=0){
-     
+
       /**Calling the Category two merge it.. */
 
             $concadinatedCertificate   = $this->csvCategory($objResultExport->fields['message_id'],"module_partners_message_to_category","module_partners_categories","name",$language_export);
@@ -3702,7 +3706,7 @@ class PartnersAdmin extends PartnersLibrary {
             $concadinatedProfile       = $this->csvCategory($objResultExport->fields['message_id'],"module_partners_message_to_profile","module_partners_user_profile","profile",$language_export);
             $concadinatedVertical      = $this->csvCategory($objResultExport->fields['message_id'],"module_partners_message_to_vertical","module_partners_user_vertical","vertical",$language_export);
             $concadinatedRegion        = $this->csvCategory($objResultExport->fields['message_id'],"module_partners_message_to_region","module_partners_user_region","name",$language_export);
-            
+
             $data[$i][$j]=$arrLanguagesExport." ";
             $j++;
             $data[$i][$j]=$status." ";
@@ -3862,7 +3866,7 @@ class PartnersAdmin extends PartnersLibrary {
                    'HIDDEN_IMPORT_LEFTKEYS'  => $leftval,
                    'HIDDEN_IMPORT_PARTNERS_CSV'  => $flname
 	    		));
-	    		
+
 
             if (count($this->_arrLanguages) > 0) {
 
@@ -3905,9 +3909,9 @@ class PartnersAdmin extends PartnersLibrary {
 	   			'IMPORT_LANGUAGES_2'	=>	$arrLanguages[1],
 	   			'IMPORT_LANGUAGES_3'	=>	$arrLanguages[2]
 	   		));
-            
+
            	}
-	    		
+
             }
             $arrRecipients = $objImport->getFinalData($arrFields);
 
@@ -3950,7 +3954,7 @@ class PartnersAdmin extends PartnersLibrary {
                 'TXT_IMPORT_IN_CATEGORY'    => $_ARRAYLANG['TXT_IMPORT_IN_CATEGORY'],
                 'TXT_ENTER_EMAIL_ADDRESS'     => $_ARRAYLANG['TXT_ENTER_EMAIL_ADDRESS'],
             ));
-            
+
            $this->_objTpl->setVariable(array(
                 'PARTNERS_CATEGORY_MENU'     => $this->CategoryDropDown(),
                 'PARTNERS_IMPORT_FRAME'    => $objTpl->get()
@@ -4035,7 +4039,7 @@ class PartnersAdmin extends PartnersLibrary {
             $this->_objTpl->setVariable('PARTNERS_USER_FILE', $objTpl->get());
         }
     }
-    
+
     /*
     * This function is used to choose the category when Importing csv file
     * @global 	array		$_CORELANG
@@ -4062,7 +4066,7 @@ class PartnersAdmin extends PartnersLibrary {
         }
         return $ReturnVar;
     }
-    
+
 
 
     /*
@@ -4086,7 +4090,7 @@ class PartnersAdmin extends PartnersLibrary {
         $lcnt=count($lvalue);
         $cntlang=count($actlang);
         $tfile = fopen(ASCMS_MODULE_PATH."/partners/upload/".$csvfile, "r");
-        
+
 
 
 
@@ -4123,11 +4127,11 @@ class PartnersAdmin extends PartnersLibrary {
               }
            }
 
-               
+
                for($L=0;$L<$intLanguageCounter;$L++) {
-               
+
                     for($z=0;$z<count($actlang);$z++) {
-                    
+
                        // echo "L".($L+1)."active:".$actlang[$z]."<br><br>";
                         if(($L+1)==$actlang[$z]) {
 
@@ -4156,30 +4160,30 @@ class PartnersAdmin extends PartnersLibrary {
                         $objDatabase->Execute($createPartners);
                         $intMessageId = $objDatabase->insert_id();
                         for($M=0;$M<$intLanguageCounter;$M++) {
-                        
+
                            $createLangEnglish='INSERT INTO '.DBPREFIX.'module_partners_create_lang
                                                         SET `message_id`  = "'.$intMessageId.'",
                                                             `lang_id`     = "'.($M+1).'",
                                                              `is_active`  = "'.$arrayLangActive[$M].'" ';
                              $inserted_ID[$M]=$intMessageId;
                              $objDatabase->Execute($createLangEnglish);
-                             
-                             
+
+
                              /**Message to Level... */
 
                            $createMessage='INSERT INTO '.DBPREFIX.'module_partners_message_to_level
 											                 SET `message_id` = '.$intMessageId.',
 												                 `lang_id`     = "'.($M+1).'"';
                              $objDatabase->Execute($createMessage);
-                             
+
                              /** Category....*/
 
                              $createCategory='INSERT INTO '.DBPREFIX.'module_partners_message_to_category
 											                 SET `message_id`  = '.$intMessageId.',
 												                 `lang_id`    = "'.($M+1).'"';
                              $objDatabase->Execute($createCategory);
-                             
-                             
+
+
                              /**Profile.... */
 
                             $createProfile='INSERT INTO '.DBPREFIX.'module_partners_message_to_profile
@@ -4187,7 +4191,7 @@ class PartnersAdmin extends PartnersLibrary {
 												                 `lang_id`    = "'.($M+1).'"';
 
                             $objDatabase->Execute($createProfile);
-                            
+
                             /**Message to Vertical.. */
 
                             $createVeritical='INSERT INTO '.DBPREFIX.'module_partners_message_to_vertical
@@ -4195,17 +4199,17 @@ class PartnersAdmin extends PartnersLibrary {
 												                 `lang_id`     = "'.($M+1).'"';
 
                             $objDatabase->Execute($createVeritical);
-                            
-                            
+
+
                             /**Country ..*/
                             $createCountry='INSERT INTO '.DBPREFIX.'module_partners_message_to_country
 											                 SET `message_id`  = '.$intMessageId.',
 												                 `lang_id`    = "'.($M+1).'"';
 
                             $objDatabase->Execute($createCountry);
-                            
+
                             /**Region.. */
-                            
+
                             $createRegion='INSERT INTO '.DBPREFIX.'module_partners_message_to_region
 											                 SET `message_id`  = '.$intMessageId.',
 												                 `lang_id`     = "'.($M+1).'"';
@@ -4232,7 +4236,7 @@ class PartnersAdmin extends PartnersLibrary {
                                                              `lang_id`     = "'.($j+1).'"';
                                        $objDatabase->Execute($createCategoryUpdate);
                                   }
-                            
+
                                   if($rvalue[$i]=='profile')  {
                                        $createProfileUpdate='	UPDATE '.DBPREFIX.'module_partners_message_to_profile
                                                             SET
@@ -4292,7 +4296,7 @@ class PartnersAdmin extends PartnersLibrary {
 
           $this->showOverview();
           $this->_strOkMessage =  $_ARRAYLANG['TXT_PARTNERS_ENTRY_IMPORT_SUCCESSFULL'];
-         
+
     }
 
 }

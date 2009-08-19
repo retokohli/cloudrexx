@@ -23,23 +23,23 @@ require_once ASCMS_MODULE_PATH.'/fileUploader/lib/FileUploaderLib.class.php';
  * @package     contrexx
  * @subpackage  module_fileuploader
  */
-class FileUploader extends FileUploaderLib {
+class FileUploader extends FileUploaderLib
+{
     /**
     * Constructor
     */
     public function __construct()
     {
         parent::__construct();
-
         $this->moduleURI = '?cmd=fileUploader&amp;standalone=true';
     }
+
 
     /**
     * Set the backend page
     */
     public function getPage()
     {
-
         if (!isset($_REQUEST['act'])) {
             $_REQUEST['act'] = '';
         }
@@ -55,24 +55,22 @@ class FileUploader extends FileUploaderLib {
         }
     }
 
+
     /**
     * Show the file upload applet
-    *
     * @access private
     * @global array
     */
     private function showUploadApplet()
     {
-        global $_ARRAYLANG, $_LANGID, $objLanguage, $objInit;
+        global $_ARRAYLANG;
 
         $objFWUser = FWUser::getFWUserObject();
-        $lang = $objLanguage->getLanguageParameter($objFWUser->objUser->getBackendLanguage(), 'lang');
+        $lang = FWLanguage::getLanguageParameter($objFWUser->objUser->getBackendLanguage(), 'lang');
         if (!file_exists(ASCMS_MODULE_PATH.'/fileUploader/lib/lang/messages_'.$lang.'.zip')) {
             $lang = $this->defaultInterfaceLanguage;
         }
-
         $this->objTpl->loadTemplateFile('module_fileUploader_frame.html');
-
         $this->objTpl->setVariable(array(
             'TXT_FILEUPLOADER_CLOSE'        => $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'],
             'CONTREXX_CHARSET'              => CONTREXX_CHARSET,
@@ -81,8 +79,8 @@ class FileUploader extends FileUploaderLib {
             'FILEUPLOADER_HANDLER_PATH'     => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=upload&amp;type='.$this->mediaType.'&amp;path='.urlencode($this->path),
             'FILEUPLOADER_PARTITION_LENGTH' => $this->getPartitionLength()
         ));
-
         $this->objTpl->show();
     }
 }
+
 ?>
