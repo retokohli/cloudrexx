@@ -2475,10 +2475,10 @@ EOF;
     }
 
     /**
-     * shortens a string to a maximum lenght
+     * shortens a string to a maximum length
      *
      * @param string $str original string
-     * @param integer $maxLength maximum lenght
+     * @param integer $maxLength maximum length
      * @return string $str shortened string
      */
 
