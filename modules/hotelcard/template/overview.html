@@ -1,0 +1,39 @@
+<!-- start settings.html -->
+<form name="formSettings" method="post" action="{MODULE_URI_BASE}&amp;xyz">
+  <div class="table">
+    <div class="thead">
+      <div class="tr" style="width: 100%;">
+        <div class="th" style="width: 25%;">
+          <b>{TXT_SETTING_NAME}</b>
+        </div>
+        <div class="th" style="width: 75%;">
+          <b>{TXT_SETTING_VALUE}</b>
+        </div>
+      </div>
+    </div>
+    <div class="tbody">
+<!-- BEGIN core_setting_db_section -->
+      <div class="tr_section">
+        <div class="td" style="width: 100%;font-weight: bold;">
+          {TXT_SETTING_SECTION}
+        </div>
+      </div>
+<!-- BEGIN core_setting_db_row -->
+      <div class="trrow{SETTINGS_ROWCLASS}">
+        <div class="td" style="width: 25%;">
+          {SETTING_NAME}
+        </div>
+        <div class="td" style="width: 25%;">
+          {SETTING_VALUE}
+        </div>
+        <div class="td" style="width: 50%;">&nbsp;</div>
+      </div>
+<!-- END core_setting_db_row -->
+<!-- END core_setting_db_section -->
+    </div>
+  </div>
+  <br />
+  <br />
+  <input type="submit" value="{TXT_SETTING_STORE}" name="store" style="margin-left:30px;" /><br />
+</form>
+<!-- end settings.html -->

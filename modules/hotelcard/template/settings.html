@@ -1,5 +1,5 @@
 <!-- start settings.html -->
-<form name="formSettings" method="post" action="{MODULE_BASE_URI}&amp;act=settings">
+<form name="formSettings" method="post" action="{MODULE_URI_BASE}&amp;xyz">
   <div class="table">
     <div class="thead">
       <div class="tr" style="width: 100%;">
@@ -12,19 +12,28 @@
       </div>
     </div>
     <div class="tbody">
-      <!-- BEGIN setting -->
-      <div class="trrow{DIETIKER_ROW_CLASS}">
+<!-- BEGIN core_setting_db_section -->
+      <div class="tr_section">
+        <div class="td" style="width: 100%;font-weight: bold;">
+          {TXT_SETTING_SECTION}
+        </div>
+      </div>
+<!-- BEGIN core_setting_db_row -->
+      <div class="trrow{SETTINGS_ROWCLASS}">
         <div class="td" style="width: 25%;">
           {SETTING_NAME}
         </div>
-        <div class="td" style="width: 75%;">
+        <div class="td" style="width: 25%;">
           {SETTING_VALUE}
         </div>
+        <div class="td" style="width: 50%;">&nbsp;</div>
       </div>
-      <!-- END setting -->
+<!-- END core_setting_db_row -->
+<!-- END core_setting_db_section -->
     </div>
   </div>
   <br />
-  <input type="submit" value="{TXT_DIETIKER_STORE}" name="store" style="margin-left:30px;" /><br />
+  <br />
+  <input type="submit" value="{TXT_SETTING_STORE}" name="store" style="margin-left:30px;" /><br />
 </form>
 <!-- end settings.html -->
