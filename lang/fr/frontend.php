@@ -189,4 +189,6 @@ $_ARRAYLANG['TXT_JOBS_MODULE'] = "Offres d'emploi";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Enchères";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Enchères";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Dernières annonces";
+$_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Geändert am";
+$_ARRAYLANG['TXT_HOTELCARD'] = "Hotelcard";
 ?>
