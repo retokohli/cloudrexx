@@ -68,7 +68,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('lib/DBG.php');
-define('_DEBUG', DBG_NONE);
+define('_DEBUG', DBG_PHP | DBG_ADODB);
 DBG::__internal__setup();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
@@ -1797,20 +1797,20 @@ if ($objTemplate->blockExists('access_logged_out')) {
 
 // currently online users
 $modulespath = 'core_modules/access/lib/blocks.class.php';
+$objAccessBlocks = false;
 if ($objTemplate->blockExists('access_currently_online_member_list')) {
     if (    FWUser::showCurrentlyOnlineUsers()
         && (    $objTemplate->blockExists('access_currently_online_female_members')
             ||  $objTemplate->blockExists('access_currently_online_male_members')
             ||  $objTemplate->blockExists('access_currently_online_members'))) {
-        if (file_exists($modulespath) && include_once($modulespath)) {
+        if (file_exists($modulespath) && require_once($modulespath))
             $objAccessBlocks = new Access_Blocks();
-            if ($objTemplate->blockExists('access_currently_online_female_members'))
-                $objAccessBlocks->setCurrentlyOnlineUsers('female');
-            if ($objTemplate->blockExists('access_currently_online_male_members'))
-                $objAccessBlocks->setCurrentlyOnlineUsers('male');
-            if ($objTemplate->blockExists('access_currently_online_members'))
-                $objAccessBlocks->setCurrentlyOnlineUsers();
-        }
+        if ($objTemplate->blockExists('access_currently_online_female_members'))
+            $objAccessBlocks->setCurrentlyOnlineUsers('female');
+        if ($objTemplate->blockExists('access_currently_online_male_members'))
+            $objAccessBlocks->setCurrentlyOnlineUsers('male');
+        if ($objTemplate->blockExists('access_currently_online_members'))
+            $objAccessBlocks->setCurrentlyOnlineUsers();
     } else {
         $objTemplate->hideBlock('access_currently_online_member_list');
     }
@@ -1822,20 +1822,15 @@ if ($objTemplate->blockExists('access_last_active_member_list')) {
         && (    $objTemplate->blockExists('access_last_active_female_members')
             ||  $objTemplate->blockExists('access_last_active_male_members')
             ||  $objTemplate->blockExists('access_last_active_members'))) {
-        if (    $objAccessBlocks
-            ||  file_exists($modulespath)
-                && include_once($modulespath)
-                && $objAccessBlocks = new Access_Blocks()) {
-            if ($objTemplate->blockExists('access_last_active_female_members')) {
-                $objAccessBlocks->setLastActiveUsers('female');
-            }
-            if ($objTemplate->blockExists('access_last_active_male_members')) {
-                $objAccessBlocks->setLastActiveUsers('male');
-            }
-            if ($objTemplate->blockExists('access_last_active_members')) {
-                $objAccessBlocks->setLastActiveUsers();
-            }
-        }
+        if (   !$objAccessBlocks
+            && file_exists($modulespath) && require_once($modulespath))
+            $objAccessBlocks = new Access_Blocks();
+        if ($objTemplate->blockExists('access_last_active_female_members'))
+            $objAccessBlocks->setLastActiveUsers('female');
+        if ($objTemplate->blockExists('access_last_active_male_members'))
+            $objAccessBlocks->setLastActiveUsers('male');
+        if ($objTemplate->blockExists('access_last_active_members'))
+            $objAccessBlocks->setLastActiveUsers();
     } else {
         $objTemplate->hideBlock('access_last_active_member_list');
     }
@@ -1847,20 +1842,15 @@ if ($objTemplate->blockExists('access_latest_registered_member_list')) {
         && (    $objTemplate->blockExists('access_latest_registered_female_members')
             ||  $objTemplate->blockExists('access_latest_registered_male_members')
             ||  $objTemplate->blockExists('access_latest_registered_members'))) {
-        if (    $objAccessBlocks
-            ||  file_exists($modulespath)
-                && include_once($modulespath)
-                && $objAccessBlocks = new Access_Blocks()) {
-            if ($objTemplate->blockExists('access_latest_registered_female_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers('female');
-            }
-            if ($objTemplate->blockExists('access_latest_registered_male_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers('male');
-            }
-            if ($objTemplate->blockExists('access_latest_registered_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers();
-            }
-        }
+        if (   !$objAccessBlocks
+            && file_exists($modulespath) && require_once($modulespath))
+            $objAccessBlocks = new Access_Blocks();
+        if ($objTemplate->blockExists('access_latest_registered_female_members'))
+            $objAccessBlocks->setLatestRegisteredUsers('female');
+        if ($objTemplate->blockExists('access_latest_registered_male_members'))
+            $objAccessBlocks->setLatestRegisteredUsers('male');
+        if ($objTemplate->blockExists('access_latest_registered_members'))
+            $objAccessBlocks->setLatestRegisteredUsers();
     } else {
         $objTemplate->hideBlock('access_latest_registered_member_list');
     }
@@ -1872,11 +1862,10 @@ if ($objTemplate->blockExists('access_birthday_member_list')) {
         && (    $objTemplate->blockExists('access_birthday_female_members')
             ||  $objTemplate->blockExists('access_birthday_male_members')
             ||  $objTemplate->blockExists('access_birthday_members'))) {
-        if (  (     $objAccessBlocks
-                || (   file_exists($modulespath)
-                    && include_once($modulespath)
-                    && $objAccessBlocks = new Access_Blocks())
-              ) && $objAccessBlocks->isSomeonesBirthdayToday()) {
+        if (   !$objAccessBlocks
+            && file_exists($modulespath) && require_once($modulespath))
+            $objAccessBlocks = new Access_Blocks();
+        if ($objAccessBlocks->isSomeonesBirthdayToday()) {
             if ($objTemplate->blockExists('access_birthday_female_members'))
                 $objAccessBlocks->setBirthdayUsers('female');
             if ($objTemplate->blockExists('access_birthday_male_members'))
