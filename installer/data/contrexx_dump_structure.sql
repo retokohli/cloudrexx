@@ -57,6 +57,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   `group_description` varchar(255) NOT NULL default '',
   `is_active` tinyint(4) NOT NULL default '1',
   `type` enum('frontend','backend') NOT NULL default 'frontend',
+  `homepage` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`group_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
