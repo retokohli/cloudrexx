@@ -30,7 +30,7 @@ class DBG
     {
         self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
 
-        if (!defined(_DEBUG))
+        if (!defined('_DEBUG'))
             define('_DEBUG', DBG_NONE);
 
         self::enable_all();
@@ -107,9 +107,10 @@ class DBG
 
 
     // Redirect ADODB output to us instead of STDOUT.
-    static function enable_adodb() {
+    static function enable_adodb()
+    {
         if (!(_DEBUG & DBG_LOG_FILE)) self::setup('php://output');
-        define('ADODB_OUTP', 'DBG_log_adodb');
+        if (!defined('ADODB_OUTP')) define('ADODB_OUTP', 'DBG_log_adodb');
     }
 
 
