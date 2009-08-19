@@ -1,10 +1,10 @@
 <?php
+
 /**
  * Settings
- *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.1.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.1.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -155,7 +155,7 @@ class settingsManager
      */
     function showSettings()
     {
-        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG, $objLanguage, $_FRONTEND_LANGID;
+        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG, $_FRONTEND_LANGID;
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings', 'settings.html');
         $this->strPageTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
@@ -214,7 +214,7 @@ class settingsManager
             'TXT_CORE_LIST_PROTECTED_PAGES'         => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
             'TXT_CORE_LIST_PROTECTED_PAGES_HELP'    => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
             'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'    => $_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'],
-            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'   => sprintf($_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'], htmlentities($objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'name'), ENT_QUOTES, CONTREXX_CHARSET), ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/').($arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : '<br /><strong>'.$_CORELANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'].'</strong>'),
+            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'   => sprintf($_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'], htmlentities(FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'name'), ENT_QUOTES, CONTREXX_CHARSET), ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'/').($arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : '<br /><strong>'.$_CORELANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'].'</strong>'),
         ));
 
         if ($this->isWritable()) {
@@ -300,6 +300,7 @@ class settingsManager
             }
 
             if (intval($intId) == 53) {
+                $arrMatch = array();
                 if (preg_match('#^https?://(.*)$#', $strValue, $arrMatch)) {
                     $strValue = $arrMatch[1];
                 }
@@ -374,7 +375,7 @@ class settingsManager
      */
     public function setVirtualLanguagePath($use)
     {
-        global $objLanguage, $_CONFIG;
+        global $_CONFIG;
 
         // load HtAccess file
         $objFWHtAccess = new FWHtAccess();
@@ -390,12 +391,7 @@ class settingsManager
             return true;
         }
 
-        // generate RewriteRules
-        if (!isset($objLanguage)) {
-            $objLanguage = new FWLanguage();
-        }
-
-        $arrLanguages = $objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         $arrLanguageCodes = array();
         $arrLanguageRules = array();
 

@@ -129,12 +129,11 @@ class ContentSitemap
     * Gets admin tree array
     *
     * @global   array
-    * @global   FWLanguage
     * @return   string   parsed content
     */
 	function getSiteMap()
 	{
-		global $_CORELANG, $objLanguage;
+		global $_CORELANG;
 
         $objTpl = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 		$objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -212,7 +211,7 @@ class ContentSitemap
 		$objTpl->setCurrentBlock('siteRow');
 		$objTpl->setVariable(array(
 			'CONTENT_ID'     => $this->langId,
-			'CONTENT_NAME'   => $objLanguage->getLanguageParameter($this->langId, "name"),
+			'CONTENT_NAME'   => FWLanguage::getLanguageParameter($this->langId, 'name'),
 		));
 		$objTpl->parseCurrentBlock();
 

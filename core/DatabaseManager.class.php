@@ -33,7 +33,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch> (Pre 2.1.0)
  * @author      Reto Kohli <reto.kohli@comvation.com> (Version 2.1.0)
  * @version     2.1.0
- * @internal    Use the core Mime class to handle MIME types
+ * @internal    Use the core Filetype class to handle MIME types
  */
 class DatabaseManager
 {
