@@ -121,6 +121,7 @@ CREATE TABLE `contrexx_access_users` (
   `frontend_lang_id` int(2) unsigned NOT NULL default '0',
   `backend_lang_id` int(2) unsigned NOT NULL default '0',
   `active` tinyint(1) NOT NULL default '0',
+  `primary_group` int(6) unsigned NOT NULL default '0',
   `profile_access` enum('everyone','members_only','nobody') NOT NULL default 'members_only',
   `restore_key` varchar(32) NOT NULL default '',
   `restore_key_time` int(14) unsigned NOT NULL default '0',
