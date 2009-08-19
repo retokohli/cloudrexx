@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework Validator
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -10,104 +11,132 @@
  */
 
 /**
- * Regular Expression for an e-mail address
- *
+ * Regular Expression for e-mail addresses
  * TKaelin @ 2.0.2: wrote new regex based on http://en.wikipedia.org/wiki/E-mail_address
- * Dave V, @ 2.1.2: re-wrote regex according to http://www.regular-expressions.info/email.html 
-*/
+ * Dave V, @ 2.1.2: re-wrote regex according to http://www.regular-expressions.info/email.html
+ * Reto Kohli @ 2.2.0: Fixed e-mail regex for use with standard slashes as delimiters
+ */
 define('VALIDATOR_REGEX_EMAIL',
-    "[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+    '[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+);
+/**
+ * Regular Expressions for URIs
+ * Reto Kohli @ 2.2.0: Added regex for URIs
+ */
+define('VALIDATOR_REGEX_URI',
+    '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
 );
 
 /**
  * Framework Validator
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
  * @package     contrexx
  * @subpackage  lib_framework
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @todo        Edit PHP DocBlocks!
+ * @todo        Most, if not all, should be static
  */
 class FWValidator
 {
     /**
      * Validate an E-mail address
      *
+     * Note:  This used to have a stripslashes() around the string.
+     * This is bollocks.  If you want to match a string, you match the string,
+     * not transformed version.  Strip whatever you want, but do it *before*
+     * you call this function.
      * @param  string $string
-     * @return boolean
+     * @return boolean          True if it's an e-mail address, false otherwise
      * @access public
      */
-    function isEmail($string)
+    static function isEmail($string)
     {
-        return preg_match('"^'.VALIDATOR_REGEX_EMAIL.'$"i', stripslashes($string)) ? true : false;
+        return (bool)preg_match('/^'.VALIDATOR_REGEX_EMAIL.'$/i', $string);
     }
+
+
+    /**
+     * Returns true if the given string is a valid URI
+     * @param   string  $string The string to be tested
+     * @return  boolean         True if the string represents an URI,
+     *                          false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function isUri($string)
+    {
+        return (bool)preg_match('/^'.VALIDATOR_REGEX_URI.'$/i', $string);
+    }
+
 
     /**
      * Find all e-mail addresses in a string
      * @param   string  $string     String potentially containing email addresses
      * @return  array               Array with all e-mail addresses found
      * @access  public
+     * @todo    This function does not belong in here
      */
-    function getEmailAsArray($string)
+    static function getEmailAsArray($string)
     {
+        $arrMatches = array();
         preg_match_all(
-//          '/\s([_a-zA-Z0-9-]+(?:\.?[_a-zA-Z0-9-])*@((?:[a-zA-Z0-9-]+\.)+(?:[a-zA-Z]{2,4})|localhost))\s+/", $string, $matches);
-            '/\s('.VALIDATOR_REGEX_EMAIL.')\.?\s/',
-            $string, $matches);
-        return $matches[0]; // include spaces
-        // return $matches[1]; // exclude spaces
+            '/\s('.VALIDATOR_REGEX_EMAIL.')\.?\s/', $string, $arrMatches);
+        return $arrMatches[0]; // include spaces
+        // return $arrMatches[1]; // exclude spaces
     }
 
+
     /**
-     * Check if the given url has the leading HTTP protocol prefix.
-     * If not then the prefix will be added.
+     * Adds a leading protocol ("http://") prefix to the string, if
+     * there is none.
      *
-     * @access public
-     * @param string url
-     * @return string url
+     * Note:  This accepts any known and unknown protocol already present.
+     * Mind your step!
+     * @access  public
+     * @param   string  $string   The URL with possibly missing protocol
+     * @return  string            The complete URL with protocol
+     * @todo    This function does not belong in here
      */
-    function getUrl($string)
+    static function getUrl($string)
     {
-        if (preg_match("/^[a-z]+:\/\//i", $string) || empty($string)) {
+        if (preg_match('/^[a-z]+:\/\//i', $string) || empty($string))
             return $string;
-        } else {
-            return "http://".$string;
-        }
+        return 'http://'.$string;
     }
 
 
     /**
-     * Returns true if the ending of the given file name
-     * is harmless. We consider all executable as well as
+     * Returns true if the ending of the given file name is harmless.
+     *
+     * We consider all executable as well as
      * all scripts (server and client side) as harmful.
      * You should NOT allow to upload these.
-     *
      * This function returns true if the given filename
      * is safe to upload.
-     *
-     * @param string file
+     * @param   string  $file   The file name
      */
-    static function is_file_ending_harmless($file) {
+    static function is_file_ending_harmless($file)
+    {
         $evil = array(
             # windows executables:
-            'exe','bat','pif', 'com',
+            'exe', 'bat', 'pif', 'com',
             # client scripts:
-            'vs', 'vbs','js',
+            'vs', 'vbs', 'js',
             # client script containers:
-            'html','xhtml','xml','svg','shtml','htm',
+            'html', 'xhtml', 'xml', 'svg', 'shtml', 'htm',
             # server scripts:
-            'php','cgi','pl','jsp','jspx','asp','aspx', 
-            'jsp','jspx','jhtml','phtml','cfm',
+            'php', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
+            'jsp', 'jspx', 'jhtml', 'phtml', 'cfm',
         );
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-    
-        if (in_array($ext, $evil)) {
-            return false;
-        }
+        if (in_array($ext, $evil)) return false;
         return true;
     }
 
-    private static function __fix_flash($html) {
+
+    private static function __fix_flash($html)
+    {
         // we come from a preg_replace_callback
         $html = $html[0];
 
@@ -123,12 +152,13 @@ class FWValidator
         return preg_replace('/<embed/i', "<embed $embed_attr", $html, 1);
     }
 
+
     /**
      * This function fixes the given HTML so that any embedded flash
-     * objects will get the "wmode=transprent" set. This is neccessary
-     * for the frontend login box for example, when a flash object is
-     * on the page.
+     * objects will get the "wmode=transprent" set.
      *
+     * This is neccessary for the frontend login box for example, when a
+     * flash object is on the page.
      * Takes un-escaped HTML code as parameter, returns the fixed HTML.
      */
     static function fix_flash_transparency($html_code) {
@@ -139,5 +169,7 @@ class FWValidator
         );
         return $result;
     }
+
 }
 
+?>
