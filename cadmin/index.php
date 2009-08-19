@@ -4,10 +4,9 @@
  * Modul Admin Index
  *
  * CMS Administration
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Engineering Team
- * @version       $Id:    Exp $
+ * @version     2.1.2
  * @package     contrexx
  * @subpackage  admin
  */
@@ -158,9 +157,6 @@ $_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
 
 $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
-// language object from the Framework
-$objLanguage = new FWLanguage();
 
 // Module object
 $objModules = new ModuleChecker();
@@ -967,7 +963,7 @@ switch ($plainCmd) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
-        $objKnowledge = &new KnowledgeAdmin();
+        $objKnowledge = new KnowledgeAdmin();
         $objKnowledge->getPage();
         break;
 
@@ -1019,6 +1015,20 @@ switch ($plainCmd) {
         $objAuction->getPage();
         break;
 
+    /**
+     * Hotelcard Module
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.2.0
+     * @version 2.2.0
+     */
+    case 'hotelcard':
+        Permission::checkAccess(150, 'static');
+        if (file_exists(ASCMS_MODULE_PATH.'/hotelcard/admin.class.php')) {
+            require_once(ASCMS_MODULE_PATH.'/hotelcard/admin.class.php');
+            $subMenuTitle = $_CORELANG['TXT_HOTELCARD'];
+            Hotelcard::getPage();
+        }
+        break;
 
     //-------------------------------------------------------
     // access denied
