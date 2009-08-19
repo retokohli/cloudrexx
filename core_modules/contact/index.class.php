@@ -313,7 +313,7 @@ class Contact extends ContactLib
     * Replace non valid filename chars with a undercore.
     * @access private
     * @param string $file   The string file name
-    * @param int    $maxlen Maximun permited string lenght
+    * @param int    $maxlen Maximun permited string length
     * @return string Formatted file name
     */
     function _cleanFileName($name, $maxlen=250){
