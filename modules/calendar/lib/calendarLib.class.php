@@ -72,21 +72,13 @@ class calendarLibrary
     var $objEvent;
     var $settings;
 
+
     /**
      * PHP 5 Constructor
      */
     function __construct($url)
     {
-        $this->calendarLibrary($url);
-    }
-
-
-    /**
-     * Constructor for php 4
-     */
-    function calendarLibrary($url)
-    {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_CONFIG;
 
         $this->calStartYear = 2004;
         $this->calEndYear   = 2037;
@@ -100,7 +92,7 @@ class calendarLibrary
 
         $this->uploadImgPath = ASCMS_PATH.ASCMS_IMAGE_PATH.'/calendar/';
         $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/calendar/';
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/calendar'.$this->mandateLink.'/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/calendar'.$this->mandateLink.'/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setGlobalVariable("CALENDAR_MANDATE", $this->mandateLink);
         $this->url = $url.$this->mandateLink;
@@ -108,7 +100,6 @@ class calendarLibrary
         $this->settings = new CalendarSettings($this->mandateLink);
         $this->objEvent = new CalendarEvent($this->mandateLink);
     }
-
 
 
 	/**
@@ -254,6 +245,7 @@ class calendarLibrary
     		$this->_iCalExportAll();
     	}
 		require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
+// TODO: $objRS is not defined
 		$this->_filename = html_entity_decode($objRS->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
 		$this->_sendICal($this->getEventsFromCategoryByID($catID));
     }
@@ -442,8 +434,8 @@ class calendarLibrary
      * @return string $str_without_html_tags
      */
     function _filterHTML($str){
-    	$str = preg_replace("#<([^>]+)>#s", '', $str);
-		return preg_replace("#[\s\t\r\n]{2,}+#s", "\n", $str);
+    	$str = preg_replace('#<([^>]+)>#s', '', $str);
+		return preg_replace('#[\s\t\r\n]{2,}+#s', "\n", $str);
     }
 
     // write month names
@@ -514,9 +506,10 @@ class calendarLibrary
             }
 
             //load events
-            foreach ($this->eventList as $key => $array) {
+            foreach ($this->eventList as $array) {
             	if ($array['access'] && $objInit->mode == 'frontend' && !Permission::checkAccess(116, 'static', true)) {
-            		$objResult->MoveNext();
+// TODO: Not defined
+//            		$objResult->MoveNext();
             		continue;
             	}
 
@@ -734,11 +727,14 @@ class calendarLibrary
 		$enddate	= $objResultNote->fields['enddate'];
 
 		$day			= date("d", $startdate);
-		$end_day		= date("d", $enddate);
+// TODO: Never used
+//		$end_day		= date("d", $enddate);
 		$month			= date("m", $startdate);
-		$end_month		= date("m", $enddate);
+// TODO: Never used
+//		$end_month		= date("m", $enddate);
 		$year			= date("Y", $startdate);
-		$end_year		= date("Y", $enddate);
+// TODO: Never used
+//		$end_year		= date("Y", $enddate);
 		$hour			= date("H", $startdate);
 		$minutes		= date("i", $startdate);
 		$end_hour		= date("H", $enddate);
@@ -801,8 +797,8 @@ class calendarLibrary
 	        $picHeight	= $arrInfo[1]+20;
 
 	        $attachNamePos  = strrpos($objResultNote->fields['attachment'], '/');
-	        $attachNameLenght = strlen($objResultNote->fields['attachment']);
-	        $attachName		= substr($objResultNote->fields['attachment'], $attachNamePos+1, $attachNameLenght);
+	        $attachNamelength = strlen($objResultNote->fields['attachment']);
+	        $attachName		= substr($objResultNote->fields['attachment'], $attachNamePos+1, $attachNamelength);
 
 		} else {
 			$ed = get_wysiwyg_editor('inputComment',$objResultNote->fields['comment']);
@@ -1200,7 +1196,7 @@ class calendarLibrary
 	 */
 	function getRegData($regId)
 	{
-		global  $objDatabase, $_ARRAYLANG, $_CORELANG;
+		global  $objDatabase, $_ARRAYLANG;
 
 		//get reg data
 		$queryReg = "SELECT id,note_id,note_date,time,host,ip_address,type
@@ -1602,7 +1598,7 @@ class calendarLibrary
      */
 	function _sendRegistration($noteId)
 	{
-		global $_CONFIG, $objDatabase, $_ARRAYLANG, $objLanguage;
+		global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
 		//get mail template
 		$query 			= "SELECT mailTitle, mailContent
@@ -1658,7 +1654,7 @@ class calendarLibrary
 				} else {
 					if (!empty($objResultUser->fields['email'])) {
 						$arrGoupsUser = explode(",",$objResultUser->fields['groups']);
-						foreach ($arrGoupsNote as $arrKey => $groupId){
+						foreach ($arrGoupsNote as $groupId){
 							if (in_array($groupId, $arrGoupsUser)) {
 								$arrUsers[$objResultUser->fields['id']]['email'] 		= $objResultUser->fields['email'];
 								$arrUsers[$objResultUser->fields['id']]['lastname'] 	= $objResultUser->fields['lastname'];
@@ -1701,7 +1697,7 @@ class calendarLibrary
 				$date		= date(ASCMS_DATE_FORMAT);
 				$firstname	= $arrUser['firstname'];
 				$lastname	= $arrUser['lastname'];
-				$link		= "http://".$url."/".($_CONFIG['useVirtualLanguagePath'] == 'on' ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
+				$link		= "http://".$url."/".($_CONFIG['useVirtualLanguagePath'] == 'on' ? FWLanguage::getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
 				$title		= $objResultNote->fields['name'];
 				$startdate	= date("Y-m-d H:i", $objResultNote->fields['startdate']);
 				$enddate 	= date("Y-m-d H:i", $objResultNote->fields['enddate']);
@@ -1935,7 +1931,7 @@ class calendarLibrary
 				$objMail->Body = $mailContent;
 
 				//add addresses
-				foreach ($addresses as $key => $email) {
+				foreach ($addresses as $email) {
 					$objMail->AddAddress($email);
 				}
 

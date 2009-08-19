@@ -51,9 +51,9 @@ class MemberDirManager extends MemberDirLibrary
      */
     function __construct()
     {
-        global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
+        global $_ARRAYLANG, $objTemplate, $objInit;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -81,7 +81,7 @@ class MemberDirManager extends MemberDirLibrary
     */
     function getPage()
     {
-        global $_ARRAYLANG, $_CONFIG, $objTemplate;
+        global $_ARRAYLANG, $objTemplate;
 
         if(!isset($_GET['act'])){
             $_GET['act']="";
@@ -208,12 +208,11 @@ class MemberDirManager extends MemberDirLibrary
      *
      * @global array
      * @global ADONewConnection
-     * @global FWLanguage
      * @access private
      */
     function _overview()
     {
-        global $_ARRAYLANG, $objDatabase, $objLanguage;
+        global $_ARRAYLANG, $objDatabase;
 
         $this->_objTpl->loadTemplateFile('module_memberdir_overview.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_OVERVIEW'];
@@ -268,7 +267,7 @@ class MemberDirManager extends MemberDirLibrary
             if ($value['lang'] == 0) {
                 $lang = $_ARRAYLANG['TXT_ALL_LANGUAGES'];
             } else {
-                $lang =  $objLanguage->arrLanguage[$value['lang']]['lang'];
+                $lang =  FWLanguage::getLanguageParameter($value['lang'], 'lang');
             }
             $this->_objTpl->setVariable(array(
                 "MEMBERDIR_DIRID"           => $key,
@@ -282,7 +281,7 @@ class MemberDirManager extends MemberDirLibrary
                 "MEMBERDIR_DISPLAY"         => ($value['parentdir'] == 0) ? "table-row" : "none",
                 "MEMBERDIR_HAS_CHILDREN"    => $value['has_children'],
                 "MEMBERDIR_LEVEL"           => $value['level'],
-                'MEMBERDIR_LANGUAGE'        => htmlentities($objLanguage->arrLanguage[$value['lang']]['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$lang.')'
+                'MEMBERDIR_LANGUAGE'        => htmlentities(FWLanguage::getLanguageParameter($value['lang'], 'name'), ENT_QUOTES, CONTREXX_CHARSET).' ('.$lang.')'
             ));
 
             if ($value['has_children']) {
@@ -402,11 +401,11 @@ class MemberDirManager extends MemberDirLibrary
      */
     function _getLanguageMenu($attrs, $selectedLangId = 0)
     {
-        global $objLanguage, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $menu = '<select '.$attrs.'>';
         $menu .= '<option value="0">'.$_ARRAYLANG['TXT_ALL_LANGUAGES'].'</option>';
-        foreach ($objLanguage->getLanguageArray() as $langId => $arrLanguage) {
+        foreach (FWLanguage::getLanguageArray() as $langId => $arrLanguage) {
             $menu .= '<option value="'.$langId.'"'.(($langId == $selectedLangId) ? ' selected="selected"' : '').'>'.htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$arrLanguage['lang'].')</option>';
         }
         $menu .= '</select>';
@@ -424,7 +423,7 @@ class MemberDirManager extends MemberDirLibrary
      */
     function _saveNewDir()
     {
-        global $_ARRAYLANG, $objDatabase, $objLanguage;
+        global $_ARRAYLANG, $objDatabase;
 
         $name = (!empty($_POST['dir_name'])) ? contrexx_addslashes($_POST['dir_name']) : "directory";
         $description = contrexx_addslashes($_POST['dir_desc']);
@@ -433,8 +432,9 @@ class MemberDirManager extends MemberDirLibrary
         $sort = intval($_POST['sortSelection']);
         $langId = isset($_POST['memberdirLangId']) ? intval($_POST['memberdirLangId']) : 0;
 
-        if (!in_array($langId, array_keys($objLanguage->arrLanguage)) && $langId != 0) {
-            $langId = $objLanguage->defaultLanguageId;
+        $arrLanguage = FWLanguage::getLanguageArray();
+        if (!in_array($langId, array_keys($arrLanguage)) && $langId != 0) {
+            $langId = FWLanguage::defaultLanguageId;
         }
 
         $query = "INSERT INTO ".DBPREFIX."module_memberdir_directories
@@ -468,14 +468,15 @@ class MemberDirManager extends MemberDirLibrary
      */
     function _saveCopyDir()
     {
-        global $objDatabase, $_ARRAYLANG, $objLanguage;
+        global $objDatabase, $_ARRAYLANG;
 
         $dirid = $this->_saveNewDir();
         $copydirid = intval($_GET['id']);
         $langId = isset($_POST['memberdirLangId']) ? intval($_POST['memberdirLangId']) : 0;
 
-        if (!in_array($langId, array_keys($objLanguage->arrLanguage))) {
-            $langId = $objLanguage->defaultLanguageId;
+        $arrLanguage = FWLanguage::getLanguageArray();
+        if (!in_array($langId, array_keys($arrLanguage))) {
+            $langId = FWLanguage::defaultLanguageId;
         }
 
         /*
@@ -548,7 +549,7 @@ class MemberDirManager extends MemberDirLibrary
      */
     function _editDir($copy = false)
     {
-        global $_ARRAYLANG, $objDatabase, $objLanguage;
+        global $_ARRAYLANG, $objDatabase;
 
         $dirid = !empty($_GET['id']) ? intval($_GET['id']) : 0;
         if (isset($this->directories[$dirid])) {
@@ -565,7 +566,7 @@ class MemberDirManager extends MemberDirLibrary
             $name = '';
             $description = '';
             $sort = 0;
-            $lang = $objLanguage->defaultLangId;
+            $lang = FWLanguage::defaultLangId;
             $pic1 = '';
             $pic2 = '';
         }
@@ -646,7 +647,7 @@ class MemberDirManager extends MemberDirLibrary
      */
     function _saveEditedDir($dirid = null)
     {
-        global $objDatabase, $_ARRAYLANG, $objLanguage;
+        global $objDatabase, $_ARRAYLANG;
 
         $dirid = (empty($dirid)) ? intval($_GET['id']) : $dirid;
 
@@ -681,8 +682,9 @@ class MemberDirManager extends MemberDirLibrary
         $parentdir = ($parentdir == $dirid) ? $this->directories[$dirid]['parentdir'] : $parentdir;
         $displaymode = contrexx_addslashes($_POST['displaymode']);
         $sort = intval($_POST['sortSelection']);
-        $lang_keys = array_keys($objLanguage->arrLanguage);
-        $langId = (in_array(intval($_POST['memberdirLangId']), array_keys($objLanguage->arrLanguage)) || $_POST['memberdirLangId'] == 0) ? intval($_POST['memberdirLangId']) : $lang_keys[0];
+        $lang_keys = array_keys(FWLanguage::getLanguageArray());
+        $langId = (in_array(intval($_POST['memberdirLangId']), $lang_keys) || $_POST['memberdirLangId'] == 0)
+            ? intval($_POST['memberdirLangId']) : $lang_keys[0];
         $query = "UPDATE ".DBPREFIX."module_memberdir_directories
                   SET `name` = '$name',
                   `description` = '$description',
@@ -698,7 +700,7 @@ class MemberDirManager extends MemberDirLibrary
         }
 
         if ($error) {
-            $this->statusMessage = $_ARRRAYLANG['TXT_DATABASE_WRITE_ERROR'];
+            $this->statusMessage = $_ARRAYLANG['TXT_DATABASE_WRITE_ERROR'];
         }
     }
 
@@ -771,7 +773,7 @@ class MemberDirManager extends MemberDirLibrary
 
         if (isset($_POST['selectedId'])) {
             $error = false;
-            foreach ($_POST['selectedId'] as $intKey => $intCatId) {
+            foreach ($_POST['selectedId'] as $intCatId) {
                 if (!$this->_deleteDir($intCatId)) {
                         $error = true;
                 }
@@ -1071,7 +1073,8 @@ class MemberDirManager extends MemberDirLibrary
         $this->pageTitle = $_ARRAYLANG['TXT_NEW_MEMBER'];
 
         //TODO
-        $defaultdir = 1;
+// TODO: Unused
+//        $defaultdir = 1;
         $dirid = (empty($_GET['dirid'])) ? $this->firstDir : $_GET['dirid'];
 
         $this->_objTpl->setGlobalVariable(array(
@@ -1244,10 +1247,9 @@ class MemberDirManager extends MemberDirLibrary
         // Delete Picture if requested
         $query = "SELECT pic1, pic2 FROM ".DBPREFIX."module_memberdir_values
                   WHERE id = '$id'";
-        $objResult = $objDatabase->Execute($query);
+        $objDatabase->Execute($query);
 
         $picture1 = (!empty($_POST['image1'])) ? $_POST['image1'] : "none";
-
         $picture2 = (!empty($_POST['image2'])) ? $_POST['image2'] : "none";
 
         if (!$this->_validate_post($fields)) {
@@ -1425,7 +1427,7 @@ class MemberDirManager extends MemberDirLibrary
 
         if (isset($_POST['selectedId'])) {
             $error = false;
-            foreach ($_POST['selectedId'] as $intKey => $intCatId) {
+            foreach ($_POST['selectedId'] as $intCatId) {
                 if (!$this->_deleteEntry($intCatId)) {
                         $error = true;
                 }
@@ -1439,7 +1441,6 @@ class MemberDirManager extends MemberDirLibrary
 
     /**
      * Deletes a Picture
-     *
      */
     function _deletePic()
     {

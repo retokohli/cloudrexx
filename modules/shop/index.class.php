@@ -3908,11 +3908,10 @@ right after the customer logs in!
             $processorId = Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id');
             $processorName = PaymentProcessing::getPaymentProcessorName($processorId);
              // other payment methods
-            $objLanguage = new FWLanguage();
             $this->objProcessing->initProcessor(
                 $processorId,
                 Currency::getActiveCurrencyCode(),
-                $objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang')
+                FWLanguage::getLanguageParameter(FRONTEND_LANG_ID, 'lang')
             );
 
             // if the processor is Internal_LSV, and there is account information,

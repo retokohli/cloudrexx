@@ -1803,9 +1803,8 @@ class shopmanager extends ShopLibrary
             case 'mail':
                 $strMailSelectedTemplates = '';
                 $strMailTemplates = '';
-                $objLanguage = new FWLanguage();
                 // gets indexed language array
-                $arrLanguage = $objLanguage->getLanguageArray();
+                $arrLanguage = FWLanguage::getLanguageArray();
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_mail.html');
                 self::$objTemplate->setVariable(array(
                     'TXT_MAIL_TEMPLATES' => $_ARRAYLANG['TXT_MAIL_TEMPLATES'],

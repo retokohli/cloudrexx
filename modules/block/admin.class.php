@@ -80,7 +80,7 @@ class blockManager extends blockLibrary
     {
         global $objTemplate, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/block/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/block/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (isset($_POST['saveSettings'])) {
@@ -296,13 +296,12 @@ class blockManager extends blockLibrary
     *
     * @access private
     * @global array
-    * @global FWLanguage
     * @global ADONewConnection
     * @see blockLibrary::_getBlockContent(), blockLibrary::blockNamePrefix
     */
     function _showModifyBlock($copy = false)
     {
-        global $_ARRAYLANG, $objLanguage, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
         $blockId                = isset($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockName              = '';
@@ -364,7 +363,7 @@ class blockManager extends blockLibrary
             $blockContent = $arrBlock['content'];
             $blockAssociatedLangIds = $this->_getAssociatedLangIds($blockId);
         } else {
-            $blockAssociatedLangIds = array_keys($objLanguage->getLanguageArray());
+            $blockAssociatedLangIds = array_keys(FWLanguage::getLanguageArray());
         }
 
         $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
@@ -385,7 +384,7 @@ class blockManager extends blockLibrary
             'BLOCK_CONTENT'                     => get_wysiwyg_editor('blockBlockContent', $blockContent)
         ));
 
-        $arrLanguages = &$objLanguage->getLanguageArray();
+        $arrLanguages = &FWLanguage::getLanguageArray();
         $langNr = 0;
 
         foreach ($arrLanguages as $langId => $arrLanguage) {
@@ -425,7 +424,7 @@ class blockManager extends blockLibrary
             }
 
             // create new ContentTree instance
-            $objContentTree = &new ContentTree($langId);
+            $objContentTree = new ContentTree($langId);
             $strSelectedPages   = '';
             $strUnselectedPages = '';
 

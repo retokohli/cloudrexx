@@ -21,22 +21,13 @@ require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
  * @package     contrexx
  * @subpackage  module_data
  */
-class DataLibrary 
+class DataLibrary
 {
 	var $_boolInnoDb = false;
 	var $_intLanguageId;
 	var $_intCurrentUserId;
 	var $_arrSettings			= array();
 	var $_arrLanguages 			= array();
-
-	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
-    */
-	function DataLibrary() {
-		$this->__construct();
-	}
-
 
 	/**
 	* Constructor
@@ -51,13 +42,12 @@ class DataLibrary
 
 	/**
 	 * Reads out the used database engine and sets the local variable.
-	 *
 	 */
-	function setDatabaseEngine() {
+	function setDatabaseEngine()
+	{
 		global $objDatabase;
 
 		$objMetaResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'module_data_settings"');
-
 		if (preg_match('/.*innodb.*/i', $objMetaResult->fields['Engine'])) {
 			$this->_boolInnoDb = true;
 		}
@@ -67,11 +57,11 @@ class DataLibrary
 	/**
 	 * Create an array containing all settings of the data-module.
 	 * Example: $arrSettings[$strSettingName] for the content of $strSettingsName
-	 *
 	 * @global	ADONewConnection
 	 * @return 	array		$arrReturn
 	 */
-	function createSettingsArray() {
+	function createSettingsArray()
+	{
 		global $objDatabase;
 
 		$arrReturn = array();
@@ -140,7 +130,7 @@ class DataLibrary
 	 * @param 	integer		$intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
 	 * @return	array		$arrReturn
 	 */
-	function createCategoryArray($intStartingIndex=0, $intLimitIndex=0) 
+	function createCategoryArray($intStartingIndex=0, $intLimitIndex=0)
 	{
 		global $objDatabase;
 
@@ -150,17 +140,17 @@ class DataLibrary
 			$intLimitIndex = $this->countCategories();
 		}
 
-		
+
 		$objResult = $objDatabase->Execute('SELECT	DISTINCT category_id
 											FROM	'.DBPREFIX.'module_data_categories
 											ORDER BY sort
 											LIMIT 	'.$intStartingIndex.','.$intLimitIndex.'
-	
+
 										');
 		//Initialize Array
 		if ($objResult->RecordCount() > 0) {
 			while (!$objResult->EOF) {
-				foreach($this->_arrLanguages as $intLangId => $arrValues) {
+				foreach(array_keys($this->_arrLanguages) as $intLangId) {
 					$arrReturn[intval($objResult->fields['category_id'])][$intLangId] = array(	'name'		=>	'',
 																								'is_active'	=>	'',
 																								'placeholder' => '',
@@ -176,7 +166,7 @@ class DataLibrary
 
 		//Fill array if possible
 		foreach ($arrReturn as $intCategoryId => $arrLanguages) {
-			foreach ($arrLanguages as $intLanguageId => $arrLanguageTranslation) {
+			foreach (array_keys($arrLanguages) as $intLanguageId) {
                 $query = '  SELECT is_active,
                                         name,
                                         parent_id,
@@ -200,7 +190,7 @@ class DataLibrary
 				if ($objResult->RecordCount() > 0) {
 					$arrReturn[$intCategoryId][$intLanguageId]['name'] = htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
 					$arrReturn[$intCategoryId][$intLanguageId]['is_active'] = intval($objResult->fields['is_active']);
-					
+
 					$arrReturn[$intCategoryId]['placeholder'] = $objResult->fields['placeholder'];
 			        $arrReturn[$intCategoryId]['parent_id'] = $objResult->fields['parent_id'];
 			        $arrReturn[$intCategoryId]['active'] = $objResult->fields['active'];
@@ -213,7 +203,7 @@ class DataLibrary
 				}
 			}
 		}
-		
+
 		return $arrReturn;
 	}
 
@@ -302,7 +292,7 @@ class DataLibrary
 			while (!$objResult->EOF) {
 				$intMessageId = $objResult->fields['message_id'];
 
-                $arrReturn[$intMessageId] = array(	
+                $arrReturn[$intMessageId] = array(
                     'time_created'		=>	date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_created']),
                     'time_created_ts'	=>	$objResult->fields['time_created'],
                     'time_edited'		=>	date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_edited']),
@@ -323,14 +313,14 @@ class DataLibrary
 				);
 
 				//Get vote-avarage for this entry
-				$objVoteResult = $objDatabase->Execute('SELECT	avg(vote)		AS avarageVote
+				$objDatabase->Execute('SELECT	avg(vote)		AS avarageVote
 														FROM	'.DBPREFIX.'module_data_votes
 														WHERE	message_id='.$intMessageId.'
 													');
 				//$arrReturn[$intMessageId]['votes_avg'] 	= number_format($objVoteResult->fields['avarageVote'], 2, '.', '');
 
 				//Fill the translation-part of the return-array with default values
-				foreach ($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+				foreach (array_keys($this->_arrLanguages) as $intLanguageId) {
 					$arrReturn[$intMessageId]['categories'][$intLanguageId] = array();
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active'] 	= 0;
 					$arrReturn[$intMessageId]['translation'][$intLanguageId]['subject'] 	= '';
@@ -355,7 +345,7 @@ class DataLibrary
 				}
 
 				//Get existing translations for the current entry
-				$objLanguageResult = $objDatabase->Execute('SELECT	lang_id,
+				$objResult = $objDatabase->Execute('SELECT	lang_id,
 																	is_active,
 																	subject,
 																	content,
@@ -372,29 +362,29 @@ class DataLibrary
 															WHERE	message_id='.$intMessageId.'
 														');
 
-				while (!$objLanguageResult->EOF) {
-					$intLanguageId = $objLanguageResult->fields['lang_id'];
+				while (!$objResult->EOF) {
+					$intLanguageId = $objResult->fields['lang_id'];
 
-					if ( ($intLanguageId == $this->_intLanguageId && !empty($objLanguageResult->fields['subject'])) ||
+					if ( ($intLanguageId == $this->_intLanguageId && !empty($objResult->fields['subject'])) ||
 					       empty($arrReturn[$intMessageId]['subject']) ) {
-                        $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objLanguageResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
+                        $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
 					}
 
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active'] 	= $objLanguageResult->fields['is_active'];
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['subject'] 	= htmlentities(stripslashes($objLanguageResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['content'] 	= $objLanguageResult->fields['content'];
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['tags'] 		= htmlentities(stripslashes($objLanguageResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['image'] 		= htmlentities(stripslashes($objLanguageResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail'] 		= htmlentities(stripslashes($objLanguageResult->fields['thumbnail']), ENT_QUOTES, CONTREXX_CHARSET);
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_width'] 		= empty($objLanguageResult->fields['thumbnail_width']) ? 80 : $objLanguageResult->fields['thumbnail_width'];
-					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_height'] 		= empty($objLanguageResult->fields['thumbnail_height']) ? 80 : $objLanguageResult->fields['thumbnail_height'];
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['attachment'] 	= htmlentities(stripslashes($objLanguageResult->fields['attachment']), ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['attachment_desc'] 	= htmlentities(stripslashes($objLanguageResult->fields['attachment_description']), ENT_QUOTES, CONTREXX_CHARSET);
-//                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['mode']        = $objLanguageResult->fields['mode'];
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_url'] = $objLanguageResult->fields['forward_url'];
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_target'] = $objLanguageResult->fields['forward_target'];
-					
-					$objLanguageResult->MoveNext();
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active'] 	= $objResult->fields['is_active'];
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['subject'] 	= htmlentities(stripslashes($objResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['content'] 	= $objResult->fields['content'];
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['tags'] 		= htmlentities(stripslashes($objResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['image'] 		= htmlentities(stripslashes($objResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail'] 		= htmlentities(stripslashes($objResult->fields['thumbnail']), ENT_QUOTES, CONTREXX_CHARSET);
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_width'] 		= empty($objResult->fields['thumbnail_width']) ? 80 : $objResult->fields['thumbnail_width'];
+					$arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_height'] 		= empty($objResult->fields['thumbnail_height']) ? 80 : $objResult->fields['thumbnail_height'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['attachment'] 	= htmlentities(stripslashes($objResult->fields['attachment']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['attachment_desc'] 	= htmlentities(stripslashes($objResult->fields['attachment_description']), ENT_QUOTES, CONTREXX_CHARSET);
+//                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['mode']        = $objResult->fields['mode'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_url'] = $objResult->fields['forward_url'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['forward_target'] = $objResult->fields['forward_target'];
+
+					$objResult->MoveNext();
                 }
 
 
@@ -459,9 +449,9 @@ class DataLibrary
 				$objResult->MoveNext();
 			}
 
-			foreach ($arrReturn as $intNetworkId => $arrValues) {
+			foreach (array_keys($arrReturn) as $intNetworkId) {
 				//Initialize the array first
-				foreach ($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+				foreach (array_keys($this->_arrLanguages) as $intLanguageId) {
 					$arrReturn[$intNetworkId]['status'][$intLanguageId] = 0;
 				}
 
@@ -562,7 +552,7 @@ class DataLibrary
 			$intNumberOfAssignedMessages = 0;
 
 			$arrEntries = $this->createEntryArray($this->_intLanguageId);
-			foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+			foreach ($arrEntries as $arrEntryValues) {
 
 				if ($arrEntryValues['translation'][$this->_intLanguageId]['is_active']) {
 					if (array_key_exists($intCategoryId, $arrEntryValues['categories'][$this->_intLanguageId])) {
@@ -680,8 +670,10 @@ class DataLibrary
 	 * @param 	boolean		$boolOnlyActive: if this parameter is true, only the "active" comments are counted
 	 * @return 	integer		number of comments for the desired entry.
 	 */
-	function countComments($intMessageId, $boolOnlyActive=false) {
+	function countComments($intMessageId, $boolOnlyActive=false)
+	{
         return 0;
+/*
 		global $objDatabase;
 
 		$intMessageId = intval($intMessageId);
@@ -698,7 +690,8 @@ class DataLibrary
 											');
 
 		return intval($objCommentResult->fields['numberOfComments']);
-	}
+*/
+    }
 
 
 
@@ -735,7 +728,7 @@ class DataLibrary
 		if (count($arrCategories) > 0) {
 			$arrCategoryNames = $this->createCategoryArray();
 
-			foreach ($arrCategories as $intCategoryId => $intDummyValue) {
+			foreach (array_keys($arrCategories) as $intCategoryId) {
 				$strCategoryString .= ($boolLinked) ? '<a href="index.php?section=data&amp;cmd=search&amp;category='.$intCategoryId.'" title="'.$arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'].'">' : '';
 				$strCategoryString .= $arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'];
 				$strCategoryString .= ($boolLinked) ? '</a>,&nbsp;' : ',&nbsp;';
@@ -783,14 +776,14 @@ class DataLibrary
 			$intTotalHits = 1;
 			$intTotalComments = 1;
 
-			foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+			foreach ($arrEntries as $arrEntryValues) {
 				if ($arrEntryValues['translation'][$this->_intLanguageId]['is_active']) {
 					$intTotalHits += $arrEntryValues['hits'];
 					$intTotalComments += $arrEntryValues['comments_active'];
 				}
 			}
 
-			foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+			foreach ($arrEntries as $arrEntryValues) {
 				if ($arrEntryValues['translation'][$this->_intLanguageId]['is_active']) {
 					//Calculate the keyword-value first
 					$intKeywordValue = 1; 																						#Base-Value
@@ -817,7 +810,7 @@ class DataLibrary
 
 					//Split tags
 					$arrEntryTags = split(',',$arrEntryValues['translation'][$this->_intLanguageId]['tags']);
-					foreach($arrEntryTags as $intKey => $strTag) {
+					foreach($arrEntryTags as $strTag) {
 						$strTag = trim($strTag);
 
 						if (array_key_exists($strTag,$arrKeywords)) {
@@ -895,7 +888,7 @@ class DataLibrary
 			$strReturn = '<ol class="dataTagHitlist">';
 
 			$intTagCounter = 0;
-			foreach ($arrKeywords as $strTag => $intKeywordValue) {
+			foreach (array_keys($arrKeywords) as $strTag) {
 				$strReturn .= '<li class="dataTagHitlistItem"><a href="index.php?section=data&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
 				++$intTagCounter;
 
@@ -1004,7 +997,7 @@ class DataLibrary
 
 		$arrEntriesInPeriod = $this->getEntriesInPeriod(mktime(0,0,0,$intMonth,1,$intYear), mktime(0,0,0,$intMonth,31,$intYear));
 		if (count($arrEntriesInPeriod) > 0) {
-			foreach ($arrEntriesInPeriod as $intKey => $intTimeStamp) {
+			foreach ($arrEntriesInPeriod as $intTimeStamp) {
 				$objCalendar->setEvent($intYear, $intMonth , date('d',$intTimeStamp), null, 'index.php?section=data&amp;cmd=search&amp;mode=date&amp;yearID='.$intYear.'&amp;monthID='.$intMonth.'&amp;dayID='.date('d',$intTimeStamp));
 			}
 		}
@@ -1124,12 +1117,12 @@ class DataLibrary
 
 	/**
 	 * Writes RSS feed containing the latest N comments to the feed-directory. This is done for every language seperately.
-	 *
 	 * @global 	array
 	 * @global 	array
 	 * @global 	ADONewConnection
 	 */
-	function writeCommentRSS() {
+	function writeCommentRSS()
+	{
 		global $_CONFIG, $_ARRAYLANG, $objDatabase;
 
 		if (intval($this->_arrSettings['data_rss_activated'])) {
@@ -1167,7 +1160,9 @@ class DataLibrary
 							htmlspecialchars($objResult->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET),
 							str_replace('{ID}',$objResult->fields['message_id'],$strItemLink),
 							htmlspecialchars($objResult->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
-							htmlspecialchars($strUserName, ENT_QUOTES, CONTREXX_CHARSET),
+// TODO: $strUserName is not defined
+//							htmlspecialchars($strUserName, ENT_QUOTES, CONTREXX_CHARSET),
+              '',
 							'',
 							'',
 							'',
@@ -1245,7 +1240,7 @@ class DataLibrary
 										''
 									);
 
-									$intNumberOfMessages++;    
+									$intNumberOfMessages++;
 
 									//Check for message-limit
 									if ($intNumberOfMessages >= intval($this->_arrSettings['data_rss_messages'])) {
@@ -1266,7 +1261,7 @@ class DataLibrary
 			}
 		}
 	}
-	
+
 	/**
      * Build a tree of the categories recursively
      *

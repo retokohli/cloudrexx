@@ -104,12 +104,6 @@ class Support
     var $objInfoFields;
 
     /**
-     * The language object
-     * @var     FWLanguage
-     */
-    var $objLanguage;
-
-    /**
      * The currently selected Ticket language ID (also filter value)
      * @var     integer
      */
@@ -411,9 +405,6 @@ class Support
             ?   $_REQUEST['supportMessageOrder']
             :   0
         );
-
-        // Language object
-        $this->objLanguage = new FWLanguage();
 
         // Support Categories object
         $this->objSupportCategories =

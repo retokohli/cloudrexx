@@ -73,7 +73,7 @@ class podcastManager extends podcastLib
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/podcast/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/podcast/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=podcast'>".$_ARRAYLANG['TXT_PODCAST_MEDIA']."</a>
@@ -82,7 +82,7 @@ class podcastManager extends podcastLib
                                                         <a href='index.php?cmd=podcast&amp;act=templates'>".$_ARRAYLANG['TXT_PODCAST_TEMPLATES']."</a>
                                                         <a href='index.php?cmd=podcast&amp;act=settings'>".$_ARRAYLANG['TXT_PODCAST_SETTINGS']."</a>"
                                                         );
-        $this->_youTubeIdRegex = "#.*[\?&]v=(".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}).*#";
+        $this->_youTubeIdRegex = '#.*[\?&]v=('.$this->_youTubeAllowedCharacters.'{'.$this->_youTubeIdLength.'}).*#';
         parent::__construct();
     }
 
@@ -96,7 +96,7 @@ class podcastManager extends podcastLib
     */
     function getPage()
     {
-        global $objTemplate, $_ARRAYLANG, $objDatabase;
+        global $objTemplate, $_ARRAYLANG;
 
 
         if (!isset($_REQUEST['act'])) {
@@ -314,7 +314,7 @@ class podcastManager extends podcastLib
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_DELETE_MEDIUM_SUCCESSFULL_MSG'], $arrMedium['title']);
                 }
 
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
                 $this->_createRSS();
             } else {
@@ -386,7 +386,7 @@ class podcastManager extends podcastLib
 
     function _modifyCategory()
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
         $categoryId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $categoryTitle = '';
@@ -425,7 +425,7 @@ class podcastManager extends podcastLib
                 if ($categoryId > 0) {
                     if ($this->_updateCategory($categoryId, $categoryTitle, $categoryDescription, $categoryAssociatedLangIds, $categoryStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_CATEGORY_UPDATED_SUCCESSFULL'];
-                        $objCache = &new Cache();
+                        $objCache = new Cache();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_categories();
@@ -435,7 +435,7 @@ class podcastManager extends podcastLib
                 } else {
                     if ($this->_addCategory($categoryTitle, $categoryDescription, $categoryAssociatedLangIds, $categoryStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_CATEGORY_CREATED_SUCCESSFULL'];
-                        $objCache = &new Cache();
+                        $objCache = new Cache();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_categories();
@@ -472,7 +472,7 @@ class podcastManager extends podcastLib
             'PODCAST_CATEGORY_STATUS'       => $categoryStatus == 1 ? 'checked="checked"' : ''
         ));
 
-        $arrLanguages = &$objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         $langNr = 0;
 
         foreach ($arrLanguages as $langId => $arrLanguage) {
@@ -499,7 +499,7 @@ class podcastManager extends podcastLib
             if ($this->_getMediaCount($categoryId) == 0) {
                 if ($this->_deleteCategory($categoryId)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_DELETE_CATEGORY_SUCCESSFULL_MSG'], $arrCategory['title']);
-                    $objCache = &new Cache();
+                    $objCache = new Cache();
                     $objCache->deleteAllFiles();
                     $this->_createRSS();
                 } else {
@@ -605,7 +605,7 @@ class podcastManager extends podcastLib
                 if ($templateId > 0 ) {
                     if ($this->_updateTemplate($templateId, $description, $template, $extensions)) {
                         $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_UPDATED_SUCCESSFULL'], $description);
-                        $objCache = &new Cache();
+                        $objCache = new Cache();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_templates();
@@ -615,7 +615,7 @@ class podcastManager extends podcastLib
                 } else {
                     if ($this->_addTemplate($description, $template, $extensions)) {
                         $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_ADDED_SUCCESSFULL'], $description);
-                        $objCache = &new Cache();
+                        $objCache = new Cache();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_templates();
@@ -660,7 +660,7 @@ class podcastManager extends podcastLib
             if (!$this->_isTemplateInUse($templateId)) {
                 if ($this ->_deleteTemplate($templateId)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_SUCCESSFULL'], $arrTemplate['description']);
-                    $objCache = &new Cache();
+                    $objCache = new Cache();
                     $objCache->deleteAllFiles();
                     $this->_createRSS();
                 } else {
@@ -703,7 +703,7 @@ class podcastManager extends podcastLib
 
     function _settings()
     {
-        global $_ARRAYLANG, $_CONFIG, $objLanguage;
+        global $_ARRAYLANG, $_CONFIG;
 
         $arrSettingsTabs = array("general", "block");
         $defaultTab = 'general';
@@ -740,13 +740,13 @@ class podcastManager extends podcastLib
             'TXT_PODCAST_PLAY'                  => $_ARRAYLANG['TXT_PODCAST_PLAY'],
             'TXT_PODCAST_MEDIA_DATE'            => $_ARRAYLANG['TXT_PODCAST_MEDIA_DATE'],
             'TXT_PODCAST_MEDIA_TITLE'           => $_ARRAYLANG['TXT_PODCAST_MEDIA_TITLE'],
-            'TXT_PODCAST_MEDIA_PLAYLENGHT'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGHT'],
+            'TXT_PODCAST_MEDIA_PLAYLENGTH'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGTH'],
             'TXT_PODCAST_MEDIA_ID'              => $_ARRAYLANG['TXT_PODCAST_MEDIA_ID'],
             'TXT_PODCAST_MEDIA_VIEWS_COUNT'     => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS_COUNT'],
             'TXT_PODCAST_MEDIA_VIEWS'           => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'],
             'TXT_PODCAST_MEDIA_AUTHOR'          => $_ARRAYLANG['TXT_PODCAST_MEDIA_AUTHOR'],
-            'TXT_PODCAST_MEDIA_SHORT_PLAYLENGHT'=> $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_PLAYLENGHT'],
-            'TXT_PODCAST_MEDIA_PLAYLENGHT'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGHT'],
+            'TXT_PODCAST_MEDIA_SHORT_PLAYLENGTH'=> $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_PLAYLENGTH'],
+            'TXT_PODCAST_MEDIA_PLAYLENGTH'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGTH'],
             'TXT_PODCAST_MEDIA_URL'             => $_ARRAYLANG['TXT_PODCAST_MEDIA_URL'],
             'TXT_PODCAST_MEDIA_THUMBNAIL'       => $_ARRAYLANG['TXT_PODCAST_MEDIA_THUMBNAIL'],
             'TXT_PODCAST_MEDIA_SHORT_DATE'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_DATE'],
@@ -823,7 +823,7 @@ class podcastManager extends podcastLib
 
         $arrCategories = &$this->_getCategories();
         $categoryNr = 0;
-        $arrLanguages = &$objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
 
         foreach ($arrCategories as $categoryId => $arrCategory) {
             $column = $categoryNr % 3;
@@ -847,7 +847,7 @@ class podcastManager extends podcastLib
         require_once(ASCMS_CORE_PATH.'/settings.class.php');
         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setHomeContent'])."' WHERE setname='podcastHomeContent'");
         if($objResult !== false){
-            $objSettings = &new settingsManager();
+            $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
             $_CONFIG['podcastHomeContent'] = intval($_POST['setHomeContent']);
             return true;

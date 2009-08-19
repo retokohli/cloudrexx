@@ -264,15 +264,13 @@ class blockLibrary
         global $objDatabase;
 
         $arrLangIds = array();
-
-        $objLanguage = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$blockId);
-        if ($objLanguage !== false) {
-            while (!$objLanguage->EOF) {
-                array_push($arrLangIds, $objLanguage->fields['lang_id']);
-                $objLanguage->MoveNext();
+        $objResult = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$blockId);
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                array_push($arrLangIds, $objResult->fields['lang_id']);
+                $objResult->MoveNext();
             }
         }
-
         return $arrLangIds;
     }
 
@@ -390,15 +388,14 @@ class blockLibrary
     function _setBlockRandom(&$code, $id)
     {
         global $objDatabase, $_LANGID;
-        
-        
-        $query = "  SELECT tblBlock.id 
-                    FROM ".DBPREFIX."module_block_blocks AS tblBlock 
+
+        $query = "  SELECT tblBlock.id
+                    FROM ".DBPREFIX."module_block_blocks AS tblBlock
                     INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.active= 1
                     AND tblLang.lang_id = ".$_LANGID." ";
-        
+
         //Get Block Name and Status
         switch($id) {
             case '1':
