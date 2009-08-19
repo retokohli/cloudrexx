@@ -20,28 +20,20 @@
  */
 class FWLanguage
 {
-    public $arrLanguage = null;
-
-    /**
-     * Constructor (PHP5)
-     * @access  private
-     * @global  ADONewConnection
-     */
-    function __construct()
-    {
-        $this->loadLangConfig();
-    }
+    private static $arrLanguages = false;
 
     /**
      * Loads the language config from database.
      *
      * This used to be in __construct but is also
      * called from core/language.class.php to reload
-     * the config, so core/settings.class.php can 
+     * the config, so core/settings.class.php can
      * rewrite .htaccess (virtual lang dirs).
      */
-    function loadLangConfig() {
+    static function init()
+    {
         global $objDatabase;
+
          $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default
@@ -50,7 +42,7 @@ class FWLanguage
          ");
          if ($objResult) {
              while (!$objResult->EOF) {
-                $this->arrLanguage[$objResult->fields['id']] = array(
+                self::$arrLanguages[$objResult->fields['id']] = array(
                     'id'         => $objResult->fields['id'],
                     'lang'       => $objResult->fields['lang'],
                     'name'       => $objResult->fields['name'],
@@ -63,7 +55,6 @@ class FWLanguage
                 $objResult->MoveNext();
             }
         }
-
     }
 
 
@@ -73,9 +64,10 @@ class FWLanguage
      * @return  array           The language data
      * @access  public
      */
-    function getLanguageArray()
+    static function getLanguageArray()
     {
-        return $this->arrLanguage;
+        if (empty(self::$arrLanguages)) self::init();
+        return self::$arrLanguages;
     }
 
 
@@ -87,11 +79,12 @@ class FWLanguage
      * @return  mixed           Language data field content
      * @access  public
      */
-    function getLanguageParameter($id, $index)
+    static function getLanguageParameter($id, $index)
     {
+        if (empty(self::$arrLanguages)) self::init();
         return
-            (isset($this->arrLanguage[$id][$index])
-                ? $this->arrLanguage[$id][$index] : false
+            (isset(self::$arrLanguages[$id][$index])
+                ? self::$arrLanguages[$id][$index] : false
             );
     }
 
@@ -107,15 +100,9 @@ class FWLanguage
      * @return  string              The dropdown menu HTML code
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getMenu($selectedId=0, $menuName='', $onchange='')
+    static function getMenu($selectedId=0, $menuName='', $onchange='')
     {
-        $menu = '';
-        foreach ($this->arrLanguage as $id => $arrField) {
-            $menu .=
-                "<option value='$id'".
-                ($selectedId == $id ? ' selected="selected"' : '').
-                ">{$arrField['name']}</option>\n";
-        }
+        $menu = self::getMenuoptions($selectedId, true);
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'".
                     ($onchange ? ' onchange="'.$onchange.'"' : '').
@@ -123,6 +110,57 @@ class FWLanguage
         }
 //echo("getMenu(select=$selectedId, name=$menuName, onchange=$onchange): made menu: ".htmlentities($menu)."<br />");
         return $menu;
+    }
+
+
+    /**
+     * Returns HTML code to display a language selection dropdown menu
+     * for the active frontend languages only.
+     *
+     * Does only contain the <select> tag pair if the optional $menuName
+     * is specified and evaluates to a true value.
+     * Frontend use only.
+     * @param   integer $selectedId The optional preselected language ID
+     * @param   string  $menuName   The optional menu name
+     * @param   string  $onchange   The optional onchange code
+     * @return  string              The dropdown menu HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getMenuActiveOnly($selectedId=0, $menuName='', $onchange='')
+    {
+        $menu = self::getMenuoptions($selectedId, false);
+        if ($menuName) {
+            $menu = "<select id='$menuName' name='$menuName'".
+                    ($onchange ? ' onchange="'.$onchange.'"' : '').
+                    ">\n$menu</select>\n";
+        }
+//echo("getMenu(select=$selectedId, name=$menuName, onchange=$onchange): made menu: ".htmlentities($menu)."<br />");
+        return $menu;
+    }
+
+
+    /**
+     * Returns HTML code for the language menu options
+     * @param   integer $selectedId   The optional preselected language ID
+     * @param   boolean $flagInactive If true, all languages are added,
+     *                                only the active ones otherwise
+     * @return  string                The menu options HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getMenuoptions($selectedId=0, $flagInactive=false)
+    {
+        if (empty(self::$arrLanguages)) self::init();
+        $menuoptions = '';
+        foreach (self::$arrLanguages as $id => $arrLanguage) {
+            // Skip inactive ones if desired
+            if (!$flagInactive && empty($arrLanguage['frontend']))
+                continue;
+            $menuoptions .=
+                "<option value='$id'".
+                ($selectedId == $id ? ' selected="selected"' : '').
+                ">{$arrLanguage['name']}</option>\n";
+        }
+        return $menuoptions;
     }
 
 
@@ -144,7 +182,7 @@ class FWLanguage
      * @global  ADONewConnection
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getLangIdByIso639_1($langCode)
+    static function getLangIdByIso639_1($langCode)
     {
         global $objDatabase;
 
@@ -197,31 +235,16 @@ class FWLanguage
     /**
      * Return the language code from the database for the given ID
      *
-     * Returns false on failure, or the empty string if the code
-     * could not be found.
+     * Returns false on failure, or false if the code could not be found.
      * @global  ADONewConnection
      * @param   integer $langId         The language ID
-     * @return  mixed                   The two letter code, the empty string,
-     *                                  or false
+     * @return  mixed                   The two letter code, or false
      * @static
      */
-    //static
-    function getLanguageCodeById($langId)
+    static function getLanguageCodeById($langId)
     {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT lang
-              FROM ".DBPREFIX."languages
-             WHERE id=$langId
-        ");
-        if (!$objResult) {
-            return false;
-        }
-        if (!$objResult->EOF) {
-            return $objResult->fields['lang'];
-        }
-        return '';
+        if (empty(self::$arrLanguages)) self::init();
+        return self::getLanguageParameter($langId, 'lang');
     }
 
 }

@@ -1429,25 +1429,8 @@ class User extends User_Profile
      */
     private function validateLanguageId($scope)
     {
-        static $objFWLanguage;
-
-        if (!isset($objFWLanguage)) {
-            $objFWLanguage = new FWLanguage();
-        }
-
-        $this->{$scope.'_language'} = $objFWLanguage->getLanguageParameter($this->{$scope.'_language'}, $scope) ? $this->{$scope.'_language'} : 0;
+        $this->{$scope.'_language'} = FWLanguage::getLanguageParameter($this->{$scope.'_language'}, $scope) ? $this->{$scope.'_language'} : 0;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     private function loadPermissionIds($type)
@@ -1475,7 +1458,6 @@ class User extends User_Profile
     }
 
 
-
     public function hasModeAccess($backend = false)
     {
         global $objDatabase;
@@ -1494,18 +1476,12 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        $ltime=$this->last_activity;
-
         $arrSettings = User_Setting::getSettings();
-        $intervalvalue=$arrSettings['session_user_interval']['value'];
-
-        $currenttime=time();
-        $diff=$currenttime-$ltime ;
-
-        if($diff>$intervalvalue)
-          return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
-        else
-          return true;
+        $intervalvalue = (isset($arrSettings['session_user_interval']['value'])
+            ? $arrSettings['session_user_interval']['value'] : 500);
+        if (time() > ($intervalvalue + $this->last_activity))
+            return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
+        return true;
     }
 
     private function updateLastAuthTime()
