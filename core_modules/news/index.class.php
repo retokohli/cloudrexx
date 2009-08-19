@@ -55,11 +55,12 @@ class news extends newsLibrary {
     function __construct($pageContent)
     {
         global $_LANGID;
+
         $this->getSettings();
         $this->pageContent = $pageContent;
         $this->langId = $_LANGID;
 
-        $this->_objTpl = &new HTML_Template_Sigma();
+        $this->_objTpl = new HTML_Template_Sigma();
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -103,7 +104,7 @@ class news extends newsLibrary {
     */
     function getDetails()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
         $newsid = intval($_GET['newsid']);
@@ -530,7 +531,7 @@ class news extends newsLibrary {
         $this->_objTpl->setTemplate($this->pageContent);
 
         require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
-        $objModulManager = &new modulemanager();
+        $objModulManager = new modulemanager();
         $arrInstalledModules = $objModulManager->getModules();
         if (in_array(23, $arrInstalledModules)) {
             $communityModul = true;
@@ -573,7 +574,7 @@ class news extends newsLibrary {
 		$url = $captcha->getUrl();
 
         if (isset($_POST['submitNews'])) {
-            $objValidator = &new FWValidator();
+            $objValidator = new FWValidator();
 
             $_POST['newsTitle'] = contrexx_strip_tags(html_entity_decode($_POST['newsTitle']));
             $_POST['newsTeaserText'] = contrexx_stripslashes($_POST['newsTeaserText']);
@@ -773,12 +774,10 @@ class news extends newsLibrary {
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $objLanguage = &new FWLanguage();
         $this->_objTpl->setTemplate($this->pageContent);
-
         $serverPort = $_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT']);
-        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".xml";
-        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".js";
+        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".FWLanguage::getLanguageParameter($_LANGID, 'lang').".xml";
+        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".FWLanguage::getLanguageParameter($_LANGID, 'lang').".js";
         $hostname = addslashes(htmlspecialchars($_SERVER['SERVER_NAME'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE

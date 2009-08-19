@@ -531,7 +531,7 @@ class FileBrowser {
     */
     function _setContent()
     {
-        global $objDatabase, $objLanguage, $_CONFIG;
+        global $objDatabase, $_CONFIG;
 
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
         $this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
@@ -554,7 +554,7 @@ class FileBrowser {
 
             $scriptPath = ($this->_absoluteURIs ?
                 $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ?
-                    $objLanguage->getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
+                    FWLanguage::getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
                 :   null)
             :   null);
             foreach ($objContentTree->getTree() as $arrPage) {
