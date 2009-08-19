@@ -495,6 +495,7 @@ class AccessManager extends AccessLib
             $objGroup->setDescription(!empty($_POST['access_group_description']) ? trim(contrexx_stripslashes($_POST['access_group_description'])) : '');
             $objGroup->setActiveStatus(isset($_POST['access_group_status']) ? (bool)$_POST['access_group_status'] : false);
             $objGroup->setType(!empty($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
+            $objGroup->setHomepage(!empty($_POST['access_group_homepage']) ? trim(contrexx_stripslashes($_POST['access_group_homepage'])) : '');
             $objGroup->setUsers(isset($_POST['access_group_associated_users']) && is_array($_POST['access_group_associated_users']) ? $_POST['access_group_associated_users'] : array());
             $objGroup->setStaticPermissionIds(isset($_POST['access_area_id']) && is_array($_POST['access_area_id']) ? $_POST['access_area_id'] : array());
             $objGroup->setDynamicPermissionIds(isset($_POST['access_webpage_access_id']) && is_array($_POST['access_webpage_access_id']) ? $_POST['access_webpage_access_id'] : array());
@@ -702,6 +703,12 @@ class AccessManager extends AccessLib
             $this->_objTpl->hideBlock('access_permission_tabs_menu');
         }
 
+        $this->attachJavaScriptFunction('accessSetWebpage');
+        $this->attachJavaScriptFunction('accessSelectAllGroups');
+        $this->attachJavaScriptFunction('accessDeselectAllGroups');
+        $this->attachJavaScriptFunction('accessAddGroupToList');
+        $this->attachJavaScriptFunction('accessRemoveGroupFromList');
+
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_GENERAL'            => $_ARRAYLANG['TXT_ACCESS_GENERAL'],
             'TXT_ACCESS_PERMISSIONS'        => $_ARRAYLANG['TXT_ACCESS_PERMISSIONS'],
@@ -718,8 +725,10 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_ASSOCIATED_USERS'   => $_ARRAYLANG['TXT_ACCESS_ASSOCIATED_USERS'],
             'TXT_ACCESS_UNPROTECT_PAGE'     => $_ARRAYLANG['TXT_ACCESS_UNPROTECT_PAGE'],
             'TXT_ACCESS_PROTECT_PAGE'       => $_ARRAYLANG['TXT_ACCESS_PROTECT_PAGE'],
-            'TXT_ACCESS_PROMT_EXEC_WARNING' => $_ARRAYLANG['TXT_ACCESS_PROMT_EXEC_WARNING']
-
+            'TXT_ACCESS_PROMT_EXEC_WARNING' => $_ARRAYLANG['TXT_ACCESS_PROMT_EXEC_WARNING'],
+            'TXT_ACCESS_HOMEPAGE'           => $_ARRAYLANG['TXT_ACCESS_HOMEPAGE'],
+            'TXT_ACCESS_HOMEPAGE_DESC'      => $_ARRAYLANG['TXT_ACCESS_HOMEPAGE_DESC'],
+            'TXT_ACCESS_BROWSE'             => $_ARRAYLANG['TXT_ACCESS_BROWSE']
         ));
 
         $this->_objTpl->setVariable(array(
@@ -728,6 +737,7 @@ class AccessManager extends AccessLib
             'ACCESS_GROUP_DESCRIPTION'          => htmlentities($objGroup->getDescription(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_GROUP_STATUS'               => $objGroup->getActiveStatus() ? 'checked="checked"' : '',
             'ACCESS_GROUP_TYPE'                 => $objGroup->getType(),
+            'ACCESS_GROUP_HOMEPAGE'             => $objGroup->getHomepage(),
             'ACCESS_GROUP_NOT_ASSOCIATED_USERS' => $notAssociatedUsers,
             'ACCESS_GROUP_ASSOCIATED_USERS'     => $associatedUsers,
             'ACCESS_PROTECT_PAGE_TXT'           => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_LOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_PROTECT_PAGE'],
@@ -736,7 +746,8 @@ class AccessManager extends AccessLib
             'ACCESS_GENERAL_TAB_STATUS'         => !$changeProtection ? 'block' : 'none',
             'ACCESS_PERMISSION_TAB_MENU_STATUS' => $changeProtection ? 'class="active"' : '',
             'ACCESS_PERMISSION_TAB_STATUS'      => $changeProtection ? 'block' : 'none',
-            'ACCESS_SCROLL_POS'                 => $scrollPos
+            'ACCESS_SCROLL_POS'                 => $scrollPos,
+            'ACCESS_JAVASCRIPT_FUNCTIONS'       => $this->getJavaScriptCode()
         ));
         $this->_objTpl->parse('module_access_group_modify');
     }
@@ -1110,6 +1121,8 @@ class AccessManager extends AccessLib
                 }
             }
 
+            $objUser->setPrimaryGroup(isset($_POST['access_user_primary_group']) ? $_POST['access_user_primary_group'] : 0);
+
             if ($objUser->setPassword(isset($_POST['access_user_password']) ? trim(contrexx_stripslashes($_POST['access_user_password'])) : '', isset($_POST['access_user_password_confirmed']) ? trim(contrexx_stripslashes($_POST['access_user_password_confirmed'])) : '') &&
                 // only administrators are allowed to change the admin status and the account validity
                 (!Permission::hasAllAccess() || $objUser->getId() == $objFWUser->objUser->getId() || (
@@ -1171,6 +1184,7 @@ class AccessManager extends AccessLib
             $this->attachJavaScriptFunction('accessDeselectAllGroups');
             $this->attachJavaScriptFunction('accessAddGroupToList');
             $this->attachJavaScriptFunction('accessRemoveGroupFromList');
+            $this->attachJavaScriptFunction('accessAssignGroupToUser');
             $this->attachJavaScriptFunction('confirmUserNotification');
         } else {
             $this->_objTpl->hideBlock('access_profile_group_assignment');
@@ -1195,6 +1209,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_PASSWORD_MD5_ENCRYPTED'         => $_ARRAYLANG['TXT_ACCESS_PASSWORD_MD5_ENCRYPTED'],
             'TXT_ACCESS_AVAILABLE_GROUPS'               => $_ARRAYLANG['TXT_ACCESS_AVAILABLE_GROUPS'],
             'TXT_ACCESS_ASSOCIATED_GROUPS'              => $_ARRAYLANG['TXT_ACCESS_ASSOCIATED_GROUPS'],
+            'TXT_ACCESS_PRIMARY_GROUP'                  => $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'],
             'TXT_ACCESS_CHECK_ALL'                      => $_ARRAYLANG['TXT_ACCESS_CHECK_ALL'],
             'TXT_ACCESS_UNCHECK_ALL'                    => $_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL'],
             'TXT_ACCESS_SAVE'                           => $_ARRAYLANG['TXT_ACCESS_SAVE'],
@@ -1226,6 +1241,7 @@ class AccessManager extends AccessLib
             'ACCESS_USER_ACTIVE'                    => $objUser->getActiveStatus() ? 'checked="checked"' : '',
             'ACCESS_USER_NOT_ASSOCIATED_GROUPS'     => $notAssociatedGroups,
             'ACCESS_USER_ASSOCIATED_GROUPS'         => $associatedGroups,
+            'ACCESS_USER_PRIMARY_GROUP_MENU'        => $this->getGroupMenu($objUser->getPrimaryGroupId(), 'name="access_user_primary_group" id="access_user_primary_group" onchange="accessAssignGroupToUser(this,document.getElementById(\'access_user_not_associated_groups\'),document.getElementById(\'access_user_associated_groups\'))"', false),
             'ACCESS_USER_VALIDITY_EXPIRATION_MENU'  => $this->getUserValidityMenu($objUser->getValidityTimePeriod(), $objUser->getExpirationDate()),
             'ACCESS_USER_VALIDITY_OPTION_DISPLAY'   => $objUser->getAdminStatus() ? 'none' : '',
             'ACCESS_JAVASCRIPT_FUNCTIONS'           => $this->getJavaScriptCode()
@@ -1466,7 +1482,7 @@ class AccessManager extends AccessLib
     }
 
 
-    private function getGroupMenu($selectedGroupId, $attrs)
+    private function getGroupMenu($selectedGroupId, $attrs, $showAllOption = true)
     {
         global $_ARRAYLANG;
 
@@ -1474,8 +1490,8 @@ class AccessManager extends AccessLib
         $objGroup = $objFWUser->objGroup->getGroups(null, array('group_name', 'asc'), array('group_name', 'type'));
 
         $menu = "<select".(!empty($attrs) ? " ".$attrs : "").">\n";
-        $menu .= "<option value=\"_\" style=\"border-bottom:1px solid #000000;\">".$_ARRAYLANG['TXT_ACCESS_SELECT_GROUP']."</option>\n";
-        $menu .= "<option value=\"0\" style=\"text-indent:5px;\">".$_ARRAYLANG['TXT_ACCESS_ALL']."</option>\n";
+        $menu .= "<option value=\"".($showAllOption ? '_' : '0')."\" style=\"border-bottom:1px solid #000000;\">".$_ARRAYLANG['TXT_ACCESS_SELECT_GROUP']."</option>\n";
+        $showAllOption ? $menu .= "<option value=\"0\" style=\"text-indent:5px;\">".$_ARRAYLANG['TXT_ACCESS_ALL']."</option>\n" : false;
         while (!$objGroup->EOF) {
             $menu .= "<option value=\"".$objGroup->getId()."\" style=\"text-indent:5px;\"".($selectedGroupId == $objGroup->getId() ? " selected=\"selected\"" : "").">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)." [".$objGroup->getType()."]</option>\n";
             $objGroup->next();
@@ -1942,8 +1958,6 @@ class AccessManager extends AccessLib
 
         $this->attachJavaScriptFunction('accessSetWebsite');
         $this->attachJavaScriptFunction('jscalendarIncludes');
-//      $this->attachJavaScriptFunction('access_get_fileBrowser');
-//      $this->attachJavaScriptFunction('SetUrl');
 
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_NAME'                       => $_ARRAYLANG['TXT_ACCESS_NAME'],

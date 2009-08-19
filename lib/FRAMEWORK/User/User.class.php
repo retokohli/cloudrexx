@@ -85,6 +85,14 @@ class User extends User_Profile
     private $is_active;
 
     /**
+     * The ID of a user group that should be used as the primary one
+     *
+     * @var integer
+     * @access private
+     */
+    private $primary_group;
+
+    /**
      * Administrator status
      *
      * @var boolean
@@ -216,6 +224,7 @@ class User extends User_Profile
         'validity'          => 'int',
         'last_auth'         => 'int',
         'last_activity'     => 'int',
+        'primary_group'     => 'int',
         'email'             => 'string',
         'email_access'      => 'string',
         'frontend_lang_id'  => 'int',
@@ -342,6 +351,7 @@ class User extends User_Profile
         $this->frontend_language = $_LANGID;
         $this->backend_language = $_LANGID;
         $this->is_active = false;
+        $this->primary_group = 0;
         $this->is_admin = false;
         $this->profile_access = $this->defaultProfileAccessTyp;
         $this->regdate = 0;
@@ -439,6 +449,11 @@ class User extends User_Profile
     public function getActiveStatus()
     {
         return $this->is_active;
+    }
+
+    public function getPrimaryGroupId()
+    {
+        return $this->primary_group;
     }
 
     public function getAdminStatus()
@@ -711,6 +726,7 @@ class User extends User_Profile
             $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
             $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
             $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
+            $this->primary_group = isset($this->arrCachedUsers[$id]['primary_group']) ? $this->arrCachedUsers[$id]['primary_group'] : 0;
             $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
             $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
             $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
@@ -1230,6 +1246,7 @@ class User extends User_Profile
                     `expiration` = ".intval($this->expiration).",
                     `validity` = ".intval($this->validity).",
                     `active` = ".intval($this->is_active).",
+                    `primary_group` = ".intval($this->primary_group).",
                     `profile_access` = '".$this->profile_access."',
                     `restore_key` = '".$this->restore_key."',
                     `restore_key_time` = ".$this->restore_key_time."
@@ -1254,6 +1271,7 @@ class User extends User_Profile
                     `last_auth`,
                     `last_activity`,
                     `active`,
+                    `primary_group`,
                     `profile_access`,
                     `restore_key`,
                     `restore_key_time`
@@ -1271,6 +1289,7 @@ class User extends User_Profile
                     ".$this->last_auth.",
                     ".$this->last_activity.",
                     ".intval($this->is_active).",
+                    ".intval($this->primary_group).",
                     '".$this->profile_access."',
                     '".$this->restore_key."',
                     '".$this->restore_key_time."'
@@ -1653,6 +1672,23 @@ class User extends User_Profile
     public function setActiveStatus($status)
     {
         $this->is_active = (bool)$status;
+    }
+
+    /**
+     * Set the Id of a user group that should be used as the user's primary group
+     *
+     * @param integer $groupId
+     * @return void
+     */
+    public function setPrimaryGroup($groupId)
+    {
+        if (in_array($groupId, $this->arrGroups)) {
+            $this->primary_group = $groupId;
+        } elseif (count($this->arrGroups)) {
+            $this->primary_group = $this->arrGroups[0];
+        } else {
+            $this->primary_group = 0;
+        }
     }
 
     /**
