@@ -348,10 +348,10 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 
     if ($history) {
         $objPageProtection = $objDatabase->SelectLimit('
-            SELECT backend_access_id 
-              FROM '.DBPREFIX.'content_navigation 
-             WHERE catid='.$objResult->fields['catid'].' 
-               AND backend_access_id!=0 
+            SELECT backend_access_id
+              FROM '.DBPREFIX.'content_navigation
+             WHERE catid='.$objResult->fields['catid'].'
+               AND backend_access_id!=0
                AND lang='.FRONTEND_LANG_ID, 1);
         if ($objPageProtection !== false) {
             if ($objPageProtection->RecordCount() == 1) {
@@ -368,8 +368,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // authentification for protected pages
 //-------------------------------------------------------
 if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_REQUEST['section']) || $_REQUEST['section'] != 'login')) {
-    if (!isset($sessionObj) || !is_object($sessionObj)) 
-        $sessionObj = new cmsSession(); 
+    if (!isset($sessionObj) || !is_object($sessionObj))
+        $sessionObj = new cmsSession();
     $sessionObj->cmsSessionStatusUpdate('frontend');
 
     $objFWUser = FWUser::getFWUserObject();
@@ -395,13 +395,13 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
     }
 }
 
-if (   ($frontEditing || $frontPreview) 
-    && (!$objFWUser->objUser->login() || !Permission::hasAllAccess())) 
+if (   ($frontEditing || $frontPreview)
+    && (!$objFWUser->objUser->login() || !Permission::hasAllAccess()))
     $page_content = '';
 
 if (!empty($page_redirect)) {
     if (strpos($page_redirect, 'langId') === false) {
-        $page_redirect .= 
+        $page_redirect .=
             (strpos($page_redirect, '?') ? '&' : '?').
             'langId='.LANG_ID;
     }
@@ -1796,21 +1796,21 @@ if(isset($_REQUEST['section'])){
 			if ($objResult === true || !$objResult->EOF) {
 			    $tmpCID = $objResult->fields["catid"];
 			}else{
-				$URLquery 	= ereg_replace("\&?section\=[a-zA-Z]+", "", $URLquery);
-				$URLquery 	= ereg_replace("\&?cmd\=[0-9]+", "", $URLquery);
+				$URLquery 	= ereg_replace('\&?section\=[a-zA-Z]+', '', $URLquery);
+				$URLquery 	= ereg_replace('\&?cmd\=[0-9]+', '', $URLquery);
 			}
 	}
 }
 
 foreach ($objInit->arrLang as $key => $value) {
-	$URLquery 	= ereg_replace("\&?fromLang\=[0-9]+", "", $URLquery);
-	$URLquery 	= ereg_replace("\&?langId\=[0-9]+", "", $URLquery);
-	$URLquery 	= ereg_replace("\&?setLang\=[0-9]+", "", $URLquery);
+	$URLquery 	= ereg_replace('\&?fromLang\=[0-9]+', '', $URLquery);
+	$URLquery 	= ereg_replace('\&?langId\=[0-9]+', '', $URLquery);
+	$URLquery 	= ereg_replace('\&?setLang\=[0-9]+', '', $URLquery);
 	$FromQuery	= 'fromLang='.$_LANGID;
 
 	// workaround contact
 	if($tmpCID!=0){
-		$URLquery 	= ereg_replace("\&?cmd\=[0-9]+", "", $URLquery);
+		$URLquery 	= ereg_replace('\&?cmd\=[0-9]+', '', $URLquery);
 		$tmpCMD		= 0;
 		$query		= "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
 		$objResult 	= $objDatabase->SelectLimit($query, 1);
@@ -1906,20 +1906,20 @@ if ($objTemplate->blockExists('access_logged_out')) {
 
 // currently online users
 $modulespath = 'core_modules/access/lib/blocks.class.php';
+$objAccessBlocks = false;
 if ($objTemplate->blockExists('access_currently_online_member_list')) {
     if (    FWUser::showCurrentlyOnlineUsers()
         && (    $objTemplate->blockExists('access_currently_online_female_members')
             ||  $objTemplate->blockExists('access_currently_online_male_members')
             ||  $objTemplate->blockExists('access_currently_online_members'))) {
-        if (file_exists($modulespath) && include_once($modulespath)) {
+        if (file_exists($modulespath) && require_once($modulespath))
             $objAccessBlocks = new Access_Blocks();
-            if ($objTemplate->blockExists('access_currently_online_female_members'))
-                $objAccessBlocks->setCurrentlyOnlineUsers('female');
-            if ($objTemplate->blockExists('access_currently_online_male_members'))
-                $objAccessBlocks->setCurrentlyOnlineUsers('male');
-            if ($objTemplate->blockExists('access_currently_online_members'))
-                $objAccessBlocks->setCurrentlyOnlineUsers();
-        }
+        if ($objTemplate->blockExists('access_currently_online_female_members'))
+            $objAccessBlocks->setCurrentlyOnlineUsers('female');
+        if ($objTemplate->blockExists('access_currently_online_male_members'))
+            $objAccessBlocks->setCurrentlyOnlineUsers('male');
+        if ($objTemplate->blockExists('access_currently_online_members'))
+            $objAccessBlocks->setCurrentlyOnlineUsers();
     } else {
         $objTemplate->hideBlock('access_currently_online_member_list');
     }
@@ -1931,20 +1931,15 @@ if ($objTemplate->blockExists('access_last_active_member_list')) {
         && (    $objTemplate->blockExists('access_last_active_female_members')
             ||  $objTemplate->blockExists('access_last_active_male_members')
             ||  $objTemplate->blockExists('access_last_active_members'))) {
-        if (    $objAccessBlocks
-            ||  file_exists($modulespath)
-                && include_once($modulespath)
-                && $objAccessBlocks = new Access_Blocks()) {
-            if ($objTemplate->blockExists('access_last_active_female_members')) {
-                $objAccessBlocks->setLastActiveUsers('female');
-            }
-            if ($objTemplate->blockExists('access_last_active_male_members')) {
-                $objAccessBlocks->setLastActiveUsers('male');
-            }
-            if ($objTemplate->blockExists('access_last_active_members')) {
-                $objAccessBlocks->setLastActiveUsers();
-            }
-        }
+        if (   !$objAccessBlocks
+            && file_exists($modulespath) && require_once($modulespath))
+            $objAccessBlocks = new Access_Blocks();
+        if ($objTemplate->blockExists('access_last_active_female_members'))
+            $objAccessBlocks->setLastActiveUsers('female');
+        if ($objTemplate->blockExists('access_last_active_male_members'))
+            $objAccessBlocks->setLastActiveUsers('male');
+        if ($objTemplate->blockExists('access_last_active_members'))
+            $objAccessBlocks->setLastActiveUsers();
     } else {
         $objTemplate->hideBlock('access_last_active_member_list');
     }
@@ -1956,20 +1951,15 @@ if ($objTemplate->blockExists('access_latest_registered_member_list')) {
         && (    $objTemplate->blockExists('access_latest_registered_female_members')
             ||  $objTemplate->blockExists('access_latest_registered_male_members')
             ||  $objTemplate->blockExists('access_latest_registered_members'))) {
-        if (    $objAccessBlocks
-            ||  file_exists($modulespath)
-                && include_once($modulespath)
-                && $objAccessBlocks = new Access_Blocks()) {
-            if ($objTemplate->blockExists('access_latest_registered_female_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers('female');
-            }
-            if ($objTemplate->blockExists('access_latest_registered_male_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers('male');
-            }
-            if ($objTemplate->blockExists('access_latest_registered_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers();
-            }
-        }
+        if (   !$objAccessBlocks
+            && file_exists($modulespath) && require_once($modulespath))
+            $objAccessBlocks = new Access_Blocks();
+        if ($objTemplate->blockExists('access_latest_registered_female_members'))
+            $objAccessBlocks->setLatestRegisteredUsers('female');
+        if ($objTemplate->blockExists('access_latest_registered_male_members'))
+            $objAccessBlocks->setLatestRegisteredUsers('male');
+        if ($objTemplate->blockExists('access_latest_registered_members'))
+            $objAccessBlocks->setLatestRegisteredUsers();
     } else {
         $objTemplate->hideBlock('access_latest_registered_member_list');
     }
@@ -1981,11 +1971,10 @@ if ($objTemplate->blockExists('access_birthday_member_list')) {
         && (    $objTemplate->blockExists('access_birthday_female_members')
             ||  $objTemplate->blockExists('access_birthday_male_members')
             ||  $objTemplate->blockExists('access_birthday_members'))) {
-        if (  (     $objAccessBlocks
-                || (   file_exists($modulespath)
-                    && include_once($modulespath)
-                    && $objAccessBlocks = new Access_Blocks())
-              ) && $objAccessBlocks->isSomeonesBirthdayToday()) {
+        if (   !$objAccessBlocks
+            && file_exists($modulespath) && require_once($modulespath))
+            $objAccessBlocks = new Access_Blocks();
+        if ($objAccessBlocks->isSomeonesBirthdayToday()) {
             if ($objTemplate->blockExists('access_birthday_female_members'))
                 $objAccessBlocks->setBirthdayUsers('female');
             if ($objTemplate->blockExists('access_birthday_male_members'))
