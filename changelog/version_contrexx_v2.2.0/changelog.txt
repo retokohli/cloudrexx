@@ -21,11 +21,15 @@ Benutzerverwaltung
 - Bei der Auflistung der Benutzer wird der Link 'zum Adressbuch hinzufügen'
   nur dann angezeigt, sofern der jeweilige Benutzer nicht bereits im Adressbuch
   enthalten ist.
+- Für jede Benutzergruppe kann eine Homepage definiert werden, auf welche sich
+  die dazugehörigen Benutzer nach erfolgreicher Authentifizierung laden
+  sollen.
+- Für jeden Benutzer kann eine primäre Benutzergruppe definiert werden.
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
-- Editeren einer Seite in mehreren Sprachen auf einmal 
-- Vorschau-Funktion 
+- Editeren einer Seite in mehreren Sprachen auf einmal
+- Vorschau-Funktion
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben

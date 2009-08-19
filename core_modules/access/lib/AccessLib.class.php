@@ -1171,26 +1171,62 @@ function accessRemoveGroupFromList(from,dest)
 </script>
 JSaccessRemoveGroupFromList
                 ,
-                'access_get_fileBrowser' => <<<JSaccess_get_fileBrowser
+                'accessGetFileBrowser' => <<<JSaccessGetFileBrowser
 <script type="text/javascript">
 // <![CDATA[
-accessProcessingImage = '';
-function access_get_fileBrowser(imageId)
+accessProcessingUrlElement = '';
+accessProcessingUrlElementType = 'image';
+function accessGetFileBrowser(elementId, type)
 {
-    accessProcessingImage = imageId;
-    accessPopup = window.open('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    accessProcessingUrlElement = elementId;
+    if (type) {
+        accessProcessingUrlElementType = type;
+    }
+    accessPopup = window.open('index.php?cmd=fileBrowser&standalone=true&type='+accessProcessingUrlElementType,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
     accessPopup.focus();
 }
 // ]]>
 </script>
-JSaccess_get_fileBrowser
+JSaccessGetFileBrowser
                 ,
-                'SetUrl' => <<<JSSetUrl
+                'accessSetUrl' => <<<JSaccessSetUrl
 <script type="text/javascript">
 // <![CDATA[
 function SetUrl(url, width, height, alt)
 {
-    if (accessProcessingImage.length) {
+    switch (accessProcessingUrlElementType) {
+        case 'webpages':
+            accessSetWebpage(url, width, height, alt);
+            break;
+
+        case 'image':
+            accessSetImage(url, width, height, alt);
+            break;
+    }
+}
+// ]]>
+</script>
+JSaccessSetUrl
+                ,
+                'accessSetWebpage' => <<<JSaccessSetWebpage
+<script type="text/javascript">
+// <![CDATA[
+
+function accessSetWebpage(url, width, height, alt)
+{
+
+        document.getElementById(accessProcessingUrlElement).value = url;
+}
+// ]]>
+</script>
+JSaccessSetWebpage
+                ,
+                'accessSetImage' => <<<JSaccessSetImage
+<script type="text/javascript">
+// <![CDATA[
+function accessSetImage(url, width, height, alt)
+{
+    if (accessProcessingUrlElement.length) {
         maxPicWidth = {$arrSettings['max_pic_width']['value']};
         maxPicHeight = {$arrSettings['max_pic_height']['value']};
 
@@ -1223,19 +1259,19 @@ function SetUrl(url, width, height, alt)
 
         // zoom the image if necessary
         if(imgFactor != 1){
-            document.getElementById(accessProcessingImage+'_image').style.width = width * imgFactor + "px";
-            document.getElementById(accessProcessingImage+'_image').style.height = height * imgFactor + "px";
+            document.getElementById(accessProcessingUrlElement+'_image').style.width = width * imgFactor + "px";
+            document.getElementById(accessProcessingUrlElement+'_image').style.height = height * imgFactor + "px";
             intZoom = imgFactor;
         }
 
-        document.getElementById(accessProcessingImage+'_image').src = url;
-        document.getElementById(accessProcessingImage).value = url;
-        accessProcessingImage = '';
+        document.getElementById(accessProcessingUrlElement+'_image').src = url;
+        document.getElementById(accessProcessingUrlElement).value = url;
+        accessProcessingUrlElement = '';
     }
 }
 // ]]>
 </script>
-JSSetUrl
+JSaccessSetImage
                 ,
                 'confirmUserNotification' => <<<JSconfirmUserNotification
 <script type="text/javascript">
@@ -1254,6 +1290,61 @@ function confirmUserNotification(elementIdStatusStorage, status)
 // ]]>
 </script>
 JSconfirmUserNotification
+                ,
+                'accessAssignGroupToUser' => <<<JSaccessAssignGroupToUser
+<script type="text/javascript">
+// <![CDATA[
+function accessAssignGroupToUser(elPrimaryGroupMenu, from, dest)
+{
+    addGroup = false;
+    for (var i=0; i<from.length; i++) {
+        if (from.options[i].value == elPrimaryGroupMenu.value) {
+            from.options[i].selected = true;
+            addGroup = true;
+        } else {
+            from.options[i].selected = false;
+        }
+    }
+    addGroup ? accessAddGroupToList(from, dest) : false;
+}
+// ]]>
+</script>
+JSaccessAssignGroupToUser
+                ,
+                'accessValidatePrimaryGroupAssociation' => <<<JSaccessValidatePrimaryGroupAssociation
+<script type="text/javascript">
+// <![CDATA[
+function accessValidatePrimaryGroupAssociation(elAssignedGroupBox)
+{
+    elPrimaryGroupMenu = document.getElementById('access_user_primary_group');
+    if (elPrimaryGroupMenu.value) {
+        groupAssigned = false;
+        for (var i=0; i<elAssignedGroupBox.length; i++) {
+            if (elAssignedGroupBox.options[i].value == elPrimaryGroupMenu.value) {
+                groupAssigned = true;
+                break;
+            }
+        }
+
+        if (!groupAssigned) {
+            if (elAssignedGroupBox.length) {
+                elPrimaryGroupMenu.value = elAssignedGroupBox.options[0].value;
+            } else {
+                elPrimaryGroupMenu.value = 0;
+            }
+        }
+    }
+}
+
+accessTmpFunction = accessRemoveGroupFromList;
+accessRemoveGroupFromList = function(from, dest){
+    accessTmpFunction(from, dest);
+    accessValidatePrimaryGroupAssociation(dest);
+}
+
+// ]]>
+</script>
+JSaccessValidatePrimaryGroupAssociation
             );
         }
 
@@ -1319,6 +1410,18 @@ JSconfirmUserNotification
                 'accessSetWebsite' => array(
                     'accessAddEvent',
                     'accessRemoveChildsOfElement'
+                ),
+                'accessSetWebpage' => array(
+                    'accessGetFileBrowser',
+                    'accessSetUrl'
+                ),
+                'accessSetImage' => array(
+                    'accessGetFileBrowser',
+                    'accessSetUrl'
+                ),
+                'accessAssignGroupToUser' => array(
+                    'accessAddGroupToList',
+                    'accessValidatePrimaryGroupAssociation'
                 )
             );
         }
