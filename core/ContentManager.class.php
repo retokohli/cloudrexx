@@ -234,12 +234,11 @@ class ContentManager
     * Show copy page
     *
     * @global    array Core language
-    * @global    FWLanguage
     * @global    HTML_Template_Sigma
     */
     function showCopyPage()
     {
-        global $_CORELANG, $objLanguage, $objTemplate;
+        global $_CORELANG, $objTemplate;
 
         if (isset($_REQUEST['langOriginal']) && !empty($_REQUEST['langOriginal'])) {
             $this->contentOverview();
@@ -256,7 +255,7 @@ class ContentManager
                 'TXT_DO_YOU_WANT_TO_CONTINUE'    => $_CORELANG['TXT_DO_YOU_WANT_TO_CONTINUE']
             ));
 
-            foreach ($objLanguage->getLanguageArray() as $key){
+            foreach (FWLanguage::getLanguageArray() as $key){
                 if ($key['id'] == $this->langId) {
                     $objTemplate->setVariable(array(
                         'LANG_OLD_ID' => $this->langId,
@@ -410,14 +409,14 @@ class ContentManager
     */
     function _deleteAll($langId=0)
     {
-        global $objDatabase, $_CORELANG, $objLanguage;
+        global $objDatabase, $_CORELANG;
 
         if (isset($_GET['contentId']) && intval($_GET['contentId'])!=0) {
             $langId = intval($_GET['contentId']);
         }
         if (intval($langId) != 0) {
             // the default language site cannot be deleted
-            if ($objLanguage->getLanguageParameter($langId, "is_default")=="true") {
+            if (FWLanguage::getLanguageParameter($langId, "is_default")=="true") {
                 $this->strErrMessage[] = $_CORELANG['TXT_STANDARD_SITE_NOT_DELETED'];
             } else {
                 $arrQuery = array();
@@ -1318,7 +1317,6 @@ class ContentManager
                     $objWorkflow->deleteHistory(intval($intHistoryId));
                 }
             }
-
             return true;
         }
 

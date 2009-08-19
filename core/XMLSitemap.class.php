@@ -32,14 +32,10 @@ class XMLSitemap {
 
     public static function write()
     {
-        global $_CONFIG, $objLanguage, $_CORELANG;
+        global $_CONFIG, $_CORELANG;
 
         if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-            if (!isset($objLanguage)) {
-                $objLanguage = new FWLanguage();
-            }
-
-            foreach ($objLanguage->getLanguageArray() as $arrLanguage) {
+            foreach (FWLanguage::getLanguageArray() as $arrLanguage) {
                 if ($arrLanguage['frontend'] == 1) {
                     $arrActiveLanguages[$arrLanguage['id']] = $arrLanguage['lang'];
                 }
