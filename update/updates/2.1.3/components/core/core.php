@@ -1,22 +1,22 @@
 <?php
+
 function _coreUpdate()
 {
     global $objDatabase, $_CORELANG;
 
     $query = "SELECT `id` FROM `".DBPREFIX."languages` WHERE `charset` != 'UTF-8'";
-    $objLanguage = $objDatabase->Execute($query);
-    if ($objLanguage !== false) {
-        while (!$objLanguage->EOF) {
-            $query = "UPDATE `".DBPREFIX."languages` SET `charset` = 'UTF-8' WHERE `id`=".$objLanguage->fields['id'];
+    $objResult = $objDatabase->Execute($query);
+    if ($objResult !== false) {
+        while (!$objResult->EOF) {
+            $query = "UPDATE `".DBPREFIX."languages` SET `charset` = 'UTF-8' WHERE `id`=".$objResult->fields['id'];
             if ($objDatabase->Execute($query) === false) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
-            $objLanguage->MoveNext();
+            $objResult->MoveNext();
         }
     } else {
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
-
 
     $query = "SELECT `catid` FROM `".DBPREFIX."content_navigation`";
     $objContentNavigation = $objDatabase->Execute($query);
@@ -48,11 +48,6 @@ function _coreUpdate()
     } else {
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
-
-
-
-
-
 
     try{
         UpdateUtil::table(
@@ -122,10 +117,6 @@ function _coreUpdate()
         // we COULD do something else here..
         return UpdateUtil::DefaultActionHandler($e);
     }
-
-
-
-
 
 
     /**********************************************
@@ -1577,4 +1568,5 @@ CONFIG_TPL
         return false;
     }
 }
+
 ?>

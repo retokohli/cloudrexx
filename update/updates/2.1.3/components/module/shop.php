@@ -1068,8 +1068,7 @@ NOT FOR VERSION 2.1
     // Determine the default language ID.
     // Used below as the language ID for the text records created
     $lang_id = 1;
-    $objLanguage = new FWLanguage();
-    $arrLanguages = $objLanguage->getLanguageArray();
+    $arrLanguages = FWLanguage::getLanguageArray();
     if (empty($arrLanguages) || !is_array($arrLanguages)) {
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_shop_products'));
         return false;
