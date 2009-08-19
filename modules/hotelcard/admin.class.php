@@ -1,6 +1,6 @@
 <?php
 
-define('_HOTELCARD_DEBUG', 3);
+define('_HOTELCARD_DEBUG', 0);
 
 /**
  * Class Hotelcard
@@ -8,7 +8,7 @@ define('_HOTELCARD_DEBUG', 3);
  * Administration of the Hotelcard module
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.1
+ * @version     2.2.0
  * @package     contrexx
  * @subpackage  module_hotelcard
  */
@@ -21,7 +21,6 @@ require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 require_once ASCMS_CORE_PATH.'/Sorting.class.php';
 require_once ASCMS_CORE_PATH.'/Text.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
-require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Settings.class.php';
 //require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Designer.class.php';
 //require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Download.class.php';
 //require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Product.class.php';
@@ -45,7 +44,7 @@ require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Settings.class.php';
  * Administration of the Hotelcard module
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.1
+ * @version     2.2.0
  * @package     contrexx
  * @subpackage  module_hotelcard
  */
@@ -120,35 +119,34 @@ importHotelcard();
      */
     function getPage()
     {
-        global $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objTemplate, $_ARRAYLANG;
 
         $cmd = (isset($_GET['cmd']) ? $_GET['cmd'] : '');
         $act = (isset($_GET['act']) ? $_GET['act'] : '');
 //        $tpl = (isset($_GET['tpl']) ? $_GET['tpl'] : '');
-        $category_id = (isset($_REQUEST['category_id']) ? $_REQUEST['category_id'] : 0);
-        $contact_id = (isset($_REQUEST['contact_id']) ? $_REQUEST['contact_id'] : 0);
-        $designer_id = (isset($_REQUEST['designer_id']) ? $_REQUEST['designer_id'] : 0);
-        $download_id = (isset($_REQUEST['download_id']) ? $_REQUEST['download_id'] : 0);
-        $product_id = (isset($_REQUEST['product_id']) ? $_REQUEST['product_id'] : 0);
-        $property_id = (isset($_REQUEST['property_id']) ? $_REQUEST['property_id'] : 0);
-        $reference_id = (isset($_REQUEST['reference_id']) ? $_REQUEST['reference_id'] : 0);
-        $idName =
-            ($category_id ? 'category_id' :
-              ($contact_id ? 'contact_id' :
-                ($designer_id ? 'designer_id' :
-                  ($download_id ? 'download_id' :
-                    ($product_id ? 'product_id' :
-                      ($property_id ? 'property_id' :
-                        ($reference_id ? 'reference_id' : 'id')))))));
-        $id = (isset($_REQUEST[$idName]) ? $_REQUEST[$idName] : 0);
-        // Used for setting up the Sorting headers
-        self::$baseUri = 'index.php?cmd='.$cmd.'&amp;act='.$act;
+
+        // Used for setting up the sorting headers and others
+        self::$baseUri =
+            'index.php?cmd='.$cmd.
+            (empty($act) ? '' : '&amp;act='.$act);
+//echo("URI base is ".self::$baseUri."<br />");
 
         $result = true;
+        $subnavigation = '';
         switch ($act) {
             case 'settings':
-            default:
                 $result &= self::settings();
+                break;
+            case 'hotels':
+                $subnavigation =
+                    '<a href="index.php?cmd=hotelcard&amp;act=hotels&amp;tpl=new">'.
+                    $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD'].'</a>';
+                $result &= self::hotels();
+                break;
+            case 'add_hotel':
+            case 'overview':
+            default:
+                $result &= self::overview();
                 break;
         }
 
@@ -156,30 +154,25 @@ importHotelcard();
         if (!$result) {
             self::errorHandler();
             self::addError('An error has occurred.  Please try reloading the page.');
-die("ERROR building page, code dfsgljbew<br />");
+//die("ERROR building page, code dfsgljbew<br />");
         }
 
+//        $objTemplate->setGlobalVariable(array(
+//            'MODULE_URI_BASE' => self::$baseUri,
+//        ));
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'          => self::$pageTitle,
             'CONTENT_OK_MESSAGE'     => self::$strOkMessage,
             'CONTENT_STATUS_MESSAGE' => self::$strErrMessage,
             'ADMIN_CONTENT'          => self::$objTemplate->get(),
             'CONTENT_NAVIGATION'     =>
-                '<a href="index.php?cmd=hotelcard&amp;act=settings">'.$_CORELANG['TXT_CORE_SETTINGS'].'</a>',
+                '<a href="index.php?cmd=hotelcard">'.$_ARRAYLANG['TXT_HOTELCARD_OVERVIEW'].'</a>'.
+                '<a href="index.php?cmd=hotelcard&amp;act=hotels">'.$_ARRAYLANG['TXT_HOTELCARD_HOTELS'].'</a>'.
+//                '<a href="index.php?cmd=hotelcard&amp;act=reservations">'.$_ARRAYLANG['TXT_HOTELCARD_RESERVATIONS'].'</a>'.
+                '<a href="index.php?cmd=hotelcard&amp;act=settings">'.$_ARRAYLANG['TXT_HOTELCARD_SETTINGS'].'</a>',
+            'CONTENT_SUBNAVIGATION' => $subnavigation,
         ));
-// Subnavigation
-//        switch ($act) {
-//            case 'product':
-//                $objTemplate->setVariable(
-//                    'CONTENT_SUBNAVIGATION',
-//                        '<a href="index.php?cmd=hotelcard&amp;act=product">'.$_ARRAYLANG['TXT_HOTELCARD_PRODUCT_NEW'].'</a>'
-//                );
-//                break;
-//        }
-        $objTemplate->setGlobalVariable(array(
-            'MODULE_BASE_URI'        => $baseUri,
-        ));
-
+        return true;
     }
 
 
@@ -199,10 +192,28 @@ die("ERROR building page, code dfsgljbew<br />");
         self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_SETTINGS'];
         if (!self::$objTemplate->loadTemplateFile('settings.html', true, true))
             die("Failed to load template settings.html");
+        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
 
-        // *MUST* reinitialis
-        SettingDb::init(MODULE_ID);
-        return SettingDb::show(self::$objTemplate);
+        // *MUST* reinitialise after storing!
+        SettingDb::init(MODULE_ID, 'admin');
+        $result = true && SettingDb::show(
+            self::$objTemplate,
+            $_ARRAYLANG['TXT_HOTELCARD_SETTING_SECTION_ADMIN'],
+            'TXT_HOTELCARD_SETTING_'
+        );
+        SettingDb::init(MODULE_ID, 'frontend');
+        $result &= SettingDb::show(
+            self::$objTemplate,
+            $_ARRAYLANG['TXT_HOTELCARD_SETTING_SECTION_FRONTEND'],
+            'TXT_HOTELCARD_SETTING_'
+        );
+        SettingDb::init(MODULE_ID, 'backend');
+        $result &= SettingDb::show(
+            self::$objTemplate,
+            $_ARRAYLANG['TXT_HOTELCARD_SETTING_SECTION_BACKEND'],
+            'TXT_HOTELCARD_SETTING_'
+        );
+        return $result;
     }
 
 
@@ -220,30 +231,85 @@ die("ERROR building page, code dfsgljbew<br />");
     {
         global $_ARRAYLANG;
 
-        if (empty($_POST['hotelcard']) || !is_array($_POST['hotelcard'])) return '';
+//        if (empty($_POST['hotelcard']) || !is_array($_POST['hotelcard'])) return '';
 
         // Compare POST with current settings.
         // Only store what was changed.
         SettingDb::init(MODULE_ID);
-        $flagError = false;
-        $flagChanged = false;
-        foreach ($_POST['hotelcard'] as $name => $value) {
+        unset($_POST['store']);
+        foreach ($_POST as $name => $value) {
+//echo("Updating $name to $value (");
             $value = contrexx_stripslashes($value);
-            if ($value == SettingDb::get($name)) continue;
-            $flagChanged = true;
-            $result = SettingDb::store($name, $value);
-            if ($result === false) $flagError = true;
+            SettingDb::set($name, $value);
         }
+        $result = SettingDb::storeAll();
         // No changes detected
-        if (!$flagChanged) return true;
-        if ($flagError) {
-            self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_SETTING_NOT_STORED']);
-            return false;
+        if ($result === '') return true;
+        if ($result) {
+            self::addMessage($_ARRAYLANG['TXT_HOTELCARD_SETTING_STORED_SUCCESSFULLY']);
+            return true;
         }
-        self::addMessage($_ARRAYLANG['TXT_HOTELCARD_SETTING_STORED_SUCCESSFULLY']);
+        self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_SETTING_NOT_STORED']);
+        return false;
+    }
+
+
+    /**
+     * Set up the page with a list of hotels
+     *
+     * The hotels visible here are determined by various filter parameters
+     * and (the rights of) the current user.
+     * @todo    Define what content is to be shown here
+     * @return  boolean             True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function hotels()
+    {
+        global $_ARRAYLANG;
+
+        self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_HOTELS'];
+        if (!self::$objTemplate->loadTemplateFile('hotels.html', true, true))
+            die("Failed to load template settings.html");
+        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
+
         return true;
     }
 
+
+    /**
+     * Set up the overview page
+     * @todo    Define what content is to be shown here
+     * @return  boolean             True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function overview()
+    {
+        global $_ARRAYLANG;
+
+        self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_OVERVIEW'];
+        if (!self::$objTemplate->loadTemplateFile('overview.html', true, true))
+            die("Failed to load template settings.html");
+        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
+
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// OLD DIETIKER FROM HERE
 
     /**
      * Set up the page with a list of all Properties
@@ -528,8 +594,7 @@ die("ERROR building page, code dfsgljbew<br />");
     function updateImageText()
     {
         // Get active frontend language IDs
-        $objLang = new FWLanguage();
-        $arrLanguages = $objLang->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         $arrLanguageId = array();
         foreach ($arrLanguages as $id => $arrLanguage) {
             if ($arrLanguage['frontend'])
