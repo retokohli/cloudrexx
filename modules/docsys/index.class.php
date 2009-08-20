@@ -50,7 +50,7 @@ class docSys extends docSysLibrary
     // GET PAGE
     function getdocSysPage()
     {
-        
+
         if (!isset($_REQUEST['cmd'])) {
             $_REQUEST['cmd'] = '';
         }
@@ -100,8 +100,8 @@ class docSys extends docSysLibrary
                          WHERE status = 1
                            AND id = $id
                            AND lang=".$this->langId."
-                           AND (startdate<=CURDATE() OR startdate='0000-00-00')
-                           AND (enddate>=CURDATE() OR enddate='0000-00-00')";
+			               AND (startdate<=".time()." OR startdate=0)
+			               AND (enddate>=".time()." OR enddate=0)";
             $objResult = $objDatabase->SelectLimit($query, 1);
 
             while(!$objResult->EOF) {
@@ -207,10 +207,10 @@ class docSys extends docSysLibrary
         $this->_objTpl->setVariable("DOCSYS_NO_CATEGORY", $_ARRAYLANG['TXT_CATEGORY']);
         $this->_objTpl->setVariable("DOCSYS_CAT_MENU", $this->getCategoryMenu($this->langId, array($selectedId), $_REQUEST['cmd']));
         $this->_objTpl->setVariable("TXT_PERFORM", $_ARRAYLANG['TXT_PERFORM']);
-        
+
         $count = $this->countOverviewEntries($selectedId);
         $entries = $this->getOverviewTitles($pos, $selectedId, $sortType);
-        
+
         if ($count > intval($_CONFIG['corePagingLimit'])) {
             $paging = getPaging($count, $pos, "&section=docsys".MODULE_INDEX, $_ARRAYLANG['TXT_DOCUMENTS'], true);
         }
@@ -219,7 +219,7 @@ class docSys extends docSysLibrary
         if ($count >= 1) {
             $row = 1;
             foreach ($entries as $entry) {
-                $cmd = $_REQUEST['cmd'] 
+                $cmd = $_REQUEST['cmd']
                     ? $_REQUEST['cmd'] . '_details'
                     : 'details';
 
@@ -230,9 +230,9 @@ class docSys extends docSysLibrary
                     'DOCSYS_LINK'	    => "<a href=\"".CONTREXX_SCRIPT_PATH."?section=docsys".MODULE_INDEX."&amp;cmd=$cmd&amp;id=".
                                             $entry['id']."\" title=\"".stripslashes($entry['title'])."\">".stripslashes($entry['title'])."</a>",
                     'DOCSYS_CATEGORY'   => stripslashes($entry['name']),
-                    'DOCSYS_AUTHOR'     => stripslashes($entry['author']),               
+                    'DOCSYS_AUTHOR'     => stripslashes($entry['author']),
                 ));
-                
+
                 $this->_objTpl->parse("row");
             }
             $this->_objTpl->parse("table");

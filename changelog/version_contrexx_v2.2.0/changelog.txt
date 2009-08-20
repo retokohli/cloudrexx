@@ -40,6 +40,9 @@ Modul: Digital Asset Management
   direkt eine neue persönliche Kategorie im Digital Asset Management Modul
   für diesen Benutzer erstellt werden.
 
+Modul: Dokumenten System
+- Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
+
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
 
