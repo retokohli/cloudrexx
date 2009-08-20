@@ -680,7 +680,7 @@ class User extends User_Profile
         return $this->username;
     }
 
-    public function getUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
+    public function getUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = 0)
     {
         $objUser = clone $this;
         $objUser->arrCachedUsers = &$this->arrCachedUsers;
