@@ -68,7 +68,7 @@ class UserGroup {
 
     public function getGroups(
         $filter=null, $arrSort=null, $arrAttributes=null,
-        $limit=null, $offset=null)
+        $limit=null, $offset=0)
     {
         $objGroup = clone $this;
         $objGroup->arrCache = &$this->arrCache;
@@ -78,7 +78,7 @@ class UserGroup {
 
     private function loadGroups(
         $filter=null, $arrSort=null, $arrAttributes=null,
-        $limit=null, $offset=null)
+        $limit=null, $offset=0)
     {
         global $objDatabase;
 
