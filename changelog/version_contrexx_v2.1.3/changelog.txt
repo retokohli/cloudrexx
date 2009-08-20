@@ -6,9 +6,12 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 
+Modul: Dokumenten System
+- Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
 
 ****************************************
 * Behobene Fehler **********************
 ****************************************
 
-Update: Update-SQL-Query im Kalendermodul gefixt
+Update:
+- Update-SQL-Query im Kalendermodul gefixt

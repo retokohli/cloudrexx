@@ -89,7 +89,7 @@ class docSysManager extends docSysLibrary
                 $this->update();
                 $this->overview();
                 break;
- 
+
             case "cat":
                 $this->manageCategories();
                 break;
@@ -169,14 +169,14 @@ class docSysManager extends docSysLibrary
 
         $entries = $this->getAllEntries($pos);
         $row = 1;
-        $this->_objTpl->setCurrentBlock('row'); 
+        $this->_objTpl->setCurrentBlock('row');
         foreach ($entries as $entry) {
             $categories = "";
             foreach ($entry['categories'] as $category) {
                 $categories .= $category."<br />";
             }
             $categories = substr($categories, 0, -6); // remove the last br
-            
+
             $this->_objTpl->setVariable(array(
                 'DOCSYS_ID'         => $entry['id'],
                 'DOCSYS_DATE'       => date(ASCMS_DATE_FORMAT, $entry['date']),
@@ -212,7 +212,7 @@ class docSysManager extends docSysLibrary
     /**
     * adds a news entry
     *
-    * @global    ADONewConnection 
+    * @global    ADONewConnection
     * @global    array
     * @param     integer   $newsid -> the id of the news entry
     * @return    boolean   result
@@ -252,7 +252,6 @@ class docSysManager extends docSysLibrary
             'DOCSYS_STARTDATE'       => "",
             'DOCSYS_ENDDATE' => "",
             'DOCSYS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
-            //'DOCSYS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']), // there is no result here....
             'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
             'DOCSYS_AUTHOR' => htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
         ));
@@ -371,12 +370,6 @@ class docSysManager extends docSysLibrary
             if($objResult->fields['status']==1) {
                 $status = "checked";
             }
-            if($objResult->fields['startdate']!="0000-00-00") {
-                $startDate = $objResult->fields['startdate'];
-            }
-            if($objResult->fields['enddate']!="0000-00-00") {
-                $endDate = $objResult->fields['enddate'];
-            }
 
             $this->_objTpl->setVariable(array(
                 'DOCSYS_ID'             => $id,
@@ -387,14 +380,13 @@ class docSysManager extends docSysLibrary
                 'DOCSYS_SOURCE'         => $objResult->fields['source'],
                 'DOCSYS_URL1'           => $objResult->fields['url1'],
                 'DOCSYS_URL2'           => $objResult->fields['url2'],
-                'DOCSYS_STARTDATE'      => $startDate,
-                'DOCSYS_ENDDATE'        => $endDate,
+				'DOCSYS_STARTDATE'	=> !empty($objResult->fields['startdate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['startdate']) : '',
+				'DOCSYS_ENDDATE'	=> !empty($objResult->fields['enddate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['enddate']) : '',
                 'DOCSYS_STATUS'         => $status,
-                'DOCSYS_DATE'           => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                'DOCSYS_JS_DATE'        => date('Y-m-d', $objResult->fields['date']),
+                'DOCSYS_DATE'           => date(ASCMS_DATE_FORMAT, $objResult->fields['date'])
             ));
         }
-        
+
         $categories = $this->getCategories($id);
 
         $this->_objTpl->setVariable("DOCSYS_CAT_MENU",$this->getCategoryMenu($this->langId, $categories));
@@ -435,9 +427,16 @@ class docSysManager extends docSysLibrary
             $url2 = get_magic_quotes_gpc() ? strip_tags($_POST['docSysUrl2']) : addslashes(strip_tags($_POST['docSysUrl2']));
             $catId = intval($_POST['docSysCat']);
             $status = (!empty($_POST['status'])) ? intval($_POST['status']) : 0;
-            $startDate = get_magic_quotes_gpc() ? strip_tags($_POST['startDate']) : addslashes(strip_tags($_POST['startDate']));
-            $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
-            $author =  get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
+            if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['startDate'], $arrDate)) {
+                $startDate = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+            } else {
+                $startDate = '';
+            }
+            if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['endDate'], $arrDate)) {
+                $endDate = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+            } else {
+                $endDate = '';
+            }            $author =  get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
 
             $query = "UPDATE ".DBPREFIX."module_docsys".MODULE_INDEX."
                            SET title='$title',
@@ -460,7 +459,7 @@ class docSysManager extends docSysLibrary
                 $this->createRSS();
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             }
-           
+
             if (!$this->removeCategories($id)) {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'].": ".$objDatabase->ErrorMsg();
             } else{
@@ -474,7 +473,7 @@ class docSysManager extends docSysLibrary
     /**
     * Update news
     *
-    * @global    ADONewConnection 
+    * @global    ADONewConnection
     * @global    array
     * @global    array
     * @param     integer   $newsid
@@ -532,7 +531,7 @@ class docSysManager extends docSysLibrary
     function insert()
     {
         global $objDatabase, $_ARRAYLANG;
-        
+
 
         $objFWUser = FWUser::getFWUserObject();
 
@@ -552,14 +551,17 @@ class docSysManager extends docSysLibrary
         $cat = intval($_POST['docSysCat']);
         $userid = $objFWUser->objUser->getId();
 
-        $startDate = get_magic_quotes_gpc() ? strip_tags($_POST['startDate']) : addslashes(strip_tags($_POST['startDate']));
-        $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
-
-        $status = intval($_POST['status']);
-        if($status == 0) {
-            $startDate = "";
-            $endDate = "";
+        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['startDate'], $arrDate)) {
+            $startDate = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+        } else {
+            $startDate = '';
         }
+        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['endDate'], $arrDate)) {
+            $endDate = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+        } else {
+            $endDate = '';
+        }
+        $status = intval($_POST['status']);
 
         $query = "INSERT INTO `".DBPREFIX."module_docsys".MODULE_INDEX."`
                                 ( `id`,
@@ -596,13 +598,13 @@ class docSysManager extends docSysLibrary
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
         }
-        
+
         $id = $objDatabase->Insert_ID();
         if (!$this->assignCategories($id, $_POST['docSysCat'])) {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'].": ".$objDatabase->ErrorMsg();
         }
-        
-        
+
+
         $this->overview();
     }
 
@@ -769,7 +771,7 @@ class docSysManager extends docSysLibrary
     function createRSS()
     {
         global $_CONFIG;
-        
+
         $RSS = new rssFeed();
         //$RSS->channelTitle = $_CONFIG['backendXmlChannelTitle'];
         //$RSS->channelDescription = $_CONFIG['backendXmlChannelDescription'];
