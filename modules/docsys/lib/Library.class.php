@@ -39,7 +39,7 @@ class docSysLibrary
 
         $strMenu = "";
 		!$cmdName ? $query_where = '' : $query_where = " AND cmd='".$cmdName."'";
-		
+
         $query="SELECT catid,
                        name
                   FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories
@@ -48,18 +48,18 @@ class docSysLibrary
 
         $objResult = $objDatabase->Execute($query);
 
-        while (!$objResult->EOF) {          
+        while (!$objResult->EOF) {
             if (array_search($objResult->fields['catid'], $selectedCatIds) !== false) {
                 $selected = "selected";
             } else {
-                $selected = "";    
+                $selected = "";
             }
             $strMenu .="<option value=\"".$objResult->fields['catid']."\" $selected>".stripslashes($objResult->fields['name'])."</option>\n";
             $objResult->MoveNext();
         }
         return $strMenu;
     }
-    
+
     /**
      * Get all categories of a entry
      *
@@ -69,9 +69,9 @@ class docSysLibrary
     protected function getCategories($id)
     {
         global $objDatabase;
-        
+
         $id = intval($id);
-        
+
         $query = "  SELECT category FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_entry_category
                     WHERE entry = ".$id;
         $result = $objDatabase->Execute($query);
@@ -85,11 +85,11 @@ class docSysLibrary
                     $result->MoveNext();
                 }
             }
-            
+
             return $retval;
         }
     }
-    
+
     /**
      * Return all entries
      *
@@ -101,7 +101,7 @@ class docSysLibrary
     protected function getAllEntries($pos)
     {
         global $objDatabase, $_CONFIG;
-        
+
         $query = "  SELECT entry.id, entry.date, entry.author, entry.title, entry.status, entry.changelog, cat.name as catname, users.username
                     FROM ".DBPREFIX."module_docsys".MODULE_INDEX." as entry
                     LEFT JOIN ".DBPREFIX."module_docsys".MODULE_INDEX."_entry_category as joined ON entry.id = joined.entry
@@ -109,7 +109,7 @@ class docSysLibrary
                     LEFT JOIN ".DBPREFIX."access_users as users ON entry.userid = users.id
                     WHERE entry.lang = ".$this->langId."
                     ORDER BY entry.id";
-        
+
         $result = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], intval($pos));
         if ($result === false) {
             return false;
@@ -134,12 +134,12 @@ class docSysLibrary
                     $result->MoveNext();
                 }
             }
-            
+
             return $retval;
         }
-        
+
     }
-    
+
     /**
      * Count all entries (for paging)
      *
@@ -149,17 +149,17 @@ class docSysLibrary
     protected function countAllEntries()
     {
         global $objDatabase;
-        
+
         $query = "  SELECT count(id) as count FROM ".DBPREFIX."module_docsys".MODULE_INDEX."
                     WHERE lang = ".$this->langId;
         $result = $objDatabase->Execute($query);
         if ($result === false) {
             return false;
         }
-        
+
         return intval($result->fields['count']);
     }
-    
+
     /**
      * Assign categories to an entry
      *
@@ -171,9 +171,9 @@ class docSysLibrary
     protected function assignCategories($entry, $categories)
     {
         global $objDatabase;
-        
+
         $entry = intval($entry);
-        
+
         $err = false;
         foreach ($categories as $cat) {
             $query = "  INSERT INTO ".DBPREFIX."module_docsys".MODULE_INDEX."_entry_category
@@ -183,10 +183,10 @@ class docSysLibrary
                 $err = true;
             }
         }
-        
+
         return !$err;
     }
-    
+
     /**
      * Remove an entry's categories
      *
@@ -197,9 +197,9 @@ class docSysLibrary
     protected function removeCategories($entry)
     {
         global $objDatabase;
-        
+
         $entry = intval($entry);
-        
+
         $query = "  DELETE FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_entry_category
                     WHERE entry = ".$entry;
         return !($objDatabase->Execute($query) === false);
@@ -218,11 +218,11 @@ class docSysLibrary
     protected function getOverviewTitles($pos=0, $category=null, $sortType=null)
     {
         global $objDatabase, $_CONFIG;
-        
+
         if (isset($category) && !isset($sortType)) {
             throw new Exception("second argument needed");
         }
-        
+
         $query = "  SELECT entry.date, entry.id, entry.title, entry.author, cat.name
                     FROM ".DBPREFIX."module_docsys".MODULE_INDEX." as entry
                     LEFT JOIN ".DBPREFIX."module_docsys".MODULE_INDEX."_entry_category as j
@@ -230,14 +230,13 @@ class docSysLibrary
                     LEFT JOIN ".DBPREFIX."module_docsys".MODULE_INDEX."_categories as cat
                         ON j.category = cat.catid
                     WHERE entry.lang = ".$this->langId."
-                        AND (startdate <= CURDATE() OR startdate = '0000-00-00')
-                        AND (enddate >= CURDATE() OR enddate = '0000-00-00')
-                    ";
-        
+                        AND (startdate<=".time()." OR startdate=0)
+                        AND (enddate>=".time()." OR enddate=0)";
+
         if (isset($category)) {
             $category = intval($category);
             $query .= " AND cat.catid = ".$category." ";
-            
+
             switch($sortType){
                 case 'alpha':
                     $query .= " ORDER BY entry.title";
@@ -257,7 +256,7 @@ class docSysLibrary
         } else{
             $query .= " ORDER BY entry.date DESC";
         }
-        
+
         $result = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
         if ($result === false) {
             return false;
@@ -277,15 +276,15 @@ class docSysLibrary
                             "categories"    => array($result->fields['name'])
                         );
                     }
-                    
+
                     $result->MoveNext();
                 }
             }
-            
+
             return $retval;
         }
     }
-    
+
     /**
      * Count the entries for a specific category
      *
@@ -299,21 +298,21 @@ class docSysLibrary
     protected function countOverviewEntries($category=null)
     {
         global $objDatabase;
-        
+
         if (!isset($category)) {
             return $this->countAllEntries();
         }
-        
+
         $category = intval($category);
         $query = "  SELECT count(id) as count FROM ".DBPREFIX."module_docsys".MODULE_INDEX." as e
-                    LEFT JOIN ".DBPREFIX."module_docsys".MODULE_INDEX."_entry_category as j 
+                    LEFT JOIN ".DBPREFIX."module_docsys".MODULE_INDEX."_entry_category as j
                     ON e.id = j.entry
                     WHERE j.category = ".$category;
         $result = $objDatabase->Execute($query);
         if ($result === false) {
             return false;
         }
-        
+
         return intval($result->fields['count']);
     }
 }

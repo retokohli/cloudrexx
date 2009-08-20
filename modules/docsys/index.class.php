@@ -100,8 +100,8 @@ class docSys extends docSysLibrary
                          WHERE status = 1
                            AND id = $id
                            AND lang=".$this->langId."
-                           AND (startdate<=CURDATE() OR startdate='0000-00-00')
-                           AND (enddate>=CURDATE() OR enddate='0000-00-00')";
+			               AND (startdate<=".time()." OR startdate=0)
+			               AND (enddate>=".time()." OR enddate=0)";
             $objResult = $objDatabase->SelectLimit($query, 1);
 
             while(!$objResult->EOF) {

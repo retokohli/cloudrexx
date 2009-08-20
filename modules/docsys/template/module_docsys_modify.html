@@ -25,7 +25,7 @@ function setStartDate()
     {
 	   if(startDate.value=="")
 	   {
-	        startDate.value= "{DOCSYS_JS_DATE}";
+	        startDate.value= "{DOCSYS_DATE}";
 	   }
     }
 }
@@ -36,7 +36,7 @@ function setEndDate()
     {
 	   if(endDate.value=="")
 	   {
-	        endDate.value = "{DOCSYS_JS_DATE}";
+	        endDate.value = "{DOCSYS_DATE}";
 	   }
     }
 }
@@ -128,9 +128,9 @@ function setEndDate()
       <td height="26"><b>
         <input type="checkbox" name="status" value="1" {DOCSYS_STATUS} onClick="disableDate()" />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;{TXT_STARTDATE}:
-        <input type="text" name="startDate" size="10" maxlength="10" onClick="setStartDate()" value="{DOCSYS_STARTDATE}" enabled />
+        <input type="text" name="startDate" size="19" maxlength="19" onClick="setStartDate()" value="{DOCSYS_STARTDATE}" enabled />
         &nbsp;&nbsp; {TXT_ENDDATE}:
-        <input type="text" name="endDate" size="10" maxlength="10" onFocus="setEndDate()" value="{DOCSYS_ENDDATE}" enabled />
+        <input type="text" name="endDate" size="19" maxlength="19" onFocus="setEndDate()" value="{DOCSYS_ENDDATE}" enabled />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )</td>
     </tr>
   </table>
