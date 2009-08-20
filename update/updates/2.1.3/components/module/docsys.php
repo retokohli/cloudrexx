@@ -2,7 +2,7 @@
 
 function _docsysUpdate()
 {
-    global $objDatabase;
+    global $objDatabase, $_ARRAYLANG;
 
     try{
         UpdateUtil::table(
@@ -84,6 +84,86 @@ function _docsysUpdate()
         foreach ($fix_queries as $insert_query) {
             if ($objDatabase->Execute($insert_query) === false) {
                 return _databaseError($insert_query, $objDatabase->ErrorMsg());
+            }
+        }
+
+
+
+
+        // alter column startdate from date to int
+        $arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_docsys');
+        if ($arrColumns === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_docsys'));
+            return false;
+        }
+        if (isset($arrColumns['STARTDATE'])) {
+            if ($arrColumns['STARTDATE']->type == 'date') {
+                if (!isset($arrColumns['STARTDATE_NEW'])) {
+                    $query = 'ALTER TABLE `'.DBPREFIX.'module_docsys` ADD `startdate_new` INT(14) UNSIGNED NOT NULL DEFAULT \'0\' AFTER `startdate`';
+                    if ($objDatabase->Execute($query) === false) {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+
+                $query = 'UPDATE `'.DBPREFIX.'module_docsys` SET `startdate_new` = UNIX_TIMESTAMP(`startdate`) WHERE `startdate` != \'0000-00-00\'';
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+
+                $query = 'ALTER TABLE `'.DBPREFIX.'module_docsys` DROP `startdate`';
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
+        }
+        $arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_docsys');
+        if ($arrColumns === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_docsys'));
+            return false;
+        }
+        if (!isset($arrColumns['STARTDATE'])) {
+            $query = 'ALTER TABLE `'.DBPREFIX.'module_docsys` CHANGE `startdate_new` `startdate` INT(14) UNSIGNED NOT NULL DEFAULT \'0\'';
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+        }
+
+
+        // alter column enddate from date to int
+        $arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_docsys');
+        if ($arrColumns === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_docsys'));
+            return false;
+        }
+        if (isset($arrColumns['ENDDATE'])) {
+            if ($arrColumns['ENDDATE']->type == 'date') {
+                if (!isset($arrColumns['ENDDATE_NEW'])) {
+                    $query = 'ALTER TABLE `'.DBPREFIX.'module_docsys` ADD `enddate_new` INT(14) UNSIGNED NOT NULL DEFAULT \'0\' AFTER `enddate`';
+                    if ($objDatabase->Execute($query) === false) {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+
+                $query = 'UPDATE `'.DBPREFIX.'module_docsys` SET `enddate_new` = UNIX_TIMESTAMP(`enddate`) WHERE `enddate` != \'0000-00-00\'';
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+
+                $query = 'ALTER TABLE `'.DBPREFIX.'module_docsys` DROP `enddate`';
+                if ($objDatabase->Execute($query) === false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
+        }
+        $arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_docsys');
+        if ($arrColumns === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_docsys'));
+            return false;
+        }
+        if (!isset($arrColumns['ENDDATE'])) {
+            $query = 'ALTER TABLE `'.DBPREFIX.'module_docsys` CHANGE `enddate_new` `enddate` INT(14) UNSIGNED NOT NULL DEFAULT \'0\'';
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
             }
         }
 
