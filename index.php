@@ -2006,6 +2006,11 @@ $objTemplate->setVariable(array(
     'SIDEBAR_FILE'     => $themesPages['sidebar'],
     'JAVASCRIPT_FILE'  => $themesPages['javascript'],
     'BUILDIN_STYLE_FILE'  => $themesPages['buildin_style'],
+    'DATE_YEAR'           => date('Y'),
+    'DATE_MONTH'          => date('m'),
+    'DATE_DAY'            => date('d'),
+    'DATE_TIME'           => date('H:i'),
+    'BUILDIN_STYLE_FILE'  => $themesPages['buildin_style'],
     'JAVASCRIPT_LIGHTBOX' =>
         '<script type="text/javascript" src="lib/lightbox/javascript/mootools.js"></script>
         <script type="text/javascript" src="lib/lightbox/javascript/slimbox.js"></script>',
