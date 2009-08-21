@@ -65,18 +65,18 @@ class HotelRating
         if (empty($arrRating)) {
             if ($selected === '')
                 $arrRating[] = $_ARRAYLANG['TXT_HOTELCARD_HOTEL_RATING_PLEASE_CHOOSE'];
-echo("Making rating array...<br />");
+echo("HotelRating::getMenu($name, $selected, $onchange, $attribute): Making rating array...<br />");
             for ($index = self::RATING_FROM;
                  (   (   self::RATING_FROM < self::RATING_TO
                       && $index <= self::RATING_TO)
                   || $index >= self::RATING_TO);
                 $index += (self::RATING_FROM < self::RATING_TO ? 1 : -1)) {
                 $rating = self::getString($index);
-echo("adding index $index => $rating<br />");
+echo("HotelRating::getMenu($name, $selected, $onchange, $attribute): Adding index $index => $rating<br />");
                 $arrRating[$index] = $rating;
             }
         }
-echo("Made rating array ".var_export($arrRating, true)."<br />");
+echo("HotelRating::getMenu($name, $selected, $onchange, $attribute): Made rating array ".var_export($arrRating, true)."<br />");
         return Html::getSelect(
             $name,
             $arrRating,
@@ -95,8 +95,13 @@ echo("Made rating array ".var_export($arrRating, true)."<br />");
      */
     public static function getString($rating)
     {
-        if ($rating < self::RATING_FROM || $rating > self::RATING_TO)
+echo("HotelRating::getString($rating):  Entered<br />");
+        if (    self::RATING_FROM < self::RATING_TO
+            && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
+            ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
+echo("HotelRating::getString($rating):  Invalid rating<br />");
             return '';
+        }
         return sprintf(self::TEMPLATE, $rating, str_repeat(self::STAR, $rating));
     }
 

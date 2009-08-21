@@ -190,11 +190,12 @@ class HotelFacility
 
 
     /**
-     * Returns the array of all facility names
+     * Returns an array of facility names.
+     *
      * The optional $group_id parameter limits the result to that group.
      * @param   integer   $group_id   The optional group ID
-     * @return  array               The facilities array on success,
-     *                              false otherwise
+     * @return  array                 The facilities array on success,
+     *                                false otherwise
      */
     function getFacilityNameArray($group_id)
     {
@@ -222,15 +223,42 @@ class HotelFacility
     }
 
 
+    static function getFacilityNameById($facility_id)
+    {
+        if (empty(self::$arrFacilities)) self::init();
+        return self::$arrFacilities[$facility_id]['name'];
+    }
+
+
     /**
      * Returns the array of all facility groups
      * @return  array               The facility groups array on success,
      *                              false otherwise
      */
-    function getGroupArray()
+    static function getGroupArray()
     {
         if (empty(self::$arrGroups)) self::init();
         return self::$arrGroups;
+    }
+
+
+    /**
+     * Returns an array of facility group names.
+     * @return  array                 The facility group names array
+     *                                on success, false otherwise
+     */
+    static function getGroupNameArray()
+    {
+        static $arrGroupName = false;
+
+        if (empty(self::$arrGroups)) self::init();
+        // Return the buffered array, or set it up first.
+        if (empty($arrGroupName)) {
+            foreach (self::$arrGroups as $id => $arrGroups) {
+                $arrGroupName[$id] = $arrGroups['name'];
+            }
+        }
+        return $arrGroupName;
     }
 
 

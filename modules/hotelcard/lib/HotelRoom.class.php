@@ -30,7 +30,7 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
 class HotelRoom
 {
     const TEXT_HOTELCARD_ROOM_TYPE = 'HOTELCARD_ROOM_TYPE';
-    const TEXT_HOTELCARD_ROOM_FIXTURE = 'HOTELCARD_ROOM_FIXTURE';
+    const TEXT_HOTELCARD_ROOM_FACILITY = 'HOTELCARD_ROOM_FACILITY';
 
     /**
      * Array of hotel room types
@@ -42,8 +42,8 @@ class HotelRoom
      *      'name'           => type name,
      *      'number_default' => default number of rooms available per day,
      *      'price_default'  => default price per day,
-     *      'fixture'  => array (
-     *        fixture ID => fixture name,
+     *      'facility'  => array (
+     *        facility ID => facility name,
      *        ... more ...
      *      'availability'   => array(
      *        date => array(
@@ -66,22 +66,22 @@ class HotelRoom
     private static $arrRoomtypes = false;
 
     /**
-     * Array of room fixtures
+     * Array of room facilities
      *
      * The array is of the form
      *  array(
-     *    fixture ID => array(
-     *      'name' => fixture name,
+     *    facility ID => array(
+     *      'name' => facility name,
      *      'ord'  => ordinal value,
      *    ),
      *    ... more ...
      *  )
-     * The fixtures are sorted by their ordinal values.
+     * The facilities are sorted by their ordinal values.
      * @var     array
      * @access  private
      * @static
      */
-    private static $arrFixtures = false;
+    private static $arrFacilities = false;
 
     /**
      * The hotel ID used when calling {@see init()}
@@ -91,7 +91,7 @@ class HotelRoom
 
 
     /**
-     * Initializes the fixtures and types data from the database
+     * Initializes the facilities and types data from the database
      *
      * Reads records for the given $hotel_id only.  The optional $type_id
      * may further restrict the result to any single type of room.
@@ -102,7 +102,7 @@ class HotelRoom
         global $objDatabase;
 
         if (empty($hotel_id)) return false;
-        if (empty(self::$arrFixtures)) self::initFixtures();
+        if (empty(self::$arrFacilities)) self::initFacilities();
 
         // Room type
         $arrSqlName = Text::getSqlSnippets(
@@ -140,20 +140,20 @@ class HotelRoom
         }
 
         foreach (self::$arrRoomtypes as $type_id => &$arrRoomtype) {
-            // Fixture for each room type
+            // Facility for each room type
             $query = "
-                SELECT `room_fixture_id`
-                  FROM `".DBPREFIX."module_hotelcard_room_fixture` AS `fixture`
-                 INNER JOIN `".DBPREFIX."module_hotelcard_room_type_has_room_fixture` AS `relation`
-                    ON `fixture`.`name_text_id`=`relation`.`room_fixture_id`
+                SELECT `room_facility_id`
+                  FROM `".DBPREFIX."module_hotelcard_room_facility` AS `facility`
+                 INNER JOIN `".DBPREFIX."module_hotelcard_room_type_has_room_facility` AS `relation`
+                    ON `facility`.`name_text_id`=`relation`.`room_facility_id`
                  WHERE `relation`.`room_type_id`=$type_id
-                 ORDER BY `fixture`.`ord` ASC";
+                 ORDER BY `facility`.`ord` ASC";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return self::errorHandler();
             while (!$objResult->EOF) {
-                $id = $objResult->fields['room_fixture_id'];
-                $strName = self::$arrFixtures[$id]['name'];
-                $arrRoomtype['fixture'][$id] = $strName;
+                $id = $objResult->fields['room_facility_id'];
+                $strName = self::$arrFacilities[$id]['name'];
+                $arrRoomtype['facility'][$id] = $strName;
                 $objResult->MoveNext();
             }
 
@@ -186,29 +186,29 @@ class HotelRoom
 
 
     /**
-     * Initialize the static array of all fixtures available
+     * Initialize the static array of all facilities available
      *
      * Usually only called once by {@see init()}, or directly by
-     * {@see getFixtureArray()} when needed.
+     * {@see getFacilityArray()} when needed.
      * @return    boolean               True on success, false otherwise
      */
-    static function initFixtures()
+    static function initFacilities()
     {
         global $objDatabase;
 
-        // All fixtures available
+        // All facilities available
         $arrSqlName = Text::getSqlSnippets(
-            '`fixture`.`name_text_id`', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_HOTELCARD_ROOM_FIXTURE
+            '`facility`.`name_text_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY
         );
         $query = "
-            SELECT `fixture`.`ord` ".$arrSqlName['field']."
-              FROM `".DBPREFIX."module_hotelcard_room_fixture` AS `fixture`".
+            SELECT `facility`.`ord` ".$arrSqlName['field']."
+              FROM `".DBPREFIX."module_hotelcard_room_facility` AS `facility`".
                    $arrSqlName['join']."
-             ORDER BY `fixture`.`ord` ASC";
+             ORDER BY `facility`.`ord` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
-        self::$arrFixtures = array();
+        self::$arrFacilities = array();
         while (!$objResult->EOF) {
             $id = $objResult->fields['name_text_id'];
             $strName = $objResult->fields[$arrSqlName['text']];
@@ -216,47 +216,49 @@ class HotelRoom
                 $objText = Text::getById($id, 0);
                 if ($objText) $strName = $objText->getText();
             }
-            self::$arrFixtures[$id] = array(
+            self::$arrFacilities[$id] = array(
                 'id'       => $id,
                 'name'     => $strName,
                 'ord'      => $objResult->fields['ord'],
             );
             $objResult->MoveNext();
         }
-echo("HotelRoom::initFixtures(): Made ".var_export(self::$arrFixtures, true)."<hr />");
+echo("HotelRoom::initFacilities(): Made ".var_export(self::$arrFacilities, true)."<hr />");
         return true;
     }
 
 
     /**
-     * Returns the array of all fixtures
-     * @return  array               The fixtures array on success,
+     * Returns the array of all facilities
+     * @return  array               The facilities array on success,
      *                              false otherwise
+     * @static
      */
-    function getFixtureArray()
+    static function getFacilityArray()
     {
-        if (empty(self::$arrFixtures)) self::initFixtures();
-        return self::$arrfixtures;
+        if (empty(self::$arrFacilities)) self::initFacilities();
+        return self::$arrfacilities;
     }
 
 
     /**
-     * Returns the array of all fixture names
-     * @return  array               The fixture name array on success,
+     * Returns the array of all facility names
+     * @return  array               The facility name array on success,
      *                              false otherwise
+     * @static
      */
-    function getFixtureNameArray()
+    static function getFacilityNameArray()
     {
-        static $arrFixtureName = false;
+        static $arrFacilityName = false;
 
-        if (empty($arrFixtureName)) {
-            if (empty(self::$arrFixtures)) self::initFixtures();
-            foreach (self::$arrFixtures as $id => $arrFixture) {
-                $arrFixtureName[$id] = $arrFixture['name'];
+        if (empty($arrFacilityName)) {
+            if (empty(self::$arrFacilities)) self::initFacilities();
+            foreach (self::$arrFacilities as $id => $arrFacility) {
+                $arrFacilityName[$id] = $arrFacility['name'];
             }
         }
-echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, true)."<hr />");
-        return $arrFixtureName;
+echo("HotelRoom::getFacilityNameArray(): Returning ".var_export($arrFacilityName, true)."<hr />");
+        return $arrFacilityName;
     }
 
 
@@ -271,8 +273,9 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
      * @param   integer   $type_id    The optional type ID
      * @return  array                 The room types array on success,
      *                                false otherwise
+     * @static
      */
-    function getTypeArray($hotel_id=0, $type_id=0)
+    static function getTypeArray($hotel_id=0, $type_id=0)
     {
         if (empty($hotel_id)) $hotel_id = self::$hotel_id;
         if (   ($type_id && empty(self::$arrRoomtypes[$type_id]))
@@ -283,20 +286,20 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
 
 
     /**
-     * Returns true if the fixture record with the given ID exists,
+     * Returns true if the facility record with the given ID exists,
      * false otherwise
-     * @param   integer   $id     The fixture ID
+     * @param   integer   $id     The facility ID
      * @return  boolean           True on success, false otherwise
      * @static
      */
-    static function recordFixtureExists($id)
+    static function recordFacilityExists($id)
     {
         global $objDatabase;
 
         $query = "
             SELECT 1
-              FROM `".DBPREFIX."module_hotelcard_room_fixture`
-             WHERE `fixture`.`name_text_id`=$id";
+              FROM `".DBPREFIX."module_hotelcard_room_facility`
+             WHERE `facility`.`name_text_id`=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return (!(bool)$objResult->EOF);
@@ -348,6 +351,29 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
 
 
     /**
+     * Adds the facility to the room type
+     * @param   integer   $room_type_id       The room type ID
+     * @param   integer   $room_facility_id   The facility ID
+     * @return  boolean                       True on success, false otherwise
+     * @return
+     */
+    static function addFacility($room_type_id, $room_facility_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            INSERT INTO `".DBPREFIX."module_hotelcard_room_type_has_room_facility` (
+                `room_type_id`, `room_facility_id`
+            ) VALUES (
+                $room_type_id, $room_facility_id
+            )";
+        $objResult = $objDatabase->Execute($query);
+        return (bool)$objResult;
+
+    }
+
+
+    /**
      * Stores a room type
      *
      * Updates the room type if it exists, otherwise inserts it.
@@ -358,7 +384,8 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
      * @param   integer   $type_id          The optional room type ID
-     * @return  boolean                     True on success, false otherwise
+     * @return  integer                     The ID of the record inserted or
+     *                                      updated on success, zero otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
@@ -368,18 +395,6 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
         global $objDatabase;
 
         if (empty($name) || empty($hotel_id)) return false;
-        if ($type_id) {
-            $arrType = self::getTypeArray($hotel_id, $type_id);
-            $arrType['name']           = $name;
-            $arrType['number_default'] = $number_default;
-            $arrType['price_default']  = $price_default;
-        } else {
-            $arrType = array(
-                'name'           => $name,
-                'number_default' => $number_default,
-                'price_default'  => $price_default,
-            );
-        }
         $objText = false;
         if ($type_id) $objText = Text::getById($type_id, FRONTEND_LANG_ID);
         if (!$objText)
@@ -403,7 +418,8 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
      * @param   integer   $type_id          The room type ID
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
-     * @return  boolean                     True on success, false otherwise
+     * @return  integer                     The ID of the record inserted or
+     *                                      updated on success, zero otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
@@ -417,7 +433,7 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
                    `price_default`=$price_default
              WHERE `type_text_id`=$type_id";
         $objResult = $objDatabase->Execute($query);
-        return (bool)$objResult;
+        return ($objResult ? $type_id : 0);
     }
 
 
@@ -430,7 +446,8 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
      * @param   integer   $type_id          The room type ID
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
-     * @return  boolean                     True on success, false otherwise
+     * @return  integer                     The ID of the record inserted or
+     *                                      updated on success, zero otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
@@ -446,7 +463,7 @@ echo("HotelRoom::getFixtureNameArray(): Returning ".var_export($arrFixtureName, 
                 $hotel_id, $type_id, $number_default, $price_default
             )";
         $objResult = $objDatabase->Execute($query);
-        return (bool)$objResult;
+        return ($objResult ? $objDatabase->Insert_ID() : 0);
     }
 
 
@@ -634,23 +651,23 @@ echo("room::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_avai
 echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_available<br />");
 
 
-        if (in_array(DBPREFIX."module_hotelcard_room_fixture", $arrTables)) {
-            $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_fixture`";
+        if (in_array(DBPREFIX."module_hotelcard_room_facility", $arrTables)) {
+            $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("room::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_fixture<br />");
+echo("room::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_facility<br />");
         }
         $query = "
-            CREATE TABLE `".DBPREFIX."module_hotelcard_room_fixture` (
+            CREATE TABLE `".DBPREFIX."module_hotelcard_room_facility` (
               `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
               `ord` INT UNSIGNED NOT NULL DEFAULT 0,
               PRIMARY KEY (`name_text_id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_fixture<br />");
+echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_facility<br />");
 // TODO: Add data
-        $arrFixture = array(
+        $arrFacility = array(
              1 => 'Klimaanlage',
              2 => 'Balkon',
              3 => 'Badewanne',
@@ -663,13 +680,13 @@ echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_fixt
             10 => 'TV',
         );
         $arrText = Text::getArrayById(
-            MODULE_ID, self::TEXT_HOTELCARD_ROOM_FIXTURE, FRONTEND_LANG_ID
+            MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY, FRONTEND_LANG_ID
         );
-        foreach ($arrFixture as $ord => $fixture) {
+        foreach ($arrFacility as $ord => $facility) {
             $objTextFound = false;
             foreach ($arrText as $objText) {
                 // Do not insert text that is already there
-                if ($fixture == $objText->getText()) {
+                if ($facility == $objText->getText()) {
                     $objTextFound = $objText;
                     break;
                 }
@@ -680,8 +697,8 @@ echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_fixt
             } else {
                 // Add missing text
                 $objText = new Text(
-                    $fixture, FRONTEND_LANG_ID,
-                    MODULE_ID, self::TEXT_HOTELCARD_ROOM_FIXTURE
+                    $facility, FRONTEND_LANG_ID,
+                    MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY
                 );
                 if (!$objText->store()) {
 // TODO:  Add error message
@@ -689,7 +706,7 @@ echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_fixt
                 }
             }
             $query = "
-                INSERT INTO `".DBPREFIX."module_hotelcard_room_fixture` (
+                INSERT INTO `".DBPREFIX."module_hotelcard_room_facility` (
                   `name_text_id`, `ord`
                 ) VALUES (
                   ".$objText->getId().", $ord
@@ -698,25 +715,25 @@ echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_fixt
             if (!$objResult) return false;
         }
 
-        if (in_array(DBPREFIX."module_hotelcard_room_type_has_room_fixture", $arrTables)) {
-            $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_type_has_room_fixture`";
+        if (in_array(DBPREFIX."module_hotelcard_room_type_has_room_facility", $arrTables)) {
+            $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_type_has_room_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("room::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_type_has_room_fixture<br />");
+echo("room::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_type_has_room_facility<br />");
         }
         $query = "
-            CREATE TABLE `".DBPREFIX."module_hotelcard_room_type_has_room_fixture` (
+            CREATE TABLE `".DBPREFIX."module_hotelcard_room_type_has_room_facility` (
               `room_type_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              `room_fixture_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              PRIMARY KEY (`room_type_id`, `room_fixture_id`),
-              INDEX `room_fixture_id` (`room_fixture_id` ASC),
-              INDEX `room_fixture_room_type_id` (`room_type_id` ASC),
-              CONSTRAINT `room_fixture_id`
-                FOREIGN KEY (`room_fixture_id`)
-                REFERENCES `".DBPREFIX."module_hotelcard_room_fixture` (`id`)
+              `room_facility_id` INT UNSIGNED NOT NULL DEFAULT 0,
+              PRIMARY KEY (`room_type_id`, `room_facility_id`),
+              INDEX `room_facility_id` (`room_facility_id` ASC),
+              INDEX `room_facility_room_type_id` (`room_type_id` ASC),
+              CONSTRAINT `room_facility_id`
+                FOREIGN KEY (`room_facility_id`)
+                REFERENCES `".DBPREFIX."module_hotelcard_room_facility` (`id`)
                 ON DELETE NO ACTION
                 ON UPDATE NO ACTION,
-              CONSTRAINT `room_fixture_room_type_id`
+              CONSTRAINT `room_facility_room_type_id`
                 FOREIGN KEY (`room_type_id`)
                 REFERENCES `".DBPREFIX."module_hotelcard_room_type` (`id`)
                 ON DELETE NO ACTION
@@ -724,7 +741,7 @@ echo("room::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_type
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_type_has_room_fixture<br />");
+echo("room::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_type_has_room_facility<br />");
 
         // More to come...
 

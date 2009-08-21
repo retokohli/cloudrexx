@@ -56,7 +56,7 @@ class HotelAccomodationType
     {
         global $objDatabase;
 
-echo("HotelAccomodationType::init(): Entered<br />");
+//echo("HotelAccomodationType::init(): Entered<br />");
         $arrSqlName = Text::getSqlSnippets(
             '`type`.`name_text_id`', FRONTEND_LANG_ID,
             MODULE_ID, self::TEXT_ACCOMODATION_TYPE
@@ -76,7 +76,7 @@ echo("HotelAccomodationType::init(): Entered<br />");
                 $objText = Text::getById($id, 0);
                 if ($objText) $strName = $objText->getText();
             }
-echo("HotelAccomodationType::init(): Name $strName<br />");
+//echo("HotelAccomodationType::init(): Name $strName<br />");
 
             self::$arrAccomodationTypes[$id] = array(
                 'id' => $id,
@@ -85,7 +85,7 @@ echo("HotelAccomodationType::init(): Name $strName<br />");
             );
             $objResult->MoveNext();
         }
-echo("HotelAccomodationType::init(): Made<br />".var_export(self::$arrAccomodationTypes, true)."<br />");
+//echo("HotelAccomodationType::init(): Made<br />".var_export(self::$arrAccomodationTypes, true)."<br />");
         return true;
     }
 
@@ -131,7 +131,7 @@ echo("HotelAccomodationType::init(): Made<br />".var_export(self::$arrAccomodati
      */
     static function getNameById($id)
     {
-echo("HotelAccomodationType::getNameById($id):  Entered<br />");
+//echo("HotelAccomodationType::getNameById($id):  Entered<br />");
         if (empty(self::$arrAccomodationTypes)) self::init();
         return self::$arrAccomodationTypes[$id]['name'];
     }

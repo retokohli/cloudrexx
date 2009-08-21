@@ -72,19 +72,9 @@ class HotelCheckInOut
         $name, $selected='', $onchange='', $attribute=''
     ) {
         static $arrCheckin = array();
-        if (empty($arrCheckin)) {
-            $time_lo  = (self::CHECKIN_MIN-1) * 3600;
-            $time_hi  = (self::CHECKIN_MAX-1) * 3600;
-            $interval = self::INTERVAL        * 3600;
-echo("getMenuCheckin($name, $selected, $onchange, $attribute): made time_lo $time_lo time_hi $time_hi interval $interval");
-            for ($index = $time_lo;
-                $index <= $time_hi;
-                $index += $interval) {
-                $arrCheckin[date('H:i', $index)] =
-                    date(self::TEMPLATE, $index);
-            }
-        }
-echo("Made time array ".var_export($arrCheckin, true)."<br />");
+        if (empty($arrCheckin))
+            $arrCheckin = self::getArray(self::CHECKIN_MIN, self::CHECKIN_MAX);
+echo("getMenuCheckin($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckin, true)."<br />");
         return Html::getSelect(
             $name,
             $arrCheckin,
@@ -109,25 +99,47 @@ echo("Made time array ".var_export($arrCheckin, true)."<br />");
         $name, $selected='', $onchange='', $attribute=''
     ) {
         static $arrCheckout = array();
-        if (empty($arrCheckout)) {
-            $time_lo  = (self::CHECKOUT_MIN-1) * 3600;
-            $time_hi  = (self::CHECKOUT_MAX-1) * 3600;
-            $interval = self::INTERVAL         * 3600;
-echo("getMenuCheckout($name, $selected, $onchange, $attribute): made time_lo $time_lo time_hi $time_hi interval $interval");
-            for ($index = $time_lo;
-                $index <= $time_hi;
-                $index += $interval) {
-                $arrCheckout[date('H:m', $index)] =
-                    date(self::TEMPLATE, $index);
-            }
-        }
-echo("Made time array ".var_export($arrCheckout, true)."<br />");
+        if (empty($arrCheckout))
+            $arrCheckout = self::getArray(self::CHECKOUT_MIN, self::CHECKOUT_MAX);
+echo("getMenuCheckout($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckout, true)."<br />");
         return Html::getSelect(
             $name,
             $arrCheckout,
             $selected, $onchange, $attribute
         );
     }
+
+
+    /**
+     * Returns an array with the times between $time_from and $time_to
+     * in intervals of self::INTERVAL
+     *
+     * Usable for both check in and check out times.
+     * All values represent times in 'HH:MM' format,
+     * the visible format in the menu is defined by the
+     * {@see HotelCheckInOut::TEMPLATE} constant.
+     * @param   integer   $time_from  The start time
+     * @param   integer   $time_to    The end time
+     * @return  array                 The times array
+     */
+    public static function getArray($time_from, $time_to)
+    {
+        $time_lo  = ($time_from-1) * 3600;
+        $time_hi  = ($time_to  -1) * 3600;
+        $interval = self::INTERVAL * 3600;
+echo("getArray($time_from, $time_to): made time_lo $time_lo time_hi $time_hi interval $interval<br />");
+        $arrTime = array();
+        for ($index = $time_lo;
+            $index <= $time_hi;
+            $index += $interval) {
+            $arrTime[date('H:i', $index)] =
+                date(self::TEMPLATE, $index);
+        }
+echo("getArray($time_from, $time_to):: Made times ".var_export($arrTime, true)."<hr />");
+        return $arrTime;
+    }
+
+
 
 }
 

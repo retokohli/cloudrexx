@@ -1,6 +1,133 @@
 <?php
 
-define('_HOTELCARD_DEBUG', 0);
+define('_HOTELCARD_DEBUG', 3);
+
+/* TEST */
+$_SESSION['hotelcard'] =
+    array (
+        'step' => '8',
+        'lang_id' => '2',
+        'hotel_name' => 'asdf',
+        'group_id' => 'sdhastet',
+        'accomodation_type_id' => '5',
+        'hotel_address' => 'dfgsdf',
+        'hotel_zip' => 'dsfg',
+        'hotel_location' => 'dfgsdfg',
+        'hotel_region_id' => '3638',
+        'hotel_country_id' => '5076',
+        'contact_phone' => 'dfgsdfg',
+        'contact_fax' => 'cvnxfh',
+        'contact_name' => 'dfgsdfgdf',
+        'contact_email' => 'reto.kohli@comvation.com',
+        'contact_email_retype' => 'reto.kohli@comvation.com',
+        'continue' => 'Continue',
+        'confirm_terms' => '1',
+        'contact_position' => 'dsasfdff',
+        'contact_gender' => 'm',
+        'contact_department' => 'dhkjlh',
+        'reservation_name' => 'fgsdfb',
+        'reservation_gender' => 'f',
+        'reservation_phone' => 'ertwer',
+        'reservation_fax' => 'dfasdf',
+        'reservation_email' => 'reto.kohli@comvation.com',
+        'hotel_uri' => 'dfgdfgdf',
+        'hotel_image' => 'nyxcosmetics_full.sql.bak',
+        'hotel_rating' => '4',
+        'numof_rooms' => '3423',
+        'checkin_from' => '07:00',
+        'checkin_to' => '09:00',
+        'checkout_from' => '06:00',
+        'checkout_to' => '13:00',
+        'found_how' => 'dgadfga',
+        'creditcard_id' =>
+        array (
+            1 => 'Barzahlung',
+            4 => 'Australian BankCard',
+            7 => 'Cabal',
+            21 => 'NICOS',
+            25 => 'Red 6000',
+            28 => 'Switch',
+        ),
+        'accountant_name' => 'asdfasdf',
+        'accountant_gender' => 'f',
+        'accountant_phone' => 'dgsds',
+        'accountant_fax' => 'dfg',
+        'accountant_email' => 'reto.kohli@comvation.com',
+        'billing_company' => 'fgsdfgr',
+        'billing_address' => 'dsfg',
+        'billing_zip' => 'fgdsfg',
+        'billing_country_id' => '5078',
+        'billing_name' => 'dasdf',
+        'billing_gender' => 'm',
+        'billing_tax_id' => '4354523',
+        'hotel_description_de' => 'fasdfas',
+        'hotel_description_en' => 'dgashre reh erher',
+        'hotel_facility_id' =>
+        array (
+            5316 => 'Air Conditioning',
+            5317 => 'All Public and Private spaces non-smoking',
+            5323 => 'Design Hotel',
+            5330 => 'Gay Friendly',
+            5338 => 'Rooms/Facilities for Disabled Guests',
+            5342 => 'Soundproofed Rooms',
+            5347 => 'Bowling',
+            5351 => 'Cycling',
+            5361 => 'Jacuzzi',
+            5374 => 'Outdoor Swimming Pool',
+            5392 => 'Internet Services',
+            5397 => 'Room Service',
+            5402 => 'VIP Room Facilities',
+        ),
+        'room_type' =>
+        array (
+            1 => 'bcvbcvb',
+            2 => 'gsdf rer ger g',
+            3 => 'fdhsdfhsdfhsdhf',
+            4 => 'dsfh erh erherhe h',
+        ),
+        'room_available' =>
+        array (
+            1 => '623',
+            2 => '342',
+            3 => '24',
+            4 => '3532',
+        ),
+        'room_price' =>
+        array (
+            1 => '34663.00',
+            2 => '23623.00',
+            3 => '325323.05',
+            4 => '3434634',
+        ),
+        'room_facility_id' =>
+        array (
+            1 => array (
+                5416 => 'Badewanne',
+                5417 => 'Minibar',
+                5419 => 'Etagenbad',
+            ),
+            2 => array (
+                5419 => 'Etagenbad',
+                5420 => 'Dusche',
+            ),
+            3 => array (
+                5415 => 'Balkon',
+                5418 => 'Radio',
+                5419 => 'Etagenbad',
+            ),
+            4 => array (
+                5414 => 'Klimaanlage',
+                5415 => 'Balkon',
+                5416 => 'Badewanne',
+                5417 => 'Minibar',
+                5418 => 'Radio',
+                5419 => 'Etagenbad',
+                5420 => 'Dusche',
+                5421 => 'Telefon',
+                5423 => 'TV',
+            ),
+        ),
+    );
 
 /**
  * Class Hotelcard
@@ -26,9 +153,11 @@ require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 require_once ASCMS_CORE_PATH.'/Sorting.class.php';
 require_once ASCMS_CORE_PATH.'/Text.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
+require_once 'lib/Hotel.class.php';
 require_once 'lib/HotelAccomodationType.class.php';
 require_once 'lib/HotelCheckInOut.class.php';
 require_once 'lib/HotelFacility.class.php';
+require_once 'lib/HotelcardLibrary.class.php';
 require_once 'lib/HotelRating.class.php';
 require_once 'lib/HotelRoom.class.php';
 require_once 'lib/RelHotelCreditcard.class.php';
@@ -90,7 +219,7 @@ class Hotelcard
      * Status / error message
      * @var string
      */
-    private static $statusMessage = '';
+    private static $message = '';
 
 
     /**
@@ -100,22 +229,21 @@ class Hotelcard
      */
     static function getPage($page_content)
     {
+
+if (_HOTELCARD_DEBUG & 1) DBG::enable_error_reporting();
+if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();
+
         self::$page_content = $page_content;
         // PEAR Sigma template
         self::$objTemplate = new HTML_Template_Sigma('.');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         self::$objTemplate->setTemplate(self::$page_content, true, true);
 
-        if (isset($_GET['cmd'])) {
-            $_GET['act'] = $_GET['cmd'];
-        }
-        if (!isset($_GET['act'])) {
-            $_GET['act'] = '';
-        }
+        if (isset($_GET['cmd'])) $_GET['act'] = $_GET['cmd'];
+        if (empty($_GET['act'])) $_GET['act'] = '';
 
         // Flag for error handling
         $result = true;
-
         switch($_GET['act']) {
             case 'add_hotel':
                 $result &= self::addHotel();
@@ -124,15 +252,15 @@ class Hotelcard
             default:
                 $result &= self::overview();
         }
-//        $result &= (empty(self::$statusMessage));
+//        $result &= (empty(self::$message));
 //        if (!$result) {
 //            self::errorHandler();
 //            global $_ARRAYLANG;
 //            self::addMessage($_ARRAYLANG['TXT_HOTELCARD_ERROR_TRY_RELOADING']);
 //        }
-echo("Messages:<br />".self::$statusMessage."<hr />");
+echo("Messages:<br />".self::$message."<hr />");
         self::$objTemplate->setVariable(
-            'HOTELCARD_STATUS', self::$statusMessage);
+            'HOTELCARD_STATUS', self::$message);
         return self::$objTemplate->get();
 
     }
@@ -159,7 +287,7 @@ DBG::enable_error_reporting();
         foreach ($_POST as $key => $value) {
             $_SESSION['hotelcard'][$key] = $value;
         }
-echo("Added POST<br />".nl2br(var_export($_POST, true))."<hr />Collected<br />".nl2br(var_export($_SESSION['hotelcard'], true))."<hr />");
+echo("Added POST<br />".nl2br(var_export($_POST, true))."<hr />".(isset($_SESSION['hotelcard']) ? "Collected<br />".nl2br(var_export($_SESSION['hotelcard'], true))."<hr />" : ''));
         // Number of the current step
         $step_posted = 1;
         if (empty($_SESSION['hotelcard']['step'])) {
@@ -176,36 +304,53 @@ echo("Added POST<br />".nl2br(var_export($_POST, true))."<hr />Collected<br />".
 //            unset($_SESSION['hotelcard']);
         // Start verifying the data from the step posted
         $step = $step_posted;
-        while ($step < self::HOTEL_REGISTRATION_STEPS) {
+        while ($step <= self::HOTEL_REGISTRATION_STEPS) {
 echo("Trying step $step<br />");
             // Returns false if it misses some data,
             // continue with the next step if true is returned.
             // After each step has been shown once, the single steps
             // must verify their data
             $result_step = call_user_func(array('self', 'addHotelStep'.$step));
-            if ($result_step) {
+            if (!$result_step) {
+echo("Step $step incomplete.  Session step ".$_SESSION['hotelcard']['step']."<br />");
+                break;
+            } else {
 echo("Step $step successfully completed.  Session step ".$_SESSION['hotelcard']['step']."<br />");
-                // This step has been completed
-                // Show next step, without verification
                 ++$step;
-                continue;
             }
-            // So the result was false, and the current step is shown
-echo("Trying step $step FAILED<br />");
-            self::$objTemplate->setVariable(array(
-                'HOTELCARD_STEP'              => $step,
-                'HOTELCARD_FORM_ACTION'       => $_SERVER['REQUEST_URI'],
-                'HOTELCARD_FORM_SUBMIT_NAME'  => 'continue',
-                'HOTELCARD_FORM_SUBMIT_VALUE' =>
-                    $_ARRAYLANG['TXT_HOTELCARD_FORM_SUBMIT_CONTINUE'],
-                'HOTELCARD_PAGE_NUMBER'       => sprintf(
-                    $_ARRAYLANG['TXT_HOTELCARD_PAGE_NUMBER_X_OF_Y'],
-                    $step, self::HOTEL_REGISTRATION_STEPS),
-            ));
-            return false;
         }
+        // So the result was false, and the current step is shown
+echo("Trying step $step FAILED<br />");
+        self::$objTemplate->setVariable(array(
+            'HOTELCARD_STEP' => $step,
+            'HOTELCARD_FORM_ACTION' => $_SERVER['REQUEST_URI'],
+            'HOTELCARD_FORM_SUBMIT_NAME' => 'continue',
+            'HOTELCARD_FORM_SUBMIT_VALUE' =>
+                ($step < 9
+                  ? $_ARRAYLANG['TXT_HOTELCARD_FORM_SUBMIT_CONTINUE']
+                  : $_ARRAYLANG['TXT_HOTELCARD_FORM_SUBMIT_FINISH']
+                ),
+            'HOTELCARD_PAGE_NUMBER' => sprintf(
+                $_ARRAYLANG['TXT_HOTELCARD_PAGE_NUMBER_X_OF_Y'],
+                $step, self::HOTEL_REGISTRATION_STEPS),
+            'TXT_HOTELCARD_NOTE' => sprintf(
+                $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP'.$step.'_NOTE'],
+                // Replace format parameters with
+                // 1 - Customer name
+                // 2 - Registration date
+                // 3 - hotelcard.ch online ID
+                (isset($_SESSION['hotelcard']['contact_name'])
+                    ? $_SESSION['hotelcard']['contact_name'] : ''),
+                (isset($_SESSION['hotelcard']['registration_date'])
+                    ? date(ASCMS_DATE_FORMAT,
+                        $_SESSION['hotelcard']['registration_date'])
+                    : ''),
+                (isset($_SESSION['hotelcard']['registration_id'])
+                    ? $_SESSION['hotelcard']['registration_id'] : '')
+            ),
+        ));
 echo("Steps done<br />");
-        return true;
+        return $result_step;
     }
 
 
@@ -219,24 +364,24 @@ echo("Steps done<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+            'group_id', // Mind that this goes into a lookup table!
+            'accomodation_type_id',
+            'lang_id',
+            'hotel_name',
+            'hotel_address',
+            'hotel_zip',
+            'hotel_location',
+            'hotel_region_id',
+            'contact_name',
+            'contact_email',
+            'contact_email_retype',
+            'contact_phone',
+            'contact_fax',
+        );
         // Verify the data already present if it's the current step
         if ($_SESSION['hotelcard']['step'] == 1) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                'hotel_group', // Mind that this goes into a lookup table!
-                'accomodation_type_id',
-                'lang_id',
-                'hotel_name',
-                'hotel_address',
-                'hotel_zip',
-                'hotel_location',
-                'hotel_region_id',
-                'contact_name',
-                'contact_email',
-                'contact_email_retype',
-                'contact_phone',
-                'contact_fax',
-            );
             foreach ($mandatoryFields as $name) {
                 if (empty($_SESSION['hotelcard'][$name])) {
 echo("Step 1: missing mandatory field value for $name<br />");
@@ -272,10 +417,10 @@ echo("Showing step 1<br />");
             'TXT_HOTELCARD_HOTEL_NAME' => Html::getInputText('hotel_name',
                 (isset($_SESSION['hotelcard']['hotel_name'])
                     ? $_SESSION['hotelcard']['hotel_name'] : '')),
-            'TXT_HOTELCARD_HOTEL_GROUP' => Html::getInputText('hotel_group',
-                (isset($_SESSION['hotelcard']['hotel_group'])
-                    ? $_SESSION['hotelcard']['hotel_group'] : '')),
-            'TXT_HOTELCARD_HOTEL_ACCOMODATION_TYPE_ID' => Html::getSelect(
+            'TXT_HOTELCARD_GROUP_ID' => Html::getInputText('group_id',
+                (isset($_SESSION['hotelcard']['group_id'])
+                    ? $_SESSION['hotelcard']['group_id'] : '')),
+            'TXT_HOTELCARD_ACCOMODATION_TYPE_ID' => Html::getSelect(
                 'accomodation_type_id',
                 HotelAccomodationType::getNameArray(),
                 (isset($_SESSION['hotelcard']['accomodation_type_id'])
@@ -320,9 +465,6 @@ echo("Showing step 1<br />");
             ));
             self::$objTemplate->parse('hotelcard_data');
         }
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP1_NOTE'],
-        ));
         return false; // Still running
     }
 
@@ -337,15 +479,15 @@ echo("Showing step 1<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+            'confirm_terms',
+            'hotel_name',
+            'contact_name',
+            'contact_position',
+        );
         // Verify the data already present
         if ($_SESSION['hotelcard']['step'] == 2) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                'confirm_terms',
-                'hotel_name',
-                'contact_name',
-                'contact_position',
-            );
             foreach ($mandatoryFields as $name) {
                 if (empty($_SESSION['hotelcard'][$name])) {
 echo("Step 2: missing mandatory field value for $name<br />");
@@ -380,9 +522,6 @@ echo("Showing step 2<br />");
             ));
             self::$objTemplate->parse('hotelcard_data');
         }
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP2_NOTE'],
-        ));
         return false; // Still running
     }
 
@@ -397,31 +536,31 @@ echo("Showing step 2<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+            'contact_name',
+            'contact_gender',
+            'contact_position',
+            'contact_department',
+            'contact_phone',
+            'contact_email',
+            'reservation_name',
+            'reservation_gender',
+            'reservation_phone',
+            'reservation_fax',
+            'reservation_email',
+            'hotel_uri',
+            'hotel_image',
+            'hotel_rating',
+            'numof_rooms',
+            'checkin_from',
+            'checkin_to',
+            'checkout_from',
+            'checkout_to',
+            'found_how',
+        );
         // Verify the data already present
         if ($_SESSION['hotelcard']['step'] == 3) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                'contact_name',
-                'contact_gender',
-                'contact_position',
-                'contact_department',
-                'contact_phone',
-                'contact_email',
-                'reservation_name',
-                'reservation_gender',
-                'reservation_phone',
-                'reservation_fax',
-                'reservation_email',
-                'hotel_uri',
-                'hotel_image',
-                'hotel_rating',
-                'numof_rooms',
-                'checkin_from',
-                'checkin_to',
-                'checkout_from',
-                'checkout_to',
-                'found_how',
-            );
             foreach ($mandatoryFields as $name) {
                 if (empty($_SESSION['hotelcard'][$name])) {
 echo("Step 3: missing mandatory field value for $name<br />");
@@ -429,19 +568,17 @@ echo("Step 3: missing mandatory field value for $name<br />");
                     self::addMessage($_ARRAYLANG['TXT_HOTELCARD_MISSING_'.strtoupper($name)]);
                 }
             }
-            if ($flagComplete) {
-                if (   $_SESSION['hotelcard']['checkin_to']
-                    && $_SESSION['hotelcard']['checkin_from'] >
-                          $_SESSION['hotelcard']['checkin_to']) {
-                    $flagComplete = false;
-                    self::addMessage($_ARRAYLANG['TXT_HOTELCARD_CHECKIN_FROM_AFTER_TO']);
-                } elseif (
-                       $_SESSION['hotelcard']['checkout_to']
-                    && $_SESSION['hotelcard']['checkout_from'] >
-                          $_SESSION['hotelcard']['checkout_to']) {
-                    $flagComplete = false;
-                    self::addMessage($_ARRAYLANG['TXT_HOTELCARD_CHECKOUT_FROM_AFTER_TO']);
-                }
+            if (   $_SESSION['hotelcard']['checkin_to']
+                && $_SESSION['hotelcard']['checkin_from'] >
+                      $_SESSION['hotelcard']['checkin_to']) {
+                $flagComplete = false;
+                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_CHECKIN_FROM_AFTER_TO']);
+            } elseif (
+                   $_SESSION['hotelcard']['checkout_to']
+                && $_SESSION['hotelcard']['checkout_from'] >
+                      $_SESSION['hotelcard']['checkout_to']) {
+                $flagComplete = false;
+                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_CHECKOUT_FROM_AFTER_TO']);
             }
             if ($flagComplete) {
 echo("Step 3 complete<br />");
@@ -552,9 +689,6 @@ echo("Showing step 3<br />");
             ));
             self::$objTemplate->parse('hotelcard_data');
         }
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP3_NOTE'],
-        ));
         return false; // Still running
     }
 
@@ -569,12 +703,12 @@ echo("Showing step 3<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+            'creditcard_id',
+        );
         // Verify the data already present
         if ($_SESSION['hotelcard']['step'] == 4) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                'creditcard_id',
-            );
             foreach ($mandatoryFields as $name) {
                 if (empty($_SESSION['hotelcard'][$name])) {
 echo("Step 4: missing mandatory field value for $name<br />");
@@ -602,9 +736,6 @@ echo("Showing step 4<br />");
             ));
             self::$objTemplate->parse('hotelcard_data');
         }
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP4_NOTE'],
-        ));
         return false; // Still running
     }
 
@@ -619,23 +750,23 @@ echo("Showing step 4<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+            'accountant_name',
+            'accountant_gender',
+            'accountant_phone',
+            'accountant_fax',
+            'accountant_email',
+            'billing_company',
+            'billing_address',
+            'billing_zip',
+            'billing_country_id',
+            'billing_name',
+            'billing_gender',
+            'billing_tax_id',
+        );
         // Verify the data already present
         if ($_SESSION['hotelcard']['step'] == 5) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                'accountant_name',
-                'accountant_gender',
-                'accountant_phone',
-                'accountant_fax',
-                'accountant_email',
-                'billing_company',
-                'billing_address',
-                'billing_zip',
-                'billing_country_id',
-                'billing_name',
-                'billing_gender',
-                'billing_tax_id',
-            );
             foreach ($mandatoryFields as $name) {
                 if (empty($_SESSION['hotelcard'][$name])) {
 echo("Step 5: missing mandatory field value for $name<br />");
@@ -665,51 +796,39 @@ echo("Showing step 5<br />");
                 (isset($_SESSION['hotelcard']['accountant_gender'])
                     ? $_SESSION['hotelcard']['accountant_gender'] : '')
                 ),
-//Direkte Telefonnummer der Buchhaltung 	+
             'TXT_HOTELCARD_ACCOUNTANT_PHONE' =>
                 Html::getInputText('accountant_phone',
                 (isset($_SESSION['hotelcard']['accountant_phone'])
                     ? $_SESSION['hotelcard']['accountant_phone'] : '')),
-//Direkte Faxnummer der Buchhaltung 	+
             'TXT_HOTELCARD_ACCOUNTANT_FAX' =>
                 Html::getInputText('accountant_fax',
                 (isset($_SESSION['hotelcard']['accountant_fax'])
                     ? $_SESSION['hotelcard']['accountant_fax'] : '')),
-//Direkte E-Mail der Buchhaltung
             'TXT_HOTELCARD_ACCOUNTANT_EMAIL' =>
                 Html::getInputText('accountant_email',
                 (isset($_SESSION['hotelcard']['accountant_email'])
                     ? $_SESSION['hotelcard']['accountant_email'] : '')),
-//*** Rechnungsdetails ***
             'TXT_HOTELCARD_BILLING_DETAILS' => '',
-//Firmenname fÃ¼r die Rechnung
             'TXT_HOTELCARD_BILLING_COMPANY' =>
                 Html::getInputText('billing_company',
                 (isset($_SESSION['hotelcard']['billing_company'])
                     ? $_SESSION['hotelcard']['billing_company'] : '')),
-//Rechnungsadresse
             'TXT_HOTELCARD_BILLING_ADDRESS' =>
                 Html::getInputText('billing_address',
                 (isset($_SESSION['hotelcard']['billing_address'])
                     ? $_SESSION['hotelcard']['billing_address'] : '')),
-//Postleitzahl
             'TXT_HOTELCARD_BILLING_ZIP' =>
                 Html::getInputText('billing_zip',
                 (isset($_SESSION['hotelcard']['billing_zip'])
                     ? $_SESSION['hotelcard']['billing_zip'] : '')),
-//Land
             'TXT_HOTELCARD_BILLING_COUNTRY_ID' => Html::getSelect(
                 'billing_country_id', Country::getNameArray(),
                 (isset($_SESSION['hotelcard']['billing_country_id'])
                     ? $_SESSION['hotelcard']['billing_country_id'] : '')),
-//Kontaktperson fÃ¼r Rechnungen
             'TXT_HOTELCARD_BILLING_NAME' =>
                 Html::getInputText('billing_name',
                 (isset($_SESSION['hotelcard']['billing_name'])
                     ? $_SESSION['hotelcard']['billing_name'] : '')),
-//Geschlecht : 		Herr
-//Frau
-
             'TXT_HOTELCARD_BILLING_GENDER' => Html::getRadioGroup(
                 'billing_gender',
                 array(
@@ -719,7 +838,6 @@ echo("Showing step 5<br />");
                 (isset($_SESSION['hotelcard']['billing_gender'])
                     ? $_SESSION['hotelcard']['billing_gender'] : '')
                 ),
-//Ust-ID Nummer der Firma (obligatorisch fÃ¼r EU LÃ¤nder)
             // sales tax identification number
             'TXT_HOTELCARD_BILLING_TAX_ID' =>
                 Html::getInputText('billing_tax_id',
@@ -728,16 +846,12 @@ echo("Showing step 5<br />");
 
         );
         foreach ($arrData as $placeholder => $element) {
-//echo("Language variable $placeholder => ".$_ARRAYLANG[$placeholder]."<br />");
             self::$objTemplate->setVariable(array(
                 'HOTELCARD_DATA_LABEL' => $_ARRAYLANG[$placeholder],
                 'HOTELCARD_DATA_INPUT' => $element,
             ));
             self::$objTemplate->parse('hotelcard_data');
         }
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP5_NOTE'],
-        ));
         return false; // Still running
     }
 
@@ -752,14 +866,14 @@ echo("Showing step 5<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+            'hotel_description_de',
+            'hotel_description_en',
+            'hotel_facility_id',
+        );
         // Verify the data already present
         if ($_SESSION['hotelcard']['step'] == 6) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                'hotel_description_de',
-                'hotel_description_en',
-                'hotel_facility_id',
-            );
             foreach ($mandatoryFields as $name) {
                 if (empty($_SESSION['hotelcard'][$name])) {
 echo("Step 6: missing mandatory field value for $name<br />");
@@ -794,14 +908,11 @@ echo("Showing step 6<br />");
             self::$objTemplate->parse('hotelcard_data');
         }
 
-// TODO: write getGroupNameArray()
-        $arrFacilityGroups = HotelFacility::getGroupArray();
-        foreach ($arrFacilityGroups as $group_id => $arrFacilityGroup) {
+        foreach (HotelFacility::getGroupNameArray() as $group_id => $group_name) {
             $arrFacilities = HotelFacility::getFacilityNameArray($group_id);
-//            foreach ($arrFacilities as $facility_id => $facility_name) {
 // TODO: Limit the number of facilities shown here.
             self::$objTemplate->setVariable(array(
-                'HOTELCARD_DATA_LABEL' => $arrFacilityGroup['name'],
+                'HOTELCARD_DATA_LABEL' => $group_name,
                 'HOTELCARD_DATA_INPUT' => Html::getCheckboxGroup(
                     'hotel_facility_id',
                     $arrFacilities, $arrFacilities,
@@ -810,14 +921,8 @@ echo("Showing step 6<br />");
                       : '')
                 ),
             ));
-
             self::$objTemplate->parse('hotelcard_data');
-//            }
         }
-
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP6_NOTE'],
-        ));
         return false; // Still running
     }
 
@@ -832,18 +937,18 @@ echo("Showing step 6<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+            // Note: These are checkbox groups and are thus posted as
+            // arrays, like 'room_type[0]'
+            'room_type',
+            'room_available',
+            'room_price',
+// Not mandatory:
+//            'room_facilities',
+        );
         // Verify the data already present
         if ($_SESSION['hotelcard']['step'] == 7) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                // Note: These are checkbox groups and are thus posted as
-                // arrays, like 'room_type[0]'
-                'room_type',
-                'room_available',
-                'room_price',
-// Not mandatory:
-//                'room_facilities',
-            );
             foreach ($mandatoryFields as $name) {
 //echo("Step 7: checking mandatory field $name: ".(empty($_SESSION['hotelcard'][$name][1]) ?  '-- empty --' : $_SESSION['hotelcard'][$name][1])."<br />");
 //                $name_stripped = preg_replace('/\[.*$/', '', $name);
@@ -878,8 +983,8 @@ echo("Showing step 7<br />");
                         ? $_SESSION['hotelcard']['room_price'][$i] : '')),
                 'TXT_HOTELCARD_ROOM_FACILITY_ID' =>
                     Html::getCheckboxGroup('room_facility_id['.$i.']',
-                    HotelRoom::getFixtureNameArray(),
-                    HotelRoom::getFixtureNameArray(),
+                    HotelRoom::getFacilityNameArray(),
+                    HotelRoom::getFacilityNameArray(),
                     (isset($_SESSION['hotelcard']['room_facility_id'][$i])
                         ? $_SESSION['hotelcard']['room_facility_id'][$i] : '')),
             );
@@ -898,9 +1003,6 @@ echo("Showing step 7<br />");
                 self::$objTemplate->parse('hotelcard_data');
             }
         }
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP7_NOTE'],
-        ));
         return false; // Still running
     }
 
@@ -915,12 +1017,12 @@ echo("Showing step 7<br />");
     {
         global $_ARRAYLANG;
 
+        $mandatoryFields = array(
+//            'room_type',
+        );
         // Verify the data already present
         if ($_SESSION['hotelcard']['step'] == 8) {
             $flagComplete = true;
-            $mandatoryFields = array(
-                'room_type',
-            );
             foreach ($mandatoryFields as $name) {
                 if (empty($_SESSION['hotelcard'][$name])) {
 echo("Step 8: missing mandatory field value for $name<br />");
@@ -935,10 +1037,15 @@ echo("Step 8 complete<br />");
         }
 echo("Showing step 8<br />");
 
-        $arrData = array();
+//echo("Creditcards: ".var_export($_SESSION['hotelcard']['creditcard_id'], true)."<hr />");
+//echo("Room facilities: ".var_export($_SESSION['hotelcard']['room_facility_id'], true)."<hr />");
         foreach ($_SESSION['hotelcard'] as $name => $value) {
-            // Skip fields that are irrelevant
-            if (preg_match('/confirm_terms$/', $name)) continue;
+            // Skip fields that are irrelevant or handled separately.
+            // room_available, room_price, room_facility_id are all arrays
+            // and handled together with room_type in the loop below.
+            if (preg_match(
+                '/(?:confirm_terms|room_available|room_price|room_facility_id)$/',
+                $name)) continue;
 
             // Fix values that are IDs, special, or arrays of anything
             if (preg_match('/country_id$/', $name))
@@ -948,7 +1055,8 @@ echo("Showing step 8<br />");
             elseif (preg_match('/accomodation_type_id$/', $name))
                 $value = HotelAccomodationType::getNameById($value);
             elseif (preg_match('/creditcard_id$/', $name))
-                $value = join(', ', array_map(array('Creditcard', 'getNameById'), $value));
+// array ( 3 => 'Argencard', 6 => 'Bankcard', 9 => 'Carte Blanche', 13 => 'Discover', 18 => 'JCB', 22 => 'PIN', 28 => 'Switch', )
+                $value = join(', ', $value);
             elseif (preg_match('/lang_id$/', $name))
                 $value = FWLanguage::getLanguageParameter($value, 'name');
             elseif (preg_match('/gender$/', $name))
@@ -957,27 +1065,62 @@ echo("Showing step 8<br />");
                   : $_ARRAYLANG['TXT_HOTELCARD_GENDER_FEMALE']);
             elseif (preg_match('/rating$/', $name))
                 $value = HotelRating::getString($value);
-
+            elseif (preg_match('/hotel_facility_id$/', $name))
+                $value = join(', ', $value);
+            elseif (preg_match('/room_type$/', $name)) {
+                // Collect all hotel room data
+                $room_data = '';
+                foreach ($value as $index => $room_type) {
+echo("index $index, room_type $room_type<br />");
+                    if (empty($room_type)) continue;
+                    $room_data .=
+                        sprintf(
+                            $_ARRAYLANG['TXT_HOTELCARD_ROOM_TYPE_NUMBER'],
+                            $index).'<br />'.
+                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_TYPE'].' '.
+                        $room_type.'<br />'.
+                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_AVAILABLE'].' '.
+                        $_SESSION['hotelcard']['room_available'][$index].'<br />'.
+                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_PRICE'].' '.
+                        $_SESSION['hotelcard']['room_price'][$index].'<br />'.
+                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_FACILITY_ID'].' '.
+                        (isset($_SESSION['hotelcard']['room_facility_id'][$index])
+                          ? join(', ', $_SESSION['hotelcard']['room_facility_id'][$index])
+                          : '').'<br /><br />';
+                }
+                $name = 'room_types';
+                $value = $room_data;
+            }
             $name = 'TXT_HOTELCARD_'.strtoupper($name);
             if (empty($_ARRAYLANG[$name])) {
 echo("WARNING: Missing language entry for $name<br />");
                 continue;
             }
-
-            $arrData[$name] = $value;
-        }
-        foreach ($arrData as $placeholder => $element) {
-//echo("Language variable $placeholder => ".$_ARRAYLANG[$placeholder]."<br />");
+//echo("Language variable $name => ".$_ARRAYLANG[$name]."<br />");
             self::$objTemplate->setVariable(array(
-                'HOTELCARD_DATA_LABEL' => $_ARRAYLANG[$placeholder],
-                'HOTELCARD_DATA_INPUT' => $element,
+                'HOTELCARD_DATA_LABEL' => $_ARRAYLANG[$name],
+                'HOTELCARD_DATA_INPUT' => $value,
             ));
             self::$objTemplate->parse('hotelcard_data');
         }
+        return false; // Still running
+    }
 
-        self::$objTemplate->setVariable(array(
-            'TXT_HOTELCARD_NOTE' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ADD_STEP8_NOTE'],
-        ));
+
+    /**
+     * Shows the ninth step of the "Add Hotel" wizard
+     *
+     * If it still misses information, shows itself, and returns false.
+     * Returns true if the information is complete.
+     */
+    static function addHotelStep9()
+    {
+        global $_ARRAYLANG;
+
+        if (empty($_SESSION['hotelcard']['registration_id'])) {
+            // Store the hotel
+            if (Hotel::storeFromSession()) return true;
+        }
         return false; // Still running
     }
 
@@ -1000,14 +1143,14 @@ echo("WARNING: Missing language entry for $name<br />");
      *
      * If necessary, inserts a line break tag (<br />) between
      * messages.
-     * @param   string  $strMessage       The message to add
+     * @param   string  $text         The text to add
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function addMessage($strMessage)
+    static function addMessage($text)
     {
-        self::$statusMessage .=
-            (self::$statusMessage ? '<br />' : '').
-            $strMessage;
+        self::$message .=
+            (self::$message ? '<br />' : '').
+            $text;
     }
 
 
