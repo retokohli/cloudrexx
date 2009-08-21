@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hotelcard to Creditcard relation class
+ * Hotel class
  * @version     2.2.0
  * @since       2.2.0
  * @package     contrexx
@@ -22,8 +22,11 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  */
 require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
 
+require_once 'HotelFacility.class.php';
+require_once 'HotelRoom.class.php';
+
 /**
- * Hotelcard to Creditcard relation class
+ * Hotel class
  * @version     2.2.0
  * @since       2.2.0
  * @package     contrexx
@@ -34,60 +37,70 @@ require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
  */
 class Hotel
 {
+    const TEXT_HOTEL_GROUP = 'HOTELCARD_HOTEL_GROUP';
+
     /**
-     * Stores the Hotel data in the object and serves as a list of field names
+     * A complete list of all Hotel field names
+     * @var     array
+     * @access  private
+     * @static
+     */
+    private static $arrFieldnames = array(
+        'id',
+        'group_id',
+        'accomodation_type_id',
+        'lang_id',
+        'image_id',
+        'rating',
+        'recommended',
+        'numof_rooms',
+        'hotel_name',
+        'hotel_address',
+        'hotel_zip',
+        'hotel_location',
+        'hotel_region_id',
+        'description_text_id',
+        'policy_text_id',
+        'hotel_uri',
+        'contact_name',
+        'contact_gender',
+        'contact_position',
+        'contact_department',
+        'contact_phone',
+        'contact_fax',
+        'contact_email',
+        'reservation_name',
+        'reservation_phone',
+        'reservation_gender',
+        'reservation_fax',
+        'reservation_email',
+        'accountant_name',
+        'accountant_gender',
+        'accountant_phone',
+        'accountant_fax',
+        'accountant_email',
+        'billing_name',
+        'billing_gender',
+        'billing_address',
+        'billing_company',
+        'billing_zip',
+        'billing_location',
+        'billing_country_id',
+        'billing_tax_id',
+        'checkin_from',
+        'checkin_to',
+        'checkout_from',
+        'checkout_to',
+        'comment',
+        'found_how',
+    );
+
+    /**
+     * Stores the Hotel data in the object
      * @var     array
      * @access  private
      */
-    private $arrFieldvalues = array(
-        'id' => null,
-        'group_id' => null,
-        'accomodation_type_id' => null,
-        'lang_id' => null,
-        'image_id' => null,
-        'rating' => null,
-        'recommended' => null,
-        'numof_rooms' => null,
-        'hotel_name' => null,
-        'hotel_address' => null,
-        'hotel_zip' => null,
-        'hotel_location' => null,
-        'hotel_region_id' => null,
-        'description_text_id' => null,
-        'policy_text_id' => null,
-        'hotel_uri' => null,
-        'contact_name' => null,
-        'contact_gender' => null,
-        'contact_position' => null,
-        'contact_department' => null,
-        'contact_phone' => null,
-        'contact_fax' => null,
-        'contact_email' => null,
-        'reservation_name' => null,
-        'reservation_phone' => null,
-        'reservation_gender' => null,
-        'reservation_fax' => null,
-        'reservation_email' => null,
-        'accountant_name' => null,
-        'accountant_gender' => null,
-        'accountant_phone' => null,
-        'accountant_fax' => null,
-        'accountant_email' => null,
-        'billing_name' => null,
-        'billing_gender' => null,
-        'billing_address' => null,
-        'billing_company' => null,
-        'billing_zip' => null,
-        'billing_location' => null,
-        'billing_country_id' => null,
-        'billing_ust' => null,
-        'checkin_from' => null,
-        'checkin_to' => null,
-        'checkout_from' => null,
-        'checkout_to' => null,
-        'comment' => null,
-        'found_how' => null,
-    );
+    private $arrFieldvalues = array();
 
     /**
      * If this is false, the object has not been modified.  Otherwise,
@@ -98,7 +111,6 @@ class Hotel
      * @var   boolean
      */
     private $flagChanged = false;
-
 
     /**
      * Construct the Hotel
@@ -148,6 +160,16 @@ class Hotel
 
 
     /**
+     * Returns an array with all available field names
+     * @return  array         The field name array
+     */
+    static function getFieldnames()
+    {
+        return self::$arrFieldnames;
+    }
+
+
+    /**
      * Set the value for the given field name to the given value
      *
      * $name must be one of the field names present in the objects'
@@ -164,14 +186,17 @@ class Hotel
     function setFieldvalue($name, $value)
     {
         switch ($name) {
-          // INT(10), IDs -> Verify that it's a positive integer,
-          //    but not existence of PK
+          // INT(10) NULL, IDs -> Verify that it's a non-negative integer
           case 'group_id':
+          case 'image_id':
+          case 'policy_text_id':
+            if (!is_integer($value) || $value < 0) return false;
+            break;
+
+          // INT(10) NOT NULL, IDs -> Verify that it's a positive integer
           case 'accomodation_type_id':
           case 'lang_id':
-          case 'image_id':
           case 'description_text_id':
-          case 'policy_text_id':
           case 'hotel_region_id':
           case 'billing_country_id':
             if (!is_integer($value) || $value <= 0) return false;
@@ -211,7 +236,7 @@ class Hotel
           case 'billing_company':
           case 'billing_zip':
           case 'billing_location':
-          case 'billing_ust':
+          case 'billing_tax_id':
             $value = trim(strip_tags($value));
             break;
 
@@ -344,6 +369,99 @@ class Hotel
     }
 
 
+    static function storeFromSession()
+    {
+        global $_ARRAYLANG;
+
+        $objHotel = new Hotel();
+        foreach (Hotel::getFieldnames() as $name) {
+            if (!isset($_SESSION['hotelcard'][$name])) continue;
+            $value = $_SESSION['hotelcard'][$name];
+            switch ($name) {
+              case 'id':
+echo("Skipping name $name<br />");
+                continue;
+echo("Storing name $name, value $value<br />");
+              case 'group_id':
+echo("Adding group name $name<br />");
+                // See whether that hotel group exists already in that language
+                $arrId = Text::getIdArrayBySearch($value, MODULE_ID, self::TEXT_HOTEL_GROUP, FRONTEND_LANG_ID);
+                if (empty($arrId)) {
+                    // In another language maybe?
+                    $arrId = Text::getIdArrayBySearch($value, MODULE_ID, self::TEXT_HOTEL_GROUP);
+                }
+                if (empty($arrId)) {
+                    // No way... Create a new Text
+                    $objText = new Text($value, FRONTEND_LANG_ID, MODULE_ID, self::TEXT_HOTEL_GROUP);
+                    if (!$objText->store()) {
+                // TODO:  Error message
+                        return false;
+                    }
+                } else {
+                    // Use the existing Text
+                    $id = key($arrId);
+                    $objText = Text::getById($id, FRONTEND_LANG_ID);
+                }
+                $_SESSION['hotelcard']['group_id'] = $objText->getId();
+                break;
+              default:
+            }
+            if ($objHotel->setFieldvalue($name, $value)) {
+echo("Success name $name, value $value<br />");
+                continue;
+            }
+            Hotelcard::addMessage(sprintf(
+                $_ARRAYLANG['TXT_HOTELCARD_ERROR_ILLEGAL_VALUE'],
+                $_ARRAYLANG['TXT_HOTELCARD_'.strtoupper($name)]));
+// Test only!
+//                return false;
+        }
+        $hotel_id =  $objHotel->getFieldvalue('id');
+
+        // Store the hotel facilities
+        if (empty($_SESSION['hotelcard']['hotel_facility_id'])) return false;
+        foreach ($_SESSION['hotelcard']['hotel_facility_id'] as $hotel_facility_id) {
+            if (HotelFacility::addRelation(
+                $hotel_id, $hotel_facility_id)) continue;
+            Hotelcard::addMessage(sprintf(
+                $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_HOTEL_FACILITY'],
+                HotelFacility::getFacilityNameById($hotel_facility_id)));
+            return false;
+        }
+
+        // Store the room types
+        if (empty($_SESSION['hotelcard']['room_type'])) return false;
+        foreach ($_SESSION['hotelcard']['room_type'] as $room_type) {
+            $room_type_id = HotelRoom::storeType(
+                $room_type,
+                $hotel_id,
+                $_SESSION['hotelcard']['room_available'],
+                $_SESSION['hotelcard']['room_price']);
+            if ($room_type_id) {
+                // Store the room facilities
+                foreach ($_SESSION['hotelcard']['room_facility_id'] as $room_facility_id) {
+                    if (HotelRoom::addFacility(
+                        $room_type_id, $room_facility_id)) continue;
+                    Hotelcard::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_FACILITY'],
+                        HotelRoom::getFacilityNameById($room_facility_id)));
+                    return false;
+                }
+                continue;
+            }
+            Hotelcard::addMessage(sprintf(
+                $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_TYPE'],
+                HotelFacility::getFacilityNameById($room_type)));
+            return false;
+        }
+
+// TODO
+        $_SESSION['hotelcard']['registration_id'] = 0;
+        $_SESSION['hotelcard']['registration_date'] = 0;
+        return true;
+    }
+
+
     /**
      * Tries to fix or recreate the database table(s) for the class
      *
@@ -354,14 +472,14 @@ class Hotel
     {
         global $objDatabase;
 
-echo("Creditcard::errorHandler(): Entered<br />");
+echo("Hotel::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("Creditcard::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel<br />");
+echo("Hotel::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel` (
@@ -405,7 +523,7 @@ echo("Creditcard::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hot
               `billing_zip` TINYTEXT NULL DEFAULT NULL,
               `billing_location` TINYTEXT NULL DEFAULT NULL,
               `billing_country_id` INT(10) NULL DEFAULT NULL,
-              `billing_ust` TINYTEXT NULL DEFAULT NULL,
+              `billing_tax_id` TINYTEXT NULL DEFAULT NULL,
               `checkin_from` TIME NULL DEFAULT NULL,
               `checkin_to` TIME NULL DEFAULT NULL,
               `checkout_from` TIME NULL DEFAULT NULL,
@@ -446,7 +564,7 @@ echo("Creditcard::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hot
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("Creditcard::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel<br />");
+echo("Hotel::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel<br />");
 
         // More to come...
 
