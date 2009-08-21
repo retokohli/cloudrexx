@@ -129,9 +129,11 @@ echo("Creditcard::getNameArray():  Made array ".var_export($arrCreditcardNames, 
     /**
      * Returns the name of the creditcard selected by its ID
      *
-     * If a creditcard with the given ID does not exist, returns the empty string.
-     * @param   integer   $creditcard_id     The creditcard ID
-     * @return  string                    The creditcard name, or the empty string
+     * If a creditcard with the given ID does not exist, returns the
+     * empty string.
+     * @param   integer   $creditcard_id  The creditcard ID
+     * @return  string                    The creditcard name,
+     *                                    or the empty string
      * @static
      */
     static function getNameById($creditcard_id)
