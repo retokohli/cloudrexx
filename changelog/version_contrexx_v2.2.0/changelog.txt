@@ -13,6 +13,10 @@ Wird diese Option deaktivert, wird der normale WYSIWYG Editor Style geladen.
 - Aus sicherheits- und benutzerfreundlichen Gründen wird nun standardmässig jeder Text der in den
 WYSIWYG Editor kopiert wird, als Plaintext eingefügt. (FCKConfig.ForcePasteAsPlainText = true;)
 
+Allgemein
+- Neue Platzhalter für Datumsfragmente:
+  DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
+
 Benutzerverwaltung
 - Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
   Kategorie beim Digital Asset Management Modul erstellt werden.
