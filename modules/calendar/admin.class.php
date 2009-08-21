@@ -48,7 +48,7 @@ class calendarManager extends calendarLibrary
     {
         global $_ARRAYLANG, $objTemplate;
 
-        $this->calendarLibrary($_SERVER["SCRIPT_NAME"]."?cmd=calendar".$this->mandateLink);
+        parent::__construct($_SERVER["SCRIPT_NAME"]."?cmd=calendar".$this->mandateLink);
         // links
         $this->pageTitle = $_ARRAYLANG['TXT_CALENDAR'];
 
