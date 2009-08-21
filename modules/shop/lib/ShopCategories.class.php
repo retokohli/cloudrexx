@@ -758,6 +758,7 @@ TODO:  For 2.2.0
         "; // $queryFlags: OR flags LIKE '%parent:$parentShopCategoryId%'
 /*
 2.2.0
+// TODO: *MUST NOT* ignore the language IDs nested in the array!
         $strTextId = join(',', array_keys(Text::getIdArrayBySearch(
             $strName, MODULE_ID, TEXT_SHOP_CATEGORIES_NAME, FRONTEND_LANG_ID
         )));
