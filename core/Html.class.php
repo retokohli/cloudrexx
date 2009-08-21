@@ -120,7 +120,7 @@ class Html
         $name, $arrOptions=array(), $selected='', $onchange='', $attribute=''
     ) {
 
-echo("getSelect($name, $arrOptions, $selected, $onchange, $attribute): Entered<br />");
+//echo("getSelect($name, $arrOptions, $selected, $onchange, $attribute): Entered<br />");
 
         if (empty($name)) return '';
         return
@@ -181,7 +181,7 @@ echo("getSelect($name, $arrOptions, $selected, $onchange, $attribute): Entered<b
     ) {
         static $index = array();
 
-echo("getRadioGroup($name, $arrOptions, $checked, $onchange, $attributeRadio, $attributeLabel): Entered<br />");
+//echo("getRadioGroup($name, $arrOptions, $checked, $onchange, $attributeRadio, $attributeLabel): Entered<br />");
 
         if (empty($name)) return '';
         $radiogroup = '';
@@ -199,6 +199,7 @@ echo("getRadioGroup($name, $arrOptions, $checked, $onchange, $attributeRadio, $a
                     $attributeLabel
                 );
         }
+//echo("getRadioGroup(): Made ".htmlentities($radiogroup, ENT_QUOTES, CONTREXX_CHARSET)."<br />");
         return $radiogroup;
     }
 
@@ -222,7 +223,7 @@ echo("getRadioGroup($name, $arrOptions, $checked, $onchange, $attributeRadio, $a
         $name, $value, $id='', $checked=false, $onchange='', $attribute='')
     {
 
-echo("getRadio($name, $value, $id, $checked, $onchange, $attribute): Entered<br />");
+//echo("getRadio($name, $value, $id, $checked, $onchange, $attribute): Entered<br />");
 
         if (empty($name)) return '';
         return
@@ -269,7 +270,7 @@ echo("getRadio($name, $value, $id, $checked, $onchange, $attribute): Entered<br 
     ) {
         static $index = array();
 
-echo("getCheckboxGroup($name, ".var_export($arrOptions, true).", ".var_export($arrLabel, true).", ".var_export($arrChecked, true).", $onchange, $attributeCheckbox, $attributeLabel): Entered<br />");
+//echo("getCheckboxGroup($name, ".var_export($arrOptions, true).", ".var_export($arrLabel, true).", ".var_export($arrChecked, true).", $onchange, $attributeCheckbox, $attributeLabel): Entered<br />");
 
         if (empty($name)) return '';
         // Remove any bracketed construct from the end of the name
@@ -314,7 +315,7 @@ echo("getCheckboxGroup($name, ".var_export($arrOptions, true).", ".var_export($a
         $name, $value=1, $id='', $checked=false, $onchange='', $attribute=''
     ) {
 
-echo("getCheckbox($name, $value, $id, $checked, $onchange, $attribute): Entered<br />");
+//echo("getCheckbox($name, $value, $id, $checked, $onchange, $attribute): Entered<br />");
 
         if (empty($name)) return '';
         return
