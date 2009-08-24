@@ -199,4 +199,5 @@ $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW'] = "Dia show";
 $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'] = "Seconds per image";
 $_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] = "Single image view";
 $_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'] = "Show file names";
+$_ARRAYLANG['TXT_GALLERY_GD_LIB_NOT_INSTALLED'] = "Unable to rotate image because the PHP GD graphics library is missing.";
 ?>
