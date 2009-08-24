@@ -119,6 +119,10 @@ Modul: Dokumenten System
 Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
+Modul: Bildergallerie
+- Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die 
+  ImageRotate() Funktion nicht verfügbar ist. 
+
 Modul: Gästebuch
 - Der Inhalt des Benachrichtigung-E-Mails wird korrekt dargestellt.
 
