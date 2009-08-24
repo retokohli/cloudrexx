@@ -1512,7 +1512,7 @@ class User extends User_Profile
                 FROM `".DBPREFIX."access_user_groups` AS tblG
                 INNER JOIN `".DBPREFIX."access_rel_user_group` AS tblR ON tblR.`group_id` = tblG.`group_id`
                 INNER JOIN `".DBPREFIX."access_users` AS tblU ON tblU.`id` = tblR.`user_id`
-                WHERE tblU.`id` = ".$this->id." AND (tblG.`type` = '".($backend ? 'backend' : 'frontend')."' OR tblG.`type` = 'backend')
+                WHERE tblU.`id` = ".$this->id." AND tblG.`is_active` = 1 AND (tblG.`type` = '".($backend ? 'backend' : 'frontend')."' OR tblG.`type` = 'backend')
             ", 1)) !== false && $objUser->RecordCount() == 1;
     }
 
