@@ -3094,6 +3094,11 @@ $strFileNew = '';
     {
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
 
+        if(!function_exists('imagerotate')){
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_GD_LIB_NOT_INSTALLED'];
+            return false;
+        }
+
         $objResult = $objDatabase->Execute('SELECT     path,
                                                     quality,
                                                     size_type,
