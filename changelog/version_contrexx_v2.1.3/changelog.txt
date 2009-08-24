@@ -18,6 +18,10 @@ Modul: Dokumenten System
 * Behobene Fehler **********************
 ****************************************
 
+Gallery:
+- Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
+  ImageRotate() Funktion nicht verfügbar ist.
+
 Benutzerverwaltung:
 - Ein Benutzer kann nur authentifiziert werden, sofern er bei mindestens einer
   aktiven Gruppe Mitglied ist.
