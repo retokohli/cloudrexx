@@ -453,6 +453,11 @@ class User extends User_Profile
 
     public function getPrimaryGroupId()
     {
+        if (empty($this->primary_group)) {
+            $FWUser = FWUser::getFWUserObject();
+            $this->arrGroups = $this->loadGroups(!$FWUser->isBackendMode());
+            return $this->arrGroups[0];
+        }
         return $this->primary_group;
     }
 
@@ -1146,10 +1151,11 @@ class User extends User_Profile
      * the user is associated to.
      *
      * @param integer $userId
+     * @param boolean $onlyActiveGroups
      * @global ADONewConnection
      * @return mixed array on success, FALSE on failure
      */
-    private function loadGroups()
+    private function loadGroups($onlyActiveGroups = false)
     {
         global $objDatabase;
 
@@ -1163,6 +1169,7 @@ class User extends User_Profile
             INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGroup
             USING(`group_id`)
             WHERE tblRel.`user_id` = '.$this->id
+            .($onlyActiveGroups ? ' AND tblGroup.`is_active` = 1' : '')
         );
         if ($objGroup) {
             while (!$objGroup->EOF) {
