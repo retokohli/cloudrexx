@@ -96,7 +96,7 @@ class JS
                 'lib/javascript/datepickercontrol/datepickercontrol.js'
             ),
             'cssfiles'      => array(
-                'lib/javascript/datepickercontrol/datepickercontrol.js'
+                'lib/javascript/datepickercontrol/datepickercontrol.css'
             )
         ),
         'shadowbox'     => array(
