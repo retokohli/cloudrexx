@@ -436,6 +436,9 @@ class Shop extends ShopLibrary
             }
             if (empty($selectedCatId) && isset($_REQUEST['productId'])) {
                 $product_id = $_REQUEST['productId'];
+                if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
+                    $product_id = $_SESSION['shop']['cart']['products'][$product_id]['id'];
+                }
                 $objProduct = Product::getById($product_id);
                 $selectedCatId = $objProduct->getShopCategoryId();
             }
