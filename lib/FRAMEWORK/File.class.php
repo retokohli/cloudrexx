@@ -379,7 +379,6 @@ class File
         } else {
             $status = $oldDirName;
         }
-
         return $status;
     }
 
@@ -417,45 +416,39 @@ class File
 
     /**
      * Moves an uploaded file to a specified path
-     * @param   string  $fileinput  Uploaded file name
-     * @param   string  $fileTarget Target path relative to the document root
-     * @param   integer $maxSize    The maximum allowed file size
-     * //@param   array   $types      NOT YET IMPLEMENTED NOR USED
-     * @return true on success, false otherwise
      *
-     * @todo implement filetype parsing and other features
+     * Returns true if the file exists, matches one of the accepted file types,
+     * if any, is not too large, and can be moved successfully.
+     * Mind that the target path *MUST NOT* include ASCMS_PATH,
+     * but only the path relative to it.
+     * @param   string  $upload_field_name  File input field name
+     * @param   string  $target_path        Target path, relative to the document
+     *                                      root, including a leading path separator
+     *                                      and the file name
+     * @param   integer $maximum_size       The optional maximum allowed file size
+     * @param   array   $accepted_extensions  The optional array of allowed file
+     *                                      extensions, without the dot
+     * @return  boolean                     True on success, false otherwise
      */
-    static function uploadFileHttp($fileinput, $fileTarget, $maxSize = 0) //, $types = 0)
+    static function uploadFileHttp(
+        $upload_field_name, $target_path,
+        $maximum_size=0, $accepted_extensions=false)
     {
-        if (!$fileinput or !$fileTarget) return false;
-        if (!$_FILES[$fileinput]) return false;
-        $tmpFilePath = $_FILES[$fileinput]['tmp_name'];
-        if ( $maxSize > 0 && filesize($tmpFilePath) > $maxSize) return false;
-        if (move_uploaded_file($tmpFilePath, $fileTarget)) return true;
-        return false;
-    }
-
-
-/*
-Bogus and never used.
-Should be replaced by and used instead of the various functions of the same name
-spread throughout the system, however.
-    function uploadFile($path, $webPath, $fileName, $sourceFile)
-    {
-        // upload the file
-        echo $fileName;
-        echo $sourceFile;
-
-        $upload = ftp_put($this->conn_id, 'test.jpg', $sourceFile, FTP_BINARY);
-
-        // check upload status
-        if (!$upload) {
-            echo 'FTP upload has failed!';
-        } else {
-            echo "Uploaded $sourceFile!";
+        if (   empty($upload_field_name)
+            || empty($_FILES[$upload_field_name])
+            || empty($target_path))
+            return false;
+        $tmp_path = $_FILES[$upload_field_name]['tmp_name'];
+        if ($accepted_extensions) {
+            $path_parts = pathinfo($tmp_path, PATHINFO_EXTENSION);
+            if (!in_array($path_parts['extension'], $accepted_extensions))
+                return false;
         }
+        if ($maximum_size > 0 && filesize($tmp_path) > $maximum_size)
+            return false;
+        if (!move_uploaded_file($tmp_path, ASCMS_PATH.$target_path)) return false;
+        return true;
     }
-*/
 
 }
 
