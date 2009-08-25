@@ -434,6 +434,14 @@ class Shop extends ShopLibrary
             if (isset($_REQUEST['catId'])) {
                 $selectedCatId = intval($_REQUEST['catId']);
             }
+            if (empty($selectedCatId) && isset($_REQUEST['productId'])) {
+                $product_id = $_REQUEST['productId'];
+                if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
+                    $product_id = $_SESSION['shop']['cart']['products'][$product_id]['id'];
+                }
+                $objProduct = Product::getById($product_id);
+                $selectedCatId = $objProduct->getShopCategoryId();
+            }
 
             // Array of all visible ShopCategories
             $arrShopCategoryTree = ShopCategories::getTreeArray(
