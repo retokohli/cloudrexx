@@ -45,14 +45,9 @@ class PrintshopAdmin extends PrintshopLibrary {
 
         $objFWUser = FWUser::getFWUserObject();
         $this->_intCurrentUserId = $objFWUser->objUser->getId();
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=printshop">'.$_ARRAYLANG['TXT_PRINTSHOP_OVERVIEW'].'</a>
-                                                            <a href="?cmd=printshop&amp;act=type">'.$_ARRAYLANG['TXT_PRINTSHOP_TYPE_TITLE'].'</a>
-                                                            <a href="?cmd=printshop&amp;act=format">'.$_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'].'</a>
-                                                            <a href="?cmd=printshop&amp;act=front">'.$_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'].'</a>
-                                                            <a href="?cmd=printshop&amp;act=back">'.$_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'].'</a>
-                                                            <a href="?cmd=printshop&amp;act=weight">'.$_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'].'</a>
-                                                            <a href="?cmd=printshop&amp;act=paper">'.$_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'].'</a>
-                                                            <a href="?cmd=printshop&amp;act=orders">'.$_ARRAYLANG['TXT_PRINTSHOP_ORDERS_TITLE'].'</a>
+        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=printshop">'.$_ARRAYLANG['TXT_PRINTSHOP_ORDERS_TITLE'].'</a>
+                                                            <a href="?cmd=printshop&amp;act=products">'.$_ARRAYLANG['TXT_PRINTSHOP_PRODUCTS'].'</a>
+                                                            <a href="?cmd=printshop&amp;act=attributes">'.$_ARRAYLANG['TXT_PRINTSHOP_ATTRIBUTES'].'</a>
                                                             <a href="?cmd=printshop&amp;act=settings">'.$_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'].'</a>
                                                     ');
     }
@@ -87,6 +82,8 @@ class PrintshopAdmin extends PrintshopLibrary {
                 $this->_getProducts();
             break;
 
+            case 'attributes':
+                $_GET['act'] = 'type'; //default attribute
             case 'type':
             case 'format':
             case 'front':
@@ -94,7 +91,6 @@ class PrintshopAdmin extends PrintshopLibrary {
             case 'weight':
             case 'paper':
                 Permission::checkAccess(150, 'static');
-
                 $attribute = contrexx_addslashes($_GET['act']);
                 if(!empty($_POST['json'])){
                     switch($_POST['json']){
@@ -111,6 +107,7 @@ class PrintshopAdmin extends PrintshopLibrary {
                             die(json_encode(array('message' => $message)));
                         break;
                         default:
+                            die("OMGWTF");
                     }
                 }
                 $this->showAttributes($attribute);
@@ -125,10 +122,12 @@ class PrintshopAdmin extends PrintshopLibrary {
                 $this->saveSettings();
                 $this->showSettings();
             break;
-
+            case 'products':
+                $this->showProductOverview();
+            break;
             default:
                 Permission::checkAccess(150, 'static');
-                $this->showOverview();
+                $this->showOrders();
         }
 
         $objTemplate->setVariable(array(
@@ -146,11 +145,11 @@ class PrintshopAdmin extends PrintshopLibrary {
      * @global  array
      * @global  array
      */
-    function showOverview() {
+    function showProductOverview() {
         global $_CORELANG, $_ARRAYLANG;
 
-        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_OVERVIEW'];
-        $this->_objTpl->loadTemplateFile('module_printshop_main.html', true, true);
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_PRODCUTS'];
+        $this->_objTpl->loadTemplateFile('module_printshop_products.html', true, true);
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_NO_ENTRY'         => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'],
@@ -209,6 +208,17 @@ class PrintshopAdmin extends PrintshopLibrary {
             $this->_objTpl->touchBlock('noEntry');
         }
     }
+
+
+    function showOrders(){
+        global $_ARRAYLANG;
+
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_ORDERS_TITLE'];
+        $this->_objTpl->loadTemplateFile('module_printshop_orders.html', true, true);
+
+
+    }
+
 
     /**
      * return filtered products as JSON string
@@ -338,7 +348,7 @@ class PrintshopAdmin extends PrintshopLibrary {
                 'error'     => 'null',
                 'ok'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_ADDED'],
                 'type'      => $this->_arrAttributeTranslation['type'  ][$type  ]['name'],
-                'format'    => $this->_arrAttributeTranslation['front' ][$front ]['name'],
+                'format'    => $this->_arrAttributeTranslation['format'][$format]['name'],
                 'back'      => $this->_arrAttributeTranslation['back'  ][$back  ]['name'],
                 'front'     => $this->_arrAttributeTranslation['front' ][$front ]['name'],
                 'weight'    => $this->_arrAttributeTranslation['weight'][$weight]['name'],
@@ -434,7 +444,7 @@ class PrintshopAdmin extends PrintshopLibrary {
      */
     function showAttributes($attribute){
         global $_ARRAYLANG, $_CORELANG;
-        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'];
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_ATTRIBUTES'];
         $this->_objTpl->loadTemplateFile('module_printshop_attributes.html', true, true);
 
         $this->_objTpl->setGlobalVariable(array(
@@ -450,7 +460,14 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_PRINTSHOP_DELETE_ENTRY'            => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_ENTRY'],
             'TXT_PRINTSHOP_DELETE_SELECTED'         => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_SELECTED'],
             'TXT_PRINTSHOP_ALREADY_EXISTS'          => $_ARRAYLANG['TXT_PRINTSHOP_ALREADY_EXISTS'],
-            'TXT_PRINTSHOP_FADE_OUT'         => $_ARRAYLANG['TXT_PRINTSHOP_FADE_OUT'],
+            'TXT_PRINTSHOP_FADE_OUT'                => $_ARRAYLANG['TXT_PRINTSHOP_FADE_OUT'],
+
+            'TXT_PRINTSHOP_TYPE_TITLE'              => $_ARRAYLANG['TXT_PRINTSHOP_TYPE_TITLE'],
+            'TXT_PRINTSHOP_FORMAT_TITLE'            => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
+            'TXT_PRINTSHOP_FRONT_TITLE'             => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
+            'TXT_PRINTSHOP_BACK_TITLE'              => $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
+            'TXT_PRINTSHOP_PAPER_TITLE'             => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
+            'TXT_PRINTSHOP_WEIGHT_TITLE'            => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
 
             'TXT_SELECT_ALL'                        => $_CORELANG['TXT_SELECT_ALL'],
             'TXT_DESELECT_ALL'                      => $_CORELANG['TXT_DESELECT_ALL'],

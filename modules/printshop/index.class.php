@@ -92,6 +92,15 @@ class Printshop extends PrintshopLibrary {
      */
     function showPrints() {
         global $_ARRAYLANG;
+
+        if(!empty($_REQUEST['standalone'])){ //JSON request
+            foreach ($this->_arrAvailableAttributes as $attribute) {
+                $arrFilter[$attribute] = !empty($_POST[$attribute]) ? intval($_POST[$attribute]) : 0;
+            }
+            $arrEntry = $this->_getEntries($arrFilter, true);
+            die(json_encode(current($arrEntry['entries'])));
+        }
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_FORMAT_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
             'TXT_PRINTSHOP_FRONT_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
@@ -121,11 +130,14 @@ class Printshop extends PrintshopLibrary {
         }
         $lineColor = $this->_lineColor;
         $type = !empty($_REQUEST['type']) ? contrexx_addslashes($_REQUEST['type']) : '';
+        $DI   = CONTREXX_DIRECTORY_INDEX;
+        JS::activate('jquery');
         JS::activate('excanvas');
         $JS =<<< EOJ
 (function(){
     \$J(document).ready(function(){
-        var drawDelay = 10; //delay in ms for each rectangle draw step
+        var drawDelay = 12; //delay in ms for each rectangle draw step
+        var stepSize = 3;
         var \$last = [];
         \$J.each(['Format', 'Front', 'Back', 'Weight', 'Paper'], function(i, j){
             setAttributeFilter(\$J('#psAttribute'+j+' li:first'), \$last);
@@ -137,14 +149,27 @@ class Printshop extends PrintshopLibrary {
             window.console = {log: function(msg){window.log+=msg.toString();}}
         }
 
+        \$J('#psSubmit').click(function(){
+            var format = \$J('#psAttributeFormat li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
+            var back   = \$J('#psAttributeBack li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
+            var front  = \$J('#psAttributeFront li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
+            var weight = \$J('#psAttributeWeight li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
+            var paper  = \$J('#psAttributePaper li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
+            location.href='$DI?section=printshop&cmd=order&type=$type&format='+format+'&front='+front+'&back='+back+'&weight='+weight+'&paper='+paper+''
+        });
+
+        \$J('.psType_$type').css({color:'black'});
+
         \$J('#printshopCanvas').click(function(e){
             clickLiAtPos(e);
         });
 
         var clickLiAtPos = function(e){
+            var x = e.clientX + \$J(window).scrollLeft();
+            var y = e.clientY + \$J(window).scrollTop();
             for(var i=0; i < arrLis.length; i++){
-                if(e.clientX > arrLis[i].left && e.clientX < arrLis[i].left + arrLis[i].width){
-                    if(e.clientY > arrLis[i].top && e.clientY < arrLis[i].top + arrLis[i].height){
+                if(x > arrLis[i].left && x < arrLis[i].left + arrLis[i].width){
+                    if(y > arrLis[i].top && y < arrLis[i].top + arrLis[i].height){
                         \$J(arrLis[i].li).click();
                         return false;
                     }
@@ -175,17 +200,6 @@ class Printshop extends PrintshopLibrary {
                 return false;
             }
 
-            var filters = getFilters();
-
-            \$J.ajax({
-                type: 'POST',
-                url: 'index.php?standalone=1&cmd=printshop&type=$type',
-                data: filters,
-                dataType: 'json',
-                success: function(data){updatePrice(data.price)},
-                error: function(data){updatePrice('N/A');}
-            });
-
             var \$ul        = \$li.parent();
             var \$canvas    = \$J('#printshopCanvas');
             var posLi       = \$li.position();
@@ -211,6 +225,10 @@ class Printshop extends PrintshopLibrary {
             var left        = posLi.left - posCanvas.left;
             var top         = posLi.top - posCanvas.top;
             \$li.parent().find('li').removeClass('selected');
+            \$li.addClass('targetLi');
+            updateFilter();
+            \$li.removeClass('targetLi');
+
             \$liSel.addClass('oldSelected');
             (function(){ //scroll down smoothly
                 ctx.clearRect(left , posUl.top - posCanvas.top, widthUl, heightUl+100);
@@ -221,7 +239,7 @@ class Printshop extends PrintshopLibrary {
                 }else{
                     ctx.fillRect (left, top - heightLi*gap + step, widthLi, heightLi);
                 }
-                step += 2;
+                step += stepSize;
                 if(step < targetPos){
                     x = setTimeout(arguments.callee, drawDelay);
                     return;
@@ -232,11 +250,25 @@ class Printshop extends PrintshopLibrary {
             })();
         });
         var x = setTimeout(initCanvas, 100); //give poor IE some time
+        updateFilter();
     });
 
-    var getFilters = function(){
+    var updateFilter = function(){
+        var filters = getFilters();
+        \$J.ajax({
+            type: 'POST',
+            url: 'index.php?standalone=1&section=printshop',
+            data: 'type=$type&'+filters,
+            dataType: 'json',
+            success: function(data){updateInfoDisplay(data)},
+            error: function(data){updateInfoDisplay();}
+        });
+    }
+
+    var getFilters = function(\$li){
         var filter = {};
-        \$J('.selected').each(function(){
+        var \$selected = \$J('.selected,.targetLi');
+        \$selected.each(function(){
             var filterMatch = \$J(this).attr('id').match(/(.*?)_(\d+)$/);
             var attribute   = filterMatch[1];
             var attributeId = filterMatch[2];
@@ -273,8 +305,27 @@ class Printshop extends PrintshopLibrary {
         updateLines();
     }
 
-    var updatePrice = function(price){
-        \$J('#pricePerOne').text(price);
+    var updateInfoDisplay = function(data){
+        var NA = 'N/A';
+        if(data){
+            \$J('#pricePerOne').text(data.price);
+            \$J('#psSummaryType').text(data.type);
+            \$J('#psSummaryFormat').text(data.format);
+            \$J('#psSummaryFront').text(data.front);
+            \$J('#psSummaryBack').text(data.back);
+            \$J('#psSummaryWeight').text(data.weight);
+            \$J('#psSummaryPaper').text(data.paper);
+            \$J('#psSubmit').removeAttr('disabled');
+        }else{
+            \$J('#pricePerOne').text(NA);
+            \$J('#psSummaryType').text(NA);
+            \$J('#psSummaryFormat').text(NA);
+            \$J('#psSummaryFront').text(NA);
+            \$J('#psSummaryBack').text(NA);
+            \$J('#psSummaryWeight').text(NA);
+            \$J('#psSummaryPaper').text(NA);
+            \$J('#psSubmit').attr('disabled', 'disabled');
+        }
     }
 
     var updateLines = function(_offsetTop, \$affectedLi, toTop){
@@ -327,16 +378,6 @@ class Printshop extends PrintshopLibrary {
 })();
 EOJ;
         JS::registerCode($JS);
-
-        if(!empty($_REQUEST['standalone'])){ //JSON request
-            foreach ($this->_arrAvailableAttributes as $attribute) {
-                $arrFilter[$attribute] = !empty($_POST[$attribute]) ? intval($_POST[$attribute]) : 0;
-            }
-            $arrEntry = current($this->_getEntries($arrFilter, false));
-            die(json_encode(array(
-                'price' => $arrEntry['price'],
-            )));
-        }
     }
 
 
@@ -349,6 +390,52 @@ EOJ;
      */
     function showOrder() {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
+
+         $this->_objTpl->setGlobalVariable(array(
+            'TXT_PRINTSHOP_FORMAT_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
+            'TXT_PRINTSHOP_FRONT_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
+            'TXT_PRINTSHOP_BACK_TITLE'       => $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
+            'TXT_PRINTSHOP_WEIGHT_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
+            'TXT_PRINTSHOP_PAPER_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
+            'TXT_PRINTSHOP_SUMMARY'          => $_ARRAYLANG['TXT_PRINTSHOP_SUMMARY'],
+            'TXT_PRINTSHOP_PRICE_PER_PIECE'  => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_PER_PIECE'],
+            'TXT_PRINTSHOP_AMOUNT'           => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
+            'TXT_PRINTSHOP_TYPE'             => $_ARRAYLANG['TXT_PRINTSHOP_TYPE'],
+            'TXT_PRINTSHOP_DATA_PREPARATION' => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION'],
+            'TXT_PRINTSHOP_EXCL_TAX'         => $_ARRAYLANG['TXT_PRINTSHOP_EXCL_TAX'],
+            'TXT_PRINTSHOPT_COMMIT_ORDER'    => $_ARRAYLANG['TXT_PRINTSHOPT_COMMIT_ORDER'],
+        ));
+
+        $type = !empty($_REQUEST['type']) ? contrexx_addslashes($_REQUEST['type']) : '';
+        $DI   = CONTREXX_DIRECTORY_INDEX;
+        JS::activate('jquery');
+        JS::activate('excanvas');
+        $JS =<<< EOJ
+(function(){
+    \$J(document).ready(function(){
+        updatePrice();
+        checkFilledFields();
+    });
+
+    var updatePrice = function(){
+        var amount = \$J('#amount').val();
+
+    }
+
+    var checkFilledFields = function(){
+        var psSubject = \$J('#psSubject').val().replace(/\s+/, '');
+        var psImageFront = \$J('#psImageFront').val().replace(/\s+/, '');
+
+        if(!= ''){
+        }
+
+
+
+    }
+
+})();
+EOJ;
+        JS::registerCode($JS);
 
     }
 

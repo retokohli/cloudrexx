@@ -1881,7 +1881,7 @@ $objTemplate->setVariable(array(
     'LOGIN_URL'            => (isset($strFeLink) ? $strFeLink : ''),
     'LOGIN_CONTENT'        => (isset($strFeContent) ? $strFeContent : ''),
     'JAVASCRIPT'           => 'javascript_inserting_here',
-    'TXT_CORE_LAST_MODIFIED_PAGE' => $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'],
+    'TXT_CORE_LAST_MODIFIED_PAGE' => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE'   => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
 ));
 
