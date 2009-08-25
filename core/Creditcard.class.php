@@ -111,7 +111,7 @@ class Creditcard
     {
         static $arrCreditcardNames = false;
         if ($arrCreditcardNames) return $arrCreditcardNames;
-echo("Creditcard::getNameArray():  Initializing<br />");
+//echo("Creditcard::getNameArray():  Initializing<br />");
         if (empty(self::$arrCreditcards)) self::init();
         if (empty(self::$arrCreditcards)) {
 echo("Creditcard::getNameArray():  Failed to initialize<br />");
@@ -121,7 +121,7 @@ echo("Creditcard::getNameArray():  Failed to initialize<br />");
         foreach (self::$arrCreditcards as $id => $arrCreditcard) {
             $arrCreditcardNames[$id] = $arrCreditcard['name'];
         }
-echo("Creditcard::getNameArray():  Made array ".var_export($arrCreditcardNames, true)."<br />");
+//echo("Creditcard::getNameArray():  Made array ".var_export($arrCreditcardNames, true)."<br />");
         return $arrCreditcardNames;
     }
 
