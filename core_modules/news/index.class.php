@@ -414,7 +414,7 @@ class news extends newsLibrary {
     function getPageTitle($pageTitle="")
     {
         if (empty($this->newsTitle)) {
-            $this->newsTitle = htmlspecialchars(strip_tags(stripslashes($pageTitle)), ENT_QUOTES, CONTREXX_CHARSET);
+            $this->newsTitle = $pageTitle;
         }
     }
 
