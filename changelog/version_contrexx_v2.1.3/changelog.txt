@@ -5,8 +5,7 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
-
-Allgemein:
+Allgemein
 - Neue Platzhalter für Datumsfragmente:
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
 
@@ -17,14 +16,17 @@ Modul: Dokumenten System
 ****************************************
 * Behobene Fehler **********************
 ****************************************
-
-Gallery:
-- Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
-  ImageRotate() Funktion nicht verfÃ¼gbar ist.
-
-Benutzerverwaltung:
+Benutzerverwaltung
 - Ein Benutzer kann nur authentifiziert werden, sofern er bei mindestens einer
   aktiven Gruppe Mitglied ist.
 
-Update:
+Modul: Bildergalerie
+- Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
+  ImageRotate() Funktion nicht verfügbar ist.
+
+Modul: Shop
+- Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
+- Die detaillierte Produkte Ansicht aus dem Warenkorb heraus funktioniert.
+
+Update
 - Update-SQL-Query im Kalendermodul gefixt
