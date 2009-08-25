@@ -33,7 +33,20 @@ class Image
     /**
      * The default "no image" URI
      */
-    const NO_IMAGE_SRC         = 'images/content/no_image.gif';
+    const NO_IMAGE_SRC = 'images/content/no_image.gif';
+
+    /**
+     * Size limit in bytes for images being uploaded or stored
+     */
+    const MAXIMUM_UPLOAD_FILE_SIZE = 300000;
+
+    /**
+     * Array of all file extensions accepted as image files
+     * @var   array
+     */
+    private static $arrAcceptedFiletype = array(
+        'gif', 'jpg', 'png',
+    );
 
     /**
      * @var     integer         $id              The object ID, PRIMARY
@@ -84,18 +97,18 @@ class Image
     /**
      * Create an Image
      *
-     * Note that the optional $imageId argument *SHOULD NOT* be used when
+     * Note that the optional $image_id argument *SHOULD NOT* be used when
      * adding the first Image to another object, but only to ensure that
      * additional Images with different ordinals are added to the same ID.
      * @access  public
      * @param   integer       $ord              The ordinal number
-     * @param   integer       $imageId          The optional Image ID
+     * @param   integer       $image_id          The optional Image ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function Image($ord, $imageId=0)
+    function Image($ord, $image_id=0)
     {
         $this->ord = $ord;
-        $this->id = $imageId;
+        $this->id = $image_id;
     }
 
 
@@ -271,7 +284,7 @@ class Image
      *
      * If no object with that ID and ordinal can be found, creates a new one.
      * In that case, the $image_type_id parameter must be non-empty.
-     * @param   integer     $imageId        The object ID
+     * @param   integer     $image_id        The object ID
      * @param   integer     $ord            The ordinal number
      * @param   string      $path           The path
      * @param   integer     $image_type_id  The image type ID
@@ -279,9 +292,9 @@ class Image
      * @param   integer     $ord            The optional height, overrides automatic value
      * @return  boolean                     True on success, false otherwise
      */
-    function replace($imageId, $ord, $path, $image_type_id='', $width=false, $height=false)
+    function replace($image_id, $ord, $path, $image_type_id='', $width=false, $height=false)
     {
-        $objImage = Image::getById($imageId, $ord);
+        $objImage = Image::getById($image_id, $ord);
         if (!$objImage && empty($image_type_id)) return false;
         if (!$objImage) $objImage = new Image($ord);
         $imageSize = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$path);
@@ -291,10 +304,11 @@ class Image
         }
         $path_parts = pathinfo($path);
 
+// TODO:  Debug stuff, remove in release
         $auto_type = $imageSize[2];
-        if ($auto_type !== strtoupper($path_parts['extension'])) {
-echo("Warning: Image extension (".$path_parts['extension'].") mismatch with type ($auto_type)<br />");
-        }
+        if ($auto_type !== strtoupper($path_parts['extension']))
+echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $image_type_id, width $width, height $height): Warning: Image extension (".$path_parts['extension'].") mismatch with type ($auto_type)<br />");
+// /TODO
 
         if ($image_type_id) $objImage->setTypeKey($image_type_id);
         $objImage->setPath($path);
@@ -350,20 +364,20 @@ echo("Warning: Image extension (".$path_parts['extension'].") mismatch with type
      * @todo        Existing thumbnails are deleted along with them.
      * @static
      * @global      mixed       $objDatabase    Database object
-     * @param       integer     $imageId        The Image ID
+     * @param       integer     $image_id        The Image ID
      * @param       mixed       $ord            The optional ordinal number
      * @return      boolean                     True on success, false otherwise
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function deleteById($imageId, $ord=false)
+    static function deleteById($image_id, $ord=false)
     {
         global $objDatabase;
 
-        $arrImages = self::getArrayById($imageId, $ord);
+        $arrImages = self::getArrayById($image_id, $ord);
         if (!is_array($arrImages)) return false;
 
         foreach (array_keys($arrImages) as $ord) {
-            $objImage = self::getById($imageId, $ord);
+            $objImage = self::getById($image_id, $ord);
             if (!$objImage) return false;
             if (!$objImage->delete()) return false;
         }
@@ -489,21 +503,21 @@ echo("Warning: Image extension (".$path_parts['extension'].") mismatch with type
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getById($imageId, $ord)
+    static function getById($image_id, $ord)
     {
         global $objDatabase;
 
-        if (empty($imageId)) return false;
+        if (empty($image_id)) return false;
         $query = "
             SELECT `image_type_id`, `file_type_id`,
                    `path`, `width`, `height`
               FROM ".DBPREFIX."core_image
-             WHERE image_id=$imageId
+             WHERE image_id=$image_id
                AND ord=$ord";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         if ($objResult->EOF) return false;
-        $objImage = new Image($ord, $imageId);
+        $objImage = new Image($ord, $image_id);
         $objImage->image_type_id = $objResult->fields['image_type_id'];
         $objImage->file_type_id = $objResult->fields['file_type_id'];
         $objImage->path = $objResult->fields['path'];
@@ -533,13 +547,13 @@ echo("Warning: Image extension (".$path_parts['extension'].") mismatch with type
      *    [...]
      *  )
      * @static
-     * @param       integer     $imageId        The Image ID
+     * @param       integer     $image_id        The Image ID
      * @param       integer     $ord            The optional ordinal number
      * @return      array                       The fields array on success,
      *                                          false otherwise
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getArrayById($imageId, $ord=false)
+    static function getArrayById($image_id, $ord=false)
     {
         global $objDatabase;
 
@@ -547,7 +561,7 @@ echo("Warning: Image extension (".$path_parts['extension'].") mismatch with type
             SELECT `ord`, `image_type_id`, `file_type_id`,
                    `path`, `width`, `height`
               FROM ".DBPREFIX."core_image
-             WHERE image_id=$imageId
+             WHERE image_id=$image_id
                ".($ord === false ? 'ORDER BY ord ASC' : "AND ord=$ord")
         ;
         $objResult = $objDatabase->Execute($query);
@@ -621,6 +635,59 @@ echo("Warning: Image extension (".$path_parts['extension'].") mismatch with type
 
 
     /**
+     * Uploads an image file and stores its information in the database
+     * @param   string  $upload_field_name  File input field name
+     * @param   string  $target_path        Target path, relative to the document
+     *                                      root, including the file name
+     * @return  integer                     The new image ID on success, false otherwise
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    function uploadAndStore(
+        $upload_field_name, $target_path,
+        $image_id=false, $image_type_id=false, $ord=false)
+    {
+        // $target_path *SHOULD* be like ASCMS_HOTELCARD_IMAGES_FOLDER.'/folder/name.ext'
+        if (!File::uploadFileHttp(
+            $upload_field_name, $target_path,
+            self::MAXIMUM_UPLOAD_FILE_SIZE, self::$arrAcceptedFiletype)
+        ) return false;
+
+        if ($image_id) {
+            if ($ord === false) $ord = self::getNextOrd($image_id, $image_type_id);
+        }
+        $objImage = new Image($ord, $image_id);
+        $objImage->setImageTypeId($image_type_id);
+        return $objImage->store();
+    }
+
+
+    /**
+     * Returns the last used ordinal value plus one for the image ID and
+     * image type ID given
+     *
+     * If there is no matching one yet, returns 1.
+     * @param   integer   $image_id       The optional image ID
+     * @param   integer   $image_type_id  The optional image type ID
+     * @return  integer                   The next ordinal number on success,
+     *                                    false otherwise
+     */
+    static function getNextOrd($image_id=0, $image_type_id=0)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT MAX(`ord`) as `ord`
+              FROM ".DBPREFIX."core_image
+             WHERE 1".
+              ($image_id      ? " AND `image_id`=$image_id"           : '').
+              ($image_type_id ? " AND `image_type_id`=$image_type_id" : '');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->EOF) return self::errorHandler();
+        return 1 + $objResult->fields['ord'];
+    }
+
+
+    /**
      * Handle any error occurring in this class.
      *
      * Tries to fix known problems with the database table.
@@ -685,9 +752,9 @@ echo("Warning: Image extension (".$path_parts['extension'].") mismatch with type
         $maxratio = $maxwidth / $maxheight;
         if ($ratio > $maxratio) {
             $width = $maxwidth;
-            $height *= $maxwidth/$width;
+            $height *= intval($maxwidth/$width);
         } else {
-            $width *= $maxheight/$height;
+            $width *= intval($maxheight/$height);
             $height = $maxheight;
         }
     }

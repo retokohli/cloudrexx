@@ -364,6 +364,24 @@ class Text
 
 
     /**
+     * Add a new Text object directly to the database table
+     *
+     * Mind that this method uses the current FRONTEND_LANG_ID and
+     * MODULE_ID global constants as language ID and Module ID,
+     * respectively.
+     * This is but a handy shortcut for those in the know.
+     * @param   string    $text       The text string
+     * @return  integer               The object ID on success, false otherwise
+     */
+    static function add($text, $key)
+    {
+        $objText = new Text($text, FRONTEND_LANG_ID, MODULE_ID, $key);
+        if ($objText->store()) return $objText->getId();
+        return false;
+    }
+
+
+    /**
      * Returns the next available ID
      *
      * Called by {@link insert()}.
@@ -411,7 +429,7 @@ class Text
 
         if (empty($text_id)) return false;
         $query = "
-            SELECT `id`, `text`, `module_id`, `key`
+            SELECT `id`, `lang_id`, `text`, `module_id`, `key`
               FROM `".DBPREFIX."core_text`
              WHERE `id`=$text_id
                ".($lang_id ? "AND `lang_id`=$lang_id" : '');
@@ -665,24 +683,52 @@ class Text
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."core_text", $arrTables)) {
-// TODO:  Fix it!
-        } else {
-            $query = "
-                CREATE TABLE `".DBPREFIX."core_text` (
-                  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                  `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
-                  `module_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                  `key` TINYTEXT NOT NULL DEFAULT '',
-                  `text` TEXT NOT NULL DEFAULT '',
-                  PRIMARY KEY `id` (`id`, `lang_id`),
-                  INDEX `module_id` (`module_id` ASC),
-                  INDEX `key` (`key`(32) ASC),
-                  FULLTEXT `text` (`text`)
-                ) ENGINE=MyISAM;
-            ";
+            $query = "DROP TABLE `".DBPREFIX."core_text`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
         }
+        $query = "
+            CREATE TABLE `".DBPREFIX."core_text` (
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+              `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+              `module_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `key` TINYTEXT NOT NULL DEFAULT '',
+              `text` TEXT NOT NULL DEFAULT '',
+              PRIMARY KEY `id` (`id`, `lang_id`),
+              INDEX `module_id` (`module_id` ASC),
+              INDEX `key` (`key`(32) ASC),
+              FULLTEXT `text` (`text`)
+            ) ENGINE=MyISAM
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+
+        // Insert all country names into the multilanguage text table
+        $query = "
+            INSERT INTO `".DBPREFIX."core_text` (
+              `id`, `lang_id`, `module_id`, `key`, `text`
+            )
+            SELECT NULL, 2, 0, 'CORE_COUNTRY', `name`
+              FROM `".DBPREFIX."lib_country`
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+
+        //Insert all country name text IDs into the multilanguage country table.
+        //Note that the text foreign ID is used as the primary key as well!
+        $query = "
+            INSERT INTO `".DBPREFIX."core_country` (
+              `name_text_id`, `iso_code_2`, `iso_code_3`
+            )
+            SELECT DISTINCT `t`.`id`, `c`.`iso_code_2`, `c`.`iso_code_3`
+              FROM `".DBPREFIX."lib_country` AS `c`
+             INNER JOIN `".DBPREFIX."core_text` AS `t`
+                ON `c`.`name`=`t`.`text`
+             WHERE `t`.`key`='CORE_COUNTRY'
+               AND `t`.`lang_id`=2
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
 
         // More to come...
 

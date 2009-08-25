@@ -10,8 +10,14 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+require_once ASCMS_CORE_PATH.'/Html.class.php';
+
 /**
  * Manages settings stored in the database
+ *
+ * Before trying to access a modules' settings, *DON'T* forget to call
+ * {@see SettingDb::init()} with the current MODULE_ID before calling
+ * getValue() for the first time!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @version     2.2.0
@@ -183,6 +189,7 @@ class SettingDb
      */
     function getValue($name)
     {
+//echo("SettingDb::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
         return (isset(self::$arrSettings[$name]['value'])
             ? self::$arrSettings[$name]['value'] : false
         );
@@ -446,6 +453,7 @@ class SettingDb
             switch ($arrSetting['type']) {
               // Dropdown menu
               case 'dropdown':
+// TODO:  Use the Html class to create the dropdown
                 $element =
                     '<select name="'.$name.
                     '" style="width: 220px;'.$value_align.'" >';
@@ -456,6 +464,17 @@ class SettingDb
                         '>'.$some_value.'</option>';
                 }
                 $element .= '</select>';
+                break;
+
+              case 'dropdown_user_custom_attribute':
+//DBG::enable_error_reporting();
+//DBG::enable_adodb_debug();
+                    $element = Html::getSelect(
+                    $name,
+                    User_Profile_Attribute::getCustomAttributeNameArray(),
+                    $arrSetting['value'],
+                    '', 'style="width: 220px;"'
+                );
                 break;
 // More...
 //              case '':
@@ -524,14 +543,22 @@ echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
         // Mind:  For funny values, apply addslashes()!
         $arrRecord = array(
+            // name => array(module ID, key, value, type, values, ord)
+
+            // module hotelcard default settings
             'hotel_minimum_rooms_days' => array(10013, 'admin', '180', 'text', '180', 0),
             'hotel_default_description_en' => array(10013, 'admin', 'Description', 'text', 'Description', 2),
             'hotel_default_description_de' => array(10013, 'admin', 'Beschreibung', 'text', 'Beschreibung', 1),
+            'user_attribute_hotel_id' => array(10013, 'admin', '1', 'dropdown_user_custom_attribute', '', 3),
+
             'hotel_per_page_frontend' => array(10013, 'frontend', '10', 'text', '10', 1),
             'hotel_default_order_frontend' => array(10013, 'frontend', 'price DESC', 'text', 'price DESC', 2),
             'hotel_max_pictures' => array(10013, 'frontend', '3', 'text', '3', 2),
+
             'hotel_per_page_backend' => array(10013, 'backend', '10', 'text', '10', 1),
             'hotel_default_order_backend' => array(10013, 'backend', 'name ASC', 'text', 'name ASC', 2),
+
+
         );
         foreach ($arrRecord as $name => $arrSetting) {
             $objResult = $objDatabase->Execute("

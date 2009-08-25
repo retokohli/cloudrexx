@@ -339,7 +339,7 @@ echo("Country::errorHandler(): Entered<br />");
             $query = "
                 DROP TABLE `".DBPREFIX."core_country`";
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return false;
+//            if (!$objResult) return false;
 echo("Country::errorHandler(): Dropped table ".DBPREFIX."core_country<br />");
         }
         $query = "

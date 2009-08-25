@@ -232,7 +232,7 @@ class Html
             ($checked ? ' checked="checked"' : '').
             ($onchange ? ' onchange="'.$onchange.'"' : '').
             ($attribute ? ' '.$attribute : '').
-            ">\n";
+            " />\n";
     }
 
 
@@ -408,6 +408,21 @@ class Html
             '</a><br />'.
             self::getInputFileupload($id.'_file');
     }
+
+
+    static function getSelectDate($name, $value='', $onchange='', $attribute='')
+    {
+        static $index = 0;
+
+        return
+            '<input type="text" name="'.$name.
+            '" id="DPC_edit'.++$index.'_YYYY-MM-DD" '.
+            'value="'.$value.'"'.
+            ($onchange ? ' onchange='.$onchange : '').
+            ($attribute ? ' '.$attribute : '').
+            ' />';
+    }
+
 }
 
 ?>
