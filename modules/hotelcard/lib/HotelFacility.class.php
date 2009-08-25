@@ -225,6 +225,7 @@ class HotelFacility
 
     static function getFacilityNameById($facility_id)
     {
+//echo("HotelFacility::getFacilityNameById($facility_id): Entered<br />");
         if (empty(self::$arrFacilities)) self::init();
         return self::$arrFacilities[$facility_id]['name'];
     }
@@ -606,14 +607,14 @@ class HotelFacility
     {
         global $objDatabase;
 
-echo("facility::errorHandler(): Entered<br />");
+echo("HotelFacility::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility_group", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("facility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group` (
@@ -629,7 +630,7 @@ echo("facility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("facility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
 
         // Add data
         $arrFacilityGroup = array(
@@ -664,7 +665,7 @@ echo("HotelFacility::errorHandler(): Failed to insert group $name<br />");
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("facility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility` (
@@ -681,7 +682,7 @@ echo("facility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("facility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
 
         // Add data
         $arrFacility = array(
@@ -801,7 +802,7 @@ echo("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("facility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility` (
@@ -823,7 +824,7 @@ echo("facility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("facility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
 // TODO: Add data
 
         // More to come...
