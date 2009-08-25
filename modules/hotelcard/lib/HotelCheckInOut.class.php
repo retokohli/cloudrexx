@@ -74,7 +74,7 @@ class HotelCheckInOut
         static $arrCheckin = array();
         if (empty($arrCheckin))
             $arrCheckin = self::getArray(self::CHECKIN_MIN, self::CHECKIN_MAX);
-echo("getMenuCheckin($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckin, true)."<br />");
+//echo("getMenuCheckin($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckin, true)."<br />");
         return Html::getSelect(
             $name,
             $arrCheckin,
@@ -101,7 +101,7 @@ echo("getMenuCheckin($name, $selected, $onchange, $attribute): Made time ".var_e
         static $arrCheckout = array();
         if (empty($arrCheckout))
             $arrCheckout = self::getArray(self::CHECKOUT_MIN, self::CHECKOUT_MAX);
-echo("getMenuCheckout($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckout, true)."<br />");
+//echo("getMenuCheckout($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckout, true)."<br />");
         return Html::getSelect(
             $name,
             $arrCheckout,
@@ -127,7 +127,7 @@ echo("getMenuCheckout($name, $selected, $onchange, $attribute): Made time ".var_
         $time_lo  = ($time_from-1) * 3600;
         $time_hi  = ($time_to  -1) * 3600;
         $interval = self::INTERVAL * 3600;
-echo("getArray($time_from, $time_to): made time_lo $time_lo time_hi $time_hi interval $interval<br />");
+//echo("getArray($time_from, $time_to): made time_lo $time_lo time_hi $time_hi interval $interval<br />");
         $arrTime = array();
         for ($index = $time_lo;
             $index <= $time_hi;
@@ -135,7 +135,7 @@ echo("getArray($time_from, $time_to): made time_lo $time_lo time_hi $time_hi int
             $arrTime[date('H:i', $index)] =
                 date(self::TEMPLATE, $index);
         }
-echo("getArray($time_from, $time_to):: Made times ".var_export($arrTime, true)."<hr />");
+//echo("getArray($time_from, $time_to):: Made times ".var_export($arrTime, true)."<hr />");
         return $arrTime;
     }
 
