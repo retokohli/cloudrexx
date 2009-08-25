@@ -224,13 +224,16 @@ class Shipment
         if (empty(self::$arrShippers)) self::init();
         // Mind that s.shipment_id actually points to a shipper, not a shipment!
         $query = "
-            SELECT `s`.`shipment_id` AS `shipper_id`
+            SELECT `r`.`shipment_id` AS `shipper_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
                 ON `c`.`zones_id`=`z`.`zones_id`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `s`
-                ON `z`.`zones_id`=`s`.`zones_id`
-             WHERE `z`.`activation_status`=1".
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `r`
+                ON `z`.`zones_id`=`r`.`zones_id`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
+                ON `r`.`shipment_id`=`s`.`id`
+             WHERE `z`.`activation_status`=1
+               AND `s`.`status`=1".
               ($countryId ? " AND `c`.`countries_id`=$countryId" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;

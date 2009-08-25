@@ -120,8 +120,8 @@ Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
 Modul: Bildergallerie
-- Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die 
-  ImageRotate() Funktion nicht verfügbar ist. 
+- Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
+  ImageRotate() Funktion nicht verfügbar ist.
 
 Modul: Gästebuch
 - Der Inhalt des Benachrichtigung-E-Mails wird korrekt dargestellt.
@@ -148,6 +148,7 @@ Modul: Shop
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
   vorhanden ist, wird die nächste vorhandene Sprache verwendet.
 - Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
+- Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
 
 Modul: User to User Nachrichten
 - Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.
