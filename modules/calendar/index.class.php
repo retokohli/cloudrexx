@@ -1455,7 +1455,7 @@ class Calendar extends calendarLibrary
                     $sessid++;
                 }
             }
-            $fileNew = $this->uploadImgPath.$pathAdd.$sessid.$extension;
+            $fileNew = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
             $rc = File::uploadFileHttp($formfield, $fileNew, $this->uploadImgMaxSize);
             if($rc) {
                 $_SESSION['calendar']['uploadedimage'][$formfield] = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
