@@ -72,6 +72,8 @@ var deleteEntry = function(){
                         		</tr>').appendTo($J('#psEntriesTable'));
                         }
                         resetRowClasses();
+                        $J('#pagingUpper').text(parseInt($J('#pagingUpper').text())-1);
+                        $J('#pagingTotal').text(parseInt($J('#pagingTotal').text())-1);
                     });
                  },
         error: function(xhr, textStatus, errorThrown){submitError(xhr, textStatus, errorThrown);}
@@ -397,10 +399,10 @@ var addRow = function(data, textStatus){
     		<td class="psfactor">'+factor+'</td>\
     		<td nowrap="nowrap" class="psaction">\
     			<div align="right">\
-    				<a href="#" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
+    				<a class="psedit" href="#" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
     				   <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />\
     				</a>\
-    				<a href="#" target="_self" title="{TXT_PRINTSHOP_DELETE}">\
+    				<a class="psdelete" href="#" target="_self" title="{TXT_PRINTSHOP_DELETE}">\
     				   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />\
     				</a>\
     			</div>\
@@ -408,7 +410,8 @@ var addRow = function(data, textStatus){
     	</tr>')
     .appendTo('#psEntriesTable').hide().fadeIn(500)
     .find('.psname').data('default', name);
-
+    $J('#pagingUpper').text(parseInt($J('#pagingUpper').text())+1);
+    $J('#pagingTotal').text(parseInt($J('#pagingTotal').text())+1);
     //<input size="6" type="text" name="psPrice" value="{ENTRY_PRICE}" />
 }
 
@@ -483,7 +486,7 @@ var setMessage = function(message){
 
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />
-<form name="frmShowEntries" method="post" action="">
+<form name="frmShowEntries" method="post" action="{DIRECTORY_INDEX}?cmd=printshop&act=products">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psAddTable">
 	   <thead>
         <tr>
@@ -498,8 +501,8 @@ var setMessage = function(message){
 			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
 			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
 			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
-  			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
-  			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
+  			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
+  			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
     		<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
         </tr>
         <tr class="row3">
@@ -509,8 +512,8 @@ var setMessage = function(message){
 			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_BACK_DD}</span></td>
 			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_WEIGHT_DD}</span></td>
 			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_PAPER_DD}</span></td>
-  			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;"><input size="6" type="text" name="psPrice" /></span></td>
-  			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;"><input size="6" type="text" name="psFactor" /></span></td>
+  			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;"><input size="6" type="text" name="psPrice" /></span></td>
+  			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;"><input size="6" type="text" name="psFactor" /></span></td>
     		<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;"><input type="button" name="psAddProduct" value="{TXT_PRINTSHOP_ADD}" /></span></td>
         </tr>
        </tbody>
@@ -530,8 +533,8 @@ var setMessage = function(message){
     			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
     			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
     			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
+    			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
+    			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
     			<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
     		</tr>
     		<tr class="row3">
@@ -541,8 +544,8 @@ var setMessage = function(message){
     			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_BACK_FILTER_DD}</span></td>
     			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_WEIGHT_FILTER_DD}</span></td>
     			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_PAPER_FILTER_DD}</span></td>
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">&nbsp;</span></td>
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">&nbsp;</span></td>
+    			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;">&nbsp;</span></td>
+    			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">&nbsp;</span></td>
     			<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">&nbsp;</span></td>
     		</tr>
     		<!-- BEGIN showEntry -->
