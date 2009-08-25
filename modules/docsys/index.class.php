@@ -159,7 +159,7 @@ class docSys extends docSysLibrary
     function getPageTitle($pageTitle="")
     {
         if(empty($this->docSysTitle)){
-            $this->docSysTitle = strip_tags(stripslashes($pageTitle));
+            $this->docSysTitle = $pageTitle;
         }
     }
 

@@ -228,7 +228,7 @@ class jobs extends jobsLibrary
     function getPageTitle($pageTitle="")
     {
         if(empty($this->jobsTitle)){
-            $this->jobsTitle = strip_tags(stripslashes($pageTitle));
+            $this->jobsTitle = $pageTitle;
         }
     }
 
