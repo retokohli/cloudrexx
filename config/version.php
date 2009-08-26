@@ -1,31 +1,30 @@
 <?php
+
 /**
- * Version code
- *
- * Version informations
- *
+ * Version information
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Comvation Development Team <info@comvation.com>
- * @version		1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     2.2.0
  * @package     contrexx
  * @subpackage  config
  * @todo        Edit PHP DocBlocks!
  */
 
 // status levels:
-//	Planning
-//	Pre-Alpha
-//	Alpha
-//	Beta
-//	Production/Stable
-//	Mature
-//	Inactive
+// Planning
+// Unstable
+// Pre-Alpha
+// Alpha
+// Beta
+// Production/Stable
+// Mature
+// Inactive
 
-$_CONFIG['coreCmsName']	     	= "Contrexx® Web Content Management System";
-$_CONFIG['coreCmsVersion']	  	= "1.1-dev";
-$_CONFIG['coreCmsStatus']	  	= "Unstable";
-$_CONFIG['coreCmsEdition']		= "Premium";
-$_CONFIG['coreCmsCodeName']	  	= "None";
-$_CONFIG['coreCmsReleaseDate'] 	= "-";
+$_CONFIG['coreCmsName']        = "Contrexx® Web Content Management System";
+$_CONFIG['coreCmsVersion']     = "trunk";
+$_CONFIG['coreCmsStatus']      = "Unstable";
+$_CONFIG['coreCmsEdition']     = "Premium";
+$_CONFIG['coreCmsCodeName']    = "None";
+$_CONFIG['coreCmsReleaseDate'] = "-";
 
 ?>
