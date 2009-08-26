@@ -21,45 +21,45 @@
 -->
 <html>
 <head>
-	<title></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<script type="text/javascript">
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script type="text/javascript">
 
 function gup( name )
 {
-	name = name.replace( /[\[]/, '\\\[' ).replace( /[\]]/, '\\\]' ) ;
-	var regexS = '[\\?&]' + name + '=([^&#]*)' ;
-	var regex = new RegExp( regexS ) ;
-	var results = regex.exec( window.location.href ) ;
+  name = name.replace( /[\[]/, '\\\[' ).replace( /[\]]/, '\\\]' ) ;
+  var regexS = '[\\?&]' + name + '=([^&#]*)' ;
+  var regex = new RegExp( regexS ) ;
+  var results = regex.exec( window.location.href ) ;
 
-	if( results == null )
-		return '' ;
-	else
-		return results[ 1 ] ;
+  if( results == null )
+    return '' ;
+  else
+    return results[ 1 ] ;
 }
 
 function sendData2Master()
 {
-	var destination = parent.parent ;
-	try
-	{
-		if ( destination.XDTMaster )
-		{
-			var t = destination.XDTMaster.read( [ gup( 'cmd' ), gup( 'data' ) ] ) ;
-			window.clearInterval( interval ) ;
-		}
-	}
-	catch (e) {}
+  var destination = parent.parent ;
+  try
+  {
+    if ( destination.XDTMaster )
+    {
+      var t = destination.XDTMaster.read( [ gup( 'cmd' ), gup( 'data' ) ] ) ;
+      window.clearInterval( interval ) ;
+    }
+  }
+  catch (e) {}
 }
 
 function onLoad()
 {
-	interval = window.setInterval( sendData2Master, 100 );
+  interval = window.setInterval( sendData2Master, 100 );
 }
 
         </script>
 </head>
 <body onload="onLoad()">
-	<p></p>
+  <p></p>
 </body>
 </html>
