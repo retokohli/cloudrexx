@@ -6,21 +6,21 @@ Text[0]=["","{TXT_CONTENT_TYPE_HELP}"];
 Text[1]=['','{CONTENT_ALIAS_HELPTEXT}'];
 
 function setText() {
-	with( document.formContent )
-	{
-	var txtNewpage= newpage.value;
-	if(title.value == "")
-		title.value=txtNewpage;
-	if(metatitle.value == "")
-		metatitle.value=txtNewpage;
-	if(desc.value == "")
-		desc.value=txtNewpage;
-	if(key.value == "")
-		key.value=txtNewpage;
-	// if(alias.value == "")
-	// 	alias.value=aliasText(txtNewpage);
-	//	updateAliasPreview(txtNewpage);
-	}
+  with( document.formContent )
+  {
+  var txtNewpage= newpage.value;
+  if(title.value == "")
+    title.value=txtNewpage;
+  if(metatitle.value == "")
+    metatitle.value=txtNewpage;
+  if(desc.value == "")
+    desc.value=txtNewpage;
+  if(key.value == "")
+    key.value=txtNewpage;
+  // if(alias.value == "")
+  //   alias.value=aliasText(txtNewpage);
+  //  updateAliasPreview(txtNewpage);
+  }
 }
 
 
@@ -29,257 +29,257 @@ function updateAliasPreview(text) {
 
     var target = document.getElementById('aliastarget');
 
-	target.innerHTML = aliasText(text);
+  target.innerHTML = aliasText(text);
     target.parentNode.style.textDecoration = linkstyle;
 
-	document.formContent.alias.value = aliasText(text);
+  document.formContent.alias.value = aliasText(text);
 }
 
 
 function preSubmitCheck(){
-	if (document.formContent.newpage.value == "") {
-		document.getElementById('errormessagetarget').innerHTML = '<div id="alertbox">{TXT_ERROR_NO_TITLE}</div><br />';
-		return false;
-	}
-	SelectAllList(document.formContent.elements['assignedGroups[]']);
-	SelectAllList(document.formContent.elements['assignedBackendGroups[]']);
-	SelectAllList(document.formContent.elements['assignedBlocks[]']);
-	return true;
+  if (document.formContent.newpage.value == "") {
+    document.getElementById('errormessagetarget').innerHTML = '<div id="alertbox">{TXT_ERROR_NO_TITLE}</div><br />';
+    return false;
+  }
+  SelectAllList(document.formContent.elements['assignedGroups[]']);
+  SelectAllList(document.formContent.elements['assignedBackendGroups[]']);
+  SelectAllList(document.formContent.elements['assignedBlocks[]']);
+  return true;
 }
 
 function aliasText(txt) {
-	return txt
-		.replace(/Ä/ig, 'ae')
-		.replace(/Ö/ig, 'oe')
-		.replace(/Ü/ig, 'ue')
-		.replace(/ä/ig, 'ae')
-		.replace(/ö/ig, 'oe')
-		.replace(/ü/ig, 'ue')
-		.replace(/à/ig,  'a')
-		.replace(/ç/ig,  'c')
-		.replace(/[èé]/ig, 'e')
-		.replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
-		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
-		// Sanitize most latin1 characters.
-		// there's more to come. maybe there's
-		// a generic function for this?
-		// Fallback for everything we didn't catch by now
-		.replace(/[^\sa-z_-]+/ig, '_')
-		.replace(/[_-]{2,}/g, '_')
-		.replace(/^[_\.\/\-]+/, '')
-		.toLowerCase()
-	;
+  return txt
+    .replace(/Ä/ig, 'ae')
+    .replace(/Ö/ig, 'oe')
+    .replace(/Ü/ig, 'ue')
+    .replace(/ä/ig, 'ae')
+    .replace(/ö/ig, 'oe')
+    .replace(/ü/ig, 'ue')
+    .replace(/à/ig,  'a')
+    .replace(/ç/ig,  'c')
+    .replace(/[èé]/ig, 'e')
+    .replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
+    .replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
+    // Sanitize most latin1 characters.
+    // there's more to come. maybe there's
+    // a generic function for this?
+    // Fallback for everything we didn't catch by now
+    .replace(/[^\sa-z_-]+/ig, '_')
+    .replace(/[_-]{2,}/g, '_')
+    .replace(/^[_\.\/\-]+/, '')
+    .toLowerCase()
+  ;
 }
 
 function setDateToday(txtValue) {
-	with(document.formContent)
-	{
-	if(txtValue.value=="")
-	{
-	 txtValue.value=date.value;
-	}
-	}
+  with(document.formContent)
+  {
+  if(txtValue.value=="")
+  {
+   txtValue.value=date.value;
+  }
+  }
 }
 
 function swapBlock( div,status ) {
-	if(status == 1){
-	    document.getElementById( div ).style.display ='block';
-	}else{
-	    document.getElementById( div ).style.display ='none';
-	}
+  if(status == 1){
+      document.getElementById( div ).style.display ='block';
+  }else{
+      document.getElementById( div ).style.display ='none';
+  }
 }
 
 function AddToTheList(from,dest,add,remove) {
     if ( from.selectedIndex < 0){
-		if (from.options[0] != null)
-			from.options[0].selected = true;
-		from.focus();
-		return false;
-	}else{
-		for (var i=0; i<from.length; i++) {
-			if (from.options[i].selected)
-			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--) {
-			if (from.options[i].selected)
-			{
-		       from.options[i] = null;
-   			}
-		}
-	}
+    if (from.options[0] != null)
+      from.options[0].selected = true;
+    from.focus();
+    return false;
+  }else{
+    for (var i=0; i<from.length; i++) {
+      if (from.options[i].selected)
+      {
+          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+         }
+    }
+      for (var i=from.length-1; i>=0; i--) {
+      if (from.options[i].selected)
+      {
+           from.options[i] = null;
+         }
+    }
+  }
     disapleButtons(from,dest,add,remove);
 }
 
 function RemoveFromTheList(from,dest,add,remove) {
-	if ( dest.selectedIndex < 0){
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
-		dest.focus();
-		return false;
-	}
-	else{
-		for (var i=0; i<dest.options.length; i++)
-		{
-			if (dest.options[i].selected)
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--)
-		{
-			if (dest.options[i].selected)
-			{
-		       dest.options[i] = null;
-   			}
-		}
-	}
-	disapleButtons(from,dest,add,remove);
+  if ( dest.selectedIndex < 0){
+    if (dest.options[0] != null)
+      dest.options[0].selected = true;
+    dest.focus();
+    return false;
+  }
+  else{
+    for (var i=0; i<dest.options.length; i++)
+    {
+      if (dest.options[i].selected)
+      {
+          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+         }
+    }
+      for (var i=dest.options.length-1; i>=0; i--)
+    {
+      if (dest.options[i].selected)
+      {
+           dest.options[i] = null;
+         }
+    }
+  }
+  disapleButtons(from,dest,add,remove);
 }
 
 function disapleButtons(from,dest,add,remove) {
-	if (from.options.length > 0 )
-	{
-		add.disabled = 0;
-	}
-	else
-		add.disabled = 1;
+  if (from.options.length > 0 )
+  {
+    add.disabled = 0;
+  }
+  else
+    add.disabled = 1;
 
-	if (dest.options.length > 0)
-		remove.disabled = 0;
-	else
-		remove.disabled = 1;
+  if (dest.options.length > 0)
+    remove.disabled = 0;
+  else
+    remove.disabled = 1;
 }
 
 function SelectAllList(CONTROL) {
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = true;
-	}
+  for(var i = 0;i < CONTROL.length;i++)
+  {
+    CONTROL.options[i].selected = true;
+  }
 }
 
 function DeselectAllList(CONTROL) {
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = false;
-	}
+  for(var i = 0;i < CONTROL.length;i++)
+  {
+    CONTROL.options[i].selected = false;
+  }
 }
 
 function deletePage(intId) {
-	if (confirm('{TXT_DELETE_MESSAGE}')) {
-		window.location.href = "{DIRECTORY_INDEX}?cmd=content&act=delete&pageId="+intId;
-	}
+  if (confirm('{TXT_DELETE_MESSAGE}')) {
+    window.location.href = "{DIRECTORY_INDEX}?cmd=content&act=delete&pageId="+intId;
+  }
 }
 
 function showOrHide(strElement) {
-	if (document.getElementById(strElement).style.display == 'block'){
-		document.getElementById(strElement).style.display = 'none';
-	} else {
-		document.getElementById(strElement).style.display = 'block';
-	}
+  if (document.getElementById(strElement).style.display == 'block'){
+    document.getElementById(strElement).style.display = 'none';
+  } else {
+    document.getElementById(strElement).style.display = 'block';
+  }
 }
 
 function deleteHistory(intId) {
-	if (confirm('{TXT_DELETE_HISTORY_MSG}')) {
-		window.location.replace("{DIRECTORY_INDEX}?cmd=workflow&act=deleteHistory&hId="+intId);
-	}
+  if (confirm('{TXT_DELETE_HISTORY_MSG}')) {
+    window.location.replace("{DIRECTORY_INDEX}?cmd=workflow&act=deleteHistory&hId="+intId);
+  }
 }
 
 function activateHistory(intId) {
-	if (confirm('{TXT_ACTIVATE_HISTORY_MSG}')) {
-		window.location.replace("{DIRECTORY_INDEX}?cmd=workflow&act=activateHistory&hId="+intId);
-	}
+  if (confirm('{TXT_ACTIVATE_HISTORY_MSG}')) {
+    window.location.replace("{DIRECTORY_INDEX}?cmd=workflow&act=activateHistory&hId="+intId);
+  }
 }
 
 function historyMultiAction() {
-	with (document.formContent)
-	{
-		switch (formContent_HistoryMultiAction.value) {
-			case 'delete':
-				if (confirm('{TXT_DELETE_HISTORY_MSG_ALL}')) {
-					submit();
-				}
-			break;
-			default: //do nothing
+  with (document.formContent)
+  {
+    switch (formContent_HistoryMultiAction.value) {
+      case 'delete':
+        if (confirm('{TXT_DELETE_HISTORY_MSG_ALL}')) {
+          submit();
+        }
+      break;
+      default: //do nothing
 
-		}
-	}
+    }
+  }
 }
 
 function modusSelection(strAction) {
-	if (strAction == 'type_content'){
-		document.getElementById('type_content').style.display = 'block';
-		document.getElementById('type_redirect').style.display = 'none';
-	} else {
-		document.getElementById('type_content').style.display = 'none';
-		document.getElementById('type_redirect').style.display = 'block';
-	}
+  if (strAction == 'type_content'){
+    document.getElementById('type_content').style.display = 'block';
+    document.getElementById('type_redirect').style.display = 'none';
+  } else {
+    document.getElementById('type_content').style.display = 'none';
+    document.getElementById('type_redirect').style.display = 'block';
+  }
 }
 
 function SetUrl(url, width, height, alt) {
-	switch (newsElType) {
-	case 'image':
-	case 'webpages':
-		document.getElementById(newsElInsertBox).value = url;
-		break
-	case 'link':
-		insertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
-		break;
-	}
+  switch (newsElType) {
+  case 'image':
+  case 'webpages':
+    document.getElementById(newsElInsertBox).value = url;
+    break
+  case 'link':
+    insertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
+    break;
+  }
 }
 
 function getFileBrowser(elInsertBox, sType)
 {
-	newsElInsertBox = elInsertBox;
-	newsElType = sType;
+  newsElInsertBox = elInsertBox;
+  newsElType = sType;
 
-	if (sType == 'webpages') {
-		openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-	} else {
-		openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-	}
+  if (sType == 'webpages') {
+    openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+  } else {
+    openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+  }
 }
 
 function insertLink(elInsertBox, sLink) {
-	elInsertBox.focus();
+  elInsertBox.focus();
 
-	/* für Internet Explorer */
-	if (typeof document.selection != 'undefined') {
-		/* Einfügen des Formatierungscodes */
-		var range = document.selection.createRange();
-		var insText = range.text;
-		range.text = sLink;
-	}
+  /* für Internet Explorer */
+  if (typeof document.selection != 'undefined') {
+    /* Einfügen des Formatierungscodes */
+    var range = document.selection.createRange();
+    var insText = range.text;
+    range.text = sLink;
+  }
 
-	/* für neuere auf Gecko basierende Browser */
-	else if (typeof elInsertBox.selectionStart != 'undefined') {
-		/* Einfügen des Formatierungscodes */
-		var start = elInsertBox.selectionStart;
-		var end = elInsertBox.selectionEnd;
+  /* für neuere auf Gecko basierende Browser */
+  else if (typeof elInsertBox.selectionStart != 'undefined') {
+    /* Einfügen des Formatierungscodes */
+    var start = elInsertBox.selectionStart;
+    var end = elInsertBox.selectionEnd;
 
-		elInsertBox.value = elInsertBox.value.substr(0, start) + sLink + elInsertBox.value.substr(end);
-	}
+    elInsertBox.value = elInsertBox.value.substr(0, start) + sLink + elInsertBox.value.substr(end);
+  }
 
-	/* für die übrigen Browser */
-	else {
-		/* Abfrage der Einfügeposition */
-		var pos;
-		var re = new RegExp('^[0-9]{0,3}$');
-		while(!re.test(pos)) {
-			pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
-		}
-		if (pos > elInsertBox.value.length) {
-			pos = elInsertBox.value.length;
-		}
-		/* Einfügen des Formatierungscodes */
-		elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
-	}
+  /* für die übrigen Browser */
+  else {
+    /* Abfrage der Einfügeposition */
+    var pos;
+    var re = new RegExp('^[0-9]{0,3}$');
+    while(!re.test(pos)) {
+      pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
+    }
+    if (pos > elInsertBox.value.length) {
+      pos = elInsertBox.value.length;
+    }
+    /* Einfügen des Formatierungscodes */
+    elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
+  }
 }
 
 function openWindow(theURL,winName,features){
-	galleryPopup = window.open(theURL,"gallery",features);
-	galleryPopup.focus();
+  galleryPopup = window.open(theURL,"gallery",features);
+  galleryPopup.focus();
 }
 
 (function(){  //wrap in anonyomous function to avoid polluting the global namespace
@@ -1005,15 +1005,15 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-	<tr>
-		<th colspan="{LANGUAGE_COUNT}">{TXT_LANGUAGES}</th>
-	</tr>
-	<tr class="row1" id="availableLanguages">
+  <tr>
+    <th colspan="{LANGUAGE_COUNT}">{TXT_LANGUAGES}</th>
+  </tr>
+  <tr class="row1" id="availableLanguages">
     <!-- BEGIN languages_activate -->
-		<td style="white-space: nowrap; min-width: 100px;" valign="top">{LANGUAGE_CHECKBOX}</td>
+    <td style="white-space: nowrap; min-width: 100px;" valign="top">{LANGUAGE_CHECKBOX}</td>
     <!-- END languages_activate -->
         <td width="70%">&nbsp;</td>
-	</tr>
+  </tr>
 </table>
 <br />
 <form name="formContent" method="post" action="{DIRECTORY_INDEX}?cmd=content&amp;act={CONTENT_FORM_ACTION}">
@@ -1028,486 +1028,486 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
 
 <div class="tabContainer">
     <br />
-	<ul id="tabmenu">
-		<li><a id="editorTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_BASIC_DATA}">{TXT_BASIC_DATA}</a></li>
-		<li><a id="editorTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_MORE_OPTIONS}">{TXT_MORE_OPTIONS}</a></li>
-		<li><a id="editorTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_FRONTEND_PERMISSION}">{TXT_FRONTEND_PERMISSION}</a></li>
-		<li><a id="editorTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_RELATEDNESS}">{TXT_RELATEDNESS}</a></li>
-		<!-- BEGIN changelog1 -->
-		<li><a id="editorTab_content5" href="javascript:{}" onclick="selectTab('content5')" title="{TXT_CHANGELOG}">{TXT_CHANGELOG}</a></li>
-		<!-- END changelog1 -->
-		<li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>
-	</ul>
+  <ul id="tabmenu">
+    <li><a id="editorTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_BASIC_DATA}">{TXT_BASIC_DATA}</a></li>
+    <li><a id="editorTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_MORE_OPTIONS}">{TXT_MORE_OPTIONS}</a></li>
+    <li><a id="editorTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_FRONTEND_PERMISSION}">{TXT_FRONTEND_PERMISSION}</a></li>
+    <li><a id="editorTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_RELATEDNESS}">{TXT_RELATEDNESS}</a></li>
+    <!-- BEGIN changelog1 -->
+    <li><a id="editorTab_content5" href="javascript:{}" onclick="selectTab('content5')" title="{TXT_CHANGELOG}">{TXT_CHANGELOG}</a></li>
+    <!-- END changelog1 -->
+    <li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>
+  </ul>
 </div>
-	<div id="content1" class="editorTab" style="display:block">
-		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-			<thead style="vertical-align:top; white-space:nowrap;">
-  				<tr>
-					<th colspan="2">{TXT_PAGE_NAME}</th>
-				</tr>
-			</thead>
-			<tbody style="vertical-align:top; white-space:nowrap;">
-				<tr class="row2">
-					<td width="15%">{TXT_MENU_NAME}</td>
-					<td width="85%">
-						<div style="display:inline; float:left;">
-							<input type="text" name="newpage" size="40" onchange="setText()" maxlength="100" value="{CONTENT_MENU_NAME}" style="margin-right:5px;" />
-							<select name="category" style="margin-right:5px;"
-								onfocus="this.lastSelectedOption=this.selectedIndex"
-								onchange="if (this.options[this.selectedIndex].disabled) {this.selectedIndex = this.lastSelectedOption;}">
-								<option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_NEW_CATEGORY}</option>
-								{CONTENT_CAT_MENU}
-							</select>
-							{TXT_VISIBLE}
-							<input type="checkbox" name="displaystatus" value="on" {CONTENT_DISPLAYSTATUS} />
-						</div>
-						<!-- BEGIN deleteButton -->
-							<div style="display:inline; float:right;">
-								<a href="javascript:void(0);" onclick="deletePage({CONTENT_CATID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_DELETE}" /></a>
-							</div>
-						<!-- END deleteButton -->
-					</td>
-				</tr>
-				<tr class="row1">
-					<td>{TXT_CONTENT_TITLE}</td>
-					<td><input type="text" name="title" value="{CONTENT_TITLE_VAL}" maxlength="250" size="80" /></td>
-				</tr>
-				<tr class="row2">
-					<td>{TXT_META_TITLE}</td>
-					<td><input type="text" name="metatitle" value="{CONTENT_META_TITLE}" maxlength="250" size="80" /></td>
-				</tr>
-				<tr class="row1">
-					<td>{TXT_META_DESCRIPTION}</td>
-					<td><input type="text" name="desc" value="{CONTENT_DESC}" maxlength="250" size="80" /></td>
-				</tr>
-				<tr class="row2">
-					<td>{TXT_META_KEYWORD}</td>
-					<td><input type="text" name="key" value="{CONTENT_KEY}" size="80" /></td>
-				</tr>
-				<tr class="row1" {CONTENT_ALIAS_DISABLE}>
-					<td>{TXT_DEFAULT_ALIAS}</td>
-					<td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
-				</tr>
-				<tr class="row2" {CONTENT_ALIAS_DISABLE}>
-					<td>&nbsp;</td>
-					<td>{TXT_BASE_URL}<span style="font-weight: bold;" id="aliastarget">{CONTENT_ALIAS}</span></td>
-				</tr>
-				<tr class="row1">
-					<td>{TXT_META_ROBOTS}</td>
-					<td><input type="checkbox" name="robots" value="index" {CONTENT_ROBOTS} /></td>
-				</tr>
-				<tr class="row2">
-					<td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
-					<td>
-						<input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
-						<input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
-						<div style="float:right; text-align:right; min-width: 100%"> <input type="button" name="preview" value="{TXT_THEME_PREVIEW}" /> </div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<br />
-		<div id="type_content" {CONTENT_TYPE_STYLE_CONTENT}>
-		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-			<thead style="vertical-align:top;">
-				<tr>
-					<th>{TXT_CONTENT}</th><th style="text-align: right;">{TXT_SOURCE_MODE} <input type="checkbox" name="expertmode" value="y" {CONTENT_SHOW_EXPERTMODE} /></th>
-	       </thead>
-	       <tbody>
-				</tr>
-				<tr class="row2">
-					<td colspan="2">{CONTENT_HTML}</td>
-				</tr>
-				<tr class="row1">
-					<td colspan="2" height="26">&nbsp;</td>
-				</tr>
-			</tbody>
-		</table>
-		</div>
-		<div id="type_redirect" {CONTENT_TYPE_STYLE_REDIRECT}>
-		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-			<thead style="vertical-align:top;">
-				<tr>
-					<th colspan="2">{TXT_CONTENT_TYPE_REDIRECT}</th>
-				</tr>
-			</thead>
- 	        <tbody>
-				<tr class="row2">
-					<td width="15%">{TXT_REDIRECT}</td>
-					<td width="85%"><input type="text" id="typeRedirectValue" name="redirectUrl" value="{TXT_NO_REDIRECT}" maxlength="255" size="80" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="getFileBrowser('typeRedirectValue', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-				</tr>
-	       </tbody>
-		</table>
-		</div>
-	</div>
-	<div id="content2" class="editorTab" style="display:none">
-		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-			<thead>
-				<tr>
-					<th colspan="2">{TXT_GENERAL_OPTIONS}</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="row2">
-					<td width="15%">{TXT_START_DATE}</td>
-					<td width="85%"><input type="text" name="startdate" size="10" maxlength="10" onclick="setDateToday(startdate);" value="{CONTENT_STARTDATE}" /></td>
-				</tr>
-				<tr class="row1">
-					<td>{TXT_END_DATE}</td>
-					<td><input type="text" name="enddate" size="10" maxlength="10" onfocus="setDateToday(enddate);" value="{CONTENT_ENDDATE}" /></td>
-				</tr>
-			</tbody>
-		</table>
-		<br />
-		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-			<thead style="white-space:nowrap;">
-				<tr>
-					<th colspan="2">{TXT_THEMES}</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="row2">
-					<td width="15%">{TXT_THEMES}</td>
-					<td width="85%">
-						<select name="themesId" style="margin-right:5px;">
-							{CONTENT_THEMES_MENU}
-						</select>
-						{TXT_RECURSIVE_CHANGE}
-						<input type="checkbox" name="themesRecursive" value="1" />
-					</td>
-				</tr>
-				<tr class="row1">
-					<td>{TXT_OPTIONAL_CSS_NAME}</td>
-					<td><input name="cssName" type="text" id="cssName" value="{CONTENT_CSS_NAME}" size="40" maxlength="50" /></td>
-				</tr>
-			</tbody>
-		</table>
-		<br />
-		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-			<thead style="white-space:nowrap;">
-    			<tr>
-    				<th colspan="2">{TXT_NAVIGATION}</th>
-    			</tr>
-			</thead>
-			<tbody>
-    			<tr class="row2">
-    					<td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
-    					<td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" /></td>
-    				</tr>
-    		    <tr class="row1">
-    		      <td>{TXT_TARGET}</td>
-    		      <td>
-    	             <select name="redirectTarget" style="margin-right:5px;">
-    					<option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
-        				<option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
-    					<option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
-    					<option value="_self">{TXT_TARGET_SELF} (_self)</option>
-    					<option value="_top">{TXT_TARGET_TOP} (_top)</option>
-    				</select>
-    			 </td>
-    		   </tr>
-		   </tbody>
-		</table>
-		<br />
-		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-			<thead style="white-space:nowrap;">
-			<tr>
-				<th colspan="2">{TXT_EXPERT_MODE}</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr class="row2">
-				<td width="15%">{TXT_MODULE} (cmd | section)</td>
-				<td width="85%">
-					<input type="text" name="command" value="{CONTENT_SHOW_CMD}" maxlength="100" size="40" />
-					<select name="selectmodule">
-						<option value="">{TXT_NO_MODULE}</option>
-						{CONTENT_MODULE_MENU}
-					</select>
-				</td>
-			</tr>
-			<tr class="row1">
-				<td>{TXT_CACHING_STATUS}</td>
-				<td><input type="checkbox" name="cachingstatus" value="1" {CONTENT_CACHING_STATUS} /></td>
-			</tr>
+  <div id="content1" class="editorTab" style="display:block">
+    <table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
+      <thead style="vertical-align:top; white-space:nowrap;">
+          <tr>
+          <th colspan="2">{TXT_PAGE_NAME}</th>
+        </tr>
+      </thead>
+      <tbody style="vertical-align:top; white-space:nowrap;">
+        <tr class="row2">
+          <td width="15%">{TXT_MENU_NAME}</td>
+          <td width="85%">
+            <div style="display:inline; float:left;">
+              <input type="text" name="newpage" size="40" onchange="setText()" maxlength="100" value="{CONTENT_MENU_NAME}" style="margin-right:5px;" />
+              <select name="category" style="margin-right:5px;"
+                onfocus="this.lastSelectedOption=this.selectedIndex"
+                onchange="if (this.options[this.selectedIndex].disabled) {this.selectedIndex = this.lastSelectedOption;}">
+                <option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_NEW_CATEGORY}</option>
+                {CONTENT_CAT_MENU}
+              </select>
+              {TXT_VISIBLE}
+              <input type="checkbox" name="displaystatus" value="on" {CONTENT_DISPLAYSTATUS} />
+            </div>
+            <!-- BEGIN deleteButton -->
+              <div style="display:inline; float:right;">
+                <a href="javascript:void(0);" onclick="deletePage({CONTENT_CATID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_DELETE}" /></a>
+              </div>
+            <!-- END deleteButton -->
+          </td>
+        </tr>
+        <tr class="row1">
+          <td>{TXT_CONTENT_TITLE}</td>
+          <td><input type="text" name="title" value="{CONTENT_TITLE_VAL}" maxlength="250" size="80" /></td>
+        </tr>
+        <tr class="row2">
+          <td>{TXT_META_TITLE}</td>
+          <td><input type="text" name="metatitle" value="{CONTENT_META_TITLE}" maxlength="250" size="80" /></td>
+        </tr>
+        <tr class="row1">
+          <td>{TXT_META_DESCRIPTION}</td>
+          <td><input type="text" name="desc" value="{CONTENT_DESC}" maxlength="250" size="80" /></td>
+        </tr>
+        <tr class="row2">
+          <td>{TXT_META_KEYWORD}</td>
+          <td><input type="text" name="key" value="{CONTENT_KEY}" size="80" /></td>
+        </tr>
+        <tr class="row1" {CONTENT_ALIAS_DISABLE}>
+          <td>{TXT_DEFAULT_ALIAS}</td>
+          <td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
+        </tr>
+        <tr class="row2" {CONTENT_ALIAS_DISABLE}>
+          <td>&nbsp;</td>
+          <td>{TXT_BASE_URL}<span style="font-weight: bold;" id="aliastarget">{CONTENT_ALIAS}</span></td>
+        </tr>
+        <tr class="row1">
+          <td>{TXT_META_ROBOTS}</td>
+          <td><input type="checkbox" name="robots" value="index" {CONTENT_ROBOTS} /></td>
+        </tr>
+        <tr class="row2">
+          <td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
+          <td>
+            <input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
+            <input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
+            <div style="float:right; text-align:right; min-width: 100%"> <input type="button" name="preview" value="{TXT_THEME_PREVIEW}" /> </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <div id="type_content" {CONTENT_TYPE_STYLE_CONTENT}>
+    <table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
+      <thead style="vertical-align:top;">
+        <tr>
+          <th>{TXT_CONTENT}</th><th style="text-align: right;">{TXT_SOURCE_MODE} <input type="checkbox" name="expertmode" value="y" {CONTENT_SHOW_EXPERTMODE} /></th>
+         </thead>
+         <tbody>
+        </tr>
+        <tr class="row2">
+          <td colspan="2">{CONTENT_HTML}</td>
+        </tr>
+        <tr class="row1">
+          <td colspan="2" height="26">&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div id="type_redirect" {CONTENT_TYPE_STYLE_REDIRECT}>
+    <table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
+      <thead style="vertical-align:top;">
+        <tr>
+          <th colspan="2">{TXT_CONTENT_TYPE_REDIRECT}</th>
+        </tr>
+      </thead>
+           <tbody>
+        <tr class="row2">
+          <td width="15%">{TXT_REDIRECT}</td>
+          <td width="85%"><input type="text" id="typeRedirectValue" name="redirectUrl" value="{TXT_NO_REDIRECT}" maxlength="255" size="80" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="getFileBrowser('typeRedirectValue', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+        </tr>
+         </tbody>
+    </table>
+    </div>
+  </div>
+  <div id="content2" class="editorTab" style="display:none">
+    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+      <thead>
+        <tr>
+          <th colspan="2">{TXT_GENERAL_OPTIONS}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row2">
+          <td width="15%">{TXT_START_DATE}</td>
+          <td width="85%"><input type="text" name="startdate" size="10" maxlength="10" onclick="setDateToday(startdate);" value="{CONTENT_STARTDATE}" /></td>
+        </tr>
+        <tr class="row1">
+          <td>{TXT_END_DATE}</td>
+          <td><input type="text" name="enddate" size="10" maxlength="10" onfocus="setDateToday(enddate);" value="{CONTENT_ENDDATE}" /></td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+      <thead style="white-space:nowrap;">
+        <tr>
+          <th colspan="2">{TXT_THEMES}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row2">
+          <td width="15%">{TXT_THEMES}</td>
+          <td width="85%">
+            <select name="themesId" style="margin-right:5px;">
+              {CONTENT_THEMES_MENU}
+            </select>
+            {TXT_RECURSIVE_CHANGE}
+            <input type="checkbox" name="themesRecursive" value="1" />
+          </td>
+        </tr>
+        <tr class="row1">
+          <td>{TXT_OPTIONAL_CSS_NAME}</td>
+          <td><input name="cssName" type="text" id="cssName" value="{CONTENT_CSS_NAME}" size="40" maxlength="50" /></td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+      <thead style="white-space:nowrap;">
+          <tr>
+            <th colspan="2">{TXT_NAVIGATION}</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr class="row2">
+              <td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
+              <td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" /></td>
+            </tr>
+            <tr class="row1">
+              <td>{TXT_TARGET}</td>
+              <td>
+                   <select name="redirectTarget" style="margin-right:5px;">
+              <option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
+                <option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
+              <option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
+              <option value="_self">{TXT_TARGET_SELF} (_self)</option>
+              <option value="_top">{TXT_TARGET_TOP} (_top)</option>
+            </select>
+           </td>
+           </tr>
+       </tbody>
+    </table>
+    <br />
+    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+      <thead style="white-space:nowrap;">
+      <tr>
+        <th colspan="2">{TXT_EXPERT_MODE}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="row2">
+        <td width="15%">{TXT_MODULE} (cmd | section)</td>
+        <td width="85%">
+          <input type="text" name="command" value="{CONTENT_SHOW_CMD}" maxlength="100" size="40" />
+          <select name="selectmodule">
+            <option value="">{TXT_NO_MODULE}</option>
+            {CONTENT_MODULE_MENU}
+          </select>
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_CACHING_STATUS}</td>
+        <td><input type="checkbox" name="cachingstatus" value="1" {CONTENT_CACHING_STATUS} /></td>
+      </tr>
             </tbody>
-		</table>
-	</div>
-	<!-- start content3 div -->
-	<div id="content3" class="editorTab" style="display:none">
-		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
-			<thead style="white-space:nowrap;">
-				<tr>
-					<th>{TXT_FRONTEND_PERMISSION}</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="row2">
-					<td>
-						<input value="0" id="noFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',0);" {CONTENT_PROTECTION_INACTIVE} /><label for="noFrontendProtection">&nbsp;{TXT_PUBLIC_PAGE}</label><br />
-						<input value="1" id="yesFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',1);" {CONTENT_PROTECTION_ACTIVE} /><label for="yesFrontendProtection">&nbsp;{TXT_PROTECTION}</label>
-					</td>
-				</tr>
-				<tr class="row1">
-					<td><label for="recursive">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="recursive" name="recursive" value="1" /></td>
-				</tr>
-			</tbody>
-		</table>
-		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="frontendGroups" style="display:{CONTENT_PROTECTION_DISPLAY};">
-			<tbody style="vertical-align:top;">
-				<tr class="row2">
-					<td colspan="3">&nbsp;</td>
-				</tr>
-				<tr class="row1">
-					<td width="15%">{TXT_GROUPS}</td>
-					<td width="1%">&nbsp;</td>
-					<td>{TXT_GROUPS_DEST}</td>
-				</tr>
-				<tr class="row2">
-					<td>
-						<select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
-						{CONTENT_EXISTING_GROUPS}
-						</select>
-						<br />
-						<font size="1">
-							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-						</font>
-					</td>
-					<td>
-						<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
-						<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" />
-					</td>
-					<td>
-						<select name="assignedGroups[]" size="10" style="width:300px;" multiple="multiple">
-						{CONTENT_ASSIGNED_GROUPS}
-						</select>
-						<br />
-						<font size="1">
-							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-						</font>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<!-- start content4 div -->
-	<div id="content4" class="editorTab" style="display: none">
-		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
-			<thead style="white-space:nowrap;">
-				<tr>
-					<th>{TXT_RELATEDNESS}</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="row2">
-					<td>
-						<input value="0" name="backendPermission" id="noBackendPermission" type="radio" onclick="swapBlock('backendGroups',0);" {CONTENT_CONTROL_BACKEND_INACTIVE} /><label for="noBackendPermission">&nbsp;{TXT_BACKEND_RELEASE}</label><br />
-						<input value="1" name="backendPermission" id="yesBackendPermission" type="radio" onclick="swapBlock('backendGroups',1);" {CONTENT_CONTROL_BACKEND_ACTIVE} /><label for="yesBackendPermission">&nbsp;{TXT_LIMIT_GROUP_RIGHTS}</label>
-					</td>
-				</tr>
-				<tr class="row1">
-					<td><label for="backendInherit">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="backendInherit" name="backendInherit" value="1" /></td>
-				</tr>
-			</tbody>
-		</table>
-		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="backendGroups" style="display:{CONTENT_CONTROL_BACKEND_DISPLAY};">
-			<thead style="vertical-align:top">
-				<tr class="row2">
-					<td colspan="3">&nbsp;</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="row1">
-					<td width="15%">{TXT_GROUPS}</td>
-					<td width="1%">&nbsp;</td>
-					<td>{TXT_GROUPS_DEST}</td>
-				</tr>
-				<tr class="row2">
-					<td>
-						<select name="existingBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
-						{CONTENT_EXISTING_BACKEND_GROUPS}
-						</select>
-						<br />
-						<font size="1">
-							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-						</font>
-					</td>
-					<td width="1%">
-						<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
-						<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" />
-					</td>
-					<td>
-						<select name="assignedBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
-						{CONTENT_ASSIGNED_BACKEND_GROUPS}
-						</select>
-						<br />
-						<font size="1">
-							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
-							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-						</font>
-					</td>
-				</tr>
-			</body>
-		</table>
-	</div>
-	<!-- end content4 div -->
-	<!-- start content5 div -->
-	<!-- BEGIN changelog2 -->
-	<div id="content5" class="editorTab" style="display: none">
-		<table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top" width="100%" class="adminlist">
+    </table>
+  </div>
+  <!-- start content3 div -->
+  <div id="content3" class="editorTab" style="display:none">
+    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
+      <thead style="white-space:nowrap;">
+        <tr>
+          <th>{TXT_FRONTEND_PERMISSION}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row2">
+          <td>
+            <input value="0" id="noFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',0);" {CONTENT_PROTECTION_INACTIVE} /><label for="noFrontendProtection">&nbsp;{TXT_PUBLIC_PAGE}</label><br />
+            <input value="1" id="yesFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',1);" {CONTENT_PROTECTION_ACTIVE} /><label for="yesFrontendProtection">&nbsp;{TXT_PROTECTION}</label>
+          </td>
+        </tr>
+        <tr class="row1">
+          <td><label for="recursive">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="recursive" name="recursive" value="1" /></td>
+        </tr>
+      </tbody>
+    </table>
+    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="frontendGroups" style="display:{CONTENT_PROTECTION_DISPLAY};">
+      <tbody style="vertical-align:top;">
+        <tr class="row2">
+          <td colspan="3">&nbsp;</td>
+        </tr>
+        <tr class="row1">
+          <td width="15%">{TXT_GROUPS}</td>
+          <td width="1%">&nbsp;</td>
+          <td>{TXT_GROUPS_DEST}</td>
+        </tr>
+        <tr class="row2">
+          <td>
+            <select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
+            {CONTENT_EXISTING_GROUPS}
+            </select>
+            <br />
+            <font size="1">
+              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+            </font>
+          </td>
+          <td>
+            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
+            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" />
+          </td>
+          <td>
+            <select name="assignedGroups[]" size="10" style="width:300px;" multiple="multiple">
+            {CONTENT_ASSIGNED_GROUPS}
+            </select>
+            <br />
+            <font size="1">
+              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+            </font>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- start content4 div -->
+  <div id="content4" class="editorTab" style="display: none">
+    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
+      <thead style="white-space:nowrap;">
+        <tr>
+          <th>{TXT_RELATEDNESS}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row2">
+          <td>
+            <input value="0" name="backendPermission" id="noBackendPermission" type="radio" onclick="swapBlock('backendGroups',0);" {CONTENT_CONTROL_BACKEND_INACTIVE} /><label for="noBackendPermission">&nbsp;{TXT_BACKEND_RELEASE}</label><br />
+            <input value="1" name="backendPermission" id="yesBackendPermission" type="radio" onclick="swapBlock('backendGroups',1);" {CONTENT_CONTROL_BACKEND_ACTIVE} /><label for="yesBackendPermission">&nbsp;{TXT_LIMIT_GROUP_RIGHTS}</label>
+          </td>
+        </tr>
+        <tr class="row1">
+          <td><label for="backendInherit">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="backendInherit" name="backendInherit" value="1" /></td>
+        </tr>
+      </tbody>
+    </table>
+    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="backendGroups" style="display:{CONTENT_CONTROL_BACKEND_DISPLAY};">
+      <thead style="vertical-align:top">
+        <tr class="row2">
+          <td colspan="3">&nbsp;</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row1">
+          <td width="15%">{TXT_GROUPS}</td>
+          <td width="1%">&nbsp;</td>
+          <td>{TXT_GROUPS_DEST}</td>
+        </tr>
+        <tr class="row2">
+          <td>
+            <select name="existingBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
+            {CONTENT_EXISTING_BACKEND_GROUPS}
+            </select>
+            <br />
+            <font size="1">
+              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+            </font>
+          </td>
+          <td width="1%">
+            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
+            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" />
+          </td>
+          <td>
+            <select name="assignedBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
+            {CONTENT_ASSIGNED_BACKEND_GROUPS}
+            </select>
+            <br />
+            <font size="1">
+              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
+              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+            </font>
+          </td>
+        </tr>
+      </body>
+    </table>
+  </div>
+  <!-- end content4 div -->
+  <!-- start content5 div -->
+  <!-- BEGIN changelog2 -->
+  <div id="content5" class="editorTab" style="display: none">
+    <table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top" width="100%" class="adminlist">
             <thead>
-		    <tr>
-				<th colspan="5">{TXT_CHANGELOG}</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr class="row3">
-				<td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
-				<td width="25%"><b>{TXT_CHANGELOG_DATE}</b></td>
-				<td width="48%"><b>{TXT_CHANGELOG_NAME}</b></td>
-				<td width="25%"><b>{TXT_CHANGELOG_USER}</b></td>
-				<td width="1%"><b>{TXT_CHANGELOG_FUNCTIONS}</b></td>
-			</tr>
-			<!-- BEGIN showChanges -->
-			<tr class="{CHANGELOG_ROWCLASS}">
-				<td><div style="border-bottom:0px;">{CHANGELOG_CHECKBOX}</div></td>
-				<td><div style="border-bottom:0px;">{CHANGELOG_DATE}</div></td>
-				<td><div style="border-bottom:0px;"><a href="javascript:showOrHide('contentDiv_{CHANGELOG_ID}');">{CHANGELOG_TITLE}</a></div></td>
-				<td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{CHANGELOG_USER}" title="{CHANGELOG_USER}" border="0" align="middle" />&nbsp;{CHANGELOG_USER}</div></td>
-				<td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
-					{CHANGELOG_ACTIVATE}
-					{CHANGELOG_DELETE}
-				</div></td>
-			</tr>
-			<tr class="{CHANGELOG_ROWCLASS}">
-				<td colspan="5">
-					<div id="contentDiv_{CHANGELOG_ID}" style="width:100%; border:1px solid #DDE4FF; display:none;">
-						<table summary="" border="0" cellpadding="3" width="100%">
-							<tr>
-								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_PAGETITLE}</b></div></td>
-								<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_PAGETITLE}</div></td>
-								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_START_DATE}</b></div></td>
-								<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_STARTDATE}</div></td>
-								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_MODULE} (cmd|section)</b></div></td>
-								<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CMD} | {CHANGELOG_SECTION}</div></td>
-								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_FRONTEND}</b></div></td>
-								<td width="15%" valign="top" rowspan="2"><div style="border-bottom:0px;">{CHANGELOG_FRONTEND}</div></td>
-							</tr>
-							<tr>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_TITLE}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METATITLE}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_END_DATE}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_ENDDATE}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_REDIRECT}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_REDIRECT}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-							</tr>
-							<tr>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_DESCRIPTION}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METADESC}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_THEMES}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_THEME}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_SOURCE_MODE}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_SOURCEMODE}</div></td>
-								<td nowrap="nowrap" valign="top" height="1%"><div style="border-bottom:0px;"><b>{TXT_CL_BACKEND}</b></div></td>
-								<td rowspan="2" valign="top"><div style="border-bottom:0px;">{CHANGELOG_BACKEND}</div></td>
-							</tr>
-							<tr>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_KEYWORD}</b></div></td>
-								<td valign="top"><div style="border-bottom:0px;">{CHANGELOG_METAKEY}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_OPTIONAL_CSS_NAME}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_OPTIONAL_CSS}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CACHINGSTATUS}</b></div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CACHINGSTATUS}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-							</tr>
-							<tr>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CATEGORY}</b></div></td>
-								<td valign="top"><div style="border-bottom:0px;">{CHANGELOG_CATEGORY}</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-							</tr>
-						</table>
-					</div>
-				</td>
-			</tr>
-			<!-- END showChanges -->
-			</tbody>
-		</table>
-		<table summary="" cellpadding="3" cellspacing="0" border="0">
-		<tbody>
-			<tr>
-				<td>
-					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-					<a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',true); return false;">{TXT_SELECT_ALL}</a> /
-					<a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-					<img src="images/icons/strike.gif" alt="layout" />
-					<select name="formContent_HistoryMultiAction" onchange="historyMultiAction();">
-						<option value="0">{TXT_CHANGELOG_SUBMIT}</option>
-						<option value="delete">{TXT_CHANGELOG_SUBMIT_DEL}</option>
-					</select>
-				</td>
-			</tr>
-    	</tbody>
-		</table>
-	</div>
-	<!-- END changelog2 -->
-	<!-- end content5 div -->
-	<!-- start content6 div -->
-	<div id="content6" class="editorTab" style="display: none">
-		<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
-			<thead>
-			    <tr>
-					<th colspan="3">{TXT_CONTENT_ASSIGN_BLOCK}</th>
-				</tr>
-		    </thead>
-		    <tbody>
-				<tr class="row2">
-					<td height="22" width="15%">{TXT_GROUPS}</td>
-					<td width="1%">&nbsp;</td>
-					<td>{TXT_GROUPS_DEST}</td>
-				</tr>
-				<tr class="row1">
-					<td>
-						<select name="existingBlocks[]" size="10" style="width:300px;" multiple="multiple">
-						{CONTENT_EXISTING_BLOCKS}
-						</select>
-						<br />
-						<font size="1">
-							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-						</font>
-					</td>
-					<td width="1%" valign="top" nowrap>
-						&nbsp;<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" style="margin-bottom:1px;" />&nbsp;<br />
-						&nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" />&nbsp;
-					</td>
-					<td>
-						<select name="assignedBlocks[]" size="10" style="width:300px;" multiple="multiple">
-						{CONTENT_ASSIGNED_BLOCK}
-						</select>
-						<br />
-						<font size="1">
-							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
-							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-						</font>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<!-- end content6 div -->
-	<br />
-	<input type="submit" name="Submit" value="{TXT_STORE}" />
-	<br />
+        <tr>
+        <th colspan="5">{TXT_CHANGELOG}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="row3">
+        <td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
+        <td width="25%"><b>{TXT_CHANGELOG_DATE}</b></td>
+        <td width="48%"><b>{TXT_CHANGELOG_NAME}</b></td>
+        <td width="25%"><b>{TXT_CHANGELOG_USER}</b></td>
+        <td width="1%"><b>{TXT_CHANGELOG_FUNCTIONS}</b></td>
+      </tr>
+      <!-- BEGIN showChanges -->
+      <tr class="{CHANGELOG_ROWCLASS}">
+        <td><div style="border-bottom:0px;">{CHANGELOG_CHECKBOX}</div></td>
+        <td><div style="border-bottom:0px;">{CHANGELOG_DATE}</div></td>
+        <td><div style="border-bottom:0px;"><a href="javascript:showOrHide('contentDiv_{CHANGELOG_ID}');">{CHANGELOG_TITLE}</a></div></td>
+        <td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{CHANGELOG_USER}" title="{CHANGELOG_USER}" border="0" align="middle" />&nbsp;{CHANGELOG_USER}</div></td>
+        <td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
+          {CHANGELOG_ACTIVATE}
+          {CHANGELOG_DELETE}
+        </div></td>
+      </tr>
+      <tr class="{CHANGELOG_ROWCLASS}">
+        <td colspan="5">
+          <div id="contentDiv_{CHANGELOG_ID}" style="width:100%; border:1px solid #DDE4FF; display:none;">
+            <table summary="" border="0" cellpadding="3" width="100%">
+              <tr>
+                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_PAGETITLE}</b></div></td>
+                <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_PAGETITLE}</div></td>
+                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_START_DATE}</b></div></td>
+                <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_STARTDATE}</div></td>
+                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_MODULE} (cmd|section)</b></div></td>
+                <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CMD} | {CHANGELOG_SECTION}</div></td>
+                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_FRONTEND}</b></div></td>
+                <td width="15%" valign="top" rowspan="2"><div style="border-bottom:0px;">{CHANGELOG_FRONTEND}</div></td>
+              </tr>
+              <tr>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_TITLE}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METATITLE}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_END_DATE}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_ENDDATE}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_REDIRECT}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_REDIRECT}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+              </tr>
+              <tr>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_DESCRIPTION}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METADESC}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_THEMES}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_THEME}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_SOURCE_MODE}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_SOURCEMODE}</div></td>
+                <td nowrap="nowrap" valign="top" height="1%"><div style="border-bottom:0px;"><b>{TXT_CL_BACKEND}</b></div></td>
+                <td rowspan="2" valign="top"><div style="border-bottom:0px;">{CHANGELOG_BACKEND}</div></td>
+              </tr>
+              <tr>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_KEYWORD}</b></div></td>
+                <td valign="top"><div style="border-bottom:0px;">{CHANGELOG_METAKEY}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_OPTIONAL_CSS_NAME}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_OPTIONAL_CSS}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CACHINGSTATUS}</b></div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CACHINGSTATUS}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+              </tr>
+              <tr>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CATEGORY}</b></div></td>
+                <td valign="top"><div style="border-bottom:0px;">{CHANGELOG_CATEGORY}</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      <!-- END showChanges -->
+      </tbody>
+    </table>
+    <table summary="" cellpadding="3" cellspacing="0" border="0">
+    <tbody>
+      <tr>
+        <td>
+          <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+          <a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',true); return false;">{TXT_SELECT_ALL}</a> /
+          <a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',false); return false;">{TXT_DESELECT_ALL}</a>
+          <img src="images/icons/strike.gif" alt="layout" />
+          <select name="formContent_HistoryMultiAction" onchange="historyMultiAction();">
+            <option value="0">{TXT_CHANGELOG_SUBMIT}</option>
+            <option value="delete">{TXT_CHANGELOG_SUBMIT_DEL}</option>
+          </select>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- END changelog2 -->
+  <!-- end content5 div -->
+  <!-- start content6 div -->
+  <div id="content6" class="editorTab" style="display: none">
+    <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
+      <thead>
+          <tr>
+          <th colspan="3">{TXT_CONTENT_ASSIGN_BLOCK}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="row2">
+          <td height="22" width="15%">{TXT_GROUPS}</td>
+          <td width="1%">&nbsp;</td>
+          <td>{TXT_GROUPS_DEST}</td>
+        </tr>
+        <tr class="row1">
+          <td>
+            <select name="existingBlocks[]" size="10" style="width:300px;" multiple="multiple">
+            {CONTENT_EXISTING_BLOCKS}
+            </select>
+            <br />
+            <font size="1">
+              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+            </font>
+          </td>
+          <td width="1%" valign="top" nowrap>
+            &nbsp;<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" style="margin-bottom:1px;" />&nbsp;<br />
+            &nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" />&nbsp;
+          </td>
+          <td>
+            <select name="assignedBlocks[]" size="10" style="width:300px;" multiple="multiple">
+            {CONTENT_ASSIGNED_BLOCK}
+            </select>
+            <br />
+            <font size="1">
+              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
+              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+            </font>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- end content6 div -->
+  <br />
+  <input type="submit" name="Submit" value="{TXT_STORE}" />
+  <br />
 </form>
 
 <script type="text/javascript">

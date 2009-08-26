@@ -1,12 +1,12 @@
 <?php
+
 /**
  * Modul Admin Index
  *
  * CMS Administration
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Engineering Team
- * @version       $Id:    Exp $
+ * @version     2.1.2
  * @package     contrexx
  * @subpackage  admin
  */
@@ -160,9 +160,6 @@ $_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
 
 $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
-// language object from the Framework
-$objLanguage = new FWLanguage();
 
 // Module object
 $objModules = new ModuleChecker();
@@ -741,13 +738,13 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-	// E-Card
+    // E-Card
     //-------------------------------------------------------
     case 'ecard':
         $modulespath = ASCMS_MODULE_PATH.'/ecard/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-      	$subMenuTitle = $_CORELANG['TXT_ECARD_TITLE'];
+          $subMenuTitle = $_CORELANG['TXT_ECARD_TITLE'];
         $objEcard = new ecard();
         $objEcard->getPage();
         break;
@@ -973,7 +970,7 @@ switch ($plainCmd) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
-        $objKnowledge = &new KnowledgeAdmin();
+        $objKnowledge = new KnowledgeAdmin();
         $objKnowledge->getPage();
         break;
 
@@ -984,7 +981,7 @@ switch ($plainCmd) {
      * @version 1.0
      */
     case 'u2u':
-    	Permission::checkAccess(141, 'static');
+        Permission::checkAccess(141, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/u2u/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1000,7 +997,7 @@ switch ($plainCmd) {
      * @version 1.0
      */
     case 'partners':
-    	Permission::checkAccess(140, 'static');
+        Permission::checkAccess(140, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/partners/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1025,6 +1022,20 @@ switch ($plainCmd) {
         $objAuction->getPage();
         break;
 
+    /**
+     * Hotelcard Module
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.2.0
+     * @version 2.2.0
+     */
+    case 'hotelcard':
+        Permission::checkAccess(150, 'static');
+        if (file_exists(ASCMS_MODULE_PATH.'/hotelcard/admin.class.php')) {
+            require_once(ASCMS_MODULE_PATH.'/hotelcard/admin.class.php');
+            $subMenuTitle = $_CORELANG['TXT_HOTELCARD'];
+            Hotelcard::getPage();
+        }
+        break;
 
     //-------------------------------------------------------
     // access denied
@@ -1112,7 +1123,7 @@ $objTemplate->setGlobalVariable(array(
     // for the time being, but is provided for future use and convenience.
     'MODULE_INDEX'         => MODULE_INDEX,
     'JAVASCRIPT'            => JS::getCode(),
-    'DIRECTORY_INDEX'       => CONTREXX_DIRECTORY_INDEX
+    'DIRECTORY_INDEX'       => CONTREXX_DIRECTORY_INDEX,
 ));
 
 if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
