@@ -175,7 +175,7 @@ class marketLibrary
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
-								  color='".contrexx_addslashes($_POST['color'])."',
+                                  color='".contrexx_addslashes($_POST['color'])."',
                                   description='".contrexx_addslashes($_POST['description'])."',
                                 premium='".contrexx_addslashes($_POST['premium'])."',
                                   picture='".contrexx_addslashes($picture)."',

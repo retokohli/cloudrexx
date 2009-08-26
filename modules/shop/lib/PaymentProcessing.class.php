@@ -266,7 +266,7 @@ class PaymentProcessing
                 $return = self::getDatatransForm(Currency::getActiveCurrencyCode());
                 break;
             case 'Paypal':
-                $return = self::_PayPalProcessor();
+                $return = PayPal::getForm();
                 break;
             case 'Dummy':
                 $return = Dummy::getForm();
@@ -412,17 +412,6 @@ class PaymentProcessing
             return $strError.'</font>';
         }
         return $yellowpayForm;
-    }
-
-
-    /**
-     * Returns the HTML code for the PayPal payment method.
-     * @return  string  HTML code
-     */
-    function  _PayPalProcessor()
-    {
-        $objPayPal = new PayPal();
-        return $objPayPal->getForm();
     }
 
 

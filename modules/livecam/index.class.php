@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Livecam
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -261,7 +262,7 @@ class Livecam extends LivecamLibrary
      */
     function _showArchive($date)
     {
-		global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         JS::activate("shadowbox", array('players' => array('img')));
         JS::activate("datepicker");
@@ -401,4 +402,5 @@ class Livecam extends LivecamLibrary
         }
     }
 }
+
 ?>

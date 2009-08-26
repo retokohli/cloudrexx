@@ -114,7 +114,6 @@ class ProductAttribute
             $this->arrValue = ProductAttributes::getValueArrayByNameId($id);
         if ($productId)
             $this->arrRelation = ProductAttributes::getRelationArray($productId);
-//echo("PA::__construct($name, $type, $id, $productId):  ".var_export($this, true)."<br />");
     }
 
 
@@ -466,8 +465,7 @@ class ProductAttribute
      */
     function storeValues()
     {
-//echo("storeValues(): this->arrvalue: ".var_export($this->arrValue, true)."<br />");
-    	// Mind: value entries in the array may be new and have to
+        // Mind: value entries in the array may be new and have to
         // be inserted, even though the object itself has got a valid ID!
         foreach ($this->arrValue as $arrValue) {
 //            // The Text ID is not set for values that have been added
@@ -475,7 +473,6 @@ class ProductAttribute
 //                (empty($arrValue['text_value_id'])
 //                    ? 0 : $arrValue['text_value_id']
 //                );
-//echo("storing value: ".var_export($arrValue, true)."<br />");
 //            // Store Text
 //            $objText = Text::replace(
 //                $text_id, FRONTEND_LANG_ID, $arrValue['value'],
@@ -489,7 +486,6 @@ class ProductAttribute
             // If the value was just added to the array, the array index
             // is just that -- an array index, and its $arrValue['id'] is empty.
             $value_id = (empty($arrValue['id']) ? 0 : $arrValue['id']);
-//echo("storeValues(): storing pa value ID $value_id: ".var_export($arrValue, true)."<br />");
             if ($value_id && $this->recordExistsValue($value_id)) {
                 if (!$this->updateValue($arrValue)) return false;
             } else {
@@ -513,7 +509,6 @@ class ProductAttribute
     {
         global $objDatabase;
 
-//echo("updateValue():  Got value: ".var_export($arrValue, true)."<br />");
         // mind: value entries in the array may be *new* and have to
         // be inserted, even though the object itself has got a valid ID!
         $query = "

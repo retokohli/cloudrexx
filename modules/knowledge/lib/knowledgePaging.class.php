@@ -1,7 +1,7 @@
 <?php
 /**
  * Knowledge Paging
- * 
+ *
  * This paging is modified for the knowledge module. The changes include
  * the removal of the the url for the links. This is because the standard url template
  * is index.php?pos=positiont&extargs. This cannot be used if the paging works with
@@ -26,7 +26,7 @@ if (eregi("paging.class.php",$_SERVER['PHP_SELF'])) {
 /**
  * Function getKnowledgePaging
  *
- * helping function for the Paging class, modified for the knowledge 
+ * helping function for the Paging class, modified for the knowledge
  * module (see above for description)
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>
@@ -169,7 +169,7 @@ class KnowledgePaging
         $array_paging['last'] = "<a href=\"". str_replace('%POS%', $this->row - $corr_value, $this->ext_argv) ."\">";
 
         if ($this->cur_position != 0) {
-            $array_paging['previous_link'] = "<a href=\"". str_replace('%POS%', 
+            $array_paging['previous_link'] = "<a href=\"". str_replace('%POS%',
                 $this->cur_position - $this->result_per_page, $this->ext_argv) ."\">";
         }
 

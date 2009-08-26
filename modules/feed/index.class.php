@@ -41,9 +41,9 @@ if(ini_get('allow_url_fopen') != 1){
  */
 class feed extends feedLibrary
 {
-	/**
-	 * @var    HTML_Template_Sigma
-	 */
+    /**
+     * @var    HTML_Template_Sigma
+     */
     public $_objTpl;
     public $pageTitle;
     public $statusMessage;

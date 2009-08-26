@@ -26,7 +26,7 @@ var selectMultiAction = function() {
             }
         break;
         default:
-	}
+  }
     $multi.val(0);
 }
 
@@ -68,8 +68,8 @@ var deleteEntry = function(){
                         $J(this).remove();
                         if($J('#psEntriesTable tr:lt(4)').length < 4){
                             $J('<tr>\
-                        			<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
-                        		</tr>').appendTo($J('#psEntriesTable'));
+                              <td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
+                            </tr>').appendTo($J('#psEntriesTable'));
                         }
                         resetRowClasses();
                         $J('#pagingUpper').text(parseInt($J('#pagingUpper').text())-1);
@@ -320,8 +320,8 @@ var updateEntries = function(data, textStatus){
 
     if(data.entries.length == 0){
         $J('<tr class="row2">\
-    		<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
-    	</tr>').appendTo($J('#psEntriesTable tbody')).hide().fadeIn(500);
+        <td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
+      </tr>').appendTo($J('#psEntriesTable tbody')).hide().fadeIn(500);
     }
 
     var htmlRow = '';
@@ -389,25 +389,25 @@ var addRow = function(data, textStatus){
     var $rows = $J('#psEntriesTable tbody tr.row2,#psEntriesTable tbody tr.row1');
     var className = $rows.length % 2 ? 'row2' : 'row1';
     $J('<tr class="'+className+'">\
-    		<td class="pstype"><input type="checkbox" name="selectedEntries[]" /> '+type+'</td>\
-    		<td class="psformat">'+format+'</td>\
-    		<td class="psfront">'+front+'</td>\
-    		<td class="psback">'+back+'</td>\
-    		<td class="psweight">'+weight+'</td>\
-    		<td class="pspaper">'+paper+'</td>\
-    		<td class="psprice">'+price+'</td>\
-    		<td class="psfactor">'+factor+'</td>\
-    		<td nowrap="nowrap" class="psaction">\
-    			<div align="right">\
-    				<a class="psedit" href="#" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
-    				   <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />\
-    				</a>\
-    				<a class="psdelete" href="#" target="_self" title="{TXT_PRINTSHOP_DELETE}">\
-    				   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />\
-    				</a>\
-    			</div>\
-    		</td>\
-    	</tr>')
+        <td class="pstype"><input type="checkbox" name="selectedEntries[]" /> '+type+'</td>\
+        <td class="psformat">'+format+'</td>\
+        <td class="psfront">'+front+'</td>\
+        <td class="psback">'+back+'</td>\
+        <td class="psweight">'+weight+'</td>\
+        <td class="pspaper">'+paper+'</td>\
+        <td class="psprice">'+price+'</td>\
+        <td class="psfactor">'+factor+'</td>\
+        <td nowrap="nowrap" class="psaction">\
+          <div align="right">\
+            <a class="psedit" href="#" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
+               <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />\
+            </a>\
+            <a class="psdelete" href="#" target="_self" title="{TXT_PRINTSHOP_DELETE}">\
+               <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />\
+            </a>\
+          </div>\
+        </td>\
+      </tr>')
     .appendTo('#psEntriesTable').hide().fadeIn(500)
     .find('.psname').data('default', name);
     $J('#pagingUpper').text(parseInt($J('#pagingUpper').text())+1);
@@ -463,16 +463,16 @@ var submitError = function(xhr, textStatus, errorThrown){
 var setError = function(message){
     $J('#errormessagetarget').append('<div id="alertbox">\
         <span class="messageFadeout"><a href="#" target="_self" title="{TXT_PRINTSHOP_FADE_OUT}">\
-		   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
-		</a></span>'+message+'</div>').find(':last-child')
+       <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
+    </a></span>'+message+'</div>').find(':last-child')
         .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
 }
 
 var setMessage = function(message){
     $J('#errormessagetarget').append('<div id="okbox">\
         <span class="messageFadeout"><a href="#" target="_self" title="{TXT_PRINTSHOP_FADE_OUT}">\
-		   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
-		</a></span>'+message+'</div>').find(':last-child')
+       <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
+    </a></span>'+message+'</div>').find(':last-child')
                               .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
 }
 
@@ -488,7 +488,7 @@ var setMessage = function(message){
 <br />
 <form name="frmShowEntries" method="post" action="{DIRECTORY_INDEX}?cmd=printshop&act=products">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psAddTable">
-	   <thead>
+     <thead>
         <tr>
             <th colspan="9">{TXT_PRINTSHOP_ADD_PRODUCT}</th>
         </tr>
@@ -496,108 +496,108 @@ var setMessage = function(message){
        <tbody>
         <tr class="row3">
             <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_TYPE_TITLE}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FORMAT_TITLE}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FRONT_TITLE}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
-  			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
-  			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
-    		<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FORMAT_TITLE}</span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FRONT_TITLE}</span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
+      <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
+        <td nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
+        <td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
+        <td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
         </tr>
         <tr class="row3">
             <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_TYPE_DD}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FORMAT_DD}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FRONT_DD}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_BACK_DD}</span></td>
-			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_WEIGHT_DD}</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_PAPER_DD}</span></td>
-  			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;"><input size="6" type="text" name="psPrice" /></span></td>
-  			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;"><input size="6" type="text" name="psFactor" /></span></td>
-    		<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;"><input type="button" name="psAddProduct" value="{TXT_PRINTSHOP_ADD}" /></span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FORMAT_DD}</span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FRONT_DD}</span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_BACK_DD}</span></td>
+      <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_WEIGHT_DD}</span></td>
+      <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_PAPER_DD}</span></td>
+        <td nowrap="nowrap" width="8%"><span style="font-weight:bold;"><input size="6" type="text" name="psPrice" /></span></td>
+        <td nowrap="nowrap" width="12%"><span style="font-weight:bold;"><input size="6" type="text" name="psFactor" /></span></td>
+        <td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;"><input type="button" name="psAddProduct" value="{TXT_PRINTSHOP_ADD}" /></span></td>
         </tr>
        </tbody>
-	</table>
+  </table>
     <br />
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psEntriesTable">
+  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psEntriesTable">
         <thead>
-    		<tr>
-    			<th colspan="9">{TXT_PRINTSHOP_PRODUCTS}</th>
-    		</tr>
+        <tr>
+          <th colspan="9">{TXT_PRINTSHOP_PRODUCTS}</th>
+        </tr>
         </thead>
         <tbody>
-    		<tr class="row3">
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_TYPE_TITLE}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FORMAT_TITLE}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FRONT_TITLE}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
-    			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
-    			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
-    			<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
-    		</tr>
-    		<tr class="row3">
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_TYPE_FILTER_DD}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FORMAT_FILTER_DD}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FRONT_FILTER_DD}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_BACK_FILTER_DD}</span></td>
-    			<td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_WEIGHT_FILTER_DD}</span></td>
-    			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_PAPER_FILTER_DD}</span></td>
-    			<td nowrap="nowrap" width="8%"><span style="font-weight:bold;">&nbsp;</span></td>
-    			<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">&nbsp;</span></td>
-    			<td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">&nbsp;</span></td>
-    		</tr>
-    		<!-- BEGIN showEntry -->
-    		<tr class="{ENTRY_ROWCLASS}">
-    			<td class="pstype"><input type="checkbox" name="selectedEntriesId[]" value="{PRINTSHOP_ATTRIBUTE_ID}" /> {ENTRY_TYPE}</td>
-    			<td class="psformat">{ENTRY_FORMAT}</td>
-    			<td class="psfront">{ENTRY_FRONT}</td>
-    			<td class="psback">{ENTRY_BACK}</td>
-    			<td class="psweight">{ENTRY_WEIGHT}</td>
-    			<td class="pspaper">{ENTRY_PAPER}</td>
-    			<td class="psprice">{ENTRY_PRICE}</td><!-- <input size="6" type="text" name="psPrice" value="{ENTRY_PRICE}" /> -->
-    			<td class="psfactor">{ENTRY_FACTOR}</td><!-- <input size="6" type="text" name="psPrice" value="{ENTRY_PRICE}" /> -->
-    			<td nowrap="nowrap" class="psaction">
-        			<div align="right">
-    					<a href="#" class="psedit" target="_self" title="{TXT_PRINTSHOP_EDIT}">
-    					   <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />
-    					</a>
-    					<a href="#" class="psdelete" target="_self" title="{TXT_PRINTSHOP_DELETE}">
-    					   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />
-    					</a>
-    				</div>
-    			</td>
-    		</tr>
-    		<!-- END showEntry -->
-    		<!-- BEGIN noEntry -->
-    		<tr class="row2">
-    			<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>
-    		</tr>
-		<!-- END noEntry -->
-		</tbody>
-	</table>
+        <tr class="row3">
+          <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_TYPE_TITLE}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FORMAT_TITLE}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FRONT_TITLE}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
+          <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
+          <td nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_PRICE_TITLE}</span></td>
+          <td nowrap="nowrap" width="12%"><span style="font-weight:bold;">{TXT_PRINTSHOP_FACTOR_TITLE}</span></td>
+          <td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
+        </tr>
+        <tr class="row3">
+          <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_TYPE_FILTER_DD}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FORMAT_FILTER_DD}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_FRONT_FILTER_DD}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_BACK_FILTER_DD}</span></td>
+          <td nowrap="nowrap" width="13%"><span style="font-weight:bold;">{ENTRY_WEIGHT_FILTER_DD}</span></td>
+          <td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{ENTRY_PAPER_FILTER_DD}</span></td>
+          <td nowrap="nowrap" width="8%"><span style="font-weight:bold;">&nbsp;</span></td>
+          <td nowrap="nowrap" width="12%"><span style="font-weight:bold;">&nbsp;</span></td>
+          <td style="text-align: right;" nowrap="nowrap" width="8%"><span style="font-weight:bold;">&nbsp;</span></td>
+        </tr>
+        <!-- BEGIN showEntry -->
+        <tr class="{ENTRY_ROWCLASS}">
+          <td class="pstype"><input type="checkbox" name="selectedEntriesId[]" value="{PRINTSHOP_ATTRIBUTE_ID}" /> {ENTRY_TYPE}</td>
+          <td class="psformat">{ENTRY_FORMAT}</td>
+          <td class="psfront">{ENTRY_FRONT}</td>
+          <td class="psback">{ENTRY_BACK}</td>
+          <td class="psweight">{ENTRY_WEIGHT}</td>
+          <td class="pspaper">{ENTRY_PAPER}</td>
+          <td class="psprice">{ENTRY_PRICE}</td><!-- <input size="6" type="text" name="psPrice" value="{ENTRY_PRICE}" /> -->
+          <td class="psfactor">{ENTRY_FACTOR}</td><!-- <input size="6" type="text" name="psPrice" value="{ENTRY_PRICE}" /> -->
+          <td nowrap="nowrap" class="psaction">
+              <div align="right">
+              <a href="#" class="psedit" target="_self" title="{TXT_PRINTSHOP_EDIT}">
+                 <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />
+              </a>
+              <a href="#" class="psdelete" target="_self" title="{TXT_PRINTSHOP_DELETE}">
+                 <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />
+              </a>
+            </div>
+          </td>
+        </tr>
+        <!-- END showEntry -->
+        <!-- BEGIN noEntry -->
+        <tr class="row2">
+          <td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>
+        </tr>
+    <!-- END noEntry -->
+    </tbody>
+  </table>
 
 
 
 
-	<br />
-	<table cellpadding="2" cellspacing="0" border="0">
-	   <tbody>
-    		<tr>
-    			<td>
-    				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
-    				<a href="#" id="entriesSelectAll" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a> /
-    				<a href="#" id="entriesDeselectAll" title="{TXT_DESELECT_ALL}">{TXT_DESELECT_ALL}</a>
-    				<img src="images/icons/strike.gif" alt="" />
-    				<select id="entriesMultiAction">
-    					<option value="0">{TXT_MULTISELECT_SELECT}</option>
-    					<option value="delete">{TXT_MULTISELECT_DELETE}</option>
-    				</select>
-    			</td>
-    		</tr>
-		</tbody>
-	</table>
+  <br />
+  <table cellpadding="2" cellspacing="0" border="0">
+     <tbody>
+        <tr>
+          <td>
+            <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+            <a href="#" id="entriesSelectAll" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a> /
+            <a href="#" id="entriesDeselectAll" title="{TXT_DESELECT_ALL}">{TXT_DESELECT_ALL}</a>
+            <img src="images/icons/strike.gif" alt="" />
+            <select id="entriesMultiAction">
+              <option value="0">{TXT_MULTISELECT_SELECT}</option>
+              <option value="delete">{TXT_MULTISELECT_DELETE}</option>
+            </select>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 </form>
 <br />
 <div id="pspaging" align="center">{PRINTSHOP_PAGING}</div>

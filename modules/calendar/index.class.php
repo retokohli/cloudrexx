@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Calendar
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -36,8 +37,8 @@ require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Image.class.php';
  */
 class Calendar extends calendarLibrary
 {
-	var $objSeries;
-	//var $eventList = array();
+    var $objSeries;
+    //var $eventList = array();
    /**
      * XML parser handle
      *
@@ -56,7 +57,7 @@ class Calendar extends calendarLibrary
      */
     function __construct($pageContent)
     {
-    	global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         parent::__construct($_SERVER['SCRIPT_NAME']."index.php?section=calendar");
         $this->pageContent = $pageContent;
@@ -68,101 +69,101 @@ class Calendar extends calendarLibrary
      * Standard function, called by the index
      * file
      *
-     * @access 	public
+     * @access     public
      */
     function getCalendarPage()
     {
-    	if (!isset($_REQUEST['cmd'])) {
-    		$_REQUEST['cmd'] = '';
-    	}
+        if (!isset($_REQUEST['cmd'])) {
+            $_REQUEST['cmd'] = '';
+        }
 
-    	$this->_getEventList();
+        $this->_getEventList();
 
-    	switch($_REQUEST['cmd']) {
-    		case 'event':
-    			$key 	= intval($_REQUEST['id']);
-    			$id 	= intval($this->eventList[$key]['id']);
+        switch($_REQUEST['cmd']) {
+            case 'event':
+                $key     = intval($_REQUEST['id']);
+                $id     = intval($this->eventList[$key]['id']);
 
-				//check export
-				if(isset($_REQUEST['export'])){
-					switch($_REQUEST['export']){
-						case 'iCal':
-			    			if($id > 0){
-				    			$this->_iCalExport('event', $id);
-			    			}
-							break;
+                //check export
+                if(isset($_REQUEST['export'])){
+                    switch($_REQUEST['export']){
+                        case 'iCal':
+                            if($id > 0){
+                                $this->_iCalExport('event', $id);
+                            }
+                            break;
 
-						case 'category':
-							if ($id > 0) {
-								$this->_iCalExport('category', $id);
-							}
-							break;
-						case 'all':
-							$this->_iCalExport('all');
-							break;
-						default:
-							// do nothing
-							break;
-					}
-				}else{
-			    	return $this->_showEvent($key, $id);
-				}
-		    	break;
-	    	case 'addevent':
+                        case 'category':
+                            if ($id > 0) {
+                                $this->_iCalExport('category', $id);
+                            }
+                            break;
+                        case 'all':
+                            $this->_iCalExport('all');
+                            break;
+                        default:
+                            // do nothing
+                            break;
+                    }
+                }else{
+                    return $this->_showEvent($key, $id);
+                }
+                break;
+            case 'addevent':
                 return $this->_showAddEventForm();
                 break;
-		    case 'eventlist':
-				return $this->_showEventList();
-		    	break;
+            case 'eventlist':
+                return $this->_showEventList();
+                break;
 
-		    case 'sign':
-				return $this->_showRegistrationForm();
-		    	break;
+            case 'sign':
+                return $this->_showRegistrationForm();
+                break;
 
-		    case 'boxes':
-		    	if ($_GET['act'] == "list") {
-		    		return $this->_boxesEventList();
-		    	} else {
-		    		return $this->_showThreeBoxes();
-		    	}
-		    	break;
+            case 'boxes':
+                if ($_GET['act'] == "list") {
+                    return $this->_boxesEventList();
+                } else {
+                    return $this->_showThreeBoxes();
+                }
+                break;
 
-		    default:
-		        return $this->_showStandardView();
-		        break;
-    	}
+            default:
+                return $this->_showStandardView();
+                break;
+        }
     }
 
     function _getEventList()
     {
-    	global $_CONFIG;
+        global $_CONFIG;
 
-    	//get startdates
-    	if (empty($_POST['startDate'])) {
-    		$day 	= isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("d", mktime());
-    		$month 	= isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
-    		$year 	= isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
+        //get startdates
+        if (empty($_POST['startDate'])) {
+            $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("d", mktime());
+            $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
+            $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
 
-    		if($_GET['cmd'] == 'boxes' && empty($_GET['act'])){
-	    		$day = 1;
-    		}
+            if($_GET['cmd'] == 'boxes' && empty($_GET['act'])){
+                $day = 1;
+            }
 
-    		$startdate = mktime(0, 0, 0, $month, $day, $year);
-    	} else {
-    		$datearr = explode("-", $_POST['startDate']);
-    		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
-    		unset($datearr);
-    	}
+            $startdate = mktime(0, 0, 0, $month, $day, $year);
+        } else {
+            $datearr = explode("-", $_POST['startDate']);
+            $startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+            unset($datearr);
+        }
 
-    	//get enddates
-    	if (empty($_POST['endDate'])) {
-    		if($_GET['cmd'] == 'boxes'){
-    			$day 	= isset($_GET['dayID']) ? $_GET['dayID'] : date("d", mktime());
-    			//$day 	= isset($_GET['dayID']) ? $_GET['dayID'] : 31;
-	    		$month 	= isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
-	    		$year 	= isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
+        //get enddates
+        if (empty($_POST['endDate'])) {
+            if($_GET['cmd'] == 'boxes'){
+                $day     = isset($_GET['dayID']) ? $_GET['dayID'] : date("d", mktime());
+                //$day     = isset($_GET['dayID']) ? $_GET['dayID'] : 31;
+                $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
+                $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
 
-	    		if(empty($_GET['act'])){
+                if(empty($_GET['act'])){
                     $month = $month+2;
                     $day = 31;
                 } else if ($_GET['act'] == 'list') {
@@ -171,283 +172,277 @@ class Calendar extends calendarLibrary
                     $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
                 }
 
-    			$enddate = mktime(23, 59, 59, $month, $day, $year);
-    		} else {
+                $enddate = mktime(23, 59, 59, $month, $day, $year);
+            } else {
                 $enddate = mktime(23, 59, 59, $month, $day, $year+10);
-    		}
-    	} else {
-    		$datearr = explode("-", $_POST['endDate']);
-    		$enddate = mktime(23, 59, 59, $datearr[1], $datearr[2], $datearr[0]);
-    		unset($datearr);
-    	}
+            }
+        } else {
+            $datearr = explode("-", $_POST['endDate']);
+            $enddate = mktime(23, 59, 59, $datearr[1], $datearr[2], $datearr[0]);
+            unset($datearr);
+        }
 
-    	//get search term
-    	if (isset($_REQUEST['keyword'])) {
-    		$term = htmlentities(addslashes($_REQUEST['keyword']), ENT_QUOTES, CONTREXX_CHARSET);
-    	} else {
-    		$term = null;
-    	}
+        //get search term
+        if (isset($_REQUEST['keyword'])) {
+            $term = htmlentities(addslashes($_REQUEST['keyword']), ENT_QUOTES, CONTREXX_CHARSET);
+        } else {
+            $term = null;
+        }
 
-    	//check access
+        //check access
         $auth = $this->_checkAccess();
 
         //get category
         if (!empty($_GET['catid']) && $_GET['catid'] != 0) {
-    		$category = intval($_GET['catid']);
-    	} else {
-    		$category = null;
-    	}
+            $category = intval($_GET['catid']);
+        } else {
+            $category = null;
+        }
 
-    	//get maxsize for boxes
-    	if($_GET['cmd'] == 'boxes'){
-    		$count = 999;
-    	} else {
-    		$count = $_CONFIG['calendar'.$this->mandateLink.'defaultcount'];
-    	}
+        //get maxsize for boxes
+        if($_GET['cmd'] == 'boxes'){
+            $count = 999;
+        } else {
+            $count = $_CONFIG['calendar'.$this->mandateLink.'defaultcount'];
+        }
 
         //get events list
-        $this->objSeries 	= new seriesManager();
-		$this->eventList 	= $this->objSeries->getEventList($startdate,$enddate,$count, $auth, $term, $category, true);
+        $this->objSeries     = new seriesManager();
+        $this->eventList     = $this->objSeries->getEventList($startdate,$enddate,$count, $auth, $term, $category, true);
 
     }
 
 
-
     function _showStandardView()
     {
-    	global $objDatabase, $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_LANGID;
 
-    	$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
-    	$this->_objTpl->setTemplate($this->pageContent);
+        $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
+        $this->_objTpl->setTemplate($this->pageContent);
 
 
-    	$this->_objTpl->setVariable(array(
+        $this->_objTpl->setVariable(array(
             "CALENDAR_CATID"            => isset($_GET['catid']) ? intval($_GET['catid']) : 0,
-    		"CALENDAR"					=> $calendarbox,
-    		"TXT_CALENDAR_ALL_CAT"		=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
-    		"CALENDAR_CATEGORIES"		=> $this->category_list((isset($_GET['catid']) ? $_GET['catid'] : "")),
-    		"CALENDAR_JAVASCRIPT"		=> $this->getJS(),
-    		"CALENDAR_SEARCHED_KEYWORD" => stripslashes((isset($_POST['keyword']) ? $_POST['keyword'] : "")),
-    		"CALENDAR_DATEPICKER_START"	=> $_POST['startDate'],
-    		"CALENDAR_DATEPICKER_END"	=> $_POST['endDate'],
-    		"TXT_CALENDAR_FROM"			=> $_ARRAYLANG['TXT_CALENDAR_FROM'],
-    		"TXT_CALENDAR_TILL"			=> $_ARRAYLANG['TXT_CALENDAR_TILL'],
-    		"TXT_CALENDAR_KEYWORD"		=> $_ARRAYLANG['TXT_CALENDAR_KEYWORD'],
-    		"TXT_CALENDAR_SEARCH"		=> $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
-    		"CALENDAR_LIST_TITLE"		=> $listTitle,
+            "CALENDAR"                    => $calendarbox,
+            "TXT_CALENDAR_ALL_CAT"        => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
+            "CALENDAR_CATEGORIES"        => $this->category_list((isset($_GET['catid']) ? $_GET['catid'] : "")),
+            "CALENDAR_JAVASCRIPT"        => $this->getJS(),
+            "CALENDAR_SEARCHED_KEYWORD" => stripslashes((isset($_POST['keyword']) ? $_POST['keyword'] : "")),
+            "CALENDAR_DATEPICKER_START"    => $_POST['startDate'],
+            "CALENDAR_DATEPICKER_END"    => $_POST['endDate'],
+            "TXT_CALENDAR_FROM"            => $_ARRAYLANG['TXT_CALENDAR_FROM'],
+            "TXT_CALENDAR_TILL"            => $_ARRAYLANG['TXT_CALENDAR_TILL'],
+            "TXT_CALENDAR_KEYWORD"        => $_ARRAYLANG['TXT_CALENDAR_KEYWORD'],
+            "TXT_CALENDAR_SEARCH"        => $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
+            "CALENDAR_LIST_TITLE"        => $listTitle,
 
-    	));
+        ));
 
-    	$this->_showList();
+        $this->_showList();
 
-    	return $this->_objTpl->get();
+        return $this->_objTpl->get();
     }
 
 
     function _showList()
     {
-    	global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-    	if (!empty($this->eventList)) {
-	    	foreach ($this->eventList as $key => $array) {
+        if (!empty($this->eventList)) {
+            foreach ($this->eventList as $key => $array) {
 
-				//priority
-				switch ($array['priority'] ){
-					case 1:
-						$priority	 	= $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
-						$priorityImg	= "<img src='images/modules/calendar/very_height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' />";
-						break;
-					case 2:
-						$priority	 	= $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'];
-						$priorityImg	= "<img src='images/modules/calendar/height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' />";
-						break;
-					case 3:
-						$priority	 	= $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'];
-						$priorityImg	= "&nbsp;";
-						break;
-					case 4:
-						$priority	 	= $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'];
-						$priorityImg	= "<img src='images/modules/calendar/low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' />";
-						break;
-					case 5:
-						$priority	 	= $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'];
-						$priorityImg	= "<img src='images/modules/calendar/very_low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' />";
-						break;
-				}
+                //priority
+                switch ($array['priority'] ){
+                    case 1:
+                        $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
+                        $priorityImg    = "<img src='images/modules/calendar/very_height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' />";
+                        break;
+                    case 2:
+                        $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'];
+                        $priorityImg    = "<img src='images/modules/calendar/height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' />";
+                        break;
+                    case 3:
+                        $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'];
+                        $priorityImg    = "&nbsp;";
+                        break;
+                    case 4:
+                        $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'];
+                        $priorityImg    = "<img src='images/modules/calendar/low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' />";
+                        break;
+                    case 5:
+                        $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'];
+                        $priorityImg    = "<img src='images/modules/calendar/very_low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' />";
+                        break;
+                }
 
-				if (empty($_POST['startDate'])) {
-				    $day 	= isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '';
-    	    		$month 	= isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '';
-    	    		$year 	= isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '';
-            	} else {
-            		$datearr = explode("-", $_POST['startDate']);
-            		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+                if (empty($_POST['startDate'])) {
+                    $day     = isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '';
+                    $month     = isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '';
+                    $year     = isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '';
+                } else {
+                    $datearr = explode("-", $_POST['startDate']);
+                    $startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
 
-            		$day 	=  '&amp;dayID='.date("d", $startdate);
-    	    		$month 	=  '&amp;monthID='.date("m", $startdate);
-    	    		$year 	=  '&amp;yearID='.date("Y", $startdate);
-            	}
+                    $day     =  '&amp;dayID='.date("d", $startdate);
+                    $month     =  '&amp;monthID='.date("m", $startdate);
+                    $year     =  '&amp;yearID='.date("Y", $startdate);
+                }
 
-                $category 	= isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
-            	$term 	    = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
+                $category     = isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
+                $term         = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
 
-				$link = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.$year.$month.$day.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                $link = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.$year.$month.$day.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
 
-				$this->_objTpl->setVariable(array(
-					'CALENDAR_PRIORITY' 			=> $priority,
-					'CALENDAR_PRIORITY_IMG' 		=> $priorityImg,
-					'CALENDAR_PLACE' 				=> htmlentities($array['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
-					'CALENDAR_TITLE' 				=> htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET),
-					'CALENDAR_START'		 		=> date("Y-m-d", $array['startdate']),
-					'CALENDAR_END'			 		=> date("Y-m-d", $array['enddate']),
-					'CALENDAR_START_SHOW'		 	=> date("d.m.Y", $array['startdate']),
-					'CALENDAR_END_SHOW'			 	=> date("d.m.Y", $array['enddate']),
-					'CALENDAR_START_TIME'		 	=> date("H:i", $array['startdate']),
-					'CALENDAR_END_TIME'			 	=> date("H:i", $array['enddate']),
-					"CALENDAR_ROW"	 				=> $i % 2 == 0 ? "row1" : "row2",
-					"CALENDAR_ID"	 				=> intval($key),
-					"CALENDAR_DETAIL_LINK"	 		=> $link,
+                $this->_objTpl->setVariable(array(
+                    'CALENDAR_PRIORITY'             => $priority,
+                    'CALENDAR_PRIORITY_IMG'         => $priorityImg,
+                    'CALENDAR_PLACE'                 => htmlentities($array['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CALENDAR_TITLE'                 => htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CALENDAR_START'                 => date("Y-m-d", $array['startdate']),
+                    'CALENDAR_END'                     => date("Y-m-d", $array['enddate']),
+                    'CALENDAR_START_SHOW'             => date("d.m.Y", $array['startdate']),
+                    'CALENDAR_END_SHOW'                 => date("d.m.Y", $array['enddate']),
+                    'CALENDAR_START_TIME'             => date("H:i", $array['startdate']),
+                    'CALENDAR_END_TIME'                 => date("H:i", $array['enddate']),
+                    "CALENDAR_ROW"                     => $i % 2 == 0 ? "row1" : "row2",
+                    "CALENDAR_ID"                     => intval($key),
+                    "CALENDAR_DETAIL_LINK"             => $link,
                     "CALENDAR_CATEGORIE"            => $this->getCategoryNameFromCategoryId($array['catid']), # backwards comp.
                     "CALENDAR_CATEGORY"             => $this->getCategoryNameFromCategoryId($array['catid']), # cat name
-				));
+                ));
 
-				$i++;
+                $i++;
 
-				$this->_objTpl->parse("event");
-	    	}
-    	} else {
-    		$this->_objTpl->setVariable(array(
-				"TXT_CALENDAR_NO_EVENTS"	 => $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'],
-			));
-    	}
+                $this->_objTpl->parse("event");
+            }
+        } else {
+            $this->_objTpl->setVariable(array(
+                "TXT_CALENDAR_NO_EVENTS"     => $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'],
+            ));
+        }
     }
 
 
     /**
      * Shows the list with the next events
      */
-	function _showEventList()
-	{
-		global $objDatabase, $_ARRAYLANG, $_CONFIG;
-		$this->_objTpl->setTemplate($this->pageContent);
+    function _showEventList()
+    {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        $this->_objTpl->setTemplate($this->pageContent);
 
-		if(intval($_GET['catid']) == 0){
-			$exportLinks = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=all"
-							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
-            					'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'
-            					<img style="padding-top: -1px;" border="0"
-            						 src="images/modules/calendar/ical_export.gif"
-            						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'"
-            						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
-							</a>';
+        if(intval($_GET['catid']) == 0){
+            $exportLinks = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=all"
+                               title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
+                                '.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'
+                                <img style="padding-top: -1px;" border="0"
+                                     src="images/modules/calendar/ical_export.gif"
+                                     alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'"
+                                     title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
+                            </a>';
 
-			$exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=all"
-							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
-            					<img border="0"
-            						 src="images/modules/calendar/ical_export.gif"
-            						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'"
-            						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
-							</a>';
+            $exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=all"
+                               title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
+                                <img border="0"
+                                     src="images/modules/calendar/ical_export.gif"
+                                     alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'"
+                                     title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
+                            </a>';
 
-		}else{
-			$exportLinks = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
-							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
-            					'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'
-            					<img style="padding-top: -1px;" border="0"
-            						 src="images/modules/calendar/ical_export.gif"
-            						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'"
-            						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
-            				</a>';
+        }else{
+            $exportLinks = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
+                               title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
+                                '.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'
+                                <img style="padding-top: -1px;" border="0"
+                                     src="images/modules/calendar/ical_export.gif"
+                                     alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'"
+                                     title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
+                            </a>';
 
-			$exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
-							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
-            					<img border="0"
-            						 src="images/modules/calendar/ical_export.gif"
-            						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'"
-            						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
-            				</a>';
-		}
+            $exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
+                               title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
+                                <img border="0"
+                                     src="images/modules/calendar/ical_export.gif"
+                                     alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'"
+                                     title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
+                            </a>';
+        }
 
-		$this->_objTpl->setVariable(array(
-			"TXT_CALENDAR_STARTDATE" 		=> $_ARRAYLANG['TXT_CALENDAR_STARTDATE'],
-			"TXT_CALENDAR_ENDDATE"	 		=> $_ARRAYLANG['TXT_CALENDAR_ENDDATE'],
-			"TXT_CALENDAR_TITLE"	 		=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
-			"TXT_CALENDAR_ALL_CAT"	 		=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
-    		"CALENDAR_CATEGORIES"	 		=> $this->category_list($_GET['catid']),
-    		"CALENDAR_JAVASCRIPT"	 		=> $this->getJS(),
-    		"CALENDAR_ICAL_EXPORT"   		=> $exportLinks,
-    		"CALENDAR_ICAL_EXPORT_IMG"   	=> $exportImg,
-		));
+        $this->_objTpl->setVariable(array(
+            "TXT_CALENDAR_STARTDATE"         => $_ARRAYLANG['TXT_CALENDAR_STARTDATE'],
+            "TXT_CALENDAR_ENDDATE"             => $_ARRAYLANG['TXT_CALENDAR_ENDDATE'],
+            "TXT_CALENDAR_TITLE"             => $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+            "TXT_CALENDAR_ALL_CAT"             => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
+            "CALENDAR_CATEGORIES"             => $this->category_list($_GET['catid']),
+            "CALENDAR_JAVASCRIPT"             => $this->getJS(),
+            "CALENDAR_ICAL_EXPORT"           => $exportLinks,
+            "CALENDAR_ICAL_EXPORT_IMG"       => $exportImg,
+        ));
 
-		//$this->_getEventList();
-		$this->_showList();
+        //$this->_getEventList();
+        $this->_showList();
 
-		return $this->_objTpl->get();
-	}
+        return $this->_objTpl->get();
+    }
 
-	function _showThreeBoxes()
-	{
-		global $_ARRAYLANG, $_LANGID, $objDatabase;
+    function _showThreeBoxes()
+    {
+        global $_ARRAYLANG, $_LANGID, $objDatabase;
 
-		$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
-	    $this->monthnavurl = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes";
+        $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
+        $this->monthnavurl = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes";
 
-	    $this->_objTpl->setTemplate($this->pageContent);
+        $this->_objTpl->setTemplate($this->pageContent);
 
-	    if (empty($_GET['catid'])) {
+        if (empty($_GET['catid'])) {
             $catid = 0;
         } else {
             $catid = $_GET['catid'];
         }
 
-	    if (isset($_GET['yearID']) && isset($_GET['monthID']) &&  isset($_GET['dayID'])) {
-	    	$day 	= $_GET['dayID'];
-			$month 	= $_GET['monthID'];
-			$year 	= $_GET['yearID'];
-		} elseif (isset($_GET['yearID']) && isset($_GET['monthID']) && !isset($_GET['dayID'])) {
-			$day 	= 0;
-			$month 	= $_GET['monthID'];
-			$year 	= $_GET['yearID'];
-		} elseif (isset($_GET['yearID']) && !isset($_GET['monthID']) && !isset($_GET['dayID'])) {
-			$day 	= 0;
-			$month 	= 0;
-			$year 	= $_GET['yearID'];
-		} else {
-			$day 	= date("d");
-			$month 	= date("m");
-			$year 	= date("Y");
-		}
+        if (isset($_GET['yearID']) && isset($_GET['monthID']) &&  isset($_GET['dayID'])) {
+            $day     = $_GET['dayID'];
+            $month     = $_GET['monthID'];
+            $year     = $_GET['yearID'];
+        } elseif (isset($_GET['yearID']) && isset($_GET['monthID']) && !isset($_GET['dayID'])) {
+            $day     = 0;
+            $month     = $_GET['monthID'];
+            $year     = $_GET['yearID'];
+        } elseif (isset($_GET['yearID']) && !isset($_GET['monthID']) && !isset($_GET['dayID'])) {
+            $day     = 0;
+            $month     = 0;
+            $year     = $_GET['yearID'];
+        } else {
+            $day     = date("d");
+            $month     = date("m");
+            $year     = date("Y");
+        }
 
-		$calendarbox 	= $this->getBoxes(3, $year, $month, $day, $catid);
+        $calendarbox     = $this->getBoxes(3, $year, $month, $day, $catid);
 
-		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"".CONTREXX_DIRECTORY_INDEX."?section=calendar&catid=".$_GET['catid']."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
-		$java_script .= "function categories()\n{\nwindow.location.href = \"".$requestUri."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
+        $java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"".CONTREXX_DIRECTORY_INDEX."?section=calendar&catid=".$_GET['catid']."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
+        $java_script .= "function categories()\n{\nwindow.location.href = \"".$requestUri."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
 
-
-		$this->_objTpl->setVariable(array(
-			"CALENDAR"				=> $calendarbox,
-			"JAVA_SCRIPT"      		=> $java_script,
-			"TXT_CALENDAR_ALL_CAT"	=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
-			"CALENDAR_CATEGORIES"	=> $this->category_list($_GET['catid']),
-			"CALENDAR_JAVASCRIPT"	=> $javascript.$this->getJS()
-		));
-
-		return $this->_objTpl->get();
-	}
+        $this->_objTpl->setVariable(array(
+            "CALENDAR"                => $calendarbox,
+            "JAVA_SCRIPT"              => $java_script,
+            "TXT_CALENDAR_ALL_CAT"    => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
+            "CALENDAR_CATEGORIES"    => $this->category_list($_GET['catid']),
+            "CALENDAR_JAVASCRIPT"    => $javascript.$this->getJS()
+        ));
+        return $this->_objTpl->get();
+    }
 
 
-	function _boxesEventList()
-	{
-		global $_ARRAYLANG, $_LANGID, $objDatabase;
+    function _boxesEventList()
+    {
+        global $_ARRAYLANG, $_LANGID, $objDatabase;
 
-		$this->_objTpl->setTemplate($this->pageContent);
-
-		$this->_objTpl->hideBlock("boxes");
-
-		$this->_showList();
-
-		return $this->_objTpl->get();
-	}
+        $this->_objTpl->setTemplate($this->pageContent);
+        $this->_objTpl->hideBlock("boxes");
+        $this->_showList();
+        return $this->_objTpl->get();
+    }
 
 
     /**
@@ -456,73 +451,73 @@ class Calendar extends calendarLibrary
      * Shows the detailed view of a event...
      * Yet strange stuff
      */
-	function _showEvent($key, $id)
-	{
-		global $_ARRAYLANG;
+    function _showEvent($key, $id)
+    {
+        global $_ARRAYLANG;
 
-		if (!isset($_GET['id'])) {
-		    if ($this->mandate == 1) {
+        if (!isset($_GET['id'])) {
+            if ($this->mandate == 1) {
                 header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
-		    } else {
-		        header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandate);
-		    }
-			exit;
-		}
-		$this->_objTpl->setTemplate($this->pageContent);
+            } else {
+                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandate);
+            }
+            exit;
+        }
+        $this->_objTpl->setTemplate($this->pageContent);
 
-		$access = $this->getNoteData($id, "show", 0);
+        $access = $this->getNoteData($id, "show", 0);
 
-		if ($access == true) {
-			if (!$this->_checkAccess($id)) {
-				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
-				exit;
-			}
-		}
+        if ($access == true) {
+            if (!$this->_checkAccess($id)) {
+                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
+                exit;
+            }
+        }
 
-		$this->_objTpl->setVariable(array(
-			'CALENDAR_START'		 		=> date("Y-m-d", $this->eventList[$key]['startdate']),
-			'CALENDAR_END'			 		=> date("Y-m-d", $this->eventList[$key]['enddate']),
-			'CALENDAR_START_SHOW'		 	=> date("d.m.Y", $this->eventList[$key]['startdate']),
-			'CALENDAR_END_SHOW'			 	=> date("d.m.Y",$this->eventList[$key]['enddate']),
-			'CALENDAR_START_TIME'		 	=> date("H:i", $this->eventList[$key]['startdate']),
-			'CALENDAR_END_TIME'			 	=> date("H:i", $this->eventList[$key]['enddate']),
-			'TXT_CALENDAR_CAT'            	=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
-			'TXT_CALENDAR_NEW'            	=> $_ARRAYLANG['TXT_CALENDAR_NEW'],
-			'TXT_CALENDAR_NAME'	          	=> $_ARRAYLANG['TXT_CALENDAR_NAME'],
-			'TXT_CALENDAR_PLACE'         	=> $_ARRAYLANG['TXT_CALENDAR_PLACE'],
-			'TXT_CALENDAR_PRIORITY'	      	=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
-			'TXT_CALENDAR_START'          	=> $_ARRAYLANG['TXT_CALENDAR_START'],
-			'TXT_CALENDAR_END'            	=> $_ARRAYLANG['TXT_CALENDAR_END'],
-			'TXT_CALENDAR_COMMENT'        	=> $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
-			'TXT_CALENDAR_LINK'           	=> $_ARRAYLANG['TXT_CALENDAR_INFO'],
-			'TXT_CALENDAR_RESET'          	=> $_ARRAYLANG['TXT_CALENDAR_RESET'],
-			'TXT_CALENDAR_EVENT' 		  	=> $_ARRAYLANG['TXT_CALENDAR_TERMIN'],
-			'TXT_CALENDAR_STREET_NR' 		=> $_ARRAYLANG['TXT_CALENDAR_STREET_NR'],
-			'TXT_CALENDAR_ZIP' 		  		=> $_ARRAYLANG['TXT_CALENDAR_ZIP'],
-			'TXT_CALENDAR_LINK' 		  	=> $_ARRAYLANG['TXT_CALENDAR_LINK'],
-			'TXT_CALENDAR_MAP' 		  		=> $_ARRAYLANG['TXT_CALENDAR_MAP'],
-			'TXT_CALENDAR_ORGANIZER' 		=> $_ARRAYLANG['TXT_CALENDAR_ORGANIZER'],
-			'TXT_CALENDAR_MAIL' 		  	=> $_ARRAYLANG['TXT_CALENDAR_MAIL'],
-			'TXT_CALENDAR_ORGANIZER_NAME' 	=> $_CORELANG['TXT_NAME'],
-			'TXT_CALENDAR_TITLE' 			=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
-			'TXT_CALENDAR_ACCESS' 			=> $_ARRAYLANG['TXT_CALENDAR_ACCESS'],
-			'TXT_CALENDAR_ATTACHMENT' 		=> $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
-			'TXT_CALENDAR_PRIORITY' 		=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
-			'TXT_CALENDAR_DATE'            	=> $_ARRAYLANG['TXT_CALENDAR_DATE'],
-            'TXT_CALENDAR_BACK'         	=> $_ARRAYLANG['TXT_CALENDAR_BACK'],
+        $this->_objTpl->setVariable(array(
+            'CALENDAR_START'                 => date("Y-m-d", $this->eventList[$key]['startdate']),
+            'CALENDAR_END'                     => date("Y-m-d", $this->eventList[$key]['enddate']),
+            'CALENDAR_START_SHOW'             => date("d.m.Y", $this->eventList[$key]['startdate']),
+            'CALENDAR_END_SHOW'                 => date("d.m.Y",$this->eventList[$key]['enddate']),
+            'CALENDAR_START_TIME'             => date("H:i", $this->eventList[$key]['startdate']),
+            'CALENDAR_END_TIME'                 => date("H:i", $this->eventList[$key]['enddate']),
+            'TXT_CALENDAR_CAT'                => $_ARRAYLANG['TXT_CALENDAR_CAT'],
+            'TXT_CALENDAR_NEW'                => $_ARRAYLANG['TXT_CALENDAR_NEW'],
+            'TXT_CALENDAR_NAME'                  => $_ARRAYLANG['TXT_CALENDAR_NAME'],
+            'TXT_CALENDAR_PLACE'             => $_ARRAYLANG['TXT_CALENDAR_PLACE'],
+            'TXT_CALENDAR_PRIORITY'              => $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
+            'TXT_CALENDAR_START'              => $_ARRAYLANG['TXT_CALENDAR_START'],
+            'TXT_CALENDAR_END'                => $_ARRAYLANG['TXT_CALENDAR_END'],
+            'TXT_CALENDAR_COMMENT'            => $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
+            'TXT_CALENDAR_LINK'               => $_ARRAYLANG['TXT_CALENDAR_INFO'],
+            'TXT_CALENDAR_RESET'              => $_ARRAYLANG['TXT_CALENDAR_RESET'],
+            'TXT_CALENDAR_EVENT'               => $_ARRAYLANG['TXT_CALENDAR_TERMIN'],
+            'TXT_CALENDAR_STREET_NR'         => $_ARRAYLANG['TXT_CALENDAR_STREET_NR'],
+            'TXT_CALENDAR_ZIP'                   => $_ARRAYLANG['TXT_CALENDAR_ZIP'],
+            'TXT_CALENDAR_LINK'               => $_ARRAYLANG['TXT_CALENDAR_LINK'],
+            'TXT_CALENDAR_MAP'                   => $_ARRAYLANG['TXT_CALENDAR_MAP'],
+            'TXT_CALENDAR_ORGANIZER'         => $_ARRAYLANG['TXT_CALENDAR_ORGANIZER'],
+            'TXT_CALENDAR_MAIL'               => $_ARRAYLANG['TXT_CALENDAR_MAIL'],
+            'TXT_CALENDAR_ORGANIZER_NAME'     => $_CORELANG['TXT_NAME'],
+            'TXT_CALENDAR_TITLE'             => $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+            'TXT_CALENDAR_ACCESS'             => $_ARRAYLANG['TXT_CALENDAR_ACCESS'],
+            'TXT_CALENDAR_ATTACHMENT'         => $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
+            'TXT_CALENDAR_PRIORITY'         => $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
+            'TXT_CALENDAR_DATE'                => $_ARRAYLANG['TXT_CALENDAR_DATE'],
+            'TXT_CALENDAR_BACK'             => $_ARRAYLANG['TXT_CALENDAR_BACK'],
             'TXT_CALENDAR_REGISTRATION'     => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION'],
             'TXT_CALENDAR_REGISTRATION_INFO'=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO'],
-			'CALENDAR_REGISTRATION_LINK'	=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=sign&amp;id='.$id.'&amp;date='.$this->eventList[$key]['startdate'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
+            'CALENDAR_REGISTRATION_LINK'    => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=sign&amp;id='.$id.'&amp;date='.$this->eventList[$key]['startdate'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
 
-            'CALENDAR_ICAL_EXPORT'      	=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$key.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
-            									'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
-            								</a>',
+            'CALENDAR_ICAL_EXPORT'          => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$key.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+                                                '.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
+                                            </a>',
             'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$key.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
-            									<img border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
-            								</a>',
+                                                <img border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
+                                            </a>',
         ));
 
-		//delet old series events
+        //delet old series events
         /*if(!empty($this->eventList[$key]['series_type'])) {
             $startdate = mktime(0, 0, 0, date("m", mktime()), date("d", mktime()), date("Y", mktime()));
             $enddate = mktime(23, 59, 59, date("m", mktime()), date("d", mktime()), date("Y", mktime())+10);
@@ -536,182 +531,182 @@ class Calendar extends calendarLibrary
         }*/
 
        return $this->_objTpl->get();
-	}
+    }
 
-	function getJS()
-	{
-		return 	'<script type="text/javascript">
-				/* <![CDATA[ */
-				function changecat()
-				{
-					var href = window.location.href;
-					var catid = document.getElementById("selectcat").categories.value;
-					href = href.replace(/&catid=[0-9]+/g, \'\');
-					href = href.replace(/&act=search/g, \'\');
-					href += "&catid=" + catid;
-					window.location.href = href;
-				}
-				/* ]]> */
-				</script>
+    function getJS()
+    {
+        return     '<script type="text/javascript">
+                /* <![CDATA[ */
+                function changecat()
+                {
+                    var href = window.location.href;
+                    var catid = document.getElementById("selectcat").categories.value;
+                    href = href.replace(/&catid=[0-9]+/g, \'\');
+                    href = href.replace(/&act=search/g, \'\');
+                    href += "&catid=" + catid;
+                    window.location.href = href;
+                }
+                /* ]]> */
+                </script>
 
-				<script src="lib/datepickercontrol/datepickercontrol.js" type="text/javascript">
-				</script>
+                <script src="lib/datepickercontrol/datepickercontrol.js" type="text/javascript">
+                </script>
 
-				<script type="text/javascript">
-				/* <![CDATA[ */
-				  DatePickerControl.onSelect = function(inputid)
-				  {
-				    var startdate = document.getElementById("searchform").startDate.value.replace(/-/g, "");
-				    var enddate = document.getElementById("searchform").endDate.value.replace(/-/g, "");
+                <script type="text/javascript">
+                /* <![CDATA[ */
+                  DatePickerControl.onSelect = function(inputid)
+                  {
+                    var startdate = document.getElementById("searchform").startDate.value.replace(/-/g, "");
+                    var enddate = document.getElementById("searchform").endDate.value.replace(/-/g, "");
 
-				    if (startdate > enddate) {
-				   	var date = document.getElementById("searchform").startDate.value;
-				   	document.getElementById("searchform").endDate.value = date;
-				  }
-				 }
-				 /* ]]> */
-				</script>';
-	}
+                    if (startdate > enddate) {
+                       var date = document.getElementById("searchform").startDate.value;
+                       document.getElementById("searchform").endDate.value = date;
+                  }
+                 }
+                 /* ]]> */
+                </script>';
+    }
 
-	/**
+    /**
     * Show Registrations Form
     *
     *
     */
-	function _showRegistrationForm()
-	{
-		global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
+    function _showRegistrationForm()
+    {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
 
-		$this->_objTpl->setTemplate($this->pageContent);
+        $this->_objTpl->setTemplate($this->pageContent);
 
-		$check = false;
+        $check = false;
 
-		if (!empty($_POST['id'])){
-			//insert registration data
-			$time	    = mktime();
-            $noteId	    = intval($_POST['id']);
-			$noteDate	= intval($_POST['date']);
-			$type       = intval($_POST['type']);
-			$ip		    = "";
-			$host 	    = "";
+        if (!empty($_POST['id'])){
+            //insert registration data
+            $time        = mktime();
+            $noteId        = intval($_POST['id']);
+            $noteDate    = intval($_POST['date']);
+            $type       = intval($_POST['type']);
+            $ip            = "";
+            $host         = "";
 
-			$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_registrations   (`note_id`,
-			                                                                   `note_date`,
-																		       `time`,
-																		   	   `host`,
-																			   `ip_address`,
-																			   `type`)
-														   			   VALUES ('$noteId',
-														   			   		   '$noteDate',
-														   			   		   '$time',
-														   			   		   '$host',
-														   			   		   '$ip',
-																               '$type')";
-			$objResultReg = $objDatabase->Execute($query);
+            $query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_registrations   (`note_id`,
+                                                                               `note_date`,
+                                                                               `time`,
+                                                                                  `host`,
+                                                                               `ip_address`,
+                                                                               `type`)
+                                                                          VALUES ('$noteId',
+                                                                                     '$noteDate',
+                                                                                     '$time',
+                                                                                     '$host',
+                                                                                     '$ip',
+                                                                               '$type')";
+            $objResultReg = $objDatabase->Execute($query);
 
-			if ($objResultReg !== false) {
-				//insertfield data
-				$regId = $objDatabase->Insert_ID();
+            if ($objResultReg !== false) {
+                //insertfield data
+                $regId = $objDatabase->Insert_ID();
 
-				foreach ($_POST['signForm'] as $fieldId => $fieldData) {
+                foreach ($_POST['signForm'] as $fieldId => $fieldData) {
 
-					$fieldData = contrexx_addslashes(contrexx_strip_tags($fieldData));
+                    $fieldData = contrexx_addslashes(contrexx_strip_tags($fieldData));
 
-					$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_form_data       (`reg_id`,
-																				       `field_id`,
-																					   `data`)
-																   			   VALUES ('$regId',
-																   			   		   '$fieldId',
-																		               '$fieldData')";
-					$objResultFields = $objDatabase->Execute($query);
-				}
+                    $query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_form_data       (`reg_id`,
+                                                                                       `field_id`,
+                                                                                       `data`)
+                                                                                  VALUES ('$regId',
+                                                                                             '$fieldId',
+                                                                                       '$fieldData')";
+                    $objResultFields = $objDatabase->Execute($query);
+                }
 
-				if ($objResultFields !== false) {
-					//email
-					$query = " SELECT id
-					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
-					           WHERE note_id='".$noteId."'
-					           AND `key`='6'
-					           LIMIT 1";
-				    $objResult = $objDatabase->Execute($query);
-					if ($objResult !== false) {
-						$mailId = $objResult->fields['id'];
-					}
+                if ($objResultFields !== false) {
+                    //email
+                    $query = " SELECT id
+                               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+                               WHERE note_id='".$noteId."'
+                               AND `key`='6'
+                               LIMIT 1";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult !== false) {
+                        $mailId = $objResult->fields['id'];
+                    }
 
-					//firstane
-					$query = " SELECT id
-					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
-					           WHERE note_id='".$noteId."'
-					           AND `key`='1'
-					           LIMIT 1";
-				    $objResult = $objDatabase->Execute($query);
-					if ($objResult !== false) {
-						$firstnameId = $objResult->fields['id'];
-					}
+                    //firstane
+                    $query = " SELECT id
+                               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+                               WHERE note_id='".$noteId."'
+                               AND `key`='1'
+                               LIMIT 1";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult !== false) {
+                        $firstnameId = $objResult->fields['id'];
+                    }
 
-					//lastname
-					$query = " SELECT id
-					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
-					           WHERE note_id='".$noteId."'
-					           AND `key`='2'
-					           LIMIT 1";
-				    $objResult = $objDatabase->Execute($query);
-					if ($objResult !== false) {
-						$lastnameId = $objResult->fields['id'];
-					}
+                    //lastname
+                    $query = " SELECT id
+                               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+                               WHERE note_id='".$noteId."'
+                               AND `key`='2'
+                               LIMIT 1";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult !== false) {
+                        $lastnameId = $objResult->fields['id'];
+                    }
 
-					if (!empty($_POST['userid'])) {
-						$userId = intval($_POST['userid']);
-						$this->_sendConfirmation($userId, $noteId, $regId);
-					} else {
-						if (!empty($_POST['signForm'][$mailId])) {
-							$this->_sendConfirmation($_POST['signForm'][$mailId], $noteId, $regId);
-						}
-					}
+                    if (!empty($_POST['userid'])) {
+                        $userId = intval($_POST['userid']);
+                        $this->_sendConfirmation($userId, $noteId, $regId);
+                    } else {
+                        if (!empty($_POST['signForm'][$mailId])) {
+                            $this->_sendConfirmation($_POST['signForm'][$mailId], $noteId, $regId);
+                        }
+                    }
 
-					$this->_sendNotification($_POST['signForm'][$mailId], $_POST['signForm'][$firstnameId], $_POST['signForm'][$lastnameId], $noteId, $regId);
+                    $this->_sendNotification($_POST['signForm'][$mailId], $_POST['signForm'][$firstnameId], $_POST['signForm'][$lastnameId], $noteId, $regId);
 
-					$day 	= '&amp;dayID='.date("d", $noteDate);
-    	    		$month 	= '&amp;monthID='.date("m", $noteDate);
-    	    		$year 	= '&amp;yearID='.date("Y", $noteDate);
+                    $day     = '&amp;dayID='.date("d", $noteDate);
+                    $month     = '&amp;monthID='.date("m", $noteDate);
+                    $year     = '&amp;yearID='.date("Y", $noteDate);
 
-					$this->_objTpl->setVariable(array(
-						'CALENDAR_REGISTRATIONS_STATUS'          => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFUL'],
-						'CALENDAR_LINK_BACK'         			 => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=event&amp;id='.$id.$day.$month.$year.'">'.$_CORELANG['TXT_BACK'].'</a>',
-			        ));
+                    $this->_objTpl->setVariable(array(
+                        'CALENDAR_REGISTRATIONS_STATUS'          => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFUL'],
+                        'CALENDAR_LINK_BACK'                      => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=event&amp;id='.$id.$day.$month.$year.'">'.$_CORELANG['TXT_BACK'].'</a>',
+                    ));
 
-			        $this->_objTpl->hideBlock("signForm");
-					$this->_objTpl->parse("signStatus");
-				}
-			}
-		} else {
-			//get key
-			if (isset($_GET['key']) || isset($_GET['id']) ) {
+                    $this->_objTpl->hideBlock("signForm");
+                    $this->_objTpl->parse("signStatus");
+                }
+            }
+        } else {
+            //get key
+            if (isset($_GET['key']) || isset($_GET['id']) ) {
 
-				//get key or id
-				if (isset($_GET['key']) && empty($_GET['id'])) {
-					$getKey 	= base64_decode($_GET['key']);
+                //get key or id
+                if (isset($_GET['key']) && empty($_GET['id'])) {
+                    $getKey     = base64_decode($_GET['key']);
 
-					$arrGet		= explode("#", $getKey);
+                    $arrGet        = explode("#", $getKey);
 
-					$noteId		= intval($arrGet[0]);
-					$userId		= intval($arrGet[1]);
-					$noteKeyGet	= $arrGet[2];
-				} elseif (isset($_GET['id']) && empty($_GET['key'])) {
-					$noteId		= intval($_GET['id']);
-				}
+                    $noteId        = intval($arrGet[0]);
+                    $userId        = intval($arrGet[1]);
+                    $noteKeyGet    = $arrGet[2];
+                } elseif (isset($_GET['id']) && empty($_GET['key'])) {
+                    $noteId        = intval($_GET['id']);
+                }
 
-				//get note details
-				$query 			= "SELECT `id`, `key`, `public`, `all_groups`, `groups`, `num`
+                //get note details
+                $query             = "SELECT `id`, `key`, `public`, `all_groups`, `groups`, `num`
                                     FROM ".DBPREFIX."module_calendar".$this->mandateLink."
                                     WHERE id = '".$noteId."'";
 
-				$objResult 		= $objDatabase->SelectLimit($query, 1);
+                $objResult         = $objDatabase->SelectLimit($query, 1);
 
-				$noteKey		= $objResult->fields['key'];
-				$noteGroups		= $objResult->fields['groups'];
-				$notePublic		= $objResult->fields['public'];
-				$noteSubscriber	= $this->_countSubscriber($noteId);
+                $noteKey        = $objResult->fields['key'];
+                $noteGroups        = $objResult->fields['groups'];
+                $notePublic        = $objResult->fields['public'];
+                $noteSubscriber    = $this->_countSubscriber($noteId);
 
                 if (($noteSubscriber < $objResult->fields['num']) || $objResult->fields['num'] == 0 || $objResult->fields['num'] == '') {
                     //check key
@@ -784,20 +779,20 @@ class Calendar extends calendarLibrary
                     $this->_objTpl->hideBlock("signForm");
                     $this->_objTpl->parse("signStatus");
                 }
-			}
-		}
+            }
+        }
 
         return $this->_objTpl->get();
-	}
+    }
 
 
-	/**
-	 * this function displays the form to add events from within the frontend
-	 *
-	 * @todo this function is way too huge. split it into subfunctions und make this file smaller
-	 *
-	 * @return boolean
-	 */
+    /**
+     * this function displays the form to add events from within the frontend
+     *
+     * @todo this function is way too huge. split it into subfunctions und make this file smaller
+     *
+     * @return boolean
+     */
     function _showAddEventForm() {
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $objFWUser;
         $this->_objTpl->setTemplate($this->pageContent);
@@ -937,122 +932,122 @@ class Calendar extends calendarLibrary
                 /**
                  * @todo put this into a function.. same procedure is used in the backend.. uses way too much codespace
                  */
-        		//series pattern
-        		$seriesStatus 				= intval($form['inputSeriesStatus']);
-        		$seriesType 				= intval($form['inputSeriesType']);
-        		$seriesPatternCount			= 0;
-        		$seriesPatternWeekday		= 0;
-        		$seriesPatternDay			= 0;
-        		$seriesPatternWeek			= 0;
-        		$seriesPatternMonth			= 0;
-        		$seriesPatternType			= 0;
-        		$seriesPatternDouranceType	= 0;
-        		$seriesPatternEnd			= 0;
-        		$seriesPatternBegin			= 0;
+                //series pattern
+                $seriesStatus                 = intval($form['inputSeriesStatus']);
+                $seriesType                 = intval($form['inputSeriesType']);
+                $seriesPatternCount            = 0;
+                $seriesPatternWeekday        = 0;
+                $seriesPatternDay            = 0;
+                $seriesPatternWeek            = 0;
+                $seriesPatternMonth            = 0;
+                $seriesPatternType            = 0;
+                $seriesPatternDouranceType    = 0;
+                $seriesPatternEnd            = 0;
+                $seriesPatternBegin            = 0;
 
-        		switch($seriesType) {
-        			case 1;
-        				if ($seriesStatus == 1) {
-        					$seriesPatternType			= intval($form['inputSeriesDaily']);
-        					if($seriesPatternType == 1) {
-        						$seriesPatternWeekday	= 0;
-        						$seriesPatternDay		= intval($form['inputSeriesDailyDays']);;
-        					} else {
-        						$seriesPatternWeekday	= "1111100";
-        						$seriesPatternDay		= 0;
-        					}
+                switch($seriesType) {
+                    case 1;
+                        if ($seriesStatus == 1) {
+                            $seriesPatternType            = intval($form['inputSeriesDaily']);
+                            if($seriesPatternType == 1) {
+                                $seriesPatternWeekday    = 0;
+                                $seriesPatternDay        = intval($form['inputSeriesDailyDays']);;
+                            } else {
+                                $seriesPatternWeekday    = "1111100";
+                                $seriesPatternDay        = 0;
+                            }
 
-        					$seriesPatternWeek			= 0;
-        					$seriesPatternMonth			= 0;
-        					$seriesPatternCount			= 0;
+                            $seriesPatternWeek            = 0;
+                            $seriesPatternMonth            = 0;
+                            $seriesPatternCount            = 0;
 
-        					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
-        					$dateparts 					= split("-", $startdate);
-        					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-        					switch($seriesPatternDouranceType) {
-        						case 1:
-        							$seriesPatternEnd	= 0;
-        						break;
-        						case 2:
-        							$seriesPatternEnd	= intval($form['inputSeriesDouranceNotes']);
-        						break;
-        						case 3:
-        							$dateparts 			= split("-", $form['inputRepeatDouranceEnd']);
-        							$seriesPatternEnd	= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-        						break;
-        					}
-        				}
-        			break;
-        			case 2;
-        				if ($seriesStatus == 1) {
-        					$seriesPatternWeek			= intval($form['inputSeriesWeeklyWeeks']);
+                            $seriesPatternDouranceType    = intval($form['inputSeriesDouranceType']);
+                            $dateparts                     = split("-", $startdate);
+                            $seriesPatternBegin            = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
+                            switch($seriesPatternDouranceType) {
+                                case 1:
+                                    $seriesPatternEnd    = 0;
+                                break;
+                                case 2:
+                                    $seriesPatternEnd    = intval($form['inputSeriesDouranceNotes']);
+                                break;
+                                case 3:
+                                    $dateparts             = split("-", $form['inputRepeatDouranceEnd']);
+                                    $seriesPatternEnd    = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
+                                break;
+                            }
+                        }
+                    break;
+                    case 2;
+                        if ($seriesStatus == 1) {
+                            $seriesPatternWeek            = intval($form['inputSeriesWeeklyWeeks']);
 
-        					for($i=1; $i <= 7; $i++) {
-        						if (isset($form['inputSeriesWeeklyDays'][$i])) {
-        							$weekdayPattern .= "1";
-        						} else {
-        							$weekdayPattern .= "0";
-        						}
-        					}
+                            for($i=1; $i <= 7; $i++) {
+                                if (isset($form['inputSeriesWeeklyDays'][$i])) {
+                                    $weekdayPattern .= "1";
+                                } else {
+                                    $weekdayPattern .= "0";
+                                }
+                            }
 
-        					$seriesPatternWeekday		= $weekdayPattern;
+                            $seriesPatternWeekday        = $weekdayPattern;
 
-        					$seriesPatternCount			= 0;
-        					$seriesPatternDay			= 0;
-        					$seriesPatternMonth			= 0;
-        					$seriesPatternType			= 0;
+                            $seriesPatternCount            = 0;
+                            $seriesPatternDay            = 0;
+                            $seriesPatternMonth            = 0;
+                            $seriesPatternType            = 0;
 
-        					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
-        					$dateparts 					= split("-",$startdate);
-        					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-        					switch($seriesPatternDouranceType) {
-        						case 1:
-        							$seriesPatternEnd	= 0;
-        						break;
-        						case 2:
-        							$seriesPatternEnd	= intval($form['inputSeriesDouranceNotes']);
-        						break;
-        						case 3:
-        							$dateparts 			= split("-", $form['inputRepeatDouranceEnd']);
-        							$seriesPatternEnd	= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-        						break;
-        					}
-        				}
-        			break;
-        			case 3;
-        				if ($seriesStatus == 1) {
-        					$seriesPatternType			= intval($form['inputSeriesMonthly']);
-        					if($seriesPatternType == 1) {
-        						$seriesPatternMonth		= intval($form['inputSeriesMonthlyMonth_1']);
-        						$seriesPatternDay		= intval($form['inputSeriesMonthlyDay']);
-        						$seriesPatternWeekday	= 0;
-        					} else {
-        						$seriesPatternCount		= intval($form['inputSeriesMonthlyDayCount']);
-        						$seriesPatternMonth		= intval($form['inputSeriesMonthlyMonth_2']);
-        						$seriesPatternWeekday	= $form['inputSeriesMonthlyWeekday'];
-        						$seriesPatternDay		= 0;
-        					}
+                            $seriesPatternDouranceType    = intval($form['inputSeriesDouranceType']);
+                            $dateparts                     = split("-",$startdate);
+                            $seriesPatternBegin            = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
+                            switch($seriesPatternDouranceType) {
+                                case 1:
+                                    $seriesPatternEnd    = 0;
+                                break;
+                                case 2:
+                                    $seriesPatternEnd    = intval($form['inputSeriesDouranceNotes']);
+                                break;
+                                case 3:
+                                    $dateparts             = split("-", $form['inputRepeatDouranceEnd']);
+                                    $seriesPatternEnd    = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
+                                break;
+                            }
+                        }
+                    break;
+                    case 3;
+                        if ($seriesStatus == 1) {
+                            $seriesPatternType            = intval($form['inputSeriesMonthly']);
+                            if($seriesPatternType == 1) {
+                                $seriesPatternMonth        = intval($form['inputSeriesMonthlyMonth_1']);
+                                $seriesPatternDay        = intval($form['inputSeriesMonthlyDay']);
+                                $seriesPatternWeekday    = 0;
+                            } else {
+                                $seriesPatternCount        = intval($form['inputSeriesMonthlyDayCount']);
+                                $seriesPatternMonth        = intval($form['inputSeriesMonthlyMonth_2']);
+                                $seriesPatternWeekday    = $form['inputSeriesMonthlyWeekday'];
+                                $seriesPatternDay        = 0;
+                            }
 
-        					$seriesPatternWeek			= 0;
+                            $seriesPatternWeek            = 0;
 
-        					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
-        					$dateparts 					= split("-", $startdate);
-        					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-        					switch($seriesPatternDouranceType) {
-        						case 1:
-        							$seriesPatternEnd	= 0;
-        						break;
-        						case 2:
-        							$seriesPatternEnd	= intval($form['inputSeriesDouranceNotes']);
-        						break;
-        						case 3:
-        							$dateparts 			= split("-", $form['inputRepeatDouranceEnd']);
-        							$seriesPatternEnd	= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-        						break;
-        					}
-        				}
-        			break;
-        		}
+                            $seriesPatternDouranceType    = intval($form['inputSeriesDouranceType']);
+                            $dateparts                     = split("-", $startdate);
+                            $seriesPatternBegin            = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
+                            switch($seriesPatternDouranceType) {
+                                case 1:
+                                    $seriesPatternEnd    = 0;
+                                break;
+                                case 2:
+                                    $seriesPatternEnd    = intval($form['inputSeriesDouranceNotes']);
+                                break;
+                                case 3:
+                                    $dateparts             = split("-", $form['inputRepeatDouranceEnd']);
+                                    $seriesPatternEnd    = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
+                                break;
+                            }
+                        }
+                    break;
+                }
 
 
 
@@ -1151,61 +1146,61 @@ class Calendar extends calendarLibrary
             $this->selectMinutes($form['endminutes'], "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
 
 
-			$arrWeekdays = array(
-				"1000000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_MONDAY'],
-				"0100000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_TUESDAY'],
-				"0010000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_WEDNESDAY'],
-				"0001000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_THURSDAY'],
-				"0000100" => $_ARRAYLANG['TXT_CALENDAR_DAYS_FRIDAY'],
-				"0000010" => $_ARRAYLANG['TXT_CALENDAR_DAYS_SATURDAY'],
-				"0000001" => $_ARRAYLANG['TXT_CALENDAR_DAYS_SUNDAY'],
-			);
+            $arrWeekdays = array(
+                "1000000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_MONDAY'],
+                "0100000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_TUESDAY'],
+                "0010000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_WEDNESDAY'],
+                "0001000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_THURSDAY'],
+                "0000100" => $_ARRAYLANG['TXT_CALENDAR_DAYS_FRIDAY'],
+                "0000010" => $_ARRAYLANG['TXT_CALENDAR_DAYS_SATURDAY'],
+                "0000001" => $_ARRAYLANG['TXT_CALENDAR_DAYS_SUNDAY'],
+            );
 
-			$arrCount = array(
-				1 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_FIRST'],
-				2 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_SECOND'],
-				3 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_THIRD'],
-				4 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_FOURTH'],
-				5 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_LAST'],
-			);
+            $arrCount = array(
+                1 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_FIRST'],
+                2 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_SECOND'],
+                3 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_THIRD'],
+                4 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_FOURTH'],
+                5 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_LAST'],
+            );
 
-			foreach ($arrWeekdays as $value => $name) {
-				$weekdays .= '<option value="'.$value.'" '.($value == $form['inputSeriesMonthlyWeekday'] ? 'selected="selected"': '').'>'.$name.'</option>';
-			}
+            foreach ($arrWeekdays as $value => $name) {
+                $weekdays .= '<option value="'.$value.'" '.($value == $form['inputSeriesMonthlyWeekday'] ? 'selected="selected"': '').'>'.$name.'</option>';
+            }
 
-			foreach ($arrCount as $value => $name) {
-				$count .= '<option value="'.$value.'" '.($value == $form['inputSeriesMonthlyDayCount'] ? 'selected="selected"': '').'>'.$name.'</option>';
-			}
+            foreach ($arrCount as $value => $name) {
+                $count .= '<option value="'.$value.'" '.($value == $form['inputSeriesMonthlyDayCount'] ? 'selected="selected"': '').'>'.$name.'</option>';
+            }
 
-		    //data
-		    $this->_objTpl->setVariable(array(
-				'CALENDAR_START'			  				=> date("Y-m-d"),
-				'CALENDAR_END'				  				=> date("Y-m-d"),
-				'CALENDAR_DESCRIPTION'		  				=> $ed,
-				'CALENDAR_ACTIVE'		  					=> "checked",
-				'CALENDAR_FORM_ACTION'		  				=> "saveNew",
-				'CALENDAR_ACCESS_PUBLIC'					=> "selected='selected'",
-				'CALENDAR_PRIORITY_NORMAL'					=> "selected='selected'",
-				'CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED' 	=> $this->_getUserGroups('', 0),
-				'CALENDAR_REGISTRATIONS_GROUPS_SELECTED' 	=> $this->_getUserGroups('', 1),
-				'CALENDAR_MAIL_TITLE' 						=> $mailTitle,
-				'CALENDAR_MAIL_CONTENT' 					=> $mailContent,
-				'CALENDAR_NOTIFICATION_ACTIVATED' 			=> 'checked="checked"',
-				'CALENDAR_NOTIFICATION_ADDRESS' 			=> $_CONFIG['coreAdminEmail'],
+            //data
+            $this->_objTpl->setVariable(array(
+                'CALENDAR_START'                              => date("Y-m-d"),
+                'CALENDAR_END'                                  => date("Y-m-d"),
+                'CALENDAR_DESCRIPTION'                          => $ed,
+                'CALENDAR_ACTIVE'                              => "checked",
+                'CALENDAR_FORM_ACTION'                          => "saveNew",
+                'CALENDAR_ACCESS_PUBLIC'                    => "selected='selected'",
+                'CALENDAR_PRIORITY_NORMAL'                    => "selected='selected'",
+                'CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED'     => $this->_getUserGroups('', 0),
+                'CALENDAR_REGISTRATIONS_GROUPS_SELECTED'     => $this->_getUserGroups('', 1),
+                'CALENDAR_MAIL_TITLE'                         => $mailTitle,
+                'CALENDAR_MAIL_CONTENT'                     => $mailContent,
+                'CALENDAR_NOTIFICATION_ACTIVATED'             => 'checked="checked"',
+                'CALENDAR_NOTIFICATION_ADDRESS'             => $_CONFIG['coreAdminEmail'],
 
-				'CALENDAR_SERIES_PATTERN_MONTHLY_COUNT' 	=> $count,
-				'CALENDAR_SERIES_PATTERN_MONTHLY_WEEKDAY' 	=> $weekdays,
-				'CALENDAR_SERIES_PATTERN_DAILY_1' 			=> 'checked="checked"',
-				'CALENDAR_SERIES_PATTERN_MONTHLY_1' 		=> 'checked="checked"',
-				'CALENDAR_SERIES_PATTERN_DAILY_DAYS' 		=> 1,
-				'CALENDAR_SERIES_PATTERN_WEEKLY_WEEKS' 		=> 1,
-				'CALENDAR_SERIES_PATTERN_MONTHLY_DAY' 		=> 1,
-				'CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_1' 	=> 1,
-				'CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_2' 	=> 1,
-				'CALENDAR_SERIES_PATTERN_ENDS_AFTER' 		=> 1,
-				'CALENDAR_SERIES_PATTERN_START' 			=> date("Y-m-d"),
-				'CALENDAR_SERIES_PATTERN_DOURANCE_1' 		=> 'checked="checked"',
-		    ));
+                'CALENDAR_SERIES_PATTERN_MONTHLY_COUNT'     => $count,
+                'CALENDAR_SERIES_PATTERN_MONTHLY_WEEKDAY'     => $weekdays,
+                'CALENDAR_SERIES_PATTERN_DAILY_1'             => 'checked="checked"',
+                'CALENDAR_SERIES_PATTERN_MONTHLY_1'         => 'checked="checked"',
+                'CALENDAR_SERIES_PATTERN_DAILY_DAYS'         => 1,
+                'CALENDAR_SERIES_PATTERN_WEEKLY_WEEKS'         => 1,
+                'CALENDAR_SERIES_PATTERN_MONTHLY_DAY'         => 1,
+                'CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_1'     => 1,
+                'CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_2'     => 1,
+                'CALENDAR_SERIES_PATTERN_ENDS_AFTER'         => 1,
+                'CALENDAR_SERIES_PATTERN_START'             => date("Y-m-d"),
+                'CALENDAR_SERIES_PATTERN_DOURANCE_1'         => 'checked="checked"',
+            ));
 
             $this->_objTpl->setVariable(array(
                 'EV_TITLE'          => $form['title'],
@@ -1268,35 +1263,35 @@ class Calendar extends calendarLibrary
 
 
             $this->_objTpl->setVariable(array(
-    			'TXT_CALENDAR_SERIES_ACTIVATE' 			=> $_ARRAYLANG['TXT_CALENDAR_SERIES_ACTIVATE'],
-    			'TXT_CALENDAR_SERIES' 					=> $_ARRAYLANG['TXT_CALENDAR_SERIES'],
-    			'TXT_CALENDAR_SERIES_PATTERN_DAILY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_DAILY'],
-    			'TXT_CALENDAR_SERIES_PATTERN_WEEKLY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_WEEKLY'],
-    			'TXT_CALENDAR_SERIES_PATTERN_MONTHLY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_MONTHLY'],
+                'TXT_CALENDAR_SERIES_ACTIVATE'             => $_ARRAYLANG['TXT_CALENDAR_SERIES_ACTIVATE'],
+                'TXT_CALENDAR_SERIES'                     => $_ARRAYLANG['TXT_CALENDAR_SERIES'],
+                'TXT_CALENDAR_SERIES_PATTERN_DAILY'     => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_DAILY'],
+                'TXT_CALENDAR_SERIES_PATTERN_WEEKLY'     => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_WEEKLY'],
+                'TXT_CALENDAR_SERIES_PATTERN_MONTHLY'     => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_MONTHLY'],
 
-    			'TXT_CALENDAR_DAYS' 				=> $_ARRAYLANG['TXT_CALENDAR_DAYS'],
-    			'TXT_CALENDAR_DAYS_DAY' 			=> $_ARRAYLANG['TXT_CALENDAR_DAYS_DAY'],
-    			'TXT_CALENDAR_DAYS_MONDAY' 			=> $_ARRAYLANG['TXT_CALENDAR_DAYS_MONDAY'],
-    			'TXT_CALENDAR_DAYS_TUESDAY' 		=> $_ARRAYLANG['TXT_CALENDAR_DAYS_TUESDAY'],
-    			'TXT_CALENDAR_DAYS_WEDNESDAY' 		=> $_ARRAYLANG['TXT_CALENDAR_DAYS_WEDNESDAY'],
-    			'TXT_CALENDAR_DAYS_THURSDAY' 		=> $_ARRAYLANG['TXT_CALENDAR_DAYS_THURSDAY'],
-    			'TXT_CALENDAR_DAYS_FRIDAY' 			=> $_ARRAYLANG['TXT_CALENDAR_DAYS_FRIDAY'],
-    			'TXT_CALENDAR_DAYS_SATURDAY' 		=> $_ARRAYLANG['TXT_CALENDAR_DAYS_SATURDAY'],
-    			'TXT_CALENDAR_DAYS_SUNDAY' 			=> $_ARRAYLANG['TXT_CALENDAR_DAYS_SUNDAY'],
-    			'TXT_CALENDAR_DAYS_WORKDAY' 		=> $_ARRAYLANG['TXT_CALENDAR_DAYS_WORKDAY'],
+                'TXT_CALENDAR_DAYS'                 => $_ARRAYLANG['TXT_CALENDAR_DAYS'],
+                'TXT_CALENDAR_DAYS_DAY'             => $_ARRAYLANG['TXT_CALENDAR_DAYS_DAY'],
+                'TXT_CALENDAR_DAYS_MONDAY'             => $_ARRAYLANG['TXT_CALENDAR_DAYS_MONDAY'],
+                'TXT_CALENDAR_DAYS_TUESDAY'         => $_ARRAYLANG['TXT_CALENDAR_DAYS_TUESDAY'],
+                'TXT_CALENDAR_DAYS_WEDNESDAY'         => $_ARRAYLANG['TXT_CALENDAR_DAYS_WEDNESDAY'],
+                'TXT_CALENDAR_DAYS_THURSDAY'         => $_ARRAYLANG['TXT_CALENDAR_DAYS_THURSDAY'],
+                'TXT_CALENDAR_DAYS_FRIDAY'             => $_ARRAYLANG['TXT_CALENDAR_DAYS_FRIDAY'],
+                'TXT_CALENDAR_DAYS_SATURDAY'         => $_ARRAYLANG['TXT_CALENDAR_DAYS_SATURDAY'],
+                'TXT_CALENDAR_DAYS_SUNDAY'             => $_ARRAYLANG['TXT_CALENDAR_DAYS_SUNDAY'],
+                'TXT_CALENDAR_DAYS_WORKDAY'         => $_ARRAYLANG['TXT_CALENDAR_DAYS_WORKDAY'],
 
-    			'TXT_CALENDAR_AT' 					=> $_ARRAYLANG['TXT_CALENDAR_AT'],
-    			'TXT_CALENDAR_EVERY_1' 				=> $_ARRAYLANG['TXT_CALENDAR_EVERY_1'],
-    			'TXT_CALENDAR_ALL' 					=> $_ARRAYLANG['TXT_CALENDAR_ALL'],
-    			'TXT_CALENDAR_EVERY_2' 				=> $_ARRAYLANG['TXT_CALENDAR_EVERY_2'],
-    			'TXT_CALENDAR_WEEKS' 				=> $_ARRAYLANG['TXT_CALENDAR_WEEKS'],
-    			'TXT_CALENDAR_MONTHS' 				=> $_ARRAYLANG['TXT_CALENDAR_MONTHS'],
+                'TXT_CALENDAR_AT'                     => $_ARRAYLANG['TXT_CALENDAR_AT'],
+                'TXT_CALENDAR_EVERY_1'                 => $_ARRAYLANG['TXT_CALENDAR_EVERY_1'],
+                'TXT_CALENDAR_ALL'                     => $_ARRAYLANG['TXT_CALENDAR_ALL'],
+                'TXT_CALENDAR_EVERY_2'                 => $_ARRAYLANG['TXT_CALENDAR_EVERY_2'],
+                'TXT_CALENDAR_WEEKS'                 => $_ARRAYLANG['TXT_CALENDAR_WEEKS'],
+                'TXT_CALENDAR_MONTHS'                 => $_ARRAYLANG['TXT_CALENDAR_MONTHS'],
 
-    			'TXT_CALENDAR_SERIES_PATTERN_BEGINS' 		=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_BEGINS'],
-    			'TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE'],
-    			'TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER'],
-    			'TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS'],
-    			'TXT_CALENDAR_SERIES_PATTERN_ENDS' 			=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS'],
+                'TXT_CALENDAR_SERIES_PATTERN_BEGINS'         => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_BEGINS'],
+                'TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE'     => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE'],
+                'TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER'     => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER'],
+                'TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS'     => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS'],
+                'TXT_CALENDAR_SERIES_PATTERN_ENDS'             => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS'],
                 'TXT_PICTUREUPLOAD_NOTE'        => $_ARRAYLANG['TXT_CALENDAR_PICTUREUPLOAD_NOTE'],
                 'TXT_ATTACHMENT_NOTE'           => $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT_NOTE'],
                 'TXT_PICTURE'                   => $_ARRAYLANG['TXT_CALENDAR_THUMBNAIL'],
@@ -1448,7 +1443,7 @@ class Calendar extends calendarLibrary
                     $sessid++;
                 }
             }
-            $fileNew = $this->uploadImgPath.$pathAdd.$sessid.$extension;
+            $fileNew = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
             $rc = File::uploadFileHttp($formfield, $fileNew, $this->uploadImgMaxSize);
             if($rc) {
                 $_SESSION['calendar']['uploadedimage'][$formfield] = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
@@ -1560,5 +1555,7 @@ class Calendar extends calendarLibrary
     function errorBox($message) {
         return "<div class='errorbox'>$message</div>";
     }
+
 }
+
 ?>

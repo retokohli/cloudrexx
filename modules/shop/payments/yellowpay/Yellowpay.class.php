@@ -4,7 +4,6 @@
  * Class Yellowpay
  *
  * Interface for the payment mask yellowpay
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     2.1.0
@@ -187,7 +186,7 @@ class Yellowpay
             foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
                 // Remove payment methods not mentioned
                 if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
-                    unset($this->arrAcceptedPaymentMethod[$strPaymentMethod]);
+                    unset ($this->arrAcceptedPaymentMethod[$strPaymentMethod]);
                 }
             }
 //        } else {
@@ -212,9 +211,14 @@ class Yellowpay
         $this->form =
             // The real yellowpay server or the test server
             '<form name="yellowpay" method="post" '.
+// TODO:
+// New one?
+//            'action="https://e-payment.postfinance.ch/ncol/test/orderstandard.asp"'.
+// Old one?
             'action="https://yellowpay'.
             ($isTest ? 'test' : '').
             '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
+//
             ">\n";
 /*
             // Yellowpay dummy
@@ -359,6 +363,35 @@ class Yellowpay
     function addToForm($key)
     {
         if ($this->checkKey($key)) {
+/*
+Hmmm...  I dunno where this came from.  Might be useful:
+            switch ($key) {
+                case 'txtShopId':
+                    $key_name = 'PSDID';
+                    break;
+                case 'txtOrderIDShop':
+                    $key_name = 'orderID';
+                    break;
+                case 'txtOrderTotal':
+                    $key_name = 'amount';
+                    break;
+                case 'txtLangVersion':
+                    $key_name = 'language';
+                    break;
+                case 'txtArtCurrency':
+                    $key_name = 'currency';
+                    break;
+                default:
+                    $key_name = $key;
+                    break;
+            }
+            if($key == 'txtOrderTotal'){
+                $value = $this->arrShopOrder[$key]*100;
+            }else {
+                $value = $this->arrShopOrder[$key];
+            }
+            $this->form .= "<input type='hidden' name='$key_name' value='$value' />\n";
+*/
             $this->form .= "<input type='hidden' name='$key' value='{$this->arrShopOrder[$key]}' />\n";
             unset($this->arrShopOrder[$key]);
             return true;

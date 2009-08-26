@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class podcast
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -130,7 +131,9 @@ EOF;
                     'PODCAST_MEDIUM_SHORT_DATE'     => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
                     'PODCAST_MEDIUM_THUMBNAIL'      => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
                     'PODCAST_MEDIUM_URL'            => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'PODCAST_MEDIUM_PLAYLENGHT'     => $this->_getPlaylenghtFormatOfTimestamp($arrMedium['playlenght']),
+// TODO: Spelling error. Fix the template as well and remove this
+                    'PODCAST_MEDIUM_PLAYLENGHT'     => $this->_getPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+                    'PODCAST_MEDIUM_PLAYLENGTH'     => $this->_getPlaylengthFormatOfTimestamp($arrMedium['playlength']),
                     'PODCAST_MEDIUM_VIEWS'          => $this->_getViews($mediumId),
                     'PODCAST_MEDIUM_FILESIZE'       => $this->_formatFileSize($arrMedium['size'])
                 ));
@@ -176,8 +179,12 @@ EOF;
                         'PODCAST_MEDIA_URL'                 => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
                         'PODCAST_MEDIA_THUMBNAIL'           => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
                         'PODCAST_MEDIA_VIEWS'               => $this->_getViews($mediumId),
-                        'PODCAST_MEDIA_PLAYLENGHT'          => $this->_getPlaylenghtFormatOfTimestamp($arrMedium['playlenght']),
-                        'PODCAST_MEDIA_SHORT_PLAYLENGHT'    => $this->_getShortPlaylenghtFormatOfTimestamp($arrMedium['playlenght'])
+// TODO: Spelling error. Fix the template as well and remove this
+                        'PODCAST_MEDIA_PLAYLENGHT'          => $this->_getPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+                        'PODCAST_MEDIA_PLAYLENGTH'          => $this->_getPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+// TODO: Spelling error. Fix the template as well and remove this
+                        'PODCAST_MEDIA_SHORT_PLAYLENGHT'    => $this->_getShortPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+                        'PODCAST_MEDIA_SHORT_PLAYLENGTH'    => $this->_getShortPlaylengthFormatOfTimestamp($arrMedium['playlength']),
                     ));
                     $i++;
                     $this->_objTpl->parse('podcast_media');
@@ -207,4 +214,5 @@ EOF;
     }
 
 }
+
 ?>

@@ -2,40 +2,40 @@
 <script language="JavaScript" type="text/javascript">
 //<![CDATA[
 function showOrHide(strElement) {
-	if (document.getElementById(strElement).style.display == 'none') {
-		document.getElementById(strElement).style.display = 'block';
-	} else {
-		document.getElementById(strElement).style.display = 'none';
-	}
+  if (document.getElementById(strElement).style.display == 'none') {
+    document.getElementById(strElement).style.display = 'block';
+  } else {
+    document.getElementById(strElement).style.display = 'none';
+  }
 }
 
 function copyText(strField) {
-	for (var h=0; h < document.forms.length;h++) {
-		for (var i=0; i < document.forms[h].elements.length;i++) {
-			//read out all form-elements with the loop
-			if(document.forms[h].elements[i].name.search(strField) != -1) {
-				switch (strField) {
-					case 'frmEditCategory_Name_':
-						document.forms[h].elements[i].value = document.frmEditCategory.frmEditCategory_Name.value;
-					break;
-				}
-			}
-		}
-	}	
+  for (var h=0; h < document.forms.length;h++) {
+    for (var i=0; i < document.forms[h].elements.length;i++) {
+      //read out all form-elements with the loop
+      if(document.forms[h].elements[i].name.search(strField) != -1) {
+        switch (strField) {
+          case 'frmEditCategory_Name_':
+            document.forms[h].elements[i].value = document.frmEditCategory.frmEditCategory_Name.value;
+          break;
+        }
+      }
+    }
+  }
 }
 //Following Functions are needed for Picture-Selection -------------------------------------------------------------
 function SetUrl(url, width, height, alt) {
-	document.getElementById(newsElInsertBox).value = url;
+  document.getElementById(newsElInsertBox).value = url;
 }
 
 function newsGetFileBrowser(elInsertBox) {
-	newsElInsertBox = elInsertBox;
-	openWindow('?cmd=fileBrowser&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+  newsElInsertBox = elInsertBox;
+  openWindow('?cmd=fileBrowser&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function openWindow(theURL,winName,features){
-	partnersPopup = window.open(theURL,"partners",features);
-	partnersPopup.focus();
+  partnersPopup = window.open(theURL,"partners",features);
+  partnersPopup.focus();
 }
 
 
@@ -78,22 +78,22 @@ return false;
 //]]>
 </script>
 <form name="frmEditCategory" method="post" action="?cmd=partners&amp;act=updateCategory">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-		<tr>
-			<th colspan="4">{TXT_EDIT_TITLE}</th>
-		</tr>
-		<tr class="row1">
-			<td valign="top">{TXT_EDIT_NAME}</td>
-			<td colspan="3">
-				<input type="text" name="frmEditCategory_Name" value="{EDIT_NAME}" maxlength="100" onchange="copyText('frmEditCategory_Name_');" style="width:30%;" />&nbsp;<a href="javascript:showOrHide('divEditCategoryLang_Name');">{TXT_EDIT_EXTENDED}</a>
-				<div id="divEditCategoryLang_Name" style="display: none;">
-					<!-- BEGIN editCategoryNameFields -->
-					<input type="text" name="frmEditCategory_Name_{EDIT_NAME_LANGID}" value="{EDIT_NAME_VALUE}" maxlength="100" style="width:30%; margin-top:1px;" />&nbsp;<label for="frmEditCategory_Name_{EDIT_NAME_LANGID}">{EDIT_NAME_LANG}</label><br />
-					<!-- END editCategoryNameFields -->
+  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+    <tr>
+      <th colspan="4">{TXT_EDIT_TITLE}</th>
+    </tr>
+    <tr class="row1">
+      <td valign="top">{TXT_EDIT_NAME}</td>
+      <td colspan="3">
+        <input type="text" name="frmEditCategory_Name" value="{EDIT_NAME}" maxlength="100" onchange="copyText('frmEditCategory_Name_');" style="width:30%;" />&nbsp;<a href="javascript:showOrHide('divEditCategoryLang_Name');">{TXT_EDIT_EXTENDED}</a>
+        <div id="divEditCategoryLang_Name" style="display: none;">
+          <!-- BEGIN editCategoryNameFields -->
+          <input type="text" name="frmEditCategory_Name_{EDIT_NAME_LANGID}" value="{EDIT_NAME_VALUE}" maxlength="100" style="width:30%; margin-top:1px;" />&nbsp;<label for="frmEditCategory_Name_{EDIT_NAME_LANGID}">{EDIT_NAME_LANG}</label><br />
+          <!-- END editCategoryNameFields -->
                     <input type="hidden" name="cat_id" value="{CAT_ID}" />
-				</div>
-			</td>
-		</tr>
+        </div>
+      </td>
+    </tr>
 
 
              <!-- BEGIN Display_browse -->
@@ -102,7 +102,7 @@ return false;
             <td colspan="3"><input type="text" name="frmLevel_Image" id="frmLevel_Image" style="width:230px;" value="{DIV_IMAGE_CAT}">&nbsp;<input type="button" value="Browse" onclick="javascript:newsGetFileBrowser('frmLevel_Image','images')"></td>
             </tr>
              <!-- END Display_browse -->
-            		<!-- BEGIN Display_level -->
+                <!-- BEGIN Display_level -->
              <tr  class="row1" width="100%"><td colspan="4" align="center">
              <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
              <th>{TXT_ADD_DISPLAY}</th><th><a href="#" onclick="checkCheckboxes();">{TXT_ADD_ALL}</a>&nbsp;/&nbsp;<a href="#" onclick="uncheckCheckboxes();">{TXT_ADD_DALL}</a></th>
@@ -118,16 +118,16 @@ return false;
             </tr>
             <!-- END Display_level -->
             <th colspan="4">{TXT_ADD_LANGUAGES}</th>
-			<tr class="row1">
-			<td width="10%">{TXT_EDIT_LANGUAGES}</td>
-			<td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
-			<td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
-			<td width="70%" valign="top">{EDIT_LANGUAGES_3}</td>
-		</tr>
-	</table>
-	<br />
-	<input type="hidden" value="{EDIT_CATEGORY_ID}" name="frmEditCategory_Id" />
-	<input type="hidden"  name="cat_name_edit" value="{PARTNERS_CAT_NAME}">
-	<input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
+      <tr class="row1">
+      <td width="10%">{TXT_EDIT_LANGUAGES}</td>
+      <td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
+      <td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
+      <td width="70%" valign="top">{EDIT_LANGUAGES_3}</td>
+    </tr>
+  </table>
+  <br />
+  <input type="hidden" value="{EDIT_CATEGORY_ID}" name="frmEditCategory_Id" />
+  <input type="hidden"  name="cat_name_edit" value="{PARTNERS_CAT_NAME}">
+  <input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
 </form>
 <!-- END module_blog_categories_edit.html -->

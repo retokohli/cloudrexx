@@ -2724,20 +2724,20 @@ class newsletter extends NewsletterLib
         $listId = (!empty($_REQUEST['list']))  ? intval($_REQUEST['list']) : '';
         $limit  = (!empty($_REQUEST['limit'])) ? intval($_REQUEST['limit']) : $_CONFIG['corePagingLimit'];
 
-		$keyword      = contrexx_addslashes($_SESSION['backend_newsletter_users_search_keyword']);
-		$searchfield  = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchFields']);
-		$searchstatus = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchStatus']) . '';
+        $keyword      = contrexx_addslashes($_SESSION['backend_newsletter_users_search_keyword']);
+        $searchfield  = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchFields']);
+        $searchstatus = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchStatus']) . '';
 
-		// don't ignore search stuff
-		$search_where = '';
-		if ( (!empty($searchfield)) && (!empty($keyword)) ) {
-			$search_where = "AND `$searchfield` LIKE '%$keyword%'";
-		}
-		// PHP sucks. empty() doesn't work for numbers, even if they're
-		// strings. PHP considers "0" to be empty.
-		if (strlen("$searchstatus") != 0) {
-			$search_where .= " AND `status` = $searchstatus ";
-		}
+        // don't ignore search stuff
+        $search_where = '';
+        if ( (!empty($searchfield)) && (!empty($keyword)) ) {
+            $search_where = "AND `$searchfield` LIKE '%$keyword%'";
+        }
+        // PHP sucks. empty() doesn't work for numbers, even if they're
+        // strings. PHP considers "0" to be empty.
+        if (strlen("$searchstatus") != 0) {
+            $search_where .= " AND `status` = $searchstatus ";
+        }
 
 
         if(!in_array($field, $fieldValues) && ( $order != 'asc' || $order != 'desc' )){
@@ -2746,14 +2746,14 @@ class newsletter extends NewsletterLib
         if($listId == ''){
             $query = "SELECT id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user
-			WHERE 1 = 1 $search_where
+            WHERE 1 = 1 $search_where
             ORDER BY $field $order";
         }else{
             $query = "SELECT tblUser.id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
                   .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
             WHERE tblUser.id=tblRel.user and tblRel.category=".$listId."
-				 $search_where
+                 $search_where
             ORDER BY $field $order";
         }
 
@@ -3426,7 +3426,7 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_CATEGORY_ID'            => '&amp;newsletterListId='.$newsletterListId,
         ));
 
-		$search_params = addslashes("&SearchStatus={$_REQUEST['SearchStatus']}&keyword={$_REQUEST['keyword']}&SearchFields={$_REQUEST['SearchFields']}");
+        $search_params = addslashes("&SearchStatus={$_REQUEST['SearchStatus']}&keyword={$_REQUEST['keyword']}&SearchFields={$_REQUEST['SearchFields']}");
         $this->_objTpl->setVariable('NEWSLETTER_LIST_MENU', $this->CategoryDropDown('newsletterListId', $newsletterListId, "id='newsletterListId' onchange=\"window.location.replace('index.php?cmd=newsletter&act=users&newsletterListId='+this.value + '$search_params')\""));
         if($_GET["addmailcode"]=="exe"){
             $query        = "SELECT id, code FROM ".DBPREFIX."module_newsletter_user where code=''";
@@ -3515,15 +3515,15 @@ class newsletter extends NewsletterLib
         ));
 
         $where_statement = '';
-		// Set session entries so edituserSort() uses the right values when it's called..
-		$_SESSION['backend_newsletter_users_search_SearchStatus'] = $_REQUEST["SearchStatus"];
-		$_SESSION['backend_newsletter_users_search_SearchFields'] = $_REQUEST["SearchFields"];
-		$_SESSION['backend_newsletter_users_search_keyword']      = $_REQUEST["keyword"];
+        // Set session entries so edituserSort() uses the right values when it's called..
+        $_SESSION['backend_newsletter_users_search_SearchStatus'] = $_REQUEST["SearchStatus"];
+        $_SESSION['backend_newsletter_users_search_SearchFields'] = $_REQUEST["SearchFields"];
+        $_SESSION['backend_newsletter_users_search_keyword']      = $_REQUEST["keyword"];
         $this->_objTpl->setVariable(array(
-			'NEWSLETTER_SEARCH_STATUS'  => $_REQUEST["SearchStatus"],
-			'NEWSLETTER_SEARCH_FIELDS'  => $_REQUEST["SearchFields"],
-			'NEWSLETTER_SEARCH_KEYWORD' => $_REQUEST["keyword"]
-		));
+            'NEWSLETTER_SEARCH_STATUS'  => $_REQUEST["SearchStatus"],
+            'NEWSLETTER_SEARCH_FIELDS'  => $_REQUEST["SearchFields"],
+            'NEWSLETTER_SEARCH_KEYWORD' => $_REQUEST["keyword"]
+        ));
         if ($_REQUEST["keyword"]!="") {
             if ($_REQUEST["SearchFields"]!="") {
                 $where_statement .= ' and '.contrexx_addslashes($_REQUEST["SearchFields"]).' LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%" ';
@@ -3651,8 +3651,8 @@ class newsletter extends NewsletterLib
                 <option value="1">'.$_ARRAYLANG['TXT_ACTIVE'].'</option>
             </select>
         ';
-		$selected = $_REQUEST['SearchStatus'];
-		$ReturnVar = str_replace("value=\"$selected\"", "selected=\"selected\" value=\"$selected\"", $ReturnVar);
+        $selected = $_REQUEST['SearchStatus'];
+        $ReturnVar = str_replace("value=\"$selected\"", "selected=\"selected\" value=\"$selected\"", $ReturnVar);
         return $ReturnVar;
     }
 
@@ -3690,8 +3690,8 @@ class newsletter extends NewsletterLib
                 <option value="birthday">'.$_ARRAYLANG['TXT_BIRTHDAY'].'</option>
             </select>
         ';
-		$selected = $_REQUEST['SearchFields'];
-		$ReturnVar = str_replace("value=\"$selected\"", "selected=\"selected\" value=\"$selected\"", $ReturnVar);
+        $selected = $_REQUEST['SearchFields'];
+        $ReturnVar = str_replace("value=\"$selected\"", "selected=\"selected\" value=\"$selected\"", $ReturnVar);
         return $ReturnVar;
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Gallery
  *
@@ -968,7 +969,7 @@ class Gallery
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
                         '}"  title="'.$imageName.'" href="'.
-                        $strImagePath.'"><img  title="'.$imageName.'" src="'.
+                        $strImagePath.'"><img title="'.$imageName.'" src="'.
                         $imageThumbPath.'" alt="'.$imageName.'" /></a>';
                     /*
                     $strImageOutput =

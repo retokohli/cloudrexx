@@ -1,13 +1,22 @@
 <?php
+
+/**
+ * Podcast library class
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_podcast
+ * @todo        Edit PHP DocBlocks!
+ */
+
 /**
  * Class podcast library
- *
- * podcast library class
- *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
@@ -52,7 +61,7 @@ class podcastLib
      * @access private
      * @var string length of a YouTube Video ID
      */
-    var $_youTubeIdLenght = '11';
+    var $_youTubeIdLength = '11';
 
     /**
      * Youtube ID Regex
@@ -94,21 +103,19 @@ class podcastLib
     var $_communityCategories = array();
 
 
-    function podcastLib(){
-        $this->__construct();
-    }
-
-    function __construct(){
+    function __construct()
+    {
         $this->_arrSettings = $this->_getSettings();
-        $this->_youTubeIdRegex   = "#.*[\?&/]v[=/](".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}).*#";
+        $this->_youTubeIdRegex = '#.*[\?&/]v[=/]('.$this->_youTubeAllowedCharacters.'{'.$this->_youTubeIdLength.'}).*#';
         //youtubeIdCharacters and youtubeIdLength are JS variables.
         $this->_youTubeIdRegexJS = '.*[\\?&/]v[=/]("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*';
-		$this->_noThumbnail = ASCMS_PATH_OFFSET . '/images/podcast/no_picture.gif';
+        $this->_noThumbnail = ASCMS_PATH_OFFSET . '/images/podcast/no_picture.gif';
     }
 
     function _getMedia($ofCategory = false, $isActive = false, $limit = 0, $pos = 0)
     {
-        global $objDatabase, $_CONFIG, $_LANGID;
+        global $objDatabase, $_CONFIG;
+
         $arrMedia = array();
         $cat = false;
         $sqlLimit = ($limit == 0) ? $_CONFIG['corePagingLimit'] : $limit;
@@ -158,7 +165,7 @@ class podcastLib
                     'thumbnail'     => !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
                     'width'         => $objMedium->fields['width'],
                     'height'        => $objMedium->fields['height'],
-                    'playlenght'    => $objMedium->fields['playlenght'],
+                    'playlength'    => $objMedium->fields['playlenght'],
                     'size'          => $objMedium->fields['size'],
                     'status'        => $objMedium->fields['status'],
                     'date_added'    => $objMedium->fields['date_added'],
@@ -209,7 +216,7 @@ class podcastLib
                 'thumbnail'     => !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
                 'width'         => $objMedium->fields['width'],
                 'height'        => $objMedium->fields['height'],
-                'playlenght'    => $objMedium->fields['playlenght'],
+                'playlength'    => $objMedium->fields['playlenght'],
                 'size'          => $objMedium->fields['size'],
                 'status'        => $objMedium->fields['status'],
                 'date_added'    => $objMedium->fields['date_added'],
@@ -436,22 +443,22 @@ class podcastLib
         }
     }
 
-    function _addMedium($title, $youtubeID, $author, $description, $source, $thumbnail, $template, $width, $height, $playlenght, $size, $arrCategories, $status)
+    function _addMedium($title, $youtubeID, $author, $description, $source, $thumbnail, $template, $width, $height, $playlength, $size, $arrCategories, $status)
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_podcast_medium (`title`, `youtube_id`, `author`,`description`, `source`, `thumbnail`, `template_id`, `width`, `height`, `playlenght`, `size`, `status`, `date_added`) VALUES ('".contrexx_addslashes($title)."', '".contrexx_addslashes($youtubeID)."', '".contrexx_addslashes($author)."','".contrexx_addslashes($description)."', '".contrexx_addslashes($source)."', '".contrexx_addslashes($thumbnail)."', ".$template.", ".$width.", ".$height.", ".$playlenght.", ".$size.", ".$status.", ".time().")") !== false) {
+        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_podcast_medium (`title`, `youtube_id`, `author`,`description`, `source`, `thumbnail`, `template_id`, `width`, `height`, `playlenght`, `size`, `status`, `date_added`) VALUES ('".contrexx_addslashes($title)."', '".contrexx_addslashes($youtubeID)."', '".contrexx_addslashes($author)."','".contrexx_addslashes($description)."', '".contrexx_addslashes($source)."', '".contrexx_addslashes($thumbnail)."', ".$template.", ".$width.", ".$height.", ".$playlength.", ".$size.", ".$status.", ".time().")") !== false) {
             return $this->_setMediumCategories($objDatabase->Insert_ID(), $arrCategories);
         } else {
             return false;
         }
     }
 
-    function _updateMedium($id, $title, $youtubeID, $author, $description, $thumbnail, $template, $width, $height, $playlenght, $size, $arrCategories, $status)
+    function _updateMedium($id, $title, $youtubeID, $author, $description, $thumbnail, $template, $width, $height, $playlength, $size, $arrCategories, $status)
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_podcast_medium SET `title`='".contrexx_addslashes($title)."', `youtube_id`='".contrexx_addslashes($youtubeID)."', `author`='".contrexx_addslashes($author)."',`description`='".contrexx_addslashes($description)."', `thumbnail`='".contrexx_addslashes($thumbnail)."', `template_id`=".$template.", `width`=".$width.", `height`=".$height.", `playlenght`=".$playlenght.", `size`=".$size.", `status`=".$status." WHERE id=".$id) !== false) {
+        if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_podcast_medium SET `title`='".contrexx_addslashes($title)."', `youtube_id`='".contrexx_addslashes($youtubeID)."', `author`='".contrexx_addslashes($author)."',`description`='".contrexx_addslashes($description)."', `thumbnail`='".contrexx_addslashes($thumbnail)."', `template_id`=".$template.", `width`=".$width.", `height`=".$height.", `playlenght`=".$playlength.", `size`=".$size.", `status`=".$status." WHERE id=".$id) !== false) {
             return $this->_setMediumCategories($id, $arrCategories);
         } else {
             return false;
@@ -469,7 +476,7 @@ class podcastLib
                   WHERE `id` = ".$id;
         if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
             $thumbNail = $objRS->fields['thumbnail'];
-            $objFile = &new File();
+            $objFile = new File();
             $objFile->delFile(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, $thumbNail);
         }
 
@@ -680,11 +687,11 @@ class podcastLib
     function _getYoutubeTemplate()
     {
         global $objDatabase;
-        $id = 0;
+
         $query = "  SELECT `id` FROM `".DBPREFIX."module_podcast_template`
                     WHERE `description` = 'YouTube Video'";
         $objRS = $objDatabase->SelectLimit($query, 1);
-        if($objRS !== false){
+        if ($objRS !== false) {
             return $objRS->fields['id'];
         }
     }
@@ -708,6 +715,7 @@ class podcastLib
         $modifiedWidth = 0;
         $modifiedHeight = 0;
 
+        $arrMatches = array();
         if (preg_match('/\[\[MEDIUM_HEIGHT\]\](\s*\+\s*([0-9]+))/', $template, $arrMatches)) {
             $modifiedHeight = $arrMedium['height'] + $arrMatches[2];
             $heightSpacer .= $arrMatches[1];
@@ -738,12 +746,12 @@ class podcastLib
             $template);
     }
 
-    function _getShortPlaylenghtFormatOfTimestamp($timestamp)
+    function _getShortPlaylengthFormatOfTimestamp($timestamp)
     {
         return sprintf('%02u', floor($timestamp / 3600)).":".sprintf('%02u', floor(($timestamp % 3600) / 60)).":".sprintf('%02u', $timestamp % 60);
     }
 
-    function _getPlaylenghtFormatOfTimestamp($timestamp)
+    function _getPlaylengthFormatOfTimestamp($timestamp)
     {
         global $_ARRAYLANG;
 
@@ -885,8 +893,10 @@ EOF;
     function _selectMediumSource()
     {
         global $_ARRAYLANG;
+
         $youtubeIdError = false;
         if (isset($_POST['podcast_select_source']) && in_array($_POST['podcast_medium_source_type'], array('local', 'remote', 'youtube'))) {
+            $match = array();
             $sourceType = $_POST['podcast_medium_source_type'];
             if ($sourceType == 'local') {
                 $source = isset($_POST['podcast_medium_local_source']) ? $_POST['podcast_medium_local_source'] : '';
@@ -894,8 +904,8 @@ EOF;
                 $source = isset($_POST['podcast_medium_remote_source']) ? $_POST['podcast_medium_remote_source'] : '';
             } else{
                 $source = isset($_POST['podcast_medium_youtube_source']) ? $_POST['podcast_medium_youtube_source'] : '';
-                preg_match("#".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}#", $_POST['youtubeID'], $match);
-                if(strlen($match[0]) != $this->_youTubeIdLenght){
+                preg_match("#".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLength."}#", $_POST['youtubeID'], $match);
+                if(strlen($match[0]) != $this->_youTubeIdLength){
                     $youtubeIdError = true;
                 }
             }
@@ -943,17 +953,15 @@ EOF;
             'PODCAST_REMOTE_SOURCE'             => $sourceType == 'remote' ? $source : 'http://',
             'PODCAST_YOUTUBE_SOURCE'            => $sourceType == 'youtube' ? $source : '',
             'PODCAST_YOUTUBE_ID_CHARACTERS'     => $this->_youTubeAllowedCharacters,
-            'PODCAST_YOUTUBE_ID_LENGTH'         => $this->_youTubeIdLenght,
+            'PODCAST_YOUTUBE_ID_LENGTH'         => $this->_youTubeIdLength,
             'PODCAST_YOUTUBE_REGEX_JS'          => $this->_youTubeIdRegexJS
         ));
     }
 
     function _modifyMedium()
     {
-        global $_ARRAYLANG, $_CONFIG, $objLanguage;
-        if(is_null($objLanguage)){
-            $objLanguage = &new FWLanguage();
-        }
+        global $_ARRAYLANG, $_CONFIG;
+
         $mediumId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $mediumTitle = '';
         $mediumYoutubeID = '';
@@ -964,7 +972,7 @@ EOF;
         $mediumTemplate = '';
         $mediumWidth = 0;
         $mediumHeight = 0;
-        $mediumPlaylenght = 0;
+        $mediumPlaylength = 0;
         $mediumSize = 0;
         $mediumStatus = 1;
         $mediumCategories = array();
@@ -1007,8 +1015,12 @@ EOF;
             'TXT_PODCAST_STATUS'            => $_ARRAYLANG['TXT_PODCAST_STATUS'],
             'TXT_PODCAST_ACTIVE'            => $_ARRAYLANG['TXT_PODCAST_ACTIVE'],
             'TXT_PODCAST_SAVE'              => $_ARRAYLANG['TXT_PODCAST_SAVE'],
+// TODO: Spelling error. Fix the template as well as the language variable and remove this
             'TXT_PODCAST_PLAYLENGHT'        => $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT'],
+            'TXT_PODCAST_PLAYLENGTH'        => $_ARRAYLANG['TXT_PODCAST_PLAYLENGTH'],
+// TODO: Spelling error. Fix the template as well as the language variable and remove this
             'TXT_PODCAST_PLAYLENGHT_FORMAT' => $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'],
+            'TXT_PODCAST_PLAYLENGTH_FORMAT' => $_ARRAYLANG['TXT_PODCAST_PLAYLENGTH_FORMAT'],
             'TXT_PODCAST_FILESIZE'          => $_ARRAYLANG['TXT_PODCAST_FILESIZE'],
             'TXT_PODCAST_BYTES'             => $_ARRAYLANG['TXT_PODCAST_BYTES'],
             'TXT_PODCAST_AUTHOR'            => $_ARRAYLANG['TXT_PODCAST_AUTHOR'],
@@ -1035,11 +1047,12 @@ EOF;
             $mediumHeight = isset($_POST['podcast_medium_height']) ? intval($_POST['podcast_medium_height']) : 0;
             $mediumSize = isset($_POST['podcast_medium_filesize']) ? intval($_POST['podcast_medium_filesize']) : 0;
 
-            if (!empty($_POST['podcast_medium_playlenght'])) {
-                if (preg_match('/^(([0-9]*):)?(([0-9]*):)?([0-9]*)$/', $_POST['podcast_medium_playlenght'], $arrPlaylenght)) {
-                    $minutes = empty($arrPlaylenght[3]) ? $arrPlaylenght[2] : $arrPlaylenght[4];
-                    $hours = empty($arrPlaylenght[3]) ? $arrPlaylenght[4] : $arrPlaylenght[2];
-                    $mediumPlaylenght = $hours * 3600 + $minutes * 60 + $arrPlaylenght[5];
+            if (!empty($_POST['podcast_medium_playlength'])) {
+                $arrPlaylength = array();
+                if (preg_match('/^(([0-9]*):)?(([0-9]*):)?([0-9]*)$/', $_POST['podcast_medium_playlength'], $arrPlaylength)) {
+                    $minutes = empty($arrPlaylength[3]) ? $arrPlaylength[2] : $arrPlaylength[4];
+                    $hours = empty($arrPlaylength[3]) ? $arrPlaylength[4] : $arrPlaylength[2];
+                    $mediumPlaylength = $hours * 3600 + $minutes * 60 + $arrPlaylength[5];
                 }
             }
 
@@ -1083,9 +1096,9 @@ EOF;
 
             if ($saveStatus) {
                 if ($mediumId > 0 && $_REQUEST['section'] != 'podcast') {
-                    if ($this->_updateMedium($mediumId, $mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylenght, $mediumSize, $mediumCategories, $mediumStatus)) {
+                    if ($this->_updateMedium($mediumId, $mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylength, $mediumSize, $mediumCategories, $mediumStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_SUCCESSFULL'];
-                        $objCache = &new Cache();
+                        $objCache = new Cache();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_media();
@@ -1093,8 +1106,8 @@ EOF;
                         $this->_strErrMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_FAILED'];
                     }
                 } else {
-                    if ($this->_addMedium($mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumSource, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylenght, $mediumSize, $mediumCategories, $mediumStatus)) {
-                        $objCache = &new Cache();
+                    if ($this->_addMedium($mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumSource, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylength, $mediumSize, $mediumCategories, $mediumStatus)) {
+                        $objCache = new Cache();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
 
@@ -1128,14 +1141,14 @@ EOF;
             $mediumHeight = $arrMedium['height'];
             $mediumStatus = $arrMedium['status'];
             $mediumCategories = $arrMedium['category'];
-            $mediumPlaylenght = $arrMedium['playlenght'];
+            $mediumPlaylength = $arrMedium['playlength'];
             $mediumSize = $arrMedium['size'];
         } elseif ($mediumId == 0) {
             $mediumSource = '';
             if (isset($_POST['podcast_medium_source_type']) && in_array($_POST['podcast_medium_source_type'], array('local', 'remote', 'youtube'))) {
                 if ($_POST['podcast_medium_source_type'] == 'local') {
                     if (isset($_POST['podcast_medium_local_source'])) {
-                        if (($hasOffsetPath = strpos($_POST['podcast_medium_local_source'], ASCMS_PATH_OFFSET)) === 0) {
+                        if (strpos($_POST['podcast_medium_local_source'], ASCMS_PATH_OFFSET) === 0) {
                             $mediumSource =  ASCMS_PROTOCOL.'://%domain%%offset%'.substr($_POST['podcast_medium_local_source'], strlen(ASCMS_PATH_OFFSET));
                         } else {
                             $mediumSource =  ASCMS_PROTOCOL.'://%domain%%offset%'.$_POST['podcast_medium_local_source'];
@@ -1188,7 +1201,9 @@ EOF;
             'PODCAST_MEDIUM_TEMPLATE_MENU'      => $this->_getTemplateMenu($mediumTemplate, 'name="podcast_medium_template" style="width:450px;"'),
             'PODCAST_MEDIUM_WIDTH'              => $mediumWidth,
             'PODCAST_MEDIUM_HEIGHT'             => $mediumHeight,
-            'PODCAST_MEDIUM_PLAYLENGHT'         => $this->_getShortPlaylenghtFormatOfTimestamp($mediumPlaylenght),
+// TODO: Spelling error. Fix the template and remove this
+            'PODCAST_MEDIUM_PLAYLENGHT'         => $this->_getShortPlaylengthFormatOfTimestamp($mediumPlaylength),
+            'PODCAST_MEDIUM_PLAYLENGTH'         => $this->_getShortPlaylengthFormatOfTimestamp($mediumPlaylength),
             'PODCAST_MEDIUM_FILESIZE'           => $mediumSize,
             'PODCAST_MEDIUM_THUMBNAIL_SRC'      => !empty($mediumThumbnail) ? $mediumThumbnail : $this->_noThumbnail,
             'PODCAST_MEDIUM_STATUS'             => $mediumStatus == 1 ? 'checked="checked"' : '',
@@ -1198,7 +1213,7 @@ EOF;
 
         $arrCategories = &$this->_getCategories();
         $categoryNr = 0;
-        $arrLanguages = &$objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
 
         foreach ($arrCategories as $categoryId => $arrCategory) {
             if($_REQUEST['section'] == 'podcast'){
@@ -1235,7 +1250,8 @@ EOF;
     {
         $httpRequest = '';
         $response = '';
-        $mediumTitle = '';
+        $errmsg = '';
+        $errno = 0;
         $s = @fsockopen('img.youtube.com', 80, $errno, $errmsg, 5);
         if(is_resource($s)){
             $httpRequest =  "GET /vi/%s/default.jpg HTTP/1.1\r\n".
@@ -1251,6 +1267,7 @@ EOF;
             fflush($s);
 
             $response = fread($s, 512);
+            $match = array();
             preg_match('#Content-Length: ([0-9]+)#', $response, $match);
             $contentLength = $match[1];
             while(!feof($s)){
@@ -1277,6 +1294,8 @@ EOF;
         $httpRequest = '';
         $response = '';
         $mediumTitle = '';
+        $errmsg = '';
+        $errno = 0;
         $s = @fsockopen('www.youtube.com', 80, $errno, $errmsg, 5);
         if(is_resource($s)){
             $httpRequest =  "GET /watch?v=".$youTubeID." HTTP/1.1\r\n".
@@ -1294,6 +1313,7 @@ EOF;
                 $response .= fread($s, 512);
             }
             @fclose($s);
+            $match = array();
             preg_match('#<title>YouTube - ([^<]+)</title>#', $response, $match);
             $mediumTitle = $match[1];
         }
@@ -1309,6 +1329,8 @@ EOF;
     function _getYoutubeDescription($youTubeID)
     {
         return '';
+// TODO: This part is never reached
+/*
         $httpRequest = '';
         $response = '';
         $mediumDescription = '';
@@ -1329,16 +1351,18 @@ EOF;
                 $response .= fread($s, 512);
             }
             @fclose($s);
-            preg_match('¬expand-content">(.*?)\).*?<a¬im', $response, $match);
+            preg_match('/expand-content">(.*?)\).*?<a/im', $response, $match);
             $mediumDescription = $match[1];
         }
         return $mediumDescription;
+*/
     }
 
 
     function _createRSS()
     {
-        global $_CONFIG, $objLanguage, $objDatabase;
+        global $_CONFIG, $objDatabase;
+
         $this->_arrSettings = &$this->_getSettings();
         $arrMedia = array();
         $objMedium = $objDatabase->Execute("
@@ -1431,4 +1455,5 @@ EOF;
         return $status;
     }
 }
+
 ?>
