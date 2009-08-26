@@ -492,3 +492,101 @@ div.tabContainer {
 span.messageFadeout{
     float: right;
 }
+
+
+/* div table */
+
+div.table {
+  display: block; /*table;*/
+  width: 100%;
+  border-collapse: collapse;
+	font-size: 11px;
+	empty-cells: show;
+	background-color: #ffffff;
+}
+div.thead {
+  display: block; /*table-header-group;*/
+}
+div.th {
+  display: block; /*table-cell;*/
+  width: 100%;
+  float: left;
+  clear: none;
+	color: white;
+	min-height: 22px;
+	height: auto;
+	background-color: #0a50a1;
+	text-align: left;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+div.th a {
+	color: white;
+	text-decoration: underline;
+}
+div.th a:hover {
+	color: #0a50a1;
+	background-color: #dce4ff;
+	text-decoration: none;
+}
+div.tbody {
+  display: block; /*table-row-group;*/
+}
+div.tr {
+  clear: both;
+  display: block; /*table-row;*/
+  width: 100%;
+	height: 22px;
+	border-bottom: #dde4ff 1px solid;
+}
+div.trrow1 {
+  clear: both;
+  display: block; /*table-row;*/
+  width: 100%;
+	height: 22px;
+	background-color: #f4f7ff;
+	border-bottom: #dde4ff 1px solid;
+}
+div.trrow1:hover {
+	background-color: #f1f1f1;
+}
+div.trrow2 {
+  clear: both;
+  display: block; /*table-row;*/
+  width: 100%;
+	height: 22px;
+	background-color: #ffffff;
+	border-bottom: #dde4ff 1px solid;
+}
+div.trrow2:hover {
+	background-color: #f1f1f1;
+}
+div.tr_section {
+  clear: both;
+  display: block; /*table-row;*/
+  width: 100%;
+	height: 22px;
+	background-color: #dde4ff;
+	border-bottom: #dde4ff 1px solid;
+}
+div.tr_section:hover {
+	background-color: #dde4ff;
+}
+div.trrowwarn {
+  clear: both;
+  display: block; /*table-row;*/
+  width: 100%;
+	height: 22px;
+	background-color: #ffe7e7;
+	border-bottom: #dde4ff 1px solid;
+}
+div.td {
+  display: inline; /*table-cell;*/
+	min-height: 22px;
+	height: auto;
+  float: left;
+  clear: none;
+	vertical-align: middle;
+/*	white-space: nowrap;*/
+}
+
