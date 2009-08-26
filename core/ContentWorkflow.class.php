@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Workflow
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -28,20 +29,21 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
-class ContentWorkflow {
+class ContentWorkflow 
+{
     var $strPageTitle;
     var $strErrMessage = array();
     var $strOkMessage = '';
 
     /**
     * Constructor
-    *
     * @global     ADONewConnection
     * @global     HTML_Template_Sigma
     * @global     array        Core language
     * @global     array        Configuration
     */
-    function __construct() {
+    function __construct() 
+    {
         global $objDatabase,$objTemplate,$_CORELANG,$_CONFIG;
 
         $objDatabase->Execute('DELETE FROM  '.DBPREFIX.'content_logfile WHERE history_id=0');
@@ -62,12 +64,12 @@ class ContentWorkflow {
         }
     }
 
+
     /**
-    * Calls the requested function
-    *
-    * @global     HTML_Template_Sigma
-    * @global     array        Core language
-    */
+     * Calls the requested page function
+     * @global     HTML_Template_Sigma
+     * @global     array        Core language
+     */
     function getPage()
     {
         global $objTemplate, $_CORELANG;
@@ -133,15 +135,16 @@ class ContentWorkflow {
         ));
     }
 
+
     /**
-    * Show logfile-entries (new, updated or deleted)
-    *
-    * @global     HTML_Template_Sigma
-    * @global     ADONewConnection
-    * @global     array        Core language
-    * @global     array        Configuration
-    */
-    function showHistory($strAction='new') {
+     * Show logfile entries (new, updated or deleted)
+     * @global     HTML_Template_Sigma
+     * @global     ADONewConnection
+     * @global     array        Core language
+     * @global     array        Configuration
+     */
+    function showHistory($strAction='new') 
+    {
         global $objTemplate,$objDatabase,$_CORELANG,$_CONFIG;
 
         switch ($strAction) {
@@ -420,9 +423,22 @@ class ContentWorkflow {
         }
     }
 
-    function restoreHistory($intHistoryId, $boolInsert=false){
+
+    /**
+     * Load a page from history
+     * @global   ADONewConnection
+     * @param    integer  $intHistoryId  The entry with this id will be loaded
+     * @param    boolean  $boolInsert    This parameter has to set to true, if the page was deleted before
+     * @return   integer       $intPageId: The id of the page which was loaded
+
+     */
+    function restoreHistory($intHistoryId, $boolInsert=false)
+    {
         global $objDatabase;
+
         $objResult = $objDatabase->Execute('SELECT  `catid`, `lang`
+
+
                                             FROM    '.DBPREFIX.'content_navigation_history
                                             WHERE   id='.$intHistoryId.'
                                             LIMIT   1');
@@ -536,17 +552,18 @@ class ContentWorkflow {
                                         expertmode="'.addslashes($objResult->fields['expertmode']).'"');
     }
 
+
     /**
-    * Load a page from history
-    *
-    * @global   ADONewConnection
-    * @global     array        Core language
-    * @global     array        Configuration
-    * @param    integer      $intHistoryId: The entry with this id will be loaded
-    * @param     boolean        $boolInsert: This parameter has to set to true, if the page was deleted before
-    * @return   integer       $intPageId: The id of the page which was loaded
-    */
-    function loadHistory($intHistoryId,$boolInsert=false) {
+     * Load a page from history
+     * @global   ADONewConnection
+     * @global     array        Core language
+     * @global     array        Configuration
+     * @param    integer      $intHistoryId: The entry with this id will be loaded
+     * @param     boolean        $boolInsert: This parameter has to set to true, if the page was deleted before
+     * @return   integer       $intPageId: The id of the page which was loaded
+     */
+    function loadHistory($intHistoryId,$boolInsert=false) 
+    {
         global $objDatabase, $_CORELANG, $_CONFIG;
 
         $intHistoryId = intval($intHistoryId);
@@ -593,14 +610,14 @@ class ContentWorkflow {
 
 
     /**
-    * Delete an history entry
-    *
-    * @global   ADONewConnection
-    * @global     array        Core language
-    * @param    integer      $intHistoryId    The entry with this id will be deleted
-    * @return   integer       $intPageId       The history entry deleted belonged to this pageid
-    */
-    function deleteHistory($intHistoryId) {
+     * Delete a history entry
+     * @global   ADONewConnection
+     * @global     array        Core language
+     * @param    integer      $intHistoryId    The entry with this id will be deleted
+     * @return   integer       $intPageId       The history entry deleted belonged to this pageid
+     */
+    function deleteHistory($intHistoryId) 
+    {
         global $objDatabase, $_CORELANG;
 
         $intHistoryId = intval($intHistoryId);
@@ -643,24 +660,24 @@ class ContentWorkflow {
 
 
     /**
-    * Redirect to content manager (open site)
-    *
-    * @param    integer     The page with this id will be shown in content manager
-    */
-    function redirectPage($intPageId) {
+     * Redirect to content manager (open site)
+     * @param    integer     The page with this id will be shown in content manager
+     */
+    function redirectPage($intPageId)
+    {
         header('location:index.php?cmd=content&act=edit&pageId='.intval($intPageId));
         exit;
     }
 
     /**
-    * Validate an incoming page
-    *
-    * @global   ADONewConnection
-    * @global     array        Core language
-    * @param    integer      $intHistoryId       The entry with this id will be validated
-    * @return   integer       $intValidateStatus  1 -> accept page, 0 -> decline page
-    */
-    function validatePage($intLogfileId,$intValidateStatus) {
+     * Validate an incoming page
+     * @global   ADONewConnection
+     * @global     array        Core language
+     * @param    integer      $intHistoryId       The entry with this id will be validated
+     * @return   integer       $intValidateStatus  1 -> accept page, 0 -> decline page
+     */
+    function validatePage($intLogfileId,$intValidateStatus)
+    {
         global $objDatabase, $_CORELANG;
 
         $intLogfileId = intval($intLogfileId);
@@ -819,13 +836,13 @@ class ContentWorkflow {
 
 
     /**
-    * Show logfile-entries (new, updated or deleted)
-    *
-    * @global     HTML_Template_Sigma
-    * @global     ADONewConnection
-    * @global     array        Core language
-    */
-    function showClean() {
+     * Show logfile-entries (new, updated or deleted)
+     * @global     HTML_Template_Sigma
+     * @global     ADONewConnection
+     * @global     array        Core language
+     */
+    function showClean() 
+    {
         global $objTemplate, $objDatabase, $_CORELANG;
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_history_clean', 'content_history_clean.html');
@@ -863,14 +880,15 @@ class ContentWorkflow {
         $objTemplate->setVariable('HISTORY_CLEAN_DAYS', $intDays);
     }
 
+
     /**
      * Removes old workflow entries which are older than $intNumberOfDays.
-     *
      * @global     ADONewConnection
      * @global     array
      * @param    integer        $intNumberOfDays: Entries older than this value will be removed
      */
-    function cleanHistory($intNumberOfDays) {
+    function cleanHistory($intNumberOfDays) 
+    {
         global $objDatabase, $_CORELANG;
 
         $intNumberOfDays = intval($intNumberOfDays);
@@ -934,4 +952,5 @@ class ContentWorkflow {
         $this->strOkMessage = str_replace('[DAYS]', $intNumberOfDays, $_CORELANG['TXT_WORKFLOW_CLEAN_SUCCESS']);
     }
 }
+
 ?>

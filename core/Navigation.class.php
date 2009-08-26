@@ -615,7 +615,7 @@ class Navigation
     * @global InitCMS
     * @global ADONewConnection
     * @global integer
-	* @global array
+    * @global array
     */
     function getFrontendLangNavigation()
     {
@@ -623,64 +623,64 @@ class Navigation
         $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = "";
 
-        $URLquery	= $_SERVER['QUERY_STRING'];
-        $URLbase	= $_SERVER['PHP_SELF'];
+        $URLquery    = $_SERVER['QUERY_STRING'];
+        $URLbase    = $_SERVER['PHP_SELF'];
         // Workaround contact
-        $tmpCID 	= 0;
+        $tmpCID     = 0;
         if(isset($_REQUEST['section'])){
-        	if($_REQUEST['section']=='contact'){
-        		$cmd = $_REQUEST['cmd'];
-    			$query 		= "SELECT catid FROM ".DBPREFIX."content_navigation WHERE cmd=".intval($_REQUEST['cmd'])." AND lang=".$_LANGID." ";
-    			$objResult 	= $objDatabase->SelectLimit($query, 1);
-    			if ($objResult === true || !$objResult->EOF) {
-    			    $tmpCID = $objResult->fields["catid"];
-    			}else{
-    				$URLquery 	= ereg_replace("\&?section\=[a-zA-Z]+", "", $URLquery);
-    				$URLquery 	= ereg_replace("\&?cmd\=[0-9]+", "", $URLquery);
-    			}
-        	}
+            if($_REQUEST['section']=='contact'){
+                $cmd = $_REQUEST['cmd'];
+                $query         = "SELECT catid FROM ".DBPREFIX."content_navigation WHERE cmd=".intval($_REQUEST['cmd'])." AND lang=".$_LANGID." ";
+                $objResult     = $objDatabase->SelectLimit($query, 1);
+                if ($objResult === true || !$objResult->EOF) {
+                    $tmpCID = $objResult->fields["catid"];
+                }else{
+                    $URLquery     = ereg_replace("\&?section\=[a-zA-Z]+", "", $URLquery);
+                    $URLquery     = ereg_replace("\&?cmd\=[0-9]+", "", $URLquery);
+                }
+            }
         }
 
         if(count($this->arrLang)>1) {
             foreach($this->arrLang as $id => $value) {
                 if($this->arrLang[$id]['frontend']==1) {
                     $GETquery = '';
-                	$URLquery 	= ereg_replace("\&?fromLang\=[0-9]+", "", $URLquery);
-                	$URLquery 	= ereg_replace("\&?langId\=[0-9]+", "", $URLquery);
-                	$URLquery 	= ereg_replace("\&?setLang\=[0-9]+", "", $URLquery);
-                	$FromQuery	= 'fromLang='.$_LANGID;
+                    $URLquery     = ereg_replace("\&?fromLang\=[0-9]+", "", $URLquery);
+                    $URLquery     = ereg_replace("\&?langId\=[0-9]+", "", $URLquery);
+                    $URLquery     = ereg_replace("\&?setLang\=[0-9]+", "", $URLquery);
+                    $FromQuery    = 'fromLang='.$_LANGID;
 
-                	// workaround contact
-                	if($tmpCID!=0){
-                		$URLquery 	= ereg_replace("\&?cmd\=[0-9]", "", $URLquery);
-                		$tmpCMD		= 0;
-                		$query		= "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
-                		$objResult 	= $objDatabase->SelectLimit($query, 1);
-                		if ($objResult === true || !$objResult->EOF) {
-                		    $tmpCMD = $objResult->fields["cmd"];
-                		}
-                		if($tmpCMD!=0){
-                			$URLquery .= ($URLquery!='') ? '&cmd='.$tmpCMD : '?section='.$_REQUEST['section'].'&cmd='.$tmpCMD;
-                		}
-                	}
+                    // workaround contact
+                    if($tmpCID!=0){
+                        $URLquery     = ereg_replace("\&?cmd\=[0-9]", "", $URLquery);
+                        $tmpCMD        = 0;
+                        $query        = "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
+                        $objResult     = $objDatabase->SelectLimit($query, 1);
+                        if ($objResult === true || !$objResult->EOF) {
+                            $tmpCMD = $objResult->fields["cmd"];
+                        }
+                        if($tmpCMD!=0){
+                            $URLquery .= ($URLquery!='') ? '&cmd='.$tmpCMD : '?section='.$_REQUEST['section'].'&cmd='.$tmpCMD;
+                        }
+                    }
 
-                	if($_CONFIG['useVirtualLanguagePath']=='on'){
-                		if($URLquery!=''){
-                			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$FromQuery;
-                		}else{
-                			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$FromQuery;
-                		}
-                	}else{
-                		if($URLquery!=''){
-                			$URLquery 	= 'setLang='.$value['id'];
-                		}else{
-                			$URLquery 	= 'setLang='.$value['id'];
-                		}
-                		$LangURL		= $URLbase.'?'.$URLquery.'&'.$FromQuery;
-                	}
+                    if($_CONFIG['useVirtualLanguagePath']=='on'){
+                        if($URLquery!=''){
+                            $LangURL     = '/'.$value['lang'].$URLbase.'?'.$FromQuery;
+                        }else{
+                            $LangURL     = '/'.$value['lang'].$URLbase.'?'.$FromQuery;
+                        }
+                    }else{
+                        if($URLquery!=''){
+                            $URLquery     = 'setLang='.$value['id'];
+                        }else{
+                            $URLquery     = 'setLang='.$value['id'];
+                        }
+                        $LangURL        = $URLbase.'?'.$URLquery.'&'.$FromQuery;
+                    }
                     foreach ($_GET as $k => $v) {
-                    	if(in_array($k, array('fromLang', 'setLang', 'langId'))) continue;
-                    	$GETquery .= '&amp;'.$k.'='.$v;
+                        if(in_array($k, array('fromLang', 'setLang', 'langId'))) continue;
+                        $GETquery .= '&amp;'.$k.'='.$v;
                     }
                     $langNavigation .= ' [ <a href="'.$LangURL.$GETquery.'" title="'.$value['name'].'" >'.$value['name'].'</a> ] ';
                 }

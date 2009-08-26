@@ -2,27 +2,18 @@
 
 /**
  * Text (core version)
- * @version     2.1.0
+ * @version     2.2.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 
-/*
-DROP TABLE IF EXISTS `contrexx_core_text`;
-CREATE TABLE `contrexx_core_text` (
-  `id` INT(10) UNSIGNED NOT NULL,
-  `lang_id` INT(10) UNSIGNED NOT NULL,
-  `module_id` INT(10) UNSIGNED DEFAULT NULL,
-  `key_id` INT(10) UNSIGNED DEFAULT NULL,
-  `text` TEXT NOT NULL DEFAULT '',
-  PRIMARY KEY `id` (`id`, `lang_id`),
-  INDEX `module_id` (`module_id`),
-  INDEX `key_id` (`key_id`),
-  FULLTEXT `text` (`text`)
-) ENGINE=MyISAM;
-*/
+/**
+ * Changes in version 2.2.0:
+ * - Module ID *MUST NOT* be NULL, but zero if unused
+ * - Changed integer 'key_id' to string 'key' (TINYTEXT)
+ */
 
 /**
  * Text
@@ -30,7 +21,7 @@ CREATE TABLE `contrexx_core_text` (
  * Includes access methods and data layer.
  * Do not, I repeat, do not access private fields, or even try
  * to access the database directly!
- * @version     2.1.0
+ * @version     2.2.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -57,10 +48,10 @@ class Text
     private $module_id = null;
 
     /**
-     * @var     integer         $key_id             The optional key ID
+     * @var     string          $key                The optional key
      * @access  private
      */
-    private $key_id = null;
+    private $key = null;
 
     /*
      * @var     string          $reference          The optional reference name
@@ -89,16 +80,16 @@ class Text
      * @param   string      $text             The content
      * @param   integer     $lang_id          The language ID
      * @param   integer     $module_id        The module ID
-     * @param   integer     $key_id           The key ID
+     * @param   string      $key              The key
      * @param   integer     $text_id          The optional Text ID
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function __construct($text, $lang_id, $module_id, $key_id, $text_id=0)
+    function __construct($text, $lang_id, $module_id, $key, $text_id=0)
     {
         $this->text = $text;
         $this->lang_id = $lang_id;
         $this->module_id = $module_id;
-        $this->key_id = $key_id;
+        $this->key = $key;
         $this->id = $text_id;
     }
 
@@ -157,41 +148,22 @@ class Text
      */
 
     /**
-     * Get the key ID
-     * @return  integer                             The key ID
+     * Get the key
+     * @return  string                              The key
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getKeyId()
+    function getKey()
     {
-        return $this->key_id;
+        return $this->key;
     }
     /*
-     * Set the key ID
+     * Set the key
      * NOT ALLOWED!  Set this upon creation.
-     * @param   integer         $key_id             The key ID
+     * @param   string          $key                The key
      * @author      Reto Kohli <reto.kohli@comvation.com>
-    function setKeyId($key_id)
+    function setKey($key)
     {
-        $this->key_id = intval($key_id);
-    }
-     */
-
-    /*
-     * Get the reference name
-     * @return  string                              The reference name
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-    function getReference()
-    {
-        return $this->reference;
-    }
-     */
-    /*
-     * Set the reference name
-     * @param   string          $reference               The reference name
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-    function setReference($reference)
-    {
-        $this->reference = trim(strip_tags($reference));
+        $this->key = $key;
     }
      */
 
@@ -256,9 +228,9 @@ class Text
 
         if (!$text_id) return false;
         $query = "
-            DELETE FROM ".DBPREFIX."core_text
-             WHERE id=$text_id
-               ".($lang_id == 0 ? '' : "AND lang_id=$lang_id");
+            DELETE FROM `".DBPREFIX."core_text`
+             WHERE `id`=$text_id
+               ".($lang_id == 0 ? '' : "AND `lang_id`=$lang_id");
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return true;
@@ -281,9 +253,8 @@ class Text
 
         if (!$lang_id) return false;
         $query = "
-            DELETE FROM ".DBPREFIX."core_text
-             WHERE lang_id=$lang_id
-        ";
+            DELETE FROM `".DBPREFIX."core_text`
+             WHERE `lang_id`=$lang_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return true;
@@ -307,8 +278,7 @@ class Text
             SELECT 1
               FROM ".DBPREFIX."core_text
              WHERE id=$this->id
-               AND lang_id=$this->lang_id
-        ";
+               AND lang_id=$this->lang_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         if ($objResult->RecordCount() == 1) return true;
@@ -342,12 +312,12 @@ class Text
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."core_text
+            UPDATE `".DBPREFIX."core_text`
             SET `module_id`=".($this->module_id ? $this->module_id : 'NULL').",
-                `key_id`=".($this->key_id ? $this->key_id : 'NULL').",
+                `key`='".addslashes($this->key)."',
                 `text`='".addslashes($this->text)."'
-          WHERE id=$this->id
-            AND lang_id=$this->lang_id
+          WHERE `id`=$this->id
+            AND `lang_id`=$this->lang_id
         ";
 // Removed: `reference`='".(empty($this->reference) ? 'NULL' : addslashes($this->reference))."',
         $objResult = $objDatabase->Execute($query);
@@ -372,15 +342,15 @@ class Text
         if (empty($this->id)) $this->id = self::nextId();
         if (empty($this->id)) return false;
         $query = "
-            INSERT INTO ".DBPREFIX."core_text (
+            INSERT INTO `".DBPREFIX."core_text` (
                 ".($this->id ? '`id`, ' : '')."
-                `lang_id`, `module_id`, `key_id`,
+                `lang_id`, `module_id`, `key`,
                 `text`
             ) VALUES (
                 ".($this->id ? "$this->id, " : '')."
                 $this->lang_id,
-                ".($this->module_id ? $this->module_id : 'NULL').",
-                ".($this->key_id ? $this->key_id : 'NULL').",
+                ".($this->module_id ? $this->module_id : '0').",
+                '".addslashes($this->key)."',
                 '".addslashes($this->text)."'
             )
         ";
@@ -391,6 +361,24 @@ class Text
         if (!$objResult) return self::errorHandler();
         if ($this->id == 0) $this->id = $objDatabase->insert_id();
         return $this->id;
+    }
+
+
+    /**
+     * Add a new Text object directly to the database table
+     *
+     * Mind that this method uses the current FRONTEND_LANG_ID and
+     * MODULE_ID global constants as language ID and Module ID,
+     * respectively.
+     * This is but a handy shortcut for those in the know.
+     * @param   string    $text       The text string
+     * @return  integer               The object ID on success, false otherwise
+     */
+    static function add($text, $key)
+    {
+        $objText = new Text($text, FRONTEND_LANG_ID, MODULE_ID, $key);
+        if ($objText->store()) return $objText->getId();
+        return false;
     }
 
 
@@ -408,13 +396,12 @@ class Text
 
         $query = "
             SELECT MAX(`id`) AS `id`
-              FROM ".DBPREFIX."core_text
-        ";
+              FROM `".DBPREFIX."core_text`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return self::errorHandler();
         // This will also work for an empty database table,
         // when mySQL merrily returns NULL in the ID field.
-        return $objResult->fields['id']+1;
+        return 1+$objResult->fields['id'];
     }
 
 
@@ -428,7 +415,7 @@ class Text
      * language encountered is returned.
      * If no record is found for the given ID, creates a new object
      * with a warning message and returns it.
-     * Note that in the last case, neither the module nor the key ID
+     * Note that in the last case, neither the module nor the key
      * are set and remain at their default (null) value.  You should
      * set them to the desired values before storing the object.
      * @static
@@ -445,10 +432,10 @@ class Text
 
         if (empty($text_id)) return false;
         $query = "
-            SELECT *
-              FROM ".DBPREFIX."core_text
-             WHERE id=$text_id
-               ".($lang_id ? "AND lang_id=$lang_id" : '');
+            SELECT `id`, `lang_id`, `text`, `module_id`, `key`
+              FROM `".DBPREFIX."core_text`
+             WHERE `id`=$text_id
+               ".($lang_id ? "AND `lang_id`=$lang_id" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         if ($objResult->RecordCount() == 0) {
@@ -458,14 +445,15 @@ class Text
                 $lang_id, null, null, $text_id
             );
         }
-        $id = $objResult->fields['id'];
-        $text = $objResult->fields['text'];
-        $module_id = $objResult->fields['module_id'];
-        $key_id = $objResult->fields['key_id'];
+        $objText = new Text(
+            $objResult->fields['text'],
+            $objResult->fields['lang_id'],
+            $objResult->fields['module_id'],
+            $objResult->fields['key'],
+            $text_id
+        );
         // Mark Text not present in the selected language
-        //$text = $objResult->fields['text'].($lang_id ? ' *' : '');
-        $objText = new Text($text, $lang_id, $module_id, $key_id, $id);
-//        $objText->reference = $objResult->fields['reference'];
+        //$objText->markDifferentLanguage($lang_id);
         return $objText;
     }
 
@@ -474,29 +462,28 @@ class Text
      * Store the Text record with the given Text and language ID
      * with new values
      *
-     * The optional arguments $module_id and $key_id are ignored if empty.
+     * The optional arguments $module_id and $key are ignored if empty.
      * If such a record exists, it is updated.  Otherwise, a new record
      * is created.
      * @param   integer     $text_id        The Text ID
      * @param   integer     $lang_id        The language ID
      * @param   string      $strText        The text
      * @param   integer     $module_id      The optional module ID
-     * @param   integer     $key_id         The optional key ID
+     * @param   string      $key            The optional key
      * @return  Text                        The Text object on success,
      *                                      false otherwise
      */
-    static function replace($text_id, $lang_id, $strText, $module_id=0, $key_id=0)
+    static function replace($text_id, $lang_id, $strText, $module_id=0, $key='')
     {
         $objText = Text::getById($text_id, $lang_id);
         if (   !$objText || !$objText->getLanguageId()
-            || !$objText->getModuleId() || !$objText->getKeyId())
-            $objText = new Text(
-                '', $lang_id, 0, 0, $text_id
-            );
+// TODO:  This is not well defined yet
+//            || !$objText->getModuleId() || !$objText->getKey())
+        ) $objText = new Text('', $lang_id, 0, '', $text_id);
         $objText->setText($strText);
         $objText->setLanguageId($lang_id);
         if ($module_id) $objText->module_id = $module_id;
-        if ($key_id) $objText->key_id = $key_id;
+        if ($key) $objText->key = $key;
         if (!$objText->store()) return false;
         return $objText;
     }
@@ -521,20 +508,21 @@ class Text
      * The '*' may be any descriptive part of the name that disambiguates
      * multiple foreign keys in a single table, like 'name', or 'value'.
      * Note that the $lang_id parameter is mandatory and *MUST NOT* be
-     * emtpy (zero).
+     * emtpy.  Any of $module_id, $key, or $text_ids may be false, in which
+     * case they are ignored.
      * @static
      * @param       string      $field_id_name  The name of the text ID
      *                                          foreign key field
      * @param       integer     $lang_id        The language ID
-     * @param       integer     $module_id      The optional module ID
-     * @param       integer     $key_id         The optional key ID
+     * @param       integer     $module_id      The optional module ID, or false
+     * @param       string      $key            The optional key, or false
      * @param       integer     $text_ids       The optional comma separated
-     *                                          list of Text IDs
+     *                                          list of Text IDs, or false
      * @return      array                       The array with SQL code parts
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     static function getSqlSnippets(
-        $field_id_name, $lang_id, $module_id='', $key_id='', $text_ids=''
+        $field_id_name, $lang_id, $module_id=false, $key=false, $text_ids=false
     ) {
         if (empty($field_id_name) || empty($lang_id)) return false;
         $table_alias = 'text_'.++self::$table_alias_index;
@@ -547,11 +535,12 @@ class Text
         $query_join =
             ' LEFT JOIN `'.DBPREFIX.'core_text` as `'.$table_alias.'`'.
             ' ON `'.$table_alias.'`.`id`='.$field_id_name. //;
-            ' AND '.$table_alias.'.lang_id='.$lang_id.
-            ($module_id ? ' AND '.$table_alias.'.module_id='.$module_id : '').
-            ($key_id    ? ' AND '.$table_alias.'.key_id='.$key_id       : '').
-            ($text_ids  ? ' AND '.$table_alias.'.id IN ('.$text_ids.')' : '');
+            ' AND `'.$table_alias.'`.`lang_id`='.$lang_id.
+            ($module_id !== false ? " AND `$table_alias`.`module_id`=$module_id"       : '').
+            ($key       !== false ? " AND `$table_alias`.`key`='".addslashes($key)."'" : '').
+            ($text_ids  !== false ? " AND `$table_alias`.`id` IN ($text_ids)"          : '');
 //echo("Text::getSqlSnippets(): got name /$field_id_name/, made ");
+            // Remove table name, dot and backticks, if any
             $field_id_name = preg_replace('/`?\w*`?\.?`?(\w+)`?/', '$1', $field_id_name);
 //echo("/$field_id_name/<br />");
         return array(
@@ -580,7 +569,7 @@ class Text
      *  )
      * @static
      * @param       integer     $module_id      The module ID
-     * @param       integer     $key_id         The key ID
+     * @param       string      $key            The key
      * @param       integer     $lang_id        The language ID
      * @param       integer     $text_ids       The optional comma separated
      *                                          list of Text IDs
@@ -589,18 +578,18 @@ class Text
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getArrayById($module_id, $key_id, $lang_id, $text_ids='')
+    static function getArrayById($module_id, $key, $lang_id, $text_ids='')
     {
         global $objDatabase;
 
-        if (empty($module_id) || empty($key_id) || empty($lang_id)) return false;
+        if (empty($module_id) || empty($key) || empty($lang_id)) return false;
         $query = "
-            SELECT id
-              FROM ".DBPREFIX."core_text
-             WHERE module_id=$module_id
-               AND key_id=$key_id".
-               ($lang_id > 0 ? ' AND lang_id='.$lang_id          : '').
-               ($text_ids    ? ' AND text_id IN ('.$text_ids.')' : '');
+            SELECT `id`
+              FROM `".DBPREFIX."core_text`
+             WHERE `module_id`=$module_id
+               AND `key`='".addslashes($key)."'".
+               ($lang_id > 0 ? ' AND `lang_id`='.$lang_id          : '').
+               ($text_ids    ? ' AND `text_id` IN ('.$text_ids.')' : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         $arrText = array();
@@ -623,45 +612,43 @@ class Text
      * match to be open ended.
      * The array returned looks like this:
      *  array(
-     *    ID => array(
-     *      'id'      => ID,
-     *      'lang_id' => Language ID,
+     *    id => array(
+     *      0 => Language ID,
+     *      ... 1 => more language IDs ...
      *    ),
-     *    ... more ...
+     *    ... more ids ...
      *  )
      * @static
      * @param       string      $pattern        The search pattern
-     * @param       integer     $module_id      The optional module ID
-     * @param       integer     $key_id         The optional key ID
-     * @param       integer     $lang_id        The optional language ID
+     * @param       integer     $module_id      The optional module ID, or false
+     * @param       string      $key            The optional key, or false
+     * @param       integer     $lang_id        The optional language ID, or false
      * @param       integer     $text_ids       The optional comma separated
-     *                                          list of Text IDs
+     *                                          list of Text IDs, or false
      * @return      array                       The array of Text and language
      *                                          IDs on success, false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     static function getIdArrayBySearch(
-        $pattern, $module_id=false, $key_id=false,
+        $pattern, $module_id=false, $key=false,
         $lang_id=false, $text_ids=false
     ) {
         global $objDatabase;
 
         $query = "
-            SELECT id, lang_id
-              FROM ".DBPREFIX."core_text
-             WHERE text LIKE '".addslashes($pattern)."'".
-            ($module_id !== false ? " AND module_id=$module_id"   : '').
-            ($key_id    !== false ? " AND key_id=$key_id"         : '').
-            ($lang_id             ? " AND lang_id=$lang_id"       : '').
-            ($text_ids            ? " AND text_id IN ($text_ids)" : '');
+            SELECT `id`, `lang_id`
+              FROM `".DBPREFIX."core_text`
+             WHERE `text` LIKE '".addslashes($pattern)."'".
+            ($lang_id   !== false ? " AND `lang_id`=$lang_id"           : '').
+            ($module_id !== false ? " AND `module_id`=$module_id"       : '').
+            ($key       !== false ? " AND `key`='".addslashes($key)."'" : '').
+            ($text_ids  !== false ? " AND `id` IN ($text_ids)"     : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         $arrId = array();
         while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $lang_id = $objResult->fields['lang_id'];
-            $arrId[$id] = array('id' => $id, 'lang_id' => $lang_id);
+            $arrId[$objResult->fields['id']][$objResult->fields['lang_id']] = true;
             $objResult->MoveNext();
         }
         return $arrId;
@@ -677,9 +664,10 @@ class Text
     function markDifferentLanguage($lang_id)
     {
         if ($lang_id != $this->lang_id) {
+            $this->text = '['.$this->text.']';
 // Different formatting -- up to you.
 //            $this->text = '<font color="red">'.$this->text.'</font>';
-            $this->text = '['.$this->text.']';
+//            $this->text = $this->text.' *';
         }
     }
 
@@ -697,25 +685,53 @@ class Text
         global $objDatabase;
 
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (!in_array(DBPREFIX."core_text", $arrTables)) {
-            // The table doesn't exist yet!
-            $query = "
-                CREATE TABLE `".DBPREFIX."core_text` (
-                  `id` INT(10) UNSIGNED NOT NULL,
-                  `lang_id` INT(10) UNSIGNED NOT NULL,
-                  `module_id` INT(10) UNSIGNED DEFAULT NULL,
-                  `key_id` INT(10) UNSIGNED DEFAULT NULL,
-                  `text` TEXT NOT NULL DEFAULT '',
-                  PRIMARY KEY `id` (`id`, `lang_id`),
-                  INDEX `module_id` (`module_id`),
-                  INDEX `key_id` (`key_id`),
-                  FULLTEXT `text` (`text`)
-                ) ENGINE=MYISAM;
-            ";
-// `reference` VARCHAR(255) NULL DEFAULT NULL,
+        if (in_array(DBPREFIX."core_text", $arrTables)) {
+            $query = "DROP TABLE `".DBPREFIX."core_text`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
         }
+        $query = "
+            CREATE TABLE `".DBPREFIX."core_text` (
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+              `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+              `module_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `key` TINYTEXT NOT NULL DEFAULT '',
+              `text` TEXT NOT NULL DEFAULT '',
+              PRIMARY KEY `id` (`id`, `lang_id`),
+              INDEX `module_id` (`module_id` ASC),
+              INDEX `key` (`key`(32) ASC),
+              FULLTEXT `text` (`text`)
+            ) ENGINE=MyISAM
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+
+        // Insert all country names into the multilanguage text table
+        $query = "
+            INSERT INTO `".DBPREFIX."core_text` (
+              `id`, `lang_id`, `module_id`, `key`, `text`
+            )
+            SELECT NULL, 2, 0, 'CORE_COUNTRY', `name`
+              FROM `".DBPREFIX."lib_country`
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+
+        //Insert all country name text IDs into the multilanguage country table.
+        //Note that the text foreign ID is used as the primary key as well!
+        $query = "
+            INSERT INTO `".DBPREFIX."core_country` (
+              `name_text_id`, `iso_code_2`, `iso_code_3`
+            )
+            SELECT DISTINCT `t`.`id`, `c`.`iso_code_2`, `c`.`iso_code_3`
+              FROM `".DBPREFIX."lib_country` AS `c`
+             INNER JOIN `".DBPREFIX."core_text` AS `t`
+                ON `c`.`name`=`t`.`text`
+             WHERE `t`.`key`='CORE_COUNTRY'
+               AND `t`.`lang_id`=2
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
 
         // More to come...
 
@@ -723,45 +739,5 @@ class Text
     }
 
 }
-
-/*
-
-DROP TABLE IF EXISTS `_conversiontest`;
-CREATE TABLE IF NOT EXISTS `_conversiontest` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `value` varchar(255) collate utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-
-INSERT INTO `_conversiontest` VALUES(1, '');
-INSERT INTO `_conversiontest` VALUES(2, '0');
-INSERT INTO `_conversiontest` VALUES(3, '1');
-INSERT INTO `_conversiontest` VALUES(4, '200');
-INSERT INTO `_conversiontest` VALUES(5, '-1');
-INSERT INTO `_conversiontest` VALUES(6, 'asdf');
-INSERT INTO `_conversiontest` VALUES(7, '-');
-INSERT INTO `_conversiontest` VALUES(8, '?');
-
-ALTER TABLE `_conversiontest` CHANGE `value` `value` INT( 10 ) UNSIGNED NOT NULL;
-
--- Becomes
-
-DROP TABLE IF EXISTS `_conversiontest`;
-CREATE TABLE IF NOT EXISTS `_conversiontest` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `value` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-
-INSERT INTO `_conversiontest` VALUES(1, 0);
-INSERT INTO `_conversiontest` VALUES(2, 0);
-INSERT INTO `_conversiontest` VALUES(3, 1);
-INSERT INTO `_conversiontest` VALUES(4, 200);
-INSERT INTO `_conversiontest` VALUES(5, 0);
-INSERT INTO `_conversiontest` VALUES(6, 0);
-INSERT INTO `_conversiontest` VALUES(7, 0);
-INSERT INTO `_conversiontest` VALUES(8, 0);
-
-*/
 
 ?>

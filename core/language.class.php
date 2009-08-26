@@ -24,14 +24,14 @@ require_once ASCMS_CORE_PATH.'/settings.class.php';
  */
 class LanguageManager
 {
-    var $_objTpl;
-    var $pageTitle='';
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $arrLang = array();
-    var $filePath='';
-    var $hideVariables = true;
-    var $langIDs = array();
+    public $_objTpl;
+    public $pageTitle='';
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $arrLang = array();
+    public $filePath='';
+    public $hideVariables = true;
+    public $langIDs = array();
 
     /**
      * Constructor
@@ -40,8 +40,10 @@ class LanguageManager
      * @global  HTML_Template_Sigma
      * @return  void
      */
-    function __construct() {
+    function __construct()
+    {
         global  $objDatabase, $_CORELANG, $objTemplate;
+
         $arrTables = array();
 
         $objRS = $objDatabase->Execute("SELECT `id` FROM ".DBPREFIX."languages ORDER BY `id`");
@@ -343,7 +345,7 @@ class LanguageManager
                 if (!empty($result[1]) && !empty($result[2])) {
                     $backendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Invalid $_ARRAYLANG format (backend) - regex: '.$regex.'<br />';
                 }
             }
 
@@ -363,7 +365,7 @@ class LanguageManager
                     }
                     $frontendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (frontend)  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Invalid $_ARRAYLANG format (frontend ) - regex: '.$regex.'<br />';
                 }
             }
 
@@ -949,9 +951,7 @@ class LanguageManager
      */
     function modifyLanguage()
     {
-        // note: $objLanguage is not the same as $this, even if it
-        // used to be (was defined in cadmin/index.php)
-        global $_CORELANG, $_CONFIG, $objDatabase, $objLanguage;
+        global $_CORELANG, $_CONFIG, $objDatabase;
 
         if (!empty($_POST['submit']) AND (isset($_POST['addLanguage']) && $_POST['addLanguage']=="true")) {
             //-----------------------------------------------
@@ -1020,14 +1020,11 @@ class LanguageManager
                 $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET name='".$name."', frontend=".$active." , is_default='".$status."',backend='".$adminstatus."' WHERE id=".$id);
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-
-            $objLanguage->loadLangConfig();
-
+            FWLanguage::init();
             if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
                 $settings = new settingsManager();
                 $settings->setVirtualLanguagePath(true);
             }
-
             return true;
        }
         return false;
