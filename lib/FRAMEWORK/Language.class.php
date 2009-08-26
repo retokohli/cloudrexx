@@ -23,6 +23,14 @@ class FWLanguage
     public $arrLanguage = null;
 
     /**
+     * ID of the default language
+     *
+     * @var integer
+     * @access private
+     */
+    private static $defaultLangId;
+
+    /**
      * Constructor (PHP5)
      * @access  private
      * @global  ADONewConnection
@@ -60,10 +68,30 @@ class FWLanguage
                     'backend'    => $objResult->fields['backend'],
                     'is_default' => $objResult->fields['is_default'],
                 );
+
+                if ($objResult->fields['is_default'] == 'true') {
+                    self::$defaultLangId = $objResult->fields['id'];
+                }
+
                 $objResult->MoveNext();
             }
         }
 
+    }
+
+
+    /**
+     * Returns the ID of the default language
+     *
+     * @return integer Language ID
+     */
+    static function getDefaultLangId()
+    {
+        if (empty(self::$defaultLangId)) {
+            self::init();
+        }
+
+        return self::$defaultLangId;
     }
 
 

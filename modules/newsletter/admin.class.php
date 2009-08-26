@@ -2277,7 +2277,7 @@ class newsletter extends NewsletterLib
         $NewsletterBody_TEXT = $this->ParseNewsletter($UserID, $subject, $content_text, $TEXT_TemplateSource, "text", $TargetEmail);
         $NewsletterBody_TEXT = wordwrap($NewsletterBody_TEXT, $break);
 
-        // Work around an oddity in phpmailer: it detects 
+        // Work around an oddity in phpmailer: it detects
         // whether it's multipart/alternative by checking
         // the length of the AltBody attribute. Now if we
         // set it to empty (because it's not entered), it
@@ -2314,7 +2314,7 @@ class newsletter extends NewsletterLib
         $mail->Priority = $priority;
         //$mail->AddBCC($bcc, '');
         switch ($format) {
-            case "text/html": # Some joker decided that we need to make the format spec as a string. Cause Constants 
+            case "text/html": # Some joker decided that we need to make the format spec as a string. Cause Constants
             case "html/text": # are for idiots, right? Everybody can remember the right way to specify a string.. RIGHT?
                 $mail->Body     = $NewsletterBody_HTML;
                 $mail->AltBody     = $NewsletterBody_TEXT;
@@ -2574,10 +2574,18 @@ class newsletter extends NewsletterLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        $uri = ASCMS_PROTOCOL.'://'
+            .$_CONFIG['domainUrl']
+            .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
+            .ASCMS_PATH_OFFSET
+            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL)
+            .'/'.CONTREXX_DIRECTORY_INDEX
+            .'?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+
         if ($format=="html") {
-            return '<a href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email).'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+            return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
         } else {
-            return $_ARRAYLANG['TXT_UNSUBSCRIBE'].' '.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email)."\n\n";
+            return $_ARRAYLANG['TXT_UNSUBSCRIBE'].' '.$uri."\n\n";
         }
     }
 
@@ -2587,10 +2595,18 @@ class newsletter extends NewsletterLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        $uri = ASCMS_PROTOCOL.'://'
+            .$_CONFIG['domainUrl']
+            .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
+            .ASCMS_PATH_OFFSET
+            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL)
+            .'/'.CONTREXX_DIRECTORY_INDEX
+            .'?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+
         if ($format=="html") {
-            return '<a href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email).'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+            return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
         } else {
-            return $_ARRAYLANG['TXT_EDIT_PROFILE'].' '.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email)."\n\n";
+            return $_ARRAYLANG['TXT_EDIT_PROFILE'].' '.$uri."\n\n";
         }
     }
 
