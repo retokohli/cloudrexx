@@ -1,0 +1,462 @@
+
+<script language="javascript">
+  // <![CDATA[
+    function newsGetFileBrowser(elInsertBox, sType)
+    {
+      newsElInsertBox = elInsertBox;
+      newsElType = sType;
+
+      if (sType == 'link') {
+        newsElLinkText = prompt('', '');
+        if (newsElLinkText == null) {
+          return false;
+        }
+      }
+
+      if (sType == 'webpages') {
+        openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+      } else {
+        openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+      }
+    }
+
+    function openWindow(theURL,winName,features){
+      galleryPopup = window.open(theURL,"gallery",features);
+      galleryPopup.focus();
+    }
+
+    function SetUrl(url, width, height, alt) {
+      switch (newsElType) {
+      case 'image':
+      case 'webpages':
+        document.getElementById(newsElInsertBox).value = url;
+        break
+      case 'link':
+        if (newsElLinkText == '') {
+          newsElLinkText = url;
+        }
+        newsInsertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
+        break;
+      }
+    }
+
+    /* ----------------------------------------- */
+
+
+    arrTabToDiv = new Array();
+    {JS_ARR}
+
+    function switchBoxAndTab(objElement, strTabId) {
+
+      if (countActiveLanguages() == 0) {
+        //We just "unchecked" the last language, disallow this
+        objElement.checked = true;
+      } else {
+        //There are more active languages, hide the tab
+        switchTabVisibility(strTabId);
+      }
+
+      //Now make sure that a possible div is shown
+      activateAnyActiveDiv();
+    }
+
+    function switchTabVisibility(strTabId) {
+      if (document.getElementById(strTabId).style.display == 'none') {
+        document.getElementById(strTabId).style.display = 'inline';
+      } else {
+        document.getElementById(strTabId).style.display = 'none';
+      }
+    }
+
+
+    function countActiveLanguages() {
+      var activeLanguages = 0;
+
+      for (var h=0; h < document.forms.length;h++) {
+        for (var i=0; i < document.forms[h].elements.length;i++) {
+          //read out all form-elements with the loop
+          if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
+            if(document.forms[h].elements[i].checked) {
+              activeLanguages++;
+            }
+          }
+        }
+      }
+
+      return activeLanguages;
+    }
+
+    function activateAnyActiveDiv() {
+      //Deactivate every div first first
+      for (var TabName in arrTabToDiv) {
+        document.getElementById(TabName).className = 'inactive';
+        document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
+      }
+
+      //Activate the first possible div with an acitvated checkbox
+      for (var TabName in arrTabToDiv) {
+        if (document.getElementById(TabName).style.display == 'inline') {
+          document.getElementById(TabName).className = 'active';
+          document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
+          break;
+        }
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------
+
+    function AddToTheList(from,dest,add,remove) {
+        if ( from.selectedIndex < 0){
+        if (from.options[0] != null)
+          from.options[0].selected = true;
+        from.focus();
+        return false;
+      }else{
+        for (var i=0; i<from.length; i++) {
+          if (from.options[i].selected)
+          {
+              dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+             }
+        }
+          for (var i=from.length-1; i>=0; i--) {
+          if (from.options[i].selected)
+          {
+               from.options[i] = null;
+             }
+        }
+      }
+        disapleButtons(from,dest,add,remove);
+    }
+
+    function RemoveFromTheList(from,dest,add,remove) {
+      if ( dest.selectedIndex < 0){
+        if (dest.options[0] != null)
+          dest.options[0].selected = true;
+        dest.focus();
+        return false;
+      }
+      else{
+        for (var i=0; i<dest.options.length; i++)
+        {
+          if (dest.options[i].selected)
+          {
+              from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+             }
+        }
+          for (var i=dest.options.length-1; i>=0; i--)
+        {
+          if (dest.options[i].selected)
+          {
+               dest.options[i] = null;
+             }
+        }
+      }
+      disapleButtons(from,dest,add,remove);
+    }
+
+    function disapleButtons(from,dest,add,remove) {
+      if (from.options.length > 0 )
+      {
+        add.disabled = 0;
+      }
+      else
+        add.disabled = 1;
+
+      if (dest.options.length > 0)
+        remove.disabled = 0;
+      else
+        remove.disabled = 1;
+    }
+
+    function SelectAllList(CONTROL) {
+//      for(var i = 0;i < CONTROL.length;i++)
+//      {
+//        CONTROL.options[i].selected = true;
+//      }
+
+      CONTROL1 = document.AddFileForm.elements['assignedCategories[]'];
+      for(var i = 0;i < CONTROL1.length;i++)
+      {
+        CONTROL1.options[i].selected = true;
+      }
+
+      CONTROL2 = document.AddFileForm.elements['assignedGroups[]'];
+      for(var i = 0;i < CONTROL2.length;i++)
+      {
+        CONTROL2.options[i].selected = true;
+      }
+
+      CONTROL3 = document.AddFileForm.elements['assignedDownloads[]'];
+      for(var i = 0;i < CONTROL3.length;i++)
+      {
+        CONTROL3.options[i].selected = true;
+      }
+    }
+
+    // ----------------------------------------------------------------------------------- //
+
+    function downloadsFilesDoAction(strForm,strCheckbox,objSelect,strAct)
+    {
+      if(checkboxIsChecked(strForm,strCheckbox) == true){
+        switch(strAct){
+          case 'del':
+            if(confirm('{TXT_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+              document.forms[strForm].action = "index.php?cmd=downloads&act=files&deletefiles=exe";
+              document.forms[strForm].submit();
+            }
+            break;
+        }
+      } else {
+        alert("{TXT_MAKE_SELECTION}");
+      }
+      objSelect.value = 0;
+    }
+
+    // ----------------------------------------------------------------------------------- //
+
+    function FileSwitch(IDname1, IDname2){
+      document.getElementById(IDname1).style.display = 'block';
+      document.getElementById(IDname2).style.display = 'none';
+    }
+
+    function ShowGroupSelect(){
+      document.getElementById('DIVgroupSelect').style.display = 'block';
+    }
+
+    function HideGroupSelect(){
+      document.getElementById('DIVgroupSelect').style.display = 'none';
+    }
+
+    function deleteFile(FileID){
+      if(confirm('{TXT_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+        document.location.href = 'index.php?cmd=downloads&act=files&mode=delete&download='+FileID;
+      }
+    }
+
+  // ]]>
+</script>
+
+<ul id="tabmenu">
+  <li><a id="files_Overview" class="active" href="javascript:{}" onclick="selectTab('Overview')" title="{TXT_DOWNLOADS_MANAGE_DOWNLOADS}">{TXT_DOWNLOADS_MANAGE_DOWNLOADS}</a></li>
+  <li><a id="files_AddFile" class="" href="javascript:{}" onclick="selectTab('AddFile')" title="{TXT_DOWNLOADS_ADD_DOWNLOAD}">{TXT_DOWNLOADS_ADD_DOWNLOAD}</a></li>
+</ul>
+
+
+<!-- begin files overview -->
+  <div id="Overview" class="files" style="display: block;">
+    <form name="frmSearch" action="index.php?cmd=downloads&act=files" method="post">
+      <table class="adminlist" align="top" border="0" cellpadding="3" cellspacing="0" width="100%">
+        <tr>
+          <th>{TXT_SEARCH}</th>
+        </tr>
+        <tr class="row1">
+          <td>{CATEGORY_SELECT} <input type="submit" value="{TXT_SEARCH}" /></td>
+        </tr>
+      </table>
+    </form>
+    <br />
+    <form name="downloadsFiles" method="post" action="index.php?cmd=downloads&act=files">
+      <table class="adminlist" align="top" border="0" cellpadding="3" cellspacing="0" width="100%">
+        <tr>
+          <th colspan="7">{TXT_DOWNLOADS_FILES}</th>
+        </tr>
+        <tr class="row3">
+          <td align="center"><b>&nbsp;&nbsp;#</b></td>
+          <td><b>{TXT_DOWNLOADS_STATE}</b></td>
+          <td><b>{TXT_DOWNLOADS_FILE}</b></td>
+          <td><b>{TXT_DOWNLOADS_SOURCE}</b></td>
+          <td><b>{TXT_DOWNLOADS_TYPE}</b></td>
+          <td><b>{TXT_AUTHOR}</b></td>
+          <td style="font-weight: bold; text-align: right;">{TXT_FUNCTIONS}</td>
+        </tr>
+        <!-- BEGIN filesList -->
+          <tr class="{ROWCLASS}">
+            <td nowrap="nowrap" width="1%"><input type="checkbox" name="selectedFileId[]" value="{FILE_ID}" /></td>
+            <td nowrap="nowrap">&nbsp;&nbsp;&nbsp;{FILE_STATE}</td>
+            <td nowrap="nowrap">{FILE_NAME}</td>
+            <td nowrap="nowrap">{FILE_SOURCE}</td>
+            <td nowrap="nowrap">{FILE_TYPE}</td>
+            <td nowrap="nowrap">{FILE_AUTOR}</td>
+            <td nowrap="nowrap" width="1%">
+            <div align="right">
+              <a href="index.php?cmd=downloads&act=download&id={FILE_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
+              <a href="javascript:deleteFile('{FILE_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
+            </div></td>
+          </tr>
+          <!-- END filesList -->
+      </table>
+    </form>
+
+    <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+    <a href="javascript:{}" onclick="changeCheckboxes('downloadsFiles','selectedFileId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+    <a href="javascript:{}" onclick="changeCheckboxes('downloadsFiles','selectedFileId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+    <select name="selectAction" onchange="downloadsFilesDoAction('downloadsFiles','selectedFileId[]',this,this.value)">
+      <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
+      <option value="del">{TXT_DELETE}</option>
+    </select>
+
+  </div>
+<!-- end files overview -->
+
+<!-- begin file add/edit -->
+  <div id="AddFile" class="files" style="display: none;">
+    <form name="AddFileForm" action="index.php?cmd=downloads&act=files" method="post" enctype="multipart/form-data" onsubmit="SelectAllList(document.AddFileForm.elements['assignedCategories[]']);">
+    <input type="hidden" name="mode" value="insert" />
+
+      <table class="adminlist" align="top" border="0" cellpadding="3" cellspacing="0" width="100%">
+        <tr>
+          <th colspan="2">{TXT_ADD_FILE}</th>
+        </tr>
+        <tr class="row1">
+          <td width="200">{TXT_DOWNLOADS_FILE}</td>
+          <td>Source <input type="radio" name="file_select" value="1" checked onclick="FileSwitch('DIVfile_source', 'DIVfile_url');" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Url <input type="radio" name="file_select" value="2" onclick="FileSwitch('DIVfile_url', 'DIVfile_source');" /></td>
+        </tr>
+        <tr class="row1">
+          <td>&nbsp;</td>
+          <td>
+            <div id="DIVfile_source"><input name="file_source" id="file_source" style="width: 30%;" value="" type="text" />&nbsp;<input value="{TXT_BROWSE}" onclick="newsGetFileBrowser('file_source', 'image')" type="button" /></div>
+            <div id="DIVfile_url" style="display: none;"><input type="text" name="file_url" value="http://" style="width: 30%;" /></div>
+          </td>
+        </tr>
+      </table>
+
+      <br />
+      {LANG_TAB_NAVI}
+      {LANG_TABS}
+      <br />
+      <table class="adminlist" align="top" border="0" cellpadding="3" cellspacing="0" width="100%">
+        <tr>
+          <th colspan="2">{TXT_DOWNLOADS_PERMISSIONS}</th>
+        </tr>
+        <tr class="row1">
+          <td width="200" valign="top">{TXT_DOWNLOADS_PROTECTED_DOWNLOAD}</td>
+          <td>{TXT_DOWNLOADS_YES} <input type="radio" value="1" name="protected" checked onclick="ShowGroupSelect();" /> &nbsp;&nbsp;&nbsp;&nbsp; {TXT_DOWNLOADS_NO} <input type="radio" value="2" name="protected" onclick="HideGroupSelect();" />
+
+            <div id="DIVgroupSelect"><br />
+              <table cellspacing="0" cellpadding="2" border="0">
+                <tr>
+
+                  <td>
+                    {TXT_DOWNLOADS_AVAILABLE_USER_GROUPS}<br />
+                    <select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
+                    {VALUE_GROUPS}
+                    </select>
+
+
+                  </td>
+                  <td>
+                    <input type="button" value="&gt;&gt;" name="addgroup" onclick="AddToTheList(document.AddFileForm.elements['existingGroups[]'],document.AddFileForm.elements['assignedGroups[]'],addgroup,removegroup);" style="margin-bottom:1px;" /><br />
+                    <input type="button" value="&lt;&lt;" name="removegroup" onclick="RemoveFromTheList(document.AddFileForm.elements['existingGroups[]'],document.AddFileForm.elements['assignedGroups[]'],addgroup,removegroup);" />
+                  </td>
+                  <td>{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
+                    <select name="assignedGroups[]" size="10" style="width:300px;" multiple="multiple">
+                    {VALUE_ADDED_GROUPS}
+                    </select>
+
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <br />
+      <table class="adminlist" align="top" border="0" cellpadding="3" cellspacing="0" width="100%">
+        <tr>
+          <th colspan="2">{TXT_DOWNLOADS_FILEINFO}</th>
+        </tr>
+        <tr class="row1">
+          <td width="200">{TXT_DOWNLOADS_STATE} </td>
+          <td><input type="checkbox" name="file_state" value="1" checked /></td>
+        </tr>
+        <tr class="row1">
+          <td width="200">{TXT_DOWNLOADS_TYPE}</td>
+          <td>
+            <select name="file_type" style="width: 30%;">
+              <option value="">{TXT_DOWNLOADS_TYPE_UNDEFINED}</option>
+              <option value="image">{TXT_DOWNLOADS_TYPE_IMAGE}</option>
+              <option value="text">{TXT_DOWNLOADS_TYPE_TEXT}</option>
+              <option value="media">{TXT_DOWNLOADS_TYPE_MEDIA}</option>
+              <option value="archive">{TXT_DOWNLOADS_TYPE_ARCHIVE}</option>
+              <option value="applikation">{TXT_DOWNLOADS_TYPE_APPLICATION}</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="row1">
+          <td width="200">{TXT_DOWNLOADS_SIZE} (Bytes)</td>
+          <td><input type="text" name="file_size" value="" style="width: 30%;" /></td>
+        </tr>
+        <tr class="row1">
+          <td width="200">{TXT_DOWNLOADS_LICENSE}</td>
+          <td><input type="text" name="file_license" value="" style="width: 30%;" /></td>
+        </tr>
+        <tr class="row1">
+          <td width="200">{TXT_DOWNLOADS_VERSION}</td>
+          <td><input type="text" name="file_version" value="" style="width: 30%;" /></td>
+        </tr>
+        <tr class="row1">
+          <td>{TXT_AUTHOR}</td>
+          <td><input name="file_author" style="width: 30%;" value="{VALUE_USER}" type="text" /></td>
+        </tr>
+        <tr class="row1">
+          <td>{TXT_IMAGE} (Screenshot)</td>
+          <td><input name="file_image" id="file_image" style="width: 30%;" value="" type="text" />&nbsp;<input value="{TXT_BROWSE}" onclick="newsGetFileBrowser('file_image', 'image')" type="button" /></td>
+        </tr>
+        <tr class="row1">
+          <td valign="top">{TXT_DOWNLOADS_CATEGORIES}</td>
+          <td>
+            <table cellspacing="0" cellpadding="2" border="0">
+              <tr>
+
+                <td>
+                  {TXT_DOWNLOADS_CATEGORIES}<br />
+                  <select name="existingCategories[]" size="10" style="width:300px;" multiple="multiple">
+                  {VALUE_CATEGORIES}
+                  </select>
+                </td>
+                <td>
+                  <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.AddFileForm.elements['existingCategories[]'],document.AddFileForm.elements['assignedCategories[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
+                  <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.AddFileForm.elements['existingCategories[]'],document.AddFileForm.elements['assignedCategories[]'],adduser,removeuser);" />
+                </td>
+                <td>
+                  {TXT_DOWNLOADS_ADDED_CATEGORIES}<br />
+                  <select name="assignedCategories[]" size="10" style="width:300px;" multiple="multiple">
+                  {VALUE_ADDED_CATEGORIES}
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr class="row1">
+          <td valign="top">{TXT_DOWNLOADS_RELATED_DOWNLOADS}</td>
+          <td>
+            <table cellspacing="0" cellpadding="2" border="0">
+              <tr>
+
+                <td>
+                {TXT_DOWNLOADS_AVAILABLE_DOWNLOADS}<br />
+                  <select name="existingDownloads[]" size="10" style="width:300px;" multiple="multiple">
+                  {VALUE_DOWNLOADS}
+                  </select>
+                </td>
+                <td>
+                  <input type="button" value="&gt;&gt;" name="adddownload" onclick="AddToTheList(document.AddFileForm.elements['existingDownloads[]'],document.AddFileForm.elements['assignedDownloads[]'],adddownload,removedownload);" style="margin-bottom:1px;" /><br />
+                  <input type="button" value="&lt;&lt;" name="removedownload" onclick="RemoveFromTheList(document.AddFileForm.elements['existingDownloads[]'],document.AddFileForm.elements['assignedDownloads[]'],adddownload,removedownload);" />
+                </td>
+                <td>
+                {TXT_DOWNLOADS_ASSIGNED_DOWNLOADS}<br />
+                  <select name="assignedDownloads[]" size="10" style="width:300px;" multiple="multiple">
+                  {VALUE_ADDED_DOWNLOADS}
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <br />
+      <input type="submit" value="{TXT_SAVE}" />
+    </form>
+  </div>
+<!-- begin file add/edit -->
