@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
-$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
+$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";
 $_ARRAYLANG['TXT_PASSWORD_NOT_USERNAME_TEXT'] = "The password and the login name cannot be identical";
@@ -38,7 +38,7 @@ $_ARRAYLANG['TXT_HOSTNAME'] = "Hostname";
 $_ARRAYLANG['TXT_COLLAPS_LINK'] = "Close All";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
 $_ARRAYLANG['TXT_LOG_OUT'] = "Logout";
-$_ARRAYLANG['TXT_EXPAND_LINK'] = "Expand";
+$_ARRAYLANG['TXT_EXPAND_LINK'] = "Expand All";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "This module does not exist.";
 $_ARRAYLANG['TXT_STATUS'] = "Status";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Deselect All";
@@ -55,6 +55,7 @@ $_ARRAYLANG['TXT_MORE_NEWS'] = "More News";
 $_ARRAYLANG['TXT_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_BACK'] = "back";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "The two passwords do not match.";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Latest Directory Entries ";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Cannot send email to %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Reset password";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Please enter your email address. A message will be sent to you shortly with further instructions.";
@@ -187,4 +188,7 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Job offers";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Job offers";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auctions";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
+$_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
+$_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Last modified";
+$_ARRAYLANG['TXT_HOTELCARD'] = "Hotelcard";
 ?>

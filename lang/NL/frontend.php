@@ -55,6 +55,7 @@ $_ARRAYLANG['TXT_MORE_NEWS'] = "Meer nieuws";
 $_ARRAYLANG['TXT_LOGIN'] = "Inloggen";
 $_ARRAYLANG['TXT_BACK'] = "terug";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De twee wachtwoorden komen niet overeen!";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Neuste Verzeichnis Einträge";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Kan geen e-mail verzenden naar %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Reset wachtwoord";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Vul uw e-mailadres in. Een bericht met verdere instructies zal spoedig verstuurd worden.";
@@ -187,4 +188,7 @@ $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
 $_ARRAYLANG['TXT_JOBS_MODULE'] = "Stellenangebote";
 $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
+$_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
+$_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Geändert am";
+$_ARRAYLANG['TXT_HOTELCARD'] = "Hotelcard";
 ?>
