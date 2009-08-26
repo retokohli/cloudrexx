@@ -296,15 +296,15 @@ class Teasers extends newsLibrary
         if (isset($this->arrTeaserFrameTemplates[$templateId]['html'])) {
             $teaserFrame = $this->arrTeaserFrameTemplates[$templateId]['html'];
             if (preg_match_all('/<!-- BEGIN (teaser_[0-9]+) -->/ms', $teaserFrame, $arrTeaserBlocks)) {
-				$funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
-				usort($arrTeaserBlocks[0], $funcSort);
-				usort($arrTeaserBlocks[1], $funcSort);
+                $funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
+                usort($arrTeaserBlocks[0], $funcSort);
+                usort($arrTeaserBlocks[1], $funcSort);
                 foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {
-					if (preg_match('/<!-- BEGIN '.$teaserBlock.' -->(.*)<!-- END '.$teaserBlock.' -->/s', $teaserFrame, $arrMatch)) {
-						$teaserBlockCode = $arrMatch[1];
-					} else {
-						$teaserBlockCode = '';
-					}
+                    if (preg_match('/<!-- BEGIN '.$teaserBlock.' -->(.*)<!-- END '.$teaserBlock.' -->/s', $teaserFrame, $arrMatch)) {
+                        $teaserBlockCode = $arrMatch[1];
+                    } else {
+                        $teaserBlockCode = '';
+                    }
 
                     if (isset($this->arrFrameTeaserIds[$id][$nr])) {
                         $teaserBlockCode = str_replace('{TEASER_CATEGORY}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category'], $teaserBlockCode);
@@ -341,7 +341,7 @@ class Teasers extends newsLibrary
                     if (!$this->administrate) {
                         $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->[\S\s]*<!-- END '.$teaserBlock.' -->/', $teaserBlockCode, $teaserFrame);
                     } else {
-						$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->)[\S\s]*(<!-- END '.$teaserBlock.' -->)/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>'.$teaserBlockCode.'</td></tr></table>', $teaserFrame);
+                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->)[\S\s]*(<!-- END '.$teaserBlock.' -->)/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>'.$teaserBlockCode.'</td></tr></table>', $teaserFrame);
                     }
                 }
             }

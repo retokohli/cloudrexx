@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -41,17 +42,9 @@ class ContactManager extends ContactLib
 
     var $_invalidRecipients = false;
 
-    /**
-    * Constructor
-    */
-    function ContactManager()
-    {
-        $this->__construct();
-    }
 
     /**
     * PHP5 constructor
-    *
     * @global HTML_Template_Sigma
     * @global array
     * @global array
@@ -60,7 +53,7 @@ class ContactManager extends ContactLib
     {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "   <a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
@@ -333,6 +326,7 @@ class ContactManager extends ContactLib
                 $pos = intval($_GET['pos']);
             }
 
+            $arrCols = array();
             $arrEntries = &$this->getFormEntries($formId, $arrCols, $pos, $paging);
             if (count($arrEntries) > 0) {
                 $arrFormFields = &$this->getFormFields($formId);
@@ -418,7 +412,7 @@ class ContactManager extends ContactLib
 
     function _contactForms()
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_contact_forms_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'];
@@ -461,7 +455,7 @@ class ContactManager extends ContactLib
                     'CONTACT_FORM_NAME'                 => htmlentities($arrForm['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '&nbsp;',
                     'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $arrForm['number'],
-                    'CONTACT_FORM_LANG'                 => $objLanguage->arrLanguage[$arrForm['lang']]['name'],
+                    'CONTACT_FORM_LANG'                 => FWLanguage::getLanguageParameter($arrForm['lang'], 'name'),
                     'CONTACT_DELETE_CONTENT'            => $pageId > 0 ? 'true' : 'false'
                 ));
 
@@ -474,7 +468,7 @@ class ContactManager extends ContactLib
 
     function _selectFrontendLang()
     {
-        global $_ARRAYLANG, $objLanguage, $_FRONTEND_LANGID;
+        global $_ARRAYLANG;
 
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         if ($formId > 0) {
@@ -483,9 +477,10 @@ class ContactManager extends ContactLib
             $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_COPY_FORM'];
 
             $menu = "<select name=\"userFrontendLangId\">\n";
-            foreach ($objLanguage->arrLanguage as $langId => $arrLanguage) {
+            $arrLanguages = FWLanguage::getLanguageArray();
+            foreach ($arrLanguages as $langId => $arrLanguage) {
                 if (intval($arrLanguage['frontend']) == 1) {
-                    $menu .= "<option value=\"".$langId."\"".($_FRONTEND_LANGID == $langId ? "selected=\"selected\"" : "").">".$arrLanguage['name']."</option>\n";
+                    $menu .= "<option value=\"".$langId."\"".(FRONTEND_LANGID == $langId ? "selected=\"selected\"" : "").">".$arrLanguage['name']."</option>\n";
                 }
             }
             $menu .= "</select>\n";
@@ -512,33 +507,33 @@ class ContactManager extends ContactLib
      * @param array $arrRecipients
      */
     function _showRecipients($arrRecipients = null){
-    	global $_ARRAYLANG;
-		if(!is_array($arrRecipients) || count($arrRecipients) < 1){
-			$arrRecipients[$this->getLastRecipientId()+1] = array(
-				'name' 	=> $_ARRAYLANG['TXT_CONTACT_NAME'],
-				'email' => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
-				'sort' => 1,
-			);
-		}
-		foreach ($arrRecipients as $id => $arrRecipient) {
-			$this->_objTpl->setVariable(array(
-				'CONTACT_FORM_RECIPIENT_ID'		=> $id,
-				'CONTACT_FORM_RECIPIENT_NAME'   => $arrRecipient['name'],
-				'CONTACT_FORM_RECIPIENT_EMAIL'  => $arrRecipient['email'],
-				'CONTACT_FORM_RECIPIENT_SORT'   => $arrRecipient['sort'],
-			));
-			$this->_objTpl->parse("contact_form_recipient_list");
-		}
-	}
+        global $_ARRAYLANG;
+        if(!is_array($arrRecipients) || count($arrRecipients) < 1){
+            $arrRecipients[$this->getLastRecipientId()+1] = array(
+                'name'     => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'email' => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
+                'sort' => 1,
+            );
+        }
+        foreach ($arrRecipients as $id => $arrRecipient) {
+            $this->_objTpl->setVariable(array(
+                'CONTACT_FORM_RECIPIENT_ID'        => $id,
+                'CONTACT_FORM_RECIPIENT_NAME'   => $arrRecipient['name'],
+                'CONTACT_FORM_RECIPIENT_EMAIL'  => $arrRecipient['email'],
+                'CONTACT_FORM_RECIPIENT_SORT'   => $arrRecipient['sort'],
+            ));
+            $this->_objTpl->parse("contact_form_recipient_list");
+        }
+    }
 
 
-	/**
-	* update recipient list
-	*
-	* @param integer $formId
-	* @param boolean $refresh
-	* @return array
-	*/
+    /**
+    * update recipient list
+    *
+    * @param integer $formId
+    * @param boolean $refresh
+    * @return array
+    */
     public function setRecipients($arrRecipients)
     {
         global $objDatabase;
@@ -550,13 +545,13 @@ class ContactManager extends ContactLib
 
         foreach ($arrRecipients as $id => $arrRecipient) {
             // this is a bit radical, but it works.
-			$objDatabase->Execute("
-	            INSERT INTO `".DBPREFIX."module_contact_recipient`
-	            SET `id`  = $id,
-	            `id_form` = ".$arrRecipient['id_form'].",
-	            `name`	  = '".$arrRecipient['name']."',
-	            `email`	  = '".$arrRecipient['email']."',
-	            `sort`	  = ".$arrRecipient['sort']);
+            $objDatabase->Execute("
+                INSERT INTO `".DBPREFIX."module_contact_recipient`
+                SET `id`  = $id,
+                `id_form` = ".$arrRecipient['id_form'].",
+                `name`      = '".$arrRecipient['name']."',
+                `email`      = '".$arrRecipient['email']."',
+                `sort`      = ".$arrRecipient['sort']);
         }
     }
 
@@ -569,7 +564,7 @@ class ContactManager extends ContactLib
      */
     function _modifyForm($copy = false)
     {
-        global $_ARRAYLANG, $_CONFIG, $objDatabase, $objLanguage, $_FRONTEND_LANGID;
+        global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
         if ($copy) {
             $this->initContactForms(true);
@@ -626,9 +621,10 @@ class ContactManager extends ContactLib
         $lastFieldId = 0;
 
         if (isset($_POST['saveForm'])) {
+            $null = null;
             $arrFields = $this->_getFormFieldsFromPost($null);
             $arrRecipients = $this->_getRecipientsFromPost(false);
-			$this->_showRecipients($arrRecipients);
+            $this->_showRecipients($arrRecipients);
             $formName = isset($_POST['contactFormName']) ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET) : '';
             $formEmails = isset($_POST['contactFormEmail']) ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET) : '';
             if (empty($formEmails)) {
@@ -652,7 +648,7 @@ class ContactManager extends ContactLib
             $formUseCaptcha = $this->arrForms[$formId]['useCaptcha'];
             $formUseCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
             $formSendCopy = $this->arrForms[$formId]['sendCopy'];
-			$this->_showRecipients($this->arrForms[$formId]['recipients']);
+            $this->_showRecipients($this->arrForms[$formId]['recipients']);
         } else {
             $formName = '';
             $formEmails = $_CONFIG['contactFormEmail'];
@@ -663,7 +659,7 @@ class ContactManager extends ContactLib
             $formUseCaptcha = 1;
             $formUseCustomStyle = 0;
             $formSendCopy = 0;
-			$this->_showRecipients();
+            $this->_showRecipients();
             $this->_objTpl->setVariable(array(
                 'CONTACT_FORM_FIELD_NAME'               => '',
                 'CONTACT_FORM_FIELD_ID'                 => 1,
@@ -709,7 +705,7 @@ class ContactManager extends ContactLib
             $lang = $this->arrForms[$formId]['lang'];
         } else {
             $actionTitle = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
-            $lang = $_FRONTEND_LANGID;
+            $lang = FRONTEND_LANGID;
         }
 
         $this->_objTpl->setVariable(array(
@@ -850,6 +846,7 @@ class ContactManager extends ContactLib
             $formSendCopy = intval($_POST['contactFormSendCopy']);
             if (!empty($formName)) {
                 if ($this->isUniqueFormName($formName, $formId)) {
+                    $uniqueFieldNames = null;
                     $arrFields = $this->_getFormFieldsFromPost($uniqueFieldNames);
                     if ($uniqueFieldNames) {
                         $formEmailsTmp = isset($_POST['contactFormEmail']) ? explode(',', strip_tags(contrexx_stripslashes($_POST['contactFormEmail']))) : '';
@@ -872,8 +869,8 @@ class ContactManager extends ContactLib
 
                         $boolUsesRecipientField = false;
                         foreach ($arrFields as $arrField) {
-                        	if($arrField['type'] == 'recipient'){
-                        	    $boolUsesRecipientField = true;
+                            if($arrField['type'] == 'recipient'){
+                                $boolUsesRecipientField = true;
                             }
                         }
 
@@ -1067,9 +1064,9 @@ class ContactManager extends ContactLib
     {
         global $_ARRAYLANG;
         $arrErrors = $arrRecipients = array();
-		if(isset($_POST['contactFormRecipientName']) && is_array($_POST['contactFormRecipientName'])){
-			$formId = intval($_REQUEST['formId']);
-			foreach ($_POST['contactFormRecipientName'] as $id => $recipientName) {
+        if(isset($_POST['contactFormRecipientName']) && is_array($_POST['contactFormRecipientName'])){
+            $formId = intval($_REQUEST['formId']);
+            foreach ($_POST['contactFormRecipientName'] as $id => $recipientName) {
                 $recipientName  = strip_tags(contrexx_stripslashes($recipientName));
                 $recipientEmail = strip_tags(contrexx_stripslashes($_POST['contactFormRecipientEmail'][$id]));
                 if(strpos($recipientEmail, ',')){
@@ -1084,21 +1081,21 @@ class ContactManager extends ContactLib
 
                 $recipientSort  = intval($_POST['contactFormRecipientSort'][$id]);
                 if($recipientEmail != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL']){
-              		$arrRecipients[$id] = array(
-              			'name' 		=>	$recipientName,
-              			'email' 	=>	$recipientEmail,
-              			'sort'		=> 	$recipientSort,
-              			'id_form'	=>  $formId
-              		);
+                      $arrRecipients[$id] = array(
+                          'name'         =>    $recipientName,
+                          'email'     =>    $recipientEmail,
+                          'sort'        =>     $recipientSort,
+                          'id_form'    =>  $formId
+                      );
                 }
-			}
-		}
-    	if(!empty($arrErrors)){
-    	    $this->_invalidRecipients = true;
+            }
+        }
+        if(!empty($arrErrors)){
+            $this->_invalidRecipients = true;
             $this->_statusMessageErr .= implode("<br />", $arrErrors);
-    	}
-		return $arrRecipients;
-	}
+        }
+        return $arrRecipients;
+    }
 
     function _getFormFieldsFromPost(&$uniqueFieldNames)
     {
@@ -1369,7 +1366,7 @@ class ContactManager extends ContactLib
                 case 'recipient':
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_recipient" id=contactFormField_'.$fieldId.'">';
                     foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
-                    	$sourcecode[] = '<option value="'.$index.'">'.$arrRecipient['name'].'</option>';
+                        $sourcecode[] = '<option value="'.$index.'">'.$arrRecipient['name'].'</option>';
                     }
                     $sourcecode[] = "</select>";
                     break;
@@ -1594,12 +1591,13 @@ class ContactManager extends ContactLib
         $filename = strtolower($filename);
 
         // replace whitespaces
-        $filename = preg_replace("%\ %", "_", $filename);
+        $filename = preg_replace('/\s/', '_', $filename);
 
         // replace umlauts
-        $filename = preg_replace("%�%", "oe", $filename);
-        $filename = preg_replace("%�%", "ue", $filename);
-        $filename = preg_replace("%�%", "ae", $filename);
+// TODO: Use octal notation for special characters in regexes!
+        $filename = preg_replace('%�%', 'oe', $filename);
+        $filename = preg_replace('%�%', 'ue', $filename);
+        $filename = preg_replace('%�%', 'ae', $filename);
 
         return $filename;
     }
@@ -1618,7 +1616,7 @@ class ContactManager extends ContactLib
      */
     function _createContentPage()
     {
-        global $_ARRAYLANG, $objDatabase, $_FRONTEND_LANGID, $_CONFIG;
+        global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
         Permission::checkAccess(5, 'static');
 
@@ -1660,7 +1658,7 @@ class ContactManager extends ContactLib
                                         '6')";
             $objDatabase->Execute($q1);
 
-            $q2 ="INSERT INTO ".DBPREFIX."content ( id,
+            $q2 ="INSERT INTO ".DBPREFIX."content (id,
                                                     lang_id,
                                                     content,
                                                     title,
@@ -1668,7 +1666,7 @@ class ContactManager extends ContactLib
                                                     metadesc,
                                                     metakeys)
                                             VALUES (".$pageId.",
-                                                    ".$_FRONTEND_LANGID.",
+                                                    ".FRONTEND_LANGID.",
                                                     '".$content."',
                                                     '".$catname."',
                                                     '".$catname."',
@@ -1682,17 +1680,17 @@ class ContactManager extends ContactLib
                     $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
                                             SET     is_validated="0",
                                                     activestatus="0"
-                                            WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID.'
+                                            WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANGID.'
                                             LIMIT   1
                                         ');
                 }
 
                 if ($this->boolHistoryEnabled) {
-                    $objResult = $objDatabase->Execute('SELECT  protected,
+                    $objDatabase->Execute('SELECT  protected,
                                                                 frontend_access_id,
                                                                 backend_access_id
                                                         FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID.'
+                                                        WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANGID.'
                                                         LIMIT   1
                                                     ');
                     $objDatabase->Execute(' INSERT
@@ -1712,7 +1710,7 @@ class ContactManager extends ContactLib
                                             INTO    '.DBPREFIX.'content_history
                                             SET     id='.$intHistoryId.',
                                                     page_id='.$pageId.',
-                                                    lang_id="'.$_FRONTEND_LANGID.'",
+                                                    lang_id="'.FRONTEND_LANGID.'",
                                                     content="'.$content.'",
                                                     title="'.$catname.'",
                                                     metatitle="'.$catname.'",
@@ -1736,7 +1734,7 @@ class ContactManager extends ContactLib
 
     function _updateContentSite()
     {
-        global $objDatabase, $_FRONTEND_LANGID, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         Permission::checkAccess(35, 'static');
         $formId = intval($_REQUEST['formId']);
@@ -1765,7 +1763,7 @@ class ContactManager extends ContactLib
             if ($boolDirectUpdate) {
                 $objDatabase->Execute("UPDATE   ".DBPREFIX."content
                                        SET      content='".$content."'
-                                        WHERE   id=".$pageId.' AND `lang_id`='.$_FRONTEND_LANGID);
+                                        WHERE   id=".$pageId.' AND `lang_id`='.FRONTEND_LANGID);
             }
 
             if ($parcat!=$pageId) {
@@ -1775,7 +1773,7 @@ class ContactManager extends ContactLib
                     $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
                                             SET     username='".$objFWUser->objUser->getUsername()."',
                                                     changelog='".$currentTime."'
-                                            WHERE catid=".$pageId.' AND `lang`='.$_FRONTEND_LANGID);
+                                            WHERE catid=".$pageId.' AND `lang`='.FRONTEND_LANGID);
                 }
             } else {
                 //create copy of parcat (for history)
@@ -1784,7 +1782,7 @@ class ContactManager extends ContactLib
                     $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
                                             SET     username='".$objFWUser->objUser->getUsername()."',
                                                     changelog='".$currentTime."'
-                                            WHERE   catid=".$pageId.' AND `lang`='.$_FRONTEND_LANGID);
+                                            WHERE   catid=".$pageId.' AND `lang`='.FRONTEND_LANGID);
                 }
             }
 
@@ -1796,18 +1794,18 @@ class ContactManager extends ContactLib
 
             //create backup for history
             if ($this->boolHistoryEnabled) {
-                $objResult = $objDatabase->Execute('SELECT  displayorder,
+                $objDatabase->Execute('SELECT  displayorder,
                                                             protected,
                                                             frontend_access_id,
                                                             backend_access_id
                                                     FROM    '.DBPREFIX.'content_navigation
-                                                    WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID.'
+                                                    WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANGID.'
                                                     LIMIT   1
                                                 ');
                 if ($boolDirectUpdate) {
                     $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
                                             SET     is_active="0"
-                                            WHERE   catid='.$pageId.' AND `lang`='.$_FRONTEND_LANGID);
+                                            WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANGID);
                 }
 
                 $objDatabase->Execute(' INSERT
@@ -1818,7 +1816,7 @@ class ContactManager extends ContactLib
                                                 catname="'.$catname.'",
                                                 username="'.$objFWUser->objUser->getUsername().'",
                                                 changelog="'.$currentTime.'",
-                                                lang="'.$_FRONTEND_LANGID.'",
+                                                lang="'.FRONTEND_LANGID.'",
                                                 cmd="'.$formId.'",
                                                 module="6"
                                            ');
@@ -1827,7 +1825,7 @@ class ContactManager extends ContactLib
                                         INTO    '.DBPREFIX.'content_history
                                         SET     id='.$intHistoryId.',
                                                 page_id='.$pageId.',
-                                                lang_id='.$_FRONTEND_LANGID.',
+                                                lang_id='.FRONTEND_LANGID.',
                                                 content="'.$content.'",
                                                 title="'.$catname.'",
                                                 metatitle="'.$catname.'",
@@ -1850,7 +1848,7 @@ class ContactManager extends ContactLib
 
         // Check if the thanks page is already active
         $thxQuery = "SELECT catid FROM ".DBPREFIX."content_navigation
-                     WHERE module=6 AND lang=".$_FRONTEND_LANGID;
+                     WHERE module=6 AND lang=".FRONTEND_LANG_ID;
         $objResult = $objDatabase->SelectLimit($thxQuery, 1);
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 0) {
@@ -1860,7 +1858,7 @@ class ContactManager extends ContactLib
                                     `displaystatus`, `displayorder`, `username`,
                                     `displayorder`
                                   FROM ".DBPREFIX."module_repository
-                             WHERE `moduleid` = 6 AND `lang`=".$_FRONTEND_LANGID;
+                             WHERE `moduleid` = 6 AND `lang`=".FRONTEND_LANG_ID;
                 $objResult = $objDatabase->Execute($thxQuery);
                 if ($objResult !== false) {
                     $content = $objResult->fields['content'];
@@ -1868,7 +1866,8 @@ class ContactManager extends ContactLib
                     $cmd = $objResult->fields['cmd'];
                     $expertmode = $objResult->fields['expertmode'];
                     $displaystatus = $objResult->fields['displaystatus'];
-                    $displayorder = $objResult->fields['displayorder'];
+// TODO: Never used
+//                    $displayorder = $objResult->fields['displayorder'];
                     $username = $objResult->fields['username'];
                     $changelog = time();
 
@@ -1882,14 +1881,14 @@ class ContactManager extends ContactLib
                                  '".$cmd."',
                                  '".$displaystatus."',
                                  '6',
-                                 '".$_FRONTEND_LANGID."')";
+                                 '".FRONTEND_LANG_ID."')";
                     $objDatabase->Execute($thxQuery);
                     $thxId = $objDatabase->Insert_ID();
 
                     $thxQuery = "INSERT INTO ".DBPREFIX."content
                                  (id, lang_id, content, title, metatitle, metadesc, metakeys, expertmode)
                                  VALUES
-                                 (".$thxId.", ".$_FRONTEND_LANGID.", '".$content."', '".$title."', '".$title."', '".$title."', '".$title."',
+                                 (".$thxId.", ".FRONTEND_LANGID.", '".$content."', '".$title."', '".$title."', '".$title."', '".$title."',
                                   '".$expertmode."')";
 
                     $objDatabase->Execute($thxQuery);

@@ -37,7 +37,7 @@ class ContactLib
      */
     public function getLastRecipientId($refresh = false)
     {
-    	global $objDatabase;
+        global $objDatabase;
         if (empty($this->_lastRecipientId) || $refresh) {
             $this->_lastRecipientId = intval($objDatabase->SelectLimit('SELECT MAX(`id`) as `max` FROM `'.DBPREFIX.'module_contact_recipient`', 1)->fields['max']);
         }
@@ -51,7 +51,7 @@ class ContactLib
      */
     public function getHighestSortValue($formId)
     {
-    	global $objDatabase;
+        global $objDatabase;
         return intval($objDatabase->SelectLimit('SELECT MAX(`sort`) as `max` FROM `'.DBPREFIX.'module_contact_recipient` WHERE `id_form` = '.$formId, 1)->fields['max']);
     }
 
@@ -73,7 +73,7 @@ class ContactLib
         if ($formId == 0 && !empty($this->_arrRecipients) && !$refresh ){
             return $this->_arrRecipients;
         }
-		$this->_arrRecipients = array();
+        $this->_arrRecipients = array();
         $objRS = $objDatabase->Execute("
             SELECT `id`, `id_form`, `name`, `email`, `sort`
             FROM `".DBPREFIX."module_contact_recipient`".
@@ -81,10 +81,10 @@ class ContactLib
             " ORDER BY `sort` ASC");
         while (!$objRS->EOF){
             $this->_arrRecipients[$objRS->fields['id']] = array(
-                'id_form' 	=>  $objRS->fields['id_form'],
-                'name'  	=>  $objRS->fields['name'],
-                'email' 	=>  $objRS->fields['email'],
-                'sort'  	=>  $objRS->fields['sort'],
+                'id_form'     =>  $objRS->fields['id_form'],
+                'name'      =>  $objRS->fields['name'],
+                'email'     =>  $objRS->fields['email'],
+                'sort'      =>  $objRS->fields['sort'],
             );
             $objRS->MoveNext();
         }

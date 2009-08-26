@@ -433,7 +433,7 @@ class FileBrowser {
 
         $nr = 1;
 
-		if (!FWValidator::is_file_ending_harmless($uploadFileName)) {
+        if (!FWValidator::is_file_ending_harmless($uploadFileName)) {
             return false;
         }
 
@@ -531,7 +531,7 @@ class FileBrowser {
     */
     function _setContent($noAliases=false)
     {
-        global $objDatabase, $objLanguage, $_CONFIG;
+        global $objDatabase, $_CONFIG;
 
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
         $this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
@@ -554,7 +554,7 @@ class FileBrowser {
 
             $scriptPath = ($this->_absoluteURIs ?
                 $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ?
-                    $objLanguage->getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
+                    FWLanguage::getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
                 :   null)
             :   null);
             foreach ($objContentTree->getTree() as $arrPage) {
@@ -682,8 +682,8 @@ class FileBrowser {
         $objModulChecker = new ModuleChecker();
         if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
             $this->_objTpl->setVariable(array(
-                'TXT_UPLOAD_FILE_MULTI'				=> $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'],
-                'FILEBROWSER_ADVANCED_UPLOAD_PATH'	=> 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->_mediaType.'&amp;path='.urlencode($this->_path)
+                'TXT_UPLOAD_FILE_MULTI'                => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'],
+                'FILEBROWSER_ADVANCED_UPLOAD_PATH'    => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->_mediaType.'&amp;path='.urlencode($this->_path)
             ));
             $this->_objTpl->parse('fileBrowser_advanced_upload');
             $this->_objTpl->hideBlock('fileBrowser_simple_upload');

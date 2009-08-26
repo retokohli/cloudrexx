@@ -479,8 +479,8 @@ class counter
         // check for mobilephone
         $fp = fopen('lib/mobile-useragents.inc',"r");
         while (true) {
-        	$line = fgets($fp);
-        	if ($line === false) break;
+            $line = fgets($fp);
+            if ($line === false) break;
             $arrUserAgent = explode("\t",$line);
             if (!strcasecmp(trim($this->arrClient['useragent']),trim($arrUserAgent[2]))) {
                 $this->mobilePhone = $arrUserAgent[0].' '.$arrUserAgent[1];
@@ -520,9 +520,9 @@ class counter
     function _getBrowser()
     {
         $userAgent = $this->arrClient['useragent'];
-		$arrBrowserRegExps = array();
-		$arrBrowserNames = array();
-		$arrBrowser = array();
+        $arrBrowserRegExps = array();
+        $arrBrowserNames = array();
+        $arrBrowser = array();
         include('lib/useragents.inc.php');
         if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
@@ -700,8 +700,8 @@ class counter
         $result = $objDb->Execute($query);
         if ($result) {
             while (true) {
-            	$arrResult = $result->FetchRow();
-            	if (empty($arrResult)) break;
+                $arrResult = $result->FetchRow();
+                if (empty($arrResult)) break;
                 $arrStats[$arrResult['type']]['id'] = $arrResult['id'];
             }
         }
@@ -775,4 +775,5 @@ class counter
         }
     }
 }
+
 ?>

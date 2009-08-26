@@ -1,4 +1,5 @@
 <?php
+
 /**
  * News manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -210,9 +211,9 @@ class newsManager extends newsLibrary {
                 $this->edit();
                 break;
 
-			case 'copy':
-				$this->edit(true);
-				break;
+            case 'copy':
+                $this->edit(true);
+                break;
 
             case 'delete':
                 $this->delete();
@@ -562,8 +563,8 @@ class newsManager extends newsLibrary {
         $newsurl2               = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
         $newscat                = intval($_POST['newsCat']);
         $userid                 = $objFWUser->objUser->getId();
-	    $startDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-		$endDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+        $startDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+        $endDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
@@ -587,7 +588,7 @@ class newsManager extends newsLibrary {
         if(empty($status)) {
             $status = 0;
             $startDate = "0000-00-00 00:00:00";
-	        $endDate = "0000-00-00 00:00:00";
+            $endDate = "0000-00-00 00:00:00";
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
@@ -932,7 +933,7 @@ class newsManager extends newsLibrary {
                                                         startdate,
                                                         enddate,
                                                         status,
-														userid,
+                                                        userid,
                                                         frontend_access_id,
                                                         backend_access_id,
                                                         teaser_only,
@@ -952,10 +953,10 @@ class newsManager extends newsLibrary {
             if($objResult->fields['status']==1){
                 $status = "checked=\"checked\"";
             }
-			if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
+            if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
                 $startDate = $objResult->fields['startdate'];
             }
-			if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
+            if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
                 $endDate = $objResult->fields['enddate'];
             }
 
@@ -1158,8 +1159,8 @@ class newsManager extends newsLibrary {
                 }
             }
 
-            $startDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-			$endDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+            $startDate        = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+            $endDate        = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
 
             $newsFrontendAccess     = !empty($_POST['news_read_access']);
             $newsFrontendGroups     = $newsFrontendAccess && isset($_POST['news_read_access_associated_groups']) && is_array($_POST['news_read_access_associated_groups']) ? array_map('intval', $_POST['news_read_access_associated_groups']) : array();
@@ -1522,7 +1523,7 @@ class newsManager extends newsLibrary {
     *
     */
     function createRSS(){
-        global $_CONFIG, $objDatabase, $_FRONTEND_LANGID, $objLanguage;
+        global $_CONFIG, $objDatabase, $_FRONTEND_LANGID;
 
         require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
 
@@ -1532,9 +1533,9 @@ class newsManager extends newsLibrary {
 
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
             $objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
-            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
+            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
             $objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
-            $objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang');
+            $objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang');
             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
             if (!empty($this->arrSettings['news_feed_image'])) {
@@ -1544,7 +1545,7 @@ class newsManager extends newsLibrary {
             }
             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-            $itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
+            $itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
 
             $query = "
                 SELECT      tblNews.id,
@@ -1587,14 +1588,14 @@ class newsManager extends newsLibrary {
             }
 
             // create rss feed
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
+            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
                     htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                     htmlspecialchars($arrNewsItem['text'], ENT_QUOTES, CONTREXX_CHARSET),
                     '',
-                    array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+                    array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
                     '',
                     '',
                     '',
@@ -1606,14 +1607,14 @@ class newsManager extends newsLibrary {
 
             // create headlines rss feed
             $objRSSWriter->removeItems();
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
+            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
                     htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : ""),
                     '',
                     '',
-                    array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+                    array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
                     '',
                     '',
                     '',
@@ -1623,7 +1624,7 @@ class newsManager extends newsLibrary {
             $statusHeadlines = $objRSSWriter->write();
 
             $objRSSWriter->feedType = 'js';
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js';
+            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js';
             $objRSSWriter->write();
 
             if (count($objRSSWriter->arrErrorMsg) > 0) {
@@ -1633,9 +1634,9 @@ class newsManager extends newsLibrary {
                 $this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
             }
         } else {
-            @unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
-            @unlink(ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
-            @unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js');
+            @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
+            @unlink(ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
+            @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js');
         }
     }
 
@@ -2627,4 +2628,5 @@ class newsManager extends newsLibrary {
         ));
     }
 }
+
 ?>

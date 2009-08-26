@@ -73,7 +73,7 @@ class aliasLib
 
     function _getAliases($limit = null, $allLanguages = false)
     {
-        global $objDatabase, $_CONFIG, $objLanguage;
+        global $objDatabase, $_CONFIG;
 
         $arrAliases = array();
         $arrLocalAliases = array();
@@ -155,9 +155,9 @@ class aliasLib
         return $arrAliases;
     }
 
-	function is_alias_valid($alias) {
-		return !file_exists(ASCMS_DOCUMENT_ROOT.'/'.$alias);
-	}
+    function is_alias_valid($alias) {
+        return !file_exists(ASCMS_DOCUMENT_ROOT.'/'.$alias);
+    }
 
     function _getAliasesCount()
     {
@@ -224,7 +224,7 @@ class aliasLib
 
     function _setAliasTarget(&$arrAlias)
     {
-        global $objDatabase, $objLanguage, $_CONFIG;
+        global $objDatabase;
 
         if ($arrAlias['type'] == 'local') {
             $objAlias = $objDatabase->SelectLimit("

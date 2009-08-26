@@ -68,13 +68,13 @@ class AccessManager extends AccessLib
     */
     function _exportUsers($groupId = 0, $langId = null)
     {
-        global $objDatabase, $_CORELANG, $objLanguage, $objInit;
+        global $_CORELANG, $objInit;
 
         $csvSeparator = ";";
         $groupId = intval($groupId);
 
         $objFWUser = FWUser::getFWUserObject();
-        $arrLangs = $objLanguage->getLanguageArray();
+        $arrLangs = FWLanguage::getLanguageArray();
 
         if($groupId){
             $objGroup = $objFWUser->objGroup->getGroup($groupId);
@@ -97,7 +97,7 @@ class AccessManager extends AccessLib
             $filter['group_id'] = $groupId;
         }
         if (!empty($langId)) {
-            if ($objLanguage->getLanguageParameter($langId, 'is_default') == 'true') {
+            if (FWLanguage::getLanguageParameter($langId, 'is_default') == 'true') {
                 $filter['frontend_lang_id'] = array($langId, 0);
             } else {
                 $filter['frontend_lang_id'] = $langId;
@@ -340,9 +340,9 @@ class AccessManager extends AccessLib
      */
     function _groupList()
     {
-        global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objLanguage;
+        global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
-        $arrLangs = $objLanguage->getLanguageArray();
+        $arrLangs = FWLanguage::getLanguageArray();
 
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_list', 'module_access_group_list.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_GROUPS'];
@@ -396,7 +396,7 @@ class AccessManager extends AccessLib
                     'ACCESS_LANG_NAME'          => $arrLang['lang'],
                 ));
 
-			    $this->_objTpl->parse('languages');
+                $this->_objTpl->parse('languages');
             }
 
             $this->_objTpl->setVariable(array(
@@ -1323,7 +1323,7 @@ class AccessManager extends AccessLib
 
     private function processDigitalAssetManagementExtension($objUser)
     {
-        global $_ARRAYLANG, $objLanguage, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         if (empty($_POST['access_user_add_dma_category'])) {
             return true;
@@ -1331,7 +1331,8 @@ class AccessManager extends AccessLib
 
         include_once ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php';
 
-        $objFWUser = FWUser::getFWUserObject();
+// TODO: Never used
+//        $objFWUser = FWUser::getFWUserObject();
         $objDownloadLib = new DownloadsLibrary();
         $arrDownloadSettings = $objDownloadLib->getSettings();
         $objUser->setGroups(array_merge($objUser->getAssociatedGroupIds(), array_map('trim', explode(',', $arrDownloadSettings['associate_user_to_groups']))));
@@ -1355,7 +1356,7 @@ class AccessManager extends AccessLib
             return false;
         }
 
-        $arrLanguageIds = array_keys($objLanguage->getLanguageArray());
+        $arrLanguageIds = array_keys(FWLanguage::getLanguageArray());
         $arrNames = array();
         $arrDescription = array();
         foreach ($arrLanguageIds as $langId) {
@@ -1555,7 +1556,7 @@ class AccessManager extends AccessLib
 
     private function getMailLanguageMenu($type, $lang, $attrs)
     {
-        global $objDatabase, $objLanguage;
+        global $objDatabase;
 
         $arrUsedLangIds = array();
         $objResultSet = $objDatabase->Execute("SELECT `lang_id` FROM `".DBPREFIX."access_user_mail` WHERE `type` = '".$type."' AND `lang_id` != 0");
@@ -1565,9 +1566,16 @@ class AccessManager extends AccessLib
                 $objResultSet->MoveNext();
             }
             $menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').">\n";
-            foreach ($objLanguage->arrLanguage as $langId => $arrLanguage) {
+            $arrLanguages = FWLanguage::getLanguageArray();
+            foreach ($arrLanguages as $langId => $arrLanguage) {
                 if (!in_array($langId, $arrUsedLangIds)) {
-                    $menu .= '<option value="'.$langId.'"'.($langId == $lang ? ' selected="selected"' : '').'>'.htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+                    $menu .=
+                        '<option value="'.$langId.'"'.
+                        ($langId == $lang ? ' selected="selected"' : '').
+                        '>'.
+                        htmlentities(
+                            $arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET
+                        )."</option>\n";
                 }
             }
             $menu .= "</select>\n";
@@ -1784,9 +1792,9 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_MISCELLANEOUS'                          => $_ARRAYLANG['TXT_ACCESS_MISCELLANEOUS'],
             'TXT_ACCESS_STANDARD'                               => $_ARRAYLANG['TXT_ACCESS_STANDARD'],
             'TXT_ACCESS_EMAIL'                                  => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
-            'TXT_ACCESS_SESSION_ON_INTERVAL'				    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
+            'TXT_ACCESS_SESSION_ON_INTERVAL'                    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
             'TXT_ACCESS_SESSION_DESCRIPTION'                    =>$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'],
-            'TXT_ACCESS_SESSION_TITLE' 				            => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
+            'TXT_ACCESS_SESSION_TITLE'                             => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
             'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE']
         ));
 
@@ -1876,13 +1884,13 @@ class AccessManager extends AccessLib
             }
 
             $session_on_interval =  intval($_POST['sessioninterval']);
-   			if(trim($session_on_interval) != null) {
+               if(trim($session_on_interval) != null) {
 
-				if ($session_on_interval >=0 && $session_on_interval <= 300) {
+                if ($session_on_interval >=0 && $session_on_interval <= 300) {
 
-				 $arrSettings['session_user_interval']['value'] = $session_on_interval;
-				}
-			}
+                 $arrSettings['session_user_interval']['value'] = $session_on_interval;
+                }
+            }
 
 
 
@@ -1943,7 +1951,7 @@ class AccessManager extends AccessLib
             'ACCESS_MAX_PIC_HEIGHT'                                 => $arrSettings['max_pic_height']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_WIDTH'                        => $arrSettings['max_thumbnail_pic_width']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_HEIGHT'                       => $arrSettings['max_thumbnail_pic_height']['value'],
-            'ACCESS_SESSION_USER_INTERVAL'			    => $arrSettings['session_user_interval']['value'],
+            'ACCESS_SESSION_USER_INTERVAL'                => $arrSettings['session_user_interval']['value'],
             'ACCESS_MAX_PIC_SIZE'                                   => $this->getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
         ));
         $this->_objTpl->parse('module_access_config_general');
@@ -2009,7 +2017,7 @@ class AccessManager extends AccessLib
 
     function _configModifyAttribute()
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
         $setStatus = true;
         $associatedGroups = '';
@@ -2141,11 +2149,11 @@ class AccessManager extends AccessLib
         ));
 
         if ((!$objAttribute->getId() || $objAttribute->isCustomAttribute($objAttribute->getId())) && $objAttribute->getParent() !== 'title') {
-            foreach ($objLanguage->getLanguageArray() as $langId => $arrLanguage) {
+            foreach (FWLanguage::getLanguageArray() as $langId => $arrLanguage) {
                 if ($arrLanguage['frontend']) {
                     $this->_objTpl->setVariable(array(
                         'ACCESS_ATTRIBUTE_LANG_ID'      => $langId,
-                        'ACCESS_ATTRIBUTE_LANG_NAME'    => htmlentities($objLanguage->getLanguageParameter($langId, 'name'), ENT_QUOTES, CONTREXX_CHARSET),
+                        'ACCESS_ATTRIBUTE_LANG_NAME'    => htmlentities(FWLanguage::getLanguageParameter($langId, 'name'), ENT_QUOTES, CONTREXX_CHARSET),
                         'ACCESS_ATTRIBUTE_NAME'         => htmlentities($objAttribute->getName($langId), ENT_QUOTES, CONTREXX_CHARSET)
                     ));
                     $this->_objTpl->parse('access_attribute_name_list');
@@ -2332,7 +2340,7 @@ class AccessManager extends AccessLib
 
     function _configMails()
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
         $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_mail', 'module_access_config_mail.html');
         $objFWUser = FWUser::getFWUserObject();
@@ -2362,7 +2370,7 @@ class AccessManager extends AccessLib
                     'ACCESS_MAIL_LANG'       => $objUserMail->getLangId(),
                     'ACCESS_MAIL_TYPE_TXT'   => $objUserMail->getLangId() ? '&rarr; '.$objUserMail->getTypeDescription() : $objUserMail->getTypeDescription(),
                     'ACCESS_MAIL_TYPE_STYLE' => $objUserMail->getLangId() ? 'text-indent:10px;' : '',
-                    'ACCESS_MAIL_LANGUAGE'   => $objUserMail->getLangId() ? $objLanguage->getLanguageParameter($objUserMail->getLangId(), 'name') : $_ARRAYLANG['TXT_ACCESS_ALL'],
+                    'ACCESS_MAIL_LANGUAGE'   => $objUserMail->getLangId() ? FWLanguage::getLanguageParameter($objUserMail->getLangId(), 'name') : $_ARRAYLANG['TXT_ACCESS_ALL'],
                     'ACCESS_MAIL_SUBJECT'    => htmlentities($objUserMail->getSubject(), ENT_QUOTES, CONTREXX_CHARSET)
                 ));
 
@@ -2388,7 +2396,7 @@ class AccessManager extends AccessLib
 
     function _configModifyMails($copy = false)
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
         if (empty($_REQUEST['type'])) {
             return $this->_configMails();
@@ -2450,7 +2458,7 @@ class AccessManager extends AccessLib
         } elseif (!$objUserMail->getLangId()) {
             $language = '-';
         } else {
-            $language = '<input type="hidden" name="access_mail_lang" value="'.$objUserMail->getLangId().'" />'.$objLanguage->getLanguageParameter($objUserMail->getLangId(), 'name');
+            $language = '<input type="hidden" name="access_mail_lang" value="'.$objUserMail->getLangId().'" />'.FWLanguage::getLanguageParameter($objUserMail->getLangId(), 'name');
         }
 
         $this->_objTpl->setVariable(array(

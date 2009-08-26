@@ -55,11 +55,12 @@ class news extends newsLibrary {
     function __construct($pageContent)
     {
         global $_LANGID;
+
         $this->getSettings();
         $this->pageContent = $pageContent;
         $this->langId = $_LANGID;
 
-        $this->_objTpl = &new HTML_Template_Sigma();
+        $this->_objTpl = new HTML_Template_Sigma();
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -103,7 +104,7 @@ class news extends newsLibrary {
     */
     function getDetails()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
         $newsid = intval($_GET['newsid']);
@@ -121,9 +122,9 @@ class news extends newsLibrary {
                                                             news.title              AS title,
                                                             news.teaser_image_path  AS newsimage,
                                                             news.teaser_text        AS teasertext,
-															cat.name				AS catname
+                                                            cat.name                AS catname
                                                     FROM    '.DBPREFIX.'module_news AS news
-			              							INNER JOIN '.DBPREFIX.'module_news_categories AS cat ON cat.catid = news.catid
+                                                      INNER JOIN '.DBPREFIX.'module_news_categories AS cat ON cat.catid = news.catid
                                                     WHERE   news.status = 1 AND
                                                             news.id = '.$newsid.' AND
                                                             news.lang ='.$this->langId.' AND
@@ -193,7 +194,7 @@ class news extends newsLibrary {
                        'NEWS_SOURCE'        => $newsSource,
                        'NEWS_URL'           => $newsUrl,
                        'NEWS_AUTHOR'        => $author,
-					   'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
+                       'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
 
                     if (!empty($objResult->fields['newsimage'])) {
@@ -287,7 +288,7 @@ class news extends newsLibrary {
                                 n.title             AS newstitle,
                                 n.text              AS newscontent,
                                 n.teaser_image_path AS newsimage,
-								n.teaser_image_thumbnail_path AS newsimagethumbnail,
+                                n.teaser_image_thumbnail_path AS newsimagethumbnail,
                                 n.redirect          AS newsredirect,
                                 n.teaser_text       AS teasertext,
                                 nc.name             AS name
@@ -310,16 +311,16 @@ class news extends newsLibrary {
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if (isset($_REQUEST['category'])) {
-			$category = "&amp;category=".$selected;
-		}
+            $category = "&amp;category=".$selected;
+        }
 
-		if (isset($_REQUEST['cmd'])) {
-			if ($_REQUEST['cmd'] == $selected) {
-        		$category = "&amp;cmd=".$_REQUEST['cmd'];
-			}else {
-				$category .= "&amp;cmd=".$_REQUEST['cmd'];
-			}
-		}
+        if (isset($_REQUEST['cmd'])) {
+            if ($_REQUEST['cmd'] == $selected) {
+                $category = "&amp;cmd=".$_REQUEST['cmd'];
+            }else {
+                $category .= "&amp;cmd=".$_REQUEST['cmd'];
+            }
+        }
 
 
         if ($count>intval($_CONFIG['corePagingLimit'])) {
@@ -349,13 +350,13 @@ class news extends newsLibrary {
                 if (!empty($objResult->fields['newsimage'])) {
                     if (!empty($objResult->fields['newsimagethumbnail'])) {
                         $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
-						$imageSrc = $objResult->fields['newsimagethumbnail'];
+                        $imageSrc = $objResult->fields['newsimagethumbnail'];
                     } elseif (file_exists(ASCMS_PATH.$objResult->fields['newsimage'].".thumb")) {
                         $image = '<img src="'.$objResult->fields['newsimage'].'.thumb" alt="'.$newstitle.'" />';
-						$imageSrc = $objResult->fields['newsimage'].'.thumb';
+                        $imageSrc = $objResult->fields['newsimage'].'.thumb';
                     } else {
                         $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
-						$imageSrc = $objResult->fields['newsimage'];
+                        $imageSrc = $objResult->fields['newsimage'];
                     }
                 } else {
                     $image = "";
@@ -368,7 +369,7 @@ class news extends newsLibrary {
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
                            'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
-                           'NEWS_LINK'         	=> (empty($objResult->fields['newsredirect'])) ? (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ? '' :'<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
+                           'NEWS_LINK'             => (empty($objResult->fields['newsredirect'])) ? (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ? '' :'<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
                            'NEWS_AUTHOR'        => $author
                 ));
@@ -530,7 +531,7 @@ class news extends newsLibrary {
         $this->_objTpl->setTemplate($this->pageContent);
 
         require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
-        $objModulManager = &new modulemanager();
+        $objModulManager = new modulemanager();
         $arrInstalledModules = $objModulManager->getModules();
         if (in_array(23, $arrInstalledModules)) {
             $communityModul = true;
@@ -566,14 +567,14 @@ class news extends newsLibrary {
         $insertStatus = false;
 
         require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
-		$captcha = new Captcha();
+        $captcha = new Captcha();
 
-		$offset = $captcha->getOffset();
-		$alt = $captcha->getAlt();
-		$url = $captcha->getUrl();
+        $offset = $captcha->getOffset();
+        $alt = $captcha->getAlt();
+        $url = $captcha->getUrl();
 
         if (isset($_POST['submitNews'])) {
-            $objValidator = &new FWValidator();
+            $objValidator = new FWValidator();
 
             $_POST['newsTitle'] = contrexx_strip_tags(html_entity_decode($_POST['newsTitle']));
             $_POST['newsTeaserText'] = contrexx_stripslashes($_POST['newsTeaserText']);
@@ -586,36 +587,36 @@ class news extends newsLibrary {
             $_POST['newsCat'] = intval($_POST['newsCat']);
 
             if(!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
-            	$this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
+                $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
 
-	        if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
-	                $insertStatus = $this->_insert();
-	                if (!$insertStatus) {
-	                    $newsTitle = $_POST['newsTitle'];
-	                    $newsTeaserText = $_POST['newsTeaserText'];
-	                    $newsRedirect = $_POST['newsRedirect'];
-	                    $newsSource = $_POST['newsSource'];
-	                    $newsUrl1 = $_POST['newsUrl1'];
-	                    $newsUrl2 = $_POST['newsUrl2'];
-	                    $newsCat = $_POST['newsCat'];
-	                    $newsText = $_POST['newsText'];
-	                }
-	                else {
-	                    $this->_notify_by_email($insertStatus);
-	                }
-	            } else {
-	                $newsTitle = $_POST['newsTitle'];
-	                $newsTeaserText = $_POST['newsTeaserText'];
-	                $newsRedirect = $_POST['newsRedirect'];
-	                $newsSource = $_POST['newsSource'];
-	                $newsUrl1 = $_POST['newsUrl1'];
-	                $newsUrl2 = $_POST['newsUrl2'];
-	                $newsCat = $_POST['newsCat'];
-	                $newsText = $_POST['newsText'];
+            if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
+                    $insertStatus = $this->_insert();
+                    if (!$insertStatus) {
+                        $newsTitle = $_POST['newsTitle'];
+                        $newsTeaserText = $_POST['newsTeaserText'];
+                        $newsRedirect = $_POST['newsRedirect'];
+                        $newsSource = $_POST['newsSource'];
+                        $newsUrl1 = $_POST['newsUrl1'];
+                        $newsUrl2 = $_POST['newsUrl2'];
+                        $newsCat = $_POST['newsCat'];
+                        $newsText = $_POST['newsText'];
+                    }
+                    else {
+                        $this->_notify_by_email($insertStatus);
+                    }
+                } else {
+                    $newsTitle = $_POST['newsTitle'];
+                    $newsTeaserText = $_POST['newsTeaserText'];
+                    $newsRedirect = $_POST['newsRedirect'];
+                    $newsSource = $_POST['newsSource'];
+                    $newsUrl1 = $_POST['newsUrl1'];
+                    $newsUrl2 = $_POST['newsUrl2'];
+                    $newsCat = $_POST['newsCat'];
+                    $newsText = $_POST['newsText'];
 
-	                $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
-	            }
+                    $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
+                }
         }
 
         if ($insertStatus) {
@@ -645,7 +646,7 @@ class news extends newsLibrary {
                 'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
                 'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
                 'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
-                "TXT_CAPTCHA"           	=> $_ARRAYLANG['TXT_CAPTCHA'],
+                "TXT_CAPTCHA"               => $_ARRAYLANG['TXT_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
                 'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
                 'NEWS_TITLE'                => $newsTitle,
@@ -654,9 +655,9 @@ class news extends newsLibrary {
                 'NEWS_URL2'                 => $newsUrl2,
                 'NEWS_TEASER_TEXT'          => $newsTeaserText,
                 'NEWS_REDIRECT'             => $newsRedirect,
-            	"CAPTCHA_OFFSET"        	=> $offset,
-            	"IMAGE_URL"                 => $url,
-            	"IMAGE_ALT"                 => $alt
+                "CAPTCHA_OFFSET"            => $offset,
+                "IMAGE_URL"                 => $url,
+                "IMAGE_ALT"                 => $alt
             ));
 
             if ($this->_objTpl->blockExists('news_category_menu')) {
@@ -773,12 +774,10 @@ class news extends newsLibrary {
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $objLanguage = &new FWLanguage();
         $this->_objTpl->setTemplate($this->pageContent);
-
         $serverPort = $_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT']);
-        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".xml";
-        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".js";
+        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".FWLanguage::getLanguageParameter($_LANGID, 'lang').".xml";
+        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".FWLanguage::getLanguageParameter($_LANGID, 'lang').".js";
         $hostname = addslashes(htmlspecialchars($_SERVER['SERVER_NAME'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
@@ -808,4 +807,5 @@ RSS2JSCODE;
         return $this->_objTpl->get();
     }
 }
+
 ?>
