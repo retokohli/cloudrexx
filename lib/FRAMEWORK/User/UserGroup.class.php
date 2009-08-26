@@ -35,7 +35,7 @@ class UserGroup {
         'group_description',
         'is_active',
         'type',
-        'homepage'
+        'homepage',
     );
 
     var $arrTypes = array(

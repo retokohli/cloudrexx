@@ -85,15 +85,7 @@ class User extends User_Profile
     private $is_active;
 
     /**
-     * The ID of a user group that should be used as the primary one
-     *
-     * @var integer
-     * @access private
-     */
-    private $primary_group;
-
-    /**
-     * Administrator status
+     * The ID of a user group that should be used as the primary one     *     * @var integer     * @access private     */    private $primary_group;    /**     * Administrator status
      *
      * @var boolean
      * @access private
@@ -461,6 +453,7 @@ class User extends User_Profile
         return $this->primary_group;
     }
 
+
     public function getAdminStatus()
     {
         return $this->is_admin;
@@ -731,8 +724,7 @@ class User extends User_Profile
             $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
             $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
             $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
-            $this->primary_group = isset($this->arrCachedUsers[$id]['primary_group']) ? $this->arrCachedUsers[$id]['primary_group'] : 0;
-            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
+            $this->primary_group = isset($this->arrCachedUsers[$id]['primary_group']) ? $this->arrCachedUsers[$id]['primary_group'] : 0;            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
             $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
             $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
             $this->validity = isset($this->arrCachedUsers[$id]['validity']) ? $this->arrCachedUsers[$id]['validity'] : 0;
@@ -1155,7 +1147,7 @@ class User extends User_Profile
      * @global ADONewConnection
      * @return mixed array on success, FALSE on failure
      */
-    private function loadGroups($onlyActiveGroups = false)
+    private function loadGroups($onlyActiveGroups=false)
     {
         global $objDatabase;
 
@@ -1168,8 +1160,8 @@ class User extends User_Profile
                 `'.DBPREFIX.'access_rel_user_group` AS tblRel
             INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGroup
             USING(`group_id`)
-            WHERE tblRel.`user_id` = '.$this->id
-            .($onlyActiveGroups ? ' AND tblGroup.`is_active` = 1' : '')
+            WHERE tblRel.`user_id` = '.$this->id.
+            ($onlyActiveGroups ? ' AND tblGroup.`is_active` = 1' : '')
         );
         if ($objGroup) {
             while (!$objGroup->EOF) {
@@ -1183,16 +1175,11 @@ class User extends User_Profile
         }
     }
 
+
     public function reset()
     {
         $this->clean();
     }
-
-
-
-
-
-
 
 
     /**
@@ -1206,6 +1193,7 @@ class User extends User_Profile
         }
     }
 
+
     public function signUp()
     {
         $arrSettings = User_Setting::getSettings();
@@ -1216,7 +1204,6 @@ class User extends User_Profile
 
         return $this->store();
     }
-
 
 
     /**
@@ -1296,8 +1283,7 @@ class User extends User_Profile
                     ".$this->last_auth.",
                     ".$this->last_activity.",
                     ".intval($this->is_active).",
-                    ".intval($this->primary_group).",
-                    '".$this->profile_access."',
+                    ".intval($this->primary_group).",                    '".$this->profile_access."',
                     '".$this->restore_key."',
                     '".$this->restore_key_time."'
                 )") !== false) {
@@ -1455,25 +1441,10 @@ class User extends User_Profile
      */
     private function validateLanguageId($scope)
     {
-        static $objFWLanguage;
-
-        if (!isset($objFWLanguage)) {
-            $objFWLanguage = new FWLanguage();
-        }
-
-        $this->{$scope.'_language'} = $objFWLanguage->getLanguageParameter($this->{$scope.'_language'}, $scope) ? $this->{$scope.'_language'} : 0;
+        $this->{$scope.'_language'} =
+            (FWLanguage::getLanguageParameter($this->{$scope.'_language'}, $scope)
+                ? $this->{$scope.'_language'} : 0);
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     private function loadPermissionIds($type)
@@ -1501,7 +1472,6 @@ class User extends User_Profile
     }
 
 
-
     public function hasModeAccess($backend = false)
     {
         global $objDatabase;
@@ -1520,18 +1490,12 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        $ltime=$this->last_activity;
-
         $arrSettings = User_Setting::getSettings();
-        $intervalvalue=$arrSettings['session_user_interval']['value'];
-
-        $currenttime=time();
-        $diff=$currenttime-$ltime ;
-
-        if($diff>$intervalvalue)
-          return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
-        else
-          return true;
+        $intervalvalue = (isset($arrSettings['session_user_interval']['value'])
+            ? $arrSettings['session_user_interval']['value'] : 500);
+        if (time() > ($intervalvalue + $this->last_activity))
+            return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_activity` = '".time()."' WHERE `id` = ".$this->id);
+        return true;
     }
 
     private function updateLastAuthTime()
@@ -1697,6 +1661,7 @@ class User extends User_Profile
             $this->primary_group = 0;
         }
     }
+
 
     /**
      * Set administration status of user

@@ -43,22 +43,22 @@ require_once ASCMS_FRAMEWORK_PATH.'/User/UserGroup.class.php';
  */
 class FWUser extends User_Setting
 {
-    var $arrStatusMsg = array(
+    public $arrStatusMsg = array(
         'ok'    => array(),
         'error' => array(),
     );
 
-    var $backendMode;
+    public $backendMode;
     /**
      * User
      * @var   User
      */
-    var $objUser;
+    public $objUser;
     /**
      * User Group
      * @var   UserGroup
      */
-    var $objGroup;
+    public $objGroup;
 
 
     function __construct($backend = false)

@@ -107,9 +107,10 @@ class DBG
 
 
     // Redirect ADODB output to us instead of STDOUT.
-    static function enable_adodb() {
+    static function enable_adodb()
+    {
         if (!(_DEBUG & DBG_LOG_FILE)) self::setup('php://output');
-        define('ADODB_OUTP', 'DBG_log_adodb');
+        if (!defined('ADODB_OUTP')) define('ADODB_OUTP', 'DBG_log_adodb');
     }
 
 
