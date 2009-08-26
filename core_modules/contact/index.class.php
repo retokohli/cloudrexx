@@ -313,7 +313,7 @@ class Contact extends ContactLib
     * Replace non valid filename chars with a undercore.
     * @access private
     * @param string $file   The string file name
-    * @param int    $maxlen Maximun permited string lenght
+    * @param int    $maxlen Maximun permited string length
     * @return string Formatted file name
     */
     function _cleanFileName($name, $maxlen=250){
@@ -538,7 +538,7 @@ class Contact extends ContactLib
             $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
             if(!empty($arrFormData['data']['contactFormField_recipient'])){
                 foreach (explode(',', $arrRecipients[intval($arrFormData['data']['contactFormField_recipient'])]['email']) as $sendTo) {
-                	 if (!empty($sendTo)) {
+                     if (!empty($sendTo)) {
                         $objMail->AddAddress($sendTo);
                         $objMail->Send();
                         $objMail->ClearAddresses();

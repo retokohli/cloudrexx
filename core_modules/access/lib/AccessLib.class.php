@@ -464,11 +464,8 @@ class AccessLib
         global $_CORELANG;
 
         $arrScope = array('frontend', 'backend');
-        $objFWLanguage = new FWLanguage();
-
         $this->arrAccountAttributes['frontend_language']['children'][0] = $this->arrAccountAttributes['backend_language']['children'][0] = $_CORELANG['TXT_ACCESS_DEFAULT'];
-        foreach ($objFWLanguage->getLanguageArray() as $langId => $arrLanguage)
-        {
+        foreach (FWLanguage::getLanguageArray() as $langId => $arrLanguage) {
             foreach ($arrScope as $scope) {
                 if ($arrLanguage[$scope]) {
                     $this->arrAccountAttributes[$scope.'_language']['children'][$langId] = $arrLanguage['name'];
