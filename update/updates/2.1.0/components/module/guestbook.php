@@ -1,9 +1,9 @@
 <?php
 function _guestbookUpdate()
 {
-	global $objDatabase;
+    global $objDatabase;
 
-	$arrGuestbookColumns = $objDatabase->MetaColumns(DBPREFIX.'module_guestbook');
+    $arrGuestbookColumns = $objDatabase->MetaColumns(DBPREFIX.'module_guestbook');
     if ($arrGuestbookColumns === false) {
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_guestbook'));
         return false;

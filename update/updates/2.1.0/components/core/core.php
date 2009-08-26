@@ -1328,11 +1328,11 @@ function _coreUpdate()
 
     /**********************************************************
      * Add unique index on theme name. Who needs multiple
-     * themes with the same name anyways? Are there people 
+     * themes with the same name anyways? Are there people
      * who know the difference between "aaa" and "aaa"? Guess
      * not. It's just useless.
-     * NOTE THIS KICKS OUT ALL DUPLICATE DESIGNS WITH THE 
-     * SAME NAME FROM THE DATABASE. WHICH I CONSIDER A 
+     * NOTE THIS KICKS OUT ALL DUPLICATE DESIGNS WITH THE
+     * SAME NAME FROM THE DATABASE. WHICH I CONSIDER A
      * NECCESSARY EVIL.
      **********************************************************/
     try {

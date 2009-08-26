@@ -1,121 +1,121 @@
 <?php
 function _newsUpdate() {
-	global $objDatabase, $_CONFIG, $objUpdate, $_ARRAYLANG;
+    global $objDatabase, $_CONFIG, $objUpdate, $_ARRAYLANG;
 
 
-	/************************************************
-	* EXTENSION:	Placeholder NEWS_LINK replaced	*
-	*				by NEWS_LINK_TITLE				*
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
-	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.0')) {
-		$query = "
-    		SELECT
-	    		c.`id`,
-	    		c.`content`,
-	    		c.`title`,
-	    		c.`metatitle`,
-	    		c.`metadesc`,
-	    		c.`metakeys`,
-	    		c.`metarobots`,
-	    		c.`css_name`,
-	    		c.`redirect`,
-	    		c.`expertmode`,
-	    		n.`catid`,
+    /************************************************
+    * EXTENSION:    Placeholder NEWS_LINK replaced    *
+    *                by NEWS_LINK_TITLE                *
+    * ADDED:        Contrexx v2.1.0                    *
+    ************************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.0')) {
+        $query = "
+            SELECT
+                c.`id`,
+                c.`content`,
+                c.`title`,
+                c.`metatitle`,
+                c.`metadesc`,
+                c.`metakeys`,
+                c.`metarobots`,
+                c.`css_name`,
+                c.`redirect`,
+                c.`expertmode`,
+                n.`catid`,
                 n.`is_validated`,
-	    		n.`parcat`,
-	    		n.`catname`,
-	    		n.`target`,
-	    		n.`displayorder`,
-	    		n.`displaystatus`,
+                n.`parcat`,
+                n.`catname`,
+                n.`target`,
+                n.`displayorder`,
+                n.`displaystatus`,
                 n.`activestatus`,
-	    		n.`cachingstatus`,
+                n.`cachingstatus`,
                 n.`username`,
-	    		n.`cmd`,
-	    		n.`lang`,
-	    		n.`startdate`,
-	    		n.`enddate`,
-	    		n.`protected`,
-	    		n.`frontend_access_id`,
-	    		n.`backend_access_id`,
-	    		n.`themes_id`,
+                n.`cmd`,
+                n.`lang`,
+                n.`startdate`,
+                n.`enddate`,
+                n.`protected`,
+                n.`frontend_access_id`,
+                n.`backend_access_id`,
+                n.`themes_id`,
                 n.`css_name`
-    		FROM `".DBPREFIX."content` AS c
-    		INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
-    		WHERE n.`module` = 8 AND c.`content` LIKE '%\{NEWS_LINK\}%' AND n.`username` != 'contrexx_update_2_1_0'";
-    	$objContent = $objDatabase->Execute($query);
-    	if ($objContent !== false) {
-    		$arrFailedPages = array();
-    		while (!$objContent->EOF) {
-    			$newContent = str_replace(
-    				'{NEWS_LINK}',
-    				'{NEWS_LINK_TITLE}',
-    				$objContent->fields['content']
-    			);
-    			$query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_2_1_0' WHERE c.`id` = ".$objContent->fields['id'];
-    			if ($objDatabase->Execute($query) === false) {
-					$link = CONTREXX_SCRIPT_PATH."?section=news".(empty($objContent->fields['cmd']) ? '' : "&amp;cmd=".$objContent->fields['cmd'])."&amp;langId=".$objContent->fields['lang'];
-    				$arrFailedPages[$objContent->fields['id']] = array('title' => $objContent->fields['catname'], 'link' => $link);
-    			} else {
-	    			$objDatabase->Execute("UPDATE `".DBPREFIX."content_navigation_history` SET `is_active` = '0' WHERE `catid` = ".$objContent->fields['id']);
-	    			$objDatabase->Execute("
-	    				INSERT INTO `".DBPREFIX."content_navigation_history`
-						SET
-							`is_active` = '1',
-							`catid` = ".$objContent->fields['id'].",
-							`parcat` = ".$objContent->fields['parcat'].",
-							`catname` = '".addslashes($objContent->fields['catname'])."',
-							`target` = '".$objContent->fields['target']."',
-							`displayorder` = ".$objContent->fields['displayorder'].",
-							`displaystatus` = '".$objContent->fields['displaystatus']."',
-							`activestatus` = '".$objContent->fields['activestatus']."',
-							`cachingstatus` = '".$objContent->fields['cachingstatus']."',
-							`username` = 'contrexx_update_2_1_0',
-							`changelog` = ".time().",
-							`cmd` = '".$objContent->fields['cmd']."',
-							`lang` = ".$objContent->fields['lang'].",
-							`module` = 8,
-							`startdate` = '".$objContent->fields['startdate']."',
-							`enddate` = '".$objContent->fields['enddate']."',
-							`protected` = ".$objContent->fields['protected'].",
-							`frontend_access_id` = ".$objContent->fields['frontend_access_id'].",
-							`backend_access_id` = ".$objContent->fields['backend_access_id'].",
-							`themes_id` = ".$objContent->fields['themes_id'].",
+            FROM `".DBPREFIX."content` AS c
+            INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
+            WHERE n.`module` = 8 AND c.`content` LIKE '%\{NEWS_LINK\}%' AND n.`username` != 'contrexx_update_2_1_0'";
+        $objContent = $objDatabase->Execute($query);
+        if ($objContent !== false) {
+            $arrFailedPages = array();
+            while (!$objContent->EOF) {
+                $newContent = str_replace(
+                    '{NEWS_LINK}',
+                    '{NEWS_LINK_TITLE}',
+                    $objContent->fields['content']
+                );
+                $query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_2_1_0' WHERE c.`id` = ".$objContent->fields['id'];
+                if ($objDatabase->Execute($query) === false) {
+                    $link = CONTREXX_SCRIPT_PATH."?section=news".(empty($objContent->fields['cmd']) ? '' : "&amp;cmd=".$objContent->fields['cmd'])."&amp;langId=".$objContent->fields['lang'];
+                    $arrFailedPages[$objContent->fields['id']] = array('title' => $objContent->fields['catname'], 'link' => $link);
+                } else {
+                    $objDatabase->Execute("UPDATE `".DBPREFIX."content_navigation_history` SET `is_active` = '0' WHERE `catid` = ".$objContent->fields['id']);
+                    $objDatabase->Execute("
+                        INSERT INTO `".DBPREFIX."content_navigation_history`
+                        SET
+                            `is_active` = '1',
+                            `catid` = ".$objContent->fields['id'].",
+                            `parcat` = ".$objContent->fields['parcat'].",
+                            `catname` = '".addslashes($objContent->fields['catname'])."',
+                            `target` = '".$objContent->fields['target']."',
+                            `displayorder` = ".$objContent->fields['displayorder'].",
+                            `displaystatus` = '".$objContent->fields['displaystatus']."',
+                            `activestatus` = '".$objContent->fields['activestatus']."',
+                            `cachingstatus` = '".$objContent->fields['cachingstatus']."',
+                            `username` = 'contrexx_update_2_1_0',
+                            `changelog` = ".time().",
+                            `cmd` = '".$objContent->fields['cmd']."',
+                            `lang` = ".$objContent->fields['lang'].",
+                            `module` = 8,
+                            `startdate` = '".$objContent->fields['startdate']."',
+                            `enddate` = '".$objContent->fields['enddate']."',
+                            `protected` = ".$objContent->fields['protected'].",
+                            `frontend_access_id` = ".$objContent->fields['frontend_access_id'].",
+                            `backend_access_id` = ".$objContent->fields['backend_access_id'].",
+                            `themes_id` = ".$objContent->fields['themes_id'].",
                             `css_name` = '".$objContent->fields['css_name']."'"
-					);
+                    );
 
-					$historyId = $objDatabase->Insert_ID();
+                    $historyId = $objDatabase->Insert_ID();
 
-					$objDatabase->Execute("
-						INSERT INTO `".DBPREFIX."content_history`
-						SET
-							`id` = ".$historyId.",
-							`page_id` = ".$objContent->fields['id'].",
-							`content` = '".addslashes($newContent)."',
-							`title` = '".addslashes($objContent->fields['title'])."',
-							`metatitle` = '".addslashes($objContent->fields['metatitle'])."',
-							`metadesc` = '".addslashes($objContent->fields['metadesc'])."',
-							`metakeys` = '".addslashes($objContent->fields['metakeys'])."',
-							`metarobots` = '".addslashes($objContent->fields['metarobots'])."',
-							`css_name` = '".addslashes($objContent->fields['css_name'])."',
-							`redirect` = '".addslashes($objContent->fields['redirect'])."',
-							`expertmode` = '".$objContent->fields['expertmode']."'
-					");
+                    $objDatabase->Execute("
+                        INSERT INTO `".DBPREFIX."content_history`
+                        SET
+                            `id` = ".$historyId.",
+                            `page_id` = ".$objContent->fields['id'].",
+                            `content` = '".addslashes($newContent)."',
+                            `title` = '".addslashes($objContent->fields['title'])."',
+                            `metatitle` = '".addslashes($objContent->fields['metatitle'])."',
+                            `metadesc` = '".addslashes($objContent->fields['metadesc'])."',
+                            `metakeys` = '".addslashes($objContent->fields['metakeys'])."',
+                            `metarobots` = '".addslashes($objContent->fields['metarobots'])."',
+                            `css_name` = '".addslashes($objContent->fields['css_name'])."',
+                            `redirect` = '".addslashes($objContent->fields['redirect'])."',
+                            `expertmode` = '".$objContent->fields['expertmode']."'
+                    ");
 
-					$objDatabase->Execute("
-						INSERT INTO	`".DBPREFIX."content_logfile`
-						SET
-							`action` = 'update',
-							`history_id` = ".$historyId.",
-							`is_validated` = '1'
-					");
-    			}
+                    $objDatabase->Execute("
+                        INSERT INTO    `".DBPREFIX."content_logfile`
+                        SET
+                            `action` = 'update',
+                            `history_id` = ".$historyId.",
+                            `is_validated` = '1'
+                    ");
+                }
 
-    			$objContent->MoveNext();
-    		}
+                $objContent->MoveNext();
+            }
 
-    		if (count($arrFailedPages)) {
-    			setUpdateMsg($_ARRAYLANG['TXT_UNABLE_APPLY_NEW_NEWS_LAYOUT'], 'msg');
+            if (count($arrFailedPages)) {
+                setUpdateMsg($_ARRAYLANG['TXT_UNABLE_APPLY_NEW_NEWS_LAYOUT'], 'msg');
 
                 $pages = '<ul>';
                 foreach ($arrFailedPages as $arrPage) {
@@ -123,19 +123,19 @@ function _newsUpdate() {
                 }
                 $pages .= '</ul>';
                 setUpdateMsg($pages, 'msg');
-    		}
-    	} else {
-    		return _databaseError($query, $objDatabase->ErrorMsg());
-    	}
-	}
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
 
 
 
-	/************************************************
-	* EXTENSION:	Front- and backend permissions  *
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
-	$query = "SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'news_message_protection'";
+    /************************************************
+    * EXTENSION:    Front- and backend permissions  *
+    * ADDED:        Contrexx v2.1.0                    *
+    ************************************************/
+    $query = "SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'news_message_protection'";
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult) {
         if ($objResult->RecordCount() == 0) {
@@ -182,10 +182,10 @@ function _newsUpdate() {
 
 
 
-	/************************************************
-	* EXTENSION:	Thunbmail Image                 *
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
+    /************************************************
+    * EXTENSION:    Thunbmail Image                 *
+    * ADDED:        Contrexx v2.1.0                    *
+    ************************************************/
     $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_news');
     if ($arrColumns === false) {
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news'));
@@ -199,7 +199,7 @@ function _newsUpdate() {
         }
     }
 
-	return true;
+    return true;
 }
 
 ?>
