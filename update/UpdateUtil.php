@@ -175,7 +175,7 @@ class UpdateUtil {
 
             self::sql($query);
             return true;
-		}
+        }
         else {
             $col_spec = $col_info[strtoupper($col)];
             $type = $col_spec->type . (preg_match('@[a-z]+\([0-9]+\)@i', $spec['type']) && $col_spec->max_length > 0 ? "($col_spec->max_length)" : ($col_spec->type == 'enum' ? "(".implode(",", $col_spec->enums).")" : ''));
@@ -331,8 +331,7 @@ class UpdateUtil {
         if ($e instanceof Update_DatabaseException) {
             return _databaseError($e->sql, $e->getMessage());
         }
-		setUpdateMsg($e->getMessage());
-		return false;
+        setUpdateMsg($e->getMessage());
+        return false;
     }
 }
-

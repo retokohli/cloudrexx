@@ -422,32 +422,32 @@ function _shopUpdate()
     $objResult = $objDatabase->Execute($query);
     if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
     if ($objResult->RecordCount()) {
-   	    $flagVatEnabled = $objResult->fields['value'];
-	    $arrVatEnabled = array(
-	        'vat_enabled_foreign_customer',
-	        'vat_enabled_foreign_reseller',
-	        'vat_enabled_home_customer',
-	        'vat_enabled_home_reseller',
-	    );
-	    foreach ($arrVatEnabled as $strSetting) {
-	        $query = "
-	            SELECT 1 FROM ".DBPREFIX."module_shop_config
-	            WHERE `name`='$strSetting'";
-	        $objResult = $objDatabase->Execute($query);
-	        if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-	        if ($objResult->RecordCount() == 0) {
-	            $query = "
-	                INSERT INTO `".DBPREFIX."module_shop_config` (
-	                    `name`, `value`
-	                ) VALUES (
-	                    '$strSetting', '$flagVatEnabled'
-	                );
-	            ";
-	            $objResult = $objDatabase->Execute($query);
-	            if (!$objResult)
-	                return _databaseError($query, $objDatabase->ErrorMsg());
-	        }
-	    }
+           $flagVatEnabled = $objResult->fields['value'];
+        $arrVatEnabled = array(
+            'vat_enabled_foreign_customer',
+            'vat_enabled_foreign_reseller',
+            'vat_enabled_home_customer',
+            'vat_enabled_home_reseller',
+        );
+        foreach ($arrVatEnabled as $strSetting) {
+            $query = "
+                SELECT 1 FROM ".DBPREFIX."module_shop_config
+                WHERE `name`='$strSetting'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+            if ($objResult->RecordCount() == 0) {
+                $query = "
+                    INSERT INTO `".DBPREFIX."module_shop_config` (
+                        `name`, `value`
+                    ) VALUES (
+                        '$strSetting', '$flagVatEnabled'
+                    );
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult)
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+        }
     }
 
     $query = "
@@ -457,31 +457,31 @@ function _shopUpdate()
     if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
     if ($objResult->RecordCount()) {
         $flagVatIncluded = $objResult->fields['value'];
-	    $arrVatIncluded = array(
-	        'vat_included_foreign_customer',
-	        'vat_included_foreign_reseller',
-	        'vat_included_home_customer',
-	        'vat_included_home_reseller',
-	    );
-	    foreach ($arrVatIncluded as $strSetting) {
-	        $query = "
-	            SELECT 1 FROM ".DBPREFIX."module_shop_config
-	            WHERE `name`='$strSetting'";
-	        $objResult = $objDatabase->Execute($query);
-	        if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-	        if ($objResult->RecordCount() == 0) {
-	            $query = "
-	                INSERT INTO `".DBPREFIX."module_shop_config` (
-	                    `name`, `value`
-	                ) VALUES (
-	                    '$strSetting', '$flagVatIncluded'
-	                );
-	            ";
-	            $objResult = $objDatabase->Execute($query);
-	            if (!$objResult)
-	                return _databaseError($query, $objDatabase->ErrorMsg());
-	        }
-	    }
+        $arrVatIncluded = array(
+            'vat_included_foreign_customer',
+            'vat_included_foreign_reseller',
+            'vat_included_home_customer',
+            'vat_included_home_reseller',
+        );
+        foreach ($arrVatIncluded as $strSetting) {
+            $query = "
+                SELECT 1 FROM ".DBPREFIX."module_shop_config
+                WHERE `name`='$strSetting'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+            if ($objResult->RecordCount() == 0) {
+                $query = "
+                    INSERT INTO `".DBPREFIX."module_shop_config` (
+                        `name`, `value`
+                    ) VALUES (
+                        '$strSetting', '$flagVatIncluded'
+                    );
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult)
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+        }
     }
 
     $query = "

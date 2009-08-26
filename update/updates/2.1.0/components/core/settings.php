@@ -211,7 +211,7 @@ function _updateSettings()
         $arrSettingsByName[$data['setname']] = $setid;
     }
 
-	// change googleSitemapStatus to xmlSitemapStatus
+    // change googleSitemapStatus to xmlSitemapStatus
     $query = "SELECT 1 FROM `".DBPREFIX."settings` WHERE `setname`='googleSitemapStatus'";
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult) {

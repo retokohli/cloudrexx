@@ -290,10 +290,10 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
 
 
 
-	/*********************************************************
-	* EXTENSION:	Thunbmail Image & Attachment description *
-	* ADDED:		Contrexx v2.1.0					         *
-	*********************************************************/
+    /*********************************************************
+    * EXTENSION:    Thunbmail Image & Attachment description *
+    * ADDED:        Contrexx v2.1.0                             *
+    *********************************************************/
     $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_data_messages_lang');
     if ($arrColumns === false) {
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_data_messages_lang'));
