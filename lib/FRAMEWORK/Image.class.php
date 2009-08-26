@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Image manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -97,7 +98,7 @@ class ImageManager
         $objFile   = new File();
         $_objImage = new ImageManager();
         $file      = basename($file);
-        $tmpSize   = getimagesize($strPath.$file);
+        $tmpSize   = getimagesize($strPath.'/'.$file);
 
         if ($tmpSize[0] > $tmpSize[1]) {
            $factor = $maxSize / $tmpSize[0];
@@ -106,7 +107,7 @@ class ImageManager
         }
         $thumbWidth  = $tmpSize[0] * $factor;
         $thumbHeight = $tmpSize[1] * $factor;
-        if (!$_objImage->loadImage($strPath.$file)) return false;
+        if (!$_objImage->loadImage($strPath.'/'.$file)) return false;
         if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
         if (!$_objImage->saveNewImage($strPath . $file . '.thumb')) return false;
         if (!$objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) return false;
@@ -146,7 +147,7 @@ class ImageManager
         if (empty($fileNew))       $fileNew       = $file;
         if (empty($strPathNew))    $strPathNew    = $strPath;
         if (empty($strWebPathNew)) $strWebPathNew = $strWebPath;
-        $tmpSize = getimagesize($strPath.$file);
+        $tmpSize = getimagesize($strPath.'/'.$file);
 
         // reset the ImageManager
         $this->imageCheck = 1;
@@ -166,15 +167,24 @@ class ImageManager
             $thumbHeight = $height*$maxWidth/$width;
         }
 
-        if (!$this->loadImage($strPath.$file)) return false;
-        if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
-        if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
-            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) return false;
+        if (!$this->loadImage($strPath.'/'.$file)) {
+            return false;
         }
-        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) return false;
+        if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) {
+            return false;
+        }
+        if (is_file($strPathNew.'/'.$fileNew.$thumbNailSuffix)) {
+            if (!unlink($strPathNew.'/'.$fileNew.$thumbNailSuffix)) {
+                return false;
+            }
+        }
+        if (!$this->saveNewImage($strPathNew.'/'.$fileNew.$thumbNailSuffix)) {
+            return false;
+        }
         $objFile = new File();
-        if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) return false;
-//echo("_createThumbWhq($strPath, $strWebPath, $file, $maxWidth, $maxHeight, $quality, $thumbNailSuffix, $strPathNew, $strWebPathNew, $fileNew): saved file $strPathNew$fileNew$thumbNailSuffix<br />");
+        if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) {
+            return false;
+        }
         return true;
     }
 
