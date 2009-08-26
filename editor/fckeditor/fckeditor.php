@@ -26,6 +26,6 @@
  */
 
 if ( !function_exists('version_compare') || version_compare( phpversion(), '5', '<' ) )
-	include_once( ASCMS_DOCUMENT_ROOT.$FCKeditorBasePath.'fckeditor_php4.php' ) ;
+    include_once( ASCMS_DOCUMENT_ROOT.$FCKeditorBasePath.'fckeditor_php4.php' ) ;
 else
-	include_once( ASCMS_DOCUMENT_ROOT.$FCKeditorBasePath.'fckeditor_php5.php' ) ;
+    include_once( ASCMS_DOCUMENT_ROOT.$FCKeditorBasePath.'fckeditor_php5.php' ) ;

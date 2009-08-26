@@ -1,7 +1,7 @@
 <?php
-	require_once('../config/configuration.php');
-	require_once('../core/settings.class.php');
-	$objSettings = new settingsManager();
+    require_once('../config/configuration.php');
+    require_once('../core/settings.class.php');
+    $objSettings = new settingsManager();
 ?>
 /*
  * FCKeditor config file
@@ -16,32 +16,32 @@ FCKConfig.ForcePasteAsPlainText = false;
 <? echo $objSettings->useOwnCSS();?>
 
 FCKConfig.ToolbarSets["Default"] = [
-	['Source','DocProps','-','NewPage','Preview','-','Templates'],
-	['Cut','Copy','Paste','PasteText','PasteWord','-','Print','SpellCheck'],
-	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-	['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
-	['OrderedList','UnorderedList','-','Outdent','Indent'],
-	['JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'],
-	['Link','Unlink','Anchor'],
-	['Image','Flash','Table','Rule','Smiley','SpecialChar','PageBreak'],
-	'/',
-	['FontFormat','FontName','FontSize'],
-	['TextColor','BGColor'],
-	['FitWindow']
+    ['Source','DocProps','-','NewPage','Preview','-','Templates'],
+    ['Cut','Copy','Paste','PasteText','PasteWord','-','Print','SpellCheck'],
+    ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+    ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
+    ['OrderedList','UnorderedList','-','Outdent','Indent'],
+    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'],
+    ['Link','Unlink','Anchor'],
+    ['Image','Flash','Table','Rule','Smiley','SpecialChar','PageBreak'],
+    '/',
+    ['FontFormat','FontName','FontSize'],
+    ['TextColor','BGColor'],
+    ['FitWindow']
 ];
 FCKConfig.ToolbarSets["News"] = [
-	['NewPage','Preview'],
-	['Cut','Copy','Paste','PasteText','PasteWord','-','Print','SpellCheck'],
-	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-	['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
-	['OrderedList','UnorderedList','-','Outdent','Indent'],
-	['JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'],
-	['Table','Rule','Smiley','SpecialChar'],
-	['FitWindow']
+    ['NewPage','Preview'],
+    ['Cut','Copy','Paste','PasteText','PasteWord','-','Print','SpellCheck'],
+    ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+    ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
+    ['OrderedList','UnorderedList','-','Outdent','Indent'],
+    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'],
+    ['Table','Rule','Smiley','SpecialChar'],
+    ['FitWindow']
 ] ;
 FCKConfig.ToolbarSets["BBCode"] = [
-	['Source'],
-	['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
+    ['Source'],
+    ['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
 ] ;
 
 <?php
@@ -49,7 +49,7 @@ $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
 $absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
 
 if(!empty($_GET['bbcode'])){
-	echo "FCKConfig.Plugins.Add('bbcode');\n";
+    echo "FCKConfig.Plugins.Add('bbcode');\n";
 }
 
 ?>
