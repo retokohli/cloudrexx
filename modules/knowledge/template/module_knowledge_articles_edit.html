@@ -19,7 +19,7 @@ var activeChanged = function(val)
 {
     if (val == 1) {
         $$('.actives_true').each(function(obj) {
-            obj.checked = "checked"; 
+            obj.checked = "checked";
         });
     } else {
         $$('.actives_false').each(function(obj) {
@@ -47,9 +47,9 @@ var categoryChanged = function(obj)
 <form action="index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act={ACTION}" method="post" onsubmit="return checkCategory();">
 
 <ul id="tabmenu">
-	<!-- BEGIN showLanguageTabs -->
-	<li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" onclick="selectTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
-	<!-- END showLanguageTabs -->
+  <!-- BEGIN showLanguageTabs -->
+  <li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" onclick="selectTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
+  <!-- END showLanguageTabs -->
 </ul>
 
 <!-- BEGIN langDiv -->

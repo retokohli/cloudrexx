@@ -332,15 +332,13 @@ class popupLibrary
         global $objDatabase;
 
         $arrLangIds = array();
-
-        $objLanguage = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_popup_rel_lang WHERE popup_id=".$popupId);
-        if ($objLanguage !== false) {
-            while (!$objLanguage->EOF) {
-                array_push($arrLangIds, $objLanguage->fields['lang_id']);
-                $objLanguage->MoveNext();
+        $objResult = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_popup_rel_lang WHERE popup_id=".$popupId);
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                array_push($arrLangIds, $objResult->fields['lang_id']);
+                $objResult->MoveNext();
             }
         }
-
         return $arrLangIds;
     }
 

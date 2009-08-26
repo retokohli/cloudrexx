@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -22,8 +23,8 @@ require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
  * @package     contrexx
  * @subpackage  module_forum
  */
-class Forum extends ForumLibrary {
-
+class Forum extends ForumLibrary
+{
     var $_objTpl;
     var $strError = ''; //errormessage for captcha
 
@@ -437,7 +438,7 @@ class Forum extends ForumLibrary {
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            'FORUM_NAME'                =>    $this->_shortenString($this->_arrTranslations[$intForumId][$this->_intLangId]['name'], $this->_maxStringLenght),
+            'FORUM_NAME'                =>    $this->_shortenString($this->_arrTranslations[$intForumId][$this->_intLangId]['name'], $this->_maxStringlength),
             'FORUM_TREE'                =>    $this->_createNavTree($intForumId),
             'FORUM_DROPDOWN'            =>    $this->createForumDD('forum_quickaccess', $intForumId, 'onchange="gotoForum(this);"', ''),
             'FORUM_JAVASCRIPT_GOTO'        =>     $this->getJavascript('goto'),
@@ -543,8 +544,8 @@ class Forum extends ForumLibrary {
                 return false;
             }
 
-            if(strlen(trim($content)) < $this->_minPostLenght){//content check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+            if(strlen(trim($content)) < $this->_minPostlength){//content check
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostlength));
                 return false;
             }
 
@@ -738,8 +739,8 @@ class Forum extends ForumLibrary {
             'FORUM_JAVASCRIPT_SCROLLTO'             =>    $this->getJavascript('scrollto'),
             'FORUM_SCROLLPOS'                       =>    !empty($_REQUEST['scrollpos']) ? intval($_REQUEST['scrollpos']) : '0',
             'FORUM_JAVASCRIPT_INSERT_TEXT'          =>    $this->getJavascript('insertText',  array($intCatId, $intThreadId, $firstPost)),
-            'FORUM_NAME'                            =>    $this->_shortenString($firstPost['subject'], $this->_maxStringLenght),
-            'FORUM_TREE'                            =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="index.php?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght).'</a> > ' ,
+            'FORUM_NAME'                            =>    $this->_shortenString($firstPost['subject'], $this->_maxStringlength),
+            'FORUM_TREE'                            =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="index.php?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringlength).'</a> > ' ,
             'FORUM_DROPDOWN'                        =>    $this->createForumDD('forum_quickaccess', $intCatId, 'onchange="gotoForum(this);"', ''),
             'TXT_FORUM_COMMA_SEPARATED_KEYWORDS'    =>    $_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'],
             'TXT_FORUM_KEYWORDS'                    =>    $_ARRAYLANG['TXT_FORUM_KEYWORDS'],
@@ -850,8 +851,8 @@ class Forum extends ForumLibrary {
 
 
             $this->_objTpl->setVariable(array(
-                'FORUM_POST_ID'             => $postId,
-                'FORUM_RATING_POST_ID'      => $postId
+                'FORUM_POST_ID'        => $postId,
+                'FORUM_RATING_POST_ID' => $postId
             ));
             if($firstPost['is_locked'] != 1 && ($this->_checkAuth($intCatId, 'edit') || ($objFWUser->objUser->login() && $arrValues['user_id'] == $objFWUser->objUser->getId()))) {
                 $this->_objTpl->touchBlock('postEdit');
@@ -911,8 +912,8 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
                 return false;
             }
-            if(strlen(trim($content)) < $this->_minPostLenght){//content check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+            if(strlen(trim($content)) < $this->_minPostlength){//content check
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostlength));
                 return false;
             }
 
@@ -965,8 +966,8 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
                 return false;
             }
-            if(strlen(trim($content)) < $this->_minPostLenght){//content check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+            if(strlen(trim($content)) < $this->_minPostlength){//content check
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostlength));
                 return false;
             }
             $this->_objTpl->setVariable(array(
@@ -1000,8 +1001,8 @@ class Forum extends ForumLibrary {
 
 
         if(!empty($_REQUEST['update']) && $_REQUEST['update'] == $_ARRAYLANG['TXT_FORUM_UPDATE_POST']){
-            if(strlen(trim($content)) < $this->_minPostLenght){//content size check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+            if(strlen(trim($content)) < $this->_minPostlength){//content size check
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostlength));
                 return false;
             }
             if (!$this->_checkAuth($intCatId, 'edit') && (!$objFWUser->objUser->login() || $arrValues['user_id'] != $objFWUser->objUser->getId())) {
@@ -1384,7 +1385,7 @@ class Forum extends ForumLibrary {
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
 
         $this->_objTpl->setVariable(array(
-            'FORUM_NAME'            =>    $this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght),
+            'FORUM_NAME'            =>    $this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringlength),
             'FORUM_TREE'            =>    $this->_createNavTree($intCatId),
             'FORUM_DROPDOWN'        =>    $this->createForumDD('forum_quickaccess', $intCatId, 'onchange="gotoForum(this);"', ''),
             'FORUM_JAVASCRIPT'        =>    $this->getJavascript(),
@@ -1671,7 +1672,7 @@ class Forum extends ForumLibrary {
                             offset = document.documentElement.scrollTop;
                         }
                         if(document.getElementById("scrollpos")){
-                        	document.getElementById("scrollpos").value = offset;
+                            document.getElementById("scrollpos").value = offset;
                         }
                     }
                 //]]>
@@ -1911,4 +1912,5 @@ EOJS;
     }
 
 }
+
 ?>

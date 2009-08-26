@@ -22,7 +22,7 @@ var selectMultiAction = function() {
                 }
         break;
         default:
-	}
+  }
     $multi.val(0);
 }
 
@@ -49,8 +49,8 @@ var deleteEntry = function(){
                         resetRowClasses();
                         if($J('#psEntries tr:lt(3)').length < 3){
                             $J('<tr class="row2">\
-                        			<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
-                        		</tr>').appendTo($J('#psEntries'));
+                              <td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
+                            </tr>').appendTo($J('#psEntries'));
                         }
                     });
                  },
@@ -212,17 +212,17 @@ var addRow = function(data, textStatus){
     var className = $rows.length % 2 ? 'row2' : 'row1';
     $J('<tr class="'+className+'">\
             <td><input type="checkbox" name="selectedEntriesId[]" value="'+id+'" /></td>\
-    		<td class="psname">'+name+'</td>\
-    		<td nowrap="nowrap">\
-    			<div align="right">\
-    				<a class="psedit" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id='+id+'" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
-    				   <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />\
-    		        </a>\
-    				<a class="psdelete" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id='+id+'" target="_self" title="{TXT_PRINTSHOP_DELETE}">\
-    				   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />\
-    				</a>\
-    			</div>\
-    		</td>\
+        <td class="psname">'+name+'</td>\
+        <td nowrap="nowrap">\
+          <div align="right">\
+            <a class="psedit" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id='+id+'" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
+               <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />\
+                </a>\
+            <a class="psdelete" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id='+id+'" target="_self" title="{TXT_PRINTSHOP_DELETE}">\
+               <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />\
+            </a>\
+          </div>\
+        </td>\
         </tr>')
     .appendTo('#psEntries').hide().fadeIn(500)
     .find('.psname').data('default', name);
@@ -242,8 +242,8 @@ var submitError = function(xhr, textStatus, errorThrown){
 var setError = function(message){
     $J('#errormessagetarget').append('<div id="alertbox">\
         <span class="messageFadeout"><a href="#" target="_self" title="{TXT_PRINTSHOP_FADE_OUT}">\
-		   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
-		</a></span>'+message+'</div>').find(':last-child')
+       <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
+    </a></span>'+message+'</div>').find(':last-child')
                               .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
 }
 
@@ -258,87 +258,87 @@ var setError = function(message){
 <!--
 -->
 <div id="subnavbar_level2">
-	<ul>
-		<li><a href="?cmd=printshop&amp;act=type">{TXT_PRINTSHOP_TYPE_TITLE}</a></li>
+  <ul>
+    <li><a href="?cmd=printshop&amp;act=type">{TXT_PRINTSHOP_TYPE_TITLE}</a></li>
         <li><a href="?cmd=printshop&amp;act=format">{TXT_PRINTSHOP_FORMAT_TITLE}</a></li>
         <li><a href="?cmd=printshop&amp;act=front">{TXT_PRINTSHOP_FRONT_TITLE}</a></li>
         <li><a href="?cmd=printshop&amp;act=back">{TXT_PRINTSHOP_BACK_TITLE}</a></li>
         <li><a href="?cmd=printshop&amp;act=weight">{TXT_PRINTSHOP_WEIGHT_TITLE}</a></li>
         <li><a href="?cmd=printshop&amp;act=paper">{TXT_PRINTSHOP_PAPER_TITLE}</a></li>
 
-	</ul>
+  </ul>
 </div>
 <br />
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />
 <form name="formAttributes" method="post" action="{DIRECTORY_INDEX}?cmd=printshop">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-	    <tbody>
-    		<tr>
-    			<th colspan="10">{TXT_PRINTSHOP_ADD_ATTRIBUTE}</th>
-    		</tr>
-    		<tr class="row3">
-    			<td nowrap="nowrap" width="13%">{TXT_PRINTSHOP_ENTER_ATTRIBUTE}</td>
-    			<td nowrap="nowrap" width="87%">
-    			     <input type="text" value="" name="psAttributeName" size="60" />
-    			     <input type="button" value="{TXT_PRINTSHOP_ADD_ATTRIBUTE}" name="psAddAttribute" />
-    			</td>
-    		</tr>
+  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+      <tbody>
+        <tr>
+          <th colspan="10">{TXT_PRINTSHOP_ADD_ATTRIBUTE}</th>
+        </tr>
+        <tr class="row3">
+          <td nowrap="nowrap" width="13%">{TXT_PRINTSHOP_ENTER_ATTRIBUTE}</td>
+          <td nowrap="nowrap" width="87%">
+               <input type="text" value="" name="psAttributeName" size="60" />
+               <input type="button" value="{TXT_PRINTSHOP_ADD_ATTRIBUTE}" name="psAddAttribute" />
+          </td>
+        </tr>
         </tbody>
     </table>
     <br />
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psEntries">
-		<thead>
-    		<tr>
-    			<th colspan="10">{TXT_PRINTSHOP_ATTRIBUTE}</th>
-    		</tr>
-		</thead>
-		<tbody>
-    		<tr class="row3">
-    			<td nowrap="nowrap" width="2%"><span style="font-weight:bold;">#</span></td>
-    			<td nowrap="nowrap" width="83%"><span style="font-weight:bold;">{TXT_PRINTSHOP_ATTRIBUTE_NAME}</span></td>
-    			<td nowrap="nowrap" width="5%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
-    		</tr>
-    		<!-- BEGIN showEntry -->
-    		<tr class="{ENTRY_ROWCLASS}">
-    			<td><input type="checkbox" name="selectedEntriesId[]" value="{PRINTSHOP_ATTRIBUTE_ID}" /></td>
-    			<td class="psname">{PRINTSHOP_ATTRIBUTE_NAME}</td>
-    			<td nowrap="nowrap">
-    				<div align="right">
-    					<a class="psedit" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id={PRINTSHOP_ATTRIBUTE_ID}" target="_self" title="{TXT_PRINTSHOP_EDIT}">
-    					   <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />
-    			        </a>
-    					<a class="psdelete" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id={PRINTSHOP_ATTRIBUTE_ID}" target="_self" title="{TXT_PRINTSHOP_DELETE}">
-    					   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />
-    					</a>
-    				</div>
-    			</td>
-    		</tr>
-    		<!-- END showEntry -->
-    		<!-- BEGIN noEntry -->
-    		<tr class="row2">
-    			<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>
-    		</tr>
-    		<!-- END noEntry -->
+  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psEntries">
+    <thead>
+        <tr>
+          <th colspan="10">{TXT_PRINTSHOP_ATTRIBUTE}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="row3">
+          <td nowrap="nowrap" width="2%"><span style="font-weight:bold;">#</span></td>
+          <td nowrap="nowrap" width="83%"><span style="font-weight:bold;">{TXT_PRINTSHOP_ATTRIBUTE_NAME}</span></td>
+          <td nowrap="nowrap" width="5%"><span style="font-weight:bold;">{TXT_PRINTSHOP_SUBTITLE_ACTIONS}</span></td>
+        </tr>
+        <!-- BEGIN showEntry -->
+        <tr class="{ENTRY_ROWCLASS}">
+          <td><input type="checkbox" name="selectedEntriesId[]" value="{PRINTSHOP_ATTRIBUTE_ID}" /></td>
+          <td class="psname">{PRINTSHOP_ATTRIBUTE_NAME}</td>
+          <td nowrap="nowrap">
+            <div align="right">
+              <a class="psedit" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id={PRINTSHOP_ATTRIBUTE_ID}" target="_self" title="{TXT_PRINTSHOP_EDIT}">
+                 <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />
+                  </a>
+              <a class="psdelete" href="{DIRECTORY_INDEX}?cmd=printshop&amp;act={PRINTSHOP_ATTRIBUTE}&amp;id={PRINTSHOP_ATTRIBUTE_ID}" target="_self" title="{TXT_PRINTSHOP_DELETE}">
+                 <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_DELETE}" title="{TXT_PRINTSHOP_DELETE}" />
+              </a>
+            </div>
+          </td>
+        </tr>
+        <!-- END showEntry -->
+        <!-- BEGIN noEntry -->
+        <tr class="row2">
+          <td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>
+        </tr>
+        <!-- END noEntry -->
         </tbody>
-	</table>
-	<br />
-	<table cellpadding="2" cellspacing="0" border="0">
-    	<tbody>
-    		<tr>
-    			<td>
-    						<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
-    				<a href="#" id="entriesSelectAll" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a> /
-    				<a href="#" id="entriesDeselectAll" title="{TXT_DESELECT_ALL}">{TXT_DESELECT_ALL}</a>
-    				<img src="images/icons/strike.gif" alt="" />
-    				<select id="entriesMultiAction">
-    					<option value="0">{TXT_MULTISELECT_SELECT}</option>
-    					<option value="delete">{TXT_MULTISELECT_DELETE}</option>
-    				</select>
-    			</td>
-    		</tr>
+  </table>
+  <br />
+  <table cellpadding="2" cellspacing="0" border="0">
+      <tbody>
+        <tr>
+          <td>
+                <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+            <a href="#" id="entriesSelectAll" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a> /
+            <a href="#" id="entriesDeselectAll" title="{TXT_DESELECT_ALL}">{TXT_DESELECT_ALL}</a>
+            <img src="images/icons/strike.gif" alt="" />
+            <select id="entriesMultiAction">
+              <option value="0">{TXT_MULTISELECT_SELECT}</option>
+              <option value="delete">{TXT_MULTISELECT_DELETE}</option>
+            </select>
+          </td>
+        </tr>
         </tbody>
-	</table>
+  </table>
 </form>
 <br />
 <div align="center">{ENTRIES_PAGING}</div>

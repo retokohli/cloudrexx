@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File Uploader
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -62,14 +63,10 @@ class FileUploader extends FileUploaderLib {
     */
     private function showUploadApplet()
     {
-        global $_ARRAYLANG, $_LANGID, $objLanguage, $objInit;
+        global $_ARRAYLANG, $_LANGID, $objInit;
 
         $objFWUser = FWUser::getFWUserObject();
-        if (!isset($objLanguage)) {
-            $objLanguage = new FWLanguage();
-        }
-
-        $lang = $objLanguage->getLanguageParameter($objFWUser->objUser->getBackendLanguage(), 'lang');
+        $lang = FWLanguage::getLanguageParameter($objFWUser->objUser->getBackendLanguage(), 'lang');
         if (!file_exists(ASCMS_MODULE_PATH.'/fileUploader/lib/lang/messages_'.$lang.'.zip')) {
             $lang = $this->defaultInterfaceLanguage;
         }
@@ -91,4 +88,5 @@ class FileUploader extends FileUploaderLib {
         $this->objTpl->show();
     }
 }
+
 ?>

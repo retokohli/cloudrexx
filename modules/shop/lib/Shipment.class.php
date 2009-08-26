@@ -140,7 +140,7 @@ class Shipment
      */
     static function getShipperName($shipperId)
     {
-    	if (empty($shipperId)) return '';
+        if (empty($shipperId)) return '';
         if (empty(self::$arrShippers)) self::init(true);
         if (empty(self::$arrShippers[$shipperId])) return '';
         return self::$arrShippers[$shipperId]['name'];
@@ -168,7 +168,7 @@ class Shipment
     static function getShipmentsArray()
     {
         if (empty(self::$arrShippments)) self::init();
-    	return self::$arrShipments;
+        return self::$arrShipments;
     }
 
 
@@ -270,7 +270,6 @@ class Shipment
         global $_ARRAYLANG;
 
         if (empty(self::$arrShippers)) self::init();
-//echo("getShipperMenu($countryId, $selectedId, $onchange):  Init()ed: ".var_export(self::$arrShippers, true)."<br />");
         $menu = (intval($selectedId) == 0
             ? '<option value="0" selected="selected">'.
               $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
@@ -278,7 +277,6 @@ class Shipment
             : ''
         );
         $arrId = self::getCountriesRelatedShippingIdArray($countryId);
-//echo("getShipperMenu():  Country related IDs: ".var_export($arrId, true)."<br />");
         $haveShipper = false;
         foreach (array_keys(self::$arrShippers) as $sid) {
             // only show suitable shipments in the menu if the user is on the payment page,

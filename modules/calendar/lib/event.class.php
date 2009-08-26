@@ -18,7 +18,7 @@ class CalendarEvent {
     var $values = array();
     var $mandateLink;
     function __construct($mandate = '') {
-    	$this->mandateLink = $mandate;
+        $this->mandateLink = $mandate;
         $this->values = array(
             'id'            => 0,
             'catid'         => 0,
@@ -52,10 +52,10 @@ class CalendarEvent {
             'groups'        => '',
             'all_groups'    => 0,
             'notification'  => 0,
-            'notificationAddress' 		=> '',
-            'registrationSubscriber' 	=> '',
+            'notificationAddress'         => '',
+            'registrationSubscriber'     => '',
             'public '       => '',
-            
+
             'series_status' => 0,
             'series_type'   => 0,
             'series_pattern_count'      => 0,
@@ -160,7 +160,7 @@ class CalendarEvent {
         $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink." WHERE id=$id";
         $objRs = $objDatabase->Execute($query);
         if(!$objRs) {
-        	echo $query."<br>";
+            echo $query."<br>";
             return false;
         }
 

@@ -319,7 +319,7 @@ class Shop extends ShopLibrary
                     break;
                 case 'paypalIpnCheck':
                     require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-                    $objPaypal = new PayPal;
+                    $objPaypal = new Paypal;
                     $objPaypal->ipnCheck();
                     exit;
                     break;
@@ -333,14 +333,12 @@ class Shop extends ShopLibrary
                 // *DO NOT* remove this!  Needed for site testing.
                 case 'testIpn':
                     require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    $objPaypal = new PayPal;
-                    $objPaypal->testIpn(); // die()s!
+                    Paypal::testIpn(); // die()s!
                 // Test for PayPal IPN validation
                 // *DO NOT* remove this!  Needed for site testing.
                 case 'testIpnValidate':
                     require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    $objPaypal = new PayPal;
-                    $objPaypal->testIpnValidate(); // die()s!
+                    Paypal::testIpnValidate(); // die()s!
                 default:
                     $this->products();
                     break;
@@ -878,7 +876,6 @@ class Shop extends ShopLibrary
         JS::activate('shadowbox');
 
         $flagSpecialoffer = intval($this->arrConfig['shop_show_products_default']['value']);
-//echo("special: $flagSpecialoffer<br />");
         $flagLastFive =
             (isset($_REQUEST['lastFive'])  ? true                   : false);
         $productId =
@@ -1367,18 +1364,15 @@ class Shop extends ShopLibrary
                 $product_Id =
                     $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
             $arrAttributeNames = ProductAttributes::getNameArrayByProductId($product_Id);
-//echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
             // When there are no ProductAttributes for this Product, hide the
             // options blocks
             if (empty($arrAttributeNames)) {
                 $this->objTemplate->hideBlock('shopProductOptionsRow');
                 $this->objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
-//echo("Showing Attributes for Product ID $product_Id<br />PA Names: ".var_export($arrAttributeNames, true)."<hr />");
                 // Loop through the ProductAttribute Names for the Product
                 foreach ($arrAttributeNames as $optionId => $arrAttributeName) {
                     $arrAttributeValues = ProductAttributes::getValueArrayByNameId($optionId);
-//echo("Showing Attribute Values for name ID $optionId<br />Values: ".var_export($arrAttributeValues, true)."<hr />");
                     $selectValues = '';
                     // create head of option menu/checkbox/radiobutton
                     switch ($arrAttributeName['type']) {
@@ -1773,7 +1767,6 @@ class Shop extends ShopLibrary
     function _getProductPrice(
         $productId, $priceOptions=0, $count=1, $flagIgnoreSpecialoffer=false)
     {
-//echo("_getProductPrice($productId, $priceOptions, $count, $flagIgnoreSpecialoffer): Entered<br />");
         $objProduct = Product::getById($productId);
         if (!$objProduct) return false;
         $normalPrice = $objProduct->getPrice();
@@ -1810,7 +1803,6 @@ class Shop extends ShopLibrary
             $price -= ($price * $rateCount * 0.01);
         }
         $price = Currency::getCurrencyPrice($price);
-//echo("_getProductPrice(): Made /$price/<br />");
         return $price;
     }
 
@@ -2142,7 +2134,7 @@ function shopUpdateCart()
 function shopGenerateCart()
 {
     cart = '';
-    if (objCart.products.length>0) {
+    if (countObjects(objCart.products)) {
         for (i = 0; i < objCart.products.length; i++) {
             cartProduct = cartProductsTpl.replace('[[SHOP_JS_PRODUCT_QUANTITY]]', objCart.products[i].quantity);
             cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', objCart.products[i].title+objCart.products[i].options);
@@ -2551,9 +2543,7 @@ sendReq('', 1);
                     // Should be tested!
                     //if (!$objProductAttribute) { ... }
                       $arrValues = $objProductAttribute->getValueArray();
-//echo("_parseCart(): Got Values ".var_export($arrValues, true)."<br />");
                     foreach ($arrValueIds as $value_id) {
-//echo("_parseCart(): processing value ID $value_id<br />");
                         // Note that the ProductAttribute values are indexed
                         // starting from 1!
                         // For types 4..7, the value entered in the text box is
@@ -2567,7 +2557,6 @@ sendReq('', 1);
                             //$arrValues = ProductAttributes::getValueArrayByNameId($optionId);
                             $arrValue = $arrValues[$value_id];
                         }
-//echo("_parseCart(): Fixed value ".var_export($arrValue, true)."<br />");
                         if (!is_array($arrValue)) continue;
                         $optionValue = ShopLibrary::stripUniqidFromFilename($arrValue['value']);
                         if (   $optionValue != $arrValue['value']
@@ -3194,7 +3183,7 @@ die("Z1");
                 // PayPal payment processor (processor ID 2)
 die("Z2");
                 require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                $objPaypal = new PayPal;
+                $objPaypal = new Paypal;
                 if (!in_array(Currency::getActiveCurrencyCode(), Paypal::getAcceptedCurrencyCodeArray())) {
                     foreach (Currency::getCurrencyArray() as $arrCurrency) {
                         if ($arrCurrency['status'] && $arrCurrency['code'] == $this->arrConfig['paypal_default_currency']['value']) {
@@ -3925,11 +3914,10 @@ right after the customer logs in!
             $processorId = Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id');
             $processorName = PaymentProcessing::getPaymentProcessorName($processorId);
              // other payment methods
-            $objLanguage = new FWLanguage();
             $this->objProcessing->initProcessor(
                 $processorId,
                 Currency::getActiveCurrencyCode(),
-                $objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang')
+                FWLanguage::getLanguageParameter(FRONTEND_LANG_ID, 'lang')
             );
 
             // if the processor is Internal_LSV, and there is account information,

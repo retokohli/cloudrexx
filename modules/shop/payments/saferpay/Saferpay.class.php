@@ -387,11 +387,11 @@ class Saferpay
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payConfirm'].'?'.$this->attributes);
         if (!$this->arrTemp['result']) {
-	        // Try socket connection as well
-	        $this->arrTemp['result'] =
-	            Socket::getHttp10Response(
-	                $this->gateway['payConfirm'].'?'.$this->attributes
-	            );
+            // Try socket connection as well
+            $this->arrTemp['result'] =
+                Socket::getHttp10Response(
+                    $this->gateway['payConfirm'].'?'.$this->attributes
+                );
         }
 
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {

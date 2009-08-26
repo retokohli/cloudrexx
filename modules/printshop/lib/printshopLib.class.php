@@ -185,7 +185,7 @@ class PrintshopLibrary {
     function _getAttributeTranslation(){
         if(empty($this->_arrAttributeTranslation)){
             foreach ($this->_arrAvailableAttributes as $attribute) {
-            	$this->_arrAttributeTranslation[$attribute] = $this->_getAttributes($attribute);
+                $this->_arrAttributeTranslation[$attribute] = $this->_getAttributes($attribute);
             }
         }
     }
@@ -206,7 +206,7 @@ class PrintshopLibrary {
         $html = '<select name="'.$namePrefix.$attribute.'"><option value="0">'.$defaultText.'</option>';
         $selected = 'selected="selected"';
         foreach ($arrAttributes as $id => $attribute) {
-        	$html .= '<option '.($selectedId == $attribute['id'] ? $selected : '').' value="'.$attribute['id'].'">'.$attribute['name'].'</option>';
+            $html .= '<option '.($selectedId == $attribute['id'] ? $selected : '').' value="'.$attribute['id'].'">'.$attribute['name'].'</option>';
         }
         return $html.'</select>';
     }

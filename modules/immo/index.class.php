@@ -44,16 +44,16 @@ class Immo extends ImmoLib
     var $_objTpl;
 
     var $_arrPriceFormat = array(
-    	1 => array(
-    		'dec' => 0,
-    		'dec_sep' => ",",
-    		'thousand_sep' => "'",
-    	),
-    	2 => array(
-    		'dec' => 0,
-    		'dec_sep' => ",",
-    		'thousand_sep' => "'",
-    	)
+        1 => array(
+            'dec' => 0,
+            'dec_sep' => ",",
+            'thousand_sep' => "'",
+        ),
+        2 => array(
+            'dec' => 0,
+            'dec_sep' => ",",
+            'thousand_sep' => "'",
+        )
     );
 
 
@@ -106,7 +106,7 @@ class Immo extends ImmoLib
         $this->_objTpl->setTemplate($pageContent);
 
         if(function_exists('mysql_set_charset')){
-        	mysql_set_charset("utf8"); //this is important for umlauts
+            mysql_set_charset("utf8"); //this is important for umlauts
         }
 
         parent::__construct();
@@ -132,12 +132,12 @@ class Immo extends ImmoLib
                 case 'map':
                     $this->_loadIFrame();
                        break;
-				case 'quickSearch':
-				    $this->_quickSearch();
-				    break;
-				case 'detailSearch':
-				    $this->_detailSearch();
-				    break;
+                case 'quickSearch':
+                    $this->_quickSearch();
+                    break;
+                case 'detailSearch':
+                    $this->_detailSearch();
+                    break;
                 case 'immolist':
                     $this->_showImmoList();
                     break;
@@ -186,7 +186,7 @@ class Immo extends ImmoLib
 
         foreach ($images as $index => $image) {
             $this->_objTpl->setVariable(array(
-            	 'IMMO_STYLE_NAME'		 => $this->_styleName,
+                 'IMMO_STYLE_NAME'         => $this->_styleName,
                  'IMMO_IMAGE_INDEX'      => $index,
                  'IMMO_IMAGE_SRC'        => $image['imgsrc'],
                  'IMMO_IMAGE_WIDTH'      => $image['width'],
@@ -210,14 +210,14 @@ class Immo extends ImmoLib
      *
      */
     function _quickSearch(){
-		switch (intval($_GET['step'])){
-			case 2:
-				$this->_showQuickSearch1();
-				$this->_showQuickSearch2();
-			break;
-			default:
-				$this->_showQuickSearch1();
-		}
+        switch (intval($_GET['step'])){
+            case 2:
+                $this->_showQuickSearch1();
+                $this->_showQuickSearch2();
+            break;
+            default:
+                $this->_showQuickSearch1();
+        }
     }
 
 
@@ -226,19 +226,19 @@ class Immo extends ImmoLib
      *
      */
     function _showQuickSearch1(){
-    	global $objDatabase;
+        global $objDatabase;
 
-    	if($this->_objTpl->blockExists('step_2')){
-    		$this->_objTpl->hideblock('step_2');
-    	}
+        if($this->_objTpl->blockExists('step_2')){
+            $this->_objTpl->hideblock('step_2');
+        }
 
-    	$this->_objTpl->setVariable(array(
-    		'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=quickSearch&step=2',
-    		'IMMO_RADIO_CHECKED_'.
-    			( !empty($_POST['cat']) && $_POST['cat'] == 'business' ? 'BUSINESS' : 'RESIDENCE' )
-    							 => 'checked="checked"',
-	   	));
-    	$this->_objTpl->parse('step_1');
+        $this->_objTpl->setVariable(array(
+            'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=quickSearch&step=2',
+            'IMMO_RADIO_CHECKED_'.
+                ( !empty($_POST['cat']) && $_POST['cat'] == 'business' ? 'BUSINESS' : 'RESIDENCE' )
+                                 => 'checked="checked"',
+           ));
+        $this->_objTpl->parse('step_1');
 
     }
 
@@ -247,75 +247,75 @@ class Immo extends ImmoLib
      *
      */
     function _showQuickSearch2(){
-    	if($this->_objTpl->blockExists('step_1')){
-    		$this->_objTpl->touchBlock('step_1');
-    	}
+        if($this->_objTpl->blockExists('step_1')){
+            $this->_objTpl->touchBlock('step_1');
+        }
 
-    	$this->_objTpl->setVariable(array(
-    		'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=immolist',
-    	));
+        $this->_objTpl->setVariable(array(
+            'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=immolist',
+        ));
 
-    	//buy
-    	//get buy info
-    	foreach ($this->categories as $id => $category) {
-			$this->_objTpl->setVariable(array(
-				'IMMO_CHECKBOX_ID'	=> $id,
-				'IMMO_CHECKBOX_NAME'	=> 'rent',
-				'IMMO_CHECKBOX_VALUE'	=> $category,
-				'IMMO_CHECKBOX_CHECKED'	=> $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
-				'IMMO_CHECKBOX_LABEL'	=> $category
-			));
+        //buy
+        //get buy info
+        foreach ($this->categories as $id => $category) {
+            $this->_objTpl->setVariable(array(
+                'IMMO_CHECKBOX_ID'    => $id,
+                'IMMO_CHECKBOX_NAME'    => 'rent',
+                'IMMO_CHECKBOX_VALUE'    => $category,
+                'IMMO_CHECKBOX_CHECKED'    => $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
+                'IMMO_CHECKBOX_LABEL'    => $category
+            ));
 
-			$this->_objTpl->parse('buyResult');
-    	}
+            $this->_objTpl->parse('buyResult');
+        }
 
-    	//rent
-    	//get rent info
-    	foreach ($this->categories as $id => $category) {
-			$this->_objTpl->setVariable(array(
-				'IMMO_CHECKBOX_ID'	=> $id,
-				'IMMO_CHECKBOX_NAME'	=> 'rent',
-				'IMMO_CHECKBOX_VALUE'	=> $category,
-				'IMMO_CHECKBOX_CHECKED'	=> $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
-				'IMMO_CHECKBOX_LABEL'	=> $category
-			));
+        //rent
+        //get rent info
+        foreach ($this->categories as $id => $category) {
+            $this->_objTpl->setVariable(array(
+                'IMMO_CHECKBOX_ID'    => $id,
+                'IMMO_CHECKBOX_NAME'    => 'rent',
+                'IMMO_CHECKBOX_VALUE'    => $category,
+                'IMMO_CHECKBOX_CHECKED'    => $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
+                'IMMO_CHECKBOX_LABEL'    => $category
+            ));
 
-			$this->_objTpl->parse('rentResult');
-    	}
-    	$this->_objTpl->parse('step_2');
+            $this->_objTpl->parse('rentResult');
+        }
+        $this->_objTpl->parse('step_2');
     }
 
 
     /**
-   	 * deatil search handling
+        * deatil search handling
      *
      */
     function _detailSearch(){
-		if(!empty($_GET['step'])){
-			if(!empty($_GET['noAJAX'])){
-				switch ($_GET['step']){
-					case 2:
-						$this->_showDetailSearchNoAJAX2();
-					break;
-					case 3:
-						$this->_showDetailSearchNoAJAX23();
-					break;
-					default:
-						$this->_showDetailSearchNoAJAX21();
-				}
-			}else{
-				switch ($_GET['step']){
-					case 2:
-						$this->_showDetailSearch2();
-					break;
-					case 3:
-						$this->_showDetailSearch3();
-					break;
-					default:
-						$this->_showDetailSearch1();
-				}
-			}
-		}
+        if(!empty($_GET['step'])){
+            if(!empty($_GET['noAJAX'])){
+                switch ($_GET['step']){
+                    case 2:
+                        $this->_showDetailSearchNoAJAX2();
+                    break;
+                    case 3:
+                        $this->_showDetailSearchNoAJAX23();
+                    break;
+                    default:
+                        $this->_showDetailSearchNoAJAX21();
+                }
+            }else{
+                switch ($_GET['step']){
+                    case 2:
+                        $this->_showDetailSearch2();
+                    break;
+                    case 3:
+                        $this->_showDetailSearch3();
+                    break;
+                    default:
+                        $this->_showDetailSearch1();
+                }
+            }
+        }
     }
 
 

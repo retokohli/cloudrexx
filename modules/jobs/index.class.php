@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * DocSys
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -14,7 +15,7 @@
  * Includes
  */
 require_once ASCMS_MODULE_PATH . '/jobs/lib/Library.class.php';
-error_reporting(E_ALL);
+
 /**
  * DocSys
  *
@@ -35,13 +36,6 @@ class jobs extends jobsLibrary
     var $_objTpl;
 
 
-    function jobs($pageContent)
-    {
-        $this->__construct($pageContent);
-    }
-
-
-    // CONSTRUCTOR
     function __construct($pageContent)
     {
         global $_LANGID;
@@ -87,47 +81,47 @@ class jobs extends jobsLibrary
         $this->_objTpl->setTemplate($this->pageContent);
 
         $id = intval($_GET['id']);
-        
-        
+
+
         /**
         *
         * First get Settings and build footnote
         *
         */
-        
+
         $footnotetext = "";
         $footnotelink = "";
-    	$footnote = "";
+        $footnote = "";
         $link = "";
         $url = "";
-        
+
         if($id > 0) {
-	        $query = "SELECT *
-	                     FROM `".DBPREFIX."module_jobs_settings`
-	                     WHERE name = 'footnote'
-	                     OR name = 'link'
-	                     OR name = 'url'
-	                     ";
-	        $objResult = $objDatabase->Execute($query);
-	
-	        while(!$objResult->EOF) {
-	
-	            if($objResult->fields['name']== "footnote") {
-	                $footnote = stripslashes($objResult->fields['value']);
-	            }
-	            elseif($objResult->fields['name']== "link") {
-	                $link = stripslashes($objResult->fields['value']);
-	            }
-	            elseif($objResult->fields['name']== "url") {
-	                $url = stripslashes($objResult->fields['value']);
-	            }
-	            $objResult->movenext();
-	        }
-	        
+            $query = "SELECT *
+                         FROM `".DBPREFIX."module_jobs_settings`
+                         WHERE name = 'footnote'
+                         OR name = 'link'
+                         OR name = 'url'
+                         ";
+            $objResult = $objDatabase->Execute($query);
+
+            while(!$objResult->EOF) {
+
+                if($objResult->fields['name']== "footnote") {
+                    $footnote = stripslashes($objResult->fields['value']);
+                }
+                elseif($objResult->fields['name']== "link") {
+                    $link = stripslashes($objResult->fields['value']);
+                }
+                elseif($objResult->fields['name']== "url") {
+                    $url = stripslashes($objResult->fields['value']);
+                }
+                $objResult->movenext();
+            }
+
         }
-        
-        
-        
+
+
+
 
         $this->_objTpl->setVariable(array(
             'TXT_JOBS_AUTOR' => $_ARRAYLANG['TXT_JOBS_AUTOR'],
@@ -162,7 +156,7 @@ class jobs extends jobsLibrary
                 $workloc    = stripslashes($objResult->fields['workloc']);
                 $workload = stripslashes($objResult->fields['workload']);
                 $work_start = stripslashes($objResult->fields['work_start']);
-                
+
                 if(empty($work_start) or time() >= $work_start ) {
                     $work_start = $_ARRAYLANG['TXT_JOBS_WORK_START_NOW'];
                 } else {
@@ -176,32 +170,32 @@ class jobs extends jobsLibrary
                         'TXT_JOBS_LASTUPDATE' => $_ARRAYLANG['TXT_JOBS_LASTUPDATE'],
                         'JOBS_LASTUPDATE' => date(ASCMS_DATE_FORMAT,$lastUpdate),
                     ));
-                     
+
                 }
 
                 $title = stripslashes($objResult->fields['title']);
-	                
-		        /*
-		        * Replace self defined placeholders in $url
-		        */
-		        if(!empty($footnote)) {
-					$footnotetext = nl2br($footnote);
-		        }
-		        
-		        if(!empty($link)) {
-			        $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
-			        $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
-			        $footnotelink = "<a href='$url'>$link</a>";			        
-		        }
-                
-                  
+
+                /*
+                * Replace self defined placeholders in $url
+                */
+                if(!empty($footnote)) {
+                    $footnotetext = nl2br($footnote);
+                }
+
+                if(!empty($link)) {
+                    $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
+                    $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
+                    $footnotelink = "<a href='$url'>$link</a>";
+                }
+
+
                 $this->_objTpl->setVariable(array(
                     'JOBS_DATE' => date(ASCMS_DATE_FORMAT,$date),
                     'JOBS_TITLE'=> stripslashes($title),
                     'JOBS_AUTHOR'    => stripslashes($objResult->fields['author']),
                     'JOBS_TEXT' => stripslashes($objResult->fields['text']),
                     'JOBS_FOOTNOTE' => $footnotetext,
-                    'JOBS_FOOTNOTE_LINK' => $footnotelink,           
+                    'JOBS_FOOTNOTE_LINK' => $footnotelink,
                     'JOBS_WORKLOC' => $workloc,
                     'JOBS_WORKLOAD'=> $workload,
                     'JOBS_WORK_START' => $work_start));
@@ -217,9 +211,6 @@ class jobs extends jobsLibrary
     }
 
 
-
-
-
     /**
     * Gets the global page title
     *
@@ -233,9 +224,6 @@ class jobs extends jobsLibrary
     }
 
 
-
-
-
     /**
     * Gets the list with the headlines
     *
@@ -244,7 +232,6 @@ class jobs extends jobsLibrary
     * @param     string       $page_content
     * @return    string    parsed content
     */
-
     function getTitles()
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
@@ -262,17 +249,13 @@ class jobs extends jobsLibrary
         $category;
 
         $this->_objTpl->setTemplate($this->pageContent);
-        
         if(isset($_REQUEST['catid'])) {
             $category = intval($_REQUEST['catid']);
         }
-        /**
-         * This overwrites $_REQUEST['catid'] but it shouldnt be set parallel anyway
-         */
+        // This overwrites $_REQUEST['catid'] but it shouldnt be set parallel anyway
         if(is_numeric($_REQUEST['cmd'])) {
-        	$category = $_REQUEST['cmd'];
+            $category = $_REQUEST['cmd'];
         }
-            
 
         if(!empty($category)){
             $selectedId= intval($category);
@@ -286,9 +269,7 @@ class jobs extends jobsLibrary
             }
             $docFilter =" n.catid='$selectedId' AND ";
         }
-        
-        
-        
+
         $objRS = $objDatabase->Execute("SELECT id,value FROM `".DBPREFIX."module_jobs_settings` WHERE name = 'show_location_fe'");
         if($objRS !== false ) {
             if(intval($objRS->fields['value']) == 1) {
@@ -296,7 +277,6 @@ class jobs extends jobsLibrary
                     $location = intval($_REQUEST['locid']);
                     $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE  rel.job = n.id AND rel.location = '".$location."' AND ";
                 }
-        
                 $jobslocationform ="
     <select name=\"locid\" onchange=\"javascript:this.form.submit();\">
     <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_JOBS_LOCATION_ALL']."</option>
@@ -305,16 +285,12 @@ class jobs extends jobsLibrary
             }
         }
 
-        
-
-
-            
         $jobscategoryform ="
     <select name=\"catid\" onchange=\"javascript:this.form.submit();\">
     <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_CATEGORY_ALL']."</option>
     ".$this->getCategoryMenu($this->langId, $selectedId)."
     </select>";
-        
+
         $this->_objTpl->setVariable("JOBS_CATEGORY_FORM",$jobscategoryform );
         $this->_objTpl->setVariable("JOBS_LOCATION_FORM",$jobslocationform );
         $this->_objTpl->setVariable("TXT_PERFORM", $_ARRAYLANG['TXT_PERFORM']);
@@ -374,17 +350,17 @@ class jobs extends jobsLibrary
         $this->_objTpl->setVariable("JOBS_PAGING", $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos) ;
         /*** end paging ***/
-        
+
         if($count>=1){
             while (!$objResult->EOF) {
                 ($i % 2) ? $class  = 'row1' : $class  = 'row2';
 
                 $this->_objTpl->setVariable(array(
                     'JOBS_STYLE'      => $class,
-                    'JOBS_ID'			=> $objResult->fields['docid'],
+                    'JOBS_ID'            => $objResult->fields['docid'],
                     'JOBS_LONG_DATE'  => date($this->dateLongFormat,$objResult->fields['date']),
                     'JOBS_DATE'       => date($this->dateFormat,$objResult->fields['date']),
-                    'JOBS_LINK'       => "<a href=\"?section=jobs&amp;cmd=details&amp;id=".$objResult->fields['docid']."\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",                    
+                    'JOBS_LINK'       => "<a href=\"?section=jobs&amp;cmd=details&amp;id=".$objResult->fields['docid']."\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
                     'JOBS_AUTHOR'       => stripslashes($objResult->fields['author']),
                     'JOBS_WORKLOAD' => stripslashes($objResult->fields['workload'])
                 ));
@@ -402,4 +378,5 @@ class jobs extends jobsLibrary
         return $this->_objTpl->get();
     }
 }
+
 ?>

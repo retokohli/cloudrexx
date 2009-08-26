@@ -6,21 +6,21 @@ Text[0]=["","{TXT_PRINTSHOP_EMAIL_HELP}"];
 //]]>
 </script>
 <form name="frmSettings" method="post" action="{DIRECTORY_INDEX}?cmd=printshop&amp;act=saveSettings">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-		<tr>
-			<th colspan="2">{TXT_PRINTSHOP_SETTINGS_TITLE}</th>
-		</tr>
-		<tr class="row1">
-			<td width="15%">{TXT_PRINTSHOP_ORDER_EMAIL}</td>
-			<td width="85%"><input type="text" name="orderEmail" value="{PRINTSHOP_SETTINGS_ORDER_EMAIL}"  maxlength="50" style="width:30%;"  />&nbsp;
-				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-		</tr>
-		<tr class="row2">
-			<td width="15%">{TXT_PRINTSHOP_ENTRIES_PER_PAGE}</td>
-			<td width="85%"><input type="text" name="entriesPerPage" value="{PRINTSHOP_SETTINGS_ENTRIES_PER_PAGE}"  maxlength="50" style="width:30%;"  />&nbsp;</td>
-		</tr>
-	</table>
-	<br />
-	<input type="submit" value="{TXT_SAVE}" name="save_settings" />
+  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+    <tr>
+      <th colspan="2">{TXT_PRINTSHOP_SETTINGS_TITLE}</th>
+    </tr>
+    <tr class="row1">
+      <td width="15%">{TXT_PRINTSHOP_ORDER_EMAIL}</td>
+      <td width="85%"><input type="text" name="orderEmail" value="{PRINTSHOP_SETTINGS_ORDER_EMAIL}"  maxlength="50" style="width:30%;"  />&nbsp;
+        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+    </tr>
+    <tr class="row2">
+      <td width="15%">{TXT_PRINTSHOP_ENTRIES_PER_PAGE}</td>
+      <td width="85%"><input type="text" name="entriesPerPage" value="{PRINTSHOP_SETTINGS_ENTRIES_PER_PAGE}"  maxlength="50" style="width:30%;"  />&nbsp;</td>
+    </tr>
+  </table>
+  <br />
+  <input type="submit" value="{TXT_SAVE}" name="save_settings" />
 </form>
 <!-- END module_printshop_settings.html -->

@@ -6,15 +6,15 @@ Text[0]=["","{TXT_SORT}"];
 
 
 var hoverIn = function(obj) {
-	if (navigator.appName.indexOf("Explorer") == -1) {
-		obj.style.background = '#ffffcc';
-	}
+  if (navigator.appName.indexOf("Explorer") == -1) {
+    obj.style.background = '#ffffcc';
+  }
 }
 
 var hoverOut = function(obj) {
-	if (navigator.appName.indexOf("Explorer") == -1) {
-		obj.style.background = 'transparent';
-	}
+  if (navigator.appName.indexOf("Explorer") == -1) {
+    obj.style.background = 'transparent';
+  }
 }
 
 
@@ -41,10 +41,10 @@ var hoverOut = function(obj) {
         </tr>
     </table>
     <div>
-	    <ul id="articlelist"  >
-		<!-- BEGIN row -->
-			<li id="article_{ARTICLEID}" style=" z-index: 1000;">
-	            <table style="width: 100%">
+      <ul id="articlelist"  >
+    <!-- BEGIN row -->
+      <li id="article_{ARTICLEID}" style=" z-index: 1000;">
+              <table style="width: 100%">
                 <tr>
                     <!-- BEGIN sort-td -->
                     <td class="drag_handle" style="width: 20px; vertical-align: top;" onmousedown="lastDragged={ARTICLEID_DRAG}; handlerEvent();">
@@ -57,8 +57,8 @@ var hoverOut = function(obj) {
                         </a>
                     </td>
                     <td style="padding-right: 15px; vertical-align: top;">
-                        <span onclick="location.href='index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}'" 
-							onmouseover="hoverIn(this)" onmouseout="hoverOut(this)" style="cursor: pointer; color: #000099;">{QUESTION}</span>
+                        <span onclick="location.href='index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}'"
+              onmouseover="hoverIn(this)" onmouseout="hoverOut(this)" style="cursor: pointer; color: #000099;">{QUESTION}</span>
                     </td>
                     <td style="width: 50px; vertical-align: top;">
                         {HITS}
@@ -70,22 +70,22 @@ var hoverOut = function(obj) {
                         <a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}" title="{TXT_IMGALT_EDIT}">
                             <img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" />
                         </a>
-                        
-    					<a href="javascript:deleteArticle({ARTICLEID});" title="{TXT_DELETE_CATEGORY}">
-    					   <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
-    				    </a> 
+
+              <a href="javascript:deleteArticle({ARTICLEID});" title="{TXT_DELETE_CATEGORY}">
+                 <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
+                </a>
                     </td>
                 </tr>
             </table>
-	        </li>
-	        <!-- END row -->
-	        
-	        <!-- BEGIN no_articles -->
-	        <li>
-	            {TXT_NO_ARTICLES}
-	        </li>   
-	        <!-- END no_articles -->
-	    </ul>
+          </li>
+          <!-- END row -->
+
+          <!-- BEGIN no_articles -->
+          <li>
+              {TXT_NO_ARTICLES}
+          </li>
+          <!-- END no_articles -->
+      </ul>
         <br  style="clear: both;"/>
     </div>
     <br />

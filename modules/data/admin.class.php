@@ -3,7 +3,7 @@
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
- * @version	    $Id: index.inc.php,v 1.00 $
+ * @version        $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_data
  *
@@ -19,263 +19,263 @@ require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
  * DataAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
- * @version	    $Id: index.inc.php,v 1.00 $
+ * @version        $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_data
  */
 class DataAdmin extends DataLibrary {
 
-	var $_objTpl;
-	var $_strPageTitle	= '';
-	var $_strErrMessage = '';
-	var $_strOkMessage 	= '';
+    var $_objTpl;
+    var $_strPageTitle    = '';
+    var $_strErrMessage = '';
+    var $_strOkMessage     = '';
 
     var $current_cat_id = 0;
 
-	/**
-	* Constructor-Fix for non PHP5-Servers
+    /**
+    * Constructor-Fix for non PHP5-Servers
     *
     */
-	function DataAdmin() {
-		$this->__construct();
-	}
-
-
-	/**
-	* Constructor	-> Create the module-menu and an internal template-object
-    *
-    * @global   InitCMS
-    * @global	HTML_Template_Sigma
-    * @global	array
-    */
-	function __construct() {
-		global $objInit, $objTemplate, $_ARRAYLANG;
-
-		DataLibrary::__construct();
-		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
-		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
- 		$this->_intLanguageId = $objInit->userFrontendLangId;
-
-    	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=data">'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'].'</a>
-    														<a href="?cmd=data&amp;act=addEntry">'.$_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'].'</a>
-    														<a href="?cmd=data&amp;act=manageCategory">'.$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'].'</a>
-    														<a href="?cmd=data&amp;act=settings">'.$_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'].'</a>
-    												');
-	}
+    function DataAdmin() {
+        $this->__construct();
+    }
 
 
     /**
-	* Perform the right operation depending on the $_GET-params
+    * Constructor    -> Create the module-menu and an internal template-object
     *
-    * @global 	HTML_Template_Sigma
+    * @global   InitCMS
+    * @global    HTML_Template_Sigma
+    * @global    array
+    */
+    function __construct() {
+        global $objInit, $objTemplate, $_ARRAYLANG;
+
+        DataLibrary::__construct();
+        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
+         $this->_intLanguageId = $objInit->userFrontendLangId;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=data">'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'].'</a>
+                                                            <a href="?cmd=data&amp;act=addEntry">'.$_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'].'</a>
+                                                            <a href="?cmd=data&amp;act=manageCategory">'.$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'].'</a>
+                                                            <a href="?cmd=data&amp;act=settings">'.$_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'].'</a>
+                                                    ');
+    }
+
+
+    /**
+    * Perform the right operation depending on the $_GET-params
+    *
+    * @global     HTML_Template_Sigma
     */
     function getPage() {
-    	global /*$objPerm,*/ $objTemplate;
+        global /*$objPerm,*/ $objTemplate;
 
-    	if(!isset($_GET['act'])) {
-    	    $_GET['act']='';
-    	}
+        if(!isset($_GET['act'])) {
+            $_GET['act']='';
+        }
 
-    	switch($_GET['act']){
-    		case 'addEntry':
-    			/*$objPerm->checkAccess(121, 'static');*/
-    			$this->addEntry();
+        switch($_GET['act']){
+            case 'addEntry':
+                /*$objPerm->checkAccess(121, 'static');*/
+                $this->addEntry();
                 break;
-    		case 'insertEntry':
-    			/*$objPerm->checkAccess(121, 'static');*/
-    			$this->insertEntry();
-    			$this->showEntries();
-    			break;
-    		case 'deleteEntry':
-    			/*$objPerm->checkAccess(120, 'static');*/
-    			$this->deleteEntry($_GET['id']);
-    			$this->showEntries();
-    			break;
-    		case 'editEntry':
-    			/*$objPerm->checkAccess(120, 'static');*/
-    			$this->editEntry($_GET['id']);
-    			break;
-    		case 'updateEntry':
-    			/*$objPerm->checkAccess(120, 'static');*/
-    			$this->updateEntry();
-    			$this->showEntries();
-    			break;
-    		case 'switchEntryState':
-    		    /*$objPerm->checkAccess(120, 'static');*/
-    		    $this->switchEntryState();
-    		    break;
-    		case 'multiactionEntry':
-    			/*$objPerm->checkAccess(120, 'static');*/
-    			$this->doEntryMultiAction($_POST['frmShowEntries_MultiAction']);
-    			$this->showEntries();
-    			break;
-    		case 'manageCategory':
-    			/*$objPerm->checkAccess(122, 'static');*/
-    			$this->showCategories();
-    			break;
-    		case 'insertCategory':
-    			/*$objPerm->checkAccess(123, 'static');*/
-    			$this->insertCategory();
-    			$this->showCategories();
-    			break;
-    		case 'editCategory':
-    			/*$objPerm->checkAccess(122, 'static');*/
-    			$this->editCategory($_GET['id']);
-    			break;
-    		case 'updateCategory':
-    			/*$objPerm->checkAccess(122, 'static');*/
-    			$this->updateCategory();
-    			$this->showCategories();
-    			break;
-    		case 'deleteCategory':
-    			/*$objPerm->checkAccess(122, 'static');*/
-    			$this->deleteCategory($_GET['id']);
-    			$this->showCategories();
-    			break;
-    		case 'multiactionCategory':
-    			/*$objPerm->checkAccess(122, 'static');*/
-    			$this->doCategoryMultiAction($_POST['frmShowCategories_MultiAction']);
-    			$this->showCategories();
-    			break;
-    	    case 'switchCategoryState':
-    		    /*$objPerm->checkAccess(120, 'static');*/
-    		    $this->switchCategoryState();
-    		    break;
-    		case 'settings':
-    			/*$objPerm->checkAccess(124, 'static');*/
-    			$this->showSettings();
-    			break;
-    		case 'saveSettings':
-    			/*$objPerm->checkAccess(124, 'static');*/
-    			$this->saveSettings();
-    			$this->showSettings();
-    			break;
-    		case 'saveEntryOrder':
-    		    /*$objPerm->checkAccess(120, 'static');*/
-    		    $this->saveEntryOrder();
-    		    break;
-    		case 'saveCategoryOrder':
-    		    /*$objPerm->checkAccess(122, 'static');*/
-    		    $this->saveCategoryOrder();
-    		    break;
-    		default:
-    			/*$objPerm->checkAccess(120, 'static');*/
-    			$this->showEntries();
-    	}
+            case 'insertEntry':
+                /*$objPerm->checkAccess(121, 'static');*/
+                $this->insertEntry();
+                $this->showEntries();
+                break;
+            case 'deleteEntry':
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->deleteEntry($_GET['id']);
+                $this->showEntries();
+                break;
+            case 'editEntry':
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->editEntry($_GET['id']);
+                break;
+            case 'updateEntry':
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->updateEntry();
+                $this->showEntries();
+                break;
+            case 'switchEntryState':
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->switchEntryState();
+                break;
+            case 'multiactionEntry':
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->doEntryMultiAction($_POST['frmShowEntries_MultiAction']);
+                $this->showEntries();
+                break;
+            case 'manageCategory':
+                /*$objPerm->checkAccess(122, 'static');*/
+                $this->showCategories();
+                break;
+            case 'insertCategory':
+                /*$objPerm->checkAccess(123, 'static');*/
+                $this->insertCategory();
+                $this->showCategories();
+                break;
+            case 'editCategory':
+                /*$objPerm->checkAccess(122, 'static');*/
+                $this->editCategory($_GET['id']);
+                break;
+            case 'updateCategory':
+                /*$objPerm->checkAccess(122, 'static');*/
+                $this->updateCategory();
+                $this->showCategories();
+                break;
+            case 'deleteCategory':
+                /*$objPerm->checkAccess(122, 'static');*/
+                $this->deleteCategory($_GET['id']);
+                $this->showCategories();
+                break;
+            case 'multiactionCategory':
+                /*$objPerm->checkAccess(122, 'static');*/
+                $this->doCategoryMultiAction($_POST['frmShowCategories_MultiAction']);
+                $this->showCategories();
+                break;
+            case 'switchCategoryState':
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->switchCategoryState();
+                break;
+            case 'settings':
+                /*$objPerm->checkAccess(124, 'static');*/
+                $this->showSettings();
+                break;
+            case 'saveSettings':
+                /*$objPerm->checkAccess(124, 'static');*/
+                $this->saveSettings();
+                $this->showSettings();
+                break;
+            case 'saveEntryOrder':
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->saveEntryOrder();
+                break;
+            case 'saveCategoryOrder':
+                /*$objPerm->checkAccess(122, 'static');*/
+                $this->saveCategoryOrder();
+                break;
+            default:
+                /*$objPerm->checkAccess(120, 'static');*/
+                $this->showEntries();
+        }
 
-		$objTemplate->setVariable(array(
-			'CONTENT_TITLE'				=> $this->_strPageTitle,
-			'CONTENT_OK_MESSAGE'		=> $this->_strOkMessage,
-			'CONTENT_STATUS_MESSAGE'	=> $this->_strErrMessage,
-			'ADMIN_CONTENT'				=> $this->_objTpl->get()
-		));
+        $objTemplate->setVariable(array(
+            'CONTENT_TITLE'                => $this->_strPageTitle,
+            'CONTENT_OK_MESSAGE'        => $this->_strOkMessage,
+            'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
+            'ADMIN_CONTENT'                => $this->_objTpl->get()
+        ));
     }
 
 
     /**
      * Shows the categories-page of the data-module.
      *
-     * @global	array
-     * @global 	ADONewConnection
+     * @global    array
+     * @global     ADONewConnection
      */
     function showCategories() {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-		$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_data_categories.html',true,true);
+        $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
+        $this->_objTpl->loadTemplateFile('module_data_categories.html',true,true);
 
-    	$this->_objTpl->setVariable(array(
-    		'TXT_OVERVIEW_TITLE'				=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'],
-    		'TXT_OVERVIEW_SUBTITLE_NAME'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
-    		'TXT_OVERVIEW_SUBTITLE_ACTIVE'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIVE_LANGUAGES'],
-    		'TXT_OVERVIEW_SUBTITLE_ACTIONS'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
-    		'TXT_OVERVIEW_DELETE_CATEGORY_JS'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_JS'],
-    		'TXT_OVERVIEW_MARKED'				=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_MARKED'],
-    		'TXT_OVERVIEW_SELECT_ALL'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_SELECT'],
-    		'TXT_OVERVIEW_DESELECT_ALL'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DESELECT'],
-    		'TXT_OVERVIEW_SUBMIT_SELECT'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
-    		'TXT_OVERVIEW_SUBMIT_DELETE'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
-   			'TXT_OVERVIEW_SUBMIT_DELETE_JS'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE_JS'],
-    		'TXT_ADD_TITLE'						=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_TITLE'],
-    		'TXT_ADD_NAME'						=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
-    		'TXT_ADD_EXTENDED'					=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
-    		'TXT_ADD_LANGUAGES'					=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_ADD_SUBMIT'					=>	$_ARRAYLANG['TXT_SAVE'],
-    		'TXT_PLACEHOLDERS'                  =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-    		'TXT_PARENT_CAT'                    =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
-    		"TXT_TOP_LEVEL"                     =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
-    		"TXT_FRONTEND_PAGE"                 =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
-    		'TXT_CONTENT_PAGE'                  =>  $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'],
-    		'TXT_BOX'                           =>  $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'],
-    		'TXT_GENERAL_ACTION'                =>  $_ARRAYLANG['TXT_DATA_SETTINGS_ACTION'],
-    		'TXT_SUBCATEGORIES'                 =>  $_ARRAYLANG['TXT_SUBCATEGORIES'],
-    		'TXT_BOX_WIDTH'                     =>  $_ARRAYLANG['TXT_DATA_OVERLAY_WIDTH'],
-    		'TXT_BOX_HEIGHT'                    =>  $_ARRAYLANG['TXT_DATA_OVERLAY_HEIGHT'],
-    		'TXT_TEMPLATE'                      =>  $_ARRAYLANG['TXT_TEMPLATE'],
-    		'CAT_TEMPLATE'                      =>  $this->_arrSettings['data_template_category'],
-    		'TXT_DISPLAY_MODE'                  =>  $_ARRAYLANG['TXT_DISPLAY_MODE']
-    	));
+        $this->_objTpl->setVariable(array(
+            'TXT_OVERVIEW_TITLE'                =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'],
+            'TXT_OVERVIEW_SUBTITLE_NAME'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
+            'TXT_OVERVIEW_SUBTITLE_ACTIVE'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIVE_LANGUAGES'],
+            'TXT_OVERVIEW_SUBTITLE_ACTIONS'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
+            'TXT_OVERVIEW_DELETE_CATEGORY_JS'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_JS'],
+            'TXT_OVERVIEW_MARKED'                =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_MARKED'],
+            'TXT_OVERVIEW_SELECT_ALL'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_SELECT'],
+            'TXT_OVERVIEW_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DESELECT'],
+            'TXT_OVERVIEW_SUBMIT_SELECT'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
+            'TXT_OVERVIEW_SUBMIT_DELETE'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
+               'TXT_OVERVIEW_SUBMIT_DELETE_JS'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE_JS'],
+            'TXT_ADD_TITLE'                        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_TITLE'],
+            'TXT_ADD_NAME'                        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
+            'TXT_ADD_EXTENDED'                    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
+            'TXT_ADD_LANGUAGES'                    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
+            'TXT_ADD_SUBMIT'                    =>    $_ARRAYLANG['TXT_SAVE'],
+            'TXT_PLACEHOLDERS'                  =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+            'TXT_PARENT_CAT'                    =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
+            "TXT_TOP_LEVEL"                     =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
+            "TXT_FRONTEND_PAGE"                 =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
+            'TXT_CONTENT_PAGE'                  =>  $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'],
+            'TXT_BOX'                           =>  $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'],
+            'TXT_GENERAL_ACTION'                =>  $_ARRAYLANG['TXT_DATA_SETTINGS_ACTION'],
+            'TXT_SUBCATEGORIES'                 =>  $_ARRAYLANG['TXT_SUBCATEGORIES'],
+            'TXT_BOX_WIDTH'                     =>  $_ARRAYLANG['TXT_DATA_OVERLAY_WIDTH'],
+            'TXT_BOX_HEIGHT'                    =>  $_ARRAYLANG['TXT_DATA_OVERLAY_HEIGHT'],
+            'TXT_TEMPLATE'                      =>  $_ARRAYLANG['TXT_TEMPLATE'],
+            'CAT_TEMPLATE'                      =>  $this->_arrSettings['data_template_category'],
+            'TXT_DISPLAY_MODE'                  =>  $_ARRAYLANG['TXT_DISPLAY_MODE']
+        ));
 
-    	$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+        $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 
-    	//Show Categories
-    	$arrCategories = $this->createCategoryArray($intPagingPosition, $this->getPagingLimit());
+        //Show Categories
+        $arrCategories = $this->createCategoryArray($intPagingPosition, $this->getPagingLimit());
 
 
-    	if (count($arrCategories) > 0) {
-    	    $catTree = $this->buildCatTree($arrCategories, 0);
-    	    $this->parseCategoryLevel($catTree, $arrCategories, 0);
-    	    $this->parseCategoryDropdown($catTree, $arrCategories, 0, 0, $this->_intLanguageId);
-    	} else {
-    		$this->_objTpl->setVariable('TXT_OVERVIEW_NO_CATEGORIES_FOUND',$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_NO_CATEGORIES']);
-    		$this->_objTpl->parse('noCategories');
-    	}
+        if (count($arrCategories) > 0) {
+            $catTree = $this->buildCatTree($arrCategories, 0);
+            $this->parseCategoryLevel($catTree, $arrCategories, 0);
+            $this->parseCategoryDropdown($catTree, $arrCategories, 0, 0, $this->_intLanguageId);
+        } else {
+            $this->_objTpl->setVariable('TXT_OVERVIEW_NO_CATEGORIES_FOUND',$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_NO_CATEGORIES']);
+            $this->_objTpl->parse('noCategories');
+        }
 
-    	//Show Add-Category Form
-    	if (count($this->_arrLanguages) > 0) {
-    		$intCounter = 0;
-	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
+        //Show Add-Category Form
+        if (count($this->_arrLanguages) > 0) {
+            $intCounter = 0;
+               $arrLanguages = array(0 => '', 1 => '', 2 => '');
 
-	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-	    		$arrLanguages[$intCounter%3] .= '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
+            foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+                $arrLanguages[$intCounter%3] .= '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 
-	    		$this->_objTpl->setVariable(array(
-	    			'ADD_NAME_LANGID'	=>	$intLanguageId,
-	    			'ADD_NAME_LANG'		=>	$arrTranslations['long'].' ['.$arrTranslations['short'].']'
-	    		));
+                $this->_objTpl->setVariable(array(
+                    'ADD_NAME_LANGID'    =>    $intLanguageId,
+                    'ADD_NAME_LANG'        =>    $arrTranslations['long'].' ['.$arrTranslations['short'].']'
+                ));
 
-	    		$this->_objTpl->parse('addCategoryNameFields');
+                $this->_objTpl->parse('addCategoryNameFields');
 
-	    		++$intCounter;
-	    	}
+                ++$intCounter;
+            }
 
-	    	$objResult = $objDatabase->Execute('SELECT		MAX(category_id) AS currentId
-    											FROM		'.DBPREFIX.'module_data_categories
-    											ORDER BY	category_id DESC
-    										');
-    		$intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
+            $objResult = $objDatabase->Execute('SELECT        MAX(category_id) AS currentId
+                                                FROM        '.DBPREFIX.'module_data_categories
+                                                ORDER BY    category_id DESC
+                                            ');
+            $intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
 
-	   		$this->_objTpl->setVariable(array(
-                'ADD_LANGUAGES_1'    =>	$arrLanguages[0],
-                'ADD_LANGUAGES_2'    =>	$arrLanguages[1],
-	   		    'ADD_LANGUAGES_3'    =>	$arrLanguages[2],
-	   			'TXT_PLACEHOLDER'    => $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-	   			'PLACEHOLDER'        => "CAT_".$intNextCategoryId,
-	   			'PAGE_SELECT_DISPLAY' => "none"
-	   		));
+               $this->_objTpl->setVariable(array(
+                'ADD_LANGUAGES_1'    =>    $arrLanguages[0],
+                'ADD_LANGUAGES_2'    =>    $arrLanguages[1],
+                   'ADD_LANGUAGES_3'    =>    $arrLanguages[2],
+                   'TXT_PLACEHOLDER'    => $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+                   'PLACEHOLDER'        => "CAT_".$intNextCategoryId,
+                   'PAGE_SELECT_DISPLAY' => "none"
+               ));
 
-    	   // show the frontend pages
-    	   $frontPages = $this->getFrontendPages();
-    	   foreach ($frontPages as $pageId => $pageVal) {
-    	       $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
-    	       $this->_objTpl->setVariable(array(
-    	           "FRONTEND_PAGE"     => $pageName,
-    	           "FRONTEND_PAGE_ID"  => $pageVal['cmd']
-    	       ));
-    	       $this->_objTpl->parse("frontendPage");
-    	   }
-    	}
+           // show the frontend pages
+           $frontPages = $this->getFrontendPages();
+           foreach ($frontPages as $pageId => $pageVal) {
+               $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
+               $this->_objTpl->setVariable(array(
+                   "FRONTEND_PAGE"     => $pageName,
+                   "FRONTEND_PAGE_ID"  => $pageVal['cmd']
+               ));
+               $this->_objTpl->parse("frontendPage");
+           }
+        }
     }
 
     /**
@@ -320,72 +320,72 @@ class DataAdmin extends DataLibrary {
 
         foreach ($tree as $key => $subcats) {
             $this->_objTpl->setVariable(array(
-				'TXT_OVERVIEW_IMGALT_MESSAGES'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ASSIGNED_MESSAGES'],
-	    		'TXT_OVERVIEW_IMGALT_EDIT'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_TITLE'],
-	    		'TXT_OVERVIEW_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_TITLE']
-			));
+                'TXT_OVERVIEW_IMGALT_MESSAGES'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ASSIGNED_MESSAGES'],
+                'TXT_OVERVIEW_IMGALT_EDIT'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_TITLE'],
+                'TXT_OVERVIEW_IMGALT_DELETE'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_TITLE']
+            ));
 
-			$arrLanguages = $arrCategories[$key];
+            $arrLanguages = $arrCategories[$key];
 
-			// make string with active languages
-			$strActivatedLanguages = '';
-			foreach($arrLanguages as $intLanguageId => $arrValues) {
-				if ($arrValues['is_active'] == 1 && array_key_exists($intLanguageId,$this->_arrLanguages)) {
-					$strActivatedLanguages .= $this->_arrLanguages[$intLanguageId]['long'].' ['.$this->_arrLanguages[$intLanguageId]['short'].'], ';
-				}
-			}
+            // make string with active languages
+            $strActivatedLanguages = '';
+            foreach($arrLanguages as $intLanguageId => $arrValues) {
+                if ($arrValues['is_active'] == 1 && array_key_exists($intLanguageId,$this->_arrLanguages)) {
+                    $strActivatedLanguages .= $this->_arrLanguages[$intLanguageId]['long'].' ['.$this->_arrLanguages[$intLanguageId]['short'].'], ';
+                }
+            }
 
-			$strActivatedLanguages = substr($strActivatedLanguages,0,-2);
+            $strActivatedLanguages = substr($strActivatedLanguages,0,-2);
 
-			if ($arrCategories[$key]['action'] == "overlaybox") {
+            if ($arrCategories[$key]['action'] == "overlaybox") {
                 $display = $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'];
-			} elseif ($arrCategories[$key]['action'] == "content") {
-			    $display = $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'];
-			} else {
-			    $display = $_ARRAYLANG['TXT_SUBCATEGORIES'];
-			}
-			$this->_objTpl->setVariable(array(
-				'OVERVIEW_CATEGORY_ROWCLASS'	=>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
-				'OVERVIEW_CATEGORY_ID'			=>	$key,
-				'OVERVIEW_CATEGORY_NAME'		=>	$arrLanguages[$this->_intLanguageId]['name'],
-				'OVERVIEW_CATEGORY_LANGUAGES'	=>	$strActivatedLanguages,
-				'OVERVIEW_CATEGORY_PLACEHOLDER' =>  $arrLanguages['placeholder'],
-				'OVERVIEW_CATEGORY_DISPLAY'     =>  $display,
-				'PARENT_OPT_LABEL'              =>  $arrLanguages[$this->_intLanguageId]['name'],
-				'PARENT_OPT_VALUE'              =>  $key,
-				'INDENT'                        =>  ($level > 0) ?  ($level-1) * 15 : 0,
-				'PARENT_INDENT'                 =>  str_repeat("...", $level),
-				'ACTIVE_LED'                    =>  ($arrCategories[$key]['active']) ? "green" : "red",
-				'ACTIVE_STATE'                  =>  ($arrCategories[$key]['active']) ? 0 : 1,
-			));
+            } elseif ($arrCategories[$key]['action'] == "content") {
+                $display = $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'];
+            } else {
+                $display = $_ARRAYLANG['TXT_SUBCATEGORIES'];
+            }
+            $this->_objTpl->setVariable(array(
+                'OVERVIEW_CATEGORY_ROWCLASS'    =>    ($intRowClass % 2 == 0) ? 'row1' : 'row2',
+                'OVERVIEW_CATEGORY_ID'            =>    $key,
+                'OVERVIEW_CATEGORY_NAME'        =>    $arrLanguages[$this->_intLanguageId]['name'],
+                'OVERVIEW_CATEGORY_LANGUAGES'    =>    $strActivatedLanguages,
+                'OVERVIEW_CATEGORY_PLACEHOLDER' =>  $arrLanguages['placeholder'],
+                'OVERVIEW_CATEGORY_DISPLAY'     =>  $display,
+                'PARENT_OPT_LABEL'              =>  $arrLanguages[$this->_intLanguageId]['name'],
+                'PARENT_OPT_VALUE'              =>  $key,
+                'INDENT'                        =>  ($level > 0) ?  ($level-1) * 15 : 0,
+                'PARENT_INDENT'                 =>  str_repeat("...", $level),
+                'ACTIVE_LED'                    =>  ($arrCategories[$key]['active']) ? "green" : "red",
+                'ACTIVE_STATE'                  =>  ($arrCategories[$key]['active']) ? 0 : 1,
+            ));
 
-			if ($level > 0) {
-			    $this->_objTpl->touchBlock("arrow");
-			    $this->_objTpl->parse("arrow");
-			}
+            if ($level > 0) {
+                $this->_objTpl->touchBlock("arrow");
+                $this->_objTpl->parse("arrow");
+            }
 
-			$children = $this->getAllChildren($key, $tree[$key]);
+            $children = $this->getAllChildren($key, $tree[$key]);
 
             $this->_objTpl->setGlobalVariable(array(
                     "CATID"         => $key,
                     "PARENT_ID"     => $arrCategories[$key]['parent_id'],
                     "LEVEL"         => $level
-	   		));
-	   		foreach ($children as $child) {
-	   		    $this->_objTpl->setVariable("CHILD_ID", $child);
-	   		    $this->_objTpl->parse("set_child");
-	   		}
+               ));
+               foreach ($children as $child) {
+                   $this->_objTpl->setVariable("CHILD_ID", $child);
+                   $this->_objTpl->parse("set_child");
+               }
 
-	   		$this->_objTpl->touchBlock("push_sort");
-	   		$this->_objTpl->parse("push_sort");
+               $this->_objTpl->touchBlock("push_sort");
+               $this->_objTpl->parse("push_sort");
 
-			$this->_objTpl->parse('showCategories');
-			$this->_objTpl->parse("addCategoryDropDown");
-			$intRowClass++;
+            $this->_objTpl->parse('showCategories');
+            $this->_objTpl->parse("addCategoryDropDown");
+            $intRowClass++;
 
-			if (count($subcats) > 0) {
-			    $intRowClass = $this->parseCategoryLevel($subcats, $arrCategories, $level+1, $intRowClass);
-			}
+            if (count($subcats) > 0) {
+                $intRowClass = $this->parseCategoryLevel($subcats, $arrCategories, $level+1, $intRowClass);
+            }
         }
 
         return $intRowClass;
@@ -417,220 +417,220 @@ class DataAdmin extends DataLibrary {
      * Adds a new category to the database. Collected
      * data in POST is checked for valid values.
      *
-     * @global 	ADONewConnection
+     * @global     ADONewConnection
      * @global  array
      */
     function insertCategory() {
-    	global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
-    	if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
-    		//Get next category-id
-    		$objResult = $objDatabase->Execute('SELECT		MAX(category_id) AS currentId
-    											FROM		'.DBPREFIX.'module_data_categories
-    											ORDER BY	category_id DESC
-    										');
-    		$intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
+        if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
+            //Get next category-id
+            $objResult = $objDatabase->Execute('SELECT        MAX(category_id) AS currentId
+                                                FROM        '.DBPREFIX.'module_data_categories
+                                                ORDER BY    category_id DESC
+                                            ');
+            $intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
 
-    		//Collect data
-    		$arrValues = array();
-    		foreach ($_POST as $strKey => $strValue) {
-    			if (substr($strKey,0,strlen('frmAddCategory_Name_')) == 'frmAddCategory_Name_') {
-    				$intLanguageId = intval(substr($strKey,strlen('frmAddCategory_Name_')));
-    				$arrValues[$intLanguageId] = array(	'name' 		   => contrexx_addslashes(strip_tags($strValue)),
-    													'is_active'	   => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
-    													'parent_id'    => intval($_POST['frmParentcategory']),
-    													'cmd'          => intval($_POST['frmFrontendPage']),
-    													'action'       => $_POST['frmSettings_action'],
-    													'box_width'    => $_POST['frmBoxwidth'],
-    													'box_height'   => $_POST['frmBoxheight'],
-    													'template'     => contrexx_addslashes($_POST['frmTemplate'])
-    												);
-    			}
-    		}
+            //Collect data
+            $arrValues = array();
+            foreach ($_POST as $strKey => $strValue) {
+                if (substr($strKey,0,strlen('frmAddCategory_Name_')) == 'frmAddCategory_Name_') {
+                    $intLanguageId = intval(substr($strKey,strlen('frmAddCategory_Name_')));
+                    $arrValues[$intLanguageId] = array(    'name'            => contrexx_addslashes(strip_tags($strValue)),
+                                                        'is_active'       => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
+                                                        'parent_id'    => intval($_POST['frmParentcategory']),
+                                                        'cmd'          => intval($_POST['frmFrontendPage']),
+                                                        'action'       => $_POST['frmSettings_action'],
+                                                        'box_width'    => $_POST['frmBoxwidth'],
+                                                        'box_height'   => $_POST['frmBoxheight'],
+                                                        'template'     => contrexx_addslashes($_POST['frmTemplate'])
+                                                    );
+                }
+            }
 
-    		foreach ($arrValues as $intLanguageId => $arrCategoryValues) {
-    			$objDatabase->Execute('	INSERT INTO `'.DBPREFIX.'module_data_categories`
-    									SET	`category_id` = '.$intNextCategoryId.',
-    										`lang_id` = '.$intLanguageId.',
-    										`is_active` = "'.$arrCategoryValues['is_active'].'",
-    										`parent_id` = "'.$arrCategoryValues['parent_id'].'",
-    										`name` = "'.$arrCategoryValues['name'].'",
-    										`cmd` = "'.$arrCategoryValues['cmd'].'",
-    										`action` = "'.$arrCategoryValues['action'].'",
-    										`box_width` = "'.$arrCategoryValues['box_width'].'",
-    										`box_height` = "'.$arrCategoryValues['box_height'].'",
-    										`template` = "'.$arrCategoryValues['template'].'"
-    								');
-    		}
+            foreach ($arrValues as $intLanguageId => $arrCategoryValues) {
+                $objDatabase->Execute('    INSERT INTO `'.DBPREFIX.'module_data_categories`
+                                        SET    `category_id` = '.$intNextCategoryId.',
+                                            `lang_id` = '.$intLanguageId.',
+                                            `is_active` = "'.$arrCategoryValues['is_active'].'",
+                                            `parent_id` = "'.$arrCategoryValues['parent_id'].'",
+                                            `name` = "'.$arrCategoryValues['name'].'",
+                                            `cmd` = "'.$arrCategoryValues['cmd'].'",
+                                            `action` = "'.$arrCategoryValues['action'].'",
+                                            `box_width` = "'.$arrCategoryValues['box_width'].'",
+                                            `box_height` = "'.$arrCategoryValues['box_height'].'",
+                                            `template` = "'.$arrCategoryValues['template'].'"
+                                    ');
+            }
 
-    		// insert placeholder
-    		if (isset($_POST['frmPlaceholder'])) {
-    		    $placeholder = $this->_formatPlaceholder($_POST['frmPlaceholder']);
-    		    $query = "INSERT INTO ".DBPREFIX."module_data_placeholders
-    		              (type, ref_id, placeholder)
-    		              VALUES
-    		              ('cat', ".$intNextCategoryId.", '".$placeholder."')";
-    		    $objDatabase->Execute($query);
-    		}
+            // insert placeholder
+            if (isset($_POST['frmPlaceholder'])) {
+                $placeholder = $this->_formatPlaceholder($_POST['frmPlaceholder']);
+                $query = "INSERT INTO ".DBPREFIX."module_data_placeholders
+                          (type, ref_id, placeholder)
+                          VALUES
+                          ('cat', ".$intNextCategoryId.", '".$placeholder."')";
+                $objDatabase->Execute($query);
+            }
 
-    		$this->_strOkMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_SUCCESSFULL'];
-    	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_ERROR_ACTIVE'];
-    	}
+            $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_SUCCESSFULL'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_ERROR_ACTIVE'];
+        }
     }
 
 
     /**
      * Removes a category from the database.
      *
-     * @param 	integer		$intCategoryId: This category will be deleted by the function.
-     * @global 	array
-     * @global 	ADONewConnection
+     * @param     integer        $intCategoryId: This category will be deleted by the function.
+     * @global     array
+     * @global     ADONewConnection
      */
     function deleteCategory($intCategoryId) {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-    	$intCategoryId = intval($intCategoryId);
+        $intCategoryId = intval($intCategoryId);
 
-    	if ($intCategoryId > 0) {
-    		$objDatabase->Execute('	DELETE
-    								FROM '.DBPREFIX.'module_data_categories
-    								WHERE `category_id` = '.$intCategoryId.'
-    							');
+        if ($intCategoryId > 0) {
+            $objDatabase->Execute('    DELETE
+                                    FROM '.DBPREFIX.'module_data_categories
+                                    WHERE `category_id` = '.$intCategoryId.'
+                                ');
 
-    		if (!$this->_boolInnoDb) {
-    			$objDatabase->Execute('	DELETE
-										FROM '.DBPREFIX.'module_data_message_to_category
-										WHERE `category_id` = '.$intCategoryId.'
-									');
-    		}
+            if (!$this->_boolInnoDb) {
+                $objDatabase->Execute('    DELETE
+                                        FROM '.DBPREFIX.'module_data_message_to_category
+                                        WHERE `category_id` = '.$intCategoryId.'
+                                    ');
+            }
 
-    		$objDatabase->Execute("   DELETE FROM ".DBPREFIX."module_data_placeholders
-    		                          WHERE ref_id = ".$intCategoryId);
+            $objDatabase->Execute("   DELETE FROM ".DBPREFIX."module_data_placeholders
+                                      WHERE ref_id = ".$intCategoryId);
 
-    		$this->writeMessageRSS();
-    		$this->writeCategoryRSS();
+            $this->writeMessageRSS();
+            $this->writeCategoryRSS();
 
-    		$this->_strOkMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_SUCCESSFULL'];
-    	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_ERROR'];
-    	}
+            $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_SUCCESSFULL'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_ERROR'];
+        }
     }
 
 
     /**
      * Performs the action for the dropdown-selection on the category page. The behaviour depends on the parameter.
      *
-     * @param	string		$strAction: the action passed by the formular.
+     * @param    string        $strAction: the action passed by the formular.
      */
     function doCategoryMultiAction($strAction='') {
-    	switch ($strAction) {
-    		case 'delete':
-    			foreach($_POST['selectedCategoryId'] as $intKey => $intCategoryId) {
-    				$this->deleteCategory($intCategoryId);
-    			}
-    			break;
-    		default:
-    			//do nothing!
-    	}
+        switch ($strAction) {
+            case 'delete':
+                foreach($_POST['selectedCategoryId'] as $intKey => $intCategoryId) {
+                    $this->deleteCategory($intCategoryId);
+                }
+                break;
+            default:
+                //do nothing!
+        }
     }
 
 
     /**
      * Shows the edit-page for a specific category.
      *
-     * @global	array
-     * @global 	ADONewConnection
-     * @param 	integer		$intCategoryId: The category with this id will be loaded into the form.
+     * @global    array
+     * @global     ADONewConnection
+     * @param     integer        $intCategoryId: The category with this id will be loaded into the form.
      */
     function editCategory($intCategoryId) {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-		$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_data_categories_edit.html',true,true);
+        $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
+        $this->_objTpl->loadTemplateFile('module_data_categories_edit.html',true,true);
 
-    	$this->_objTpl->setVariable(array(
-    		'TXT_EDIT_TITLE'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_TITLE'],
-    		'TXT_EDIT_NAME'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
-    		'TXT_EDIT_EXTENDED'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
-    		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_EDIT_SUBMIT'		=>	$_ARRAYLANG['TXT_SAVE'],
-    		'TXT_PARENT_CAT'        =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
-    		'TXT_TOP_LEVEL'         =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
-    		"TXT_FRONTEND_PAGE"     =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
-    		'TXT_CONTENT_PAGE'      =>  $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'],
-    		'TXT_BOX'               =>  $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'],
-    		'TXT_GENERAL_ACTION'    =>  $_ARRAYLANG['TXT_DATA_SETTINGS_ACTION'],
-    		'TXT_SUBCATEGORIES'     =>  $_ARRAYLANG['TXT_SUBCATEGORIES'],
-    		'TXT_PLACEHOLDER'       =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-    		'TXT_BOX_WIDTH'         =>  $_ARRAYLANG['TXT_DATA_OVERLAY_WIDTH'],
-    		'TXT_BOX_HEIGHT'        =>  $_ARRAYLANG['TXT_DATA_OVERLAY_HEIGHT'],
-    		'TXT_TEMPLATE'          =>  $_ARRAYLANG['TXT_TEMPLATE']
-    	));
+        $this->_objTpl->setVariable(array(
+            'TXT_EDIT_TITLE'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_TITLE'],
+            'TXT_EDIT_NAME'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
+            'TXT_EDIT_EXTENDED'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
+            'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
+            'TXT_EDIT_SUBMIT'        =>    $_ARRAYLANG['TXT_SAVE'],
+            'TXT_PARENT_CAT'        =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
+            'TXT_TOP_LEVEL'         =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
+            "TXT_FRONTEND_PAGE"     =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
+            'TXT_CONTENT_PAGE'      =>  $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'],
+            'TXT_BOX'               =>  $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'],
+            'TXT_GENERAL_ACTION'    =>  $_ARRAYLANG['TXT_DATA_SETTINGS_ACTION'],
+            'TXT_SUBCATEGORIES'     =>  $_ARRAYLANG['TXT_SUBCATEGORIES'],
+            'TXT_PLACEHOLDER'       =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+            'TXT_BOX_WIDTH'         =>  $_ARRAYLANG['TXT_DATA_OVERLAY_WIDTH'],
+            'TXT_BOX_HEIGHT'        =>  $_ARRAYLANG['TXT_DATA_OVERLAY_HEIGHT'],
+            'TXT_TEMPLATE'          =>  $_ARRAYLANG['TXT_TEMPLATE']
+        ));
 
-    	$intCategoryId = intval($intCategoryId);
+        $intCategoryId = intval($intCategoryId);
 
         $this->current_cat_id = $intCategoryId;
 
-    	$arrCategories = $this->createCategoryArray();
-    	$ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
+        $arrCategories = $this->createCategoryArray();
+        $ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
 
-    	if (array_key_exists($intCategoryId,$arrCategories)) {
+        if (array_key_exists($intCategoryId,$arrCategories)) {
 
-    		$intCounter = 0;
-	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
+            $intCounter = 0;
+               $arrLanguages = array(0 => '', 1 => '', 2 => '');
 
-	   		$catTree = $this->buildCatTree($arrCategories, 0);
+               $catTree = $this->buildCatTree($arrCategories, 0);
 
-	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-	    		$arrLanguages[$intCounter%3] .= '<input '.(($arrCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmEditCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
+            foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+                $arrLanguages[$intCounter%3] .= '<input '.(($arrCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmEditCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 
-	    		$this->_objTpl->setVariable(array(
-	    			'EDIT_NAME_LANGID'	=>	$intLanguageId,
-	    			'EDIT_NAME_LANG'	=>	$arrTranslations['long'].' ['.$arrTranslations['short'].']',
-	    			'EDIT_NAME_VALUE'	=>	$arrCategories[$intCategoryId][$intLanguageId]['name']
-	    		));
+                $this->_objTpl->setVariable(array(
+                    'EDIT_NAME_LANGID'    =>    $intLanguageId,
+                    'EDIT_NAME_LANG'    =>    $arrTranslations['long'].' ['.$arrTranslations['short'].']',
+                    'EDIT_NAME_VALUE'    =>    $arrCategories[$intCategoryId][$intLanguageId]['name']
+                ));
 
-	    		$this->_objTpl->parse('editCategoryNameFields');
+                $this->_objTpl->parse('editCategoryNameFields');
 
-	    		$this->parseCategoryDropdown($catTree, $arrCategories, $intCategoryId, 0, $intLanguageId);
+                $this->parseCategoryDropdown($catTree, $arrCategories, $intCategoryId, 0, $intLanguageId);
 
-	    		++$intCounter;
-	    	}
+                ++$intCounter;
+            }
 
-	   		$this->_objTpl->setVariable(array(
-	   			'EDIT_CATEGORY_ID'       =>	$intCategoryId,
-	   			'EDIT_NAME'              =>	$arrCategories[$intCategoryId][$this->_intLanguageId]['name'],
-	   			'EDIT_LANGUAGES_1'	     =>	$arrLanguages[0],
-	   			'EDIT_LANGUAGES_2'	     =>	$arrLanguages[1],
-	   			'EDIT_LANGUAGES_3'	     =>	$arrLanguages[2],
-	   			"PLACEHOLDER"            => $arrCategories[$intCategoryId]['placeholder'],
-	   			'PAGE_SELECT_DISPLAY'    => ($arrCategories[$intCategoryId]['action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
-	   			'ACTION_SELECTED_BOX'    => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? "selected=\"selected\"" : "",
-	   			'ACTION_SELECTED_CONTENT' => ($arrCategories[$intCategoryId]['action'] == "content") ? "selected=\"selected\"" : "",
-	   			'ACTION_SELECTED_SUBCATS' => ($arrCategories[$intCategoryId]['action'] == "subcategories") ? "selected=\"selected\"" : "",
-	   			'PAGE_BOX_WIDTH_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
-	   			'PAGE_BOX_HEIGHT_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
-	   			'BOX_WIDTH'              => $arrCategories[$intCategoryId]['box_width'],
-	   			'BOX_HEIGHT'             => $arrCategories[$intCategoryId]['box_height'],
-	   			'CAT_TEMPLATE'           => $arrCategories[$intCategoryId]['template']
-	   		));
-    	} else {
-    		//Wrong category-id
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_ERROR_ID'];
-    	}
+               $this->_objTpl->setVariable(array(
+                   'EDIT_CATEGORY_ID'       =>    $intCategoryId,
+                   'EDIT_NAME'              =>    $arrCategories[$intCategoryId][$this->_intLanguageId]['name'],
+                   'EDIT_LANGUAGES_1'         =>    $arrLanguages[0],
+                   'EDIT_LANGUAGES_2'         =>    $arrLanguages[1],
+                   'EDIT_LANGUAGES_3'         =>    $arrLanguages[2],
+                   "PLACEHOLDER"            => $arrCategories[$intCategoryId]['placeholder'],
+                   'PAGE_SELECT_DISPLAY'    => ($arrCategories[$intCategoryId]['action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
+                   'ACTION_SELECTED_BOX'    => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? "selected=\"selected\"" : "",
+                   'ACTION_SELECTED_CONTENT' => ($arrCategories[$intCategoryId]['action'] == "content") ? "selected=\"selected\"" : "",
+                   'ACTION_SELECTED_SUBCATS' => ($arrCategories[$intCategoryId]['action'] == "subcategories") ? "selected=\"selected\"" : "",
+                   'PAGE_BOX_WIDTH_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
+                   'PAGE_BOX_HEIGHT_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
+                   'BOX_WIDTH'              => $arrCategories[$intCategoryId]['box_width'],
+                   'BOX_HEIGHT'             => $arrCategories[$intCategoryId]['box_height'],
+                   'CAT_TEMPLATE'           => $arrCategories[$intCategoryId]['template']
+               ));
+        } else {
+            //Wrong category-id
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_ERROR_ID'];
+        }
 
         // show the frontend pages
-    	$frontPages = $this->getFrontendPages();
-    	foreach ($frontPages as $pageId => $pageVal) {
-    	   $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
-    	   $this->_objTpl->setVariable(array(
-    	       "FRONTEND_PAGE"             => $pageName,
-    	       "FRONTEND_PAGE_ID"          => $pageVal['cmd'],
-    	       "FRONTEND_PAGE_SELECTED"    => ($pageVal['cmd'] == $arrCategories[$intCategoryId]['cmd']) ? "selected=\"selected\"" : ""
-    	   ));
-    	   $this->_objTpl->parse("frontendPage");
-    	}
+        $frontPages = $this->getFrontendPages();
+        foreach ($frontPages as $pageId => $pageVal) {
+           $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
+           $this->_objTpl->setVariable(array(
+               "FRONTEND_PAGE"             => $pageName,
+               "FRONTEND_PAGE_ID"          => $pageVal['cmd'],
+               "FRONTEND_PAGE_SELECTED"    => ($pageVal['cmd'] == $arrCategories[$intCategoryId]['cmd']) ? "selected=\"selected\"" : ""
+           ));
+           $this->_objTpl->parse("frontendPage");
+        }
     }
 
     /**
@@ -683,91 +683,91 @@ class DataAdmin extends DataLibrary {
     /**
      * Updates an existing category.
      *
-     * @global 	array
-     * @global 	ADONewConnection
+     * @global     array
+     * @global     ADONewConnection
      */
     function updateCategory() {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-    	if (isset($_POST['frmEditCategory_Languages']) && is_array($_POST['frmEditCategory_Languages'])) {
- 			$intCategoryId = intval($_POST['frmEditCategory_Id']);
+        if (isset($_POST['frmEditCategory_Languages']) && is_array($_POST['frmEditCategory_Languages'])) {
+             $intCategoryId = intval($_POST['frmEditCategory_Id']);
 
- 			//Collect active-languages
-    		foreach ($_POST['frmEditCategory_Languages'] as $intKey => $intLanguageId) {
-	    		$arrActiveLanguages[$intLanguageId] = true;
-    		}
+             //Collect active-languages
+            foreach ($_POST['frmEditCategory_Languages'] as $intKey => $intLanguageId) {
+                $arrActiveLanguages[$intLanguageId] = true;
+            }
 
-    		//Collect names & check for existing database-entry
-    		foreach ($_POST as $strKey => $strValue) {
+            //Collect names & check for existing database-entry
+            foreach ($_POST as $strKey => $strValue) {
 
-    			if (substr($strKey,0,strlen('frmEditCategory_Name_')) == 'frmEditCategory_Name_') {
-    				$intLanguageId = substr($strKey,strlen('frmEditCategory_Name_'));
+                if (substr($strKey,0,strlen('frmEditCategory_Name_')) == 'frmEditCategory_Name_') {
+                    $intLanguageId = substr($strKey,strlen('frmEditCategory_Name_'));
 
-    				$objResult = $objDatabase->Execute('SELECT name
-    													FROM	'.DBPREFIX.'module_data_categories
-														WHERE	`category_id` = '.$intCategoryId.' AND
-    															`lang_id` = '.$intLanguageId.'
-    													LIMIT	1
-    												');
-    				if ($objResult->RecordCount() == 0) {
-    					//We have to create a new entry first
-		    			$objDatabase->Execute("	INSERT
-		    									INTO	`".DBPREFIX."module_data_categories`
-		    									SET		`category_id` = ".$intCategoryId.",
-		    											`lang_id` = ".$intLanguageId.",
-		    											`is_active` = '".(array_key_exists($intLanguageId,$arrActiveLanguages) ? "1" : "0")."',
-		    											`parent_id` = ".intval($_POST["frmParentcategory"]).",
-		    											`name` = '".contrexx_addslashes(strip_tags($strValue))."',
-		    											`cmd` = '".$_POST["frmFrontendPage"]."',
-		    											`action` = '".$_POST["frmSettings_action"]."',
+                    $objResult = $objDatabase->Execute('SELECT name
+                                                        FROM    '.DBPREFIX.'module_data_categories
+                                                        WHERE    `category_id` = '.$intCategoryId.' AND
+                                                                `lang_id` = '.$intLanguageId.'
+                                                        LIMIT    1
+                                                    ');
+                    if ($objResult->RecordCount() == 0) {
+                        //We have to create a new entry first
+                        $objDatabase->Execute("    INSERT
+                                                INTO    `".DBPREFIX."module_data_categories`
+                                                SET        `category_id` = ".$intCategoryId.",
+                                                        `lang_id` = ".$intLanguageId.",
+                                                        `is_active` = '".(array_key_exists($intLanguageId,$arrActiveLanguages) ? "1" : "0")."',
+                                                        `parent_id` = ".intval($_POST["frmParentcategory"]).",
+                                                        `name` = '".contrexx_addslashes(strip_tags($strValue))."',
+                                                        `cmd` = '".$_POST["frmFrontendPage"]."',
+                                                        `action` = '".$_POST["frmSettings_action"]."',
                                                         `box_height` = '".$_POST["frmBoxheight"]."',
                                                         `box_width` = '".$_POST['frmBoxwidth']."',
                                                         `template` = '".$_POST['frmTemplate']."
-		    								");
-    				} else {
-    					//We can update the existing entry
-		    			$objDatabase->Execute("	UPDATE	`".DBPREFIX."module_data_categories`
-		    									SET		`is_active` = '".(array_key_exists($intLanguageId,$arrActiveLanguages) ? "1" : "0")."',
-		    											`name` = '".contrexx_addslashes(strip_tags($strValue))."',
-		    											`parent_id` = ".intval($_POST["frmParentcategory"]).",
-		    											`cmd` = '".$_POST["frmFrontendPage"]."',
-		    											`action` = '".$_POST["frmSettings_action"]."',
-		    											`box_height` = '".$_POST['frmBoxheight']."',
+                                            ");
+                    } else {
+                        //We can update the existing entry
+                        $objDatabase->Execute("    UPDATE    `".DBPREFIX."module_data_categories`
+                                                SET        `is_active` = '".(array_key_exists($intLanguageId,$arrActiveLanguages) ? "1" : "0")."',
+                                                        `name` = '".contrexx_addslashes(strip_tags($strValue))."',
+                                                        `parent_id` = ".intval($_POST["frmParentcategory"]).",
+                                                        `cmd` = '".$_POST["frmFrontendPage"]."',
+                                                        `action` = '".$_POST["frmSettings_action"]."',
+                                                        `box_height` = '".$_POST['frmBoxheight']."',
                                                         `box_width` = '".$_POST["frmBoxwidth"]."',
                                                         `template` = '".$_POST['frmTemplate']."'
-												WHERE	`category_id` = ".$intCategoryId." AND
-			    										`lang_id` = ".$intLanguageId."
-			    								LIMIT	1
-		    								");
-    				}
-    			}
-    		}
+                                                WHERE    `category_id` = ".$intCategoryId." AND
+                                                        `lang_id` = ".$intLanguageId."
+                                                LIMIT    1
+                                            ");
+                    }
+                }
+            }
 
-    		if (isset($_POST['frmPlaceholder'])) {
+            if (isset($_POST['frmPlaceholder'])) {
                 $query = "DELETE FROM ".DBPREFIX."module_data_placeholders
-    		                  WHERE ref_id = ".$intCategoryId;
-    		    $objDatabase->Execute($query);
-    		    $placeholder = $this->_formatPlaceholder($_POST['frmPlaceholder']);
-    		    $query = "INSERT INTO ".DBPREFIX."module_data_placeholders
-    		              (type, ref_id, placeholder)
-    		              VALUES
-    		              ('cat', ".$intCategoryId.", '".$placeholder."')";
-    		    $objDatabase->Execute($query);
-    		    $err = $objDatabase->ErrorNo();
-    		    if ($err == 1062) {
-    		        $placeholder .= rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9); // not very beautiful...
+                              WHERE ref_id = ".$intCategoryId;
+                $objDatabase->Execute($query);
+                $placeholder = $this->_formatPlaceholder($_POST['frmPlaceholder']);
+                $query = "INSERT INTO ".DBPREFIX."module_data_placeholders
+                          (type, ref_id, placeholder)
+                          VALUES
+                          ('cat', ".$intCategoryId.", '".$placeholder."')";
+                $objDatabase->Execute($query);
+                $err = $objDatabase->ErrorNo();
+                if ($err == 1062) {
+                    $placeholder .= rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9); // not very beautiful...
                     $objDatabase->Execute(" INSERT INTO ".DBPREFIX."module_data_placeholders
                                             (`type`, `ref_id`, `placeholder`)
                                             VALUES
                                             ('entry', ".$intCategoryId.",
                                             '".$placeholder."')");
-    		    }
-    		}
+                }
+            }
 
-    		$this->_strOkMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_UPDATE_SUCCESSFULL'];
-    	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_UPDATE_ERROR_ACTIVE'];
-    	}
+            $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_UPDATE_SUCCESSFULL'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_UPDATE_ERROR_ACTIVE'];
+        }
     }
 
 
@@ -775,90 +775,90 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows an overview of all entries.
      *
-     * @global	array
+     * @global    array
      */
     function showEntries()
     {
-    	global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
-    	$intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
-   		$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+        $intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
+           $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 
-    	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_data_entries.html',true,true);
+        $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'];
+        $this->_objTpl->loadTemplateFile('module_data_entries.html',true,true);
 
-    	$this->arrEntries = $this->createEntryArray(0);
+        $this->arrEntries = $this->createEntryArray(0);
 
 
-    	// show categories
-    	$arrCategories = $this->createCategoryArray();
-    	$catTree = $this->buildCatTree($arrCategories);
-    	$row = 2;
-    	$this->_objTpl->setVariable(array(
+        // show categories
+        $arrCategories = $this->createCategoryArray();
+        $catTree = $this->buildCatTree($arrCategories);
+        $row = 2;
+        $this->_objTpl->setVariable(array(
                 "CATEGORY_NAME"             =>  $_ARRAYLANG['TXT_DATA_SHOW_ALL'],
                 "CATEGORY_ID"               =>  0,
                 "CATEGORY_INDENT"           =>  5,
                 "CATEGORY_ROW"              =>  ($intSelectedCategory == 0) ? 3 : $row++,
                 "CATEGORY_AMOUNT_OF_ENTRIES" => $this->getAmountOfEntries(0)
-    	    ));
-    	$this->_objTpl->parse("category_row");
-    	$this->parseOverviewCategories($catTree, $arrCategories, $intSelectedCategory, 0, $row);
+            ));
+        $this->_objTpl->parse("category_row");
+        $this->parseOverviewCategories($catTree, $arrCategories, $intSelectedCategory, 0, $row);
 
-    	$this->_objTpl->setVariable(array(
-			'TXT_ENTRIES_TITLE'					=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'],
-			'TITLE_CATEGORY'                    =>  ($intSelectedCategory == 0) ? $_ARRAYLANG['TXT_DATA_ALL'] : $arrCategories[$intSelectedCategory][$this->_intLanguageId]['name'],
-			'TXT_ENTRIES_SUBTITLE_DATE'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_DATE'],
-			'TXT_ENTRIES_SUBTITLE_SUBJECT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
-			'TXT_ENTRIES_SUBTITLE_PLACEHOLDER'  =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-			'TXT_ENTRIES_SUBTITLE_LANGUAGES'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-			'TXT_ENTRIES_SUBTITLE_HITS'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_HITS'],
-			'TXT_ENTRIES_SUBTITLE_COMMENTS'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_COMMENTS'],
-			'TXT_ENTRIES_SUBTITLE_VOTES'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_VOTE'],
-			'TXT_ENTRIES_SUBTITLE_USER'			=>	$_ARRAYLANG['TXT_USER'],
-			'TXT_ENTRIES_SUBTITLE_EDITED'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_UPDATED'],
-			'TXT_ENTRIES_SUBTITLE_ACTIONS'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
-			'TXT_ENTRIES_DELETE_ENTRY_JS'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_DELETE_JS'],
-    		'TXT_ENTRIES_MARKED'				=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_MARKED'],
-    		'TXT_ENTRIES_SELECT_ALL'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_SELECT'],
-    		'TXT_ENTRIES_DESELECT_ALL'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DESELECT'],
-    		'TXT_ENTRIES_SUBMIT_SELECT'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
-    		'TXT_ENTRIES_SUBMIT_DELETE'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
-   			'TXT_ENTRIES_SUBMIT_DELETE_JS'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
-   			'TXT_ENTRIES_SUBTITLE_CATEGORY'     =>  $_ARRAYLANG['TXT_DATA_CATEGORY'],
-   			'TXT_ENTRIES_SUBTITLE_MODE'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE']
-   		));
+        $this->_objTpl->setVariable(array(
+            'TXT_ENTRIES_TITLE'                    =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'],
+            'TITLE_CATEGORY'                    =>  ($intSelectedCategory == 0) ? $_ARRAYLANG['TXT_DATA_ALL'] : $arrCategories[$intSelectedCategory][$this->_intLanguageId]['name'],
+            'TXT_ENTRIES_SUBTITLE_DATE'            =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_DATE'],
+            'TXT_ENTRIES_SUBTITLE_SUBJECT'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
+            'TXT_ENTRIES_SUBTITLE_PLACEHOLDER'  =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+            'TXT_ENTRIES_SUBTITLE_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
+            'TXT_ENTRIES_SUBTITLE_HITS'            =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_HITS'],
+            'TXT_ENTRIES_SUBTITLE_COMMENTS'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_COMMENTS'],
+            'TXT_ENTRIES_SUBTITLE_VOTES'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_VOTE'],
+            'TXT_ENTRIES_SUBTITLE_USER'            =>    $_ARRAYLANG['TXT_USER'],
+            'TXT_ENTRIES_SUBTITLE_EDITED'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_UPDATED'],
+            'TXT_ENTRIES_SUBTITLE_ACTIONS'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
+            'TXT_ENTRIES_DELETE_ENTRY_JS'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_DELETE_JS'],
+            'TXT_ENTRIES_MARKED'                =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_MARKED'],
+            'TXT_ENTRIES_SELECT_ALL'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_SELECT'],
+            'TXT_ENTRIES_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DESELECT'],
+            'TXT_ENTRIES_SUBMIT_SELECT'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
+            'TXT_ENTRIES_SUBMIT_DELETE'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
+               'TXT_ENTRIES_SUBMIT_DELETE_JS'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
+               'TXT_ENTRIES_SUBTITLE_CATEGORY'     =>  $_ARRAYLANG['TXT_DATA_CATEGORY'],
+               'TXT_ENTRIES_SUBTITLE_MODE'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE']
+           ));
 
-   		if ($intSelectedCategory == 0) {
-   		    $this->sortEntriesAlphabetical();
-   		}
+           if ($intSelectedCategory == 0) {
+               $this->sortEntriesAlphabetical();
+           }
 
-   		if (count($this->arrEntries) > 0) {
-   			$intRowClass = 1;
+           if (count($this->arrEntries) > 0) {
+               $intRowClass = 1;
 
-   			foreach ($this->arrEntries as $intEntryId => $arrEntryValues) {
-   				if ($intSelectedCategory > 0) {
-   					//Filter for a specific category. If the category doesn't match: skip.
-   					if (!$this->categoryMatches($intSelectedCategory, $arrEntryValues['categories'][$this->_intLanguageId])) {
-   						continue;
-   					}
-   				}
+               foreach ($this->arrEntries as $intEntryId => $arrEntryValues) {
+                   if ($intSelectedCategory > 0) {
+                       //Filter for a specific category. If the category doesn't match: skip.
+                       if (!$this->categoryMatches($intSelectedCategory, $arrEntryValues['categories'][$this->_intLanguageId])) {
+                           continue;
+                       }
+                   }
 
-	   			$this->_objTpl->setVariable(array(
-	   				'TXT_IMGALT_EDIT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'],
-	   				'TXT_IMGALT_COPY'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'],
-	   				'TXT_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_DELETE_TITLE']
-	   			));
+                   $this->_objTpl->setVariable(array(
+                       'TXT_IMGALT_EDIT'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'],
+                       'TXT_IMGALT_COPY'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'],
+                       'TXT_IMGALT_DELETE'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_DELETE_TITLE']
+                   ));
 
-	   			//Check active languages
-	   			$strActiveLanguages = '';
-	   			foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
-	   				if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
-	   					$strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
-	   				}
-	   			}
-	   			$strActiveLanguages = substr($strActiveLanguages,0,-12);
+                   //Check active languages
+                   $strActiveLanguages = '';
+                   foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
+                       if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
+                           $strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
+                       }
+                   }
+                   $strActiveLanguages = substr($strActiveLanguages,0,-12);
 
-	   			$this->_objTpl->setGlobalVariable("ENTRY_ID", $intEntryId);
+                   $this->_objTpl->setGlobalVariable("ENTRY_ID", $intEntryId);
 
                 $category_keys = array_keys($arrEntryValues['categories'][$this->_intLanguageId]);
                 if ($arrEntryValues['mode'] == "normal") {
@@ -866,50 +866,50 @@ class DataAdmin extends DataLibrary {
                 } else {
                     $mode = $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'];
                 }
-	   			$this->_objTpl->setVariable(array(
-	   				'ENTRY_ROWCLASS'		=>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
-	   				'ENTRY_ID'				=>	$intEntryId,
-	   				'ENTRY_DATE'			=>	$arrEntryValues['time_created'],
-	   				'ENTRY_EDITED'			=>	$arrEntryValues['time_edited'],
-	   				'ENTRY_SUBJECT'			=>	$arrEntryValues['subject'],
-	   				'ENTRY_PLACEHOLDER'     =>  $arrEntryValues['placeholder'],
-	   				'ENTRY_LANGUAGES'		=>	$strActiveLanguages,
-	   				'ENTRY_HITS'			=>	$arrEntryValues['hits'],
-	   				//'ENTRY_COMMENTS'		=>	$arrEntryValues['comments'].'&nbsp;'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_COMMENTS'],
-	   				//'ENTRY_VOTES'			=>	'&#216;&nbsp;'.$arrEntryValues['votes_avg'].'&nbsp;/&nbsp;'.$arrEntryValues['votes'].' '.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_VOTES'],
-	   				//'ENTRY_USER'			=>	$arrEntryValues['user_name'],
-	   				'ACTIVE_LED'            =>  ($arrEntryValues['active']) ? "green" : "red",
-	   				'ACTIVE_STATE'          =>  ($arrEntryValues['active']) ? 0 : 1,
-	   				'ENTRY_CATEGORY'        =>  $arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
-	   				'ENTRY_MODE'            =>  $mode
-	   			));
+                   $this->_objTpl->setVariable(array(
+                       'ENTRY_ROWCLASS'        =>    ($intRowClass % 2 == 0) ? 'row1' : 'row2',
+                       'ENTRY_ID'                =>    $intEntryId,
+                       'ENTRY_DATE'            =>    $arrEntryValues['time_created'],
+                       'ENTRY_EDITED'            =>    $arrEntryValues['time_edited'],
+                       'ENTRY_SUBJECT'            =>    $arrEntryValues['subject'],
+                       'ENTRY_PLACEHOLDER'     =>  $arrEntryValues['placeholder'],
+                       'ENTRY_LANGUAGES'        =>    $strActiveLanguages,
+                       'ENTRY_HITS'            =>    $arrEntryValues['hits'],
+                       //'ENTRY_COMMENTS'        =>    $arrEntryValues['comments'].'&nbsp;'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_COMMENTS'],
+                       //'ENTRY_VOTES'            =>    '&#216;&nbsp;'.$arrEntryValues['votes_avg'].'&nbsp;/&nbsp;'.$arrEntryValues['votes'].' '.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_VOTES'],
+                       //'ENTRY_USER'            =>    $arrEntryValues['user_name'],
+                       'ACTIVE_LED'            =>  ($arrEntryValues['active']) ? "green" : "red",
+                       'ACTIVE_STATE'          =>  ($arrEntryValues['active']) ? 0 : 1,
+                       'ENTRY_CATEGORY'        =>  $arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
+                       'ENTRY_MODE'            =>  $mode
+                   ));
 
-	   			if ($intSelectedCategory == 0) {
-	   			    $this->_objTpl->hideBlock("show_arrows");
-	   			} else {
-	   			    $this->_objTpl->parse("show_arrows");
-	   			}
+                   if ($intSelectedCategory == 0) {
+                       $this->_objTpl->hideBlock("show_arrows");
+                   } else {
+                       $this->_objTpl->parse("show_arrows");
+                   }
 
-	   			$this->_objTpl->parse('showEntries');
+                   $this->_objTpl->parse('showEntries');
 
-	   			$intRowClass++;
+                   $intRowClass++;
 
-	   			$this->_objTpl->setVariable(array(
+                   $this->_objTpl->setVariable(array(
                     "ENTRY_ID"          => $intEntryId
-	   			));
-	   			$this->_objTpl->parse("push_sort");
-	   		}
+                   ));
+                   $this->_objTpl->parse("push_sort");
+               }
 
-	   		//Show paging if needed
-	   		/*
-	   		if ($this->countEntries() > $this->getPagingLimit()) {
-		   		$strPaging = getPaging($this->countEntries(), $intPagingPosition, "&amp;cmd=data&amp;catId=".$intSelectedCategory, '<strong>'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_PAGING'].'</strong>', true, $this->getPagingLimit());
-		   		$this->_objTpl->setVariable('ENTRIES_PAGING', $strPaging);
-	   		}*/
-   		} else {
-   			$this->_objTpl->setVariable('TXT_ENTRIES_NO_ENTRIES_FOUND', $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_NO_ENTRIES']);
-   			$this->_objTpl->parse('noEntries');
-   		}
+               //Show paging if needed
+               /*
+               if ($this->countEntries() > $this->getPagingLimit()) {
+                   $strPaging = getPaging($this->countEntries(), $intPagingPosition, "&amp;cmd=data&amp;catId=".$intSelectedCategory, '<strong>'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_PAGING'].'</strong>', true, $this->getPagingLimit());
+                   $this->_objTpl->setVariable('ENTRIES_PAGING', $strPaging);
+               }*/
+           } else {
+               $this->_objTpl->setVariable('TXT_ENTRIES_NO_ENTRIES_FOUND', $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_NO_ENTRIES']);
+               $this->_objTpl->parse('noEntries');
+           }
     }
 
     /**
@@ -954,19 +954,19 @@ class DataAdmin extends DataLibrary {
                 "CATEGORY_INDENT"               =>  5 + (($level > 0) ? ($level-1) * 15 : 0),
                 "CATEGORY_ROW"                  => ($currentCat == $key) ? 3 : (($row % 2 == 0) ? 2 : 1),
                 "CATEGORY_AMOUNT_OF_ENTRIES"    => $amount,
-    	    ));
+            ));
 
-    	    if ($level > 0) {
-    	        $this->_objTpl->touchBlock("arrow");
-    	        $this->_objTpl->parse("arrow");
-    	    }
+            if ($level > 0) {
+                $this->_objTpl->touchBlock("arrow");
+                $this->_objTpl->parse("arrow");
+            }
 
-    	    $this->_objTpl->parse("category_row");
+            $this->_objTpl->parse("category_row");
 
-    	    $row++;
-    	    if (count($value) > 0) {
-    	        $row = $this->parseOverviewCategories($value, $arrCategories, $currentCat, $level+1, $row);
-    	    }
+            $row++;
+            if (count($value) > 0) {
+                $row = $this->parseOverviewCategories($value, $arrCategories, $currentCat, $level+1, $row);
+            }
         }
         return $row;
     }
@@ -992,23 +992,23 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the "Add Entry" page.
      *
-     * @global 	array
+     * @global     array
      * @global  ADONewConnection
      */
     function addEntry() {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-    	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
+        $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'];
+        $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
 
-    	$this->_objTpl->setVariable(array(
-    		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_ADD_ENTRY'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'],
-    		'TXT_EDIT_SUBMIT'		=>	$_ARRAYLANG['TXT_SAVE'],
-    		'TXT_TOP_LEVEL'         =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
-    		'TXT_ADV_SETTINGS'      =>  $_ARRAYLANG['TXT_ADV_SETTINGS'],
-    		'TXT_DIV_MODE'          =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
-		    'TXT_DIV_MODE_NORMAL'   =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_NORMAL'],
+        $this->_objTpl->setVariable(array(
+            'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
+            'TXT_ADD_ENTRY'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'],
+            'TXT_EDIT_SUBMIT'        =>    $_ARRAYLANG['TXT_SAVE'],
+            'TXT_TOP_LEVEL'         =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
+            'TXT_ADV_SETTINGS'      =>  $_ARRAYLANG['TXT_ADV_SETTINGS'],
+            'TXT_DIV_MODE'          =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
+            'TXT_DIV_MODE_NORMAL'   =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_NORMAL'],
             'TXT_DIV_MODE_FORWARD'  =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'],
             'TXT_REDIRECT_HELP'     =>  htmlspecialchars($_ARRAYLANG['TXT_REDIRECT_HELP'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_DIV_ACTIVATE_RELEASE_TIME' =>  $_ARRAYLANG['TXT_ACTIVATE_RELEASE_TIME'],
@@ -1026,42 +1026,42 @@ class DataAdmin extends DataLibrary {
             'ENDLESS_CHECKED'               => "checked=\"checked\"",
             'RELEASE_DISPLAY'               => "disabled=\"disabled\"",
             'RELEASE_COLOR'                 => "gray"
-    	));
+        ));
 
-    	$arrCategories = $this->createCategoryArray();
+        $arrCategories = $this->createCategoryArray();
 
-    	$catTree = $this->buildCatTree($arrCategories);
+        $catTree = $this->buildCatTree($arrCategories);
 
-    	//Show language-selection
-    	if (count($this->_arrLanguages) > 0) {
-    		$intLanguageCounter = 0;
-	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
-	   		$strJsTabToDiv = '';
+        //Show language-selection
+        if (count($this->_arrLanguages) > 0) {
+            $intLanguageCounter = 0;
+               $arrLanguages = array(0 => '', 1 => '', 2 => '');
+               $strJsTabToDiv = '';
 
-	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+            foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
                 $this->parseCategoryDropdown($catTree, $arrCategories, 0, 0, $intLanguageId);
-	   			$arrLanguages[$intLanguageCounter%3] .= '<input checked="checked" type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
+                   $arrLanguages[$intLanguageCounter%3] .= '<input checked="checked" type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 
-	    		$strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
+                $strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
 
-	    		//Parse the TABS at the top of the language-selection
-	    		$this->_objTpl->setVariable(array(
-	    			'TABS_LINK_ID'			=>	'addEntry_'.$arrTranslations['long'],
-	    			'TABS_DIV_ID'			=>	$arrTranslations['long'],
-	    			'TABS_CLASS'			=>	($intLanguageCounter == 0) ? 'active' : 'inactive',
-	    			'TABS_DISPLAY_STYLE'	=>	'display: inline;',
-	    			'TABS_NAME'				=>	$arrTranslations['long']
+                //Parse the TABS at the top of the language-selection
+                $this->_objTpl->setVariable(array(
+                    'TABS_LINK_ID'            =>    'addEntry_'.$arrTranslations['long'],
+                    'TABS_DIV_ID'            =>    $arrTranslations['long'],
+                    'TABS_CLASS'            =>    ($intLanguageCounter == 0) ? 'active' : 'inactive',
+                    'TABS_DISPLAY_STYLE'    =>    'display: inline;',
+                    'TABS_NAME'                =>    $arrTranslations['long']
 
-	    		));
-	    		$this->_objTpl->parse('showLanguageTabs');
+                ));
+                $this->_objTpl->parse('showLanguageTabs');
 
-	    		//Parse the DIVS for every language
-	    		$this->_objTpl->setVariable(array(
-	    			'TXT_DIV_SUBJECT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
-	    			'TXT_DIV_IMAGE'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
-	    			'TXT_DIV_IMAGE_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
-	    			'TXT_DIV_THUMBNAIL'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
-	    			'TXT_DIV_THUMBNAIL_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
+                //Parse the DIVS for every language
+                $this->_objTpl->setVariable(array(
+                    'TXT_DIV_SUBJECT'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
+                    'TXT_DIV_IMAGE'            =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
+                    'TXT_DIV_IMAGE_BROWSE'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
+                    'TXT_DIV_THUMBNAIL'            =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
+                    'TXT_DIV_THUMBNAIL_BROWSE'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
                     'TXT_DATA_THUMBNAIL_ORI_DESC'   => $_ARRAYLANG['TXT_DATA_THUMBNAIL_ORI_DESC'],
                     'TXT_DATA_THUMBNAIL_DIFF_DESC'  => $_ARRAYLANG['TXT_DATA_THUMBNAIL_DIFF_DESC'],
                     'TXT_DATA_THUMBNAIL_SIZE'       => $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'],
@@ -1071,10 +1071,10 @@ class DataAdmin extends DataLibrary {
                     'DIV_THUMBNAIL_DIFF_DISPLAY'    => 'none',
                     'TXT_DATA_WIDTH'                => $_ARRAYLANG['TXT_DATA_WIDTH'],
                     'TXT_DATA_HEIGHT'               => $_ARRAYLANG['TXT_DATA_HEIGHT'],
-	    			'TXT_DIV_CATEGORIES'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_CATEGORIES'],
-	    			'TXT_DIV_PLACEHOLDER'   =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-	    			'TXT_DIV_ATTACHMENT'    =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT'],
-	    			'TXT_DIV_ATTACHMENT_DESC' =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'],
+                    'TXT_DIV_CATEGORIES'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_CATEGORIES'],
+                    'TXT_DIV_PLACEHOLDER'   =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+                    'TXT_DIV_ATTACHMENT'    =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT'],
+                    'TXT_DIV_ATTACHMENT_DESC' =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'],
                     'TXT_FORWARD_URL'       =>  $_ARRAYLANG['TXT_FORWARD_URL'],
                     'DISPLAY_FORWARD_URL'   =>  "none",
                     'TXT_TARGET_WINDOW'     =>  $_ARRAYLANG['TXT_TARGET_WINDOW'],
@@ -1083,52 +1083,52 @@ class DataAdmin extends DataLibrary {
                     'TXT_TARGET_SELF'       =>  $_ARRAYLANG['TXT_TARGET_SELF'],
                     'TXT_TARGET_TOP'        =>  $_ARRAYLANG['TXT_TARGET_TOP']
 
-	    		));
+                ));
 
-	    		//Filter out active categories for this language
-	    		$intCategoriesCounter = 0;
-	    		$arrCategoriesContent = array(0 => '', 1 => '', 2 => '');
-	    		foreach ($arrCategories as $intCategoryId => $arrCategoryValues) {
-	    			if ($arrCategoryValues[$intLanguageId]['is_active']) {
-	    				$arrCategoriesContent[$intCategoriesCounter%3] .= '<input type="checkbox" name="frmEditEntry_Categories_'.$intLanguageId.'[]" value="'.$intCategoryId.'" />'.$arrCategoryValues[$intLanguageId]['name'].'<br />';
-	    				++$intCategoriesCounter;
-	    			}
-	    		}
+                //Filter out active categories for this language
+                $intCategoriesCounter = 0;
+                $arrCategoriesContent = array(0 => '', 1 => '', 2 => '');
+                foreach ($arrCategories as $intCategoryId => $arrCategoryValues) {
+                    if ($arrCategoryValues[$intLanguageId]['is_active']) {
+                        $arrCategoriesContent[$intCategoriesCounter%3] .= '<input type="checkbox" name="frmEditEntry_Categories_'.$intLanguageId.'[]" value="'.$intCategoryId.'" />'.$arrCategoryValues[$intLanguageId]['name'].'<br />';
+                        ++$intCategoriesCounter;
+                    }
+                }
 
-	    		//$objRs = $objDatabase->Execute("SHOW TABLE STATUS WHERE name = '".DBPREFIX."module_data_messages'");
-	    		$objRs = $objDatabase->Execute("SHOW TABLE STATUS");
-	    		while (!$objRs->EOF) {
+                //$objRs = $objDatabase->Execute("SHOW TABLE STATUS WHERE name = '".DBPREFIX."module_data_messages'");
+                $objRs = $objDatabase->Execute("SHOW TABLE STATUS");
+                while (!$objRs->EOF) {
                     if ($objRs->fields['Name'] == DBPREFIX."module_data_messages") {
                         $autoIncrement = $objRs->fields['Auto_increment'];
                     }
                     $objRs->MoveNext();
-	    		}
+                }
 
-	    		$this->_objTpl->setVariable(array(
-	    			'DIV_ID'			=>	$arrTranslations['long'],
-	    			'DIV_LANGUAGE_ID'	=>	$intLanguageId,
-	    			'DIV_DISPLAY_STYLE'	=>	($intLanguageCounter == 0) ? 'display: block;' : 'display: none;',
-	    			'DIV_TITLE'			=>	$arrTranslations['long'],
-	    			'DIV_CATEGORIES_1'	=>	$arrCategoriesContent[0],
-	    			'DIV_CATEGORIES_2'	=>	$arrCategoriesContent[1],
-	    			'DIV_CATEGORIES_3'	=>	$arrCategoriesContent[2],
-	    			'DIV_CONTENT'		=>	get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, ''),
-	    			'DIV_PLACEHOLDER'   =>  "DETAIL_".$autoIncrement
-	    		));
-	    		$this->_objTpl->parse('showLanguageDivs');
+                $this->_objTpl->setVariable(array(
+                    'DIV_ID'            =>    $arrTranslations['long'],
+                    'DIV_LANGUAGE_ID'    =>    $intLanguageId,
+                    'DIV_DISPLAY_STYLE'    =>    ($intLanguageCounter == 0) ? 'display: block;' : 'display: none;',
+                    'DIV_TITLE'            =>    $arrTranslations['long'],
+                    'DIV_CATEGORIES_1'    =>    $arrCategoriesContent[0],
+                    'DIV_CATEGORIES_2'    =>    $arrCategoriesContent[1],
+                    'DIV_CATEGORIES_3'    =>    $arrCategoriesContent[2],
+                    'DIV_CONTENT'        =>    get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, ''),
+                    'DIV_PLACEHOLDER'   =>  "DETAIL_".$autoIncrement
+                ));
+                $this->_objTpl->parse('showLanguageDivs');
 
-	    		++$intLanguageCounter;
-	    	}
+                ++$intLanguageCounter;
+            }
 
-	   		$this->_objTpl->setVariable(array(
-	   			'EDIT_POST_ACTION'		=>	'?cmd=data&amp;act=insertEntry',
-	   			'EDIT_MESSAGE_ID'		=>	0,
-	   			'EDIT_LANGUAGES_1'		=>	$arrLanguages[0],
-	   			'EDIT_LANGUAGES_2'		=>	$arrLanguages[1],
-	   			'EDIT_LANGUAGES_3'		=>	$arrLanguages[2],
-	   			'EDIT_JS_TAB_TO_DIV'	=>	$strJsTabToDiv
-	   		));
-    	}
+               $this->_objTpl->setVariable(array(
+                   'EDIT_POST_ACTION'        =>    '?cmd=data&amp;act=insertEntry',
+                   'EDIT_MESSAGE_ID'        =>    0,
+                   'EDIT_LANGUAGES_1'        =>    $arrLanguages[0],
+                   'EDIT_LANGUAGES_2'        =>    $arrLanguages[1],
+                   'EDIT_LANGUAGES_3'        =>    $arrLanguages[2],
+                   'EDIT_JS_TAB_TO_DIV'    =>    $strJsTabToDiv
+               ));
+        }
     }
 
 
@@ -1136,66 +1136,66 @@ class DataAdmin extends DataLibrary {
     /**
      * Adds a new entry to the database. Collected data in POST is checked for valid values.
      *
-     * @global 	array
-     * @global 	ADONewConnection
+     * @global     array
+     * @global     ADONewConnection
      */
     function insertEntry() {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-    	if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages'])) {
+        if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages'])) {
 
-    	    $objRs = $objDatabase->Execute(" SELECT MAX(sort) AS sort FROM ".DBPREFIX."module_data_messages");
-    	    $sort = $objRs->fields['sort']+1;
+            $objRs = $objDatabase->Execute(" SELECT MAX(sort) AS sort FROM ".DBPREFIX."module_data_messages");
+            $sort = $objRs->fields['sort']+1;
 
-    	    $mode = (isset($_POST['frmEditEntry_Mode'])) ? contrexx_addslashes($_POST['frmEditEntry_Mode']) : "normal";
+            $mode = (isset($_POST['frmEditEntry_Mode'])) ? contrexx_addslashes($_POST['frmEditEntry_Mode']) : "normal";
 
-    	    // the release times
-    	    if (isset($_POST['release_time_activated'])) {
-    	        if (isset($_POST['endless'])) {
-    	            // no end
-    	            $release_time_end = 0;
-    	        } else {
-    	            $endDateParts = split("-", $_POST['release_date_end']);
-    	            $hour = intval($_POST['release_hour_end']);
-    	            $minute = intval($_POST['release_minute_end']);
-    	            $day = intval($endDateParts[2]);
-    	            $month = intval($endDateParts[1]);
-    	            $year = intval($endDateParts[0]);
-    	            $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
-    	        }
+            // the release times
+            if (isset($_POST['release_time_activated'])) {
+                if (isset($_POST['endless'])) {
+                    // no end
+                    $release_time_end = 0;
+                } else {
+                    $endDateParts = split("-", $_POST['release_date_end']);
+                    $hour = intval($_POST['release_hour_end']);
+                    $minute = intval($_POST['release_minute_end']);
+                    $day = intval($endDateParts[2]);
+                    $month = intval($endDateParts[1]);
+                    $year = intval($endDateParts[0]);
+                    $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
+                }
 
-    	        $dateParts = split("-", $_POST['release_date']);
-    	        $hour = intval($_POST['release_hour']);
-    	        $minute = intval($_POST['release_minute']);
-    	        $day = intval($dateParts[2]);
-    	        $month = intval($dateParts[1]);
-    	        $year = intval($dateParts[0]);
-    	        $release_time = mktime($hour, $minute, 0, $month, $day, $year);
-    	    } else {
-    	        // no release time associated
-    	        $release_time = 0;
-    	        $release_time_end = 0;
-    	    }
+                $dateParts = split("-", $_POST['release_date']);
+                $hour = intval($_POST['release_hour']);
+                $minute = intval($_POST['release_minute']);
+                $day = intval($dateParts[2]);
+                $month = intval($dateParts[1]);
+                $year = intval($dateParts[0]);
+                $release_time = mktime($hour, $minute, 0, $month, $day, $year);
+            } else {
+                // no release time associated
+                $release_time = 0;
+                $release_time_end = 0;
+            }
 
-    	    //Create entry with general-information for all languages
-    		$objDatabase->Execute('	INSERT INTO '.DBPREFIX.'module_data_messages
-    								SET `time_created` = '.time().',
-    									`time_edited` = '.time().',
-    									`hits` = 0,
-    									`mode` = "'.$mode.'",
-    									`sort` = '.$sort.',
-    									`release_time` = '.$release_time.',
-    									`release_time_end`  = '.$release_time_end);
-    		$intMessageId = $objDatabase->insert_id();
-    		$this->insertEntryData($intMessageId);
+            //Create entry with general-information for all languages
+            $objDatabase->Execute('    INSERT INTO '.DBPREFIX.'module_data_messages
+                                    SET `time_created` = '.time().',
+                                        `time_edited` = '.time().',
+                                        `hits` = 0,
+                                        `mode` = "'.$mode.'",
+                                        `sort` = '.$sort.',
+                                        `release_time` = '.$release_time.',
+                                        `release_time_end`  = '.$release_time_end);
+            $intMessageId = $objDatabase->insert_id();
+            $this->insertEntryData($intMessageId);
 
-    		$this->writeMessageRSS();
-    		$this->writeCategoryRSS();
+            $this->writeMessageRSS();
+            $this->writeCategoryRSS();
 
-    		$this->_strOkMessage = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUCCESSFULL'];
-    	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_ERROR_LANGUAGES'];
-    	}
+            $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUCCESSFULL'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_ERROR_LANGUAGES'];
+        }
     }
 
 
@@ -1205,87 +1205,87 @@ class DataAdmin extends DataLibrary {
      * $_POST and creates the new entries in the database. This function was extracted from original source to be as
      * DRY/SPOT as possible.
      *
-     * @global 	ADONewConnection
-     * @param	integer		$intMessageId: This is the id of the message which the new values will be linked to.
+     * @global     ADONewConnection
+     * @param    integer        $intMessageId: This is the id of the message which the new values will be linked to.
      */
     function insertEntryData($intMessageId) {
-    	global $objDatabase;
+        global $objDatabase;
 
-    	$intMessageId = intval($intMessageId);
+        $intMessageId = intval($intMessageId);
 
-		//Collect data for every language
-		$arrValues = array();
-		foreach ($_POST as $strKey => $strValue) {
-			if (substr($strKey,0,strlen('frmEditEntry_Subject_')) == 'frmEditEntry_Subject_') {
-				$intLanguageId = intval(substr($strKey,strlen('frmEditEntry_Subject_')));
-				$arrValues[$intLanguageId] = array(	'subject' 		=> contrexx_addslashes(strip_tags($_POST['frmEditEntry_Subject_'.$intLanguageId])),
-													'content'		=> contrexx_addslashes($_POST['frmEditEntry_Content_'.$intLanguageId]),
-													'is_active'		=> intval(in_array($intLanguageId, $_POST['frmEditEntry_Languages'])),
-													//'categories'	=> (isset($_POST['frmEditEntry_Categories_'.$intLanguageId])) ? $_POST['frmEditEntry_Categories_'.$intLanguageId] : array(),
-													'categories'    => (isset($_POST['frmcategory_'.$intLanguageId])) ? array($_POST['frmcategory_'.$intLanguageId]) : array(),
-													'image'			=> contrexx_addslashes(strip_tags($_POST['frmEditEntry_Image_'.$intLanguageId])),
-													'thumbnail'			=> isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'different' ? contrexx_addslashes(strip_tags($_POST['frmEditEntry_Thumbnail_'.$intLanguageId])) : '',
+        //Collect data for every language
+        $arrValues = array();
+        foreach ($_POST as $strKey => $strValue) {
+            if (substr($strKey,0,strlen('frmEditEntry_Subject_')) == 'frmEditEntry_Subject_') {
+                $intLanguageId = intval(substr($strKey,strlen('frmEditEntry_Subject_')));
+                $arrValues[$intLanguageId] = array(    'subject'         => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Subject_'.$intLanguageId])),
+                                                    'content'        => contrexx_addslashes($_POST['frmEditEntry_Content_'.$intLanguageId]),
+                                                    'is_active'        => intval(in_array($intLanguageId, $_POST['frmEditEntry_Languages'])),
+                                                    //'categories'    => (isset($_POST['frmEditEntry_Categories_'.$intLanguageId])) ? $_POST['frmEditEntry_Categories_'.$intLanguageId] : array(),
+                                                    'categories'    => (isset($_POST['frmcategory_'.$intLanguageId])) ? array($_POST['frmcategory_'.$intLanguageId]) : array(),
+                                                    'image'            => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Image_'.$intLanguageId])),
+                                                    'thumbnail'            => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'different' ? contrexx_addslashes(strip_tags($_POST['frmEditEntry_Thumbnail_'.$intLanguageId])) : '',
                                                     'thumbnail_width' => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Width_'.$intLanguageId]) : 0,
                                                     'thumbnail_height' => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Height_'.$intLanguageId]) : 0,
-													'attachment'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_'.$intLanguageId]),
-													'attachment_desc'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_Desc_'.$intLanguageId]),
-													'forward_url'   => contrexx_addslashes($_POST['frmEditEntry_ForwardUrl_'.$intLanguageId]),
-													'forward_target' => contrexx_addslashes($_POST['frmEditEntry_ForwardTarget_'.$intLanguageId]),
-												);
-			}
-		}
+                                                    'attachment'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_'.$intLanguageId]),
+                                                    'attachment_desc'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_Desc_'.$intLanguageId]),
+                                                    'forward_url'   => contrexx_addslashes($_POST['frmEditEntry_ForwardUrl_'.$intLanguageId]),
+                                                    'forward_target' => contrexx_addslashes($_POST['frmEditEntry_ForwardTarget_'.$intLanguageId]),
+                                                );
+            }
+        }
 
-		//save the placeholder
-		if (isset($_POST['frmEditEntry_Placeholder'])) {
-		    $placeholder = $this->_formatPlaceholder($_POST['frmEditEntry_Placeholder']);
-		    $objDatabase->Execute("  INSERT INTO ".DBPREFIX."module_data_placeholders
-		                             (`type`, `ref_id`, `placeholder`)
-		                             VALUES
-		                             ('entry', ".$intMessageId.",
-		                              '".$placeholder."')"
-		                         );
-		  $err = $objDatabase->ErrorNo();
-		  if ($err == 1062) {  //duplicate entry error
-		      $placeholder .= rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9); // not very beautiful...
-		      $objDatabase->Execute(" INSERT INTO ".DBPREFIX."module_data_placeholders
-		                              (`type`, `ref_id`, `placeholder`)
-		                              VALUES
-		                              ('entry', ".$intMessageId.",
-		                              '".$placeholder."')");
-		  }
-		}
+        //save the placeholder
+        if (isset($_POST['frmEditEntry_Placeholder'])) {
+            $placeholder = $this->_formatPlaceholder($_POST['frmEditEntry_Placeholder']);
+            $objDatabase->Execute("  INSERT INTO ".DBPREFIX."module_data_placeholders
+                                     (`type`, `ref_id`, `placeholder`)
+                                     VALUES
+                                     ('entry', ".$intMessageId.",
+                                      '".$placeholder."')"
+                                 );
+          $err = $objDatabase->ErrorNo();
+          if ($err == 1062) {  //duplicate entry error
+              $placeholder .= rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9); // not very beautiful...
+              $objDatabase->Execute(" INSERT INTO ".DBPREFIX."module_data_placeholders
+                                      (`type`, `ref_id`, `placeholder`)
+                                      VALUES
+                                      ('entry', ".$intMessageId.",
+                                      '".$placeholder."')");
+          }
+        }
 
-		//Insert collected data
-		foreach ($arrValues as $intLanguageId => $arrEntryValues) {
-			$objDatabase->Execute('	INSERT INTO '.DBPREFIX.'module_data_messages_lang
-									SET	`message_id` = '.$intMessageId.',
-										`lang_id` = '.$intLanguageId.',
-										`is_active` = "'.$arrEntryValues['is_active'].'",
-										`subject` = "'.$arrEntryValues['subject'].'",
-										`content` = "'.$arrEntryValues['content'].'",
-										`image` = "'.$arrEntryValues['image'].'",
-										`thumbnail` = "'.$arrEntryValues['thumbnail'].'",
-										`thumbnail_width` = "'.$arrEntryValues['thumbnail_width'].'",
-										`thumbnail_height` = "'.$arrEntryValues['thumbnail_height'].'",
-										`attachment` = "'.$arrEntryValues['attachment'].'",
-										`attachment_description` = "'.$arrEntryValues['attachment_desc'].'",
-										`forward_url` = "'.$arrEntryValues['forward_url'].'",
-										`forward_target` = "'.$arrEntryValues['forward_target'].'"
-								');
+        //Insert collected data
+        foreach ($arrValues as $intLanguageId => $arrEntryValues) {
+            $objDatabase->Execute('    INSERT INTO '.DBPREFIX.'module_data_messages_lang
+                                    SET    `message_id` = '.$intMessageId.',
+                                        `lang_id` = '.$intLanguageId.',
+                                        `is_active` = "'.$arrEntryValues['is_active'].'",
+                                        `subject` = "'.$arrEntryValues['subject'].'",
+                                        `content` = "'.$arrEntryValues['content'].'",
+                                        `image` = "'.$arrEntryValues['image'].'",
+                                        `thumbnail` = "'.$arrEntryValues['thumbnail'].'",
+                                        `thumbnail_width` = "'.$arrEntryValues['thumbnail_width'].'",
+                                        `thumbnail_height` = "'.$arrEntryValues['thumbnail_height'].'",
+                                        `attachment` = "'.$arrEntryValues['attachment'].'",
+                                        `attachment_description` = "'.$arrEntryValues['attachment_desc'].'",
+                                        `forward_url` = "'.$arrEntryValues['forward_url'].'",
+                                        `forward_target` = "'.$arrEntryValues['forward_target'].'"
+                                ');
 
-			//Assign message to categories
-			if (is_array($arrEntryValues['categories'])) {
-				foreach ($arrEntryValues['categories'] as $intKey => $intCategoryId) {
-					$objDatabase->Execute('	INSERT INTO '.DBPREFIX.'module_data_message_to_category
-											SET `message_id` = '.$intMessageId.',
-												`category_id` = '.$intCategoryId.',
-												`lang_id` = '.$intLanguageId.'
-										');
-					if ($intLanguageId == $this->_intLanguageId) {
-					   $_GET['catId'] = $intCategoryId;
-					}
-				}
-			}
+            //Assign message to categories
+            if (is_array($arrEntryValues['categories'])) {
+                foreach ($arrEntryValues['categories'] as $intKey => $intCategoryId) {
+                    $objDatabase->Execute('    INSERT INTO '.DBPREFIX.'module_data_message_to_category
+                                            SET `message_id` = '.$intMessageId.',
+                                                `category_id` = '.$intCategoryId.',
+                                                `lang_id` = '.$intLanguageId.'
+                                        ');
+                    if ($intLanguageId == $this->_intLanguageId) {
+                       $_GET['catId'] = $intCategoryId;
+                    }
+                }
+            }
 
             // create thumbnail if required
             if (empty($arrEntryValues['thumbnail'])) {
@@ -1298,48 +1298,48 @@ class DataAdmin extends DataLibrary {
                 $file = basename($arrEntryValues['image']);
                 $objImage->_createThumbWhq($strPath, $strWebPath, $file, $arrEntryValues['thumbnail_width'], $arrEntryValues['thumbnail_height'], 90, '', ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', $intMessageId.'_'.$intLanguageId.'_'.$file);
             }
-		}
+        }
     }
 
 
     /**
      * Shows the "Edit Entry" page.
      *
-     * @global 	array
-     * @param 	integer		$intEntryId: The values of this entry will be loaded into the form.
+     * @global     array
+     * @param     integer        $intEntryId: The values of this entry will be loaded into the form.
      */
     function editEntry($intEntryId, $copy = false) {
-    	global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
-    	$this->_strPageTitle = $copy ? $_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'] : $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
+        $this->_strPageTitle = $copy ? $_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'] : $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
+        $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
 
-    	$this->_objTpl->setVariable(array(
-    		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_EDIT_SUBMIT'		=>	$_ARRAYLANG['TXT_SAVE'],
-    		'TXT_ADV_SETTINGS'      =>  $_ARRAYLANG['TXT_ADV_SETTINGS'],
+        $this->_objTpl->setVariable(array(
+            'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
+            'TXT_EDIT_SUBMIT'        =>    $_ARRAYLANG['TXT_SAVE'],
+            'TXT_ADV_SETTINGS'      =>  $_ARRAYLANG['TXT_ADV_SETTINGS'],
             'TXT_DIV_MODE'          =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
-		    'TXT_DIV_MODE_NORMAL'   =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_NORMAL'],
+            'TXT_DIV_MODE_NORMAL'   =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_NORMAL'],
             'TXT_DIV_MODE_FORWARD'  =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'],
             'TXT_DIV_ACTIVATE_RELEASE_TIME' =>  $_ARRAYLANG['TXT_ACTIVATE_RELEASE_TIME'],
             'TXT_DIV_RELEASE_TIME'  =>  $_ARRAYLANG['TXT_RELEASE_TIME'],
             'TXT_ENDDATE_ENDLESS'   =>  $_ARRAYLANG['TXT_ENDLESS']
-    	));
+        ));
 
-    	$arrCategories = $this->createCategoryArray();
-    	$arrEntries = $this->createEntryArray();
+        $arrCategories = $this->createCategoryArray();
+        $arrEntries = $this->createEntryArray();
 
-    	$intEntryId = intval($intEntryId);
+        $intEntryId = intval($intEntryId);
 
-    	$catTree = $this->buildCatTree($arrCategories);
-    	$catKeys = array_keys($arrEntries[$intEntryId]['categories'][$this->_intLanguageId]);
-    	$firstCat = $catKeys[0];
-    	$ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
+        $catTree = $this->buildCatTree($arrCategories);
+        $catKeys = array_keys($arrEntries[$intEntryId]['categories'][$this->_intLanguageId]);
+        $firstCat = $catKeys[0];
+        $ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
 
 
-    	$release_date = $arrEntries[$intEntryId]['release_time'];
-    	$release_date_end = $arrEntries[$intEntryId]['release_time_end'];
-    	$this->_objTpl->setVariable(array(
+        $release_date = $arrEntries[$intEntryId]['release_time'];
+        $release_date_end = $arrEntries[$intEntryId]['release_time_end'];
+        $this->_objTpl->setVariable(array(
             'DIV_MODE_NORMAL_CHECKED'       => ($arrEntries[$intEntryId]['mode'] == "normal") ? "checked=\"checked\"" : "",
             'DIV_MODE_FORWARD_CHECKED'      => ($arrEntries[$intEntryId]['mode'] == "forward") ? "checked=\"checked\"" : "",
             'DISPLAY_RELEASE_TIME'          => ($release_date) ? (($ie) ? "block" : "table-row") : "none",
@@ -1353,40 +1353,40 @@ class DataAdmin extends DataLibrary {
             'ENDLESS_CHECKED'               => ($release_date_end == 0) ? "checked=\"checked\"" : "",
             'RELEASE_DISPLAY'               => ($release_date_end == 0) ? "disabled=\"disabled\"" : "",
             'RELEASE_COLOR'                 => ($release_date_end == 0) ? "gray" : "black"
-    	));
+        ));
 
-    	if ($intEntryId > 0 && key_exists($intEntryId,$arrEntries)) {
-	    	if (count($this->_arrLanguages) > 0) {
-	    		$intLanguageCounter = 0;
-	    		$boolFirstLanguage = true;
-		   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
-		   		$strJsTabToDiv = '';
+        if ($intEntryId > 0 && key_exists($intEntryId,$arrEntries)) {
+            if (count($this->_arrLanguages) > 0) {
+                $intLanguageCounter = 0;
+                $boolFirstLanguage = true;
+                   $arrLanguages = array(0 => '', 1 => '', 2 => '');
+                   $strJsTabToDiv = '';
 
-		    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-		    	    $this->parseCategoryDropdown($catTree, $arrCategories, $firstCat, 0, $intLanguageId, false);
+                foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+                    $this->parseCategoryDropdown($catTree, $arrCategories, $firstCat, 0, $intLanguageId, false);
 
-		    		$boolLanguageIsActive = $arrEntries[$intEntryId]['translation'][$intLanguageId]['is_active'];
+                    $boolLanguageIsActive = $arrEntries[$intEntryId]['translation'][$intLanguageId]['is_active'];
 
-		   			$arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
-		    		$strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
+                       $arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
+                    $strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
 
-		    		//Parse the TABS at the top of the language-selection
-		    		$this->_objTpl->setVariable(array(
-		    			'TABS_LINK_ID'			=>	'addEntry_'.$arrTranslations['long'],
-		    			'TABS_DIV_ID'			=>	$arrTranslations['long'],
-		    			'TABS_CLASS'			=>	($boolFirstLanguage && $boolLanguageIsActive) ? 'active' : 'inactive',
-		    			'TABS_DISPLAY_STYLE'	=>	($boolLanguageIsActive) ? 'display: inline;' : 'display: none;',
-		    			'TABS_NAME'				=>	$arrTranslations['long'],
-		    		));
-		    		$this->_objTpl->parse('showLanguageTabs');
+                    //Parse the TABS at the top of the language-selection
+                    $this->_objTpl->setVariable(array(
+                        'TABS_LINK_ID'            =>    'addEntry_'.$arrTranslations['long'],
+                        'TABS_DIV_ID'            =>    $arrTranslations['long'],
+                        'TABS_CLASS'            =>    ($boolFirstLanguage && $boolLanguageIsActive) ? 'active' : 'inactive',
+                        'TABS_DISPLAY_STYLE'    =>    ($boolLanguageIsActive) ? 'display: inline;' : 'display: none;',
+                        'TABS_NAME'                =>    $arrTranslations['long'],
+                    ));
+                    $this->_objTpl->parse('showLanguageTabs');
 
-		    		//Parse the DIVS for every language
-		    		$this->_objTpl->setVariable(array(
-		    			'TXT_DIV_SUBJECT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
-	    				'TXT_DIV_IMAGE'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
-	    				'TXT_DIV_THUMBNAIL'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
-	    				'TXT_DIV_IMAGE_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
-	    				'TXT_DIV_THUMBNAIL_BROWSE'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
+                    //Parse the DIVS for every language
+                    $this->_objTpl->setVariable(array(
+                        'TXT_DIV_SUBJECT'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
+                        'TXT_DIV_IMAGE'            =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
+                        'TXT_DIV_THUMBNAIL'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
+                        'TXT_DIV_IMAGE_BROWSE'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
+                        'TXT_DIV_THUMBNAIL_BROWSE'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
                         'TXT_DATA_THUMBNAIL_ORI_DESC'   => $_ARRAYLANG['TXT_DATA_THUMBNAIL_ORI_DESC'],
                         'TXT_DATA_THUMBNAIL_DIFF_DESC'  => $_ARRAYLANG['TXT_DATA_THUMBNAIL_DIFF_DESC'],
                         'TXT_DATA_THUMBNAIL_SIZE'       => $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'],
@@ -1394,9 +1394,9 @@ class DataAdmin extends DataLibrary {
                         'DIV_THUMBNAIL_DIFF_DISPLAY'    => 'none',
                         'TXT_DATA_WIDTH'                => $_ARRAYLANG['TXT_DATA_WIDTH'],
                         'TXT_DATA_HEIGHT'               => $_ARRAYLANG['TXT_DATA_HEIGHT'],
-		    			'TXT_DIV_CATEGORIES'	=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_CATEGORIES'],
-		    			'TXT_DIV_PLACEHOLDER'   =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-		    			'TXT_DIV_ATTACHMENT'    =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT'],
+                        'TXT_DIV_CATEGORIES'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_CATEGORIES'],
+                        'TXT_DIV_PLACEHOLDER'   =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+                        'TXT_DIV_ATTACHMENT'    =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT'],
                         'TXT_DIV_ATTACHMENT_DESC' =>  $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'],
                         'TXT_FORWARD_URL'       =>  $_ARRAYLANG['TXT_FORWARD_URL'],
                         'TXT_REDIRECT_HELP'     =>  htmlspecialchars($_ARRAYLANG['TXT_REDIRECT_HELP'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1406,28 +1406,28 @@ class DataAdmin extends DataLibrary {
                         'TXT_TARGET_PARENT'     =>  $_ARRAYLANG['TXT_TARGET_PARENT'],
                         'TXT_TARGET_SELF'       =>  $_ARRAYLANG['TXT_TARGET_SELF'],
                         'TXT_TARGET_TOP'        =>  $_ARRAYLANG['TXT_TARGET_TOP']
-		    		));
+                    ));
 
-		    		//Filter out active categories for this language
-		    		$intCategoriesCounter = 0;
-		    		$arrCategoriesContent = array(0 => '', 1 => '', 2 => '');
-		    		foreach ($arrCategories as $intCategoryId => $arrCategoryValues) {
-		    			if ($arrCategoryValues[$intLanguageId]['is_active']) {
-		    				$arrCategoriesContent[$intCategoriesCounter%3] .= '<input type="checkbox" name="frmEditEntry_Categories_'.$intLanguageId.'[]" value="'.$intCategoryId.'" '.(key_exists($intCategoryId, $arrEntries[$intEntryId]['categories'][$intLanguageId]) ? 'checked="checked"' : '').' />'.$arrCategoryValues[$intLanguageId]['name'].'<br />';
-		    				++$intCategoriesCounter;
-		    			}
-		    		}
+                    //Filter out active categories for this language
+                    $intCategoriesCounter = 0;
+                    $arrCategoriesContent = array(0 => '', 1 => '', 2 => '');
+                    foreach ($arrCategories as $intCategoryId => $arrCategoryValues) {
+                        if ($arrCategoryValues[$intLanguageId]['is_active']) {
+                            $arrCategoriesContent[$intCategoriesCounter%3] .= '<input type="checkbox" name="frmEditEntry_Categories_'.$intLanguageId.'[]" value="'.$intCategoryId.'" '.(key_exists($intCategoryId, $arrEntries[$intEntryId]['categories'][$intLanguageId]) ? 'checked="checked"' : '').' />'.$arrCategoryValues[$intLanguageId]['name'].'<br />';
+                            ++$intCategoriesCounter;
+                        }
+                    }
 
-		    		$selected = "selected=\"selected\"";
+                    $selected = "selected=\"selected\"";
 
-		    		$this->_objTpl->setVariable(array(
-		    			'DIV_ID'			=>	$arrTranslations['long'],
-		    			'DIV_LANGUAGE_ID'	=>	$intLanguageId,
-		    			'DIV_DISPLAY_STYLE'	=>	($boolFirstLanguage && $boolLanguageIsActive) ? 'display: block;' : 'display: none;',
-		    			'DIV_TITLE'			=>	$arrTranslations['long'],
-		    			'DIV_SUBJECT'		=>	$arrEntries[$intEntryId]['translation'][$intLanguageId]['subject'],
-		    			'DIV_IMAGE'			=>	$arrEntries[$intEntryId]['translation'][$intLanguageId]['image'],
-		    			'DIV_THUMBNAIL'		=>	$arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail'],
+                    $this->_objTpl->setVariable(array(
+                        'DIV_ID'            =>    $arrTranslations['long'],
+                        'DIV_LANGUAGE_ID'    =>    $intLanguageId,
+                        'DIV_DISPLAY_STYLE'    =>    ($boolFirstLanguage && $boolLanguageIsActive) ? 'display: block;' : 'display: none;',
+                        'DIV_TITLE'            =>    $arrTranslations['long'],
+                        'DIV_SUBJECT'        =>    $arrEntries[$intEntryId]['translation'][$intLanguageId]['subject'],
+                        'DIV_IMAGE'            =>    $arrEntries[$intEntryId]['translation'][$intLanguageId]['image'],
+                        'DIV_THUMBNAIL'        =>    $arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail'],
                         'THUMBNAIL_ORI_WIDTH' => $arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail_width'],
                         'THUMBNAIL_ORI_HEIGHT' => $arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail_height'],
                         'THUMBNAIL_METHOD_ORI_CHECKED' => empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? 'checked="checked"' : '',
@@ -1435,42 +1435,42 @@ class DataAdmin extends DataLibrary {
                         'DIV_THUMBNAIL_ORI_DISPLAY' => empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? '' : 'none',
                         'DIV_THUMBNAIL_DIFF_DISPLAY' => !empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? '' : 'none',
                         'DIV_THUMBNAIL_'.(!empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? 'DIFF' : 'ORI').'_DISPLAY' => '',
-		    			'DIV_CATEGORIES_1'	=>	$arrCategoriesContent[0],
-		    			'DIV_CATEGORIES_2'	=>	$arrCategoriesContent[1],
-		    			'DIV_CATEGORIES_3'	=>	$arrCategoriesContent[2],
-		    			'DIV_CONTENT'		=>	get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content']),
-		    			'DIV_PLACEHOLDER'   =>  $arrEntries[$intEntryId]['placeholder'],
-		    			'DIV_ATTACHMENT'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment'],
-		    			'DIV_ATTACHMENT_DESC'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment_desc'],
-		    			'DIV_FORWARD_URL'   =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_url'],
-		    			'TARGET_BLANK_SELECTED'    => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_blank") ? $selected : "",
-		    			'TARGET_PARENT_SELECTED'   => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_parent") ? $selected : "",
-		    			'TARGET_SELF_SELECTED'     => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_self") ? $selected : "",
-		    			'TARGET_TOP_SELECTED'      => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_top") ? $selected : "",
-		    			'TARGET_NOTHING_SELECTED'  => (empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'])) ? $selected : ""
-		    		));
+                        'DIV_CATEGORIES_1'    =>    $arrCategoriesContent[0],
+                        'DIV_CATEGORIES_2'    =>    $arrCategoriesContent[1],
+                        'DIV_CATEGORIES_3'    =>    $arrCategoriesContent[2],
+                        'DIV_CONTENT'        =>    get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content']),
+                        'DIV_PLACEHOLDER'   =>  $arrEntries[$intEntryId]['placeholder'],
+                        'DIV_ATTACHMENT'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment'],
+                        'DIV_ATTACHMENT_DESC'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment_desc'],
+                        'DIV_FORWARD_URL'   =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_url'],
+                        'TARGET_BLANK_SELECTED'    => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_blank") ? $selected : "",
+                        'TARGET_PARENT_SELECTED'   => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_parent") ? $selected : "",
+                        'TARGET_SELF_SELECTED'     => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_self") ? $selected : "",
+                        'TARGET_TOP_SELECTED'      => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'] == "_top") ? $selected : "",
+                        'TARGET_NOTHING_SELECTED'  => (empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['forward_target'])) ? $selected : ""
+                    ));
 
-		    		$this->_objTpl->parse('showLanguageDivs');
+                    $this->_objTpl->parse('showLanguageDivs');
 
-		    		if ($boolLanguageIsActive) {
-		    			$boolFirstLanguage = false;
-		    		}
+                    if ($boolLanguageIsActive) {
+                        $boolFirstLanguage = false;
+                    }
 
-		    		++$intLanguageCounter;
-		    	}
+                    ++$intLanguageCounter;
+                }
 
-		   		$this->_objTpl->setVariable(array(
-		   			'EDIT_POST_ACTION'		=>	'?cmd=data&amp;act='.($copy ? 'insertEntry' : 'updateEntry'),
-		   			'EDIT_MESSAGE_ID'		=>	$copy ? 0 : $intEntryId,
-		   			'EDIT_LANGUAGES_1'		=>	$arrLanguages[0],
-		   			'EDIT_LANGUAGES_2'		=>	$arrLanguages[1],
-		   			'EDIT_LANGUAGES_3'		=>	$arrLanguages[2],
-		   			'EDIT_JS_TAB_TO_DIV'	=>	$strJsTabToDiv
-		   		));
-	    	}
-    	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_ERROR_ID'];
-    	}
+                   $this->_objTpl->setVariable(array(
+                       'EDIT_POST_ACTION'        =>    '?cmd=data&amp;act='.($copy ? 'insertEntry' : 'updateEntry'),
+                       'EDIT_MESSAGE_ID'        =>    $copy ? 0 : $intEntryId,
+                       'EDIT_LANGUAGES_1'        =>    $arrLanguages[0],
+                       'EDIT_LANGUAGES_2'        =>    $arrLanguages[1],
+                       'EDIT_LANGUAGES_3'        =>    $arrLanguages[2],
+                       'EDIT_JS_TAB_TO_DIV'    =>    $strJsTabToDiv
+                   ));
+            }
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_ERROR_ID'];
+        }
     }
 
 
@@ -1478,80 +1478,80 @@ class DataAdmin extends DataLibrary {
     /**
      * Collects and validates all values from the edit-entry-form. Updates values in database.
      *
-     * @global 	array
-     * @global 	ADONewConnection
+     * @global     array
+     * @global     ADONewConnection
      */
     function updateEntry() {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-    	$intMessageId = intval($_POST['frmEditCategory_MessageId']);
+        $intMessageId = intval($_POST['frmEditCategory_MessageId']);
 
-    	if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages']) && $intMessageId > 0) {
+        if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages']) && $intMessageId > 0) {
 
-    	    $mode = (isset($_POST['frmEditEntry_Mode'])) ? contrexx_addslashes($_POST['frmEditEntry_Mode']) : "normal";
+            $mode = (isset($_POST['frmEditEntry_Mode'])) ? contrexx_addslashes($_POST['frmEditEntry_Mode']) : "normal";
 
-    	    // the release times
-    	    if (isset($_POST['release_time_activated'])) {
-    	        if (isset($_POST['endless'])) {
-    	            // no end
-    	            $release_time_end = 0;
-    	        } else {
-    	            $endDateParts = split("-", $_POST['release_date_end']);
-    	            $hour = intval($_POST['release_hour_end']);
-    	            $minute = intval($_POST['release_minute_end']);
-    	            $day = intval($endDateParts[2]);
-    	            $month = intval($endDateParts[1]);
-    	            $year = intval($endDateParts[0]);
-    	            $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
-    	        }
+            // the release times
+            if (isset($_POST['release_time_activated'])) {
+                if (isset($_POST['endless'])) {
+                    // no end
+                    $release_time_end = 0;
+                } else {
+                    $endDateParts = split("-", $_POST['release_date_end']);
+                    $hour = intval($_POST['release_hour_end']);
+                    $minute = intval($_POST['release_minute_end']);
+                    $day = intval($endDateParts[2]);
+                    $month = intval($endDateParts[1]);
+                    $year = intval($endDateParts[0]);
+                    $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
+                }
 
-    	        $dateParts = split("-", $_POST['release_date']);
-    	        $hour = intval($_POST['release_hour']);
-    	        $minute = intval($_POST['release_minute']);
-    	        $day = intval($dateParts[2]);
-    	        $month = intval($dateParts[1]);
-    	        $year = intval($dateParts[0]);
-    	        $release_time = mktime($hour, $minute, 0, $month, $day, $year);
-    	    } else {
-    	        // no release time associated
-    	        $release_time = 0;
-    	        $release_time_end = 0;
-    	    }
+                $dateParts = split("-", $_POST['release_date']);
+                $hour = intval($_POST['release_hour']);
+                $minute = intval($_POST['release_minute']);
+                $day = intval($dateParts[2]);
+                $month = intval($dateParts[1]);
+                $year = intval($dateParts[0]);
+                $release_time = mktime($hour, $minute, 0, $month, $day, $year);
+            } else {
+                // no release time associated
+                $release_time = 0;
+                $release_time_end = 0;
+            }
 
-    		//Update general info
-    		$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_data_messages
-    								SET 	`time_edited` = '.time().',
-    										`mode` = "'.$mode.'",
-    										`release_time` = "'.$release_time.'",
-    										`release_time_end` = "'.$release_time_end.'"
-    								WHERE	message_id='.$intMessageId.'
-    								LIMIT	1
-    							');
+            //Update general info
+            $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_data_messages
+                                    SET     `time_edited` = '.time().',
+                                            `mode` = "'.$mode.'",
+                                            `release_time` = "'.$release_time.'",
+                                            `release_time_end` = "'.$release_time_end.'"
+                                    WHERE    message_id='.$intMessageId.'
+                                    LIMIT    1
+                                ');
 
 
-    		//Remove existing data for all languages
-    		$objDatabase->Execute('	DELETE
-    								FROM	'.DBPREFIX.'module_data_messages_lang
-    								WHERE	message_id='.$intMessageId.'
-    							');
+            //Remove existing data for all languages
+            $objDatabase->Execute('    DELETE
+                                    FROM    '.DBPREFIX.'module_data_messages_lang
+                                    WHERE    message_id='.$intMessageId.'
+                                ');
 
-    		$objDatabase->Execute('	DELETE
-    								FROM	'.DBPREFIX.'module_data_message_to_category
-    								WHERE	message_id='.$intMessageId.'
-    							');
+            $objDatabase->Execute('    DELETE
+                                    FROM    '.DBPREFIX.'module_data_message_to_category
+                                    WHERE    message_id='.$intMessageId.'
+                                ');
 
-    		$objDatabase->Execute(" DELETE FROM ".DBPREFIX."module_data_placeholders
+            $objDatabase->Execute(" DELETE FROM ".DBPREFIX."module_data_placeholders
                                     WHERE   ref_id = ".$intMessageId);
-    		//Now insert new data
-    		$this->insertEntryData($intMessageId);
+            //Now insert new data
+            $this->insertEntryData($intMessageId);
 
-    		$this->writeMessageRSS();
-    		$this->writeCategoryRSS();
+            $this->writeMessageRSS();
+            $this->writeCategoryRSS();
 
-    		$this->_strOkMessage =  $_ARRAYLANG['TXT_DATA_ENTRY_UPDATE_SUCCESSFULL'];
-    	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_UPDATE_ERROR_LANGUAGES'];
-    	}
+            $this->_strOkMessage =  $_ARRAYLANG['TXT_DATA_ENTRY_UPDATE_SUCCESSFULL'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_UPDATE_ERROR_LANGUAGES'];
+        }
     }
 
     /**
@@ -1606,172 +1606,172 @@ class DataAdmin extends DataLibrary {
     /**
      * Removes the entry with id = $intEntry from database.
      *
-     * @global 	array
-     * @global 	ADONewConnection
+     * @global     array
+     * @global     ADONewConnection
      */
     function deleteEntry($intEntryId) {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-    	$intEntryId = intval($intEntryId);
+        $intEntryId = intval($intEntryId);
 
-    	if ($intEntryId > 0) {
+        if ($intEntryId > 0) {
 
 
-    			$objDatabase->Execute('	DELETE
-	    								FROM	'.DBPREFIX.'module_data_messages
-	    								WHERE	message_id='.$intEntryId.'
-	    								LIMIT	1
-	    							');
+                $objDatabase->Execute('    DELETE
+                                        FROM    '.DBPREFIX.'module_data_messages
+                                        WHERE    message_id='.$intEntryId.'
+                                        LIMIT    1
+                                    ');
 
-    		if (!$this->_boolInnoDb) {
-				$objDatabase->Execute('	DELETE
-										FROM	'.DBPREFIX.'module_data_messages_lang
-										WHERE	message_id='.$intEntryId.'
-									');
+            if (!$this->_boolInnoDb) {
+                $objDatabase->Execute('    DELETE
+                                        FROM    '.DBPREFIX.'module_data_messages_lang
+                                        WHERE    message_id='.$intEntryId.'
+                                    ');
 
-				$objDatabase->Execute('	DELETE
-										FROM	'.DBPREFIX.'module_data_message_to_category
-										WHERE	message_id='.$intEntryId.'
-									');
+                $objDatabase->Execute('    DELETE
+                                        FROM    '.DBPREFIX.'module_data_message_to_category
+                                        WHERE    message_id='.$intEntryId.'
+                                    ');
 
-				$objDatabase->Execute('	DELETE
-										FROM	'.DBPREFIX.'module_data_message_to_category
-										WHERE	message_id='.$intEntryId.'
-									');
+                $objDatabase->Execute('    DELETE
+                                        FROM    '.DBPREFIX.'module_data_message_to_category
+                                        WHERE    message_id='.$intEntryId.'
+                                    ');
 
-				$objDatabase->Execute('	DELETE
-										FROM	'.DBPREFIX.'module_data_votes
-										WHERE	message_id='.$intEntryId.'
-									');
+                $objDatabase->Execute('    DELETE
+                                        FROM    '.DBPREFIX.'module_data_votes
+                                        WHERE    message_id='.$intEntryId.'
+                                    ');
 
-				$objDatabase->Execute('	DELETE
-										FROM	'.DBPREFIX.'module_data_comments
-										WHERE	message_id='.$intEntryId.'
-									');
-    		}
+                $objDatabase->Execute('    DELETE
+                                        FROM    '.DBPREFIX.'module_data_comments
+                                        WHERE    message_id='.$intEntryId.'
+                                    ');
+            }
 
-    		$objDatabase->Execute("   DELETE FROM ".DBPREFIX."module_data_placeholders
-    		                          WHERE ref_id = ".$intEntryId);
+            $objDatabase->Execute("   DELETE FROM ".DBPREFIX."module_data_placeholders
+                                      WHERE ref_id = ".$intEntryId);
 
-			require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
+            require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
             $objFile = new File();
             foreach (glob(ASCMS_DATA_IMAGES_PATH.'/'.$intEntryId.'_*') as $image) {
                 $objFile->delFile(ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', basename($image));
             }
 
-    		$this->writeMessageRSS();
-    		$this->writeCategoryRSS();
-    		$this->writeCommentRSS();
+            $this->writeMessageRSS();
+            $this->writeCategoryRSS();
+            $this->writeCommentRSS();
 
-    		$this->_strOkMessage = $_ARRAYLANG['TXT_DATA_ENTRY_DELETE_SUCCESSFULL'];
-    	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_DELETE_ERROR_ID'];
-    	}
+            $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_ENTRY_DELETE_SUCCESSFULL'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_ENTRY_DELETE_ERROR_ID'];
+        }
     }
 
 
     /**
      * Performs the action for the dropdown-selection on the entry page. The behaviour depends on the parameter.
      *
-     * @param	string		$strAction: the action passed by the formular.
+     * @param    string        $strAction: the action passed by the formular.
      */
     function doEntryMultiAction($strAction='') {
-    	switch ($strAction) {
-    		case 'delete':
-    			foreach($_POST['selectedEntriesId'] as $intKey => $intEntryId) {
-    				$this->deleteEntry($intEntryId);
-    			}
-    			break;
-    		default:
-    			//do nothing!
-    	}
+        switch ($strAction) {
+            case 'delete':
+                foreach($_POST['selectedEntriesId'] as $intKey => $intEntryId) {
+                    $this->deleteEntry($intEntryId);
+                }
+                break;
+            default:
+                //do nothing!
+        }
     }
 
     /**
      * Shows the settings-page of the data-module.
      *
-     * @global 	array
+     * @global     array
      * @global  ADONewConnection
      */
     function showSettings() {
-    	global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
-    	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_data_settings.html',true,true);
+        $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'];
+        $this->_objTpl->loadTemplateFile('module_data_settings.html',true,true);
 
-    	$objRs = $objDatabase->Execute( "SELECT setvalue FROM ".DBPREFIX."settings
-    	                        WHERE setname = 'dataUseModule'");
-    	if ($objRs) {
-    	    if ($objRs->fields['setvalue'] == 1) {
-    	        $useDatalist = 1;
-    	    } else {
-    	        $useDatalist = 0;
-    	    }
-    	} else {
-    	    $useDatalist = 0;
-    	}
+        $objRs = $objDatabase->Execute( "SELECT setvalue FROM ".DBPREFIX."settings
+                                WHERE setname = 'dataUseModule'");
+        if ($objRs) {
+            if ($objRs->fields['setvalue'] == 1) {
+                $useDatalist = 1;
+            } else {
+                $useDatalist = 0;
+            }
+        } else {
+            $useDatalist = 0;
+        }
 
-    	$ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
+        $ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
 
-    	$this->_objTpl->setVariable(array(
-    		'TXT_GENERAL_TITLE'							=>	$_ARRAYLANG['TXT_DATA_SETTINGS_GENERAL_TITLE'],
-    		'TXT_GENERAL_INTRODUCTION'					=>	$_ARRAYLANG['TXT_DATA_SETTINGS_GENERAL_INTRODUCTION'],
-    		'TXT_GENERAL_INTRODUCTION_HELP'				=>	$_ARRAYLANG['TXT_DATA_SETTINGS_GENERAL_INTRODUCTION_HELP'],
-    		'TXT_COMMENTS_EDITOR_TEXTAREA'				=>	$_ARRAYLANG['TXT_DATA_SETTINGS_COMMENTS_EDITOR_TEXTAREA'],
-    		'TXT_TAG_TITLE'								=>	$_ARRAYLANG['TXT_DATA_SETTINGS_TAG_TITLE'],
-    		'TXT_TAG_HITLIST'							=>	$_ARRAYLANG['TXT_DATA_SETTINGS_TAG_HITLIST'],
-    		'TXT_TAG_HITLIST_HELP'						=>	$_ARRAYLANG['TXT_DATA_SETTINGS_TAG_HITLIST_HELP'],
-    		'TXT_BLOCK_TITLE'							=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_TITLE'],
-    		'TXT_BLOCK_ACTIVATE'						=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_ACTIVATE'],
-    		'TXT_BLOCK_ACTIVATE_HELP'					=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_ACTIVATE_HELP'],
-    		'TXT_BLOCK_MESSAGES'						=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_MESSAGES'],
-    		'TXT_BLOCK_MESSAGES_HELP'					=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_MESSAGES_HELP'],
-    		'TXT_ACTIVATED'								=>	$_ARRAYLANG['TXT_ACTIVATED'],
-    		'TXT_DEACTIVATED'							=>	$_ARRAYLANG['TXT_DEACTIVATED'],
-    		'TXT_BUTTON_SAVE'							=>	$_ARRAYLANG['TXT_SAVE'],
-    		'TXT_GENERAL_TEMPLATE_CATEGORY'             =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_CATEGORY'],
-    		'TXT_GENERAL_TEMPLATE_ENTRY'                =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_ENTRY'],
-    		'TXT_GENERAL_TEMPLATE_SHADOWBOX'            =>  $_ARRAYLANG['TXT_DATA_SETTINGS_SHADOWBOX_TEMPLATE'],
-    		'TXT_USE_DATALIST'                          =>  $_ARRAYLANG['TXT_DATA_SETTINGS_USE_DATALIST'],
-    		'TXT_CONTENT_PAGE'                          =>  $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'],
-    		'TXT_BOX'                                   =>  $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'],
-    		'TXT_GENERAL_ACTION'                        =>  $_ARRAYLANG['TXT_DATA_SETTINGS_ACTION'],
-    		"TXT_FRONTEND_PAGE"                         =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
-    		"TXT_GENERAL_ACTION_HELP"                     => htmlentities($_ARRAYLANG['TXT_GENERAL_ACTION_HELP']),
-    		'TXT_GENERAL_BOX_WIDTH'                     =>  $_ARRAYLANG['TXT_GENERAL_BOX_WIDTH'],
-    		'TXT_GENERAL_BOX_HEIGHT'                    =>  $_ARRAYLANG['TXT_GENERAL_BOX_HEIGHT']
-    	));
+        $this->_objTpl->setVariable(array(
+            'TXT_GENERAL_TITLE'                            =>    $_ARRAYLANG['TXT_DATA_SETTINGS_GENERAL_TITLE'],
+            'TXT_GENERAL_INTRODUCTION'                    =>    $_ARRAYLANG['TXT_DATA_SETTINGS_GENERAL_INTRODUCTION'],
+            'TXT_GENERAL_INTRODUCTION_HELP'                =>    $_ARRAYLANG['TXT_DATA_SETTINGS_GENERAL_INTRODUCTION_HELP'],
+            'TXT_COMMENTS_EDITOR_TEXTAREA'                =>    $_ARRAYLANG['TXT_DATA_SETTINGS_COMMENTS_EDITOR_TEXTAREA'],
+            'TXT_TAG_TITLE'                                =>    $_ARRAYLANG['TXT_DATA_SETTINGS_TAG_TITLE'],
+            'TXT_TAG_HITLIST'                            =>    $_ARRAYLANG['TXT_DATA_SETTINGS_TAG_HITLIST'],
+            'TXT_TAG_HITLIST_HELP'                        =>    $_ARRAYLANG['TXT_DATA_SETTINGS_TAG_HITLIST_HELP'],
+            'TXT_BLOCK_TITLE'                            =>    $_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_TITLE'],
+            'TXT_BLOCK_ACTIVATE'                        =>    $_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_ACTIVATE'],
+            'TXT_BLOCK_ACTIVATE_HELP'                    =>    $_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_ACTIVATE_HELP'],
+            'TXT_BLOCK_MESSAGES'                        =>    $_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_MESSAGES'],
+            'TXT_BLOCK_MESSAGES_HELP'                    =>    $_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_MESSAGES_HELP'],
+            'TXT_ACTIVATED'                                =>    $_ARRAYLANG['TXT_ACTIVATED'],
+            'TXT_DEACTIVATED'                            =>    $_ARRAYLANG['TXT_DEACTIVATED'],
+            'TXT_BUTTON_SAVE'                            =>    $_ARRAYLANG['TXT_SAVE'],
+            'TXT_GENERAL_TEMPLATE_CATEGORY'             =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_CATEGORY'],
+            'TXT_GENERAL_TEMPLATE_ENTRY'                =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_ENTRY'],
+            'TXT_GENERAL_TEMPLATE_SHADOWBOX'            =>  $_ARRAYLANG['TXT_DATA_SETTINGS_SHADOWBOX_TEMPLATE'],
+            'TXT_USE_DATALIST'                          =>  $_ARRAYLANG['TXT_DATA_SETTINGS_USE_DATALIST'],
+            'TXT_CONTENT_PAGE'                          =>  $_ARRAYLANG['TXT_DATA_SETTINGS_CONTENT_PAGE'],
+            'TXT_BOX'                                   =>  $_ARRAYLANG['TXT_DATA_SETTINGS_BOX'],
+            'TXT_GENERAL_ACTION'                        =>  $_ARRAYLANG['TXT_DATA_SETTINGS_ACTION'],
+            "TXT_FRONTEND_PAGE"                         =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
+            "TXT_GENERAL_ACTION_HELP"                     => htmlentities($_ARRAYLANG['TXT_GENERAL_ACTION_HELP']),
+            'TXT_GENERAL_BOX_WIDTH'                     =>  $_ARRAYLANG['TXT_GENERAL_BOX_WIDTH'],
+            'TXT_GENERAL_BOX_HEIGHT'                    =>  $_ARRAYLANG['TXT_GENERAL_BOX_HEIGHT']
+        ));
 
-    	$this->_objTpl->setVariable(array(
-    		'DATA_SETTINGS_GENERAL_INTRODUCTION'			=>	intval($this->_arrSettings['data_general_introduction']),
-    		'DATA_SETTINGS_TAG_HITLIST'						=>	intval($this->_arrSettings['data_tags_hitlist']),
-    		'DATA_SETTINGS_BLOCK_ACTIVATE_ON'				=>	($this->_arrSettings['data_block_activated'] == '1') ? 'checked="checked"' : '',
-    		'DATA_SETTINGS_BLOCK_ACTIVATE_OFF'				=>	($this->_arrSettings['data_block_activated'] == '0') ? 'checked="checked"' : '',
-    		'DATA_SETTINGS_BLOCK_MESSAGES'					=>	intval($this->_arrSettings['data_block_messages']),
-    		'DATA_SETTINGS_TEMPLATE_CATEGORY'               =>  $this->_arrSettings['data_template_category'],
-    		'DATA_SETTINGS_TEMPLATE_ENTRY'                  =>  $this->_arrSettings['data_template_entry'],
-    		'DATA_SETTINGS_TEMPLATE_SHADOWBOX'              =>  $this->_arrSettings['data_template_shadowbox'],
-       		'USE_DATALIST_CHECKED'                          =>  ($useDatalist) ? "checked=\"checked\"" : "",
-       	    'TXT_PLACEHOLDER'                               =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-	   		'PAGE_SELECT_DISPLAY'                           =>  ($this->_arrSettings['data_entry_action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
+        $this->_objTpl->setVariable(array(
+            'DATA_SETTINGS_GENERAL_INTRODUCTION'            =>    intval($this->_arrSettings['data_general_introduction']),
+            'DATA_SETTINGS_TAG_HITLIST'                        =>    intval($this->_arrSettings['data_tags_hitlist']),
+            'DATA_SETTINGS_BLOCK_ACTIVATE_ON'                =>    ($this->_arrSettings['data_block_activated'] == '1') ? 'checked="checked"' : '',
+            'DATA_SETTINGS_BLOCK_ACTIVATE_OFF'                =>    ($this->_arrSettings['data_block_activated'] == '0') ? 'checked="checked"' : '',
+            'DATA_SETTINGS_BLOCK_MESSAGES'                    =>    intval($this->_arrSettings['data_block_messages']),
+            'DATA_SETTINGS_TEMPLATE_CATEGORY'               =>  $this->_arrSettings['data_template_category'],
+            'DATA_SETTINGS_TEMPLATE_ENTRY'                  =>  $this->_arrSettings['data_template_entry'],
+            'DATA_SETTINGS_TEMPLATE_SHADOWBOX'              =>  $this->_arrSettings['data_template_shadowbox'],
+               'USE_DATALIST_CHECKED'                          =>  ($useDatalist) ? "checked=\"checked\"" : "",
+               'TXT_PLACEHOLDER'                               =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+               'PAGE_SELECT_DISPLAY'                           =>  ($this->_arrSettings['data_entry_action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
             'ACTION_SELECTED_BOX'                           => ($this->_arrSettings['data_entry_action'] == "overlaybox") ? "selected=\"selected\"" : "",
-	   		'ACTION_SELECTED_CONTENT'                       => ($this->_arrSettings['data_entry_action'] == "content") ? "selected=\"selected\"" : "",
-	   		'DATA_SETTINGS_BOX_WIDTH'                       => $this->_arrSettings['data_shadowbox_width'],
-	   		'DATA_SETTINGS_BOX_HEIGHT'                      => $this->_arrSettings['data_shadowbox_height']
-    	));
+               'ACTION_SELECTED_CONTENT'                       => ($this->_arrSettings['data_entry_action'] == "content") ? "selected=\"selected\"" : "",
+               'DATA_SETTINGS_BOX_WIDTH'                       => $this->_arrSettings['data_shadowbox_width'],
+               'DATA_SETTINGS_BOX_HEIGHT'                      => $this->_arrSettings['data_shadowbox_height']
+        ));
 
 
-	   // show the frontend pages
-	   $frontPages = $this->getFrontendPages();
-	   foreach ($frontPages as $pageId => $pageVal) {
-	       $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
-	       $this->_objTpl->setVariable(array(
-	           "FRONTEND_PAGE"             => $pageName,
-	           "FRONTEND_PAGE_ID"          => $pageVal['cmd'],
-	           "FRONTEND_PAGE_SELECTED"    => ($pageVal['cmd'] == $this->_arrSettings['data_target_cmd']) ? "selected=\"selected\"" : ""
-	       ));
-	       $this->_objTpl->parse("frontendPage");
-	   }
+       // show the frontend pages
+       $frontPages = $this->getFrontendPages();
+       foreach ($frontPages as $pageId => $pageVal) {
+           $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
+           $this->_objTpl->setVariable(array(
+               "FRONTEND_PAGE"             => $pageName,
+               "FRONTEND_PAGE_ID"          => $pageVal['cmd'],
+               "FRONTEND_PAGE_SELECTED"    => ($pageVal['cmd'] == $this->_arrSettings['data_target_cmd']) ? "selected=\"selected\"" : ""
+           ));
+           $this->_objTpl->parse("frontendPage");
+       }
     }
 
 
@@ -1779,34 +1779,34 @@ class DataAdmin extends DataLibrary {
     /**
      * Validate and save the settings from $_POST into the database.
      *
-     * @global	ADONewConnection
-     * @global 	array
+     * @global    ADONewConnection
+     * @global     array
      */
     function saveSettings() {
-    	global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
 
-    	//On-Off-Settings can only be 0 or 1.
-    	$arrOnOffValues = array('frmSettings_CommentsAllow'				=>	'data_comments_activated',
-    							'frmSettings_CommentsAllowAnonymous'	=>	'data_comments_anonymous',
-    							'frmSettings_CommentsAutoActivate'		=>	'data_comments_autoactivate',
-    							'frmSettings_CommentsNotification'		=>	'data_comments_notification',
-    							'frmSettings_VotingAllow'				=>	'data_voting_activated',
-    							'frmSettings_BlockActivated'			=>	'data_block_activated',
-    							'frmSettings_RssActivated'				=>	'data_rss_activated'
-    						);
+        //On-Off-Settings can only be 0 or 1.
+        $arrOnOffValues = array('frmSettings_CommentsAllow'                =>    'data_comments_activated',
+                                'frmSettings_CommentsAllowAnonymous'    =>    'data_comments_anonymous',
+                                'frmSettings_CommentsAutoActivate'        =>    'data_comments_autoactivate',
+                                'frmSettings_CommentsNotification'        =>    'data_comments_notification',
+                                'frmSettings_VotingAllow'                =>    'data_voting_activated',
+                                'frmSettings_BlockActivated'            =>    'data_block_activated',
+                                'frmSettings_RssActivated'                =>    'data_rss_activated'
+                            );
 
-    	//Integer-Settings [0 .. infinite]
-    	$arrIntegerValues = array(	'frmSettings_CommentsTimeout'			=>	'data_comments_timeout',
-    								'frmSettings_GeneralIntroduction'		=>	'data_general_introduction',
-    								'frmSettings_BlockNumberOfMessages'		=>	'data_block_messages',
-    								'frmSettings_RssNumberOfMessages'		=>	'data_rss_messages',
-    								'frmSettings_RssNumberOfComments'		=>	'data_rss_comments',
-    								'frmSettings_TagHitlist'				=>	'data_tags_hitlist',
-    								'frmSettings_frontendPage'              =>  'data_target_cmd',
-    								'frmSettings_shadowbox_width'            =>  'data_shadowbox_width',
-    								'frmSettings_shadowbox_height'           =>  'data_shadowbox_height'
-    						);
+        //Integer-Settings [0 .. infinite]
+        $arrIntegerValues = array(    'frmSettings_CommentsTimeout'            =>    'data_comments_timeout',
+                                    'frmSettings_GeneralIntroduction'        =>    'data_general_introduction',
+                                    'frmSettings_BlockNumberOfMessages'        =>    'data_block_messages',
+                                    'frmSettings_RssNumberOfMessages'        =>    'data_rss_messages',
+                                    'frmSettings_RssNumberOfComments'        =>    'data_rss_comments',
+                                    'frmSettings_TagHitlist'                =>    'data_tags_hitlist',
+                                    'frmSettings_frontendPage'              =>  'data_target_cmd',
+                                    'frmSettings_shadowbox_width'            =>  'data_shadowbox_width',
+                                    'frmSettings_shadowbox_height'           =>  'data_shadowbox_height'
+                            );
 
         // String Settings
         $arrTextValues = array(   'frmSettings_templateCategory'          => 'data_template_category',
@@ -1814,62 +1814,62 @@ class DataAdmin extends DataLibrary {
                                     'frmSettings_templateShadowbox'       => 'data_template_shadowbox'
                                 );
 
-    	//Enum-Settings, must be a value of a given list
-       	$arrEnumValues = array(	'frmSettings_CommentsEditor'	=>	'data_comments_editor',
-       	                        'frmSettings_action'            =>  'data_entry_action',);
-       	$arrEnumPossibilities = array(	'frmSettings_CommentsEditor'	=>	'wysiwyg,textarea',
-       	                                'frmSettings_action'    =>  'content,overlaybox');
+        //Enum-Settings, must be a value of a given list
+           $arrEnumValues = array(    'frmSettings_CommentsEditor'    =>    'data_comments_editor',
+                                   'frmSettings_action'            =>  'data_entry_action',);
+           $arrEnumPossibilities = array(    'frmSettings_CommentsEditor'    =>    'wysiwyg,textarea',
+                                           'frmSettings_action'    =>  'content,overlaybox');
 
 
 
-    	foreach ($_POST as $strKey => $strValue) {
-    			if (key_exists($strKey, $arrOnOffValues)) {
-    				$objDatabase->Execute('	UPDATE '.DBPREFIX.'module_data_settings
-    										SET `value` = "'.intval($strValue).'"
-    										WHERE `name` = "'.$arrOnOffValues[$strKey].'"
-    									');
-    			}
+        foreach ($_POST as $strKey => $strValue) {
+                if (key_exists($strKey, $arrOnOffValues)) {
+                    $objDatabase->Execute('    UPDATE '.DBPREFIX.'module_data_settings
+                                            SET `value` = "'.intval($strValue).'"
+                                            WHERE `name` = "'.$arrOnOffValues[$strKey].'"
+                                        ');
+                }
 
-    			if (key_exists($strKey, $arrIntegerValues)) {
-    				$objDatabase->Execute('	UPDATE '.DBPREFIX.'module_data_settings
-    										SET `value` = "'.abs(intval($strValue)).'"
-    										WHERE `name` = "'.$arrIntegerValues[$strKey].'"
-    									');
-    			}
+                if (key_exists($strKey, $arrIntegerValues)) {
+                    $objDatabase->Execute('    UPDATE '.DBPREFIX.'module_data_settings
+                                            SET `value` = "'.abs(intval($strValue)).'"
+                                            WHERE `name` = "'.$arrIntegerValues[$strKey].'"
+                                        ');
+                }
 
-    			if (key_exists($strKey, $arrEnumValues)) {
-    				$arrSplit = explode(',', $arrEnumPossibilities[$strKey]);
+                if (key_exists($strKey, $arrEnumValues)) {
+                    $arrSplit = explode(',', $arrEnumPossibilities[$strKey]);
 
-    				if (in_array($strValue, $arrSplit)) {
-	    				$objDatabase->Execute('	UPDATE '.DBPREFIX.'module_data_settings
-	    										SET `value` = "'.$strValue.'"
-	    										WHERE `name` = "'.$arrEnumValues[$strKey].'"
-	    									');
-    				}
-    			}
+                    if (in_array($strValue, $arrSplit)) {
+                        $objDatabase->Execute('    UPDATE '.DBPREFIX.'module_data_settings
+                                                SET `value` = "'.$strValue.'"
+                                                WHERE `name` = "'.$arrEnumValues[$strKey].'"
+                                            ');
+                    }
+                }
 
-    			if (key_exists($strKey, $arrTextValues)) {
+                if (key_exists($strKey, $arrTextValues)) {
                     $objDatabase->Execute(" UPDATE ".DBPREFIX."module_data_settings
                                             SET `value` = '".contrexx_addslashes(trim($strValue))."'
                                             WHERE `name`= '".$arrTextValues[$strKey]."'
                                             ");
-    			}
+                }
 
-    	}
+        }
 
-    	if (isset($_POST['frmSettings_useDatalist'])) {
-    	    $objDatabase->Execute("  UPDATE ".DBPREFIX."settings
-    			                             SET `setvalue` = 1
-    			                             WHERE `setname` = 'dataUseModule'");
-    	} else {
-    	    $objDatabase->Execute("  UPDATE ".DBPREFIX."settings
-    			                             SET `setvalue` = 0
-    			                             WHERE `setname` = 'dataUseModule'");
-    	}
+        if (isset($_POST['frmSettings_useDatalist'])) {
+            $objDatabase->Execute("  UPDATE ".DBPREFIX."settings
+                                             SET `setvalue` = 1
+                                             WHERE `setname` = 'dataUseModule'");
+        } else {
+            $objDatabase->Execute("  UPDATE ".DBPREFIX."settings
+                                             SET `setvalue` = 0
+                                             WHERE `setname` = 'dataUseModule'");
+        }
 
-    	$this->_arrSettings = $this->createSettingsArray();
+        $this->_arrSettings = $this->createSettingsArray();
 
-    	$this->_strOkMessage = $_ARRAYLANG['TXT_DATA_SETTINGS_SAVE_SUCCESSFULL'];
+        $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_SETTINGS_SAVE_SUCCESSFULL'];
     }
 
     /**

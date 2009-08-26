@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -39,7 +40,7 @@ class BlogAdmin extends BlogLibrary {
         global $objInit, $objTemplate, $_CORELANG;
 
         BlogLibrary::__construct();
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/blog/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/blog/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_intLanguageId = $objInit->userFrontendLangId;
@@ -412,7 +413,7 @@ class BlogAdmin extends BlogLibrary {
     function doCategoryMultiAction($strAction='') {
         switch ($strAction) {
             case 'delete':
-                foreach($_POST['selectedCategoryId'] as $intKey => $intCategoryId) {
+                foreach($_POST['selectedCategoryId'] as $intCategoryId) {
                     $this->deleteCategory($intCategoryId);
                 }
                 break;
@@ -493,7 +494,7 @@ class BlogAdmin extends BlogLibrary {
             $intCategoryId = intval($_POST['frmEditCategory_Id']);
 
             //Collect active-languages
-            foreach ($_POST['frmEditCategory_Languages'] as $intKey => $intLanguageId) {
+            foreach ($_POST['frmEditCategory_Languages'] as $intLanguageId) {
                 $arrActiveLanguages[$intLanguageId] = true;
             }
 
@@ -642,8 +643,9 @@ class BlogAdmin extends BlogLibrary {
      * @global  array
      * @global  FWLanguage
      */
-    function addEntry() {
-        global $_CORELANG, $_ARRAYLANG, $_CONFIG, $objLanguage;
+    function addEntry()
+    {
+        global $_CORELANG, $_ARRAYLANG;
 
         $this->_strPageTitle = $_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'];
         $this->_objTpl->loadTemplateFile('module_blog_entries_edit.html',true,true);
@@ -772,7 +774,7 @@ class BlogAdmin extends BlogLibrary {
 
         //Collect data for every language
         $arrValues = array();
-        foreach ($_POST as $strKey => $strValue) {
+        foreach (array_keys($_POST) as $strKey) {
             if (substr($strKey,0,strlen('frmEditEntry_Subject_')) == 'frmEditEntry_Subject_') {
                 $intLanguageId = intval(substr($strKey,strlen('frmEditEntry_Subject_')));
                 $arrValues[$intLanguageId] = array( 'subject'       => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Subject_'.$intLanguageId])),
@@ -799,7 +801,7 @@ class BlogAdmin extends BlogLibrary {
 
             //Assign message to categories
             if (is_array($arrEntryValues['categories'])) {
-                foreach ($arrEntryValues['categories'] as $intKey => $intCategoryId) {
+                foreach ($arrEntryValues['categories'] as $intCategoryId) {
                     $objDatabase->Execute(' INSERT INTO '.DBPREFIX.'module_blog_message_to_category
                                             SET `message_id` = '.$intMessageId.',
                                                 `category_id` = '.$intCategoryId.',
@@ -820,8 +822,9 @@ class BlogAdmin extends BlogLibrary {
      * @global  FWLanguage
      * @param   integer     $intEntryId: The values of this entry will be loaded into the form.
      */
-    function editEntry($intEntryId) {
-        global $_CORELANG, $_ARRAYLANG, $_CONFIG, $objLanguage;
+    function editEntry($intEntryId)
+    {
+        global $_CORELANG, $_ARRAYLANG;
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_TITLE'];
         $this->_objTpl->loadTemplateFile('module_blog_entries_edit.html',true,true);
@@ -1032,7 +1035,7 @@ class BlogAdmin extends BlogLibrary {
     function doEntryMultiAction($strAction='') {
         switch ($strAction) {
             case 'delete':
-                foreach($_POST['selectedEntriesId'] as $intKey => $intEntryId) {
+                foreach($_POST['selectedEntriesId'] as $intEntryId) {
                     $this->deleteEntry($intEntryId);
                 }
                 break;
@@ -1236,7 +1239,7 @@ class BlogAdmin extends BlogLibrary {
 
         switch ($strAction) {
             case 'delete':
-                foreach($_POST['selectedVotingsId'] as $intKey => $intVotingId) {
+                foreach($_POST['selectedVotingsId'] as $intVotingId) {
                     $intMessageId = $this->deleteVoting($intVotingId);
                 }
                 break;
@@ -1257,7 +1260,8 @@ class BlogAdmin extends BlogLibrary {
      * @global  ADONewConnection
      * @param   integer     $intEntryId: The comments of this entry will shown.
      */
-    function showComments($intEntryId) {
+    function showComments($intEntryId)
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_COMMENTS'];
@@ -1288,7 +1292,8 @@ class BlogAdmin extends BlogLibrary {
 
         if ($intEntryId > 0) {
 
-            @$this->_objTpl->setVariable('COMMENTS_SUBJECT', $arrEntries[$intEntryId]['subject']);
+// TODO: $arrEntries is not defined
+//            @$this->_objTpl->setVariable('COMMENTS_SUBJECT', $arrEntries[$intEntryId]['subject']);
 
             $objCommentsResult = $objDatabase->Execute('SELECT      comment_id,
                                                                     lang_id,
@@ -1432,11 +1437,10 @@ class BlogAdmin extends BlogLibrary {
      * @param   string      $strAction: the action passed by the formular.
      * @return  integer     It returns the message_id of the modified comments.
      */
-    function doCommentMultiAction($strAction='') {
+    function doCommentMultiAction($strAction='')
+    {
         $intMessageId = 0;
-
-        foreach($_POST['selectedCommentsId'] as $intKey => $intCommentId) {
-
+        foreach($_POST['selectedCommentsId'] as $intCommentId) {
             switch ($strAction) {
                 case 'activate':
                 case 'deactivate':
@@ -1449,21 +1453,19 @@ class BlogAdmin extends BlogLibrary {
                     //do nothing!
             }
         }
-
         return $intMessageId;
     }
 
 
-
     /**
      * Shows the edit-form for an comment.
-     *
      * @global  array
      * @global  array
      * @global  ADONewConnection
      * @param   integer     $intCommentId: the values of this comment will be loaded into the form
      */
-    function editComment($intCommentId) {
+    function editComment($intCommentId)
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT'];
@@ -1827,7 +1829,7 @@ class BlogAdmin extends BlogLibrary {
             $intNetworkId = $objDatabase->insert_id();
 
             if (is_array($arrLanguages) && count($arrLanguages) > 0) {
-                foreach ($arrLanguages as $intKey => $intLanguageId) {
+                foreach ($arrLanguages as $intLanguageId) {
                     $objDatabase->Execute(' INSERT
                                             INTO    '.DBPREFIX.'module_blog_networks_lang
                                             SET     network_id='.$intNetworkId.',
@@ -1939,7 +1941,7 @@ class BlogAdmin extends BlogLibrary {
                                 ');
 
             if (is_array($arrLanguages) && count($arrLanguages) > 0) {
-                foreach ($arrLanguages as $intKey => $intLanguageId) {
+                foreach ($arrLanguages as $intLanguageId) {
                     $objDatabase->Execute(' INSERT
                                             INTO    '.DBPREFIX.'module_blog_networks_lang
                                             SET     network_id='.$intNetworkId.',
@@ -1998,7 +2000,7 @@ class BlogAdmin extends BlogLibrary {
     function doNetworkMultiAction($strAction='') {
         switch ($strAction) {
             case 'delete':
-                foreach($_POST['selectedNetworksId'] as $intKey => $intNetworkId) {
+                foreach($_POST['selectedNetworksId'] as $intNetworkId) {
                     $this->deleteNetwork($intNetworkId);
                 }
                 break;
@@ -2155,4 +2157,5 @@ class BlogAdmin extends BlogLibrary {
 
         $this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_SETTINGS_SAVE_SUCCESSFULL'];
     }
+
 }

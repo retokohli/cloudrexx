@@ -14,17 +14,17 @@ var notAllowedMsg = "{NOT_ALLOWED_MSG}";
 
 function selectMultiAction()
 {
-	with (document.frmShowEntries) {
-		switch (frmShowEntries_MultiAction.value) {
-			case 'delete':
-				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
-					action='?cmd=knowledge{MODULE_INDEX}&act=multiactionEntry';
-					submit();
-				}
-			break;
-			default: //do nothing
-		}
-	}
+  with (document.frmShowEntries) {
+    switch (frmShowEntries_MultiAction.value) {
+      case 'delete':
+        if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+          action='?cmd=knowledge{MODULE_INDEX}&act=multiactionEntry';
+          submit();
+        }
+      break;
+      default: //do nothing
+    }
+  }
 }
 
 /**
@@ -243,7 +243,7 @@ Text[0]=["","{TXT_SORT}"];
         </thead>
         <tbody>
             <tr class="row3">
-                <td style="width: 20px;">   
+                <td style="width: 20px;">
                     <img src="images/icons/note.gif" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
                 </td>
                 <td style="width: 50px;"><strong>#</strong></td>
@@ -293,16 +293,16 @@ Text[0]=["","{TXT_SORT}"];
                                 </td>
                                 <td style="width: 40px;">
                                     <a href="?cmd=knowledge{MODULE_INDEX}&amp;section=categories&amp;act=edit&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
-                					<a href="javascript:deleteCategory({CATEGORY_ID}, {ENTRIES_AMOUNT});" target="_self" title="{TXT_DELETE_CATEGORY}">
-                					   <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
-                				    </a>
+                          <a href="javascript:deleteCategory({CATEGORY_ID}, {ENTRIES_AMOUNT});" target="_self" title="{TXT_DELETE_CATEGORY}">
+                             <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
+                            </a>
                                 </td>
                             </tr>
                         </table>
 
-    				    <div class="subcategories">
-    				        {SUB}
-    				    </div>
+                <div class="subcategories">
+                    {SUB}
+                </div>
                     </li>
                     <!-- END row -->
                     {ROWS}

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Blog library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -21,7 +22,8 @@ require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
  * @package     contrexx
  * @subpackage  module_blog
  */
-class BlogLibrary {
+class BlogLibrary
+{
     var $_boolInnoDb = false;
     var $_intLanguageId;
     var $_intCurrentUserId;
@@ -29,9 +31,8 @@ class BlogLibrary {
     var $_arrLanguages          = array();
 
     /**
-    * Constructor
-    *
-    */
+     * Constructor
+     */
     function __construct()
     {
         $this->setDatabaseEngine();
@@ -42,7 +43,6 @@ class BlogLibrary {
 
     /**
      * Reads out the used database engine and sets the local variable.
-     *
      */
     function setDatabaseEngine() {
         global $objDatabase;
@@ -58,7 +58,6 @@ class BlogLibrary {
     /**
      * Create an array containing all settings of the blog-module.
      * Example: $arrSettings[$strSettingName] for the content of $strSettingsName
-     *
      * @global  ADONewConnection
      * @return  array       $arrReturn
      */
@@ -87,7 +86,6 @@ class BlogLibrary {
      * Contents:
      * $arrValue[$langId]['short']      =>  For Example: en, de, fr, ...
      * $arrValue[$langId]['long']       =>  For Example: 'English', 'Deutsch', 'French', ...
-     *
      * @global  ADONewConnection
      * @return  array       $arrReturn
      */
@@ -120,7 +118,6 @@ class BlogLibrary {
      * Contents:
      * $arrCategories[$categoryId][$langId]['name']         =>  Translation for the category with ID = $categoryId for the desired language ($langId).
      * $arrCategories[$categoryId][$langId]['is_active']    =>  Status of the category with ID = $categoryId for the desired language ($langId).
-     *
      * @global  ADONewConnection
      * @param   integer     $intStartingIndex: can be used for paging. The value defines, with which row the result should start.
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
@@ -142,10 +139,12 @@ class BlogLibrary {
         //Initialize Array
         if ($objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
-                foreach($this->_arrLanguages as $intLangId => $arrValues) {
-                    $arrReturn[intval($objResult->fields['category_id'])][$intLangId] = array(  'name'      =>  '',
-                                                                                                'is_active' =>  ''
-                                                                                            );
+                foreach (array_keys($this->_arrLanguages) as $intLangId) {
+                    $arrReturn[intval($objResult->fields['category_id'])][$intLangId] =
+                        array(
+                            'name'      => '',
+                            'is_active' => '',
+                        );
                 }
                 $objResult->MoveNext();
             }
@@ -153,7 +152,7 @@ class BlogLibrary {
 
         //Fill array if possible
         foreach ($arrReturn as $intCategoryId => $arrLanguages) {
-            foreach ($arrLanguages as $intLanguageId => $arrLanguageTranslation) {
+            foreach (array_keys($arrLanguages) as $intLanguageId) {
                 $objResult = $objDatabase->Execute('SELECT      is_active,
                                                                 name
                                                     FROM        '.DBPREFIX.'module_blog_categories
@@ -196,7 +195,6 @@ class BlogLibrary {
      * $arrEntries[$entryId]['translation'][$langId]['image']       =>  Image of entry in the language with the id = langId.
      * $arrEntries[$entryId]['translation'][$langId]['content']     =>  Content of entry in the language with the id = langId.
      * $arrEntries[$entryId]['translation'][$langId]['tags']        =>  Keywords of entry in the language with the id = langId.
-     *
      * @global  ADONewConnection
      * @global  array
      * @param   integer     $intLanguageId: The value defines, if categories of a specific language should be returned. If the value is zero, all languages will be used.
@@ -269,7 +267,7 @@ class BlogLibrary {
                 $arrReturn[$intMessageId]['votes_avg']  = number_format($objVoteResult->fields['avarageVote'], 2, '.', '');
 
                 //Fill the translation-part of the return-array with default values
-                foreach ($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+                foreach (array_keys($this->_arrLanguages) as $intLanguageId) {
                     $arrReturn[$intMessageId]['categories'][$intLanguageId] = array();
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active']   = 0;
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['subject']     = '';
@@ -291,7 +289,7 @@ class BlogLibrary {
                 }
 
                 //Get existing translations for the current entry
-                $objLanguageResult = $objDatabase->Execute('SELECT  lang_id,
+                $objResult = $objDatabase->Execute('SELECT  lang_id,
                                                                     is_active,
                                                                     subject,
                                                                     content,
@@ -301,32 +299,28 @@ class BlogLibrary {
                                                             WHERE   message_id='.$intMessageId.'
                                                         ');
 
-                while (!$objLanguageResult->EOF) {
-                    $intLanguageId = $objLanguageResult->fields['lang_id'];
+                while (!$objResult->EOF) {
+                    $intLanguageId = $objResult->fields['lang_id'];
 
-                    if ( ($intLanguageId == $this->_intLanguageId && !empty($objLanguageResult->fields['subject'])) ||
+                    if ( ($intLanguageId == $this->_intLanguageId && !empty($objResult->fields['subject'])) ||
                          empty($arrReturn[$intMessageId]['subject']) )
                     {
-                        $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objLanguageResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
+                        $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
                     }
 
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active']   = $objLanguageResult->fields['is_active'];
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['subject']     = htmlentities(stripslashes($objLanguageResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = $objLanguageResult->fields['content'];
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['tags']        = htmlentities(stripslashes($objLanguageResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['image']       = htmlentities(stripslashes($objLanguageResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active']   = $objResult->fields['is_active'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['subject']     = htmlentities(stripslashes($objResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = $objResult->fields['content'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['tags']        = htmlentities(stripslashes($objResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['image']       = htmlentities(stripslashes($objResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
 
-                    $objLanguageResult->MoveNext();
+                    $objResult->MoveNext();
                 }
-
-
                 $objResult->MoveNext();
             }
         }
-
         return $arrReturn;
     }
-
 
 
     /**
@@ -339,7 +333,6 @@ class BlogLibrary {
      * $arrEntries[$intNetworkId]['icon']               =>  Icon of the service provider.
      * $arrEntries[$intNetworkId]['icon_img']           =>  Icon of the service provider as am <img>-tag.
      * $arrEntries[$intNetworkId]['status'][$langId]    =>  Activation status of a specific language.
-     *
      * @global  ADONewConnection
      * @param   integer     $intStartingIndex: can be used for paging. The value defines, with which row the result should start.
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
@@ -381,18 +374,16 @@ class BlogLibrary {
                 $objResult->MoveNext();
             }
 
-            foreach ($arrReturn as $intNetworkId => $arrValues) {
+            foreach (array_keys($arrReturn) as $intNetworkId) {
                 //Initialize the array first
-                foreach ($this->_arrLanguages as $intLanguageId => $arrTranslations) {
+                foreach (array_keys($this->_arrLanguages) as $intLanguageId) {
                     $arrReturn[$intNetworkId]['status'][$intLanguageId] = 0;
                 }
-
                 //Now check for active languages
                 $objStatusResult = $objDatabase->Execute('  SELECT  lang_id
                                                             FROM    '.DBPREFIX.'module_blog_networks_lang
                                                             WHERE   network_id='.$intNetworkId.'
                                                         ');
-
                 if ($objStatusResult->RecordCount() > 0) {
                     while(!$objStatusResult->EOF) {
                         $arrReturn[$intNetworkId]['status'][$objStatusResult->fields['lang_id']] = 1;
@@ -408,7 +399,6 @@ class BlogLibrary {
 
     /**
      * Returns the allowed maximum element per page. Can be used for paging.
-     *
      * @global  array
      * @return  integer     allowed maximum of elements per page.
      */
@@ -421,7 +411,6 @@ class BlogLibrary {
 
     /**
      * Counts all existing entries in the database.
-     *
      * @global  ADONewConnection
      * @return  integer     number of entries in the database
      */
@@ -439,7 +428,6 @@ class BlogLibrary {
 
     /**
      * Counts the number of active messages which are assigned to a specific category.
-     *
      * @param   integer     $intCategoryId: The assigned messages of this category will be counted.
      */
     function countEntriesOfCategory($intCategoryId) {
@@ -449,8 +437,7 @@ class BlogLibrary {
             $intNumberOfAssignedMessages = 0;
 
             $arrEntries = $this->createEntryArray($this->_intLanguageId);
-            foreach ($arrEntries as $intEntryId => $arrEntryValues) {
-
+            foreach ($arrEntries as $arrEntryValues) {
                 if ($arrEntryValues['translation'][$this->_intLanguageId]['is_active']) {
                     if (array_key_exists($intCategoryId, $arrEntryValues['categories'][$this->_intLanguageId])) {
                         ++$intNumberOfAssignedMessages;
@@ -467,7 +454,6 @@ class BlogLibrary {
 
     /**
      * Counts all existing categories in the database.
-     *
      * @global  ADONewConnection
      * @return  integer     number of categories in the database
      */
@@ -484,7 +470,6 @@ class BlogLibrary {
 
     /**
      * Counts all votings for a specific entry.
-     *
      * @global  ADONewConnection
      * @param   integer     $intMessageId: the votings of the message with this id will be counted.
      * @return  integer     number of votings for the desired entry.
@@ -505,7 +490,6 @@ class BlogLibrary {
 
     /**
      * Counts all existing networks in the database.
-     *
      * @global  ADONewConnection
      * @return  integer     number of networks in the database
      */
@@ -523,7 +507,6 @@ class BlogLibrary {
 
     /**
      * Creates an rating bar (****) for a specific message.
-     *
      * @global  ADONewConnection
      * @global  array
      * @param   integer     $intMessageId: The rating bar will be created for the message with this id.
@@ -561,7 +544,6 @@ class BlogLibrary {
 
     /**
      * Counts all comments for a specific entry.
-     *
      * @global  ADONewConnection
      * @param   integer     $intMessageId: the comments of the message with this id will be counted.
      * @param   boolean     $boolOnlyActive: if this parameter is true, only the "active" comments are counted
@@ -587,13 +569,11 @@ class BlogLibrary {
     }
 
 
-
     /**
      * Creates a "posted by $strUsername on $strDate" string.
-     *
      * @global  array
      * @param   string      $strUsername
-     * @param   string		$strDate
+     * @param   string        $strDate
      * @return  string
      */
     function getPostedByString($strUsername, $strDate) {
@@ -606,20 +586,18 @@ class BlogLibrary {
     }
 
 
-	/**
+    /**
      * Returns an img-Tag for the "posted by" string.
-     *
-	 * @param   string		$strDate
+     * @param   string        $strDate
      * @return  string
      */
     function getPostedByIcon($strDate) {
-    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/calendar.gif" alt="'.$strDate.'" />';
+        return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/calendar.gif" alt="'.$strDate.'" />';
     }
 
 
     /**
      * Returns a string containing the names of all parametered category-id's. Example: "Category 1, Category 2, Category 3".
-     *
      * @param   array       $arrCategories: Array containing all id's which should be resolved. Example for the Resolution of Categories 1 .. 3: array(1 => 1, 2 => 1, 3 => 1)
      * @param   boolean     $boolLinked: If it is needed, that the single categories are linked with the search-site, this parameter must be set true.
      * @return  string      String as described in introduction.
@@ -631,7 +609,7 @@ class BlogLibrary {
         if (count($arrCategories) > 0) {
             $arrCategoryNames = $this->createCategoryArray();
 
-            foreach ($arrCategories as $intCategoryId => $intDummyValue) {
+            foreach (array_keys($arrCategories) as $intCategoryId) {
                 $strCategoryString .= ($boolLinked) ? '<a href="index.php?section=blog&amp;cmd=search&amp;category='.$intCategoryId.'" title="'.$arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'].'">' : '';
                 $strCategoryString .= $arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'];
                 $strCategoryString .= ($boolLinked) ? '</a>,&nbsp;' : ',&nbsp;';
@@ -647,7 +625,6 @@ class BlogLibrary {
 
     /**
      * Checks, if the category selected by the user corresponds with the assigned categories of an entry.
-     *
      * @param   integer     $intSelectedCategory: this category was selected by the user. can also be zero, which means "all categories" selected.
      * @param   array       $arrAssignedCategories: an array containing all categories assigned to an entry.
      * @return  boolean     true, if the entry was assigned to the searched category.
@@ -667,10 +644,10 @@ class BlogLibrary {
      * Creates an array containing all used tags (keywords) with an calculated number of points. The points depend of the usage-frequency,
      * the number of hits for the assigned topics, voting of the assigned topics and the number of commend of the assigned topics. The
      * array is ordered alphabetically by the keywords.
-     *
      * @return  array       Sorted array in the format $arrExample[Keyword] = NumberOfPoints.
      */
-    function createKeywordArray() {
+    function createKeywordArray()
+    {
         $arrKeywords    = array();
         $arrEntries     = $this->createEntryArray($this->_intLanguageId);
 
@@ -679,14 +656,14 @@ class BlogLibrary {
             $intTotalHits = 1;
             $intTotalComments = 1;
 
-            foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+            foreach ($arrEntries as $arrEntryValues) {
                 if ($arrEntryValues['translation'][$this->_intLanguageId]['is_active']) {
                     $intTotalHits += $arrEntryValues['hits'];
                     $intTotalComments += $arrEntryValues['comments_active'];
                 }
             }
 
-            foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+            foreach ($arrEntries as $arrEntryValues) {
                 if ($arrEntryValues['translation'][$this->_intLanguageId]['is_active']) {
                     //Calculate the keyword-value first
                     $intKeywordValue = 1;                                                                                       #Base-Value
@@ -713,7 +690,7 @@ class BlogLibrary {
 
                     //Split tags
                     $arrEntryTags = split(',',$arrEntryValues['translation'][$this->_intLanguageId]['tags']);
-                    foreach($arrEntryTags as $intKey => $strTag) {
+                    foreach($arrEntryTags as $strTag) {
                         $strTag = trim($strTag);
 
                         if (array_key_exists($strTag,$arrKeywords)) {
@@ -726,16 +703,13 @@ class BlogLibrary {
                 }
             }
         }
-
         ksort($arrKeywords);
-
         return $arrKeywords;
     }
 
 
     /**
      * Creates the html-source for a tag-cloud with all used keywords.
-     *
      * @return  string      html-source for the tag cloud.
      */
     function getTagCloud() {
@@ -775,7 +749,6 @@ class BlogLibrary {
 
     /**
      * Creates the html-source for a tag-hitlist with the $intNumberOfTags-most used keywords.
-     *
      * @param   integer     $intNumberOfTags: the hitlist contains less or equals items than this value, depending on the number of keywords used.
      * @return  string      html-source for the tag hitlist.
      */
@@ -791,7 +764,7 @@ class BlogLibrary {
             $strReturn = '<ol class="blogTagHitlist">';
 
             $intTagCounter = 0;
-            foreach ($arrKeywords as $strTag => $intKeywordValue) {
+            foreach (array_keys($arrKeywords) as $strTag) {
                 $strReturn .= '<li class="blogTagHitlistItem"><a href="index.php?section=blog&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
                 ++$intTagCounter;
 
@@ -810,7 +783,6 @@ class BlogLibrary {
 
     /**
      * Returns the HTML-source for a category-select. Is used on the search-page or the home-site.
-     *
      * @param   string      $strFieldName: This value will be entered in the "name"-field of the <select>-tag
      * @param   integer     $intSelectedCategory: The category with this id will be marked as "selected".
      * @param   boolean     $boolStandalone: If this parameter is set to true, a javascript is added to the menu => After changing the selection the search is stared.
@@ -858,7 +830,6 @@ class BlogLibrary {
 
     /**
      * This function replaces all tags with links to the search-module.
-     *
      * @param   string      $strUnlinkedTags: The input String looks something like this: "Keyword 1, Keyword 2, Keyword 3".
      * @return  string      The Keywords are replaced with linked tags, for example: "<a href="index.php?section=blog&amp;cmd=search&term=Keyword 1">Keyword1</a>, ..."
      */
@@ -872,18 +843,16 @@ class BlogLibrary {
 
     /**
      * Returns an img-Tag for the "tags"-icon.
-     *
-	 * @param   string		$strDate
+     * @param   string        $strDate
      * @return  string
      */
     function getTagsIcon() {
-    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/tags.gif" alt="Tags" />';
+        return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/tags.gif" alt="Tags" />';
     }
 
 
     /**
      * Returns the source-code for a calendar in the "month"-view.
-     *
      * @param   integer     $intYear: This year will be selected. If empty it will be used the current year.
      * @param   integer     $intMonth: This month will be selected. If empty it will be used the current month.
      * @param   integer     $intDay: This day will be selected. If empty it will be used the current day.
@@ -904,7 +873,7 @@ class BlogLibrary {
 
         $arrEntriesInPeriod = $this->getEntriesInPeriod(mktime(0,0,0,$intMonth,1,$intYear), mktime(0,0,0,$intMonth,31,$intYear));
         if (count($arrEntriesInPeriod) > 0) {
-            foreach ($arrEntriesInPeriod as $intKey => $intTimeStamp) {
+            foreach ($arrEntriesInPeriod as $intTimeStamp) {
                 $objCalendar->setEvent($intYear, $intMonth , date('d',$intTimeStamp), null, 'index.php?section=blog&amp;cmd=search&amp;mode=date&amp;yearID='.$intYear.'&amp;monthID='.$intMonth.'&amp;dayID='.date('d',$intTimeStamp));
             }
         }
@@ -918,7 +887,6 @@ class BlogLibrary {
      * Returns an array containing the timestamps of all entries within a given range.
      * Example: $arrReturn[0] = 1123144112
      *          $arrReturn[1] = 1234316412
-     *
      * @param   integer     $intStartingDate: The Unix-timestamp in this parameter defines the beginning of the range.
      * @param   integer     $intEndingDate: The Unix-timestamp in this parameter defines the end of the range.
      * @return  array       Array as described before.
@@ -952,7 +920,6 @@ class BlogLibrary {
     /**
      * The text in the parameter $strFullMessage will be shortened to the introduction-length definied in the settings-array. If
      * the text is smaller than the definied length, nothing is done.
-     *
      * @param   string      $strFullMessage: This message will be reduced.
      * @return  string      Reduced message, can be used as introduction text.
      */
@@ -971,13 +938,12 @@ class BlogLibrary {
 
     /**
      * Writes RSS feed containing the latest N messages to the feed-directory. This is done for every language seperately.
-     *
      * @global  array
      * @global  array
-     * @global  FWLanguage
      */
-    function writeMessageRSS() {
-        global $_CONFIG, $_ARRAYLANG, $objLanguage;
+    function writeMessageRSS()
+    {
+        global $_CONFIG, $_ARRAYLANG;
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
@@ -985,17 +951,17 @@ class BlogLibrary {
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['blog_rss_messages']) );
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog&amp;cmd=details&amp;id=';
+                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog&amp;cmd=details&amp;id=';
 
                 if (count($arrEntries) > 0) {
                     $objRSSWriter = new RSSWriter();
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
+                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
                     //Function doesn't exist
-                    //$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
+                    //$objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
@@ -1027,14 +993,13 @@ class BlogLibrary {
 
     /**
      * Writes RSS feed containing the latest N comments to the feed-directory. This is done for every language seperately.
-     *
      * @global  array
      * @global  array
      * @global  ADONewConnection
      * @global  FWLanguage
      */
     function writeCommentRSS() {
-        global $_CONFIG, $_ARRAYLANG, $objDatabase, $objLanguage;
+        global $_CONFIG, $_ARRAYLANG, $objDatabase;
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
@@ -1042,7 +1007,7 @@ class BlogLibrary {
             $objFWUser = FWUser::getFWUserObject();
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog&amp;cmd=details&amp;id={ID}#comments';
+                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog&amp;cmd=details&amp;id={ID}#comments';
 
                 $objResult = $objDatabase->Execute('SELECT      message_id,
                                                                 time_created,
@@ -1062,11 +1027,11 @@ class BlogLibrary {
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
+                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     //Function doesn't exist
-                    //$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
+                    //$objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                     while (!$objResult->EOF) {
@@ -1100,13 +1065,12 @@ class BlogLibrary {
 
     /**
      * Writes RSS feed containing the latest N messages of each category the feed-directory. This is done for every language seperately.
-     *
      * @global  array
      * @global  array
      * @global  FWLanguage
      */
     function writeCategoryRSS() {
-        global $_CONFIG, $_ARRAYLANG, $objLanguage;
+        global $_CONFIG, $_ARRAYLANG;
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
@@ -1116,7 +1080,7 @@ class BlogLibrary {
 
             //Iterate over all languages
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog&amp;cmd=details&amp;id=';
+                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog&amp;cmd=details&amp;id=';
 
                 $arrEntries = $this->createEntryArray($intLanguageId);
 
@@ -1134,11 +1098,11 @@ class BlogLibrary {
                             $objRSSWriter = new RSSWriter();
                             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                             $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
+                            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
                             $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';
                             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                             //Function doesn't exist
-                            //$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
+                            //$objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                             //Find assigned messages
@@ -1172,11 +1136,12 @@ class BlogLibrary {
 
                             @chmod(ASCMS_FEED_PATH.'/blog_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml', 0777);
                         }
-
                     }
-
                 }
             }
         }
     }
+
 }
+
+?>

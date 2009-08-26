@@ -151,7 +151,7 @@ class Country
      */
     static function getNameById($country_id)
     {
-    	if (empty($country_id)) return '';
+        if (empty($country_id)) return '';
         if (empty(self::$arrCountries)) self::initCountries();
         return self::$arrCountries[$country_id]['name'];
     }
@@ -278,7 +278,6 @@ class Country
             if (   empty(self::$arrCountries[$id])
                 || empty(self::$arrCountries[$id]['status']))
                 continue;
-//echo("Country::getArraysByZoneId($zone_id): Country ID $id, name /$strName/, relation is $flagInZone<br />");
             $arrZoneCountries['in'][$id] = array(
                 'id' => $id,
                 'name' => self::$arrCountries[$id]['name'],
@@ -289,12 +288,12 @@ class Country
         }
         foreach (self::$arrCountries as $id => $arrCountry) {
             // Country may only be available for the Zone if it is active
-        	if (empty($arrZoneCountries['in'][$id])
-        	    && $arrCountry['status'])
-	            $arrZoneCountries['out'][$id] = array(
-	                'id' => $id,
-	                'name' => $arrCountry['name'],
-	            );
+            if (empty($arrZoneCountries['in'][$id])
+                && $arrCountry['status'])
+                $arrZoneCountries['out'][$id] = array(
+                    'id' => $id,
+                    'name' => $arrCountry['name'],
+                );
 
         }
         return $arrZoneCountries;

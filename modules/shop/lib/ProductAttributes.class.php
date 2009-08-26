@@ -113,7 +113,6 @@ class ProductAttributes  // friend Product
             );
             $objResult->MoveNext();
         }
-//echo("getNameArrayByProductId($productId): Made: ".var_export(self::$arrName, true)."<hr />");
         return self::$arrName;
     }
 
@@ -189,7 +188,7 @@ class ProductAttributes  // friend Product
     static function getValueArrayByNameId($name_id)
     {
         if (empty(self::$arrValue) && !self::initValueArray()) return false;
-    	if (empty(self::$arrValue[$name_id])) return array();
+        if (empty(self::$arrValue[$name_id])) return array();
         return self::$arrValue[$name_id];
     }
 
@@ -284,7 +283,6 @@ class ProductAttributes  // friend Product
             self::$arrRelation[$product_id][$value_id] = $objResult->fields['sort_id'];
             $objResult->MoveNext();
         }
-//echo("initRelationArray($product_id):  Made ".var_export(self::$arrRelation, true)."<br />");
         return true;
     }
 
@@ -576,7 +574,6 @@ class ProductAttributes  // friend Product
         global $_ARRAYLANG;
 
         $arrValues = self::getValueArrayByNameId($name_id);
-//echo("PAs::getAttributeValueMenu($name_id, $name, $selectedId, $onchange, $style):  Values: ".var_export($arrValues, true)."<br />");
         // No options, or an error occurred
         if (!$arrValues) return '';
         $menu =
@@ -615,13 +612,13 @@ class ProductAttributes  // friend Product
         $jsVars = '';
         $highestIndex = 0;
         foreach (ProductAttributes::getValueArray() as $name_id => $arrAttributeValue) {
-        	$first = true;
-        	foreach (array_keys($arrAttributeValue) as $value_id) {
-	            if ($first)
-	                $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
-	            $first = false;
-	            if ($value_id > $highestIndex) $highestIndex = $value_id;
-        	}
+            $first = true;
+            foreach (array_keys($arrAttributeValue) as $value_id) {
+                if ($first)
+                    $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
+                $first = false;
+                if ($value_id > $highestIndex) $highestIndex = $value_id;
+            }
         }
         $jsVars .= "\nindex = ".$highestIndex.";\n";
         return $jsVars;

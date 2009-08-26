@@ -103,7 +103,7 @@ class calHeadlines extends calendarLibrary
                     }
 
 
-                    $category 	= isset($this->category) ? '&amp;catid='.intval($this->category) : '';
+                    $category     = isset($this->category) ? '&amp;catid='.intval($this->category) : '';
                     $link = 'index.php?section=calendar&amp;cmd=event'.$category.'&amp;id='.intval($key);
 
                     $parts= explode("\n", wordwrap($array['comment'], 100, "\n"));

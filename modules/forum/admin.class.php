@@ -31,7 +31,7 @@ class ForumAdmin extends ForumLibrary {
 
     /**
      * Constructor    -> Create the module-menu and an internal template-object
-     * @global    InitCMS 
+     * @global    InitCMS
      * @global    HTML_Template_Sigma
      * @global    array
      */
@@ -771,7 +771,7 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Show "access rights"-form for a selected category.
      *
-     * @global    ADONewConnection 
+     * @global    ADONewConnection
      * @global     array
      * @param    integer        $intCategoryId: The category / forum with this id should be edited
      */

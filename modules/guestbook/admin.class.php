@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Guestbook Module
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,13 +28,13 @@ require_once ASCMS_MODULE_PATH . '/guestbook/Lib.class.php';
  */
 class GuestbookManager extends GuestbookLibrary
 {
-    var $_objTpl;
-    var $pageTitle='';
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $imagePath;
-    var $langId;
-    var $arrSettings = array();
+    public $_objTpl;
+    public $pageTitle='';
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $imagePath;
+    public $langId;
+    public $arrSettings = array();
 
 
     /**
@@ -43,33 +44,28 @@ class GuestbookManager extends GuestbookLibrary
     {
         global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
         $this->langId=$objInit->userFrontendLangId;
-
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=guestbook'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
                                                         <a href='?cmd=guestbook&amp;act=add'>".$_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY']."</a>
                                                         <a href='?cmd=guestbook&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
-
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_guestbook");
         $this->getSettings();
     }
 
 
-
     /**
-    * Gets the requested methods
-    *
-    * @global   array
+     * Gets the requested methods
+     * @global   array
     * @global   array
     * @global   HTML_Template_Sigma
     * @return   string    parsed content
     */
     function getPage()
     {
-        global $_ARRAYLANG, $_CONFIG, $objTemplate;
+        global $_ARRAYLANG, $objTemplate;
 
         if(!isset($_GET['act'])){
             $_GET['act']="";
@@ -126,12 +122,9 @@ class GuestbookManager extends GuestbookLibrary
     }
 
 
-
-
-
     function _settings()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_guestbook_settings.html',true,true);
@@ -169,15 +162,13 @@ class GuestbookManager extends GuestbookLibrary
     }
 
 
-
     /**
-    * shows the edit page
-    *
-    * @global  ADONewConnection
-    * @global  array
-    * @access private
-    */
-
+     * shows the edit page
+     *
+     * @global  ADONewConnection
+     * @global  array
+     * @access private
+     */
     function _showAdd()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -201,13 +192,12 @@ class GuestbookManager extends GuestbookLibrary
             'TXT_IP_ADDRESS'    => $_ARRAYLANG['TXT_IP_ADDRESS'],
             'TXT_STORE'         => $_ARRAYLANG['TXT_STORE'],
             'TXT_RESET'         => $_ARRAYLANG['TXT_RESET'],
-            'TXT_BACK_TO_INDEX' => $_ARRAYLANG['txtBackToIndex'], // N/A
+// TODO: $_ARRAYLANG['txtBackToIndex'] does not exist
+//            'TXT_BACK_TO_INDEX' => $_ARRAYLANG['txtBackToIndex'], // N/A
             'GUESTBOOK_JAVASCRIPT'  => $javascript
         ));
         // $this->_store();
     }
-
-
 
 
     /**
@@ -221,64 +211,45 @@ class GuestbookManager extends GuestbookLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $error = "";
-
-		if (!empty($_POST['forename']) AND !empty($_POST['name']) /*AND !empty($_POST['comment'])*/) {
-			$forename  = contrexx_addslashes(strip_tags($_POST['forename']));
-			$name  = contrexx_addslashes(strip_tags($_POST['name']));
-            $gender  = contrexx_addslashes(strip_tags($_POST['malefemale']));
+        $error = '';
+        if (!empty($_POST['forename']) AND !empty($_POST['name']) /*AND !empty($_POST['comment'])*/) {
+            $forename = contrexx_addslashes(strip_tags($_POST['forename']));
+            $name = contrexx_addslashes(strip_tags($_POST['name']));
+            $gender = contrexx_addslashes(strip_tags($_POST['malefemale']));
             $mail = isset($_POST['email']) ? contrexx_addslashes($_POST['email']) : '';
             $url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : '';
             $comment = contrexx_addslashes(nl2br($this->addHyperlinking(strip_tags($_POST['comment']))));
             $location = contrexx_addslashes(strip_tags($_POST['location']));
             $ip = empty($_POST['ip']) ? $_SERVER['REMOTE_ADDR'] : contrexx_addslashes(strip_tags($_POST['ip']));
 
-            $objValidator = new FWValidator();
-
             if (!empty($url)) {
-                if (!$this->isUrl($url)) {
-                    $error.= $_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS']."<br />";
+                if (FWValidator::isUri($url)) {
+                    $error .= $_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS']."<br />";
                 }
             }
-            if (!$objValidator->isEmail($mail)) {
-                $error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
+            if (FWValidator::isEmail($mail)) {
+                $error .= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
             }
             if (empty($error)) {
-                $query = "INSERT INTO ".DBPREFIX."module_guestbook
-			                           (forename,
-			                            name,
-                                        gender,
-                                        url,
-                                        datetime,
-                                        email,
-                                        comment,
-                                        ip,
-                                        location,
-                                        lang_id)
-					            VALUES ('$forename',
-							            '$name',
-                                        '$gender',
-                                        '$url',
-                                        NOW(),
-                                        '$mail',
-                                        '$comment',
-                                        '$ip',
-                                        '$location',
-                                        '$this->langId')";
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_guestbook (
+                        forename, name, gender,
+                        url, datetime, email, comment,
+                        ip, location, lang_id
+                    ) VALUES (
+                        '$forename', '$name', '$gender',
+                        '$url', NOW(), '$mail', '$comment',
+                        '$ip', '$location', '$this->langId'
+                    )";
                 $objDatabase->Execute($query);
-
                 $this->strOkMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_STORED_SUCCESSFUL'];
-            }else{
+            } else {
                 $this->strErrMessage = $error;
             }
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'];
         }
     }
-
-
-
-
 
 
     /**
@@ -315,8 +286,8 @@ class GuestbookManager extends GuestbookLibrary
         ));
 
         if(!empty($_GET['id'])){
-			$query = "SELECT forename,
-							   name,
+            $query = "SELECT forename,
+                               name,
                                id,
                                gender,
                                url,
@@ -336,8 +307,8 @@ class GuestbookManager extends GuestbookLibrary
                     default  : $gender_m = ""; $gender_f = ""; break;
                 }
                 $this->_objTpl->setVariable(array(
-					'GUESTBOOK_FORENAME'  => htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
-					'GUESTBOOK_NAME'      => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
+                    'GUESTBOOK_FORENAME'  => htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
+                    'GUESTBOOK_NAME'      => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
                     'GUESTBOOK_CHECKED_M' => $gender_m,
                     'GUESTBOOK_CHECKED_F' => $gender_f,
                     'GUESTBOOK_URL'       => htmlentities($objResult->fields["url"], ENT_QUOTES, CONTREXX_CHARSET),
@@ -354,15 +325,13 @@ class GuestbookManager extends GuestbookLibrary
     }
 
 
-
-
     /**
-    * Deletes the selected guestbook entry
-    *
-    * @global  ADONewConnection
-    * @global  array
-    * @return  string   status message
-    */
+     * Deletes the selected guestbook entry
+     *
+     * @global  ADONewConnection
+     * @global  array
+     * @return  string   status message
+     */
     function _delete()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -376,15 +345,13 @@ class GuestbookManager extends GuestbookLibrary
     }
 
 
-
     /**
-    * default guestbook entries list
-    *
-    * @global  ADONewConnection
-    * @global  array
-    * @global  array
-    */
-
+     * default guestbook entries list
+     *
+     * @global  ADONewConnection
+     * @global  array
+     * @global  array
+     */
     function _overview()
     {
         global $objDatabase, $_CONFIG, $_ARRAYLANG;
@@ -409,7 +376,7 @@ class GuestbookManager extends GuestbookLibrary
             'TXT_DELETE_CATEGORY_ALL'    => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL']
         ));
 
-        $pos = intval($_GET['pos']);
+        $pos = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
 
         /** start paging **/
         $query = "SELECT *
@@ -418,53 +385,49 @@ class GuestbookManager extends GuestbookLibrary
         $objResult = $objDatabase->Execute($query);
 
         $count = $objResult->RecordCount();
-        $paging = getPaging($count, $pos, "&amp;cmd=guestbook", "<b>".$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES']."</b>", true);
+// TODO: $_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] does not exist
+//        $paging = getPaging($count, $pos, "&amp;cmd=guestbook", "<b>".$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES']."</b>", true);
+        $paging = getPaging($count, $pos, "&amp;cmd=guestbook", '', true);
 
         $this->_objTpl->setVariable("GUESTBOOK_PAGING", $paging);
         /** end paging **/
 
-        $query = "  SELECT      id,
-                                status,
-								forename,
-								name,
-                                gender,
-                                url,
-                                email,
-                                comment,
-                                ip,
-                                location,
-                                datetime,
-                                UNIX_TIMESTAMP(datetime) AS uTimestamp
-                    FROM        ".DBPREFIX."module_guestbook "
-                    .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='$this->langId' " : '')
-                    ."ORDER BY  id DESC ";
-        $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+        $query = "
+            SELECT id, status, forename, name, gender,
+                   url, email, comment, ip, location,
+                   datetime, UNIX_TIMESTAMP(datetime) AS uTimestamp
+              FROM ".DBPREFIX."module_guestbook".
+                    ($this->arrSettings['guestbook_only_lang_entries']
+                        ? " WHERE lang_id='$this->langId'" : '').
+                    " ORDER BY id DESC";
+        $objResult = $objDatabase->SelectLimit(
+            $query, $_CONFIG['corePagingLimit'], $pos);
 
-        $i=0;
+        $i = 0;
         while(!$objResult->EOF) {
-            $gender = ($objResult->fields["gender"]=="M") ? $_ARRAYLANG['guestbookGenderMale'] : $_ARRAYLANG['guestbookGenderFemale']; // N/A
-
-            $url = "";
-            $mail = "";
-            if ($objResult->fields['url']!="") {
+// TODO: $_ARRAYLANG['guestbookGenderMale'] and
+// $_ARRAYLANG['guestbookGenderFemale'] do not exist
+//            $gender = ($objResult->fields["gender"] == "M") ? $_ARRAYLANG['guestbookGenderMale'] : $_ARRAYLANG['guestbookGenderFemale'];
+            $gender = '';
+            $url = '';
+            $mail = '';
+            if ($objResult->fields['url'] != '') {
                 $url = "<a href='".$objResult->fields['url']."' target='_blank'><img alt=\"".$objResult->fields['url']."\" title=\"".$objResult->fields['url']."\" src=\"" . $this->imagePath . "/guestbook/www.gif\" border=\"0\" /></a>";
             }
-            if ($objResult->fields['email']!="") {
+            if ($objResult->fields['email'] != '') {
                 $mail = "<a href=\"mailto:".$objResult->fields["email"]."\"><img alt=\"".$objResult->fields["email"]."\" title=\"".$objResult->fields["email"]."\" src=\"" . $this->imagePath . "/guestbook/email.gif\" border=\"0\" /></a>";
             }
-
             $statusIcon = ($objResult->fields['status'] == 0) ? 'led_red' : 'led_green';
             if ($objResult->fields['status'] == 0) {
                 $rowclass = 'rowWarn';
             } else {
                 $rowclass = ($i % 2) ? 'row1' : 'row2';
             }
-
             $this->_objTpl->setVariable(array(
                        'GUESTBOOK_ROWCLASS' => $rowclass,
                        'GUESTBOOK_STATUS'   => $statusIcon,
-					   'GUESTBOOK_FORENAME'	=> htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
-					   'GUESTBOOK_NAME'	    => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
+                       'GUESTBOOK_FORENAME'    => htmlentities($objResult->fields["forename"], ENT_QUOTES, CONTREXX_CHARSET),
+                       'GUESTBOOK_NAME'        => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
                        'GUESTBOOK_GENDER'   => $gender,
                        'GUESTBOOK_URL'      => $url,
                        'GUESTBOOK_LOCATION' => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
@@ -484,8 +447,6 @@ class GuestbookManager extends GuestbookLibrary
     }
 
 
-
-
     /**
     * Update guestbook
     *
@@ -499,8 +460,8 @@ class GuestbookManager extends GuestbookLibrary
         $error = "";
 
         if (!empty($guestbookId)) {
-			$forename = contrexx_addslashes(strip_tags($_POST['forename']));
-			$name	  = contrexx_addslashes(strip_tags($_POST['name']));
+            $forename = contrexx_addslashes(strip_tags($_POST['forename']));
+            $name      = contrexx_addslashes(strip_tags($_POST['name']));
             $gender   = contrexx_addslashes(strip_tags($_POST['malefemale']));
             $mail = isset($_POST['email']) ?  contrexx_addslashes(strip_tags($_POST['email'])) : '';
             $url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : "";
@@ -519,10 +480,10 @@ class GuestbookManager extends GuestbookLibrary
             if(!$objValidator->isEmail($mail)) {
                 $error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
             }
-			if(!empty($forename) && !empty($name) /*&& !empty($comment) && empty($error)*/) {
+            if(!empty($forename) && !empty($name) /*&& !empty($comment) && empty($error)*/) {
                 $query = "UPDATE ".DBPREFIX."module_guestbook
-							   SET forename='$forename',
-							   	   name='$name',
+                               SET forename='$forename',
+                                      name='$name',
                                    gender='$gender',
                                    email='$mail',
                                    url='$url',
@@ -532,7 +493,7 @@ class GuestbookManager extends GuestbookLibrary
                                    datetime='$date',
                                    lang_id='$this->langId'
                              WHERE id=$guestbookId";
-                $objResult = $objDatabase->Execute($query);
+                $objDatabase->Execute($query);
             }
         }
         if (empty($error)) {
@@ -541,6 +502,7 @@ class GuestbookManager extends GuestbookLibrary
             $this->strErrMessage = $error;
         }
     }
+
 
     /**
      * Activate Entry
@@ -570,6 +532,7 @@ class GuestbookManager extends GuestbookLibrary
         $objDatabase->Execute($query);
     }
 
+
     /**
      * Deletes an entry
      */
@@ -580,17 +543,19 @@ class GuestbookManager extends GuestbookLibrary
         return $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_guestbook WHERE id = $id");
     }
 
+
     /**
      * Activates one or more entries
      */
     function _multiActivate()
     {
         if (isset($_POST['selectedId'])) {
-            foreach ($_POST['selectedId'] as $intKey => $intCatId) {
+            foreach ($_POST['selectedId'] as $intCatId) {
                 $this->_activateEntry($intCatId, "activate");
             }
         }
     }
+
 
     /**
      * Deactivates one or more entries
@@ -598,22 +563,25 @@ class GuestbookManager extends GuestbookLibrary
     function _multiDeactivate()
     {
         if (isset($_POST['selectedId'])) {
-            foreach ($_POST['selectedId'] as $intKey => $intCatId) {
+            foreach ($_POST['selectedId'] as $intCatId) {
                 $this->_activateEntry($intCatId, "deactivate");
             }
         }
     }
+
 
     /**
      * Deletes one or more entries
      */
     function _multiDelete()
     {
+        global $_ARRAYLANG;
+
         if (isset($_POST['selectedId'])) {
             $error = false;
-            foreach ($_POST['selectedId'] as $intKey => $intCatId) {
+            foreach ($_POST['selectedId'] as $intCatId) {
                 if (!$this->_deleteEntry($intCatId)) {
-                        $error = true;
+                    $error = true;
                 }
             }
             if ($error) {
@@ -622,4 +590,5 @@ class GuestbookManager extends GuestbookLibrary
         }
     }
 }
+
 ?>

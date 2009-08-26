@@ -106,11 +106,10 @@ class Payment
     {
         global $objDatabase;
 
-//echo("getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies): Entered<br />");
         if (empty(self::$arrPayment)) self::init();
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $arrAcceptedCurrencyCodes = array();
-        $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
+        $arrPaypalAcceptedCurrencyCodes = Paypal::getAcceptedCurrencyCodeArray();
         foreach ($arrCurrencies as $arrCurrency) {
             if (   $arrCurrency['status']
                 && in_array($arrCurrency['code'],
@@ -142,8 +141,6 @@ class Payment
             }
             $objResult->MoveNext();
         }
-//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
-//echo("getCountriesRelatedPaymentIdArray(): Returning ".var_export($arrPaymentId, true)."<br />");
         return $arrPaymentId;
     }
 
@@ -158,16 +155,16 @@ class Payment
      */
     static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
     {
-   	    global $_ARRAYLANG;
+           global $_ARRAYLANG;
 
         $menu =
             '<select name="paymentId"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').'>'.
             (intval($selectedId) == 0 && $onchange
-	            ? '<option value="0" selected="selected">'.
-	              $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'].
-	              "</option>\n"
-	            : ''
+                ? '<option value="0" selected="selected">'.
+                  $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'].
+                  "</option>\n"
+                : ''
             ).
             self::getPaymentMenuoptions($selectedId, $countryId).
             "</select>\n";

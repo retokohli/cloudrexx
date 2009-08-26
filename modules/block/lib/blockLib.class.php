@@ -264,15 +264,13 @@ class blockLibrary
         global $objDatabase;
 
         $arrLangIds = array();
-
-        $objLanguage = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$blockId);
-        if ($objLanguage !== false) {
-            while (!$objLanguage->EOF) {
-                array_push($arrLangIds, $objLanguage->fields['lang_id']);
-                $objLanguage->MoveNext();
+        $objResult = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$blockId);
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                array_push($arrLangIds, $objResult->fields['lang_id']);
+                $objResult->MoveNext();
             }
         }
-
         return $arrLangIds;
     }
 
@@ -317,6 +315,7 @@ class blockLibrary
             $code = str_replace("{".$this->blockNamePrefix.$id."}", $objBlock->fields['content'], $code);
         }*/
     }
+
 
     /**
     * Set block Global
@@ -391,7 +390,6 @@ class blockLibrary
     {
         global $objDatabase, $_LANGID;
 
-
         $query = "  SELECT tblBlock.id
                     FROM ".DBPREFIX."module_block_blocks AS tblBlock
                     INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
@@ -463,4 +461,5 @@ class blockLibrary
         $objSettings->writeSettingsFile();
     }
 }
+
 ?>

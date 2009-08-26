@@ -1012,7 +1012,7 @@ class directoryLibrary
      */
     function sendMail($feedId, $email)
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG, $objInit, $objLanguage;
+        global $_CONFIG, $objDatabase, $_ARRAYLANG, $objInit;
 
         $feedId = intval($feedId);
         $languageId = null;
@@ -1069,7 +1069,7 @@ class directoryLibrary
             $link =
                 "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
                 ($_CONFIG['useVirtualLanguagePath'] == 'on'
-                  ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : '').
+                  ? FWLanguage::getLanguageParameter($languageId, 'lang').'/' : '').
                   CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
         }
 

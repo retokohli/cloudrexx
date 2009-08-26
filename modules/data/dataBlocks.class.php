@@ -3,7 +3,7 @@
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Stefan Heinemann <sh@comvation.com>
- * @version	    $Id: index.inc.php,v 1.00 $
+ * @version        $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_data
  */
@@ -21,7 +21,7 @@ require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
  * pages.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Stefan Heinemann <sh@comvation.com>
- * @version	    $Id: index.inc.php,v 1.00 $
+ * @version        $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_data
  *

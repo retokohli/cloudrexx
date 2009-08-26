@@ -29,7 +29,7 @@
 
     function downloadsSelectAll()
     {
-    	downloadsSelectAllOptions(document.getElementById('downloads_category_read_associated_groups'))
+      downloadsSelectAllOptions(document.getElementById('downloads_category_read_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_add_subcategories_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_manage_subcategories_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_add_files_associated_groups'))
@@ -80,7 +80,7 @@
             }
         }
     }
-    
+
 
     var downloadsPermissionDependencies = {
         'read':{
@@ -106,7 +106,7 @@
         'add_files':['manage_files'],
         'manage_files':[]
     }
-        
+
     function downloadsAdjustAccessConfig(trigger)
     {
         downloadsResolvePermissionDependencies(downloadsPermissionDependencies, null, false, trigger);
@@ -149,10 +149,10 @@
         elTriggerGroupContainer             = document.getElementById('downloads_category_'+trigger+masterContainerType);
         elSyncAssociatedGroupsContainer     = document.getElementById('downloads_category_'+sync+masterContainerType);
         elSyncNotAssociatedGroupsContainer  = document.getElementById('downloads_category_'+sync+slaveContainerType);
-        
+
         aSyncAssociatedGroups = new Array();
         aSyncedGroups = new Array();
-        
+
         for (var i=0; i<elSyncAssociatedGroupsContainer.options.length; i++) {
             aSyncAssociatedGroups[elSyncAssociatedGroupsContainer.options[i].value] = i;
         }
@@ -174,20 +174,20 @@
 
 
 
-//		function downloadsGetFileBrowser(elInsertBox)
-//		{
-//			downloadsElInsertBox = elInsertBox;
-//			downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-//		}
-//		
+//    function downloadsGetFileBrowser(elInsertBox)
+//    {
+//      downloadsElInsertBox = elInsertBox;
+//      downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+//    }
+//
 
-	function downloadsOpenWindow(theURL,winName,features)
-	{
-	    downloadsPopup = window.open(theURL,"Downloads",features);
-	    downloadsPopup.focus();
-	}
+  function downloadsOpenWindow(theURL,winName,features)
+  {
+      downloadsPopup = window.open(theURL,"Downloads",features);
+      downloadsPopup.focus();
+  }
 
-    
+
     function SetUrl(url, width, height, alt)
     {
         document.getElementById('downloads_category_image').value = url;
@@ -492,7 +492,7 @@
     </div>
 <!-- end div downloadsPermissionCategoryMenu_manageSubcategoriesTab -->
 <br />
-                
+
 <ul id="tabsubmenu">
     <li><a id="downloadsPermissionFilesMenu_addFilesTab" class="active" href="javascript:void(0)" onclick="selectTab('addFilesTab')" title="{TXT_DOWNLOADS_ADD}">{TXT_DOWNLOADS_ADD}</a></li>
     <li><a id="downloadsPermissionFilesMenu_manageFilesTab" href="javascript:void(0)" onclick="selectTab('manageFilesTab')" title="{TXT_DOWNLOADS_MANAGE}">{TXT_DOWNLOADS_MANAGE}</a></li>

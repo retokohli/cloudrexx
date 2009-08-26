@@ -406,9 +406,9 @@ class downloads extends DownloadsLibrary
                 }
                 break;
         }
-
         return false;
     }
+
 
     private function processFileUploaderUpload(&$fileName, &$fileExtension, &$suffix)
     {
@@ -422,15 +422,10 @@ class downloads extends DownloadsLibrary
 
     private function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory)
     {
-        global $objLanguage;
-
         $objDownload = new Download();
 
         // parse name and description attributres
-        if (!isset($objLanguage)) {
-            $objLanguage = new FWLanguage();
-        }
-        $arrLanguageIds = array_keys($objLanguage->getLanguageArray());
+        $arrLanguageIds = array_keys(FWLanguage::getLanguageArray());
 
         foreach ($arrLanguageIds as $langId) {
             $arrNames[$langId] = $fileName.'.'.$fileExtension;
@@ -471,7 +466,7 @@ class downloads extends DownloadsLibrary
 
     private function processUpload($objCategory)
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
         // check for sufficient permissions
         if ($objCategory->getAddFilesAccessId()
@@ -501,8 +496,6 @@ class downloads extends DownloadsLibrary
 
     private function processCreateDirectory($objCategory)
     {
-        global $objLanguage;
-
         if (empty($_POST['downloads_category_name'])) {
             return;
         } else {
@@ -518,10 +511,7 @@ class downloads extends DownloadsLibrary
         }
 
         // parse name and description attributres
-        if (!isset($objLanguage)) {
-            $objLanguage = new FWLanguage();
-        }
-        $arrLanguageIds = array_keys($objLanguage->getLanguageArray());
+        $arrLanguageIds = array_keys(FWLanguage::getLanguageArray());
 
 
         foreach ($arrLanguageIds as $langId) {

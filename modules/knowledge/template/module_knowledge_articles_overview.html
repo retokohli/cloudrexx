@@ -32,8 +32,8 @@ var confirmDeletion = '{TXT_CONFIRM_ARTICLE_DELETION}';
                         <div style="padding: 5px;">
                             {TXT_SEARCH_ARTICLES}:<br />
                             <form action="javascript: void(0)" onsubmit="articles.searchArticles($('searchterm').value, 0)">
-                                <input type="text" value="{TXT_SEARCH_INPUT}" onfocus="if (this.value == '{TXT_SEARCH_INPUT}')  { this.value =''; } " 
-                                    onblur='if (this.value == "") { this.value = "{TXT_SEARCH_INPUT}" }' 
+                                <input type="text" value="{TXT_SEARCH_INPUT}" onfocus="if (this.value == '{TXT_SEARCH_INPUT}')  { this.value =''; } "
+                                    onblur='if (this.value == "") { this.value = "{TXT_SEARCH_INPUT}" }'
                                     style="width: 300px;" id="searchterm" />
                                     <input type="submit" value="{TXT_SEARCH}" />
                             </form>
@@ -88,7 +88,7 @@ var confirmDeletion = '{TXT_CONFIRM_ARTICLE_DELETION}';
                     <div style="float: left; ">
                         <img src="images/icons/sub_arrow.gif" class="sub_arrow" style="border: none;" /><a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};"><img alt="" class="openClosePicture" src="images/icons/pluslink.gif" style="border: none; margin: 2px;" /></a><img src="../images/modules/knowledge/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
                     </div>
-                    
+
                     <div style="float: left;">
                         <a href="javascript: void(0);" onclick="articles.getCategory({ID})">{NAME}</a> ({ENTRY_COUNT})
                     </div>
@@ -97,7 +97,7 @@ var confirmDeletion = '{TXT_CONFIRM_ARTICLE_DELETION}';
                 <!-- END row -->
                 {ROWS}
             </ul>
-            <!-- END list -->   
+            <!-- END list -->
         <!-- END remove_area -->
         {CATLIST}
         <ul>
@@ -129,9 +129,9 @@ var confirmDeletion = '{TXT_CONFIRM_ARTICLE_DELETION}';
     </div>
 </div>
 <!--<div style="position: relative;">-->
-	<div id="articles">
-	    {TXT_ARTICLES}
-	</div>
+  <div id="articles">
+      {TXT_ARTICLES}
+  </div>
 <!--</div>-->
 
 <script type="text/javascript">

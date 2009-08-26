@@ -718,7 +718,7 @@ class Vat
      */
     static function calculateDefaultTax($price)
     {
-        $amount = $price * self::getRate(self::$vatDefaultId) / 100;
+        $amount = $price * self::$vatDefaultRate / 100;
         return $amount;
     }
 

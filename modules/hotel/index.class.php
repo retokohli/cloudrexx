@@ -13,6 +13,16 @@
 
 require_once ASCMS_MODULE_PATH."/hotel/HotelLib.class.php";
 
+/**
+* Hotel management
+*
+* @copyright    CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @author       Astalavista Development Team <thun@astalvista.ch>
+* @module       hotel
+* @modulegroup  modules
+* @access       public
+* @version      1.0.0
+*/
 class HotelManager extends HotelLib
 {
 
@@ -2475,10 +2485,10 @@ EOF;
     }
 
     /**
-     * shortens a string to a maximum lenght
+     * shortens a string to a maximum length
      *
      * @param string $str original string
-     * @param integer $maxLength maximum lenght
+     * @param integer $maxLength maximum length
      * @return string $str shortened string
      */
 

@@ -1236,13 +1236,9 @@ class Download {
 
     private function validateName()
     {
-        global $_ARRAYLANG, $objLanguage;
+        global $_ARRAYLANG;
 
-        if (!isset($objLanguages)) {
-            $objLanguages = new FWLanguage();
-        }
-
-        $arrLanguages = $objLanguages->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         $namesSet = true;
         foreach ($arrLanguages as $langId => $arrLanguage) {
             if (empty($this->names[$langId])) {

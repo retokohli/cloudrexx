@@ -182,7 +182,7 @@ class Auction extends auctionLibrary
                     $i++;
                 }
             }
-			$today = mktime(date("H"), date("i"), date("s"), date("m")  , date("d"), date("Y"));
+            $today = mktime(date("H"), date("i"), date("s"), date("m")  , date("d"), date("Y"));
             $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_auction WHERE status = '1' AND enddate >= '".$today."'");
             $allFeeds = $objResult->RecordCount();
             $insertFeeds = $allFeeds." ".$_ARRAYLANG['TXT_AUCTION_ADD_ADVERTISEMENT'];
@@ -430,10 +430,10 @@ class Auction extends auctionLibrary
                 }
                 $width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
                 $height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
-                
+
                 $image = '<img src="'.$this->mediaWebPath.'pictures/tmb_'.$objResult->fields['picture'].'" '.$width.' '.$height.' border="0" alt="'.$objResult->fields['title'].'" />';
-                
-                
+
+
                 $objFWUser = FWUser::getFWUserObject();
                 $objUser = $objFWUser->objUser->getUser($objResult->fields['userid']);
                 if ($objUser) {
@@ -455,29 +455,29 @@ class Auction extends auctionLibrary
                    }else{
                        $price = $objResult->fields['price'].' '.$this->settings['currency'];
                    }
-                   
+
                    $Bids = $this->GetAuctionBids($objResult->fields['id']);
-            
-		            if(count($Bids)>0){
-		            	$LastPrice = $Bids[count($Bids)-1]["bid_price"];
-		            }else{
-		            	$LastPrice = $objResult->fields['startprice'];
-		            }
-		            
-		            
-		             $price = $LastPrice.' '.$this->settings['currency'];
-                   
+
+                    if(count($Bids)>0){
+                        $LastPrice = $Bids[count($Bids)-1]["bid_price"];
+                    }else{
+                        $LastPrice = $objResult->fields['startprice'];
+                    }
+
+
+                     $price = $LastPrice.' '.$this->settings['currency'];
+
                    // auction pictures tmb
                    // ---------------------------------
-                   $auction_tmb 	= ASCMS_AUCTION_UPLOAD_WEB_PATH.'/no_img.gif';
-                   $auction_tmbx	= 0;
+                   $auction_tmb     = ASCMS_AUCTION_UPLOAD_WEB_PATH.'/no_img.gif';
+                   $auction_tmbx    = 0;
                    for($z=1; $z<6; $z++){
-	                	if($objResult->fields['picture_'.$z]!='' && $auction_tmbx==0){
-	                		$auction_tmb = ASCMS_AUCTION_UPLOAD_WEB_PATH.'/tmb_'.$objResult->fields['picture_'.$z];
-	                		$auction_tmbx = 1;
-	                	}
-	                }
-                   
+                        if($objResult->fields['picture_'.$z]!='' && $auction_tmbx==0){
+                            $auction_tmb = ASCMS_AUCTION_UPLOAD_WEB_PATH.'/tmb_'.$objResult->fields['picture_'.$z];
+                            $auction_tmbx = 1;
+                        }
+                    }
+
 
                    $this->_objTpl->setVariable(array(
                     'AUCTION_ENDDATE'            => $enddate,
@@ -494,8 +494,8 @@ class Auction extends auctionLibrary
                     'AUCTION_SPEZ_FIELD_3'        => $objResult->fields['spez_field_3'],
                     'AUCTION_SPEZ_FIELD_4'        => $objResult->fields['spez_field_4'],
                     'AUCTION_SPEZ_FIELD_5'        => $objResult->fields['spez_field_5'],
-                    'AUCTION_TMB'				=> $auction_tmb,
-                    'AUCTION_BIDS'				=> count($this->GetAuctionBids($objResult->fields['id'])),
+                    'AUCTION_TMB'                => $auction_tmb,
+                    'AUCTION_BIDS'                => count($this->GetAuctionBids($objResult->fields['id'])),
                 ));
 
                 $this->_objTpl->parse('showEntries');
@@ -671,121 +671,121 @@ class Auction extends auctionLibrary
 
 
     function _makeOffer($id){
-    	global $objDatabase, $_ARRAYLANG, $_CORELANG;
-    	
-    	$id = $_REQUEST["id"];
-    	
-    	$Bids = $this->GetAuctionBids($id);
-            
-        if(count($Bids)>0){
-        	$LastPrice = $Bids[count($Bids)-1]["bid_price"];
-        }else{
-        	$LastPrice = $this->entries[$id]['startprice'];
-        }
-        
-        $offer 	= $_REQUEST["offer_1"].'.'.$_REQUEST["offer_2"];
-        $offer 	= floatval($offer);
-        $step 	= (count($this->GetAuctionBids($id))==0) ? 0 : floatval($this->entries[$id]['incr_step']);
-        $dif 	= $offer - $LastPrice;
-        
-        
-        $objFWUser = FWUser::getFWUserObject();
-		if ($objFWUser->objUser->login()) {
-			$UserID = $objFWUser->objUser->getId();
-		}
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        $teil_1	= $offer/$step;
+        $id = $_REQUEST["id"];
+
+        $Bids = $this->GetAuctionBids($id);
+
+        if(count($Bids)>0){
+            $LastPrice = $Bids[count($Bids)-1]["bid_price"];
+        }else{
+            $LastPrice = $this->entries[$id]['startprice'];
+        }
+
+        $offer     = $_REQUEST["offer_1"].'.'.$_REQUEST["offer_2"];
+        $offer     = floatval($offer);
+        $step     = (count($this->GetAuctionBids($id))==0) ? 0 : floatval($this->entries[$id]['incr_step']);
+        $dif     = $offer - $LastPrice;
+
+
+        $objFWUser = FWUser::getFWUserObject();
+        if ($objFWUser->objUser->login()) {
+            $UserID = $objFWUser->objUser->getId();
+        }
+
+        $teil_1    = $offer/$step;
         $teil_2 = $teil_1;
         settype($teil_2, 'int');
-        
-    	//if(($offer % $step) != 0 || $offer<$LastPrice+$step){
-    	if($teil_1>$teil_2 || $offer<$LastPrice+$step){
-    		$_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_LOOK_INCREASE_STEP'].'");';
-    	}else{
-    		if($objFWUser->objUser->login()){
-    			
-    			$objReslut = $objDatabase->Execute("select enddate from ".DBPREFIX."module_auction where id='".$id."'");
-		        if ($objReslut !== false) {
-					$Differenz		= $objReslut->fields['enddate']-time();
-		        }
-		        
-		        if($Differenz<0){
-					$_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_AUCTION_IS_CLOSED'].'");';
-				}else{
-    			
-		    		$objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_auction_bids SET
-		                                bid_auction='".$id."',
-		                                bid_user='".$UserID."',
-		                                bid_price='".$offer."',
-		                                bid_time='".time()."',
-		                                bid_ip='".$_SERVER['REMOTE_ADDR']."'");
-		
-		            if($objResult !== false){
-		            	$_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_SAVE_OFFER_SUCCS'].'");';
-		            }else{
-		            	$_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_SAVE_OFFER_ERROR'].'");';
-		            }
-		            
-				}
-    		}else{
-    			$_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_NOT_LOGED_ERROR'].'");';
-    		}
-    	}
-    }
-    
-    function sendQuestion(){
-    	global $objDatabase, $_ARRAYLANG, $_CORELANG;
-    	
-    	$id = $_REQUEST["id"];
-    	$this->getEntries('', 'id', $id);
-    	
-    	$mail = new phpmailer();
-    	
-    	$objFWUser = FWUser::getFWUserObject();
 
-    	$objOwner 			= FWUser::getFWUserObject();
-        $objOwnerUser 		= $objOwner->objUser->getUser($this->entries[$id]['userid']);
+        //if(($offer % $step) != 0 || $offer<$LastPrice+$step){
+        if($teil_1>$teil_2 || $offer<$LastPrice+$step){
+            $_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_LOOK_INCREASE_STEP'].'");';
+        }else{
+            if($objFWUser->objUser->login()){
+
+                $objReslut = $objDatabase->Execute("select enddate from ".DBPREFIX."module_auction where id='".$id."'");
+                if ($objReslut !== false) {
+                    $Differenz        = $objReslut->fields['enddate']-time();
+                }
+
+                if($Differenz<0){
+                    $_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_AUCTION_IS_CLOSED'].'");';
+                }else{
+
+                    $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_auction_bids SET
+                                        bid_auction='".$id."',
+                                        bid_user='".$UserID."',
+                                        bid_price='".$offer."',
+                                        bid_time='".time()."',
+                                        bid_ip='".$_SERVER['REMOTE_ADDR']."'");
+
+                    if($objResult !== false){
+                        $_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_SAVE_OFFER_SUCCS'].'");';
+                    }else{
+                        $_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_SAVE_OFFER_ERROR'].'");';
+                    }
+
+                }
+            }else{
+                $_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_NOT_LOGED_ERROR'].'");';
+            }
+        }
+    }
+
+    function sendQuestion(){
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+
+        $id = $_REQUEST["id"];
+        $this->getEntries('', 'id', $id);
+
+        $mail = new phpmailer();
+
+        $objFWUser = FWUser::getFWUserObject();
+
+        $objOwner             = FWUser::getFWUserObject();
+        $objOwnerUser         = $objOwner->objUser->getUser($this->entries[$id]['userid']);
         if ($objOwnerUser) {
             $TargetEmail = $objOwnerUser->getEmail();
         }
-        
-        $objFWUser 			= FWUser::getFWUserObject();
-		if ($objFWUser->objUser->login()) {
-			$FromEmail = $objFWUser->objUser->getEmail();
-		}
-		if($_REQUEST["Email"]!=''){
-			$FromEmail = $_REQUEST["Email"];
-		}
-		$FromName 			= $_REQUEST["Name"].' (User: '.$objFWUser->objUser->getUsername().')';
-		$mailHTML			= '';
-		$Mailbody[1]		= str_replace('[USER]', $objOwnerUser->getUsername(), $_ARRAYLANG['TXT_AUCTION_QUESTION_BODY_1']);
-		$Mailbody[2]		= str_replace('[AUCTION_NR]', $id, $_ARRAYLANG['TXT_AUCTION_QUESTION_BODY_2']);
-		$Mailbody[2]		= str_replace('[AUCTION_TITLE]', $this->entries[$id]['title'], $Mailbody[2]);
-		
-		$mailHTML .= $Mailbody[1]."\n";
-		$mailHTML .= $Mailbody[2]."\n\n";
-		$mailHTML .= $_ARRAYLANG["TXT_AUCTION_QUESTION"].":\n";
-		$mailHTML .= $_REQUEST["Frage"]."\n\n";
-		$mailHTML .= $_ARRAYLANG["TXT_AUCTION_QUESTION_BODY_3"]."\n";
-		$mailHTML .= "Name: ".$FromName."\n";
-		$mailHTML .= "E-Mail: ".$FromEmail."\n\n";
-		$mailHTML .= "-------------------------------\n";
-		$mailHTML .= "-------------------------------\n";
-		$mailHTML .= "Created: ".date("d.m.Y H:i")."\n";
-        
-		$mail->From 	= $FromEmail;
-		$mail->FromName = $FromName;	
-		$mail->Subject 	= $_ARRAYLANG["TXT_AUCTION_AUCTION_QUESTION"];
-		$mail->Priority = 3;
-		$mail->IsHTML(false); 
-		$mail->Body 	= $mailHTML;
-		$mail->AltBody 	= $mailHTML;
-		$mail->AddAddress($TargetEmail);
-		if($mail->Send()){
-			$_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_QUESTION_ALERT'].'");';
-		}
-		unset($mail);
-		
+
+        $objFWUser             = FWUser::getFWUserObject();
+        if ($objFWUser->objUser->login()) {
+            $FromEmail = $objFWUser->objUser->getEmail();
+        }
+        if($_REQUEST["Email"]!=''){
+            $FromEmail = $_REQUEST["Email"];
+        }
+        $FromName             = $_REQUEST["Name"].' (User: '.$objFWUser->objUser->getUsername().')';
+        $mailHTML            = '';
+        $Mailbody[1]        = str_replace('[USER]', $objOwnerUser->getUsername(), $_ARRAYLANG['TXT_AUCTION_QUESTION_BODY_1']);
+        $Mailbody[2]        = str_replace('[AUCTION_NR]', $id, $_ARRAYLANG['TXT_AUCTION_QUESTION_BODY_2']);
+        $Mailbody[2]        = str_replace('[AUCTION_TITLE]', $this->entries[$id]['title'], $Mailbody[2]);
+
+        $mailHTML .= $Mailbody[1]."\n";
+        $mailHTML .= $Mailbody[2]."\n\n";
+        $mailHTML .= $_ARRAYLANG["TXT_AUCTION_QUESTION"].":\n";
+        $mailHTML .= $_REQUEST["Frage"]."\n\n";
+        $mailHTML .= $_ARRAYLANG["TXT_AUCTION_QUESTION_BODY_3"]."\n";
+        $mailHTML .= "Name: ".$FromName."\n";
+        $mailHTML .= "E-Mail: ".$FromEmail."\n\n";
+        $mailHTML .= "-------------------------------\n";
+        $mailHTML .= "-------------------------------\n";
+        $mailHTML .= "Created: ".date("d.m.Y H:i")."\n";
+
+        $mail->From     = $FromEmail;
+        $mail->FromName = $FromName;
+        $mail->Subject     = $_ARRAYLANG["TXT_AUCTION_AUCTION_QUESTION"];
+        $mail->Priority = 3;
+        $mail->IsHTML(false);
+        $mail->Body     = $mailHTML;
+        $mail->AltBody     = $mailHTML;
+        $mail->AddAddress($TargetEmail);
+        if($mail->Send()){
+            $_SESSION["ADD_JS"] = 'alert("'.$_ARRAYLANG['TXT_AUCTION_QUESTION_ALERT'].'");';
+        }
+        unset($mail);
+
     }
 
     function entryDetails($id) {
@@ -796,24 +796,24 @@ class Auction extends auctionLibrary
 
         //get erntry
         $this->getEntries('', 'id', $id);
-        
-        
+
+
         // EXE
         // --------------------------
         if(isset($_REQUEST["exe"])){
-        	switch ($_REQUEST["exe"]) {
-        		case "makeOffer":
-        			$this->_makeOffer($id);
-        			break;
-        		case "sendQuestion":
-        			$this->sendQuestion($id);
-        			break;
-        	
-        	}
+            switch ($_REQUEST["exe"]) {
+                case "makeOffer":
+                    $this->_makeOffer($id);
+                    break;
+                case "sendQuestion":
+                    $this->sendQuestion($id);
+                    break;
+
+            }
         }
-        
-        
-        
+
+
+
         if (isset($id) && count($this->entries) != 0) {
 
             //get search
@@ -887,8 +887,8 @@ class Auction extends auctionLibrary
 
                 $residence = $objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city');
             } else {
-            	$TXTuserDetails 	= $_ARRAYLANG['TXT_AUCTION_CONTACT'];
-                $userDetails 		= $user.$userMail;
+                $TXTuserDetails     = $_ARRAYLANG['TXT_AUCTION_CONTACT'];
+                $userDetails         = $user.$userMail;
             }
 
             if ($this->entries[$id]['userdetails'] != 1) {
@@ -930,66 +930,66 @@ class Auction extends auctionLibrary
             } else {
                 $enddate = "";
             }
-            
+
             // Auction TMBS
             // --------------------------------------------
             $auction_tmbs = '';
             for($x=1;$x<6;$x++){
-	            if($this->entries[$id]['picture_'.$x] != ''){
-	            	if (file_exists(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$this->entries[$id]['picture_'.$x])) {
-	            		$auction_tmbs .= '<div class="auction_tmb"><a href="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/'.$this->entries[$id]['picture_'.$x].'" class="lightview" rel="gallery[auctionimages_'.$id.']"><img src="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/tmb_'.$this->entries[$id]['picture_'.$x].'" border="0" alt="" /></a></div>';
-	            	}else{
-	            		$auction_tmbs .= '<div class="auction_tmb"><a href="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/'.$this->entries[$id]['picture_'.$x].'" class="lightview" rel="gallery[auctionimages_'.$id.']"><img src="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/no_img.gif" border="0" alt="" /></a></div>';
-	            	}
-	            }
+                if($this->entries[$id]['picture_'.$x] != ''){
+                    if (file_exists(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$this->entries[$id]['picture_'.$x])) {
+                        $auction_tmbs .= '<div class="auction_tmb"><a href="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/'.$this->entries[$id]['picture_'.$x].'" class="lightview" rel="gallery[auctionimages_'.$id.']"><img src="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/tmb_'.$this->entries[$id]['picture_'.$x].'" border="0" alt="" /></a></div>';
+                    }else{
+                        $auction_tmbs .= '<div class="auction_tmb"><a href="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/'.$this->entries[$id]['picture_'.$x].'" class="lightview" rel="gallery[auctionimages_'.$id.']"><img src="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/no_img.gif" border="0" alt="" /></a></div>';
+                    }
+                }
             }
-            
+
             $Bids = $this->GetAuctionBids($id);
-            
+
             if(count($Bids)>0){
-            	$LastPrice = $Bids[count($Bids)-1]["bid_price"];
+                $LastPrice = $Bids[count($Bids)-1]["bid_price"];
             }else{
-            	$LastPrice = $this->entries[$id]['startprice'];
+                $LastPrice = $this->entries[$id]['startprice'];
             }
-            
+
             // Offers
             // ---------------------------------------------
             $this->_objTpl->setCurrentBlock('AllOffers');
             for($x=count($Bids)-1;$x>-1; $x--){
-            	
-            	$icon = ($x==count($Bids)-1) ? 'icon_ok.gif' : 'icon_no.gif';
-            	
-            	$objFWUserAuction = FWUser::getFWUserObject();
-				$objUserAuction = $objFWUserAuction->objUser->getUser($Bids[$x]['bid_user']);
-				
-            	$this->_objTpl->setVariable(array(
-                	'AUCTION_OFFERS_ICON'		=> ASCMS_AUCTION_WEB_PATH.'/'.$icon,
-                	'AUCTION_BID'				=> number_format($Bids[$x]['bid_price'], 2,',', '.'),
-                	'AUCTION_BID_MAKED'			=> date('d.m.Y H:i', $Bids[$x]['bid_time']),
-                	'AUCTION_USENAME'			=> $objUserAuction->getUsername(),
+
+                $icon = ($x==count($Bids)-1) ? 'icon_ok.gif' : 'icon_no.gif';
+
+                $objFWUserAuction = FWUser::getFWUserObject();
+                $objUserAuction = $objFWUserAuction->objUser->getUser($Bids[$x]['bid_user']);
+
+                $this->_objTpl->setVariable(array(
+                    'AUCTION_OFFERS_ICON'        => ASCMS_AUCTION_WEB_PATH.'/'.$icon,
+                    'AUCTION_BID'                => number_format($Bids[$x]['bid_price'], 2,',', '.'),
+                    'AUCTION_BID_MAKED'            => date('d.m.Y H:i', $Bids[$x]['bid_time']),
+                    'AUCTION_USENAME'            => $objUserAuction->getUsername(),
                 ));
                 $this->_objTpl->parse('AllOffers');
             }
-            
-            
-            $display_auction_login 	= ($objFWUser->objUser->login()) ? 'none' : 'block';
-            $loged					= ($objFWUser->objUser->login()) ? 1 : 0;
-            
-            $_SESSION["ADD_JS"]		= (isset($_SESSION["ADD_JS"])) ? $_SESSION["ADD_JS"]: '';
 
-            $nextBid				= number_format($LastPrice+$this->entries[$id]['incr_step'],2, ',', '.').' '.$this->settings['currency'];
+
+            $display_auction_login     = ($objFWUser->objUser->login()) ? 'none' : 'block';
+            $loged                    = ($objFWUser->objUser->login()) ? 1 : 0;
+
+            $_SESSION["ADD_JS"]        = (isset($_SESSION["ADD_JS"])) ? $_SESSION["ADD_JS"]: '';
+
+            $nextBid                = number_format($LastPrice+$this->entries[$id]['incr_step'],2, ',', '.').' '.$this->settings['currency'];
             if(count($this->GetAuctionBids($id))==0){
-            	$nextBid = number_format($LastPrice,2, ',', '.').' '.$this->settings['currency'];
+                $nextBid = number_format($LastPrice,2, ',', '.').' '.$this->settings['currency'];
             }
-            
-            $yourOffer_1			= number_format($LastPrice+$this->entries[$id]['incr_step'],0,'.','');
-            $yourOffer_2			= substr(strrchr (number_format($LastPrice+$this->entries[$id]['incr_step'],2), "."), 1);
-            
+
+            $yourOffer_1            = number_format($LastPrice+$this->entries[$id]['incr_step'],0,'.','');
+            $yourOffer_2            = substr(strrchr (number_format($LastPrice+$this->entries[$id]['incr_step'],2), "."), 1);
+
             if(count($this->GetAuctionBids($id))==0){
-            	$yourOffer_1 = number_format($LastPrice,0,'.','');
-            	$yourOffer_2 = substr(strrchr (number_format($LastPrice,2), "."), 1);
+                $yourOffer_1 = number_format($LastPrice,0,'.','');
+                $yourOffer_2 = substr(strrchr (number_format($LastPrice,2), "."), 1);
             }
-            
+
             // set variables
             $this->_objTpl->setVariable(array(
                 'AUCTION_TITLE'                    => $this->entries[$id]['title'],
@@ -1027,35 +1027,35 @@ class Auction extends auctionLibrary
                 'AUCTION_SPEZ_FIELD_3'            => $this->entries[$id]['spez_field_3'],
                 'AUCTION_SPEZ_FIELD_4'            => $this->entries[$id]['spez_field_4'],
                 'AUCTION_SPEZ_FIELD_5'            => $this->entries[$id]['spez_field_5'],
-                'TXT_AUCTION_ID' 					=> $_ARRAYLANG['TXT_AUCTION_ID'],
-                'TXT_AUCTION_ENDTIME' 				=> $_ARRAYLANG['TXT_AUCTION_ENDTIME'],
-                'TXT_AUCTION_NR_BIDS' 				=> $_ARRAYLANG['TXT_AUCTION_NR_BIDS'],
-                'TXT_AUCTION_SEARCH_TITLE' 			=> $_ARRAYLANG['TXT_AUCTION_SEARCH_TITLE'],
-                'AUCTION_ENDTIME'					=> date("d.m.Y H:i", $this->entries[$id]['enddate']),
-                'AUCTION_NR_BIDS'					=> count($this->GetAuctionBids($id)),
-                'AUCTION_TMBS'						=> $auction_tmbs,
-                'TXT_AUCTION_STARTPRICE' 			=> $_ARRAYLANG['TXT_AUCTION_STARTPRICE'],
-                'TXT_AUCTION_INCREASE_STEP' 		=> $_ARRAYLANG['TXT_AUCTION_INCREASE_STEP'],
-                'TXT_AUCTION_NEXT_BID' 				=> $_ARRAYLANG['TXT_AUCTION_NEXT_BID'],
-                'AUCTION_STARTPRICE' 				=> number_format($this->entries[$id]['startprice'], 2,',', '.').' '.$this->settings['currency'],
-                'AUCTION_INCREASE_STEP' 			=> number_format($this->entries[$id]['incr_step'], 2,',', '.').' '.$this->settings['currency'],
-                'AUCTION_NEXT_BID' 					=> $nextBid,
-                'TXT_AUCTION_YOUR_OFFER' 			=> $_ARRAYLANG['TXT_AUCTION_YOUR_OFFER'],
-                'CURRENCY' 							=> $this->settings['currency'],
-                'YOUR_OFFER_1' 						=> $yourOffer_1,
-                'YOUR_OFFER_2'						=> $yourOffer_2,
-                'TXT_AUCTION_ADD_OFFER' 			=> $_ARRAYLANG['TXT_AUCTION_ADD_OFFER'],
-                'TXT_AUCTION_DESCRIPTION' 			=> $_ARRAYLANG['TXT_AUCTION_DESCRIPTION'],
-                'AUCTION_DESCRIPTION' 				=> $this->entries[$id]['description'],
-                'TXT_AUCTION_INFORMATIONEN' 		=> $_ARRAYLANG['TXT_AUCTION_INFORMATIONEN'],
-                'TXT_AUCTION_SHIPPING' 				=> $_ARRAYLANG['TXT_AUCTION_SHIPPING'],
-                'TXT_AUCTION_PAYMENT' 				=> $_ARRAYLANG['TXT_AUCTION_PAYMENT'],
-                'AUCTION_SHIPPING' 					=> $this->entries[$id]['shipping'],
-                'AUCTION_PAYMENT' 					=> $this->entries[$id]['payment'],
-                'TXT_AUCTION_OFFERS' 				=> $_ARRAYLANG['TXT_AUCTION_OFFERS'],
-                'AUCTION_OFFERS' 					=> 'auction offers - contrexx_module_auction:contrexx_module_auction_bids id:'.$id,
-                'TXT_AUCTION_QUESTIONS'				=> $_ARRAYLANG['TXT_AUCTION_QUESTIONS'],
-                'AUCTION_QUESTIONS'					=> 'auction quest - form output id:'.$id,
+                'TXT_AUCTION_ID'                     => $_ARRAYLANG['TXT_AUCTION_ID'],
+                'TXT_AUCTION_ENDTIME'                 => $_ARRAYLANG['TXT_AUCTION_ENDTIME'],
+                'TXT_AUCTION_NR_BIDS'                 => $_ARRAYLANG['TXT_AUCTION_NR_BIDS'],
+                'TXT_AUCTION_SEARCH_TITLE'             => $_ARRAYLANG['TXT_AUCTION_SEARCH_TITLE'],
+                'AUCTION_ENDTIME'                    => date("d.m.Y H:i", $this->entries[$id]['enddate']),
+                'AUCTION_NR_BIDS'                    => count($this->GetAuctionBids($id)),
+                'AUCTION_TMBS'                        => $auction_tmbs,
+                'TXT_AUCTION_STARTPRICE'             => $_ARRAYLANG['TXT_AUCTION_STARTPRICE'],
+                'TXT_AUCTION_INCREASE_STEP'         => $_ARRAYLANG['TXT_AUCTION_INCREASE_STEP'],
+                'TXT_AUCTION_NEXT_BID'                 => $_ARRAYLANG['TXT_AUCTION_NEXT_BID'],
+                'AUCTION_STARTPRICE'                 => number_format($this->entries[$id]['startprice'], 2,',', '.').' '.$this->settings['currency'],
+                'AUCTION_INCREASE_STEP'             => number_format($this->entries[$id]['incr_step'], 2,',', '.').' '.$this->settings['currency'],
+                'AUCTION_NEXT_BID'                     => $nextBid,
+                'TXT_AUCTION_YOUR_OFFER'             => $_ARRAYLANG['TXT_AUCTION_YOUR_OFFER'],
+                'CURRENCY'                             => $this->settings['currency'],
+                'YOUR_OFFER_1'                         => $yourOffer_1,
+                'YOUR_OFFER_2'                        => $yourOffer_2,
+                'TXT_AUCTION_ADD_OFFER'             => $_ARRAYLANG['TXT_AUCTION_ADD_OFFER'],
+                'TXT_AUCTION_DESCRIPTION'             => $_ARRAYLANG['TXT_AUCTION_DESCRIPTION'],
+                'AUCTION_DESCRIPTION'                 => $this->entries[$id]['description'],
+                'TXT_AUCTION_INFORMATIONEN'         => $_ARRAYLANG['TXT_AUCTION_INFORMATIONEN'],
+                'TXT_AUCTION_SHIPPING'                 => $_ARRAYLANG['TXT_AUCTION_SHIPPING'],
+                'TXT_AUCTION_PAYMENT'                 => $_ARRAYLANG['TXT_AUCTION_PAYMENT'],
+                'AUCTION_SHIPPING'                     => $this->entries[$id]['shipping'],
+                'AUCTION_PAYMENT'                     => $this->entries[$id]['payment'],
+                'TXT_AUCTION_OFFERS'                 => $_ARRAYLANG['TXT_AUCTION_OFFERS'],
+                'AUCTION_OFFERS'                     => 'auction offers - contrexx_module_auction:contrexx_module_auction_bids id:'.$id,
+                'TXT_AUCTION_QUESTIONS'                => $_ARRAYLANG['TXT_AUCTION_QUESTIONS'],
+                'AUCTION_QUESTIONS'                    => 'auction quest - form output id:'.$id,
                 'TXT_AUCTION_DURATION'                => $_ARRAYLANG["TXT_AUCTION_DURATION"],
                 'TXT_AUCTION_USENAME'                => $_ARRAYLANG["TXT_AUCTION_USENAME"],
                 'TXT_AUCTION_BID'                => $_ARRAYLANG["TXT_AUCTION_BID"],
@@ -1066,23 +1066,23 @@ class Auction extends auctionLibrary
                 'TXT_AUCTION_PASSWORD'                => $_ARRAYLANG["TXT_AUCTION_PASSWORD"],
                 'TXT_LOGIN'                => $_ARRAYLANG["TXT_AUCTION_LOGIN"],
                 'DISPLAY_LOGIN'                => $display_auction_login,
-                'REDIRECT_URL'					=> base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']),
-                'LOGED'							=> $loged,
-                'TXT_AUCTION_NOT_LOGED_ERROR'	=> $_ARRAYLANG['TXT_AUCTION_NOT_LOGED_ERROR'],
-                'TXT_AUCTION_URL'				=> $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'],
-                'TXT_AUCTION_ADD_ALL_FIELDS'				=> $_ARRAYLANG['TXT_AUCTION_ADD_ALL_FIELDS'],
-                'TXT_AUCTION_SEND_QUESTION'				=> $_ARRAYLANG['TXT_AUCTION_SEND_QUESTION'],
-                'ADD_JS'						=> $_SESSION["ADD_JS"],
-                
+                'REDIRECT_URL'                    => base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']),
+                'LOGED'                            => $loged,
+                'TXT_AUCTION_NOT_LOGED_ERROR'    => $_ARRAYLANG['TXT_AUCTION_NOT_LOGED_ERROR'],
+                'TXT_AUCTION_URL'                => $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'],
+                'TXT_AUCTION_ADD_ALL_FIELDS'                => $_ARRAYLANG['TXT_AUCTION_ADD_ALL_FIELDS'],
+                'TXT_AUCTION_SEND_QUESTION'                => $_ARRAYLANG['TXT_AUCTION_SEND_QUESTION'],
+                'ADD_JS'                        => $_SESSION["ADD_JS"],
+
             ));
-            
+
             $_SESSION["ADD_JS"] = '';
-            
+
         }else{
             header('Location: ?section=auction');
         }
     }
-    
+
     function sendMessage($id) {
 
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
@@ -1220,41 +1220,41 @@ class Auction extends auctionLibrary
                        }
                        ';
         }
-        
+
         // Auktionsende
         // --------------------------------------------
-        $Options 				= array();
-        $AuctionEnd				= array();
-        $AuctionEndTimestamp	= $objResult->fields['enddate'];
-        $AuctionEnd['year']		= date('Y', $AuctionEndTimestamp);
-        $AuctionEnd['month']	= date('m', $AuctionEndTimestamp);
-        $AuctionEnd['day']		= date('d', $AuctionEndTimestamp);
-        $AuctionEnd['hour']		= date('H', $AuctionEndTimestamp);
-        $AuctionEnd['minutes']	= date('i', $AuctionEndTimestamp);
-        
+        $Options                 = array();
+        $AuctionEnd                = array();
+        $AuctionEndTimestamp    = $objResult->fields['enddate'];
+        $AuctionEnd['year']        = date('Y', $AuctionEndTimestamp);
+        $AuctionEnd['month']    = date('m', $AuctionEndTimestamp);
+        $AuctionEnd['day']        = date('d', $AuctionEndTimestamp);
+        $AuctionEnd['hour']        = date('H', $AuctionEndTimestamp);
+        $AuctionEnd['minutes']    = date('i', $AuctionEndTimestamp);
+
         for($x=date("Y"); $x<=date("Y")+5; $x++){
-        	$SelectedText = ($x==date("Y")) ? 'selected' : '';
-        	$Options['auctionend']['year'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+            $SelectedText = ($x==date("Y")) ? 'selected' : '';
+            $Options['auctionend']['year'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
-        
+
         for($x=1; $x<=12; $x++){
-        	$SelectedText = ($x==intval(date("m"))) ? 'selected' : '';
-        	$Options['auctionend']['month'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+            $SelectedText = ($x==intval(date("m"))) ? 'selected' : '';
+            $Options['auctionend']['month'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
-        
+
         for($x=1; $x<=31; $x++){
-        	$SelectedText = ($x==intval(date("d"))) ? 'selected' : '';
-        	$Options['auctionend']['day'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+            $SelectedText = ($x==intval(date("d"))) ? 'selected' : '';
+            $Options['auctionend']['day'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
-        
+
         for($x=1; $x<=23; $x++){
-        	$SelectedText = ($x==intval(date("H"))) ? 'selected' : '';
-        	$Options['auctionend']['hour'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+            $SelectedText = ($x==intval(date("H"))) ? 'selected' : '';
+            $Options['auctionend']['hour'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
-        
+
         for($x=0; $x<=59; $x++){
-        	$SelectedText = ($x==intval(date("i"))) ? 'selected' : '';
-        	$Options['auctionend']['minutes'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+            $SelectedText = ($x==intval(date("i"))) ? 'selected' : '';
+            $Options['auctionend']['minutes'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
 
         $this->_objTpl->setVariable(array(
@@ -1281,11 +1281,11 @@ class Auction extends auctionLibrary
             'TXT_AUCTION_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_AUCTION_NO_SHOW_IN_ADVERTISEMENT'],
             'TXT_AUCTION_PREMIUM'                    =>    $_ARRAYLANG['TXT_AUCTION_MARK_ADVERTISEMENT'],
             'TXT_AUCTION_DAYS'                        =>    $_ARRAYLANG['TXT_AUCTION_DAYS'],
-            'ENTRY_END_YEAR'				=> $Options['auctionend']['year'],
-            'ENTRY_END_MONTH'				=> $Options['auctionend']['month'],
-            'ENTRY_END_DAY'					=> $Options['auctionend']['day'],
-            'ENTRY_END_HOUR'				=> $Options['auctionend']['hour'],
-            'ENTRY_END_MINUTES'				=> $Options['auctionend']['minutes'],
+            'ENTRY_END_YEAR'                => $Options['auctionend']['year'],
+            'ENTRY_END_MONTH'                => $Options['auctionend']['month'],
+            'ENTRY_END_DAY'                    => $Options['auctionend']['day'],
+            'ENTRY_END_HOUR'                => $Options['auctionend']['hour'],
+            'ENTRY_END_MINUTES'                => $Options['auctionend']['minutes'],
         ));
 
 //        if ($this->settings['maxdayStatus'] != 1) {
@@ -1345,12 +1345,12 @@ class Auction extends auctionLibrary
                 $this->insertAuction(0);
                 $id = $objDatabase->Insert_ID();
             }
-            
+
             $this->getNavigation($this->entries[$id]['catid']);
 
             if (isset($_POST['submit'])) {
                 if(!isset($id)){
-                	$id = contrexx_addslashes($_POST['id']);
+                    $id = contrexx_addslashes($_POST['id']);
                 }
                 $regkey     = contrexx_addslashes($_POST['regkey']);
 
@@ -1384,7 +1384,7 @@ class Auction extends auctionLibrary
 //                    $objResult->MoveNext();
 //                }
 //              }
-              
+
               $codeMode = '0';
 
               if ($codeMode == '0') {
@@ -1593,27 +1593,27 @@ class Auction extends auctionLibrary
                        }else{
                            $price = $objResult->fields['price'].' '.$this->settings['currency'];
                        }
-                       
+
                        $Bids = $this->GetAuctionBids($objResult->fields['id']);
-            
-			            if(count($Bids)>0){
-			            	$LastPrice = $Bids[count($Bids)-1]["bid_price"];
-			            }else{
-			            	$LastPrice = $objResult->fields['startprice'];
-			            }
-		            
-		             $price = $LastPrice.' '.$this->settings['currency'];
-		             
-		             // auction pictures tmb
-	                   // ---------------------------------
-	                   $auction_tmb 	= ASCMS_AUCTION_WEB_PATH.'/no_img.gif';
-	                   $auction_tmbx	= 0;
-	                   for($z=1; $z<6; $z++){
-		                	if($objResult->fields['picture_'.$z]!='' && $auction_tmbx==0){
-		                		$auction_tmb = ASCMS_AUCTION_WEB_PATH.'/tmb_'.$objResult->fields['picture_'.$z];
-		                		$auction_tmbx = 1;
-		                	}
-		                }
+
+                        if(count($Bids)>0){
+                            $LastPrice = $Bids[count($Bids)-1]["bid_price"];
+                        }else{
+                            $LastPrice = $objResult->fields['startprice'];
+                        }
+
+                     $price = $LastPrice.' '.$this->settings['currency'];
+
+                     // auction pictures tmb
+                       // ---------------------------------
+                       $auction_tmb     = ASCMS_AUCTION_WEB_PATH.'/no_img.gif';
+                       $auction_tmbx    = 0;
+                       for($z=1; $z<6; $z++){
+                            if($objResult->fields['picture_'.$z]!='' && $auction_tmbx==0){
+                                $auction_tmb = ASCMS_AUCTION_WEB_PATH.'/tmb_'.$objResult->fields['picture_'.$z];
+                                $auction_tmbx = 1;
+                            }
+                        }
 
                        $this->_objTpl->setVariable(array(
                         'AUCTION_ENDDATE'                => $enddate,
@@ -1989,7 +1989,7 @@ class Auction extends auctionLibrary
             }
         }
     }
-    
-    
+
+
 }
 ?>
