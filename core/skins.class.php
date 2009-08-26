@@ -1326,7 +1326,7 @@ class skins
         $dirs = array();
         if($hDir = opendir($strDir)) {
             $level++;
-        	while($strFile = readdir($hDir)) {
+            while($strFile = readdir($hDir)) {
                 // don't need ., .., .svn
                 if(in_array($strFile, array('.', '..', '.svn'))){
                     continue;
@@ -1354,8 +1354,8 @@ class skins
                         'level' => $level,
                     );
                 }
-        	}
-        	closedir($hDir);
+            }
+            closedir($hDir);
         }
         return $dirs;
     }

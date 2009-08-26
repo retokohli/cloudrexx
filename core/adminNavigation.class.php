@@ -1,33 +1,32 @@
 <?php
+
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @version		1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
- * Admin CP navigation
- *
  * Class for the Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @access		public
- * @version		1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 class adminMenu
 {
-    var $arrMenuItems = array();
-    var $arrMenuGroups = array();
-    var $statusMessage;
-    var $arrUserRights = array();
-    var $arrUserGroups = array();
+    public $arrMenuItems = array();
+    public $arrMenuGroups = array();
+    public $statusMessage;
+    public $arrUserRights = array();
+    public $arrUserGroups = array();
 
 
     /**
@@ -38,6 +37,7 @@ class adminMenu
         $this->init();
     }
 
+
     function getAdminNavbar()
     {
         global $objTemplate;
@@ -45,6 +45,7 @@ class adminMenu
         $this->getMenu();
         $objTemplate->setVariable('STATUS_MESSAGE',trim($this->statusMessage));
     }
+
 
     function init()
     {
@@ -55,7 +56,7 @@ class adminMenu
 
         if (!$objFWUser->objUser->getAdminStatus()) {
             if (count($objFWUser->objUser->getStaticPermissionIds()) > 0) {
-            	$sqlWhereString = " AND (areas.access_id = ".implode(' OR areas.access_id = ', $objFWUser->objUser->getStaticPermissionIds()).")";
+                $sqlWhereString = " AND (areas.access_id = ".implode(' OR areas.access_id = ', $objFWUser->objUser->getStaticPermissionIds()).")";
             } else {
                 $sqlWhereString = " AND areas.access_id='' ";
             }
@@ -82,7 +83,8 @@ class adminMenu
                 $this->arrMenuItems[$objResult->fields['area_id']] =
                 array(
                     $objResult->fields['parent_area_id'],
-                    $_CORELANG[$objResult->fields['area_name']],
+                    (isset($_CORELANG[$objResult->fields['area_name']])
+                      ? $_CORELANG[$objResult->fields['area_name']] : ''),
                     $objResult->fields['uri'],
                     $objResult->fields['target'],
                     $objResult->fields['module_name']
@@ -93,13 +95,13 @@ class adminMenu
     }
 
     /**
-     * gets the administration menu by user rights
+     * Creates the administration navigation
      *
-     * creates the navigation by userright
-     *
-     * @global array $_CORELANG
-	 * @global object $objTemplate
-	 * @global object $objModules
+     * Considers the users' rights and only shows what he's
+     * allowed to see
+     * @global array  $_CORELANG
+     * @global object $objTemplate
+     * @global object $objModules
      */
     function getMenu()
     {
@@ -110,6 +112,8 @@ class adminMenu
 
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
+// TODO:
+// $objModules->existsModuleFolders is bollocks.  Should be ignored.
             if ($group_id==2 && !$objModules->existsModuleFolders) {
                 continue;
             }
@@ -125,28 +129,31 @@ class adminMenu
             }
 
             if (!empty($navigation)) {
-				$objTemplate->setVariable(array(
-					'NAVIGATION_GROUP_NAME'	=> htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
-					'NAVIGATION_ID'			=> $group_id,
-					'NAVIGATION_MENU'		=> $navigation,
-					'NAVIGATION_STYLE'		=> isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
-				));
+                $objTemplate->setVariable(array(
+                    'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
+                    'NAVIGATION_ID'            => $group_id,
+                    'NAVIGATION_MENU'        => $navigation,
+                    'NAVIGATION_STYLE'        => isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
+                ));
                 $objTemplate->parse('navigationRow');
         }
         }
 
-		$objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
+        $objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
         $objTemplate->parse('navigation_output');
     }
+
 
     function moduleExists($moduleFolderName)
     {
         global $objModules;
+
         if (empty($moduleFolderName)) {
             return true;
-        } else {
-            return $objModules->getModuleStatusByName($moduleFolderName);
         }
+        return $objModules->getModuleStatusByName($moduleFolderName);
     }
+
 }
+
 ?>

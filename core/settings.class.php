@@ -1,10 +1,10 @@
 <?php
+
 /**
  * Settings
- *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.1.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.1.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -155,7 +155,7 @@ class settingsManager
      */
     function showSettings()
     {
-        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG, $objLanguage, $_FRONTEND_LANGID;
+        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG, $_FRONTEND_LANGID;
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings', 'settings.html');
         $this->strPageTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
@@ -177,46 +177,46 @@ class settingsManager
             'TXT_RADIO_OFF'                   => $_CORELANG['TXT_DEACTIVATED']
         ));
         $objTemplate->setVariable(array(
-            'TXT_TITLE_SET1'                  			=> $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
-            'TXT_TITLE_SET2'                  			=> $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
-            'TXT_SAVE_CHANGES'                			=> $_CORELANG['TXT_SAVE'],
-            'TXT_SYSTEM_STATUS'            			   	=> $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
-            'TXT_SYSTEM_STATUS_HELP'          			=> $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
-            'TXT_IDS_STATUS'                  			=> $_CORELANG['TXT_SETTINGS_IDS'],
-            'TXT_IDS_STATUS_HELP'             			=> $_CORELANG['TXT_SETTINGS_IDS_HELP'],
-            'TXT_HISTORY_STATUS'              			=> $_CORELANG['TXT_SETTINGS_HISTORY'],
-            'TXT_HISTORY_STATUS_HELP'         			=> $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
-            'TXT_XML_SITEMAP_STATUS'          			=> $_CORELANG['TXT_SETTINGS_XML_SITEMAP'],
-            'TXT_XML_SITEMAP_STATUS_HELP'     			=> $_CORELANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
-            'TXT_GLOBAL_TITLE'                			=> $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
-            'TXT_GLOBAL_TITLE_HELP'           			=> $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
-            'TXT_DOMAIN_URL'                  			=> $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
-            'TXT_DOMAIN_URL_HELP'             			=> $_CORELANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
-            'TXT_PAGING_LIMIT'                			=> $_CORELANG['TXT_SETTINGS_PAGING_LIMIT'],
-            'TXT_PAGING_LIMIT_HELP'           			=> $_CORELANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
-            'TXT_SEARCH_RESULT'               			=> $_CORELANG['TXT_SETTINGS_SEARCH_RESULT'],
-            'TXT_SEARCH_RESULT_HELP'          			=> $_CORELANG['TXT_SETTINGS_SEARCH_RESULT_HELP'],
-            'TXT_SESSION_LIVETIME'            			=> $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME'],
-            'TXT_SESSION_LIVETIME_HELP'       			=> $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'],
-            'TXT_DNS_SERVER'                  			=> $_CORELANG['TXT_SETTINGS_DNS_SERVER'],
-            'TXT_DNS_SERVER_HELP'             			=> $_CORELANG['TXT_SETTINGS_DNS_SERVER_HELP'],
-            'TXT_ADMIN_NAME'                  			=> $_CORELANG['TXT_SETTINGS_ADMIN_NAME'],
-            'TXT_ADMIN_EMAIL'                 			=> $_CORELANG['TXT_SETTINGS_ADMIN_EMAIL'],
-            'TXT_CONTACT_EMAIL'               			=> $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL'],
-            'TXT_CONTACT_EMAIL_HELP'          			=> $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
-            'TXT_SEARCH_VISIBLE_CONTENT_ONLY' 			=> $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
-            'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'		=> $_CORELANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
-            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'     		=> $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
-            'TXT_GOOGLE_MAPS_API_KEY_HELP'      		=> $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
-            'TXT_GOOGLE_MAPS_API_KEY'           		=> $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
-            'TXT_FRONTEND_EDITING_STATUS'        		=> $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
-            'TXT_FRONTEND_EDITING_STATUS_HELP'    		=> $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'],
-            'TXT_CORE_LIST_PROTECTED_PAGES'         	=> $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
-            'TXT_CORE_LIST_PROTECTED_PAGES_HELP'   		=> $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
-            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'    	=> $_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'],
+            'TXT_TITLE_SET1'                              => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
+            'TXT_TITLE_SET2'                              => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
+            'TXT_SAVE_CHANGES'                            => $_CORELANG['TXT_SAVE'],
+            'TXT_SYSTEM_STATUS'                               => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
+            'TXT_SYSTEM_STATUS_HELP'                      => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
+            'TXT_IDS_STATUS'                              => $_CORELANG['TXT_SETTINGS_IDS'],
+            'TXT_IDS_STATUS_HELP'                         => $_CORELANG['TXT_SETTINGS_IDS_HELP'],
+            'TXT_HISTORY_STATUS'                          => $_CORELANG['TXT_SETTINGS_HISTORY'],
+            'TXT_HISTORY_STATUS_HELP'                     => $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
+            'TXT_XML_SITEMAP_STATUS'                      => $_CORELANG['TXT_SETTINGS_XML_SITEMAP'],
+            'TXT_XML_SITEMAP_STATUS_HELP'                 => $_CORELANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
+            'TXT_GLOBAL_TITLE'                            => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
+            'TXT_GLOBAL_TITLE_HELP'                       => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
+            'TXT_DOMAIN_URL'                              => $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
+            'TXT_DOMAIN_URL_HELP'                         => $_CORELANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
+            'TXT_PAGING_LIMIT'                            => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT'],
+            'TXT_PAGING_LIMIT_HELP'                       => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
+            'TXT_SEARCH_RESULT'                           => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT'],
+            'TXT_SEARCH_RESULT_HELP'                      => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT_HELP'],
+            'TXT_SESSION_LIVETIME'                        => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME'],
+            'TXT_SESSION_LIVETIME_HELP'                   => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'],
+            'TXT_DNS_SERVER'                              => $_CORELANG['TXT_SETTINGS_DNS_SERVER'],
+            'TXT_DNS_SERVER_HELP'                         => $_CORELANG['TXT_SETTINGS_DNS_SERVER_HELP'],
+            'TXT_ADMIN_NAME'                              => $_CORELANG['TXT_SETTINGS_ADMIN_NAME'],
+            'TXT_ADMIN_EMAIL'                             => $_CORELANG['TXT_SETTINGS_ADMIN_EMAIL'],
+            'TXT_CONTACT_EMAIL'                           => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL'],
+            'TXT_CONTACT_EMAIL_HELP'                      => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
+            'TXT_SEARCH_VISIBLE_CONTENT_ONLY'             => $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
+            'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'        => $_CORELANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
+            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'             => $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
+            'TXT_GOOGLE_MAPS_API_KEY_HELP'              => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
+            'TXT_GOOGLE_MAPS_API_KEY'                   => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
+            'TXT_FRONTEND_EDITING_STATUS'                => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
+            'TXT_FRONTEND_EDITING_STATUS_HELP'            => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'],
+            'TXT_CORE_LIST_PROTECTED_PAGES'             => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
+            'TXT_CORE_LIST_PROTECTED_PAGES_HELP'           => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
+            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'        => $_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'],
             'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'   => sprintf($_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'], htmlentities($objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'name'), ENT_QUOTES, CONTREXX_CHARSET), ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/').($arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : '<br /><strong>'.$_CORELANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'].'</strong>'),
-            'TXT_USE_OWN_CSS_IN_EDITOR'   				=> $_CORELANG['TXT_USE_OWN_CSS_IN_EDITOR'],
-            'TXT_USE_OWN_CSS_IN_EDITOR_HELP'    		=> $_CORELANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'],
+            'TXT_USE_OWN_CSS_IN_EDITOR'                   => $_CORELANG['TXT_USE_OWN_CSS_IN_EDITOR'],
+            'TXT_USE_OWN_CSS_IN_EDITOR_HELP'            => $_CORELANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'],
         ));
 
         if ($this->isWritable()) {
@@ -229,37 +229,37 @@ class settingsManager
         // as every setting entry is already passed through htmlspecialchars() when
         // saved. See function updateSettings() below
         $objTemplate->setVariable(array(
-            'SETTINGS_CONTACT_EMAIL'              			=> ($arrSettings['contactFormEmail']),
-            'SETTINGS_ADMIN_EMAIL'                			=> ($arrSettings['coreAdminEmail']),
-            'SETTINGS_ADMIN_NAME'                 			=> ($arrSettings['coreAdminName']),
-            'SETTINGS_GLOBAL_TITLE'               			=> ($arrSettings['coreGlobalPageTitle']),
-            'SETTINGS_DOMAIN_URL'                 			=> ($arrSettings['domainUrl']),
-            'SETTINGS_PAGING_LIMIT'               			=> intval($arrSettings['corePagingLimit']),
-            'SETTINGS_SEARCH_RESULT_LENGTH'       			=> intval($arrSettings['searchDescriptionLength']),
-            'SETTINGS_SESSION_LIFETIME'           			=> intval($arrSettings['sessionLifeTime']),
-            'SETTINGS_DNS_SERVER'                 			=> ($arrSettings['dnsServer']),
-            'SETTINGS_IDS_RADIO_ON'               			=> ($arrSettings['coreIdsStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_IDS_RADIO_OFF'              			=> ($arrSettings['coreIdsStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_HISTORY_ON'                 			=> ($arrSettings['contentHistoryStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_HISTORY_OFF'                			=> ($arrSettings['contentHistoryStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_XML_SITEMAP_ON'             			=> ($arrSettings['xmlSitemapStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_XML_SITEMAP_OFF'            			=> ($arrSettings['xmlSitemapStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_SYSTEMSTATUS_ON'            			=> ($arrSettings['systemStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_SYSTEMSTATUS_OFF'           			=> ($arrSettings['systemStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_SEARCH_VISIBLE_CONTENT_ON'  			=> ($arrSettings['searchVisibleContentOnly'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF' 			=> ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_DETECT_BROWSER_LANGUAGE_ON' 			=> ($arrSettings['languageDetection'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'			=> ($arrSettings['languageDetection'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_FRONTEND_EDITING_ON'        			=> ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_FRONTEND_EDITING_OFF'       			=> ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_GOOGLE_MAPS_API_KEY'        			=> ($arrSettings['googleMapsAPIKey']),
-            'SETTINGS_LIST_PROTECTED_PAGES_ON'    			=> ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_LIST_PROTECTED_PAGES_OFF'    			=> ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_ON' 		=> ($arrSettings['useVirtualLanguagePath'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_OFF'    	=> ($arrSettings['useVirtualLanguagePath'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_CONTACT_EMAIL'                          => ($arrSettings['contactFormEmail']),
+            'SETTINGS_ADMIN_EMAIL'                            => ($arrSettings['coreAdminEmail']),
+            'SETTINGS_ADMIN_NAME'                             => ($arrSettings['coreAdminName']),
+            'SETTINGS_GLOBAL_TITLE'                           => ($arrSettings['coreGlobalPageTitle']),
+            'SETTINGS_DOMAIN_URL'                             => ($arrSettings['domainUrl']),
+            'SETTINGS_PAGING_LIMIT'                           => intval($arrSettings['corePagingLimit']),
+            'SETTINGS_SEARCH_RESULT_LENGTH'                   => intval($arrSettings['searchDescriptionLength']),
+            'SETTINGS_SESSION_LIFETIME'                       => intval($arrSettings['sessionLifeTime']),
+            'SETTINGS_DNS_SERVER'                             => ($arrSettings['dnsServer']),
+            'SETTINGS_IDS_RADIO_ON'                           => ($arrSettings['coreIdsStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_IDS_RADIO_OFF'                          => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_HISTORY_ON'                             => ($arrSettings['contentHistoryStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_HISTORY_OFF'                            => ($arrSettings['contentHistoryStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_XML_SITEMAP_ON'                         => ($arrSettings['xmlSitemapStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_XML_SITEMAP_OFF'                        => ($arrSettings['xmlSitemapStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_SYSTEMSTATUS_ON'                        => ($arrSettings['systemStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_SYSTEMSTATUS_OFF'                       => ($arrSettings['systemStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_SEARCH_VISIBLE_CONTENT_ON'              => ($arrSettings['searchVisibleContentOnly'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF'             => ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_DETECT_BROWSER_LANGUAGE_ON'             => ($arrSettings['languageDetection'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'            => ($arrSettings['languageDetection'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_FRONTEND_EDITING_ON'                    => ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_FRONTEND_EDITING_OFF'                   => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_GOOGLE_MAPS_API_KEY'                    => ($arrSettings['googleMapsAPIKey']),
+            'SETTINGS_LIST_PROTECTED_PAGES_ON'                => ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_LIST_PROTECTED_PAGES_OFF'                => ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_ON'         => ($arrSettings['useVirtualLanguagePath'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_OFF'        => ($arrSettings['useVirtualLanguagePath'] == 'off') ? 'checked="checked"' : '',
             'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED'   => $arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : 'disabled="disabled"',
-            'SETTINGS_OWN_CSS_ON'   						=> ($arrSettings['useOwnCSS'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_OWN_CSS_OFF'   						=> ($arrSettings['useOwnCSS'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_OWN_CSS_ON'                           => ($arrSettings['useOwnCSS'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_OWN_CSS_OFF'                           => ($arrSettings['useOwnCSS'] == 'off') ? 'checked="checked"' : '',
         ));
 
         $objModuleChecker = new ModuleChecker();
@@ -305,6 +305,7 @@ class settingsManager
             }
 
             if (intval($intId) == 53) {
+                $arrMatch = array();
                 if (preg_match('#^https?://(.*)$#', $strValue, $arrMatch)) {
                     $strValue = $arrMatch[1];
                 }
@@ -322,7 +323,7 @@ class settingsManager
                     $_CONFIG['useVirtualLanguagePath'] = $strValue;
                     // update the .htaccess rewrite rules in case the function was de-/activated
                     if ($formerUseVirtualLanguagePathValue != $_CONFIG['useVirtualLanguagePath']) {
-						// deactivate the function in case the .htaccess file couldn't be written
+                        // deactivate the function in case the .htaccess file couldn't be written
                         if (!$this->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on')) {
                             $_CONFIG['useVirtualLanguagePath'] = 'off';
                             $strValue = 'off';
@@ -384,7 +385,7 @@ class settingsManager
      */
     public function setVirtualLanguagePath($use)
     {
-        global $objLanguage, $_CONFIG;
+        global $_CONFIG;
 
         // load HtAccess file
         $objFWHtAccess = new FWHtAccess();
@@ -400,12 +401,7 @@ class settingsManager
             return true;
         }
 
-        // generate RewriteRules
-        if (!isset($objLanguage)) {
-            $objLanguage = new FWLanguage();
-        }
-
-        $arrLanguages = $objLanguage->getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         $arrLanguageCodes = array();
         $arrLanguageRules = array();
 
@@ -764,46 +760,46 @@ class settingsManager
      * @return string
      */
     function useOwnCSS() {
-		$useCSS = "off";
-		//-------------------------------------------------------
-		// Initialize database object
-		//-------------------------------------------------------
-		require_once('../core/API.php');
-		$strOkMessage = '';
-		$strErrMessage = '';
-		$objDatabase = getDatabaseObject($strErrMessage);
-		if ($objDatabase === false) {
-			die('Database error: '.$strErrMessage);
-		}
+        $useCSS = "off";
+        //-------------------------------------------------------
+        // Initialize database object
+        //-------------------------------------------------------
+        require_once('../core/API.php');
+        $strOkMessage = '';
+        $strErrMessage = '';
+        $objDatabase = getDatabaseObject($strErrMessage);
+        if ($objDatabase === false) {
+            die('Database error: '.$strErrMessage);
+        }
 
-		//get current setting
+        //get current setting
         $query = "SELECT setvalue FROM ".DBPREFIX."settings WHERE setid = '73'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             $useCSS = $objResult->fields['setvalue'];
-		}
-
-		//get default theme
-		if ($useCSS == "on") {
-			$query = "	SELECT
-							themesid,
-							foldername
-						FROM
-							".DBPREFIX."languages
-						LEFT JOIN
-							".DBPREFIX."skins
-						ON
-							".DBPREFIX."skins.id=".DBPREFIX."languages.themesid
-						WHERE
-							".DBPREFIX."languages.is_default = 'true';";
-
-			$objResult = $objDatabase->Execute($query);
-	        if ($objResult) {
-	            $folderName = $objResult->fields['foldername'];
-	        }
         }
 
-		return ($useCSS == "on" && !empty($folderName)) ? "FCKConfig.EditorAreaCSS = FCKConfig.BasePath + '../../../themes/".$folderName."/style.css';" : "";
+        //get default theme
+        if ($useCSS == "on") {
+            $query = "    SELECT
+                            themesid,
+                            foldername
+                        FROM
+                            ".DBPREFIX."languages
+                        LEFT JOIN
+                            ".DBPREFIX."skins
+                        ON
+                            ".DBPREFIX."skins.id=".DBPREFIX."languages.themesid
+                        WHERE
+                            ".DBPREFIX."languages.is_default = 'true';";
+
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                $folderName = $objResult->fields['foldername'];
+            }
+        }
+
+        return ($useCSS == "on" && !empty($folderName)) ? "FCKConfig.EditorAreaCSS = FCKConfig.BasePath + '../../../themes/".$folderName."/style.css';" : "";
     }
 }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Modulemanager
  * @copyright   CONTREXX CMS - COMVATION AG

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ContentManager
  * @copyright    CONTREXX CMS - COMVATION AG
@@ -112,10 +113,10 @@ class ContentManager
     * @access public
     */
     function __construct() {
-        global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG,$objLanguage;
+        global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG;
 
         $this->langId = $objInit->userFrontendLangId;
-        foreach($objLanguage->getLanguageArray() as $arrLang){
+        foreach(FWLanguage::getLanguageArray() as $arrLang){
             if($arrLang['frontend'] == 1){
                 $this->firstActiveLang = $arrLang['id'];
                 break;
@@ -147,10 +148,8 @@ class ContentManager
     }
 
     /**
-    * getPage
-    *
-    * calls the requested function
-    */
+     * Calls the requested page function
+     */
     function getPage()
     {
         global $_CORELANG, $objTemplate;
@@ -225,7 +224,7 @@ class ContentManager
                 $this->strErrMessage[] = $result;
             }
             $this->contentOverview();
-        break;
+            break;
         case 'JSON':
             $this->createJSON();
             break;
@@ -249,12 +248,11 @@ class ContentManager
     * Show copy page
     *
     * @global    array Core language
-    * @global    FWLanguage
     * @global    HTML_Template_Sigma
     */
     function showCopyPage()
     {
-        global $_CORELANG, $objLanguage, $objTemplate;
+        global $_CORELANG, $objTemplate;
 
         if (isset($_REQUEST['langOriginal']) && !empty($_REQUEST['langOriginal'])) {
             $this->contentOverview();
@@ -271,7 +269,7 @@ class ContentManager
                 'TXT_DO_YOU_WANT_TO_CONTINUE'    => $_CORELANG['TXT_DO_YOU_WANT_TO_CONTINUE']
             ));
 
-            foreach ($objLanguage->getLanguageArray() as $key){
+            foreach (FWLanguage::getLanguageArray() as $key){
                 if ($key['id'] == $this->langId) {
                     $objTemplate->setVariable(array(
                         'LANG_OLD_ID' => $this->langId,
@@ -288,15 +286,16 @@ class ContentManager
         }
     }
 
+
     /**
      * Copy page content
-     *
      * @global   ADONewConnection
      * @global    array    Core language
      */
     function _copyAll()
     {
         global $objDatabase, $_CORELANG;
+
         if (isset($_POST['langOriginal']) && !empty($_POST['langOriginal'])) {
             $this->_deleteAll(intval($_POST['langNew']));
             $objResult = $objDatabase->Execute("SELECT catid,
@@ -419,21 +418,20 @@ class ContentManager
 
     /**
     * Deletes all global site content
-    *
     * @global ADONewConnection
     * @global array
     * @global FWLanguage
     */
     function _deleteAll($langId=0)
     {
-        global $objDatabase, $_CORELANG, $objLanguage;
+        global $objDatabase, $_CORELANG;
 
         if (isset($_GET['contentId']) && intval($_GET['contentId'])!=0) {
             $langId = intval($_GET['contentId']);
         }
         if (intval($langId) != 0) {
             // the default language site cannot be deleted
-            if ($objLanguage->getLanguageParameter($langId, "is_default")=="true") {
+            if (FWLanguage::getLanguageParameter($langId, "is_default")=="true") {
                 $this->strErrMessage[] = $_CORELANG['TXT_STANDARD_SITE_NOT_DELETED'];
             } else {
                 $arrQuery = array();
@@ -482,15 +480,15 @@ class ContentManager
     * @param string groupType
     * @desc gets all frontend groups as an array
     */
-    function _getAllGroups($groupType="frontend")
+    function _getAllGroups($groupType='frontend')
     {
         global $objDatabase;
 
-        if ($groupType!="frontend") {
-            $groupType="backend";
+        if ($groupType != 'frontend') {
+            $groupType = 'backend';
         }
 
-        $arrGroups=array();
+        $arrGroups = array();
         $objResult = $objDatabase->Execute("SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups WHERE type='".$groupType."'");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -501,9 +499,9 @@ class ContentManager
         return $arrGroups;
     }
 
+
     /**
      * Show sitemap
-     *
      * @version   1.0        initial version
      * @global    ADONewConnection
      * @global    HTML_Template_Sigma
@@ -573,14 +571,13 @@ class ContentManager
 
     /**
      * Create new page
-     *
      * @global    ADONewConnection
      * @global    array      Core language
      * @global    HTML_Template_Sigma
      */
     function showNewPage()
     {
-        global $objDatabase, $_CORELANG, $objTemplate, $objLanguage, $_CONFIG;
+        global $objDatabase, $_CORELANG, $objTemplate;
 
         // init variables
         $contenthtml='';
@@ -653,7 +650,6 @@ class ContentManager
                     'CONTENT_CSS_NAME'      => $objResult->fields['css_name'],
                 ));
             }
-
 
             $objResult = $objDatabase->SelectLimit("SELECT module,
                                startdate,
@@ -745,8 +741,8 @@ class ContentManager
             'TXT_NO_MODULE'                     => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                      => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'                        => $_CORELANG['TXT_BROWSE'],
-      		'TXT_CONTENT_ASSIGN_BLOCK'          => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
-           	'TXT_NO_REDIRECT'                   => '',
+              'TXT_CONTENT_ASSIGN_BLOCK'          => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+               'TXT_NO_REDIRECT'                   => '',
             'TXT_SOURCE_MODE'                   => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'                => $_CORELANG['TXT_CACHING_STATUS'],
             'TXT_THEMES'                        => $_CORELANG['TXT_THEMES'],
@@ -777,9 +773,9 @@ class ContentManager
             'TXT_DEFAULT_ALIAS'                 => $_CORELANG['TXT_DEFAULT_ALIAS'],
             'CONTENT_ALIAS_HELPTEXT'            => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
             'CONTENT_ALIAS_DISABLE'             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-			'TXT_ERROR_NO_TITLE'                => $_CORELANG['TXT_ERROR_NO_TITLE'],
-			'TXT_BASE_URL'                      => self::mkurl('/'),
-			'CONTREXX_SITEMAP_ENABLED'          => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
+            'TXT_ERROR_NO_TITLE'                => $_CORELANG['TXT_ERROR_NO_TITLE'],
+            'TXT_BASE_URL'                      => self::mkurl('/'),
+            'CONTREXX_SITEMAP_ENABLED'          => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
         ));
 
         $objTemplate->hideBlock('deleteButton');
@@ -814,6 +810,7 @@ class ContentManager
         ));
     }
 
+
     /**
     * @access private
     * @return string
@@ -826,12 +823,11 @@ class ContentManager
         $langId = intval($langId);
         if($langId == 0){ $langId = $this->firstActiveLang; }
         $objResult = $objDatabase->SelectLimit("SELECT protected FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId." AND `lang`=".$langId, 1);
-        if ($objResult !== false && $objResult->RecordCount()>0 && isset($objResult->fields['protected']) && $objResult->fields['protected']) {
-            return "checked";
-        } else {
-            return '';
-        }
+        if ($objResult !== false && $objResult->RecordCount()>0 && isset($objResult->fields['protected']) && $objResult->fields['protected']) 
+            return ' checked="checked"';
+        return '';
     }
+
 
     /**
      * @access private
@@ -871,6 +867,7 @@ class ContentManager
     function _checkModificationPermission($pageId, $langId = 0)
     {
         global $objDatabase;
+
         $langId = intval($langId);
         if($langId == 0){ $langId = $this->firstActiveLang; }
 
@@ -892,21 +889,21 @@ class ContentManager
         }
     }
 
-	/**
-	 * Returns true if alias functionality is enabled.
-	 */
-	function _is_alias_enabled() {
+    /**
+     * Returns true if alias functionality is enabled.
+     */
+    function _is_alias_enabled() {
         global $objDatabase;
-		$query = "
-			SELECT setvalue
-			FROM ".DBPREFIX."settings
-			WHERE setmodule = 41 AND setname = 'aliasStatus'
-		";
-		if ($res = $objDatabase->SelectLimit($query, 1)) {
-			return $res->fields['setvalue'];
-		}
-		return false;
-	}
+        $query = "
+            SELECT setvalue
+            FROM ".DBPREFIX."settings
+            WHERE setmodule = 41 AND setname = 'aliasStatus'
+        ";
+        if ($res = $objDatabase->SelectLimit($query, 1)) {
+            return $res->fields['setvalue'];
+        }
+        return false;
+    }
 
     /**
      * Content editing
@@ -919,7 +916,8 @@ class ContentManager
      */
     function showEditPage($pageId = '')
     {
-        global $objDatabase, $_CORELANG, $objTemplate, $objLanguage, $_CONFIG;
+        global $objDatabase, $_CORELANG, $objTemplate;
+
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
         $this->pageTitle = $_CORELANG['TXT_EDIT_PAGE'];
 
@@ -939,9 +937,7 @@ class ContentManager
                                         ORDER BY `n`.`lang` ASC');
 
         $arrContentLanguages = array();
-
         $this->firstActiveLang = $langId = $this->langId;
-
         if ($this->_checkModificationPermission($pageId, $langId)) {
             $_backendPermissions = true;
         } else {
@@ -1017,7 +1013,7 @@ class ContentManager
             'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'                    => $_CORELANG['TXT_BROWSE'],
-  			'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+            'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'                  => '',
             'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'               => $_CORELANG['TXT_CACHING_STATUS'],
@@ -1062,9 +1058,9 @@ class ContentManager
             'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
             'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
             'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-			'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
-			'TXT_BASE_URL'             => self::mkurl('/'),
-			'CONTREXX_SITEMAP_ENABLED' => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
+            'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
+            'TXT_BASE_URL'             => self::mkurl('/'),
+            'CONTREXX_SITEMAP_ENABLED' => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
         ));
 
         if (!$this->boolHistoryEnabled) {
@@ -1073,20 +1069,20 @@ class ContentManager
         }
 
         if (!empty($pageId)) {
-			$objResult = $objDatabase->SelectLimit("SELECT c.*,
-														   a_s.url AS alias_url
+            $objResult = $objDatabase->SelectLimit("SELECT c.*,
+                                                           a_s.url AS alias_url
                                                       FROM ".DBPREFIX."content AS c
-													  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
-													  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-														  ON  (a_s.target_id = a_t.id AND a_s.lang_id = c.lang_id)
-														AND a_s.isdefault = 1
+                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
+                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                                                          ON  (a_s.target_id = a_t.id AND a_s.lang_id = c.lang_id)
+                                                        AND a_s.isdefault = 1
                                                      WHERE c.id =".$pageId.' AND c.lang_id='.$langId, 1);
 
             if ($objResult !== false && $objResult->RecordCount()>0) {
                 $contenthtml = $objResult->fields['content'];
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$contenthtml);
                 if ($objResult->fields['expertmode'] == "y" ) {
-                    $expertmodeValue = 'checked="checked"';
+                    $expertmodeValue = ' checked="checked"';
                     $contenthtml = htmlspecialchars($contenthtml, ENT_QUOTES, CONTREXX_CHARSET);
                     $ed = get_wysiwyg_editor('html',$contenthtml, 'html');
                 } else {
@@ -1117,14 +1113,12 @@ class ContentManager
                 $blocks = array();
                 $blocks = $this->getBlocks($pageId, $langId);
 
-
-
                 $objTemplate->setVariable(array(
                     'CONTENT_FORM_ACTION'      => "update",
                     'CONTENT_TOP_TITLE'           => $_CORELANG['TXT_EDIT_PAGE'],
                     'CONTENT_CATID'            => $pageId,
                     'CONTENT_HTML'               => $ed,
-					'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_TITLE_VAL'           => htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_DESC'               => htmlentities($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_META_TITLE'       => htmlentities($objResult->fields['metatitle'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1426,6 +1420,7 @@ class ContentManager
     function updatePage()
     {
         global $objDatabase, $objTemplate, $_CORELANG;
+
         header('Content-Type: application/json');
 
         $objFWUser = FWUser::getFWUserObject();
@@ -1483,7 +1478,7 @@ class ContentManager
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
         $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirectUrl'])) : '';
-	    if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
+        if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
             $redirect = 'mailto:'.$match[1];
             $_POST['redirectTarget'] = '_blank';
         }
@@ -1610,8 +1605,8 @@ class ContentManager
 
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'], $langId)) {
-			$objTemplate->setVariable("ALIAS_STATUS", $err);
-		}
+            $objTemplate->setVariable("ALIAS_STATUS", $err);
+        }
 
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
@@ -1752,7 +1747,6 @@ class ContentManager
 
     /**
     * Adds a new page
-    *
     * @global    ADONewConnection
     * @global    array      Core language
     * @global    HTML_Template_Sigma
@@ -1876,8 +1870,8 @@ UPDATE          catid=".$pageId.",
         $objDatabase->Execute($q1);
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'], $langId)) {
-			$objTemplate->setVariable("ALIAS_STATUS", $err);
-		}
+            $objTemplate->setVariable("ALIAS_STATUS", $err);
+        }
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
@@ -2111,6 +2105,7 @@ ON DUPLICATE KEY
             }
         }
     }
+
 
     /**
     * Add page to repository
@@ -2367,7 +2362,6 @@ ON DUPLICATE KEY
 
     /*
     * Do navigation dropdown
-    *
     * @param    integer  $parcat
     * @param    integer  $level
     * @param    integer  $selectedid
@@ -2398,7 +2392,6 @@ ON DUPLICATE KEY
 
     /**
     * Change page protection
-    *
     * @global    ADONewConnection
     * @global    array      Core language
     */
@@ -2443,7 +2436,6 @@ ON DUPLICATE KEY
 
     /**
     * Change page status
-    *
     * @global    array      Core language
     */
     function changeStatus($langId=0)
@@ -2639,9 +2631,9 @@ ON DUPLICATE KEY
         }
     }
 
+
     /**
     * Do navigation dropdown
-    *
     * @global    ADONewConnection
     * @global    array      Core language
     * @param    integer  $parcat
@@ -2669,7 +2661,6 @@ ON DUPLICATE KEY
 
     /**
     * Change the "activestatus"-flag of a page
-    *
     * @global    ADONewConnection
     * @param    integer      $intPageId: The page with this id will be changed
     */
@@ -2729,6 +2720,7 @@ ON DUPLICATE KEY
         }
     }
 
+
     /**
      * Avoid circular references in categories.
      *
@@ -2785,7 +2777,6 @@ ON DUPLICATE KEY
 
     /**
      * The function collects all categories without an existing parcat and assigns it to "lost and found"
-     *
      * @global     ADONewConnection
      */
     function collectLostPages() {
@@ -2830,8 +2821,10 @@ ON DUPLICATE KEY
     }
 
 
-    function getBlocks($pageId = null, $langId = 0) {
+    function getBlocks($pageId=null, $langId=0) 
+    {
         global $objDatabase;
+
         if($langId == 0){ $langId = $this->firstActiveLang; }
 
         $blocks = array('', ''); // initialize to empty strings to avoid notice
@@ -2875,52 +2868,56 @@ ON DUPLICATE KEY
         return $blocks;
     }
 
-	/**
-	 * Returns an alias that has only valid characters.
-	 */
-	function _fix_alias($txt) {
-		// this is kinda of a duplicate of the javascript function aliasText()
-		// in cadmin/template/ascms/content_editor.html
 
-		// Sanitize most latin1 characters.
-		// there's more to come. maybe there's
-		// a generic function for this?
-		$txt = str_replace(
-			array('ä', 'ö', 'ü', 'à','ç','è','é'),
-			array('ae','oe','ue','a','c','e','e'),
-			strtolower($txt)
-		);
+    /**
+     * Returns an alias that has only valid characters.
+     */
+    function _fix_alias($txt) 
+    {
+        // this is kinda of a duplicate of the javascript function aliasText()
+        // in cadmin/template/ascms/content_editor.html
 
-		$txt = preg_replace( '/[\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
-		$txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
+        // Sanitize most latin1 characters.
+        // there's more to come. maybe there's
+        // a generic function for this?
+        $txt = str_replace(
+            array('ä', 'ö', 'ü', 'à','ç','è','é'),
+            array('ae','oe','ue','a','c','e','e'),
+            strtolower($txt)
+        );
 
-		// Fallback for everything we didn't catch by now
-		$txt = preg_replace('/[^\sa-z_-]+/i',  '_', $txt);
-		$txt = preg_replace('/[_-]{2,}/',    '_', $txt);
-		$txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
+        $txt = preg_replace( '/[\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
+        $txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
+
+        // Fallback for everything we didn't catch by now
+        $txt = preg_replace('/[^\sa-z_-]+/i',  '_', $txt);
+        $txt = preg_replace('/[_-]{2,}/',    '_', $txt);
+        $txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
         $txt = str_replace(array(' ', '\\\ '), '\\\\ ', $txt);
-		return $txt;
-	}
+        return $txt;
+    }
 
-	/**
-	 * Sets default alias for a given page id. If an empty alias is given and the
-	 * page already has a default alias, it will be removed.
-	 *
+
+    /**
+     * Sets default alias for a given page id. If an empty alias is given and the
+     * page already has a default alias, it will be removed.
+     *
      * Returns false on SUCCESS. On failure, returns an appropriate error message.
-	 * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
-	 * @param alias   the alias to install for the page. if it is empty or null,
-	 *                no change will happen.
-	 */
-    function _set_default_alias($pageId, $alias, $langId = 0) {
+     * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
+     * @param alias   the alias to install for the page. if it is empty or null,
+     *                no change will happen.
+     */
+    function _set_default_alias($pageId, $alias, $langId = 0) 
+    {
         if($langId == 0){ $langId = $this->langId; }
         $alias    = $this->_fix_alias($alias);
-		//////////////////////////////////////////////////////////////
-		// aliasLib has some handy stuff for us here..
-		global $objDatabase, $_ARRAYLANG;
-		require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
-		$util = new aliasLib($langId);
+        //////////////////////////////////////////////////////////////
+        // aliasLib has some handy stuff for us here..
+        global $objDatabase, $_ARRAYLANG;
+        require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
+        $util = new aliasLib($langId);
 
-		// check if there is already an alias present for the page
+        // check if there is already an alias present for the page
         $aliasId = intval($this->_has_default_alias($pageId, $langId));
         if (($arrAlias = $util->_getAlias($aliasId)) == false) {
             $arrAlias = array(
@@ -2933,7 +2930,7 @@ ON DUPLICATE KEY
         }
 
         if ($alias == '') {
-        	// Remove alias if it's empty.
+            // Remove alias if it's empty.
             $aliasRemoved = false;
             for ($i = 0; $i < count($arrAlias['sources']); $i++) {
                 if ($arrAlias['sources'][$i]['isdefault']) {
@@ -2947,7 +2944,7 @@ ON DUPLICATE KEY
                     // no other alias for this page are left, so let's remove the whole alias
                     $util->_deleteAlias($aliasId);
                 } else {
-					// update the alias with the removed source entry
+                    // update the alias with the removed source entry
                     $util->_updateAlias($aliasId, $arrAlias);
                 }
             }
@@ -2984,27 +2981,30 @@ ON DUPLICATE KEY
                 return $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
             }
         }
-	}
+    }
 
-	/**
-	 * Returns the alias source id if the given pageid
-	 * has a default alias defined. false otherwise.
-	 */
-	function _has_default_alias($pageid, $langId) {
-		global $objDatabase;
-		$check_update = "
-			SELECT a_s.url, a_t.id
-			FROM            ".DBPREFIX."module_alias_target AS a_t
-			LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-				  ON  a_t.id        = a_s.target_id
-				  AND a_s.isdefault = 1
-			WHERE a_t.url = '$pageid' AND a_s.lang_id = ".$langId;
-		$check_update_res = $objDatabase->Execute($check_update);
-		if ($check_update_res->RecordCount()){
-			return $check_update_res->fields['id'];
-		}
-		return false;
-	}
+
+    /**
+     * Returns the alias source id if the given pageid
+     * has a default alias defined. false otherwise.
+     */
+    function _has_default_alias($pageid, $langId)
+    {
+        global $objDatabase;
+
+        $check_update = "
+            SELECT a_s.url, a_t.id
+            FROM            ".DBPREFIX."module_alias_target AS a_t
+            LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                  ON  a_t.id        = a_s.target_id
+                  AND a_s.isdefault = 1
+            WHERE a_t.url = '$pageid' AND a_s.lang_id = ".$langId;
+        $check_update_res = $objDatabase->Execute($check_update);
+        if ($check_update_res->RecordCount()){
+            return $check_update_res->fields['id'];
+        }
+        return false;
+    }
     function modifyBlocks($associatedBlockIds, $pageId, $langId = 0)
     {
         global $objDatabase, $_FRONTEND_LANGID;
@@ -3052,11 +3052,12 @@ ON DUPLICATE KEY
         }
     }
 
+
     /**
      * Create JSON strings for content manager data
-     *
      */
-    function createJSON(){
+    function createJSON()
+    {
         global $objDatabase;
         $data   = $_GET['data'];
         $pageId = intval($_REQUEST['page']);
@@ -3067,8 +3068,8 @@ ON DUPLICATE KEY
                 die($this->_getHistoyTemplate($pageId, $langId));
             break;
             case 'inputText':
-       			 $objRS = $objDatabase->SelectLimit("
-          			      SELECT a_s.url AS alias_url
+                    $objRS = $objDatabase->SelectLimit("
+                            SELECT a_s.url AS alias_url
                             FROM ".DBPREFIX."content AS c
                  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
                  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
@@ -3203,108 +3204,109 @@ ON DUPLICATE KEY
         }
     }
 
+
     /**
      * get the history HTML
-     *
      * @return atring HTML
      */
-    function _getHistoyTemplate($pageId, $langId){
+    function _getHistoyTemplate($pageId, $langId)
+    {
         global $objDatabase, $_CORELANG, $objTemplate;
 
         $templateHTML = '<table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top" width="100%" class="adminlist">
-    	<tr>
-    		<th colspan="5">'.$_CORELANG['TXT_CHANGELOG'].'</th>
-    	</tr>
-    	<tr class="row3">
-    		<td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
-    		<td width="25%"><b>'.$_CORELANG['TXT_DATE'].'</b></td>
-    		<td width="48%"><b>'.$_CORELANG['TXT_PAGETITLE'].'</b></td>
-    		<td width="25%"><b>'.$_CORELANG['TXT_USER'].'</b></td>
-    		<td width="1%"><b>'.$_CORELANG['TXT_FUNCTIONS'].'</b></td>
-    	</tr>
-    	<!-- BEGIN showChanges -->
-    	<tr class="{CHANGELOG_ROWCLASS}">
-    		<td><div style="border-bottom:0px;">{CHANGELOG_CHECKBOX}</div></td>
-    		<td><div style="border-bottom:0px;">{CHANGELOG_DATE}</div></td>
-    		<td><div style="border-bottom:0px;"><a href="javascript:showOrHide(\'contentDiv_{CHANGELOG_ID}\');">{CHANGELOG_TITLE}</a></div></td>
-    		<td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{CHANGELOG_USER}" title="{CHANGELOG_USER}" border="0" align="middle" />&nbsp;{CHANGELOG_USER}</div></td>
-    		<td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
-    			{CHANGELOG_ACTIVATE}
-    			{CHANGELOG_DELETE}
-    		</div></td>
-    	</tr>
-    	<tr class="{CHANGELOG_ROWCLASS}">
-    		<td colspan="5">
-    			<div id="contentDiv_{CHANGELOG_ID}" style="width:100%; border:1px solid #DDE4FF; display:none;">
-    				<table summary="" border="0" cellpadding="3" width="100%">
-    					<tr>
-    						<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_PAGETITLE'].'</b></div></td>
-    						<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_PAGETITLE}</div></td>
-    						<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_START_DATE'].'</b></div></td>
-    						<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_STARTDATE}</div></td>
-    						<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_MODULE'].' (cmd|section)</b></div></td>
-    						<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CMD} | {CHANGELOG_SECTION}</div></td>
-    						<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_WEB_PAGES'].'</b></div></td>
-    						<td width="15%" valign="top" rowspan="2"><div style="border-bottom:0px;">{CHANGELOG_FRONTEND}</div></td>
-    					</tr>
-    					<tr>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_META_TITLE'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METATITLE}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_END_DATE'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_ENDDATE}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_REDIRECT'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_REDIRECT}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    					</tr>
-    					<tr>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_META_DESCRIPTION'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METADESC}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_THEMES'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_THEME}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_SOURCE_MODE'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_SOURCEMODE}</div></td>
-    						<td nowrap="nowrap" valign="top" height="1%"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_ADMINISTRATION_PAGES'].'</b></div></td>
-    						<td rowspan="2" valign="top"><div style="border-bottom:0px;">{CHANGELOG_BACKEND}</div></td>
-    					</tr>
-    					<tr>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_META_KEYWORD'].'</b></div></td>
-    						<td valign="top"><div style="border-bottom:0px;">{CHANGELOG_METAKEY}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_OPTIONAL_CSS_NAME'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_OPTIONAL_CSS}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_CACHING_STATUS'].'</b></div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CACHINGSTATUS}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    					</tr>
-    					<tr>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_CL_CATEGORY'].'</b></div></td>
-    						<td valign="top"><div style="border-bottom:0px;">{CHANGELOG_CATEGORY}</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    						<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-    					</tr>
-    				</table>
-    			</div>
-    		</td>
-    	</tr>
-    	<!-- END showChanges -->
+        <tr>
+            <th colspan="5">'.$_CORELANG['TXT_CHANGELOG'].'</th>
+        </tr>
+        <tr class="row3">
+            <td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
+            <td width="25%"><b>'.$_CORELANG['TXT_DATE'].'</b></td>
+            <td width="48%"><b>'.$_CORELANG['TXT_PAGETITLE'].'</b></td>
+            <td width="25%"><b>'.$_CORELANG['TXT_USER'].'</b></td>
+            <td width="1%"><b>'.$_CORELANG['TXT_FUNCTIONS'].'</b></td>
+        </tr>
+        <!-- BEGIN showChanges -->
+        <tr class="{CHANGELOG_ROWCLASS}">
+            <td><div style="border-bottom:0px;">{CHANGELOG_CHECKBOX}</div></td>
+            <td><div style="border-bottom:0px;">{CHANGELOG_DATE}</div></td>
+            <td><div style="border-bottom:0px;"><a href="javascript:showOrHide(\'contentDiv_{CHANGELOG_ID}\');">{CHANGELOG_TITLE}</a></div></td>
+            <td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{CHANGELOG_USER}" title="{CHANGELOG_USER}" border="0" align="middle" />&nbsp;{CHANGELOG_USER}</div></td>
+            <td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
+                {CHANGELOG_ACTIVATE}
+                {CHANGELOG_DELETE}
+            </div></td>
+        </tr>
+        <tr class="{CHANGELOG_ROWCLASS}">
+            <td colspan="5">
+                <div id="contentDiv_{CHANGELOG_ID}" style="width:100%; border:1px solid #DDE4FF; display:none;">
+                    <table summary="" border="0" cellpadding="3" width="100%">
+                        <tr>
+                            <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_PAGETITLE'].'</b></div></td>
+                            <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_PAGETITLE}</div></td>
+                            <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_START_DATE'].'</b></div></td>
+                            <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_STARTDATE}</div></td>
+                            <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_MODULE'].' (cmd|section)</b></div></td>
+                            <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CMD} | {CHANGELOG_SECTION}</div></td>
+                            <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_WEB_PAGES'].'</b></div></td>
+                            <td width="15%" valign="top" rowspan="2"><div style="border-bottom:0px;">{CHANGELOG_FRONTEND}</div></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_META_TITLE'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METATITLE}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_END_DATE'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_ENDDATE}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_REDIRECT'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_REDIRECT}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_META_DESCRIPTION'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METADESC}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_THEMES'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_THEME}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_SOURCE_MODE'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_SOURCEMODE}</div></td>
+                            <td nowrap="nowrap" valign="top" height="1%"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_ADMINISTRATION_PAGES'].'</b></div></td>
+                            <td rowspan="2" valign="top"><div style="border-bottom:0px;">{CHANGELOG_BACKEND}</div></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_META_KEYWORD'].'</b></div></td>
+                            <td valign="top"><div style="border-bottom:0px;">{CHANGELOG_METAKEY}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_OPTIONAL_CSS_NAME'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_OPTIONAL_CSS}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_CACHING_STATUS'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CACHINGSTATUS}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_CL_CATEGORY'].'</b></div></td>
+                            <td valign="top"><div style="border-bottom:0px;">{CHANGELOG_CATEGORY}</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <!-- END showChanges -->
     </table>
     <table summary="" cellpadding="3" cellspacing="0" border="0">
-    	<tr>
-    		<td>
-    			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="'.$_CORELANG['TXT_MARKED'].':" />
-    			<a href="#" onclick="changeCheckboxes(\'formContent\',\'selectedChangelogId[]\',true); return false;">'.$_CORELANG['TXT_SELECT_ALL'].'</a> /
-    			<a href="#" onclick="changeCheckboxes(\'formContent\',\'selectedChangelogId[]\',false); return false;">'.$_CORELANG['TXT_DESELECT_ALL'].'</a>
-    			<img src="images/icons/strike.gif" alt="layout" />
-    			<select name="formContent_HistoryMultiAction" onchange="historyMultiAction();">
-    				<option value="0">'.$_CORELANG['TXT_MULTISELECT_SELECT'].'</option>
-    				<option value="delete">'.$_CORELANG['TXT_MULTISELECT_DELETE'].'</option>
-    			</select>
-    		</td>
-    	</tr>
+        <tr>
+            <td>
+                <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="'.$_CORELANG['TXT_MARKED'].':" />
+                <a href="#" onclick="changeCheckboxes(\'formContent\',\'selectedChangelogId[]\',true); return false;">'.$_CORELANG['TXT_SELECT_ALL'].'</a> /
+                <a href="#" onclick="changeCheckboxes(\'formContent\',\'selectedChangelogId[]\',false); return false;">'.$_CORELANG['TXT_DESELECT_ALL'].'</a>
+                <img src="images/icons/strike.gif" alt="layout" />
+                <select name="formContent_HistoryMultiAction" onchange="historyMultiAction();">
+                    <option value="0">'.$_CORELANG['TXT_MULTISELECT_SELECT'].'</option>
+                    <option value="delete">'.$_CORELANG['TXT_MULTISELECT_DELETE'].'</option>
+                </select>
+            </td>
+        </tr>
     </table>';
         $objTemplate->setTemplate($templateHTML);
         $retHTML = '';
@@ -3469,37 +3471,38 @@ ON DUPLICATE KEY
 }//end class
 
 if (!function_exists('json_encode')){
-	function json_encode($a=false)	{
-		if (is_null($a)) return 'null';
-		if ($a === false) return 'false';
-		if ($a === true) return 'true';
-		if (is_scalar($a)){
-			if (is_float($a)){
-				// Always use "." for floats.
-				return floatval(str_replace(",", ".", strval($a)));
-			}
-			if (is_string($a)){
-				static $jsonReplaces = array(array("\\", "/", "\n", "\t", "\r", "\b", "\f", '"'), array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"'));
-				return '"' . str_replace($jsonReplaces[0], $jsonReplaces[1], $a) . '"';
-			}else{
-				return $a;
-			}
+    function json_encode($a=false)    {
+        if (is_null($a)) return 'null';
+        if ($a === false) return 'false';
+        if ($a === true) return 'true';
+        if (is_scalar($a)){
+            if (is_float($a)){
+                // Always use "." for floats.
+                return floatval(str_replace(",", ".", strval($a)));
+            }
+            if (is_string($a)){
+                static $jsonReplaces = array(array("\\", "/", "\n", "\t", "\r", "\b", "\f", '"'), array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"'));
+                return '"' . str_replace($jsonReplaces[0], $jsonReplaces[1], $a) . '"';
+            }else{
+                return $a;
+            }
         }
-		$isList = true;
-		for ($i = 0, reset($a); $i < count($a); $i++, next($a)){
-			if (key($a) !== $i){
-				$isList = false;
-				break;
-			}
-		}
-		$result = array();
-		if ($isList){
-			foreach ($a as $v) $result[] = json_encode($v);
-			return '[' . join(',', $result) . ']';
-		} else {
-			foreach ($a as $k => $v) $result[] = json_encode($k).':'.json_encode($v);
-			return '{' . join(',', $result) . '}';
-		}
-	}
+        $isList = true;
+        for ($i = 0, reset($a); $i < count($a); $i++, next($a)){
+            if (key($a) !== $i){
+                $isList = false;
+                break;
+            }
+        }
+        $result = array();
+        if ($isList){
+            foreach ($a as $v) $result[] = json_encode($v);
+            return '[' . join(',', $result) . ']';
+        } else {
+            foreach ($a as $k => $v) $result[] = json_encode($k).':'.json_encode($v);
+            return '{' . join(',', $result) . '}';
+        }
+    }
 }
+
 ?>

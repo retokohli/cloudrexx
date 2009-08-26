@@ -2,23 +2,23 @@
 /**
  * Create error pages
  *
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @package	    contrexx
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
+ * @package        contrexx
  * @subpackage  core
- * @version		1.0.0
+ * @version        1.0.0
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
  * Handles all errors.
  *
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @access		public
- * @package	    contrexx
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
+ * @access        public
+ * @package        contrexx
  * @subpackage  core
- * @version		1.0.0
+ * @version        1.0.0
  * @todo        Declare and document class variable 'pageContent'
  */
 class error
@@ -29,9 +29,9 @@ class error
      */
     var $_objTpl;
 
-	/**
-	 * Error page constructor
-	 * @param  string $pageContent Page content
+    /**
+     * Error page constructor
+     * @param  string $pageContent Page content
      */
     function __construct($pageContent)
     {

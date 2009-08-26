@@ -49,7 +49,7 @@ class Permission
         if ($return) {
             return false;
         }
-        Permission::noAccess();
+        return Permission::noAccess();
     }
 
     /**

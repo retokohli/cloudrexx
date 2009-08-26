@@ -32,14 +32,10 @@ class XMLSitemap {
 
     public static function write()
     {
-        global $_CONFIG, $objLanguage, $_CORELANG;
+        global $_CONFIG, $_CORELANG;
 
         if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-            if (!isset($objLanguage)) {
-                $objLanguage = new FWLanguage();
-            }
-
-            foreach ($objLanguage->getLanguageArray() as $arrLanguage) {
+            foreach (FWLanguage::getLanguageArray() as $arrLanguage) {
                 if ($arrLanguage['frontend'] == 1) {
                     $arrActiveLanguages[$arrLanguage['id']] = $arrLanguage['lang'];
                 }
@@ -68,7 +64,7 @@ class XMLSitemap {
 
     private static function prepareFileAccess($filename)
     {
-		$objFile = new File();
+        $objFile = new File();
 
         return (
                 file_exists(ASCMS_DOCUMENT_ROOT.XMLSitemap::$strFilePath.'/'.$filename)
@@ -119,27 +115,27 @@ class XMLSitemap {
             $strActiveLanguages = implode(',', $arrLang);
             $objFWUser = FWUser::getFWUserObject();
 
-            $objResult = $objDatabase->Execute('SELECT     	cn.catid 		AS catid,
-                                                            cn.changelog 	AS changelog,
-                                                            cn.cmd			AS cmd,
-                                                            cn.module		AS module,
-                                                            cn.lang			AS langid,
+            $objResult = $objDatabase->Execute('SELECT         cn.catid         AS catid,
+                                                            cn.changelog     AS changelog,
+                                                            cn.cmd            AS cmd,
+                                                            cn.module        AS module,
+                                                            cn.lang            AS langid,
                                                             cc.redirect     AS redirect,
                                                 '.($_CONFIG['aliasStatus'] ? '
-                                                            mas.isdefault	AS aliasIsDefault,
-                                                            mas.url			AS aliasName'
+                                                            mas.isdefault    AS aliasIsDefault,
+                                                            mas.url            AS aliasName'
                                                             : '0            AS aliasIsDefault').'
-                                                FROM        '.DBPREFIX.'content_navigation	AS cn
+                                                FROM        '.DBPREFIX.'content_navigation    AS cn
                                                 INNER JOIN  '.DBPREFIX.'content             AS cc
                                                 ON          cc.id = cn.catid
                                                 '.($_CONFIG['aliasStatus'] ?
-                                                'LEFT JOIN	'.DBPREFIX.'module_alias_target	AS mat
-                                                ON			cn.catid = mat.url
-                                                LEFT JOIN	'.DBPREFIX.'module_alias_source AS mas
-                                                ON			mat.id = mas.target_id' : '').'
-                                                WHERE       cn.is_validated="1" 	AND
-                                                            cn.activestatus="1" 	AND
-                                                            cn.displaystatus="on" 	AND
+                                                'LEFT JOIN    '.DBPREFIX.'module_alias_target    AS mat
+                                                ON            cn.catid = mat.url
+                                                LEFT JOIN    '.DBPREFIX.'module_alias_source AS mas
+                                                ON            mat.id = mas.target_id' : '').'
+                                                WHERE       cn.is_validated="1"     AND
+                                                            cn.activestatus="1"     AND
+                                                            cn.displaystatus="on"     AND
                                                             (cn.startdate<=CURDATE() OR cn.startdate=\'0000-00-00\') AND
                                                             (cn.enddate>=CURDATE() OR cn.enddate=\'0000-00-00\') AND
                                                             cn.lang IN ('.$strActiveLanguages.')
@@ -187,7 +183,7 @@ class XMLSitemap {
                                     .$_CONFIG['domainUrl']
                                     .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                                     .htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET);
-							} else {
+                            } else {
                                 $location = ASCMS_PROTOCOL.'://'
                                     .$_CONFIG['domainUrl']
                                     .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
@@ -302,35 +298,35 @@ class XMLSitemap {
      * Creates the modification-date of a page as a string which can be processed by google. The method uses
      * for module-pages the current date, for normale pages the date of last modification.
      *
-     * @param		integer		$intModule: value of the module-field in the database
-     * @param		string		$strCmd: value of the cmd-field in the database
-     * @param		integer		$intTimestamp: last update of the page as a timestamp
-     * @return		string		A date string which can be understood by google
+     * @param        integer        $intModule: value of the module-field in the database
+     * @param        string        $strCmd: value of the cmd-field in the database
+     * @param        integer        $intTimestamp: last update of the page as a timestamp
+     * @return        string        A date string which can be understood by google
      */
     private static function getLastModificationDate($intModule, $strCmd, $intTimestamp)
     {
-    	if (intval($intModule) > 0 || !empty($strCmd)) {
-    		return date('Y-m-d', time());
-    	} else {
-    		return date('Y-m-d', $intTimestamp);
-    	}
+        if (intval($intModule) > 0 || !empty($strCmd)) {
+            return date('Y-m-d', time());
+        } else {
+            return date('Y-m-d', $intTimestamp);
+        }
     }
 
     /**
      * Returns the changing-frequency of the page depending on the database values. If the page is a module
      * page, the frequency is set to 'hourly', for normal pages to 'weekly'.
      *
-     * @param		integer		$intModule: value of the module-field in the database
-     * @param		string		$strCmd: value of the cmd-field in the database
-     * @return		string		true, if the page is a module page. Otherwise false.
+     * @param        integer        $intModule: value of the module-field in the database
+     * @param        string        $strCmd: value of the cmd-field in the database
+     * @return        string        true, if the page is a module page. Otherwise false.
      */
     private static function getChangingFrequency($intModule, $strCmd)
     {
-    	if (intval($intModule) > 0 || !empty($strCmd)) {
-    		return 'hourly';
-    	} else {
-    		return 'weekly';
-    	}
+        if (intval($intModule) > 0 || !empty($strCmd)) {
+            return 'hourly';
+        } else {
+            return 'weekly';
+        }
     }
 }
 ?>
