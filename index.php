@@ -182,7 +182,8 @@ if (   isset($_GET['handler'])
 }
 
 
-$section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section']) : '';
+$section = (isset($_REQUEST['section'])
+    ? contrexx_addslashes($_REQUEST['section']) : '');
 
 // To clone any module, use an optional integer cmd suffix.
 // E.g.: "shop2", "gallery5", etc.
@@ -190,7 +191,7 @@ $section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section'
 // references to your module (section and cmd parameters, database tables)
 // using the MODULE_INDEX constant in the right place both in your code
 // *AND* templates!
-// See the Shop module for an example.
+// See the shop module for an example.
 $arrMatch = array();
 $plainSection = $section;
 if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
@@ -1783,60 +1784,60 @@ $contrexxCmsName[9] = ' ';
 // ------------------------------------------------------
 // URL change lang
 // ------------------------------------------------------
-$URLquery	= $_SERVER['QUERY_STRING'];
-$URLbase	= $_SERVER['PHP_SELF'];
+$URLquery = $_SERVER['QUERY_STRING'];
+$URLbase  = $_SERVER['PHP_SELF'];
 // Workaround contact
-$tmpCID 	= 0;
+$tmpCID   = 0;
 
 if(isset($_REQUEST['section'])){
-	if($_REQUEST['section']=='contact'){
-		$cmd = $_REQUEST['cmd'];
-			$query 		= "SELECT catid FROM ".DBPREFIX."content_navigation WHERE cmd=".intval($_REQUEST['cmd'])." AND lang=".$_LANGID." ";
-			$objResult 	= $objDatabase->SelectLimit($query, 1);
-			if ($objResult === true || !$objResult->EOF) {
-			    $tmpCID = $objResult->fields["catid"];
-			}else{
-				$URLquery 	= ereg_replace('\&?section\=[a-zA-Z]+', '', $URLquery);
-				$URLquery 	= ereg_replace('\&?cmd\=[0-9]+', '', $URLquery);
-			}
-	}
+    if($_REQUEST['section']=='contact'){
+        $cmd = $_REQUEST['cmd'];
+            $query     = "SELECT catid FROM ".DBPREFIX."content_navigation WHERE cmd=".intval($_REQUEST['cmd'])." AND lang=".$_LANGID." ";
+            $objResult = $objDatabase->SelectLimit($query, 1);
+            if ($objResult === true || !$objResult->EOF) {
+                $tmpCID = $objResult->fields["catid"];
+            }else{
+                $URLquery = ereg_replace('\&?section\=[a-zA-Z]+', '', $URLquery);
+                $URLquery = ereg_replace('\&?cmd\=[0-9]+', '', $URLquery);
+            }
+    }
 }
 
 foreach ($objInit->arrLang as $key => $value) {
-	$URLquery 	= ereg_replace('\&?fromLang\=[0-9]+', '', $URLquery);
-	$URLquery 	= ereg_replace('\&?langId\=[0-9]+', '', $URLquery);
-	$URLquery 	= ereg_replace('\&?setLang\=[0-9]+', '', $URLquery);
-	$FromQuery	= 'fromLang='.$_LANGID;
+    $URLquery  = ereg_replace('\&?fromLang\=[0-9]+', '', $URLquery);
+    $URLquery  = ereg_replace('\&?langId\=[0-9]+', '', $URLquery);
+    $URLquery  = ereg_replace('\&?setLang\=[0-9]+', '', $URLquery);
+    $FromQuery = 'fromLang='.$_LANGID;
 
-	// workaround contact
-	if($tmpCID!=0){
-		$URLquery 	= ereg_replace('\&?cmd\=[0-9]+', '', $URLquery);
-		$tmpCMD		= 0;
-		$query		= "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
-		$objResult 	= $objDatabase->SelectLimit($query, 1);
-		if ($objResult === true || !$objResult->EOF) {
-		    $tmpCMD = $objResult->fields["cmd"];
-		}
-		if($tmpCMD!=0){
-			$URLquery .= ($URLquery!='') ? '&cmd='.$tmpCMD : '?section='.$_REQUEST['section'].'&cmd='.$tmpCMD;
-		}
-	}
+    // workaround contact
+    if($tmpCID!=0){
+        $URLquery  = ereg_replace('\&?cmd\=[0-9]+', '', $URLquery);
+        $tmpCMD    = 0;
+        $query     = "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult === true || !$objResult->EOF) {
+            $tmpCMD = $objResult->fields["cmd"];
+        }
+        if($tmpCMD!=0){
+            $URLquery .= ($URLquery!='') ? '&cmd='.$tmpCMD : '?section='.$_REQUEST['section'].'&cmd='.$tmpCMD;
+        }
+    }
 
-	if($_CONFIG['useVirtualLanguagePath']=='on'){
-		if($URLquery!=''){
-			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$URLquery.'&'.$FromQuery;
-		}else{
-			$LangURL 	= '/'.$value['lang'].$URLbase.'?'.$FromQuery;
-		}
-	}else{
-		if($URLquery!=''){
-			$URLquery 	= $URLquery.'&setLang='.$value['id'];
-		}else{
-			$URLquery 	= 'setLang='.$value['id'];
-		}
-		$LangURL		= $URLbase.'?'.$URLquery.'&'.$FromQuery;
-	}
-	$objTemplate->setVariable(array('LANG_CHANGE_'.strtoupper($value['lang']) => $LangURL));
+    if($_CONFIG['useVirtualLanguagePath']=='on'){
+        if($URLquery!=''){
+            $LangURL = '/'.$value['lang'].$URLbase.'?'.$URLquery.'&'.$FromQuery;
+        }else{
+            $LangURL = '/'.$value['lang'].$URLbase.'?'.$FromQuery;
+        }
+    }else{
+        if($URLquery!=''){
+            $URLquery = $URLquery.'&setLang='.$value['id'];
+        }else{
+            $URLquery = 'setLang='.$value['id'];
+        }
+        $LangURL        = $URLbase.'?'.$URLquery.'&'.$FromQuery;
+    }
+    $objTemplate->setVariable(array('LANG_CHANGE_'.strtoupper($value['lang']) => $LangURL));
 }
 
 
