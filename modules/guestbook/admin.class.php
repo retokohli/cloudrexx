@@ -141,7 +141,7 @@ class GuestbookManager extends GuestbookLibrary
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_guestbook_settings SET value='".$replace_at."' WHERE name='guestbook_replace_at'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_guestbook_settings SET value='".$maintainLangSeparated."' WHERE name='guestbook_only_lang_entries'");
 
-            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
+            $this->strOkMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_STORED_SUCCESSFUL'];
             // renew the settings values
             $this->getSettings();
         }
@@ -242,7 +242,7 @@ class GuestbookManager extends GuestbookLibrary
                         '$ip', '$location', '$this->langId'
                     )";
                 $objDatabase->Execute($query);
-                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
+                $this->strOkMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_STORED_SUCCESSFUL'];
             } else {
                 $this->strErrMessage = $error;
             }
@@ -338,9 +338,9 @@ class GuestbookManager extends GuestbookLibrary
 
         $id = intval($_GET['id']);
         if($this->_deleteEntry($id)){
-            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+            $this->strOkMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_DELETED_SUCCESSFUL'];
         } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
+            $this->strErrMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_DELETE_ERROR'];
         }
     }
 
@@ -585,7 +585,7 @@ class GuestbookManager extends GuestbookLibrary
                 }
             }
             if ($error) {
-                $this->strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'];
+                $this->strErrMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_MULTI_DELETE_ERROR'];
             }
         }
     }

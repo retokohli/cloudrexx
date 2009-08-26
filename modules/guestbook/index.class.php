@@ -295,9 +295,9 @@ class Guestbook extends GuestbookLibrary
         if ($this->arrSettings['guestbook_send_notification_email']==1) {
 	    	$this->sendNotificationEmail($forename, $name, $comment, $mail);
         }
-        $this->statusMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL']."<br />";
+        $this->statusMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_STORED_SUCCESSFUL']."<br />";
         if ($this->arrSettings['guestbook_activate_submitted_entries'] == 0) {
-            $this->statusMessage .= '<b>'.$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'].'</b>';
+            $this->statusMessage .= '<b>'.$_ARRAYLANG['TXT_GUESTBOOK_RECORD_STORED_ACTIVATE'].'</b>';
         }
 
         $this->_objTpl->setVariable(array(
