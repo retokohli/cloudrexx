@@ -134,6 +134,8 @@ Modul: Kleinanzeigemarkt
 
 Modul: Newsletter
 - Die Anmeldung und Bearbeitung des Profils funktioniert korrekt.
+- Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
+  Sprachverzeichnissen.
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
