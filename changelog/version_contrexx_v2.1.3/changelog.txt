@@ -24,6 +24,10 @@ Modul: Bildergalerie
 - Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
   ImageRotate() Funktion nicht verfügbar ist.
 
+Modul: Newsletter
+- Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
+  Sprachverzeichnissen.
+
 Modul: Shop
 - Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
 - Die detaillierte Produkte Ansicht aus dem Warenkorb heraus funktioniert.
