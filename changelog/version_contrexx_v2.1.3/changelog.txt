@@ -16,6 +16,10 @@ Modul: Dokumenten System
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Alias Verwaltung
+- Aliase welche Leerzeichen enthalten werden in der Inhalts-Navigation
+  korrekt ausgegeben.
+
 Benutzerverwaltung
 - Ein Benutzer kann nur authentifiziert werden, sofern er bei mindestens einer
   aktiven Gruppe Mitglied ist.

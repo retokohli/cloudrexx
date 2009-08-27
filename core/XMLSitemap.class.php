@@ -159,7 +159,7 @@ class XMLSitemap {
                             .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                             .ASCMS_PATH_OFFSET
                             .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
-                            .'/'.$objResult->fields['aliasName'];
+                            .'/'.stripslashes($objResult->fields['aliasName']);
                     } else {
                         //No alias
                         if (!empty($objResult->fields['redirect'])) {
