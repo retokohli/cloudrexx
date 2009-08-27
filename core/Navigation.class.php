@@ -695,7 +695,7 @@ class Navigation
         return ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
             ? ""
             : ":".intval($_SERVER['SERVER_PORT'])
-        ).ASCMS_PATH_OFFSET.$absolute_local_path;
+        ).ASCMS_PATH_OFFSET.stripslashes($absolute_local_path);
     }
 
     function _debug($obj){
