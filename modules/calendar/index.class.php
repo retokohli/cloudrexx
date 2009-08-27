@@ -794,7 +794,7 @@ class Calendar extends calendarLibrary
      * @return boolean
      */
     function _showAddEventForm() {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $objFWUser;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
         $this->_objTpl->setTemplate($this->pageContent);
         $showForm = true;
 
@@ -803,13 +803,14 @@ class Calendar extends calendarLibrary
         error_reporting(E_ALL);
 */
         $objUser = $objFWUser->objUser;
+        $objFWUser = FWUser::getFWUserObject();
 
 
         include_once(ASCMS_CORE_PATH.'/wysiwyg.class.php');
         $AuthorisationFlag = $this->settings->get('fe_entries_ability');
         if($AuthorisationFlag == 0) {
             return $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'];
-        } elseif ($AuthorisationFlag == 1 && !$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
+        } elseif ($AuthorisationFlag == 1 && !$objFWUser->objUser->login()) {
             return $_ARRAYLANG['TXT_CALENDAR_NOT_LOGGEDIN'];
         }
 
@@ -1217,11 +1218,11 @@ class Calendar extends calendarLibrary
                 'ORGANIZERPLACE'    => $form['organizerplace'],
                 'ORGANIZERSTREET'   => $form['organizerstreet'],
                 'ORGANIZERID'       => ($form['organizerid']) ? "checked='checked'" : '',
-                'USERNAME'          => ($objUser ? $objUser->getProfileAttribute('firstname') ." ". $objUser->getProfileAttribute('lastname') : ''),
-                'USERSTREET'        => ($objUser ? $objUser->getProfileAttribute('address') : ''),
-                'USERZIP'           => ($objUser ? $objUser->getProfileAttribute('zip') : ''),
-                'USERPLACE'         => ($objUser ? $objUser->getProfileAttribute('city') : ''),
-                'USERMAIL'          => ($objUser ? $objUser->getEmail() : ''),
+                'USERNAME'          => ($objFWUser->objUser ? $objFWUser->objUser->getProfileAttribute('firstname') ." ". $objFWUser->objUser->getProfileAttribute('lastname') : ''),
+                'USERSTREET'        => ($objFWUser->objUser ? $objFWUser->objUser->getProfileAttribute('address') : ''),
+                'USERZIP'           => ($objFWUser->objUser ? $objFWUser->objUser->getProfileAttribute('zip') : ''),
+                'USERPLACE'         => ($objFWUser->objUser ? $objFWUser->objUser->getProfileAttribute('city') : ''),
+                'USERMAIL'          => ($objFWUser->objUser ? $objFWUser->objUser->getEmail() : ''),
                 'ACCESSTYPE_'.$form['accesstype'] => " selected='selected' ",
                 'REGISTRATIONS'     => ($form['registrations']) ? " checked='checked' " : '',
                 'COUNTREGISTRATIONS'=> $form['countregistrations'],
@@ -1395,7 +1396,7 @@ class Calendar extends calendarLibrary
                 'TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'     => $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'],
             ));
 
-            if(!$objUser) {
+            if(!$objFWUser->objUser) {
                 $this->_objTpl->hideBlock('boxMyself');
             }
         } else {
