@@ -81,6 +81,8 @@ Benutzerverwaltung
 - Der Gruppenfilter bei der Auflistung der Benutzer im Frontend funktioniert.
 - Ein Benutzer kann nur authentifiziert werden, sofern er bei mindestens einer
   aktiven Gruppe Mitglied ist.
+- Beim Speichern einer Benutzergruppe gehen die Modul-Spezifischen Berechtigungen
+  nicht verloren.
 
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
