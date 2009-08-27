@@ -99,6 +99,7 @@ class statsLibrary
         if ($this->arrConfig['make_statistics']['status']) {
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {
                 $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
+                $searchTermPlain = contrexx_addslashes($_REQUEST['term']);
             }
 
             if (isset($_SERVER['HTTP_REFERER'])) {
@@ -108,23 +109,17 @@ class statsLibrary
             }
 
             $ascms_core_module_web_path = ASCMS_CORE_MODULE_WEB_PATH;
-            $counterTag = "<!-- Counter  START -->
-                <script type=\"text/javascript\"><!--
-                    var referer = (document.referrer) ? escape(document.referrer) : '';
-                    var v = navigator.appName;
-                    var c = 0;
-                    if (v != 'Netscape') {
-                        c = screen.colorDepth;
-                    }
-                    else {
-                        c = screen.pixelDepth;
-                    }
-                    document.write('<script type=\"text/javascript\" src=\"$ascms_core_module_web_path/stats/counter.php?mode=script&referer='+referer+'&pageId=$pageId&screen=' + screen.width + 'x' + screen.height + '&color_depth=' + c + '$searchTerm\" ><\\/script>');
-                    // -->
-                    </script>
-                    <noscript><div><img src=\"$ascms_core_module_web_path/stats/counter.php?mode=noscript&amp;referer=$referer&amp;pageId=$pageId.$searchTerm\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>
-                    <!-- Counter Code END -->
-            ";
+            $counterTag = file_get_contents(dirname(__FILE__).'/stats_script.html');
+            $replaces = array(
+                '[CORE_MODULE_URL]' => $ascms_core_module_web_path,
+                '[PAGEID]'          => $pageId,
+                '[SEARCHTERM]'      => $searchTerm,
+                '[SEARCHTERM_PLAIN]'=> $searchTermPlain,
+                '[REFERER]'         => $referer,
+            );
+            foreach ($replaces as $from => $to) {
+                $counterTag = str_replace($from, $to, $counterTag);
+            }
         }
         return $counterTag;
     }
