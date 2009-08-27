@@ -70,6 +70,10 @@ Allgemein:
 - Bei der Inhaltsnavigation wird beim Typ 'dropdown' ab der zweiten Ebene
   auch ein CSS-Style (active/inactive) ausgegeben.
 
+Alias Verwaltung
+- Aliase welche Leerzeichen enthalten werden in der Inhalts-Navigation
+  korrekt ausgegeben.
+
 Block System
 - Das Interface zur Auswahl der Frontend Seiten funktioniert korrekt.
 
