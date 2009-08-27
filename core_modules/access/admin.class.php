@@ -477,6 +477,9 @@ class AccessManager extends AccessLib
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
+        require_once ASCMS_CORE_PATH.'/Tree.class.php';
+        $objContentTree = new ContentTree();
+
         $arrAreas = array();
         $associatedUsers = '';
         $notAssociatedUsers = '';
@@ -497,7 +500,27 @@ class AccessManager extends AccessLib
             $objGroup->setType(!empty($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
             $objGroup->setUsers(isset($_POST['access_group_associated_users']) && is_array($_POST['access_group_associated_users']) ? $_POST['access_group_associated_users'] : array());
             $objGroup->setStaticPermissionIds(isset($_POST['access_area_id']) && is_array($_POST['access_area_id']) ? $_POST['access_area_id'] : array());
-            $objGroup->setDynamicPermissionIds(isset($_POST['access_webpage_access_id']) && is_array($_POST['access_webpage_access_id']) ? $_POST['access_webpage_access_id'] : array());
+
+            // set dynamic access ids
+            foreach ($objContentTree->getTree() as $arrPage) {
+                if ($arrPage[$objGroup->getType().'_access_id']) {
+                    $arrContentAccessIds[] = $arrPage[$objGroup->getType().'_access_id'];
+                }
+            }
+            $arrNewAccessIds = isset($_POST['access_webpage_access_id']) && is_array($_POST['access_webpage_access_id']) ? $_POST['access_webpage_access_id'] : array();
+            $arrCurrentAccessIds = $objGroup->getDynamicPermissionIds();
+            foreach ($arrContentAccessIds as $accessId) {
+                // add new access ids
+                if (in_array($accessId, $arrNewAccessIds) && !in_array($accessId, $arrCurrentAccessIds)) {
+                    $arrCurrentAccessIds[] = $accessId;
+                }
+
+                // delete access ids
+                if (!in_array($accessId, $arrNewAccessIds) && in_array($accessId, $arrCurrentAccessIds)) {
+                    unset($arrCurrentAccessIds[array_search($accessId, $arrCurrentAccessIds)]);
+                }
+            }
+            $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
 
             if (isset($_POST['access_save_group'])) {
                 if ($objGroup->store()) {
@@ -552,9 +575,6 @@ class AccessManager extends AccessLib
                 }
             }
         }
-
-        require_once ASCMS_CORE_PATH.'/Tree.class.php';
-        $objContentTree = new ContentTree();
 
         $this->_objTpl->setVariable('ACCESS_WEBSITE_TAB_NAME', 'Webseiten');
 
