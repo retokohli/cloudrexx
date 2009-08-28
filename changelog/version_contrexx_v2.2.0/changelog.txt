@@ -169,6 +169,9 @@ Statistik
 - Die Zählung der Besucher erfolgt korrekt.
 - Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter
   Verwendung eines Alias getätigt wurden, korrekt aufgelistet.
+- Um die Ladegeschwindigkeit zu erhöhen, wird der Counter neu mittels
+  AJAX aktualisiert, falls möglich
+
 
 Webinstaller
 - Kontrollkästchen werden beim Browser Opera angezeigt.
