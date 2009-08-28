@@ -204,6 +204,40 @@ function _newsUpdate() {
     try{
         // delete obsolete table  contrexx_module_news_access
         UpdateUtil::drop_table(DBPREFIX.'module_news_access');
+        # fix some ugly NOT NULL without defaults
+        UpdateUtil::table(
+            DBPREFIX . 'module_news',
+            array(
+                'id'                         => array('type'=>'INT(6)',         'notnull'=>true,  'primary'     =>true,   'auto_increment' => true),
+                'date'                       => array('type'=>'INT(14)',        'notnull'=>false, 'default_expr'=>'NULL'),
+                'title'                      => array('type'=>'VARCHAR(250)',   'notnull'=>true,  'default'     =>''),
+                'text'                       => array('type'=>'MEDIUMTEXT',     'notnull'=>false, 'default'     =>''),
+                'redirect'                   => array('type'=>'VARCHAR(250)',   'notnull'=>true,  'default'     =>''),
+                'source'                     => array('type'=>'VARCHAR(250)',   'notnull'=>true,  'default'     =>''),
+                'url1'                       => array('type'=>'VARCHAR(250)',   'notnull'=>true,  'default'     =>''),
+                'url2'                       => array('type'=>'VARCHAR(250)',   'notnull'=>true,  'default'     =>''),
+                'catid'                      => array('type'=>'INT(2)',         'notnull'=>true,  'default'     =>0),
+                'lang'                       => array('type'=>'INT(2)',         'notnull'=>true,  'default'     =>0),
+                'userid'                     => array('type'=>'INT(6)',         'notnull'=>true,  'default'     =>0),
+                'startdate'                  => array('type'=>'DATE',           'notnull'=>true,  'default'     =>'0000-00-00'),
+                'enddate'                    => array('type'=>'DATE',           'notnull'=>true,  'default'     =>'0000-00-00'),
+                'status'                     => array('type'=>'INT(4)',         'notnull'=>true,  'default'     =>1),
+                'validated'                  => array('type'=>"ENUM('0','1')",  'notnull'=>true,  'default'     =>0),
+                'frontend_access_id'         => array('type'=>'INT(10)',        'notnull'=>true,  'default'     =>0),
+                'backend_access_id'          => array('type'=>'INT(10)',        'notnull'=>true,  'default'     =>0),
+                'teaser_only'                => array('type'=>"ENUM('0','1')",  'notnull'=>true,  'default'     =>0),
+                'teaser_frames'              => array('type'=>'TEXT',           'notnull'=>true,  'default'     =>''),
+                'teaser_text'                => array('type'=>'TEXT',           'notnull'=>true,  'default'     =>''),
+                'teaser_show_link'           => array('type'=>'INT(1) UNSIGNED','notnull'=>true,  'default'     =>1),
+                'teaser_image_path'          => array('type'=>'TEXT',           'notnull'=>true,  'default'     =>''),
+                'teaser_image_thumbnail_path'=> array('type'=>'TEXT',           'notnull'=>true,  'default'     =>''),
+                'changelog'                  => array('type'=>'INT(14)',        'notnull'=>true,  'default'     =>0),
+            ),
+            array(#indexes
+                'newsindex' =>array ('type' => 'FULLTEXT', 'fields' => array('text','title','teaser_text'))
+            )
+        );
+
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
