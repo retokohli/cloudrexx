@@ -80,7 +80,7 @@ class Captcha {
         $handleDir = opendir($this->strAbsolutePath);
         if ($handleDir) {
             while ($strFile = readdir($handleDir)) {
-                if ($strFile != '.' && $strFile != '..' && (filemtime($this->strAbsolutePath.$strFile) < time()-3600)) {
+                if ($strFile != '.' && $strFile != '..' && $strFile != '.svn' && (filemtime($this->strAbsolutePath.$strFile) < time()-3600)) {
                     unlink($this->strAbsolutePath.$strFile);
                 }
             }
