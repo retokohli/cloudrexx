@@ -1902,7 +1902,6 @@ CREATE TABLE `contrexx_module_news` (
   `teaser_image_thumbnail_path` text NOT NULL,
   `changelog` int(14) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  KEY `ID` (`id`),
   FULLTEXT KEY `newsindex` (`text`,`title`,`teaser_text`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_news_categories` (
