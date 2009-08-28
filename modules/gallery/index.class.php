@@ -931,7 +931,9 @@ class Gallery
 //                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
                 $imageThumbPath = $this->strThumbnailWebPath.$objResult->fields['path'];
-                $imageName = $this->arrSettings['show_file_name'] == 'on' ? $objSubResult->fields['name'] : '';
+                $imageFileName = $this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '';
+                $imageName = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : '';
+                $imageTitle = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : ($this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '');
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
                 $imageSizeShow = $objResult->fields['size_show'];
@@ -940,7 +942,7 @@ class Gallery
 
                 // chop the file extension if the settings tell us to do so
                 if ($this->arrSettings['show_ext'] == 'off') {
-                    $imageName = substr($imageName, 0, strrpos($imageName, '.'));
+                    $imageFileName = substr($imageFileName, 0, strrpos($imageFileName, '.'));
                 }
 
                   if ($this->arrSettings['slide_show'] == 'slideshow') {
@@ -968,9 +970,9 @@ class Gallery
                 if ($this->arrSettings['enable_popups'] == "on") {
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
-                        '}"  title="'.$imageName.'" href="'.
-                        $strImagePath.'"><img title="'.$imageName.'" src="'.
-                        $imageThumbPath.'" alt="'.$imageName.'" /></a>';
+                        '}"  title="'.$imageTitle.'" href="'.
+                        $strImagePath.'"><img title="'.$imageTitle.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageTitle.'" /></a>';
                     /*
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
@@ -983,15 +985,28 @@ class Gallery
                         '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
                         $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
                         $objResult->fields['id'].'">'.'<img  title="'.
-                        $imageName.'" src="'.$imageThumbPath.'"'.
-                        'alt="'.$imageName.'" /></a>';
+                        $imageTitle.'" src="'.$imageThumbPath.'"'.
+                        'alt="'.$imageTitle.'" /></a>';
                 }
 
-                if ($this->arrSettings['show_names'] == 'on') {
+                if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
                     $imageSizeOutput = $imageName;
+                    if ($this->arrSettings['show_file_name'] == 'on' || $imageSizeShow) {
+                        $imageData = array();
+                        if ($this->arrSettings['show_file_name'] == 'on') {
+                            if ($this->arrSettings['show_names'] == 'off') {
+                                $imageSizeOutput .= $imageFileName;
+                            } else {
+                                $imageData[] = $imageFileName;
+                            }
+                        }
                     if ($imageSizeShow == '1') {
                         // the size of the file has to be shown
-                        $imageSizeOutput .= ' ('.$imageFileSize.' kB)<br />';
+                            $imageData[] = $imageFileSize.' kB';
+                        }
+                        if (!empty($imageData)) {
+                            $imageSizeOutput .= ' ('.join(' ', $imageData).')<br />';
+                        }
                     }
                 }
 
