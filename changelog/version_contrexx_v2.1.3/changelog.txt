@@ -38,5 +38,9 @@ Modul: Shop
 - Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
 - Die detaillierte Produkte Ansicht aus dem Warenkorb heraus funktioniert.
 
+Modul: Statistik
+- Um die Ladegeschwindigkeit zu erhöhen, wird der Counter neu mittels
+  AJAX aktualisiert, falls möglich
+
 Update
 - Update-SQL-Query im Kalendermodul gefixt
