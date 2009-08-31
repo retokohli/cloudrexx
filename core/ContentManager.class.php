@@ -9,6 +9,8 @@
  * @version        1.0.0
  */
 
+error_reporting(E_ALL);ini_set('display_errors', 1);
+
 /**
  * Includes
  */
@@ -597,7 +599,7 @@ class ContentManager
 
         $langCount = 0;
 
-        foreach ($objLanguage->getLanguageArray() as $arrLang){
+        foreach (FWLanguage::getLanguageArray() as $arrLang){
             $langCount++;
             $checked = '';
             $tabClass = 'inactive';
@@ -823,7 +825,7 @@ class ContentManager
         $langId = intval($langId);
         if($langId == 0){ $langId = $this->firstActiveLang; }
         $objResult = $objDatabase->SelectLimit("SELECT protected FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId." AND `lang`=".$langId, 1);
-        if ($objResult !== false && $objResult->RecordCount()>0 && isset($objResult->fields['protected']) && $objResult->fields['protected']) 
+        if ($objResult !== false && $objResult->RecordCount()>0 && isset($objResult->fields['protected']) && $objResult->fields['protected'])
             return ' checked="checked"';
         return '';
     }
@@ -950,7 +952,7 @@ class ContentManager
         $langCount = 0;
         $activeLangCount = 0;
         //TODO selected frontend lang active tab
-        foreach ($objLanguage->getLanguageArray() as $arrLang){
+        foreach (FWLanguage::getLanguageArray() as $arrLang){
             $checked = '';
             $langCount++;
             $tabClass = 'inactive';
@@ -2821,7 +2823,7 @@ ON DUPLICATE KEY
     }
 
 
-    function getBlocks($pageId=null, $langId=0) 
+    function getBlocks($pageId=null, $langId=0)
     {
         global $objDatabase;
 
@@ -2872,7 +2874,7 @@ ON DUPLICATE KEY
     /**
      * Returns an alias that has only valid characters.
      */
-    function _fix_alias($txt) 
+    function _fix_alias($txt)
     {
         // this is kinda of a duplicate of the javascript function aliasText()
         // in cadmin/template/ascms/content_editor.html
@@ -2907,7 +2909,7 @@ ON DUPLICATE KEY
      * @param alias   the alias to install for the page. if it is empty or null,
      *                no change will happen.
      */
-    function _set_default_alias($pageId, $alias, $langId = 0) 
+    function _set_default_alias($pageId, $alias, $langId = 0)
     {
         if($langId == 0){ $langId = $this->langId; }
         $alias    = $this->_fix_alias($alias);
