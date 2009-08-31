@@ -25,19 +25,27 @@ class PrintshopLibrary {
     var $_arrAvailableAttributes = array('type', 'format', 'front', 'back', 'weight', 'paper');
     var $_arrAvailableTypes = array();
     var $_arrAttributeTranslation = array();
-    var $_settingNames = array('orderEmail', 'entriesPerPage');
-
+    var $_settingNames = array('orderEmail', 'entriesPerPage', 'priceThresholds');
+    var $_priceThresholdCount = 16;
+    var $_priceThresholds;
     /**
     * Constructor
     *
     */
     function __construct(){
-        global $_CONFIG;
+        global $_CONFIG, $objDatabase;
 
         $this->_arrSettings         = $this->createSettingsArray();
         $this->_arrAvailableTypes   = $this->_getAvailableTypes();
         $this->_limit               = !empty($_REQUEST['count']) ? intval($_REQUEST['count']) : intval($this->_arrSettings['entriesPerPage']);
         $this->_pos                 = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
+
+        for($i=0; $i < $this->_priceThresholdCount; $i++) {
+            $this->_priceThresholds[] = array('field' => 'price_'.$i);
+        }
+        foreach (explode(',', $this->_arrSettings['priceThresholds']) as $index => $threshold) {
+        	$this->_priceThresholds[$index]['threshold'] = $threshold;
+        }
     }
 
 
@@ -147,15 +155,18 @@ class PrintshopLibrary {
             }
         }
 
-        $query = 'SELECT SQL_CALC_FOUND_ROWS `p`.`type`, `p`.`format`, `p`.`front`, `p`.`back`, `p`.`weight`, `p`.`paper`, `p`.`price`, `p`.`factor`
+        $priceFieldsSQL = '';
+        foreach($this->_priceThresholds as $index => $price){
+            $priceFieldsSQL .= '`p`.`'.$price['field'].($index < $this->_priceThresholdCount - 1 ? '`,' : '`');
+        }
+        $query = 'SELECT SQL_CALC_FOUND_ROWS `p`.`type`, `p`.`format`, `p`.`front`, `p`.`back`, `p`.`weight`, `p`.`paper`, '.$priceFieldsSQL.'
                   FROM   `'.DBPREFIX.'module_printshop_product` AS `p`
                   WHERE '.$where.'
                   ORDER BY `type`, `format`, `front`, `back`, `weight`, `paper`';
 
         $objRS = $objDatabase->SelectLimit($query, $this->_limit, $this->_pos);
         $objRSCount = $objDatabase->Execute('SELECT FOUND_ROWS() AS `rows`');
-        $count = $objRSCount->fields['rows'];
-
+        $count = intval($objRSCount->fields['rows']);
         while(!$objRS->EOF){
             if($translated){
                 $arrEntries[] = array(
@@ -165,8 +176,22 @@ class PrintshopLibrary {
                     'back'          => $this->_arrAttributeTranslation['back'  ][$objRS->fields['back'  ]]['name'],
                     'weight'        => $this->_arrAttributeTranslation['weight'][$objRS->fields['weight']]['name'],
                     'paper'         => $this->_arrAttributeTranslation['paper' ][$objRS->fields['paper' ]]['name'],
-                    'price'         => $objRS->fields['price'],
-                    'factor'        => $objRS->fields['factor'],
+                    'price_0'       => $objRS->fields['price_0'],
+                    'price_1'       => $objRS->fields['price_1'],
+                    'price_2'       => $objRS->fields['price_2'],
+                    'price_3'       => $objRS->fields['price_3'],
+                    'price_4'       => $objRS->fields['price_4'],
+                    'price_5'       => $objRS->fields['price_5'],
+                    'price_6'       => $objRS->fields['price_6'],
+                    'price_7'       => $objRS->fields['price_7'],
+                    'price_8'       => $objRS->fields['price_8'],
+                    'price_9'       => $objRS->fields['price_9'],
+                    'price_10'      => $objRS->fields['price_10'],
+                    'price_11'      => $objRS->fields['price_11'],
+                    'price_12'      => $objRS->fields['price_12'],
+                    'price_13'      => $objRS->fields['price_13'],
+                    'price_14'      => $objRS->fields['price_14'],
+                    'price_15'      => $objRS->fields['price_15'],
                 );
             }else{
                  $arrEntries[] = $objRS->fields;
@@ -185,7 +210,7 @@ class PrintshopLibrary {
     function _getAttributeTranslation(){
         if(empty($this->_arrAttributeTranslation)){
             foreach ($this->_arrAvailableAttributes as $attribute) {
-                $this->_arrAttributeTranslation[$attribute] = $this->_getAttributes($attribute);
+            	$this->_arrAttributeTranslation[$attribute] = $this->_getAttributes($attribute);
             }
         }
     }
@@ -206,7 +231,7 @@ class PrintshopLibrary {
         $html = '<select name="'.$namePrefix.$attribute.'"><option value="0">'.$defaultText.'</option>';
         $selected = 'selected="selected"';
         foreach ($arrAttributes as $id => $attribute) {
-            $html .= '<option '.($selectedId == $attribute['id'] ? $selected : '').' value="'.$attribute['id'].'">'.$attribute['name'].'</option>';
+        	$html .= '<option '.($selectedId == $attribute['id'] ? $selected : '').' value="'.$attribute['id'].'">'.$attribute['name'].'</option>';
         }
         return $html.'</select>';
     }
@@ -239,7 +264,7 @@ class PrintshopLibrary {
 
 
     /**
-     * add a new product into the product table
+     * add or update a new product in the product table
      *
      * @param integer $type
      * @param integer $format
@@ -247,24 +272,35 @@ class PrintshopLibrary {
      * @param integer $back
      * @param integer $weight
      * @param integer $paper
-     * @param double $price
-     * @param double $factor
+     * @param array $arrPrice
      * @return boolean
      */
-    function addProduct($type, $format, $front, $back, $weight, $paper, $price, $factor){
+    function addProduct($type, $format, $front, $back, $weight, $paper, $arrPrice){
         global $objDatabase;
 
+        $priceFieldsSQL = '';
+        foreach($this->_priceThresholds as $index => $price){
+            $priceFieldsSQL .= '`'.$price['field'].($index < $this->_priceThresholdCount - 1 ? '`,' : '`');
+        }
+
+        $priceValueSQL = '';
+        $priceUpdateSQL = '';
+        foreach($arrPrice as $index => $price){
+            $priceValueSQL  .= $price.($index < $this->_priceThresholdCount - 1 ? "," : "");
+            $priceUpdateSQL .= '`'.$this->_priceThresholds[$index]['field'].'`'
+                            ." = ".$price.($index < $this->_priceThresholdCount - 1 ? "," : "");
+        }
+
         return $objDatabase->Execute('
-            INSERT INTO `'.DBPREFIX.'module_printshop_product` (`type`, `format`, `front`, `back`, `weight`, `paper`, `price`, `factor`)
-            VALUES ('.$type.', '.$format.', '.$front.', '.$back.', '.$weight.', '.$paper.', '.$price.', '.$factor.')
+            INSERT INTO `'.DBPREFIX.'module_printshop_product` (`type`, `format`, `front`, `back`, `weight`, `paper`, '.$priceFieldsSQL.')
+            VALUES ('.$type.', '.$format.', '.$front.', '.$back.', '.$weight.', '.$paper.', '.$priceValueSQL.')
             ON DUPLICATE KEY UPDATE `type`   = '.$type.',
                                     `format` = '.$format.',
                                     `front`  = '.$front.',
                                     `back`   = '.$back.',
                                     `weight` = '.$weight.',
                                     `paper`  = '.$paper.',
-                                    `price`  = '.$price.',
-                                    `factor` = '.$factor.'
+                                    '.$priceUpdateSQL.'
         ');
     }
 

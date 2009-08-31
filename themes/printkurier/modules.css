@@ -2071,6 +2071,7 @@ dl.data_module img {
     list-style-type: none;
     padding: 3px;
     z-index: 2;
+    cursor: pointer;
 }
 #printshop ul {
     list-style: none;

@@ -107,7 +107,6 @@ class PrintshopAdmin extends PrintshopLibrary {
                             die(json_encode(array('message' => $message)));
                         break;
                         default:
-                            die("OMGWTF");
                     }
                 }
                 $this->showAttributes($attribute);
@@ -151,6 +150,19 @@ class PrintshopAdmin extends PrintshopLibrary {
         $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_PRODCUTS'];
         $this->_objTpl->loadTemplateFile('module_printshop_products.html', true, true);
 
+        foreach ($this->_priceThresholds as $index => $price) {
+            $disabled = '';
+            if(!isset($price['threshold'])){
+                $price['threshold'] = '-';
+                $disabled = 'disabled="disabled"';
+            }
+            $this->_objTpl->setVariable(array(
+                'PRINTSHOP_PRICE_'.$index             => $price['threshold'],
+                'PRINTSHOP_PRICE_'.$index.'_DISABLED' => $disabled,
+                'TXT_PRINTSHOP_PRICE_'.$index.'_HELP' => sprintf($_ARRAYLANG['TXT_PRINTSHOP_PRICE_HELP'], $price['threshold']),
+            ));
+        }
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_NO_ENTRY'         => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'],
             'TXT_PRINTSHOP_ADD'              => $_ARRAYLANG['TXT_PRINTSHOP_ADD'],
@@ -193,20 +205,37 @@ class PrintshopAdmin extends PrintshopLibrary {
                     'ENTRY_BACK'        =>  $arrEntry['back'],
                     'ENTRY_WEIGHT'      =>  $arrEntry['weight'],
                     'ENTRY_PAPER'       =>  $arrEntry['paper'],
-                    'ENTRY_PRICE'       =>  $arrEntry['price'],
-                    'ENTRY_FACTOR'      =>  $arrEntry['factor'],
+                    'ENTRY_PRICE_0'     =>  $arrEntry['price_0'],
+                    'ENTRY_PRICE_1'     =>  $arrEntry['price_1'],
+                    'ENTRY_PRICE_2'     =>  $arrEntry['price_2'],
+                    'ENTRY_PRICE_3'     =>  $arrEntry['price_3'],
+                    'ENTRY_PRICE_4'     =>  $arrEntry['price_4'],
+                    'ENTRY_PRICE_5'     =>  $arrEntry['price_5'],
+                    'ENTRY_PRICE_6'     =>  $arrEntry['price_6'],
+                    'ENTRY_PRICE_7'     =>  $arrEntry['price_7'],
+                    'ENTRY_PRICE_8'     =>  $arrEntry['price_8'],
+                    'ENTRY_PRICE_9'     =>  $arrEntry['price_9'],
+                    'ENTRY_PRICE_10'    =>  $arrEntry['price_10'],
+                    'ENTRY_PRICE_11'    =>  $arrEntry['price_11'],
+                    'ENTRY_PRICE_12'    =>  $arrEntry['price_12'],
+                    'ENTRY_PRICE_13'    =>  $arrEntry['price_13'],
+                    'ENTRY_PRICE_14'    =>  $arrEntry['price_14'],
+                    'ENTRY_PRICE_15'    =>  $arrEntry['price_15'],
                     'ENTRY_ROWCLASS'    =>  $index % 2 ? 'row2' : 'row1',
+
                 ));
 
                 $this->_objTpl->parse('showEntry');
             }
             $this->_objTpl->setVariable(array(
-                'PRINTSHOP_PAGING'          => getPaging($arrEntries['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
-                'PRINTSHOP_TOTAL_ENTRIES'   => $arrEntries['count']
+                'PRINTSHOP_PAGING'  => getPaging($arrEntries['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
             ));
         }else{
             $this->_objTpl->touchBlock('noEntry');
         }
+        $this->_objTpl->setVariable(array(
+            'PRINTSHOP_TOTAL_ENTRIES'   => $arrEntries['count'],
+        ));
     }
 
 
@@ -269,19 +298,23 @@ class PrintshopAdmin extends PrintshopLibrary {
         $back   = !empty($_POST['psBack'])   ? contrexx_addslashes($_POST['psBack']) : '';
         $weight = !empty($_POST['psWeight']) ? contrexx_addslashes($_POST['psWeight']) : '';
         $paper  = !empty($_POST['psPaper'])  ? contrexx_addslashes($_POST['psPaper']) : '';
-        $price  = !empty($_POST['psPrice'])  ? contrexx_addslashes($_POST['psPrice']) : '';
-        $factor = !empty($_POST['psFactor']) ? contrexx_addslashes($_POST['psFactor']) : '';
+        $price  = array();
+        foreach ($this->_priceThresholds as $index => $price){
+            if(!isset($_POST['psPrice_'.$index])){
+                $_POST['psPrice_'.$index] = 0;
+            }
+            $price[$index] = contrexx_addslashes($_POST['psPrice_'.$index]) ? contrexx_addslashes($_POST['psPrice_'.$index]) : 0;
+        }
 
-        if(empty($price) || empty($factor) ){
+        if(empty($price[0])){ //need at least first price
             die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'])));
         }
 
-        if($this->addProduct($type, $format, $front, $back, $weight, $paper, $price, $factor) !== false){
+        if($this->addProduct($type, $format, $front, $back, $weight, $paper, $price) !== false){
             die(json_encode(array(
                 'error'     => 'null',
                 'ok'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_UPDATED'],
                 'price'     => $price,
-                'factor'    => $factor,
             )));
         }else{
             die(json_encode(array('error' => 'DB error.'.__FILE__.':'.__LINE__)));
@@ -330,10 +363,16 @@ class PrintshopAdmin extends PrintshopLibrary {
         $back   = !empty($_POST['psBack'])   ? contrexx_addslashes($_POST['psBack']) : '';
         $weight = !empty($_POST['psWeight']) ? contrexx_addslashes($_POST['psWeight']) : '';
         $paper  = !empty($_POST['psPaper'])  ? contrexx_addslashes($_POST['psPaper']) : '';
-        $price  = !empty($_POST['psPrice'])  ? contrexx_addslashes($_POST['psPrice']) : '';
-        $factor = !empty($_POST['psFactor']) ? contrexx_addslashes($_POST['psFactor']) : '';
 
-        if(empty($type) || empty($format) || empty($front) || empty($back) || empty($weight) || empty($paper) || empty($price) || empty($factor) ){
+        $arrPrice  = array();
+        foreach ($this->_priceThresholds as $index => $price){
+            if(!isset($_POST['psPrice_'.$index])){
+                $_POST['psPrice_'.$index] = 0;
+            }
+            $arrPrice[$index] = contrexx_addslashes($_POST['psPrice_'.$index]) ? contrexx_addslashes($_POST['psPrice_'.$index]) : 0;
+        }
+
+        if(empty($type) || empty($format) || empty($front) || empty($back) || empty($weight) || empty($paper) || empty($arrPrice[0])/* need at least first price*/){
             die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'])));
         }
 
@@ -343,7 +382,7 @@ class PrintshopAdmin extends PrintshopLibrary {
 
         $this->_getAttributeTranslation();
 
-        if($this->addProduct($type, $format, $front, $back, $weight, $paper, $price, $factor) !== false){
+        if($this->addProduct($type, $format, $front, $back, $weight, $paper, $arrPrice) !== false){
             die(json_encode(array(
                 'error'     => 'null',
                 'ok'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_ADDED'],
@@ -353,8 +392,7 @@ class PrintshopAdmin extends PrintshopLibrary {
                 'front'     => $this->_arrAttributeTranslation['front' ][$front ]['name'],
                 'weight'    => $this->_arrAttributeTranslation['weight'][$weight]['name'],
                 'paper'     => $this->_arrAttributeTranslation['paper' ][$paper ]['name'],
-                'price'     => $price,
-                'factor'    => $factor,
+                'price'     => $arrPrice,
             )));
         }else{
             die(json_encode(array('error' => 'DB error.'.__FILE__.':'.__LINE__)));
@@ -507,16 +545,19 @@ class PrintshopAdmin extends PrintshopLibrary {
         $this->_objTpl->loadTemplateFile('module_printshop_settings.html', true, true);
 
         $this->_objTpl->setVariable(array(
-            'TXT_PRINTSHOP_SETTINGS_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'],
-            'TXT_PRINTSHOP_EMAIL_HELP'          => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_HELP'],
-            'TXT_PRINTSHOP_ORDER_EMAIL'         => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_EMAIL'],
-            'TXT_PRINTSHOP_ENTRIES_PER_PAGE'    => $_ARRAYLANG['TXT_PRINTSHOP_ENTRIES_PER_PAGE'],
-            'TXT_SAVE'                          => $_CORELANG['TXT_SAVE']
+            'TXT_PRINTSHOP_SETTINGS_TITLE'          => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'],
+            'TXT_PRINTSHOP_EMAIL_HELP'              => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_HELP'],
+            'TXT_PRINTSHOP_ORDER_EMAIL'             => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_EMAIL'],
+            'TXT_PRINTSHOP_ENTRIES_PER_PAGE'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRIES_PER_PAGE'],
+            'TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP'   => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP'],
+            'TXT_PRINTSHOP_PRICE_THRESHOLDS'        => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_THRESHOLDS'],
+            'TXT_SAVE'                              => $_CORELANG['TXT_SAVE']
         ));
 
         $this->_objTpl->setVariable(array(
             'PRINTSHOP_SETTINGS_ORDER_EMAIL'        => $this->_arrSettings['orderEmail'],
             'PRINTSHOP_SETTINGS_ENTRIES_PER_PAGE'   => $this->_arrSettings['entriesPerPage'],
+            'PRINTSHOP_SETTINGS_PRICE_THRESHOLDS'   => $this->_arrSettings['priceThresholds'],
         ));
     }
 
