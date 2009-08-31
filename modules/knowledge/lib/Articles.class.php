@@ -341,8 +341,8 @@ class KnowledgeArticles
     {
         $this->insertContent[] = array(
             'lang' => intval($lang),
-            'question' => addslashes($question),
-            'answer' => addslashes($answer),
+            'question' => contrexx_addslashes($question),
+            'answer' => contrexx_addslashes($answer),
             'index' => $index
         );
     }
