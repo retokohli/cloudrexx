@@ -333,14 +333,12 @@ class Shop extends ShopLibrary
                 // *DO NOT* remove this!  Needed for site testing.
                 case 'testIpn':
                     require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    $objPaypal = new PayPal;
-                    $objPaypal->testIpn(); // die()s!
+                    PayPal::testIpn(); // die()s!
                 // Test for PayPal IPN validation
                 // *DO NOT* remove this!  Needed for site testing.
                 case 'testIpnValidate':
                     require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    $objPaypal = new PayPal;
-                    $objPaypal->testIpnValidate(); // die()s!
+                    PayPal::testIpnValidate(); // die()s!
                 default:
                     $this->products();
                     break;
