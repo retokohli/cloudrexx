@@ -246,7 +246,7 @@ class memberDir extends MemberDirLibrary
 
             if ($objResult) {
                 $count = $objResult->RecordCount();
-                $paging = getPaging($count, $pos, "&amp;section=memberdir&amp;id=$dirid&amp;sort=$sort&amp;search=".htmlentities(contrexx_stripslashes($_GET['search']), ENT_QUOTES, CONTREXX_CHARSET)."&amp;keyword=$keyword", "<b>".$_ARRAYLANG['TXT_MEMBERDIR_ENTRIES']."</b>", true, $_CONFIG['corePagingLimit']);
+                $paging = getPaging($count, $pos, "&amp;section=memberdir&amp;cmd=".htmlentities($_GET['cmd'], ENT_QUOTES, CONTREXX_CHARSET)."&amp;id=$dirid&amp;sort=$sort&amp;search=".htmlentities(contrexx_stripslashes($_GET['search']), ENT_QUOTES, CONTREXX_CHARSET)."&amp;keyword=$keyword", "<b>".$_ARRAYLANG['TXT_MEMBERDIR_ENTRIES']."</b>", true, $_CONFIG['corePagingLimit']);
 
                 $this->_objTpl->setVariable("MEMBERDIR_PAGING", $paging);
 
