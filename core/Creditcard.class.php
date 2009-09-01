@@ -114,7 +114,7 @@ class Creditcard
 //echo("Creditcard::getNameArray():  Initializing<br />");
         if (empty(self::$arrCreditcards)) self::init();
         if (empty(self::$arrCreditcards)) {
-echo("Creditcard::getNameArray():  Failed to initialize<br />");
+//echo("Creditcard::getNameArray():  Failed to initialize<br />");
             return false;
         }
         $arrCreditcardNames = array();
@@ -220,7 +220,7 @@ echo("Creditcard::getNameArray():  Failed to initialize<br />");
     {
         global $objDatabase;
 
-echo("Creditcard::errorHandler(): Entered<br />");
+//echo("Creditcard::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."core_creditcard", $arrTables)) {
@@ -235,7 +235,7 @@ echo("Creditcard::errorHandler(): Entered<br />");
                 ) ENGINE=MYISAM";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("Creditcard::errorHandler(): Created table ".DBPREFIX."core_creditcard<br />");
+//echo("Creditcard::errorHandler(): Created table ".DBPREFIX."core_creditcard<br />");
         }
 
 // TODO:  Try to DROP old records
@@ -283,7 +283,7 @@ echo("Creditcard::errorHandler(): Created table ".DBPREFIX."core_creditcard<br /
                   ".($ord * 1000)."
                 )");
             if (!$objResult) {
-echo("Creditcard::errorHandler(): Failed to insert Creditcard $creditcard<br />");
+//echo("Creditcard::errorHandler(): Failed to insert Creditcard $creditcard<br />");
                 continue;
             }
         }

@@ -11,7 +11,9 @@
  * @subpackage  module_hotelcard
  */
 
-//require_once(ASCMS_CORE_PATH.'/HtmlTag.class');
+//require_once(ASCMS_CORE_PATH.'/HtmlTag.class.php');
+require_once(ASCMS_FRAMEWORK_PATH.'/Javascript.class.php');
+require_once(ASCMS_CORE_PATH.'/Image.class.php');
 
 /**
  * HTML class
@@ -26,7 +28,19 @@
 class Html
 {
     /**
+     * Index counter for all editable elements
+     *
+     * Incremented for and added to each element in the order they are created
+     * @var   integer
+     */
+    private static $tabindex = 0;
+
+    /**
      * Returns HTML code for a text imput field
+     *
+     * If the custom attributes parameter $attribute is empty, and
+     * is_numeric($value) evaluates to true, the text is right aligned
+     * within the input element.
      * @param   string    $name         The element name
      * @param   string    $value        The element value
      * @param   string    $attribute    Additional optional attributes
@@ -37,7 +51,12 @@ class Html
     {
         return
             '<input type="text" name="'.$name.'" value="'.$value.'"'.
-            ($attribute ? ' '.$attribute : '').
+            ' tabindex="'.++self::$tabindex.'"'.
+            ($attribute
+              ? ' '.$attribute
+              : (is_numeric($value)
+                  ? ' style="text-align: right;"'
+                  : '')).
             ' />';
     }
 
@@ -54,6 +73,7 @@ class Html
     {
         return
             '<input type="password" name="'.$name.'" value="'.$value.'"'.
+            ' tabindex="'.++self::$tabindex.'"'.
             ($attribute ? ' '.$attribute : '').
             ' />';
     }
@@ -73,6 +93,7 @@ class Html
     ) {
         return
             '<input type="file" name="'.$name.'"'.
+            ' tabindex="'.++self::$tabindex.'"'.
             ($maxlength ? ' maxlength="'.$maxlength.'"' : '').
             ($mimetype ? ' accept="'.$mimetype.'"' : '').
             ($attribute ? ' '.$attribute : '').
@@ -95,6 +116,7 @@ class Html
     ) {
         return
             '<textarea name="'.$name.'"'.
+            ' tabindex="'.++self::$tabindex.'"'.
             ($cols ? ' cols="'.$cols.'"' : '').
             ($rows ? ' rows="'.$rows.'"' : '').
             ($attribute ? ' '.$attribute : '').
@@ -122,13 +144,18 @@ class Html
 
 //echo("getSelect($name, $arrOptions, $selected, $onchange, $attribute): Entered<br />");
 
-        if (empty($name)) return '';
-        return
+        if (empty($name)) {
+//die("getSelect($name, $arrOptions, $selected, $onchange, $attribute): Name empty");
+            return '';
+        }
+        $menu =
             '<select id="'.$name.'" name="'.$name.'"'.
+            ' tabindex="'.++self::$tabindex.'"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').
             ($attribute ? ' '.$attribute : '').
             ">\n".self::getOptions($arrOptions, $selected)."</select>\n";
-//echo("getMenu(select=$selectedId, name=$menuName, onchange=$onchange): made menu: ".htmlentities($menu)."<br />");
+//echo("getSelect($name, $arrOptions, $selected, $onchange, $attribute): made menu: ".htmlentities($menu)."<br />");
+        return $menu;
     }
 
 
@@ -200,7 +227,7 @@ class Html
                 );
         }
 //echo("getRadioGroup(): Made ".htmlentities($radiogroup, ENT_QUOTES, CONTREXX_CHARSET)."<br />");
-        return $radiogroup;
+        return '<span class="inputgroup">'.$radiogroup.'</span>';
     }
 
 
@@ -230,6 +257,7 @@ class Html
             '<input type="radio" name="'.$name.'" value="'.$value.'"'.
             ($id ? ' id="'.$id.'"' : '').
             ($checked ? ' checked="checked"' : '').
+            ' tabindex="'.++self::$tabindex.'"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').
             ($attribute ? ' '.$attribute : '').
             " />\n";
@@ -282,6 +310,7 @@ class Html
             if (empty($index[$name_stripped])) $index[$name_stripped] = 0;
             $id = $name.'-'.++$index[$name_stripped];
             $checkboxgroup .=
+                '<p>'.
                 self::getCheckbox(
                     $name.'['.$key.']', $value, $id,
                     (in_array($key, $arrChecked)),
@@ -291,7 +320,8 @@ class Html
                     $id,
                     $arrLabel[$key],
                     $attributeLabel
-                ).'<br />';
+                ).
+                '</p>';
         }
         return $checkboxgroup;
     }
@@ -322,6 +352,7 @@ class Html
             '<input type="checkbox" name="'.$name.'" value="'.$value.'"'.
             ($id ? ' id="'.$id.'"' : '').
             ($checked ? ' checked="checked"' : '').
+            ' tabindex="'.++self::$tabindex.'"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').
             ($attribute ? ' '.$attribute : '').
             " />\n";
@@ -348,12 +379,12 @@ class Html
 
 
     /**
-     * Returns HTML and JS code for an image element that links to
+     * Returns HTML code for an image element that links to
      * the filebrowser for choosing an image file on the server
      *
      * Uses the $id parameter as prefix for both the name and id attributes
      * of all HTML elements.  The names and respective suffixes are:
-     *  - id+'' (none) for the name and id of the <img> tag
+     *  - id+'img' for the name and id of the <img> tag
      *  - id+'_src' for the name and id of the hidden <input> tag for the image URI
      *  - id+'_width' for the name and id of the hidden <input> tag for the width
      *  - id+'_height' for the name and id of the hidden <input> tag for the height
@@ -364,17 +395,21 @@ class Html
     {
         global $_CORELANG;
 
+        Javascript::registerCode(self::getJavascript());
         return
-            '<img id="'.$id.'" src="'.$objImage->getPath().'" '.
+            '<img id="'.$id.'_img" src="'.$objImage->getPath().'" '.
             '    style="width:'.$objImage->getWidth().'px; height:'.$objImage->getHeight().'px; border: none;" '.
             '    title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" '.
             '    alt="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" />'.
-            '<a href="javascript:void(0);" title="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'">'.
-            '    onclick="clearImage(\''.$id.'\');"'.
-            '  <img src="'.Image::CLEAR_IMAGE_ICON.'" border="0" alt="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"/>'.
-            '</a><br />'.
-            '<a href="javascript:void(0);" title="{TXT_CORE_CHOOSE_IMAGE}" '.
-                'onclick="openBrowser(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop\',\'1\',\'width=800,height=640,resizable=yes,status=no,scrollbars=yes\');"  >'.
+            ($objImage->getPath()
+                ? '<a href="javascript:void(0);" title="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'">'.
+                  ' onclick="clearImage(\''.$id.'\');"'.
+                  '<img src="'.Image::CLEAR_IMAGE_ICON.'" border="0" alt="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"/>'.
+                  '</a><br />'
+                : '').
+            '<a href="javascript:void(0);" title="{TXT_CORE_CHOOSE_IMAGE}"'.
+                ' tabindex="'.++self::$tabindex.'"'.
+                ' onclick="openBrowser(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop\',\'1\',\'width=800,height=640,resizable=yes,status=no,scrollbars=yes\');"  >'.
             '  '.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].
             '<input type="hidden" id="'.$id.'_src" name="'.$id.'_src" value="'.$objImage->getPath().'" />'.
             '<input type="hidden" id="'.$id.'_width" name="'.$id.'_width" value="'.$objImage->getWidth().'" />'.
@@ -383,29 +418,41 @@ class Html
 
 
     /**
-     * Returns HTML and JS code for an image element with form
+     * Returns HTML code for an image element with form
      * elements for uploading an image file.
      *
      * Uses the $id parameter as prefix for both the name and id attributes
      * of all HTML elements.  The names and respective suffixes are:
-     *  - id+'' (none) for the name and id of the <img> tag
+     *  - id+'_img' for the name and id of the <img> tag
+     *  - id+'_src' for the name and id of the hidden <input> tag for the image URI
+     *  - id+'_width' for the name and id of the hidden <input> tag for the width
+     *  - id+'_height' for the name and id of the hidden <input> tag for the height
      *  - id+'_file' for the name and id of the file upload element
-     * The file upload element will provide the current selected image
-     * path when the form is posted.
+     * The file upload element will provide the new image chosen by the user
+     * when the form is posted, while the hidden fields represent the previous
+     * state when the page was generated.
      */
     static function getImageChooserUpload($objImage, $id)
     {
         global $_CORELANG;
 
+        JS::registerCode(self::getJavascript());
+        if (empty($objImage)) $objImage = new Image(0);
         return
-            '<img id="'.$id.'" src="'.$objImage->getPath().'" '.
+            '<img id="'.$id.'_img" src="'.$objImage->getPath().'" '.
             '    style="width:'.$objImage->getWidth().'px; height:'.$objImage->getHeight().'px; border: none;" '.
             '    title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" '.
             '    alt="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" />'.
-            '<a href="javascript:void(0);" title="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'">'.
-            '    onclick="clearImage(\''.$id.'\');"'.
-            '  <img src="'.Image::ICON_CLEAR_IMAGE_SRC.'" border="0" alt="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"/>'.
-            '</a><br />'.
+            ($objImage->getPath()
+                ? '<a href="javascript:void(0);" title="'.
+                  $_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"'.
+                  ' onclick="clearImage(\''.$id.'\');">'.
+                  '<img src="'.Image::ICON_CLEAR_IMAGE_SRC.'" border="0" alt="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"/>'.
+                  '</a><br />'
+                : '').
+            '<input type="hidden" id="'.$id.'_src" name="'.$id.'_src" value="'.$objImage->getPath().'" />'.
+            '<input type="hidden" id="'.$id.'_width" name="'.$id.'_width" value="'.$objImage->getWidth().'" />'.
+            '<input type="hidden" id="'.$id.'_height" name="'.$id.'_height" value="'.$objImage->getHeight().'" />'.
             self::getInputFileupload($id.'_file');
     }
 
@@ -414,13 +461,63 @@ class Html
     {
         static $index = 0;
 
+        JS::registerCode(self::getJavascript());
         return
             '<input type="text" name="'.$name.
-            '" id="DPC_edit'.++$index.'_YYYY-MM-DD" '.
+//            '" id="DPC_edit'.++$index.'_YYYY-MM-DD" '.
+            '" id="DPC_edit'.++$index.'_DD.MM.YYYY" '.
             'value="'.$value.'"'.
+            ' tabindex="'.++self::$tabindex.'"'.
             ($onchange ? ' onchange='.$onchange : '').
             ($attribute ? ' '.$attribute : '').
             ' />';
+    }
+
+
+    static function getJavascript()
+    {
+        return '
+function openWindow(theURL, winName, features)
+{
+  window.open(theURL, winName, features);
+}
+
+field_id = false;
+function openBrowser(url, id, attrs)
+{
+  field_id = id;
+  try {
+    if (!browserPopup.closed) {
+      return browserPopup.focus();
+    }
+  } catch(e) {}
+  if (!window.focus) return true;
+  browserPopup = window.open(url, "", attrs);
+  browserPopup.focus();
+  return false;
+}
+
+function SetUrl(url, width, height, alt)
+{
+  var fact = 80 / height;
+  if (width > height) fact = 80 / width;
+  var element_img = document.getElementById(field_id+"_img").
+  element_img.setAttribute("src", url);
+  element_img.style.width = parseInt(width*fact)+"px";
+  element_img.style.height = parseInt(height*fact)+"px";
+  document.getElementById(field_id+"_src").value = url;
+  document.getElementById(field_id+"_width").value = width;
+  document.getElementById(field_id+"_height").value = height;
+}
+
+function clearImage(id, index)
+{
+  document.getElementById(id+"_img").src = "'.Image::NO_IMAGE_SRC.'";
+  document.getElementById(id+"_src").value = "";
+  document.getElementById(id+"_width").value = "";
+  document.getElementById(id+"_height").value = "";
+}
+';
     }
 
 }

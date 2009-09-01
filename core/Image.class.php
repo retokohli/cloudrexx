@@ -28,7 +28,7 @@ class Image
     /**
      * The icon URI for the "remove the current image" link
      */
-    const ICON_CLEAR_IMAGE_SRC = 'images/icons/clear_image.gif';
+    const ICON_CLEAR_IMAGE_SRC = 'images/content/clear_image.gif';
 
     /**
      * The default "no image" URI
@@ -220,7 +220,7 @@ class Image
         $path = preg_replace($reRoot, '', $path);
         $reThumb = '/\.thumb$/';
         $path = preg_replace($reThumb, '', $path);
-        if ($path == self::$default) {
+        if ($path == self::NO_IMAGE_SRC) {
             $this->path = '';
         } else {
             $this->path = strip_tags($path);
@@ -284,7 +284,7 @@ class Image
      *
      * If no object with that ID and ordinal can be found, creates a new one.
      * In that case, the $image_type_id parameter must be non-empty.
-     * @param   integer     $image_id        The object ID
+     * @param   integer     $image_id       The object ID
      * @param   integer     $ord            The ordinal number
      * @param   string      $path           The path
      * @param   integer     $image_type_id  The image type ID
@@ -307,7 +307,7 @@ class Image
 // TODO:  Debug stuff, remove in release
         $auto_type = $imageSize[2];
         if ($auto_type !== strtoupper($path_parts['extension']))
-echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $image_type_id, width $width, height $height): Warning: Image extension (".$path_parts['extension'].") mismatch with type ($auto_type)<br />");
+//echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $image_type_id, width $width, height $height): Warning: Image extension (".$path_parts['extension'].") mismatch with type ($auto_type)<br />");
 // /TODO
 
         if ($image_type_id) $objImage->setTypeKey($image_type_id);
@@ -334,7 +334,7 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
 
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."core_image
-             WHERE image_id=$this->id
+             WHERE id=$this->id
                AND ord=$this->ord
         ");
         if (!$objResult) return self::errorHandler();
@@ -402,7 +402,7 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
         $query = "
             SELECT 1
               FROM ".DBPREFIX."core_image
-             WHERE image_id=$this->id
+             WHERE id=$this->id
                AND ord=$this->ord";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
@@ -438,7 +438,8 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
 
     /**
      * Update this object in the database.
-     * @return      boolean                     True on success, false otherwise
+     * @return      integer                     The Image ID on success,
+     *                                          false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -450,22 +451,24 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
             UPDATE ".DBPREFIX."core_image
                SET `id`=$this->id,
                    `image_type_id`=$this->image_type_id,
-                   `file_type_id`=$this->file_type_id,
+                   `file_type_id`=".($this->file_type_id
+                      ? $this->file_type_id : 'NULL').",
                    `path`='".addslashes($this->path)."',
-                   `width`=$this->width,
-                   `height`=$this->height
+                   `width`=".($this->width ? $this->width : 'NULL').",
+                   `height`=".($this->height ? $this->height : 'NULL')."
              WHERE `id`=$this->id
                AND `ord`=$this->ord
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
-        return true;
+        return $this->id;
     }
 
 
     /**
      * Insert this object into the database.
-     * @return      boolean                     True on success, false otherwise
+     * @return      integer                     The Image ID on success,
+     *                                          false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -482,14 +485,17 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
             ) VALUES (
                 ".($this->id ? "$this->id, " : '').
                 "$this->ord, $this->image_type_id,
-                $this->file_type_id, '".addslashes($this->path)."',
-                `width`=$this->width, `height`=$this->height
+                ".($this->file_type_id ? $this->file_type_id : 'NULL').",
+                '".addslashes($this->path)."',
+                `width`=".($this->width ? $this->width : 'NULL').",
+                `height`=".($this->height ? $this->height : 'NULL')."
             )
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
-        if ($this->id == 0) $this->id = $objDatabase->insert_id();
-        return true;
+        if ($this->id == 0) $this->id = $objDatabase->Insert_ID();
+//echo("Image::insert(): Inserted ID $this->id<br />");
+        return $this->id;
     }
 
 
@@ -512,7 +518,7 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
             SELECT `image_type_id`, `file_type_id`,
                    `path`, `width`, `height`
               FROM ".DBPREFIX."core_image
-             WHERE image_id=$image_id
+             WHERE id=$image_id
                AND ord=$ord";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
@@ -561,7 +567,7 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
             SELECT `ord`, `image_type_id`, `file_type_id`,
                    `path`, `width`, `height`
               FROM ".DBPREFIX."core_image
-             WHERE image_id=$image_id
+             WHERE id=$image_id
                ".($ord === false ? 'ORDER BY ord ASC' : "AND ord=$ord")
         ;
         $objResult = $objDatabase->Execute($query);
@@ -571,7 +577,7 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
         $arrImage = array();
         while (!$objResult->EOF) {
             $arrImage[$objResult->fields['ord']] = array(
-                'id'           => $objResult->fields['image_id'],
+                'id'           => $objResult->fields['id'],
                 'ord'          => $objResult->fields['ord'],
                 'image_type_id'     => $objResult->fields['image_type_id'],
                 'file_type_id' => $objResult->fields['file_type_id'],
@@ -647,17 +653,30 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
         $image_id=false, $image_type_id=false, $ord=false)
     {
         // $target_path *SHOULD* be like ASCMS_HOTELCARD_IMAGES_FOLDER.'/folder/name.ext'
+        // Strip path offset, if any, from the target path
+        $target_path = preg_replace('/^'.preg_quote(ASCMS_PATH_OFFSET, '/').'/', '', $target_path);
         if (!File::uploadFileHttp(
             $upload_field_name, $target_path,
             self::MAXIMUM_UPLOAD_FILE_SIZE, self::$arrAcceptedFiletype)
-        ) return false;
-
+        ) {
+//echo("Image::uploadAndStore($upload_field_name, $target_path, $image_id, $image_type_id, $ord): Failed to upload<br />");
+            return false;
+        }
         if ($image_id) {
             if ($ord === false) $ord = self::getNextOrd($image_id, $image_type_id);
         }
         $objImage = new Image($ord, $image_id);
+        $objImage->setPath($target_path);
+        $size = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$target_path);
+        $objImage->setWidth($size[0]);
+        $objImage->setHeight($size[1]);
         $objImage->setImageTypeId($image_type_id);
-        return $objImage->store();
+        if ($objImage->store()) {
+//echo("Image::uploadAndStore(): Successfully stored<br />");
+            return $objImage->getId();
+        }
+//echo("Image::uploadAndStore(): Failed to store<br />");
+        return false;
     }
 
 
@@ -679,7 +698,7 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
             SELECT MAX(`ord`) as `ord`
               FROM ".DBPREFIX."core_image
              WHERE 1".
-              ($image_id      ? " AND `image_id`=$image_id"           : '').
+              ($image_id      ? " AND `id`=$image_id"                 : '').
               ($image_type_id ? " AND `image_type_id`=$image_type_id" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return self::errorHandler();
@@ -704,24 +723,24 @@ echo("Image::replace(image_id $image_id, ord $ord, path $path, image_type_id $im
             // The table doesn't exist yet!
             $query = "
                 CREATE TABLE `".DBPREFIX."core_image` (
-                  `id` INT UNSIGNED NOT NULL ,
-                  `ord` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value allowing multiple images to be stored for the same image ID and type.\nUsed for sorting.\nDefaults to zero.' ,
-                  `image_type_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT 'Type ID allowing multiple images to be stored for the same image ID.\nRelates to core_image_type.type_text_id, which in turn is a core_text ID.\nDefaults to NULL, which is an untyped image.' ,
-                  `file_type_id` INT UNSIGNED NULL COMMENT 'Image type is unknown if NULL.' ,
-                  `path` TEXT NOT NULL COMMENT 'Path *SHOULD* be relative to the ASCMS_ROOT (document root + path offset).\nOmit leading slashes, these will be cut.' ,
-                  `width` INT UNSIGNED NULL COMMENT 'Width is unknown if NULL.' ,
-                  `height` INT UNSIGNED NULL COMMENT 'Height is unknown if NULL.' ,
-                  PRIMARY KEY (`id`, `ord`) ,
-                  INDEX `file_type_id` (`file_type_id` ASC) ,
-                  INDEX `image_type_id` (`image_type_id` ASC) ,
+                  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                  `ord` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value allowing multiple images to be stored for the same image ID and type.\nUsed for sorting.\nDefaults to zero.',
+                  `image_type_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT 'Type ID allowing multiple images to be stored for the same image ID.\nRelates to core_image_type.type_text_id, which in turn is a core_text ID.\nDefaults to NULL, which is an untyped image.',
+                  `file_type_id` INT UNSIGNED NULL COMMENT 'Image type is unknown if NULL.',
+                  `path` TEXT NOT NULL COMMENT 'Path *SHOULD* be relative to the ASCMS_DOCUMENT_ROOT (document root + path offset).\nOmit leading slashes, these will be cut.',
+                  `width` INT UNSIGNED NULL COMMENT 'Width is unknown if NULL.',
+                  `height` INT UNSIGNED NULL COMMENT 'Height is unknown if NULL.',
+                  PRIMARY KEY (`id`, `ord`),
+                  INDEX `file_type_id` (`file_type_id` ASC),
+                  INDEX `image_type_id` (`image_type_id` ASC),
                   CONSTRAINT `file_type_id`
-                    FOREIGN KEY (`file_type_id` )
-                    REFERENCES `contrexx_core_file_type` (`id` )
+                    FOREIGN KEY (`file_type_id`)
+                    REFERENCES `contrexx_core_file_type` (`id`)
                     ON DELETE NO ACTION
                     ON UPDATE NO ACTION,
                   CONSTRAINT `image_type_id`
-                    FOREIGN KEY (`image_type_id` )
-                    REFERENCES `core_image_type` (`key` )
+                    FOREIGN KEY (`image_type_id`)
+                    REFERENCES `core_image_type` (`key`)
                     ON DELETE NO ACTION
                     ON UPDATE NO ACTION)
                 ENGINE=MyISAM

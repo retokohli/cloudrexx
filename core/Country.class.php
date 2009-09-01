@@ -615,8 +615,10 @@ echo("Country::errorHandler(): Created table ".DBPREFIX."core_country<br />");
                   NULL, 2, 0, '".self::TEXT_CORE_COUNTRY_NAME."', '".addslashes($arrCountry[1])."'
                 )");
             if (!$objResult) {
-echo("Country::errorHandler(): Failed to insert Text for Country ".var_export($arrCountry, true)."<br />");
-                continue;
+                Text::errorHandler();
+                return self::errorHandler();
+//echo("Country::errorHandler(): Failed to insert Text for Country ".var_export($arrCountry, true)."<br />");
+//                continue;
             }
             $id = $objDatabase->Insert_ID();
             // The active field defaults to 1
@@ -630,8 +632,8 @@ echo("Country::errorHandler(): Failed to insert Text for Country ".var_export($a
                   ".++$ord."
                 )");
             if (!$objResult) {
-echo("Country::errorHandler(): Failed to insert Country ".var_export($arrCountry, true)."<br />");
-                continue;
+die("Country::errorHandler(): Failed to insert Country ".var_export($arrCountry, true)."<br />");
+//                continue;
             }
         }
 
@@ -968,10 +970,48 @@ echo("Region::errorHandler(): Entered<br />");
         if (!$objResult) return false;
 echo("Region::errorHandler(): Created table ".DBPREFIX."core_region<br />");
 
-// TODO:  Try to DROP old records
+        // Create region records from ZIP table.
+        // Note that this contains double cities with different ZIP
+        $objResult = $objDatabase->Execute("
+            SELECT DISTINCT `city`, `state`, `country_id`
+              FROM `".DBPREFIX."core_zip`");
+        if (!$objResult)
+die ("Failed to read region source table<br />");
+        $ord = 0;
+        while (!$objResult->EOF) {
+            $city = utf8_encode($objResult->fields['city']);
+            $state = $objResult->fields['state'];
+            $country_id = $objResult->fields['country_id'];
+            $region = preg_replace('/\s*'.$state.'/', '', $city).' ('.$state.')';
+//echo("Got city $city, state $state, country_id $country_id, region $region<br />");
 
-        // Re-insert region records from scratch
-// TODO: Define and add regions
+            $objResult2 = $objDatabase->Execute("
+                INSERT INTO `".DBPREFIX."core_text` (
+                  `id`, `lang_id`, `module_id`, `key`, `text`
+                ) VALUES (
+                  NULL, 1, 0, '".self::TEXT_CORE_REGION_NAME."', '".
+                  addslashes($region)."'
+                )");
+            if (!$objResult) {
+                Text::errorHandler();
+                return self::errorHandler();
+            }
+//die("Country::errorHandler(): Failed to insert Text for Region ".$objResult->fields['region']."<br />");
+            $text_id = $objDatabase->Insert_ID();
+            if (!$text_id)
+die("Failed to insert region text<br />");
+            $objResult2 = $objDatabase->Execute("
+                INSERT INTO `".DBPREFIX."core_region` (
+                  `name_text_id`, `parent_id`, `country_name_id`, `ord`
+                ) VALUES (
+                  $text_id, 0, $country_id, ".++$ord."
+                )");
+            if (!$objResult2)
+die("Country::errorHandler(): Failed to insert Region with ID $text_id ($region)<br />");
+            $objResult->MoveNext();
+        }
+
+/*
         $arrRegion = array(
             // (Name, parent name, country ID)
             array('Bern', '', 204),
@@ -987,7 +1027,7 @@ echo("Region::errorHandler(): Created table ".DBPREFIX."core_region<br />");
                   NULL, 2, 0, '".self::TEXT_CORE_REGION_NAME."', '".addslashes($arrRegion[0])."'
                 )");
             if (!$objResult) {
-echo("Region::errorHandler(): Failed to insert Text for Region ".var_export($arrRegion, true)."<br />");
+//echo("Region::errorHandler(): Failed to insert Text for Region ".var_export($arrRegion, true)."<br />");
                 continue;
             }
             $id = $objDatabase->Insert_ID();
@@ -1008,10 +1048,11 @@ echo("Region::errorHandler(): Failed to insert Text for Region ".var_export($arr
                   ".++$ord."
                 )");
             if (!$objResult) {
-echo("Region::errorHandler(): Failed to insert Region ".var_export($arrRegion, true)."<br />");
+//echo("Region::errorHandler(): Failed to insert Region ".var_export($arrRegion, true)."<br />");
                 continue;
             }
         }
+*/
 
         // More to come...
 
