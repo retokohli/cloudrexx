@@ -1037,12 +1037,13 @@ $_ARRAYLANG['TXT_PRINTSHOP_MODULE_DESCRIPTION'] = "Online Shop for printed matte
 $_ARRAYLANG['TXT_PRINTSHOP_MODULE'] = "Print shop";
 $_ARRAYLANG['TXT_PLEASE_WAIT_SITEMAP'] = "Sitemap is currently being written. Depending on the number of languages, this can take a while.";
 $_ARRAYLANG['TXT_LANGUAGE_ALREADY_EXIST'] = "The language already exists!";
-$_ARRAYLANG['TXT_HOTELCARD_MODULE_DESCRIPTION'] = "Verwaltung des Hotelcard Moduls";
+$_ARRAYLANG['TXT_HOTELCARD'] = "Hotelcard";
+$_ARRAYLANG['TXT_HOTELCARD_MODULE_DESCRIPTION'] = "Administration of the Hotelcard";
 $_ARRAYLANG['TXT_CORE_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_CORE_SETTING_STORE'] = "store";
 $_ARRAYLANG['TXT_CORE_SETTING_NAME'] = "Description";
-$_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Setting";
-$_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Error querying settings";
+$_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Value";
+$_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Error while retrieving the settings";
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "No settings found";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
 ?>
