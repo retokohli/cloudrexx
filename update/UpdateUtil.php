@@ -103,8 +103,13 @@ class UpdateUtil {
     }
     private static function sql($statement) {
         global $objDatabase;
-        if ($objDatabase->Execute($statement) === false) {
+        $objResult = $objDatabase->Execute($statement);
+        if ($objResult === false) {
             self::cry($objDatabase->ErrorMsg(), $statement);
+        } elseif ($objDatabase->Insert_ID()) {
+            return $objDatabase->Insert_ID();
+        } else {
+            return $objResult;
         }
     }
 
@@ -175,7 +180,7 @@ class UpdateUtil {
 
             self::sql($query);
             return true;
-        }
+		}
         else {
             $col_spec = $col_info[strtoupper($col)];
             $type = $col_spec->type . (preg_match('@[a-z]+\([0-9]+\)@i', $spec['type']) && $col_spec->max_length > 0 ? "($col_spec->max_length)" : ($col_spec->type == 'enum' ? "(".implode(",", $col_spec->enums).")" : ''));
@@ -327,11 +332,137 @@ class UpdateUtil {
         return $primaries;
     }
 
+    /**
+     * Replace certain strings in a content page
+     *
+     * This method will replace $search with $replace in the content page(s) specified by the module ID $moduleId and CMD $cmd.
+     * If $cmd is set to NULL, the replacement will be done on every content page of the specified module.
+     * $search and $replace can either be a single string or an array of strings.
+     * $changeVersion specifies the Contrexx version in which the replaced should take place. Latter means that the replace will only be done if the installed Contrexx version is older than the one specified by $changeVersion.
+     *
+     * @global Contrexx_Update
+     * @global Array
+     * @param integer Module ID
+     * @param string CMD
+     * @param mixed Search string(s)
+     * @param mixed Replacement string(s)
+     * @param string Contrexx version
+     * of the content page
+     */
+    public static function migrateContentPage($moduleId, $cmd, $search, $replace, $changeVersion)
+    {
+        global $objUpdate, $_CONFIG;
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
+            $query = "
+                SELECT
+                    c.`id`,
+                    c.`content`,
+                    c.`title`,
+                    c.`metatitle`,
+                    c.`metadesc`,
+                    c.`metakeys`,
+                    c.`metarobots`,
+                    c.`css_name`,
+                    c.`redirect`,
+                    c.`expertmode`,
+                    n.`catid`,
+                    n.`is_validated`,
+                    n.`parcat`,
+                    n.`catname`,
+                    n.`target`,
+                    n.`displayorder`,
+                    n.`displaystatus`,
+                    n.`activestatus`,
+                    n.`cachingstatus`,
+                    n.`username`,
+                    n.`cmd`,
+                    n.`lang`,
+                    n.`startdate`,
+                    n.`enddate`,
+                    n.`protected`,
+                    n.`frontend_access_id`,
+                    n.`backend_access_id`,
+                    n.`themes_id`,
+                    n.`css_name`
+                FROM `".DBPREFIX."content` AS c
+                INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
+                WHERE n.`module` = $moduleId ".($cmd === null ? '' : "AND n.`cmd` = '$cmd'")." AND n.`username` != 'contrexx_update_$changeVersion'";
+            $objContent = self::sql($query);
+            $arrFailedPages = array();
+            while (!$objContent->EOF) {
+                $newContent = str_replace(
+                    $search,
+                    $replace,
+                    $objContent->fields['content']
+                );
+                $query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_$changeVersion' WHERE c.`id` = ".$objContent->fields['id'];
+                self::sql($query);
+
+                $query = "UPDATE `".DBPREFIX."content_navigation_history` SET `is_active` = '0' WHERE `catid` = ".$objContent->fields['id'];
+                self::sql($query);
+
+                $query = "
+                    INSERT INTO `".DBPREFIX."content_navigation_history`
+                    SET
+                        `is_active` = '1',
+                        `catid` = ".$objContent->fields['id'].",
+                        `parcat` = ".$objContent->fields['parcat'].",
+                        `catname` = '".addslashes($objContent->fields['catname'])."',
+                        `target` = '".$objContent->fields['target']."',
+                        `displayorder` = ".$objContent->fields['displayorder'].",
+                        `displaystatus` = '".$objContent->fields['displaystatus']."',
+                        `activestatus` = '".$objContent->fields['activestatus']."',
+                        `cachingstatus` = '".$objContent->fields['cachingstatus']."',
+                        `username` = 'contrexx_update_$changeVersion',
+                        `changelog` = ".time().",
+                        `cmd` = '".$objContent->fields['cmd']."',
+                        `lang` = ".$objContent->fields['lang'].",
+                        `module` = $moduleId,
+                        `startdate` = '".$objContent->fields['startdate']."',
+                        `enddate` = '".$objContent->fields['enddate']."',
+                        `protected` = ".$objContent->fields['protected'].",
+                        `frontend_access_id` = ".$objContent->fields['frontend_access_id'].",
+                        `backend_access_id` = ".$objContent->fields['backend_access_id'].",
+                        `themes_id` = ".$objContent->fields['themes_id'].",
+                        `css_name` = '".$objContent->fields['css_name']."'";
+                $historyId = self::sql($query);
+
+                $query = "
+                    INSERT INTO `".DBPREFIX."content_history`
+                    SET
+                        `id` = ".$historyId.",
+                        `page_id` = ".$objContent->fields['id'].",
+                        `content` = '".addslashes($newContent)."',
+                        `title` = '".addslashes($objContent->fields['title'])."',
+                        `metatitle` = '".addslashes($objContent->fields['metatitle'])."',
+                        `metadesc` = '".addslashes($objContent->fields['metadesc'])."',
+                        `metakeys` = '".addslashes($objContent->fields['metakeys'])."',
+                        `metarobots` = '".addslashes($objContent->fields['metarobots'])."',
+                        `css_name` = '".addslashes($objContent->fields['css_name'])."',
+                        `redirect` = '".addslashes($objContent->fields['redirect'])."',
+                        `expertmode` = '".$objContent->fields['expertmode']."'";
+                self::sql($query);
+
+                $query = "
+                    INSERT INTO	`".DBPREFIX."content_logfile`
+                    SET
+                        `action` = 'update',
+                        `history_id` = ".$historyId.",
+                        `is_validated` = '1'";
+                self::sql($query);
+
+                $objContent->MoveNext();
+            }
+        }
+    }
+
     public static function DefaultActionHandler($e) {
         if ($e instanceof Update_DatabaseException) {
             return _databaseError($e->sql, $e->getMessage());
         }
-        setUpdateMsg($e->getMessage());
-        return false;
+		setUpdateMsg($e->getMessage());
+		return false;
     }
 }
+
