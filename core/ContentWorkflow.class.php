@@ -285,7 +285,7 @@ class ContentWorkflow
                 if (!empty($objResult->fields['navPageId'])) {
                     $objSubResult = $objDatabase->SelectLimit('    SELECT    catid
                                                             FROM    '.DBPREFIX.'content_navigation
-                                                            WHERE    catid='.$objResult->fields['navPageId'], 1);
+                                                            WHERE    catid='.intval($objResult->fields['navPageId']), 1);
                     if ($objSubResult->RecordCount() == 1) {
                         $boolPageExists = true;
                     } else {
