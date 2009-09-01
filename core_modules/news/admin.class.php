@@ -1287,6 +1287,21 @@ class newsManager extends newsLibrary {
 
             $objFWUser->objUser->getDynamicPermissionIds(true);
 
+            // find out original user's id
+            $orig_user_sql = "
+                SELECT userid 
+                FROM ".DBPREFIX."module_news
+                WHERE id = '$id'
+            ";
+            $orig_user_rs = $objDatabase->Execute($orig_user_sql);
+            if ($orig_user_rs == false) {
+                DBG::msg("We're in trouble! sql failure: $orig_user_sql");
+            }
+            else {
+                $orig_userid = $orig_user_rs->fields['userid'];
+            }
+            $set_userid = $orig_userid ? $orig_userid : $userId;
+
             // $finishednewstext = $newstext."<br>".$_ARRAYLANG['TXT_LAST_EDIT'].": ".$date;
             $objResult = $objDatabase->Execute("UPDATE  ".DBPREFIX."module_news
                                                 SET     title='".$title."',
@@ -1298,7 +1313,7 @@ class newsManager extends newsLibrary {
                                                         url2='".$url2."',
                                                         catid='".$catId."',
                                                         lang='".$this->langId."',
-                                                        userid = '".$userId."',
+                                                        userid = '".$set_userid."',
                                                         status = '".$status."',
                                                         ".(isset($_POST['validate']) ? "validated='1'," : "")."
                                                         startdate = '".$startDate."',
