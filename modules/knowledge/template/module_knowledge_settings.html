@@ -5,31 +5,45 @@
 
 function tidyTags(caller)
 {
-    new Ajax.Request("index.php", {
-        method : "get",
-        parameters : {
+    $J.ajax({
+        url: "index.php",
+        method: "get",
+        data: {
             cmd : "knowledge{MODULE_INDEX}",
             section : "settings",
             act : "tidyTags"
-        }
+        },
+        dataType: 'json',
+        success: showOkMessage
     });
 }
 
 function resetVotes()
 {
-    new Ajax.Request("index.php", {
-        method : "get",
-        parameters : {
+    $J.ajax({
+        url: "index.php",
+        method: "get",
+        data: {
             cmd : "knowledge{MODULE_INDEX}",
             section : "settings",
             act : "resetVotes"
-        }
+        },
+        dataType: 'json',
+        success: showOkMessage
     });
+}
 
+var showOkMessage = function(data){
+    if(data.ok){
+        $J('#errormessagetarget').append('<div id="okbox">'+data.ok+'</div>').find(':last-child')
+        .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+    }
 }
 
 /* ]]> */
 </script>
+
+<div id="errormessagetarget"></div>
 
 <form action="index.php?cmd=knowledge{MODULE_INDEX}&section=settings&act=update" method="post">
 <table class="adminlist" cellspacing="0" cellpadding="3" border="0" style="width: 100%;">
