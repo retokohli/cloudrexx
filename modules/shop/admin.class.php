@@ -891,7 +891,7 @@ class shopmanager extends ShopLibrary
                 'SHOP_EXPORT_GROUP_CODE' => $arrGroups[$i],
                 'SHOP_EXPORT_INDEX' => $i,
                 'TXT_EXPORT' => $_ARRAYLANG['TXT_EXPORT'],
-                'CLASS_NAME' => (++$i % 2 ? 'row2' : 'row2'),
+                'CLASS_NAME' => ($i % 2 ? 'row1' : 'row2'),
             ));
             self::$objTemplate->parse('groupRow');
             $tipText .= 'Text['.$i.']=["","'.$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_'.strtoupper($arrGroups[$i]).'_TIP'].'"];';
