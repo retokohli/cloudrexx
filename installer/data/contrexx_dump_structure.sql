@@ -650,7 +650,7 @@ CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
-  `type` enum('text','label','checkbox','checkboxGroup','date','file','hidden','password','radio','select','textarea') NOT NULL default 'text',
+  `type` enum('text','label','checkbox','checkboxGroup','date','file','hidden','password','radio','select','textarea','recipient') NOT NULL default 'text',
   `attributes` text NOT NULL,
   `is_required` set('0','1') NOT NULL default '0',
   `check_type` int(3) NOT NULL default '1',
