@@ -29,8 +29,8 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  */
 class HotelFacility
 {
-    const TEXT_HOTELCARD_FACILITY = 'HOTELCARD_FACILITY';
-    const TEXT_HOTELCARD_FACILITY_GROUP = 'HOTELCARD_FACILITY_GROUP';
+    const TEXT_HOTELCARD_FACILITY = 'hotelcard_facility';
+    const TEXT_HOTELCARD_FACILITY_GROUP = 'hotelcard_facility_group';
 
     /**
      * Array of hotel facilities
@@ -194,10 +194,13 @@ class HotelFacility
      *
      * The optional $group_id parameter limits the result to that group.
      * @param   integer   $group_id   The optional group ID
+     * @param   boolean   $short      If true, only a short list of the
+     *                                available facilities is returned,
+     *                                the full otherwise.
      * @return  array                 The facilities array on success,
      *                                false otherwise
      */
-    function getFacilityNameArray($group_id)
+    function getFacilityNameArray($group_id, $short=false)
     {
         static $arrFacilityName = false;
 
@@ -207,6 +210,7 @@ class HotelFacility
             // Return the buffered array, or set it up first.
             if (empty($arrFacilityName)) {
                 foreach (self::$arrFacilities as $id => $arrFacility) {
+                    if ($short && $arrFacility['ord'] >= 1000) continue;
                     $arrFacilityName[$id] = $arrFacility['name'];
                 }
             }
@@ -215,7 +219,8 @@ class HotelFacility
         // This subset is not buffered.  Do not confuse it with the static one!
         $arrFacilityNameTemp = array();
         foreach (self::$arrFacilities as $facility_id => $arrFacility) {
-            if ($arrFacility['group_id'] != $group_id)
+            if (   ($short && $arrFacility['ord'] >= 1000)
+                || $arrFacility['group_id'] != $group_id)
                 continue;
             $arrFacilityNameTemp[$facility_id] = $arrFacility['name'];
         }
@@ -607,14 +612,14 @@ class HotelFacility
     {
         global $objDatabase;
 
-echo("HotelFacility::errorHandler(): Entered<br />");
+//echo("HotelFacility::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility_group", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group` (
@@ -630,42 +635,13 @@ echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
-
-        // Add data
-        $arrFacilityGroup = array(
-            // name
-            'General',
-            'Activities',
-            'Services',
-        );
-        $ord = 0;
-        $arrGroupId = array();
-        foreach ($arrFacilityGroup as $name) {
-            $objText = new Text(
-                $name, 2, MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP);
-            if (!$objText->store()) {
-echo("HotelFacility::errorHandler(): Failed to store group text $name<br />");
-                continue;
-            }
-            $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility_group` (
-                  `name_text_id`, `ord`
-                ) VALUES (
-                  ".$objText->getId().", ".++$ord."
-                )");
-            if (!$objResult) {
-echo("HotelFacility::errorHandler(): Failed to insert group $name<br />");
-                continue;
-            }
-            $arrGroupId[$name] = $objText->getId();
-        }
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
 
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility` (
@@ -682,119 +658,625 @@ echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
 
         // Add data
-        $arrFacility = array(
-            // name => group name
-            '24-Hour Front Desk' => 'General',
-            'Air Conditioning' => 'General',
-            'All Public and Private spaces non-smoking' => 'General',
-            'Allergy-Free Room Available' => 'General',
-            'Bar' => 'General',
-            'Breakfast Buffet' => 'General',
-            'Chapel/Shrine' => 'General',
-            'Continental Breakfast' => 'General',
-            'Design Hotel' => 'General',
-            'Designated Smoking Area' => 'General',
-            'Elevator' => 'General',
-            'Express Check-In/Check-Out' => 'General',
-            'Family Rooms' => 'General',
-            'Free Parking' => 'General',
-            'Garden' => 'General',
-            'Gay Friendly' => 'General',
-            'Heating' => 'General',
-            'Luggage Storage' => 'General',
-            'Newspapers' => 'General',
-            'Non-Smoking Rooms' => 'General',
-            'Parking' => 'General',
-            'Pets Allowed' => 'General',
-            'Restaurant' => 'General',
-            'Rooms/Facilities for Disabled Guests' => 'General',
-            'Safety Deposit Box' => 'General',
-            'Shops in Hotel' => 'General',
-            'Ski Storage' => 'General',
-            'Soundproofed Rooms' => 'General',
-            'Terrace' => 'General',
-            'Valet Parking' => 'General',
-            'BQ Facilities' => 'Activities',
-            'Billiards' => 'Activities',
-            'Bowling' => 'Activities',
-            'Canoeing' => 'Activities',
-            'Casino' => 'Activities',
-            'Children\'s Playground' => 'Activities',
-            'Cycling' => 'Activities',
-            'Darts' => 'Activities',
-            'Diving' => 'Activities',
-            'Fishing' => 'Activities',
-            'Fitness Centre' => 'Activities',
-            'Games Room' => 'Activities',
-            'Golf Course (within 3 km)' => 'Activities',
-            'Hammam' => 'Activities',
-            'Hiking' => 'Activities',
-            'Horse Riding' => 'Activities',
-            'Jacuzzi' => 'Activities',
-            'Karaoke' => 'Activities',
-            'Library' => 'Activities',
-            'Massage' => 'Activities',
-            'Mini Golf' => 'Activities',
-            'Sauna' => 'Activities',
-            'Ski School' => 'Activities',
-            'Skiing' => 'Activities',
-            'Snorkelling' => 'Activities',
-            'Solarium' => 'Activities',
-            'Spa & Wellness Centre' => 'Activities',
-            'Squash' => 'Activities',
-            'Indoor Swimming Pool' => 'Activities',
-            'Outdoor Swimming Pool' => 'Activities',
-            'Table Tennis' => 'Activities',
-            'Tennis Court' => 'Activities',
-            'Turkish/Steam Bath' => 'Activities',
-            'Windsurfing' => 'Activities',
-            'Airport Shuttle' => 'Services',
-            'ATM/Cash Machine on site' => 'Services',
-            'Babysitting/Child Services' => 'Services',
-            'Bicycle Rental' => 'Services',
-            'Breakfast in the Room' => 'Services',
-            'Bridal Suite' => 'Services',
-            'Business Centre' => 'Services',
-            'Car Rental' => 'Services',
-            'Currency Exchange' => 'Services',
-            'Dry Cleaning' => 'Services',
-            'Fax/Photocopying' => 'Services',
-            'Free Wi-Fi Internet Access Included' => 'Services',
-            'Barber/Beauty Shop' => 'Services',
-            'Internet Services' => 'Services',
-            'Ironing Service' => 'Services',
-            'Laundry' => 'Services',
-            'Meeting/Banquet Facilities' => 'Services',
-            'Packed Lunches' => 'Services',
-            'Room Service' => 'Services',
-            'Shoe Shine' => 'Services',
-            'Souvenirs/Gift Shop' => 'Services',
-            'Ticket Service' => 'Services',
-            'Tour Desk' => 'Services',
-            'VIP Room Facilities' => 'Services',
-            'Wi-Fi/Wireless LAN' => 'Services',
+        // Groups
+        $arrFacilityGroup = array(
+// TODO: Properly translate the group names to French and Italian
+            'general' => array(
+                1 => 'Allgemein', // Deutsch
+                2 => 'General',   // English
+                3 => 'Géneral',   // Français
+                4 => 'Generali',  // Italiano
+            ),
+            'activities' => array(
+                1 => 'Aktivitäten', // Deutsch
+                2 => 'Activities',  // English
+                3 => 'Activités',   // Français
+                4 => 'Attivitati',  // Italiano
+            ),
+            'services' => array(
+                1 => 'Dienstleistungen', // Deutsch
+                2 => 'Services',         // English
+                3 => 'Services',         // Français
+                4 => 'Servizi',          // Italiano
+            ),
         );
 
-        $ord = 0;
-        foreach ($arrFacility as $name => $group) {
-            $objText = new Text(
-                $name, 2, MODULE_ID, self::TEXT_HOTELCARD_FACILITY);
-            if (!$objText->store()) {
-echo("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
-                continue;
+        $arrFacilities = array(
+            // General
+            'general' => array(
+                // Wizard
+                array(
+                    1 => 'Air Conditioning', // de
+                    2 => 'Air Conditioning', // en
+                    3 => 'Air Conditioning', // fr
+                    4 => 'Air Conditioning', // it
+                ),
+// TODO: Add all the entries in English, French, and Italian
+                array(
+                    1 => 'Fahrstuhl',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Frühstück',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Restaurant',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Parkplätze',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+
+                // Edit only
+                1000 =>
+                array(
+                    1 => '24 Stunden Reception',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Nichtraucherbetrieb',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Allergiefreie Räume',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bar',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kapelle/Gebetsraum',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Designerhotel',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Abgetrennte Raucherzone',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Frühstücksbuffet',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Express Check-In/Check-Out',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Familienzimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Garten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Zentralheizung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Gepäckaufbewahrung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Gratis Parking',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Zeitungen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Nichtraucherzimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Haustiere erlaubt',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Behindertengerechte Infrastruktur',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Hotelsafe',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Einkaufsmöglichkeiten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Ski Aufbewahrung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Schallgedämmte Zimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Terrasse',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Parkierdienst',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+            ),
+            // Activities
+            'activities' => array(
+                // Wizard
+                array(
+                    1 => 'Fitnessraum',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Golfplatz (im Umkreis von 3 km)',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kinderspielplatz',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Spa & Wellness',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tennisplatz',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+
+                // Edit only
+                1000 =>
+                array(
+                    1 => 'Grillplatz',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Billiard',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bowling/Kegeln',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kanufahrten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Casino',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Radwege',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Dart',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tauchen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Fischen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Spielzimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Wanderwege',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Pferdereiten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Jacuzzi',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Karaoke',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bibliothek',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Massage',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Minigolf',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Sauna',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Ski Schule',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Skipisten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Schnorcheln',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Solarium',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Squash',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Swimming Pool innen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Swimming Pool aussen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tischtennis',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Dampfbad',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Windsurfen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+            ),
+
+            // Services
+            'services' => array(
+                // Wizard
+                array(
+                    1 => 'Geldautomat im Gebäude',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Geldwechsel',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Internet Zugang',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Konferenzraum',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Zimmerservice',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+
+                // Edit only
+                1000 =>
+                array(
+                    1 => 'Airport Shuttle',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kinderkrippe/Hütdienst',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Fahrradvermietung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Frühstück im Zimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Hochzeitssuite',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Autovermietung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Chemische Reinigung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Fax/Kopiergerät',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kostenloser WiFi Internet Zugang inbegriffen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Coiffeur/Schönheitssalon',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bügelservice',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Wäscheservice',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bankettsaal',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Schuhreinigung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Souvenirs/Geschenk Shop',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Ticket Verkauf',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tour Desk',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'VIP Räume',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'WiFi/Drahtloses Internet',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+            ),
+        );
+
+        $ord_group = 0;
+        $arrGroupId = array();
+        foreach ($arrFacilityGroup as $group => $arrLang) {
+            $text_id = 0;
+            foreach ($arrLang as $lang_id => $name) {
+                $objText = new Text(
+                    $name, $lang_id,
+                    MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP, $text_id);
+                if (!$objText->store()) {
+die("failed to add Text for facility group $ord_group: $name");
+//                    return false;
+                }
+                $text_id = $objText->getId();
             }
             $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility` (
-                  `name_text_id`, `facility_group_id`, `ord`
+                INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility_group` (
+                  `name_text_id`, `ord`
                 ) VALUES (
-                  ".$objText->getId().", ".$arrGroupId[$group].", ".++$ord."
+                  $text_id, $ord_group
                 )");
             if (!$objResult) {
-echo("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
+//echo("HotelFacility::errorHandler(): Failed to insert group $name<br />");
                 continue;
+            }
+            $arrGroupId[$group] = $objText->getId();
+        }
+
+        foreach ($arrFacilities as $group => $arrFacility) {
+            $group_id = $arrGroupId[$group];
+            foreach ($arrFacility as $ord_facility => $arrLang) {
+                $text_id = 0;
+                foreach ($arrLang as $lang_id => $name) {
+                    $objText = new Text(
+                        $name, $lang_id,
+                        MODULE_ID, self::TEXT_HOTELCARD_FACILITY, $text_id);
+                    if (!$objText->store()) {
+die("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
+//                        continue;
+                    }
+                    $text_id = $objText->getId();
+                }
+                $objResult = $objDatabase->Execute("
+                    INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility` (
+                      `name_text_id`, `facility_group_id`, `ord`
+                    ) VALUES (
+                      $text_id, $group_id, $ord_facility
+                    )");
+                if (!$objResult) {
+//echo("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
+//                    continue;
+                }
             }
         }
 
@@ -802,7 +1284,7 @@ echo("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility` (
@@ -824,7 +1306,7 @@ echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
 // TODO: Add data
 
         // More to come...

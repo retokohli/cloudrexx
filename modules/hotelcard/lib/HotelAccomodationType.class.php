@@ -29,7 +29,7 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  */
 class HotelAccomodationType
 {
-    const TEXT_ACCOMODATION_TYPE = 'HOTELCARD_ACCOMODATION_TYPE';
+    const TEXT_ACCOMODATION_TYPE = 'hotelcard_accomodation_type';
 
     /**
      * Array of hotel to HotelAccomodationType relations
@@ -133,7 +133,9 @@ class HotelAccomodationType
     {
 //echo("HotelAccomodationType::getNameById($id):  Entered<br />");
         if (empty(self::$arrAccomodationTypes)) self::init();
-        return self::$arrAccomodationTypes[$id]['name'];
+        return (isset(self::$arrAccomodationTypes[$id])
+            ? self::$arrAccomodationTypes[$id]['name']
+            : false);
     }
 
 
@@ -174,52 +176,81 @@ echo("HotelAccomodationType::errorHandler(): Dropped table ".DBPREFIX."module_ho
         if (!$objResult) return false;
 echo("HotelAccomodationType::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_HotelAccomodationType<br />");
 
-// TODO:  Try to DROP old records
-
         // Add types
         $arrTypes = array(
             // ord, name
-            0 => '-- select hotel type --',
-            1 => 'Apartment',
-            2 => 'Guest accommodation',
-            3 => 'Hostel',
-            4 => 'Hotel',
-            5 => 'Motel',
-            6 => 'Residence',
-            7 => 'Resort',
+            0 =>
+            array(
+                1 => '-- Hoteltyp wählen --',
+                2 => '-- Select hotel type --',
+                3 => '-- Select hotel type --',
+                4 => '-- Select hotel type --',
+            ),
+            array(
+                1 => 'Hotel',
+                2 => 'Hotel',
+                3 => 'Hotel',
+                4 => 'Hotel',
+            ),
+            array(
+                1 => 'Motel',
+                2 => 'Motel',
+                3 => 'Motel',
+                4 => 'Motel',
+            ),
+            array(
+                1 => 'Resort',
+                2 => 'Resort',
+                3 => 'Resort',
+                4 => 'Resort',
+            ),
+            array(
+                1 => 'Apartment',
+                2 => 'Apartment',
+                3 => 'Apartment',
+                4 => 'Apartment',
+            ),
+            array(
+                1 => 'Herberge',
+                2 => 'Hostel',
+                3 => 'Hostel',
+                4 => 'Hostel',
+            ),
+            array(
+                1 => 'Residenz',
+                2 => 'Residence',
+                3 => 'Residence',
+                4 => 'Residence',
+            ),
+/*
+            array(
+                1 => 'Guest accommodation',
+                2 => 'Guest accommodation',
+                3 => 'Guest accommodation',
+                4 => 'Guest accommodation',
+            ),
+*/
         );
-        $arrText = Text::getArrayById(
-            MODULE_ID, self::TEXT_ACCOMODATION_TYPE, FRONTEND_LANG_ID
-        );
-
-        foreach ($arrTypes as $ord => $type) {
-            $objTextFound = false;
-            foreach ($arrText as $objText) {
-                // Do not insert text that is already there
-                if ($type == $objText->getText()) {
-                    $objTextFound = $objText;
-                    break;
-                }
-            }
-            if ($objTextFound) {
-                // Reuse existing text
-                $objText = $objTextFound;
-            } else {
-                // Add missing text
+        foreach ($arrTypes as $ord => $arrLang) {
+            $text_id = 0;
+            foreach ($arrLang as $lang_id => $name) {
                 $objText = new Text(
-                    $type, FRONTEND_LANG_ID,
-                    MODULE_ID, self::TEXT_ACCOMODATION_TYPE
+                    $name, $lang_id,
+                    MODULE_ID, self::TEXT_ACCOMODATION_TYPE, $text_id
                 );
                 if (!$objText->store()) {
-// TODO:  Add error message
-                    return false;
+                    Text::errorHandler();
+                    return self::errorHandler();
+//die("Failed to store Text for accomodation type $name");
+//                    return false;
                 }
+                $text_id = $objText->getId();
             }
             $query = "
                 INSERT INTO `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (
                   `name_text_id`, `ord`
                 ) VALUES (
-                  ".$objText->getId().", $ord
+                  $text_id, $ord
                 )";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
