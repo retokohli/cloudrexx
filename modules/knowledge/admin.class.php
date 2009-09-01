@@ -1395,8 +1395,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
      */
     private function tidyTags()
     {
+        global $_ARRAYLANG;
         try {
             $this->tags->tidy();
+            die(json_encode(array('ok' => $_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_SUCCESSFUL'])));
         } catch (DatabaseError $e) {
             $this->sendAjaxError($e->formatted());
         }
@@ -1411,8 +1413,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
      */
     private function resetVotes()
     {
+        global $_ARRAYLANG;
         try {
             $this->articles->resetVotes();
+            die(json_encode(array('ok' => $_ARRAYLANG['TXT_KNOWLEDGE_RESET_VOTES_SUCCESSFUL'])));
         } catch (DatabaseError $e) {
             $this->sendAjaxError($e->formatted());
         }
