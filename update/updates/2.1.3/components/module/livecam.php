@@ -110,6 +110,21 @@ function _livecamUpdate()
 		return _databaseError($query, $objDatabase->ErrorMsg());
 	}
 
+
+
+
+
+	/************************************************
+	* BUGFIX:	Update content page                 *
+    * ADDED:    2.1.3                               *
+	************************************************/
+    // livecam module ID is 30
+    // both spaces in the search and replace pattern are required in that case
+    UpdateUtil::migrateContentPage(30, NULL, ' {LIVECAM_IMAGE_SHADOWBOX}', ' rel="{LIVECAM_IMAGE_SHADOWBOX}"', '2.1.3');
+
+
+
+
     return true;
 }
 ?>
