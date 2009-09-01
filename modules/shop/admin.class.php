@@ -2272,23 +2272,6 @@ class shopmanager extends ShopLibrary
 
 
     /**
-     * OBSOLETE
-    function _getPayPalAcceptedCurrencyCodesMenu()
-    {
-        require_once ASCMS_MODULE_PATH .'/shop/payments/paypal/Paypal.class.php';
-        $objPayPal = new PayPal();
-
-        $menu = "<select name=\"paypal_default_currency\">\n";
-        foreach ($objPayPal->arrAcceptedCurrencyCodes as $code) {
-            $menu .= "<option".($this->arrConfig['paypal_default_currency']['value'] == $code ? ' selected="selected"' : "").">".$code."</option>\n";
-        }
-        $menu .= "</select>\n";
-        return $menu;
-    }
-     */
-
-
-    /**
      * Show exchange page
      *
      * Shows the import & export page and does the import and export work

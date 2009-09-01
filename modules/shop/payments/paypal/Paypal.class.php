@@ -41,13 +41,6 @@ define('_PAYPAL_DEBUG', 0);
  */
 class PayPal
 {
-    /**
-     * e-mail address for paypal account
-     * @var string
-     * @see getForm()
-     */
-    private $PayPalAcc;
-
     private static $arrAcceptedCurrencyCode = array(
         'AUD', // Australian Dollar
         'CAD', // Canadian Dollar
@@ -81,14 +74,15 @@ class PayPal
      *
      * @return string HTML-Code for the PayPal form
      */
-    function getForm()
+    static function getForm()
     {
         global $_ARRAYLANG;
 
+        require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
         $orderid = $_SESSION['shop']['orderid'];
         $business = self::getBusiness();
         $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
-        $currency_code = $this->getCurencyCode($_SESSION['shop']['currencyId']);
+        $currency_code = Currency::getCodeById($_SESSION['shop']['currencyId']);
         $amount = $_SESSION['shop']['grand_total_price'];
 
         $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
@@ -151,52 +145,14 @@ class PayPal
 
 
     /**
-     * Read the currency code from the database
-     * @param   integer     $id         The currency code ID
-     * @return  string                  The currency code
-     */
-    function getCurencyCode($id)
-    {
-        require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-        return Currency::getCodeById($id);
-    }
-
-
-    /**
-     * Try to determine whether the payment was successful.
+     * This method is called whenever the IPN from PayPal is received
      *
-     * UNUSED!
-     * @return  mixed       True on success, false on failure, or
-     *                      NULL if the order status isn't set to 'confirmed'.
-    function payConfirm()
-    {
-        global $objDatabase;
-
-        if (isset($_GET['orderid']) && !empty($_GET['orderid'])) {
-            $orderid = intval($_GET['orderid']);
-        }
-        $query = "
-            SELECT order_status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             WHERE orderid=$orderid
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        if ($objResult->fields['order_status'] == 1) {
-            return $orderid;
-        } else {
-            return NULL;
-        }
-    }
+     * The data from the IPN is verified and answered.  After that,
+     * PayPal must reply again with either the "VERIFIED" or "INVALID"
+     * keyword.  According to that reply, the status of the order
+     * concerned is updated.  See {@see Shop::updateOrderStatus}.
      */
-
-
-    /**
-     * Receives the IPN from PayPal and answers it.
-     */
-    function ipnCheck()
+    static function ipnCheck()
     {
         global $objDatabase;
 
@@ -265,11 +221,11 @@ if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' 
 if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $currencyCode = $objResult->fields['code'];
 
-        $newOrderStatus = 0;
+        $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
         while (!feof($fp)) {
             $res = fgets($fp, 1024);
 //$res = 'VERIFIED';
-if (_PAYPAL_DEBUG) @fwrite($log, "got $res\r\n");
+//if (_PAYPAL_DEBUG) @fwrite($log, "got $res\r\n");
             if (preg_match('/^VERIFIED/', $res)) {
                 if (   $paypalAccountEmail == $receiver_email
                     && $payment_amount == $amount
@@ -313,7 +269,7 @@ if (_PAYPAL_DEBUG) {
      * Creates a dummy order and sends the IPN to the Shop.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function testIpn()
+    static function testIpn()
     {
         global $objDatabase;
 
@@ -405,13 +361,13 @@ die('
 <input type="submit" name="ipn" value="IPN senden" />
 </form>
 <a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;orderid='.$orderid.'">
-  Erfolgreiche Zahlung, zur�ck zum Shop
+  Erfolgreiche Zahlung, zur&uuml;ck zum Shop
 </a><br />
 <a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid.'">
-  Zahlung annulieren, zur�ck zum Shop
+  Zahlung annulieren, zur&uuml;ck zum Shop
 </a><br />
 <a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=0&amp;orderid='.$orderid.'">
-  Zahlung abbrechen, zur�ck zum Shop
+  Zahlung abbrechen, zur&uuml;ck zum Shop
 </a><br />
 </body></html>
 ');
@@ -423,7 +379,7 @@ die('
      * and send back the VALID or INVALID message.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function testIpnValidate()
+    static function testIpnValidate()
     {
         global $objDatabase;
 
@@ -477,7 +433,7 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnValidateLog.txt', 'w');
 
     static function getAcceptedCurrencyCodeArray()
     {
-    	return self::$arrAcceptedCurrencyCode;
+        return self::$arrAcceptedCurrencyCode;
     }
 
 
