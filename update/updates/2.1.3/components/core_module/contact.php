@@ -21,7 +21,7 @@ function _contactUpdate()
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'id_form'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'date\',\'file\',\'hidden\',\'password\',\'radio\',\'select\',\'textarea\')', 'notnull' => true, 'default' => 'text'),
+                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'date\',\'file\',\'hidden\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\')', 'notnull' => true, 'default' => 'text'),
                 'attributes'     => array('type' => 'TEXT'),
                 'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
                 'check_type'     => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1'),
