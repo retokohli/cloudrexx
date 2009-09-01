@@ -228,7 +228,7 @@ class Livecam extends LivecamLibrary
         $this->_objTpl->setVariable(array(
             'LIVECAM_CURRENT_IMAGE'      => isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$_GET['file'] : $this->camSettings['currentImagePath'],
             'LIVECAM_IMAGE_TEXT'        => isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild',
-            'LIVECAM_IMAGE_SHADOWBOX'   => $this->camSettings['shadowboxActivate'] == 1 ? 'rel="shadowboxgallery"' : '',
+            'LIVECAM_IMAGE_SHADOWBOX'   => $this->camSettings['shadowboxActivate'] == 1 ? 'shadowboxgallery' : '',
             'LIVECAM_IMAGE_LINK'        => $imageLink,
             'LIVECAM_IMAGE_SIZE'        => $this->camSettings['currentMaxSize'],
         ));
@@ -291,7 +291,7 @@ class Livecam extends LivecamLibrary
                     'LIVECAM_PICTURE_TIME'      => $arrThumbnail['time'],
                     'LIVECAM_THUMBNAIL_URL'     => $arrThumbnail['image_url'],
                     'LIVECAM_THUMBNAIL_SIZE'    => $this->camSettings['thumbMaxSize'],
-                    'LIVECAM_IMAGE_SHADOWBOX'   => $this->camSettings['shadowboxActivate'] == 1 ? 'rel="shadowbox[gallery]"' : '',
+                    'LIVECAM_IMAGE_SHADOWBOX'   => $this->camSettings['shadowboxActivate'] == 1 ? 'shadowbox[gallery]' : '',
                 ));
                 $this->_objTpl->parse($this->_pictureTemplatePlaceholder.$picNr);
 
