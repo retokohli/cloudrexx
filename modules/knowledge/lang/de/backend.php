@@ -285,4 +285,6 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_RESULTS_OF'] = "Suchergebnisse von";
 $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_INPUT'] = "Suchbegriff...";
 $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_ARTICLES'] = "Artikel suchen";
 $_ARRAYLANG['TXT_KNOWLEDGE_JUMP'] = "Springen";
+$_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_SUCCESSFUL'] = "Stichworte wurden aufgeräumt.";
+$_ARRAYLANG['TXT_KNOWLEDGE_RESET_VOTES_SUCCESSFUL'] = "Bewertungsstatistiken wurden zurückgesetzt.";
 ?>
