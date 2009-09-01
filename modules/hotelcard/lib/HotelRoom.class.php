@@ -29,16 +29,16 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  */
 class HotelRoom
 {
-    const TEXT_HOTELCARD_ROOM_TYPE = 'HOTELCARD_ROOM_TYPE';
-    const TEXT_HOTELCARD_ROOM_FACILITY = 'HOTELCARD_ROOM_FACILITY';
+    const TEXT_HOTELCARD_ROOM_TYPE = 'hotelcard_room_type';
+    const TEXT_HOTELCARD_ROOM_FACILITY = 'hotelcard_room_facility';
 
     /**
      * Array of hotel room types
      *
      * The array is of the form
      *  array(
-     *    type ID => array(
-     *      'id'             => type ID,
+     *    room type ID => array(
+     *      'id'             => room type ID,
      *      'name'           => type name,
      *      'number_default' => default number of rooms available per day,
      *      'price_default'  => default price per day,
@@ -57,7 +57,7 @@ class HotelRoom
      *    ),
      *    ... more ...
      *  )
-     * The room types are ordered by their type ID, which is usually the
+     * The room types are ordered by their room type ID, which is usually the
      * same order that they have been entered in.
      * @var     array
      * @access  private
@@ -93,18 +93,20 @@ class HotelRoom
     /**
      * Initializes the facilities and types data from the database
      *
-     * Reads records for the given $hotel_id only.  The optional $type_id
+     * Reads records for the given $hotel_id only.  The optional $room_type_id
      * may further restrict the result to any single type of room.
      * The optional $da
-     * @param   integer   $hotel_id   The hotel ID
-     * @param   integer   $type_id    The optional type ID
-     * @param   string    $date_from  The optinal start date for the availabilities
-     * @param   string    $date_to    The optinal end date for the availabilities
-     * @return  boolean               True on success, false otherwise
+     * @param   integer   $hotel_id       The hotel ID
+     * @param   integer   $room_type_id   The optional room type ID
+     * @param   string    $date_from      The optinal start date for the
+     *                                    availabilities
+     * @param   string    $date_to        The optinal end date for the
+     *                                    availabilities
+     * @return  boolean                   True on success, false otherwise
      * @global  ADONewConnection  $objDatabase
      */
     static function init(
-        $hotel_id, $type_id=0, $date_from='', $date_to='')
+        $hotel_id, $room_type_id=0, $date_from='', $date_to='')
     {
         global $objDatabase;
 
@@ -122,7 +124,7 @@ class HotelRoom
               FROM `".DBPREFIX."module_hotelcard_room_type` AS `type`".
                    $arrSqlName['join']."
              WHERE `type`.`hotel_id`=$hotel_id".
-            ($type_id ? " AND `type`.`type_text_id`=$type_id" : '')."
+            ($room_type_id ? " AND `type`.`type_text_id`=$room_type_id" : '')."
              ORDER BY `type`.`type_text_id` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult)
@@ -132,14 +134,14 @@ die;//return self::errorHandler();
             || $hotel_id != self::$hotel_id)
             self::$arrRoomtypes = array();
         while (!$objResult->EOF) {
-            $type_id = $objResult->fields['type_text_id'];
+            $room_type_id = $objResult->fields['type_text_id'];
             $strName = $objResult->fields[$arrSqlName['text']];
             if ($strName === null) {
-                $objText = Text::getById($type_id, 0);
+                $objText = Text::getById($room_type_id, 0);
                 if ($objText) $strName = $objText->getText();
             }
-            self::$arrRoomtypes[$type_id] = array(
-                'id'             => $type_id,
+            self::$arrRoomtypes[$room_type_id] = array(
+                'id'             => $room_type_id,
                 'name'           => $strName,
                 'number_default' => $objResult->fields['number_default'],
                 'price_default'  => $objResult->fields['price_default'],
@@ -149,14 +151,14 @@ die;//return self::errorHandler();
             $objResult->MoveNext();
         }
 
-        foreach (self::$arrRoomtypes as $type_id => &$arrRoomtype) {
+        foreach (self::$arrRoomtypes as $room_type_id => &$arrRoomtype) {
             // Facility for each room type
             $query = "
                 SELECT `room_facility_id`
                   FROM `".DBPREFIX."module_hotelcard_room_facility` AS `facility`
                  INNER JOIN `".DBPREFIX."module_hotelcard_room_type_has_room_facility` AS `relation`
                     ON `facility`.`name_text_id`=`relation`.`room_facility_id`
-                 WHERE `relation`.`room_type_id`=$type_id
+                 WHERE `relation`.`room_type_id`=$room_type_id
                  ORDER BY `facility`.`ord` ASC";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult)
@@ -176,7 +178,7 @@ die;//return self::errorHandler();
                        `availability`.`number_cancelled`,
                        `availability`.`price`
                   FROM `".DBPREFIX."module_hotelcard_room_available` AS `availability`
-                 WHERE `availability`.`room_type_id`=$type_id".
+                 WHERE `availability`.`room_type_id`=$room_type_id".
                   ($date_from ? " AND `availability`.`date`>='$date_from'" : '').
                   ($date_to   ? " AND `availability`.`date`<='$date_to'"   : '')."
                  ORDER BY `availability`.`date` ASC";
@@ -194,7 +196,7 @@ die;//return self::errorHandler();
                 $objResult->MoveNext();
             }
         }
-//echo("HotelRoom::init($hotel_id, $type_id): made<br />".var_export(self::$arrRoomtypes, true)."<hr />");
+//echo("HotelRoom::init($hotel_id, $room_type_id): made<br />".var_export(self::$arrRoomtypes, true)."<hr />");
         return true;
     }
 
@@ -257,21 +259,29 @@ die;//return self::errorHandler();
 
     /**
      * Returns the array of all facility names
+     * @param   boolean   $short    If true, only a short list of facilites
+     *                              are returned with the array
      * @return  array               The facility name array on success,
      *                              false otherwise
      * @static
      */
-    static function getFacilityNameArray()
+    static function getFacilityNameArray($short=false)
     {
         static $arrFacilityName = false;
 
         if (empty($arrFacilityName)) {
             if (empty(self::$arrFacilities)) self::initFacilities();
             foreach (self::$arrFacilities as $facility_id => $arrFacility) {
+//echo("HotelRoom::getFacilityNameArray($short): Facility: ".var_export($arrFacility, true)."<hr />");
+//echo("HotelRoom::getFacilityNameArray($short): ord ".$arrFacility['ord']."<hr />");
+                if ($short && $arrFacility['ord'] >= 1000) {
+//echo("HotelRoom::getFacilityNameArray($short): Skipping ord ".$arrFacility['ord']."<hr />");
+                    continue;
+                }
                 $arrFacilityName[$facility_id] = $arrFacility['name'];
             }
         }
-//echo("HotelRoom::getFacilityNameArray(): Returning ".var_export($arrFacilityName, true)."<hr />");
+//echo("HotelRoom::getFacilityNameArray($short): Returning ".var_export($arrFacilityName, true)."<hr />");
         return $arrFacilityName;
     }
 
@@ -283,21 +293,23 @@ die;//return self::errorHandler();
      * Otherwise, the $hotel_id *MUST* be specified.
      * Apart from that, it works like {@see init()}, but returns
      * the type array instead of a boolean.
-     * @param   integer   $hotel_id   The optional hotel ID
-     * @param   integer   $type_id    The optional type ID
-     * @param   string    $date_from  The optinal start date for the availabilities
-     * @param   string    $date_to    The optinal end date for the availabilities
-     * @return  array                 The room types array on success,
-     *                                false otherwise
+     * @param   integer   $hotel_id       The optional hotel ID
+     * @param   integer   $room_type_id   The optional room type ID
+     * @param   string    $date_from      The optinal start date for the
+     *                                    availabilities
+     * @param   string    $date_to        The optinal end date for the
+     *                                    availabilities
+     * @return  array                     The room types array on success,
+     *                                    false otherwise
      * @static
      */
     static function getTypeArray(
-        $hotel_id=0, $type_id=0, $date_from='', $date_to='')
+        $hotel_id=0, $room_type_id=0, $date_from='', $date_to='')
     {
         if (empty($hotel_id)) $hotel_id = self::$hotel_id;
-        if (   ($type_id && empty(self::$arrRoomtypes[$type_id]))
+        if (   ($room_type_id && empty(self::$arrRoomtypes[$room_type_id]))
             || empty(self::$arrRoomtypes))
-            self::init($hotel_id, $type_id, $date_from, $date_to);
+            self::init($hotel_id, $room_type_id, $date_from, $date_to);
         return self::$arrRoomtypes;
     }
 
@@ -326,18 +338,18 @@ die;//return self::errorHandler();
     /**
      * Returns true if the room type record with the given ID exists,
      * false otherwise
-     * @param   integer   $type_id    The room type ID
-     * @return  boolean               True on success, false otherwise
+     * @param   integer   $room_type_id   The room type ID
+     * @return  boolean                   True on success, false otherwise
      * @static
      */
-    static function recordTypeExists($type_id)
+    static function recordTypeExists($room_type_id)
     {
         global $objDatabase;
 
         $query = "
             SELECT 1
               FROM `".DBPREFIX."module_hotelcard_room_type`
-             WHERE `type_text_id`=$type_id";
+             WHERE `type_text_id`=$room_type_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return (!(bool)$objResult->EOF);
@@ -347,19 +359,19 @@ die;//return self::errorHandler();
     /**
      * Returns true if the room availability record with the given IDs
      * and date exists, false otherwise
-     * @param   integer   $type_id    The room type ID
-     * @param   string    $date       The date
-     * @return  boolean               True on success, false otherwise
+     * @param   integer   $room_type_id   The room type ID
+     * @param   string    $date           The date
+     * @return  boolean                   True on success, false otherwise
      * @static
      */
-    static function recordAvailabilityExists($type_id, $date)
+    static function recordAvailabilityExists($room_type_id, $date)
     {
         global $objDatabase;
 
         $query = "
             SELECT 1
               FROM `".DBPREFIX."module_hotelcard_room_available`
-             WHERE `room_type_id`=$type_id
+             WHERE `room_type_id`=$room_type_id
                AND `date`='$date'";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
@@ -369,12 +381,12 @@ die;//return self::errorHandler();
 
     /**
      * Adds the facility to the room type
-     * @param   integer   $type_id       The room type ID
-     * @param   integer   $facility_id   The facility ID
-     * @return  boolean                       True on success, false otherwise
+     * @param   integer   $room_type_id   The room type ID
+     * @param   integer   $facility_id    The facility ID
+     * @return  boolean                   True on success, false otherwise
      * @return
      */
-    static function addFacility($type_id, $facility_id)
+    static function addFacility($room_type_id, $facility_id)
     {
         global $objDatabase;
 
@@ -382,7 +394,7 @@ die;//return self::errorHandler();
             INSERT INTO `".DBPREFIX."module_hotelcard_room_type_has_room_facility` (
                 `room_type_id`, `room_facility_id`
             ) VALUES (
-                $type_id, $facility_id
+                $room_type_id, $facility_id
             )";
         $objResult = $objDatabase->Execute($query);
         return (bool)$objResult;
@@ -400,31 +412,38 @@ die;//return self::errorHandler();
      * @param   string    $name             The room type name
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
-     * @param   integer   $type_id          The optional room type ID
+     * @param   integer   $room_type_id     The optional room type ID
      * @return  integer                     The ID of the record inserted or
      *                                      updated on success, zero otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
     static function storeType(
-        $hotel_id, $name, $number_default, $price_default, $type_id=0
+        $hotel_id, $name, $number_default=1, $price_default=100, $room_type_id=0
     ) {
         global $objDatabase;
 
         if (empty($hotel_id) || empty($name)) return false;
-//echo("HotelRoom::storeType(hotel_id $hotel_id, name $name, number_default $number_default, price_default $price_default, type_id $type_id): Entered<br />");
+//echo("HotelRoom::storeType(hotel_id $hotel_id, name $name, number_default $number_default, price_default $price_default, room_type_id $room_type_id): Entered<br />");
         $objText = false;
-        if ($type_id) $objText = Text::getById($type_id, FRONTEND_LANG_ID);
-        if (!$objText)
+        $room_type_id = intval($room_type_id);
+        if ($room_type_id)
+            $objText = Text::getById($room_type_id, FRONTEND_LANG_ID);
+        if ($objText) {
+            $objText->setText($name);
+        } else {
             $objText = new Text(
                 $name, FRONTEND_LANG_ID, MODULE_ID,
-                self::TEXT_HOTELCARD_ROOM_TYPE, $type_id);
+                self::TEXT_HOTELCARD_ROOM_TYPE, $room_type_id);
+        }
         if (!$objText->store()) return false;
-        $type_id = $objText->getId();
-        if (self::recordTypeExists($type_id))
-            return self::updateType($type_id, $number_default, $price_default);
+        $room_type_id = $objText->getId();
+        $number_default = intval($number_default);
+        $price_default = intval($price_default);
+        if (self::recordTypeExists($room_type_id))
+            return self::updateType($room_type_id, $number_default, $price_default);
         return self::insertType(
-            $type_id, $hotel_id, $number_default, $price_default);
+            $room_type_id, $hotel_id, $number_default, $price_default);
     }
 
 
@@ -433,7 +452,7 @@ die;//return self::errorHandler();
      *
      * Mind that the related Text record is inserted in {@see storeType()}
      * and is not affected here.
-     * @param   integer   $type_id          The room type ID
+     * @param   integer   $room_type_id     The room type ID
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
      * @return  integer                     The ID of the record inserted or
@@ -441,18 +460,18 @@ die;//return self::errorHandler();
      * @static
      * @global  ADONewConnection  $objDatabase
      */
-    static function updateType($type_id, $number_default, $price_default)
+    static function updateType($room_type_id, $number_default, $price_default)
     {
         global $objDatabase;
 
-        if (empty($type_id)) return false;
+        if (empty($room_type_id)) return false;
         $query = "
             UPDATE `".DBPREFIX."module_hotelcard_room_type`
                SET `number_default`=$number_default,
                    `price_default`=$price_default
-             WHERE `type_text_id`=$type_id";
+             WHERE `type_text_id`=$room_type_id";
         $objResult = $objDatabase->Execute($query);
-        return ($objResult ? $type_id : 0);
+        return ($objResult ? $room_type_id : 0);
     }
 
 
@@ -461,7 +480,7 @@ die;//return self::errorHandler();
      *
      * Mind that the related Text record is inserted in {@see storeType()}
      * and is not affected here.
-     * @param   integer   $type_id          The room type ID
+     * @param   integer   $room_type_id     The room type ID
      * @param   integer   $hotel_id         The hotel ID
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
@@ -471,19 +490,19 @@ die;//return self::errorHandler();
      * @global  ADONewConnection  $objDatabase
      */
     static function insertType(
-        $type_id, $hotel_id, $number_default, $price_default
+        $room_type_id, $hotel_id, $number_default, $price_default
     ) {
         global $objDatabase;
 
-        if (empty($type_id) || empty($hotel_id)) return false;
+        if (empty($room_type_id) || empty($hotel_id)) return false;
         $query = "
             INSERT INTO `".DBPREFIX."module_hotelcard_room_type` (
                 `type_text_id`, `hotel_id`, `number_default`, `price_default`
             ) VALUES (
-                $type_id, $hotel_id, $number_default, $price_default
+                $room_type_id, $hotel_id, $number_default, $price_default
             )";
         $objResult = $objDatabase->Execute($query);
-        return ($objResult ? $type_id : 0);
+        return ($objResult ? $room_type_id : 0);
     }
 
 
@@ -493,8 +512,11 @@ die;//return self::errorHandler();
      * Updates single availability records that exist, inserts missing ones.
      * Dates that are not present in the availability array will not be
      * affected at all.
+     * If the $room_type_id is empty, or if the $arrAvailability argument
+     * is empty or not an array, false is returned.
      * The array has the same structure as the 'availabilities' branch in
-     * {@see $arrRoomtypes}:
+     * {@see $arrRoomtypes}, and the data posted by the edit_hotel page in
+     * the frontend:
      *  array(
      *    date => array(
      *      'number_total'     => number of rooms available that day,
@@ -504,32 +526,41 @@ die;//return self::errorHandler();
      *    ),
      *    ... more ...
      *  )
-     * @param   string    $type_id          The room type ID
+     * @param   string    $room_type_id     The room type ID
      * @param   array     $arrAvailability  The availability array
-     * @return  boolean                     True on success, false otherwise
+     * @return  boolean                     True on success, false on failure,
+     *                                      or the empty string
      * @static
      * @global  ADONewConnection  $objDatabase
      */
-    static function storeAvailabilityArray($type_id, $arrAvailability)
+    static function storeAvailabilityArray($room_type_id, $arrAvailability)
     {
         global $objDatabase;
 
-        if (   empty($type_id)
+//echo("HotelRoom::storeAvailabilityArray($room_type_id, ".var_export($arrAvailability, true).": Entered<br />");
+
+        if (   empty($room_type_id)
             || empty($arrAvailability) || !is_array($arrAvailability))
             return false;
 
         $result = true;
         foreach ($arrAvailability as $date => $arrAvailable) {
-            if (self::recordAvailabilityExists($type_id, $date)) {
+//echo("HotelRoom::storeAvailabilityArray(): date $date, available ".var_export($arrAvailable, true)."<br />");
+
+            // If the number_total index is not present, jump out
+            if (   !is_array($arrAvailable)
+                || !isset($arrAvailable['number_total']))
+                return '';
+            if (self::recordAvailabilityExists($room_type_id, $date)) {
                 $result &= self::updateAvailable(
-                    $type_id, $date,
+                    $room_type_id, $date,
                     $arrAvailable['number_total'],
                     $arrAvailable['number_booked'],
                     $arrAvailable['number_cancelled'],
                     $arrAvailable['price']);
             } else {
                 $result &= self::insertAvailable(
-                    $type_id, $date,
+                    $room_type_id, $date,
                     $arrAvailable['number_total'],
                     $arrAvailable['number_booked'],
                     $arrAvailable['number_cancelled'],
@@ -542,7 +573,7 @@ die;//return self::errorHandler();
 
     /**
      * Updates the available rooms for the given type and date
-     * @param   integer   $type_id            The room type ID
+     * @param   integer   $room_type_id       The room type ID
      * @param   integer   $date               The date
      * @param   integer   $number_total       The total number of rooms
      *                                        available
@@ -554,19 +585,19 @@ die;//return self::errorHandler();
      * @global  ADONewConnection  $objDatabase
      */
     static function updateAvailable(
-        $type_id, $date, $number_total,
+        $room_type_id, $date, $number_total,
         $number_booked, $number_cancelled, $price
     ) {
         global $objDatabase;
 
         $query = "
-            UPDATE `".DBPREFIX."module_hotelcard_hotel_room_available`
+            UPDATE `".DBPREFIX."module_hotelcard_room_available`
                SET `number_total`=$number_total,
                    `number_booked`=$number_booked,
                    `number_cancelled`=$number_cancelled,
                    `price`=$price
-             WHERE `type_id`=$type_id
-               AND `date`=$date";
+             WHERE `room_type_id`=$room_type_id
+               AND `date`='$date'";
         $objResult = $objDatabase->Execute($query);
         return (bool)$objResult;
     }
@@ -574,7 +605,7 @@ die;//return self::errorHandler();
 
     /**
      * Inserts the available rooms for the given type and date
-     * @param   integer   $type_id            The room type ID
+     * @param   integer   $room_type_id       The room type ID
      * @param   integer   $date               The date
      * @param   integer   $number_total       The total number of rooms
      *                                        available
@@ -586,18 +617,18 @@ die;//return self::errorHandler();
      * @global  ADONewConnection  $objDatabase
      */
     static function insertAvailable(
-        $type_id, $date, $number_total,
+        $room_type_id, $date, $number_total,
         $number_booked, $number_cancelled, $price
     ) {
         global $objDatabase;
 
         $query = "
-            INSERT INTO `".DBPREFIX."module_hotelcard_hotel_room_available` (
-              `type_id`, `date`,
+            INSERT INTO `".DBPREFIX."module_hotelcard_room_available` (
+              `room_type_id`, `date`,
               `number_total`, `number_booked`, `number_cancelled`,
               `price`
             ) VALUES (
-              $type_id, $date,
+              $room_type_id, '$date',
               $number_total, $number_booked, $number_cancelled,
               $price
             )";
@@ -616,14 +647,14 @@ die;//return self::errorHandler();
     {
         global $objDatabase;
 
-echo("HotelRoom::errorHandler(): Entered<br />");
+//echo("HotelRoom::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_room_type", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_type`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_type<br />");
+//echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_type<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_type` (
@@ -641,14 +672,14 @@ echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_type<br />");
+//echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_type<br />");
 
 
         if (in_array(DBPREFIX."module_hotelcard_room_available", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_available`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_available<br />");
+//echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_available<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_available` (
@@ -668,14 +699,14 @@ echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_available<br />");
+//echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_available<br />");
 
 
         if (in_array(DBPREFIX."module_hotelcard_room_facility", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_facility<br />");
+//echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_facility` (
@@ -685,30 +716,25 @@ echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_facility<br />");
-// TODO: Add data
-/*
-kitchenette
-refrigerator
-coffee-maker
-microwave
-remote control television
-clock radio
-hairdryer
-ironing board
-voice mail
-*/
+//echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_facility<br />");
         $arrFacility = array(
-             1 => 'Klimaanlage',
-             2 => 'Balkon',
-             3 => 'Badewanne',
-             4 => 'Minibar',
-             5 => 'Radio',
-             6 => 'Etagenbad',
-             7 => 'Dusche',
-             8 => 'Telefon',
-             9 => 'WC',
-            10 => 'TV',
+            'Badewanne',
+            'Dusche',
+            'Balkon',
+            'Klimaanlage',
+            'Kühlschrank',
+            'Minibar',
+            'Radio',
+            'Telefon',
+            'TV',
+            'WC',
+            'Weckradio',
+            1000 => // The following are not visible in the wizard
+            'Etagenbad',
+            'Haartrockner',
+            'Kaffeemaschine',
+            'Küche',
+            'Mikrowelle',
         );
         $arrText = Text::getArrayById(
             MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY, FRONTEND_LANG_ID
@@ -728,7 +754,7 @@ voice mail
             } else {
                 // Add missing text
                 $objText = new Text(
-                    $facility, FRONTEND_LANG_ID,
+                    $facility, 1, // German *ONLY*
                     MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY
                 );
                 if (!$objText->store()) {
@@ -750,7 +776,7 @@ voice mail
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_room_type_has_room_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_type_has_room_facility<br />");
+//echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room_type_has_room_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_type_has_room_facility` (
@@ -772,7 +798,7 @@ echo("HotelRoom::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_room
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_type_has_room_facility<br />");
+//echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_type_has_room_facility<br />");
 
         // More to come...
 

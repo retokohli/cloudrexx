@@ -37,9 +37,9 @@ require_once 'HotelRoom.class.php';
  */
 class Hotel
 {
-    const TEXT_GROUP       = 'HOTELCARD_HOTEL_GROUP';
-    const TEXT_DESCRIPTION = 'HOTELCARD_HOTEL_DESCRIPTION';
-    const TEXT_POLICY      = 'HOTELCARD_HOTEL_POLICY';
+    const TEXT_GROUP       = 'hotelcard_hotel_group';
+    const TEXT_DESCRIPTION = 'hotelcard_hotel_description';
+    const TEXT_POLICY      = 'hotelcard_hotel_policy';
 
     /**
      * A complete list of all Hotel field names
@@ -144,6 +144,7 @@ class Hotel
         if (!$objResult || $objResult->EOF) return false;
         $objHotel = new Hotel();
         foreach (self::$arrFieldnames as $name) {
+// TODO: Text!
             $objHotel->arrFieldvalues[$name] = $objResult->fields[$name];
         }
         return $objHotel;
@@ -200,7 +201,7 @@ class Hotel
           // INT(10) NOT NULL, positive numbers, IDs -> Verify that it's a positive integer
           case 'accomodation_type_id':
           case 'lang_id':
-          case 'description_text_id':
+          case 'description_text_id': // See below
           case 'hotel_region_id':
           case 'billing_country_id':
           case 'numof_rooms':
@@ -260,7 +261,7 @@ class Hotel
 
           // TINYTEXT, URI -> Verify
           case 'hotel_uri':
-            if (!FWValidator::isUri($value)) return false;
+            if ($value !== '' && !FWValidator::isUri($value)) return false;
             break;
 
           // TIME -> Verify (
@@ -280,14 +281,16 @@ class Hotel
           // TEXT -> Strip tags and possibly other crap
           case 'comment':
           case 'found_how':
+          case 'description_text': // See above
+          case 'policy_text':      // See above
             $value = trim(strip_tags($value));
             break;
 
           default:
             // case 'id' -> *MUST NOT* be changed
-            // Skip any unknown/unwnanted fields
-echo("Hotel::setFieldvalue($name, $value):  Illegal name or value<br />");
-            return false;
+            // Skip any unknown/unwnanted fields, but return true anyway
+//echo("Hotel::setFieldvalue($name, $value):  Illegal name skipped<br />");
+            return true;
         }
         // Accept valid values
         $this->arrFieldvalues[$name] = $value;
@@ -342,6 +345,23 @@ echo("Hotel::setFieldvalue($name, $value):  Illegal name or value<br />");
      */
     function store()
     {
+        if (isset($this->arrFieldvalues['description_text'])) {
+            $objText = false;
+            if (isset($this->arrFieldvalues['description_text_id']))
+                $objText = Text::getById(
+                    $this->arrFieldvalues['description_text_id'],
+                    FRONTEND_LANG_ID);
+            if (!$objText) {
+                $objText = new Text(
+                    '', FRONTEND_LANG_ID, MODULE_ID, self::TEXT_DESCRIPTION);
+            }
+            $objText->setText($this->arrFieldvalues['description_text']);
+            $objText->setLanguageId(FRONTEND_LANG_ID);
+            if (!$objText->store()) return false;
+            $this->arrFieldvalues['description_text_id'] = $objText->getId();
+        }
+// TODO: store policy Text
+
         if ($this->recordExists()) return $this->update();
         return $this->insert();
     }
@@ -355,9 +375,8 @@ echo("Hotel::setFieldvalue($name, $value):  Illegal name or value<br />");
     {
         global $objDatabase;
 
-// TODO: store Text
-
         unset($this->arrFieldvalues['id']);
+        if (empty($this->arrFieldvalues)) return false;
         $query = "
             INSERT INTO `".DBPREFIX."module_hotelcard_hotel` (
               `".join('`,`', array_keys($this->arrFieldvalues))."`
@@ -379,15 +398,14 @@ echo("Hotel::setFieldvalue($name, $value):  Illegal name or value<br />");
     {
         global $objDatabase;
 
-// TODO: store Text
-
         $strFields = '';
         foreach ($this->arrFieldvalues as $name => $value) {
             if ($name == 'id') continue;
             $strFields .=
-        	     (empty($strFields) ? ',' : '').
-        	     "`$name`='$value'";
+                 (empty($strFields) ? ',' : '').
+                 "`$name`='$value'";
         }
+        if (empty($strFields)) return false;
         $query = "
             UPDATE `".DBPREFIX."module_hotelcard_hotel`
                SET $strFields
@@ -405,14 +423,14 @@ echo("Hotel::setFieldvalue($name, $value):  Illegal name or value<br />");
         $objHotel = new Hotel();
         foreach (Hotel::getFieldnames() as $name) {
             if (!isset($_SESSION['hotelcard'][$name])) {
-echo("Note: missing value for $name<br />");
+//echo("Note: missing value for $name<br />");
                 continue;
             }
             $value = $_SESSION['hotelcard'][$name];
 //echo("Processing name $name, value $value<br />");
             switch ($name) {
               case 'id':
-echo("Skipping name $name<br />");
+//echo("Skipping name $name<br />");
                 continue;
               case 'group_id':
 //echo("Adding group $value<br />");
@@ -421,22 +439,20 @@ echo("Skipping name $name<br />");
                 if (empty($value)) return false;
                 break;
               case 'image_id':
+                // Images are stored right after they are uploaded
 //echo("Adding image $value<br />");
-                // See whether that hotel group exists already, create it if not
-                $value = Image::uploadAndStore($value);
-                if (empty($value)) return false;
                 break;
-              case 'description_text_id':
+              case 'description_text':
 //echo("Adding description $value<br />");
-                // See whether that hotel group exists already, create it if not
                 $value = Text::add($value, self::TEXT_DESCRIPTION);
                 if (empty($value)) return false;
+                $objHotel->setFieldvalue('description_text_id', $value);
                 break;
-              case 'policy_text_id':
+              case 'policy_text':
 //echo("Adding policy $value<br />");
-                // See whether that hotel group exists already, create it if not
                 $value = Text::add($value, self::TEXT_POLICY);
                 if (empty($value)) return false;
+                $objHotel->setFieldvalue('policy_text_id', $value);
                 break;
               default:
                 // No special action for the remaining ones
@@ -445,7 +461,7 @@ echo("Skipping name $name<br />");
 //echo("Success name $name, value $value<br />");
                 continue;
             }
-echo("FAILED: name $name, value '$value'<br />");
+//echo("FAILED: name $name, value '$value'<br />");
             Hotelcard::addMessage(sprintf(
                 $_ARRAYLANG['TXT_HOTELCARD_ERROR_ILLEGAL_VALUE'],
                 $_ARRAYLANG['TXT_HOTELCARD_'.strtoupper($name)],
@@ -454,14 +470,17 @@ echo("FAILED: name $name, value '$value'<br />");
 //                return false;
         }
         if (!$objHotel->store()) {
-echo("ERROR: Failed to store hotel<br />");
+//echo("ERROR: Failed to store hotel<br />");
             return false;
         }
         $hotel_id = $objHotel->getFieldvalue('id');
 //echo("Stored hotel ID $hotel_id<br />");
 
         // Store the hotel facilities
-        if (empty($_SESSION['hotelcard']['hotel_facility_id'])) return false;
+        if (empty($_SESSION['hotelcard']['hotel_facility_id'])) {
+//echo("ERROR: Missing hotel facilities<br />");
+            return false;
+        }
         foreach (array_keys($_SESSION['hotelcard']['hotel_facility_id']) as $hotel_facility_id) {
             if (HotelFacility::addRelation(
                 $hotel_id, $hotel_facility_id)) continue;
@@ -472,7 +491,10 @@ echo("ERROR: Failed to store hotel<br />");
         }
 
         // Store the room types
-        if (empty($_SESSION['hotelcard']['room_type'])) return false;
+        if (empty($_SESSION['hotelcard']['room_type'])) {
+//echo("ERROR: Missing room types<br />");
+            return false;
+        }
         foreach ($_SESSION['hotelcard']['room_type'] as $index => $room_type) {
             // Skip types without a name
             if (empty($room_type)) continue;
@@ -498,7 +520,21 @@ echo("ERROR: Failed to store hotel<br />");
                 return false;
             }
         }
-        $_SESSION['hotelcard']['registration_id'] = $objHotel->getFieldvalue('id');
+
+        // Create a subfolder for the hotel images
+        if (File::makeDir(ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id)) {
+            // Move the image there, if any
+            if (!empty($_SESSION['hotelcard']['image_filename'])) {
+                if (!File::move(
+                    ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.
+                        $_SESSION['hotelcard']['image_filename'],
+                    ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id.'/'.
+                        $_SESSION['hotelcard']['image_filename'])) {
+//echo("ERROR: Failed to move image to folder ".ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id."<br />");
+                }
+            }
+        }
+        $_SESSION['hotelcard']['registration_id'] = $hotel_id;
         $_SESSION['hotelcard']['registration_date'] = time();
         return true;
     }
@@ -539,14 +575,14 @@ echo("ERROR: Failed to store hotel<br />");
     {
         global $objDatabase;
 
-echo("Hotel::errorHandler(): Entered<br />");
+//echo("Hotel::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("Hotel::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel<br />");
+//echo("Hotel::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel` (
@@ -631,7 +667,7 @@ echo("Hotel::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel<br
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("Hotel::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel<br />");
+//echo("Hotel::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel<br />");
 
         // More to come...
 
