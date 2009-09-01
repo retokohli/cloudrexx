@@ -700,56 +700,43 @@ class news extends newsLibrary {
 
         $objFWUser = FWUser::getFWUserObject();
 
-        $date = time();
-        $newstitle = $_POST['newsTitle'];
-        $newstext = addslashes($_POST['newsText']);
+        $date         = time();
+        $newstitle    = $_POST['newsTitle'];
+        $newstext     = $_POST['newsText'];
         $newsRedirect = $_POST['newsRedirect'];
         if ($newsRedirect == 'http://') {
             $newsRedirect = '';
         }
-        $newsTeaserText = addslashes($_POST['newsTeaserText']);
-        $newssource = $_POST['newsSource'];
-        $newsurl1 = $_POST['newsUrl1'];
-        $newsurl2 = $_POST['newsUrl2'];
-        $newscat = $_POST['newsCat'];
-        $userid = $objFWUser->objUser->getId();
+        $newsTeaserText = $_POST['newsTeaserText'];
+        $newssource     = $_POST['newsSource'];
+        $newsurl1       = $_POST['newsUrl1'];
+        $newsurl2       = $_POST['newsUrl2'];
+        $newscat        = $_POST['newsCat'];
+        $userid         = $objFWUser->objUser->getId();
 
-        $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news (
-            id,
-            date,
-            title,
-            text,
-            redirect,
-            source,
-            url1,
-            url2,
-            catid,
-            lang,
-            startdate,
-            enddate,
-            status,
-            validated,
-            userid,
-            teaser_text,
-            changelog
-            ) VALUES (
-            '',
-            '$date',
-            '$newstitle',
-            '$newstext',
-            '".$newsRedirect."',
-            '$newssource',
-            '$newsurl1',
-            '$newsurl2',
-            '$newscat',
-            '$this->langId',
-            '',
-            '',
-            '".($this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0")."',
-            '".($this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0")."',
-            '$userid',
-            '".$newsTeaserText."',
-            '$date')"
+        $insert_fields = array(
+            'date',       'title',     'text',        'redirect',
+            'source',     'url1',      'url2',        'catid',
+            'lang',     /*  'startdate', 'enddate', */'status',
+            'validated',  'userid',    'teaser_text', 'changelog'
+
+        );
+
+        $enable = $this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0";
+        $insert_values = array(
+            $date,          $newstitle, $newstext,        $newsRedirect,
+            $newssource,    $newsurl1,  $newsurl2,        $newscat,
+            $this->langId,/*'',         '',      */       $enable,
+            $enable,        $userid,    $newsTeaserText,  $date
+        );
+
+
+        $into   = "`" . join("`, `", $insert_fields) . "`";
+        $values = "'" . join("', '", array_map('contrexx_addslashes', $insert_values)) . "'";
+
+        $objResult = $objDatabase->Execute("
+            INSERT INTO ".DBPREFIX."module_news ( $into) 
+            VALUES ( $values )"
         );
 
         if ($objResult !== false){
