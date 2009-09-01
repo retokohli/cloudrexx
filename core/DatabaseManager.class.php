@@ -1660,7 +1660,7 @@ final class SQLBackup extends BackupBase
                 $strReturn .= '(';
                 foreach($arrColumnNames as $strColumnName) {
                     if (isset($objTableContent->fields[$strColumnName])) {
-                        $strReturn .= '\''.mysql_escape_string($objTableContent->fields[$strColumnName]).'\', ';
+                        $strReturn .= '\''.addslashes($objTableContent->fields[$strColumnName]).'\', ';
                     } else {
                         $strReturn .= 'NULL, ';
                     }
