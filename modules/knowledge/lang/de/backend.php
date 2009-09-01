@@ -273,4 +273,6 @@ $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'] = "Kategorie wählen";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'] = "Bitte wählen Sie eine Kategorie aus";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_BEST_RATED_DESCRIPTION'] = "Bestbewertete Artikel";
 $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_MOST_READ_DESCRIPTION'] = "Meistgelesene Artikel";
+$_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_SUCCESSFUL'] = "Stichworte wurden aufgeräumt.";
+$_ARRAYLANG['TXT_KNOWLEDGE_RESET_VOTES_SUCCESSFUL'] = "Bewertungsstatistiken wurden zurückgesetzt.";
 ?>
