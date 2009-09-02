@@ -190,5 +190,7 @@ $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Geändert am";
-$_ARRAYLANG['TXT_HOTELCARD'] = "Hotelcard";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Ein Fehler ist aufgetreten";
+$_ARRAYLANG['TXT_CSRF_DESCR'] = "Aus Sicherheitsgründen wurde diese Aktion blockiert. Falls diese Meldung wiederholt auftaucht, versuchen Sie, weniger Browserfenster offen zu halten.";
+$_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 ?>
