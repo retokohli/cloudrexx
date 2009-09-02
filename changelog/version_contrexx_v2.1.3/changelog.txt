@@ -8,6 +8,7 @@
 Allgemein
 - Neue Platzhalter für Datumsfragmente:
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
+- Einige Sicherheitsprobleme behoben
 
 Modul: Dokumenten System
 - Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
