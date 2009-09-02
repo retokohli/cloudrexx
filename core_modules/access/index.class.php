@@ -43,13 +43,15 @@ class Access extends AccessLib
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
 
 
-
+        CSRF::add_code();
         switch ($cmd[0]) {
             case 'signup':
+                CSRF::check_code();
                 $this->signUp();
                 break;
 
             case 'settings':
+                CSRF::check_code();
                 $this->settings();
                 break;
 
@@ -58,6 +60,7 @@ class Access extends AccessLib
                 break;
 
             case 'user':
+                CSRF::check_code();
                 $this->user($metaPageTitle, $pageTitle);
                 break;
 
