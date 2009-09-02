@@ -96,6 +96,7 @@ class Auction extends auctionLibrary
     */
     function getPage()
     {
+        CSRF::add_code();
         if (!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         }
@@ -105,18 +106,23 @@ class Auction extends auctionLibrary
                 $this->entryDetails($_GET['id']);
             break;
             case 'send':
+                CSRF::check_code();
                 $this->sendMessage($_GET['id']);
             break;
             case 'add':
+                CSRF::check_code();
                 $this->addEntry();
             break;
             case 'confirm':
+                CSRF::check_code();
                 $this->confirmEntry();
             break;
             case 'edit':
+                CSRF::check_code();
                 $this->editEntry();
             break;
             case 'del':
+                CSRF::check_code();
                 $this->delEntry();
             break;
             case 'search':
