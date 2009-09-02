@@ -59,7 +59,6 @@ class CSRF {
      * output so as to insert the data.
      */
 	public static function add_code() {
-        DBG::trace();
         if (CSRF::$already_added_code) {
             return;
         }
@@ -69,7 +68,6 @@ class CSRF {
         $code = preg_replace('#[\'"=%]#', '_', $code);
         output_add_rewrite_var(CSRF::$formkey, $code);
 
-        DBG::msg("Added anti-CSRF code '$code'");
 
         CSRF::__setkey($code, CSRF::$validity_count);
 	}
@@ -80,7 +78,6 @@ class CSRF {
      * find a valid anti-CSRF code in the request.
      */
     public static function check_code() {
-        DBG::trace();
 
         if (CSRF::$already_checked) {
             return;
@@ -94,26 +91,21 @@ class CSRF {
         if (CSRF::__is_ajax()) {
             return;
         }
-        DBG::trace();
 
         $code = ($_SERVER['REQUEST_METHOD'] == 'GET')
             ? $_GET [CSRF::$formkey]
             : $_POST[CSRF::$formkey]
         ;
 
-        DBG::msg("Checking code. Incoming is '$code'");
         CSRF::__cleanup();
 
         if(! CSRF::__getkey($code)) {
-            DBG::msg("CSRF: killing, key not in session");
-            DBG::dump($_SESSION[CSRF::$sesskey]);
             CSRF::__kill();
         }
         else {
             CSRF::__reduce($code);
 
             if (CSRF::__getkey($code) < 0) {
-                DBG::msg("CSRF: killing after decrement");
                 CSRF::__kill();
             }
         }
@@ -202,8 +194,6 @@ class CSRF {
             unset($_SESSION[CSRF::$sesskey][$cand]);
         }
 
-        DBG::msg('Cleaned up CSRF code list. Looks like this now:');
-        DBG::dump($_SESSION[CSRF::$sesskey]);
     }
 
     private function __getkey($key) {

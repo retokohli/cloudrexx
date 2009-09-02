@@ -68,7 +68,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('lib/DBG.php');
-define('_DEBUG', DBG_PHP | DBG_ADODB);
+define('_DEBUG', DBG_NONE);
 DBG::__internal__setup();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
@@ -119,6 +119,7 @@ if ($_CONFIG['systemStatus'] != 'on') {
  * Include all the required files.
  */
 require_once dirname(__FILE__).'/core/API.php';
+require_once dirname(__FILE__).'/lib/CSRF.php';
 
 //-------------------------------------------------------
 // Initialize database object
