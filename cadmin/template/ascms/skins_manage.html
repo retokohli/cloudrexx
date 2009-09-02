@@ -77,7 +77,7 @@ var importSelect = function(div){
 	}
 }
 
-var highlight = function(obj, direction){
+var skinsHighlight = function(obj, direction){
 	if(obj.className=='rowWarn') return; //ignore active row
 	obj.style.backgroundColor = highlightcolor;
 	if(direction == 'upper'){
@@ -87,7 +87,7 @@ var highlight = function(obj, direction){
 	}
 }
 
-var unhighlight = function(obj, direction){ //ignore active row
+var skinsUnhighlight = function(obj, direction){ //ignore active row
 	if(obj.className=='rowWarn') return;
 	if(direction == 'upper'){
 		if(getPrevRow(obj).className == 'row1'){
@@ -249,7 +249,7 @@ document.body.onmousemove = function(event){
 		</td>
 	</tr>
 	<!-- BEGIN themeRow -->
-	<tr class="{ROW_CLASS}" onmouseover="highlight(this,'lower');" onmouseout="unhighlight(this,'lower');" onclick="showInfo(this);">
+	<tr class="{ROW_CLASS}" onmouseover="skinsHighlight(this,'lower');" onmouseout="skinsUnhighlight(this,'lower');" onclick="showInfo(this);">
 		<td style="width: 200px">
 		<div style="vertical-align: top; font-size:1.1em;">
 			{THEME_NAME_EXTRA}
@@ -279,7 +279,7 @@ document.body.onmousemove = function(event){
 		</div>
 		</td>
 	</tr>
-	<tr class="hidden" onmouseover="highlight(this,'upper');" onmouseout="unhighlight(this,'upper');" onclick="hideInfo(this);">
+	<tr class="hidden" onmouseover="skinsHighlight(this,'upper');" onmouseout="skinsUnhighlight(this,'upper');" onclick="hideInfo(this);">
 		<td colspan="4">
 			{THEME_XML_AUTHOR} &nbsp;&nbsp;&nbsp; {THEME_XML_VERSION} &nbsp;&nbsp;&nbsp; {THEME_XML_DESCRIPTION}
 		</td>
