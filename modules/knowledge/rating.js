@@ -1,8 +1,8 @@
 /**
  * Constructor
  */
-var Rating = function(nr, currentRate, options) 
-{	
+var Rating = function(nr, currentRate, options)
+{
     /* the object number suffix */
     this.nr = nr;
 
@@ -45,7 +45,7 @@ var Rating = function(nr, currentRate, options)
 
     /* the data to be passed to the callback function */
     this.callbackData = {};
-    
+
 
     if (options) {
         if (options.starWidth) {
@@ -93,15 +93,15 @@ var Rating = function(nr, currentRate, options)
             this.callbackData = options.callbackData;
         }
     }
-    
+
 
     this.currentSize = currentRate * (this.width / this.stars);
     var obj = $(this.elemPrefix+nr);
 
     // add the events
     var ref = this;
-    if (!this.locked) { 
-        obj.observe('mousemove', function(event) { ref.moving(event); });    
+    if (!this.locked) {
+        obj.observe('mousemove', function(event) { ref.moving(event); });
         obj.observe('mouseout', function(event) { ref.blur(event); });
         obj.observe('mouseover', function(event) { ref.over(event); });
         obj.observe('click', function(event) { ref.click(event); });
@@ -111,10 +111,10 @@ var Rating = function(nr, currentRate, options)
     this.fg = document.createElement("div");
     obj.appendChild(this.bg);
     obj.appendChild(this.fg);
- 
+
 
     // ad the style
-    //obj.style.position = "relative"; 
+    obj.style.position = "relative";
     obj.style.width = this.width + 'px';
     obj.style.height = this.starHeight + 'px';
     obj.style.overlay = "hidden";
@@ -127,8 +127,8 @@ var Rating = function(nr, currentRate, options)
     this.bg.style.background = 'url('+this.starPath+this.bgStar+') repeat-x';
     if (!this.locked) {
         this.bg.style.cursor = "pointer";
-    } 	
-     
+    }
+
     this.fg.style.height = this.starHeight+'px';
     this.fg.style.position = 'absolute';
     this.fg.style.top = '0px';
@@ -147,11 +147,11 @@ var Rating = function(nr, currentRate, options)
 /**
  * The moving event
  */
-Rating.prototype.moving = function(event) 
+Rating.prototype.moving = function(event)
 {
     if (!this.rated) {
         if (window.event) {
-            var x = window.event.x;
+            var x = window.event.offsetX;
         } else {
             var x = event.layerX;
         }
@@ -169,7 +169,7 @@ Rating.prototype.moving = function(event)
 /**
  * The onmouseout event
  */
-Rating.prototype.blur = function(event) 
+Rating.prototype.blur = function(event)
 {
     if (!this.rated) {
         this.fg.style.width = this.currentSize+'px';
@@ -179,7 +179,7 @@ Rating.prototype.blur = function(event)
 /**
  * The over event
  */
-Rating.prototype.over =  function(event) 
+Rating.prototype.over =  function(event)
 {
     if (!this.rated) {
         if (window.event) {
@@ -201,7 +201,7 @@ Rating.prototype.over =  function(event)
 /**
  * The click event
  */
-Rating.prototype.click = function(event) 
+Rating.prototype.click = function(event)
 {
     if (window.event) {
         var x = window.event.x;
