@@ -76,7 +76,7 @@ class Calendar extends calendarLibrary
         if (!isset($_REQUEST['cmd'])) {
             $_REQUEST['cmd'] = '';
         }
-
+        CSRF::add_code();
         $this->_getEventList();
 
         switch($_REQUEST['cmd']) {
@@ -110,6 +110,7 @@ class Calendar extends calendarLibrary
                 }
                 break;
             case 'addevent':
+                CSRF::check_code();
                 return $this->_showAddEventForm();
                 break;
             case 'eventlist':
@@ -117,6 +118,7 @@ class Calendar extends calendarLibrary
                 break;
 
             case 'sign':
+                CSRF::check_code();
                 return $this->_showRegistrationForm();
                 break;
 

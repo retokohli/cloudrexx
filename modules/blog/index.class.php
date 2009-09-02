@@ -65,6 +65,7 @@ class Blog extends BlogLibrary  {
     */
     function getPage()
     {
+        CSRF::add_code();
         if(!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         }
@@ -411,6 +412,7 @@ class Blog extends BlogLibrary  {
      */
     function addVoting($intMessageId, $intVoting) {
         global $objDatabase, $_ARRAYLANG;
+        CSRF::check_code();
 
         $intMessageId = intval($intMessageId);
         $intVoting = intval($intVoting);
@@ -452,6 +454,7 @@ class Blog extends BlogLibrary  {
     function addComment() {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        CSRF::check_code();
         $this->initUserId();
 
         //Check for activated function

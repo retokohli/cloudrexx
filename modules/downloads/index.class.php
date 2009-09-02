@@ -96,6 +96,7 @@ class downloads extends DownloadsLibrary
     */
     public function getPage()
     {
+        CSRF::add_code();
         switch ($this->cmd) {
             case 'download_file':
                 $this->download();
@@ -103,11 +104,13 @@ class downloads extends DownloadsLibrary
                 break;
 
             case 'delete_file':
+                CSRF::check_code();
                 $this->deleteDownload();
                 $this->overview();
                 break;
 
             case 'delete_category':
+                CSRF::check_code();
                 $this->deleteCategory();
                 $this->overview();
                 break;
@@ -136,6 +139,7 @@ class downloads extends DownloadsLibrary
     {
         global $_LANGID, $_ARRAYLANG;
 
+        CSRF::check_code();
         $objDownload = new Download();
         $objDownload->load(isset($_GET['delete_file']) ? $_GET['delete_file'] : 0);
 
@@ -154,6 +158,7 @@ class downloads extends DownloadsLibrary
     {
         global $_LANGID, $_ARRAYLANG;
 
+        CSRF::check_code();
         $objCategory = Category::getCategory(isset($_GET['delete_category']) ? $_GET['delete_category'] : 0);
 
         if (!$objCategory->EOF) {
@@ -627,6 +632,7 @@ class downloads extends DownloadsLibrary
     {
         global $_ARRAYLANG;
 
+        CSRF::check_code();
         if (!$this->objTemplate->blockExists('downloads_create_category')) {
             return;
         }

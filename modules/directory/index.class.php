@@ -119,6 +119,7 @@ class rssDirectory extends directoryLibrary
      */
     function getPage()
     {
+        CSRF::add_code();
         if (!isset($_REQUEST['cmd'])) {
             $_REQUEST['cmd'] = '';
         }
@@ -131,6 +132,7 @@ class rssDirectory extends directoryLibrary
                 $this->feedDetails(intval($_GET['id']), intval($_GET['cid']), intval($_GET['lid']));
                 break;
             case 'add':
+                CSRF::check_code();
                 $this->newFeed();
                 break;
             case 'myfeeds':
@@ -140,12 +142,14 @@ class rssDirectory extends directoryLibrary
                 $this->latest();
                 break;
             case 'edit':
+                CSRF::check_code();
                 $this->editFeed();
                 break;
             case 'search':
                 $this->searchFeed();
                 break;
             case 'vote':
+                CSRF::check_code();
                 $this->voteFeed();
                 break;
             default:
