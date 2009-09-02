@@ -151,7 +151,7 @@ Rating.prototype.moving = function(event)
 {
     if (!this.rated) {
         if (window.event) {
-            var x = window.event.x;
+            var x = window.event.offsetX;
         } else {
             var x = event.layerX;
         }
