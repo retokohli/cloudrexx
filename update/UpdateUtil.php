@@ -46,6 +46,7 @@ class UpdateUtil {
         if (in_array($name, $tableinfo)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
+            self::check_dbtype($name, $engine);
         }
         else {
             self::create_table($name, $struc, $idx, $engine);
@@ -74,6 +75,22 @@ class UpdateUtil {
             throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
         }
         return isset($col_info[strtoupper($col)]);
+    }
+
+    private static function check_dbtype($name, $engine) {
+        global $objDatabase;
+
+        $tableinfo   = self::sql("SHOW CREATE TABLE $name");
+        $create_stmt = $tableinfo->fields['Create Table'];
+
+        preg_match('#ENGINE=(\w+)#i', $create_stmt, $result);
+        $current_engine = strtoupper($result[1]);
+
+        if (strtoupper($engine) == $current_engine) {
+            return;
+        }
+        // need to change the engine type.
+        self::sql("ALTER TABLE `$name` ENGINE=$engine");
     }
 
     private static function create_table($name, array $struc, $idx, $engine) {
@@ -111,6 +128,7 @@ class UpdateUtil {
         } else {
             return $objResult;
         }
+        return $result;
     }
 
     private function check_columns($name, $struc) {
@@ -208,11 +226,7 @@ class UpdateUtil {
     private function check_indexes($name, $idx, $struc = null) {
         global $objDatabase;
         # mysql> show index from contrexx_access_user_mail;
-        $key_qry = "SHOW INDEX FROM `$name`";
-        $keyinfo = $objDatabase->Execute($key_qry);
-        if ($keyinfo === false) {
-            self::cry($objDatabase->ErrorMsg(), $key_qry);
-        }
+        $keyinfo = self::sql("SHOW INDEX FROM `$name`");
 
         // Find already existing keys, drop unused keys
         $arr_keys_to_drop = array();
