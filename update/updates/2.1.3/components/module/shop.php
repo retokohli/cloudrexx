@@ -537,6 +537,12 @@ function _shopUpdate()
         );
 
 
+        $query = "
+            UPDATE ".DBPREFIX."module_shop_currencies
+            SET sort_order = 0 WHERE sort_order IS NULL";
+        if ($objDatabase->Execute($query) == false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
         // Currencies table fields
         UpdateUtil::table(
             DBPREFIX.'module_shop_currencies',
@@ -753,6 +759,12 @@ function _shopUpdate()
         );
 
 
+        $query = "
+            UPDATE ".DBPREFIX."module_shop_products
+            SET description = '' WHERE description IS NULL";
+        if ($objDatabase->Execute($query) == false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
         // Products table fields
         UpdateUtil::table(
             DBPREFIX.'module_shop_products',

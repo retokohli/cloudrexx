@@ -181,8 +181,8 @@ function _docsysUpdate()
                 'url2'      => array('type' => 'VARCHAR(250)'),
                 'lang'      => array('type' => 'INT(2)', 'unsigned' => true, 'default' => '0'),
                 'userid'    => array('type' => 'INT(6)', 'unsigned' => true, 'default' => '0'),
-                'startdate' => array('type' => 'DATE', 'default' => '0000-00-00'),
-                'enddate'   => array('type' => 'DATE', 'default' => '0000-00-00'),
+                'startdate' => array('type' => 'INT(14)', 'default' => '0'),
+                'enddate'   => array('type' => 'INT(14)', 'default' => '0'),
                 'status'    => array('type' => 'TINYINT(4)', 'default' => '1'),
                 'changelog' => array('type' => 'INT(14)', 'default' => '0')
             ),
