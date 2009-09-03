@@ -226,7 +226,10 @@ class UpdateUtil {
     private function check_indexes($name, $idx, $struc = null) {
         global $objDatabase;
         # mysql> show index from contrexx_access_user_mail;
-        $keyinfo = self::sql("SHOW INDEX FROM `$name`");
+        $keyinfo = $objDatabase->Execute("SHOW INDEX FROM `$name`");
+        if ($keyinfo === false) {
+            self::cry($objDatabase->ErrorMsg(), "SHOW INDEX FROM `$name`");
+        }
 
         // Find already existing keys, drop unused keys
         $arr_keys_to_drop = array();
@@ -403,6 +406,7 @@ class UpdateUtil {
                 INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
                 WHERE n.`module` = $moduleId ".($cmd === null ? '' : "AND n.`cmd` = '$cmd'")." AND n.`username` != 'contrexx_update_$changeVersion'";
             $objContent = self::sql($query);
+            $orig_loopy_query = $query;
             $arrFailedPages = array();
             while (!$objContent->EOF) {
                 $newContent = str_replace(
@@ -410,6 +414,12 @@ class UpdateUtil {
                     $replace,
                     $objContent->fields['content']
                 );
+                if (!is_numeric($objContent->fields['id'])) {
+                    DBG::trace();
+                    DBG::msg("wow. something is fucked up here.");
+                    DBG::msg("SQL query to the following crap was: $orig_loopy_query");
+                    DBG::dump($objContent->fields);
+                }
                 $query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_$changeVersion' WHERE c.`id` = ".$objContent->fields['id'];
                 self::sql($query);
 
