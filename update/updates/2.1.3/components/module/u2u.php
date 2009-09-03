@@ -11,7 +11,9 @@ function _u2uUpdate()
                 'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'user_id'        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
                 'buddies_id'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0')
-            )
+            ),
+            array(),
+            'InnoDB'
         );
         UpdateUtil::table(
             DBPREFIX . 'module_u2u_message_log',
@@ -65,7 +67,10 @@ function _u2uUpdate()
                 'user_sent_items'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'user_unread_items'  => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'user_status'        => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1')
-            )
+            ),
+            array(),
+            'InnoDB'
+
         );
     }
     catch (UpdateException $e) {
