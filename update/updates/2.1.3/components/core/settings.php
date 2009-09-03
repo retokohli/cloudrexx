@@ -353,7 +353,7 @@ function _updateSettingsTable($setId, $arrSetting)
             if (($objSettings = $objDatabase->SelectLimit($query, 1)) !== false) {
                 if ($objSettings->RecordCount() == 0) {
                     // option ID isn't already in use => ok, add it
-                    $query = "INSERT INTO `".DBPREFIX."settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (".intval($setId).", '".$arrSetting['setname']."', '".$arrSetting['setvalue']."', '".$arrSetting['setmodule']."')";
+                    $query = "INSERT INTO `".DBPREFIX."settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (".intval($setId).", '".$arrSetting['setname']."', '".$arrSetting['setvalue']."', '".intval($arrSetting['setmodule'])."')";
                     if ($objDatabase->Execute($query) !== false) {
                         return true;
                     } else {
