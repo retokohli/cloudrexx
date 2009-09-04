@@ -1520,6 +1520,11 @@ define('CONTEXX_INSTALLED', true);
 @header('content-type: text/html; charset='.\$_CONFIG['coreCharacterEncoding']);
 
 /**
+* Set output url seperator
+*/
+@ini_set('arg_separator.output', '&amp;');
+
+/**
 * -------------------------------------------------------------------------
 * Set constants
 * -------------------------------------------------------------------------
