@@ -7,7 +7,6 @@ FCKConfig.SkinPath = FCKConfig.BasePath + 'skins/default/' ;
 
 FCKConfig.EnterMode = 'br';
 FCKConfig.ShiftEnterMode = 'p';
-FCKConfig.StartupShowBlocks = true;
 
 FCKConfig.ToolbarSets["Default"] = [
 	['Source','DocProps','-','NewPage','Preview','-','Templates'],
