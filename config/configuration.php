@@ -64,6 +64,11 @@ $_CONFIGURATION['custom']['shopJsCart'] = false; // true|false
 $_CONFIG['coreCharacterEncoding'] = ''; // example 'UTF-8'
 @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
 
+/**
+* Set output url seperator
+*/
+@ini_set('arg_separator.output', '&amp;');
+
 /*
 * Enable Frontend editing
 */

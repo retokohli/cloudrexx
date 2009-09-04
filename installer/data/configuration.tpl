@@ -65,6 +65,11 @@ $_CONFIG['coreCharacterEncoding'] = '%CHARSET%'; // example 'UTF-8'
 @header('content-type: text/html; charset='.$_CONFIG['coreCharacterEncoding']);
 
 /**
+* Set output url seperator
+*/
+@ini_set('arg_separator.output', '&amp;');
+
+/**
 * -------------------------------------------------------------------------
 * Set constants
 * -------------------------------------------------------------------------
