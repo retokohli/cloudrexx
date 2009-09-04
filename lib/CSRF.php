@@ -50,6 +50,17 @@ class CSRF {
     private static $sesskey = '__csrf_data__';
     private static $formkey = '__csrf__';
 
+    private static $current_code = NULL;
+
+    private static function __get_code() {
+        if (!empty(CSRF::$current_code)) {
+            return CSRF::$current_code;
+        }
+        CSRF::$current_code = base64_encode(rand(1000000000000,9999999999999));
+        CSRF::$current_code = preg_replace('#[\'"=%]#', '_', CSRF::$current_code);
+        CSRF::__setkey(CSRF::$current_code, CSRF::$validity_count);
+        return CSRF::$current_code;
+    }
 
     /**
      * Call this to add a CSRF protection code to all the 
@@ -63,14 +74,27 @@ class CSRF {
             return;
         }
         CSRF::$already_added_code = true;
-
-        $code = base64_encode(rand(100000000000,999999999999));
-        $code = preg_replace('#[\'"=%]#', '_', $code);
+        $code = CSRF::__get_code();
         output_add_rewrite_var(CSRF::$formkey, $code);
-
-
-        CSRF::__setkey($code, CSRF::$validity_count);
 	}
+
+    /**
+     * Adds a placeholder for the CSRF code to the given template.
+     * This is so you can easily patch javascript code that handles
+     * URLs, as this cannot be done by add_code().
+     *
+     * @param $tpl Template object
+     */
+    public static function add_placeholder($tpl) {
+        if (!is_object($tpl)) {
+            DBG::msg("CSRF::add_placeholder(): fix this call, that ain't a template object! (Stack follows)");
+            DBG::stack();
+        }
+        $code = CSRF::__get_code();
+        $name = CSRF::$formkey;
+        $tpl->setGlobalVariable("CSRF_PARAM", "$name=$code");
+        return true;
+    }
 
     /**
      * Call this if you need to protect critical work. 
