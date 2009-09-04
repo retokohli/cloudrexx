@@ -46,7 +46,6 @@ class Access extends AccessLib
         CSRF::add_code();
         switch ($cmd[0]) {
             case 'signup':
-                CSRF::check_code();
                 $this->signUp();
                 break;
 
