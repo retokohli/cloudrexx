@@ -6,7 +6,6 @@ if (!@include_once(ASCMS_CORE_PATH.'/API.php')) {
 function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = true, $updateModules = true)
 {
 	global $_ARRAYLANG, $_CORELANG, $objDatabase, $objUpdate;
-    DBG::calltrace();
 
 	$arrDirs = array('core_module', 'module');
 	$updateStatus = true;
