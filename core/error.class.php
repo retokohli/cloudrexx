@@ -37,6 +37,7 @@ class error
     {
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma();
+        CSRF::add_placeholder($this->_objTpl);
     }
 
 
