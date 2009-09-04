@@ -80,6 +80,7 @@ class Development extends DevelopmentLibrary
 		global $objTemplate, $_ARRAYLANG, $objDatabase;
 		$objDatabase->debug=true;
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/development/template');
+        CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     	
     	$objTemplate->setVariable("CONTENT_NAVIGATION", "	<a href='index.php?cmd=development&amp;act=modules'>TXT_DEVELOPMENT_MODULES</a>

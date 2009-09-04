@@ -90,6 +90,7 @@ class HotelManager extends HotelLib {
     {
         global $objTemplate, $_ARRAYLANG;
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "

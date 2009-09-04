@@ -69,6 +69,7 @@ class FileBrowser {
         global $_ARRAYLANG;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_iconPath = ASCMS_MODULE_IMAGE_WEB_PATH.'/fileBrowser/';

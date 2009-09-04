@@ -50,6 +50,7 @@ class FileUploaderLib {
         global $objInit;
 
         $this->objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/fileUploader/template');
+        CSRF::add_placeholder($this->objTpl);
         $this->objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->mediaType = $this->getMediaType();

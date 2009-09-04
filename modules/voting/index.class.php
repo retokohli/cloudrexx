@@ -22,6 +22,7 @@ function votingShowCurrent($page_content){
 	$paging = '';
 
 	$objTpl = &new HTML_Template_Sigma('.');
+    CSRF::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($page_content);
 
@@ -364,6 +365,7 @@ function setVotingResult($template)
 	$paging="";
 
 	$objTpl = &new HTML_Template_Sigma('.');
+    CSRF::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($template);
 

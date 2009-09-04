@@ -214,6 +214,7 @@ class HotelManager extends HotelLib
                                         lang_id = 1 AND lower(name) LIKE '%hlung%'"); // aufzählung
         $this->_listingCount = $objRS->fields['cnt'];
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
         $this->_weekdays = explode(',', $_CORELANG['TXT_DAY_ARRAY']);

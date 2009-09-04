@@ -58,6 +58,7 @@ class downloads extends DownloadsLibrary
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->parseURLModifiers();
         $this->objTemplate = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);
     }

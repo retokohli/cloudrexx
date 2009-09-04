@@ -49,6 +49,7 @@ class votingmanager
         global $_ARRAYLANG, $objTemplate;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/voting/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable(array(

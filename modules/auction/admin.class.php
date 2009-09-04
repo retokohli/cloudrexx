@@ -63,6 +63,7 @@ class Auction extends auctionLibrary
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/auction/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_AUCTION_UPLOAD_PATH . '/';
         $this->mediaWebPath = ASCMS_AUCTION_UPLOAD_WEB_PATH . '/';

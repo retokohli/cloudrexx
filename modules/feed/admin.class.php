@@ -49,6 +49,7 @@ class feedManager extends feedLibrary
         global  $_ARRAYLANG, $objTemplate, $_CONFIG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/feed/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (isset($_GET['act']) && $_GET['act'] == 'settings' && isset($_POST['save'])) {

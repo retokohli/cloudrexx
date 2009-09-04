@@ -129,6 +129,7 @@ class popupManager extends popupLibrary
         $_ARRAYLANG['TXT_POPUP_DATE_DESC'] = "Um eine unbegrenzte Anzeigedauer zu definieren, müssen beiden Felder leer gelassen werden. Es kann auch nur ein Start- oder Enddatum angegeben werden.";
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/popup/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=popup&amp;act=overview'>".$_ARRAYLANG['TXT_POPUP_OVERVIEW']."</a><a href='index.php?cmd=popup&amp;act=modify'>".$_ARRAYLANG['TXT_PUPUP_ADD_PUPUP']."</a><a href='index.php?cmd=popup&amp;act=settings'>".$_ARRAYLANG['TXT_POPUP_SETTINGS']."</a>");

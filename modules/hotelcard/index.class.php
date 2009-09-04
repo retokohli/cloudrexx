@@ -108,6 +108,7 @@ if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();
         self::$page_content = $page_content;
         // PEAR Sigma template
         self::$objTemplate = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder(self::$objTemplate);
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         self::$objTemplate->setTemplate(self::$page_content, true, true);
 

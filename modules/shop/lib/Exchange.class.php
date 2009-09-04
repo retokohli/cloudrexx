@@ -110,6 +110,7 @@ class Exchange
     function __construct()
     {
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template/');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->loadTemplateFile('module_shop_exchange.html', true, true);
 
         $this->arrExchangeStep = array(

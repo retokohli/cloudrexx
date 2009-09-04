@@ -67,6 +67,7 @@ class downloads extends DownloadsLibrary
 
         $this->objTemplate =
             new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/downloads/template');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',

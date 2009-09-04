@@ -57,6 +57,7 @@ class galleryManager extends GalleryLibrary
         global $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->intLangId=$objInit->userFrontendLangId;

@@ -44,6 +44,7 @@ class Blog extends BlogLibrary  {
         $this->_intCurrentUserId = 0;
 
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
     }

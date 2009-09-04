@@ -72,6 +72,7 @@ class dataBlocks extends DataLibrary
         $this->lang = $lang;
         $this->_arrSettings = $this->createSettingsArray();
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        CSRF::add_placeholder($this->_objTpl);
 
         $this->langVars = $objInit->loadLanguageData('data');
     }

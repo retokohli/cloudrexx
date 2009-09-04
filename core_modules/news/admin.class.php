@@ -169,6 +169,7 @@ class newsManager extends newsLibrary {
         global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_saveSettings();

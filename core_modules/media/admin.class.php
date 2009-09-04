@@ -83,6 +83,7 @@ class MediaManager extends MediaLibrary {
 
         // sigma template
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/media/template');
+        CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
 		// directory variables

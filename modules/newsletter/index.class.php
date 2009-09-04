@@ -43,6 +43,7 @@ class newsletter extends NewsletterLib
         global $_ARRAYLANG;
         $this->pageContent = $pageContent;
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $months = explode(',', $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY']);
         $i=0;

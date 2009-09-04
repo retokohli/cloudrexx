@@ -93,6 +93,7 @@ class Immo extends ImmoLib
                                         lang_id = 1 AND lower(name) LIKE '%aufzählung%'");
         $this->_listingCount = $objRS->fields['cnt'];
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
 
