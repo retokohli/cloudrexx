@@ -3,12 +3,12 @@
 function deleteCategory(catid)
 {
   if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=directory&act=del&id="+catid);
+    window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=del&id="+catid);
 }
 
 function statusCategory(catid, status)
 {
-  window.location.replace("index.php?cmd=directory&id="+catid+"&status="+status);
+  window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&id="+catid+"&status="+status);
 }
 
 function CheckForm()

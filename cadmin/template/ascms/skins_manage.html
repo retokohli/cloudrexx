@@ -39,7 +39,7 @@ var init = function(){
 }
 
 var openPreview = function(id){
-	window.open("index.php?cmd=skins&act=manage&preview=" + id);
+	window.open("index.php?cmd=skins&{CSRF_PARAM}&act=manage&preview=" + id);
 	return false;
 }
 

@@ -52,7 +52,7 @@ function storeChanges()
 function deleteOption(id)
 {
   if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes&delId="+id);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=products&tpl=attributes&delId="+id);
 }
 
 function swapEdit(id)

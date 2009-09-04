@@ -3,7 +3,7 @@
 // <![CDATA[
 function deleteEntry(entryId){ 
     if(confirm('{TXT_DELETE_ENTRY}')) 
-        window.location.replace("?cmd=auction&act=deleteEntry&id="+entryId);
+        window.location.replace("?cmd=auction&{CSRF_PARAM}&act=deleteEntry&id="+entryId);
 }
 
 function selectMultiAction()

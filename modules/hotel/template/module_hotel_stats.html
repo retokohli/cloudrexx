@@ -8,7 +8,7 @@
     function deleteContact(contactID) {
     	strConfirmTxt = '{TXT_HOTEL_CONFIRM_DELETE_CONTACT}';
     	if (confirm(strConfirmTxt+'\n{TXT_HOTEL_CANNOT_UNDO_OPERATION}')) {
-    		window.location.href = "?cmd=hotel&act=stats&del="+contactID;
+    		window.location.href = "?cmd=hotel&{CSRF_PARAM}&act=stats&del="+contactID;
     	}
     }
 

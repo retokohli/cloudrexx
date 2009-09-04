@@ -11,7 +11,7 @@ function showOrHide(strElement)
 }
 function restoreDeleted(intId) {
 	if (confirm('{TXT_DELETED_RESTORE_JS}')) {
-		window.location.replace("index.php?cmd=workflow&act=restoreHistory&hId="+intId);
+		window.location.replace("index.php?cmd=workflow&{CSRF_PARAM}&act=restoreHistory&hId="+intId);
 	}
 }
 // ]]>

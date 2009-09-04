@@ -3,7 +3,7 @@
 function deletePage(pageId)
 {
   if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-    window.location.replace("index.php?cmd=jobs&act=delete&id="+pageId);
+    window.location.replace("index.php?cmd=jobs&{CSRF_PARAM}&act=delete&id="+pageId);
   }
 }
 function deletePages()

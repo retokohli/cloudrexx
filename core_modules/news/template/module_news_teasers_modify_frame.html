@@ -25,6 +25,6 @@
 	</table>
 	{NEWS_TEASER_FRAME_PREVIEW}
 	<br />
-	<input type="button" name="cancel" onclick="window.location.replace('index.php?cmd=news&act=teasers&tpl=frames')" value="{TXT_CANCEL}" />&nbsp;<input type="submit" name="saveTeaserFrame" value="{TXT_SAVE}" />
+	<input type="button" name="cancel" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&act=teasers&tpl=frames')" value="{TXT_CANCEL}" />&nbsp;<input type="submit" name="saveTeaserFrame" value="{TXT_SAVE}" />
 </form>
 <!-- END module_news_teasers_modify_frame.html -->

@@ -3,14 +3,14 @@
 function ticketClose()
 {
   if (confirm('{TXT_SUPPORT_TICKET_CLOSE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
-    window.location.replace("index.php?cmd=support&act=ticketClose&supportTicketId={SUPPORT_TICKET_ID}");
+    window.location.replace("index.php?cmd=support&{CSRF_PARAM}&act=ticketClose&supportTicketId={SUPPORT_TICKET_ID}");
   }
 }
 
 function ticketDelete()
 {
   if (confirm('{TXT_SUPPORT_TICKET_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
-    window.location.replace("index.php?cmd=support&act=ticketDelete&supportTicketId={SUPPORT_TICKET_ID}");
+    window.location.replace("index.php?cmd=support&{CSRF_PARAM}&act=ticketDelete&supportTicketId={SUPPORT_TICKET_ID}");
   }
 }
 // -->

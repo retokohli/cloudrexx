@@ -3,7 +3,7 @@
 // <![CDATA[
 function deleteCategory(catId){ 
     if(confirm('{TXT_DELETE_CATEGORY}')) 
-        window.location.replace("?cmd=market&act=deleteCategorie&id="+catId);
+        window.location.replace("?cmd=market&{CSRF_PARAM}&act=deleteCategorie&id="+catId);
 }
 
 function selectMultiAction()

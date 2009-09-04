@@ -3,12 +3,12 @@
 function deleteFile(id)
 {
    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=directory&act=delfile&id="+id);
+        window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=delfile&id="+id);
 }
 
 function confirmFile(id)
 {
-   window.location.replace("index.php?cmd=directory&act=confirmfile&id="+id);
+   window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=confirmfile&id="+id);
 }
 
 

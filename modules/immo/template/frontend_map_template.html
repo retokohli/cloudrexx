@@ -114,9 +114,9 @@ var createMessage = function(id) {
 
 var showObj = function(id){
 	if(!opener){
-		top.location.href='index.php?section=immo&cmd=showObj&immoLang='+immoLang+"&id="+id;
+		top.location.href='index.php?section=immo&{CSRF_PARAM}&cmd=showObj&immoLang='+immoLang+"&id="+id;
 	}else{
-		opener.top.location.href='index.php?section=immo&cmd=showObj&immoLang='+immoLang+"&id="+id;
+		opener.top.location.href='index.php?section=immo&{CSRF_PARAM}&cmd=showObj&immoLang='+immoLang+"&id="+id;
 		window.close();
 	}
 }

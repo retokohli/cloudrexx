@@ -106,7 +106,7 @@
 
 	var confirmDelete = function(id) {
 		if(confirm('{TXT_CONFIRM_DELETE}')){
-			return location.href="?cmd=immo&act=delfield&id="+id;
+			return location.href="?cmd=immo&{CSRF_PARAM}&act=delfield&id="+id;
 		}
 		return false;
 	}
@@ -187,7 +187,7 @@
 			}
 		}catch(e){}
 
-		url='?cmd=immo&act=map&standalone=true';
+		url='?cmd=immo&act=map&{CSRF_PARAM}&standalone=true';
 		if (!window.focus){
 			return true;
 		}

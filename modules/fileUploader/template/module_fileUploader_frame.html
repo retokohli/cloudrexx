@@ -61,7 +61,7 @@ function uploaderStatusChanged(uploader)
              * Reload opener window with passing the list of uploaded files in JSON
              * packed into the url modifier "highlightFiles".
              */
-            sFiles = '&highlightFiles=';
+            sFiles = '&{CSRF_PARAM}&highlightFiles=';
             sFiles += encodeURIComponent('["' + aUploadedFiles.join('", "') + '"]');
             window.opener.location.replace(window.opener.location.href+sFiles);
 

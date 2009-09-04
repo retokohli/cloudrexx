@@ -2,7 +2,7 @@
 <script language="JavaScript">
 function confirmFile(id)
 {
-   window.location.replace("index.php?cmd=directory&act=confirmfile&id="+id);
+   window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=confirmfile&id="+id);
 }
 </script>
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">

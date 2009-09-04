@@ -4,7 +4,7 @@
 function deleteCustomer(customerId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcustomer&customerId="+customerId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delcustomer&customerId="+customerId);
 }
 
 function sendForm(letter)

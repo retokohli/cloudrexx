@@ -97,7 +97,7 @@
     function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMimeType)
     {
         downloadsElInsertBox = elInsertBox;
-        downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+        downloadsOpenWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
     }
 
     function SetUrl(url, width, height, alt)
@@ -184,7 +184,7 @@
         </tbody>
     </table>
     <br />
-    <input type="button" name="downloads_group_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&amp;act=groups&amp;group_sort={DOWNLOADS_GROUP_GROUP_SORT}&amp;group_by={DOWNLOADS_GROUP_GROUP_SORT_BY}&amp;group_pos={DOWNLOADS_GROUP_GROUP_OFFSET}'" />
+    <input type="button" name="downloads_group_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&{CSRF_PARAM}&amp;act=groups&amp;group_sort={DOWNLOADS_GROUP_GROUP_SORT}&amp;group_by={DOWNLOADS_GROUP_GROUP_SORT_BY}&amp;group_pos={DOWNLOADS_GROUP_GROUP_OFFSET}'" />
     <input type="submit" name="downloads_group_save" value="{TXT_DOWNLOADS_SAVE}" />
 </form>
 <!-- end module_downloads_group_modify.html -->

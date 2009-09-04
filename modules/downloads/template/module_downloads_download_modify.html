@@ -98,7 +98,7 @@ function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMim
     downloadsElImagePreview = typeof(elImagePreview) == 'undefined' ? null : elImagePreview;
     downloadsElRemoveButton = typeof(elRemoveButton) == 'undefined' ? null : elRemoveButton;
     downloadsElMimeType = typeof(elMimeType) == 'undefined' ? null : elMimeType;
-    downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    downloadsOpenWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function downloadsOpenWindow(theURL,winName,features)
@@ -335,7 +335,7 @@ function downloadsAdjustSourceConfig()
 
 		function deleteFile(FileID){
 			if(confirm('{TXT_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-				document.location.href = 'index.php?cmd=downloads&act=files&mode=delete&download='+FileID;
+				document.location.href = 'index.php?cmd=downloads&{CSRF_PARAM}&act=files&mode=delete&download='+FileID;
 			}
 		}
 
@@ -622,7 +622,7 @@ function downloadsAdjustSourceConfig()
     </div>
 <!-- end div downloadsTab_downloadPermissions -->
 <br />
-<input type="button" name="downloads_download_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&act={DOWNLOADS_DOWNLOAD_CANCEL_LINK_SECITON}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
+<input type="button" name="downloads_download_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&{CSRF_PARAM}&act={DOWNLOADS_DOWNLOAD_CANCEL_LINK_SECITON}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
 <input type="submit" name="downloads_download_save" value="{TXT_DOWNLOADS_SAVE}" />
 </form>
 <!-- end module_downloads_download_modify.html -->

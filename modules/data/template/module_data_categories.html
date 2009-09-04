@@ -27,7 +27,7 @@ function copyText(strField) {
 
 function deleteCategory(catId){ 
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}')) 
-        window.location.replace("index.php?cmd=data&act=deleteCategory&id="+catId);
+        window.location.replace("index.php?cmd=data&{CSRF_PARAM}&act=deleteCategory&id="+catId);
 }
 
 function selectMultiAction() {

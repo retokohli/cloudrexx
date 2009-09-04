@@ -23,7 +23,7 @@
     }
     function editCategory(id)
     {
-    	window.location.replace("?cmd=feed&act=catedit&id="+id);
+    	window.location.replace("?cmd=feed&{CSRF_PARAM}&act=catedit&id="+id);
     }
     function selectTodoCategory()
     {

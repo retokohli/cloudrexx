@@ -5,7 +5,7 @@ function deleteNewsMLDoc(providerId, publicIdentifier)
 {
     if(confirm("{TXT_CONFIRM_DELETE_NEWS_MSG}\n{TXT_FEED_ACTION_COULD_NOT_BE_UNDONE}"))
     {
-        window.location.href = "index.php?cmd=feed&act=newsML&tpl=deleteDocument&providerId="+providerId+"&publicIdentifier="+publicIdentifier;
+        window.location.href = "index.php?cmd=feed&{CSRF_PARAM}&act=newsML&tpl=deleteDocument&providerId="+providerId+"&publicIdentifier="+publicIdentifier;
     }
 }
 

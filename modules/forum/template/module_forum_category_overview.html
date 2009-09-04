@@ -8,7 +8,7 @@ Text[{FORUM_TOOLTIP_INDEX}]=["","{FORUM_TOOLTIP_TEXT}"];
 
 function deleteCategory(catId){
     if(confirm('{TXT_JS_DELETE_MSG}'))
-        window.location.replace("?cmd=forum&act=category_delete&id="+catId);
+        window.location.replace("?cmd=forum&{CSRF_PARAM}&act=category_delete&id="+catId);
 }
 
 function selectMultiAction()

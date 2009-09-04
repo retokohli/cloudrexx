@@ -4,7 +4,7 @@
 function confirmDeleteEntry(id)
 {
 	if (confirm('{TXT_CONTACT_CONFIRM_DELETE_ENTRY}\n{TXT_CONTACT_ACTION_IS_IRREVERSIBLE}')) {
-		document.location.href = 'index.php?cmd=contact&act=forms&tpl=deleteEntry&formId={CONTACT_FORM_ID}&entryId='+id;
+		document.location.href = 'index.php?cmd=contact&{CSRF_PARAM}&act=forms&tpl=deleteEntry&formId={CONTACT_FORM_ID}&entryId='+id;
 	}
 }
 
@@ -68,5 +68,5 @@ function selectMultiAction(order)
 </table>
 {CONTACT_FORM_PAGING}
 <br />
-<input type="button" value="{TXT_CONTACT_BACK}" onclick="document.location.href='index.php?cmd=contact'" />
+<input type="button" value="{TXT_CONTACT_BACK}" onclick="document.location.href='index.php?cmd=contact&{CSRF_PARAM}'" />
 <!-- END module_contact_form_entries.html -->

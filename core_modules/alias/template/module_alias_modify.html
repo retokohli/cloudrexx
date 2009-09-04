@@ -14,7 +14,7 @@ function alias_change_source()
 
 function alias_get_fileBrowser()
 {
-	aliasPopup = window.open('?cmd=fileBrowser&standalone=true&absoluteURIs=true&getPageId=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	aliasPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&absoluteURIs=true&getPageId=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 	aliasPopup.focus();
 }
 
@@ -92,7 +92,7 @@ function alias_add_alias()
 	</tbody>
 </table>
 <br />
-<input type="button" value="{TXT_ALIAS_CANCEL}" onclick="window.location.href = '?cmd=alias'" />
+<input type="button" value="{TXT_ALIAS_CANCEL}" onclick="window.location.href = '?cmd=alias&{CSRF_PARAM}'" />
 <input type="submit" name="alias_save" value="{TXT_ALIAS_SAVE}" />
 </form>
 <!-- END module_alias_modify.html -->

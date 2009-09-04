@@ -3,7 +3,7 @@
 
 function deleteSurvey(surveyId){ 
     if(confirm('{TXT_JS_DELETE_MSG}')) 
-        window.location.replace("?cmd=survey&act=delete&id="+surveyId);
+        window.location.replace("?cmd=survey&{CSRF_PARAM}&act=delete&id="+surveyId);
 }
 
 function selectMultiAction() {

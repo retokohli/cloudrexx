@@ -4,7 +4,7 @@
 function confirmDeleteEntry(id)
 {
 	if (confirm('{TXT_CONTACT_CONFIRM_DELETE_ENTRY}\n{TXT_CONTACT_ACTION_IS_IRREVERSIBLE}')) {
-		document.location.href = 'index.php?cmd=contact&act=forms&tpl=deleteEntry&formId={CONTACT_FORM_ID}&entryId='+id;
+		document.location.href = 'index.php?cmd=contact&{CSRF_PARAM}&act=forms&tpl=deleteEntry&formId={CONTACT_FORM_ID}&entryId='+id;
 	}
 }
 // -->
@@ -19,6 +19,6 @@ function confirmDeleteEntry(id)
 </table>
 {CONTACT_ENTRY}
 <br />
-<input type="button" value="{TXT_CONTACT_BACK}" onclick="document.location.href='index.php?cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId={CONTACT_FORM_ID}'" />
+<input type="button" value="{TXT_CONTACT_BACK}" onclick="document.location.href='index.php?cmd=contact&{CSRF_PARAM}&amp;act=forms&amp;tpl=entries&amp;formId={CONTACT_FORM_ID}'" />
 <input type="button" value="{TXT_CONTACT_DELETE}" onclick="confirmDeleteEntry({CONTACT_FORM_ENTRY_ID})" />
 <!-- END module_contact_entries_details.html -->

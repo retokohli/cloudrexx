@@ -4,7 +4,7 @@
 function deleteModule(id)
 {
 	if (confirm('{TXT_DEVELOPMENT_CONFIRM_DELETE_MODULE}\n{TXT_DEVELOPMENT_ACTION_COULD_NOT_BE_UNDONE}')) {
-		document.location.href = 'index.php?cmd=development&act=modules&tpl=deleteModule&moduleId='+id;
+		document.location.href = 'index.php?cmd=development&{CSRF_PARAM}&act=modules&tpl=deleteModule&moduleId='+id;
 	}
 }
 

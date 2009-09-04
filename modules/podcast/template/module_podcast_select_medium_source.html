@@ -93,7 +93,7 @@ function podcast_change_source()
 
 function podcast_get_fileBrowser()
 {
-	podcastPopup = window.open('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	podcastPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 	podcastPopup.focus();
 }
 

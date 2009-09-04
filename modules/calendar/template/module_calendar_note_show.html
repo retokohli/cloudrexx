@@ -5,7 +5,7 @@
 function deleteNote(Id)
 {
     if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=all&id="+Id);
+        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=all&id="+Id);
 }
 // -->
 </script>

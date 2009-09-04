@@ -4,7 +4,7 @@
 function reset()
 {
     if(confirm('{TXT_CALENDAR_RESET_STANDARD_CONFIRM}'))
-        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=style&style=reset");
+        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=style&style=reset");
 
 }
 

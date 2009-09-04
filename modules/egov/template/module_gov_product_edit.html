@@ -214,7 +214,7 @@ function newsGetFileBrowser(elInsertBox, sType)
 {
   newsElInsertBox = elInsertBox;
   newsElType = sType;
-  openWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+  openWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function openWindow(theURL,winName,features){

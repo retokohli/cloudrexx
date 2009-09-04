@@ -26,7 +26,7 @@ function copyText(strField) {
 
 function deleteCategory(catId){ 
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}')) 
-        window.location.replace("index.php?cmd=blog&act=deleteCategory&id="+catId);
+        window.location.replace("index.php?cmd=blog&{CSRF_PARAM}&act=deleteCategory&id="+catId);
 }
 
 function selectMultiAction() {
@@ -34,7 +34,7 @@ function selectMultiAction() {
 		switch (frmShowCategories_MultiAction.value) {
 			case 'delete':
 				if (confirm('{TXT_OVERVIEW_SUBMIT_DELETE_JS}')) {
-					action='index.php?cmd=blog&act=multiactionCategory';
+					action='index.php?cmd=blog&{CSRF_PARAM}&act=multiactionCategory';
 					submit();
 				}
 			break;

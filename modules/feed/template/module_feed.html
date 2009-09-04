@@ -60,21 +60,21 @@
     function sortByCategory()
     {
        sort = document.form2.form_show_category.value;
-       window.location.replace("?cmd=feed&sort="+sort);
+       window.location.replace("?cmd=feed&{CSRF_PARAM}&sort="+sort);
     }
     function editNews(id)
     {
-    	window.location.replace("?cmd=feed&act=edit&id="+id);
+    	window.location.replace("?cmd=feed&{CSRF_PARAM}&act=edit&id="+id);
     }
     function refreshNews(id)
     {
-    	window.location.replace("?cmd=feed&ref=1&id="+id);
+    	window.location.replace("?cmd=feed&{CSRF_PARAM}&ref=1&id="+id);
     }
     function showNews(id)
     {
         var l = (screen.availWidth - 750) / 2;
 	    var t = (screen.availHeight - 50 - 500) / 2;
-        window.open("?cmd=feed&show=1&id="+id, "", "left="+l+",top="+t+",width=750,height=550,scrollbars=yes");
+        window.open("?cmd=feed&{CSRF_PARAM}&show=1&id="+id, "", "left="+l+",top="+t+",width=750,height=550,scrollbars=yes");
     }
     function selectTodoCategory()
     {

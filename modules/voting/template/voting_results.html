@@ -4,7 +4,7 @@
 function deleteVoting(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("?cmd=voting&act=delete&votingid="+id);
+        window.location.replace("?cmd=voting&{CSRF_PARAM}&act=delete&votingid="+id);
 }
 // ]]>
 </script>

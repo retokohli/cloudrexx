@@ -5,11 +5,11 @@ function supportMessageDataEvent(strAction, messageId)
   switch(strAction) {
     case 'quote':
       document.location =
-        "index.php?cmd=support&act=messageEdit&supportMessageId=" + messageId;
+        "index.php?cmd=support&{CSRF_PARAM}&act=messageEdit&supportMessageId=" + messageId;
       break;
     case 'ticketClose':
       document.location =
-        "index.php?cmd=support&act=ticketClose&supportMessageId=" + messageId;
+        "index.php?cmd=support&{CSRF_PARAM}&act=ticketClose&supportMessageId=" + messageId;
       break;
   }
 }

@@ -3,7 +3,7 @@
 function deleteImage(imageId)
 { 
     if(confirm('{TXT_DELETE_IMAGE_MSG}')) 
-        window.location.replace("?cmd=gallery&act=delete_valid_image&id="+imageId);
+        window.location.replace("?cmd=gallery&{CSRF_PARAM}&act=delete_valid_image&id="+imageId);
 }
 
 function imageNameFields()

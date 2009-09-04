@@ -168,7 +168,7 @@ function DeselectAllList(CONTROL) {
 
 function deletePage(intId) {
 	if (confirm('{TXT_DELETE_MESSAGE}')) {
-		window.location.href = "index.php?cmd=content&act=delete&pageId="+intId;
+		window.location.href = "index.php?cmd=content&{CSRF_PARAM}&act=delete&pageId="+intId;
 	}
 }
 
@@ -182,13 +182,13 @@ function showOrHide(strElement) {
 
 function deleteHistory(intId) {
 	if (confirm('{TXT_DELETE_HISTORY_MSG}')) {
-		window.location.replace("index.php?cmd=workflow&act=deleteHistory&hId="+intId);
+		window.location.replace("index.php?cmd=workflow&{CSRF_PARAM}&act=deleteHistory&hId="+intId);
 	}
 }
 
 function activateHistory(intId) {
 	if (confirm('{TXT_ACTIVATE_HISTORY_MSG}')) {
-		window.location.replace("index.php?cmd=workflow&act=activateHistory&hId="+intId);
+		window.location.replace("index.php?cmd=workflow&{CSRF_PARAM}&act=activateHistory&hId="+intId);
 	}
 }
 
@@ -235,9 +235,9 @@ function getFileBrowser(elInsertBox, sType)
 	newsElType = sType;
 
 	if (sType == 'webpages') {
-		openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 	} else {
-		openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 	}
 }
 

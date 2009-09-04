@@ -589,7 +589,7 @@ function SetUrl(url, width, height, alt) {
 
 function newsGetFileBrowser(elInsertBox) {
 	newsElInsertBox = elInsertBox;
-	openWindow('?cmd=fileBrowser&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function openWindow(theURL,winName,features){

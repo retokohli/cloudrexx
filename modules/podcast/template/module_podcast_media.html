@@ -5,7 +5,7 @@ function podcast_delete_medium(id, title)
 {
 	strDeleteTitle = '{TXT_PODCAST_CONFIRM_DELETE_MEDIUM_MSG}';
 	if (confirm(strDeleteTitle.replace('%s', '\''+title+'\'')+'\n{TXT_PODCAST_OPERATION_IRREVERSIBLE}')) {
-		window.location.href = "index.php?cmd=podcast&act=deleteMedium&id="+id;
+		window.location.href = "index.php?cmd=podcast&{CSRF_PARAM}&act=deleteMedium&id="+id;
 	}
 }
 
@@ -74,5 +74,5 @@ function podcast_media_do_action(action) {
 </form>
 <br />
 {PODCAST_PAGING}
-<input type="button" onclick="window.location.href='index.php?cmd=podcast&amp;act=selectSource'" value="{TXT_PODCAST_ADD_MEDIUM}" />
+<input type="button" onclick="window.location.href='index.php?cmd=podcast&{CSRF_PARAM}&amp;act=selectSource'" value="{TXT_PODCAST_ADD_MEDIUM}" />
 <!-- end module_podcast_media.html -->

@@ -5,7 +5,7 @@
 	{
 		strConfirm = '{TXT_NEWSLETTER_CONFIRM_DELETE_TEMPLATE}';
 	    if(confirm(strConfirm.replace('%s', tplName)+'\n{TXT_NEWSLETTER_CANNOT_UNDO_OPERATION}'))
-	        window.location.href = "index.php?cmd=newsletter&act=tpldel&id="+tplId;
+	        window.location.href = "index.php?cmd=newsletter&{CSRF_PARAM}&act=tpldel&id="+tplId;
 	}
 // ]]>
 </script>
@@ -37,5 +37,5 @@
 	<!-- END templates_row -->
 </table>
 <br />
-<input type="button" name="newsletter_add_tpl" onclick="window.location.href='index.php?cmd=newsletter&amp;act=tpledit'" value="{TXT_TEMPLATE_ADD_NEW_TEMPLATE}" />
+<input type="button" name="newsletter_add_tpl" onclick="window.location.href='index.php?cmd=newsletter&{CSRF_PARAM}&amp;act=tpledit'" value="{TXT_TEMPLATE_ADD_NEW_TEMPLATE}" />
 <!-- END module_newsletter_templates.html -->

@@ -8,7 +8,7 @@ function accessChangeUserStatus(id, name)
 	msg = '{TXT_ACCESS_CONFIRM_USER_ACCOUNT_STATUS_CHANGED}';
     notify = confirm(msg.replace('%s', name));
     if(notify) {
-	   window.location.href = 'index.php?cmd=u2u&act=changeStatus&id='+id;
+	   window.location.href = 'index.php?cmd=u2u&{CSRF_PARAM}&act=changeStatus&id='+id;
     }
 }
 // ]]>

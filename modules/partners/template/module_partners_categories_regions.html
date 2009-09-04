@@ -29,32 +29,32 @@ function deleteCategory(catId,cat_Id){
   if(catName=="level")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=level&id="+catId);
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=level&id="+catId);
             }
   else if(catName=="profile")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=profile&id="+catId);
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=profile&id="+catId);
             }
   else if(catName=="country")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=country&id="+catId);
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=country&id="+catId);
             }
   else if(catName=="vertical")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=vertical&id="+catId);
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=vertical&id="+catId);
             }
   else if(catName=="Regions")
   {
     if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
             }
   else if(catName=="category")
             {
             if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
-            window.location.replace("index.php?cmd=partners&act=deleteCategory&id="+catId);
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&id="+catId);
             }
 }
 
@@ -62,27 +62,27 @@ function editCategory(catId,cat_Id){
   var catName = document.getElementById('cat_name_del').value;
   if(catName=="level")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=level&id="+catId);
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=level&id="+catId);
   }
   else if(catName=="profile")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=profile&id="+catId);
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=profile&id="+catId);
   }
   else if(catName=="country")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=country&id="+catId);
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=country&id="+catId);
   }
   else if(catName=="vertical")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=vertical&id="+catId);
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=vertical&id="+catId);
   }
   else if(catName=="Regions")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
   }
   else if(catName=="category")
   {
-             window.location.replace("index.php?cmd=partners&act=editCategory&id="+catId);
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&id="+catId);
   }
 }
 
@@ -110,7 +110,7 @@ function SetUrl(url, width, height, alt) {
 
 function newsGetFileBrowser(elInsertBox) {
 	newsElInsertBox = elInsertBox;
-	openWindow('?cmd=fileBrowser&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function openWindow(theURL,winName,features){

@@ -4,7 +4,7 @@
 function confirmClean() {
 	if (confirm('{TXT_HISTORY_CLEAN_JS_CONFIRM}')) {
 		var numberOfDays = document.getElementById('numberOfDays').value;
-		window.location.replace("index.php?cmd=workflow&act=cleanHistory&days="+numberOfDays);
+		window.location.replace("index.php?cmd=workflow&{CSRF_PARAM}&act=cleanHistory&days="+numberOfDays);
 	}
 }
 // ]]>
