@@ -120,6 +120,9 @@ class UpdateUtil {
     }
     private static function sql($statement) {
         global $objDatabase;
+        # ugly, ugly hack so it does not return Insert_ID when we didn't insert
+        $objDatabase->lastInsID   = NULL;
+        $objDatabase->hasInsertID = false;
         $objResult = $objDatabase->Execute($statement);
         if ($objResult === false) {
             self::cry($objDatabase->ErrorMsg(), $statement);
@@ -414,12 +417,6 @@ class UpdateUtil {
                     $replace,
                     $objContent->fields['content']
                 );
-                if (!is_numeric($objContent->fields['id'])) {
-                    DBG::trace();
-                    DBG::msg("wow. something is fucked up here.");
-                    DBG::msg("SQL query to the following crap was: $orig_loopy_query");
-                    DBG::dump($objContent->fields);
-                }
                 $query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_$changeVersion' WHERE c.`id` = ".$objContent->fields['id'];
                 self::sql($query);
 
