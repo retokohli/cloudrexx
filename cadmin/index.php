@@ -163,6 +163,7 @@ $_ARRAYLANG = $objInit->loadLanguageData($plainCmd);
 $_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
 
 $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+CSRF::add_placeholder($objTemplate);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 // Module object
@@ -1158,6 +1159,8 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
 } else {
     $objTemplate->hideBlock('additional_style');
 }
+
+CSRF::add_placeholder($objTemplate);
 
 $objTemplate->show();
 
