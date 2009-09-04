@@ -69,6 +69,7 @@ class rssDirectory extends directoryLibrary
         global  $_ARRAYLANG, $objInit, $objTemplate, $objDatabase;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/directory/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->langId=$objInit->userFrontendLangId;

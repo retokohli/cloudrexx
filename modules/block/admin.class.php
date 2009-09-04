@@ -81,6 +81,7 @@ class blockManager extends blockLibrary
         global $objTemplate, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/block/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (isset($_POST['saveSettings'])) {

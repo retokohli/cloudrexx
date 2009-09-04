@@ -47,6 +47,7 @@ class eGov extends eGovLibrary
         $this->initContactForms();
         $this->pageContent = $pageContent;
         $this->objTemplate = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
     }

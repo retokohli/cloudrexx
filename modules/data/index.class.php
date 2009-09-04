@@ -54,6 +54,7 @@ class Data extends DataLibrary  {
 		$this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
 
 	    $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($strPageContent);
 	}
@@ -368,6 +369,7 @@ class Data extends DataLibrary  {
         $picture = (!empty($entry['translation'][$lang]['image'])) ? $entry['translation'][$lang]['image'] : "none";
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setCurrentBlock("shadowbox");
 
         $objResult = $objDatabase->SelectLimit(" SELECT foldername

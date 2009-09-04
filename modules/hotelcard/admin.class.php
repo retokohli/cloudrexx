@@ -100,6 +100,7 @@ class Hotelcard
 
         // Sigma template
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotelcard/template');
+        CSRF::add_placeholder(self::$objTemplate);
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         // Set up whatever needed here.

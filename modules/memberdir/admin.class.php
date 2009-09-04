@@ -54,6 +54,7 @@ class MemberDirManager extends MemberDirLibrary
         global $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
+        CSRF::add_placeholder($this->_objTpl);
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

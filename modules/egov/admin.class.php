@@ -105,6 +105,7 @@ class eGov extends eGovLibrary
         $this->initContactForms();
 
         $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/egov/template');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;

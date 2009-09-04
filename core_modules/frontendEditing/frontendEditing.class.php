@@ -134,6 +134,7 @@ class frontendEditing extends frontendEditingLib {
 
 		//Template
 		$this->objTemplate = &new HTML_Template_Sigma($this->strTemplatePath);
+        CSRF::add_placeholder($this->objTemplate);
 		$this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 		//Configuration

@@ -57,6 +57,7 @@ class RecommendManager extends RecommendLibrary
         global $objTemplate, $_ARRAYLANG;
         
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/recommend/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);  
         
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=recommend'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");

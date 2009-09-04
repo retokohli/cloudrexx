@@ -191,6 +191,7 @@ class Shop extends ShopLibrary
 
         // PEAR Sigma template
         $this->objTemplate = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
         // Global module index for clones
@@ -363,6 +364,7 @@ class Shop extends ShopLibrary
         }
 
         $objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate($shopNavbarContent, true, true);
 

@@ -52,6 +52,7 @@ class AccessManager extends AccessLib
 
         parent::__construct();
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/access/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable('CONTENT_NAVIGATION', /*' <a href="index.php?cmd=access" title="'.$_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'">'.$_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>

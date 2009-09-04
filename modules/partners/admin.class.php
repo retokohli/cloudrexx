@@ -33,6 +33,7 @@ class PartnersAdmin extends PartnersLibrary {
 
         PartnersLibrary::__construct();
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/partners/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_intLanguageId = $objInit->userFrontendLangId;
@@ -3813,6 +3814,7 @@ class PartnersAdmin extends PartnersLibrary {
     {
         global $objDatabase, $_ARRAYLANG,$_CORELANG;
         $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/partners/template');
+        CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";

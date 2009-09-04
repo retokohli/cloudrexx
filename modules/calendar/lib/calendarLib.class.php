@@ -93,6 +93,7 @@ class calendarLibrary
         $this->uploadImgPath = ASCMS_PATH.ASCMS_IMAGE_PATH.'/calendar/';
         $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/calendar/';
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/calendar'.$this->mandateLink.'/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setGlobalVariable("CALENDAR_MANDATE", $this->mandateLink);
         $this->url = $url.$this->mandateLink;

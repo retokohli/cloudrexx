@@ -46,6 +46,7 @@ class SurveyAdmin extends SurveyLibrary {
 
         SurveyLibrary::__construct();
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/survey/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_intLangId = $objInit->userFrontendLangId;
 

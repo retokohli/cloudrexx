@@ -54,6 +54,7 @@ class jobsManager extends jobsLibrary
 
         $this->pageTitle = $_ARRAYLANG["TXT_JOBS_MANAGER"];
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/jobs/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',

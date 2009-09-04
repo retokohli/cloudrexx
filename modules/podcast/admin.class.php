@@ -74,6 +74,7 @@ class podcastManager extends podcastLib
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/podcast/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=podcast'>".$_ARRAYLANG['TXT_PODCAST_MEDIA']."</a>

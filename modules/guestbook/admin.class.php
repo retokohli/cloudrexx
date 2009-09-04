@@ -45,6 +45,7 @@ class GuestbookManager extends GuestbookLibrary
         global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
         $this->langId=$objInit->userFrontendLangId;

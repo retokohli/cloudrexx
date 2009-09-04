@@ -53,6 +53,7 @@ class DataAdmin extends DataLibrary {
 
 		DataLibrary::__construct();
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
+        CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
  		$this->_intLanguageId = $objInit->userFrontendLangId;

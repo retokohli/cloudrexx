@@ -70,6 +70,7 @@ class newsletter extends NewsletterLib
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (!isset($_REQUEST['standalone'])) {
@@ -2783,6 +2784,7 @@ class newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
 
         $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
+        CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";

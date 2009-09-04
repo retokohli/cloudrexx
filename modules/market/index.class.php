@@ -54,6 +54,7 @@ class Market extends marketLibrary
         $this->pageContent = $pageContent;
 
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';

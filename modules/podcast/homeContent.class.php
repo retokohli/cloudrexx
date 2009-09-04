@@ -40,6 +40,7 @@ class podcastHomeContent extends podcastLib {
         global $_LANGID;
         $this->_pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_langId = $_LANGID;
            parent::__construct();
     }

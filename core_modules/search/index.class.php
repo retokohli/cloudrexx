@@ -37,6 +37,7 @@ function search_getSearchPage($pos, $page_content)
     global $_CONFIG, $_ARRAYLANG,$objDatabase;
 
     $objTpl = &new HTML_Template_Sigma('.');
+    CSRF::add_placeholder($objTpl);
     $objTpl->setErrorHandling(PEAR_ERROR_DIE);
     $objTpl->setTemplate($page_content);
 	$objTpl->setVariable("TXT_SEARCH", $_ARRAYLANG['TXT_SEARCH']);

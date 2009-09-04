@@ -44,6 +44,7 @@ class Knowledge extends KnowledgeLibrary
 		$this->languageId = intval($_LANGID);
 
         $this->tpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->tpl);
 		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->tpl->setTemplate($pageContent);
 		$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);

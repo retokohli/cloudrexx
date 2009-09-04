@@ -79,6 +79,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
 		KnowledgeLibrary::__construct();
 		$this->tpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/knowledge'.MODULE_INDEX.'/template');
+        CSRF::add_placeholder($this->tpl);
 		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 
  		$this->languageId = $objInit->userFrontendLangId;
@@ -873,6 +874,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         }
 
         $tpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH."/knowledge/template/");
+        CSRF::add_placeholder($tpl);
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $tpl->loadTemplateFile("module_knowledge_articles_overview_articlelist.html");

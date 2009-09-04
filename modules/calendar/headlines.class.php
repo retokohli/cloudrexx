@@ -45,6 +45,7 @@ class calHeadlines extends calendarLibrary
     function calHeadlines($pageContent) {
         $this->_pageContent = $pageContent;
         $this->_objTemplate = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTemplate);
     }
 
 
