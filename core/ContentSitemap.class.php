@@ -136,6 +136,7 @@ class ContentSitemap
 		global $_CORELANG;
 
         $objTpl = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        CSRF::add_placeholder($objTpl);
 		$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$objTpl->loadTemplateFile('content_sitemap.html',true,true);
 

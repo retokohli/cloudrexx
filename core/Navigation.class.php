@@ -256,6 +256,7 @@ class Navigation
     function getNavigation($templateContent,$boolShop=false)
     {
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($templateContent);
 
