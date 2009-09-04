@@ -2651,7 +2651,7 @@ CREATE TABLE `contrexx_module_u2u_address_list` (
   `user_id` int(11) NOT NULL default '0',
   `buddies_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_module_u2u_message_log` (
   `message_id` int(11) unsigned NOT NULL auto_increment,
   `message_text` text NOT NULL,
@@ -2680,7 +2680,7 @@ CREATE TABLE `contrexx_module_u2u_user_log` (
   `user_unread_items` int(11) unsigned NOT NULL default '0',
   `user_status` enum('0','1') NOT NULL default '1',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_modules` (
   `id` int(2) unsigned default NULL,
   `name` varchar(250) NOT NULL default '',
