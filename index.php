@@ -600,7 +600,7 @@ $page_template = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadl
 // Get Calendar Events
 //-------------------------------------------------------
 $modulespath = 'modules/calendar/headlines.class.php';
-if (file_exists($modulespath)) {
+if (MODULE_INDEX < 2 && file_exists($modulespath)) {
     /** @ignore */
     include_once($modulespath);
     $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
@@ -652,7 +652,7 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // get knowledge content
 //-------------------------------------------------------
-if (!empty($_CONFIG['useKnowledgePlaceholders'])) {
+if (MODULE_INDEX < 2 && !empty($_CONFIG['useKnowledgePlaceholders'])) {
     $modulespath = 'modules/knowledge/interface.class.php';
     if (file_exists($modulespath)) {
         require_once($modulespath);
@@ -841,7 +841,7 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
 //-------------------------------------------------------
 // Load JavaScript Cart
 //-------------------------------------------------------
-if (   $_CONFIGURATION['custom']['shopJsCart']
+if (MODULE_INDEX < 2 && $_CONFIGURATION['custom']['shopJsCart']
     && (   $_CONFIGURATION['custom']['shopnavbar']
         ||    isset($_REQUEST['section'])
            && $_REQUEST['section'] == 'shop')) {
@@ -1595,7 +1595,7 @@ switch ($plainSection) {
 //-------------------------------------------------------
 // show shop navbar on each page
 //-------------------------------------------------------
-if (isset($_CONFIGURATION['custom']['shopnavbar']) AND $_CONFIGURATION['custom']['shopnavbar'] == TRUE) {
+if (MODULE_INDEX < 2 && isset($_CONFIGURATION['custom']['shopnavbar']) AND $_CONFIGURATION['custom']['shopnavbar'] == TRUE) {
     if (!is_object($shopObj)){
         $modulespath = 'modules/shop/index.class.php';
         if (file_exists($modulespath)){
@@ -1615,7 +1615,7 @@ if (isset($_CONFIGURATION['custom']['shopnavbar']) AND $_CONFIGURATION['custom']
 // Calendar
 //-------------------------------------------------------
 // print_r($objTemplate->getPlaceholderList());
-
+if (MODULE_INDEX < 2) {
 $calendarCheck1 = $objTemplate->placeholderExists('CALENDAR');
 $calendarCheck2 = $objTemplate->placeholderExists('CALENDAR_EVENTS');
 if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
@@ -1631,6 +1631,7 @@ if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
             $objTemplate->setVariable('CALENDAR_EVENTS', $objHomeCalendar->getHomeCalendarEvents());
         }
     }
+}
 }
 
 
