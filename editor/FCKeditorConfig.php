@@ -11,7 +11,6 @@ FCKConfig.SkinPath = FCKConfig.BasePath + 'skins/default/' ;
 
 FCKConfig.EnterMode = 'br';
 FCKConfig.ShiftEnterMode = 'p';
-FCKConfig.StartupShowBlocks = true;
 FCKConfig.ForcePasteAsPlainText = false;
 <? echo $objSettings->useOwnCSS();?>
 
