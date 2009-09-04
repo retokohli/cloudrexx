@@ -4,14 +4,14 @@ function deleteComment(cId)
 {
     if(confirm('{TXT_COMMENT_DELETE_JS}'))
     {
-        window.location.replace("?cmd=gallery&act=delete_comment&id={VALUE_ID}&comId="+cId);
+        window.location.replace("?cmd=gallery&{CSRF_PARAM}&act=delete_comment&id={VALUE_ID}&comId="+cId);
     }
 }
 function deleteVote(vId)
 {
     if(confirm('{TXT_VOTING_DELETE_JS}'))
     {
-        window.location.replace("?cmd=gallery&act=delete_vote&id={VALUE_ID}&voteId="+vId);
+        window.location.replace("?cmd=gallery&{CSRF_PARAM}&act=delete_vote&id={VALUE_ID}&voteId="+vId);
     }
 }
 function selectCommentMultiAction()

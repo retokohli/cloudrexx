@@ -3,13 +3,13 @@
 function deleteFile(id)
 {
    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=directory&act=delfile&id="+id);
+        window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=delfile&id="+id);
 }
 
 function restoreVoting(id)
 {
    if(confirm('{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=directory&act=restorevoting&id="+id);
+        window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=restorevoting&id="+id);
 }
 
 

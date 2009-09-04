@@ -4,25 +4,25 @@
 function deletePage(pageId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&act=delete&pageId="+pageId);
+        window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=delete&pageId="+pageId);
 }
 
 function deleteContent(contentId)
 {
   if(confirm('{TXT_CONFIRM_DELETE_CONTENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=content&act=deleteAll&contentId="+contentId);
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=deleteAll&contentId="+contentId);
 }
 
 function repositoryPage(pageId)
 {
     if(confirm('{TXT_CONFIRM_REPOSITORY}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&act=addrepository&pageid="+pageId);
+        window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=addrepository&pageid="+pageId);
 }
 
 function changeStatus(pageId)
 {
     if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
-        window.location.replace("index.php?cmd=content&act=changestatus&pageId="+pageId);
+        window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=changestatus&pageId="+pageId);
 }
   function selectMultiAction()
   {

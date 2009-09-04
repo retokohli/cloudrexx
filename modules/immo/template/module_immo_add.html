@@ -215,7 +215,7 @@
 			}
 		}catch(e){}
 
-		url='?cmd=immo&act=map&standalone=true';
+		url='?cmd=immo&{CSRF_PARAM}&act=map&standalone=true';
 		if (!window.focus){
 			return true;
 		}

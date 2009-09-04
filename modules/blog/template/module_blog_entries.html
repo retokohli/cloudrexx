@@ -3,7 +3,7 @@
 //<![CDATA[
 function deleteEntry(entryId){ 
     if(confirm('{TXT_ENTRIES_DELETE_ENTRY_JS}')) 
-        window.location.replace("?cmd=blog&act=deleteEntry&id="+entryId);
+        window.location.replace("?cmd=blog&{CSRF_PARAM}&act=deleteEntry&id="+entryId);
 }
 
 function selectMultiAction() {

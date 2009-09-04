@@ -4,21 +4,21 @@
 function deleteList(listId, listName) {
 	strConfirmTxt = '{TXT_NEWSLETTER_CONFIRM_DELETE_LIST}';
 	if (confirm(strConfirmTxt.replace('%s', listName)+'\n{TXT_NEWSLETTER_CANNOT_UNDO_OPERATION}')) {
-		window.location.href = "index.php?cmd=newsletter&act=deleteList&id="+listId;
+		window.location.href = "index.php?cmd=newsletter&{CSRF_PARAM}&act=deleteList&id="+listId;
 	}
 }
 
 function flushList(listId, listName) {
 	strConfirmTxt = '{TXT_NEWSLETTER_CONFIRM_FLUSH_LIST}';
 	if (confirm(strConfirmTxt.replace('%s', listName)+'\n{TXT_NEWSLETTER_CANNOT_UNDO_OPERATION}')) {
-		window.location.href = "index.php?cmd=newsletter&act=flushList&id="+listId;
+		window.location.href = "index.php?cmd=newsletter&{CSRF_PARAM}&act=flushList&id="+listId;
 	}
 }
 
 function changeListStatus(listId, listName) {
 	strConfirmTxt = '{TXT_NEWSLETTER_CONFIRM_CHANGE_LIST_STATUS}';
 	if (confirm(strConfirmTxt.replace('%s', listName))) {
-		window.location.href = 'index.php?cmd=newsletter&act=changeListStatus&id='+listId;
+		window.location.href = 'index.php?cmd=newsletter&{CSRF_PARAM}&act=changeListStatus&id='+listId;
 	}
 }
 

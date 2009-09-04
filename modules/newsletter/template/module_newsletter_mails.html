@@ -3,7 +3,7 @@
 // <![CDATA[
 	function newsletterDeleteMail(id){
 		if (confirm('{TXT_NEWSLETTER_CONFIRM_DELETE_MAIL}\n{TXT_NEWSLETTER_CANNOT_UNDO_OPERATION}')) {
-			document.location.href = 'index.php?cmd=newsletter&act=deleteMail&id='+id;
+			document.location.href = 'index.php?cmd=newsletter&{CSRF_PARAM}&act=deleteMail&id='+id;
 		}
 	}
 

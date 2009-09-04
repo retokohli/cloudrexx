@@ -5,7 +5,7 @@ function settingsSmtpDeleteAccount(id,name)
 {
 	strMsg = '{TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT}';
 	if  (confirm(strMsg.replace('%s', name)+'\n{TXT_SETTINGS_OPERATION_IRREVERSIBLE}')) {
-		window.location.href = 'index.php?cmd=settings&act=smtp&tpl=delete&id='+id;
+		window.location.href = 'index.php?cmd=settings&{CSRF_PARAM}&act=smtp&tpl=delete&id='+id;
 		return true;
 	}
 	return false;
@@ -31,7 +31,7 @@ function settingsSmtpDeleteAccount(id,name)
 			<td>{SETTINGS_SMTP_ACCOUNT}</td>
 			<td>{SETTINGS_SMTP_HOST}</td>
 			<td>{SETTINGS_SMTP_USERNAME}</td>
-			<td><div style="text-align:center;"><input type="radio" name="settings_smtp_default" onclick="window.location.href='?cmd=settings&amp;act=smtp&amp;tpl=default&amp;id={SETTINGS_SMTP_ACCOUNT_ID}'" value="{SETTINGS_SMTP_ACCOUNT_ID}" {SETTINGS_SMTP_DEFAULT} {SETTINGS_SMTP_OPTION_DISABLED} /></div></td>
+			<td><div style="text-align:center;"><input type="radio" name="settings_smtp_default" onclick="window.location.href='?cmd=settings&{CSRF_PARAM}&amp;act=smtp&amp;tpl=default&amp;id={SETTINGS_SMTP_ACCOUNT_ID}'" value="{SETTINGS_SMTP_ACCOUNT_ID}" {SETTINGS_SMTP_DEFAULT} {SETTINGS_SMTP_OPTION_DISABLED} /></div></td>
 			<td><div style="text-align:right;">&nbsp;
 				<!-- BEGIN settings_smtp_account_functions -->
 				<a href="?cmd=settings&amp;act=smtp&amp;tpl=modify&amp;id={SETTINGS_SMTP_ACCOUNT_ID}" title="{TXT_SETTINGS_MODFIY}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_SETTINGS_MODIFY}" /></a>
@@ -43,5 +43,5 @@ function settingsSmtpDeleteAccount(id,name)
 	</tbody>
 </table>
 <br />
-<input type="button" onclick="window.location.href='?cmd=settings&amp;act=smtp&amp;tpl=modify'" value="{TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT}" />
+<input type="button" onclick="window.location.href='?cmd=settings&{CSRF_PARAM}&amp;act=smtp&amp;tpl=modify'" value="{TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT}" />
 <!-- end settings_smtp.html -->

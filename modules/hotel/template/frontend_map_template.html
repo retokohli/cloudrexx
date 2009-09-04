@@ -101,9 +101,9 @@ var createMessage = function(id) {
 
 var showObj = function(id){
 	if(!opener){
-		top.location.href='index.php?section=hotel&cmd=showObj&langId='+hotelLang+"&id="+id;
+		top.location.href='index.php?section=hotel&{CSRF_PARAM}&cmd=showObj&langId='+hotelLang+"&id="+id;
 	}else{
-		opener.location.href='index.php?section=hotel&cmd=showObj&langId='+hotelLang+"&id="+id;
+		opener.location.href='index.php?section=hotel&{CSRF_PARAM}&cmd=showObj&langId='+hotelLang+"&id="+id;
 		window.close();
 	}
 }

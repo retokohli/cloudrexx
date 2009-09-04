@@ -106,7 +106,7 @@
 
 	var confirmDelete = function(id) {
 		if(confirm('{TXT_CONFIRM_DELETE}')){
-			return location.href="?cmd=hotel&act=delfield&id="+id;
+			return location.href="?cmd=hotel&{CSRF_PARAM}&act=delfield&id="+id;
 		}
 		return false;
 	}

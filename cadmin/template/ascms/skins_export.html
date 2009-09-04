@@ -4,7 +4,7 @@
 function deleteLanguage(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALLY_AT_RISK}'))
-        window.location.replace("index.php?cmd=language&act=dellang&languageId="+id);
+        window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&languageId="+id);
 }
 
 function reloadThemesPage()

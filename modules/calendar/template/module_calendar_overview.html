@@ -4,11 +4,11 @@
 function deleteNote(Id)
 {
 	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=delete&id="+Id);
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=delete&id="+Id);
 }
 function category()
 {
-	window.location.href = "{CALENDAR_REQUEST_URI}&catid="+document.selectCat.inputCat.value;
+	window.location.href = "{CALENDAR_REQUEST_URI}&{CSRF_PARAM}&catid="+document.selectCat.inputCat.value;
 }
 
 

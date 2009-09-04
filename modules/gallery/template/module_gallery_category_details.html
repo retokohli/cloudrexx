@@ -11,12 +11,12 @@ window.onload = function(){
 // <![CDATA[
     function resetPicture(picId) {
 	    if(confirm('{TXT_RESET_PICTURE}')) {
-	        window.location.replace("?cmd=gallery&act=reset_picture&gid={CATEGORY_ID}&id="+picId);
+	        window.location.replace("?cmd=gallery&{CSRF_PARAM}&act=reset_picture&gid={CATEGORY_ID}&id="+picId);
 	    }
 	}
 	function deletePicture(picId) {
 	    if(confirm('{TXT_DELETE_PICTURE}')) {
-	        window.location.replace("?cmd=gallery&act=delete_picture&gid={CATEGORY_ID}&id="+picId);
+	        window.location.replace("?cmd=gallery&{CSRF_PARAM}&act=delete_picture&gid={CATEGORY_ID}&id="+picId);
 	    }
 	}
 	function selectMultiAction()
@@ -103,7 +103,7 @@ window.onload = function(){
 				<a href="?cmd=gallery&amp;act=edit_picture&amp;id={IMAGES_ID}&amp;active=voting" target="_self" title="{IMAGES_VOTING_COUNT}{IMAGES_VOTING_AVERAGE}">{IMAGES_VOTING_COUNT}{IMAGES_VOTING_AVERAGE}</a>
 			</td>
             <td nowrap="nowrap" valign="top">
-                <select name="newCategory{IMAGES_ID}" {CAT_DROPDOWN_DISABLED} onchange="window.location='?cmd=gallery&amp;act=change_category_picture&amp;id={IMAGES_ID}&amp;catid='+this.options[this.selectedIndex].value">
+                <select name="newCategory{IMAGES_ID}" {CAT_DROPDOWN_DISABLED} onchange="window.location='?cmd=gallery&{CSRF_PARAM}&amp;act=change_category_picture&amp;id={IMAGES_ID}&amp;catid='+this.options[this.selectedIndex].value">
 					<!-- BEGIN showCategories -->
 					<option value="{CAT_DROPDOWN_VALUE}" {CAT_DROPDOWN_SELECTED}>{CAT_DROPDOWN_INDENT}{CAT_DROPDOWN_NAME}</option>
 					<!-- END showCategories -->

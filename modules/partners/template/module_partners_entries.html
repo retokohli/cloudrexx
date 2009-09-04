@@ -4,7 +4,7 @@
 
 function deleteEntry(entryId){ 
     if(confirm('{TXT_ENTRIES_DELETE_ENTRY_JS}')) 
-        window.location.replace("?cmd=partners&act=deletePartners&id="+entryId);
+        window.location.replace("?cmd=partners&{CSRF_PARAM}&act=deletePartners&id="+entryId);
 }
 
 function selectMultiAction() {

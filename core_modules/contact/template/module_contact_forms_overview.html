@@ -4,10 +4,10 @@
 function confirmDeleteForm(id, content)
 {
   if (confirm('{TXT_CONTACT_CONFIRM_DELETE_FORM}\n{TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED}\n{TXT_CONTACT_ACTION_IS_IRREVERSIBLE}')) {
-    url = 'index.php?cmd=contact&act=forms&tpl=deleteForm&formId='+id;
+    url = 'index.php?cmd=contact&{CSRF_PARAM}&act=forms&tpl=deleteForm&formId='+id;
     if (content) {
       if (confirm('{TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE}\n{TXT_CONTACT_ACTION_IS_IRREVERSIBLE}')) {
-        url = 'index.php?cmd=contact&act=forms&tpl=deleteForm&deleteContent=true&formId='+id;
+        url = 'index.php?cmd=contact&{CSRF_PARAM}&act=forms&tpl=deleteForm&deleteContent=true&formId='+id;
       }
     }
     document.location.href = url

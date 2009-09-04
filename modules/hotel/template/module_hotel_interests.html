@@ -8,7 +8,7 @@
     function deleteContact(contactID) {
     	strConfirmTxt = '{TXT_HOTEL_CONFIRM_DELETE_CONTACT}';
     	if (confirm(strConfirmTxt+'\n{TXT_HOTEL_CANNOT_UNDO_OPERATION}')) {
-    		window.location.href = "?cmd=hotel&act=interests&del="+contactID;
+    		window.location.href = "?cmd=hotel&{CSRF_PARAM}&act=interests&del="+contactID;
     	}
     }
 
@@ -230,7 +230,7 @@
 	            	row = document.createElement("tr");
 	            	row.className = 'row' + ((i%2) + 1);
         			aOpen = document.createElement("a");
-					aOpen.href = '/?section=hotel&cmd=showObj&id='+unescape(contacts[i].hotel_id);
+					aOpen.href = '/?section=hotel&cmd=showObj&{CSRF_PARAM}&id='+unescape(contacts[i].hotel_id);
 					aOpen.title = unescape(contacts[i].location);
 					aOpen.target = '_blank';
 	            	aOpen.appendChild(document.createTextNode(unescape(contacts[i].hotel_id)));

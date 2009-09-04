@@ -11,7 +11,7 @@ function setTableSelection(isSet) {
 
 function deleteBackup(backupId) {
     if(confirm('{TXT_EXISTING_BACKUP_DELETE}')) {
-        window.location.replace('?cmd=dbm&act=deleteBackup&id=' + backupId);
+        window.location.replace('?cmd=dbm&{CSRF_PARAM}&act=deleteBackup&id=' + backupId);
     }
 }
 // ]]>

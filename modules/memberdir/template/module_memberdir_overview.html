@@ -27,7 +27,7 @@
 
 	function memberdirDelete(pageId){
 	    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-	        window.location.replace("?cmd=memberdir&act=deleteDir&id="+pageId);
+	        window.location.replace("?cmd=memberdir&{CSRF_PARAM}&act=deleteDir&id="+pageId);
 	}
 
 	function selectMultiAction()
@@ -117,9 +117,9 @@
 
     function downloadQuestion(dirid, has_children) {
 	    if (has_children == 1 && window.confirm("{TXT_DOWNLOAD_QUESTION}")) {
-	       location.href = "index.php?cmd=memberdir&with_children=1&act=export&id=" + dirid;
+	       location.href = "index.php?cmd=memberdir&{CSRF_PARAM}&with_children=1&act=export&id=" + dirid;
 	    } else {
-            location.href = "index.php?cmd=memberdir&with_children=0&act=export&id=" + dirid;
+            location.href = "index.php?cmd=memberdir&{CSRF_PARAM}&with_children=0&act=export&id=" + dirid;
 	    }
 	}
 

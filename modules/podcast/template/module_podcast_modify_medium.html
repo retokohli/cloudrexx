@@ -42,7 +42,7 @@
 			</tr>
 			<tr class="row1">
 				<td>{TXT_PODCAST_THUMBNAIL}</td>
-				<td colspan="3"><a href="javascript:void(0);" id="podcast_thumbnail_link" title="{TXT_PODCAST_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('?cmd=fileBrowser&amp;standalone=true&amp;path=/', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');" >{TXT_PODCAST_EDIT_OR_ADD_IMAGE}<br /> <img id="podcast_thumbnail"  style="border: none;" src="{PODCAST_MEDIUM_THUMBNAIL_SRC}" title="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" alt="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" /></a></td>
+				<td colspan="3"><a href="javascript:void(0);" id="podcast_thumbnail_link" title="{TXT_PODCAST_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true&amp;path=/', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');" >{TXT_PODCAST_EDIT_OR_ADD_IMAGE}<br /> <img id="podcast_thumbnail"  style="border: none;" src="{PODCAST_MEDIUM_THUMBNAIL_SRC}" title="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" alt="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" /></a></td>
 			</tr>
 			<tr class="row2" style="vertical-align:top;">
 				<td width="15%">{TXT_PODCAST_CATEGORIES}</td>
@@ -84,7 +84,7 @@
 		if(elInputThumbnailPath.value != ''){
 			pathRegExp =/\/images\/podcast\/?(.+)\/.+/;
 			pathRegExp.exec(elInputThumbnailPath.value);
-			url='index.php?cmd=fileBrowser&standalone=true&type=podcast&path=/'+RegExp.$1;
+			url='index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=podcast&path=/'+RegExp.$1;
 		}
 		try{
 			if(!browserPopup.closed){

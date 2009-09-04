@@ -3,7 +3,7 @@
 // <![CDATA[
 function deleteCategory(catId){ 
     if(confirm('{TXT_DELETE_CATEGORY_MSG}')) 
-        window.location.replace("?cmd=gallery&act=delete_category&id="+catId);
+        window.location.replace("?cmd=gallery&{CSRF_PARAM}&act=delete_category&id="+catId);
 }
 
 function selectMultiAction()

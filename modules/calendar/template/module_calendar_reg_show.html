@@ -4,7 +4,7 @@
 function confirmDeleteReg(Id)
 {
 	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_REG_NOTE_ID}&id="+Id);
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=regdelete&note_id={CALENDAR_REG_NOTE_ID}&id="+Id);
 	}
 }
 </script>
@@ -26,6 +26,6 @@ function confirmDeleteReg(Id)
 	<!-- END registration -->
 </table>
 <br />
-<input type="button" value="{TXT_CALENDAR_BACK}" onclick="document.location.href='index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_REG_NOTE_ID}'" />
+<input type="button" value="{TXT_CALENDAR_BACK}" onclick="document.location.href='index.php?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&amp;act=reg&amp;id={CALENDAR_REG_NOTE_ID}'" />
 <input type="button" value="{TXT_CALENDAR_DELETE}" onclick="confirmDeleteReg({CALENDAR_REG_ID})" />
 <!-- END calendar_reg_show.html -->

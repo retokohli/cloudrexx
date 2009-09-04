@@ -3,7 +3,7 @@
 function deleteGroup(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=user&act=deletegroup&groupId="+id);
+        window.location.replace("index.php?cmd=user&{CSRF_PARAM}&act=deletegroup&groupId="+id);
 }
 </script>
 

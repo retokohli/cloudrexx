@@ -4,12 +4,12 @@
 function deleteList(plid)
 {
   if (confirm('{TXT_DELETE_PRICELIST_MSG}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=pricelist_delete&id="+plid);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelist_delete&id="+plid);
 }
 
 function newPricelist()
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=pricelist_new");
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelist_new");
 }
 
 function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)

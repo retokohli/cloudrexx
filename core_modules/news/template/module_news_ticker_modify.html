@@ -51,7 +51,7 @@
 	</div>
 	<!-- end advanced div -->
 	<br />
-	<input type="button" onclick="window.location.href='index.php?cmd=news&amp;act=ticker&amp;pos={NEWS_TICKER_POS}'" value="{TXT_NEWS_CANCEL}" />
+	<input type="button" onclick="window.location.href='index.php?cmd=news&{CSRF_PARAM}&amp;act=ticker&amp;pos={NEWS_TICKER_POS}'" value="{TXT_NEWS_CANCEL}" />
 	<input type="submit" name="news_save_ticker" value="{TXT_NEWS_SAVE}" />
 </form>
 <!-- end module_news_ticker_modify.html -->

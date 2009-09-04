@@ -55,7 +55,7 @@ if (navigator.appName.indexOf("Explorer") == -1) {
                         </a>
                     </td>
                     <td style="padding-right: 15px; vertical-align: top;">
-                        <span onclick="location.href='index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}'" 
+                        <span onclick="location.href='index.php?cmd=knowledge{MODULE_INDEX}&{CSRF_PARAM}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}'" 
 							onmouseover="hoverIn(this)" onmouseout="hoverOut(this)" style="cursor: pointer; color: #000099;">{QUESTION}</span>
                     </td>
                     <td style="width: 50px; vertical-align: top;">

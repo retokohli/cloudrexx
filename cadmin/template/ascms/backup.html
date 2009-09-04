@@ -20,13 +20,13 @@ function DeselectAllList(CONTROL)
 function deleteBackup(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("?cmd=backup&act=delete&backupid="+id);
+		window.location.replace("?cmd=backup&{CSRF_PARAM}&act=delete&backupid="+id);
 }
 
 function restoreBackup(id)
 {
     if(confirm('{TXT_CONFIRM_RESTORE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("?cmd=backup&act=restore&backupid="+id);
+        window.location.replace("?cmd=backup&{CSRF_PARAM}&act=restore&backupid="+id);
 }
 // ]]>
 </script>

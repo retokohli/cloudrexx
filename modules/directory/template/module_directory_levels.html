@@ -3,13 +3,13 @@
 function deleteLevel(levelid)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=directory&act=dellevel&id="+levelid);
+        window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=dellevel&id="+levelid);
 }
 
 
 function statusLevel(levelid, status)
 {
-    window.location.replace("index.php?cmd=directory&act=levels&id="+levelid+"&status="+status);
+    window.location.replace("index.php?cmd=directory&{CSRF_PARAM}&act=levels&id="+levelid+"&status="+status);
 }
 
 

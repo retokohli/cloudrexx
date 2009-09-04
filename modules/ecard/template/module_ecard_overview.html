@@ -13,7 +13,7 @@ path = "";
 function ecardGetFileBrowser(motive_id) {
   path = motive_id;
   openWindow(
-    "index.php?cmd=fileBrowser&amp;standalone=true", 
+    "index.php?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true", 
     "", 
     "width=800,height=600,resizable=yes,status=no,scrollbars=yes"
   );

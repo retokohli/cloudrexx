@@ -25,7 +25,7 @@ function SetUrl(url, width, height, alt) {
 		</tr>
 		<tr class="row2">
 			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_IMAGE}</td>
-			<td width="85%" nowrap="nowrap"><input name="newsFeedImage" id="newsFeedImage" type="text" value="{NEWS_FEED_IMAGE}" style="width:287px;" /> <input type="button" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" value="{TXT_BROWSE}" style="width:110px;" /></td>
+			<td width="85%" nowrap="nowrap"><input name="newsFeedImage" id="newsFeedImage" type="text" value="{NEWS_FEED_IMAGE}" style="width:287px;" /> <input type="button" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" value="{TXT_BROWSE}" style="width:110px;" /></td>
 		</tr>
 		<tr class="row1">
 			<td width="15%" nowrap="nowrap">{TXT_NEWS_HEADLINES_LIMIT}</td>

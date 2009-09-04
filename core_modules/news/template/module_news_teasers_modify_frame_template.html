@@ -15,7 +15,7 @@
 			<td width="85%"><input type="text" name="teaserFrameTplDescription" style="width:300px;" maxlength="100" value="{NEWS_TEASER_FRAME_TPL_DESCRIPTION}" /></td>
 		</tr>
 		<tr class="row2">
-			<td colspan="2">{NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG}<input type="checkbox" {NEWS_TEASER_FRAME_TPL_SOURCE_CHECKED} value="1" name="teaserFrameTplSource" id="teaserFrameTplSource" onclick="window.location.replace('index.php?cmd=news&amp;act=teasers&amp;tpl=editFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}&amp;source='+Number(this.checked))" /><label for="teaserFrameTplSource">{TXT_SOURCE_CODE_MODE}</label></td>
+			<td colspan="2">{NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG}<input type="checkbox" {NEWS_TEASER_FRAME_TPL_SOURCE_CHECKED} value="1" name="teaserFrameTplSource" id="teaserFrameTplSource" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&amp;act=teasers&amp;tpl=editFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}&amp;source='+Number(this.checked))" /><label for="teaserFrameTplSource">{TXT_SOURCE_CODE_MODE}</label></td>
 		</tr>
 	</table>
 	<br />

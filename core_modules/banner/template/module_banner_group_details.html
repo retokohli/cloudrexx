@@ -2,7 +2,7 @@
 <script language="JavaScript" type="text/javascript">
 function deleteBanner(intId){ 
     if(confirm('{TXT_BANNER_GROUP_DETAILS_DELETE_JS}')) 
-        window.location.replace("?cmd=banner&act=banner_delete&id="+intId);
+        window.location.replace("?cmd=banner&{CSRF_PARAM}&act=banner_delete&id="+intId);
 }
 function selectMultiAction()
 {

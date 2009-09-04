@@ -2,12 +2,12 @@
 <script language="JavaScript" type="text/javascript">
 function emptyGroup(intId){ 
     if(confirm('{TXT_BANNER_GROUP_EMPTY_JS}')) {
-   		window.location.replace("?cmd=banner&act=group_empty&id="+intId);	    	
+   		window.location.replace("?cmd=banner&{CSRF_PARAM}&act=group_empty&id="+intId);	    	
     }
 }
 function deleteGroup(intId) {
     if(confirm('{TXT_BANNER_GROUP_DELETE_JS}')) {
-   		window.location.replace("?cmd=banner&act=group_delete&id="+intId);	    	
+   		window.location.replace("?cmd=banner&{CSRF_PARAM}&act=group_delete&id="+intId);	    	
     }
 }
 function selectMultiAction()

@@ -5,7 +5,7 @@ function newsDeleteTicker(id, name)
 {
 	strMsg = '{TXT_NEWS_CONFIRM_DELETE_TICKER}';
 	if (confirm(strMsg.replace('%s', name)+'\n{TXT_NEWS_ACTION_IS_IRREVERSIBLE}')) {
-		window.location.href = 'index.php?cmd=news&act=ticker&tpl=delete&id='+id;
+		window.location.href = 'index.php?cmd=news&{CSRF_PARAM}&act=ticker&tpl=delete&id='+id;
 	}
 }
 

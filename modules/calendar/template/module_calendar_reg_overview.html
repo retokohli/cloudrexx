@@ -4,7 +4,7 @@
 function deleteReg(Id)
 {
 	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+Id);
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+Id);
 	}
 }
 

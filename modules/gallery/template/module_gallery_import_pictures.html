@@ -78,7 +78,7 @@ function deletePicture(pic)
 {
     if(confirm('{TXT_IMPORT_DELETE_PICTURE}'))
     {
-        window.location.replace("index.php?cmd=gallery&act=deleteImportPicture&pic="+pic);
+        window.location.replace("index.php?cmd=gallery&{CSRF_PARAM}&act=deleteImportPicture&pic="+pic);
     }
 }
 
@@ -124,7 +124,7 @@ function openWindow(theURL,winName,features)
     	<!-- BEGIN importDirectoryTree -->
     		<tr class="{IMPORT_IMAGE_DIR_TREE_ROW}" valign="top">
     			<td>{IMPORT_IMAGE_CHECKBOX}</td>
-    			<td><a href="javascript:openWindow('{IMPORT_IMAGE_PATH}','','width={IMPORT_IMAGE_WIDTH},height={IMPORT_IMAGE_HEIGHT}')">{IMPORT_IMAGE_NAME}</a>  {IMPORT_IMAGE_NAME_ATTRIBUT}</td>
+    			<td><a href="javascript:openWindow('{IMPORT_IMAGE_PATH}&{CSRF_PARAM}','','width={IMPORT_IMAGE_WIDTH},height={IMPORT_IMAGE_HEIGHT}')">{IMPORT_IMAGE_NAME}</a>  {IMPORT_IMAGE_NAME_ATTRIBUT}</td>
     		   	<td><div align="right">{IMPORT_IMAGE_SIZE} Bytes</div></td>
     		   	<td><div align="right">{IMPORT_IMAGE_TYP}-Datei</div></td>
     		   	<td><div align="right"><a href="javascript:deletePicture('{IMPORT_IMAGE_NAME}')" target="_self"><img src="images/icons/delete.gif" border="0"></a></div></td>

@@ -3,7 +3,7 @@
 /* <![CDATA[ */
 	function reservationDelete(pageId){
 	    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-	        window.location.replace("?cmd=reservation&act=delete&id="+pageId);
+	        window.location.replace("?cmd=reservation&{CSRF_PARAM}&act=delete&id="+pageId);
 	}
 
 /* ]]> */

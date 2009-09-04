@@ -4,7 +4,7 @@
 function deleteHotel(hotelID) {
 	strConfirmTxt = '{TXT_HOTEL_CONFIRM_DELETE_OBJECT}';
 	if (confirm(strConfirmTxt+'\n{TXT_HOTEL_CANNOT_UNDO_OPERATION}')) {
-		window.location.href = "?cmd=hotel&act=del&id="+hotelID;
+		window.location.href = "?cmd=hotel&{CSRF_PARAM}&act=del&id="+hotelID;
 	}
 }
 
@@ -243,7 +243,7 @@ function deleteHotel(hotelID) {
 	            	row.appendChild(createTdWithText(unescape(objects[i].hotel_id)));
 					
 	            	aOpen = document.createElement("a");
-					aOpen.href = '?cmd=hotel&act=edit&id='+unescape(objects[i].hotel_id);
+					aOpen.href = '?cmd=hotel&act=edit&{CSRF_PARAM}&id='+unescape(objects[i].hotel_id);
 					aOpen.title = unescape(objects[i].location);
 					aOpen.target = '_self';
 	            	aOpen.appendChild(document.createTextNode(unescape(objects[i].reference)));

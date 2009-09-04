@@ -6,7 +6,7 @@ function deleteLanguage(id)
 {
 if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
 {
-window.location.replace("index.php?cmd=language&act=dellang&id="+id);
+window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id);
 }
 }
 // -->

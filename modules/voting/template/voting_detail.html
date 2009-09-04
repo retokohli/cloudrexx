@@ -5,7 +5,7 @@ function votingDelete(id, email)
 {
 	strMsg = '{TXT_VOTING_CONFIRM_DELETE_EMAIL}';
 	if (confirm(strMsg.replace('%s', email))) {
-		window.location.href = '?cmd=voting&act=detail&delete='+id+'&id={VOTING_ID}&pos={VOTING_POS}';
+		window.location.href = '?cmd=voting&{CSRF_PARAM}&act=detail&delete='+id+'&id={VOTING_ID}&pos={VOTING_POS}';
 	}
 }
 
@@ -13,7 +13,7 @@ function votingVerify(id, email)
 {
 	strMsg = '{TXT_VOTING_CONFIRM_VERIFY_EMAIL}';
 	if (confirm(strMsg.replace('%s', email))) {
-		window.location.href = '?cmd=voting&act=detail&verify='+id+'&id={VOTING_ID}&pos={VOTING_POS}';
+		window.location.href = '?cmd=voting&{CSRF_PARAM}&act=detail&verify='+id+'&id={VOTING_ID}&pos={VOTING_POS}';
 	}
 }
 

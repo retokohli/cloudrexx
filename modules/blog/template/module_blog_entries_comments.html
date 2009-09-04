@@ -3,7 +3,7 @@
 //<![CDATA[
 function deleteComment(commentId){ 
     if(confirm('{TXT_COMMENTS_DELETE_JS}')) 
-        window.location.replace("?cmd=blog&act=deleteComment&id="+commentId);
+        window.location.replace("?cmd=blog&{CSRF_PARAM}&act=deleteComment&id="+commentId);
 }
 
 function selectMultiAction() {
@@ -85,5 +85,5 @@ function selectMultiAction() {
 <br />
 <div align="center">{COMMENTS_PAGING}</div>
 <br />
-<input type="button" value="{TXT_COMMENTS_BUTTON_BACK}" onclick="self.location='index.php?cmd=blog'" />
+<input type="button" value="{TXT_COMMENTS_BUTTON_BACK}" onclick="self.location='index.php?cmd=blog&{CSRF_PARAM}'" />
 <!-- END module_blog_entries_comments.html -->

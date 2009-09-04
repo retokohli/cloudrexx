@@ -5,7 +5,7 @@ function deletePage(pageId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
     {
-        window.location.replace("index.php?cmd=news&act=delete&newsId="+pageId);
+        window.location.replace("index.php?cmd=news&{CSRF_PARAM}&act=delete&newsId="+pageId);
     }
 }
 

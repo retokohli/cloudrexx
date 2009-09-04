@@ -4,9 +4,9 @@
 function activateUser(userId)
 {
   if (confirm('{TXT_SEND_ACTIVATION_USER_EMAIL}')) {
-    window.location.replace("index.php?cmd=user&act=activate&sendmail=1&userId="+userId);
+    window.location.replace("index.php?cmd=user&{CSRF_PARAM}&act=activate&sendmail=1&userId="+userId);
   } else {
-    window.location.replace("index.php?cmd=user&act=activate&userId="+userId);
+    window.location.replace("index.php?cmd=user&{CSRF_PARAM}&act=activate&userId="+userId);
   }
 }
 
@@ -19,7 +19,7 @@ var filterGroup = function() {
   grpinv = i.checked ? 1 : 0;
   term = u.value;
   criteria = c[c.selectedIndex].value;
-  location.href="index.php?cmd=user&groupId="+groupId+"&grpinv="+grpinv+"&user_searchterm="+term+"&user_search_criteria="+criteria+"&useract={USER_STATUS}";
+  location.href="index.php?cmd=user&{CSRF_PARAM}&groupId="+groupId+"&grpinv="+grpinv+"&user_searchterm="+term+"&user_search_criteria="+criteria+"&useract={USER_STATUS}";
 }
 
 -->

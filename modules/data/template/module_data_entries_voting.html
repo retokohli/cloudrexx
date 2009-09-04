@@ -2,7 +2,7 @@
 <script language="JavaScript" type="text/javascript">
 function deleteVote(voteId){ 
     if(confirm('{TXT_DETAILS_DELETE_JS}')) 
-        window.location.replace("?cmd=data&act=deleteVoting&id="+voteId);
+        window.location.replace("?cmd=data&{CSRF_PARAM}&act=deleteVoting&id="+voteId);
 }
 
 function selectMultiAction() {
@@ -107,5 +107,5 @@ function selectMultiAction() {
 	<div align="center">{DETAILS_PAGING}</div>	
 </div>
 <br />
-<input type="button" value="{TXT_BUTTON_BACK}" onClick="self.location='index.php?cmd=data'">
+<input type="button" value="{TXT_BUTTON_BACK}" onClick="self.location='index.php?cmd=data&{CSRF_PARAM}'">
 <!-- END module_data_entries_voting.html -->
