@@ -60,7 +60,6 @@ class Access extends AccessLib
                 break;
 
             case 'user':
-                CSRF::check_code();
                 $this->user($metaPageTitle, $pageTitle);
                 break;
 
