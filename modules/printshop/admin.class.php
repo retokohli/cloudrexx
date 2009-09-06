@@ -268,6 +268,10 @@ class PrintshopAdmin extends PrintshopLibrary {
             die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'])));
         }
         foreach ($arrEntries['entries'] as $index => $arrEntry) {
+            $arrPrice = array();
+            for($index = 0; $index < $this->_priceThresholdCount; $index++) {
+            	$arrPrice[$index] = $arrEntry['price_'.$index];
+            }
                 $arrEntriesData[] =array(
                 'type'          => $arrEntry['type'],
                 'format'        => $arrEntry['format'],
@@ -275,8 +279,7 @@ class PrintshopAdmin extends PrintshopLibrary {
                 'back'          => $arrEntry['back'],
                 'weight'        => $arrEntry['weight'],
                 'paper'         => $arrEntry['paper'],
-                'price'         => $arrEntry['price'],
-                'factor'        => $arrEntry['factor'],
+                'price'         => $arrPrice,
             );
         }
         die(json_encode(array(
@@ -299,7 +302,7 @@ class PrintshopAdmin extends PrintshopLibrary {
         $weight = !empty($_POST['psWeight']) ? contrexx_addslashes($_POST['psWeight']) : '';
         $paper  = !empty($_POST['psPaper'])  ? contrexx_addslashes($_POST['psPaper']) : '';
         $price  = array();
-        foreach ($this->_priceThresholds as $index => $price){
+        foreach ($this->_priceThresholds as $index => $threshold){
             if(!isset($_POST['psPrice_'.$index])){
                 $_POST['psPrice_'.$index] = 0;
             }
@@ -545,19 +548,34 @@ class PrintshopAdmin extends PrintshopLibrary {
         $this->_objTpl->loadTemplateFile('module_printshop_settings.html', true, true);
 
         $this->_objTpl->setVariable(array(
-            'TXT_PRINTSHOP_SETTINGS_TITLE'          => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'],
-            'TXT_PRINTSHOP_EMAIL_HELP'              => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_HELP'],
-            'TXT_PRINTSHOP_ORDER_EMAIL'             => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_EMAIL'],
-            'TXT_PRINTSHOP_ENTRIES_PER_PAGE'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRIES_PER_PAGE'],
-            'TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP'   => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP'],
-            'TXT_PRINTSHOP_PRICE_THRESHOLDS'        => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_THRESHOLDS'],
-            'TXT_SAVE'                              => $_CORELANG['TXT_SAVE']
-        ));
-
-        $this->_objTpl->setVariable(array(
-            'PRINTSHOP_SETTINGS_ORDER_EMAIL'        => $this->_arrSettings['orderEmail'],
-            'PRINTSHOP_SETTINGS_ENTRIES_PER_PAGE'   => $this->_arrSettings['entriesPerPage'],
-            'PRINTSHOP_SETTINGS_PRICE_THRESHOLDS'   => $this->_arrSettings['priceThresholds'],
+            'TXT_PRINTSHOP_SETTINGS_TITLE'              => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'],
+            'TXT_PRINTSHOP_EMAIL_HELP'                  => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_HELP'],
+            'TXT_PRINTSHOP_ORDER_EMAIL'                 => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_EMAIL'],
+            'TXT_PRINTSHOP_ENTRIES_PER_PAGE'            => $_ARRAYLANG['TXT_PRINTSHOP_ENTRIES_PER_PAGE'],
+            'TXT_PRINTSHOP_PRICE_THRESHOLDS'            => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_THRESHOLDS'],
+            'TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP'       => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP'],
+            'TXT_PRINTSHOP_DATA_PREPARATION_PRICE'      => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION_PRICE'],
+            'TXT_PRINTSHOP_CURRENCY'                    => $_ARRAYLANG['TXT_PRINTSHOP_CURRENCY'],
+            'TXT_PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER'     => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER'],
+            'TXT_PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER_HELP'=> $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER_HELP'],
+            'TXT_PRINTSHOP_EMAIL_TEMPLATE_VENDOR'       => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_TEMPLATE_VENDOR'],
+            'TXT_PRINTSHOP_EMAIL_TEMPLATE_VENDOR_HELP'  => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_TEMPLATE_VENDOR_HELP'],
+            'TXT_PRINTSHOP_EMAIL_SUBJECT_CUSTOMER'      => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_SUBJECT_CUSTOMER'],
+            'TXT_PRINTSHOP_EMAIL_SUBJECT_VENDOR'        => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_SUBJECT_VENDOR'],
+            'TXT_PRINTSHOP_SHIPMENT_PRICE_MAIL'         => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_PRICE_MAIL'],
+            'TXT_PRINTSHOP_SHIPMENT_PRICE_MESSENGER'    => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_PRICE_MESSENGER'],
+            'TXT_SAVE'                                  => $_CORELANG['TXT_SAVE'],
+            'PRINTSHOP_ORDER_EMAIL'                     => $this->_arrSettings['orderEmail'],
+            'PRINTSHOP_ENTRIES_PER_PAGE'                => $this->_arrSettings['entriesPerPage'],
+            'PRINTSHOP_PRICE_THRESHOLDS'                => $this->_arrSettings['priceThresholds'],
+            'PRINTSHOP_DATA_PREPARATION_PRICE'          => $this->_arrSettings['dataPreparationPrice'],
+            'PRINTSHOP_SHIPMENT_PRICE_MAIL'             => $this->_arrSettings['shipmentPriceMail'],
+            'PRINTSHOP_SHIPMENT_PRICE_MESSENGER'        => $this->_arrSettings['shipmentPriceMessenger'],
+            'PRINTSHOP_CURRENCY'                        => $this->_arrSettings['currency'],
+            'PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER'         => $this->_arrSettings['emailTemplateCustomer'],
+            'PRINTSHOP_EMAIL_TEMPLATE_VENDOR'           => $this->_arrSettings['emailTemplateVendor'],
+            'PRINTSHOP_EMAIL_SUBJECT_CUSTOMER'          => $this->_arrSettings['emailSubjectCustomer'],
+            'PRINTSHOP_EMAIL_SUBJECT_VENDOR'            => $this->_arrSettings['emailSubjectVendor'],
         ));
     }
 

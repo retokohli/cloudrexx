@@ -25,9 +25,24 @@ class PrintshopLibrary {
     var $_arrAvailableAttributes = array('type', 'format', 'front', 'back', 'weight', 'paper');
     var $_arrAvailableTypes = array();
     var $_arrAttributeTranslation = array();
-    var $_settingNames = array('orderEmail', 'entriesPerPage', 'priceThresholds');
+    var $_settingNames = array(
+        'orderEmail',
+        'entriesPerPage',
+        'priceThresholds',
+        'dataPreparationPrice',
+        'shipmentPriceMail',
+        'shipmentPriceMessenger',
+        'currency',
+        'emailSubjectCustomer',
+        'emailTemplateCustomer',
+        'emailSubjectVendor',
+        'emailTemplateVendor',
+    );
     var $_priceThresholdCount = 16;
     var $_priceThresholds;
+    var $_shipmentEnum = array('pickup', 'messenger', 'mail');
+
+
     /**
     * Constructor
     *
@@ -302,6 +317,30 @@ class PrintshopLibrary {
                                     `paper`  = '.$paper.',
                                     '.$priceUpdateSQL.'
         ');
+    }
+
+
+    function _addOrder($type, $format, $front, $back, $weight, $paper, $price, $amount,
+                       $filePath1, $filePath2, $filePath3, $email, $phone, $comment, $shipment,
+                       $invCompany, $invContact, $invAddress1, $invAddress2, $invZip, $invCity,
+                       $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity){
+        global $objDatabase;
+
+        $query = 'INSERT INTO `'.DBPREFIX."modules_printshop_order` (
+            `orderId`, `type`, `format`, `front`, `back`, `weight`, `paper`, `status`, `price`, `amount`,
+            `file1`, `file2`, `file3`, `email`, `telephone`, `comment`, `shipment`,
+            `invoiceCompany`, `invoiceContact`, `invoiceAddress1`, `invoiceAddress2`, `invoiceZip`, `invoiceCity`,
+            `shipmentCompany`, `shipmentContact`, `shipmentAddress1`, `shipmentAddress2`, `shipmentZip`, `shipmentCity`)
+        VALUES (NULL, $type, $format, $front, $back, $weight, $paper, $price, $amount,
+                '$filePath1', '$filePath2', '$filePath3', '$email', '$phone', '$comment', '$shipment',
+                '$invCompany', '$invContact', '$invAddress1', '$invAddress2', '$invZip', '$invCity',
+                '$shipCompany', '$shipContact', '$shipAddress1', '$shipAddress2', '$shipZip', '$shipCity')";
+        echo $query;
+        $objRS = $objDatabase->Execute($query);
+        if(intval($objDatabase->Insert_ID())){
+            return $objDatabase->Insert_ID();
+        }
+        return false;
     }
 
     /**

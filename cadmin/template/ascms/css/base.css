@@ -468,7 +468,6 @@ div.tabContainer {
     padding: 2px;
 }
 
-
 #previewContent {
     position:absolute;
     top: 26px;
@@ -493,6 +492,16 @@ span.messageFadeout{
     float: right;
 }
 
+.rowMain {
+
+}
+
+.rowSub {
+    display: none;
+}
+.rowHover{
+    background-color:#F1F1F1 !important;
+}
 
 /* div table */
 

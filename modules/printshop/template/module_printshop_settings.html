@@ -4,6 +4,8 @@
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_PRINTSHOP_EMAIL_HELP}"];
 Text[1]=["","{TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP}"];
+Text[2]=["","{TXT_PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER_HELP}"];
+Text[3]=["","{TXT_PRINTSHOP_EMAIL_TEMPLATE_VENDOR_HELP}"];
 //]]>
 </script>
 <form name="frmSettings" method="post" action="{DIRECTORY_INDEX}?cmd=printshop&amp;act=saveSettings">
@@ -12,18 +14,61 @@ Text[1]=["","{TXT_PRINTSHOP_PRICE_THRESHOLDS_HELP}"];
       <th colspan="2">{TXT_PRINTSHOP_SETTINGS_TITLE}</th>
     </tr>
     <tr class="row1">
-      <td width="15%">{TXT_PRINTSHOP_ORDER_EMAIL}</td>
-      <td width="85%"><input type="text" name="orderEmail" value="{PRINTSHOP_SETTINGS_ORDER_EMAIL}"  maxlength="50" style="width:50%;"  />&nbsp;
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_ORDER_EMAIL}</td>
+      <td width="85%"><input type="text" name="orderEmail" value="{PRINTSHOP_ORDER_EMAIL}"  maxlength="50" style="width:50%;"  />&nbsp;
         <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
     </tr>
     <tr class="row2">
-      <td width="15%">{TXT_PRINTSHOP_ENTRIES_PER_PAGE}</td>
-      <td width="85%"><input type="text" name="entriesPerPage" value="{PRINTSHOP_SETTINGS_ENTRIES_PER_PAGE}"  maxlength="50" style="width:50%;"  />&nbsp;</td>
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_ENTRIES_PER_PAGE}</td>
+      <td width="85%"><input type="text" name="entriesPerPage" value="{PRINTSHOP_ENTRIES_PER_PAGE}"  maxlength="50" style="width:50%;"  />&nbsp;</td>
     </tr>
     <tr class="row1">
-      <td width="15%">{TXT_PRINTSHOP_PRICE_THRESHOLDS}</td>
-      <td width="85%"><input type="text" name="priceThresholds" value="{PRINTSHOP_SETTINGS_PRICE_THRESHOLDS}" style="width:50%;"  />
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_PRICE_THRESHOLDS}</td>
+      <td width="85%"><input type="text" name="priceThresholds" value="{PRINTSHOP_PRICE_THRESHOLDS}" style="width:50%;"  />
        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+      &nbsp;</td>
+    </tr>
+    <tr class="row2">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_DATA_PREPARATION_PRICE}</td>
+      <td width="85%"><input type="text" name="dataPreparationPrice" value="{PRINTSHOP_DATA_PREPARATION_PRICE}" style="width:50%;"  />
+      &nbsp;</td>
+    </tr>
+    <tr class="row1">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_SHIPMENT_PRICE_MAIL}</td>
+      <td width="85%"><input type="text" name="shipmentPriceMail" value="{PRINTSHOP_SHIPMENT_PRICE_MAIL}" style="width:50%;"  />
+      &nbsp;</td>
+    <tr class="row2">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_SHIPMENT_PRICE_MESSENGER}</td>
+      <td width="85%"><input type="text" name="shipmentPriceMessenger" value="{PRINTSHOP_SHIPMENT_PRICE_MESSENGER}" style="width:50%;"  />
+      &nbsp;</td>
+    </tr>
+    <tr class="row1">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_CURRENCY}</td>
+      <td width="85%"><input type="text" name="currency" value="{PRINTSHOP_CURRENCY}" style="width:50%;"  />
+      &nbsp;</td>
+    </tr>
+    <tr class="row2">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_EMAIL_SUBJECT_CUSTOMER}</td>
+      <td width="85%"><input type="text" name="emailSubjectCustomer" value="{PRINTSHOP_EMAIL_SUBJECT_CUSTOMER}" style="width:50%;"  />
+      &nbsp;</td>
+    </tr>
+    <tr class="row1">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER}</td>
+      <td width="85%">
+            <textarea name="emailTemplateCustomer" style="width:50%; height: 200px;">{PRINTSHOP_EMAIL_TEMPLATE_CUSTOMER}</textarea>
+       <img style="vertical-align: top;" src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
+      &nbsp;</td>
+    </tr>
+     <tr class="row2">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_EMAIL_SUBJECT_VENDOR}</td>
+      <td width="85%"><input type="text" name="emailSubjectVendor" value="{PRINTSHOP_EMAIL_SUBJECT_VENDOR}" style="width:50%;"  />
+      &nbsp;</td>
+    </tr>
+    <tr class="row1">
+      <td width="15%" style="vertical-align: top;">{TXT_PRINTSHOP_EMAIL_TEMPLATE_VENDOR}</td>
+      <td width="85%">
+            <textarea name="emailTemplateVendor" style="width:50%; height: 200px;">{PRINTSHOP_EMAIL_TEMPLATE_VENDOR}</textarea>
+       <img style="vertical-align: top;" src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" />
       &nbsp;</td>
     </tr>
   </table>
