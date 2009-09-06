@@ -2192,16 +2192,11 @@ dl.data_module img {
     list-style-type: disc;
 }
 
-#printshop #pricePerOne {
-    font-size: 2em;
-    margin-left: 8px;
-    padding-left: 8px;
-    color: #99CC00;
-}
 
 #printshop div#psAmount #amount {
-    width: 50px;
+    width: 148px;
     margin-left: 16px;
+    margin-top: 12px;
 }
 
 #printshop #psSubmit {
@@ -2231,8 +2226,8 @@ dl.data_module img {
 
 #printshop table td {
     border: 0px;
-    margin: 1px;
-    padding: 1px;
+    margin: 0px;
+    padding: 0px;
 }
 
 #printshop table.psOrderTable td.first {
@@ -2242,10 +2237,22 @@ dl.data_module img {
 #printshop .comment {
     color: #99CC00;
     width: 140px;
+    font-weight: bold;
 }
 
 #printshop input.text {
-    margin: 0px; padding: 0px;
+    margin: 1px; padding: 0px;
+}
+
+#printshop input.radio {
+    margin: 1px; padding: 0px;
+}
+
+#printshop .shipmentSelection, #printshop .shipmentSelection label {
+    margin: 2px; padding: 0px;
+    font-weight: normal;
+    clear: none;
+    float: none;
 }
 
 #printshop input#amount {
@@ -2257,11 +2264,12 @@ dl.data_module img {
 }
 
 #printshop input.file {
-    margin: 0px; padding: 0px;
+    margin: 1px; padding: 0px;
 }
 
 #printshop th {
     padding-bottom: 20px;
+    padding-left: 0px;
     color: #99CC00;
     border: 0px;
     background-color: white;
@@ -2269,10 +2277,31 @@ dl.data_module img {
     font-weight: bold;
 }
 
-#printshop table#psPriceTable {
-    maring: 0px;
-    padding: 0px;
-    width: 218px;
+#printshop #psPriceTableOrder {
+    width: 245px;
+}
+
+#printshop #psPriceTableOrder td.middle {
+    text-align: right;
+}
+
+#printshop #psPriceTableOrder td.right {
+    text-align: right;
+    width: 79px;
+}
+
+#printshop #psPriceTableOrder tr.total td{
+    border-bottom: 2px solid black;
+    font-weight: bold;
+}
+
+#printshop #psPriceTableOrder .first {
+    width: 152px;
+}
+
+#printshop table#psPriceTable td.right {
+    text-align: right;
+    width: 74px;
 }
 
 #printshop table#psPriceTable td {
@@ -2280,9 +2309,24 @@ dl.data_module img {
     padding: 0px;
 }
 
-#printshop table#psPriceTable td.right {
+
+#printshop #psPriceTable td.pricePerOne {
+    color: #99CC00;
+    font-weight: bold;
     text-align: right;
-    width: 60px;
+    padding-right: 20px;
+}
+
+#printshop table#psPriceTable {
+    margin-left: 7px;
+    padding-left: 7px;
+    margin-top: 10px;
+    width: 365px;
+}
+
+#printshop table#psPriceTable td {
+    margin: 0px;
+    padding: 0px;
 }
 
 #printshopCanvas {
@@ -2298,3 +2342,22 @@ dl.data_module img {
     height: 100px;
 }
 
+#printshop #psSubmitOrder {
+    margin: 0px; padding: 0px;
+}
+
+#printshop #okMessage div {
+    color: #669900;
+    border: 1px solid #669900;
+    background-color: #ccee88;
+    padding: 2px;
+    margin-bottom: 3px;
+}
+
+#printshop #errorMessage div {
+    color: #ff0000;
+    background-color: #f4caca;
+    border: 1px solid #ff0000;
+    padding: 2px;
+    margin-bottom: 3px;
+}

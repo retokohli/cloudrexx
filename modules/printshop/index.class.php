@@ -28,6 +28,8 @@ class Printshop extends PrintshopLibrary {
     var $_strErrorMessage = '';
     var $_type = '';
     var $_lineColor = 'rgba(153, 204, 0, 0.5)';
+    var $_okMsg = array();
+    var $_errMsg = array();
 
     /**
     * Constructor   -> Call parent-constructor, set language id and create local template-object
@@ -79,7 +81,7 @@ class Printshop extends PrintshopLibrary {
                 $this->showPrints();
                 break;
         }
-
+        $this->_parseMsgs();
         return $this->_objTpl->get();
     }
 
@@ -94,6 +96,7 @@ class Printshop extends PrintshopLibrary {
         global $_ARRAYLANG;
 
         if(!empty($_REQUEST['standalone'])){ //JSON request
+            $arrFilter = array();
             foreach ($this->_arrAvailableAttributes as $attribute) {
                 $arrFilter[$attribute] = !empty($_POST[$attribute]) ? intval($_POST[$attribute]) : 0;
             }
@@ -102,18 +105,19 @@ class Printshop extends PrintshopLibrary {
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_PRINTSHOP_FORMAT_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
-            'TXT_PRINTSHOP_FRONT_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
-            'TXT_PRINTSHOP_BACK_TITLE'       => $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
-            'TXT_PRINTSHOP_WEIGHT_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
-            'TXT_PRINTSHOP_PAPER_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
-            'TXT_PRINTSHOP_SUMMARY'          => $_ARRAYLANG['TXT_PRINTSHOP_SUMMARY'],
-            'TXT_PRINTSHOP_PRICE_PER_PIECE'  => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_PER_PIECE'],
-            'TXT_PRINTSHOP_AMOUNT'           => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
-            'TXT_PRINTSHOP_TYPE'             => $_ARRAYLANG['TXT_PRINTSHOP_TYPE'],
-            'TXT_PRINTSHOP_DATA_PREPARATION' => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION'],
-            'TXT_PRINTSHOP_EXCL_TAX'         => $_ARRAYLANG['TXT_PRINTSHOP_EXCL_TAX'],
-            'TXT_PRINTSHOPT_COMMIT_ORDER'    => $_ARRAYLANG['TXT_PRINTSHOPT_COMMIT_ORDER'],
+            'TXT_PRINTSHOP_FORMAT_TITLE'                => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
+            'TXT_PRINTSHOP_FRONT_TITLE'                 => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
+            'TXT_PRINTSHOP_BACK_TITLE'                  => $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
+            'TXT_PRINTSHOP_WEIGHT_TITLE'                => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
+            'TXT_PRINTSHOP_PAPER_TITLE'                 => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
+            'TXT_PRINTSHOP_SUMMARY'                     => $_ARRAYLANG['TXT_PRINTSHOP_SUMMARY'],
+            'TXT_PRINTSHOP_PRICE_PER_PIECE'             => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_PER_PIECE'],
+            'TXT_PRINTSHOP_AMOUNT'                      => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
+            'TXT_PRINTSHOP_TYPE'                        => $_ARRAYLANG['TXT_PRINTSHOP_TYPE'],
+            'TXT_PRINTSHOP_DATA_PREPARATION'            => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION'],
+            'TXT_PRINTSHOP_EXCL_TAX'                    => $_ARRAYLANG['TXT_PRINTSHOP_EXCL_TAX'],
+            'TXT_PRINTSHOP_COMMIT_ORDER'                => $_ARRAYLANG['TXT_PRINTSHOP_COMMIT_ORDER'],
+            'TXT_PRINTSHOP_PRICES_THRESHOLD_AMOUNT'     => $_ARRAYLANG['TXT_PRINTSHOP_PRICES_THRESHOLD_AMOUNT'],
         ));
 
         foreach($this->_arrAvailableAttributes as $attribute){
@@ -128,6 +132,13 @@ class Printshop extends PrintshopLibrary {
                 $this->_objTpl->parse('filter'.ucwords($attribute));
             }
         }
+
+        $arrPriceThresholds = array();
+        foreach ($this->_priceThresholds as $index => $threshold) {
+            $arrPriceThresholds['PRINTSHOP_PRICE_THRESHOLD_'.$index] = $threshold['threshold'];
+        }
+      	$this->_objTpl->setVariable($arrPriceThresholds);
+
         $lineColor = $this->_lineColor;
         $type = !empty($_REQUEST['type']) ? contrexx_addslashes($_REQUEST['type']) : '';
         $DI   = CONTREXX_DIRECTORY_INDEX;
@@ -155,7 +166,8 @@ class Printshop extends PrintshopLibrary {
             var front  = \$J('#psAttributeFront li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
             var weight = \$J('#psAttributeWeight li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
             var paper  = \$J('#psAttributePaper li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
-            location.href='$DI?section=printshop&cmd=order&type=$type&format='+format+'&front='+front+'&back='+back+'&weight='+weight+'&paper='+paper+''
+            var amount = \$J('#amount').val().replace(/^.*?(\d+)$/g, '$1');
+            location.href='$DI?section=printshop&cmd=order&amount='+amount+'&type=$type&format='+format+'&front='+front+'&back='+back+'&weight='+weight+'&paper='+paper;
         });
 
         \$J('.psType_$type').css({color:'black'});
@@ -164,8 +176,8 @@ class Printshop extends PrintshopLibrary {
             clickLiAtPos(e);
         });
 
-        var clickLiAtPos = function(e){
-            var x = e.clientX + \$J(window).scrollLeft();
+        var clickLiAtPos = function(e){ //check event location add relay the click event to the according li
+            var x = e.clientX + \$J(window).scrollLeft(); //add window scroll pos in case we're not at 0,0
             var y = e.clientY + \$J(window).scrollTop();
             for(var i=0; i < arrLis.length; i++){
                 if(x > arrLis[i].left && x < arrLis[i].left + arrLis[i].width){
@@ -308,13 +320,15 @@ class Printshop extends PrintshopLibrary {
     var updateInfoDisplay = function(data){
         var NA = 'N/A';
         if(data){
-            \$J('#pricePerOne').text(data.price);
             \$J('#psSummaryType').text(data.type);
             \$J('#psSummaryFormat').text(data.format);
             \$J('#psSummaryFront').text(data.front);
             \$J('#psSummaryBack').text(data.back);
             \$J('#psSummaryWeight').text(data.weight);
             \$J('#psSummaryPaper').text(data.paper);
+            \$J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i, j){
+                \$J('#price_'+j).text(data['price_'+j]);
+            });
             \$J('#psSubmit').removeAttr('disabled');
         }else{
             \$J('#pricePerOne').text(NA);
@@ -324,6 +338,9 @@ class Printshop extends PrintshopLibrary {
             \$J('#psSummaryBack').text(NA);
             \$J('#psSummaryWeight').text(NA);
             \$J('#psSummaryPaper').text(NA);
+            \$J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i, j){
+                \$J('#price_'+j).text(NA);
+            });
             \$J('#psSubmit').attr('disabled', 'disabled');
         }
     }
@@ -391,20 +408,107 @@ EOJ;
     function showOrder() {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
-         $this->_objTpl->setGlobalVariable(array(
-            'TXT_PRINTSHOP_FORMAT_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
-            'TXT_PRINTSHOP_FRONT_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
-            'TXT_PRINTSHOP_BACK_TITLE'       => $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
-            'TXT_PRINTSHOP_WEIGHT_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
-            'TXT_PRINTSHOP_PAPER_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
-            'TXT_PRINTSHOP_SUMMARY'          => $_ARRAYLANG['TXT_PRINTSHOP_SUMMARY'],
-            'TXT_PRINTSHOP_PRICE_PER_PIECE'  => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_PER_PIECE'],
-            'TXT_PRINTSHOP_AMOUNT'           => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
-            'TXT_PRINTSHOP_TYPE'             => $_ARRAYLANG['TXT_PRINTSHOP_TYPE'],
-            'TXT_PRINTSHOP_DATA_PREPARATION' => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION'],
-            'TXT_PRINTSHOP_EXCL_TAX'         => $_ARRAYLANG['TXT_PRINTSHOP_EXCL_TAX'],
-            'TXT_PRINTSHOPT_COMMIT_ORDER'    => $_ARRAYLANG['TXT_PRINTSHOPT_COMMIT_ORDER'],
+        $amount = !empty($_GET['amount']) && intval($_GET['amount']) > 0 ? intval($_GET['amount']) : '1';
+
+        $arrFilter  = array();
+        foreach ($this->_arrAvailableAttributes as $attribute) {
+            $arrFilter[$attribute] = !empty($_REQUEST[$attribute]) ? intval($_REQUEST[$attribute]) : 0;
+        }
+
+        if(!empty($_REQUEST['standalone'])){ //JSON request
+            $arrEntry = $this->_getEntries($arrFilter, true);
+            $arrThresholds = array();
+            foreach ($this->_priceThresholds as $index => $threshold) {
+                $arrThresholds[$index] = $threshold['threshold'];
+            }
+            die(json_encode(array(
+                'entry'      => current($arrEntry['entries']),
+                'thresholds' => $arrThresholds,
+            )));
+        }
+
+        $shipmentInputHTML = array();
+        foreach ($this->_shipmentEnum as $id => $shipmentType) {
+            if(!empty($_POST['psShipment']) && $_POST['shipment'] == $shipmentType){
+                $checked = 'checked="checked"';
+            }elseif(empty($_POST['psShipment']) && $id == count($this->_shipmentEnum) - 1){
+                $checked = 'checked="checked"';
+            }else{
+                $checked = '';
+            }
+        	$shipmentInputHTML[] = '<input class="radio" '.$checked.' type="radio" id="psShipment'.$id.'" name="psShipment" />
+        	                        <label for="psShipment'.$id.'">'
+        	                        .$_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_'.strtoupper($shipmentType)]
+        	                        .'</label><br />';
+        }
+
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_PRINTSHOP_FORMAT_TITLE'        => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
+            'TXT_PRINTSHOP_FRONT_TITLE'         => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
+            'TXT_PRINTSHOP_BACK_TITLE'          => $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
+            'TXT_PRINTSHOP_WEIGHT_TITLE'        => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
+            'TXT_PRINTSHOP_PAPER_TITLE'         => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
+            'TXT_PRINTSHOP_SUMMARY'             => $_ARRAYLANG['TXT_PRINTSHOP_SUMMARY'],
+            'TXT_PRINTSHOP_PRICE_PER_PIECE'     => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_PER_PIECE'],
+            'TXT_PRINTSHOP_AMOUNT'              => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
+            'TXT_PRINTSHOP_TYPE_TITLE'          => $_ARRAYLANG['TXT_PRINTSHOP_TYPE_TITLE'],
+            'TXT_PRINTSHOP_DATA_PREPARATION'    => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION'],
+            'TXT_PRINTSHOP_EXCL_TAX'            => $_ARRAYLANG['TXT_PRINTSHOP_EXCL_TAX'],
+            'TXT_PRINTSHOP_COMMIT_ORDER'        => $_ARRAYLANG['TXT_PRINTSHOP_COMMIT_ORDER'],
+            'TXT_PRINTSHOP_UPLOAD_DATA_TITLE'   => $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_TITLE'],
+            'TXT_PRINTSHOP_FILE'                => $_ARRAYLANG['TXT_PRINTSHOP_FILE'],
+            'TXT_PRINTSHOP_CHOOSE_FILE'         => $_ARRAYLANG['TXT_PRINTSHOP_CHOOSE_FILE'],
+            'TXT_PRINTSHOP_UPLOAD_DATA_DESC'    => $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC'],
+            'TXT_PRINTSHOP_SUBJECT'             => $_ARRAYLANG['TXT_PRINTSHOP_SUBJECT'],
+            'TXT_PRINTSHOP_ORDERDETAILS'        => $_ARRAYLANG['TXT_PRINTSHOP_ORDERDETAILS'],
+            'TXT_PRINTSHOP_AMOUNT_COST_SHIP'    => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT_COST_SHIP'],
+            'TXT_PRINTSHOP_PRINT_COST'          => $_ARRAYLANG['TXT_PRINTSHOP_PRINT_COST'],
+            'TXT_PRINTSHOP_DATA_PREPARATION'    => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION'],
+            'TXT_PRINTSHOP_TOTAL'               => $_ARRAYLANG['TXT_PRINTSHOP_TOTAL'],
+            'TXT_PRINTSHOP_SHIPMENT'            => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT'],
+            'TXT_PRINTSHOP_GROSS'               => $_ARRAYLANG['TXT_PRINTSHOP_GROSS'],
+            'TXT_PRINTSHOP_VAT'                 => $_ARRAYLANG['TXT_PRINTSHOP_VAT'],
+            'TXT_PRINTSHOP_PRICE_SUBTOTAL'      => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_SUBTOTAL'],
+            'TXT_PRINTSHOP_INVOC_SHIPM_ADDRESS' => $_ARRAYLANG['TXT_PRINTSHOP_INVOC_SHIPM_ADDRESS'],
+            'TXT_PRINTSHOP_INVOICE_ADDRESS'     => $_ARRAYLANG['TXT_PRINTSHOP_INVOICE_ADDRESS'],
+            'TXT_PRINTSHOP_SHIPMENT_ADDRESS'    => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_ADDRESS'],
+            'TXT_PRINTSHOP_CONTACT_PERSON'      => $_ARRAYLANG['TXT_PRINTSHOP_CONTACT_PERSON'],
+            'TXT_PRINTSHOP_COMPANY'             => $_ARRAYLANG['TXT_PRINTSHOP_COMPANY'],
+            'TXT_PRINTSHOP_ADDRESS'             => $_ARRAYLANG['TXT_PRINTSHOP_ADDRESS'],
+            'TXT_PRINTSHOP_ZIP'                 => $_ARRAYLANG['TXT_PRINTSHOP_ZIP'],
+            'TXT_PRINTSHOP_CITY'                => $_ARRAYLANG['TXT_PRINTSHOP_CITY'],
+            'TXT_PRINTSHOP_CONTACT'             => $_ARRAYLANG['TXT_PRINTSHOP_CONTACT'],
+            'TXT_PRINTSHOP_COMMENT'             => $_ARRAYLANG['TXT_PRINTSHOP_COMMENT'],
+            'TXT_PRINTSHOP_EMAIL'               => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL'],
+            'TXT_PRINTSHOP_TELEPHONE'           => $_ARRAYLANG['TXT_PRINTSHOP_TELEPHONE'],
+            'TXT_PRINTSHOP_ACCEPT_TERMS'		=> $_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'],
+            'TXT_PRINTSHOP_SUBMIT_ORDER'		=> $_ARRAYLANG['TXT_PRINTSHOP_SUBMIT_ORDER'],
+            'PRINTSHOP_CURRENCY'                => $this->_arrSettings['currency'],
+            'PRINTSHOP_DATA_PREPARATION_PRICE'  => number_format($this->_arrSettings['dataPreparationPrice'], 2),
+            'PRINTSHOP_AMOUNT'                  => $amount,
+            'PRINTSHOP_SHIPMENT_RADIOBUTTONS'   => implode("\n", $shipmentInputHTML),
         ));
+
+        $arrEntry = $this->_getEntries($arrFilter, false);
+        $entry = current($arrEntry['entries']);
+        $arrAttributeTexts = array();
+        foreach ($this->_arrAvailableAttributes as $index => $attribute) {
+            $attr = strtoupper($attribute);
+        	$arrAttributeTexts['PRINTSHOP_'.$attr]       = $this->_getAttributeName($attribute, $arrFilter[$attribute]);
+        	$arrAttributeTexts['PRINTSHOP_'.$attr.'_ID'] = $entry[$attribute];
+        }
+        $this->_objTpl->setVariable($arrAttributeTexts);
+
+        $dataPreparationPrice   = $this->_arrSettings['dataPreparationPrice'];
+        $shipmentPriceMail      = $this->_arrSettings['shipmentPriceMail'];
+        $shipmentPriceMessenger = $this->_arrSettings['shipmentPriceMessenger'];
+
+        $type   = $arrFilter['type'];
+        $format = $arrFilter['format'];
+        $front  = $arrFilter['front'];
+        $back   = $arrFilter['back'];
+        $weight = $arrFilter['weight'];
+        $paper  = $arrFilter['paper'];
 
         $type = !empty($_REQUEST['type']) ? contrexx_addslashes($_REQUEST['type']) : '';
         $DI   = CONTREXX_DIRECTORY_INDEX;
@@ -412,24 +516,150 @@ EOJ;
         JS::activate('excanvas');
         $JS =<<< EOJ
 (function(){
+    var dataPreparationPrice     = parseFloat(($dataPreparationPrice).toFixed(2));
+    var shipmentPriceMail        = parseFloat(($shipmentPriceMail).toFixed(2));
+    var shipmentPriceMessenger   = parseFloat(($shipmentPriceMessenger).toFixed(2));
+    var shipmentPrice            = 0.00;
+
     \$J(document).ready(function(){
-        updatePrice();
+        initPrices();
         checkFilledFields();
+
+        \$J('#amount').keyup(function(){
+            \$J(this).val(\$J(this).val().replace(/[^\d]/g, ''));
+            if(\$J(this).val() == ''){
+                return false;
+            }
+            updatePrice();
+        });
+
+        \$J('.shipmentSelection input').change(function(){
+            updateShipmentPrice.apply(this);
+        });
+        updateShipmentPrice.apply(\$J('[name=psShipment]:checked').get(0));
     });
 
-    var updatePrice = function(){
-        var amount = \$J('#amount').val();
+    var type            = $type;
+    var format          = $format;
+    var front           = $front;
+    var back            = $back;
+    var weight          = $weight;
+    var paper           = $paper;
+    var price           = [];
+    var priceThresholds = [];
 
+
+    var updateShipmentPrice = function(){
+        var index = parseInt(\$J(this).attr('id').replace(/.*(\d+)$/, '$1'));
+        switch(index){
+            case 0:
+                shipmentPrice = 0;
+            break;
+            case 1:
+                shipmentPrice = shipmentPriceMessenger;
+            break;
+            case 2:
+                shipmentPrice = shipmentPriceMail;
+            break;
+        }
+        console.log([index, shipmentPrice, shipmentPriceMessenger, shipmentPriceMail]);
+        updatePrice();
+    }
+
+    var initPrices = function(){
+        var lastPrice;
+        \$J.ajax({
+            url: '$DI?section=printshop&cmd=order&standalone=1',
+            type: 'post',
+            data: {type: type, format: format, front: front, back: back, weight: weight, paper: paper},
+            dataType: 'json',
+            success: function(data){
+                if(data.entry.price_0){
+                    \$J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i, j){
+                        if(data.entry['price_'+j] > 0){
+                            lastPrice = data.entry['price_'+j]
+                            price[j]  = data.entry['price_'+j];
+                        }else{
+                            price[j]  = lastPrice;
+                        }
+                        priceThresholds[j]  = data.thresholds[j];
+                    });
+                }
+                updatePrice();
+            }
+        });
+    }
+
+    var roundPrice = function(flt){
+        return parseFloat(Math.floor(20*flt)/20);
+    }
+
+    var updatePrice = function(){
+        var amount = parseInt(\$J('#amount').val());
+        var printCost = 0;
+        var calculation = [];
+        if(amount > priceThresholds[1] - 1){ //check if print amount is not only in first threshold area, which is 1 to priceThresholds[1]-1
+            //process the first range
+            printCost += (priceThresholds[1] - 1) * price[0];
+            amount    -= priceThresholds[1] - 1;
+            calculation.push('a 1-'+(priceThresholds[1] - 1)+' * '+price[0]+' ='+printCost);
+
+            for(i = 1; i <= 15; i++){
+                if(amount < priceThresholds[i+1] - 1){
+                    printCost += amount * price[i];
+                    calculation.push('b '+priceThresholds[i]+'-'+(1*priceThresholds[i]-1+1*amount)+' * '+price[i]+' ='+printCost);
+                    break;
+                }else{
+                    printCost += (priceThresholds[i+1] - 1) * price[i];
+                    amount    -= priceThresholds[i] - 1;
+                    calculation.push('c '+priceThresholds[i]+'-'+(1*priceThresholds[i+1]-1)+' * '+price[i]+' ='+printCost);
+                }
+            }
+        }else{ //it's only in the first range
+            printCost   += amount * price[0];
+            calculation.push('d 1-'+amount+' * '+price[0]+' ='+printCost);
+        }
+
+        console.log(calculation);
+
+        var roundedPrice = roundPrice(printCost.toFixed(2));
+        var subtotal = 1*printCost + 1*dataPreparationPrice;
+        var vat = 1*subtotal * 0.071;
+        var grossPrice = 1*subtotal + 1*vat;
+        var totalPrice = 1*grossPrice + 1*shipmentPrice;
+
+
+        \$J('#psPrintCost').text(printCost.toFixed(2));
+        \$J('#psPriceSubtotal').text(subtotal.toFixed(2));
+        \$J('#psPriceVAT').text(vat.toFixed(2));
+        \$J('#psPriceGross').text(grossPrice.toFixed(2));
+        \$J('#psPriceShipment').text(shipmentPrice.toFixed(2));
+        \$J('#psPriceTotal').text(roundPrice(totalPrice).toFixed(2));
+        \$J('#psPrice').text(roundPrice(totalPrice).toFixed(2));
+    }
+
+    var submitOrder = function(){
+        \$J.ajax({
+            url: '$DI?section=printshop&cmd=',
+            type: 'post',
+            data: '',
+            dataType: 'json',
+            success: ''
+        });
     }
 
     var checkFilledFields = function(){
         var psSubject = \$J('#psSubject').val().replace(/\s+/, '');
-        var psImageFront = \$J('#psImageFront').val().replace(/\s+/, '');
+        var psImage1 = \$J('#psImage1').val().replace(/\s+/, '');
+        var psImage2 = \$J('#psImage2').val().replace(/\s+/, '');
+     // var psImage3 = \$J('#psImage3').val().replace(/\s+/, '');
 
-        if(!= ''){
+        if(psSubject == ''){
+            console.log("fill all fields plz");
         }
 
-
+        if(psSubject == ''){
+        }
 
     }
 
@@ -437,13 +667,159 @@ EOJ;
 EOJ;
         JS::registerCode($JS);
 
+
+        if(!empty($_POST['psSubmitOrder'])){
+            $this->_checkOrder();
+        }
     }
 
 
+    /**
+     * check if the order is complete and call handler if positive
+     *
+     */
+    function _checkOrder(){
+        global $_ARRAYLANG;
+        $subject = !empty($_POST['psSubject']) ? intval($_POST['psSubject']) : '';
+        $type = !empty($_POST['psType']) ? intval($_POST['psType']) : '';
+        $format = !empty($_POST['psFormat']) ? intval($_POST['psFormat']) : '';
+        $front = !empty($_POST['psFront']) ? intval($_POST['psFront']) : '';
+        $back = !empty($_POST['psBack']) ? intval($_POST['psBack']) : '';
+        $weight = !empty($_POST['psWeight']) ? intval($_POST['psWeight']) : '';
+        $paper = !empty($_POST['psPaper']) ? intval($_POST['psPaper']) : '';
+        $amount = !empty($_POST['psAmount']) ? intval($_POST['psAmount']) : '';
+        $price = !empty($_POST['psPrice']) ? doubleval($_POST['pspPrice']) : '';
+        $shipment = !empty($_POST['psShipment']) ? contrexx_addslashes($_POST['psShipment']) : '';
+        $invCompany = !empty($_POST['psCompanyI']) ? contrexx_addslashes($_POST['psCompanyI']) : '';
+        $invContact = !empty($_POST['psContactI']) ? contrexx_addslashes($_POST['psContactI']) : '';
+        $invAddress1 = !empty($_POST['psAddress1I']) ? contrexx_addslashes($_POST['psAddress1I']) : '';
+        $invAddress2 = !empty($_POST['psAddress2I']) ? contrexx_addslashes($_POST['psAddress2I']) : '';
+        $invZip = !empty($_POST['psZipI']) ? contrexx_addslashes($_POST['psZipI']) : '';
+        $invCity = !empty($_POST['psCityI']) ? contrexx_addslashes($_POST['psCityI']) : '';
+        $shipCompany = !empty($_POST['psCompanyS']) ? contrexx_addslashes($_POST['psCompanyS']) : '';
+        $shipContact = !empty($_POST['psContactS']) ? contrexx_addslashes($_POST['psContactS']) : '';
+        $shipAddress1 = !empty($_POST['psAddress1S']) ? contrexx_addslashes($_POST['psAddress1S']) : '';
+        $shipAddress2 = !empty($_POST['psAddress2S']) ? contrexx_addslashes($_POST['psAddress2S']) : '';
+        $shipZip = !empty($_POST['psZipS']) ? contrexx_addslashes($_POST['psZipS']) : '';
+        $shipCity = !empty($_POST['psCityS']) ? contrexx_addslashes($_POST['psCityS']) : '';
+        $email = !empty($_POST['psEmail']) ? contrexx_addslashes($_POST['psEmail']) : '';
+        $phone = !empty($_POST['psPhone']) ? contrexx_addslashes($_POST['psPhone']) : '';
+        $comment = !empty($_POST['psComment']) ? contrexx_addslashes($_POST['psComment']) : '';
+        $acceptTerms = !empty($_POST['psAcceptTerms']) ? intval($_POST['psAcceptTerms']) : '';
+
+        if(!FWValidator::isEmail($email)){
+            $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_INVALID_EMAIL']);
+            return false;
+        }
+
+        if(!in_array($shipment, $this->_shipmentEnum)){
+            $shipment = '';
+        }
+
+        //someone accessed the order page without selecting all attributes, redirect to selection in this case
+        if(empty($type) || empty($format) || empty($front) || empty($back) || empty($weight) || empty($paper)){
+            header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=printshop');
+            die();
+        }
+
+        print_r($_POST);
+        print_r($_FILES);
+
+        if(empty($subject)      || empty($amount)  || empty($shipment) || empty($invContact)  || empty($invAddress1)
+        || empty($invAddress2)  || empty($invZip)  || empty($invCity)  || empty($shipContact) || empty($shipAddress1)
+        || empty($shipAddress2) || empty($shipZip) || empty($shipCity) || empty($email)       || empty($phone)
+        || empty($acceptTerms)){
+           $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_MISSING_FIELDS']);
+           return false;
+        }
+
+        if($this->_addOrder(
+            $type, $format, $front, $back, $weight, $paper, $price, $amount, $filePath1, $filePath2, $filePath3, $email, $phone, $comment, $shipment,
+            $invCompany, $invContact, $invAddress1, $invAddress2, $invZip, $invCity,
+            $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity
+        )){
+            $this->_sendMails();
+        }else{
+            $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_ORDER_SAVE_ERROR']);
+        }
+
+
+//  orderId
+//	type
+//	format
+//	front
+//	back
+//	weight
+//	paper
+//	status
+//	price
+//	amount
+//	file1
+//	file2
+//	file3
+//	email
+//	telephone
+//	comment
+//	shipment
+//	invoiceCompany
+//	invoiceContact
+//	invoiceAddress1
+//	invoiceAddress2
+//	invoiceZip
+//	invoiceCity
+//	shipmentCompany
+//	shipmentContact
+//	shipmentAddress1
+//	shipmentAddress2
+//	shipmentZip
+//	shipmentCity
+
+
+
+
+/*
+psSubject=subject
+psType=1
+psFormat=2
+psFront=1
+psBack=1
+psWeight=1
+psPaper=1
+psAmount=44
+psCompanyI=rf
+psCompanyS=lf
+psContactI=rk
+psContactS=lk
+psAddress1I=ra1
+psAddress1S=la1
+psAddress2I=ra2
+psAddress2S=la2
+psZIPI=rp
+psZIPS=lp
+psCityI=ro
+psCityS=lo
+psEmail=asdf%40asdf.com
+psPhone=12341234
+psComment=ASDFQWDASDQWD
+psTerms=on
+*/
+    }
+
+
+    /**
+     * Return the string for the page title
+     *
+     * @return string
+     */
     function getPageTitle(){
         return '';
     }
 
+
+    function _sendMails(){
+
+
+    }
 
     /**
      * Returns needed javascripts
@@ -471,5 +847,43 @@ EOJ;
         }
 
         return $strJavaScript;
+    }
+
+
+     /**
+     * parse the available messages
+     *
+     */
+    function _parseMsgs(){
+        $msg = '';
+        foreach ($this->_errMsg as $msg) {
+            $msg .= '<div>'.$msg.'</div>';
+        	$this->_objTpl->setVariable('PRINTSHOP_ERROR_MSG');
+        }
+        $msg = '';
+        foreach ($this->_okMsg as $msg) {
+            $msg .= '<div>'.$msg.'</div>';
+        	$this->_objTpl->setVariable('PRINTSHOP_OK_MSG');
+        }
+    }
+
+
+    /**
+     * add the specified error message
+     *
+     * @param string $strMsg
+     */
+    function _setError($strMsg){
+        $this->_errMsg[] = $strMsg;
+    }
+
+
+    /**
+     * add the specified ok message
+     *
+     * @param string $strMsg
+     */
+    function _setOk($strMsg){
+        $this->_okMsg[] = $strMsg;
     }
 }
