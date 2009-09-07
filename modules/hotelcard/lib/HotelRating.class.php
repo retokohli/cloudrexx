@@ -63,8 +63,8 @@ class HotelRating
 
         static $arrRating = array();
         if (empty($arrRating)) {
-            if ($selected === '')
-                $arrRating[] = $_ARRAYLANG['TXT_HOTELCARD_HOTEL_RATING_PLEASE_CHOOSE'];
+//            if ($selected === '')
+                $arrRating[''] = $_ARRAYLANG['TXT_HOTELCARD_RATING_PLEASE_CHOOSE'];
 //echo("HotelRating::getMenu($name, $selected, $onchange, $attribute): Making rating array...<br />");
             for ($index = self::RATING_FROM;
                  (   (   self::RATING_FROM < self::RATING_TO
@@ -99,7 +99,7 @@ class HotelRating
         if (    self::RATING_FROM < self::RATING_TO
             && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
             ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
-echo("HotelRating::getString($rating):  Invalid rating<br />");
+//echo("HotelRating::getString($rating):  Invalid rating<br />");
             return '';
         }
         return sprintf(self::TEMPLATE, $rating, str_repeat(self::STAR, $rating));

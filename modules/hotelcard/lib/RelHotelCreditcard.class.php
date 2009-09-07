@@ -172,7 +172,7 @@ class RelHotelCreditcard
     {
         global $objDatabase;
 
-echo("RelHotelCreditcard::errorHandler(): Entered<br />");
+//echo("RelHotelCreditcard::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel_accepts_creditcard", $arrTables)) {
@@ -198,7 +198,7 @@ echo("RelHotelCreditcard::errorHandler(): Entered<br />");
                 ) ENGINE=MYISAM";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("RelHotelCreditcard::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_creditcard<br />");
+//echo("RelHotelCreditcard::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_creditcard<br />");
         }
 
 // TODO:  Try to DROP old records

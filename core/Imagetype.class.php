@@ -30,24 +30,47 @@ class Imagetype
      */
     const TEXT_IMAGETYPE = "core_imagetype";
 
+    /**
+     * Default thumbnail height used when the type is unknown
+     */
+    const DEFAULT_THUMBNAIL_WIDTH  = 160;
+
+    /**
+     * Default thumbnail height used when the type is unknown
+     */
+    const DEFAULT_THUMBNAIL_HEIGHT = 120;
+
+    /**
+     * Default thumbnail quality used when the type is unknown
+     */
+    const DEFAULT_THUMBNAIL_QUALITY = 90;
+
 
     /**
      * Get an array with image type data.
      *
-     * This array lets you resolve Imagetype text IDs to Imagetype names
+     * The $key argument may be empty (defaults to false), a single string,
+     * or an array of strings.  Only matching keys are returned in the array.
      * The array returned looks like
      *  array(
-     *    text_id => Imagetype name,
+     *    key => array(
+     *      'key' => Image type key,
+     *      'text_id' => Image type Text ID,
+     *      'name' => Image type name,
+     *      'width' => thumbnail width,
+     *      'height' => thumbnail height,
+     *      'quality' => thumbnail quality,
+     *    ),
      *    ... more ...
      *  )
      * The array elements are ordered by key, ascending.
      * Uses the MODULE_ID constant.
      * @static
-     * @param       string      $key            The optional type key
-     * @return      array                       The type data array on success,
-     *                                          false otherwise
-     * @global      mixed       $objDatabase    Database object
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @param   string      $key            The optional type key or key array
+     * @return  array                       The type data array on success,
+     *                                      false otherwise
+     * @global  mixed       $objDatabase    Database object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getArray($key=false)
     {
@@ -58,33 +81,107 @@ class Imagetype
             '`imagetype`.`text_id`', FRONTEND_LANG_ID,
             MODULE_ID, self::TEXT_IMAGETYPE
         );
-        // `imagetype`.`key`
         $query = "
-            SELECT 1 ".$arrSqlName['field']."
+            SELECT `imagetype`.`key`,
+                   `imagetype`.`width`,
+                   `imagetype`.`height`,
+                   `imagetype`.`quality`
+                   ".$arrSqlName['field']."
               FROM `".DBPREFIX."core_imagetype` AS `imagetype`".
                    $arrSqlName['join']."
              WHERE `imagetype`.`module_id`=".MODULE_ID.
-              ($key ? " AND `imagetype`.`key`='".addslashes($key)."'" : '')."
+              ($key
+                ? ' AND `imagetype`.`key`'.
+                  (is_array($key)
+                    ? " IN ('".join("','", addslashes($key)).')'
+                    : "='".addslashes($key)."'")
+                : '')."
              ORDER BY `imagetype`.`key` ASC";
 //echo("Imagetype::getArray($key): query $query<br />");
         $objResult = $objDatabase->Execute($query);
 //echo("Imagetype::getArray($key): query ran, result ".var_export($objResult, true)."<br />");
         if (!$objResult) return self::errorHandler();
 //die("Imagetype::getArray($key): No error<br />");
-        $arrImagetype = array();
+        $arrImagetypes = array();
         while (!$objResult->EOF) {
             $strName = $objResult->fields[$arrSqlName['text']];
             if ($strName === null) {
                 $objResult->MoveNext();
                 continue;
             }
-//            $key = $objResult->fields['key'];
-            $text_id = $objResult->fields['text_id'];
-            $arrImagetype[$text_id] = $strName;
-//die("Imagetype::getArray($key): got ID $text_id => imagetype $strName<br />");
+            $arrImagetypes[$key] = array(
+                'key' => $objResult->fields['key'],
+                'text_id' => $objResult->fields[$arrSqlName['id']],
+                'name' => $objResult->fields[$arrSqlName['text']],
+                'width' => $objResult->fields['width'],
+                'height' => $objResult->fields['height'],
+                'quality' => $objResult->fields['quality'],
+            );
             $objResult->MoveNext();
         }
+//die("Imagetype::getArray($key): got ".var_export($arrImagetypes, true)."<hr />");
+        return $arrImagetypes;
+    }
+
+
+    /**
+     * Get an array with image type names.
+     *
+     * See {@see getArray()} for details.
+     * The array returned looks like
+     *  array(
+     *    key => Imagetype name,
+     *    ... more ...
+     *  )
+     * The array elements are ordered by key, ascending.
+     * Uses the MODULE_ID constant.
+     * @static
+     * @param   string      $key            The optional type key or key array
+     * @return  array                       The type name array on success,
+     *                                      false otherwise
+     * @global  mixed       $objDatabase    Database object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getNameArray($key=false)
+    {
+        global $objDatabase;
+
+//echo("Imagetype::getNameArray(): Entered<br />");
+        $arrImagetypes = self::getArray($key);
+        if ($arrImagetypes === false) return false;
+        $arrImagetype = array();
+        foreach ($arrImagetypes as $arrImagetype) {
+            $arrImagetype[$key] = $arrImagetype['name'];
+        }
+//die("Imagetype::getNameArray($key): got ".var_export($arrImagetype, true)."<hr />");
         return $arrImagetype;
+    }
+
+
+    /**
+     * Returns an array with the thumbnail width and height for the
+     * Imagetype key
+     *
+     * If the key is not found, the default sizes are returned in the array.
+     * The returned array looks like
+     *  array(
+     *    0 => width,
+     *    1 => height,
+     *  )
+     * @param   string    $key        The Imagetype key
+     * @return  array                 The thumbnail size array
+     */
+    static function getThumbnailOptions($key)
+    {
+        $arrImagetype = self::getArray($key);
+        if ($arrImagetype === false) return array(
+            0 => self::DEFAULT_THUMBNAIL_WIDTH,
+            1 => self::DEFAULT_THUMBNAIL_HEIGHT,
+        );
+        return array(
+            0 => $arrImagetype[$key]['width'],
+            1 => $arrImagetype[$key]['height'],
+        );
     }
 
 
@@ -92,9 +189,9 @@ class Imagetype
      * Delete matching image types from the database.
      *
      * Also deletes associated Text records.
-     * @param       string      $key            The type key
-     * @return      boolean                     True on success, false otherwise
-     * @global      mixed       $objDatabase    Database object
+     * @param       string      $key          The type key
+     * @return      boolean                   True on success, false otherwise
+     * @global      mixed       $objDatabase  Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     static function deleteByKey($key)
@@ -124,10 +221,10 @@ class Imagetype
     /**
      * Test whether a record with the given module ID and key is already
      * present in the database.
-     * @param       string      $key            The type key
-     * @return      boolean                     True if the record exists,
-     *                                          false otherwise
-     * @global      mixed       $objDatabase    Database object
+     * @param       string      $key          The type key
+     * @return      boolean                   True if the record exists,
+     *                                        false otherwise
+     * @global      mixed       $objDatabase  Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function recordExists($key)
@@ -154,27 +251,27 @@ class Imagetype
      * updated, otherwise it is inserted.
      * Also adds or updates the Text entry.  Only the language selected in
      * FRONTEND_LANG_ID is affected.
-     * @param       string      $key                The type key
-     * @param       string      $imagetype          The type description
-     * @param       integer     $thumbnail_width    The thumbnail width
-     * @param       integer     $thumbnail_height   The thumbnail height
-     * @param       integer     $thumbnail_quality  The thumbnail quality
-     * @return      boolean                         True on success,
-     *                                              false otherwise
+     * @param       string      $key          The type key
+     * @param       string      $imagetype    The type description
+     * @param       integer     $width        The thumbnail width
+     * @param       integer     $height       The thumbnail height
+     * @param       integer     $quality      The thumbnail quality
+     * @return      boolean                   True on success,
+     *                                        false otherwise
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function store(
         $key, $imagetype,
-        $thumbnail_width='NULL', $thumbnail_height='NULL', $thumbnail_quality='NULL'
+        $width='NULL', $height='NULL', $quality='NULL'
     ) {
         if (self::recordExists($key))
             return self::update(
                 $key, $imagetype,
-                $thumbnail_width, $thumbnail_height, $thumbnail_quality
+                $width, $height, $quality
             );
         return self::insert(
             $key, $imagetype,
-            $thumbnail_width, $thumbnail_height, $thumbnail_quality
+            $width, $height, $quality
         );
     }
 
@@ -185,19 +282,19 @@ class Imagetype
      * Note that associations to module ID and key can *NOT* be modified.
      * If you need to change an image type this way, you have to delete()
      * and re-insert() it.
-     * @param       string      $key                The type key
-     * @param       string      $imagetype          The type description
-     * @param       integer     $thumbnail_width    The thumbnail width
-     * @param       integer     $thumbnail_height   The thumbnail height
-     * @param       integer     $thumbnail_quality  The thumbnail quality
-     * @return      boolean                         True on success,
-     *                                              false otherwise
-     * @global      mixed       $objDatabase        Database object
+     * @param       string      $key          The type key
+     * @param       string      $imagetype    The type description
+     * @param       integer     $width        The thumbnail width
+     * @param       integer     $height       The thumbnail height
+     * @param       integer     $quality      The thumbnail quality
+     * @return      boolean                   True on success,
+     *                                        false otherwise
+     * @global      mixed       $objDatabase  Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update(
         $key, $strImagetype,
-        $thumbnail_width='NULL', $thumbnail_height='NULL', $thumbnail_quality='NULL'
+        $width='NULL', $height='NULL', $quality='NULL'
     ) {
         global $objDatabase;
 
@@ -214,9 +311,9 @@ class Imagetype
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_imagetype`
                SET `text_id`=".$objText->getId().",
-                   `thumbnail_width`=$thumbnail_width,
-                   `thumbnail_height`=$thumbnail_height,
-                   `thumbnail_quality`=$thumbnail_quality
+                   `width`=$width,
+                   `height`=$height,
+                   `quality`=$quality
              WHERE `module_id`=".MODULE_ID."
                AND `key`='".addslashes($key)."'");
         if (!$objResult) return self::errorHandler();
@@ -228,19 +325,19 @@ class Imagetype
      * Insert this image type into the database.
      *
      * Uses the current language ID found in the FRONTEND_LANG_ID constant.
-     * @param       string      $key                The type key
-     * @param       string      $imagetype          The type description
-     * @param       integer     $thumbnail_width    The thumbnail width
-     * @param       integer     $thumbnail_height   The thumbnail height
-     * @param       integer     $thumbnail_quality  The thumbnail quality
-     * @return      boolean                         True on success,
-     *                                              false otherwise
-     * @global      mixed       $objDatabase        Database object
+     * @param       string      $key          The type key
+     * @param       string      $imagetype    The type description
+     * @param       integer     $width        The thumbnail width
+     * @param       integer     $height       The thumbnail height
+     * @param       integer     $quality      The thumbnail quality
+     * @return      boolean                   True on success,
+     *                                        false otherwise
+     * @global      mixed       $objDatabase  Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert(
         $key, $strImagetype,
-        $thumbnail_width='NULL', $thumbnail_height='NULL', $thumbnail_quality='NULL'
+        $width='NULL', $height='NULL', $quality='NULL'
     ) {
         global $objDatabase;
 
@@ -251,19 +348,11 @@ class Imagetype
 
         $objResult = $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."core_imagetype (
-                `module_id`,
-                `key`,
-                `text_id`,
-                `thumbnail_width`,
-                `thumbnail_height`,
-                `thumbnail_quality`
+                `module_id`, `key`, `text_id`,
+                `width`, `height`, `quality`
             ) VALUES (
-                ".MODULE_ID.",
-                '".addslashes($key)."',
-                ".$objText->getId().",
-                $thumbnail_width,
-                $thumbnail_height,
-                $thumbnail_quality
+                ".MODULE_ID.", '".addslashes($key)."', ".$objText->getId().",
+                $width, $height, $quality
             )");
         if (!$objResult) return self::errorHandler();
         return true;
@@ -295,10 +384,11 @@ echo("Imagetype::errorHandler(): Dropped table core_imagetype<br />");
               `module_id` INT UNSIGNED NOT NULL COMMENT 'The ID of the module this image type occurs in' ,
               `key` VARCHAR(255) NOT NULL COMMENT 'The key unique for each module ID that identifies the image type' ,
               `text_id` INT UNSIGNED NOT NULL COMMENT 'Relates to core_text.id' ,
-              `thumbnail_width` BINARY NULL ,
-              `thumbnail_height` INT UNSIGNED NULL ,
-              `thumbnail_quality` INT UNSIGNED NULL ,
+              `width` BINARY NULL ,
+              `height` INT UNSIGNED NULL ,
+              `quality` INT UNSIGNED NULL ,
               PRIMARY KEY (`module_id`, `key`),
+              UNIQUE (`text_id`),
               CONSTRAINT `imagetype_text_id`
                 FOREIGN KEY (`text_id`)
                 REFERENCES `".DBPREFIX."core_text` (`id`)
@@ -311,53 +401,80 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
         $arrImagetypes = array(
             // hotelcard image type entries, english
             array(
-              'module_id'         => 10013,
-              'key'               => 'hotelcard_hotel_title',
-              'text'              => 'Title',
-              'thumbnail_width'   => 120,
-              'thumbnail_height'  => 80,
-              'thumbnail_quality' => 95,
+              'module_id' => 10013,
+              'key'       => 'hotelcard_hotel_title',
+              'text'      => array(
+                  1 => 'Titelbild',
+                  2 => 'Title',
+                  3 => 'Title',
+                  4 => 'Title',
+              ),
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
             array(
-              'module_id'         => 10013,
-              'key'               => 'hotelcard_hotel_room',
-              'text'              => 'Room',
-              'thumbnail_width'   => 120,
-              'thumbnail_height'  => 80,
-              'thumbnail_quality' => 95,
+              'module_id' => 10013,
+              'key'       => 'hotelcard_hotel_room',
+              'text'      => array(
+                  1 => 'Zimmer',
+                  2 => 'Room',
+                  3 => 'Room',
+                  4 => 'Room',
+              ),
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
             array(
-              'module_id'         => 10013,
-              'key'               => 'hotelcard_hotel_vicinity',
-              'text'              => 'Vicinity',
-              'thumbnail_width'   => 120,
-              'thumbnail_height'  => 80,
-              'thumbnail_quality' => 95,
+              'module_id' => 10013,
+              'key'       => 'hotelcard_hotel_vicinity',
+              'text'      => array(
+                  1 => 'Umbgebung',
+                  2 => 'Vicinity',
+                  3 => 'Vicinity',
+                  4 => 'Vicinity',
+              ),
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
             array(
-              'module_id'         => 10013,
-              'key'               => 'hotelcard_hotel_lobby',
-              'text'              => 'Lobby',
-              'thumbnail_width'   => 120,
-              'thumbnail_height'  => 80,
-              'thumbnail_quality' => 95,
+              'module_id' => 10013,
+              'key'       => 'hotelcard_hotel_lobby',
+              'text'      => array(
+                  1 => 'Lobby',
+                  2 => 'Lobby',
+                  3 => 'Lobby',
+                  4 => 'Lobby',
+              ),
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
         );
 
         foreach ($arrImagetypes as $arrImagetype) {
-            $text_id = Text::add($arrImagetype['text'], self::TEXT_IMAGETYPE);
-            if (!$text_id) die("Imagetype::errorHandler(): Error adding Text");
+            $text_id = false;
+            foreach ($arrImagetype['text'] as $lang_id => $text) {
+                $objText = new Text(
+                    $text, $lang_id, MODULE_ID, self::TEXT_IMAGETYPE, $text_id);
+                if (!$objText->store())
+die("Imagetype::errorHandler(): Error storing Text");
+                $text_id = $objText->getId();
+            }
+die("Imagetype::errorHandler(): Error adding Text");
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_imagetype` (
                   `module_id`, `key`, `text_id`,
-                  `thumbnail_width`, `thumbnail_height`, `thumbnail_quality`
+                  `width`, `height`, `quality`
                 ) VALUES (
                   ".$arrImagetype['module_id'].",
                   '".addslashes($arrImagetype['key'])."',
                   $text_id,
-                  ".$arrImagetype['thumbnail_width'].",
-                  ".$arrImagetype['thumbnail_height'].",
-                  ".$arrImagetype['thumbnail_quality']."
+                  ".$arrImagetype['width'].",
+                  ".$arrImagetype['height'].",
+                  ".$arrImagetype['quality']."
                 )");
             if (!$objResult) die("Imagetype::errorHandler(): Error adding Imagetype");
 echo("Imagetype::errorHandler(): Inserted image type ".$arrImagetype['key']."<br />");

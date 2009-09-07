@@ -423,7 +423,11 @@ die;//return self::errorHandler();
     ) {
         global $objDatabase;
 
-        if (empty($hotel_id) || empty($name)) return false;
+        if (empty($hotel_id)) return false;
+        if (   !self::validateRoomtypeName($name)
+            || !self::validateRoomtypeNumber($number_default)
+            || !self::validateRoomtypePrice($price_default))
+            return false;
 //echo("HotelRoom::storeType(hotel_id $hotel_id, name $name, number_default $number_default, price_default $price_default, room_type_id $room_type_id): Entered<br />");
         $objText = false;
         $room_type_id = intval($room_type_id);
@@ -444,6 +448,63 @@ die;//return self::errorHandler();
             return self::updateType($room_type_id, $number_default, $price_default);
         return self::insertType(
             $room_type_id, $hotel_id, $number_default, $price_default);
+    }
+
+
+    /**
+     * Validate the room type name
+     *
+     * If the name argument given by reference contains any HTML-like tags
+     * they are removed, as are leading and trailing whitespace.
+     * False is returned if the result is empty.
+     * @param   string    $name             The room type name, by reference
+     * @return  boolean                     True if the name is valid,
+     *                                      false otherwise
+     */
+    static function validateRoomtypeName(&$name)
+    {
+        $name = trim(strip_tags($name));
+//echo("HotelRoom::validateRoomtypeName(): Fixed name to $name<br />");
+        if (empty($name)) return false;
+        return true;
+    }
+
+
+    /**
+     * Validate the number of available rooms
+     *
+     * Fixes the value given by reference to an integer.
+     * Returns false if a number smaller than one (1) results.
+     * @param   integer   $number           The number of rooms available.
+     *                                      Must be one or greater.
+     * @return  boolean                     True if the number is valid,
+     *                                      false otherwise
+     */
+    static function validateRoomtypeNumber(&$number)
+    {
+        $number = intval($number);
+        if ($number < 1) return false;
+        return true;
+    }
+
+
+    /**
+     * Validate the room price
+     *
+     * Formats the price given by reference as a double with two digits after
+     * the decimal point.
+     * Returns false if the resulting price is invalid.
+     * @param   double    $price            The price.  Must be greater
+     *                                      than zero.
+     * @return  boolean                     True if the price is valid,
+     *                                      false otherwise
+     */
+    static function validateRoomtypePrice(&$price) {
+        $price = number_format($price, 2, '.', '');
+//echo("HotelRoom::validateRoomtypePrice(): Fixed price to $price<br />");
+        if ($price <= 0) return false;
+//echo("HotelRoom::validateRoomtypePrice(): Price $price is OK<br />");
+        return true;
     }
 
 

@@ -311,6 +311,39 @@ class HotelFacility
 
 
     /**
+     * Validates the array of facilities given by reference
+     *
+     * If found, invalid IDs are removed from the array, and false is
+     * returned.  If the array contains nothing but positive integers as keys,
+     * returns true.
+     * Note that calling this function with an empty array will return
+     * true.  Calling it twice with the same array will always return true
+     * after the second run.
+     * The $arrFacility array looks like
+     *  array(
+     *    facility ID => facility name,
+     *    ... more ...
+     *  )
+     * @param   array     $arrFacility      The array of facilities
+     * @return  boolean                     True if all IDs are valid,
+     *                                      false otherwise
+     */
+    static function validateFacilityIdArray(&$arrFacility)
+    {
+        $result = true;
+        foreach (array_keys($arrFacility) as $facility_id) {
+            if (is_integer($facility_id) && $facility_id > 0) {
+                continue;
+            }
+//echo("HotelFacility::validateFacilityIdArray(".var_export($arrFacility, true).": Invalid entry at index $facility_id<br />");
+            $result = false;
+            unset($arrFacility[$facility_id]);
+        }
+        return $result;
+    }
+
+
+    /**
      * Stores a facility
      *
      * Updates the facility if it exists, otherwise inserts it.
@@ -1274,7 +1307,7 @@ die("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
                       $text_id, $group_id, $ord_facility
                     )");
                 if (!$objResult) {
-//echo("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
+die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
 //                    continue;
                 }
             }

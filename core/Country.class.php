@@ -672,6 +672,114 @@ die("Country::errorHandler(): Failed to insert Country ".var_export($arrCountry,
 
 
 /**
+ * State helper methods
+ * @version     2.2.0
+ * @since       2.2.0
+ * @package     contrexx
+ * @subpackage  core
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @todo        Test!
+ */
+class State
+{
+    /**
+     * Initialises and returns the static array with all records
+     * from the database
+     *
+     * Note: The states are only present in one language
+     * @global  ADONewConnection  $objDatabase
+     * @return  boolean                     True on success, false otherwise
+     */
+    function getArray()
+    {
+        global $objDatabase;
+        static $arrState = false;
+
+        if (empty($arrState)) {
+            $query = "
+                SELECT DISTINCT `state`
+                  FROM ".DBPREFIX."core_region
+                 ORDER BY `state` ASC";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return Region::errorHandler();
+            $arrState = array();
+            while (!$objResult->EOF) {
+                $arrState[$objResult->fields['state']] =
+                    $objResult->fields['state'];
+                $objResult->MoveNext();
+            }
+        }
+        return $arrState;
+    }
+
+
+    static function getByLocation($location)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT `state`
+              FROM ".DBPREFIX."core_region
+             WHERE `city`='".addslashes($location)."'";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return Region::errorHandler();
+        if ($objResult->EOF) return false;
+        return $objResult->fields['state'];
+    }
+
+}
+
+
+/**
+ * State helper methods
+ * @version     2.2.0
+ * @since       2.2.0
+ * @package     contrexx
+ * @subpackage  core
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @todo        Test!
+ */
+class Location
+{
+    /**
+     * Initialises and returns the static array with all records
+     * from the database matching the given state, if any
+     *
+     * Note: The locations are only present in one language
+     * @global  ADONewConnection  $objDatabase
+     * @return  boolean                     True on success, false otherwise
+     */
+    function getArrayByState($state=false)
+    {
+        global $objDatabase;
+        static $arrLocation = false;
+
+        if (empty($arrLocation)) {
+            $query = "
+                SELECT DISTINCT `city`, `zip`
+                  FROM ".DBPREFIX."core_region
+                 ".($state ? "WHERE `state`='".addslashes($state)."'" : '')."
+                 ORDER BY `city` ASC, `zip` ASC";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return Region::errorHandler();
+            $arrLocation = array();
+            while (!$objResult->EOF) {
+                $arrLocation[] =
+                    $objResult->fields['zip'].' '.
+                    $objResult->fields['city'];
+                $objResult->MoveNext();
+            }
+        }
+echo("Location::getArrayByState($state): Made array<br />".var_export($arrLocation, true)."<hr />");
+        return $arrLocation;
+    }
+
+}
+
+
+/**
  * Region helper methods
  * @version     2.2.0
  * @since       2.2.0
@@ -686,7 +794,7 @@ class Region
     /**
      * Database key
      */
-    const TEXT_CORE_REGION_NAME = 'CORE_REGION_NAME';
+//    const TEXT_CORE_REGION_NAME = 'CORE_REGION_NAME';
 
     /**
      * Array of all regions
@@ -702,7 +810,7 @@ class Region
      * @access  private
      * @see     init()
      */
-    private static $arrParentId = false;
+//    private static $arrParentId = false;
 
 
     /**
@@ -945,114 +1053,27 @@ class Region
 
 echo("Region::errorHandler(): Entered<br />");
 
-        $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."core_region", $arrTables)) {
-            $query = "DROP TABLE `".DBPREFIX."core_region`";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return false;
-        }
+        $query = "DROP TABLE IF EXISTS `contrexx_core_region`";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+
         $query = "
-            CREATE TABLE `".DBPREFIX."core_region` (
-              `name_text_id` INT(10) UNSIGNED NOT NULL,
-              `parent_id` INT(10) UNSIGNED NULL DEFAULT NULL,
-              `country_name_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              `is_active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
-              PRIMARY KEY (`name_text_id`),
-              INDEX `region_name_text_id` (`name_text_id` ASC),
-              CONSTRAINT `region_name_text_id`
-                FOREIGN KEY (`name_text_id`)
-                REFERENCES `".DBPREFIX."core_text` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+            CREATE TABLE `contrexx_core_region` (
+                `zip`        VARCHAR(8) NOT NULL DEFAULT '',
+                `city`       VARCHAR(64) NOT NULL DEFAULT '',
+                `state`      VARCHAR(4) NOT NULL DEFAULT '',
+                `country_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                PRIMARY KEY (`zip`, `country_id`),
+                INDEX (`city`),
+                INDEX (`state`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("Region::errorHandler(): Created table ".DBPREFIX."core_region<br />");
 
-        // Create region records from ZIP table.
-        // Note that this contains double cities with different ZIP
-        $objResult = $objDatabase->Execute("
-            SELECT DISTINCT `city`, `state`, `country_id`
-              FROM `".DBPREFIX."core_zip`");
-        if (!$objResult)
-die ("Failed to read region source table<br />");
-        $ord = 0;
-        while (!$objResult->EOF) {
-            $city = utf8_encode($objResult->fields['city']);
-            $state = $objResult->fields['state'];
-            $country_id = $objResult->fields['country_id'];
-            $region = preg_replace('/\s*'.$state.'/', '', $city).' ('.$state.')';
-//echo("Got city $city, state $state, country_id $country_id, region $region<br />");
-
-            $objResult2 = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."core_text` (
-                  `id`, `lang_id`, `module_id`, `key`, `text`
-                ) VALUES (
-                  NULL, 1, 0, '".self::TEXT_CORE_REGION_NAME."', '".
-                  addslashes($region)."'
-                )");
-            if (!$objResult) {
-                Text::errorHandler();
-                return self::errorHandler();
-            }
-//die("Country::errorHandler(): Failed to insert Text for Region ".$objResult->fields['region']."<br />");
-            $text_id = $objDatabase->Insert_ID();
-            if (!$text_id)
-die("Failed to insert region text<br />");
-            $objResult2 = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."core_region` (
-                  `name_text_id`, `parent_id`, `country_name_id`, `ord`
-                ) VALUES (
-                  $text_id, 0, $country_id, ".++$ord."
-                )");
-            if (!$objResult2)
-die("Country::errorHandler(): Failed to insert Region with ID $text_id ($region)<br />");
-            $objResult->MoveNext();
-        }
-
-/*
-        $arrRegion = array(
-            // (Name, parent name, country ID)
-            array('Bern', '', 204),
-            array('Thun', 'Bern', 204),
-            array('Thunersee', 'Thun', 204),
-        );
-        $ord = 0;
-        foreach ($arrRegion as $arrRegion) {
-            $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."core_text` (
-                  `id`, `lang_id`, `module_id`, `key`, `text`
-                ) VALUES (
-                  NULL, 2, 0, '".self::TEXT_CORE_REGION_NAME."', '".addslashes($arrRegion[0])."'
-                )");
-            if (!$objResult) {
-//echo("Region::errorHandler(): Failed to insert Text for Region ".var_export($arrRegion, true)."<br />");
-                continue;
-            }
-            $id = $objDatabase->Insert_ID();
-            // The active field defaults to 1
-            $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."core_region` (
-                  `name_text_id`, `parent_id`, `country_name_id`, `ord`
-                ) VALUES (
-                  $id,
-                  (SELECT `id`
-                    FROM `".DBPREFIX."core_text`
-                   WHERE `lang_id`=2
-                     AND `module_id`=".MODULE_ID."
-                     AND `key`='".self::TEXT_CORE_REGION_NAME."'
-                     AND `text`='".$arrRegion[1]."'
-                  ) OR 0,
-                  ".$arrRegion[2].",
-                  ".++$ord."
-                )");
-            if (!$objResult) {
-//echo("Region::errorHandler(): Failed to insert Region ".var_export($arrRegion, true)."<br />");
-                continue;
-            }
-        }
-*/
+        // Data -- to big to load each time
+        $query = file_get_contents(ASCMS_CORE_PATH.'/region_data.sql');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
 
         // More to come...
 

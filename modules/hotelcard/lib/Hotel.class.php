@@ -42,7 +42,11 @@ class Hotel
     const TEXT_POLICY      = 'hotelcard_hotel_policy';
 
     /**
-     * A complete list of all Hotel field names
+     * A complete list of all Hotel database table field names
+     *
+     * Mind that there are other (temporary) fields not listed here,
+     * that correspond to some of the IDs and contain the plain text
+     * in the current language
      * @var     array
      * @access  private
      * @static
@@ -60,7 +64,7 @@ class Hotel
         'hotel_address',
         'hotel_zip',
         'hotel_location',
-        'hotel_region_id',
+        'hotel_region',
         'description_text_id',
         'policy_text_id',
         'hotel_uri',
@@ -144,9 +148,22 @@ class Hotel
         if (!$objResult || $objResult->EOF) return false;
         $objHotel = new Hotel();
         foreach (self::$arrFieldnames as $name) {
-// TODO: Text!
             $objHotel->arrFieldvalues[$name] = $objResult->fields[$name];
         }
+        // Text
+        $objHotel->arrFieldvalues['group'] =
+            Text::getById($objHotel->getFieldvalue('group_id'), FRONTEND_LANG_ID);
+        $objHotel->arrFieldvalues['description_text'] =
+            Text::getById($objHotel->getFieldvalue('description_text_id'), FRONTEND_LANG_ID);
+        $objHotel->arrFieldvalues['policy_text'] =
+            Text::getById($objHotel->getFieldvalue('policy_text_id'), FRONTEND_LANG_ID);
+        $objHotel->arrFieldvalues['accomodation_type'] =
+            Text::getById($objHotel->getFieldvalue('accomodation_type_id'), FRONTEND_LANG_ID);
+//        $objHotel->arrFieldvalues['hotel_region'] =
+//            Text::getById($objHotel->getFieldvalue('hotel_region'), FRONTEND_LANG_ID);
+        // Image
+        $objHotel->arrFieldvalues['images'] =
+            Image::getArrayById($objHotel->getFieldvalue('image_id'));
         return $objHotel;
     }
 
@@ -202,15 +219,18 @@ class Hotel
           case 'accomodation_type_id':
           case 'lang_id':
           case 'description_text_id': // See below
-          case 'hotel_region_id':
           case 'billing_country_id':
           case 'numof_rooms':
             $value = intval($value);
             if ($value <= 0) return false;
             break;
 
-          // TINYINT(1), flags -> chop down to boolean
+          // TINYINT(1), small numbers -> Make sure it's an integer
           case 'rating':
+            $value = intval($value);
+            break;
+
+          // TINYINT(1), flags -> chop down to boolean
           case 'recommended':
             $value = !empty($value);
             break;
@@ -220,7 +240,9 @@ class Hotel
           case 'reservation_gender':
           case 'accountant_gender':
           case 'billing_gender':
-            $value = (preg_match('/[wf]/', $value) ? 'F' : 'M');
+            // Match any of 'w', 'W', 'f', 'F', 'female', 'weiblich', and so on.
+            // Anything else is male.
+            $value = (preg_match('/[wf]/i', $value) ? 'F' : 'M');
             break;
 
           // TINYTEXT, names and address stuff -> Strip tags and possibly other crap
@@ -228,6 +250,7 @@ class Hotel
           case 'hotel_address':
           case 'hotel_zip':
           case 'hotel_location':
+          case 'hotel_region':
           case 'contact_name':
           case 'contact_position':
           case 'contact_department':
@@ -254,8 +277,11 @@ class Hotel
 
           // TINYTEXT, e-mail address -> Verify
           case 'contact_email':
+          case 'contact_email_retype':
           case 'reservation_email':
+          case 'reservation_email_retype':
           case 'accountant_email':
+          case 'accountant_email_retype':
             if (!FWValidator::isEmail($value)) return false;
             break;
 
@@ -281,6 +307,10 @@ class Hotel
           // TEXT -> Strip tags and possibly other crap
           case 'comment':
           case 'found_how':
+            // These are temporary string versions of text fields that
+            // will be stored externally in multiple languages.
+            // They replace their ID counterparts upon inserting or updating.
+          case 'group':            // See above
           case 'description_text': // See above
           case 'policy_text':      // See above
             $value = trim(strip_tags($value));
@@ -345,6 +375,8 @@ class Hotel
      */
     function store()
     {
+        // Pick any strings and add or replace corresponding Text records
+        // in the current frontend language
         if (isset($this->arrFieldvalues['description_text'])) {
             $objText = false;
             if (isset($this->arrFieldvalues['description_text_id']))
@@ -356,11 +388,46 @@ class Hotel
                     '', FRONTEND_LANG_ID, MODULE_ID, self::TEXT_DESCRIPTION);
             }
             $objText->setText($this->arrFieldvalues['description_text']);
+            // Note that a missing language entry causes the default language
+            // entry to be returned, so the language ID *SHOULD* be fixed
+            // to be safe.
             $objText->setLanguageId(FRONTEND_LANG_ID);
             if (!$objText->store()) return false;
             $this->arrFieldvalues['description_text_id'] = $objText->getId();
+            unset($this->arrFieldvalues['description_text']);
         }
-// TODO: store policy Text
+        if (isset($this->arrFieldvalues['policy_text'])) {
+            $objText = false;
+            if (isset($this->arrFieldvalues['policy_text_id']))
+                $objText = Text::getById(
+                    $this->arrFieldvalues['policy_text_id'],
+                    FRONTEND_LANG_ID);
+            if (!$objText) {
+                $objText = new Text(
+                    '', FRONTEND_LANG_ID, MODULE_ID, self::TEXT_POLICY);
+            }
+            $objText->setText($this->arrFieldvalues['policy_text']);
+            $objText->setLanguageId(FRONTEND_LANG_ID);
+            if (!$objText->store()) return false;
+            $this->arrFieldvalues['policy_text_id'] = $objText->getId();
+            unset($this->arrFieldvalues['policy_text']);
+        }
+        if (isset($this->arrFieldvalues['group'])) {
+            $objText = false;
+            if (isset($this->arrFieldvalues['group_id']))
+                $objText = Text::getById(
+                    $this->arrFieldvalues['group_id'],
+                    FRONTEND_LANG_ID);
+            if (!$objText) {
+                $objText = new Text(
+                    '', FRONTEND_LANG_ID, MODULE_ID, self::TEXT_GROUP);
+            }
+            $objText->setText($this->arrFieldvalues['group']);
+            $objText->setLanguageId(FRONTEND_LANG_ID);
+            if (!$objText->store()) return false;
+            $this->arrFieldvalues['group_id'] = $objText->getId();
+            unset($this->arrFieldvalues['group']);
+        }
 
         if ($this->recordExists()) return $this->update();
         return $this->insert();
@@ -491,26 +558,26 @@ class Hotel
         }
 
         // Store the room types
-        if (empty($_SESSION['hotelcard']['room_type'])) {
+        if (empty($_SESSION['hotelcard']['room_type_1'])) {
 //echo("ERROR: Missing room types<br />");
             return false;
         }
-        foreach ($_SESSION['hotelcard']['room_type'] as $index => $room_type) {
+        for ($i = 1; $i <= 4; ++$i) {
             // Skip types without a name
-            if (empty($room_type)) continue;
+            if (empty($_SESSION['hotelcard']['room_type_'.$i])) continue;
             $room_type_id = HotelRoom::storeType(
                 $hotel_id,
-                $room_type,
-                $_SESSION['hotelcard']['room_available'][$index],
-                $_SESSION['hotelcard']['room_price'][$index]);
+                $_SESSION['hotelcard']['room_type_'.$i],
+                $_SESSION['hotelcard']['room_available_'.$i],
+                $_SESSION['hotelcard']['room_price_'.$i]);
             if (!$room_type_id) {
                 Hotelcard::addMessage(sprintf(
                     $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_TYPE'],
-                    HotelFacility::getFacilityNameById($room_type)));
+                    $_SESSION['hotelcard']['room_type_'.$i]));
                 return false;
             }
             // Store the room facilities
-            foreach ($_SESSION['hotelcard']['room_facility_id'][$index]
+            foreach ($_SESSION['hotelcard']['room_facility_id_'.$i]
                     as $room_facility_id => $room_facility_name) {
                 if (HotelRoom::addFacility(
                     $room_type_id, $room_facility_id)) continue;
@@ -521,8 +588,9 @@ class Hotel
             }
         }
 
+// TODO
         // Create a subfolder for the hotel images
-        if (File::makeDir(ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id)) {
+        if (File::make_folder(ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id)) {
             // Move the image there, if any
             if (!empty($_SESSION['hotelcard']['image_filename'])) {
                 if (!File::move(
@@ -540,6 +608,14 @@ class Hotel
     }
 
 
+    /**
+     * Looks up the ID for the hotel group name specified
+     *
+     * If it is not found, a new group is created.
+     * @param   string    $group_name     The hotel group name
+     * @return  intger                    The group ID on success,
+     *                                    false otherwise
+     */
     static function getGroupId($group_name)
     {
         $arrId = Text::getIdArrayBySearch(
@@ -598,7 +674,7 @@ class Hotel
               `hotel_address` TINYTEXT NULL DEFAULT NULL,
               `hotel_zip` TINYTEXT NULL DEFAULT NULL,
               `hotel_location` TINYTEXT NULL DEFAULT NULL,
-              `hotel_region_id` INT(10) UNSIGNED NULL,
+              `hotel_region` TINYTEXT NULL DEFAULT NULL,
               `description_text_id` INT(10) UNSIGNED NULL DEFAULT NULL,
               `policy_text_id` INT(10) UNSIGNED NULL DEFAULT NULL,
               `hotel_uri` TINYTEXT NULL DEFAULT NULL,
@@ -638,7 +714,7 @@ class Hotel
               INDEX `hotel_image_id` (`image_id` ASC),
               INDEX `hotel_group_id` (`group_id` ASC),
               INDEX `hotel_description_text_id` (`description_text_id` ASC),
-              INDEX `hotel_region_id` (`hotel_region_id` ASC),
+              INDEX `hotel_region` (`hotel_region` ASC),
               CONSTRAINT `hotel_type_id`
                 FOREIGN KEY (`accomodation_type_id` )
                 REFERENCES `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (`id` )
@@ -657,11 +733,6 @@ class Hotel
               CONSTRAINT `hotel_description_text_id`
                 FOREIGN KEY (`description_text_id` )
                 REFERENCES `".DBPREFIX."core_text` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION,
-              CONSTRAINT `hotel_region_id`
-                FOREIGN KEY (`hotel_region_id` )
-                REFERENCES `".DBPREFIX."core_region` (`id` )
                 ON DELETE NO ACTION
                 ON UPDATE NO ACTION
             ) ENGINE=MYISAM";

@@ -102,16 +102,6 @@ class Hotelcard
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotelcard/template');
         CSRF::add_placeholder(self::$objTemplate);
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
-        // Set up whatever needed here.
-/*
-require_once('../customizing/Import/createRegions.php');
-createRegions();
-*/
-/*
-require_once('../customizing/Import/import.php');
-importHotelcard();
-*/
     }
 
 
@@ -273,6 +263,8 @@ importHotelcard();
             die("Failed to load template settings.html");
         self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
 
+// TODO
+
         return true;
     }
 
@@ -295,207 +287,6 @@ importHotelcard();
         return true;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// OLD DIETIKER FROM HERE
-
-    /**
-     * Set up the page with a list of all Properties
-     * @return    boolean             True on success, false otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function showProperties()
-    {
-        global $_ARRAYLANG;
-
-        if (isset($_POST['store1'])) {
-            self::storeProperty();
-        }
-        if (isset($_POST['store2']) || !empty($_POST['multiAction'])) {
-            self::storeProperties();
-        }
-
-        $propertyId = (isset($_REQUEST['id']) ? $_REQUEST['id'] : 0);
-
-        if (isset($_GET['delete'])) {
-            if (!Property::deleteById($propertyId)) {
-                self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_PROPERTY_NOT_DELETED']);
-            }
-            $propertyId = 0;
-        }
-
-        self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_PROPERTIES'];
-        self::$objTemplate->loadTemplateFile('properties.html', true, true);
-
-        $objSorting = new Sorting(
-            self::$baseUri,
-            array(
-                'ord', 'property_id', 'name',
-            ),
-            array(
-                $_ARRAYLANG['TXT_HOTELCARD_ORD'],
-                $_ARRAYLANG['TXT_HOTELCARD_ID'],
-                $_ARRAYLANG['TXT_HOTELCARD_NAME'],
-            )
-        );
-        self::$objTemplate->setGlobalVariable(array(
-            'TXT_HOTELCARD_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_HOTELCARD_ACTION_IS_IRREVERSIBLE'],
-            'TXT_HOTELCARD_ACTIVATE_SELECTED' => $_ARRAYLANG['TXT_HOTELCARD_ACTIVATE_SELECTED'],
-            'TXT_HOTELCARD_COPY' => $_ARRAYLANG['TXT_HOTELCARD_COPY'],
-            'TXT_HOTELCARD_DEACTIVATE_SELECTED' => $_ARRAYLANG['TXT_HOTELCARD_DEACTIVATE_SELECTED'],
-            'TXT_HOTELCARD_DELETE' => $_ARRAYLANG['TXT_HOTELCARD_DELETE'],
-            'TXT_HOTELCARD_DELETE_SELECTED' => $_ARRAYLANG['TXT_HOTELCARD_DELETE_SELECTED'],
-            'TXT_HOTELCARD_DESELECT_ALL' => $_ARRAYLANG['TXT_HOTELCARD_DESELECT_ALL'],
-            'TXT_HOTELCARD_EDIT' => $_ARRAYLANG['TXT_HOTELCARD_EDIT'],
-            'TXT_HOTELCARD_FUNCTIONS' => $_ARRAYLANG['TXT_HOTELCARD_FUNCTIONS'],
-            'TXT_HOTELCARD_ORD' => $objSorting->getHeaderForField('ord'), //$_ARRAYLANG['TXT_HOTELCARD_ORD'],
-            'TXT_HOTELCARD_ID' => $objSorting->getHeaderForField('property_id'), //$_ARRAYLANG['TXT_HOTELCARD_ID'],
-            'TXT_HOTELCARD_NAME' => $objSorting->getHeaderForField('name'), //$_ARRAYLANG['TXT_HOTELCARD_NAME'],
-            'TXT_HOTELCARD_PROPERTIES_DELETE_CONFIRM' => $_ARRAYLANG['TXT_HOTELCARD_PROPERTIES_DELETE_CONFIRM'],
-            'TXT_HOTELCARD_PROPERTY_DELETE_CONFIRM' => $_ARRAYLANG['TXT_HOTELCARD_PROPERTY_DELETE_CONFIRM'],
-            'TXT_HOTELCARD_SELECT_ACTION' => $_ARRAYLANG['TXT_HOTELCARD_SELECT_ACTION'],
-            'TXT_HOTELCARD_SELECT_ALL' => $_ARRAYLANG['TXT_HOTELCARD_SELECT_ALL'],
-            'TXT_HOTELCARD_STORE' => $_ARRAYLANG['TXT_HOTELCARD_STORE'],
-            'TXT_HOTELCARD_ACTIVE' => $_ARRAYLANG['TXT_HOTELCARD_ACTIVE'],
-            'TXT_HOTELCARD_PROPERTY_NAME' => $_ARRAYLANG['TXT_HOTELCARD_NAME'],
-            'TXT_HOTELCARD_PROPERTY_DESC' => $_ARRAYLANG['TXT_HOTELCARD_DESC'],
-            'TXT_HOTELCARD_PROPERTY_EDIT' => $_ARRAYLANG['TXT_HOTELCARD_PROPERTY_EDIT'],
-            'TXT_HOTELCARD_ORDER' => $objSorting->getOrderUriEncoded(),
-        ));
-        // Edit Property
-        $objProperty = Property::getById($propertyId);
-        if (!$objProperty) {
-            $objProperty = new Property($propertyId);
-        }
-        $objText = Text::getById($objProperty->getTextId(), FRONTEND_LANG_ID);
-        if (!$objText) {
-            $objText = new Text(FRONTEND_LANG_ID, $objProperty->getTextId());
-        }
-        if (isset($_GET['clone'])) {
-            $propertyId = 0;
-        }
-        self::$objTemplate->setCurrentBlock('propertyEdit');
-        self::$objTemplate->setVariable(array(
-            'HOTELCARD_PROPERTY_ID' => $propertyId,
-            'HOTELCARD_PROPERTY_NAME' => htmlentities($objText->getName(), ENT_QUOTES, CONTREXX_CHARSET),
-            'HOTELCARD_PROPERTY_DESC' => htmlentities($objText->getDesc(), ENT_QUOTES, CONTREXX_CHARSET),
-        ));
-        self::$objTemplate->parseCurrentBlock();
-
-        // List Properties
-        $arrProperties = Property::getArrayByLanguageId(FRONTEND_LANG_ID, false, true);
-        usort($arrProperties, 'cmp_'.$objSorting->getOrderField());
-        if ($objSorting->getOrderDirection() == 'DESC') {
-            $arrProperties = array_reverse($arrProperties);
-        }
-        $i = 0;
-        self::$objTemplate->setCurrentBlock('property');
-        foreach ($arrProperties as $arrProperty) {
-            self::$objTemplate->setVariable(array(
-                'HOTELCARD_PROPERTY_ID' => $arrProperty['property_id'],
-                'HOTELCARD_PROPERTY_NAME' => $arrProperty['name'],
-                'HOTELCARD_PROPERTY_ORD' => $arrProperty['ord'],
-                'HOTELCARD_ROW_CLASS' => (++$i % 2) + 1,
-            ));
-            self::$objTemplate->parseCurrentBlock();
-        }
-        return true;
-    }
-
-
-    /**
-     * Store the edited Property in the database.
-     *
-     * Covers both new and updated Properties.
-     * @return  integer             The Property ID on success, zero otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function storeProperty()
-    {
-        global $_ARRAYLANG;
-
-        $propertyId = $_GET['id'];
-        $propertyName = contrexx_stripslashes($_POST['propertyName']);
-        $propertyDesc = contrexx_stripslashes($_POST['propertyDesc']);
-
-        $objProperty = Property::getById($propertyId);
-        if (!$objProperty) {
-            $objProperty = new Property($propertyId);
-        }
-
-        $objText = Text::getById($objProperty->getTextId(), FRONTEND_LANG_ID);
-        if (!$objText) {
-            $objText = new Text(FRONTEND_LANG_ID);
-        }
-        $objText->setLanguageId(FRONTEND_LANG_ID);
-        $objText->setName($propertyName);
-        $objText->setDesc($propertyDesc);
-        if (!$objText->store()) {
-            self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_TEXT_NOT_STORED']);
-            return 0;
-        }
-        $objProperty->setTextId($objText->getId());
-        if (!$objProperty->store()) {
-            self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_PROPERTY_NOT_STORED']);
-            return 0;
-        }
-        self::addMessage($_ARRAYLANG['TXT_HOTELCARD_DATA_UPDATED_SUCCESSFULLY']);
-        return $objProperty->getId();
-    }
-
-
-    /**
-     * Store changes to the list of Properties in the database.
-     * @return  boolean                 True on success, false otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function storeProperties()
-    {
-        global $_ARRAYLANG;
-
-        if (isset($_POST['store2'])) {
-            foreach ($_POST['ord'] as $propertyId => $ord) {
-                if ($ord != $_POST['ord_old'][$propertyId]) {
-                    $objProperty = Property::getById($propertyId);
-                    if (!$objProperty) {
-                        self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_PROPERTY_NOT_FOUND']);
-                        // Cannot store nothing.
-                        return false;
-                    }
-                    $objProperty->setOrd($ord);
-                    if (!$objProperty->store()) {
-                        self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_PROPERTY_NOT_STORED']);
-                        return false;
-                    }
-                }
-            }
-        } elseif (!empty($_POST['multiAction'])) {
-            $multiAction = $_POST['multiAction'];
-            switch ($multiAction) {
-              case 'delete':
-                if (Property::deleteById(implode(',', $_POST['isSelected']))) {
-                    self::addMessage($_ARRAYLANG['TXT_HOTELCARD_PROPERTIES_DELETED']);
-                } else {
-                    self::addError($_ARRAYLANG['TXT_HOTELCARD_ERROR_PROPERTIES_NOT_DELETED']);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
 
     /**
@@ -589,64 +380,6 @@ importHotelcard();
             (self::$strOkMessage != '' && $strOkMessage != ''
                 ? '<br />' : ''
             ).$strOkMessage;
-    }
-
-
-    function updateImageText()
-    {
-        // Get active frontend language IDs
-        $arrLanguages = FWLanguage::getLanguageArray();
-        $arrLanguageId = array();
-        foreach ($arrLanguages as $id => $arrLanguage) {
-            if ($arrLanguage['frontend'])
-                $arrLanguageId[] = $id;
-        }
-        // Product variant images
-        $arrProducts = Product::getArrayByLanguageId(FRONTEND_LANG_ID, false);
-        foreach ($arrProducts as $arrProduct) {
-            $imageId = $arrProduct['image_id'];
-            self::updateImageTextSingle($imageId, $arrLanguageId);
-        }
-
-        // Reference images
-        // Product variant images
-        $arrReferences = Reference::getArrayByLanguageId(FRONTEND_LANG_ID, false);
-        foreach ($arrReferences as $arrReference) {
-            $imageId = $arrReference['image_id'];
-            self::updateImageTextSingle($imageId, $arrLanguageId);
-        }
-die("Finished.");
-    }
-
-
-    static function updateImageTextSingle($imageId, &$arrLanguageId)
-    {
-        $arrImages = Image::getArrayById($imageId);
-        foreach ($arrImages as $arrImage) {
-            $textId = $arrImage['text_id'];
-            $objImage = false;
-            $objText = Text::getById($textId, FRONTEND_LANG_ID);
-            if (!$objText) {
-                $objText = new Text(FRONTEND_LANG_ID);
-                $objImage = Image::getById($imageId, $arrImage['ord']);
-            }
-            $strText = $objText->getName();
-            if (!empty($strText)) {
-                continue;
-            }
-            $filePath = $arrImage['path'];
-            $fileName = preg_replace('/^.*\/([^\/]+)$/', "$1", $filePath);
-            $objText->setName($fileName);
-            foreach ($arrLanguageId as $langId) {
-                $objText->setLanguageId($langId);
-                $objText->store();
-            }
-            if ($objImage) {
-                $objImage->setTextId($objText->getId());
-                $objImage->store();
-            }
-        }
-
     }
 
 }
