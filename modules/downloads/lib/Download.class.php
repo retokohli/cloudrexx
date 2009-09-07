@@ -1466,7 +1466,7 @@ class Download {
                 $this->source_name = $source;
             }
         } else {
-            $extension = pathinfo($source, PATHINFO_EXTENSION);
+            $extension = strtolower(pathinfo($source, PATHINFO_EXTENSION));
             $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
             $this->source_name = isset($sourceName) ? $sourceName : basename($source);
         }
