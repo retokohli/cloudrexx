@@ -810,8 +810,8 @@ class Forum extends ForumLibrary {
             ));
 
             $quoteLink = "id=".$intThreadId."&act=quote&postid=".$postId;
-            $quoteLinkLoggedIn      = "location.href='index.php?section=forum&amp;cmd=thread&amp;".htmlentities($quoteLink)."';";
-            $quoteLinkNotLoggedIn   = "location.href='index.php?section=login&amp;redirect=".base64_encode("index.php?section=forum&cmd=thread&".$quoteLink)."';";
+            $quoteLinkLoggedIn      = "location.href='".CSRF::enhanceURI("index.php?section=forum")."&amp;cmd=thread&amp;".htmlentities($quoteLink)."';";
+            $quoteLinkNotLoggedIn   = "location.href='".CSRF::enhanceURI("index.php?section=login")."&amp;redirect=".base64_encode("index.php?section=forum&cmd=thread&".$quoteLink)."';";
             $this->_objTpl->setVariable(array(
                 'FORUM_POST_DATE'                   => $arrValues['time_created'],
                 'FORUM_POST_LAST_EDITED'            => ($arrValues['time_edited'] != date(ASCMS_DATE_FORMAT, 0))
@@ -843,7 +843,7 @@ class Forum extends ForumLibrary {
             ));
 
             if(!$objFWUser->objUser->login() && !$this->_checkAuth($intCatId, 'write')){
-                $button = '<input type="button" value="'.$_ARRAYLANG['TXT_FORUM_CREATE_POST'].'" onclick="location.href=\'index.php?section=login&redirect='.base64_encode($_SERVER['REQUEST_URI']).'\';" />';
+                $button = '<input type="button" value="'.$_ARRAYLANG['TXT_FORUM_CREATE_POST'].'" onclick="location.href=\''.CSRF::enhanceURI('index.php?section=login').'&redirect='.base64_encode($_SERVER['REQUEST_URI']).'\';" />';
                 $this->_objTpl->setVariable(array(
                     'FORUM_POST_REPLY_REDIRECT'     =>  $button,
                 ));
@@ -1685,11 +1685,11 @@ class Forum extends ForumLibrary {
                             //<![CDATA[
                                 function gotoForum(objSelect){
                                     id = objSelect.options[objSelect.selectedIndex].value;
-                                    if(id==0){return top.location.href="index.php?section=forum";}
+                                    if(id==0){return top.location.href="index.php?section=forum&'.CSRF::param().'";}
                                     if(id.indexOf("_cat") > -1){
-                                        return top.location.href="index.php?section=forum&cmd=cat&id="+parseInt(id);
+                                        return top.location.href="index.php?section=forum&cmd=cat&'.CSRF::param().'&id="+parseInt(id);
                                     }else{
-                                        return top.location.href="index.php?section=forum&cmd=board&id="+id;
+                                        return top.location.href="index.php?section=forum&cmd=board&'.CSRF::param().'&id="+id;
                                     }
                                 }
                             //]]>
@@ -1702,7 +1702,7 @@ class Forum extends ForumLibrary {
                             //<![CDATA[
                                 function deletePost(thread_id, post_id){
                                     if(confirm("'.$_ARRAYLANG['TXT_FORUM_CONFIRM_DELETE'].'\n'.$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'].'")){
-                                        window.location.href = "?section=forum&cmd=thread&id="+thread_id+"&act=delete&postid="+post_id;
+                                        window.location.href = "?section=forum&cmd=thread&'.CSRF::param().'&id="+thread_id+"&act=delete&postid="+post_id;
                                     }
                                 }
                             //]]>
@@ -1715,7 +1715,7 @@ class Forum extends ForumLibrary {
                             //<![CDATA[
                                 function deleteThread(category_id, thread_id){
                                     if(confirm("'.$_ARRAYLANG['TXT_FORUM_CONFIRM_DELETE'].'\n'.$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'].'")){
-                                        window.location.href = "?section=forum&cmd=board&id="+category_id+"&act=delete&threadid="+thread_id;
+                                        window.location.href = "?section=forum&cmd=board&'.CSRF::param().'&id="+category_id+"&act=delete&threadid="+thread_id;
                                     }
                                 }
                             //]]>
@@ -1807,6 +1807,7 @@ class Forum extends ForumLibrary {
                 $confirmDelete  = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM']."\\n".$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'];
 
                 $allowedExtensions = str_replace(',', ', ', $this->_arrSettings['allowed_extensions']);
+                $csrf          = CSRF::param();
                 $strJavaScript = <<< EOJS
 <script type="text/javascript" language="JavaScript">
 //<![CDATA[
@@ -1814,21 +1815,21 @@ class Forum extends ForumLibrary {
     var doAction = function(action){
         switch(action){
          case 'move':
-            location.href = 'index.php?section=forum&cmd=thread&thread_actions=move&id=$threadId';
+            location.href = 'index.php?section=forum&$csrf&cmd=thread&thread_actions=move&id=$threadId';
          break;
          case 'close':
             if(confirm('$confirmClose')){
-                location.href = 'index.php?section=forum&cmd=thread&thread_actions=close&id=$threadId';
+                location.href = 'index.php?section=forum&$csrf&cmd=thread&thread_actions=close&id=$threadId';
             }
          break;
          case 'delete':
             if(confirm('$confirmDelete')){
-                location.href = 'index.php?section=forum&cmd=board&id=$boardId&act=delete&threadid=$threadId';
+                location.href = 'index.php?section=forum&$csrf&cmd=board&id=$boardId&act=delete&threadid=$threadId';
             }
          break;
          case 'sticky':
             if(confirm('$confirmSticky')){
-                location.href = 'index.php?section=forum&cmd=thread&thread_actions=sticky&id=$threadId';
+                location.href = 'index.php?section=forum&$csrf&cmd=thread&thread_actions=sticky&id=$threadId';
             }
          break;
         }
@@ -1839,9 +1840,9 @@ class Forum extends ForumLibrary {
 
     var ratePost = function(postId, delta, obj){
         var d = document;
-        var dl=document.location
+        var dl=document.location;
         var abs = dl.protocol+'//'+dl.host+dl.href.split(/index\.php/)[0].split(dl.host)[1]
-        var url=abs+'index.php?section=forum&cmd=thread&act=rate&value='+delta+'&postId='+postId;
+        var url=abs+'index.php?section=forum&$csrf&cmd=thread&act=rate&value='+delta+'&postId='+postId;
         var i = d.createElement("img");
         i.src = url;
         i.id = 'tmp_Img';

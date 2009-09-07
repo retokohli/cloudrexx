@@ -359,7 +359,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 ),
             'SUPPORT_REQUEST_CONTINUE_FUNCTION' =>
                 ($ticketId
-                    ? "JavaScript:window.location.href='index.php';"
+                    ? "JavaScript:window.location.href='index.php?".CSRF::param()."';"
                     : "JavaScript:supportContinue();"
                 ),
             'SUPPORT_REQUEST_TICKET_ID'     => $ticketId,

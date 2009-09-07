@@ -2087,7 +2087,7 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_SELECTED_CATEGORY'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECTED_CATEGORY'],
             'DOWNLOADS_CATEGORY_ID'             => $objCategory->getId(),
-            'DOWNLOADS_CATEGORY_MENU'           => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\'index.php?cmd=downloads&amp;act=categories&amp;parent_id=\'+this.value"')
+            'DOWNLOADS_CATEGORY_MENU'           => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\''.CSRF::enhanceURI('index.php?cmd=downloads').'&amp;act=categories&amp;parent_id=\'+this.value"')
         ));
 
         if ($objCategory->getId()) {

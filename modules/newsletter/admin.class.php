@@ -3429,7 +3429,7 @@ class newsletter extends NewsletterLib
         ));
 
 		$search_params = addslashes("&SearchStatus={$_REQUEST['SearchStatus']}&keyword={$_REQUEST['keyword']}&SearchFields={$_REQUEST['SearchFields']}");
-        $this->_objTpl->setVariable('NEWSLETTER_LIST_MENU', $this->CategoryDropDown('newsletterListId', $newsletterListId, "id='newsletterListId' onchange=\"window.location.replace('index.php?cmd=newsletter&act=users&newsletterListId='+this.value + '$search_params')\""));
+        $this->_objTpl->setVariable('NEWSLETTER_LIST_MENU', $this->CategoryDropDown('newsletterListId', $newsletterListId, "id='newsletterListId' onchange=\"window.location.replace('index.php?cmd=newsletter&".CSRF::param()."&act=users&newsletterListId='+this.value + '$search_params')\""));
         if($_GET["addmailcode"]=="exe"){
             $query        = "SELECT id, code FROM ".DBPREFIX."module_newsletter_user where code=''";
             $objResult = $objDatabase->Execute($query);
@@ -3742,7 +3742,7 @@ class newsletter extends NewsletterLib
                 function DeleteUser(UserID, email) {
                     strConfirmMsg = "'.$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_RECIPIENT_OF_ADDRESS'].'";
                     if (confirm(strConfirmMsg.replace("%s", email)+"\n'.$_ARRAYLANG['TXT_NEWSLETTER_CANNOT_UNDO_OPERATION'].'")) {
-                        document.location.href = "index.php?cmd=newsletter&act=users&delete=exe&id="+UserID;
+                        document.location.href = "index.php?cmd=newsletter&'.CSRF::param().'&act=users&delete=exe&id="+UserID;
                     }
                 }
 

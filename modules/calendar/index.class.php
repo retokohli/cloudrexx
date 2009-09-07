@@ -427,8 +427,8 @@ class Calendar extends calendarLibrary
 
 		$calendarbox 	= $this->getBoxes(3, $year, $month, $day, $catid);
 
-		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"".CONTREXX_DIRECTORY_INDEX."?section=calendar&catid=".$_GET['catid']."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
-		$java_script .= "function categories()\n{\nwindow.location.href = \"".$requestUri."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
+		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"". CSRF::enhanceURI(CONTREXX_DIRECTORY_INDEX."?section=calendar"). "&catid=".$_GET['catid']."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
+		$java_script .= "function categories()\n{\nwindow.location.href = \"".CSRF::enhanceURI($requestUri)."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
 
 
 		$this->_objTpl->setVariable(array(
@@ -558,6 +558,7 @@ class Calendar extends calendarLibrary
 					href = href.replace(/&catid=[0-9]+/g, \'\');
 					href = href.replace(/&act=search/g, \'\');
 					href += "&catid=" + catid;
+					href += "&'.CSRF::param().'";
 					window.location.href = href;
 				}
 				/* ]]> */

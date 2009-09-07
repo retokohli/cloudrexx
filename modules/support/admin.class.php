@@ -914,7 +914,8 @@ if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt
                 $this->objLanguage->getMenu(
                     $this->supportLanguageId,
                     'supportLanguageId',
-                    "window.location.replace('index.php?cmd=support".
+                    "window.location.replace('index.php?cmd=support&".
+                    CSRF::param() .
                     "&amp;act=categoriesEdit".
                     "&amp;supportCategoryId=$this->supportCategoryId".
                     "&amp;supportCategoryLanguageId=$this->supportCategoryLanguageId".
@@ -2207,7 +2208,8 @@ if (MY_DEBUG) { echo("infoFields(): ERROR: Failed to get InfoField with ID $id!<
                 $this->objLanguage->getMenu(
                     $this->supportLanguageId,
                     'supportLanguageId',
-                    "window.location.replace('index.php?cmd=support".
+                    "window.location.replace('index.php?cmd=support&".
+                    CSRF::param() .
                     "&amp;act=infoFieldsEdit".
                     "&amp;supportInfoFieldId=$this->supportInfoFieldId".
                     "&amp;supportInfoFieldLanguageId=$this->supportInfoFieldLanguageId".
