@@ -294,7 +294,7 @@ class votingmanager
                 $votingStatus=$objResult->fields['status'];
 
                 if ($votingStatus==0) {
-                     $radio=" onclick=\"Javascript: window.location.replace('?cmd=voting&amp;act=changestatus&amp;votingid=$votingid');\" />";
+                     $radio=" onclick=\"Javascript: window.location.replace('index.php?cmd=voting&amp;".CSRF::param()."&amp;act=changestatus&amp;votingid=$votingid');\" />";
                 } else {
                      $radio=" checked=\"checked\" />";
                 }

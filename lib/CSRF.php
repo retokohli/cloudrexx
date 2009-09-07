@@ -138,9 +138,8 @@ class CSRF {
             DBG::stack();
         }
         $code = CSRF::__get_code();
-        $name = CSRF::$formkey;
         $tpl->setGlobalVariable(array(
-            "CSRF_PARAM"    => "$name=$code",
+            "CSRF_PARAM"    => CSRF::param(),
             "CSRF_KEY"      => "$code"
         ));
         return true;
@@ -162,6 +161,13 @@ class CSRF {
      */
     public static function code() {
         return CSRF::__get_code();
+    }
+
+    /**
+     * Returns a key/value pair ready to use in an URL.
+     */
+    public static function param() {
+        return CSRF::key().'='.CSRF::code();
     }
 
     /**

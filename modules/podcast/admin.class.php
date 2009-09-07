@@ -253,7 +253,7 @@ class podcastManager extends podcastLib
         }
 
         if ($mediaCount > 0 || $categoryId) {
-            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $this->_getCategoriesMenu($categoryId, 'onchange="window.location.href=\'index.php?cmd=podcast&amp;categoryId=\'+this.value"'));
+            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $this->_getCategoriesMenu($categoryId, 'onchange="window.location.href=\'index.php?cmd=podcast&'.CSRF::param().'&amp;categoryId=\'+this.value"'));
             $this->_objTpl->touchBlock('podcast_category_menu');
         } else {
             $this->_objTpl->hideBlock('podcast_category_menu');

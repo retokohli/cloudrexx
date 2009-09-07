@@ -155,7 +155,7 @@ EOF;
 
         $menu = $this->_getCategoriesMenu($categoryId, 'id="podcast_category_menu"', true, true);
         if ($menu !== false) {
-            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=podcast&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
+            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=podcast&'.CSRF::param().'&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
         }
         if(intval($categoryId) == 0){
             $categories = array_keys($this->_getCategories(true, false, $_LANGID));

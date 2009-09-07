@@ -777,9 +777,11 @@ class downloads extends DownloadsLibrary
         global $_ARRAYLANG;
 
         $fileDeleteTxt = preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD']));
-        $fileDeleteLink = CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId().'&delete_file=';
+        $fileDeleteLink = CSRF::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
+            .'&category='.$objCategory->getId().'&delete_file=';
         $categoryDeleteTxt = preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY']));
-        $categoryDeleteLink = CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId().'&delete_category=';
+        $categoryDeleteLink = CSRF::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
+            .'&category='.$objCategory->getId().'&delete_category=';
 
         $javascript = <<<JS_CODE
 <script type="text/javascript">
