@@ -12,7 +12,7 @@
 
 //Security-Check
 if (eregi("admin.class.php",$_SERVER['PHP_SELF'])){
-    Header("Location: index.php");
+    CSRF::header("Location: index.php");
     die();
 }
 

@@ -170,7 +170,7 @@ class MediaLibrary {
     // downloads the media
     function _downloadMediaOLD(){
         if(is_file($this->path . $this->getFile)){
-			header("Location: ".$this->webPath . $this->getFile);
+			CSRF::header("Location: ".$this->webPath . $this->getFile);
 			exit;
         }
     }

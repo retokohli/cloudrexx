@@ -140,7 +140,7 @@ class docSys extends docSysLibrary
                 $objResult->MoveNext();
             }
         } else {
-            header("Location: ?section=docsys".MODULE_INDEX);
+            CSRF::header("Location: ?section=docsys".MODULE_INDEX);
             exit;
         }
 

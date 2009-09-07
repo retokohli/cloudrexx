@@ -469,9 +469,9 @@ class Calendar extends calendarLibrary
 
 		if (!isset($_GET['id'])) {
 		    if ($this->mandate == 1) {
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
 		    } else {
-		        header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandate);
+		        CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandate);
 		    }
 			exit;
 		}
@@ -481,7 +481,7 @@ class Calendar extends calendarLibrary
 
 		if ($access == true) {
 			if (!$this->_checkAccess($id)) {
-				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
+				CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
 				exit;
 			}
 		}

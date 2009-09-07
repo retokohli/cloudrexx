@@ -218,7 +218,7 @@ class news extends newsLibrary {
                 }
             }
         } else {
-            header("Location: ?section=news");
+            CSRF::header("Location: index.php?section=news");
             exit;
         }
 
@@ -541,18 +541,18 @@ class news extends newsLibrary {
         }
 
         if (!$this->arrSettings['news_submit_news'] == '1' || (!$communityModul && $this->arrSettings['news_submit_only_community'] == '1')) {
-            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=news');
+            CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=news');
             exit;
         } elseif ($this->arrSettings['news_submit_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
             if ($objFWUser->objUser->login()) {
                 if (!Permission::checkAccess(61, 'static')) {
-                    header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess');
+                    CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess');
                     exit;
                 }
             } else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.$link);
+                CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.$link);
                 exit;
             }
         }

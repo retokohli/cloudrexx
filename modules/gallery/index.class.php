@@ -80,7 +80,7 @@ class Gallery
         if (isset($_GET['pId']) && !empty($_GET['pId'])) {
             if (isset($_POST['frmGalComAdd_PicId'])) {
                 $this->addComment();
-                header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
+                CSRF::header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
                     intval($_POST['frmGalComAdd_GalId']).'&pId='.
                     intval($_POST['frmGalComAdd_PicId']));
                 exit;
@@ -88,7 +88,7 @@ class Gallery
 
             if (isset($_GET['mark'])) {
                 $this->countVoting($_GET['pId'],$_GET['mark']);
-                header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
+                CSRF::header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
                     intval($_GET['cid']).'&pId='.intval($_GET['pId']));
                 exit;
             }
@@ -128,7 +128,7 @@ class Gallery
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
                     $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    CSRF::header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                     exit;
             }
         }
@@ -403,7 +403,7 @@ class Gallery
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
                     $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    CSRF::header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                     exit;
             }
         }
@@ -761,7 +761,7 @@ class Gallery
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
                     $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    CSRF::header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                     exit;
             }
         }

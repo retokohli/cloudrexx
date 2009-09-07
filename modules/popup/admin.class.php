@@ -792,7 +792,7 @@ class popupManager extends popupLibrary
                 $objDatabase->Execute($query);
             }
 
-            //header('Location: index.php?cmd=popup&act=settings');
+            //CSRF::header('Location: index.php?cmd=popup&act=settings');
         }
 
         $objResult = $objDatabase->Execute("SELECT    name, value FROM    ".DBPREFIX."module_popup_settings");

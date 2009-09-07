@@ -2870,7 +2870,7 @@ WHERE id = $immoID )";
             }
         }
 
-        header("Location: ?cmd=immo&act=settings");
+        CSRF::header("Location: ?cmd=immo&act=settings");
         exit;
 	}
 

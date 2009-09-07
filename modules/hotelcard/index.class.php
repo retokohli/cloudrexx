@@ -278,7 +278,7 @@ if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();
         // start page.  Also unset the session data.
         if ($_SESSION['hotelcard']['step_current'] > self::HOTEL_REGISTRATION_STEPS) {
             unset($_SESSION['hotelcard']);
-            header('Location: index.php?section=hotelcard');
+            CSRF::header('Location: index.php?section=hotelcard');
             exit;
         }
 
@@ -1230,7 +1230,7 @@ if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();
         /** @var User */
         $objUser = $objFWUser->objUser;
         if (!$objUser) {
-            header('Location: index.php?section=hotelcard');
+            CSRF::header('Location: index.php?section=hotelcard');
             exit;
         }
         $user_id = $objUser->getId();

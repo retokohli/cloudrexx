@@ -126,12 +126,12 @@ class calendarLibrary
 			if ($objResult->fields['access'] == 1) {
 				if ($objFWUser->objUser->login()) {
 					if (!Permission::checkAccess(116, 'static', true)) {
-						header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
+						CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 						exit;
 					}
 				}else {
 					$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-					header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
+					CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 					exit;
 				}
 			}

@@ -234,12 +234,12 @@ class PaymentProcessing
         switch (self::getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */
-                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
+                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
                 break;
             case 'Internal_LSV':
                 /* Redirect browser */
-                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
+                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
                 break;
             case 'Internal_CreditCard':

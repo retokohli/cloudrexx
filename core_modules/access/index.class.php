@@ -85,7 +85,7 @@ class Access extends AccessLib
 
             if ($objUser->getProfileAccess() != 'everyone') {
                 if (!$objFWUser->objUser->login()) {
-                    header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd=user&id='.$objUser->getId()));
+                    CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd=user&id='.$objUser->getId()));
                     exit;
                 }
 
@@ -93,7 +93,7 @@ class Access extends AccessLib
                     && $objUser->getProfileAccess() == 'nobody'
                     && !$objFWUser->objUser->getAdminStatus()
                 ) {
-                    header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd=user&id='.$objUser->getId()));
+                    CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd=user&id='.$objUser->getId()));
                     exit;
                 }
             }
@@ -128,7 +128,7 @@ class Access extends AccessLib
             $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
         } else {
             // or would it be better to redirect to the home page?
-            header('Location: index.php?section=access&cmd=members');
+            CSRF::header('Location: index.php?section=access&cmd=members');
             exit;
         }
     }
@@ -215,7 +215,7 @@ class Access extends AccessLib
 
         $objFWUser = FWUser::getFWUserObject();
         if (!$objFWUser->objUser->login()) {
-            header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd='.rawurlencode($_REQUEST['cmd'])));
+            CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd='.rawurlencode($_REQUEST['cmd'])));
             exit;
         }
         $settingsDone = false;

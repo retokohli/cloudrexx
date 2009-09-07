@@ -235,7 +235,7 @@ class votingmanager
            $query= "SELECT id, UNIX_TIMESTAMP(date) as datesec, question, votes FROM ".DBPREFIX."voting_system where ".($votingId > 0 ? "id=".$votingId : "status=1");
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult->RecordCount()==0 && $totalrows==0) {
-           header("Location: ?cmd=voting&act=add");
+           CSRF::header("Location: ?cmd=voting&act=add");
            exit;
         } else {
             $votingId=$objResult->fields['id'];

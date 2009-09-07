@@ -229,7 +229,7 @@ class Login
 		}
 
 		if ((!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
-			header('Location: '.(empty($redirect) ? CONTREXX_SCRIPT_PATH : base64_decode($redirect)));
+			CSRF::header('Location: '.(empty($redirect) ? CONTREXX_SCRIPT_PATH : base64_decode($redirect)));
 			exit;
 		} else {
 			if (isset($_POST['login'])) {

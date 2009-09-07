@@ -68,7 +68,7 @@ class u2u extends u2uLibrary
         $objFWUser = FWUser::getFWUserObject();
         if (!$objFWUser->objUser->login()) {
             $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
+            CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
             exit;
         }
 
@@ -314,7 +314,7 @@ class u2u extends u2uLibrary
          $query = 'SELECT 1 FROM '.DBPREFIX.'module_u2u_address_list WHERE user_id="'.$id.'" AND buddies_id="'.$buddies_id.'"';
          $objRS = $objDatabase->SelectLimit($query, 1);
          if($objRS->RecordCount() > 0){
-            header("Location: ".CONTREXX_SCRIPT_PATH."?section=access&cmd=members");
+            CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=access&cmd=members");
             die();
          }
          $query='REPLACE INTO '.DBPREFIX.'module_u2u_address_list  (
@@ -323,7 +323,7 @@ class u2u extends u2uLibrary
                                          )
                                          VALUES ('.$id.','.$buddies_id.')';
          $objDatabase->Execute($query);
-         header("Location: ".CONTREXX_SCRIPT_PATH."?section=access&cmd=members");
+         CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=access&cmd=members");
          die();
     }
 

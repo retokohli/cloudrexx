@@ -776,7 +776,7 @@ class Immo extends ImmoLib
         if (!empty($_GET['id'])) {
             $immoID = intval($_GET['id']);
             if (empty($immoID)) {
-                header('Location: ?section=immo&cmd=immolist');
+                CSRF::header('Location: ?section=immo&cmd=immolist');
                 die();
             }
         }

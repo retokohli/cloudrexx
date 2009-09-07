@@ -209,7 +209,7 @@ class jobs extends jobsLibrary
                 $objResult->MoveNext();
             }
         } else {
-            header("Location: index.php?section=jobs");
+            CSRF::header("Location: index.php?section=jobs");
             exit;
         }
 

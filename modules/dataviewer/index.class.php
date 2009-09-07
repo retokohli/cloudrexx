@@ -43,7 +43,7 @@ class  Dataviewer {
 		$this->_objTpl->setTemplate($this->pageContent);
 		
 		if (!$this->isActive($projectname) || !in_array($_SESSION['userFrontendLangId'], $this->getLangID($projectname))) {
-			header("Location: index.php");
+			CSRF::header("Location: index.php");
 		}	
 
 				

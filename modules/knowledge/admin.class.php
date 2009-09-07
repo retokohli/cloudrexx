@@ -124,12 +124,12 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	            case 'update':
     	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
     	                $id = $this->updateCategory();
-    	                header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+    	                CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
     	                break;
     	            case 'insert':
     	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
         	            $id = $this->insertCategory();
-    	                header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+    	                CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
     	                break;
     	            case 'delete':
     	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
@@ -176,7 +176,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                         Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static');
                         $id = $this->updateArticle();
                         $content = $this->articleOverview();
-                        header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles&act=edit&id=".$id."&updated=true");
+                        CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles&act=edit&id=".$id."&updated=true");
                         break;
                     case 'getArticles':
                         Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
@@ -240,7 +240,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 $this->settings($content, $active);
                 break;
             default:
-                header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles");
+                CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles");
     	}
 
         $objTemplate->setVariable(array(
