@@ -80,10 +80,6 @@ class CSRF {
         $hdr = $result[1];
         $url = CSRF::enhanceURI($result[2]);
 
-        # &amp; is NOT allowed in HTTP headers.
-        $url = str_replace('&amp;', '&', $url);
-        $key = CSRF::$formkey;
-        $val = CSRF::__get_code();
         return "$hdr: $url";
     }
 
@@ -104,7 +100,7 @@ class CSRF {
         $key = CSRF::$formkey;
         $val = CSRF::__get_code();
         if (strstr($uri, '?')) {
-            $uri .= "&amp;$key=$val";
+            $uri .= "&$key=$val";
         }
         else {
             $uri .= "?$key=$val";
