@@ -51,7 +51,6 @@ class Access extends AccessLib
                 break;
 
             case 'settings':
-                CSRF::check_code();
                 $this->settings();
                 break;
 
@@ -223,6 +222,7 @@ class Access extends AccessLib
 
         if (isset($_POST['access_delete_account'])) {
             // delete account
+            CSRF::check_code();
             if ($objFWUser->objUser->checkPassword(isset($_POST['access_user_password']) ? $_POST['access_user_password'] : null)) {
                 if ($objFWUser->objUser->isAllowedToDeleteAccount()) {
                     if ($objFWUser->objUser->delete(true)) {
@@ -245,6 +245,7 @@ class Access extends AccessLib
             }
         } elseif (isset($_POST['access_change_password'])) {
             // change password
+            CSRF::check_code();
             if (!empty($_POST['access_user_current_password']) && $objFWUser->objUser->checkPassword(trim(contrexx_stripslashes($_POST['access_user_current_password'])))) {
                 $this->_objTpl->setVariable(
                     'ACCESS_SETTINGS_MESSAGE',
@@ -265,6 +266,7 @@ class Access extends AccessLib
             }
         } elseif (isset($_POST['access_store'])) {
             // store profile
+            CSRF::check_code();
             $status = true;
 
             isset($_POST['access_user_username']) ? $objFWUser->objUser->setUsername(trim(contrexx_stripslashes($_POST['access_user_username']))) : null;

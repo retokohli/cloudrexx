@@ -105,13 +105,11 @@ class downloads extends DownloadsLibrary
                 break;
 
             case 'delete_file':
-                CSRF::check_code();
                 $this->deleteDownload();
                 $this->overview();
                 break;
 
             case 'delete_category':
-                CSRF::check_code();
                 $this->deleteCategory();
                 $this->overview();
                 break;
@@ -482,6 +480,8 @@ class downloads extends DownloadsLibrary
             return;
         }
 
+        CSRF::check_code();
+
         $fileName = '';
         $fileExtension = '';
         $suffix = '';
@@ -507,6 +507,8 @@ class downloads extends DownloadsLibrary
         } else {
             $name = contrexx_stripslashes($_POST['downloads_category_name']);
         }
+
+        CSRF::check_code();
 
         // check for sufficient permissiosn
         if ($objCategory->getAddSubcategoriesAccessId()
@@ -633,7 +635,6 @@ class downloads extends DownloadsLibrary
     {
         global $_ARRAYLANG;
 
-        CSRF::check_code();
         if (!$this->objTemplate->blockExists('downloads_create_category')) {
             return;
         }
