@@ -63,6 +63,59 @@ class CSRF {
     }
 
     /**
+     * An utility function to patch URLs specifically in
+     * redirect (and possibly other) headers. Expects a
+     * string in the form "header-name: ...." and returns
+     * it, modified to contain the CSRF protection parameter.
+     *
+     * Example: __enhance_header('Location: index.php')
+     * --> "Location: index.php?__csrf__=xxxxx"
+     */
+    private static function __enhance_header($header) {
+        $result = array();
+        if (!preg_match('#^(\w+):\s*(.*)$#i', $header, $result)) {
+            # don't know what to do with it
+            return $header;
+        }
+        $hdr = $result[1];
+        $url = $result[2];
+        $key = CSRF::$formkey;
+        $val = CSRF::__get_code();
+        if (strstr($url, '?')) {
+            $url .= "&$key=$val";
+        }
+        else {
+            $url .= "?$key=$val";
+        }
+        return "$hdr: $url";
+    }
+
+    /**
+     * Acts as a replacement for header() calls that handle URLs.
+     * Only use it for headers in the form "Foo: an_url", for
+     * instance "Location: index.php?foo=bar".
+     */
+    public static function header($header) {
+        header(CSRF::__enhance_header($header));
+    }
+
+    /**
+	 * Adds the CSRF protection code to the URI specified by $uri.
+     */
+    public static function enhanceURI($uri)
+    {
+        $key = CSRF::$formkey;
+        $val = CSRF::__get_code();
+        if (strstr($uri, '?')) {
+            $uri .= "&amp;$key=$val";
+        }
+        else {
+            $uri .= "?$key=$val";
+        }
+        return $uri;
+    }
+
+    /**
      * Call this to add a CSRF protection code to all the 
      * forms and links on the generated page. Note that
      * you don't need to pass any content, and nothing is
@@ -92,7 +145,10 @@ class CSRF {
         }
         $code = CSRF::__get_code();
         $name = CSRF::$formkey;
-        $tpl->setGlobalVariable("CSRF_PARAM", "$name=$code");
+        $tpl->setGlobalVariable(array(
+            "CSRF_PARAM"    => "$name=$code",
+            "CSRF_KEY"      => "$code"
+        ));
         return true;
     }
 
