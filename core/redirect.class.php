@@ -67,7 +67,7 @@ class redirect
 
 	    		$newLocation = "?section=directory".$lid.$cid;
 
-	    		header('Location: '.$newLocation);
+	    		CSRF::header('Location: '.$newLocation);
 				exit;
 	    	}
     	}

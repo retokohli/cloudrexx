@@ -52,7 +52,7 @@ $incVersionStatus = include_once('../config/version.php');
 // Check if system is installed
 //-------------------------------------------------------
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-    header("Location: ../installer/index.php");
+    CSRF::header("Location: ../installer/index.php");
 } elseif ($incSettingsStatus === false || $incVersionStatus === false) {
     die('System halted: Unable to load basic configuration!');
 }
@@ -306,7 +306,7 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
 }
 if (isset($_POST['redirect']) && preg_match('/\.php/',($_POST['redirect']))) {
     $redirect = $_POST['redirect'];
-    header("Location: $redirect");
+    CSRF::header("Location: $redirect");
 }
 
 //-------------------------------------------------------

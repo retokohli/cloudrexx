@@ -326,13 +326,13 @@ class skins
         $this->pageTitle = $_CORELANG['TXT_THEME_IMPORT_EXPORT'];
         //check GETs for action
         if(!empty($_GET['preview'])){
-            header("Location: ../?preview=".$_GET['preview']);
+            CSRF::header("Location: ../?preview=".$_GET['preview']);
             exit;
         }
         if(!empty($_GET['export'])){
             $archiveURL=$this->_exportFile();
             if(is_string($archiveURL)){
-                header("Location: ".$archiveURL);
+                CSRF::header("Location: ".$archiveURL);
                 exit;
             }
         }

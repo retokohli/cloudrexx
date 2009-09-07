@@ -154,7 +154,7 @@ class ContentManager
             Permission::checkAccess(53, 'static');
             $this->_deleteAll();
             $this->contentOverview();
-            // header("Location: index.php?cmd=content");
+            // CSRF::header("Location: index.php?cmd=content");
             break;
 
         case "copyAll":
@@ -809,7 +809,7 @@ class ContentManager
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
                 if (!Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
-                    header('Location: index.php?cmd=noaccess');
+                    CSRF::header('Location: index.php?cmd=noaccess');
                     exit;
                 } else {
                     return true;
@@ -818,7 +818,7 @@ class ContentManager
                 return false;
             }
         } else {
-            header('Location: index.php?cmd=noaccess');
+            CSRF::header('Location: index.php?cmd=noaccess');
             exit;
         }
     }
@@ -2209,11 +2209,11 @@ class ContentManager
             $objResult = $objDatabase->SelectLimit("SELECT backend_access_id FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId." AND backend_access_id!=0", 1);
             if ($objResult !== false) {
                 if ($objResult->RecordCount() == 1 && !Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
-                    header('Location: index.php?cmd=noaccess');
+                    CSRF::header('Location: index.php?cmd=noaccess');
                     exit;
                 };
             } else {
-                header('Location: index.php?cmd=noaccess');
+                CSRF::header('Location: index.php?cmd=noaccess');
                 exit;
             }
 
@@ -2433,11 +2433,11 @@ class ContentManager
         $objResult = $objDatabase->SelectLimit("SELECT backend_access_id FROM ".DBPREFIX."content_navigation WHERE catid=".$intPageId." AND backend_access_id!=0", 1);
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1 && !Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
-                header('Location: index.php?cmd=noaccess');
+                CSRF::header('Location: index.php?cmd=noaccess');
                 exit;
             };
         } else {
-            header('Location: index.php?cmd=noaccess');
+            CSRF::header('Location: index.php?cmd=noaccess');
             exit;
         }
 
