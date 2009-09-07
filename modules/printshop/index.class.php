@@ -63,9 +63,10 @@ class Printshop extends PrintshopLibrary {
     }
 
 
-    /**
+   /**
     * Reads $_GET['cmd'] and selects (depending on the value) an action
     *
+    * @return string parsed HTML template
     */
     function getPage()
     {
@@ -167,7 +168,7 @@ class Printshop extends PrintshopLibrary {
             var weight = \$J('#psAttributeWeight li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
             var paper  = \$J('#psAttributePaper li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
             var amount = \$J('#amount').val().replace(/^.*?(\d+)$/g, '$1');
-            location.href='$DI?section=printshop&cmd=order&amount='+amount+'&type=$type&format='+format+'&front='+front+'&back='+back+'&weight='+weight+'&paper='+paper;
+            location.href='$DI?section=printshop&cmd=order&psAmount='+amount+'&psType=$type&psFormat='+format+'&psFront='+front+'&psBack='+back+'&psWeight='+weight+'&psPaper='+paper;
         });
 
         \$J('.psType_$type').css({color:'black'});
@@ -408,11 +409,11 @@ EOJ;
     function showOrder() {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
-        $amount = !empty($_GET['amount']) && intval($_GET['amount']) > 0 ? intval($_GET['amount']) : '1';
+        $amount = !empty($_REQUEST['psAmount']) && intval($_REQUEST['psAmount']) > 0 ? intval($_REQUEST['psAmount']) : '1';
 
         $arrFilter  = array();
         foreach ($this->_arrAvailableAttributes as $attribute) {
-            $arrFilter[$attribute] = !empty($_REQUEST[$attribute]) ? intval($_REQUEST[$attribute]) : 0;
+            $arrFilter[$attribute] = !empty($_REQUEST['ps'.ucfirst($attribute)]) ? intval($_REQUEST['ps'.ucfirst($attribute)]) : 0;
         }
 
         if(!empty($_REQUEST['standalone'])){ //JSON request
@@ -427,20 +428,29 @@ EOJ;
             )));
         }
 
+        print_r($_REQUEST);
+        print_r($_FILES);
+
+
         $shipmentInputHTML = array();
         foreach ($this->_shipmentEnum as $id => $shipmentType) {
-            if(!empty($_POST['psShipment']) && $_POST['shipment'] == $shipmentType){
+            if(!empty($_POST['psShipment']) && $_POST['psShipment'] == $shipmentType){
                 $checked = 'checked="checked"';
             }elseif(empty($_POST['psShipment']) && $id == count($this->_shipmentEnum) - 1){
                 $checked = 'checked="checked"';
             }else{
                 $checked = '';
             }
-        	$shipmentInputHTML[] = '<input class="radio" '.$checked.' type="radio" id="psShipment'.$id.'" name="psShipment" />
+        	$shipmentInputHTML[] = '<input class="radio" '.$checked.'
+        	                         type="radio" id="psShipment'.$id.'" name="psShipment" value="'.$shipmentType.'" />
         	                        <label for="psShipment'.$id.'">'
         	                        .$_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_'.strtoupper($shipmentType)]
         	                        .'</label><br />';
         }
+
+        $acceptTermsCheckbox = '<input '.(!empty($acceptTerms) ? 'checked="checked"' : '').'
+                                 type="checkbox" id="psAcceptTerms" name="psAcceptTerms" />
+                                <label for="psAcceptTerms">'.$_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'].'</label>';
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_FORMAT_TITLE'        => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
@@ -487,6 +497,7 @@ EOJ;
             'PRINTSHOP_DATA_PREPARATION_PRICE'  => number_format($this->_arrSettings['dataPreparationPrice'], 2),
             'PRINTSHOP_AMOUNT'                  => $amount,
             'PRINTSHOP_SHIPMENT_RADIOBUTTONS'   => implode("\n", $shipmentInputHTML),
+            'PRINTSHOP_TERMS_CHKBOX'            => $acceptTermsCheckbox,
         ));
 
         $arrEntry = $this->_getEntries($arrFilter, false);
@@ -510,7 +521,6 @@ EOJ;
         $weight = $arrFilter['weight'];
         $paper  = $arrFilter['paper'];
 
-        $type = !empty($_REQUEST['type']) ? contrexx_addslashes($_REQUEST['type']) : '';
         $DI   = CONTREXX_DIRECTORY_INDEX;
         JS::activate('jquery');
         JS::activate('excanvas');
@@ -523,7 +533,14 @@ EOJ;
 
     \$J(document).ready(function(){
         initPrices();
-        checkFilledFields();
+
+        \$J('.shipmentSelection input').change(function(){
+            updateShipmentPrice.apply(this);
+        });
+
+        \$J('#printShop form').submit(function(){
+            return checkFilledFields();
+        })
 
         \$J('#amount').keyup(function(){
             \$J(this).val(\$J(this).val().replace(/[^\d]/g, ''));
@@ -533,10 +550,9 @@ EOJ;
             updatePrice();
         });
 
-        \$J('.shipmentSelection input').change(function(){
-            updateShipmentPrice.apply(this);
-        });
-        updateShipmentPrice.apply(\$J('[name=psShipment]:checked').get(0));
+        if(\$J('[name=psShipment]:checked').length !== 0){
+            updateShipmentPrice.apply(\$J('[name=psShipment]:checked').get(0));
+        }
     });
 
     var type            = $type;
@@ -654,13 +670,50 @@ EOJ;
         var psImage2 = \$J('#psImage2').val().replace(/\s+/, '');
      // var psImage3 = \$J('#psImage3').val().replace(/\s+/, '');
 
-        if(psSubject == ''){
-            console.log("fill all fields plz");
+        var error = false;
+        var mandatoryFields = [
+            'psSubject',
+            'psAmount',
+            'psShipment',
+            'psContactI',
+            'psContactS',
+            'psAddress1I',
+            'psAddress1S',
+            'psAddress2I',
+            'psAddress2S',
+            'psZipI',
+            'psZipS',
+            'psCityI',
+            'psCityS',
+            'psEmail',
+            'psPhone',
+        ]
+
+        \$J(mandatoryFields).each(function(i, j){
+            \$J('#'+j).val(\$J('#'+j).val().replace(/^\s+(.*?)\s+$/, '$1'));
+            if(\$J('#'+j).val() == ''){
+                \$J('#'+j[0]).addClass('missing');
+                error = true;
+            }else{
+                \$J('#'+j[0]).removeClass('missing');
+            }
+        });
+
+        if(\$J('#psShipment :checked').length == 0){
+            \$J('#'+j[0]).addClass('missing');
+            error = true;
+        }else{
+            \$J('#'+j[0]).removeClass('missing');
         }
 
-        if(psSubject == ''){
+        if(\$J('#psAcceptTerms :checked').length == 0){
+            \$J('#'+j[0]).addClass('missing');
+            error = true;
+        }else{
+            \$J('#'+j[0]).removeClass('missing');
         }
 
+        return error;
     }
 
 })();
@@ -680,7 +733,7 @@ EOJ;
      */
     function _checkOrder(){
         global $_ARRAYLANG;
-        $subject = !empty($_POST['psSubject']) ? intval($_POST['psSubject']) : '';
+        $subject = !empty($_POST['psSubject']) ? contrexx_addslashes($_POST['psSubject']) : '';
         $type = !empty($_POST['psType']) ? intval($_POST['psType']) : '';
         $format = !empty($_POST['psFormat']) ? intval($_POST['psFormat']) : '';
         $front = !empty($_POST['psFront']) ? intval($_POST['psFront']) : '';
@@ -705,7 +758,33 @@ EOJ;
         $email = !empty($_POST['psEmail']) ? contrexx_addslashes($_POST['psEmail']) : '';
         $phone = !empty($_POST['psPhone']) ? contrexx_addslashes($_POST['psPhone']) : '';
         $comment = !empty($_POST['psComment']) ? contrexx_addslashes($_POST['psComment']) : '';
-        $acceptTerms = !empty($_POST['psAcceptTerms']) ? intval($_POST['psAcceptTerms']) : '';
+        $acceptTerms = !empty($_POST['psAcceptTerms']) ? contrexx_addslashes($_POST['psAcceptTerms']) : '';
+
+        $acceptTermsCheckbox = '<input '.(!empty($acceptTerms) ? 'checked="checked"' : 'sd="ff"').'
+                                 type="checkbox" id="psAcceptTerms" name="psAcceptTerms" />
+                                <label for="psAcceptTerms">'.$_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'].'</label>';
+
+        $this->_objTpl->setVariable(array(
+            'PRINTSHOP_SUBJECT'         => $subject,
+            'PRINTSHOP_AMOUNT'          => $amount,
+            'PRINTSHOP_COMPANYI'        => $invCompany,
+            'PRINTSHOP_COMPANYS'        => $shipCompany,
+            'PRINTSHOP_CONTACTI'        => $invContact,
+            'PRINTSHOP_CONTACTS'        => $shipContact,
+            'PRINTSHOP_ADDRESS1I'       => $invAddress1,
+            'PRINTSHOP_ADDRESS1S'       => $shipAddress1,
+            'PRINTSHOP_ADDRESS2I'       => $invAddress2,
+            'PRINTSHOP_ADDRESS2S'       => $shipAddress2,
+            'PRINTSHOP_ZIPI'            => $invZip,
+            'PRINTSHOP_ZIPS'            => $shipZip,
+            'PRINTSHOP_CITYI'           => $invCity,
+            'PRINTSHOP_CITYS'           => $shipCity,
+            'PRINTSHOP_EMAIL'           => $email,
+            'PRINTSHOP_PHONE'           => $phone,
+            'PRINTSHOP_COMMENT'         => $comment,
+            'PRINTSHOP_AMOUNT'          => $amount,
+            'PRINTSHOP_TERMS_CHKBOX'    => $acceptTermsCheckbox,
+        ));
 
         if(!FWValidator::isEmail($email)){
             $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_INVALID_EMAIL']);

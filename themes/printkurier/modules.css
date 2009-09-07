@@ -2244,6 +2244,10 @@ dl.data_module img {
     margin: 1px; padding: 0px;
 }
 
+#printshop .missing {
+    border: 1px solid red;
+}
+
 #printshop input.radio {
     margin: 1px; padding: 0px;
 }
