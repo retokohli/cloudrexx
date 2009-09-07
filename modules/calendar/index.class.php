@@ -118,7 +118,6 @@ class Calendar extends calendarLibrary
                 break;
 
             case 'sign':
-                CSRF::check_code();
                 return $this->_showRegistrationForm();
                 break;
 
@@ -584,6 +583,7 @@ class Calendar extends calendarLibrary
         $check = false;
 
         if (!empty($_POST['id'])){
+            CSRF::check_code();
             //insert registration data
             $time        = mktime();
             $noteId        = intval($_POST['id']);

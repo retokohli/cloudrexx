@@ -75,6 +75,7 @@ class rssDirectory extends directoryLibrary
         $this->pageContent = $pageContent;
 
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->path = ASCMS_DIR_PATH . '/';
@@ -132,7 +133,6 @@ class rssDirectory extends directoryLibrary
                 $this->feedDetails(intval($_GET['id']), intval($_GET['cid']), intval($_GET['lid']));
                 break;
             case 'add':
-                CSRF::check_code();
                 $this->newFeed();
                 break;
             case 'myfeeds':
@@ -1432,6 +1432,7 @@ $this->arrRows[2] = '';
 
         //add feed
         if (isset($_POST['addSubmit'])) {
+            CSRF::check_code();
             $status = $this->addFeed();
         }
 
