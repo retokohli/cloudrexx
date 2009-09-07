@@ -78,15 +78,9 @@ class CSRF {
             return $header;
         }
         $hdr = $result[1];
-        $url = $result[2];
+        $url = CSRF::enhanceURI($result[2]);
         $key = CSRF::$formkey;
         $val = CSRF::__get_code();
-        if (strstr($url, '?')) {
-            $url .= "&$key=$val";
-        }
-        else {
-            $url .= "?$key=$val";
-        }
         return "$hdr: $url";
     }
 
