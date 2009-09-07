@@ -396,7 +396,7 @@ class downloads extends DownloadsLibrary
                     }
 
                     if (FWValidator::is_file_ending_harmless($fileName)) {
-                        $fileExtension = strtolower($arrFile['extension']);
+                        $fileExtension = $arrFile['extension'];
 
                         if (@move_uploaded_file($fileTmpName, $file)) {
                             $fileName = $arrFile['filename'];
@@ -441,7 +441,7 @@ class downloads extends DownloadsLibrary
             if (!count($arrMimeType['extensions'])) {
                 continue;
             }
-            if (in_array($fileExtension, $arrMimeType['extensions'])) {
+            if (in_array(strtolower($fileExtension), $arrMimeType['extensions'])) {
                 $fileMimeType = $mimeType;
                 break;
             }
@@ -479,8 +479,6 @@ class downloads extends DownloadsLibrary
         ) {
             return;
         }
-
-        CSRF::check_code();
 
         $fileName = '';
         $fileExtension = '';
