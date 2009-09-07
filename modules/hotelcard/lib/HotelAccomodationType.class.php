@@ -149,7 +149,7 @@ class HotelAccomodationType
     {
         global $objDatabase;
 
-echo("HotelAccomodationType::errorHandler(): Entered<br />");
+//echo("HotelAccomodationType::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel_accomodation_type", $arrTables)) {
@@ -158,7 +158,7 @@ echo("HotelAccomodationType::errorHandler(): Entered<br />");
                 DROP TABLE `".DBPREFIX."module_hotelcard_hotel_accomodation_type`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelAccomodationType::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_accepts_HotelAccomodationType<br />");
+//echo("HotelAccomodationType::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_accepts_HotelAccomodationType<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (
@@ -174,12 +174,11 @@ echo("HotelAccomodationType::errorHandler(): Dropped table ".DBPREFIX."module_ho
                 ON UPDATE NO ACTION*/
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelAccomodationType::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_HotelAccomodationType<br />");
+//echo("HotelAccomodationType::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_HotelAccomodationType<br />");
 
         // Add types
         $arrTypes = array(
-            // ord, name
-            0 =>
+            // language ID => name
             array(
                 1 => '-- Hoteltyp wählen --',
                 2 => '-- Select hotel type --',
@@ -231,7 +230,10 @@ echo("HotelAccomodationType::errorHandler(): Created table ".DBPREFIX."module_ho
             ),
 */
         );
-        foreach ($arrTypes as $ord => $arrLang) {
+        // The first option ("please choose") *MUST* have the ordinal 0 (zero)
+        // in order for the selection dropdown to work properly.
+        $ord = 0;
+        foreach ($arrTypes as $arrLang) {
             $text_id = 0;
             foreach ($arrLang as $lang_id => $name) {
                 $objText = new Text(
@@ -250,7 +252,7 @@ echo("HotelAccomodationType::errorHandler(): Created table ".DBPREFIX."module_ho
                 INSERT INTO `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (
                   `name_text_id`, `ord`
                 ) VALUES (
-                  $text_id, $ord
+                  $text_id, ".$ord++."
                 )";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;

@@ -38,6 +38,7 @@ class Html
     /**
      * Returns HTML code for a text imput field
      *
+     * The $name parameter is used for both the element name and id attributes.
      * If the custom attributes parameter $attribute is empty, and
      * is_numeric($value) evaluates to true, the text is right aligned
      * within the input element.
@@ -50,19 +51,21 @@ class Html
     static function getInputText($name, $value, $attribute='')
     {
         return
-            '<input type="text" name="'.$name.'" value="'.$value.'"'.
-            ' tabindex="'.++self::$tabindex.'"'.
+            '<input type="text" name="'.$name.'" id="'.$name.'"'.
+            ' value="'.$value.'" tabindex="'.++self::$tabindex.'"'.
             ($attribute
               ? ' '.$attribute
               : (is_numeric($value)
                   ? ' style="text-align: right;"'
                   : '')).
-            ' />';
+            " />\n";
     }
 
 
     /**
      * Returns HTML code for a password text imput field
+     *
+     * The $name parameter is used for both the element name and id attributes.
      * @param   string    $name         The element name
      * @param   string    $value        The element value
      * @param   string    $attribute    Additional optional attributes
@@ -72,15 +75,17 @@ class Html
     static function getInputPassword($name, $value, $attribute='')
     {
         return
-            '<input type="password" name="'.$name.'" value="'.$value.'"'.
-            ' tabindex="'.++self::$tabindex.'"'.
+            '<input type="password" name="'.$name.'" id="'.$name.'"'.
+            ' value="'.$value.'" tabindex="'.++self::$tabindex.'"'.
             ($attribute ? ' '.$attribute : '').
-            ' />';
+            " />\n";
     }
 
 
     /**
      * Returns HTML code for a file upload input field
+     *
+     * The $name parameter is used for both the element name and id attributes.
      * @param   string    $name         The element name
      * @param   string    $maxlength    The optional maximum accepted size
      * @param   string    $mimetype     The optional accepted MIME type
@@ -92,17 +97,19 @@ class Html
         $name, $maxlength='', $mimetype='', $attribute=''
     ) {
         return
-            '<input type="file" name="'.$name.'"'.
+            '<input type="file" name="'.$name.'" id="'.$name.'"'.
             ' tabindex="'.++self::$tabindex.'"'.
             ($maxlength ? ' maxlength="'.$maxlength.'"' : '').
             ($mimetype ? ' accept="'.$mimetype.'"' : '').
             ($attribute ? ' '.$attribute : '').
-            ' />';
+            " />\n";
     }
 
 
     /**
      * Returns HTML code for a text area
+     *
+     * The $name parameter is used for both the element name and id attributes.
      * @param   string    $name         The element name
      * @param   string    $value        The element value
      * @param   string    $cols         The optional number of columns
@@ -115,12 +122,33 @@ class Html
         $name, $value, $cols='', $rows='', $attribute=''
     ) {
         return
-            '<textarea name="'.$name.'"'.
+            '<textarea name="'.$name.'" id="'.$name.'"'.
             ' tabindex="'.++self::$tabindex.'"'.
             ($cols ? ' cols="'.$cols.'"' : '').
             ($rows ? ' rows="'.$rows.'"' : '').
             ($attribute ? ' '.$attribute : '').
-            '>'.$value.'</textarea>';
+            '>'.$value."</textarea>\n";
+    }
+
+
+    /**
+     * Returns HTML code for a hidden imput field
+     *
+     * The $name parameter is used for both the element name and id attributes.
+     * @todo    Maybe the optional attributes will never be used
+     *          and can be removed?
+     * @param   string    $name         The element name
+     * @param   string    $value        The element value
+     * @param   string    $attribute    Additional optional attributes
+     * @return  string                  The HTML code for the element
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getHidden($name, $value, $attribute='')
+    {
+        return
+            '<input type="hidden" name="'.$name.'" id="'.$name.'"'.
+            ' value="'.$value.'"'.
+            ($attribute ? ' '.$attribute : '')." />\n";
     }
 
 
@@ -128,8 +156,8 @@ class Html
      * Returns HTML code for a dropdown menu
      *
      * If the name is empty, the empty string is returned.
-     * The $name parameter is both used as the name and id parameter
-     * in the element.  Mind that thus, it *MUST* be unique on your page.
+     * The $name parameter is used for both the element name and id attributes.
+     * Mind that thus, it *MUST* be unique on your page.
      * @param   string    $name         The element name
      * @param   array     $arrOptions   The options array
      * @param   string    $selected     The optional preselected option key
@@ -141,9 +169,7 @@ class Html
     static function getSelect(
         $name, $arrOptions=array(), $selected='', $onchange='', $attribute=''
     ) {
-
-//echo("getSelect($name, $arrOptions, $selected, $onchange, $attribute): Entered<br />");
-
+//echo("getSelect($name, ".var_export($arrOptions, true).", $selected, $onchange, $attribute): Entered<br />");
         if (empty($name)) {
 //die("getSelect($name, $arrOptions, $selected, $onchange, $attribute): Name empty");
             return '';
@@ -154,7 +180,7 @@ class Html
             ($onchange ? ' onchange="'.$onchange.'"' : '').
             ($attribute ? ' '.$attribute : '').
             ">\n".self::getOptions($arrOptions, $selected)."</select>\n";
-//echo("getSelect($name, $arrOptions, $selected, $onchange, $attribute): made menu: ".htmlentities($menu)."<br />");
+//echo("getSelect(): made menu: ".htmlentities($menu)."<br />");
         return $menu;
     }
 
@@ -227,7 +253,7 @@ class Html
                 );
         }
 //echo("getRadioGroup(): Made ".htmlentities($radiogroup, ENT_QUOTES, CONTREXX_CHARSET)."<br />");
-        return '<span class="inputgroup">'.$radiogroup.'</span>';
+        return '<span class="inputgroup">'.$radiogroup."</span>\n";
     }
 
 
@@ -321,7 +347,7 @@ class Html
                     $arrLabel[$key],
                     $attributeLabel
                 ).
-                '</p>';
+                "</p>\n";
         }
         return $checkboxgroup;
     }
@@ -374,7 +400,7 @@ class Html
         return
             '<label for="'.$for.'"'.
             ($attribute ? ' '.$attribute : '').
-            '>'.$text.'</label>';
+            '>'.$text."</label>\n";
     }
 
 
@@ -382,6 +408,10 @@ class Html
      * Returns HTML code for an image element that links to
      * the filebrowser for choosing an image file on the server
      *
+     * If the optional $imagetype_key is missing (defaults to false),
+     * no image type can be selected.  If it's a string, the type of the
+     * Image is set to this key.  If it's an array of keys, the Image type
+     * can be selected from these.
      * Uses the $id parameter as prefix for both the name and id attributes
      * of all HTML elements.  The names and respective suffixes are:
      *  - id+'img' for the name and id of the <img> tag
@@ -390,30 +420,49 @@ class Html
      *  - id+'_height' for the name and id of the hidden <input> tag for the height
      * All of the elements with a suffix will provide the current selected
      * image information when the form is posted.
+     * See {@see Image::updatePostImages()} and {@see Image::uploadAndStore()}
+     * for more information and examples.
+     * @param   Image   $objImage       The image object
+     * @param   string  $id             The base name for the elements IDs
+     * @param   mixed   $imagetype_key  The optional Image type key
+     * @return  string                  The HTML code for all the elements
      */
-    static function getImageChooserBrowser($objImage, $id)
+    static function getImageChooserBrowser($objImage, $id, $imagetype_key=false)
     {
         global $_CORELANG;
 
         Javascript::registerCode(self::getJavascript());
+        if (empty($objImage)) $objImage = new Image(0);
+        $type_element =
+            '<input type="hidden" id="'.$id.'_type" name="'.$id.'_type"'.
+            ' value="'.$imagetype_key.'" />'."\n";
+// TODO: Implement...
+/*
+        if (is_array($imagetype_key)) {
+            $arrImagetypeName = Imagetype::getNameArray();
+            $type_element = self::getSelect($id.'_type', $arrImagetypeName);
+        }
+*/
         return
-            '<img id="'.$id.'_img" src="'.$objImage->getPath().'" '.
-            '    style="width:'.$objImage->getWidth().'px; height:'.$objImage->getHeight().'px; border: none;" '.
-            '    title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" '.
-            '    alt="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" />'.
+            $type_element.
+            '<img id="'.$id.'_img" src="'.$objImage->getPath().'"'.
+            ' style="width:'.$objImage->getWidth().
+            'px; height:'.$objImage->getHeight().'px;"'.
+            ' title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'"'.
+            ' alt="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" />'."\n".
+            self::getHidden($id.'_type',
+              ($imagetype_key !== false
+                ? $imagetype_key : $objImage->getImageTypeKey())).
             ($objImage->getPath()
-                ? '<a href="javascript:void(0);" title="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'">'.
-                  ' onclick="clearImage(\''.$id.'\');"'.
-                  '<img src="'.Image::CLEAR_IMAGE_ICON.'" border="0" alt="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"/>'.
-                  '</a><br />'
+                ? self::getClearImageCode($id).
+                  self::getHidden($id.'_id', $objImage->getId()).
+                  self::getHidden($id.'_ord', $objImage->getOrd())
                 : '').
+            self::getHidden($id.'_src', $objImage->getPath()).
             '<a href="javascript:void(0);" title="{TXT_CORE_CHOOSE_IMAGE}"'.
-                ' tabindex="'.++self::$tabindex.'"'.
-                ' onclick="openBrowser(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop\',\'1\',\'width=800,height=640,resizable=yes,status=no,scrollbars=yes\');"  >'.
-            '  '.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].
-            '<input type="hidden" id="'.$id.'_src" name="'.$id.'_src" value="'.$objImage->getPath().'" />'.
-            '<input type="hidden" id="'.$id.'_width" name="'.$id.'_width" value="'.$objImage->getWidth().'" />'.
-            '<input type="hidden" id="'.$id.'_height" name="'.$id.'_height" value="'.$objImage->getHeight().'" />';
+            ' tabindex="'.++self::$tabindex.'"'.
+            ' onclick="openBrowser(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop\',\'1\',\'width=800,height=640,resizable=yes,status=no,scrollbars=yes\');">'.
+            $_CORELANG['TXT_CORE_CHOOSE_IMAGE']."</a>\n";
     }
 
 
@@ -421,39 +470,63 @@ class Html
      * Returns HTML code for an image element with form
      * elements for uploading an image file.
      *
+     // If the optional $imagetype_key is missing (defaults to false),
+     // no image type can be selected.  If it's a string, the type of the
+     // Image is set to this key.  If it's an array of keys, the Image type
+     // can be selected from these.
      * Uses the $id parameter as prefix for both the name and id attributes
      * of all HTML elements.  The names and respective suffixes are:
      *  - id+'_img' for the name and id of the <img> tag
-     *  - id+'_src' for the name and id of the hidden <input> tag for the image URI
+     *  - id+'_src' for the name and id of the hidden <input> tag for the image path
      *  - id+'_width' for the name and id of the hidden <input> tag for the width
      *  - id+'_height' for the name and id of the hidden <input> tag for the height
      *  - id+'_file' for the name and id of the file upload element
      * The file upload element will provide the new image chosen by the user
      * when the form is posted, while the hidden fields represent the previous
      * state when the page was generated.
+     * See {@see Image::updatePostImages()} and {@see Image::uploadAndStore()}
+     * for more information and examples.
+     * @param   Image   $objImage       The image object
+     * @param   string  $id             The base name for the elements IDs
+     * @param   mixed   $imagetype_key  The optional Image type key
+     * @return  string                  The HTML code for all the elements
      */
-    static function getImageChooserUpload($objImage, $id)
+    static function getImageChooserUpload($objImage, $id, $imagetype_key=false)
     {
         global $_CORELANG;
 
         JS::registerCode(self::getJavascript());
         if (empty($objImage)) $objImage = new Image(0);
         return
-            '<img id="'.$id.'_img" src="'.$objImage->getPath().'" '.
-            '    style="width:'.$objImage->getWidth().'px; height:'.$objImage->getHeight().'px; border: none;" '.
-            '    title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" '.
-            '    alt="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" />'.
+            '<img id="'.$id.'_img" src="'.$objImage->getPath().'"'.
+            ' style="width:'.$objImage->getWidth().
+            'px; height:'.$objImage->getHeight().'px;"'.
+            ' title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'"'.
+            ' alt="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'" />'."\n".
+            self::getHidden($id.'_type',
+              ($imagetype_key !== false
+                ? $imagetype_key : $objImage->getImageTypeKey())).
             ($objImage->getPath()
-                ? '<a href="javascript:void(0);" title="'.
-                  $_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"'.
-                  ' onclick="clearImage(\''.$id.'\');">'.
-                  '<img src="'.Image::ICON_CLEAR_IMAGE_SRC.'" border="0" alt="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"/>'.
-                  '</a><br />'
+                ? self::getClearImageCode($id).
+                  self::getHidden($id.'_id', $objImage->getId()).
+                  self::getHidden($id.'_ord', $objImage->getOrd()).
+                  self::getHidden($id.'_src', $objImage->getPath())
                 : '').
-            '<input type="hidden" id="'.$id.'_src" name="'.$id.'_src" value="'.$objImage->getPath().'" />'.
-            '<input type="hidden" id="'.$id.'_width" name="'.$id.'_width" value="'.$objImage->getWidth().'" />'.
-            '<input type="hidden" id="'.$id.'_height" name="'.$id.'_height" value="'.$objImage->getHeight().'" />'.
-            self::getInputFileupload($id.'_file');
+            self::getInputFileupload($id);
+    }
+
+
+    static function getClearImageCode($id)
+    {
+        global $_CORELANG;
+
+        return
+            '<a href="javascript:void(0);" id="'.$id.'_clear"'.
+            ' title="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"'.
+            ' onclick="clearImage(\''.$id.'\');">'."\n".
+            '  <img src="'.Image::ICON_CLEAR_IMAGE_SRC.
+            '" border="0" alt="'.$_CORELANG['TXT_CORE_CLEAR_IMAGE'].'"/>'."\n".
+            '</a><br />'."\n";
     }
 
 
@@ -513,9 +586,13 @@ function SetUrl(url, width, height, alt)
 function clearImage(id, index)
 {
   document.getElementById(id+"_img").src = "'.Image::NO_IMAGE_SRC.'";
-  document.getElementById(id+"_src").value = "";
-  document.getElementById(id+"_width").value = "";
-  document.getElementById(id+"_height").value = "";
+  document.getElementById(id+"_clear").style.display = "none";
+  if (document.getElementById(id+"_src"))
+    document.getElementById(id+"_src").value = "";
+  if (document.getElementById(id+"_width"))
+    document.getElementById(id+"_width").value = "";
+  if (document.getElementById(id+"_height"))
+    document.getElementById(id+"_height").value = "";
 }
 ';
     }
