@@ -1375,7 +1375,7 @@ class Auction extends auctionLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings&tpl=spez_fields');
+                CSRF::header('Location: ?cmd=auction&act=settings&tpl=spez_fields');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1457,7 +1457,7 @@ class Auction extends auctionLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings');
+                CSRF::header('Location: ?cmd=auction&act=settings');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1531,7 +1531,7 @@ class Auction extends auctionLibrary
         if (isset($_POST['submitSettings'])) {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_auction_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='".$_POST['mailOn']."' WHERE id='1'");
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings&tpl=email');
+                CSRF::header('Location: ?cmd=auction&act=settings&tpl=email');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1609,7 +1609,7 @@ class Auction extends auctionLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings&tpl=email_code');
+                CSRF::header('Location: ?cmd=auction&act=settings&tpl=email_code');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];

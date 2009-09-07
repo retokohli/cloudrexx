@@ -233,7 +233,7 @@ class HTTP
         }
 
         $url = HTTP::absoluteURI($url);
-        header('Location: '. $url);
+        CSRF::header('Location: '. $url);
 
         if (    $rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
                 $_SERVER['REQUEST_METHOD'] != 'HEAD') {

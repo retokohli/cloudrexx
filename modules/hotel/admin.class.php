@@ -550,7 +550,7 @@ class HotelManager extends HotelLib {
         if(!empty($interestID)){
             if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_hotel_interest WHERE id = $interestID") !== false){
                 $this->_strOkMessage = $_ARRAYLANG['TXT_HOTEL_SUCCESSFULLY_DELETED'];
-                header('Location: /admin/?cmd=hotel&act=interests');
+                CSRF::header('Location: /admin/?cmd=hotel&act=interests');
                 return true;
             }
         }
@@ -3117,7 +3117,7 @@ WHERE id = $hotelID )";
             }
         }
 
-        header("Location: ?cmd=hotel&act=settings");
+        CSRF::header("Location: ?cmd=hotel&act=settings");
         exit;
     }
 

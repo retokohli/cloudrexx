@@ -3848,7 +3848,7 @@ class PartnersAdmin extends PartnersLibrary {
         if (isset($_POST['import_cancel'])) {
             // Abbrechen. Siehe Abbrechen
             $objImport->cancel();
-            header("Location: index.php?cmd=partners&act=users&tpl=import");
+            CSRF::header("Location: index.php?cmd=partners&act=users&tpl=import");
             exit;
         } elseif ($_POST['fieldsSelected']) {
             // Speichern der Daten. Siehe Final weiter unten.

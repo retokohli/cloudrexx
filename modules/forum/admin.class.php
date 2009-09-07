@@ -641,7 +641,7 @@ class ForumAdmin extends ForumLibrary {
 
         } else {
             //no category with this id, redirect
-            header("location: index.php?cmd=forum");
+            CSRF::header("location: index.php?cmd=forum");
         }
 
     }
@@ -844,7 +844,7 @@ class ForumAdmin extends ForumLibrary {
                }
            } else {
                //wrong id, redirect
-               header("location: index.php?cmd=forum");
+               CSRF::header("location: index.php?cmd=forum");
            }
     }
 

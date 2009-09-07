@@ -1513,7 +1513,7 @@ EOF;
                 //change status
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_levels SET status='".$levelStatus."' WHERE id='".$levelId."'");
 
-                header('Location: index.php?cmd=directory&act=levels');
+                CSRF::header('Location: index.php?cmd=directory&act=levels');
                 exit;
             } else {
                 //get id and status
@@ -1523,7 +1523,7 @@ EOF;
                 //change status
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_categories SET status='".$catStatus."' WHERE id='".$catId."'");
 
-                header('Location: index.php?cmd=directory');
+                CSRF::header('Location: index.php?cmd=directory');
                 exit;
             }
         }
@@ -2959,7 +2959,7 @@ EOF;
             $objSettings = &new settingsManager();
             $objSettings->writeSettingsFile();
 
-            header('Location: ?cmd=directory&act=settings&tpl=homecontent');
+            CSRF::header('Location: ?cmd=directory&act=settings&tpl=homecontent');
             exit;
 
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];

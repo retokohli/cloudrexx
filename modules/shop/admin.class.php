@@ -2996,15 +2996,15 @@ class shopmanager extends ShopLibrary
 
             switch ($_POST['shopAfterStoreAction']) {
                 case 'newEmpty':
-                    header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage");
+                    CSRF::header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage");
                     exit();
                 case 'newTemplate':
-                    header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage&id=".
+                    CSRF::header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage&id=".
                         $objProduct->getId()."&new=1"
                     );
                     exit();
                 default:
-                    header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products");
+                    CSRF::header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products");
                     // prevent further output, go back to product overview
                     exit();
             }

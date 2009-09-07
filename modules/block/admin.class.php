@@ -286,7 +286,7 @@ class blockManager extends blockLibrary
                 $objDatabase->Execute($query);
             }
 
-            header('Location: index.php?cmd=block');
+            CSRF::header('Location: index.php?cmd=block');
         }
     }
 
@@ -590,7 +590,7 @@ class blockManager extends blockLibrary
             }
         }
 
-        header("LOCATION: ?cmd=block");
+        CSRF::header("LOCATION: ?cmd=block");
     }
 
     /**
@@ -620,7 +620,7 @@ class blockManager extends blockLibrary
             }
         }
 
-        header("LOCATION: ?cmd=block");
+        CSRF::header("LOCATION: ?cmd=block");
     }
 
     /**
@@ -765,7 +765,7 @@ class blockManager extends blockLibrary
                 $objDatabase->Execute($query);
             }
 
-            header('Location: index.php?cmd=block&act=settings');
+            CSRF::header('Location: index.php?cmd=block&act=settings');
         }
     }
 }

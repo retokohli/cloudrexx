@@ -1305,7 +1305,7 @@ JS_CODE;
         if (!$objDownload->EOF) {
             // check if the download is expired
             if ($objDownload->getExpirationDate() && $objDownload->getExpirationDate() < time()) {
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=error&id=404");
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=error&id=404");
                 exit;
             }
 
@@ -1330,7 +1330,7 @@ JS_CODE;
                 readfile(ASCMS_PATH.$objDownload->getSource());
             } else {
                 // add socket -> prevent to hide the source from the customer
-                header('Location: '.$objDownload->getSource());
+                CSRF::header('Location: '.$objDownload->getSource());
             }
         }
     }

@@ -107,7 +107,7 @@ class calendarManager extends calendarLibrary
 
             case 'saveNew':
                 $id = $this->writeNote('');
-                header("Location: index.php?cmd=calendar".$this->mandateLink."&act=event&id=$id");
+                CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink."&act=event&id=$id");
                 exit;
                 break;
 
@@ -133,7 +133,7 @@ class calendarManager extends calendarLibrary
 
             case 'saveEdited':
                 $id = $this->writeNote(intval($_POST['id']));
-                header("Location: index.php?cmd=calendar".$this->mandateLink);
+                CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink);
                 exit;
                 break;
 
@@ -145,7 +145,7 @@ class calendarManager extends calendarLibrary
             case 'saveSettings':
                 $this->saveSettings();
                 $this->setStdCat();
-                header("Location: index.php?cmd=calendar".$this->mandateLink."&act=settings");
+                CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink."&act=settings");
                 exit;
                 break;
 
@@ -558,9 +558,9 @@ class calendarManager extends calendarLibrary
         }
 
         if ($this->mandate == 1) {
-            header("Location: index.php?cmd=calendar".$this->mandateLink."");
+            CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink."");
         } else {
-            header("Location: index.php?cmd=calendar".$this->mandateLink."".$this->mandate);
+            CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink."".$this->mandate);
         }
         exit;
     }
@@ -1619,7 +1619,7 @@ class calendarManager extends calendarLibrary
             $objResult = $objDatabase->SelectLimit($query, 1);
 
             if ($objDatabase->Affected_Rows() == 0) {
-                header("Location: index.php?cmd=calendar".$this->mandateLink."&act=cat");
+                CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink."&act=cat");
 
                 die;
             }
@@ -1663,7 +1663,7 @@ class calendarManager extends calendarLibrary
                 'CALENDAR_STATUS1'       => $status1
             ));
         } else {
-            header("Location: index.php?cmd=calendar".$this->mandateLink."&act=cat");
+            CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink."&act=cat");
 
             die;
         }
@@ -2214,7 +2214,7 @@ class calendarManager extends calendarLibrary
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if (empty($id)) {
-            header("Location: index.php?cmd=calendar".$this->mandateLink);
+            CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink);
             return;
         }
 

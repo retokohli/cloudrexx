@@ -1086,7 +1086,7 @@ class Auction extends auctionLibrary
             $_SESSION["ADD_JS"] = '';
             
         }else{
-            header('Location: ?section=auction');
+            CSRF::header('Location: ?section=auction');
         }
     }
     
@@ -1149,7 +1149,7 @@ class Auction extends auctionLibrary
                 ));
             }
         }else{
-            header('Location: ?section=auction');
+            CSRF::header('Location: ?section=auction');
         }
     }
 
@@ -1169,13 +1169,13 @@ class Auction extends auctionLibrary
 
 
         if (!$this->settings['addEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
-            header('Location: index.php?section=auction');
+            CSRF::header('Location: index.php?section=auction');
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
             if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1371,7 +1371,7 @@ class Auction extends auctionLibrary
                         $this->sendMail($id);
 
                         if ($objResultUpdate !== false) {
-                            header('Location: ?section=auction&cmd=detail&id='.$objResult->fields['id'].'');
+                            CSRF::header('Location: ?section=auction&cmd=detail&id='.$objResult->fields['id'].'');
                         }
 
                         $objResult->MoveNext();
@@ -1417,7 +1417,7 @@ class Auction extends auctionLibrary
             ));
 
         }else{
-            header('Location: ?section=auction&cmd=add');
+            CSRF::header('Location: ?section=auction&cmd=add');
         }
     }
 
@@ -1681,13 +1681,13 @@ class Auction extends auctionLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         if (!$this->settings['editEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
-            header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
+            CSRF::header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
             if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1827,7 +1827,7 @@ class Auction extends auctionLibrary
                         ));
                            $objResult->MoveNext();
                        }else{
-                        header('Location: index.php?section=auction&cmd=detail&id='.$_GET['id']);
+                        CSRF::header('Location: index.php?section=auction&cmd=detail&id='.$_GET['id']);
                         exit;
                     }
                 }
@@ -1874,22 +1874,22 @@ class Auction extends auctionLibrary
                                           WHERE id='".contrexx_addslashes($_POST['id'])."'");
 
                     if ($objResult !== false) {
-                        header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
+                        CSRF::header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
                         exit;
                     }else{
 // TODO: Never used
 //                        $error = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-                        header('Location: index.php?section=auction&cmd=edit&id='.$_POST['id']);
+                        CSRF::header('Location: index.php?section=auction&cmd=edit&id='.$_POST['id']);
                         exit;
                     }
                 }else{
 // TODO: Never used
 //                    $error = $_CORELANG['TXT_AUCTION_IMAGE_UPLOAD_ERROR'];
-                    header('Location: index.php?section=auction&cmd=edit&id='.$_POST['id']);
+                    CSRF::header('Location: index.php?section=auction&cmd=edit&id='.$_POST['id']);
                     exit;
                 }
             }else{
-                header('Location: index.php?section=auction');
+                CSRF::header('Location: index.php?section=auction');
                 exit;
             }
         }
@@ -1904,13 +1904,13 @@ class Auction extends auctionLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         if (!$this->settings['editEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
-            header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
+            CSRF::header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
             if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1938,7 +1938,7 @@ class Auction extends auctionLibrary
 
                         $objResult->MoveNext();
                     }else{
-                        header('Location: index.php?section=auction&cmd=detail&id='.$_GET['id']);
+                        CSRF::header('Location: index.php?section=auction&cmd=detail&id='.$_GET['id']);
                         exit;
                     }
                 }
@@ -1950,10 +1950,10 @@ class Auction extends auctionLibrary
                 $arrDelete[0] = $_POST['id'];
                 $this->removeEntry($arrDelete);
 
-                header('Location: index.php?section=auction');
+                CSRF::header('Location: index.php?section=auction');
                 exit;
             }else{
-                header('Location: index.php?section=auction');
+                CSRF::header('Location: index.php?section=auction');
                 exit;
             }
         }

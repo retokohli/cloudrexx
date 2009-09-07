@@ -293,7 +293,7 @@ class Dataviewer {
 				$this->_objTpl->setVariable(array(
 					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_PROJECT_CREATED']
 				));	
-				header("location:index.php?cmd=dataviewer&act=added");
+				CSRF::header("location:index.php?cmd=dataviewer&act=added");
 			} else {
 				$this->_objTpl->setVariable(array(
 					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_PROJECT_COULDNT_BE_CREATED']."<br />".$insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery

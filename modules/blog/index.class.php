@@ -165,7 +165,7 @@ class Blog extends BlogLibrary  {
         $intMessageId = intval($intMessageId);
 
         if ($intMessageId < 1) {
-            header("Location: index.php?section=blog");
+            CSRF::header("Location: index.php?section=blog");
         }
 
         //Empty form-values

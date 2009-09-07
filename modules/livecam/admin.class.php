@@ -95,7 +95,7 @@ class LivecamManager extends LivecamLibrary
         switch ($_REQUEST['act']) {
             case 'saveSettings':
                 $this->saveSettings();
-                header("Location: index.php?cmd=livecam&act=settings");
+                CSRF::header("Location: index.php?cmd=livecam&act=settings");
                 break;
             case 'settings':
                 $this->settings();

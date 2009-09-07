@@ -189,7 +189,7 @@ class reservations extends reservationLib
         $unit = $_GET['unit'];
 
         if (empty($day) || empty($unit)) {
-            header("Location: index.php?section=reservation");
+            CSRF::header("Location: index.php?section=reservation");
         }
 
         $outDay = strftime("%A, %d.%m.%Y", mktime(1, 1, 1, substr($day, 5, 2), substr($day, 8, 2), substr($day, 0, 4)));
@@ -295,7 +295,7 @@ class reservations extends reservationLib
 
            } else {
                // Invalid
-               header("Location: index.php?section=recommend");
+               CSRF::header("Location: index.php?section=recommend");
            }
         }
 

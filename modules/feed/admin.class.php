@@ -1745,7 +1745,7 @@ class feedManager extends feedLibrary
 
     function goToReplace($add)
     {
-        header("Location: index.php?cmd=feed".$add);
+        CSRF::header("Location: index.php?cmd=feed".$add);
     }
 
 }

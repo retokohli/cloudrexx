@@ -882,7 +882,7 @@ class HotelManager extends HotelLib
         if (!empty($_GET['id'])) {
             $hotelID = intval($_GET['id']);
             if (empty($hotelID)) {
-                header('Location: ?section=hotel&cmd=hotellist');
+                CSRF::header('Location: ?section=hotel&cmd=hotellist');
                 die();
             }
         }

@@ -382,7 +382,7 @@ class Forum extends ForumLibrary {
         require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
         if ($intForumId == 0) {
             //wrong id, redirect
-            header('location: index.php?section=forum');
+            CSRF::header('location: index.php?section=forum');
             die();
         }
 
@@ -589,7 +589,7 @@ class Forum extends ForumLibrary {
                 $objCache = &new Cache();
                 $objCache->deleteAllFiles();
             }
-            header('Location: ?section=forum&cmd=board&id='.$intForumId);
+            CSRF::header('Location: ?section=forum&cmd=board&id='.$intForumId);
             die();
         }
     }
@@ -619,7 +619,7 @@ class Forum extends ForumLibrary {
         }
 
         if(empty($intCatId)){
-            header('Location: index.php?section=forum');
+            CSRF::header('Location: index.php?section=forum');
             die();
         }
         if ($objFWUser->objUser->login()) {
@@ -956,7 +956,7 @@ class Forum extends ForumLibrary {
                 $objCache = &new Cache();
                 $objCache->deleteAllFiles();
             }
-            header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
+            CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
         }
 
@@ -1047,7 +1047,7 @@ class Forum extends ForumLibrary {
                 $objCache->deleteAllFiles();
             }
 
-            header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
+            CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
         }
 
@@ -1107,7 +1107,7 @@ class Forum extends ForumLibrary {
                     'FORUM_CATEGORY_ID'                                     => $intCatId,
                     'FORUM_THREAD_ID'                                       => $intThreadId,
                 ));
-                header('Location: index.php?section=forum&cmd=thread&id='.$thread);
+                CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$thread);
             }
         }
 
@@ -1154,7 +1154,7 @@ class Forum extends ForumLibrary {
                     break;
                 }
                 if($action != 'move'){
-                    header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&a='.$action.'&r='.$success.'&s='.$suffix);
+                    CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&a='.$action.'&r='.$success.'&s='.$suffix);
                 }
             }else{
                 $this->_objTpl->setVariable('TXT_THREAD_ACTION_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
@@ -1429,7 +1429,7 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->setVariable('TXT_THREADS_NONE', $_ARRAYLANG['TXT_FORUM_THREADS_NONE']);
             }
         } else {
-            header('location: index.php?section=forum');
+            CSRF::header('location: index.php?section=forum');
             die();
         }
 

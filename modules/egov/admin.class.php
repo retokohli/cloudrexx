@@ -899,7 +899,7 @@ class eGov extends eGovLibrary
              WHERE order_id=".intval($_REQUEST['id']);
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() != 1) {
-            header('Location: index.php?cmd=egov&err=Wrong Order ID');
+            CSRF::header('Location: index.php?cmd=egov&err=Wrong Order ID');
             exit;
         }
 

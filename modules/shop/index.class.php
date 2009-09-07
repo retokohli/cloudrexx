@@ -597,7 +597,7 @@ class Shop extends ShopLibrary
         global $_ARRAYLANG;
 
         if (!$this->objCustomer) {
-            header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=login');
+            CSRF::header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=login');
             exit;
         }
 
@@ -2494,7 +2494,7 @@ sendReq('', 1);
     {
         // go to the next step
         if (isset($_POST['continue'])) {
-            header("Location: index.php?section=shop".MODULE_INDEX."&cmd=login");
+            CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=login");
             exit;
         }
     }
@@ -2817,7 +2817,7 @@ sendReq('', 1);
         // Redirect if the login was completed successfully:
 //        // Special redirects
 //        if ($redirect == 'shop') {
-//            header('Location: index.php?section=shop');
+//            CSRF::header('Location: index.php?section=shop');
 //            exit;
 //        }
 //         //Add more special redirects here as needed.
@@ -2825,12 +2825,12 @@ sendReq('', 1);
         if (!empty($redirect)) {
             $decodedRedirect = base64_decode($redirect);
             if (!empty($decodedRedirect)) {
-                header('Location: index.php?'.$decodedRedirect);
+                CSRF::header('Location: index.php?'.$decodedRedirect);
                 exit;
             }
         }
         // Default: Redirect to the account page
-        header('Location: index.php?section=shop&cmd=account');
+        CSRF::header('Location: index.php?section=shop&cmd=account');
         exit;
     }
 
@@ -2968,9 +2968,9 @@ sendReq('', 1);
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult) {
             if ($objResult->RecordCount() == 1) {
-                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
+                CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
             } else {
-                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
+                CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
             }
             exit;
         }
@@ -3125,7 +3125,7 @@ sendReq('', 1);
         $this->_parseCart();
         // Reloading or loading without sessions
         if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: index.php?section=shop".MODULE_INDEX);
+            CSRF::header("Location: index.php?section=shop".MODULE_INDEX);
             exit;
         }
 
@@ -3178,7 +3178,7 @@ die("Z1");
                 if (isset($_SESSION['shop']['currencyIdPrev'])) {
                     $_SESSION['shop']['currencyId'] = $_SESSION['shop']['currencyIdPrev'];
                     unset($_SESSION['shop']['currencyIdPrev']);
-                    header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
+                    CSRF::header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
                     exit;
                 }
             } else {
@@ -3191,7 +3191,7 @@ die("Z2");
                         if ($arrCurrency['status'] && $arrCurrency['code'] == $this->arrConfig['paypal_default_currency']['value']) {
                             $_SESSION['shop']['currencyIdPrev'] = $_SESSION['shop']['currencyId'];
                             $_SESSION['shop']['currencyId'] = $arrCurrency['id'];
-                            header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
+                            CSRF::header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
                             exit;
                         }
                     }
@@ -3439,7 +3439,7 @@ die("YYY");
 
             if ($agbStatus && $shipmentStatus && $paymentStatus) {
                 // everything is set and valid
-                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
+                CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
                 exit;
             } else {
                 // something is missing od invalid
@@ -3680,7 +3680,7 @@ right after the customer logs in!
 
         // if the cart is missing, return to the shop
         if (empty($_SESSION['shop']['cart'])) {
-            header('Location: index.php?section=shop'.MODULE_INDEX);
+            CSRF::header('Location: index.php?section=shop'.MODULE_INDEX);
             exit;
         }
         // hide currency navbar

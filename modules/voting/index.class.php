@@ -293,7 +293,7 @@ function VotingSubmit(){
 	        $objDatabase->Execute($query);
 			_store_additional_data($voting_id);
     }
-	    header("Location: ?section=voting");
+	    CSRF::header("Location: ?section=voting");
 	}
 }
 

@@ -1473,7 +1473,7 @@ class ContactManager extends ContactLib
         $id = intval($_GET['formId']);
 
         if (empty($id)) {
-            header("Location: index.php?cmd=contact");
+            CSRF::header("Location: index.php?cmd=contact");
             return;
         }
 
@@ -1699,7 +1699,7 @@ class ContactManager extends ContactLib
                                         ');
                 }
 
-                header("Location: ".ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId);
+                CSRF::header("Location: ".ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId);
                 exit;
             } else {
                 $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
