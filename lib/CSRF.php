@@ -18,7 +18,7 @@ class CSRF {
      * is accepted as valid. We need this in case the user
      * opens a new tab in the admin panel.
      *
-     * A high value increases usability, a low value 
+     * A high value increases usability, a low value
      * increases security. Tough call!
      */
     static $validity_count = 4;
@@ -36,7 +36,7 @@ class CSRF {
 
     /**
      * This number defines how much to decrease a code's
-     * validity each time it's checked. Example: if 
+     * validity each time it's checked. Example: if
      * validity_count is 5 and active_decrease is 1,
      * a code is valid four times, meaning a user can
      * open four tabs from the same page before the
@@ -64,8 +64,8 @@ class CSRF {
 
     /**
      * An utility function to patch URLs specifically in
-     * redirect (and possibly other) headers. Expects a 
-     * string in the form "header-name: ...." and returns 
+     * redirect (and possibly other) headers. Expects a
+     * string in the form "header-name: ...." and returns
      * it, modified to contain the CSRF protection parameter.
      *
      * Example: __enhance_header('Location: index.php')
@@ -100,7 +100,23 @@ class CSRF {
     }
 
     /**
-     * Call this to add a CSRF protection code to all the 
+	 * Adds the CSRF protection code to the URI specified by $uri.
+     */
+    public static function enhanceURI($uri)
+    {
+        $key = CSRF::$formkey;
+        $val = CSRF::__get_code();
+        if (strstr($uri, '?')) {
+            $uri .= "&amp;$key=$val";
+        }
+        else {
+            $uri .= "?$key=$val";
+        }
+        return $uri;
+    }
+
+    /**
+     * Call this to add a CSRF protection code to all the
      * forms and links on the generated page. Note that
      * you don't need to pass any content, and nothing is
      * returned - this function uses PHP to change it's
@@ -129,12 +145,15 @@ class CSRF {
         }
         $code = CSRF::__get_code();
         $name = CSRF::$formkey;
-        $tpl->setGlobalVariable("CSRF_PARAM", "$name=$code");
+        $tpl->setGlobalVariable(array(
+            "CSRF_PARAM"    => "$name=$code",
+            "CSRF_KEY"      => "$code"
+        ));
         return true;
     }
 
     /**
-     * Call this if you need to protect critical work. 
+     * Call this if you need to protect critical work.
      * This function will stop the request if it cannot
      * find a valid anti-CSRF code in the request.
      */
@@ -159,7 +178,6 @@ class CSRF {
         ;
 
         CSRF::__cleanup();
-
         if(! CSRF::__getkey($code)) {
             CSRF::__kill();
         }
@@ -174,7 +192,7 @@ class CSRF {
 
     private static function __kill() {
         global $_ARRAYLANG, $_CORELANG;
-        
+
         $data = ($_SERVER['REQUEST_METHOD'] == 'GET')
             ? $_GET
             : $_POST
@@ -193,7 +211,7 @@ class CSRF {
                     margin-left: auto;
                     margin-right: auto;
                     width: 500px;
-                    border: 1px solid red; 
+                    border: 1px solid red;
                     padding: 5px;
                     background-color: #ffefef;
                     margin-top: 100px;
