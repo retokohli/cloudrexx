@@ -18,7 +18,7 @@ class CSRF {
      * is accepted as valid. We need this in case the user
      * opens a new tab in the admin panel.
      *
-     * A high value increases usability, a low value 
+     * A high value increases usability, a low value
      * increases security. Tough call!
      */
     static $validity_count = 4;
@@ -36,7 +36,7 @@ class CSRF {
 
     /**
      * This number defines how much to decrease a code's
-     * validity each time it's checked. Example: if 
+     * validity each time it's checked. Example: if
      * validity_count is 5 and active_decrease is 1,
      * a code is valid four times, meaning a user can
      * open four tabs from the same page before the
@@ -78,15 +78,12 @@ class CSRF {
             return $header;
         }
         $hdr = $result[1];
-        $url = $result[2];
+        $url = CSRF::enhanceURI($result[2]);
+
+        # &amp; is NOT allowed in HTTP headers.
+        $url = str_replace('&amp;', '&', $url);
         $key = CSRF::$formkey;
         $val = CSRF::__get_code();
-        if (strstr($url, '?')) {
-            $url .= "&$key=$val";
-        }
-        else {
-            $url .= "?$key=$val";
-        }
         return "$hdr: $url";
     }
 
@@ -116,7 +113,7 @@ class CSRF {
     }
 
     /**
-     * Call this to add a CSRF protection code to all the 
+     * Call this to add a CSRF protection code to all the
      * forms and links on the generated page. Note that
      * you don't need to pass any content, and nothing is
      * returned - this function uses PHP to change it's
@@ -144,16 +141,40 @@ class CSRF {
             DBG::stack();
         }
         $code = CSRF::__get_code();
-        $name = CSRF::$formkey;
         $tpl->setGlobalVariable(array(
-            "CSRF_PARAM"    => "$name=$code",
+            "CSRF_PARAM"    => CSRF::param(),
             "CSRF_KEY"      => "$code"
         ));
         return true;
     }
 
     /**
-     * Call this if you need to protect critical work. 
+     * Returns the anti-CSRF code's form key.
+     * You can build your own URLs together
+     * with CSRF::code()
+     */
+    public static function key() {
+        return CSRF::$formkey;
+    }
+
+    /**
+     * Returns the anti-CSRF code for the current
+     * request. You can build your own URLs together
+     * with CSRF::key()
+     */
+    public static function code() {
+        return CSRF::__get_code();
+    }
+
+    /**
+     * Returns a key/value pair ready to use in an URL.
+     */
+    public static function param() {
+        return CSRF::key().'='.CSRF::code();
+    }
+
+    /**
+     * Call this if you need to protect critical work.
      * This function will stop the request if it cannot
      * find a valid anti-CSRF code in the request.
      */
@@ -173,12 +194,11 @@ class CSRF {
         }
 
         $code = ($_SERVER['REQUEST_METHOD'] == 'GET')
-            ? $_GET [CSRF::$formkey]
-            : $_POST[CSRF::$formkey]
+            ? (isset($_GET [CSRF::$formkey]) ? $_GET[CSRF::$formkey] : '')
+            : (isset($_POST[CSRF::$formkey]) ? $_POST[CSRF::$formkey] : '')
         ;
 
         CSRF::__cleanup();
-
         if(! CSRF::__getkey($code)) {
             CSRF::__kill();
         }
@@ -192,8 +212,8 @@ class CSRF {
     }
 
     private static function __kill() {
-        global $_ARRAYLANG, $_CORELANG;
-        
+        global $_CORELANG;
+
         $data = ($_SERVER['REQUEST_METHOD'] == 'GET')
             ? $_GET
             : $_POST
@@ -203,7 +223,7 @@ class CSRF {
         // TODO: make this a nice little template
         $html = '
             <html><head>
-            <title>'.$_ARRAYLANG['TXT_CSRF_TITLE'].'</title>
+            <title>'.$_CORELANG['TXT_CSRF_TITLE'].'</title>
             <style type="text/css">
                 * {
                     font-family: Arial,Helvetica,sans-serif;
@@ -212,7 +232,7 @@ class CSRF {
                     margin-left: auto;
                     margin-right: auto;
                     width: 500px;
-                    border: 1px solid red; 
+                    border: 1px solid red;
                     padding: 5px;
                     background-color: #ffefef;
                     margin-top: 100px;
@@ -221,13 +241,13 @@ class CSRF {
             </head>
             <body>
             <div id="message">
-                <h2>'.$_ARRAYLANG['TXT_CSRF_TITLE'].'</h2>
-                '.$_ARRAYLANG['TXT_CSRF_DESCR'].'
+                <h2>'.$_CORELANG['TXT_CSRF_TITLE'].'</h2>
+                '.$_CORELANG['TXT_CSRF_DESCR'].'
 
                 <p/>
                 <form method="'.$_SERVER['REQUEST_METHOD'].'">
                 _____ELEMENTS___
-                <input type="submit" value="'.$_ARRAYLANG['TXT_CSRF_BUTTON'].'" />
+                <input type="submit" value="'.$_CORELANG['TXT_CSRF_BUTTON'].'" />
                 </form>
             </div>
             </body>
@@ -236,7 +256,7 @@ class CSRF {
         $elem_template = '<input type="hidden" name="_N_" value="_V_" />';
         $form = '';
         foreach ($data as $key => $value) {
-            if ($key == CSRF::$formkey) {
+            if ($key == CSRF::$formkey or $key == 'amp;'.CSRF::$formkey) {
                 continue;
             }
             $elem = $elem_template;
@@ -277,7 +297,7 @@ class CSRF {
     }
 
     private function __getkey($key) {
-        return $_SESSION[CSRF::$sesskey][$key];
+        return !empty($_SESSION[CSRF::$sesskey][$key]);
     }
     private function __setkey($key, $value) {
         if (!isset($_SESSION[CSRF::$sesskey])) {
