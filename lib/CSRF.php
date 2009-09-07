@@ -149,7 +149,7 @@ class CSRF {
     }
 
     /**
-     * Returns the anti-CSRF code's form key. 
+     * Returns the anti-CSRF code's form key.
      * You can build your own URLs together
      * with CSRF::code()
      */
@@ -194,8 +194,8 @@ class CSRF {
         }
 
         $code = ($_SERVER['REQUEST_METHOD'] == 'GET')
-            ? $_GET [CSRF::$formkey]
-            : $_POST[CSRF::$formkey]
+            ? (isset($_GET [CSRF::$formkey]) ? $_GET[CSRF::$formkey] : '')
+            : (isset($_POST[CSRF::$formkey]) ? $_POST[CSRF::$formkey] : '')
         ;
 
         CSRF::__cleanup();
@@ -212,7 +212,7 @@ class CSRF {
     }
 
     private static function __kill() {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_CORELANG;
 
         $data = ($_SERVER['REQUEST_METHOD'] == 'GET')
             ? $_GET
@@ -223,7 +223,7 @@ class CSRF {
         // TODO: make this a nice little template
         $html = '
             <html><head>
-            <title>'.$_ARRAYLANG['TXT_CSRF_TITLE'].'</title>
+            <title>'.$_CORELANG['TXT_CSRF_TITLE'].'</title>
             <style type="text/css">
                 * {
                     font-family: Arial,Helvetica,sans-serif;
@@ -241,13 +241,13 @@ class CSRF {
             </head>
             <body>
             <div id="message">
-                <h2>'.$_ARRAYLANG['TXT_CSRF_TITLE'].'</h2>
-                '.$_ARRAYLANG['TXT_CSRF_DESCR'].'
+                <h2>'.$_CORELANG['TXT_CSRF_TITLE'].'</h2>
+                '.$_CORELANG['TXT_CSRF_DESCR'].'
 
                 <p/>
                 <form method="'.$_SERVER['REQUEST_METHOD'].'">
                 _____ELEMENTS___
-                <input type="submit" value="'.$_ARRAYLANG['TXT_CSRF_BUTTON'].'" />
+                <input type="submit" value="'.$_CORELANG['TXT_CSRF_BUTTON'].'" />
                 </form>
             </div>
             </body>
@@ -297,7 +297,7 @@ class CSRF {
     }
 
     private function __getkey($key) {
-        return $_SESSION[CSRF::$sesskey][$key];
+        return !empty($_SESSION[CSRF::$sesskey][$key]);
     }
     private function __setkey($key, $value) {
         if (!isset($_SESSION[CSRF::$sesskey])) {
