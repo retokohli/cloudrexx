@@ -219,30 +219,31 @@ class Mail
     ) {
         global $_CONFIG;
 
-        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            $objMail = new phpmailer();
-            if (   isset($_CONFIG['coreSmtpServer'])
-                && $_CONFIG['coreSmtpServer'] > 0
-                && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = preg_replace('/\015\012/', '', $mailFrom);
-            $objMail->FromName = preg_replace('/\015\012/', '', $mailSender);
-            //$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
-            $objMail->Subject = $mailSubject;
-            $objMail->IsHTML(false);
-            $objMail->Body = preg_replace('/\015\012/', "\012", $mailBody);
-            $objMail->AddAddress($mailTo);
-            if ($objMail->Send()) return true;
+        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+            return false;
         }
+        $objMail = new phpmailer();
+        if (   isset($_CONFIG['coreSmtpServer'])
+            && $_CONFIG['coreSmtpServer'] > 0
+            && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                $objMail->IsSMTP();
+                $objMail->Host = $arrSmtp['hostname'];
+                $objMail->Port = $arrSmtp['port'];
+                $objMail->SMTPAuth = true;
+                $objMail->Username = $arrSmtp['username'];
+                $objMail->Password = $arrSmtp['password'];
+            }
+        }
+        $objMail->CharSet = CONTREXX_CHARSET;
+        $objMail->From = preg_replace('/\015\012/', '', $mailFrom);
+        $objMail->FromName = preg_replace('/\015\012/', '', $mailSender);
+        //$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+        $objMail->Subject = $mailSubject;
+        $objMail->IsHTML(false);
+        $objMail->Body = preg_replace('/\015\012/', "\012", $mailBody);
+        $objMail->AddAddress($mailTo);
+        if ($objMail->Send()) return true;
         return false;
     }
 
