@@ -153,7 +153,7 @@ class InitCMS
             && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])
             && basename($_SERVER['SCRIPT_FILENAME']) != 'frontendEditing.class.php'
         ) {
-            header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.CONTREXX_DIRECTORY_INDEX.(empty($_GET) ? '' : '?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))));
+            CSRF::header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.CONTREXX_DIRECTORY_INDEX.(empty($_GET) ? '' : '?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))));
             exit;
         }
 
@@ -621,7 +621,7 @@ class InitCMS
                 $page_id = $objResult->fields['catid'];
             }
             if (!$page_id) {
-                header('Location: index.php?section=error');
+                CSRF::header('Location: index.php?section=error');
                 exit;
             }
             $this->_setCustomizedThemesId($objResult->fields['themes_id']);
@@ -693,7 +693,7 @@ class InitCMS
                     $this->_setCustomizedThemesId($objResult->fields['themes_id']);
                     $this->is_home=true;
                 } else {
-                    header('Location: index.php?section=error');
+                    CSRF::header('Location: index.php?section=error');
                     exit;
                 }
             }
@@ -717,7 +717,7 @@ class InitCMS
                         $this->_setCustomizedThemesId($objResult->fields['themes_id']);
                     }
                 } else {
-                    header('Location: index.php?section=error');
+                    CSRF::header('Location: index.php?section=error');
                     exit;
                 }
             } else {
@@ -738,7 +738,7 @@ class InitCMS
                     }
                 }
                 if (empty($catID)) {
-                    header('Location: index.php?section=error');
+                    CSRF::header('Location: index.php?section=error');
                     exit;
                 }
             }

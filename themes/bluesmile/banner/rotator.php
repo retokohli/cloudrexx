@@ -13,5 +13,5 @@ while (false !== ($file = readdir($handle))) {
 }
 closedir($handle); // We're not using it anymore
 $rand = array_rand($files);
-header('Location: '.$folder.$files[$rand]); // Voila!
+CSRF::header('Location: '.$folder.$files[$rand]); // Voila!
 ?>

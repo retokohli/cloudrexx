@@ -637,7 +637,7 @@ class ContentWorkflow {
     * @param    integer     The page with this id will be shown in content manager
     */
     function redirectPage($intPageId) {
-        header('location:index.php?cmd=content&act=edit&pageId='.intval($intPageId));
+        CSRF::header('location:index.php?cmd=content&act=edit&pageId='.intval($intPageId));
         exit;
     }
 

@@ -101,7 +101,7 @@ $incVersionStatus = include_once(dirname(__FILE__).'/config/version.php');
 // Check if system is installed
 //-------------------------------------------------------
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-    header('Location: installer/index.php');
+    CSRF::header('Location: installer/index.php');
     die(1);
 } elseif ($incSettingsStatus === false || $incVersionStatus === false) {
     die('System halted: Unable to load basic configuration!');
@@ -111,7 +111,7 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 // Check if system is running
 //-------------------------------------------------------
 if ($_CONFIG['systemStatus'] != 'on') {
-    header('location: offline.html');
+    CSRF::header('location: offline.html');
     die(1);
 }
 
@@ -307,7 +307,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             // If the error module is not installed, show this
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
-        header('Location: index.php?section=error&id=404');
+        CSRF::header('Location: index.php?section=error&id=404');
         exit;
     }
 
@@ -351,26 +351,26 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
         if ($page_protected) {
             if (!Permission::checkAccess($page_access_id, 'dynamic', true)) {
                 $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
+                CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
                 exit;
             }
         }
         if ($history && !Permission::checkAccess(78, 'static', true)) {
             $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
+            CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
             exit;
         }
     } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
         unset($_COOKIE['PHPSESSID']);
     } else {
         $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-        header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&redirect='.$link);
+        CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&redirect='.$link);
         exit;
     }
 }
 
 if (!empty($page_redirect)){
-    header('Location: ' . $page_redirect);
+    CSRF::header('Location: ' . $page_redirect);
     exit;
 }
 
