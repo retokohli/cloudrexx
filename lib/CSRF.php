@@ -147,6 +147,24 @@ class CSRF {
     }
 
     /**
+     * Returns the anti-CSRF code's form key. 
+     * You can build your own URLs together
+     * with CSRF::code()
+     */
+    public static function key() {
+        return CSRF::$formkey();
+    }
+
+    /**
+     * Returns the anti-CSRF code for the current
+     * request. You can build your own URLs together
+     * with CSRF::key()
+     */
+    public static function code() {
+        return CSRF::__get_code();
+    }
+
+    /**
      * Call this if you need to protect critical work.
      * This function will stop the request if it cannot
      * find a valid anti-CSRF code in the request.
