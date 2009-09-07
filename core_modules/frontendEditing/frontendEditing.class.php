@@ -22,6 +22,7 @@ require_once(BASE_FOLDER.'config/settings.php');
 require_once(BASE_FOLDER.'config/set_constants.php');
 require_once(BASE_FOLDER.'config/version.php');
 require_once(BASE_FOLDER.'core/API.php');
+require_once(ASCMS_LIBRARY_PATH.'/CSRF.php');
 require_once(ASCMS_CORE_PATH.'/Init.class.php');
 require_once(ASCMS_CORE_PATH.'/wysiwyg.class.php');
 require_once(ASCMS_CORE_PATH.'/imagecreator.php');
