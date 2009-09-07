@@ -79,6 +79,9 @@ class CSRF {
         }
         $hdr = $result[1];
         $url = CSRF::enhanceURI($result[2]);
+
+        # &amp; is NOT allowed in HTTP headers.
+        $url = str_replace('&amp;', '&', $url);
         $key = CSRF::$formkey;
         $val = CSRF::__get_code();
         return "$hdr: $url";
@@ -151,7 +154,7 @@ class CSRF {
      * with CSRF::code()
      */
     public static function key() {
-        return CSRF::$formkey();
+        return CSRF::$formkey;
     }
 
     /**
@@ -253,7 +256,7 @@ class CSRF {
         $elem_template = '<input type="hidden" name="_N_" value="_V_" />';
         $form = '';
         foreach ($data as $key => $value) {
-            if ($key == CSRF::$formkey) {
+            if ($key == CSRF::$formkey or $key == 'amp;'.CSRF::$formkey) {
                 continue;
             }
             $elem = $elem_template;
