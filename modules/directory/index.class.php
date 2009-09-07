@@ -133,7 +133,6 @@ class rssDirectory extends directoryLibrary
                 $this->feedDetails(intval($_GET['id']), intval($_GET['cid']), intval($_GET['lid']));
                 break;
             case 'add':
-                CSRF::check_code();
                 $this->newFeed();
                 break;
             case 'myfeeds':
@@ -1433,6 +1432,7 @@ $this->arrRows[2] = '';
 
         //add feed
         if (isset($_POST['addSubmit'])) {
+            CSRF::check_code();
             $status = $this->addFeed();
         }
 
