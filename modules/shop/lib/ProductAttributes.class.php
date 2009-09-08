@@ -33,7 +33,7 @@ class ProductAttributes  // friend Product
      * or 0 (zero), meaning all Attributes whatsoever.
      * @var integer
      */
-    private static $productId = 0;
+    private static $product_id = 0;
 
     /**
      * The array of ProductAttribute names
@@ -79,28 +79,31 @@ class ProductAttributes  // friend Product
     /**
      * Returns an array of ProductAttribute names.
      *
-     * If the optional $productId argument is greater than zero,
+     * If the optional $product_id argument is greater than zero,
      * only names associated with this Product are returned,
      * all names found in the database otherwise.
      * @static
      * @access  public
-     * @param   integer     $productId      The optional Product ID
+     * @param   integer     $product_id      The optional Product ID
      * @return  array                       Array of ProductAttribute names
      *                                      upon success, false otherwise.
      */
-    static function getNameArrayByProductId($productId=0)
+    static function getNameArrayByProductId($product_id=0)
     {
         global $objDatabase;
 
+//echo("ProductAttributes::getNameArrayByProductId($product_id)): Entered<br />");
+
         $query = "
-            SELECT DISTINCT id, name, display_type
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
-            ".($productId
-              ? "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-                         ON attributes_name_id=id
-                      WHERE product_id=$productId
-                   ORDER BY sort_id ASC
+            SELECT DISTINCT `id`, `name`, `display_type`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name`
+            ".($product_id
+              ? "INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`
+                    ON `attributes_name_id`=`id`
+                 WHERE `product_id`=$product_id
+              ORDER BY `sort_id` ASC
             " : '');
+//echo("ProductAttributes::getNameArrayByProductId($product_id)): Query:<br />$query<hr />");
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         self::$arrName = array();
@@ -188,7 +191,8 @@ class ProductAttributes  // friend Product
     static function getValueArrayByNameId($name_id)
     {
         if (empty(self::$arrValue) && !self::initValueArray()) return false;
-    	if (empty(self::$arrValue[$name_id])) return array();
+        if (empty(self::$arrValue[$name_id])) return array();
+//echo("ProductAttributes::getValueArrayByNameId($name_id): Got value array<br />".var_export(self::$arrValue[$name_id], true)."<hr />");
         return self::$arrValue[$name_id];
     }
 
@@ -255,6 +259,7 @@ class ProductAttributes  // friend Product
         // No options for this Product ID:  Return the empty array
         if (empty(self::$arrRelation[$product_id])) return array();
         // Otherwise, there are some options.  Return that array element
+//echo("ProductAttributes::getRelationArray($product_id): Got relation array:<br />".var_export(self::$arrRelation[$product_id], true)."<hr />");
         return self::$arrRelation[$product_id];
     }
 
@@ -293,7 +298,7 @@ class ProductAttributes  // friend Product
      *
      * Set the $flagReuse parameter to false after any Attribute properties
      * have been changed.
-     * If the optional $productId argument is greater than zero,
+     * If the optional $product_id argument is greater than zero,
      * only relations associated with this Product are returned,
      * all relations found in the database otherwise.
      * @static
@@ -301,11 +306,11 @@ class ProductAttributes  // friend Product
      * @param   boolean     $flagReuse      If true, returns the previously
      *                                      initialized array, if any.
      *                                      Reinitializes the array otherwise.
-     * @param   integer     $productId      The optional Product ID
+     * @param   integer     $product_id      The optional Product ID
      * @return  array                       Array of ProductAttribute relations
      *                                      upon success, false otherwise.
      */
-    function getRelationArray_200($flagReuse=true, $productId=0)
+    function getRelationArray_200($flagReuse=true, $product_id=0)
     {
         global $objDatabase;
 
@@ -316,7 +321,7 @@ class ProductAttributes  // friend Product
         $query = "
             SELECT *
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-        ".($productId ? "WHERE product_id=$productId" : '')."
+        ".($product_id ? "WHERE product_id=$product_id" : '')."
           ORDER BY sort_id ASC
         ";
         $objResult = $objDatabase->Execute($query);
@@ -349,17 +354,17 @@ class ProductAttributes  // friend Product
      *  ),
      *  ...
      * @access  public
-     * @param   integer     $productId      The Product ID
+     * @param   integer     $product_id      The Product ID
      * @return  array                       Array of ProductAttribute value IDs
      *                                      upon success, false otherwise.
-    function getProductValueArray($productId)
+    function getProductValueArray($product_id)
     {
         global $objDatabase;
 
         $query = "
             SELECT attributes_value_id, sort_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-             WHERE product_id=$productId
+             WHERE product_id=$product_id
           ORDER BY sort_id ASC
         ";
         $objResult = $objDatabase->Execute($query);
@@ -386,7 +391,7 @@ class ProductAttributes  // friend Product
      * The optional $order argument determines the order position of the value.
      * @static
      * @param   integer     $value_id        The ProductAttribute value ID
-     * @param   integer     $productId      The Product ID
+     * @param   integer     $product_id      The Product ID
      * @param   integer     $order          The optional sorting order,
      *                                      defaults to 0 (zero)
      * @return  boolean                     True on success, false otherwise
@@ -394,7 +399,7 @@ class ProductAttributes  // friend Product
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function addValueToProduct($value_id, $productId, $order=0)
+    static function addValueToProduct($value_id, $product_id, $order=0)
     {
         global $objDatabase;
 
@@ -402,18 +407,17 @@ class ProductAttributes  // friend Product
         if ($nameId <= 0) return false;
         // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes (
-                product_id,
-                attributes_name_id,
-                attributes_value_id,
-                sort_id
+            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes` (
+                `product_id`,
+                `attributes_name_id`,
+                `attributes_value_id`,
+                `sort_id`
             ) VALUES (
-                $productId,
+                $product_id,
                 $nameId,
                 $value_id,
                 $order
-            )
-        ";
+            )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
         return false;
@@ -423,18 +427,17 @@ class ProductAttributes  // friend Product
     /**
      * Remove all Product Attribute relations for the given Product ID.
      * @static
-     * @param   integer     $productId      The Product ID
+     * @param   integer     $product_id      The Product ID
      * @return  boolean                     True on success, false otherwise.
      * @global  ADONewConnection  $objDatabase    Database connection object
      */
-    function deleteByProductId($productId)
+    function deleteByProductId($product_id)
     {
         global $objDatabase;
 
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-             WHERE product_id=$productId
-        ";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`
+             WHERE `product_id`=$product_id";
         $objResult = $objDatabase->Execute($query);
         return $objResult;
     }
@@ -453,13 +456,13 @@ class ProductAttributes  // friend Product
     {
         global $objDatabase;
 
-        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes";
+        $query = "DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value";
+        $query = "DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name";
+        $query = "DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -612,13 +615,13 @@ class ProductAttributes  // friend Product
         $jsVars = '';
         $highestIndex = 0;
         foreach (ProductAttributes::getValueArray() as $name_id => $arrAttributeValue) {
-        	$first = true;
-        	foreach (array_keys($arrAttributeValue) as $value_id) {
-	            if ($first)
-	                $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
-	            $first = false;
-	            if ($value_id > $highestIndex) $highestIndex = $value_id;
-        	}
+            $first = true;
+            foreach (array_keys($arrAttributeValue) as $value_id) {
+                if ($first)
+                    $jsVars .= "attributeValueId[$name_id] = $value_id;\n";
+                $first = false;
+                if ($value_id > $highestIndex) $highestIndex = $value_id;
+            }
         }
         $jsVars .= "\nindex = ".$highestIndex.";\n";
         return $jsVars;

@@ -59,6 +59,14 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategory.class.php';
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
 /**
+ * ProductAttribute: Object
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttribute.class.php';
+/**
+ * ProductAttribute: Various Helpers and display functions
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttributes.class.php';
+/**
  * Discount: Custom calculations for discounts
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
@@ -1338,7 +1346,7 @@ class Shop extends ShopLibrary
      * JavaScript code contained within the Shop page to verify that
      * all mandatory choices have been made before any Product can
      * be added to the cart.
-     * @param   integer     $product_Id     The Product ID
+     * @param   integer     $product_id     The Product ID
      * @param   string      $formName       The name of the HTML form containing
      *                                      the Product and options
      * @param   integer     $cartProdId     The optional cart Product ID,
@@ -1348,7 +1356,7 @@ class Shop extends ShopLibrary
      *                                      this parameter will be set to true
      * @return  string                      The string with the HTML code
      */
-    function productOptions($product_Id, $formName, $cartProdId=false, &$flagUpload=false)
+    function productOptions($product_id, $formName, $cartProdId=false, &$flagUpload=false)
     {
         global $_ARRAYLANG;
 
@@ -1363,9 +1371,9 @@ class Shop extends ShopLibrary
             // associated with it in the cart.
             // This is needed to correctly update those Products.
             if ($cartProdId !== false)
-                $product_Id =
+                $product_id =
                     $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
-            $arrAttributeNames = ProductAttributes::getNameArrayByProductId($product_Id);
+            $arrAttributeNames = ProductAttributes::getNameArrayByProductId($product_id);
             // When there are no ProductAttributes for this Product, hide the
             // options blocks
             if (empty($arrAttributeNames)) {
@@ -1375,6 +1383,9 @@ class Shop extends ShopLibrary
                 // Loop through the ProductAttribute Names for the Product
                 foreach ($arrAttributeNames as $optionId => $arrAttributeName) {
                     $arrAttributeValues = ProductAttributes::getValueArrayByNameId($optionId);
+                    $arrRelation = ProductAttributes::getRelationArray($product_id);
+                    // This attribute does not apply for this product
+                    if (empty($arrRelation)) continue;
                     $selectValues = '';
                     // create head of option menu/checkbox/radiobutton
                     switch ($arrAttributeName['type']) {
@@ -1384,7 +1395,7 @@ class Shop extends ShopLibrary
                         $selectValues =
                             '<select name="productOption['.$optionId.
                             ']" id="productOption-'.
-                            $product_Id.'-'.$optionId.'-'.$domId.
+                            $product_id.'-'.$optionId.'-'.$domId.
                             '" style="width:180px;">'."\n".
                             '<option value="0">'.
                             $arrAttributeName['name'].'&nbsp;'.
@@ -1395,7 +1406,7 @@ class Shop extends ShopLibrary
                         // ProductAttribute, indicating a mandatory option.
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$optionId.
                             '" value="'.$arrAttributeName['name'].'" />'."\n";
                         $checkOptionIds .= "$optionId;";
                         break;
@@ -1404,11 +1415,11 @@ class Shop extends ShopLibrary
                       case '3': // Dropdown menu (mandatory attribute)
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$optionId.
                             '" value="'.$arrAttributeName['name'].'" />'."\n".
                             '<select name="productOption['.$optionId.
                             ']" id="productOption-'.
-                            $product_Id.'-'.$optionId.'-'.$domId.
+                            $product_id.'-'.$optionId.'-'.$domId.
                             '" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
@@ -1426,7 +1437,7 @@ class Shop extends ShopLibrary
                       case '5': // Text field, mandatory
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$optionId.
                             '" value="'.$arrAttributeName['name'].'" />'."\n";
                         $checkOptionIds .= "$optionId;";
                         break;
@@ -1436,7 +1447,7 @@ class Shop extends ShopLibrary
                       case '7': // Upload field, mandatory
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$optionId.
                             '" value="'.$arrAttributeName['name'].'" />'."\n";
                         $checkOptionIds .= "$optionId;";
                         break;
@@ -1444,6 +1455,8 @@ class Shop extends ShopLibrary
 
                     $i = 0;
                     foreach ($arrAttributeValues as $value_id => $arrValue) {
+                        // This option does not apply to this product
+                        if (!isset($arrRelation[$value_id])) continue;
                         $valuePrice = '';
                         $selected   = false;
                         // Show the price only if non-zero
@@ -1472,11 +1485,11 @@ class Shop extends ShopLibrary
                             $selectValues .=
                                 '<input type="radio" name="productOption['.
                                 $optionId.']" id="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $product_id.'-'.$optionId.'-'.$domId.
                                 '" value="'.$value_id.'"'.
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $product_id.'-'.$optionId.'-'.$domId.
                                 '">&nbsp;'.$arrValue['value'].$valuePrice.
                                 "</label><br />\n";
                             break;
@@ -1484,11 +1497,11 @@ class Shop extends ShopLibrary
                             $selectValues .=
                                 '<input type="checkbox" name="productOption['.
                                 $optionId.']['.$i.']" id="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $product_id.'-'.$optionId.'-'.$domId.
                                 '" value="'.$value_id.'"'.
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $product_id.'-'.$optionId.'-'.$domId.
                                 '">&nbsp;'.$arrValue['value'].$valuePrice.
                                 "</label><br />\n";
                             break;
@@ -1504,9 +1517,9 @@ class Shop extends ShopLibrary
 //                            $valuePrice = '&nbsp;';
                             $selectValues .=
                                 '<input type="text" name="productOption['.$optionId.
-                                ']" id="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.
+                                ']" id="productOption-'.$product_id.'-'.$optionId.'-'.$domId.
                                 '" value="'.$arrValue['value'].'" style="width:180px;" />'.
-                                '<label for="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.'">'.
+                                '<label for="productOption-'.$product_id.'-'.$optionId.'-'.$domId.'">'.
                                 $valuePrice."</label><br />\n";
                             break;
                           case '6': // UploadText field, optional
@@ -1514,9 +1527,9 @@ class Shop extends ShopLibrary
 //                            $valuePrice = '&nbsp;';
                             $selectValues .=
                                 '<input type="file" name="productOption['.$optionId.
-                                ']" id="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.
+                                ']" id="productOption-'.$product_id.'-'.$optionId.'-'.$domId.
                                 '" style="width:180px;" />'.
-                                '<label for="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.'">'.
+                                '<label for="productOption-'.$product_id.'-'.$optionId.'-'.$domId.'">'.
                                 $valuePrice."</label><br />\n";
                             break;
                         }
@@ -1557,7 +1570,7 @@ class Shop extends ShopLibrary
                         'SHOP_PRODUCT_OPTIONS_NAME'  => $arrAttributeName['name'],
                         'SHOP_PRODUCT_OPTIONS_TITLE' =>
                             '<a href="javascript:{}" onclick="toggleOptions('.
-                            $product_Id.')" title="'.
+                            $product_id.')" title="'.
                             $_ARRAYLANG['TXT_OPTIONS'].'">'.
                             $_ARRAYLANG['TXT_OPTIONS']."</a>\n",
                     ));
@@ -1569,7 +1582,7 @@ class Shop extends ShopLibrary
         }
         return
             "return checkProductOption('shopProductForm$formName', ".
-            "$product_Id, '".
+            "$product_id, '".
             substr($checkOptionIds, 0, strlen($checkOptionIds)-1)."');";
     }
 
