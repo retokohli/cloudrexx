@@ -331,7 +331,10 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // Note that we only do the check as long as there's no
 // cmd given; this is so we can reload the main screen if
 // the check has failed somehow.
-if (!empty($plainCmd)) {
+// fileBrowser is an exception, as it eats CSRF codes like
+// candy. We're doing CSRF::check_code() in the relevant
+// parts in the module instead.
+if (!empty($plainCmd) and $plainCmd != 'fileBrowser') {
     CSRF::check_code();
 }
 
