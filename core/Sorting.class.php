@@ -12,11 +12,6 @@
  */
 
 /**
- * URL modificator that definies the sort order
- */
-define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
-
-/**
  * Provides methods to create sorted tables
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,6 +22,14 @@ define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
  */
 class Sorting
 {
+    /**
+     * Default URL parameter name for the sorting order
+     *
+     * You *MUST* specify this yourself using {@see setOrderParameterName()}
+     * when using more than one Sorting at a time!
+     */
+    const ORDER_PARAMETER_NAME = 'x_order';
+
     /**
      * The base page URI to use.
      *
@@ -73,6 +76,11 @@ class Sorting
      */
     private $orderDirection;
 
+    /**
+     * The order parameter name for this Sorting
+     */
+    private $orderUriParameter;
+
 
     /**
      * Constructor
@@ -85,24 +93,48 @@ class Sorting
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true
+        $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true,
+        $orderUriParameter=self::ORDER_PARAMETER_NAME
     ) {
         $this->baseUri        = $baseUri;
         $this->arrFieldName   = $arrFieldName;
         $this->arrHeaderName  = $arrHeaderName;
         $this->flagDefaultAsc = $flagDefaultAsc;
+        // Default order parameter name.  Change if needed.
+        $this->orderUriParameter = $orderUriParameter;
         // By default, the table will be sorted by the first field,
         // according to the direction flag.
         // If the order parameter is present in the $_REQUEST array,
         // however, it is used instead.
         $this->setOrder(
-            (empty($_REQUEST[SORTING_ORDER_PARAMETER_NAME])
-                ?   $this->arrFieldName[0].' '.
-                    ($this->flagDefaultAsc ? 'ASC' : 'DESC')
-                :   $_REQUEST[SORTING_ORDER_PARAMETER_NAME]
+            (empty($_REQUEST[$this->orderUriParameter])
+                ? $this->arrFieldName[0].' '.($this->flagDefaultAsc ? 'ASC' : 'DESC')
+                : $_REQUEST[$this->orderUriParameter]
             )
         );
 //echo("Sorting::__construct(baseUri=$baseUri, arrFieldName=$arrFieldName, arrHeaderName=$arrHeaderName, flagDefaultAsc=$flagDefaultAsc):<br />made order: ".$this->getOrder()."<br />");
+    }
+
+
+    /**
+     * Set the order parameter name to be used for this Sorting
+     * @param   string    $parameter_name   The parameter name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setOrderParameterName($parameter_name)
+    {
+        $this->orderUriParameter = $parameter_name;
+    }
+
+
+    /**
+     * Returns the order parameter name used for this Sorting
+     * @return  string                      The parameter name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getOrderParameterName()
+    {
+        return $this->orderUriParameter;
     }
 
 
@@ -199,13 +231,10 @@ class Sorting
             break;
           default:
             $orderDirection =
-                ($this->flagDefaultAsc
-                    ? 'ASC'
-                    : 'DESC'
-                );
+                ($this->flagDefaultAsc ? 'ASC' : 'DESC');
         }
-        $this->orderField       = $orderField;
-        $this->orderDirection   = $orderDirection;
+        $this->orderField     = $orderField;
+        $this->orderDirection = $orderDirection;
     }
 
 
@@ -225,7 +254,7 @@ class Sorting
             $field = $this->orderField;
         }
         return
-            '&amp;'.SORTING_ORDER_PARAMETER_NAME.
+            '&amp;'.$this->orderUriParameter.
             '='.urlencode("$field $this->orderDirection");
     }
 
@@ -246,7 +275,7 @@ class Sorting
         }
         $orderDirectionReverse = $this->getOrderDirectionReverse();
         return
-            '&amp;'.SORTING_ORDER_PARAMETER_NAME.
+            '&amp;'.$this->orderUriParameter.
             '='.urlencode("$field $orderDirectionReverse");
     }
 
