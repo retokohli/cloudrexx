@@ -369,6 +369,7 @@ class FileBrowser {
         }
 
         if(preg_match('#^[0-9a-zA-Z_\-]+$#', $dir)){
+            CSRF::check_code();
             $objFile = new File();
             if(!$objFile->mkDir($strPath, $strWebPath, $dir)){
                 $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $dir), 'error');
