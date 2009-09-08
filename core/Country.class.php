@@ -335,33 +335,60 @@ class Country
 echo("Country::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."core_setting", $arrTables)) {
+        if (!in_array(DBPREFIX."core_setting", $arrTables)) {
             $query = "
-                DROP TABLE `".DBPREFIX."core_country`";
+                CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_country` (
+                  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+                  `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
+                  `iso_code_2` CHAR(2) ASCII NOT NULL DEFAULT '',
+                  `iso_code_3` CHAR(3) ASCII NOT NULL DEFAULT '',
+                  `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                  `is_active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
+                  PRIMARY KEY (`id`),
+                  INDEX `country_name_text_id` (`name_text_id` ASC)
+                ) ENGINE=MYISAM";
             $objResult = $objDatabase->Execute($query);
-//            if (!$objResult) return false;
-echo("Country::errorHandler(): Dropped table ".DBPREFIX."core_country<br />");
+            if (!$objResult) return false;
+echo("Country::errorHandler(): Created table ".DBPREFIX."core_country<br />");
         }
+
+        // Remove old countries
+        $objResult = $objDatabase->Execute("
+            TRUNCATE TABLE `".DBPREFIX."core_country`");
+        if (!$objResult)
+die("Country::errorHandler(): Failed to truncate table ".DBPREFIX."core_country");
+
+        // Remove old country names
+        Text::deleteByKey(self::TEXT_CORE_COUNTRY_NAME);
+// TODO: Remove
+        Text::deleteByKey('CORE_COUNTRY'); // Obsolete
+
+/*
+        // Insert all country names into the multilanguage text table
+        // German
         $query = "
-            CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_country` (
-              `name_text_id` INT UNSIGNED NOT NULL,
-              `iso_code_2` CHAR(2) ASCII NOT NULL DEFAULT '',
-              `iso_code_3` CHAR(3) ASCII NOT NULL DEFAULT '',
-              `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              `is_active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
-              PRIMARY KEY (`name_text_id`),
-              INDEX `country_name_text_id` (`name_text_id` ASC),
-              CONSTRAINT `country_name_text_id`
-                FOREIGN KEY (`name_text_id`)
-                REFERENCES `".DBPREFIX."core_text` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
-            ) ENGINE=MYISAM";
+            INSERT INTO `".DBPREFIX."core_text` (
+              `id`, `lang_id`, `module_id`, `key`, `text`
+            )
+            SELECT NULL, 1, 0, '".self::TEXT_CORE_COUNTRY_NAME."', `name`
+              FROM `".DBPREFIX."lib_country`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("Country::errorHandler(): Created table ".DBPREFIX."core_country<br />");
 
-// TODO:  Try to DROP old records
+        // Insert all country name text IDs into the country table
+        $query = "
+            INSERT INTO `".DBPREFIX."core_country` (
+              `name_text_id`, `iso_code_2`, `iso_code_3`
+            )
+            SELECT DISTINCT `t`.`id`, `c`.`iso_code_2`, `c`.`iso_code_3`
+              FROM `".DBPREFIX."lib_country` AS `c`
+             INNER JOIN `".DBPREFIX."core_text` AS `t`
+                ON `c`.`name`=`t`.`text`
+             WHERE `t`.`key`='".self::TEXT_CORE_COUNTRY_NAME."'
+               AND `t`.`lang_id`=2";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+*/
 
         // Re-insert country records from scratch
         $arrCountries = array(
@@ -608,11 +635,12 @@ echo("Country::errorHandler(): Created table ".DBPREFIX."core_country<br />");
         );
         $ord = 0;
         foreach ($arrCountries as $arrCountry) {
+            // German only!
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_text` (
                   `id`, `lang_id`, `module_id`, `key`, `text`
                 ) VALUES (
-                  NULL, 2, 0, '".self::TEXT_CORE_COUNTRY_NAME."', '".addslashes($arrCountry[1])."'
+                  NULL, 1, 0, '".self::TEXT_CORE_COUNTRY_NAME."', '".addslashes($arrCountry[1])."'
                 )");
             if (!$objResult) {
                 Text::errorHandler();
@@ -620,13 +648,14 @@ echo("Country::errorHandler(): Created table ".DBPREFIX."core_country<br />");
 //echo("Country::errorHandler(): Failed to insert Text for Country ".var_export($arrCountry, true)."<br />");
 //                continue;
             }
-            $id = $objDatabase->Insert_ID();
+            $text_id = $objDatabase->Insert_ID();
             // The active field defaults to 1
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_country` (
-                  `name_text_id`, `iso_code_2`, `iso_code_3`, `ord`
+                  `id`, `name_text_id`, `iso_code_2`, `iso_code_3`, `ord`
                 ) VALUES (
-                  $id,
+                  ".$arrCountry['0'].",
+                  $text_id,
                   '".addslashes($arrCountry['2'])."',
                   '".addslashes($arrCountry['3'])."',
                   ".++$ord."
@@ -636,31 +665,6 @@ die("Country::errorHandler(): Failed to insert Country ".var_export($arrCountry,
 //                continue;
             }
         }
-
-        /* Alternative (old):  Copy countries from 2.1 country table
-        // Insert all country names into the multilanguage text table
-        $objResult = $objDatabase->Execute("
-            INSERT INTO `".DBPREFIX."core_text` (
-              `id`, `lang_id`, `module_id`, `key`, `text`
-            )
-            SELECT NULL, 2, 0, '".TEXT_CORE_COUNTRY_NAME."', `name`
-            FROM `".DBPREFIX."lib_country`");
-        if (!$objResult) return false;
-
-        // Insert all country name text IDs into the multilanguage country table.
-        // Note that the text foreign ID is used as the primary key as well!
-        $objResult = $objDatabase->Execute("
-            INSERT INTO `".DBPREFIX."core_country` (
-              `name_text_id`, `iso_code_2`, `iso_code_3`
-            )
-            SELECT DISTINCT `t`.`id`, `c`.`iso_code_2`, `c`.`iso_code_3`
-            FROM `".DBPREFIX."lib_country` AS `c`
-            INNER JOIN `".DBPREFIX."core_text` AS `t`
-            ON `c`.`name`=`t`.`text`
-            WHERE `t`.`key`='".TEXT_CORE_COUNTRY_NAME."'
-            AND `t`.`lang_id`=2");
-        if (!$objResult) return false;
-        */
 
         // More to come...
 
@@ -743,20 +747,24 @@ class State
  */
 class Location
 {
+    private static $arrLocations = false;
+
     /**
      * Initialises and returns the static array with all records
      * from the database matching the given state, if any
      *
      * Note: The locations are only present in one language
      * @global  ADONewConnection  $objDatabase
-     * @return  boolean                     True on success, false otherwise
+     * @param   string    $state        The optional state name
+     * @return  boolean                 True on success, false otherwise
      */
     function getArrayByState($state=false)
     {
         global $objDatabase;
-        static $arrLocation = false;
+        static $last_state = null;
 
-        if (empty($arrLocation)) {
+        if (empty(self::$arrLocations) || $last_state !== $state) {
+            self::$arrLocations = array();
             $query = "
                 SELECT DISTINCT `city`, `zip`
                   FROM ".DBPREFIX."core_region
@@ -764,16 +772,38 @@ class Location
                  ORDER BY `city` ASC, `zip` ASC";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return Region::errorHandler();
-            $arrLocation = array();
+            self::$arrLocations = array();
             while (!$objResult->EOF) {
-                $arrLocation[] =
+                self::$arrLocations[$objResult->fields['zip']] =
                     $objResult->fields['zip'].' '.
                     $objResult->fields['city'];
                 $objResult->MoveNext();
             }
         }
-echo("Location::getArrayByState($state): Made array<br />".var_export($arrLocation, true)."<hr />");
-        return $arrLocation;
+        $last_state = $state;
+//echo("Location::getArrayByState($state): Made array<br />".var_export(self::$arrLocations, true)."<hr />");
+        return self::$arrLocations;
+    }
+
+
+    /**
+     * Returns the HTML code for the locations dropdown menu options
+     * @param   string  $state              The optional state
+     * @param   string  $selected           Optional preselected region ID
+     * @return  string                      The HTML dropdown menu options code
+     * @static
+     */
+    static function getMenuoptions($state='', $selected=false)
+    {
+        $strMenuoptions = '';
+        foreach (self::getArrayByState($state)
+            as $id => $location) {
+            $strMenuoptions .=
+                '<option value="'.$id.'"'.
+                ($selected == $id ? ' selected="selected"' : '').'>'.
+                $location."</option>\n";
+        }
+        return $strMenuoptions;
     }
 
 }
@@ -1011,13 +1041,13 @@ class Region
      * Remembers the last selected ID and the menu options created, so it's
      * very quick to call this again using the same arguments.
      * @param   string  $selectedId       Optional preselected region ID
-     * @param   boolean $flagActiveonly   If true, only active regions are
+     * @param   boolean $flag_active_only   If true, only active regions are
      *                                    added to the options, all otherwise.
      *                                    Defaults to true.
      * @return  string                    The HTML dropdown menu options code
      * @static
      */
-    static function getMenuoptions($selected_id=0, $flagActiveonly=true)
+    static function getMenuoptions($selected_id=0, $flag_active_only=true)
     {
         static $strMenuoptions = '';
         static $last_selected_id = 0;
@@ -1029,7 +1059,7 @@ class Region
         if ($strMenuoptions && $last_selected_id == $selected_id)
             return $strMenuoptions;
         foreach (self::$arrRegions as $id => $arrRegion) {
-            if (   $flagActiveonly
+            if (   $flag_active_only
                 && empty($arrRegion['is_active'])) continue;
             $strMenuoptions .=
                 '<option value="'.$id.'"'.
@@ -1070,7 +1100,7 @@ echo("Region::errorHandler(): Entered<br />");
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
-        // Data -- to big to load each time
+        // Data -- to big to load all the time
         $query = file_get_contents(ASCMS_CORE_PATH.'/region_data.sql');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;

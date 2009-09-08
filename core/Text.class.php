@@ -487,6 +487,51 @@ class Text
 
 
     /**
+     * Deletes the Text record from the database
+     *
+     * If the optional $all_languages parameter evaluates to boolean true,
+     * all records with the same ID are deleted.  Otherwise, only the
+     * language of this object is affected.
+     * @param   boolean   $all_languages    Delete all languages if true
+     * @return  boolean                     True on success, false otherwise
+     */
+    function delete($all_languages=false)
+    {
+        global $objDatabase;
+
+        if (empty($this->id) || empty($this->lang_id)) return false;
+        $query = "
+            DELETE FROM `".DBPREFIX."core_text`
+             WHERE `id`=$this->id".
+             ($all_languages ? '' : " AND `lang_id`=$this->lang_id");
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
+    }
+
+
+    /**
+     * Deletes the Text records with the given key from the database
+     *
+     * Use with due care!
+     * @param   string    $key              The key to match
+     * @return  boolean                     True on success, false otherwise
+     */
+    static function deleteByKey($key)
+    {
+        global $objDatabase;
+
+        if (empty($key)) return false;
+        $query = "
+            DELETE FROM `".DBPREFIX."core_text`
+             WHERE `key`='$key'";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
+    }
+
+
+    /**
      * Returns an array of SQL snippets to include the selected Text records
      * in the query.
      *
@@ -682,53 +727,23 @@ class Text
         global $objDatabase;
 
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."core_text", $arrTables)) {
-            $query = "DROP TABLE `".DBPREFIX."core_text`";
+        if (!in_array(DBPREFIX."core_text", $arrTables)) {
+            $query = "
+                CREATE TABLE `".DBPREFIX."core_text` (
+                  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                  `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+                  `module_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                  `key` TINYTEXT NOT NULL DEFAULT '',
+                  `text` TEXT NOT NULL DEFAULT '',
+                  PRIMARY KEY `id` (`id`, `lang_id`),
+                  INDEX `module_id` (`module_id` ASC),
+                  INDEX `key` (`key`(32) ASC),
+                  FULLTEXT `text` (`text`)
+                ) ENGINE=MyISAM
+            ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
         }
-        $query = "
-            CREATE TABLE `".DBPREFIX."core_text` (
-              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-              `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
-              `module_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              `key` TINYTEXT NOT NULL DEFAULT '',
-              `text` TEXT NOT NULL DEFAULT '',
-              PRIMARY KEY `id` (`id`, `lang_id`),
-              INDEX `module_id` (`module_id` ASC),
-              INDEX `key` (`key`(32) ASC),
-              FULLTEXT `text` (`text`)
-            ) ENGINE=MyISAM
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        // Insert all country names into the multilanguage text table
-        $query = "
-            INSERT INTO `".DBPREFIX."core_text` (
-              `id`, `lang_id`, `module_id`, `key`, `text`
-            )
-            SELECT NULL, 2, 0, 'CORE_COUNTRY', `name`
-              FROM `".DBPREFIX."lib_country`
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        //Insert all country name text IDs into the multilanguage country table.
-        //Note that the text foreign ID is used as the primary key as well!
-        $query = "
-            INSERT INTO `".DBPREFIX."core_country` (
-              `name_text_id`, `iso_code_2`, `iso_code_3`
-            )
-            SELECT DISTINCT `t`.`id`, `c`.`iso_code_2`, `c`.`iso_code_3`
-              FROM `".DBPREFIX."lib_country` AS `c`
-             INNER JOIN `".DBPREFIX."core_text` AS `t`
-                ON `c`.`name`=`t`.`text`
-             WHERE `t`.`key`='CORE_COUNTRY'
-               AND `t`.`lang_id`=2
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
 
         // More to come...
 
