@@ -147,6 +147,9 @@ Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 - Es werden keine leeren Einträge aufgelistet.
 
+Modul: Seitenempfehlung
+- Die Vorschaufunktion funktioniert.
+
 Modul: Shop
 - E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das

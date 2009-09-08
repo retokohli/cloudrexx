@@ -65,7 +65,8 @@ class Recommend extends RecommendLibrary
      */
     function getPage()
     {
-        switch ($_GET['act']) {
+        $act = !empty($_GET['act']) ? $_GET['act'] : '';
+        switch ($act) {
             case 'sendRecomm':
                 $this->_sendRecomm();
                 break;
@@ -305,7 +306,7 @@ class Recommend extends RecommendLibrary
     {
         return "<script type=\"text/javascript\">
 // <![CDATA[
-function update()
+function recommendUpdate()
 {
     var inhalt = document.recommend.preview_text.value;
 
