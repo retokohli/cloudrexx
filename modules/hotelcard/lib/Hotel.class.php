@@ -99,6 +99,7 @@ class Hotel
         'checkout_to',
         'comment',
         'found_how',
+        'register_time',
     );
 
     /**
@@ -165,6 +166,107 @@ class Hotel
         $objHotel->arrFieldvalues['images'] =
             Image::getArrayById($objHotel->getFieldvalue('image_id'));
         return $objHotel;
+    }
+
+
+    static function getArray(&$count, $order, $filter, $offset, $limit)
+    {
+        $arrId = self::getIdArray($count, $order, $filter, $offset, $limit);
+        $arrHotels = array();
+        foreach ($arrId as $hotel_id) {
+            $arrHotel = self::getById($hotel_id);
+            if (empty($arrHotel)) {
+                --$count;
+                continue;
+            }
+            $arrHotels[$hotel_id] = &$arrHotel;
+        }
+        return $arrHotels;
+    }
+
+
+    static function getIdArray(&$count, $order, $filter, $offset, $limit)
+    {
+        global $objDatabase;
+
+        $arrSqlDescription = Text::getSqlSnippets(
+            '`hotel`.`description_text_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_DESCRIPTION
+        );
+        $arrSqlPolicy = Text::getSqlSnippets(
+            '`hotel`.`policy_text_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_POLICY
+        );
+        $term = (empty($filter['term']) ? '' : $filter['term']);
+        $query_id = "SELECT `hotel`.`id`";
+        $query_count = "SELECT COUNT(*) AS `numof_hotels`";
+// TODO:  Make sure there are backticks in the $order
+        $query_order = " ORDER BY `hotel`.".$order;
+        $query_body = "
+              FROM `".DBPREFIX."module_hotelcard_hotel` AS `hotel`".
+                   $arrSqlDescription['join'].
+                   $arrSqlPolicy['join']."
+             WHERE 1".
+              (empty($filter['id']) ? '' : " AND `hotel`.`id`=".$filter['id']).
+              (empty($filter['accomodation_type_id']) ? '' : " AND `hotel`.`accomodation_type_id`=".$filter['accomodation_type_id']).
+              (empty($filter['lang_id']) ? '' : " AND `hotel`.`lang_id`=".$filter['lang_id']).
+              (empty($filter['rating']) ? '' : " AND `hotel`.`rating`=".$filter['rating']).
+              (empty($filter['recommended']) ? '' : " AND `hotel`.`recommended`=".$filter['recommended']).
+              (empty($filter['hotel_zip']) ? '' : " AND `hotel`.`hotel_zip`=".$filter['hotel_zip']).
+              (empty($filter['hotel_region']) ? '' : " AND `hotel`.`hotel_region`=".$filter['hotel_region']).
+              (empty($term)
+                ? ''
+                : " AND (
+                 ".$arrSqlDescription['text']." LIKE '%$term%' OR
+                 ".$arrSqlPolicy['text']." LIKE '%$term%' OR
+                 `hotel`.`hotel_name` LIKE '%$term%' OR
+                 `hotel`.`hotel_address` LIKE '%$term%' OR
+                 `hotel`.`hotel_zip` LIKE '%$term%' OR
+                 `hotel`.`hotel_location` LIKE '%$term%' OR
+                 `hotel`.`hotel_region` LIKE '%$term%' OR
+                 `hotel`.`description_text_id` LIKE '%$term%' OR
+                 `hotel`.`policy_text_id` LIKE '%$term%' OR
+                 `hotel`.`hotel_uri` LIKE '%$term%' OR
+                 `hotel`.`contact_name` LIKE '%$term%' OR
+                 `hotel`.`contact_position` LIKE '%$term%' OR
+                 `hotel`.`contact_department` LIKE '%$term%' OR
+                 `hotel`.`contact_phone` LIKE '%$term%' OR
+                 `hotel`.`contact_fax` LIKE '%$term%' OR
+                 `hotel`.`contact_email` LIKE '%$term%' OR
+                 `hotel`.`reservation_name` LIKE '%$term%' OR
+                 `hotel`.`reservation_phone` LIKE '%$term%' OR
+                 `hotel`.`reservation_fax` LIKE '%$term%' OR
+                 `hotel`.`reservation_email` LIKE '%$term%' OR
+                 `hotel`.`accountant_name` LIKE '%$term%' OR
+                 `hotel`.`accountant_gender` LIKE '%$term%' OR
+                 `hotel`.`accountant_phone` LIKE '%$term%' OR
+                 `hotel`.`accountant_fax` LIKE '%$term%' OR
+                 `hotel`.`accountant_email` LIKE '%$term%' OR
+                 `hotel`.`billing_name` LIKE '%$term%' OR
+                 `hotel`.`billing_address` LIKE '%$term%' OR
+                 `hotel`.`billing_company` LIKE '%$term%' OR
+                 `hotel`.`billing_zip` LIKE '%$term%' OR
+                 `hotel`.`billing_location` LIKE '%$term%' OR
+                 `hotel`.`billing_tax_id` LIKE '%$term%' OR
+                 `hotel`.`comment` LIKE '%$term%' OR
+                 `hotel`.`found_how` LIKE '%$term%')");
+
+        // Get the total count of matching hotels, set $count
+        $objResult = $objDatabase->Execute($query_count.$query_body);
+        if (!$objResult) return self::errorHandler();
+        $count = $objResult->fields['numof_hotels'];
+
+        // Get the IDs of the hotels according to the offset and limit
+        $objResult = $objDatabase->SelectLimit(
+            $query_id.$query_body.$query_order, $limit, $offset);
+        if (!$objResult) return self::errorHandler();
+        $arrId = array();
+        while (!$objResult->EOF) {
+            $arrId[] = $objResult->fields['id'];
+            $objResult->MoveNext();
+        }
+        // Return the array of IDs
+        return $arrId;
     }
 
 
@@ -598,13 +700,19 @@ class Hotel
                         $_SESSION['hotelcard']['image_filename'],
                     ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id.'/'.
                         $_SESSION['hotelcard']['image_filename'])) {
-//echo("ERROR: Failed to move image to folder ".ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id."<br />");
+echo("ERROR: Failed to move image to folder ".ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id."<br />");
                 }
             }
         }
         $_SESSION['hotelcard']['registration_id'] = $hotel_id;
         $_SESSION['hotelcard']['registration_date'] = time();
         return true;
+    }
+
+
+    static function getLastRegistrationDate()
+    {
+
     }
 
 
@@ -709,36 +817,20 @@ class Hotel
               `checkout_to` TIME NULL DEFAULT NULL,
               `comment` TEXT NULL DEFAULT NULL,
               `found_how` TEXT NULL DEFAULT NULL,
-              PRIMARY KEY (`id`, `description_text_id`),
+              `register_time` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              PRIMARY KEY (`id`),
               INDEX `hotel_type_id` (`accomodation_type_id` ASC),
-              INDEX `hotel_image_id` (`image_id` ASC),
               INDEX `hotel_group_id` (`group_id` ASC),
-              INDEX `hotel_description_text_id` (`description_text_id` ASC),
-              INDEX `hotel_region` (`hotel_region` ASC),
-              CONSTRAINT `hotel_type_id`
-                FOREIGN KEY (`accomodation_type_id` )
-                REFERENCES `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION,
-              CONSTRAINT `hotel_image_id`
-                FOREIGN KEY (`image_id` )
-                REFERENCES `".DBPREFIX."core_image` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION,
-              CONSTRAINT `hotel_group_id`
-                FOREIGN KEY (`group_id` )
-                REFERENCES `".DBPREFIX."module_hotelcard_hotel_group` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION,
-              CONSTRAINT `hotel_description_text_id`
-                FOREIGN KEY (`description_text_id` )
-                REFERENCES `".DBPREFIX."core_text` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+              INDEX `hotel_region` (`hotel_region`(8) ASC),
+              INDEX `register_time` (`register_time` ASC)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 //echo("Hotel::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel<br />");
+
+        Text::deleteByKey(self::TEXT_GROUP);
+        Text::deleteByKey(self::TEXT_DESCRIPTION);
+        Text::deleteByKey(self::TEXT_POLICY);
 
         // More to come...
 

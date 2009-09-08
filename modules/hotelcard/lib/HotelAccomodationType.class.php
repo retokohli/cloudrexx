@@ -62,7 +62,7 @@ class HotelAccomodationType
             MODULE_ID, self::TEXT_ACCOMODATION_TYPE
         );
         $query = "
-            SELECT `type`.`ord` ".$arrSqlName['field']."
+            SELECT `type`.`id`, `type`.`ord` ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_hotelcard_hotel_accomodation_type` AS `type`".
                    $arrSqlName['join']."
              ORDER BY `type`.`ord` ASC
@@ -70,18 +70,19 @@ class HotelAccomodationType
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         while (!$objResult->EOF) {
-            $id = $objResult->fields['name_text_id'];
+            $id = $objResult->fields['id'];
+            $text_id = $objResult->fields['name_text_id'];
             $strName = $objResult->fields[$arrSqlName['text']];
             if ($strName === null) {
-                $objText = Text::getById($id, 0);
+                $objText = Text::getById($text_id, 0);
                 if ($objText) $strName = $objText->getText();
             }
 //echo("HotelAccomodationType::init(): Name $strName<br />");
-
             self::$arrAccomodationTypes[$id] = array(
-                'id' => $id,
-                'name' => $strName,
-                'ord' => $objResult->fields['ord'],
+                'id'      => $id,
+                'text_id' => $text_id,
+                'name'    => $strName,
+                'ord'     => $objResult->fields['ord'],
             );
             $objResult->MoveNext();
         }
@@ -134,8 +135,7 @@ class HotelAccomodationType
 //echo("HotelAccomodationType::getNameById($id):  Entered<br />");
         if (empty(self::$arrAccomodationTypes)) self::init();
         return (isset(self::$arrAccomodationTypes[$id])
-            ? self::$arrAccomodationTypes[$id]['name']
-            : false);
+            ? self::$arrAccomodationTypes[$id]['name'] : false);
     }
 
 
@@ -162,16 +162,11 @@ class HotelAccomodationType
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (
-              `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              `ord` INT UNSIGNED NOT NULL DEFAULT 0,
-              PRIMARY KEY (`name_text_id`),
-              INDEX `accomodation_text_id` (`name_text_id` ASC)
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+              `name_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              PRIMARY KEY (`id`)
             ) ENGINE=MYISAM";
-/*            , CONSTRAINT `accomodation_text_id`
-                FOREIGN KEY (`name_text_id` )
-                REFERENCES `hotelcard`.`".DBPREFIX."core_text` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION*/
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 //echo("HotelAccomodationType::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_HotelAccomodationType<br />");
@@ -230,6 +225,9 @@ class HotelAccomodationType
             ),
 */
         );
+
+        Text::deleteByKey(self::TEXT_ACCOMODATION_TYPE);
+
         // The first option ("please choose") *MUST* have the ordinal 0 (zero)
         // in order for the selection dropdown to work properly.
         $ord = 0;

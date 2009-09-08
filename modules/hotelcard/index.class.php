@@ -1,6 +1,6 @@
 <?php
 
-define('_HOTELCARD_DEBUG', 3);
+define('_HOTELCARD_DEBUG', 0);
 
 if (isset($_REQUEST['test']))
 $_SESSION['hotelcard'] = array (
@@ -89,6 +89,9 @@ require_once 'lib/HotelcardLibrary.class.php';
 require_once 'lib/HotelRating.class.php';
 require_once 'lib/HotelRoom.class.php';
 require_once 'lib/RelHotelCreditcard.class.php';
+
+//die (nl2br(htmlentities(var_export($_SERVER, true))));
+//die(Location::getMenuoptions(isset($_GET['state']) ? $_GET['state'] : ''));
 
 /**
  * Class Hotelcard
@@ -187,6 +190,16 @@ if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();
                 $result &= self::editHotel();
                 break;
             case 'overview':
+
+            // Ajax
+            case 'get_locations':
+                die(
+                    Location::getMenuoptions(
+                        isset($_GET['state']) ? $_GET['state'] : '',
+                        isset($_SESSION['hotelcard']['hotel-location'])
+                          ? $_SESSION['hotelcard']['hotel-location'] : 0)
+                );
+
             default:
                 $result &= self::overview();
         }
@@ -609,7 +622,8 @@ if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();
                       ? State::getByLocation($_SESSION['hotelcard']['hotel_location'])
                       : (isset($_SESSION['hotelcard']['hotel_region'])
                           ? $_SESSION['hotelcard']['hotel_region'] : '')),
-                    'document.forms.form_hotelcard.submit();'),
+                    'new Ajax.Updater(\'hotel_location\', \'index.php?section=hotelcard&act=get_locations&state=\'+document.getElementById(\'hotel_region\').value, { method: \'get\' });'),
+                    //document.forms.form_hotelcard.submit();'),
             ),
             'hotel_location' => array(
                 'mandatory' => true,
