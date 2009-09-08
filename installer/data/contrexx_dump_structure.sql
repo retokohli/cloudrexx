@@ -576,7 +576,7 @@ CREATE TABLE `contrexx_module_calendar_form_fields` (
   `order` int(3) NOT NULL default '0',
   `key` int(7) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_calendar_registrations` (
   `id` int(7) NOT NULL auto_increment,
   `note_id` int(7) NOT NULL default '0',
@@ -586,7 +586,7 @@ CREATE TABLE `contrexx_module_calendar_registrations` (
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_calendar_settings` (
   `setid` int(7) NOT NULL auto_increment,
   `setname` varchar(255) NOT NULL,
