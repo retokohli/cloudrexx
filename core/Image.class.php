@@ -181,7 +181,7 @@ class Image
      */
     function getFileTypeKey()
     {
-        return $this->text_id;
+        return $this->file_type_key;
     }
     /**
      * Set the file type key

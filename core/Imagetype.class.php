@@ -454,6 +454,8 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
             ),
         );
 
+        Text::deleteByKey(self::TEXT_IMAGETYPE);
+
         foreach ($arrImagetypes as $arrImagetype) {
             $text_id = false;
             foreach ($arrImagetype['text'] as $lang_id => $text) {
@@ -463,7 +465,6 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
 die("Imagetype::errorHandler(): Error storing Text");
                 $text_id = $objText->getId();
             }
-die("Imagetype::errorHandler(): Error adding Text");
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_imagetype` (
                   `module_id`, `key`, `text_id`,
@@ -476,7 +477,9 @@ die("Imagetype::errorHandler(): Error adding Text");
                   ".$arrImagetype['height'].",
                   ".$arrImagetype['quality']."
                 )");
-            if (!$objResult) die("Imagetype::errorHandler(): Error adding Imagetype");
+            if (!$objResult)
+die("Imagetype::errorHandler(): Error adding Imagetype");
+
 echo("Imagetype::errorHandler(): Inserted image type ".$arrImagetype['key']."<br />");
         }
 

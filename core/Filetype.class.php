@@ -21,12 +21,27 @@
 class Filetype
 {
     /**
-     * Known extensions and corresponding MIME types are stored
-     * in this array upon the first access.
+     * Text key for the file type name
+     */
+    const TEXT_NAME = 'core_filetype';
+
+    /**
+     * Map known extensions to MIME types
+     *
+     * Note:  Some extensions may be used twice, so this mapping is flawed!
      * @access  private
      * @var     array
      */
     private static $arrExtensions2MimeTypes = false;
+
+    /**
+     * Map MIME types to known extensions
+     *
+     * Note:  Some MIME types may be used twice, so this mapping is flawed!
+     * @access  private
+     * @var     array
+     */
+    private static $MimeTypes2arrExtensions = false;
 
     /**
      * The default MIME type used if nothing is known about the data
@@ -43,13 +58,46 @@ class Filetype
      */
     function init()
     {
-        $objResult = $objDatabase->Execute("
-            SELECT `id`, `extension`, `mime_type`
-              FROM `".DBPREFIX."core_file_type`");
-        if (!$objResult) return false;
+        global $objDatabase;
+
+        $arrSqlName = Text::getSqlSnippets(
+            '`filetype`.`name_text_id`', FRONTEND_LANG_ID,
+            0, self::TEXT_NAME
+        );
+        $query = "
+            SELECT `filetype`.`id`,
+                   `filetype`.`extension`, `filetype`.`mime_type`".
+                   $arrSqlName['field']."
+              FROM ".DBPREFIX."core_filetype AS `filetype`".
+                   $arrSqlName['join']."
+             ORDER BY `filetype`.`ord` ASC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        self::$arrExtensions2MimeTypes = array();
         while (!$objResult->EOF) {
+            $id = $objResult->fields['id'];
+            $text_id = $objResult->fields[$arrSqlName['id']];
+            $strName = $objResult->fields[$arrSqlName['text']];
+            if ($strName === null) {
+                $objText = Text::getById($id, 0);
+                if ($objText) $strName = $objText->getText();
+            }
             self::$arrExtensions2MimeTypes[$objResult->fields['extension']] =
-                $objResult->fields['mime_type'];
+                array(
+                    'id' => $id,
+                    'text_id' => $text_id,
+                    'name' => $strName,
+                    'mime_type' => $objResult->fields['mime_type'],
+                    'extension' => $objResult->fields['extension'],
+                );
+            self::$arrMimeTypes2Extensions[$objResult->fields['mime_type']] =
+                array(
+                    'id' => $id,
+                    'text_id' => $text_id,
+                    'name' => $strName,
+                    'mime_type' => $objResult->fields['mime_type'],
+                    'extension' => $objResult->fields['extension'],
+                );
             $objResult->MoveNext();
         }
         return true;
@@ -91,7 +139,7 @@ class Filetype
         // Chop the file name up to and including  the last dot
         $strChoppedExtension = preg_replace('/^.*\./', '', $strExtension);
         if (self::isKnownExtension($strChoppedExtension))
-            return self::$arrExtensions2MimeTypes[$strChoppedExtension];
+            return self::$arrExtensions2MimeTypes[$strChoppedExtension]['mime_type'];
         return self::$strDefaultType;
     }
 
@@ -121,7 +169,8 @@ class Filetype
     {
         if (empty(self::$arrExtensions2MimeTypes)) self::init();
         $strMenuoptions = '';
-        foreach (self::$arrExtensions2MimeTypes as $extension => $mimetype) {
+        foreach (self::$arrExtensions2MimeTypes as $extension => $arrType) {
+            $mimetype = $arrType['mime_type'];
             $strMenuoptions .=
                 '<option value="'.$mimetype.'"'.
                 ($selected == $mimetype ? ' selected="selected"' : '').
@@ -156,17 +205,12 @@ class Filetype
 
         $objResult = $objDatabase->Execute("
             CREATE TABLE `".DBPREFIX."core_file_type` (
-              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-              `extension` VARCHAR(16) NULL COMMENT 'Extension without the leading dot' ,
-              `mime_type` VARCHAR(32) NULL COMMENT 'Mime type' ,
-              PRIMARY KEY (`id`) ,
-              UNIQUE INDEX `type` USING BTREE (`extension`(16) ASC, `mime_type`(32) ASC) ,
-              INDEX `file_type_text_id` (`id` ASC) ,
-              CONSTRAINT `file_type_text_id`
-                FOREIGN KEY (`id` )
-                REFERENCES `".DBPREFIX."core_text` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION)
+              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+              `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
+              `extension` VARCHAR(16) NULL COMMENT 'Extension without the leading dot',
+              `mime_type` VARCHAR(32) NULL COMMENT 'Mime type',
+              PRIMARY KEY (`id`),
+              UNIQUE INDEX `type` USING BTREE (`extension`(16) ASC, `mime_type`(32) ASC)
             ENGINE = InnoDB");
         if (!$objResult) return false;
 
@@ -282,14 +326,26 @@ class Filetype
             'zip' => 'application/zip',
         );
 
+        Text::deleteByKey(self::TEXT_NAME);
+
         foreach ($arrExtensions2MimeTypes as $extension => $mime_type) {
+// TODO:  Add proper names for the file types
+            $objText = new Text($mime_type, FRONTEND_LANG_ID, 0, self::TEXT_NAME);
+            if (!$objText->store()) {
+echo("Filetype::errorHandler(): Failed to store Text for type $mime_type<br />");
+                continue;
+            }
+            $text_id = $objText->getId();
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_file_type` (
-                    `id`, `extension`, `mime_type`
+                    `name_text_id`, `extension`, `mime_type`
                 ) VALUES (
-                    NULL, ".addslashes($extension).", ".addslashes($mime_type)."
+                    $text_id, ".addslashes($extension).", ".addslashes($mime_type)."
                 )");
-//            if (!$objResult) return false;
+            if (!$objResult) {
+echo("Filetype::errorHandler(): Failed to store file type $mime_type<br />");
+                continue;
+            }
         }
 
         // More to come...
