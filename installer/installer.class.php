@@ -166,8 +166,8 @@ class Installer
 		if ($_SESSION['installer']['step'] == 0) {
 			$navigationBar .= "<input type=\"submit\" name=\"next\" value=\"".$_ARRLANG['TXT_NEXT']."\" tabindex=\"".$this->_getTabIndex()."\"  style=\"width: 70px\" />";
 		} elseif ($_SESSION['installer']['step'] != count($this->arrSteps)-1) {
-			$navigationBar = "<input type=\"button\" name=\"cancel\" value=\"".$_ARRLANG['TXT_CANCEL']."\" onclick=\"window.location='".CSRF::enhanceURI('index.php?cancel')."';\" tabindex=\"".$this->_getTabIndex()."\" style=\"width: 70px\" />&nbsp;";
-			$navigationBar .= "<input type=\"button\" name=\"back\" value=\"".$_ARRLANG['TXT_BACK']."\" onclick=\"window.location='".CSRF::enhanceURI('index.php?back')."';\" tabindex=\"".$this->_getTabIndex()."\"  style=\"width: 70px\" />&nbsp;";
+			$navigationBar = "<input type=\"button\" name=\"cancel\" value=\"".$_ARRLANG['TXT_CANCEL']."\" onclick=\"window.location='index.php?cancel';\" tabindex=\"".$this->_getTabIndex()."\" style=\"width: 70px\" />&nbsp;";
+			$navigationBar .= "<input type=\"button\" name=\"back\" value=\"".$_ARRLANG['TXT_BACK']."\" onclick=\"window.location='index.php?back';\" tabindex=\"".$this->_getTabIndex()."\"  style=\"width: 70px\" />&nbsp;";
 			$navigationBar .= "<input type=\"submit\" name=\"next\" value=\"".$_ARRLANG['TXT_NEXT']."\" tabindex=\"".$this->_getTabIndex()."\"  style=\"width: 70px\" />";
 		}
 
