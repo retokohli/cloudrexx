@@ -22,7 +22,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('../lib/DBG.php');
-define('_DEBUG', DBG_PHP|DBG_LOG_FIREPHP);
+define('_DEBUG', DBG_PHP | DBG_LOG_FIREPHP);
 DBG::__internal__setup();
 
 $startTime = explode(' ', microtime());
@@ -52,7 +52,8 @@ $incVersionStatus = include_once('../config/version.php');
 // Check if system is installed
 //-------------------------------------------------------
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-    CSRF::header("Location: ../installer/index.php");
+    header("Location: ../installer/index.php");
+    exit;
 } elseif ($incSettingsStatus === false || $incVersionStatus === false) {
     die('System halted: Unable to load basic configuration!');
 }
@@ -326,7 +327,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
 }
 
-// CSRF protection. From this point on, we can assume that 
+// CSRF protection. From this point on, we can assume that
 // the user is logged in, but nothing else has happened.
 // Note that we only do the check as long as there's no
 // cmd given; this is so we can reload the main screen if
