@@ -159,7 +159,7 @@ class shopmanager extends ShopLibrary
 
         // sigma template
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
-        CSRF::add_placeholder($this->_objTpl);
+        CSRF::add_placeholder(self::$objTemplate);
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
