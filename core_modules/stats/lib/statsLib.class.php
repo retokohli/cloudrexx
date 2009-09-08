@@ -95,6 +95,7 @@ class statsLibrary
 
         $searchTerm = "";
         $counterTag = "";
+        $searchTermPlain = "";
 
         if ($this->arrConfig['make_statistics']['status']) {
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {
