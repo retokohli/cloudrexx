@@ -256,8 +256,8 @@ class CSRF {
                 continue;
             }
             $elem = $elem_template;
-            $elem = str_replace('_N_', htmlspecialchars($key),  $elem);
-            $elem = str_replace('_V_', htmlspecialchars($value),$elem);
+            $elem = str_replace('_N_', htmlspecialchars(contrexx_stripslashes($key), ENT_QUOTES, CONTREXX_CHARSET),  $elem);
+            $elem = str_replace('_V_', htmlspecialchars(contrexx_stripslashes($value), ENT_QUOTES, CONTREXX_CHARSET),$elem);
             $form .= $elem;
         }
         $html = str_replace('_____ELEMENTS___', $form, $html);
