@@ -101,7 +101,7 @@ $incVersionStatus = include_once(dirname(__FILE__).'/config/version.php');
 // Check if system is installed
 //-------------------------------------------------------
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-    CSRF::header('Location: installer/index.php');
+    header('Location: installer/index.php');
     die(1);
 } elseif ($incSettingsStatus === false || $incVersionStatus === false) {
     die('System halted: Unable to load basic configuration!');
@@ -1774,7 +1774,7 @@ $objTemplate->setVariable(array(
     'LOGIN_URL'            => (isset($strFeLink) ? $strFeLink : ''),
     'LOGIN_CONTENT'        => (isset($strFeContent) ? $strFeContent : ''),
     'JAVASCRIPT'           => 'javascript_inserting_here',
-    'TXT_CORE_LAST_MODIFIED_PAGE' => $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'],
+    'TXT_CORE_LAST_MODIFIED_PAGE' => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE'   => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
 ));
 
