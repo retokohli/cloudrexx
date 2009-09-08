@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 /**
  * This class provides protection against CSRF attacks.
@@ -303,5 +303,20 @@ class CSRF {
         $csrfdata[$key]           = $value;
         $_SESSION[CSRF::$sesskey] = $csrfdata;
     }
+
+    /**
+     * Removed the CSRF protection parameter from the query string and referer
+     */
+    public static function cleanRequestURI()
+    {
+        $csrfUrlModifierPattern = '#(\&|\?)?'.CSRF::$formkey.'\=[a-zA-Z0-9_]+#';
+        !empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] = preg_replace($csrfUrlModifierPattern, '', $_SERVER['QUERY_STRING'])    : false;
+        !empty($_SERVER['REQUEST_URI'])  ? $_SERVER['REQUEST_URI']  = preg_replace($csrfUrlModifierPattern, '', $_SERVER['REQUEST_URI'])     : false;
+        !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] = preg_replace($csrfUrlModifierPattern, '', $_SERVER['HTTP_REFERER'])    : false;
+        !empty($_SERVER['argv'])         ? $_SERVER['argv']         = preg_grep($csrfUrlModifierPattern, $_SERVER['argv'], PREG_GREP_INVERT) : false;
+    }
 }
+
+CSRF::cleanRequestURI();
+?>
 
