@@ -35,6 +35,9 @@ Modul: Newsletter
 - Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
   Sprachverzeichnissen.
 
+Modul: Seitenempfehlung
+- Die Vorschaufunktion funktioniert.
+
 Modul: Shop
 - Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
 - Die detaillierte Produkte Ansicht aus dem Warenkorb heraus funktioniert.
