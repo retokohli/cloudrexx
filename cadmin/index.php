@@ -22,7 +22,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('../lib/DBG.php');
-define('_DEBUG', DBG_PHP | DBG_LOG_FIREPHP);
+define('_DEBUG', DBG_PHP);
 DBG::__internal__setup();
 
 $startTime = explode(' ', microtime());
@@ -335,7 +335,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // fileBrowser is an exception, as it eats CSRF codes like
 // candy. We're doing CSRF::check_code() in the relevant
 // parts in the module instead.
-if (!empty($plainCmd) and $plainCmd != 'fileBrowser') {
+if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'fileUploader', 'logout')) {
     CSRF::check_code();
 }
 
