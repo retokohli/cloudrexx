@@ -140,10 +140,10 @@ function moveDivsToEndOfBodyTag() {
 window.onload = moveDivsToEndOfBodyTag;
 
 function showEditModeWindow(cmdName, pageId) {
-	$('editMode_Code_Link1').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId;
-	$('editMode_Code_Link2').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId;
-	$('editMode_Content_Link1').href 	= 'index.php?cmd=' + cmdName;
-	$('editMode_Content_Link2').href 	= 'index.php?cmd=' + cmdName;
+	$('editMode_Code_Link1').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId + '&{CSRF_PARAM}';
+	$('editMode_Code_Link2').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId + '&{CSRF_PARAM}';
+	$('editMode_Content_Link1').href 	= 'index.php?cmd=' + cmdName + '&{CSRF_PARAM}';
+	$('editMode_Content_Link2').href 	= 'index.php?cmd=' + cmdName + '&{CSRF_PARAM}';
 
 	Effect.Appear('editMode_Background', {duration: 0.5, to: 0.5});
 	Effect.Appear('editMode_Window', {duration: 0.5});
