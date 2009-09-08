@@ -93,11 +93,10 @@ class statsLibrary
     {
         global $pageId;
 
-        $searchTerm = "";
-        $counterTag = "";
-        $searchTermPlain = "";
+        $counterTag = '';
 
         if ($this->arrConfig['make_statistics']['status']) {
+            $searchTerm = '';
             $searchTermPlain = '';
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {
                 $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
