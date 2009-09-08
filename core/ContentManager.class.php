@@ -1046,6 +1046,7 @@ class ContentManager
                     $displaystatus = "checked";
                 }
                 $target = $objResult->fields['target'];
+                if (empty($target)) $target = '-';
                 //$target = "xyz";
 
                 $objTemplate->setVariable(array(
@@ -1244,48 +1245,48 @@ class ContentManager
                     }
 
                     $objTemplate->setVariable(array(
-                        'TXT_CL_PAGETITLE'                =>    $_CORELANG['TXT_PAGETITLE'],
-                        'TXT_CL_CACHINGSTATUS'            =>    $_CORELANG['TXT_CACHING_STATUS'],
-                        'TXT_CL_META_TITLE'                =>    $_CORELANG['TXT_META_TITLE'],
-                        'TXT_CL_META_DESCRIPTION'        =>    $_CORELANG['TXT_META_DESCRIPTION'],
-                        'TXT_CL_META_KEYWORD'            =>    $_CORELANG['TXT_META_KEYWORD'],
-                        'TXT_CL_CATEGORY'                =>    $_CORELANG['TXT_CATEGORY'],
-                        'TXT_CL_START_DATE'                =>    $_CORELANG['TXT_START_DATE'],
-                        'TXT_CL_END_DATE'                =>    $_CORELANG['TXT_END_DATE'],
-                        'TXT_CL_THEMES'                    =>    $_CORELANG['TXT_THEMES'],
-                        'TXT_CL_OPTIONAL_CSS_NAME'        =>    $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
-                        'TXT_CL_MODULE'                    =>    $_CORELANG['TXT_MODULE'],
-                        'TXT_CL_REDIRECT'                =>    $_CORELANG['TXT_REDIRECT'],
-                        'TXT_CL_SOURCE_MODE'            =>    $_CORELANG['TXT_SOURCE_MODE'],
-                        'TXT_CL_FRONTEND'                =>    $_CORELANG['TXT_WEB_PAGES'],
-                        'TXT_CL_BACKEND'                =>    $_CORELANG['TXT_ADMINISTRATION_PAGES'],
+                        'TXT_CL_PAGETITLE'         => $_CORELANG['TXT_PAGETITLE'],
+                        'TXT_CL_CACHINGSTATUS'     => $_CORELANG['TXT_CACHING_STATUS'],
+                        'TXT_CL_META_TITLE'        => $_CORELANG['TXT_META_TITLE'],
+                        'TXT_CL_META_DESCRIPTION'  => $_CORELANG['TXT_META_DESCRIPTION'],
+                        'TXT_CL_META_KEYWORD'      => $_CORELANG['TXT_META_KEYWORD'],
+                        'TXT_CL_CATEGORY'          => $_CORELANG['TXT_CATEGORY'],
+                        'TXT_CL_START_DATE'        => $_CORELANG['TXT_START_DATE'],
+                        'TXT_CL_END_DATE'          => $_CORELANG['TXT_END_DATE'],
+                        'TXT_CL_THEMES'            => $_CORELANG['TXT_THEMES'],
+                        'TXT_CL_OPTIONAL_CSS_NAME' => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
+                        'TXT_CL_MODULE'            => $_CORELANG['TXT_MODULE'],
+                        'TXT_CL_REDIRECT'          => $_CORELANG['TXT_REDIRECT'],
+                        'TXT_CL_SOURCE_MODE'       => $_CORELANG['TXT_SOURCE_MODE'],
+                        'TXT_CL_FRONTEND'          => $_CORELANG['TXT_WEB_PAGES'],
+                        'TXT_CL_BACKEND'           => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
                     ));
 
                     $objTemplate->setVariable(array(
-                        'CHANGELOG_ROWCLASS'        =>    ($objResult->fields['navActive']) ? 'rowWarn' : (($intRowCount % 2 == 0) ? 'row1' : 'row0'),
-                        'CHANGELOG_CHECKBOX'        =>    ($objResult->fields['navActive']) ? '' : '<input type="checkbox" name="selectedChangelogId[]" id="selectedChangelogId" value="'.$objResult->fields['navID'].'" />',
-                        'CHANGELOG_ACTIVATE'        =>    ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:activateHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" title="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" border="0" /></a>',
-                        'CHANGELOG_DELETE'            =>    ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:deleteHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/delete.gif" alt="'.$_CORELANG['TXT_DELETE'].'" title="'.$_CORELANG['TXT_DELETE'].'" border="0" /></a>',
-                        'CHANGELOG_ID'                =>    $objResult->fields['navID'],
-                        'CHANGELOG_DATE'            =>    date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
-                        'CHANGELOG_USER'            =>    $objResult->fields['navUsername'],
-                        'CHANGELOG_TITLE'            =>    stripslashes($objResult->fields['navCatname']),
-                        'CHANGELOG_PAGETITLE'        =>    stripslashes($objResult->fields['conTitle']),
-                        'CHANGELOG_METATITLE'        =>    stripslashes($objResult->fields['conMetaTitle']),
-                        'CHANGELOG_METADESC'        =>    stripslashes($objResult->fields['conMetaDesc']),
-                        'CHANGELOG_METAKEY'            =>    stripslashes($objResult->fields['conMetaKeywords']),
-                        'CHANGELOG_CATEGORY'        =>    $strTree,
-                        'CHANGELOG_STARTDATE'        =>    $objResult->fields['navStartdate'],
-                        'CHANGELOG_ENDDATE'            =>    $objResult->fields['navEnddate'],
-                        'CHANGELOG_THEME'            =>    stripslashes($arrThemes[$objResult->fields['navTheme']]),
-                        'CHANGELOG_OPTIONAL_CSS'    =>    (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
-                        'CHANGELOG_CMD'                =>    (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
-                        'CHANGELOG_SECTION'            =>    $arrModules[$objResult->fields['navModule']],
-                        'CHANGELOG_REDIRECT'        =>    (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
-                        'CHANGELOG_SOURCEMODE'        =>    strtoupper($objResult->fields['conExpertMode']),
-                        'CHANGELOG_CACHINGSTATUS'    =>    ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
-                        'CHANGELOG_FRONTEND'        =>    stripslashes($strFrontendGroups),
-                        'CHANGELOG_BACKEND'            =>    stripslashes($strBackendGroups)
+                        'CHANGELOG_ROWCLASS'      => ($objResult->fields['navActive']) ? 'rowWarn' : (($intRowCount % 2 == 0) ? 'row1' : 'row0'),
+                        'CHANGELOG_CHECKBOX'      => ($objResult->fields['navActive']) ? '' : '<input type="checkbox" name="selectedChangelogId[]" value="'.$objResult->fields['navID'].'" />',
+                        'CHANGELOG_ACTIVATE'      => ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:activateHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" title="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" border="0" /></a>',
+                        'CHANGELOG_DELETE'        => ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:deleteHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/delete.gif" alt="'.$_CORELANG['TXT_DELETE'].'" title="'.$_CORELANG['TXT_DELETE'].'" border="0" /></a>',
+                        'CHANGELOG_ID'            => $objResult->fields['navID'],
+                        'CHANGELOG_DATE'          => date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
+                        'CHANGELOG_USER'          => $objResult->fields['navUsername'],
+                        'CHANGELOG_TITLE'         => stripslashes($objResult->fields['navCatname']),
+                        'CHANGELOG_PAGETITLE'     => stripslashes($objResult->fields['conTitle']),
+                        'CHANGELOG_METATITLE'     => stripslashes($objResult->fields['conMetaTitle']),
+                        'CHANGELOG_METADESC'      => stripslashes($objResult->fields['conMetaDesc']),
+                        'CHANGELOG_METAKEY'       => stripslashes($objResult->fields['conMetaKeywords']),
+                        'CHANGELOG_CATEGORY'      => $strTree,
+                        'CHANGELOG_STARTDATE'     => $objResult->fields['navStartdate'],
+                        'CHANGELOG_ENDDATE'       => $objResult->fields['navEnddate'],
+                        'CHANGELOG_THEME'         => stripslashes($arrThemes[$objResult->fields['navTheme']]),
+                        'CHANGELOG_OPTIONAL_CSS'  => (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
+                        'CHANGELOG_CMD'           => (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
+                        'CHANGELOG_SECTION'       => $arrModules[$objResult->fields['navModule']],
+                        'CHANGELOG_REDIRECT'      => (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
+                        'CHANGELOG_SOURCEMODE'    => strtoupper($objResult->fields['conExpertMode']),
+                        'CHANGELOG_CACHINGSTATUS' => ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
+                        'CHANGELOG_FRONTEND'      => stripslashes($strFrontendGroups),
+                        'CHANGELOG_BACKEND'       => stripslashes($strBackendGroups)
                     ));
                     $objTemplate->parse('showChanges');
                     $objResult->MoveNext();
