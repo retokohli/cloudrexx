@@ -201,8 +201,6 @@ class RelHotelCreditcard
 //echo("RelHotelCreditcard::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_creditcard<br />");
         }
 
-// TODO:  Try to DROP old records
-
         // More to come...
 
         // Always!

@@ -21,7 +21,7 @@ require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 require_once ASCMS_CORE_PATH.'/Sorting.class.php';
 require_once ASCMS_CORE_PATH.'/Text.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
-//require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Designer.class.php';
+require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Hotel.class.php';
 //require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Download.class.php';
 //require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Product.class.php';
 //require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Property.class.php';
@@ -284,9 +284,77 @@ class Hotelcard
             die("Failed to load template settings.html");
         self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
 
+        $objSorting = new Sorting(
+            self::$baseUri,
+            array(
+                'id', 'hotel_name',
+            ),
+            array(
+                $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ID'],
+                $_ARRAYLANG['TXT_HOTELCARD_HOTEL_NAME'],
+            ),
+            false
+        );
+        // Number of matching hotels total, passed by reference
+        $count = 0;
+        $order = $objSorting->getOrder();
+        $filter = array(
+            'term' => (isset($_POST['term']) ? $_POST['term'] : ''),
+            'id' => (isset($_REQUEST['hotel_id']) ? $_REQUEST['hotel_id'] : ''),
+            'accomodation_type_id' => (isset($_REQUEST['accomodation_type_id']) ? $_REQUEST['accomodation_type_id'] : ''),
+            'lang_id' => (isset($_REQUEST['lang_id']) ? $_REQUEST['lang_id'] : ''),
+            'rating' => (isset($_REQUEST['rating']) ? $_REQUEST['rating'] : ''),
+            'recommended' => (isset($_REQUEST['recommended']) ? $_REQUEST['recommended'] : ''),
+            'hotel_zip' => (isset($_REQUEST['hotel_zip']) ? $_REQUEST['hotel_zip'] : ''),
+            'hotel_region' => (isset($_REQUEST['hotel_region']) ? $_REQUEST['hotel_region'] : ''),
+// TODO:  More to come...  maybe
+        );
+        $offset = Paging::getPosition();
+        $limit = SettingDb::getValue('hotel_per_page_backend');
+        $arrHotels = Hotel::getArray($count, $order, $filter, $offset, $limit);
+        $last_registration_date = Hotel::getLastRegistrationDate();
+
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_HOTELCARD_NAME' => $_ARRAYLANG['TXT_HOTELCARD_NAME'],
+            'TXT_HOTELCARD_VALUE' => $_ARRAYLANG['TXT_HOTELCARD_VALUE'],
+            'TXT_HOTELCARD_HOTEL_ID' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_ID'],
+            'TXT_HOTELCARD_HOTEL_NAME' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_NAME'],
+            'TXT_HOTELCARD_HOTEL_INFO' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_INFO'],
+            'TXT_HOTELCARD_FUNCTIONS' => $_ARRAYLANG['TXT_HOTELCARD_FUNCTIONS'],
+        ));
+        $arrOverview = array(
+            'HOTEL_NUMOF' => $count,
+            'HOTEL_LAST_REGISTRATION' => $last_registration_date
+        );
+        $i = 0;
+        foreach ($arrOverview as $name => $value) {
+/*
+'hotelcard_section'
+            'HOTELCARD_SECTION'
+*/
+            self::$objTemplate->setVariable(array(
+                'HOTELCARD_ROWCLASS' => (++$i % 2) + 1,
+                'HOTELCARD_NAME'     => $_ARRAYLANG['TXT_HOTELCARD_'.$name],
+                'HOTELCARD_VALUE'    => $value,
+            ));
+            self::$objTemplate->parse('hotelcard_row');
+        }
+        foreach ($arrHotels as $arrHotel) {
+            self::$objTemplate->setVariable(array(
+                'HOTELCARD_ROWCLASS'   => (++$i % 2) + 1,
+                'HOTELCARD_HOTEL_ID'   => $arrHotel['id'],
+                'HOTELCARD_HOTEL_NAME' => $arrHotel['hotel_name'],
+// TODO: Compose some useful abstract
+                'HOTELCARD_HOTEL_INFO' => $arrHotel['hotel_uri'],
+// TODO
+                'HOTELCARD_FUNCTIONS'  => '',
+            ));
+            self::$objTemplate->parse('hotelcard_hotel_row');
+
+        }
+
         return true;
     }
-
 
 
     /**

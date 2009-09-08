@@ -719,17 +719,13 @@ die;//return self::errorHandler();
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_type` (
-              `type_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+              `type_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               `hotel_id` INT UNSIGNED NOT NULL DEFAULT '0',
               `number_default` INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Default number of rooms available for this type',
               `price_default` DECIMAL(7,2) UNSIGNED NOT NULL DEFAULT 100.00,
-              PRIMARY KEY (`type_text_id`),
-              INDEX `room_type_text_id` (`type_text_id` ASC),
-              CONSTRAINT `room_type_text_id`
-                FOREIGN KEY (`type_text_id`)
-                REFERENCES `".DBPREFIX."core_text` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+              PRIMARY KEY (`id`),
+              INDEX `room_type_text_id` (`type_text_id` ASC)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -744,19 +740,13 @@ die;//return self::errorHandler();
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_available` (
-              `room_type_id` INT UNSIGNED NOT NULL DEFAULT 0,
+              `room_type_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               `date` DATE NOT NULL DEFAULT '0000-00-00',
-              `number_total` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Total number of rooms available for the given date.',
-              `number_booked` INT UNSIGNED NOT NULL DEFAULT 0,
-              `number_cancelled` INT NOT NULL DEFAULT 0,
+              `number_total` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Total number of rooms available for the given date.',
+              `number_booked` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `number_cancelled` INT(10) NOT NULL DEFAULT 0,
               `price` DECIMAL(7,2) UNSIGNED NOT NULL DEFAULT 100.00,
-              PRIMARY KEY (`room_type_id`, `date`),
-              INDEX `room_available_room_type_id` (`room_type_id` ASC),
-              CONSTRAINT `room_available_room_type_id`
-                FOREIGN KEY (`room_type_id`)
-                REFERENCES `".DBPREFIX."module_hotelcard_room_type` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+              PRIMARY KEY (`room_type_id`, `date`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -771,13 +761,17 @@ die;//return self::errorHandler();
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_facility` (
-              `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              `ord` INT UNSIGNED NOT NULL DEFAULT 0,
-              PRIMARY KEY (`name_text_id`)
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+              `name_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              PRIMARY KEY (`id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 //echo("HotelRoom::errorHandler(): Created table ".DBPREFIX."module_hotelcard_room_facility<br />");
+
+        Text::deleteByKey(self::TEXT_HOTELCARD_ROOM_FACILITY);
+
         $arrFacility = array(
             'Badewanne',
             'Dusche',
@@ -797,31 +791,14 @@ die;//return self::errorHandler();
             'Küche',
             'Mikrowelle',
         );
-        $arrText = Text::getArrayById(
-            MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY, FRONTEND_LANG_ID
-        );
         foreach ($arrFacility as $ord => $facility) {
-            $objTextFound = false;
-            foreach ($arrText as $objText) {
-                // Do not insert text that is already there
-                if ($facility == $objText->getText()) {
-                    $objTextFound = $objText;
-                    break;
-                }
-            }
-            if ($objTextFound) {
-                // Reuse existing text
-                $objText = $objTextFound;
-            } else {
-                // Add missing text
-                $objText = new Text(
-                    $facility, 1, // German *ONLY*
-                    MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY
-                );
-                if (!$objText->store()) {
+            $objText = new Text(
+                $facility, 1, // German *ONLY*
+                MODULE_ID, self::TEXT_HOTELCARD_ROOM_FACILITY
+            );
+            if (!$objText->store()) {
 // TODO:  Add error message
-                    return false;
-                }
+                return false;
             }
             $query = "
                 INSERT INTO `".DBPREFIX."module_hotelcard_room_facility` (
@@ -841,21 +818,9 @@ die;//return self::errorHandler();
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_type_has_room_facility` (
-              `room_type_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              `room_facility_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              PRIMARY KEY (`room_type_id`, `room_facility_id`),
-              INDEX `room_facility_id` (`room_facility_id` ASC),
-              INDEX `room_facility_room_type_id` (`room_type_id` ASC),
-              CONSTRAINT `room_facility_id`
-                FOREIGN KEY (`room_facility_id`)
-                REFERENCES `".DBPREFIX."module_hotelcard_room_facility` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION,
-              CONSTRAINT `room_facility_room_type_id`
-                FOREIGN KEY (`room_type_id`)
-                REFERENCES `".DBPREFIX."module_hotelcard_room_type` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+              `room_type_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `room_facility_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              PRIMARY KEY (`room_type_id`, `room_facility_id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
