@@ -22,7 +22,7 @@
  *   DBG_ALL             - sets all debug flags
  */
 include_once('../lib/DBG.php');
-define('_DEBUG', DBG_PHP);
+define('_DEBUG', DBG_NONE);
 DBG::__internal__setup();
 
 $startTime = explode(' ', microtime());
