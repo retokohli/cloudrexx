@@ -2222,7 +2222,7 @@ class ContentManager
     function _getBodyContent($fullContent)
     {
         $arrayMatch = array();
-        if (preg_match('/(?:\<body[^>]*\>)?(.*)(?:\<\/body\>)?/ism', $fullContent, $arrayMatch)) {
+        if (preg_match('#(?:.*<body[^>]*>)?(.*(?=</body>))?#ism', $fullContent, $arrayMatch)) {
             return $arrayMatch[1];
         }
         return '';
