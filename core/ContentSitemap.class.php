@@ -24,26 +24,26 @@
  */
 class ContentSitemap
 {
-    var $navtable   = array();
-    var $navlinks      = array();
-    var $navparent  = array();
-    var $navparentId = array();
-    var $navdisplayorder  = array();
-    var $currentid;
-    var $treeArray  = array();
-    var $navUsername = array();
-    var $navChangelog = array();
-    var $navName = array();
-    var $navModule = array();
-    var $navCmd = array();
-    var $navDisplaystatus = array();
-    var $navActiveStatus = array();
-    var $navProtection = array();
-    var $navSons = array();
-    var $navIsValidated = array();
-    var $navIsRedirect = array();
-    var $langId;
-    var $requiredModuleNames = array('home','ids','error','login','core');
+    public $navtable = array();
+    public $navlinks = array();
+    public $navparent = array();
+    public $navparentId = array();
+    public $navdisplayorder = array();
+    public $currentid;
+    public $treeArray = array();
+    public $navUsername = array();
+    public $navChangelog = array();
+    public $navName = array();
+    public $navModule = array();
+    public $navCmd = array();
+    public $navDisplaystatus = array();
+    public $navActiveStatus = array();
+    public $navProtection = array();
+    public $navSons = array();
+    public $navIsValidated = array();
+    public $navIsRedirect = array();
+    public $langId;
+    public $requiredModuleNames = array('home','ids','error','login','core');
 
     /**
     * Constructor
@@ -182,44 +182,42 @@ class ContentSitemap
         $expandAll = $_SESSION['content']['expandAll'];
 
         $objTpl->setGlobalVariable(array(
-            'TXT_CONFIRM_DELETE_DATA'    =>    $_CORELANG['TXT_CONFIRM_DELETE_DATA'],
-            'TXT_CONFIRM_CHANGESTATUS'   =>    $_CORELANG['TXT_CONFIRM_CHANGESTATUS'],
-            'TXT_ACTION_IS_IRREVERSIBLE' =>    $_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            'TXT_PAGE'                  =>    $_CORELANG['TXT_PAGE'],
-            'TXT_MODULE'                 =>    $_CORELANG['TXT_MODULE'],
-            'TXT_LAST_EDIT'              =>    $_CORELANG['TXT_LAST_EDIT'],
-            'TXT_USER'                   =>    $_CORELANG['TXT_USER'],
-            'TXT_FUNCTIONS'              =>    $_CORELANG['TXT_FUNCTIONS'],
-            'TXT_SAVE_CHANGES'           =>    $_CORELANG['TXT_SAVE_CHANGES'],
-            'TXT_COLLAPS_LINK'           =>    $_CORELANG['TXT_COLLAPS_LINK'],
-            'TXT_EXPAND_LINK'            =>    $_CORELANG['TXT_EXPAND_LINK'],
-            'TXT_CONFIRM_REPOSITORY'     =>    $_CORELANG['TXT_CONFIRM_REPOSITORY'],
-            'TXT_CONFIRM_DELETE_CONTENT' =>    $_CORELANG['TXT_CONFIRM_DELETE_CONTENT'],
-            'TXT_DELETE'                 =>    $_CORELANG['TXT_DELETE'],
-            'TXT_DELETE_ALL'             =>    $_CORELANG['TXT_DELETE_HISTORY_ALL'],
-            'TXT_TEMPLATE'               =>    $_CORELANG['TXT_TEMPLATE'],
-            'TXT_EDIT'                   =>    $_CORELANG['TXT_EDIT'],
-            'TXT_COPY_CONTENT'           =>    $_CORELANG['TXT_COPY_CONTENT'],
-            'TXT_SELECT_ALL'             =>    $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_DESELECT_ALL'             =>    $_CORELANG['TXT_DESELECT_ALL'],
-            'TXT_SUBMIT_SELECT'             =>    $_CORELANG['TXT_MULTISELECT_SELECT'],
-            'TXT_SUBMIT_DELETE'             =>    $_CORELANG['TXT_MULTISELECT_DELETE'],
-            'TXT_SUBMIT_ACTIVATE'         =>    $_CORELANG['TXT_MULTISELECT_ACTIVATE'],
-            'TXT_SUBMIT_DEACTIVATE'         =>    $_CORELANG['TXT_MULTISELECT_DEACTIVATE'],
+            'TXT_CONFIRM_DELETE_DATA'    => $_CORELANG['TXT_CONFIRM_DELETE_DATA'],
+            'TXT_CONFIRM_CHANGESTATUS'   => $_CORELANG['TXT_CONFIRM_CHANGESTATUS'],
+            'TXT_ACTION_IS_IRREVERSIBLE' => $_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_PAGE'                   => $_CORELANG['TXT_PAGE'],
+            'TXT_MODULE'                 => $_CORELANG['TXT_MODULE'],
+            'TXT_LAST_EDIT'              => $_CORELANG['TXT_LAST_EDIT'],
+            'TXT_USER'                   => $_CORELANG['TXT_USER'],
+            'TXT_FUNCTIONS'              => $_CORELANG['TXT_FUNCTIONS'],
+            'TXT_SAVE_CHANGES'           => $_CORELANG['TXT_SAVE_CHANGES'],
+            'TXT_COLLAPS_LINK'           => $_CORELANG['TXT_COLLAPS_LINK'],
+            'TXT_EXPAND_LINK'            => $_CORELANG['TXT_EXPAND_LINK'],
+            'TXT_CONFIRM_REPOSITORY'     => $_CORELANG['TXT_CONFIRM_REPOSITORY'],
+            'TXT_CONFIRM_DELETE_CONTENT' => $_CORELANG['TXT_CONFIRM_DELETE_CONTENT'],
+            'TXT_DELETE'                 => $_CORELANG['TXT_DELETE'],
+            'TXT_DELETE_ALL'             => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
+            'TXT_TEMPLATE'               => $_CORELANG['TXT_TEMPLATE'],
+            'TXT_EDIT'                   => $_CORELANG['TXT_EDIT'],
+            'TXT_COPY_CONTENT'           => $_CORELANG['TXT_COPY_CONTENT'],
+            'TXT_SELECT_ALL'             => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'           => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_SUBMIT_SELECT'          => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_SUBMIT_DELETE'          => $_CORELANG['TXT_MULTISELECT_DELETE'],
+            'TXT_SUBMIT_ACTIVATE'        => $_CORELANG['TXT_MULTISELECT_ACTIVATE'],
+            'TXT_SUBMIT_DEACTIVATE'      => $_CORELANG['TXT_MULTISELECT_DEACTIVATE'],
         ));
 
         foreach (FWLanguage::getLanguageArray() as $arrLang){
-            $checked = '';
             if($arrLang['frontend'] == 0) continue;
             $tabClass = '';
             if($this->langId == $arrLang['id'])
-                $tabClass = 'active';
-            $defaultLang = $arrLang['id'];
+            $tabClass = 'active';
             $objTpl->setVariable(array(
-                'LANGUAGE_ID'               => $arrLang['id'],
-                'LANGUAGE_NAME'             => $arrLang['name'],
-                'LANGUAGE_TITLE'            => $arrLang['name'].'_'.$arrLang['id'],
-                'TAB_CLASS'                 => $tabClass,
+                'LANGUAGE_ID'    => $arrLang['id'],
+                'LANGUAGE_NAME'  => $arrLang['name'],
+                'LANGUAGE_TITLE' => $arrLang['name'].'_'.$arrLang['id'],
+                'TAB_CLASS'      => $tabClass,
             ));
             $objTpl->parse('languages_tab');
         }
@@ -348,34 +346,36 @@ class ContentSitemap
                 }
 
                 $objTpl->setVariable(array(
-                    'SITEMAP_DISPLAYORDER_DISABLED'    => (Permission::checkAccess(35, 'static', $return = true) ? '' : 'disabled="disabled"'),
-                    'SITEMAP_PAGE_MODULE'              => $this->navModule[$key],
-                    'SITEMAP_PAGE_CMD'                 => $this->navCmd[$key],
-                    'SITEMAP_PAGE_DISPLAYORDER'        => $this->navdisplayorder[$key],
-                    'SITEMAP_PAGE_USERNAME'            => $this->navUsername[$key],
-                    'SITEMAP_PAGE_CHANGELOG'           => $this->navChangelog[$key],
-                    'SITEMAP_ROWCLASS'                 => $class,
-                    'SITEMAP_ROW_PADDING'              => $width,
-                    'SITEMAP_PAGE_LEVEL'               => $folderLinkIcon.$activeIcon.'&nbsp;'.$folderIcon,
-                    'SITEMAP_PAGE_ID'                  => $key,
-                    'SITEMAP_PAGE_NAME'                => $this->navName[$key],
-                    'SITEMAP_REPOSITORY'               => $repository,
+                    'SITEMAP_DISPLAYORDER_DISABLED' => (Permission::checkAccess(35, 'static', true) ? '' : 'disabled="disabled"'),
+                    'SITEMAP_PAGE_MODULE'           => $this->navModule[$key],
+                    'SITEMAP_PAGE_CMD'              => $this->navCmd[$key],
+                    'SITEMAP_PAGE_DISPLAYORDER'     => $this->navdisplayorder[$key],
+                    'SITEMAP_PAGE_USERNAME'         => $this->navUsername[$key],
+                    'SITEMAP_PAGE_CHANGELOG'        => $this->navChangelog[$key],
+                    'SITEMAP_ROWCLASS'              => $class,
+                    'SITEMAP_ROW_PADDING'           => $width,
+                    'SITEMAP_PAGE_LEVEL'            => $folderLinkIcon.$activeIcon.'&nbsp;'.$folderIcon,
+                    'SITEMAP_PAGE_ID'               => $key,
+                    'SITEMAP_PAGE_NAME'             => htmlentities($this->navName[$key], ENT_QUOTES, CONTREXX_CHARSET),
+                    'SITEMAP_REPOSITORY'            => $repository,
                     // New behavior: Go to module administration or content
-                    'SITEMAP_PAGE_LINK'                => (!empty($moduleReference) ? "javascript: showEditModeWindow('".$moduleReference."','".$key."');" : "index.php?cmd=content&amp;act=edit&amp;pageId=$key"),
+                    'SITEMAP_PAGE_LINK'             =>
+                        (empty($moduleReference)
+                          ? "index.php?cmd=content&amp;act=edit&amp;pageId=$key"
+                          : "javascript:showEditModeWindow('$moduleReference','$key');"),
                 ));
                 $objTpl->parseCurrentBlock();
                 $i++;
             }
             $n++;
         }
-
-                //New added in 2.0: editmode-selector window
-        $objTpl->setVariable(array(    'TXT_EDITMODE_TITLE'    =>    $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
-                                    'TXT_EDITMODE_TEXT'        =>    $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
-                                    'TXT_EDITMODE_CODE'        =>    $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
-                                    'TXT_EDITMODE_CONTENT'    =>    $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
-                        ));
-
+        // New in 2.0: editmode selector window
+        $objTpl->setVariable(array(
+            'TXT_EDITMODE_TITLE'   => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
+            'TXT_EDITMODE_TEXT'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
+            'TXT_EDITMODE_CODE'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
+            'TXT_EDITMODE_CONTENT' => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT'],
+        ));
         return $objTpl->get();
     }
 
