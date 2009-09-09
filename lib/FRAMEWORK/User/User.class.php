@@ -453,6 +453,20 @@ class User extends User_Profile
         return $this->primary_group;
     }
 
+    public function getPrimaryGroupName()
+    {
+        $objFWUser = FWUser::getFWUserObject();
+        if (empty($this->primary_group)) {
+            $this->arrGroups = $this->loadGroups(!$objFWUser->isBackendMode());
+            $groupId = $this->arrGroups[0];
+        } else {
+            $groupId = $this->primary_group;
+        }
+
+        $objGroup = $objFWUser->objGroup->getGroup($groupId);
+        return htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET);
+    }
+
 
     public function getAdminStatus()
     {
@@ -725,6 +739,7 @@ class User extends User_Profile
             $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
             $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
             $this->primary_group = isset($this->arrCachedUsers[$id]['primary_group']) ? $this->arrCachedUsers[$id]['primary_group'] : 0;            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
+            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
             $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
             $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
             $this->validity = isset($this->arrCachedUsers[$id]['validity']) ? $this->arrCachedUsers[$id]['validity'] : 0;
@@ -1283,7 +1298,8 @@ class User extends User_Profile
                     ".$this->last_auth.",
                     ".$this->last_activity.",
                     ".intval($this->is_active).",
-                    ".intval($this->primary_group).",                    '".$this->profile_access."',
+                    ".intval($this->primary_group).",
+                    '".$this->profile_access."',
                     '".$this->restore_key."',
                     '".$this->restore_key_time."'
                 )") !== false) {

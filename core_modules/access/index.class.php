@@ -103,8 +103,9 @@ class Access extends AccessLib
             $metaPageTitle = $objUser->getUsername()."'s Profil";
             $pageTitle = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."'s Profil";
             $this->_objTpl->setGlobalVariable(array(
-                'ACCESS_USER_ID'        => $objUser->getId(),
-                'ACCESS_USER_USERNAME'  => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                'ACCESS_USER_ID'            => $objUser->getId(),
+                'ACCESS_USER_USERNAME'      => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                'ACCESS_USER_PRIMARY_GROUP' => htmlentities($objUser->getPrimaryGroupName(), ENT_QUOTES, CONTREXX_CHARSET)
             ));
 
             if ($objUser->getEmailAccess() == 'everyone' ||

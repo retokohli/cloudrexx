@@ -444,6 +444,11 @@ class AccessLib
                 ),
                 'value'    => 'getEmailAccess'
             ),
+            'primary_group' => array(
+                'name'    => $_CORELANG['TXT_ACCESS_PRIMARY_GROUP'],
+                'type'    => 'text',
+                'value'   => 'getPrimaryGroupName'
+            ),
             'profile_access'    => array(
                 'name'    => $_CORELANG['TXT_ACCESS_PROFILE'],
                 'type'    => 'menu',
