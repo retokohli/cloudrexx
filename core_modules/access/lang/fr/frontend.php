@@ -74,4 +74,6 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Cliquer ici pour vous inscrire
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Compte supprimé";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Enregistrer";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Compte utilisateur mis à jour";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous. (Il s'agit d'une protection anti-spambot)";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTCHA";
 ?>

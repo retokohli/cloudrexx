@@ -74,4 +74,6 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Pulse aqu&iacute; para iniciar
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Su cuenta ha sido eliminada con &eacute;xito.";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Guardar";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "La cuenta ha sido guardada.";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Por favor, escriba los caracteres de la imagen en el campo de texto destinado para ello. Esto es necesario para que el sistema sepa que usted no es un robot de spam.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "\¡La cadena de caracteres introducida no es v&aacute;lida!";
 ?>

@@ -74,4 +74,6 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Klik her for at registrere dig
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Din brugerkonto er blevet slettet.";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Gem";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Brugerkontoen er blevet gemt med succes";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Indstast venligst de viste tegn i tekstfeltet. Dette er nødvendig for at beskytte systemet mod spam.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Den intastede tegnfølge var falsk!";
 ?>
