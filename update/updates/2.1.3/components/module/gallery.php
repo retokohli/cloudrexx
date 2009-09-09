@@ -55,7 +55,7 @@ function _galleryUpdate()
 			return _databaseError($query, $objDatabase->ErrorMsg());
 		}
 		if($objRS->RecordCount() == 0){
-			$query = "INSERT INTO `".DBPREFIX."module_gallery_settings`
+			$query = "INSERT IGNORE INTO `".DBPREFIX."module_gallery_settings`
 							 (`id`, `name`, `value`)
 					  VALUES (".$id.", '".$arrSetting['name']."', '".$arrSetting['value']."')" ;
 			if ($objDatabase->Execute($query) === false) {
