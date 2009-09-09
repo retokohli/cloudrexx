@@ -31,6 +31,9 @@ Modul: Bildergalerie
 - Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
   ImageRotate() Funktion nicht verfügbar ist.
 
+Modul: Kalender
+- Vergangene Termine/Veranstaltungen können angezeigt werden.
+
 Modul: Newsletter
 - Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
   Sprachverzeichnissen.
