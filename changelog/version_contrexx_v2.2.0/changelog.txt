@@ -29,6 +29,7 @@ Benutzerverwaltung
   die dazugehörigen Benutzer nach erfolgreicher Authentifizierung laden
   sollen.
 - Für jeden Benutzer kann eine primäre Benutzergruppe definiert werden.
+- Die Registrierungsmaske verfügt nun über einen Captcha-Schutz.
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
