@@ -1044,6 +1044,7 @@ $_ARRAYLANG['TXT_CORE_SETTING_NAME'] = "Beschreibung";
 $_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Einstellung";
 $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Fehler bei der Abfrage der Einstellungen";
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "Keine Einstellungen gefunden";
+$_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
 $_ARRAYLANG['TXT_CSRF_TITLE'] = "Ein Fehler ist aufgetreten";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = "Aus Sicherheitsgründen wurde diese Aktion blockiert. Falls diese Meldung wiederholt auftaucht, versuchen Sie, weniger Browserfenster offen zu halten.";

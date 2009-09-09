@@ -253,6 +253,5 @@ $_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Add a new, personal category to the Digital Asset Management module which is only accessable by this user.";
 $_ARRAYLANG['TXT_ACCESS_HOMEPAGE'] = "Homepage";
 $_ARRAYLANG['TXT_ACCESS_BROWSE'] = "Browse";
-$_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
 $_ARRAYLANG['TXT_ACCESS_HOMEPAGE_DESC'] = "Select the web page to which the associated users of this group should be redirected to after they had successfully been authenticated.";
 ?>
