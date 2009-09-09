@@ -74,4 +74,6 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Нажмите здесь, ч�
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Ihr Konto wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Сохранить";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto wurde erfolgreich gespeichert";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Для активации этой опции пользователь должен ввести код изображенный на картинке, чтобы иметь возможность отправть контактную форму. Это необходимо для блокирования автоматических записей генерируемых спамботами.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Указанная строка символов была неправильной!";
 ?>

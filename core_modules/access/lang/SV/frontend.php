@@ -74,4 +74,6 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Klicken Sie hier um sich erneu
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Ihr Konto wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto wurde erfolgreich gespeichert";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Please type in the characters from the picture into the textfield. This is required for the system to know that you are not a spambot.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "The specified character string was wrong!";
 ?>
