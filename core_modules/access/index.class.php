@@ -12,6 +12,8 @@
  * @ignore
  */
 require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
+require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+
 /**
  * @ignore
  */
@@ -445,6 +447,7 @@ class Access extends AccessLib
                     :    ''
                 )
                 && $objUser->checkMandatoryCompliance()
+				&& $this->checkCaptcha()
                 && $objUser->signUp()
             ) {
                 if ($this->handleSignUp($objUser)) {
@@ -499,7 +502,30 @@ class Access extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
+
+		// set captcha
+		$objCaptcha = new Captcha();
+        $this->_objTpl->setVariable(array(
+		    'ACCESS_CAPTCHA_OFFSET'			=> $objCaptcha->getOffset(),
+            'ACCESS_CAPTCHA_URL'			=> $objCaptcha->getUrl(),
+            'ACCESS_CAPTCHA_ALT'			=> $objCaptcha->getAlt(),
+			'TXT_ACCESS_CAPTCHA_DESCRIPTION'=> $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION']
+		));
+
         $this->_objTpl->parse('access_signup_form');
+    }
+
+	private function checkCaptcha()
+    {
+		global $_ARRAYLANG;
+
+		$objCaptcha = new Captcha();
+		if(!$objCaptcha->compare($_POST['accessSignUpCaptcha'], $_POST['accessSignUpCaptchaOffset'])) {
+			$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'];
+			return false;
+		} else {
+			return true;
+		}
     }
 
     function handleSignUp($objUser)
