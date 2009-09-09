@@ -1045,6 +1045,7 @@ $_ARRAYLANG['TXT_CORE_SETTING_NAME'] = "Description";
 $_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Value";
 $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Error while retrieving the settings";
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "No settings found";
+$_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
 $_ARRAYLANG['TXT_CSRF_TITLE'] = "An error hqas occurred";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = "For security reasons, this action has been blocked. If this message appears repeatedly, try to use fewer browser windows / tabs.";
