@@ -89,10 +89,6 @@ $objInit = new InitCMS('backend');
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
 
-// CSRF code needs to be even in the login form. otherwise, we
-// could not do a super-generic check later.. NOTE: do NOT move
-// this above the "new cmsSession" line!
-CSRF::add_code();
 
 $objInit->_initBackendLanguage();
 $objInit->getUserFrontendLangId();
@@ -305,6 +301,12 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
             exit;
     }
 }
+
+// CSRF code needs to be even in the login form. otherwise, we
+// could not do a super-generic check later.. NOTE: do NOT move
+// this above the "new cmsSession" line!
+CSRF::add_code();
+
 if (isset($_POST['redirect']) && preg_match('/\.php/',($_POST['redirect']))) {
     $redirect = $_POST['redirect'];
     CSRF::header("Location: $redirect");
