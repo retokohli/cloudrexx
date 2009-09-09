@@ -134,6 +134,7 @@ Modul: Gästebuch
 
 Modul: Kalender
 - Die Kategorienauswahl wird bei der Suche berücksichtigt.
+- Vergangene Termine/Veranstaltungen können angezeigt werden.
 
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.

@@ -88,14 +88,14 @@ class Calendar extends calendarLibrary
                 if(isset($_REQUEST['export'])){
                     switch($_REQUEST['export']){
                         case 'iCal':
-                            if($id > 0){
-                                $this->_iCalExport('event', $id);
+			    			if($key > 0){
+				    			$this->_iCalExport('event', $key);
                             }
                             break;
 
                         case 'category':
-                            if ($id > 0) {
-                                $this->_iCalExport('category', $id);
+							if ($key > 0) {
+								$this->_iCalExport('category', $key);
                             }
                             break;
                         case 'all':
@@ -145,8 +145,10 @@ class Calendar extends calendarLibrary
             $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
             $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
 
-            if($_GET['cmd'] == 'boxes' && empty($_GET['act'])){
-                $day = 1;
+    		if($_GET['cmd'] == 'boxes'){
+    		    if(empty($_GET['act']) || empty($_REQUEST['dayID'])) {
+                	$day = 1;
+    		    }
             }
 
             $startdate = mktime(0, 0, 0, $month, $day, $year);
@@ -158,12 +160,11 @@ class Calendar extends calendarLibrary
 
         //get enddates
         if (empty($_POST['endDate'])) {
-            if($_GET['cmd'] == 'boxes'){
-                $day     = isset($_GET['dayID']) ? $_GET['dayID'] : date("d", mktime());
-                //$day     = isset($_GET['dayID']) ? $_GET['dayID'] : 31;
-                $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime());
-                $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime());
+            $day     = isset($_REQUEST['dayEndID']) ? $_REQUEST['dayEndID'] : (isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date("d", mktime()));
+            $month     = isset($_REQUEST['monthEndID']) ? $_REQUEST['monthEndID'] : (isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date("m", mktime()));
+            $year     = isset($_REQUEST['yearEndID']) ? $_REQUEST['yearEndID'] : (isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date("Y", mktime()));
 
+            if($_GET['cmd'] == 'boxes'){
                 if(empty($_GET['act'])){
                     $month = $month+2;
                     $day = 31;
@@ -175,7 +176,11 @@ class Calendar extends calendarLibrary
 
                 $enddate = mktime(23, 59, 59, $month, $day, $year);
             } else {
-                $enddate = mktime(23, 59, 59, $month, $day, $year+10);
+                if(empty($_REQUEST['yearEndID']) && empty($_REQUEST['monthEndID'])) {
+                    $year = $year+10;
+                }
+
+                $enddate = mktime(23, 59, 59, $month, $day, $year);
             }
         } else {
             $datearr = explode("-", $_POST['endDate']);
@@ -289,10 +294,29 @@ class Calendar extends calendarLibrary
                     $year     =  '&amp;yearID='.date("Y", $startdate);
                 }
 
+				if (empty($_POST['endDate'])) {
+				    $dayEnd 	= isset($_REQUEST['dayEndID']) ? '&amp;dayEndID='.$_REQUEST['dayEndID'] : '';
+    	    		$monthEnd 	= isset($_REQUEST['monthEndID']) ? '&amp;monthEndID='.$_REQUEST['monthEndID'] : '';
+    	    		$yearEnd 	= isset($_REQUEST['yearEndID']) ? '&amp;yearEndID='.$_REQUEST['yearEndID'] : '';
+
+                    if($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
+                        $dayEnd     = isset($_REQUEST['dayID']) ? '&amp;dayEndID='.$_REQUEST['dayID'] : date("t", mktime(0, 0, 0, $month, $day, $year));
+                        $monthEnd   = isset($_REQUEST['monthID']) ? '&amp;monthEndID='.$_REQUEST['monthID'] : date("m", mktime());
+                        $yearEnd    = isset($_REQUEST['yearID']) ? '&amp;yearEndID='.$_REQUEST['yearID'] : date("Y", mktime());
+                    }
+            	} else {
+            		$datearr = explode("-", $_POST['endDate']);
+            		$enddate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+
+            		$dayEnd 	=  '&amp;dayEndID='.date("d", $enddate);
+    	    		$monthEnd 	=  '&amp;monthEndID='.date("m", $enddate);
+    	    		$yearEnd 	=  '&amp;yearEndID='.date("Y", $enddate);
+            	}
+
                 $category     = isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
                 $term         = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
 
-                $link = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.$year.$month.$day.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+				$link = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.$year.$month.$day.$yearEnd.$monthEnd.$dayEnd.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
 
                 $this->_objTpl->setVariable(array(
                     'CALENDAR_PRIORITY'             => $priority,
@@ -510,10 +534,10 @@ class Calendar extends calendarLibrary
             'TXT_CALENDAR_REGISTRATION_INFO'=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO'],
             'CALENDAR_REGISTRATION_LINK'    => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=sign&amp;id='.$id.'&amp;date='.$this->eventList[$key]['startdate'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
 
-            'CALENDAR_ICAL_EXPORT'          => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$key.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+            'CALENDAR_ICAL_EXPORT'      	=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
                                                 '.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
                                             </a>',
-            'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$key.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+            'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
                                                 <img border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
                                             </a>',
         ));
