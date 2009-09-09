@@ -21,20 +21,18 @@
  */
 class modulemanager
 {
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $arrayInstalledModules = array();
-    var $arrayRemovedModules = array();
-    var $langId;
-    var $defaultOrderValue = 111;
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $arrayInstalledModules = array();
+    public $arrayRemovedModules = array();
+    public $langId;
+    public $defaultOrderValue = 111;
 
     /**
      * Constructor
      */
     function __construct()
     {
-        global $objInit;
-
         $this->langId = FRONTEND_LANG_ID;
     }
 
@@ -121,23 +119,25 @@ class modulemanager
 
         $objTemplate->setVariable('MODULE_ACTION', 'edit');
 
-        $objRSLangs = $objDatabase->Execute("SELECT module, `lang`
-                                           FROM ".DBPREFIX."content_navigation
-                                          WHERE module<>0
-                                       GROUP BY module");
-        while(!$objRSLangs->EOF){
-            $arrAvailableModulesInLang[$objRSLangs->fields['lang']][] = $objRSLangs->fields['module'];
-            $objRSLangs->MoveNext();
+/*
+        $objResult = $objDatabase->Execute("
+            SELECT module, `lang`
+              FROM ".DBPREFIX."content_navigation
+             WHERE module!=0
+             GROUP BY module");
+        while(!$objResult->EOF){
+// TODO: This whole array is never used!
+//            $arrAvailableModulesInLang[$objResult->fields['lang']][] = $objResult->fields['module'];
+            $objResult->MoveNext();
         }
+*/
 
         $arrayInstalledModules = $this->getModules();
         $query = "
-            SELECT id, name, description_variable,
-                   is_core, is_required
+            SELECT id, name, description_variable, is_core, is_required
               FROM ".DBPREFIX."modules
              WHERE status='y'
-             ORDER BY is_required DESC, name ASC
-        ";
+             ORDER BY is_required DESC, name ASC";
         $i = 0;
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
@@ -224,13 +224,13 @@ class modulemanager
         }
         $currentTime = time();
         $paridarray = array();
-        foreach (array_keys($_POST['installModule']) as $moduleId) {
+        foreach (array_keys($_POST['installModule']) as $module_id) {
+            $module_id = intval($module_id);
             $alreadyexist = false;
-            $id = intval($moduleId);
             $objResult = $objDatabase->Execute("
                 SELECT name
                   FROM ".DBPREFIX."modules
-                 WHERE id=$id
+                 WHERE id=$module_id
             ");
             if ($objResult) {
                 if (!$objResult->EOF) {
@@ -242,38 +242,35 @@ class modulemanager
             }
 
             $q_check_repo_lang = "
-                SELECT
-                    count(lang) as langcount,
-                    `lang`
-                FROM ".DBPREFIX."module_repository
-                WHERE moduleid=$id
-                GROUP BY `lang`
-                HAVING langcount > 0
-                ORDER BY langcount ASC
+                SELECT count(lang) as langcount, `lang`
+                  FROM ".DBPREFIX."module_repository
+                 WHERE moduleid=$module_id
+                 GROUP BY `lang`
+                HAVING langcount>0
+                 ORDER BY langcount ASC
             ";
-            $check_repo_lang = $objDatabase->Execute($q_check_repo_lang);
-
+            $objResult = $objDatabase->Execute($q_check_repo_lang);
             // figure out what repository langid to use and store
-            // it in $repo_lang_id
-            while ($check_repo_lang and !$check_repo_lang->EOF) {
-                $repo_lang_id = $check_repo_lang->fields['lang'];
+            // it in $repo_lang_id.
+            // Start with the default language, so it is initialized
+            // in case there are no records
+            $repo_lang_id = $objInit->defaultFrontendLangId;
+            while ($objResult && !$objResult->EOF) {
+                $repo_lang_id = $objResult->fields['lang'];
                 // preference in this order: current language id, default id, lowest id
                 if ($this->langId                   == $repo_lang_id) break;
                 if ($objInit->defaultFrontendLangId == $repo_lang_id) break;
-
                 // lowest id is the last, so we just loop till the
                 // end (or until we find something better).
-                $check_repo_lang->MoveNext();
+                $objResult->MoveNext();
             }
-            unset($check_repo_lang);
-
-            $query = "SELECT *
-                     FROM ".DBPREFIX."module_repository
-                     WHERE moduleid=$id
-                     AND `lang`=$repo_lang_id
-                     ORDER BY parid ASC";
-
-
+            unset($objResult);
+            $query = "
+                SELECT *
+                  FROM ".DBPREFIX."module_repository
+                 WHERE moduleid=$module_id
+                   AND `lang`=$repo_lang_id
+                 ORDER BY parid ASC";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
                 while (!$objResult->EOF) {
@@ -284,7 +281,7 @@ class modulemanager
                             $objResult2 = $objDatabase->Execute("
                                 SELECT catid
                                   FROM ".DBPREFIX."content_navigation
-                                 WHERE module=$id
+                                 WHERE module=$module_id
                                    AND `lang`=$this->langId
                             ");
                             if ($objResult2 && !$objResult2->EOF) {
@@ -295,7 +292,7 @@ class modulemanager
                             }
                             $objDatabase->Execute("
                                 DELETE FROM ".DBPREFIX."content_navigation
-                                 WHERE module=$id
+                                 WHERE module=$module_id
                                    AND `lang`=$this->langId
                             ");
                         }
@@ -312,7 +309,6 @@ class modulemanager
 
                     // Set displayorder to a high value for the parent module page
                     $displayorder = ($i == 1 ? $this->defaultOrderValue : $objResult->fields['displayorder']);
-                    $langId = $this->langId;
                     $modulerepid = $objResult->fields['id'];
                     $username = $objResult->fields['username'];
 
@@ -379,16 +375,17 @@ class modulemanager
                 $objResult = $objDatabase->Execute("
                     SELECT name
                       FROM ".DBPREFIX."modules
-                     WHERE id=$id
+                     WHERE id=$module_id
                 ");
                 if ($objResult && !$objResult->EOF) {
                     $name = $objResult->fields['name'];
                 }
                 $username = $objFWUser->objUser->getUsername();
                 $objRS = $objDatabase->SelectLimit('
-                    SELECT `catid` FROM `'.DBPREFIX.'content_navigation`
-                    WHERE `module`='.$moduleid.'
-                    ORDER BY `lang` ASC', 1);
+                    SELECT `catid`
+                      FROM `'.DBPREFIX.'content_navigation`
+                     WHERE `module`='.$module_id.'
+                     ORDER BY `lang` ASC', 1);
                 if($objRS->RecordCount() == 1){
                     $catid = $paridarray[$modulerepid] = $objRS->fields['catid'];
                 }else{
@@ -400,7 +397,7 @@ class modulemanager
                        SET catid='$catid',
                            parcat='0',
                            catname='$name',
-                           module='$id',
+                           module='$module_id',
                            username='$username',
                            changelog='$currentTime',
                            lang=$this->langId
@@ -435,8 +432,7 @@ class modulemanager
                            INNER JOIN ".DBPREFIX."modules
                               ON module=id
                            WHERE module='$moduleId'
-                             AND `lang`=$this->langId
-                ";
+                             AND `lang`=$this->langId";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     while (!$objResult->EOF) {
@@ -464,10 +460,8 @@ class modulemanager
                 }
             }
             return true;
-        } else {
-            return false;
         }
-
+        return false;
     }
 
 
