@@ -2222,10 +2222,17 @@ class ContentManager
     function _getBodyContent($fullContent)
     {
         $arrayMatch = array();
-        if (preg_match('#(?:.*<body[^>]*>)?(.*(?=</body>))?#ism', $fullContent, $arrayMatch)) {
-            return $arrayMatch[1];
+        $content = '';
+
+        if(preg_match('#(?:.*<body[^>]*>)?(.*)#ism', $fullContent, $arrayMatch)) {
+            $content = $arrayMatch[1];
         }
-        return '';
+
+        if(strpos($content, '</body>') !== false){
+            $content = trim(substr($content, 0, strpos($content, '</body>')));
+        }
+
+        return $content;
     }
 
 
