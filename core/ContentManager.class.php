@@ -2,11 +2,11 @@
 
 /**
  * ContentManager
- * @copyright    CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
- * @version        1.0.0
+ * @version     1.0.0
  */
 
 /**
@@ -21,103 +21,100 @@ require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
  * ContentManager
  *
  * Manages the site content
- * @copyright    CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
- * @version        1.0.0
+ * @version     1.0.0
  */
 class ContentManager
 {
-   /**
+    /**
      * Page title
-    * @var string
-    */
-    var $pagetitle = '';
+     * @var string
+     */
+    public $pagetitle = '';
 
-   /**
+    /**
      * Error status message
-    * @var string
-    */
-    var $strErrMessage = array();
+     * @var string
+     */
+    public $strErrMessage = array();
 
     /**
      * Status message (no error)
      * @var string
      */
-    var $strOkMessage = '';
+    public $strOkMessage = '';
 
-   /**
+    /**
      * Module ID
      * @var integer
-    */
-    var $setModule = 0;
+     */
+    public $setModule = 0;
 
-   /**
+    /**
      * Command (cmd) parameter
-    * @var string
-    */
-    var $setCmd = '';
+     * @var string
+     */
+    public $setCmd = '';
 
-   /**
-    * @var array
-    * @desc Array with the WYSIWYG module ids
-    */
-    var $arrNoExpertmodes = array();
+    /**
+     * @var array
+     * @desc Array with the WYSIWYG module ids
+     */
+    public $arrNoExpertmodes = array();
 
-   /**
-    * @var int
-    * @desc Language id
-    */
-    var $langId;
+    /**
+     * @var int
+     * @desc Language id
+     */
+    public $langId;
 
     /**
      * @var int
      * @desc Id of first active language;
      */
-    var $firstActiveLang;
-   /**
+    public $firstActiveLang;
+    /**
      *
-    * @var array
+     * @var array
      * @desc
-    */
-    var $arrAllFrontendGroups = array();
-
-   /**
-     * Array of all backend groups (name, id)
-    * @var array
-    */
-    var $arrAllBackendGroups = array();
-
-   /**
-    * @var array
-    * @desc array of required modules
-    * 1->core, 13->ids, 14->error, 15->home, 18->login
-    *
-    * @access private
-    */
-    var $_requiredModules = array(1,13,14,15,18);
-
-
-    var $_navtable = array();
-
-    var $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
-
-    var $boolHistoryEnabled = false;
-    var $boolHistoryActivate = false;
+     */
+    public $arrAllFrontendGroups = array();
 
     /**
-    * Constructor
-    *
-    * @param  string
-    * @access public
-    */
-    function __construct() {
-        global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG;
+     * Array of all backend groups (name, id)
+     * @var array
+     */
+    public $arrAllBackendGroups = array();
+
+    /**
+     * array of required modules
+     * 1->core, 13->ids, 14->error, 15->home, 18->login
+     * @var array
+     * @access private
+     */
+    public $_requiredModules = array(1,13,14,15,18);
+
+    public $_navtable = array();
+    public $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
+    public $boolHistoryEnabled = false;
+    public $boolHistoryActivate = false;
+
+
+    /**
+     * Constructor
+     * @param  string
+     * @access public
+     */
+    function __construct()
+    {
+        global $objDatabase, $objInit, $_CORELANG, $objTemplate, $_CONFIG;
 
         $this->langId = $objInit->userFrontendLangId;
-        foreach(FWLanguage::getLanguageArray() as $arrLang){
-            if($arrLang['frontend'] == 1){
+        foreach(FWLanguage::getLanguageArray() as $arrLang) {
+            if ($arrLang['frontend'] == 1) {
                 $this->firstActiveLang = $arrLang['id'];
                 break;
             }
@@ -147,6 +144,7 @@ class ContentManager
         $this->collectLostPages();
     }
 
+
     /**
      * Calls the requested page function
      */
@@ -154,7 +152,7 @@ class ContentManager
     {
         global $_CORELANG, $objTemplate;
 
-        if(!isset($_GET['act'])){
+        if (!isset($_GET['act'])) {
             $_GET['act']='';
         }
 
@@ -244,12 +242,12 @@ class ContentManager
         ));
     }
 
+
     /**
-    * Show copy page
-    *
-    * @global    array Core language
-    * @global    HTML_Template_Sigma
-    */
+     * Show copy page
+     * @global    array Core language
+     * @global    HTML_Template_Sigma
+     */
     function showCopyPage()
     {
         global $_CORELANG, $objTemplate;
@@ -269,7 +267,7 @@ class ContentManager
                 'TXT_DO_YOU_WANT_TO_CONTINUE'    => $_CORELANG['TXT_DO_YOU_WANT_TO_CONTINUE']
             ));
 
-            foreach (FWLanguage::getLanguageArray() as $key){
+            foreach (FWLanguage::getLanguageArray() as $key) {
                 if ($key['id'] == $this->langId) {
                     $objTemplate->setVariable(array(
                         'LANG_OLD_ID' => $this->langId,
@@ -403,7 +401,7 @@ class ContentManager
                 }
             }
 
-            for ($i=0; $i<count($arrQuery); $i++){
+            for ($i=0; $i<count($arrQuery); $i++) {
                 $objDatabase->Execute($arrQuery[$i]);
             }
             unset($arrQuery);
@@ -416,12 +414,13 @@ class ContentManager
         }
     }
 
+
     /**
-    * Deletes all global site content
-    * @global ADONewConnection
-    * @global array
-    * @global FWLanguage
-    */
+     * Deletes all global site content
+     * @global ADONewConnection
+     * @global array
+     * @global FWLanguage
+     */
     function _deleteAll($langId=0)
     {
         global $objDatabase, $_CORELANG;
@@ -435,24 +434,26 @@ class ContentManager
                 $this->strErrMessage[] = $_CORELANG['TXT_STANDARD_SITE_NOT_DELETED'];
             } else {
                 $arrQuery = array();
-                $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE `lang`=".intval($langId));
+                $objResult = $objDatabase->Execute("
+                    SELECT catid
+                      FROM ".DBPREFIX."content_navigation
+                     WHERE `lang`=".intval($langId));
                 if ($objResult !== false) {
                     while (!$objResult->EOF) {
-                        array_push($arrQuery, "DELETE FROM ".DBPREFIX."content WHERE lang_id=".intval($langId)." AND id=".intval($objResult->fields['catid']));
-
-                        $objSubResult = $objDatabase->Execute('    SELECT    id
-                                                                FROM     '.DBPREFIX.'content_navigation_history
-                                                                WHERE    is_active="1" AND
-                                                                        catid='.intval($objResult->fields['catid']).'
-                                                                AND     `lang`='.$langId.'
-                                                                LIMIT    1
-                                                            ');
-                        $objDatabase->Execute('    INSERT
-                                                INTO    '.DBPREFIX.'content_logfile
-                                                SET        action="delete",
-                                                        history_id='.$objSubResult->fields['id'].'
-                                            ');
-
+                        array_push($arrQuery, "
+                            DELETE FROM ".DBPREFIX."content
+                             WHERE lang_id=".intval($langId)."
+                               AND id=".intval($objResult->fields['catid']));
+                        $objSubResult = $objDatabase->Execute('
+                            SELECT id
+                              FROM '.DBPREFIX.'content_navigation_history
+                             WHERE is_active="1"
+                               AND catid='.intval($objResult->fields['catid']).'
+                               AND `lang`='.$langId);
+                        $objDatabase->Execute('
+                            INSERT INTO '.DBPREFIX.'content_logfile
+                               SET action="delete",
+                                   history_id='.$objSubResult->fields['id']);
                         $objResult->MoveNext();
                     }
                 }
@@ -460,12 +461,12 @@ class ContentManager
                     $objDatabase->Execute($arrQuery[$i]);
                 }
                 unset($arrQuery);
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."content_navigation WHERE `lang`=".intval($langId));
-
+                $objDatabase->Execute("
+                    DELETE FROM ".DBPREFIX."content_navigation
+                     WHERE `lang`=".intval($langId));
                 //write caching-file, delete exisiting cache-files
                 $objCache = new Cache();
                 $objCache->writeCacheablePagesFile();
-
                 // write xml sitemap
                 if (($result = XMLSitemap::write()) !== true) {
                     $this->strErrMessage[] = $result;
@@ -474,23 +475,21 @@ class ContentManager
         }
     }
 
+
     /**
-    * @access private
-    * @return array
-    * @param string groupType
-    * @desc gets all frontend groups as an array
-    */
+     * gets all frontend groups as an array
+     * @access private
+     * @return array
+     * @param string groupType
+     */
     function _getAllGroups($groupType='frontend')
     {
         global $objDatabase;
 
-        if ($groupType != 'frontend') {
-            $groupType = 'backend';
-        }
-
+        if ($groupType != 'frontend') $groupType = 'backend';
         $arrGroups = array();
         $objResult = $objDatabase->Execute("SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups WHERE type='".$groupType."'");
-        if ($objResult !== false) {
+        if ($objResult) {
             while (!$objResult->EOF) {
                 $arrGroups[$objResult->fields['group_id']]=$objResult->fields['group_name'];
                 $objResult->MoveNext();
@@ -518,18 +517,20 @@ class ContentManager
                 $displayorder_old = intval($_POST['displayorder_old'][$value]);
                 $displayorder_new = intval($_POST['displayorder_new'][$value]);
                 if ($displayorder_old != $displayorder_new) {
-                    $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation
-                                              SET displayorder=".$displayorder_new."
-                                            WHERE catid=".intval($value)." AND `lang`=".$this->langId);
+                    $objDatabase->Execute("
+                        UPDATE ".DBPREFIX."content_navigation
+                           SET displayorder=".$displayorder_new."
+                         WHERE catid=".intval($value)."
+                           AND `lang`=".$this->langId);
                     if ($this->boolHistoryEnabled) {
-                        $objDatabase->Execute('UPDATE   '.DBPREFIX.'content_navigation_history
-                                                  SET   changelog='.time().',
-                                                        displayorder='.$displayorder_new.'
-                                                WHERE   catid='.intval($value).' AND `lang`='.$this->langId.'
-                                                  AND   is_active="1"
-                                                LIMIT   1');
+                        $objDatabase->Execute('
+                            UPDATE '.DBPREFIX.'content_navigation_history
+                               SET changelog='.time().',
+                                   displayorder='.$displayorder_new.'
+                             WHERE catid='.intval($value).'
+                               AND `lang`='.$this->langId.'
+                               AND is_active="1"');
                     }
-
                 }
             }
 
@@ -541,24 +542,22 @@ class ContentManager
                             $this->deleteContent($intPageId);
                         }
                     }
-                break;
+                    break;
                 case 'activate':
                     if (isset($_POST['selectedPages'])) {
                         foreach($_POST['selectedPages'] as $intPageId) {
                             $this->changeActiveStatus($intPageId,1);
                         }
                     }
-                break;
+                    break;
                 case 'deactivate':
                     if (isset($_POST['selectedPages'])) {
                         foreach($_POST['selectedPages'] as $intPageId) {
                             $this->changeActiveStatus($intPageId,0);
                         }
                     }
-                break;
-                default: //do nothing
+                    break;
             }
-
             // write xml sitemap
             if (($result = XMLSitemap::write()) !== true) {
                 $this->strErrMessage[] = $result;
@@ -569,6 +568,7 @@ class ContentManager
         //$objTemplate->addBlock('ADMIN_CONTENT', 'siteMap', $objNavbar->getSiteMap());
     }
 
+
     /**
      * Create new page
      * @global    ADONewConnection
@@ -577,7 +577,7 @@ class ContentManager
      */
     function showNewPage()
     {
-        global $objDatabase, $_CORELANG, $objTemplate;
+        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG;
 
         // init variables
         $contenthtml='';
@@ -597,32 +597,30 @@ class ContentManager
 
         $langCount = 0;
 
-        foreach (FWLanguage::getLanguageArray() as $arrLang){
+        foreach (FWLanguage::getLanguageArray() as $arrLang) {
             $langCount++;
             $checked = '';
             $tabClass = 'inactive';
-
-            if($arrLang['frontend'] == 0){
-                continue;
-            }
-
-            if($arrLang['id'] == $this->langId){
+            if ($arrLang['frontend'] == 0) continue;
+            if ($arrLang['id'] == $this->langId) {
                 $tabClass = 'active';
                 $defaultLang = $arrLang['id'];
-                $checked = 'checked="checked"';
+                $checked = ' checked="checked"';
                 $objTemplate->setVariable(array(
-                    'LANGUAGE_NAME'             => $arrLang['name'],
-                    'LANGUAGE_TITLE'            => $arrLang['name'].'_'.$arrLang['id'],
-                    'TAB_CLASS'                 => $tabClass,
+                    'LANGUAGE_NAME'  => $arrLang['name'],
+                    'LANGUAGE_TITLE' => $arrLang['name'].'_'.$arrLang['id'],
+                    'TAB_CLASS'      => $tabClass,
                 ));
                 $objTemplate->parse('languages_tab');
             }
-
-            $langActivateCheckbox = '<input type="checkbox" id="lang_'.$arrLang['lang'].'_'.$arrLang['id'].'" '.$checked.' />'
-                                    .'<label for="lang_'.$arrLang['lang'].'_'.$arrLang['id'].'">'.$arrLang['name'].' ('.$arrLang['lang'].')</label>';
-            $objTemplate->setVariable(array(
-                'LANGUAGE_CHECKBOX'         => $langActivateCheckbox,
-            ));
+            $langActivateCheckbox =
+                '<input type="checkbox" id="lang_'.
+                $arrLang['lang'].'_'.$arrLang['id'].'"'.$checked.' />'.
+                '<label for="lang_'.$arrLang['lang'].'_'.$arrLang['id'].'">'.
+                $arrLang['name'].' ('.$arrLang['lang'].')</label>';
+            $objTemplate->setVariable(
+                'LANGUAGE_CHECKBOX', $langActivateCheckbox
+            );
             $objTemplate->parse('languages_activate');
         }
 
@@ -631,53 +629,46 @@ class ContentManager
         if (isset($_GET['pageId']) & !empty($_GET['pageId'])) {
             $pageId = intval($_GET['pageId']);
 
-            $objResult = $objDatabase->SelectLimit("SELECT content,
-                               metadesc,
-                               metarobots,
-                               title,
-                               metakeys,
-                               css_name
-                          FROM ".DBPREFIX."content
-                         WHERE lang_id = ".$defaultLang." AND id = ".$pageId, 1);
-            if ($objResult !== false && $objResult->RecordCount()>0) {
+            $objResult = $objDatabase->Execute("
+                SELECT content, metadesc, metarobots,
+                       title, metakeys, css_name
+                  FROM ".DBPREFIX."content
+                 WHERE lang_id=".$defaultLang."
+                   AND id=".$pageId);
+            if ($objResult && $objResult->RecordCount() > 0) {
                 $contenthtml= $objResult->fields['content'];
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$contenthtml);
                 $objTemplate->setVariable(array(
-                    'CONTENT_HTML'             => get_wysiwyg_editor('html', $contenthtml),
-                    'CONTENT_DESC'           => $objResult->fields['contentdesc'],
-                    'CONTENT_META_TITLE'      => $objResult->fields['contenttitle'],
-                    'CONTENT_KEY'              => $objResult->fields['contentkey'],
-                    'CONTENT_CSS_NAME'      => $objResult->fields['css_name'],
+                    'CONTENT_HTML'       => get_wysiwyg_editor('html', $contenthtml),
+                    'CONTENT_DESC'       => $objResult->fields['contentdesc'],
+                    'CONTENT_META_TITLE' => $objResult->fields['contenttitle'],
+                    'CONTENT_KEY'        => $objResult->fields['contentkey'],
+                    'CONTENT_CSS_NAME'   => $objResult->fields['css_name'],
                 ));
             }
-
-            $objResult = $objDatabase->SelectLimit("SELECT module,
-                               startdate,
-                               enddate,
-                               displaystatus,
-                               themes_id
-                          FROM ".DBPREFIX."content_navigation
-                         WHERE catid = ".$pageId." AND `lang`=".$defaultLang, 1);
+            $objResult = $objDatabase->Execute("
+                SELECT module, startdate, enddate,
+                       displaystatus, themes_id
+                  FROM ".DBPREFIX."content_navigation
+                 WHERE catid=".$pageId."
+                   AND `lang`=".$defaultLang);
             if ($objResult !== false && $objResult->RecordCount()>0) {
                 $moduleId = $objResult->fields['module'];
                 $startDate = $objResult->fields['startdate'];
                 $endDate = $objResult->fields['enddate'];
-                $displaystatus = '';
                 $themesId = $objResult->fields['themes_id'];
-
-                if ($objResult->fields['displaystatus'] == "on" ) {
-                    $displaystatus = "checked";
-                }
-
-                $robotstatus = ($objResult->fields['metarobots'] == "index") ? "checked" : '';
                 $objTemplate->setVariable(array(
-                    'CONTENT_MODULE_MENU'              => $this->_getModuleMenu($moduleId),
-                    'CONTENT_STARTDATE'                => $startDate,
-                    'CONTENT_ENDDATE'                  => $endDate,
-                    'CONTENT_DISPLAYSTATUS'            => $displaystatus,
-                    'CONTENT_TABLE_STYLE'              => $tablestatus,
-                    'CONTENT_ROBOTS'                   => $robotstatus,
-                    'CONTENT_THEMES_MENU'              => $this->_getThemesMenu($themesId)
+                    'CONTENT_MODULE_MENU'   => $this->_getModuleMenu($moduleId),
+                    'CONTENT_STARTDATE'     => $startDate,
+                    'CONTENT_ENDDATE'       => $endDate,
+                    'CONTENT_DISPLAYSTATUS' =>
+                        ($objResult->fields['displaystatus'] == "on"
+                            ? ' checked="checked"' : ''),
+                    'CONTENT_TABLE_STYLE'   => $tablestatus,
+                    'CONTENT_ROBOTS'        =>
+                        ($objResult->fields['metarobots'] == "index"
+                            ? ' checked="checked"' : ''),
+                    'CONTENT_THEMES_MENU'   => $this->_getThemesMenu($themesId),
                 ));
             }
         } else {
@@ -687,30 +678,26 @@ class ContentManager
                 'CONTENT_HTML'        => get_wysiwyg_editor('html', $contenthtml),
                 'CONTENT_MODULE_MENU' => $this->_getModuleMenu(''),
                 'CONTENT_DATE'        => date('Y-m-d'),
-                'CONTENT_TABLE_STYLE'              => $tablestatus
+                'CONTENT_TABLE_STYLE' => $tablestatus,
             ));
         }
-
         // Frontend Groups
         foreach ($this->arrAllFrontendGroups as $id => $name) {
             $existingFrontendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
         }
-
         // Backend Groups
         foreach ($this->arrAllBackendGroups as $id => $name) {
             $existingBackendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
         }
-
         // Blocks
         $blocks = array();
         $blocks = $this->getBlocks();
 
-
         $objTemplate->setVariable(array(
             'CONTENT_CATID'                     => $pageId,
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
-            'TXT_ERROR_COULD_NOT_INSERT_PAGE'   => str_replace("'", "\'", $_CORELANG['TXT_ERROR_COULD_NOT_INSERT_PAGE']),
-            'TXT_SUCCESS_PAGE_SAVED'            => str_replace("'", "\'", $_CORELANG['TXT_SUCCESS_PAGE_SAVED']),
+            'TXT_ERROR_COULD_NOT_INSERT_PAGE'   => str_replace("'", "\\'", $_CORELANG['TXT_ERROR_COULD_NOT_INSERT_PAGE']),
+            'TXT_SUCCESS_PAGE_SAVED'            => str_replace("'", "\\'", $_CORELANG['TXT_SUCCESS_PAGE_SAVED']),
             'TXT_CONTENT_PLEASE_WAIT'           => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
             'TXT_CONTENT_NO_TITLE'              => $_CORELANG['TXT_CONTENT_NO_TITLE'],
             'TXT_LANGUAGES'                     => $_CORELANG['TXT_LANGUAGES'],
@@ -741,8 +728,8 @@ class ContentManager
             'TXT_NO_MODULE'                     => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                      => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'                        => $_CORELANG['TXT_BROWSE'],
-              'TXT_CONTENT_ASSIGN_BLOCK'          => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
-               'TXT_NO_REDIRECT'                   => '',
+            'TXT_CONTENT_ASSIGN_BLOCK'          => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+            'TXT_NO_REDIRECT'                   => '',
             'TXT_SOURCE_MODE'                   => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'                => $_CORELANG['TXT_CACHING_STATUS'],
             'TXT_THEMES'                        => $_CORELANG['TXT_THEMES'],
@@ -785,43 +772,48 @@ class ContentManager
         $objTemplate->setVariable(array(
             'CONTENT_ACTION'                       => "add",
             'CONTENT_TOP_TITLE'                    => $_CORELANG['TXT_NEW_PAGE'],
-            'CONTENT_DISPLAYSTATUS'                => "checked",
-            'CONTENT_CACHING_STATUS'               => 'checked',
+            'CONTENT_DISPLAYSTATUS'                => ' checked="checked"',
+            'CONTENT_CACHING_STATUS'               => ' checked="checked"',
             'CONTENT_CAT_MENU'                     => $this->getPageMenu(),
-            'CONTENT_CAT_MENU_NEW_PAGE'            => !Permission::checkAccess(127, 'static', true) ? 'disabled="disabled" style="color:graytext;"' : null,
+            'CONTENT_CAT_MENU_NEW_PAGE'            =>
+                (Permission::checkAccess(127, 'static', true)
+                    ? '' : ' disabled="disabled" style="color:graytext;"'),
             'CONTENT_FORM_ACTION'                  => "add",
-            'CONTENT_ROBOTS'                       => "checked",
+            'CONTENT_ROBOTS'                       => ' checked="checked"',
             'CONTENT_THEMES_MENU'                  => $this->_getThemesMenu(),
             'CONTENT_EXISTING_GROUPS'              => $existingFrontendGroups,
-            'CONTENT_PROTECTION_INACTIVE'          => "checked",
+            'CONTENT_PROTECTION_INACTIVE'          => ' checked="checked"',
             'CONTENT_PROTECTION_ACTIVE'            => '',
             'CONTENT_PROTECTION_DISPLAY'           => "none",
-            'CONTENT_CONTROL_BACKEND_INACTIVE'     => "checked",
+            'CONTENT_CONTROL_BACKEND_INACTIVE'     => ' checked="checked"',
             'CONTENT_CONTROL_BACKEND_ACTIVE'       => '',
             'CONTENT_CONTROL_BACKEND_DISPLAY'      => "none",
             'CONTENT_EXISTING_BACKEND_GROUPS'      => $existingBackendGroups,
             'CONTENT_ASSIGNED_BACKEND_GROUPS'      => '',
-            'CONTENT_EXISTING_BLOCKS'                 => $blocks[1],
-            'CONTENT_ASSIGNED_BLOCK'                 => $blocks[0],
-            'CONTENT_TYPE_CHECKED_CONTENT'        => 'checked="checked"',
+            'CONTENT_EXISTING_BLOCKS'              => $blocks[1],
+            'CONTENT_ASSIGNED_BLOCK'               => $blocks[0],
+            'CONTENT_TYPE_CHECKED_CONTENT'         => ' checked="checked"',
             'CONTENT_TYPE_CHECKED_REDIRECT'        => '',
-            'CONTENT_TYPE_STYLE_CONTENT'        => 'style="display: block;"',
-            'CONTENT_TYPE_STYLE_REDIRECT'        => 'style="display: none;"',
+            'CONTENT_TYPE_STYLE_CONTENT'           => ' style="display: block;"',
+            'CONTENT_TYPE_STYLE_REDIRECT'          => ' style="display: none;"',
         ));
     }
 
 
     /**
-    * @access private
-    * @return string
-    * @param pageId int
-    * @desc ckecks if the page is protected (returns "checked") or not.
-    */
+     * Checks whether the page is protected (returns ' checked="checked"')
+     * or not (returns the empty string).
+     * @access  private
+     * @return  string
+     * @param   integer   $pageId
+     * @param   integer   $langId
+     */
     function _getPageProtectionStatus($pageId, $langId=0)
     {
         global $objDatabase;
+
         $langId = intval($langId);
-        if($langId == 0){ $langId = $this->firstActiveLang; }
+        if ($langId == 0) { $langId = $this->firstActiveLang; }
         $objResult = $objDatabase->SelectLimit("SELECT protected FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId." AND `lang`=".$langId, 1);
         if ($objResult !== false && $objResult->RecordCount()>0 && isset($objResult->fields['protected']) && $objResult->fields['protected'])
             return ' checked="checked"';
@@ -830,18 +822,18 @@ class ContentManager
 
 
     /**
+     * Gets all frontend or backend groups (id, name) from this page
      * @access private
      * @return array
      * @global    ADONewConnection
      * @param groupType string
      * @param pageId int (optional)
-     * @desc gets all frontend or backend groups ( id,name ) from this page
      */
-    function _getAssignedGroups($groupType, $pageId=0, $langId = 0)
+    function _getAssignedGroups($groupType, $pageId=0, $langId=0)
     {
         global $objDatabase;
         $langId = intval($langId);
-        if($langId == 0){ $langId = $this->firstActiveLang; }
+        if ($langId == 0) { $langId = $this->firstActiveLang; }
         $arrAssignedGroups = array();
 
         if ($groupType != 'backend') {
@@ -849,12 +841,14 @@ class ContentManager
         }
 
         if (intval($pageId) != 0) {
-            $objResult = $objDatabase->Execute("SELECT rights.group_id
-                                                FROM ".DBPREFIX."content_navigation AS navigation,
-                                                        ".DBPREFIX."access_group_dynamic_ids AS rights
-                                                WHERE navigation.catid=".intval($pageId)." AND navigation.`lang`=".$langId."
-                                                AND navigation.".$groupType."_access_id=rights.access_id");
-            if ($objResult !== false) {
+            $objResult = $objDatabase->Execute("
+                SELECT rights.group_id
+                  FROM ".DBPREFIX."content_navigation AS navigation,
+                       ".DBPREFIX."access_group_dynamic_ids AS rights
+                 WHERE navigation.catid=".intval($pageId)."
+                   AND navigation.`lang`=".$langId."
+                   AND navigation.".$groupType."_access_id=rights.access_id");
+            if ($objResult) {
                 while (!$objResult->EOF) {
                     array_push($arrAssignedGroups, $objResult->fields['group_id']);
                     $objResult->MoveNext();
@@ -864,59 +858,61 @@ class ContentManager
         return $arrAssignedGroups;
     }
 
-    function _checkModificationPermission($pageId, $langId = 0)
+
+    function _checkModificationPermission($pageId, $langId=0)
     {
         global $objDatabase;
 
         $langId = intval($langId);
-        if($langId == 0){ $langId = $this->firstActiveLang; }
+        if ($langId == 0) $langId = $this->firstActiveLang;
 
-        $objResult = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$pageId.' AND `lang`='.$langId.' AND backend_access_id!=0', 1);
-        if ($objResult !== false) {
+        $objResult = $objDatabase->Execute('
+            SELECT backend_access_id
+              FROM '.DBPREFIX.'content_navigation
+             WHERE catid='.$pageId.'
+               AND `lang`='.$langId.'
+               AND backend_access_id!=0');
+        if ($objResult) {
             if ($objResult->RecordCount() == 1) {
                 if (!Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
                     header('Location: index.php?cmd=noaccess');
                     exit;
-                } else {
-                    return true;
                 }
-            } else {
-                return false;
+                return true;
             }
-        } else {
-            header('Location: index.php?cmd=noaccess');
-            exit;
+            return false;
         }
+        header('Location: index.php?cmd=noaccess');
+        exit;
     }
+
 
     /**
      * Returns true if alias functionality is enabled.
      */
-    function _is_alias_enabled() {
+    function _is_alias_enabled()
+    {
         global $objDatabase;
+
         $query = "
             SELECT setvalue
-            FROM ".DBPREFIX."settings
-            WHERE setmodule = 41 AND setname = 'aliasStatus'
-        ";
-        if ($res = $objDatabase->SelectLimit($query, 1)) {
-            return $res->fields['setvalue'];
-        }
-        return false;
+              FROM ".DBPREFIX."settings
+             WHERE setmodule=41 AND setname='aliasStatus'";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult && $objResult->EOF) return false;
+        return $objResult->fields['setvalue'];
     }
 
+
     /**
-     * Content editing
-     *
-     * This method manages all aspects of editing of content
-     *
+     * This method manages all aspects of content editing
      * @global  ADONewConnection
      * @global  array   Core language
      * @global  HTML_Template_Sigma
      */
-    function showEditPage($pageId = '')
+    function showEditPage($pageId='')
     {
-        global $objDatabase, $_CORELANG, $objTemplate;
+        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG;
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
         $this->pageTitle = $_CORELANG['TXT_EDIT_PAGE'];
@@ -926,16 +922,16 @@ class ContentManager
         $assignedGroups = '';
         $assignedBackendGroups = '';
 
-        if (empty($pageId)) {
-            $pageId = intval($_REQUEST['pageId']);
-        }
-        if($pageId == 0){ header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); }
+        if (empty($pageId)) $pageId = intval($_REQUEST['pageId']);
+        if ($pageId == 0) { header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); }
 
-        $objRS = $objDatabase->Execute('SELECT `n`.`lang` FROM `'.DBPREFIX.'content_navigation` AS `n`
-                                        INNER JOIN `'.DBPREFIX.'languages` AS `l` on (`l`.`id` = `n`.`lang`)
-                                        WHERE `l`.`frontend` = 1 AND `n`.`catid`='.$pageId.'
-                                        ORDER BY `n`.`lang` ASC');
-
+        $objRS = $objDatabase->Execute('
+            SELECT `n`.`lang`
+              FROM `'.DBPREFIX.'content_navigation` AS `n`
+             INNER JOIN `'.DBPREFIX.'languages` AS `l` on (`l`.`id`=`n`.`lang`)
+             WHERE `l`.`frontend`=1
+               AND `n`.`catid`='.$pageId.'
+             ORDER BY `n`.`lang` ASC');
         $arrContentLanguages = array();
         $this->firstActiveLang = $langId = $this->langId;
         if ($this->_checkModificationPermission($pageId, $langId)) {
@@ -943,38 +939,38 @@ class ContentManager
         } else {
             $_backendPermissions = false;
         }
-        while(!$objRS->EOF){
+        while(!$objRS->EOF) {
             $arrContentLanguages[$objRS->fields['lang']] = array('id' => $objRS->fields['lang']);
             $objRS->MoveNext();
         }
         $langCount = 0;
         $activeLangCount = 0;
-        //TODO selected frontend lang active tab
-        foreach (FWLanguage::getLanguageArray() as $arrLang){
+// TODO: selected frontend lang active tab
+        foreach (FWLanguage::getLanguageArray() as $arrLang) {
             $checked = '';
-            $langCount++;
+            ++$langCount;
             $tabClass = 'inactive';
-
-            if(array_key_exists($arrLang['id'], $arrContentLanguages) && $arrLang['frontend'] == 1){
+            if (array_key_exists($arrLang['id'], $arrContentLanguages) && $arrLang['frontend'] == 1) {
                 $activeLangCount++;
-                if($this->langId == $arrLang['id']){
+                if ($this->langId == $arrLang['id'])
                     $tabClass = 'active';
-                }
-                $checked = 'checked="checked"';
+                $checked = ' checked="checked"';
                 $objTemplate->setVariable(array(
-                    'LANGUAGE_NAME'             => $arrLang['name'],
-                    'LANGUAGE_TITLE'            => $arrLang['name'].'_'.$arrLang['id'],
-                    'TAB_CLASS'                 => $tabClass,
+                    'LANGUAGE_NAME'  => $arrLang['name'],
+                    'LANGUAGE_TITLE' => $arrLang['name'].'_'.$arrLang['id'],
+                    'TAB_CLASS'      => $tabClass,
                 ));
                 $objTemplate->parse('languages_tab');
             }
-
-            if($arrLang['frontend'] == 1){
-                $langActivateCheckbox = '<input type="checkbox" id="lang_'.$arrLang['lang'].'_'.$arrLang['id'].'" '.$checked.' />'
-                                        .'<label for="lang_'.$arrLang['lang'].'_'.$arrLang['id'].'">'.$arrLang['name'].' ('.$arrLang['lang'].')</label>';
-                $objTemplate->setVariable(array(
-                    'LANGUAGE_CHECKBOX'         => $langActivateCheckbox,
-                ));
+            if ($arrLang['frontend'] == 1) {
+                $langActivateCheckbox =
+                    '<input type="checkbox" id="lang_'.
+                    $arrLang['lang'].'_'.$arrLang['id'].'"'.$checked.' />'.
+                    '<label for="lang_'.$arrLang['lang'].'_'.$arrLang['id'].'">'.
+                    $arrLang['name'].' ('.$arrLang['lang'].')</label>';
+                $objTemplate->setVariable(
+                    'LANGUAGE_CHECKBOX', $langActivateCheckbox
+                );
                 $objTemplate->parse('languages_activate');
             }
         }
@@ -998,10 +994,10 @@ class ContentManager
             'TXT_MENU_NAME'                    => $_CORELANG['TXT_MENU_NAME'],
             'TXT_NEW_CATEGORY'                 => $_CORELANG['TXT_NEW_CATEGORY'],
             'TXT_VISIBLE'                      => $_CORELANG['TXT_VISIBLE'],
-            'TXT_CONTENT_TITLE'                   => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CONTENT_TITLE'                => $_CORELANG['TXT_PAGETITLE'],
             'TXT_META_INFORMATIONS'            => $_CORELANG['TXT_META_INFORMATIONS'],
             'TXT_META_TITLE'                   => $_CORELANG['TXT_META_TITLE'],
-            'TXT_META_DESCRIPTION'            => $_CORELANG['TXT_META_DESCRIPTION'],
+            'TXT_META_DESCRIPTION'             => $_CORELANG['TXT_META_DESCRIPTION'],
             'TXT_META_KEYWORD'                 => $_CORELANG['TXT_META_KEYWORD'],
             'TXT_META_ROBOTS'                  => $_CORELANG['TXT_META_ROBOTS'],
             'TXT_CONTENT'                      => $_CORELANG['TXT_CONTENT'],
@@ -1009,10 +1005,10 @@ class ContentManager
             'TXT_START_DATE'                   => $_CORELANG['TXT_START_DATE'],
             'TXT_END_DATE'                     => $_CORELANG['TXT_END_DATE'],
             'TXT_EXPERT_MODE'                  => $_CORELANG['TXT_EXPERT_MODE'],
-            'TXT_MODULE'                      => $_CORELANG['TXT_MODULE'],
+            'TXT_MODULE'                       => $_CORELANG['TXT_MODULE'],
             'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
-            'TXT_BROWSE'                    => $_CORELANG['TXT_BROWSE'],
+            'TXT_BROWSE'                       => $_CORELANG['TXT_BROWSE'],
             'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'                  => '',
             'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
@@ -1038,24 +1034,24 @@ class ContentManager
             'TXT_OPTIONAL_CSS_NAME'            => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
             'TXT_DELETE'                       => $_CORELANG['TXT_DELETE'],
             'TXT_DELETE_MESSAGE'               => $_CORELANG['TXT_DELETE_PAGE_JS'],
-            'TXT_CHANGELOG'                      => $_CORELANG['TXT_CHANGELOG'],
-            'TXT_CHANGELOG_DATE'            => $_CORELANG['TXT_DATE'],
-            'TXT_CHANGELOG_NAME'            => $_CORELANG['TXT_PAGETITLE'],
-            'TXT_CHANGELOG_USER'            => $_CORELANG['TXT_USER'],
-            'TXT_CHANGELOG_FUNCTIONS'        => $_CORELANG['TXT_FUNCTIONS'],
-            'TXT_CHANGELOG_SUBMIT'               => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_CHANGELOG'                    => $_CORELANG['TXT_CHANGELOG'],
+            'TXT_CHANGELOG_DATE'               => $_CORELANG['TXT_DATE'],
+            'TXT_CHANGELOG_NAME'               => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CHANGELOG_USER'               => $_CORELANG['TXT_USER'],
+            'TXT_CHANGELOG_FUNCTIONS'          => $_CORELANG['TXT_FUNCTIONS'],
+            'TXT_CHANGELOG_SUBMIT'             => $_CORELANG['TXT_MULTISELECT_SELECT'],
             'TXT_CHANGELOG_SUBMIT_DEL'         => $_CORELANG['TXT_MULTISELECT_DELETE'],
-            'TXT_CATEGORY'                       => $_CORELANG['TXT_CATEGORY'],
+            'TXT_CATEGORY'                     => $_CORELANG['TXT_CATEGORY'],
             'TXT_DELETE_HISTORY_MSG'           => $_CORELANG['TXT_DELETE_HISTORY'],
-            'TXT_DELETE_HISTORY_MSG_ALL'    => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
+            'TXT_DELETE_HISTORY_MSG_ALL'       => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
             'TXT_ACTIVATE_HISTORY_MSG'         => $_CORELANG['TXT_ACTIVATE_HISTORY_MSG'],
-            'TXT_TYPE_SELECT'                   => $_CORELANG['TXT_CONTENT_TYPE'],
+            'TXT_TYPE_SELECT'                  => $_CORELANG['TXT_CONTENT_TYPE'],
             'TXT_CONTENT_TYPE_DEFAULT'         => $_CORELANG['TXT_CONTENT_TYPE_DEFAULT'],
             'TXT_CONTENT_TYPE_REDIRECT'        => $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
-            'TXT_CONTENT_TYPE_HELP'               => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
-            'TXT_NAVIGATION'                => $_CORELANG['TXT_NAVIGATION'],
-            'TXT_ASSIGN_BLOCK'                   => $_CORELANG['TXT_ASSIGN_BLOCK'],
-            'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
+            'TXT_CONTENT_TYPE_HELP'            => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
+            'TXT_NAVIGATION'                   => $_CORELANG['TXT_NAVIGATION'],
+            'TXT_ASSIGN_BLOCK'                 => $_CORELANG['TXT_ASSIGN_BLOCK'],
+            'CONTENT_ALIAS_HELPTEXT'           => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
             'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
             'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
             'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
@@ -1069,43 +1065,41 @@ class ContentManager
         }
 
         if (!empty($pageId)) {
-            $objResult = $objDatabase->SelectLimit("SELECT c.*,
-                                                           a_s.url AS alias_url
-                                                      FROM ".DBPREFIX."content AS c
-                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
-                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-                                                          ON  (a_s.target_id = a_t.id AND a_s.lang_id = c.lang_id)
-                                                        AND a_s.isdefault = 1
-                                                     WHERE c.id =".$pageId.' AND c.lang_id='.$langId, 1);
-
-            if ($objResult !== false && $objResult->RecordCount()>0) {
+            $objResult = $objDatabase->Execute("
+                SELECT c.*, a_s.url AS alias_url
+                  FROM ".DBPREFIX."content AS c
+                  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url=c.id
+                  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                       ON     (    a_s.target_id=a_t.id
+                               AND a_s.lang_id=c.lang_id)
+                          AND a_s.isdefault=1
+                 WHERE c.id=$pageId
+                   AND c.lang_id=$langId");
+            if ($objResult && $objResult->RecordCount() > 0) {
                 $contenthtml = $objResult->fields['content'];
-                $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$contenthtml);
+                $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $contenthtml);
+                $expertmodeValue = '';
                 if ($objResult->fields['expertmode'] == "y" ) {
                     $expertmodeValue = ' checked="checked"';
                     $contenthtml = htmlspecialchars($contenthtml, ENT_QUOTES, CONTREXX_CHARSET);
-                    $ed = get_wysiwyg_editor('html',$contenthtml, 'html');
+                    $ed = get_wysiwyg_editor('html', $contenthtml, 'html');
                 } else {
-                    $expertmodeValue = '';
-                    $ed = get_wysiwyg_editor('html',$contenthtml);
-
+                    $ed = get_wysiwyg_editor('html', $contenthtml);
                 }
-
-                $robots = ($objResult->fields['metarobots'] == "index") ? "checked" : '';
 
                 if (empty($objResult->fields['redirect'])) {
                     $objTemplate->setVariable(array(
-                        'CONTENT_TYPE_CHECKED_CONTENT'        => 'checked="checked"',
-                        'CONTENT_TYPE_CHECKED_REDIRECT'        => '',
-                        'CONTENT_TYPE_STYLE_CONTENT'        => 'style="display: block;"',
-                        'CONTENT_TYPE_STYLE_REDIRECT'        => 'style="display: none;"',
+                        'CONTENT_TYPE_CHECKED_CONTENT'  => ' checked="checked"',
+                        'CONTENT_TYPE_CHECKED_REDIRECT' => '',
+                        'CONTENT_TYPE_STYLE_CONTENT'    => ' style="display: block;"',
+                        'CONTENT_TYPE_STYLE_REDIRECT'   => ' style="display: none;"',
                     ));
                 } else {
                     $objTemplate->setVariable(array(
-                        'CONTENT_TYPE_CHECKED_CONTENT'        => '',
-                        'CONTENT_TYPE_CHECKED_REDIRECT'        => 'checked="checked"',
-                        'CONTENT_TYPE_STYLE_CONTENT'        => 'style="display: none;"',
-                        'CONTENT_TYPE_STYLE_REDIRECT'        => 'style="display: block;"',
+                        'CONTENT_TYPE_CHECKED_CONTENT'  => '',
+                        'CONTENT_TYPE_CHECKED_REDIRECT' => ' checked="checked"',
+                        'CONTENT_TYPE_STYLE_CONTENT'    => ' style="display: none;"',
+                        'CONTENT_TYPE_STYLE_REDIRECT'   => ' style="display: block;"',
                     ));
                 }
 
@@ -1114,70 +1108,62 @@ class ContentManager
                 $blocks = $this->getBlocks($pageId, $langId);
 
                 $objTemplate->setVariable(array(
-                    'CONTENT_FORM_ACTION'      => "update",
-                    'CONTENT_TOP_TITLE'           => $_CORELANG['TXT_EDIT_PAGE'],
-                    'CONTENT_CATID'            => $pageId,
-                    'CONTENT_HTML'               => $ed,
-                    'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTENT_TITLE_VAL'           => htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTENT_DESC'               => htmlentities($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTENT_META_TITLE'       => htmlentities($objResult->fields['metatitle'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTENT_KEY'               => htmlentities($objResult->fields['metakeys'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTENT_CSS_NAME'           => htmlentities($objResult->fields['css_name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTENT_ROBOTS'           => $robots,
-                    'CONTENT_SHOW_EXPERTMODE'  => $expertmodeValue,
-                    'CONTENT_EXISTING_BLOCKS'             => $blocks[1],
-                    'CONTENT_ASSIGNED_BLOCK'             => $blocks[0],
+                    'CONTENT_FORM_ACTION'     => "update",
+                    'CONTENT_TOP_TITLE'       => $_CORELANG['TXT_EDIT_PAGE'],
+                    'CONTENT_CATID'           => $pageId,
+                    'CONTENT_HTML'            => $ed,
+                    'CONTENT_ALIAS'           => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_TITLE_VAL'       => htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_DESC'            => htmlentities($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_META_TITLE'      => htmlentities($objResult->fields['metatitle'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_KEY'             => htmlentities($objResult->fields['metakeys'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_CSS_NAME'        => htmlentities($objResult->fields['css_name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_ROBOTS'          =>
+                        ($objResult->fields['metarobots'] == "index"
+                            ? ' checked="checked"' : ''),
+                    'CONTENT_SHOW_EXPERTMODE' => $expertmodeValue,
+                    'CONTENT_EXISTING_BLOCKS' => $blocks[1],
+                    'CONTENT_ASSIGNED_BLOCK'  => $blocks[0],
                 ));
                 unset($ed);
                 $redirect = $objResult->fields['redirect'];
             }
-            $objResult = $objDatabase->SelectLimit("SELECT module,
-                               lang,
-                               startdate,
-                               enddate,
-                               displaystatus,
-                               cachingstatus,
-                               catname,
-                               catid,
-                               target,
-                               cmd,
-                               protected,
-                               themes_id,
-                               css_name
-                          FROM ".DBPREFIX."content_navigation
-                         WHERE catid = ".$pageId.' AND `lang`='.$langId, 1);
+            $objResult = $objDatabase->Execute("
+                SELECT module, lang, startdate, enddate,
+                       displaystatus, cachingstatus,
+                       catname, catid, target, cmd,
+                       protected, themes_id, css_name
+                  FROM ".DBPREFIX."content_navigation
+                 WHERE catid=".$pageId.'
+                   AND `lang`='.$langId);
 
-            if ($objResult !== false && $objResult->RecordCount()>0) {
-                $displaystatus = '';
-                $cachingStatus = ($objResult->fields['cachingstatus'] == 1) ? 'checked' : '';
+            if ($objResult && $objResult->RecordCount() > 0) {
                 $moduleId = $objResult->fields['module'];
                 $startDate = $objResult->fields['startdate'];
                 $endDate = $objResult->fields['enddate'];
                 $cmd = $objResult->fields['cmd'];
                 $catname = htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET);
                 $themesId = $objResult->fields['themes_id'];
-
-                if ($objResult->fields['displaystatus'] == "on" ) {
-                    $displaystatus = "checked";
-                }
                 $target = $objResult->fields['target'];
-                //$target = "xyz";
 
                 $objTemplate->setVariable(array(
-                    'CONTENT_MENU_NAME'       => $catname,
+                    'CONTENT_MENU_NAME'         => $catname,
                     'CONTENT_CAT_MENU'          => $this->getPageMenu($objResult->fields['catid'], $langId),
-                    'CONTENT_CAT_MENU_NEW_PAGE'    => !Permission::checkAccess(127, 'static', true) ? 'disabled="disabled" style="color:graytext;"' : null,
-                    'CONTENT_TARGET'          => $target,
-                    'CONTENT_SHOW_CMD'        => $cmd,
-                    'CONTENT_MODULE_MENU'     => $this->_getModuleMenu($moduleId),
-                    'CONTENT_DISPLAYSTATUS'   => $displaystatus,
-                    'CONTENT_CACHING_STATUS'  => $cachingStatus,
-                    'CONTENT_STARTDATE'          => $startDate,
-                    'CONTENT_CATID'           => $pageId,
-                    'CONTENT_ENDDATE'          => $endDate,
-                    'CONTENT_THEMES_MENU'     => $this->_getThemesMenu($themesId),
-                    'NAVIGATION_CSS_NAME'        => htmlentities($objResult->fields['css_name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_CAT_MENU_NEW_PAGE' => !Permission::checkAccess(127, 'static', true) ? 'disabled="disabled" style="color:graytext;"' : null,
+                    'CONTENT_TARGET'            => ($target ? $target : '&nbsp;'),
+                    'CONTENT_SHOW_CMD'          => $cmd,
+                    'CONTENT_MODULE_MENU'       => $this->_getModuleMenu($moduleId),
+                    'CONTENT_DISPLAYSTATUS'     =>
+                        ($objResult->fields['displaystatus'] == "on"
+                            ? ' checked="checked"' : ''),
+                    'CONTENT_CACHING_STATUS'    =>
+                        ($objResult->fields['cachingstatus'] == 1
+                            ? ' checked="checked"' : ''),
+                    'CONTENT_STARTDATE'         => $startDate,
+                    'CONTENT_CATID'             => $pageId,
+                    'CONTENT_ENDDATE'           => $endDate,
+                    'CONTENT_THEMES_MENU'       => $this->_getThemesMenu($themesId),
+                    'NAVIGATION_CSS_NAME'       => htmlentities($objResult->fields['css_name'], ENT_QUOTES, CONTREXX_CHARSET),
                 ));
             }
 
@@ -1193,12 +1179,11 @@ class ContentManager
             }
 
             $activeProtectionStatus = $this->_getPageProtectionStatus($pageId, $langId);
-            if ($activeProtectionStatus=="checked") {
+            $inactiveProtectionStatus = ' checked="checked"';
+            $displayStatus = "none";
+            if ($activeProtectionStatus) {
                 $inactiveProtectionStatus = '';
                 $displayStatus = "block";
-            } else {
-                $inactiveProtectionStatus = "checked";
-                $displayStatus = "none";
             }
 
             // Backend Groups
@@ -1214,112 +1199,108 @@ class ContentManager
                 }
             }
 
+            $activeBackendStatus   = '';
+            $inactiveBackendStatus = ' checked="checked"';
+            $displayBackendStatus  = "none";
             if ($_backendPermissions) {
-                $activeBackendStatus = "checked";
+                $activeBackendStatus   = ' checked="checked"';
                 $inactiveBackendStatus = '';
-                $displayBackendStatus = "block";
-            } else {
-                $inactiveBackendStatus = "checked";
-                $activeBackendStatus = '';
-                $displayBackendStatus = "none";
+                $displayBackendStatus  = "block";
             }
 
             $objTemplate->setVariable(array(
-                //// frontend
+                // frontend
                 'CONTENT_EXISTING_GROUPS'     => $existingGroups,
                 'CONTENT_ASSIGNED_GROUPS'     => $assignedGroups,
                 'CONTENT_PROTECTION_ACTIVE'   => $activeProtectionStatus,
                 'CONTENT_PROTECTION_INACTIVE' => $inactiveProtectionStatus,
                 'CONTENT_PROTECTION_DISPLAY'  => $displayStatus,
-                //// backend
+                // backend
                 'CONTENT_EXISTING_BACKEND_GROUPS'  => $existingBackendGroups,
                 'CONTENT_ASSIGNED_BACKEND_GROUPS'  => $assignedBackendGroups,
                 'CONTENT_CONTROL_BACKEND_ACTIVE'   => $activeBackendStatus,
                 'CONTENT_CONTROL_BACKEND_INACTIVE' => $inactiveBackendStatus,
-                'CONTENT_CONTROL_BACKEND_DISPLAY'  => $displayBackendStatus
+                'CONTENT_CONTROL_BACKEND_DISPLAY'  => $displayBackendStatus,
             ));
         }
 
         $objTemplate->setVariable(array(
-            'TXT_NO_REDIRECT'        => $redirect,
-            'CONTENT_CATID'          => $pageId
+            'TXT_NO_REDIRECT' => $redirect,
+            'CONTENT_CATID'   => $pageId,
         ));
 
         // History (Changelog)
         ////////////////////////////
         if ($this->boolHistoryEnabled) {
-            $objResult = $objDatabase->Execute('SELECT    id,
-                                                        themesname
-                                                FROM    '.DBPREFIX.'skins
-                                                ');
+            $objResult = $objDatabase->Execute('
+                SELECT id, themesname
+                  FROM '.DBPREFIX.'skins');
             $arrThemes[0] = $_CORELANG['TXT_STANDARD'];
             while (!$objResult->EOF) {
                 $arrThemes[$objResult->fields['id']] = $objResult->fields['themesname'];
                 $objResult->MoveNext();
             }
 
-            $objResult = $objDatabase->Execute('SELECT    id,
-                                                        name
-                                                FROM    '.DBPREFIX.'modules
-                                            ');
+            $objResult = $objDatabase->Execute('
+                SELECT id, name
+                  FROM '.DBPREFIX.'modules');
             while (!$objResult->EOF) {
                 $arrModules[$objResult->fields['id']] = $objResult->fields['name'];
                 $objResult->MoveNext();
             }
             $arrModules[0] = '-';
 
-            $objResult = $objDatabase->Execute('SELECT    group_id,
-                                                        group_name
-                                                FROM    '.DBPREFIX.'access_user_groups
-                                            ');
+            $objResult = $objDatabase->Execute('
+                SELECT group_id, group_name
+                  FROM '.DBPREFIX.'access_user_groups');
             $arrGroups[0] = '-';
             while (!$objResult->EOF) {
                 $arrGroups[$objResult->fields['group_id']] = $objResult->fields['group_name'];
                 $objResult->MoveNext();
             }
 
-            $objResult = $objDatabase->Execute('SELECT        navTable.id                    AS navID,
-                                                            navTable.catid                AS navPageId,
-                                                            navTable.is_active            AS navActive,
-                                                            navTable.catname            AS navCatname,
-                                                            navTable.username            AS navUsername,
-                                                            navTable.changelog            AS navChangelog,
-                                                            navTable.startdate            AS navStartdate,
-                                                            navTable.enddate            AS navEnddate,
-                                                            navTable.cachingstatus        AS navCachingStatus,
-                                                            navTable.themes_id            AS navTheme,
-                                                            navTable.cmd                AS navCMD,
-                                                            navTable.module                AS navModule,
-                                                            navTable.frontend_access_id    AS navFAccess,
-                                                            navTable.backend_access_id    AS navBAccess,
-                                                            conTable.title                AS conTitle,
-                                                            conTable.metatitle            AS conMetaTitle,
-                                                            conTable.metadesc            AS conMetaDesc,
-                                                            conTable.metakeys            AS conMetaKeywords,
-                                                            conTable.css_name            AS conCssName,
-                                                            conTable.redirect            AS conRedirect,
-                                                            conTable.expertmode            AS conExpertMode,
-                                                            logTable.is_validated        AS logValidated
-                                                FROM        '.DBPREFIX.'content_navigation_history AS navTable
-                                                INNER JOIN    '.DBPREFIX.'content_history AS conTable
-                                                ON            conTable.id = navTable.id
-                                                INNER JOIN    '.DBPREFIX.'content_logfile AS logTable
-                                                ON            logTable.history_id = navTable.id
-                                                WHERE         navTable.catid='.$pageId.' AND navTable.lang='.$langId.' AND
-                                                            logTable.is_validated="1"
-                                                ORDER BY    navChangelog DESC
-                                            ');
+            $objResult = $objDatabase->Execute('
+                SELECT navTable.id                 AS navID,
+                       navTable.catid              AS navPageId,
+                       navTable.is_active          AS navActive,
+                       navTable.catname            AS navCatname,
+                       navTable.username           AS navUsername,
+                       navTable.changelog          AS navChangelog,
+                       navTable.startdate          AS navStartdate,
+                       navTable.enddate            AS navEnddate,
+                       navTable.cachingstatus      AS navCachingStatus,
+                       navTable.themes_id          AS navTheme,
+                       navTable.cmd                AS navCMD,
+                       navTable.module             AS navModule,
+                       navTable.frontend_access_id AS navFAccess,
+                       navTable.backend_access_id  AS navBAccess,
+                       conTable.title              AS conTitle,
+                       conTable.metatitle          AS conMetaTitle,
+                       conTable.metadesc           AS conMetaDesc,
+                       conTable.metakeys           AS conMetaKeywords,
+                       conTable.css_name           AS conCssName,
+                       conTable.redirect           AS conRedirect,
+                       conTable.expertmode         AS conExpertMode,
+                       logTable.is_validated       AS logValidated
+                  FROM '.DBPREFIX.'content_navigation_history AS navTable
+                 INNER JOIN '.DBPREFIX.'content_history AS conTable
+                       ON conTable.id = navTable.id
+                 INNER JOIN '.DBPREFIX.'content_logfile AS logTable
+                       ON logTable.history_id = navTable.id
+                 WHERE navTable.catid='.$pageId.'
+                   AND navTable.lang='.$langId.'
+                   AND logTable.is_validated="1"
+                 ORDER BY navChangelog DESC');
             if ($objResult->RecordCount() > 0) {
                 $objContentTree = new ContentTree($langId);
                 $intRowCount = 0;
 
                 while (!$objResult->EOF) {
-                    $strBackendGroups     = '';
-                    $strFrontendGroups     = '';
-
-                    $strTree             = '';
-                    $boolCheck             = false;
-                    $intPageCategory     = $pageId;
+                    $strBackendGroups = '';
+                    $strFrontendGroups = '';
+                    $strTree = '';
+                    $boolCheck = false;
+                    $intPageCategory = $pageId;
                     while(!$boolCheck) {
                         $arrCategory = $objContentTree->getThisNode($intPageCategory);
                         if ($arrCategory['parcat'] == 0) {
@@ -1360,48 +1341,48 @@ class ContentManager
                     }
 
                     $objTemplate->setVariable(array(
-                        'TXT_CL_PAGETITLE'                =>    $_CORELANG['TXT_PAGETITLE'],
-                        'TXT_CL_CACHINGSTATUS'            =>    $_CORELANG['TXT_CACHING_STATUS'],
-                        'TXT_CL_META_TITLE'                =>    $_CORELANG['TXT_META_TITLE'],
-                        'TXT_CL_META_DESCRIPTION'        =>    $_CORELANG['TXT_META_DESCRIPTION'],
-                        'TXT_CL_META_KEYWORD'            =>    $_CORELANG['TXT_META_KEYWORD'],
-                        'TXT_CL_CATEGORY'                =>    $_CORELANG['TXT_CATEGORY'],
-                        'TXT_CL_START_DATE'                =>    $_CORELANG['TXT_START_DATE'],
-                        'TXT_CL_END_DATE'                =>    $_CORELANG['TXT_END_DATE'],
-                        'TXT_CL_THEMES'                    =>    $_CORELANG['TXT_THEMES'],
-                        'TXT_CL_OPTIONAL_CSS_NAME'        =>    $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
-                        'TXT_CL_MODULE'                    =>    $_CORELANG['TXT_MODULE'],
-                        'TXT_CL_REDIRECT'                =>    $_CORELANG['TXT_REDIRECT'],
-                        'TXT_CL_SOURCE_MODE'            =>    $_CORELANG['TXT_SOURCE_MODE'],
-                        'TXT_CL_FRONTEND'                =>    $_CORELANG['TXT_WEB_PAGES'],
-                        'TXT_CL_BACKEND'                =>    $_CORELANG['TXT_ADMINISTRATION_PAGES'],
+                        'TXT_CL_PAGETITLE'         => $_CORELANG['TXT_PAGETITLE'],
+                        'TXT_CL_CACHINGSTATUS'     => $_CORELANG['TXT_CACHING_STATUS'],
+                        'TXT_CL_META_TITLE'        => $_CORELANG['TXT_META_TITLE'],
+                        'TXT_CL_META_DESCRIPTION'  => $_CORELANG['TXT_META_DESCRIPTION'],
+                        'TXT_CL_META_KEYWORD'      => $_CORELANG['TXT_META_KEYWORD'],
+                        'TXT_CL_CATEGORY'          => $_CORELANG['TXT_CATEGORY'],
+                        'TXT_CL_START_DATE'        => $_CORELANG['TXT_START_DATE'],
+                        'TXT_CL_END_DATE'          => $_CORELANG['TXT_END_DATE'],
+                        'TXT_CL_THEMES'            => $_CORELANG['TXT_THEMES'],
+                        'TXT_CL_OPTIONAL_CSS_NAME' => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
+                        'TXT_CL_MODULE'            => $_CORELANG['TXT_MODULE'],
+                        'TXT_CL_REDIRECT'          => $_CORELANG['TXT_REDIRECT'],
+                        'TXT_CL_SOURCE_MODE'       => $_CORELANG['TXT_SOURCE_MODE'],
+                        'TXT_CL_FRONTEND'          => $_CORELANG['TXT_WEB_PAGES'],
+                        'TXT_CL_BACKEND'           => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
                     ));
 
                     $objTemplate->setVariable(array(
-                        'CHANGELOG_ROWCLASS'        =>    ($objResult->fields['navActive']) ? 'rowWarn' : (($intRowCount % 2 == 0) ? 'row1' : 'row0'),
-                        'CHANGELOG_CHECKBOX'        =>    ($objResult->fields['navActive']) ? '' : '<input type="checkbox" name="selectedChangelogId[]" id="selectedChangelogId" value="'.$objResult->fields['navID'].'" />',
-                        'CHANGELOG_ACTIVATE'        =>    ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:activateHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" title="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" border="0" /></a>',
-                        'CHANGELOG_DELETE'            =>    ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:deleteHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/delete.gif" alt="'.$_CORELANG['TXT_DELETE'].'" title="'.$_CORELANG['TXT_DELETE'].'" border="0" /></a>',
-                        'CHANGELOG_ID'                =>    $objResult->fields['navID'],
-                        'CHANGELOG_DATE'            =>    date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
-                        'CHANGELOG_USER'            =>    $objResult->fields['navUsername'],
-                        'CHANGELOG_TITLE'            =>    stripslashes($objResult->fields['navCatname']),
-                        'CHANGELOG_PAGETITLE'        =>    stripslashes($objResult->fields['conTitle']),
-                        'CHANGELOG_METATITLE'        =>    stripslashes($objResult->fields['conMetaTitle']),
-                        'CHANGELOG_METADESC'        =>    stripslashes($objResult->fields['conMetaDesc']),
-                        'CHANGELOG_METAKEY'            =>    stripslashes($objResult->fields['conMetaKeywords']),
-                        'CHANGELOG_CATEGORY'        =>    $strTree,
-                        'CHANGELOG_STARTDATE'        =>    $objResult->fields['navStartdate'],
-                        'CHANGELOG_ENDDATE'            =>    $objResult->fields['navEnddate'],
-                        'CHANGELOG_THEME'            =>    stripslashes($arrThemes[$objResult->fields['navTheme']]),
-                        'CHANGELOG_OPTIONAL_CSS'    =>    (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
-                        'CHANGELOG_CMD'                =>    (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
-                        'CHANGELOG_SECTION'            =>    $arrModules[$objResult->fields['navModule']],
-                        'CHANGELOG_REDIRECT'        =>    (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
-                        'CHANGELOG_SOURCEMODE'        =>    strtoupper($objResult->fields['conExpertMode']),
-                        'CHANGELOG_CACHINGSTATUS'    =>    ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
-                        'CHANGELOG_FRONTEND'        =>    stripslashes($strFrontendGroups),
-                        'CHANGELOG_BACKEND'            =>    stripslashes($strBackendGroups)
+                        'CHANGELOG_ROWCLASS'      => ($objResult->fields['navActive']) ? 'rowWarn' : (($intRowCount % 2 == 0) ? 'row1' : 'row0'),
+                        'CHANGELOG_CHECKBOX'      => ($objResult->fields['navActive']) ? '' : '<input type="checkbox" name="selectedChangelogId[]" id="selectedChangelogId" value="'.$objResult->fields['navID'].'" />',
+                        'CHANGELOG_ACTIVATE'      => ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:activateHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" title="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" border="0" /></a>',
+                        'CHANGELOG_DELETE'        => ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:deleteHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/delete.gif" alt="'.$_CORELANG['TXT_DELETE'].'" title="'.$_CORELANG['TXT_DELETE'].'" border="0" /></a>',
+                        'CHANGELOG_ID'            => $objResult->fields['navID'],
+                        'CHANGELOG_DATE'          => date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
+                        'CHANGELOG_USER'          => $objResult->fields['navUsername'],
+                        'CHANGELOG_TITLE'         => stripslashes($objResult->fields['navCatname']),
+                        'CHANGELOG_PAGETITLE'     => stripslashes($objResult->fields['conTitle']),
+                        'CHANGELOG_METATITLE'     => stripslashes($objResult->fields['conMetaTitle']),
+                        'CHANGELOG_METADESC'      => stripslashes($objResult->fields['conMetaDesc']),
+                        'CHANGELOG_METAKEY'       => stripslashes($objResult->fields['conMetaKeywords']),
+                        'CHANGELOG_CATEGORY'      => $strTree,
+                        'CHANGELOG_STARTDATE'     => $objResult->fields['navStartdate'],
+                        'CHANGELOG_ENDDATE'       => $objResult->fields['navEnddate'],
+                        'CHANGELOG_THEME'         => stripslashes($arrThemes[$objResult->fields['navTheme']]),
+                        'CHANGELOG_OPTIONAL_CSS'  => (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
+                        'CHANGELOG_CMD'           => (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
+                        'CHANGELOG_SECTION'       => $arrModules[$objResult->fields['navModule']],
+                        'CHANGELOG_REDIRECT'      => (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
+                        'CHANGELOG_SOURCEMODE'    => strtoupper($objResult->fields['conExpertMode']),
+                        'CHANGELOG_CACHINGSTATUS' => ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
+                        'CHANGELOG_FRONTEND'      => stripslashes($strFrontendGroups),
+                        'CHANGELOG_BACKEND'       => stripslashes($strBackendGroups),
                     ));
                     $objTemplate->parse('showChanges');
                     $objResult->MoveNext();
@@ -1415,8 +1396,8 @@ class ContentManager
 
 
     /**
-    * Update page content
-    */
+     * Update page content
+     */
     function updatePage()
     {
         global $objDatabase, $objTemplate, $_CORELANG;
@@ -1465,7 +1446,7 @@ class ContentManager
         $contentdesc = contrexx_addslashes(strip_tags($_POST['desc']));
         $contentkey = contrexx_addslashes(strip_tags($_POST['key']));
         $command = contrexx_addslashes(strip_tags($_POST['command']));
-        if($this->checkParcat($pageId,$_POST['category'])) {
+        if ($this->checkParcat($pageId,$_POST['category'])) {
             $parcat = $_POST['category'];
         } else {
             $parcat = $pageId;
@@ -1478,15 +1459,17 @@ class ContentManager
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
         $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirectUrl'])) : '';
-        if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
+        $match = array();
+        if (preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)) {
             $redirect = 'mailto:'.$match[1];
             $_POST['redirectTarget'] = '_blank';
         }
-        $redirectTarget    = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
+        $redirectTarget =
+            (in_array($_POST['redirectTarget'], $this->_arrRedirectTargets)
+                ? $_POST['redirectTarget'] : '');
+        $contenthtml = $this->_getBodyContent($contenthtml);
 
-        $contenthtml=$this->_getBodyContent($contenthtml);
-
-        //make sure the user is allowed to update the content
+        // Make sure the user is allowed to update the content
         if ($this->boolHistoryEnabled) {
             if ($this->boolHistoryActivate) {
                 $boolDirectUpdate = true;
@@ -1498,115 +1481,104 @@ class ContentManager
         }
 
         if ($boolDirectUpdate) {
-            $objDatabase->Execute("INSERT INTO ".DBPREFIX."content (id, lang_id, content, title, metatitle, metadesc,
-                                                                    metakeys, css_name,metarobots,redirect,expertmode)
-                                  VALUES      ('".$pageId."',
-                                               '".$langId."',
-                                               '".$contenthtml."',
-                                               '".$contenttitle."',
-                                               '".$metatitle."',
-                                               '".$contentdesc."',
-                                               '".$contentkey."',
-                                               '".$cssName."',
-                                               '".$robotstatus."',
-                                               '".$redirect."',
-                                               '".$expertmode."')
-                ON DUPLICATE KEY UPDATE        id='".$pageId."',
-                                               lang_id='".$langId."',
-                                               content='".$contenthtml."',
-                                               title='".$contenttitle."',
-                                               metatitle='".$metatitle."',
-                                               metadesc='".$contentdesc."',
-                                               metakeys='".$contentkey."',
-                                               css_name='".$cssName."',
-                                               metarobots='".$robotstatus."',
-                                              redirect='".$redirect."',
-                                               expertmode='".$expertmode."'"
-                                   /*  WHERE     id=".$pageId.'
-                                     AND       lang_id='.$langId*/);
+            $objDatabase->Execute("
+                INSERT INTO ".DBPREFIX."content (
+                    id, lang_id, content, title, metatitle, metadesc,
+                    metakeys, css_name,metarobots,redirect,expertmode
+                ) VALUES (
+                    '".$pageId."', '".$langId."', '".$contenthtml."',
+                    '".$contenttitle."', '".$metatitle."',
+                    '".$contentdesc."', '".$contentkey."',
+                    '".$cssName."', '".$robotstatus."',
+                    '".$redirect."', '".$expertmode."')
+                ON DUPLICATE KEY UPDATE
+                    id='".$pageId."',
+                    lang_id='".$langId."',
+                    content='".$contenthtml."',
+                    title='".$contenttitle."',
+                    metatitle='".$metatitle."',
+                    metadesc='".$contentdesc."',
+                    metakeys='".$contentkey."',
+                    css_name='".$cssName."',
+                    metarobots='".$robotstatus."',
+                    redirect='".$redirect."',
+                    expertmode='".$expertmode."'"
+                );
+                /* WHERE id=".$pageId.' AND lang_id='.$langId */
         }
 
-        if ($parcat!=$pageId) {
+        if ($parcat != $pageId) {
             //create copy of parcat (for history)
             $intHistoryParcat = $parcat;
             if ($boolDirectUpdate) {
-                $objDatabase->Execute("INSERT INTO  ".DBPREFIX."content_navigation (catid, parcat, catname, target, displaystatus, cachingstatus,
-                                                username, changelog, cmd, lang, module, startdate, enddate, themes_id, css_name)
-                                      VALUES (  '".$pageId."',
-                                                '".$parcat."',
-                                                '".$catname."',
-                                                '".$redirectTarget."',
-                                                '".$displaystatus."',
-                                                '".$cachingStatus."',
-                                                '".$objFWUser->objUser->getUsername()."',
-                                                '".$currentTime."',
-                                                '".$command."',
-                                                '".$langId."',
-                                                '".$moduleId."',
-                                                '".$startdate."',
-                                                '".$enddate."',
-                                                '".$themesId."',
-                                                '".$cssNameNav."')
-                ON DUPLICATE KEY     UPDATE     catid='".$pageId."',
-                                                parcat='".$parcat."',
-                                                catname='".$catname."',
-                                                target='".$redirectTarget."',
-                                                displaystatus='".$displaystatus."',
-                                                cachingstatus='".$cachingStatus."',
-                                                username='".$objFWUser->objUser->getUsername()."',
-                                                changelog='".$currentTime."',
-                                                cmd='".$command."',
-                                                lang='".$langId."',
-                                                module='".$moduleId."',
-                                                startdate='".$startdate."',
-                                                enddate='".$enddate."',
-                                                themes_id='".$themesId."',
-                                                css_name='".$cssNameNav."'"
-                                          /*WHERE catid=".$pageId.'
-                                          AND `lang`='.$langId*/);
+                $objDatabase->Execute("
+                    INSERT INTO ".DBPREFIX."content_navigation (
+                        catid, parcat, catname, target, displaystatus, cachingstatus,
+                        username, changelog, cmd, lang, module, startdate, enddate, themes_id, css_name
+                    ) VALUES (
+                        '".$pageId."', '".$parcat."', '".$catname."',
+                        '".$redirectTarget."', '".$displaystatus."', '".$cachingStatus."',
+                        '".$objFWUser->objUser->getUsername()."',
+                        '".$currentTime."', '".$command."',
+                        '".$langId."', '".$moduleId."',
+                        '".$startdate."', '".$enddate."',
+                        '".$themesId."', '".$cssNameNav."'
+                    )
+                    ON DUPLICATE KEY UPDATE
+                        catid='".$pageId."',
+                        parcat='".$parcat."',
+                        catname='".$catname."',
+                        target='".$redirectTarget."',
+                        displaystatus='".$displaystatus."',
+                        cachingstatus='".$cachingStatus."',
+                        username='".$objFWUser->objUser->getUsername()."',
+                        changelog='".$currentTime."',
+                        cmd='".$command."',
+                        lang='".$langId."',
+                        module='".$moduleId."',
+                        startdate='".$startdate."',
+                        enddate='".$enddate."',
+                        themes_id='".$themesId."',
+                        css_name='".$cssNameNav."'");
+                    /* WHERE catid=".$pageId.' AND `lang`='.$langId */
             }
         } else {
             //create copy of parcat (for history)
             if ($boolDirectUpdate) {
-                   $objDatabase->Execute("INSERT INTO  ".DBPREFIX."content_navigation (catid, catname, target, displaystatus, cachingstatus,
-                                                username, changelog, cmd, lang, module, startdate, enddate, themes_id, css_name)
-                                        VALUES  ( '".$pageId."',
-                                                  '".$catname."',
-                                                  '".$redirectTarget."',
-                                                  '".$displaystatus."',
-                                                  '".$cachingStatus."',
-                                                  '".$objFWUser->objUser->getUsername()."',
-                                                  '".$currentTime."',
-                                                  '".$command."',
-                                                  '".$langId."',
-                                                  '".$moduleId."',
-                                                  '".$startdate."',
-                                                  '".$enddate."',
-                                                  '".$themesId."',
-                                                  '".$cssNameNav."')
-                   ON DUPLICATE KEY   UPDATE      catid='".$pageId."',
-                                                  catname='".$catname."',
-                                                  target='".$redirectTarget."',
-                                                  displaystatus='".$displaystatus."',
-                                                  cachingstatus='".$cachingStatus."',
-                                                  username='".$objFWUser->objUser->getUsername()."',
-                                                  changelog='".$currentTime."',
-                                                  cmd='".$command."',
-                                                  lang='".$langId."',
-                                                  module='".$moduleId."',
-                                                  startdate='".$startdate."',
-                                                  enddate='".$enddate."',
-                                                  themes_id='".$themesId."',
-                                                  css_name='".$cssNameNav."'"
-                                  /*    WHERE     catid=".$pageId.'
-                                        AND       lang='.$langId*/);
+                   $objDatabase->Execute("
+                      INSERT INTO  ".DBPREFIX."content_navigation (
+                          catid, catname, target, displaystatus, cachingstatus,
+                          username, changelog, cmd, lang, module, startdate, enddate, themes_id, css_name)
+                      VALUES  (
+                          '".$pageId."', '".$catname."',
+                          '".$redirectTarget."', '".$displaystatus."', '".$cachingStatus."',
+                          '".$objFWUser->objUser->getUsername()."',
+                          '".$currentTime."', '".$command."',
+                          '".$langId."', '".$moduleId."',
+                          '".$startdate."', '".$enddate."',
+                          '".$themesId."', '".$cssNameNav."'
+                      )
+                      ON DUPLICATE KEY UPDATE
+                          catid='".$pageId."',
+                          catname='".$catname."',
+                          target='".$redirectTarget."',
+                          displaystatus='".$displaystatus."',
+                          cachingstatus='".$cachingStatus."',
+                          username='".$objFWUser->objUser->getUsername()."',
+                          changelog='".$currentTime."',
+                          cmd='".$command."',
+                          lang='".$langId."',
+                          module='".$moduleId."',
+                          startdate='".$startdate."',
+                          enddate='".$enddate."',
+                          themes_id='".$themesId."',
+                          css_name='".$cssNameNav."'");
+                      /* WHERE catid=".$pageId.' AND lang='.$langId */
             }
         }
 
-
-        if($err = $this->_set_default_alias($pageId, $_POST['alias'], $langId)) {
-            $objTemplate->setVariable("ALIAS_STATUS", $err);
-        }
+        $err = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
+        if ($err) $objTemplate->setVariable("ALIAS_STATUS", $err);
 
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
@@ -1614,15 +1586,23 @@ class ContentManager
 
             foreach ($catidarray as $value) {
                 if ($boolDirectUpdate) {
-                    $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET themes_id='".$themesId."' WHERE catid=".$value.' AND `lang`='.$langId);
-                    $objDatabase->Execute("UPDATE ".DBPREFIX."content SET css_name='".$cssName."' WHERE id=".$value.' AND `lang`='.$langId);
+                    $objDatabase->Execute("
+                        UPDATE ".DBPREFIX."content_navigation
+                           SET themes_id='".$themesId."'
+                         WHERE catid=".$value.'
+                           AND `lang`='.$langId);
+                    $objDatabase->Execute("
+                        UPDATE ".DBPREFIX."content
+                           SET css_name='".$cssName."'
+                         WHERE id=".$value.'
+                           AND `lang`='.$langId);
                 }
             }
         }
 
         if ($boolDirectUpdate) {
             $needsValidation = false;
-//            $this->strOkMessage =$_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+//            $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         } else {
             $needsValidation = true;
 //            $this->strErrMessage[] = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'];
@@ -1640,77 +1620,75 @@ class ContentManager
 
         //create backup for history
         if ($this->boolHistoryEnabled) {
-            $objResult = $objDatabase->Execute('SELECT    parcat,
-                                                        displayorder,
-                                                        protected,
-                                                        frontend_access_id,
-                                                        backend_access_id
-                                                FROM    '.DBPREFIX.'content_navigation
-                                                WHERE    catid='.$pageId.'
-                                                AND     `lang`='.$langId.'
-                                                LIMIT    1
-                                            ');
+            $objResult = $objDatabase->Execute('
+                SELECT parcat, displayorder, protected,
+                       frontend_access_id, backend_access_id
+                  FROM '.DBPREFIX.'content_navigation
+                 WHERE catid='.$pageId.'
+                   AND `lang`='.$langId);
             if (!isset($intHistoryParcat)) {
                 $intHistoryParcat = $objResult->fields['parcat'];
             }
 
             if ($boolDirectUpdate) {
-                $objDatabase->Execute(/*'INSERT INTO '.DBPREFIX.'content_navigation_history (catid, lang, is_active)
-                                        VALUES (catid, lang, "0")
-                    ON DUPLICATE KEY */ 'UPDATE    '.DBPREFIX.'content_navigation_history
-                                        SET        is_active="0"
-                                        WHERE    catid='.$pageId.' AND `lang`='.$langId);
+                $objDatabase->Execute(
+                /*'INSERT INTO '.DBPREFIX.'content_navigation_history (
+                    catid, lang, is_active
+                ) VALUES (
+                    catid, lang, "0"
+                ) ON DUPLICATE KEY */
+                    'UPDATE '.DBPREFIX.'content_navigation_history
+                        SET is_active="0"
+                      WHERE catid='.$pageId.'
+                        AND `lang`='.$langId);
             }
 
-            $objDatabase->Execute('    INSERT
-                                    INTO    '.DBPREFIX.'content_navigation_history
-                                    SET        is_active="'.(($boolDirectUpdate) ? 1 : 0).'",
-                                            catid='.$pageId.',
-                                            parcat="'.$intHistoryParcat.'",
-                                            catname="'.$catname.'",
-                                            target="'.$redirectTarget.'",
-                                            displayorder='.intval($objResult->fields['displayorder']).',
-                                            displaystatus="'.$displaystatus.'",
-                                            cachingstatus="'.$cachingStatus.'",
-                                            username="'.$objFWUser->objUser->getUsername().'",
-                                            changelog="'.$currentTime.'",
-                                            cmd="'.$command.'",
-                                            lang="'.$langId.'",
-                                            module="'.$moduleId.'",
-                                            startdate="'.$startdate.'",
-                                            enddate="'.$enddate.'",
-                                            protected='.intval($objResult->fields['protected']).',
-                                            frontend_access_id='.intval($objResult->fields['frontend_access_id']).',
-                                            backend_access_id='.intval($objResult->fields['backend_access_id']).',
-                                            themes_id="'.$themesId.'",
-                                            css_name="'.$cssNameNav.'"
-                                       ');
+            $objDatabase->Execute('
+                INSERT INTO '.DBPREFIX.'content_navigation_history
+                   SET is_active="'.($boolDirectUpdate ? 1 : 0).'",
+                       catid='.$pageId.',
+                       parcat="'.$intHistoryParcat.'",
+                       catname="'.$catname.'",
+                       target="'.$redirectTarget.'",
+                       displayorder='.intval($objResult->fields['displayorder']).',
+                       displaystatus="'.$displaystatus.'",
+                       cachingstatus="'.$cachingStatus.'",
+                       username="'.$objFWUser->objUser->getUsername().'",
+                       changelog="'.$currentTime.'",
+                       cmd="'.$command.'",
+                       lang="'.$langId.'",
+                       module="'.$moduleId.'",
+                       startdate="'.$startdate.'",
+                       enddate="'.$enddate.'",
+                       protected='.intval($objResult->fields['protected']).',
+                       frontend_access_id='.intval($objResult->fields['frontend_access_id']).',
+                       backend_access_id='.intval($objResult->fields['backend_access_id']).',
+                       themes_id="'.$themesId.'",
+                       css_name="'.$cssNameNav.'"');
             $intHistoryId = $objDatabase->insert_id();
-            $objDatabase->Execute('    INSERT
-                                    INTO    '.DBPREFIX.'content_history
-                                    SET     id='.$intHistoryId.',
-                                            page_id='.$pageId.',
-                                            lang_id='.$langId.',
-                                               content="'.$contenthtml.'",
-                                               title="'.$contenttitle.'",
-                                               metatitle="'.$metatitle.'",
-                                            metadesc="'.$contentdesc.'",
-                                               metakeys="'.$contentkey.'",
-                                               css_name="'.$cssName.'",
-                                               metarobots="'.$robotstatus.'",
-                                               redirect="'.$redirect.'",
-                                              expertmode="'.$expertmode.'"'
-                                    );
-            $objDatabase->Execute('    INSERT
-                                    INTO    '.DBPREFIX.'content_logfile
-                                    SET        action="update",
-                                            history_id='.$intHistoryId.',
-                                            is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"
-                                ');
+            $objDatabase->Execute('
+                INSERT INTO '.DBPREFIX.'content_history
+                   SET id='.$intHistoryId.',
+                       page_id='.$pageId.',
+                       lang_id='.$langId.',
+                       content="'.$contenthtml.'",
+                       title="'.$contenttitle.'",
+                       metatitle="'.$metatitle.'",
+                       metadesc="'.$contentdesc.'",
+                       metakeys="'.$contentkey.'",
+                       css_name="'.$cssName.'",
+                       metarobots="'.$robotstatus.'",
+                       redirect="'.$redirect.'",
+                       expertmode="'.$expertmode.'"');
+            $objDatabase->Execute('
+                INSERT INTO '.DBPREFIX.'content_logfile
+                   SET action="update",
+                       history_id='.$intHistoryId.',
+                       is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"');
         }
         $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
         $lastUpdate = false;
-        if(!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0){
+        if (!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0) {
             $lastUpdate = true;
             //write caching-file, delete exisiting cache-files
             $objCache = new Cache();
@@ -1729,28 +1707,32 @@ class ContentManager
         }
 
         die(json_encode(array(
-            'pageId'            => $pageId,
-            'langName'          => $langName,
-            'needsValidation'   => $needsValidation,
-            'lastUpdate'        => $lastUpdate
+            'pageId'          => $pageId,
+            'langName'        => $langName,
+            'needsValidation' => $needsValidation,
+            'lastUpdate'      => $lastUpdate,
         )));
     }
 
-    static function mkurl($absolute_local_path) {
+
+    static function mkurl($absolute_local_path)
+    {
         global $_CONFIG;
-        return ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
-            ? ""
-            : ":".intval($_SERVER['SERVER_PORT'])
-        ).ASCMS_PATH_OFFSET.$absolute_local_path;
+
+        return
+            ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].
+            ($_SERVER['SERVER_PORT'] == 80
+              ? '' : ':'.intval($_SERVER['SERVER_PORT'])
+            ).ASCMS_PATH_OFFSET.$absolute_local_path;
     }
 
 
     /**
-    * Adds a new page
-    * @global    ADONewConnection
-    * @global    array      Core language
-    * @global    HTML_Template_Sigma
-    */
+     * Adds a new page
+     * @global    ADONewConnection
+     * @global    array      Core language
+     * @global    HTML_Template_Sigma
+     */
     function addPage()
     {
         global $objDatabase, $_CORELANG, $objTemplate;
@@ -1761,51 +1743,51 @@ class ContentManager
             $parcat = 0;
         }
         header('Content-Type: application/json');
-
-
         $lastUpdate = false;
-        if(!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0){
+        if (!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0) {
             $lastUpdate = true;
         }
 
         $pageId = intval($_POST['pageId']);
         $langId = intval($_POST['langId']);
         $langName = $_POST['langName'];
-        $displaystatus = ( $_POST['displaystatus'] == "on" ) ? "on" : "off";
-        $cachingstatus = (intval($_POST['cachingstatus']) == 1) ? 1 : 0;
-        $expertmode = ( !empty($_POST['expertmode']) && $_POST['expertmode'] == "y" ) ? "y" : "n";
-        $robotstatus = ( $_POST['robots'] == "index" ) ? "index" : "noindex";
+        $displaystatus = ($_POST['displaystatus'] == "on" ? "on" : "off");
+        $cachingstatus = (intval($_POST['cachingstatus']) == 1 ? 1 : 0);
+        $expertmode = (!empty($_POST['expertmode']) && $_POST['expertmode'] == "y" ? "y" : "n");
+        $robotstatus = ($_POST['robots'] == "index" ? "index" : "noindex");
 
-        $catname =     strip_tags(contrexx_addslashes($_POST['newpage']));
+        $catname = strip_tags(contrexx_addslashes($_POST['newpage']));
         // Never used
         //$section = strip_tags(contrexx_addslashes($_POST['section']));
-        $command =     strip_tags(contrexx_addslashes($_POST['command']));
+        $command = strip_tags(contrexx_addslashes($_POST['command']));
         $contenthtml= contrexx_addslashes($_POST['html']);
         $contenthtml = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' ,$contenthtml);
         $contenttitle = contrexx_addslashes($_POST['title']);
         $metatitle = contrexx_addslashes($_POST['metatitle']);
-        $contentdesc =     strip_tags(contrexx_addslashes($_POST['desc']));
-        $contentkey =     strip_tags(contrexx_addslashes($_POST['key']));
+        $contentdesc = strip_tags(contrexx_addslashes($_POST['desc']));
+        $contentkey = strip_tags(contrexx_addslashes($_POST['key']));
 
         $redirect = contrexx_addslashes(strip_tags($_POST['redirectUrl']));
-        $redirectTarget = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
+        $redirectTarget =
+            (in_array($_POST['redirectTarget'], $this->_arrRedirectTargets)
+                ? $_POST['redirectTarget'] : '');
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
         $modul = intval($_POST['selectmodule']);
-        $startdate = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startdate'])) ? '0000-00-00' : $_POST['startdate'];
-        $enddate = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['enddate'])) ? '0000-00-00' : $_POST['enddate'];
+        $startdate = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startdate']) ? '0000-00-00' : $_POST['startdate']);
+        $enddate = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['enddate']) ? '0000-00-00' : $_POST['enddate']);
         $themesId = intval($_POST['themesId']);
         $currentTime = time();
 
-        if (!$this->_homeModuleCheck($modul,$command,'')==true) {
-            $homemessage=$this->strOkMessage;
-            $modul=intval($this->setModule);
-            $command=$this->setCmd;
+        if (!$this->_homeModuleCheck($modul, $command, '')) {
+            $homemessage = $this->strOkMessage;
+            $modul = intval($this->setModule);
+            $command = $this->setCmd;
         }
 
         // Check if Expertmode is set for modules
         // module 15 is the home module (buggy test)
-        if ($modul!=0 && $modul!=15) {
+        if ($modul != 0 && $modul != 15) {
             $expertmode = 'y';
         }
 
@@ -1832,7 +1814,7 @@ class ContentManager
         $contentredirect = $redirect;
         $contenthtml=$this->_getBodyContent($contenthtml);
         $q1 = "
-                INSERT INTO ".DBPREFIX."content_navigation (
+            INSERT INTO ".DBPREFIX."content_navigation (
                 catid, parcat, catname, target, displayorder,
                 displaystatus, cachingstatus,
                 username, changelog,
@@ -1846,9 +1828,8 @@ class ContentManager
                 '".$command."', '".$langId."', '".$modul."',
                 '".$startdate."', '".$enddate."',
                 '".$protected."', '".$themesId."', '".$cssNameNav."'
-            )
-ON DUPLICATE KEY
-UPDATE          catid=".$pageId.",
+            ) ON DUPLICATE KEY UPDATE
+                catid=".$pageId.",
                 parcat=".$parcat.",
                 catname='".$catname."',
                 target='".$redirectTarget."',
@@ -1869,9 +1850,8 @@ UPDATE          catid=".$pageId.",
         ";
         $objDatabase->Execute($q1);
 
-        if($err = $this->_set_default_alias($pageId, $_POST['alias'], $langId)) {
-            $objTemplate->setVariable("ALIAS_STATUS", $err);
-        }
+        $err = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
+        if ($err) $objTemplate->setVariable("ALIAS_STATUS", $err);
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
@@ -1884,9 +1864,8 @@ UPDATE          catid=".$pageId.",
                 '".$contenthtml."', '".$contenttitle."', '".$metatitle."',
                 '".$contentdesc."', '".$contentkey."', '".$cssName."',
                 '".$robotstatus."', '".$contentredirect."', '".$expertmode."'
-            )
-ON DUPLICATE KEY
-        UPDATE  id=".$pageId.",
+            ) ON DUPLICATE KEY UPDATE
+                id=".$pageId.",
                 lang_id=".$langId.",
                 content='".$contenthtml."',
                 title='".$contenttitle."',
@@ -1896,8 +1875,7 @@ ON DUPLICATE KEY
                 css_name='".$cssName."',
                 metarobots='".$robotstatus."',
                 redirect='".$contentredirect."',
-                expertmode='".$expertmode."'
-        ";
+                expertmode='".$expertmode."'";
         if ($objDatabase->Execute($q2) !== false) {
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
             //frontend permissions
@@ -1927,10 +1905,10 @@ ON DUPLICATE KEY
                 // User is not allowed to validate, so set if "off"
                 $objDatabase->Execute('
                     UPDATE '.DBPREFIX.'content_navigation
-                                        SET        is_validated="0",
-                                                activestatus="0"
-                     WHERE catid='.$pageId.' AND `lang`='.$langId
-                );
+                       SET is_validated="0",
+                           activestatus="0"
+                     WHERE catid='.$pageId.'
+                       AND `lang`='.$langId);
                 $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL_VALIDATE'];
             }
 
@@ -1938,32 +1916,30 @@ ON DUPLICATE KEY
                 $objResult = $objDatabase->Execute('
                     SELECT displayorder, protected,
                            frontend_access_id, backend_access_id
-                                                    FROM    '.DBPREFIX.'content_navigation
-                                                    WHERE    catid='.$pageId.'
-                                                ');
+                      FROM '.DBPREFIX.'content_navigation
+                     WHERE catid='.$pageId);
                 $objDatabase->Execute('
                     INSERT INTO '.DBPREFIX.'content_navigation_history
-                                        SET        is_active="1",
-                                                catid='.$pageId.',
-                                                parcat="'.$parcat.'",
-                                                   catname="'.$catname.'",
-                                                   target="'.$redirectTarget.'",
-                                                   displayorder='.intval($objResult->fields['displayorder']).',
-                                                   displaystatus="'.$displaystatus.'",
-                                                   cachingstatus="'.$cachingstatus.'",
-                                                   username="'.$objFWUser->objUser->getUsername().'",
-                                                   changelog="'.$currentTime.'",
-                                                   cmd="'.$command.'",
-                                                   lang="'.$langId.'",
-                                                   module="'.$modul.'",
-                                                   startdate="'.$startdate.'",
-                                                   enddate="'.$enddate.'",
-                                                   protected='.intval($objResult->fields['protected']).',
-                                                   frontend_access_id='.intval($objResult->fields['frontend_access_id']).',
-                                                   backend_access_id='.intval($objResult->fields['backend_access_id']).',
-                                                   themes_id="'.$themesId.'",
-                                                   css_name="'.$cssNameNav.'"
-                                           ');
+                       SET is_active="1",
+                           catid='.$pageId.',
+                           parcat="'.$parcat.'",
+                           catname="'.$catname.'",
+                           target="'.$redirectTarget.'",
+                           displayorder='.intval($objResult->fields['displayorder']).',
+                           displaystatus="'.$displaystatus.'",
+                           cachingstatus="'.$cachingstatus.'",
+                           username="'.$objFWUser->objUser->getUsername().'",
+                           changelog="'.$currentTime.'",
+                           cmd="'.$command.'",
+                           lang="'.$langId.'",
+                           module="'.$modul.'",
+                           startdate="'.$startdate.'",
+                           enddate="'.$enddate.'",
+                           protected='.intval($objResult->fields['protected']).',
+                           frontend_access_id='.intval($objResult->fields['frontend_access_id']).',
+                           backend_access_id='.intval($objResult->fields['backend_access_id']).',
+                           themes_id="'.$themesId.'",
+                           css_name="'.$cssNameNav.'"');
                 $intHistoryId = $objDatabase->insert_id();
                 $objDatabase->Execute('
                     INSERT INTO '.DBPREFIX.'content_logfile
@@ -1972,47 +1948,44 @@ ON DUPLICATE KEY
                         is_validated="'.($this->boolHistoryActivate ? 1 : 0).'"');
                 $objDatabase->Execute('
                     INSERT INTO '.DBPREFIX.'content_history
-                                        SET     id='.$intHistoryId.',
-                                                page_id='.$pageId.',
-                                                lang_id='.$langId.',
-                                                   content="'.$contenthtml.'",
-                                                   title="'.$contenttitle.'",
-                                                   metatitle="'.$metatitle.'",
-                                                metadesc="'.$contentdesc.'",
-                                                   metakeys="'.$contentkey.'",
-                                                   css_name="'.$cssName.'",
-                                                   metarobots="'.$robotstatus.'",
-                                                   redirect="'.$contentredirect.'",
-                                                  expertmode="'.$expertmode.'"'
-                                        );
+                       SET id='.$intHistoryId.',
+                           page_id='.$pageId.',
+                           lang_id='.$langId.',
+                           content="'.$contenthtml.'",
+                           title="'.$contenttitle.'",
+                           metatitle="'.$metatitle.'",
+                           metadesc="'.$contentdesc.'",
+                           metakeys="'.$contentkey.'",
+                           css_name="'.$cssName.'",
+                           metarobots="'.$robotstatus.'",
+                           redirect="'.$contentredirect.'",
+                           expertmode="'.$expertmode.'"');
             }
             $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
             die(json_encode(array(
                 'pageId'        => $pageId,
                 'langName'      => $langName,
-                'lastUpdate'    => $lastUpdate
+                'lastUpdate'    => $lastUpdate,
             )));
-        } else {
-            die(json_encode(array('pageId' => -1)));
         }
-        return $pageId;
+        die(json_encode(array('pageId' => -1)));
     }
 
 
     /**
-     * Delete page content (with all subcategories!)
-     *
+     * Delete page content (with all subpages!)
      * @global    ADONewConnection
      * @global    array      Core language
      */
     function deleteContent($pageId)
     {
         global $objDatabase, $_CORELANG;
+
         $pageId = intval($pageId);
         if ($pageId != 0) {
             $objResult = $objDatabase->Execute('
                 SELECT catid
-                                                FROM    '.DBPREFIX.'content_navigation
+                  FROM '.DBPREFIX.'content_navigation
                  WHERE parcat='.$pageId);//.' AND `lang`='.$this->langId);
             if ($objResult->RecordCount() > 0) {
                 while (!$objResult->EOF) {
@@ -2023,12 +1996,9 @@ ON DUPLICATE KEY
 
             $objResult = $objDatabase->Execute("
                 SELECT parcat, catid, module
-                          FROM ".DBPREFIX."content_navigation
-                         WHERE ( parcat=".$pageId."
-                            OR catid=".$pageId.")
-                            /*AND `lang`=".$this->langId."*/
-              ORDER BY catid
-            ");
+                  FROM ".DBPREFIX."content_navigation
+                 WHERE (parcat=$pageId OR catid=$pageId)
+                 ORDER BY catid"); /*AND `lang`=".$this->langId."*/
             $numLangsForThisPage = $objResult->RecordCount();
             if ($objResult !== false && $objResult->RecordCount()>0) {
                 $moduleId = $objResult->fields['module'];
@@ -2046,27 +2016,23 @@ ON DUPLICATE KEY
                     } else {
                         if ($this->boolHistoryEnabled) {
                             $objResult = $objDatabase->Execute('
-                                       SELECT id
-                                            FROM     '.DBPREFIX.'content_navigation_history
-                                            WHERE    is_active="1" AND
-                                       catid='.$pageId//.' AND `lang`='.$this->langId
-                            );
-                            while(!$objResult->EOF){
+                                SELECT id
+                                  FROM '.DBPREFIX.'content_navigation_history
+                                 WHERE is_active="1"
+                                   AND catid='.$pageId); //.' AND `lang`='.$this->langId
+                            while(!$objResult->EOF) {
                                 $objDatabase->Execute('
                                     INSERT INTO '.DBPREFIX.'content_logfile
-                                                    SET        action="delete",
-                                                            history_id='.$objResult->fields['id'].',
-                                       is_validated="'.($this->boolHistoryActivate ? 1 : 0).'"
-                                                ');
+                                       SET action="delete",
+                                           history_id='.$objResult->fields['id'].',
+                                           is_validated="'.($this->boolHistoryActivate ? 1 : 0).'"');
                                 $objResult->MoveNext();
                             }
                             $objDatabase->Execute('
                                 UPDATE '.DBPREFIX.'content_navigation_history
-                                                    SET        changelog='.time().'
-                                                    WHERE    catid='.$pageId.' AND
-                                                            is_active="1"'
-//                                                    AND     `lang`='.$this->langId
-                            );
+                                   SET changelog='.time().'
+                                 WHERE catid='.$pageId.'
+                                   AND is_active="1"'); //AND `lang`='.$this->langId
                         }
 
                         $boolDelete = true;
@@ -2082,8 +2048,8 @@ ON DUPLICATE KEY
                             $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId;//.' AND lang_id='.$this->langId;
                             $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId;//.' AND `lang`='.$this->langId;
 
-                            if ($objDatabase->Execute($q1) === false
-                             || $objDatabase->Execute($q2) === false) {
+                            if (   $objDatabase->Execute($q1) === false
+                                || $objDatabase->Execute($q2) === false) {
                                 $this->strErrMessage[] =
                                     $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
                             } else {
@@ -2095,7 +2061,8 @@ ON DUPLICATE KEY
                                 $objCache->writeCacheablePagesFile();
 
                                 // write xml sitemap
-                                if (($result = XMLSitemap::write()) !== true) {
+                                $result = XMLSitemap::write();
+                                if ($result !== true) {
                                     $this->strErrMessage[] = $result;
                                 }
                             }
@@ -2108,29 +2075,32 @@ ON DUPLICATE KEY
 
 
     /**
-    * Add page to repository
-    *
-    * @global    ADONewConnection
-    * @global    array      Core language
-    */
+     * Add page to repository
+     * @global    ADONewConnection
+     * @global    array      Core language
+     */
     function addToRepository()
     {
         global $objDatabase, $_CORELANG;
 
         $pageId = intval($_GET['pageid']);
         if ($pageId != '') {
-            $objNavbar= new ContentSitemap(0);
-            $catidarray=$objNavbar->getCurrentSonArray($pageId);
+            $objNavbar = new ContentSitemap(0);
+            $catidarray = $objNavbar->getCurrentSonArray($pageId);
             array_unshift ($catidarray,$pageId);
             $paridarray = array();
             $justonce = false;
 
-            $objModule = $objDatabase->SelectLimit('SELECT `module` FROM `'.DBPREFIX.'content_navigation` WHERE `lang_id`='.$this->langId.' AND `catid` = '.$pageId, 1);
+            $objModule = $objDatabase->Execute('
+                SELECT `module`
+                  FROM `'.DBPREFIX.'content_navigation`
+                 WHERE `lang_id`='.$this->langId.'
+                   AND `catid` = '.$pageId);
             if ($objModule) {
                 $moduleId = $objModule->fields['module'];
             }
+            $arrSkipPages = array();
             foreach ($catidarray as $value) {
-// TODO: $arrSkipPages is set too late (see below)!
                 $objResult = $objDatabase->Execute("
                     SELECT *
                       FROM ".DBPREFIX."content_navigation,
@@ -2162,8 +2132,7 @@ ON DUPLICATE KEY
                             $objDatabase->Execute("
                                 DELETE FROM ".DBPREFIX."module_repository
                                  WHERE moduleid='".$repository['moduleid']."'
-                                 AND   lang    ='".$repository['lang']."'
-                             ");
+                                   AND lang='".$repository['lang']."'");
                         }
                         $justonce=true;
                         $repository['parid']= 0;
@@ -2171,15 +2140,15 @@ ON DUPLICATE KEY
                     $query = "
                         INSERT INTO ".DBPREFIX."module_repository
                            SET displayorder ='".$repository['displayorder']."',
-                                        displaystatus ='".$repository['displaystatus']."',
-                                        username = '".addslashes($repository['username'])."',
-                                        cmd = '".addslashes($repository['cmd'])."',
-                                        content = '".addslashes($repository['content'])."',
-                                        title = '".addslashes($repository['title'])."',
-                                        expertmode ='".$repository['expertmode']."',
-                                        moduleid ='".$repository['moduleid']."',
-                                        lang ='".$repository['lang']."',
-                                        parid ='".$repository['parid']."'";
+                               displaystatus ='".$repository['displaystatus']."',
+                               username = '".addslashes($repository['username'])."',
+                               cmd = '".addslashes($repository['cmd'])."',
+                               content = '".addslashes($repository['content'])."',
+                               title = '".addslashes($repository['title'])."',
+                               expertmode ='".$repository['expertmode']."',
+                               moduleid ='".$repository['moduleid']."',
+                               lang ='".$repository['lang']."',
+                               parid ='".$repository['parid']."'";
                     if ($objDatabase->Execute($query) === false) {
                         $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
                     }
@@ -2192,9 +2161,10 @@ ON DUPLICATE KEY
         }
     }
 
+
     /**
      * Verify the URI string provided and fix it if necessary.
-    *
+     *
      * If the string argument is too short to be a valid URI,
      * returns the empty string.  The minimum length is five
      * characters, like in "sf.tv".
@@ -2206,118 +2176,102 @@ ON DUPLICATE KEY
     */
     function checkRedirectUrl($redirect)
     {
-        if (empty($redirect) || strlen($redirect) < 5) {
+        if (empty($redirect) || strlen($redirect) < 5)
             return '';
-            }
-        if (!preg_match('/^(?:https?|ftp)\:\/\//', $redirect)) {
+        if (!preg_match('/^(?:https?|ftp)\:\/\//', $redirect))
             return 'http://'.$redirect;
-        }
         return $redirect;
     }
 
 
     /**
-    * Gets the search option menus string
-    *
-    * @global    ADONewConnection
-    * @param     string     optional $selectedOption
-    * @return    string     $modulesMenu
-    */
+     * Gets the search option menus string
+     * @global    ADONewConnection
+     * @param     string     optional $selectedOption
+     * @return    string     $modulesMenu
+     */
     function _getModuleMenu($selectedOption='')
     {
         global $objDatabase;
 
         $strMenu = '';
-        $q = "SELECT * FROM ".DBPREFIX."modules WHERE 1 AND id<>0 ORDER BY id";
+        $q = "SELECT * FROM ".DBPREFIX."modules WHERE 1 AND id!=0 ORDER BY id";
         $objResult = $objDatabase->Execute($q);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $selected = ($selectedOption==$objResult->fields['id']) ? "selected" : '';
                 $strMenu .=
-                    '<option value="'.$objResult->fields['id'].'" '.
-                    $selected.'>'.$objResult->fields['name']."</option>\n";
+                    '<option value="'.$objResult->fields['id'].'"'.
+                    ($selectedOption == $objResult->fields['id']
+                        ? ' selected="selected"' : '').
+                    '>'.$objResult->fields['name']."</option>\n";
                 $objResult->MoveNext();
             }
         }
         return $strMenu;
     }
 
+
     /**
-    * Gets the body-content
-    *
-    * this function removes all the content outside the body tags
-    *
-    * @param     string     $fullContent      HTML-Content with more than BODY
-    * @return    string     $content          HTML-Content between BODY-Tag
-    */
+     * Returns the content within the body tags
+     *
+     * If there is no body tag pair to be found, returns the empty string.
+     * @param     string     $fullContent      HTML content
+     * @return    string     $content          HTML content between the body tags,
+     *                                         or the empty string
+     */
     function _getBodyContent($fullContent)
     {
-        $posBody=0;
-        $posStartBodyContent=0;
-        $arrayMatches = array();
-        $res=preg_match_all("/<body[^>]*>/i", $fullContent, $arrayMatches);
-        if ($res) {
-            $bodyStartTag = $arrayMatches[0][0];
-            // Position des Start-Tags holen
-            $posBody = strpos($fullContent, $bodyStartTag, 0);
-            // Beginn des Contents ohne Body-Tag berechnen
-            $posStartBodyContent = $posBody + strlen($bodyStartTag);
-        }
-        $posEndTag=strlen($fullContent);
-        $res = preg_match_all('/\<\/body\>/i', $fullContent, $arrayMatches);
-        if ($res) {
-            $bodyEndTag=$arrayMatches[0][0];
-            // Position des End-Tags holen
-            $posEndTag = strpos($fullContent, $bodyEndTag, 0);
-            // Content innerhalb der Body-Tags auslesen
-         }
-         $content = substr($fullContent, $posStartBodyContent, $posEndTag  - $posStartBodyContent);
-         return $content;
+        $arrayMatch = array();
+        if (preg_match('/\<body[^>]*\>(.*)\<\/body\>/i', $fullContent, $arrayMatch))
+            return $arrayMatch[1];
+        return '';
     }
 
 
-    function _homeModuleCheck($section,$cmd,$pageId)
+    function _homeModuleCheck($section, $cmd, $pageId)
     {
         global $objDatabase, $_CORELANG;
-        $lang=$this->langId;
-        $section=intval($section);
+
+        $lang = $this->langId;
+        $section = intval($section);
 
         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name='home'");
-        if ($objResult !== false && $objResult->RecordCount()>0) {
-            $homeModuleId = intval($objResult->fields['id']);
-        } else {
+        if (!$objResult || $objResult->EOF) {
             $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             return false;
         }
+        $homeModuleId = intval($objResult->fields['id']);
 
-        $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE  `lang`=".$lang." AND module=".$homeModuleId);
+        $objResult = $objDatabase->Execute("
+            SELECT catid
+              FROM ".DBPREFIX."content_navigation
+             WHERE `lang`=$lang
+               AND module=$homeModuleId");
         if ($objResult !== false && $objResult->RecordCount()>0) {
-            $objResult = $objDatabase->Execute("SELECT m.name
-                              FROM ".DBPREFIX."content_navigation AS n,
-                                   ".DBPREFIX."modules AS m
-                             WHERE n.`lang`=".$lang."
-                               AND n.module=".$section."
-                               AND n.cmd='".$cmd."'
-                               AND n.module>0
-                               AND n.catid<>'".$pageId."'");
+            $objResult = $objDatabase->Execute("
+                SELECT m.name
+                 FROM ".DBPREFIX."content_navigation AS n,
+                      ".DBPREFIX."modules AS m
+                WHERE n.`lang`=$lang
+                  AND n.module=$section
+                  AND n.cmd='$cmd'
+                  AND n.module>0
+                  AND n.catid!='$pageId'");
 
-            if ($objResult !== false) {
+            if ($objResult) {
                 if ($objResult->RecordCount()>0) {
-                    $sectionName = $objResult->fields['m.name'];
+                    $sectionName = $objResult->fields['name'];
                     $this->strErrMessage[] = $_CORELANG['TXT_PAGE_WITH_SAME_MODULE_EXIST']." ".$sectionName." ".$cmd;
                     $this->setModule=$section;
                     $this->setCmd=$cmd+1;
                     return false;
-                } else {
-                    return true;
                 }
-            } elseif ($section==$homeModuleId) {
                 return true;
-            } else {
-                $this->strOkMessage = $_CORELANG['TXT_CREATE_HOME_MODULE'];
-                $this->setModule=$homeModuleId;
-                return false;
             }
+            if ($section == $homeModuleId) return true;
+            $this->strOkMessage = $_CORELANG['TXT_CREATE_HOME_MODULE'];
+            $this->setModule=$homeModuleId;
+            return false;
         }
         $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         return  false;
@@ -2325,33 +2279,30 @@ ON DUPLICATE KEY
 
 
     /*
-    * Get dropdown menue
-    *
-    * Gets back a dropdown menu like  <option value='catid'>Catname</option>
-    * @global   ADONewConnection
-    * @param    integer  $selectedid
-    * @return   string   $result
-    */
-    function getPageMenu($selectedid = 0, $langId = 0)
+     * Returns a dropdown menu like <option value='catid'>Catname</option>
+     * @global   ADONewConnection
+     * @param    integer  $selectedid
+     * @return   string   $result
+     */
+    function getPageMenu($selectedid=0, $langId=0)
     {
         global $objDatabase;
+
         $langId = intval($langId);
-        if($langId == 0){
+        if ($langId == 0) {
             $langId = $this->firstActiveLang;
         }
         $objResult = $objDatabase->Execute("
             SELECT catid, parcat, catname, backend_access_id
-                                            FROM ".DBPREFIX."content_navigation
-                                            WHERE `lang`=".$langId."
-          ORDER BY parcat ASC, displayorder ASC
-        ");
-        if ($objResult === false) {
+              FROM ".DBPREFIX."content_navigation
+             WHERE `lang`=".$langId."
+             ORDER BY parcat ASC, displayorder ASC");
+        if (!$objResult)
             return "content::navigation() database error";
-        }
         while (!$objResult->EOF) {
             $this->_navtable[$objResult->fields['parcat']][$objResult->fields['catid']] = array(
-                'name'        => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET),
-                'access_id'    => $objResult->fields['backend_access_id']
+                'name'      => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET),
+                'access_id' => $objResult->fields['backend_access_id']
             );
             $objResult->MoveNext();
         }
@@ -2361,28 +2312,30 @@ ON DUPLICATE KEY
 
 
     /*
-    * Do navigation dropdown
-    * @param    integer  $parcat
-    * @param    integer  $level
-    * @param    integer  $selectedid
-    * @return   string   $result
-    */
-    function _getNavigationMenu($parcat=0,$level,$selectedid)
+     * Do navigation dropdown
+     * @param    integer  $parcat
+     * @param    integer  $level
+     * @param    integer  $selectedid
+     * @return   string   $result
+     */
+    function _getNavigationMenu($parcat=0, $level, $selectedid)
     {
-        $result='';
-
+        $result = '';
         $list = $this->_navtable[$parcat];
         if (is_array($list)) {
             while (list($key,$val) = each($list)) {
                 $output = str_repeat('...', $level);
-                $selected = '';
-                if ($selectedid==$key) {
-                    $selected= 'selected="selected"';
-                }
                 $val['name'] = trim($val['name']);
-                $result.= '<option value="'.$key.'" '.$selected.($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true) ? ' disabled="disabled" style="color:graytext;"' : null).'>'.$output.(empty($val['name']) ? '-' : $val['name']).'</option>'."\n";
+                $result .=
+                    '<option value="'.$key.'"'.
+                    ($selectedid == $key ? ' selected="selected"' : '').
+                    ($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true)
+                        ? ' disabled="disabled" style="color:graytext;"' : null).
+                    '>'.$output.
+                    (empty($val['name']) ? '-' : $val['name']).
+                    '</option>'."\n";
                 if (isset($this->_navtable[$key])) {
-                    $result.= $this->_getNavigationMenu($key,$level+1,$selectedid);
+                    $result .= $this->_getNavigationMenu($key, $level+1, $selectedid);
                 }
             }
         }
@@ -2391,10 +2344,10 @@ ON DUPLICATE KEY
 
 
     /**
-    * Change page protection
-    * @global    ADONewConnection
-    * @global    array      Core language
-    */
+     * Change page protection
+     * @global    ADONewConnection
+     * @global    array      Core language
+     */
     function changeProtection()
     {
         global $objDatabase, $_CORELANG;
@@ -2435,14 +2388,15 @@ ON DUPLICATE KEY
 
 
     /**
-    * Change page status
-    * @global    array      Core language
-    */
+     * Change page status
+     * @global    array      Core language
+     */
     function changeStatus($langId=0)
     {
         global $objDatabase, $_CORELANG;
+
         $langId = intval($langId);
-        if($langId == 0){ $langId = $this->langId; }
+        if ($langId == 0) { $langId = $this->langId; }
         if (isset($_REQUEST['pageId']) && !empty($_REQUEST['pageId'])) {
             $currentTime = time();
             $pageId = intval($_REQUEST['pageId']);
@@ -2457,7 +2411,6 @@ ON DUPLICATE KEY
                 header('Location: index.php?cmd=noaccess');
                 exit;
             }
-
 
             $objResult = $objDatabase->Execute("SELECT displaystatus FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId." AND `lang`=".$langId);
             if ($objResult !== false && $objResult->RecordCount()>0) {
@@ -2501,11 +2454,12 @@ ON DUPLICATE KEY
         }
     }
 
-    function _setPageProtection($pageId, $parentPageId, $protect, $arrGroups, $type, $recursive = false, $langId = 0)
+
+    function _setPageProtection($pageId, $parentPageId, $protect, $arrGroups, $type, $recursive=false, $langId=0)
     {
         global $objDatabase, $_CONFIG;
 
-        if($langId == 0){ $langId = $this->langId; }
+        if ($langId == 0) $langId = $this->langId;
         $loginModuleId = 18;
         $rightId = 0;
         $pageIsProtected = false;
@@ -2524,12 +2478,8 @@ ON DUPLICATE KEY
                         $objResult->MoveNext();
                     }
                 }
-
             }
-
-            if (count($arrGroups)>0) {
-                $protect = true;
-            }
+            if (count($arrGroups) > 0) $protect = true;
         }
 
         if ($type == 'frontend') {
@@ -2617,14 +2567,12 @@ ON DUPLICATE KEY
                 }
             }
         }
-
         // Login Module must be unprotected!
         $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET protected=0 WHERE module=".$loginModuleId);
 
         if ($lastRightId > $_CONFIG['lastAccessId']) {
             $_CONFIG['lastAccessId'] = $lastRightId;
             $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue=".$lastRightId." WHERE setname='lastAccessId'");
-
             require_once(ASCMS_CORE_PATH.'/settings.class.php');
             $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
@@ -2633,44 +2581,56 @@ ON DUPLICATE KEY
 
 
     /**
-    * Do navigation dropdown
-    * @global    ADONewConnection
-    * @global    array      Core language
-    * @param    integer  $parcat
-    * @param    integer  $level
-    * @param    integer  $selectedid
-    * @return   string   $result
-    */
-    function _getThemesMenu($id=null) {
+     * Do navigation dropdown
+     * @global    ADONewConnection
+     * @global    array      Core language
+     * @param    integer  $parcat
+     * @param    integer  $level
+     * @param    integer  $selectedid
+     * @return   string   $result
+     */
+    function _getThemesMenu($id=null)
+    {
         global $objDatabase, $_CORELANG;
 
         $themesId = intval($id);
-
-        $return = "<option value='0' selected>(".$_CORELANG['TXT_STANDARD'].")</option>\n";
-        $objResult = $objDatabase->Execute("SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $selected= ($objResult->fields['id']==$themesId) ? " selected" : '';
-                $return .="<option value='".$objResult->fields['id']."'$selected>".$objResult->fields['themesname']."</option>\n";
-                $objResult->MoveNext();
-            }
+        $return =
+            '<option value="0" selected="selected">('.
+            $_CORELANG['TXT_STANDARD'].
+            ")</option>\n";
+        $objResult = $objDatabase->Execute("
+            SELECT id, themesname
+              FROM ".DBPREFIX."skins
+             ORDER BY id");
+        if (!$objResult) return $return;
+        while (!$objResult->EOF) {
+            $return .=
+                '<option value="'.$objResult->fields['id'].'"'.
+                ($objResult->fields['id'] == $themesId ? ' selected="selected"' : '').
+                '>'.$objResult->fields['themesname']."</option>\n";
+            $objResult->MoveNext();
         }
         return $return;
     }
 
 
     /**
-    * Change the "activestatus"-flag of a page
-    * @global    ADONewConnection
-    * @param    integer      $intPageId: The page with this id will be changed
-    */
-    function changeActiveStatus($intPageId,$intNewStatus='') {
+     * Change the "activestatus"-flag of a page
+     * @global    ADONewConnection
+     * @param    integer      $intPageId: The page with this id will be changed
+     */
+    function changeActiveStatus($intPageId, $intNewStatus='')
+    {
         global $objDatabase;
 
         $intPageId = intval($intPageId);
-
-        $objResult = $objDatabase->SelectLimit("SELECT backend_access_id FROM ".DBPREFIX."content_navigation WHERE catid=".$intPageId." AND backend_access_id!=0 AND `lang`=".$this->langId, 1);
-        if ($objResult !== false) {
+        $objResult = $objDatabase->Execute("
+            SELECT backend_access_id
+              FROM ".DBPREFIX."content_navigation
+             WHERE catid=".$intPageId."
+               AND backend_access_id!=0
+               AND `lang`=".$this->langId);
+        if ($objResult) {
             if ($objResult->RecordCount() == 1 && !Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
                 header('Location: index.php?cmd=noaccess');
                 exit;
@@ -2682,11 +2642,11 @@ ON DUPLICATE KEY
 
         if ($intPageId != 0) {
             if (empty($intNewStatus)) {
-                $objResult = $objDatabase->Execute('SELECT    activestatus
-                                                    FROM    '.DBPREFIX.'content_navigation
-                                                    WHERE    catid='.$intPageId.' AND `lang`='.$this->langId.'
-                                                    LIMIT    1
-                                                ');
+                $objResult = $objDatabase->Execute('
+                    SELECT activestatus
+                      FROM '.DBPREFIX.'content_navigation
+                     WHERE catid='.$intPageId.'
+                       AND `lang`='.$this->langId);
                 if ($objResult->fields['activestatus'] == 1) {
                     $intNewStatus = 0;
                 } else {
@@ -2695,28 +2655,29 @@ ON DUPLICATE KEY
             } else {
                 $intNewStatus = intval($intNewStatus);
             }
-
-            $objResult = $objDatabase->Execute('SELECT    catid
-                                                FROM    '.DBPREFIX.'content_navigation
-                                                WHERE    parcat='.$intPageId.' AND `lang`='.$this->langId);
+            $objResult = $objDatabase->Execute('
+                SELECT catid
+                  FROM '.DBPREFIX.'content_navigation
+                 WHERE parcat='.$intPageId.'
+                   AND `lang`='.$this->langId);
             if ($objResult->RecordCount() > 0) {
                 while (!$objResult->EOF) {
                     $this->changeActiveStatus($objResult->fields['catid'],$intNewStatus);
                     $objResult->MoveNext();
                 }
             }
-
-            $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_navigation
-                                    SET        activestatus="'.$intNewStatus.'"
-                                    WHERE    catid='.$intPageId.' AND `lang`='.$this->langId.'
-                                    LIMIT    1
-                                ');
-            $objDatabase->Execute('UPDATE  '.DBPREFIX.'content_navigation_history
-                                    SET    changelog='.time().',
-                                           activestatus='.$intNewStatus.'
-                                    WHERE  catid='.$intPageId.' AND `lang`='.$this->langId.'
-                                      AND  is_active="1"
-                                    LIMIT  1');
+            $objDatabase->Execute('
+                UPDATE '.DBPREFIX.'content_navigation
+                   SET activestatus="'.$intNewStatus.'"
+                 WHERE catid='.$intPageId.'
+                   AND `lang`='.$this->langId);
+            $objDatabase->Execute('
+                UPDATE '.DBPREFIX.'content_navigation_history
+                   SET changelog='.time().',
+                       activestatus='.$intNewStatus.'
+                 WHERE catid='.$intPageId.'
+                   AND `lang`='.$this->langId.'
+                   AND is_active="1"');
         }
     }
 
@@ -2732,7 +2693,7 @@ ON DUPLICATE KEY
      * @return  boolean     True if the parent category ID is valid,
      *                      false otherwise (circular reference detected)
      */
-    function checkParcat($intPageId,$intPid,$boolFirst=true)
+    function checkParcat($intPageId, $intPid, $boolFirst=true)
     {
         global $objDatabase;
 
@@ -2754,20 +2715,18 @@ ON DUPLICATE KEY
                 // The new category is a subcategory of itself;
                 // do not allow that.
                 return false;
-            } else {
-                // Subcategory, go ahead
-                $objResult = $objDatabase->Execute('
-                    SELECT    parcat, backend_access_id
-                                                        FROM    '.DBPREFIX.'content_navigation
-                     WHERE catid='.$intPid
-                );
-                if ($objResult->RecordCount() != 0) {
-                    $row = $objResult->FetchRow();
-                    if ($boolFirst && $row['backend_access_id'] && !Permission::checkAccess($row['backend_access_id'], 'dynamic', true)) {
-                        return false;
-                    }
-                    return $this->checkParcat($intPageId,$row['parcat'],false);
-                }
+            }
+            // Subcategory, go ahead
+            $objResult = $objDatabase->Execute('
+                SELECT parcat, backend_access_id
+                  FROM '.DBPREFIX.'content_navigation
+                 WHERE catid='.$intPid);
+            if ($objResult->RecordCount() > 0) {
+                $row = $objResult->FetchRow();
+                if (   $boolFirst && $row['backend_access_id']
+                    && !Permission::checkAccess($row['backend_access_id'], 'dynamic', true))
+                    return false;
+                return $this->checkParcat($intPageId, $row['parcat'], false);
             }
         }
         // Root category
@@ -2779,41 +2738,38 @@ ON DUPLICATE KEY
      * The function collects all categories without an existing parcat and assigns it to "lost and found"
      * @global     ADONewConnection
      */
-    function collectLostPages() {
+    function collectLostPages()
+    {
         global $objDatabase;
 
-        $objResult = $objDatabase->Execute('    SELECT    catid,
-                                                        parcat,
-                                                        lang
-                                                FROM    '.DBPREFIX.'content_navigation
-                                                WHERE    parcat <> 0
-                                        ');
+        $objResult = $objDatabase->Execute('
+            SELECT catid, parcat, lang
+              FROM '.DBPREFIX.'content_navigation
+             WHERE parcat!=0');
         if ($objResult->RecordCount() > 0) {
             // Subcategories have been found
             $row = $objResult->FetchRow();
             while ($row) {
                 $objSubResult = $objDatabase->Execute('
                     SELECT 1
-                                                        FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE    catid='.$row['parcat'].' AND `lang`='.$row['lang'].'
-                                                    ');
+                      FROM '.DBPREFIX.'content_navigation
+                     WHERE catid='.$row['parcat'].'
+                       AND `lang`='.$row['lang']);
                 if ($objSubResult->RecordCount() == 0) {
                     // This is a "lost" category.
                     // Assign it to "lost and found"
                     $objSubSubResult = $objDatabase->SelectLimit('
                         SELECT catid
-                                                                FROM    '.DBPREFIX.'content_navigation
-                                                                WHERE    module=1 AND
-                                                                        cmd="lost_and_found" AND
-                               `lang`='.$row['lang'],
-                        1
-                    );
+                          FROM '.DBPREFIX.'content_navigation
+                         WHERE module=1
+                           AND cmd="lost_and_found"
+                           AND `lang`='.$row['lang'], 1);
                     $subSubRow = $objSubSubResult->FetchRow();
                     $objDatabase->Execute('
                         UPDATE '.DBPREFIX.'content_navigation
-                                            SET        parcat='.$subSubRow['catid'].'
-                         WHERE catid='.$row['catid'].' AND lang='.$row['lang']
-                    );
+                           SET parcat='.$subSubRow['catid'].'
+                         WHERE catid='.$row['catid'].'
+                           AND lang='.$row['lang']);
                 }
                 $row = $objResult->FetchRow();
             }
@@ -2821,37 +2777,34 @@ ON DUPLICATE KEY
     }
 
 
-    function getBlocks($pageId=null, $langId=0)
+    function getBlocks($pageId=0, $langId=0)
     {
         global $objDatabase;
 
-        if($langId == 0){ $langId = $this->firstActiveLang; }
+        if ($langId == 0) $langId = $this->firstActiveLang;
 
         $blocks = array('', ''); // initialize to empty strings to avoid notice
         $arrBlocks = array();
         $arrRelationBlocks = array();
 
         //get blocks
-        $objResult = $objDatabase->Execute('SELECT    id, name
-                                            FROM    '.DBPREFIX.'module_block_blocks
-                                            WHERE    active=1
-                                        ');
-
+        $objResult = $objDatabase->Execute('
+            SELECT id, name
+              FROM '.DBPREFIX.'module_block_blocks
+             WHERE active=1');
         if ($objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $arrBlocks[$objResult->fields['id']] = array('id' => $objResult->fields['id'], 'name' => $objResult->fields['name']);
                 $objResult->MoveNext();
             }
         }
-
         //block relation
-        $objResult = $objDatabase->Execute('SELECT    block_id
-                                            FROM    '.DBPREFIX.'module_block_rel_pages
-                                            WHERE    page_id='.$pageId.' AND lang_id='.$langId.'
-                                        ');
-
-
-        if ($objResult !== false) {
+        $objResult = $objDatabase->Execute('
+            SELECT block_id
+              FROM '.DBPREFIX.'module_block_rel_pages
+             WHERE page_id='.$pageId.'
+               AND lang_id='.$langId);
+        if ($objResult) {
             while (!$objResult->EOF) {
                 $arrRelationBlocks[$objResult->fields['block_id']] = '';
                 $objResult->MoveNext();
@@ -2864,7 +2817,6 @@ ON DUPLICATE KEY
                 $blocks[1] .= '<option value="'.$arrData['id'].'">'.$arrData['name'].' ('.$arrData['id'].') </option>'."\n";
             }
         }
-
         return $blocks;
     }
 
@@ -2907,13 +2859,13 @@ ON DUPLICATE KEY
      * @param alias   the alias to install for the page. if it is empty or null,
      *                no change will happen.
      */
-    function _set_default_alias($pageId, $alias, $langId = 0)
+    function _set_default_alias($pageId, $alias, $langId=0)
     {
-        if($langId == 0){ $langId = $this->langId; }
-        $alias    = $this->_fix_alias($alias);
-        //////////////////////////////////////////////////////////////
-        // aliasLib has some handy stuff for us here..
         global $objDatabase, $_ARRAYLANG;
+
+        if ($langId == 0) { $langId = $this->langId; }
+        $alias    = $this->_fix_alias($alias);
+        // aliasLib has some handy stuff for us here..
         require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
         $util = new aliasLib($langId);
 
@@ -2949,38 +2901,35 @@ ON DUPLICATE KEY
                 }
             }
             return false;
-        } elseif (!$util->is_alias_valid($alias)) {
+        }
+        if (!$util->is_alias_valid($alias))
             return sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($alias, ENT_QUOTES, CONTREXX_CHARSET));
-        } else {
-            // check if we are going to update or add an alias source
-            $aliasNr = null;
-            for ($i = 0; $i < count($arrAlias['sources']); $i++) {
-                if ($arrAlias['sources'][$i]['isdefault']) {
-                    $aliasNr = $i;
-                    break;
-                }
-            }
 
-            // check if the defined alias source is unique
-            if (!$util->_isUniqueAliasSource($alias, $pageId, $arrAlias['pageUrl'], isset($aliasNr) ? $arrAlias['sources'][$aliasNr]['id'] : 0)) {
-                return sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($alias, ENT_QUOTES, CONTREXX_CHARSET));
-            }
-
-
-            if (isset($aliasNr)) {
-                // updating the current standard alias source
-                $arrAlias['sources'][$aliasNr]['url'] = $alias;
-            } else {
-                // adding a new alias source
-                $arrAlias['sources'][] = array('url' => $alias, 'isdefault' => 1);
-            }
-
-            if (($aliasId ? $util->_updateAlias($aliasId, $arrAlias) : $util->_addAlias($arrAlias))) {
-                return false;
-            } else {
-                return $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
+        // check if we are going to update or add an alias source
+        $aliasNr = null;
+        for ($i = 0; $i < count($arrAlias['sources']); $i++) {
+            if ($arrAlias['sources'][$i]['isdefault']) {
+                $aliasNr = $i;
+                break;
             }
         }
+
+        // check if the defined alias source is unique
+        if (!$util->_isUniqueAliasSource($alias, $pageId, $arrAlias['pageUrl'], isset($aliasNr) ? $arrAlias['sources'][$aliasNr]['id'] : 0))
+            return sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($alias, ENT_QUOTES, CONTREXX_CHARSET));
+
+        if (isset($aliasNr)) {
+            // updating the current standard alias source
+            $arrAlias['sources'][$aliasNr]['url'] = $alias;
+        } else {
+            // adding a new alias source
+            $arrAlias['sources'][] = array('url' => $alias, 'isdefault' => 1);
+        }
+
+        if (($aliasId ? $util->_updateAlias($aliasId, $arrAlias) : $util->_addAlias($arrAlias))) {
+            return false;
+        }
+        return $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
     }
 
 
@@ -2994,21 +2943,24 @@ ON DUPLICATE KEY
 
         $check_update = "
             SELECT a_s.url, a_t.id
-            FROM            ".DBPREFIX."module_alias_target AS a_t
-            LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-                  ON  a_t.id        = a_s.target_id
-                  AND a_s.isdefault = 1
-            WHERE a_t.url = '$pageid' AND a_s.lang_id = ".$langId;
+              FROM ".DBPREFIX."module_alias_target AS a_t
+              LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                ON a_t.id=a_s.target_id
+                   AND a_s.isdefault=1
+             WHERE a_t.url='$pageid'
+               AND a_s.lang_id=".$langId;
         $check_update_res = $objDatabase->Execute($check_update);
-        if ($check_update_res->RecordCount()){
+        if ($check_update_res->RecordCount())
             return $check_update_res->fields['id'];
-        }
         return false;
     }
-    function modifyBlocks($associatedBlockIds, $pageId, $langId = 0)
+
+
+    function modifyBlocks($associatedBlockIds, $pageId, $langId=0)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
-        if($langId == 0){ $langId = $_FRONTEND_LANGID; }
+        global $objDatabase;
+
+        if ($langId == 0) $langId = FRONTEND_LANG_ID;
 
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_block_rel_pages
@@ -3028,7 +2980,7 @@ ON DUPLICATE KEY
         if (!empty($associatedBlockIds)) {
             $objResult = $objDatabase->Execute('
                 SELECT all_pages
-                 FROM '.DBPREFIX.'module_block_rel_lang
+                  FROM '.DBPREFIX.'module_block_rel_lang
                  WHERE block_id='.$blockId.'
                    AND lang_id='.$langId
             );
@@ -3059,42 +3011,45 @@ ON DUPLICATE KEY
     function createJSON()
     {
         global $objDatabase;
+
         $data   = $_GET['data'];
         $pageId = intval($_REQUEST['page']);
         $langId = intval($_REQUEST['lang']);
         $langName = !empty($_REQUEST['langName']) ? $_REQUEST['langName'] : '';
-        switch($data){
+        switch($data) {
             case 'history':
                 die($this->_getHistoyTemplate($pageId, $langId));
-            break;
+                break;
             case 'inputText':
-                    $objRS = $objDatabase->SelectLimit("
-                            SELECT a_s.url AS alias_url
-                            FROM ".DBPREFIX."content AS c
-                 LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
-                 LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-                              ON  (a_s.target_id = a_t.id AND a_s.lang_id = c.lang_id)
-                             AND a_s.isdefault = 1
-                           WHERE c.id =".$pageId.' AND c.lang_id='.$langId, 1);
+                $objRS = $objDatabase->SelectLimit("
+                    SELECT a_s.url AS alias_url
+                      FROM ".DBPREFIX."content AS c
+                      LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t
+                           ON a_t.url=c.id
+                      LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                           ON (a_s.target_id=a_t.id AND a_s.lang_id=c.lang_id)
+                               AND a_s.isdefault=1
+                     WHERE c.id=".$pageId.' AND c.lang_id='.$langId, 1);
                 $alias = $objRS->fields['alias_url'];
-                $query =  'SELECT `c`.`content`, `c`.`title`, `c`.`metatitle`, `c`.`metadesc` AS `desc`, `c`.`redirect` AS `redirectUrl`,
-                                          `c`.`metakeys` AS `key`, `c`.`css_name` AS `cssName`, `n`.`cmd` AS `command`,
-                                          `n`.`catname` AS `newpage`, `n`.`startdate`, `n`.`enddate`, `n`.`css_name` AS `cssNameNav`
-                                     FROM `'.DBPREFIX.'content` AS `c`
-                               INNER JOIN `'.DBPREFIX.'content_navigation` AS `n`
-                                       ON (`c`.`id` = `n`.`catid` AND `c`.`lang_id` = `n`.`lang`)
-                                    WHERE `c`.`id` = '.$pageId.'
-                                      AND `c`.`lang_id` = '.$langId;
+                $query = '
+                    SELECT `c`.`content`, `c`.`title`, `c`.`metatitle`,
+                           `c`.`metadesc` AS `desc`, `c`.`redirect` AS `redirectUrl`,
+                           `c`.`metakeys` AS `key`, `c`.`css_name` AS `cssName`, `n`.`cmd` AS `command`,
+                           `n`.`catname` AS `newpage`, `n`.`startdate`, `n`.`enddate`, `n`.`css_name` AS `cssNameNav`
+                      FROM `'.DBPREFIX.'content` AS `c`
+                     INNER JOIN `'.DBPREFIX.'content_navigation` AS `n`
+                           ON (`c`.`id`=`n`.`catid` AND `c`.`lang_id`=`n`.`lang`)
+                     WHERE `c`.`id`='.$pageId.'
+                       AND `c`.`lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
                 $objRS->fields['langName'] = $langName;
                 $objRS->fields['content']  = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $objRS->fields['content']);
                 $objRS->fields['alias']    = $alias;
                 header('Content-Type: application/json');
                 die(json_encode($objRS->fields));
-            break;
-
+                break;
             case 'inputRadio':
-                $protection = $this->_getPageProtectionStatus($pageId, $langId) == 'checked' ? 1 : 0;  // frontend protection
+                $protection = ($this->_getPageProtectionStatus($pageId, $langId) ? 1 : 0);  // frontend protection
                 $arrAssignedBackendGroups = $this->_getAssignedGroups('backend', $pageId, $langId);    // backend protection
                 $backendPermission = 0;
                 foreach ($this->arrAllBackendGroups as $id => $name) {
@@ -3103,14 +3058,15 @@ ON DUPLICATE KEY
                         break;
                     }
                 }
-                $query =  'SELECT `c`.`redirect` AS `TypeSelection`
-                                     FROM `'.DBPREFIX.'content` AS `c`
-                                    WHERE `c`.`id` = '.$pageId.'
-                                      AND `c`.`lang_id` = '.$langId;
+                $query = '
+                    SELECT `c`.`redirect` AS `TypeSelection`
+                      FROM `'.DBPREFIX.'content` AS `c`
+                     WHERE `c`.`id`='.$pageId.'
+                       AND `c`.`lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
-                if(empty($objRS->fields['TypeSelection'])){
+                if (empty($objRS->fields['TypeSelection'])) {
                     $objRS->fields['TypeSelection'] = 'content';
-                }else{
+                } else {
                     $objRS->fields['TypeSelection'] = 'redirect';
                 }
                 $objRS->fields['protection']        = $protection;
@@ -3118,38 +3074,41 @@ ON DUPLICATE KEY
                 $objRS->fields['langName']          = $langName;
                 header('Content-Type: application/json');
                 die(json_encode($objRS->fields));
-            break;
-
+                break;
             case 'navMenu':
                 global $_CORELANG;
                 $navMenu['value']    = $pageId;
-                $navMenu['options' ] = '<option value="" selected="selected" '.(!Permission::checkAccess(127, 'static', true)
-                                                                              ? 'disabled="disabled" style="color:graytext;"'
-                                                                              : '').'>'.$_CORELANG['TXT_NEW_CATEGORY'].'</option>
-                                      '.$this->getPageMenu($pageId, $langId);
+                $navMenu['options' ] =
+                    '<option value="" selected="selected"'.
+                    (!Permission::checkAccess(127, 'static', true)
+                        ? ' disabled="disabled" style="color:graytext;"'
+                        : '').
+                    '>'.$_CORELANG['TXT_NEW_CATEGORY'].'</option>'.
+                    $this->getPageMenu($pageId, $langId);
                 $navMenu['langName'] = $langName;
                 die(json_encode($navMenu));
-            break;
+                break;
             case 'inputCheckbox':
-                $query =  'SELECT `c`.`expertmode`, `c`.`metarobots` AS `robots`,
-                                  `n`.`displaystatus`, `n`.`cachingstatus`
-                             FROM `'.DBPREFIX.'content` AS `c`
-                       INNER JOIN `'.DBPREFIX.'content_navigation` AS `n`
-                               ON (`c`.`id` = `n`.`catid` AND `c`.`lang_id` = `n`.`lang`)
-                            WHERE `c`.`id` = '.$pageId.'
-                              AND `c`.`lang_id` = '.$langId;
+                $query = '
+                    SELECT `c`.`expertmode`, `c`.`metarobots` AS `robots`,
+                           `n`.`displaystatus`, `n`.`cachingstatus`
+                      FROM `'.DBPREFIX.'content` AS `c`
+                     INNER JOIN `'.DBPREFIX.'content_navigation` AS `n`
+                           ON (`c`.`id`=`n`.`catid` AND `c`.`lang_id`=`n`.`lang`)
+                     WHERE `c`.`id`='.$pageId.'
+                       AND `c`.`lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
-                $objRS->fields['displaystatus']   = $objRS->fields['displaystatus'] == 'on'    ? 'checked' : false;
-                $objRS->fields['cachingstatus']   = $objRS->fields['cachingstatus'] == 1       ? 'checked' : false;
-                $objRS->fields['expertmode']      = $objRS->fields['expertmode']    == "y"     ? 'checked' : false;
-                $objRS->fields['robots']          = $objRS->fields['robots']        == "index" ? 'checked' : false;
+                $objRS->fields['displaystatus']   = ($objRS->fields['displaystatus'] == 'on'    ? ' checked="checked"' : '');
+                $objRS->fields['cachingstatus']   = ($objRS->fields['cachingstatus'] == 1       ? ' checked="checked"' : '');
+                $objRS->fields['expertmode']      = ($objRS->fields['expertmode']    == "y"     ? ' checked="checked"' : '');
+                $objRS->fields['robots']          = ($objRS->fields['robots']        == "index" ? ' checked="checked"' : '');
                 $objRS->fields['themesRecursive'] = false;
                 $objRS->fields['backendInherit']  = false;
                 $objRS->fields['recursive']       = false;
                 $objRS->fields['langName']        = $langName;
                 header('Content-Type: application/json');
                 die(json_encode($objRS->fields));
-            break;
+                break;
             case 'select':
                 global $_CORELANG;
 
@@ -3174,14 +3133,18 @@ ON DUPLICATE KEY
                     }
                 }
 
-                $objRS = $objDatabase->SelectLimit("
+                $objRS = $objDatabase->Execute("
                     SELECT module, target, themes_id
                       FROM ".DBPREFIX."content_navigation
-                     WHERE catid = ".$pageId." AND `lang`=".$langId, 1);
-                $targets = '<option value="'.$objRS->fields['target'].'" selected="selected">'.$objRS->fields['target'].'</option>';
-                if(empty($target)){ $targets = '<option value=""></option>'; }
-                foreach ($this->_arrRedirectTargets as $target){
-                    if(empty($target)){ continue; }
+                     WHERE catid=$pageId
+                       AND `lang`=$langId");
+                $targets =
+                    '<option value="'.$objRS->fields['target'].'"'.
+                    ' selected="selected">'.$objRS->fields['target'].'</option>';
+// TODO: $target is not defined
+//                if (empty($target)) { $targets = '<option value=""></option>'; }
+                foreach ($this->_arrRedirectTargets as $target) {
+                    if (empty($target)) continue;
                     $targets .= '<option value="'.$target.'">'.$_CORELANG['TXT_TARGET'.strtoupper($target)].' ('.$target.')</option>';
                 }
                 $selects['themesId']['options']                 = $this->_getThemesMenu($objRS->fields['themes_id']);
@@ -3199,8 +3162,7 @@ ON DUPLICATE KEY
                 $selects['langName']                            = $langName;
                 header('Content-Type: application/json');
                 die(json_encode($selects));
-            break;
-            default:
+                break;
         }
     }
 
@@ -3311,78 +3273,74 @@ ON DUPLICATE KEY
         $objTemplate->setTemplate($templateHTML);
         $retHTML = '';
         if ($this->boolHistoryEnabled) {
-            $objResult = $objDatabase->Execute('SELECT    id,
-                                                        themesname
-                                                FROM    '.DBPREFIX.'skins
-                                                ');
+            $objResult = $objDatabase->Execute('
+                SELECT id, themesname
+                  FROM    '.DBPREFIX.'skins');
             $arrThemes[0] = $_CORELANG['TXT_STANDARD'];
             while (!$objResult->EOF) {
                 $arrThemes[$objResult->fields['id']] = $objResult->fields['themesname'];
                 $objResult->MoveNext();
             }
-
-            $objResult = $objDatabase->Execute('SELECT    id,
-                                                        name
-                                                FROM    '.DBPREFIX.'modules
-                                            ');
+            $objResult = $objDatabase->Execute('
+                SELECT id, name
+                  FROM '.DBPREFIX.'modules');
             while (!$objResult->EOF) {
                 $arrModules[$objResult->fields['id']] = $objResult->fields['name'];
                 $objResult->MoveNext();
             }
             $arrModules[0] = '-';
-
-            $objResult = $objDatabase->Execute('SELECT    group_id,
-                                                        group_name
-                                                FROM    '.DBPREFIX.'access_user_groups
-                                            ');
+            $objResult = $objDatabase->Execute('
+                SELECT group_id, group_name
+                  FROM '.DBPREFIX.'access_user_groups');
             $arrGroups[0] = '-';
             while (!$objResult->EOF) {
                 $arrGroups[$objResult->fields['group_id']] = $objResult->fields['group_name'];
                 $objResult->MoveNext();
             }
 
-            $objResult = $objDatabase->Execute('SELECT        navTable.id                    AS navID,
-                                                            navTable.catid                AS navPageId,
-                                                            navTable.is_active            AS navActive,
-                                                            navTable.catname            AS navCatname,
-                                                            navTable.username            AS navUsername,
-                                                            navTable.changelog            AS navChangelog,
-                                                            navTable.startdate            AS navStartdate,
-                                                            navTable.enddate            AS navEnddate,
-                                                            navTable.cachingstatus        AS navCachingStatus,
-                                                            navTable.themes_id            AS navTheme,
-                                                            navTable.cmd                AS navCMD,
-                                                            navTable.module                AS navModule,
-                                                            navTable.frontend_access_id    AS navFAccess,
-                                                            navTable.backend_access_id    AS navBAccess,
-                                                            conTable.title                AS conTitle,
-                                                            conTable.metatitle            AS conMetaTitle,
-                                                            conTable.metadesc            AS conMetaDesc,
-                                                            conTable.metakeys            AS conMetaKeywords,
-                                                            conTable.css_name            AS conCssName,
-                                                            conTable.redirect            AS conRedirect,
-                                                            conTable.expertmode            AS conExpertMode,
-                                                            logTable.is_validated        AS logValidated
-                                                FROM        '.DBPREFIX.'content_navigation_history AS navTable
-                                                INNER JOIN    '.DBPREFIX.'content_history AS conTable
-                                                ON            conTable.id = navTable.id
-                                                INNER JOIN    '.DBPREFIX.'content_logfile AS logTable
-                                                ON            logTable.history_id = navTable.id
-                                                WHERE         navTable.catid='.$pageId.' AND navTable.lang='.$langId.' AND
-                                                            logTable.is_validated="1"
-                                                ORDER BY    navChangelog DESC
-                                            ');
+            $objResult = $objDatabase->Execute('
+                SELECT navTable.id AS navID,
+                       navTable.catid              AS navPageId,
+                       navTable.is_active          AS navActive,
+                       navTable.catname            AS navCatname,
+                       navTable.username           AS navUsername,
+                       navTable.changelog          AS navChangelog,
+                       navTable.startdate          AS navStartdate,
+                       navTable.enddate            AS navEnddate,
+                       navTable.cachingstatus      AS navCachingStatus,
+                       navTable.themes_id          AS navTheme,
+                       navTable.cmd                AS navCMD,
+                       navTable.module             AS navModule,
+                       navTable.frontend_access_id AS navFAccess,
+                       navTable.backend_access_id  AS navBAccess,
+                       conTable.title              AS conTitle,
+                       conTable.metatitle          AS conMetaTitle,
+                       conTable.metadesc           AS conMetaDesc,
+                       conTable.metakeys           AS conMetaKeywords,
+                       conTable.css_name           AS conCssName,
+                       conTable.redirect           AS conRedirect,
+                       conTable.expertmode         AS conExpertMode,
+                       logTable.is_validated       AS logValidated
+                  FROM '.DBPREFIX.'content_navigation_history AS navTable
+                 INNER JOIN '.DBPREFIX.'content_history AS conTable
+                       ON conTable.id = navTable.id
+                 INNER JOIN '.DBPREFIX.'content_logfile AS logTable
+                       ON logTable.history_id = navTable.id
+                 WHERE navTable.catid='.$pageId.'
+                   AND navTable.lang='.$langId.'
+                   AND logTable.is_validated="1"
+                 ORDER BY navChangelog DESC');
             if ($objResult->RecordCount() > 0) {
                 $objContentTree = new ContentTree($langId);
                 $intRowCount = 0;
 
                 while (!$objResult->EOF) {
-                    $strBackendGroups     = '';
-                    $strFrontendGroups     = '';
+                    $strBackendGroups = '';
+                    $strFrontendGroups = '';
 
-                    $strTree             = '';
-                    $boolCheck             = false;
-                    $intPageCategory     = $pageId;
+                    $strTree = '';
+                    $boolCheck = false;
+                    $intPageCategory = $pageId;
                     while(!$boolCheck) {
                         $arrCategory = $objContentTree->getThisNode($intPageCategory);
                         if ($arrCategory['parcat'] == 0) {
@@ -3423,34 +3381,34 @@ ON DUPLICATE KEY
                     }
 
                     $objTemplate->setVariable(array(
-                        'CHANGELOG_ROWCLASS'        =>    ($objResult->fields['navActive']) ? 'rowWarn' : (($intRowCount % 2 == 0) ? 'row1' : 'row0'),
-                        'CHANGELOG_CHECKBOX'        =>    ($objResult->fields['navActive']) ? '' : '<input type="checkbox" name="selectedChangelogId[]" id="selectedChangelogId" value="'.$objResult->fields['navID'].'" />',
-                        'CHANGELOG_ACTIVATE'        =>    ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:activateHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" title="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" border="0" /></a>',
-                        'CHANGELOG_DELETE'            =>    ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:deleteHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/delete.gif" alt="'.$_CORELANG['TXT_DELETE'].'" title="'.$_CORELANG['TXT_DELETE'].'" border="0" /></a>',
-                        'CHANGELOG_ID'                =>    $objResult->fields['navID'],
-                        'CHANGELOG_DATE'            =>    date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
-                        'CHANGELOG_USER'            =>    $objResult->fields['navUsername'],
-                        'CHANGELOG_TITLE'            =>    stripslashes($objResult->fields['navCatname']),
-                        'CHANGELOG_PAGETITLE'        =>    stripslashes($objResult->fields['conTitle']),
-                        'CHANGELOG_METATITLE'        =>    stripslashes($objResult->fields['conMetaTitle']),
-                        'CHANGELOG_METADESC'        =>    stripslashes($objResult->fields['conMetaDesc']),
-                        'CHANGELOG_METAKEY'            =>    stripslashes($objResult->fields['conMetaKeywords']),
-                        'CHANGELOG_CATEGORY'        =>    $strTree,
-                        'CHANGELOG_STARTDATE'        =>    $objResult->fields['navStartdate'],
-                        'CHANGELOG_ENDDATE'            =>    $objResult->fields['navEnddate'],
-                        'CHANGELOG_THEME'            =>    stripslashes($arrThemes[$objResult->fields['navTheme']]),
-                        'CHANGELOG_OPTIONAL_CSS'    =>    (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
-                        'CHANGELOG_CMD'                =>    (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
-                        'CHANGELOG_SECTION'            =>    $arrModules[$objResult->fields['navModule']],
-                        'CHANGELOG_REDIRECT'        =>    (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
-                        'CHANGELOG_SOURCEMODE'        =>    strtoupper($objResult->fields['conExpertMode']),
-                        'CHANGELOG_CACHINGSTATUS'    =>    ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
-                        'CHANGELOG_FRONTEND'        =>    stripslashes($strFrontendGroups),
-                        'CHANGELOG_BACKEND'            =>    stripslashes($strBackendGroups)
+                        'CHANGELOG_ROWCLASS'      => ($objResult->fields['navActive']) ? 'rowWarn' : (($intRowCount % 2 == 0) ? 'row1' : 'row0'),
+                        'CHANGELOG_CHECKBOX'      => ($objResult->fields['navActive']) ? '' : '<input type="checkbox" name="selectedChangelogId[]" id="selectedChangelogId" value="'.$objResult->fields['navID'].'" />',
+                        'CHANGELOG_ACTIVATE'      => ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:activateHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" title="'.$_CORELANG['TXT_ACTIVATE_HISTORY'].'" border="0" /></a>',
+                        'CHANGELOG_DELETE'        => ($objResult->fields['navActive']) ? '<img src="images/icons/pixel.gif" width="16" border="0" alt="space" />' : '<a href="javascript:deleteHistory(\''.$objResult->fields['navID'].'\');"><img src="images/icons/delete.gif" alt="'.$_CORELANG['TXT_DELETE'].'" title="'.$_CORELANG['TXT_DELETE'].'" border="0" /></a>',
+                        'CHANGELOG_ID'            => $objResult->fields['navID'],
+                        'CHANGELOG_DATE'          => date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
+                        'CHANGELOG_USER'          => $objResult->fields['navUsername'],
+                        'CHANGELOG_TITLE'         => stripslashes($objResult->fields['navCatname']),
+                        'CHANGELOG_PAGETITLE'     => stripslashes($objResult->fields['conTitle']),
+                        'CHANGELOG_METATITLE'     => stripslashes($objResult->fields['conMetaTitle']),
+                        'CHANGELOG_METADESC'      => stripslashes($objResult->fields['conMetaDesc']),
+                        'CHANGELOG_METAKEY'       => stripslashes($objResult->fields['conMetaKeywords']),
+                        'CHANGELOG_CATEGORY'      => $strTree,
+                        'CHANGELOG_STARTDATE'     => $objResult->fields['navStartdate'],
+                        'CHANGELOG_ENDDATE'       => $objResult->fields['navEnddate'],
+                        'CHANGELOG_THEME'         => stripslashes($arrThemes[$objResult->fields['navTheme']]),
+                        'CHANGELOG_OPTIONAL_CSS'  => (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
+                        'CHANGELOG_CMD'           => (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
+                        'CHANGELOG_SECTION'       => $arrModules[$objResult->fields['navModule']],
+                        'CHANGELOG_REDIRECT'      => (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
+                        'CHANGELOG_SOURCEMODE'    => strtoupper($objResult->fields['conExpertMode']),
+                        'CHANGELOG_CACHINGSTATUS' => ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
+                        'CHANGELOG_FRONTEND'      => stripslashes($strFrontendGroups),
+                        'CHANGELOG_BACKEND'       => stripslashes($strBackendGroups)
                     ));
                     $objTemplate->parse('showChanges');
                     $objResult->MoveNext();
-                    $intRowCount++;
+                    ++$intRowCount;
                 }
             } else {
                 $objTemplate->hideBlock('showChanges');
@@ -3460,49 +3418,63 @@ ON DUPLICATE KEY
         return $retHTML;
     }
 
-    function _setPreviewContent(){
+
+    function _setPreviewContent()
+    {
         $_SESSION['content']['previewTitle']   = html_entity_decode(stripslashes($_REQUEST['previewTitle']), ENT_QUOTES, CONTREXX_CHARSET);
-        $_SESSION['content']['previewContent'] = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/',
-                                                       '{\\1}' ,
-                                                       html_entity_decode(stripslashes($_REQUEST['previewContent']), ENT_QUOTES, CONTREXX_CHARSET));
+        $_SESSION['content']['previewContent'] =
+            preg_replace(
+                '/\[\[([A-Z0-9_-]+)\]\]/',
+                '{\\1}' ,
+                html_entity_decode(stripslashes($_REQUEST['previewContent']), ENT_QUOTES, CONTREXX_CHARSET));
         die(json_encode(array('success' => true)));
     }
 
 }//end class
 
-if (!function_exists('json_encode')){
-    function json_encode($a=false)    {
+
+if (!function_exists('json_encode')) {
+    function json_encode($a=false)
+    {
         if (is_null($a)) return 'null';
         if ($a === false) return 'false';
         if ($a === true) return 'true';
-        if (is_scalar($a)){
-            if (is_float($a)){
+        if (is_scalar($a)) {
+            if (is_float($a)) {
                 // Always use "." for floats.
                 return floatval(str_replace(",", ".", strval($a)));
             }
-            if (is_string($a)){
-                static $jsonReplaces = array(array("\\", "/", "\n", "\t", "\r", "\b", "\f", '"'), array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"'));
-                return '"' . str_replace($jsonReplaces[0], $jsonReplaces[1], $a) . '"';
-            }else{
-                return $a;
+            if (is_string($a)) {
+                return
+                    '"'.
+                    str_replace(
+//                        array("\\",   "/",   "\n",  "\t",  "\r",  "\b",  "\f",  '"' ),
+//                        array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"'),
+// TODO: "\b" is not known by PHP
+// TODO: "\f" is only known from PHP 5.2.5
+                        array("\\",   "/",   "\n",  "\t",  "\r",  '"' ), //  "\f"),
+                        array('\\\\', '\\/', '\\n', '\\t', '\\r', '\"'), // '\\f'),
+                        $a
+                    ).'"';
             }
+            return $a;
         }
         $isList = true;
-        for ($i = 0, reset($a); $i < count($a); $i++, next($a)){
-            if (key($a) !== $i){
+        for ($i = 0, reset($a); $i < count($a); $i++, next($a)) {
+            if (key($a) !== $i) {
                 $isList = false;
                 break;
             }
         }
         $result = array();
-        if ($isList){
+        if ($isList) {
             foreach ($a as $v) $result[] = json_encode($v);
             return '[' . join(',', $result) . ']';
-        } else {
-            foreach ($a as $k => $v) $result[] = json_encode($k).':'.json_encode($v);
-            return '{' . join(',', $result) . '}';
         }
+        foreach ($a as $k => $v) $result[] = json_encode($k).':'.json_encode($v);
+        return '{' . join(',', $result) . '}';
     }
+
 }
 
 ?>
