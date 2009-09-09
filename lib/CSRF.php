@@ -48,7 +48,7 @@ class CSRF {
     private static $already_checked    = false;
 
     private static $sesskey = '__csrf_data__';
-    private static $formkey = '__csrf__';
+    private static $formkey = 'csrf';
 
     private static $current_code = NULL;
 
@@ -116,9 +116,8 @@ class CSRF {
      * output so as to insert the data.
      */
 	public static function add_code() {
-        if (CSRF::$already_added_code) {
-            return;
-        }
+        if (!CSRF::__is_logged_in())   { return; }
+        if (CSRF::$already_added_code) { return; }
         CSRF::$already_added_code = true;
         $code = CSRF::__get_code();
         output_add_rewrite_var(CSRF::$formkey, $code);
@@ -132,6 +131,7 @@ class CSRF {
      * @param $tpl Template object
      */
     public static function add_placeholder($tpl) {
+        if (!CSRF::__is_logged_in())   { return; }
         if (!is_object($tpl)) {
             DBG::msg("CSRF::add_placeholder(): fix this call, that ain't a template object! (Stack follows)");
             DBG::stack();
@@ -166,6 +166,8 @@ class CSRF {
      * Returns a key/value pair ready to use in an URL.
      */
     public static function param() {
+        if (!CSRF::__is_logged_in()) return '';
+
         return CSRF::key().'='.CSRF::code();
     }
 
@@ -175,10 +177,9 @@ class CSRF {
      * find a valid anti-CSRF code in the request.
      */
     public static function check_code() {
+        if (!CSRF::__is_logged_in()) { return; }
+        if (CSRF::$already_checked)  { return; }
 
-        if (CSRF::$already_checked) {
-            return;
-        }
         CSRF::$already_checked = true;
 
         # do not check if it's an AJAX request.. they're secure
@@ -256,12 +257,16 @@ class CSRF {
                 continue;
             }
             $elem = $elem_template;
-            $elem = str_replace('_N_', htmlspecialchars(contrexx_stripslashes($key), ENT_QUOTES, CONTREXX_CHARSET),  $elem);
-            $elem = str_replace('_V_', htmlspecialchars(contrexx_stripslashes($value), ENT_QUOTES, CONTREXX_CHARSET),$elem);
+            $elem = str_replace('_N_', CSRF::__formval($key),  $elem);
+            $elem = str_replace('_V_', CSRF::__formval($value),$elem);
             $form .= $elem;
         }
         $html = str_replace('_____ELEMENTS___', $form, $html);
         die($html);
+    }
+
+    private static function __formval($str) {
+        return htmlspecialchars(contrexx_stripslashes($str), ENT_QUOTES, CONTREXX_CHARSET);
     }
 
     private static function __reduce($code) {
@@ -304,6 +309,16 @@ class CSRF {
         $_SESSION[CSRF::$sesskey] = $csrfdata;
     }
 
+    private function __is_logged_in() {
+        if (class_exists('FWUser')) {
+            $objFWUser = FWUser::getFWUserObject();
+            if ($objFWUser->objUser->login()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Removed the CSRF protection parameter from the query string and referer
      */
@@ -318,4 +333,3 @@ class CSRF {
 }
 
 CSRF::cleanRequestURI();
-?>
