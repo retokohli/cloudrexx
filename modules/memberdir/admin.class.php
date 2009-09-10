@@ -567,7 +567,7 @@ class MemberDirManager extends MemberDirLibrary
             $name = '';
             $description = '';
             $sort = 0;
-            $lang = FWLanguage::defaultLangId;
+            $lang = FWLanguage::getDefaultLangId();
             $pic1 = '';
             $pic2 = '';
         }
