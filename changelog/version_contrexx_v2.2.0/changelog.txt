@@ -32,6 +32,8 @@ Benutzerverwaltung
 - Der Platzhalter [[ACCESS_USER_PRIMARY_GROUP]] gibt den Namen der primären
   Benutzergruppe aus.
 - Die Registrierungsmaske verfügt nun über einen Captcha-Schutz.
+- Mit dem neuen Platzhalter [[USER_COUNT]] kann die Anzahl Mitglieder
+  in der index.html des Layouts ausgegeben werden.
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID

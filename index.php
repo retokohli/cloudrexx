@@ -119,6 +119,7 @@ if ($_CONFIG['systemStatus'] != 'on') {
  * Include all the required files.
  */
 require_once dirname(__FILE__).'/core/API.php';
+require_once dirname(__FILE__).'/lib/CSRF.php';
 
 //-------------------------------------------------------
 // Initialize database object
@@ -1870,6 +1871,7 @@ $objTemplate->setVariable(array(
     'NAVBAR_FILE'          => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
     'ONLINE_USERS'         => $objCounter->getOnlineUsers(),
     'VISITOR_NUMBER'       => $objCounter->getVisitorNumber(),
+    'USER_COUNT'           => FWUser::getUserCount(),
     'COUNTER'              => $objCounter->getCounterTag(),
     'BANNER'               => isset($objBanner) ? $objBanner->getBannerJS() : '',
     'VERSION'              => $contrexxCmsName,

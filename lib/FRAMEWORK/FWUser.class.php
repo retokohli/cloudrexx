@@ -422,6 +422,26 @@ class FWUser extends User_Setting
 
 
     /**
+     * Return the number of registered users.
+     * Only users with an active and valid account are counted.
+     * global ADONewConnection
+     * Return integer
+     */
+    public static function getUserCount()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute('
+            SELECT COUNT(`id`) AS user_count FROM `'.DBPREFIX.'access_users` WHERE `active` = 1');
+        if ($objResult !== false) {
+            return $objResult->fields['user_count'];
+        }
+
+        return 0;
+    }
+
+
+    /**
      * Returns the HTML dropdown menu string for the User account
      * validity period.
      * @param   integer   $selectedValidity   The selected validity period

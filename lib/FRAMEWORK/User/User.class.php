@@ -458,7 +458,7 @@ class User extends User_Profile
         $objFWUser = FWUser::getFWUserObject();
         if (empty($this->primary_group)) {
             $this->arrGroups = $this->loadGroups(!$objFWUser->isBackendMode());
-            $groupId = $this->arrGroups[0];
+            $groupId = isset($this->arrGroups[0]) ? $this->arrGroups[0] : 0;
         } else {
             $groupId = $this->primary_group;
         }
