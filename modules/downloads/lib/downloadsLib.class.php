@@ -288,7 +288,7 @@ class DownloadsLibrary
     {
         $menu = '<select name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$userId.' ? \'none\' : \'\'" style="width:300px;">';
         $objFWUser = FWUser::getFWUserObject();
-        $objUser = $objFWUser->objUser->getUsers();
+        $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname'));
         while (!$objUser->EOF) {
             $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.$this->getParsedUsername($objUser->getId()).'</option>';
             $objUser->next();
