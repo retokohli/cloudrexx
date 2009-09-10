@@ -265,19 +265,30 @@ class CSRF {
             </body>
             </html>
         ';
-        $elem_template = '<input type="hidden" name="_N_" value="_V_" />';
         $form = '';
         foreach ($data as $key => $value) {
             if ($key == CSRF::$formkey or $key == 'amp;'.CSRF::$formkey) {
                 continue;
             }
-            $elem = $elem_template;
-            $elem = str_replace('_N_', CSRF::__formval($key),  $elem);
-            $elem = str_replace('_V_', CSRF::__formval($value),$elem);
-            $form .= $elem;
+            $form .= CSRF::parseRequestParametersForForm($key, $value);
         }
         $html = str_replace('_____ELEMENTS___', $form, $html);
         die($html);
+    }
+
+    private static function parseRequestParametersForForm($key, $value, $arrSubKeys = array())
+    {
+        if (is_array($value)) {
+            foreach ($value as $subKey => $subValue) {
+                $elem .= CSRF::parseRequestParametersForForm($key, $subValue, array_merge($arrSubKeys, array($subKey)));
+            }
+        } else {
+            $elem = '<input type="hidden" name="_N_" value="_V_" />';
+            $elem = str_replace('_N_', CSRF::__formval($key.(!empty($arrSubKeys) ? '['.implode('][', $arrSubKeys).']' : '')),  $elem);
+            $elem = str_replace('_V_', CSRF::__formval($value),$elem);
+        }
+
+        return $elem;
     }
 
     private static function __formval($str) {
