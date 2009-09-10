@@ -48,7 +48,7 @@ function accessAddChild(isNewAttribute)
 function accessBack2ParentAttribute()
 {
 	if (!accessAttributeHasBeenModified() || confirm('{TXT_ACCESS_CHANGES_WILL_BE_LOST}')) {
-		window.location.href = 'index.php?cmd=access&act=config&tpl={ACCESS_CANCEL_RETURN_SECTION}&id={ACCESS_PARENT_ID}';
+		window.location.href = 'index.php?cmd=access&act=config&tpl={ACCESS_CANCEL_RETURN_SECTION}&id={ACCESS_PARENT_ID}&{CSRF_PARAM}';
 	}
 }
 
@@ -56,7 +56,7 @@ function accessDeleteAttribute(id,name)
 {
 	msg = '{TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG}';
 	if (confirm(msg.replace('%s', name)+'\n\n{TXT_ACCESS_OPERATION_IRREVERSIBLE}')) {
-		window.location.href = 'index.php?cmd=access&act=config&tpl=deleteAttribute&id='+id;
+		window.location.href = 'index.php?cmd=access&act=config&tpl=deleteAttribute&id='+id+'&{CSRF_PARAM}';
 	}
 }
 
