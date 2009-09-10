@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * Protect against CSRF attacks
+ * @version     2.1.3
+ * @since       2.1.3
+ * @package     contrexx
+ * @subpackage  lib
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
+ */
+
+/**
  * This class provides protection against CSRF attacks.
  *
  * call CSRF::add_code() if the page contains vulnerable
@@ -9,7 +19,12 @@
  *
  * This class expects that the session has been set up
  * correctly and can be used through $_SESSION.
- *
+ * @version     2.1.3
+ * @since       2.1.3
+ * @package     contrexx
+ * @subpackage  lib
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
  */
 class CSRF {
 
@@ -127,11 +142,11 @@ class CSRF {
      * Adds a placeholder for the CSRF code to the given template.
      * This is so you can easily patch javascript code that handles
      * URLs, as this cannot be done by add_code().
-     *
      * @param $tpl Template object
      */
-    public static function add_placeholder($tpl) {
-        if (!CSRF::__is_logged_in())   { return; }
+    public static function add_placeholder($tpl)
+    {
+        if (!CSRF::__is_logged_in())   { return true; }
         if (!is_object($tpl)) {
             DBG::msg("CSRF::add_placeholder(): fix this call, that ain't a template object! (Stack follows)");
             DBG::stack();
@@ -333,3 +348,5 @@ class CSRF {
 }
 
 CSRF::cleanRequestURI();
+
+?>
