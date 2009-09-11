@@ -223,11 +223,11 @@ class GuestbookManager extends GuestbookLibrary
             $ip = empty($_POST['ip']) ? $_SERVER['REMOTE_ADDR'] : contrexx_addslashes(strip_tags($_POST['ip']));
 
             if (!empty($url)) {
-                if (FWValidator::isUri($url)) {
+                if (!FWValidator::isUri($url)) {
                     $error .= $_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS']."<br />";
                 }
             }
-            if (FWValidator::isEmail($mail)) {
+            if (!FWValidator::isEmail($mail)) {
                 $error .= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
             }
             if (empty($error)) {
@@ -585,7 +585,7 @@ class GuestbookManager extends GuestbookLibrary
                 }
             }
             if ($error) {
-                $this->strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'];
+                $this->strErrMessage = $_ARRAYLANG['TXT_GUESTBOOK_RECORD_MULTI_DELETE_ERROR'];
             }
         }
     }
