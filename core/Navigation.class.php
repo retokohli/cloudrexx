@@ -158,7 +158,12 @@ class Navigation
                 if ($objResult->fields['alias_url'] && $_CONFIG['aliasStatus']) {
                     $menu_url = self::mkurl(CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.$objResult->fields['alias_url']);
                 } elseif (!empty($objResult->fields['redirect'])) {
-                    $menu_url = ASCMS_PATH_OFFSET.CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.htmlspecialchars($objResult->fields['redirect']);
+                    if (self::is_local_url($objResult->fields['redirect'])) {
+                        $menu_url = ASCMS_PATH_OFFSET.CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.htmlspecialchars($objResult->fields['redirect']);
+                    }
+                    else {
+                        $menu_url = htmlspecialchars($objResult->fields['redirect']);
+                    }
                 } else {
                     $link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
                     $menu_url = CONTREXX_SCRIPT_PATH
@@ -689,6 +694,14 @@ class Navigation
         return $langNavigation;
     }
 
+    static function is_local_url($url) {
+        $url = strtolower($url);
+        if (strpos($url, 'http://' ) === 0) return false;
+        if (strpos($url, 'https://') === 0) return false;
+        if (strpos($url, '/'       ) === 0) return false;
+
+        return true;
+    }
 
     static function mkurl($absolute_local_path) {
         global $_CONFIG;
