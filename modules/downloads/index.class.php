@@ -777,9 +777,11 @@ class downloads extends DownloadsLibrary
         global $_ARRAYLANG;
 
         $fileDeleteTxt = preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD']));
-        $fileDeleteLink = CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId().'&delete_file=';
+        $fileDeleteLink = CSRF::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
+            .'&category='.$objCategory->getId().'&delete_file=';
         $categoryDeleteTxt = preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY']));
-        $categoryDeleteLink = CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId().'&delete_category=';
+        $categoryDeleteLink = CSRF::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
+            .'&category='.$objCategory->getId().'&delete_category=';
 
         $javascript = <<<JS_CODE
 <script type="text/javascript">
@@ -1303,7 +1305,7 @@ JS_CODE;
         if (!$objDownload->EOF) {
             // check if the download is expired
             if ($objDownload->getExpirationDate() && $objDownload->getExpirationDate() < time()) {
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=error&id=404");
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=error&id=404");
                 exit;
             }
 
@@ -1328,7 +1330,7 @@ JS_CODE;
                 readfile(ASCMS_PATH.$objDownload->getSource());
             } else {
                 // add socket -> prevent to hide the source from the customer
-                header('Location: '.$objDownload->getSource());
+                CSRF::header('Location: '.$objDownload->getSource());
             }
         }
     }

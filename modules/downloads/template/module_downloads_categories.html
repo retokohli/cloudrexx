@@ -6,7 +6,7 @@ function downloadsDeleteCategory(id,name,hasSubcategories)
     strMsg = '{DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT}';
     if (confirm(strMsg.replace('%s', name)+'\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
         subcategories = hasSubcategories && confirm('{TXT_DOWNLOADS_DELETE_SUBCATEGORIES}');
-        window.location.href = 'index.php?cmd=downloads&act=delete_category&parent_id={DOWNLOADS_CATEGORY_ID}&id='+id
+        window.location.href = 'index.php?cmd=downloads&{CSRF_PARAM}&act=delete_category&parent_id={DOWNLOADS_CATEGORY_ID}&id='+id
         +'&subcategories='+subcategories
         +'&category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}'
         +'&category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}'
@@ -44,7 +44,7 @@ function downloadsUnlinkDownload(id,name)
 {
     strMsg = '{DOWNLOADS_CONFIRM_UNLINK_DOWNLOAD_TXT}';
     if (confirm(strMsg.replace('%s', name))) {
-        window.location.href = 'index.php?cmd=downloads&act=unlink_download&parent_id={DOWNLOADS_CATEGORY_ID}&id='+id
+        window.location.href = 'index.php?cmd=downloads&{CSRF_PARAM}&act=unlink_download&parent_id={DOWNLOADS_CATEGORY_ID}&id='+id
           +'&category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}'
           +'&category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}'
           +'&download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}'
@@ -257,7 +257,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <!-- END downloads_category_downloads -->
 <!-- BEGIN downloads_add_downloads_button -->
 <br />
-<input type="button" name="downloads_category_add_new_download" value="{TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&amp;act=add_new_download_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
-<input type="button" name="downloads_category_add_downloads" value="{TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&amp;act=add_downloads_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
+<input type="button" name="downloads_category_add_new_download" value="{TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&{CSRF_PARAM}&amp;act=add_new_download_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
+<input type="button" name="downloads_category_add_downloads" value="{TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&{CSRF_PARAM}&amp;act=add_downloads_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
 <!-- END downloads_add_downloads_button -->
 <!-- end module_downloads_categories.html -->
