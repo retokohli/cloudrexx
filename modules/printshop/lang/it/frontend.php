@@ -57,4 +57,9 @@ $_ARRAYLANG['TXT_PRINTSHOP_INVALID_EMAIL'] = "Ungültige E-Mail Adresse";
 $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_PICKUP'] = "Abholung";
 $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_MESSENGER'] = "Kurier";
 $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_MAIL'] = "Post";
+$_ARRAYLANG['TXT_PRINTSHOP_INVALID_PHONE'] = "Ungültige Telefonnummer";
+$_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_FRONT'] = "Sie müssen mindestens eine Bild-Datei als Druckvorlage hochladen. Es können nur Dateien mit der Endung .JPG, .GIF oder .PNG hochgeladen werden.";
+$_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_BACK'] = "Sie müssen mindestens zwei Bild-Dateien als Druckvorlage hochladen (Vorder- und Rückseite). Es können nur Dateien mit der Endung .JPG, .GIF oder .PNG hochgeladen werden.";
+$_ARRAYLANG['TXT_PRINTSHOP_INVALID_EXTENSION'] = "Ungültiger Dateityp. Es können nur Dateien mit der Endung .JPG, .GIF oder .PNG hochgeladen werden.";
+$_ARRAYLANG['TXT_PRINTSHOP_ERROR_UPLOADING_FILE'] = "Beim Hochladen der Datei ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Webmaster, falls das Problem besteht.";
 ?>
