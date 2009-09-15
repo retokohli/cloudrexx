@@ -503,6 +503,21 @@ span.messageFadeout{
     background-color:#F1F1F1 !important;
 }
 
+.psNote0,.psNote1,.psNote2,.psNote3,.psNote4,.psNote5,.psNote6,.psNote7,.psNote8,
+.psNote9,.psNote10,.psNote11,.psNote12,.psNote13,.psNote14,.psNote15 {
+    margin-left: 10px;
+}
+
+.rowSub .priceInput {
+    width: 25px;
+}
+
+/*
+.psPrice_0,.psPrice_1,.psPrice_2,.psPrice_3,.psPrice_4,.psPrice_5,.psPrice_6,.psPrice_7,.psPrice_8,
+.psPrice_9,.psPrice_10,.psPrice_11,.psPrice_12,.psPrice_13,.psPrice_14,.psPrice_15 {
+    margin-left: 10px;
+}*/
+
 /* div table */
 
 div.table {

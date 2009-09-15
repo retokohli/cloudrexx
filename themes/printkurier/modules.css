@@ -2071,8 +2071,12 @@ dl.data_module img {
     list-style-type: none;
     padding: 3px;
     z-index: 2;
+}
+
+#printshop .psAttributeContainer ul li {
     cursor: pointer;
 }
+
 #printshop ul {
     list-style: none;
     margin-left: 0px;
@@ -2195,13 +2199,18 @@ dl.data_module img {
 
 #printshop div#psAmount #amount {
     width: 148px;
+    height: 20px;
     margin-left: 16px;
     margin-top: 12px;
 }
 
 #printshop #psSubmit {
+    margin: 0px;
     margin-left: 16px;
+    margin-top: 4px;
     width: 150px;
+    padding: 0px;
+    height: 23px;
     border: 1px solid #CCCCCC;
 }
 
@@ -2259,6 +2268,16 @@ dl.data_module img {
     float: none;
 }
 
+.psOrderThanks {
+    padding: 15px;
+    background-color: white;
+    border-top: 1px solid black;
+}
+
+.psOrderThanks h2 {
+    color: #99CC00;
+}
+
 #printshop input#amount {
     margin: 0px;
     padding: 0px;
@@ -2311,8 +2330,8 @@ dl.data_module img {
 #printshop table#psPriceTable td {
     margin: 0px;
     padding: 0px;
+    cursor: pointer;
 }
-
 
 #printshop #psPriceTable td.pricePerOne {
     color: #99CC00;
@@ -2333,12 +2352,23 @@ dl.data_module img {
     padding: 0px;
 }
 
+#printshop table#psPriceTable .highlight {
+    background-color: #f7fbeb;
+}
+
 #printshopCanvas {
     position: absolute;
     top: 210px;
     height: 165px;
     width: 990px;
     z-index: 1;
+}
+
+div#printshop input#psAcceptTerms,
+div#printshop input#psShipment0,
+div#printshop input#psShipment1,
+div#printshop input#psShipment2 {
+    width: 20px;
 }
 
 #printshop textarea {
@@ -2356,6 +2386,7 @@ dl.data_module img {
     background-color: #ccee88;
     padding: 2px;
     margin-bottom: 3px;
+    width: 984px;
 }
 
 #printshop #errorMessage div {
@@ -2364,4 +2395,5 @@ dl.data_module img {
     border: 1px solid #ff0000;
     padding: 2px;
     margin-bottom: 3px;
+    width: 984px;
 }

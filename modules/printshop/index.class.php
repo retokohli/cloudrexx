@@ -161,6 +161,7 @@ class Printshop extends PrintshopLibrary {
             window.console = {log: function(msg){window.log+=msg.toString();}}
         }
 
+        //form submit handler, redirect to order page
         \$J('#psSubmit').click(function(){
             var format = \$J('#psAttributeFormat li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
             var back   = \$J('#psAttributeBack li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
@@ -171,11 +172,58 @@ class Printshop extends PrintshopLibrary {
             location.href='$DI?section=printshop&cmd=order&psAmount='+amount+'&psType=$type&psFormat='+format+'&psFront='+front+'&psBack='+back+'&psWeight='+weight+'&psPaper='+paper;
         });
 
+        //highlight active navigation (use css_name psType_$type in content manager for this to work)
         \$J('.psType_$type').css({color:'black'});
+
+        //handle price table hover styles and set amount upon click
+        \$J('.priceThreshold,.pricePerOne').hover(function(){
+            if(\$J(this).is('.pricePerOne')){
+                 \$J(this).addClass('highlight');
+                 \$J(this).prev().addClass('highlight');
+            }else{
+                 \$J(this).addClass('highlight');
+                 \$J(this).next().addClass('highlight');
+            }
+        },
+        function(){
+            if(\$J(this).is('.pricePerOne')){
+                 \$J(this).removeClass('highlight');
+                 \$J(this).prev().removeClass('highlight');
+            }else{
+                 \$J(this).removeClass('highlight');
+                 \$J(this).next().removeClass('highlight');
+            }
+        })
+        .click(function(){
+            if(\$J(this).is('.pricePerOne')){
+                var amount = \$J(this).prev().text();
+            }else{
+                var amount = \$J(this).text();
+            }
+            \$J('#amount').val(parseInt(amount));
+        });
 
         \$J('#printshopCanvas').click(function(e){
             clickLiAtPos(e);
         });
+
+        \$J('#printshopCanvas').mousemove(function(e){
+            mouseOverLi(e, this);
+        });
+
+        var mouseOverLi = function(e, that){
+            var x = e.clientX + \$J(window).scrollLeft(); //add window scroll pos in case we're not at 0,0
+            var y = e.clientY + \$J(window).scrollTop();
+            for(var i=0; i < arrLis.length; i++){
+                if(x > arrLis[i].left && x < arrLis[i].left + arrLis[i].width){
+                    if(y > arrLis[i].top && y < arrLis[i].top + arrLis[i].height){
+                        \$J(that).css({cursor: 'pointer'});
+                        return false;
+                    }
+                }
+            }
+            \$J(that).css({cursor: 'default'});
+        }
 
         var clickLiAtPos = function(e){ //check event location add relay the click event to the according li
             var x = e.clientX + \$J(window).scrollLeft(); //add window scroll pos in case we're not at 0,0
@@ -428,10 +476,6 @@ EOJ;
             )));
         }
 
-        print_r($_REQUEST);
-        print_r($_FILES);
-
-
         $shipmentInputHTML = array();
         foreach ($this->_shipmentEnum as $id => $shipmentType) {
             if(!empty($_POST['psShipment']) && $_POST['psShipment'] == $shipmentType){
@@ -510,9 +554,21 @@ EOJ;
         }
         $this->_objTpl->setVariable($arrAttributeTexts);
 
+        $strBlank = $this->_blank;
+        $strErrorMissingFields      = $_ARRAYLANG['TXT_PRINTSHOP_MISSING_FIELDS'];
+        $strErrorInvalidPhone       = $_ARRAYLANG['TXT_PRINTSHOP_INVALID_PHONE'];
+        $strErrorInvalidEmail       = $_ARRAYLANG['TXT_PRINTSHOP_INVALID_EMAIL'];
+        $strErrorInvalidExtension   = $_ARRAYLANG['TXT_PRINTSHOP_INVALID_EXTENSION'];
+
         $dataPreparationPrice   = $this->_arrSettings['dataPreparationPrice'];
         $shipmentPriceMail      = $this->_arrSettings['shipmentPriceMail'];
         $shipmentPriceMessenger = $this->_arrSettings['shipmentPriceMessenger'];
+
+        $imageNames         = implode("','", $this->_arrImageFields);
+        foreach ($this->_acceptedExtension as $extension) {
+            $extensionRegexes[] = "new RegExp('\.$extension$')";
+        }
+        $extensionRegexes   = implode(",", $extensionRegexes);
 
         $type   = $arrFilter['type'];
         $format = $arrFilter['format'];
@@ -526,33 +582,81 @@ EOJ;
         JS::activate('excanvas');
         $JS =<<< EOJ
 (function(){
+    var mandatoryFields = [
+            'amount',
+            'psSubject',
+            'psImage1',
+            'psContactI',
+            'psContactS',
+            'psAddress1I',
+            'psAddress1S',
+            'psAddress2I',
+            'psAddress2S',
+            'psZipI',
+            'psZipS',
+            'psCityI',
+            'psCityS',
+            'psEmail',
+            'psPhone'
+    ];
+
     var dataPreparationPrice     = parseFloat(($dataPreparationPrice).toFixed(2));
     var shipmentPriceMail        = parseFloat(($shipmentPriceMail).toFixed(2));
     var shipmentPriceMessenger   = parseFloat(($shipmentPriceMessenger).toFixed(2));
     var shipmentPrice            = 0.00;
 
     \$J(document).ready(function(){
+        //get price informations
         initPrices();
 
+        //price recalculation
         \$J('.shipmentSelection input').change(function(){
             updateShipmentPrice.apply(this);
         });
 
-        \$J('#printShop form').submit(function(){
-            return checkFilledFields();
+        //form pre submit check
+        \$J('#psSubmitOrder').click(function(){
+            if(checkFilledFields()){
+                \$J('#psFrmOrder').submit();
+            }else{
+                return false;
+            }
         })
 
+        //autoselect on focus
+        \$J('#amount').focus(function(){
+            \$J(this).select();
+        });
+
+        //only allow numbers for the amount
         \$J('#amount').keyup(function(){
             \$J(this).val(\$J(this).val().replace(/[^\d]/g, ''));
             if(\$J(this).val() == ''){
-                return false;
+                \$J(this).val('1');
+                \$J(this).select();
             }
             updatePrice();
         });
 
+        //update price if a shipment type has already been selected on initial page load
         if(\$J('[name=psShipment]:checked').length !== 0){
             updateShipmentPrice.apply(\$J('[name=psShipment]:checked').get(0));
         }
+
+        \$J(mandatoryFields).each(function(i, j){
+            if(j == 'psImage1'){
+                return;
+            }
+            \$J('#'+j).keyup(function(){
+                \$J(this).val(\$J(this).val().replace(/^\s+(.*?)\s+$/, '$1'));
+                var value = \$J(this).val();
+                if(\$J(this).is('.missing')){
+                    if(value != ''){
+                        \$J(this).removeClass('missing');
+                    }
+                }
+            });
+        });
     });
 
     var type            = $type;
@@ -578,7 +682,6 @@ EOJ;
                 shipmentPrice = shipmentPriceMail;
             break;
         }
-        console.log([index, shipmentPrice, shipmentPriceMessenger, shipmentPriceMail]);
         updatePrice();
     }
 
@@ -636,7 +739,7 @@ EOJ;
             calculation.push('d 1-'+amount+' * '+price[0]+' ='+printCost);
         }
 
-        console.log(calculation);
+//        console.log(calculation);
 
         var roundedPrice = roundPrice(printCost.toFixed(2));
         var subtotal = 1*printCost + 1*dataPreparationPrice;
@@ -651,7 +754,7 @@ EOJ;
         \$J('#psPriceGross').text(grossPrice.toFixed(2));
         \$J('#psPriceShipment').text(shipmentPrice.toFixed(2));
         \$J('#psPriceTotal').text(roundPrice(totalPrice).toFixed(2));
-        \$J('#psPrice').text(roundPrice(totalPrice).toFixed(2));
+        \$J('#psPrice').val(roundPrice(totalPrice).toFixed(2));
     }
 
     var submitOrder = function(){
@@ -665,55 +768,102 @@ EOJ;
     }
 
     var checkFilledFields = function(){
-        var psSubject = \$J('#psSubject').val().replace(/\s+/, '');
-        var psImage1 = \$J('#psImage1').val().replace(/\s+/, '');
-        var psImage2 = \$J('#psImage2').val().replace(/\s+/, '');
-     // var psImage3 = \$J('#psImage3').val().replace(/\s+/, '');
-
+        var missing = false;
         var error = false;
-        var mandatoryFields = [
-            'psSubject',
-            'psAmount',
-            'psShipment',
-            'psContactI',
-            'psContactS',
-            'psAddress1I',
-            'psAddress1S',
-            'psAddress2I',
-            'psAddress2S',
-            'psZipI',
-            'psZipS',
-            'psCityI',
-            'psCityS',
-            'psEmail',
-            'psPhone',
-        ]
 
         \$J(mandatoryFields).each(function(i, j){
-            \$J('#'+j).val(\$J('#'+j).val().replace(/^\s+(.*?)\s+$/, '$1'));
+            if(j != 'psImage1'){
+                \$J('#'+j).val(\$J('#'+j).val().replace(/^\s+(.*?)\s+$/, '$1'));
+            }
             if(\$J('#'+j).val() == ''){
-                \$J('#'+j[0]).addClass('missing');
-                error = true;
+                \$J('#'+j).addClass('missing');
+                missing = true;
             }else{
-                \$J('#'+j[0]).removeClass('missing');
+                \$J('#'+j).removeClass('missing');
             }
         });
 
-        if(\$J('#psShipment :checked').length == 0){
-            \$J('#'+j[0]).addClass('missing');
-            error = true;
+
+        if(!\$J('#psAttributeBack').text().match(/$strBlank/) && \$J('#psImage2').val().replace(/^\s+(.*?)\s+$/, '$1') == ''){
+            \$J('#psImage2').addClass('missing');
+            missing = true;
         }else{
-            \$J('#'+j[0]).removeClass('missing');
+            \$J('#psImage2').removeClass('missing');
         }
 
-        if(\$J('#psAcceptTerms :checked').length == 0){
-            \$J('#'+j[0]).addClass('missing');
-            error = true;
-        }else{
-            \$J('#'+j[0]).removeClass('missing');
+        images            = ['$imageNames'];
+        extensionRegexes  = [$extensionRegexes];
+
+        var valid = true;
+        for(var i=0; i < images.length; i++){
+            if(\$J('#'+images[i]).val() == ''){
+                continue;
+            }
+            valid = false;
+            for(var j=0;j < extensionRegexes.length; j++){
+                if(\$J('#'+images[i]).val().match(extensionRegexes[j])){
+                    valid = true;
+                }
+            }
+            if(valid){
+                \$J('#'+images[i]).removeClass('missing');
+            }else{
+                \$J('#'+images[i]).addClass('missing');
+            }
+        }
+        if(!valid){
+            setErrorMsg('$strErrorInvalidExtension');
         }
 
-        return error;
+
+        if(\$J('[name=psShipment]:checked').length == 0){
+            \$J('.shipmentSelection').addClass('missing');
+            missing = true;
+        }else{
+            \$J('.shipmentSelection').removeClass('missing');
+        }
+
+        if(\$J('#psAcceptTerms:checked').length == 0){
+            \$J('#psAcceptTerms').parent().find('label').addClass('missing');
+            missing = true;
+        }else{
+            \$J('#psAcceptTerms').parent().find('label').removeClass('missing');
+        }
+
+        if(\$J('#psPhone').val().replace(/[^\d]/g, '').length < 10){
+            setErrorMsg('$strErrorInvalidPhone');
+            \$J('#psPhone').addClass('missing');
+            error = true;
+        }else{
+            \$J('#psPhone').removeClass('missing');
+        }
+
+        //crude email check
+        if(!\$J('#psEmail').val().match(/[\w._-]+@[\w._-]+\.[\w_-]{2,}/)){
+            setErrorMsg('$strErrorInvalidEmail');
+            \$J('#psEmail').addClass('missing');
+            error = true;
+        }else{
+            \$J('#psEmail').removeClass('missing');
+        }
+
+        if(missing){
+            setErrorMsg('$strErrorMissingFields');
+        }
+
+        return valid && !missing && !error;
+    }
+
+    var setErrorMsg = function(str){
+        \$J('<div>'+str+'</div>').appendTo('#errorMessage')
+        .fadeOut(14000, function(){\$J(this).remove()});
+        \$J(window).scrollTop(\$J('#header_wrapper').height());
+    }
+
+    var setOkMsg = function(str){
+        \$J('<div>'+str+'</div>').appendTo('#okMessage')
+        .fadeOut(14000, function(){\$J(this).remove()});
+        \$J(window).scrollTop(\$J('#header_wrapper').height());
     }
 
 })();
@@ -722,7 +872,12 @@ EOJ;
 
 
         if(!empty($_POST['psSubmitOrder'])){
-            $this->_checkOrder();
+            if($this->_checkOrder()){
+                $this->_objTpl->hideBlock('orderForm');
+                $this->_objTpl->touchBlock('orderFeedback');
+            }else{
+                $this->_objTpl->hideBlock('orderFeedback');
+            }
         }
     }
 
@@ -741,7 +896,7 @@ EOJ;
         $weight = !empty($_POST['psWeight']) ? intval($_POST['psWeight']) : '';
         $paper = !empty($_POST['psPaper']) ? intval($_POST['psPaper']) : '';
         $amount = !empty($_POST['psAmount']) ? intval($_POST['psAmount']) : '';
-        $price = !empty($_POST['psPrice']) ? doubleval($_POST['pspPrice']) : '';
+        $price = !empty($_POST['psPrice']) ? doubleval($_POST['psPrice']) : '';
         $shipment = !empty($_POST['psShipment']) ? contrexx_addslashes($_POST['psShipment']) : '';
         $invCompany = !empty($_POST['psCompanyI']) ? contrexx_addslashes($_POST['psCompanyI']) : '';
         $invContact = !empty($_POST['psContactI']) ? contrexx_addslashes($_POST['psContactI']) : '';
@@ -801,8 +956,49 @@ EOJ;
             die();
         }
 
-        print_r($_POST);
-        print_r($_FILES);
+        $arrImages = array();
+        foreach ($this->_arrImageFields as $index => $image) {
+            if(empty($_FILES[$image]['name'])){
+                $arrImages[$index] = '';
+                continue;
+            }
+
+            $arrFileParts   = pathinfo($_FILES[$image]['name']);
+            $filepath       = $this->_imageUploadPath.'/'.$_FILES[$image]['name'];
+            while(file_exists(ASCMS_DOCUMENT_ROOT.'/'.$filepath)){
+                $filepath = $this->_imageUploadPath.'/'.$arrFileParts['filename'].'_'.time().'.'.$arrFileParts['extension'];
+            }
+
+            if(!empty($_FILES[$image]['type']) && strpos($_FILES[$image]['type'], 'image/')){
+                $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_INVALID_EXTENSION']);
+                return false;
+            }
+
+            if( ($arrImages[$index] = File::uploadFileHttp($image, $filepath, 0, $this->_acceptedExtension)) === false){
+                $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_ERROR_UPLOADING_FILE']);
+                return false;
+            }else{
+                $arrImages[$index] = $filepath;
+            }
+            if(!in_array($_FILES[$image]['error'], array(UPLOAD_ERR_OK, UPLOAD_ERR_NO_FILE))){
+                $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_ERROR_UPLOADING_FILE']);
+                return false;
+            }
+
+        }
+
+        if($this->_getAttributeName('back', $back) != $this->_blank){
+            if(empty( $arrImages[2] )){
+                $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_BACK']);
+                return false;
+            }
+        }
+
+        if(empty( $arrImages[1] )){
+            $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_FRONT']);
+            return false;
+        }
+
 
         if(empty($subject)      || empty($amount)  || empty($shipment) || empty($invContact)  || empty($invAddress1)
         || empty($invAddress2)  || empty($invZip)  || empty($invCity)  || empty($shipContact) || empty($shipAddress1)
@@ -812,76 +1008,18 @@ EOJ;
            return false;
         }
 
-        if($this->_addOrder(
-            $type, $format, $front, $back, $weight, $paper, $price, $amount, $filePath1, $filePath2, $filePath3, $email, $phone, $comment, $shipment,
+        if( ($orderID = $this->_addOrder(
+            $type, $format, $front, $back, $weight, $paper, $price, $amount, $arrImages[1], $arrImages[2], $arrImages[3],
+            $subject, $email, $phone, $comment, $shipment,
             $invCompany, $invContact, $invAddress1, $invAddress2, $invZip, $invCity,
             $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity
-        )){
-            $this->_sendMails();
+        )) ){
+            $this->_sendMails($orderID);
+            return true;
         }else{
             $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_ORDER_SAVE_ERROR']);
+            return false;
         }
-
-
-//  orderId
-//	type
-//	format
-//	front
-//	back
-//	weight
-//	paper
-//	status
-//	price
-//	amount
-//	file1
-//	file2
-//	file3
-//	email
-//	telephone
-//	comment
-//	shipment
-//	invoiceCompany
-//	invoiceContact
-//	invoiceAddress1
-//	invoiceAddress2
-//	invoiceZip
-//	invoiceCity
-//	shipmentCompany
-//	shipmentContact
-//	shipmentAddress1
-//	shipmentAddress2
-//	shipmentZip
-//	shipmentCity
-
-
-
-
-/*
-psSubject=subject
-psType=1
-psFormat=2
-psFront=1
-psBack=1
-psWeight=1
-psPaper=1
-psAmount=44
-psCompanyI=rf
-psCompanyS=lf
-psContactI=rk
-psContactS=lk
-psAddress1I=ra1
-psAddress1S=la1
-psAddress2I=ra2
-psAddress2S=la2
-psZIPI=rp
-psZIPS=lp
-psCityI=ro
-psCityS=lo
-psEmail=asdf%40asdf.com
-psPhone=12341234
-psComment=ASDFQWDASDQWD
-psTerms=on
-*/
     }
 
 
@@ -895,37 +1033,98 @@ psTerms=on
     }
 
 
-    function _sendMails(){
+    function _sendMails($orderId){
+        global $_CONFIG;
 
-
-    }
-
-    /**
-     * Returns needed javascripts
-     *
-     * @param   string      $strType: Which Javascript should be returned?
-     * @return  string      $strJavaScript
-     */
-    function getJavascript($strType = '') {
-        $strJavaScript = '';
-
-        switch ($strType) {
-            case 'order':
-                $strJavaScript = '  <script type="text/javascript" language="JavaScript">
-                                    //<![CDATA[
-                                    //]]>
-                                    </script>';
-                break;
-            default:
-                $strJavaScript = '  <script type="text/javascript" language="JavaScript">
-                                    //<![CDATA[
-
-                                    //]]>
-                                    </script>';
-                break;
+        require_once(ASCMS_LIBRARY_PATH.DIRECTORY_SEPARATOR.'phpmailer'.DIRECTORY_SEPARATOR."class.phpmailer.php");
+        $mailer = new PHPMailer();
+        $mailer->CharSet = CONTREXX_CHARSET;
+        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                $mailer->IsSMTP();
+                $mailer->Host = $arrSmtp['hostname'];
+                $mailer->Port = $arrSmtp['port'];
+                $mailer->SMTPAuth = true;
+                $mailer->Username = $arrSmtp['username'];
+                $mailer->Password = $arrSmtp['password'];
+            }
         }
 
-        return $strJavaScript;
+        $arrOrder = $this->_getOrder($orderId);
+        $type               = $this->_getAttributeName('type', $arrOrder['type']);
+        $format             = $this->_getAttributeName('format', $arrOrder['format']);
+        $front              = $this->_getAttributeName('front', $arrOrder['front']);
+        $back               = $this->_getAttributeName('back', $arrOrder['back']);
+        $paper              = $this->_getAttributeName('paper', $arrOrder['paper']);
+        $weight             = $this->_getAttributeName('weight', $arrOrder['weight']);
+        $subject            = $arrOrder['subject'] ;
+        $invoiceCompany     = $arrOrder['invoiceCompany'];
+        $invoiceContact     = $arrOrder['invoiceContact'];
+        $invoiceAddress1    = $arrOrder['invoiceAddress1'];
+        $invoiceAddress2    = $arrOrder['invoiceAddress2'];
+        $invoiceZip         = $arrOrder['invoiceZip'];
+        $invoiceCity        = $arrOrder['invoiceCity'];
+        $shipCompany        = $arrOrder['shipmentCompany'];
+        $shipContact        = $arrOrder['shipmentContact'];
+        $shipAddress1       = $arrOrder['shipmentAddress1'];
+        $shipAddress2       = $arrOrder['shipmentAddress2'];
+        $shipZip            = $arrOrder['shipmentZip'];
+        $shipCity           = $arrOrder['shipmentCity'];
+        $email              = $arrOrder['email'];
+        $telephone          = $arrOrder['telephone'];
+        $comment            = $arrOrder['comment'];
+        $amount             = $arrOrder['amount'];
+        $price              = $arrOrder['price'];
+
+        $customerBody = str_replace(
+            array(
+                '%SUBJECT%', '%TYPE%', '%FORMAT%', '%FRONT%', '%BACK%', '%PAPER%', '%WEIGHT%',
+                '%INVOICE_COMPANY%', '%INVOICE_CONTACT%', '%INVOICE_ADDRESS1%', '%INVOICE_ADDRESS2%', '%INVOICE_ZIP%', '%INVOICE_CITY%',
+                '%SHIPMENT_COMPANY%', '%SHIPMENT_CONTACT%', '%SHIPMENT_ADDRESS1%', '%SHIPMENT_ADDRESS2%', '%SHIPMENT_ZIP%', '%SHIPMENT_CITY%',
+                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%'
+            ),
+            array(
+                $subject, $type, $format, $front, $back, $paper, $weight,
+                $invoiceCompany, $invoiceContact, $invoiceAddress1, $invoiceAddress2, $invoiceZip, $invoiceCity,
+                $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity,
+                $email, $telephone, $comment, $amount, $price
+            ),
+            $this->_arrSettings['emailTemplateCustomer']
+        );
+
+        //mail for customer
+        $mailer->AddAddress($email);
+        $mailer->From     = $this->_arrSettings['senderEmail'];
+        $mailer->FromName = $this->_arrSettings['senderEmail'];
+        $mailer->Subject = $this->_arrSettings['emailSubjectCustomer'];
+        $mailer->IsHTML(false);
+        $mailer->Body = $customerBody;
+        $mailer->Send();
+
+        //mail for vendor
+        $mailer->ClearAddresses();
+        $mailer->From     = $email;
+        $mailer->FromName = $this->_arrSettings['senderEmail'];
+        $mailer->AddAddress($this->_arrSettings['orderEmail']);
+        $mailer->Subject = $this->_arrSettings['emailSubjectVendor'];
+        $vendorBody = str_replace(
+            array(
+                '%SUBJECT%', '%TYPE%', '%FORMAT%', '%FRONT%', '%BACK%', '%PAPER%', '%WEIGHT%',
+                '%INVOICE_COMPANY%', '%INVOICE_CONTACT%', '%INVOICE_ADDRESS1%', '%INVOICE_ADDRESS2%', '%INVOICE_ZIP%', '%INVOICE_CITY%',
+                '%SHIPMENT_COMPANY%', '%SHIPMENT_CONTACT%', '%SHIPMENT_ADDRESS1%', '%SHIPMENT_ADDRESS2%', '%SHIPMENT_ZIP%', '%SHIPMENT_CITY%',
+                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%'
+            ),
+            array(
+                $subject, $type, $format, $front, $back, $paper, $weight,
+                $invoiceCompany, $invoiceContact, $invoiceAddress1, $invoiceAddress2, $invoiceZip, $invoiceCity,
+                $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity,
+                $email, $telephone, $comment, $amount, $price
+            ),
+            $this->_arrSettings['emailTemplateCustomer']
+        );
+        $mailer->Body = $vendorBody;
+        $mailer->Send();
+
     }
 
 
@@ -934,15 +1133,15 @@ psTerms=on
      *
      */
     function _parseMsgs(){
-        $msg = '';
+        $msgs = '';
         foreach ($this->_errMsg as $msg) {
-            $msg .= '<div>'.$msg.'</div>';
-        	$this->_objTpl->setVariable('PRINTSHOP_ERROR_MSG');
+            $msgs .= '<div>'.$msg.'</div>';
+        	$this->_objTpl->setVariable('PRINTSHOP_ERROR_MESSAGES', $msgs);
         }
-        $msg = '';
+        $msgs = '';
         foreach ($this->_okMsg as $msg) {
-            $msg .= '<div>'.$msg.'</div>';
-        	$this->_objTpl->setVariable('PRINTSHOP_OK_MSG');
+            $msgs .= '<div>'.$msg.'</div>';
+        	$this->_objTpl->setVariable('PRINTSHOP_OK_MESSAGES', $msgs);
         }
     }
 

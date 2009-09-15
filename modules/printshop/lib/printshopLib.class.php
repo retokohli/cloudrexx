@@ -27,6 +27,7 @@ class PrintshopLibrary {
     var $_arrAttributeTranslation = array();
     var $_settingNames = array(
         'orderEmail',
+        'senderEmail',
         'entriesPerPage',
         'priceThresholds',
         'dataPreparationPrice',
@@ -41,6 +42,10 @@ class PrintshopLibrary {
     var $_priceThresholdCount = 16;
     var $_priceThresholds;
     var $_shipmentEnum = array('pickup', 'messenger', 'mail');
+    var $_blank = 'nicht bedruckt';
+    var $_acceptedExtension = array('jpg', 'gif', 'png');
+    var $_imageUploadPath = 'images/printshop';
+    var $_arrImageFields = array(1 => 'psImage1', 2 => 'psImage2', 3 => 'psImage3');
 
 
     /**
@@ -277,6 +282,55 @@ class PrintshopLibrary {
         ');
     }
 
+    /**
+     * return all order with the specified status
+     *
+     * @param integer $status
+     * @return array orders with status == $status
+     */
+    function _getOrders($status = 1){
+        global $objDatabase;
+
+        $query = "SELECT SQL_CALC_FOUND_ROWS `orderId`, `type`, `format`, `front`, `back`, `weight`, `paper`, `status`,
+                  `price`, `amount`, `file1`, `file2`, `file3`, `subject`, `email`, `telephone`, `comment`, `shipment`,
+                  `invoiceCompany`, `invoiceContact`, `invoiceAddress1`, `invoiceAddress2`, `invoiceZip`, `invoiceCity`,
+                  `shipmentCompany`, `shipmentContact`, `shipmentAddress1`, `shipmentAddress2`, `shipmentZip`, `shipmentCity`
+                  FROM `".DBPREFIX."module_printshop_order`
+                  WHERE `status` = ".intval($status);
+
+        $objRS = $objDatabase->SelectLimit($query, $this->_limit, $this->_pos);
+
+        $objRSCount = $objDatabase->Execute('SELECT FOUND_ROWS() AS `rows`');
+        $arrOrders = array(
+            'count' => intval($objRSCount->fields['rows'])
+        );
+        while(!$objRS->EOF){
+            $arrOrders['entries'][] = $objRS->fields;
+            $objRS->MoveNext();
+        }
+        return $arrOrders;
+    }
+
+
+    /**
+     * return the columns of the order table row matchin the order ID
+     *
+     * @param integer $orderId
+     * @return array order columns
+     */
+    function _getOrder($orderId){
+        global $objDatabase;
+
+        $query = 'SELECT `orderId`, `type`, `format`, `front`, `back`, `weight`, `paper`, `status`,
+                  `price`, `amount`, `file1`, `file2`, `file3`, `subject`, `email`, `telephone`, `comment`, `shipment`,
+                  `invoiceCompany`, `invoiceContact`, `invoiceAddress1`, `invoiceAddress2`, `invoiceZip`, `invoiceCity`,
+                  `shipmentCompany`, `shipmentContact`, `shipmentAddress1`, `shipmentAddress2`, `shipmentZip`, `shipmentCity`
+                  FROM `'.DBPREFIX.'module_printshop_order`
+                  WHERE `orderId` = '.intval($orderId);
+
+        return $objDatabase->SelectLimit($query, 1)->fields;
+    }
+
 
     /**
      * add or update a new product in the product table
@@ -321,21 +375,20 @@ class PrintshopLibrary {
 
 
     function _addOrder($type, $format, $front, $back, $weight, $paper, $price, $amount,
-                       $filePath1, $filePath2, $filePath3, $email, $phone, $comment, $shipment,
+                       $filePath1, $filePath2, $filePath3, $subject, $email, $phone, $comment, $shipment,
                        $invCompany, $invContact, $invAddress1, $invAddress2, $invZip, $invCity,
                        $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity){
         global $objDatabase;
 
-        $query = 'INSERT INTO `'.DBPREFIX."modules_printshop_order` (
+        $query = 'INSERT INTO `'.DBPREFIX."module_printshop_order` (
             `orderId`, `type`, `format`, `front`, `back`, `weight`, `paper`, `status`, `price`, `amount`,
-            `file1`, `file2`, `file3`, `email`, `telephone`, `comment`, `shipment`,
+            `file1`, `file2`, `file3`, `subject`, `email`, `telephone`, `comment`, `shipment`,
             `invoiceCompany`, `invoiceContact`, `invoiceAddress1`, `invoiceAddress2`, `invoiceZip`, `invoiceCity`,
             `shipmentCompany`, `shipmentContact`, `shipmentAddress1`, `shipmentAddress2`, `shipmentZip`, `shipmentCity`)
-        VALUES (NULL, $type, $format, $front, $back, $weight, $paper, $price, $amount,
-                '$filePath1', '$filePath2', '$filePath3', '$email', '$phone', '$comment', '$shipment',
+        VALUES (NULL, $type, $format, $front, $back, $weight, $paper, 1, $price, $amount,
+                '$filePath1', '$filePath2', '$filePath3', '$subject', '$email', '$phone', '$comment', '$shipment',
                 '$invCompany', '$invContact', '$invAddress1', '$invAddress2', '$invZip', '$invCity',
                 '$shipCompany', '$shipContact', '$shipAddress1', '$shipAddress2', '$shipZip', '$shipCity')";
-        echo $query;
         $objRS = $objDatabase->Execute($query);
         if(intval($objDatabase->Insert_ID())){
             return $objDatabase->Insert_ID();

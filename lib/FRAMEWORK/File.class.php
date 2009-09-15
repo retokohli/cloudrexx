@@ -439,14 +439,22 @@ class File
             || empty($target_path))
             return false;
         $tmp_path = $_FILES[$upload_field_name]['tmp_name'];
+        $tmp_name = $_FILES[$upload_field_name]['name'];
         if ($accepted_extensions) {
-            $path_parts = pathinfo($tmp_path, PATHINFO_EXTENSION);
-            if (!in_array($path_parts['extension'], $accepted_extensions))
+            $extension = pathinfo($tmp_name, PATHINFO_EXTENSION);
+            if (!in_array($extension, $accepted_extensions))
                 return false;
         }
         if ($maximum_size > 0 && filesize($tmp_path) > $maximum_size)
             return false;
-        if (!move_uploaded_file($tmp_path, ASCMS_PATH.$target_path)) return false;
+        if(strpos($target_path, ASCMS_DOCUMENT_ROOT) === false){
+            if (strpos($target_path, ASCMS_PATH) !== false){
+                $target_path = str_replace(ASCMS_PATH, '', $target_path);
+            }
+            $target_path = ASCMS_DOCUMENT_ROOT.'/'.$target_path;
+        }
+
+        if (!move_uploaded_file($tmp_path, $target_path)) return false;
         return true;
     }
 

@@ -7,7 +7,6 @@
  * @subpackage  module_printshop
  */
 error_reporting(E_ALL);ini_set('display_errors',1);
-//$objDatabase->debug=1;
 
 /**
  * Includes
@@ -59,7 +58,7 @@ class PrintshopAdmin extends PrintshopLibrary {
     * @global   HTML_Template_Sigma
     */
     function getPage() {
-        global $objTemplate;
+        global $objTemplate, $_ARRAYLANG;
 
         if(!isset($_GET['act'])) {
             $_GET['act'] = '';
@@ -121,9 +120,24 @@ class PrintshopAdmin extends PrintshopLibrary {
                 $this->saveSettings();
                 $this->showSettings();
             break;
+
             case 'products':
                 $this->showProductOverview();
             break;
+
+            case 'changeStatus':
+                if($this->_changeOrderStatus(intval($_GET['orderId']))){
+                    $this->_strOkMessage  = $_ARRAYLANG['TXT_PRINTSHOP_MOVE_OK'];
+                }else{
+                    $this->_strErrMessage = $_ARRAYLANG['TXT_PRINTSHOP_MOVE_ERR'];
+                }
+                $this->showOrders();
+            break;
+
+            case 'detail':
+                $this->_showOrderDetails($_GET['orderId']);
+            break;
+
             default:
                 Permission::checkAccess(150, 'static');
                 $this->showOrders();
@@ -139,12 +153,31 @@ class PrintshopAdmin extends PrintshopLibrary {
 
 
     /**
+     * change the status of the specified order
+     *
+     * @param integer $orderId
+     * @return bool
+     */
+    function _changeOrderStatus($orderId){
+        global $objDatabase;
+        $orderId = intval($orderId);
+        if($orderId > 0){
+            $query = "UPDATE `".DBPREFIX."module_printshop_order`
+                     SET `status` = IF(`status`, 0, 1)
+                     WHERE `orderId` = ".$orderId;
+            return $objDatabase->Execute($query);
+        }
+        return false;
+    }
+
+
+    /**
      * Shows the print item overview
      *
      * @global  array
      * @global  array
      */
-    function showProductOverview() {
+    function showProductOverview(){
         global $_CORELANG, $_ARRAYLANG;
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_PRODCUTS'];
@@ -238,14 +271,160 @@ class PrintshopAdmin extends PrintshopLibrary {
         ));
     }
 
+    /**
+     * Shows the details of an order
+     *
+     * @param integer $orderId
+     */
+    function _showOrderDetails($orderId){
+        global $_ARRAYLANG;
 
+        $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_ORDER_DETAILS'];
+        $this->_objTpl->loadTemplateFile('module_printshop_order_detail.html', true, true);
+
+        $arrOrder = $this->_getOrder($orderId);
+
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_PRINTSHOP_ORDER_DETAILS'           => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_DETAILS'],
+            'TXT_PRINTSHOP_PRODUCT_DETAILS'         => $_ARRAYLANG['TXT_PRINTSHOP_PRODUCT_DETAILS'],
+            'TXT_PRINTSHOP_ADDITIONAL_DETAILS'      => $_ARRAYLANG['TXT_PRINTSHOP_ADDITIONAL_DETAILS'],
+            'TXT_PRINTSHOP_SHIPMENT_ADDRESS'        => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_ADDRESS'],
+            'TXT_PRINTSHOP_INVOICE_ADDRESS'         => $_ARRAYLANG['TXT_PRINTSHOP_INVOICE_ADDRESS'],
+            'TXT_PRINTSHOP_TYPE'            		=> $_ARRAYLANG['TXT_PRINTSHOP_TYPE_TITLE'],
+            'TXT_PRINTSHOP_FORMAT'          		=> $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
+            'TXT_PRINTSHOP_FRONT'           		=> $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
+            'TXT_PRINTSHOP_BACK'            		=> $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
+            'TXT_PRINTSHOP_WEIGHT'          		=> $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
+            'TXT_PRINTSHOP_PAPER'           		=> $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
+            'TXT_PRINTSHOP_SUBJECT'           		=> $_ARRAYLANG['TXT_PRINTSHOP_SUBJECT'],
+            'TXT_PRINTSHOP_EMAIL'           		=> $_ARRAYLANG['TXT_PRINTSHOP_EMAIL'],
+            'TXT_PRINTSHOP_TELEPHONE'               => $_ARRAYLANG['TXT_PRINTSHOP_TELEPHONE'],
+            'TXT_PRINTSHOP_COMMENT'           		=> $_ARRAYLANG['TXT_PRINTSHOP_COMMENT'],
+            'TXT_PRINTSHOP_SHIPMENT_TYPE'        	=> $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_TYPE'],
+            'TXT_PRINTSHOP_UPLOADED_IMAGES'        	=> $_ARRAYLANG['TXT_PRINTSHOP_UPLOADED_IMAGES'],
+            'TXT_PRINTSHOP_PRICE'           		=> $_ARRAYLANG['TXT_PRINTSHOP_PRICE_TITLE'],
+            'TXT_PRINTSHOP_COMPANY'         		=> $_ARRAYLANG['TXT_PRINTSHOP_COMPANY'],
+            'TXT_PRINTSHOP_CONTACT'         		=> $_ARRAYLANG['TXT_PRINTSHOP_CONTACT'],
+            'TXT_PRINTSHOP_ADDRESS'         		=> $_ARRAYLANG['TXT_PRINTSHOP_ADDRESS'],
+            'TXT_PRINTSHOP_ZIP'             		=> $_ARRAYLANG['TXT_PRINTSHOP_ZIP'],
+            'TXT_PRINTSHOP_CITY'            		=> $_ARRAYLANG['TXT_PRINTSHOP_CITY'],
+            'TXT_PRINTSHOP_AMOUNT'          		=> $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
+            'TXT_PRINTSHOP_FUNCTIONS'       		=> $_ARRAYLANG['TXT_PRINTSHOP_SUBTITLE_ACTIONS'],
+            'TXT_PRINTSHOP_VIEW_IMAGE'       		=> $_ARRAYLANG['TXT_PRINTSHOP_VIEW_IMAGE'],
+            'TXT_PRINTSHOP_DOWNLOAD_FILE'       	=> $_ARRAYLANG['TXT_PRINTSHOP_DOWNLOAD_FILE'],
+            'PRINTSHOP_TYPE'                		=> $this->_getAttributeName('type', $arrOrder['type']),
+            'PRINTSHOP_FORMAT'              		=> $this->_getAttributeName('format', $arrOrder['format']),
+            'PRINTSHOP_FRONT'               		=> $this->_getAttributeName('front', $arrOrder['front']),
+            'PRINTSHOP_BACK'                		=> $this->_getAttributeName('back', $arrOrder['back']),
+            'PRINTSHOP_WEIGHT'              		=> $this->_getAttributeName('weight', $arrOrder['weight']),
+            'PRINTSHOP_PAPER'               		=> $this->_getAttributeName('paper', $arrOrder['paper']),
+            'PRINTSHOP_AMOUNT'              		=> $arrOrder['amount'],
+            'PRINTSHOP_PRICE'               		=> $this->_arrSettings['currency'].' '.number_format($arrOrder['price'], 2, null, "'"),
+            'PRINTSHOP_SUBJECT'               		=> $arrOrder['subject'],
+            'PRINTSHOP_EMAIL'               		=> $arrOrder['email'],
+            'PRINTSHOP_TELEPHONE'               	=> $arrOrder['telephone'],
+            'PRINTSHOP_COMMENT'               		=> $arrOrder['comment'],
+            'PRINTSHOP_SHIPMENT_COMPANY'    		=> $arrOrder['shipmentCompany'],
+            'PRINTSHOP_SHIPMENT_CONTACT'    		=> $arrOrder['shipmentContact'],
+            'PRINTSHOP_SHIPMENT_ADDRESS1'   		=> $arrOrder['shipmentAddress1'],
+            'PRINTSHOP_SHIPMENT_ADDRESS2'   		=> $arrOrder['shipmentAddress2'],
+            'PRINTSHOP_SHIPMENT_ZIP'        		=> $arrOrder['shipmentZip'],
+            'PRINTSHOP_SHIPMENT_CITY'       		=> $arrOrder['shipmentCity'],
+            'PRINTSHOP_INVOICE_COMPANY'     		=> $arrOrder['invoiceCompany'],
+            'PRINTSHOP_INVOICE_CONTACT'     		=> $arrOrder['invoiceContact'],
+            'PRINTSHOP_INVOICE_ADDRESS1'    		=> $arrOrder['invoiceAddress1'],
+            'PRINTSHOP_INVOICE_ADDRESS2'    		=> $arrOrder['invoiceAddress2'],
+            'PRINTSHOP_INVOICE_ZIP'         		=> $arrOrder['invoiceZip'],
+            'PRINTSHOP_INVOICE_CITY'        		=> $arrOrder['invoiceCity'],
+            'PRINTSHOP_SHIPMENT'               		=> $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_'.strtoupper($arrOrder['shipment'])],
+        ));
+
+        foreach ($this->_arrImageFields as $index => $imgFieldName) {
+            $imgSrc = $arrOrder['file'.$index];
+            if(!empty($imgSrc)){
+                switch($index){
+                    case 1:
+                        $caption = $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'];
+                    break;
+                    case 2:
+                        $caption = $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'];
+                    break;
+                    default:
+                        $caption = $_ARRAYLANG['TXT_PRINTSHOP_ADDITIONAL'];
+                }
+                $this->_objTpl->setVariable(array(
+                    'PRINTSHOP_IMAGE_CAPTION'   => $caption,
+                    'PRINTSHOP_IMAGE_SRC'       => $imgSrc,
+                ));
+                $this->_objTpl->parse('image');
+            }
+        }
+    }
+
+
+    /**
+     * Shows the orders
+     *
+     */
     function showOrders(){
         global $_ARRAYLANG;
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_ORDERS_TITLE'];
         $this->_objTpl->loadTemplateFile('module_printshop_orders.html', true, true);
 
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_PRINTSHOP_OPEN_ORDERS'     => $_ARRAYLANG['TXT_PRINTSHOP_OPEN_ORDERS'],
+            'TXT_PRINTSHOP_CLOSED_ORDERS'   => $_ARRAYLANG['TXT_PRINTSHOP_CLOSED_ORDERS'],
+            'TXT_PRINTSHOP_PRICE'           => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_TITLE'],
+            'TXT_PRINTSHOP_COMPANY'         => $_ARRAYLANG['TXT_PRINTSHOP_COMPANY'],
+            'TXT_PRINTSHOP_CONTACT'         => $_ARRAYLANG['TXT_PRINTSHOP_CONTACT'],
+            'TXT_PRINTSHOP_ADDRESS'         => $_ARRAYLANG['TXT_PRINTSHOP_ADDRESS'],
+            'TXT_PRINTSHOP_ZIP'             => $_ARRAYLANG['TXT_PRINTSHOP_ZIP'],
+            'TXT_PRINTSHOP_CITY'            => $_ARRAYLANG['TXT_PRINTSHOP_CITY'],
+            'TXT_PRINTSHOP_AMOUNT'          => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
+            'TXT_PRINTSHOP_VIEW_DETAILS'    => $_ARRAYLANG['TXT_PRINTSHOP_VIEW_DETAILS'],
+            'TXT_PRINTSHOP_MOVE_TO_CLOSED'  => $_ARRAYLANG['TXT_PRINTSHOP_MOVE_TO_CLOSED'],
+            'TXT_PRINTSHOP_FUNCTIONS'       => $_ARRAYLANG['TXT_PRINTSHOP_SUBTITLE_ACTIONS'],
+            'PRINTSHOP_CURRENCY'            => $this->_arrSettings['currency'],
+        ));
 
+        $arrOrdersOpen = $this->_getOrders(1);
+        $arrOrdersClosed = $this->_getOrders(0);
+
+        if($arrOrdersOpen['count'] > 0){
+            foreach ($arrOrdersOpen['entries'] as $index => $arrOrder) {
+                $this->_setOrderTemplateVars($index, $arrOrder);
+                $this->_objTpl->parse('orderOpen');
+            }
+        }
+
+        if($arrOrdersClosed['count'] > 0){
+            foreach ($arrOrdersClosed['entries'] as $index => $arrOrder) {
+                $this->_setOrderTemplateVars($index, $arrOrder);
+                $this->_objTpl->parse('orderClosed');
+            }
+        }
+        $this->_objTpl->setVariable(array(
+            'PRINTSHOP_PAGING_OPEN'    => getPaging($arrOrdersOpen['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
+            'PRINTSHOP_PAGING_CLOSED'  => getPaging($arrOrdersClosed['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
+        ));
+
+    }
+
+
+    function _setOrderTemplateVars($index, $arrOrder){
+        $this->_objTpl->setVariable(array(
+            'PRINTSHOP_ROW_CLASS'   => $index % 2 == 0 ? 'row1' : 'row2',
+            'PRINTSHOP_ORDER_ID'    => !empty($arrOrder['orderId'])             ? $arrOrder['orderId']          : '&nbsp;',
+            'PRINTSHOP_COMPANY'     => !empty($arrOrder['shipmentCompany'])     ? $arrOrder['shipmentCompany']  : '&nbsp;',
+            'PRINTSHOP_CONTACT'     => !empty($arrOrder['shipmentContact'])     ? $arrOrder['shipmentContact']  : '&nbsp;',
+            'PRINTSHOP_ADDRESS1'    => !empty($arrOrder['shipmentAddress2'])    ? $arrOrder['shipmentAddress2'] : '&nbsp;',
+            'PRINTSHOP_ADDRESS2'    => !empty($arrOrder['shipmentAddress1'])    ? $arrOrder['shipmentAddress1'] : '&nbsp;',
+            'PRINTSHOP_ZIP'         => !empty($arrOrder['shipmentZip'])         ? $arrOrder['shipmentZip']      : '&nbsp;',
+            'PRINTSHOP_CITY'        => !empty($arrOrder['shipmentCity'])        ? $arrOrder['shipmentCity']     : '&nbsp;',
+            'PRINTSHOP_AMOUNT'      => !empty($arrOrder['amount'])              ? $arrOrder['amount']           : '&nbsp;',
+            'PRINTSHOP_PRICE'       => !empty($arrOrder['price'])               ? number_format($arrOrder['price'], 2, null, "'") : '0.00',
+        ));
     }
 
 
@@ -564,8 +743,13 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_PRINTSHOP_EMAIL_SUBJECT_VENDOR'        => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_SUBJECT_VENDOR'],
             'TXT_PRINTSHOP_SHIPMENT_PRICE_MAIL'         => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_PRICE_MAIL'],
             'TXT_PRINTSHOP_SHIPMENT_PRICE_MESSENGER'    => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_PRICE_MESSENGER'],
+            'TXT_PRINTSHOP_SETTINGS_GENERAL'            => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_GENERAL'],
+            'TXT_PRINTSHOP_SETTINGS_EMAIL'              => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_EMAIL'],
+            'TXT_PRINTSHOP_SENDER_EMAIL'                => $_ARRAYLANG['TXT_PRINTSHOP_SENDER_EMAIL'],
+            'TXT_PRINTSHOP_SENDER_EMAIL_HELP'           => $_ARRAYLANG['TXT_PRINTSHOP_SENDER_EMAIL_HELP'],
             'TXT_SAVE'                                  => $_CORELANG['TXT_SAVE'],
             'PRINTSHOP_ORDER_EMAIL'                     => $this->_arrSettings['orderEmail'],
+            'PRINTSHOP_SENDER_EMAIL'                    => $this->_arrSettings['senderEmail'],
             'PRINTSHOP_ENTRIES_PER_PAGE'                => $this->_arrSettings['entriesPerPage'],
             'PRINTSHOP_PRICE_THRESHOLDS'                => $this->_arrSettings['priceThresholds'],
             'PRINTSHOP_DATA_PREPARATION_PRICE'          => $this->_arrSettings['dataPreparationPrice'],

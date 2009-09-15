@@ -35,10 +35,10 @@
 #content_wrapper {
 	width: 993px;
 	height: auto !important;
-	min-height: 500px;
+	min-height: 435px;
 	height: 500px; /*FOR IE*/
 	float: left;
-	margin-top: 20px;
+	margin-top: 10px;
 	padding: 0px;
 	background-color: #CCCCCC;
 }
