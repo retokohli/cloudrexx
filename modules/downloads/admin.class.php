@@ -156,6 +156,9 @@ class downloads extends DownloadsLibrary
             case 'download':
                 $this->download();
                 break;
+		    case 'copy_download':
+				$this->download(true);
+				break;
             case 'delete_download':
                 $this->deleteDownload();
                 $this->_downloads();
@@ -683,7 +686,7 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_ID'                         => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_PARENT_ID'                  => $objCategory->getParentId(),
             'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'],
-            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
+            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), 'name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$objFWUser->objUser->getId().' ? \'none\' : \'\'" style="width:300px;"') : $this->getParsedUsername($objCategory->getOwnerId()),
             'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(142, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
             'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $objCategory->getDeletableByOwner() ? 'checked="checked"' : '',
             'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $objCategory->getModifyAccessByOwner() ? 'checked="checked"' : '',
@@ -824,13 +827,65 @@ class downloads extends DownloadsLibrary
             }
         }
 
+        $groupId = 0;
+        $userId = 0;
+        $userIsAdmin = false;
+        $managementPermission = Permission::checkAccess(142, 'static', true);
+        $arrDynamicPermissionIds = array();
+        $showHiddenDownloads = $managementPermission && (isset($_REQUEST['downloads_search_keyword']) ? !empty($_REQUEST['downloads_filter_hidden_downloads']) : 1);
+        if ($managementPermission && !empty($_REQUEST['downloads_filter_group_id'])) {
+            $groupId = intval($_REQUEST['downloads_filter_group_id']);
+            $objGroup = $objFWUser->objGroup->getGroup($groupId);
+            $arrDynamicPermissionIds = $objGroup->getDynamicPermissionIds();
+            $managementPermission = false;
+        } elseif ($managementPermission && !empty($_REQUEST['downloads_filter_user_id'])) {
+            $userId = intval($_REQUEST['downloads_filter_user_id']);
+            $objUser = $objFWUser->objUser->getUser($userId);
+            $arrDynamicPermissionIds = $objUser->getDynamicPermissionIds();
+            $arrStaticPermissionIds = $objUser->getStaticPermissionIds();
+            $userIsAdmin = $objUser->getAdminStatus();
+            $managementPermission = in_array(142, $arrStaticPermissionIds);
+        } else {
+            $arrDynamicPermissionIds = $objFWUser->objUser->getDynamicPermissionIds();
+            $userIsAdmin = $objFWUser->objUser->getAdminStatus();
+            $userId = $managementPermission ? 0 : $objFWUser->objUser->getId();
+        }
+
+		// parse search form
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_SEARCH_KEYWORD'              => htmlentities($this->searchKeyword, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_SEARCH_GROUP_MENU'           => $this->getGroupDropDownMenu($groupId),
+            'DOWNLOADS_SEARCH_USER_MENU'            => $this->getUserDropDownMenu($userId, 'name="downloads_filter_user_id" id="downloads_filter_user_id" onchange="document.getElementById(\'downloads_filter_group_id\').value=0;this.form.submit()" style="width:300px;"', true),
+            'DOWNLOADS_FILTER_HIDDEN_CHECKED'       => $showHiddenDownloads ? 'checked="checked"' : '',
+            'TXT_DOWNLOADS_SEARCH'                  => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
+            'TXT_DOWNLOADS_SHOW_PERMISSIONS'        => $_ARRAYLANG['TXT_DOWNLOADS_SHOW_PERMISSIONS'],
+            'TXT_DOWNLOADS_LIST_HIDDEN_DOWNLOADS'   => $_ARRAYLANG['TXT_DOWNLOADS_LIST_HIDDEN_DOWNLOADS']
+        ));
+        $this->objTemplate->setGlobalVariable(array(
+            'DOWNLOADS_SORT_SEARCH_KEYWORD' => urlencode($this->searchKeyword),
+            'DOWNLOADS_FILTER_GROUP_ID'     => $groupId,
+            'DOWNLOADS_FILTER_USER_ID'      => $userId,
+            'DOWNLOADS_FILTER_HIDDEN'       => $showHiddenDownloads
+        ));
+
+        if (Permission::checkAccess(142, 'static', true)) {
+            $this->objTemplate->parse('downloads_show_permissions');
+        } else {
+            $this->objTemplate->hideBlock('downloads_show_permissions');
+        }
+
+
         // this is required so that the method Download::getFilteredIdList()
         // will be processed
         $filter = array('category_id' => 0);
+        if (!$showHiddenDownloads) {
+            $filter['group_id'] = $groupId;
+            $filter['user_id'] = $userId;
+        }
 
         $objDownload = new Download();
         $objDownload->loadDownloads(
-            $filter, null, $arrOrder, null,
+            $filter, $this->searchKeyword, $arrOrder, null,
             $_CONFIG['corePagingLimit'], $limitOffset
         );
         if ($objDownload->EOF) {
@@ -848,6 +903,7 @@ class downloads extends DownloadsLibrary
 
         $this->objTemplate->setGlobalVariable(array(
             'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
+            'TXT_DOWNLOADS_COPY'    => $_ARRAYLANG['TXT_DOWNLOADS_COPY'],
             'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
         ));
 
@@ -892,12 +948,12 @@ class downloads extends DownloadsLibrary
 
         $downloadCount = $objDownload->getFilteredSearchDownloadCount();
         if ($downloadCount > $_CONFIG['corePagingLimit']) {
-            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&amp;cmd=downloads&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&amp;cmd=downloads&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy)."&amp;downloads_search_keyword=".urlencode($this->searchKeyword)."&amp;downloads_filter_group_id=".$groupId."&amp;downloads_filter_user_id=".$userId."&amp;downloads_filter_hidden_downloads=".$showHiddenDownloads, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
         }
 
 
         if (// managers are allowed to change the sort order
-            Permission::checkAccess(142, 'static', true)
+            $managementPermission
         ) {
             $changeOrderAllowed = true;
             $this->objTemplate->setVariable('TXT_DOWNLOADS_ORDER', $_ARRAYLANG['TXT_DOWNLOADS_ORDER']);
@@ -936,9 +992,9 @@ class downloads extends DownloadsLibrary
             }
 
             if (// managers are allowed to modify/delete downloads
-                Permission::checkAccess(142, 'static', true)
+                $managementPermission
                 // to owner of the download is allowed to modify/delete it
-                || $objDownload->getOwnerId() == $objFWUser->objUser->getId()
+                || $objDownload->getOwnerId() == $userId
             ) {
                 // parse select checkbox
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
@@ -969,8 +1025,17 @@ class downloads extends DownloadsLibrary
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
                 $this->objTemplate->hideBlock('downloads_download_status_link_open');
                 $this->objTemplate->hideBlock('downloads_download_status_link_close');
+
+                if (Permission::checkAccess(142, 'static', true)) {
+                    // parse modify link
+                    $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
+                    $this->objTemplate->parse('downloads_download_modify_link_open');
+                    $this->objTemplate->touchBlock('downloads_download_modify_link_close');
+                } else {
                 $this->objTemplate->hideBlock('downloads_download_modify_link_open');
                 $this->objTemplate->hideBlock('downloads_download_modify_link_close');
+                }
+
                 $this->objTemplate->hideBlock('downloads_download_functions');
                 $this->objTemplate->touchBlock('downloads_download_no_functions');
             }
@@ -978,11 +1043,11 @@ class downloads extends DownloadsLibrary
             if (// download isn't protected -> everyone is allowed to download it
                 !$objDownload->getAccessId()
                 // the owner of the download is allowed to download it
-                || $objDownload->getOwnerId() == $objFWUser->objUser->getId()
+                || $objDownload->getOwnerId() == $userId
                 // the download is protected -> only those who have the sufficent permissions are allowed to download it
-                || Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
+                || ($userIsAdmin || in_array($objDownload->getAccessId(), $arrDynamicPermissionIds))
                 // managers are allowed to download every download
-                || Permission::checkAccess(142, 'static', true)
+                || $managementPermission
             ) {
                 // parse download function
                 $this->objTemplate->setVariable(array(
@@ -1200,7 +1265,7 @@ class downloads extends DownloadsLibrary
     }
 
 
-    private function download()
+    private function download($copy = false)
     {
         global $_ARRAYLANG, $_LANGID;
 
@@ -1214,6 +1279,10 @@ class downloads extends DownloadsLibrary
         ) {
             $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_MODIFY_DOWNLOAD_PROHIBITED'];
             return $this->_downloads();
+        }
+
+		if ($copy) {
+			$objDownload->copy();
         }
 
         $categoryId = isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0;
@@ -1267,7 +1336,7 @@ class downloads extends DownloadsLibrary
             }
         }
 
-        $this->_pageTitle = $objDownload->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'];
+        $this->_pageTitle = $objDownload->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] : ($copy ? $_ARRAYLANG['TXT_DOWNLOADS_COPY_DOWNLOAD'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD']);
         $this->objTemplate->loadTemplateFile('module_downloads_download_modify.html');
 
         $this->objTemplate->setVariable(array(
@@ -1767,6 +1836,7 @@ class downloads extends DownloadsLibrary
 
         $this->objTemplate->setGlobalVariable(array(
             'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
+            'TXT_DOWNLOADS_COPY'    => $_ARRAYLANG['TXT_DOWNLOADS_COPY'],
             'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
         ));
 

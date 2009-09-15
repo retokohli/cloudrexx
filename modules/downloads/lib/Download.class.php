@@ -214,6 +214,28 @@ class Download {
         $this->clean();
     }
 
+	public function copy()
+	{
+		$this->loadLocales();
+		if ($this->getAccessId()) {
+			$objFWUser = FWUser::getFWUserObject();
+            $objGroup = $objFWUser->objGroup->getGroups(
+                array('dynamic' => $this->getAccessId())
+            );
+            $this->access_groups = $objGroup->getLoadedGroupIds();
+		} else {
+			$this->access_groups = array();
+		}
+		$this->id = 0;
+		$this->access_id = 0;
+		$this->ctime = time();
+		$this->mtime = $this->ctime;
+		$this->views = 0;
+		$this->download_count = 0;
+		$this->extensions = 0;
+		$this->validity = 0;
+	}
+
     /**
      * Clean download metadata
      *
@@ -578,20 +600,36 @@ class Download {
             $arrTables[] = 'download';
         }
 
-
         // parse access permissions for the frontend
-        if ($this->isFrontendMode) {
-            $objFWUser = FWUser::getFWUserObject();
+        $objFWUser = FWUser::getFWUserObject();
+        $userLoggedIn = $objFWUser->objUser->login();
+        $managementPermission = Permission::checkAccess(142, 'static', true);
+        if (!empty($arrFilter['group_id'])) {
+            $objGroup = $objFWUser->objGroup->getGroup($arrFilter['group_id']);
+            $arrDynamicPermissionIds = $objGroup->getDynamicPermissionIds();
+            $userId = 0;
+            $managementPermission = false;
+        } elseif (!empty($arrFilter['user_id'])) {
+            $objUser = $objFWUser->objUser->getUser($arrFilter['user_id']);
+            $arrDynamicPermissionIds = $objUser->getDynamicPermissionIds();
+            $userId = $objUser->getId();
+            $arrStaticPermissionIds = $objUser->getStaticPermissionIds();
+            $managementPermission = in_array(142, $arrStaticPermissionIds);
+        } else {
+            $arrDynamicPermissionIds = $objFWUser->objUser->getDynamicPermissionIds();
+            $userId = !empty($arrFilter['user_id']) ? $arrFilter['user_id'] : $objFWUser->objUser->getId();
+        }
 
+        if ($this->isFrontendMode) {
             // download access
             if (!isset($arrFilter['is_active'])) {
                 $arrConditions[] = 'tblD.`is_active` = 1';
             }
             if (!Permission::checkAccess(142, 'static', true)) {
                 $arrConditions[] = 'tblD.`visibility` = 1'.(
-                    $objFWUser->objUser->login() ?
-                    ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
-                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                    $userLoggedIn ?
+                    ' OR tblD.`owner_id` = '.$userId
+                    .(count($arrDynamicPermissionIds) ? ' OR tblD.`access_id` IN ('.implode(', ', $arrDynamicPermissionIds).')' : '')
                     : '');
             }
 
@@ -603,18 +641,16 @@ class Download {
             $arrConditions[] = 'tblC.`is_active` = 1';
             if (!Permission::checkAccess(142, 'static', true)) {
                 $arrConditions[] = 'tblC.`visibility` = 1'.(
-                    $objFWUser->objUser->login() ?
-                        ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
-                        .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                    $userLoggedIn ?
+                        ' OR tblC.`owner_id` = '.$userId
+                        .(count($arrDynamicPermissionIds) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $arrDynamicPermissionIds).')' : '')
                     : '');
             }
-        } elseif (!Permission::checkAccess(142, 'static', true)) {
-            $objFWUser = FWUser::getFWUserObject();
-
+        } elseif (!$managementPermission) {
              $arrConditions[] = 'tblD.`visibility` = 1'.(
-                $objFWUser->objUser->login() ?
-                ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
-                .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
+                $userLoggedIn ?
+                ' OR tblD.`owner_id` = '.$userId
+                .(count($arrDynamicPermissionIds) ? ' OR tblD.`access_id` IN ('.implode(', ', $arrDynamicPermissionIds).')' : '')
                 : '');
         }
 
