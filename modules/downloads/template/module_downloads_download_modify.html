@@ -98,7 +98,7 @@ function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMim
     downloadsElImagePreview = typeof(elImagePreview) == 'undefined' ? null : elImagePreview;
     downloadsElRemoveButton = typeof(elRemoveButton) == 'undefined' ? null : elRemoveButton;
     downloadsElMimeType = typeof(elMimeType) == 'undefined' ? null : elMimeType;
-    downloadsOpenWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    downloadsOpenWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=downloads','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function downloadsOpenWindow(theURL,winName,features)

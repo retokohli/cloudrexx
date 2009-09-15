@@ -284,11 +284,34 @@ class DownloadsLibrary
     }
 
 
-    protected function getUserDropDownMenu($selectedUserId, $userId)
+    protected function getGroupDropDownMenu($selectedGroupId)
     {
-        $menu = '<select name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$userId.' ? \'none\' : \'\'" style="width:300px;">';
+        global $_ARRAYLANG;
+
+        $menu = '<select name="downloads_filter_group_id" id="downloads_filter_group_id" onchange="document.getElementById(\'downloads_filter_user_id\').value=0;this.form.submit()" style="width:300px;">';
         $objFWUser = FWUser::getFWUserObject();
-        $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname'));
+        $objGroup = $objFWUser->objGroup->getGroups();
+        $menu .= '<option value="0"'.($selectedGroupId ? '' : ' selected="selected"').' style="border-bottom:1px solid #000;">'.$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER_GROUP'].'</option>';
+        while (!$objGroup->EOF) {
+            $menu .= '<option value="'.$objGroup->getId().'"'.($objGroup->getId() == $selectedGroupId ? ' selected="selected"' : '').'>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+            $objGroup->next();
+        }
+        $menu .= '</select>';
+
+        return $menu;
+    }
+
+
+    protected function getUserDropDownMenu($selectedUserId, $params, $header = false)
+    {
+        global $_ARRAYLANG;
+
+        $menu = "<select $params>";
+        $objFWUser = FWUser::getFWUserObject();
+        $objUser = $objFWUser->objUser->getUsers(null, null, array('firstname' => 'asc', 'lastname' => 'asc', 'username' => 'asc'), array('id', 'username', 'firstname', 'lastname'));
+        if ($header) {
+            $menu .= '<option value="0"'.($selectedUserId ? '' : ' selected="selected"').' style="border-bottom:1px solid #000;">'.$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER'].'</option>';
+        }
         while (!$objUser->EOF) {
             $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.$this->getParsedUsername($objUser->getId()).'</option>';
             $objUser->next();

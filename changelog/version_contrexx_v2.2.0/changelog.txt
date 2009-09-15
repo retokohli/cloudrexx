@@ -48,6 +48,9 @@ Modul: Digital Asset Management
 - Über die Benutzerverwaltung kann beim Erstellen eines neuen Benutzerkontos
   direkt eine neue persönliche Kategorie im Digital Asset Management Modul
   für diesen Benutzer erstellt werden.
+- Kopierfunktion für Downloads.
+- Die effektiven Zugriffsberechtigungen einer Benutzergruppe oder Benutzers
+  können angezeigt werden.
 
 Modul: Dokumenten System
 - Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
