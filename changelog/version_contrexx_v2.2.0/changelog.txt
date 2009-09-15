@@ -123,6 +123,9 @@ Modul: Digital Asset Management
 - Kategorien können keinen Unterkategorien zugeordnet werden.
 - Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
 - XHTML validierte Ausgabe.
+- Die Auflistung der Unterkategorien erfolgt anhand der benutzerdefinierten
+  Sortieren.
+- Zeilenumbrüche beim Beschreibungstext eines Downloads werden angezeigt.
 
 Modul: Dokumenten System
 - Kompatibel mit der Alias Verwaltung.

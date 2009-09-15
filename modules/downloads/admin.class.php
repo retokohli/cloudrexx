@@ -97,6 +97,8 @@ class downloads extends DownloadsLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
+        Permission::checkAccess(141, 'static');
+
         if (!isset($_REQUEST['act'])) {
             $_REQUEST['act'] = '';
         }
