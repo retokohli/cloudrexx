@@ -5,7 +5,7 @@ function downloadsDeleteDownload(id, name)
 {
     strMsg = '{DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT}';
     if (confirm(strMsg.replace('%s', name)+'\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
-        window.location.href = "index.php?cmd=downloads&act=delete_download&id="+id;
+        window.location.href = "index.php?cmd=downloads&{CSRF_PARAM}&act=delete_download&id="+id;
     }
 }
 
@@ -126,7 +126,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 </table>
 <br />
 <br />
-<input type="button" name="downloads_add_new_download" value="{TXT_DOWNLOADS_ADD_NEW_DOWNLOAD}" onclick="window.location.href='index.php?cmd=downloads&amp;act=download'" />
+<input type="button" name="downloads_add_new_download" value="{TXT_DOWNLOADS_ADD_NEW_DOWNLOAD}" onclick="window.location.href='index.php?cmd=downloads&{CSRF_PARAM}&amp;act=download'" />
 <!-- END downloads_download_no_data -->
 </form>
 <!-- end module_downloads_downloads.html -->
