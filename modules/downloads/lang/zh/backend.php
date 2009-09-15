@@ -279,4 +279,10 @@ $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'] = "Interfaces";
 $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'] = "User Admin";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatic Category Creation";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Set the user groups to which a newly created user should be assigned to, if the option to automatically create a category within the Digital Asset Management module has been selected.";
+$_ARRAYLANG['TXT_DOWNLOADS_LIST_HIDDEN_DOWNLOADS'] = "List hidden downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_SHOW_PERMISSIONS'] = "List Effective Permissions for:";
+$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER_GROUP'] = "Select User Group...";
+$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER'] = "Select User...";
+$_ARRAYLANG['TXT_DOWNLOADS_COPY'] = "Copy";
+$_ARRAYLANG['TXT_DOWNLOADS_COPY_DOWNLOAD'] = "Copy download";
 ?>

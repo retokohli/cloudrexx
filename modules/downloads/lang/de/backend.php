@@ -279,4 +279,10 @@ $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'] = "Schnittstellen";
 $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'] = "Benutzerverwaltung";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatische Erstellung einer Kategorie";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Definieren Sie die Benutzergruppen, zu welchen der neu erstellende Benutzer hinzugefügt werden soll, wenn die Option zur automatischen Erstellung einer Kategorie im Digital Asset Management Modul ausgewählt wird.";
+$_ARRAYLANG['TXT_DOWNLOADS_LIST_HIDDEN_DOWNLOADS'] = "Versteckte Downloads auflisten";
+$_ARRAYLANG['TXT_DOWNLOADS_SHOW_PERMISSIONS'] = "Effektive Zugriffsberechtigungen anzeigen für:";
+$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER_GROUP'] = "Benutzergruppe wählen...";
+$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER'] = "Benutzer wählen...";
+$_ARRAYLANG['TXT_DOWNLOADS_COPY'] = "Kopieren";
+$_ARRAYLANG['TXT_DOWNLOADS_COPY_DOWNLOAD'] = "Download kopieren";
 ?>
