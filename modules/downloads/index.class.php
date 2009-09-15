@@ -687,7 +687,7 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_CATEGORY_ID'                 =>  $objCategory->getId(),
             'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_CATEGORY_IMAGE_SRC'          => $imageSrc,
@@ -827,7 +827,7 @@ JS_CODE;
         $allowDeleteCategories = !$objCategory->getManageSubcategoriesAccessId()
                             || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
                             || $objCategory->getOwnerId() == $this->userId;
-        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId(), 'is_active' => true), null, null, null, $categoryLimit);
+        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId(), 'is_active' => true), null, array('order' => 'asc'), null, $categoryLimit);
 
         if ($objSubcategory->EOF) {
             $this->objTemplate->hideBlock($arrCategoryBlocks[0]);
@@ -932,7 +932,7 @@ JS_CODE;
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME'               => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME_LINK'          => $this->getHtmlLinkTag(CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_FOLDER_LINK'        => $this->getHtmlFolderLinkTag(CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-            'DOWNLOADS_'.$variablePrefix.'CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_'.$variablePrefix.'CATEGORY_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE_SRC'          => $imageSrc,
@@ -1113,7 +1113,7 @@ JS_CODE;
             'DOWNLOADS_FILE_ID'                 => $objDownload->getId(),
             'DOWNLOADS_FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$categoryId.'&amp;id='.$objDownload->getId(),
             'DOWNLOADS_FILE_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_FILE_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_FILE_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_FILE_IMAGE'              => $image,
             'DOWNLOADS_FILE_IMAGE_SRC'          => $imageSrc,
@@ -1247,7 +1247,7 @@ JS_CODE;
                     'DOWNLOADS_RELATED_FILE_ID'                 => $objRelatedDownload->getId(),
                     'DOWNLOADS_RELATED_FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$categoryId.'&amp;id='.$objRelatedDownload->getId(),
                     'DOWNLOADS_RELATED_FILE_NAME'               => htmlentities($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_RELATED_FILE_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_RELATED_FILE_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
                     'DOWNLOADS_RELATED_FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_RELATED_FILE_IMAGE'              => $image,
                     'DOWNLOADS_RELATED_FILE_IMAGE_SRC'          => $imageSrc,
