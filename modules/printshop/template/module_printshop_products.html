@@ -124,7 +124,7 @@ var editEntry = function(){
     //if no input field, then append input and submit and add handlers
     if($td[0].find('input').length == 0){
         $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
-            $td[j].find('span').html('<input type="text" style="width: 35px;" name="psPrice_'+j+'" value="'+price[j]+'" size="6" />');
+            $td[j].find('span').html('<input type="text" class="priceInput" name="psPrice_'+j+'" value="'+price[j]+'" size="6" />');
             if(j == 15){
                $J('<tr class="'+rowClass+' rowSubmit">\
                     <td colspan="16" style="text-align: right">\
@@ -730,152 +730,11 @@ var setMessage = function(message){
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />
 <form name="frmShowEntries" method="post" action="{DIRECTORY_INDEX}?cmd=printshop&act=products">
-    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psAddTable">
-	   <thead>
-        <tr>
-            <th colspan="16">{TXT_PRINTSHOP_ADD_PRODUCT}</th>
-        </tr>
-       </thead>
-       <tbody>
-        <tr class="row3">
-            <td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_TYPE_TITLE}</span></td>
-			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_FORMAT_TITLE}</span></td>
-			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_FRONT_TITLE}</span></td>
-			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
-			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
-			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
-			<td nowrap="nowrap" width="13%" colspan="2">&nbsp;</td>
-			<td nowrap="nowrap" colspan="2">&nbsp;</td>
-        </tr>
-        <tr class="row3">
-            <td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_TYPE_DD}</span></td>
-			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_FORMAT_DD}</span></td>
-			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_FRONT_DD}</span></td>
-			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_BACK_DD}</span></td>
-			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{ENTRY_WEIGHT_DD}</span></td>
-			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{ENTRY_PAPER_DD}</span></td>
-			<td nowrap="nowrap" width="13%" colspan="2">&nbsp;</td>
-			<td colspan="2" style="text-align: right;" nowrap="nowrap"><span style="font-weight:bold;"><input type="button" name="psAddProduct" value="{TXT_PRINTSHOP_ADD}" /></span></td>
-        </tr>
-        <!--<tr class="row3">
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_0}
-            </td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_1}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_2}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_3}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_4}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_5}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_6}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_7}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_8}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_9}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_10}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_11}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_12}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_13}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_14}
-			</td>
-			<td nowrap="nowrap">
-			{PRINTSHOP_PRICE_15}
-			</td>
-        </tr>-->
-        <tr class="row3">
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_0}
-                <input {PRINTSHOP_PRICE_0_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_0" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_1}
-                <input {PRINTSHOP_PRICE_1_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_1" />
-			</td>
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_2}
-                <input {PRINTSHOP_PRICE_2_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_2" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_3}
-                <input {PRINTSHOP_PRICE_3_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_3" />
-			</td>
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_4}
-                <input {PRINTSHOP_PRICE_4_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_4" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_5}
-                <input {PRINTSHOP_PRICE_5_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_5" />
-			</td>
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_6}
-                <input {PRINTSHOP_PRICE_6_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_6" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_7}
-                <input {PRINTSHOP_PRICE_7_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_7" />
-			</td>
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_8}
-                <input {PRINTSHOP_PRICE_8_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_8" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_9}
-                <input {PRINTSHOP_PRICE_9_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_9" />
-			</td>
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_10}
-                <input {PRINTSHOP_PRICE_10_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_10" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_11}
-                <input {PRINTSHOP_PRICE_11_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_11" />
-			</td>
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_12}
-                <input {PRINTSHOP_PRICE_12_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_12" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_13}
-                <input {PRINTSHOP_PRICE_13_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_13" />
-			</td>
-            <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_14}
-                <input {PRINTSHOP_PRICE_14_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_14" />
-    	    </td>
-    	    <td nowrap="nowrap">
-                {PRINTSHOP_PRICE_15}
-                <input {PRINTSHOP_PRICE_15_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_15" />
-			</td>
-        </tr>
-       </tbody>
-	</table>
-    <br />
+    <ul id="tabmenu">
+        <li><a id="generalTab_products" class="active" title="{TXT_PRINTSHOP_PRODUCTS}" onclick="selectTab('products')" href="javascript:{}">{TXT_PRINTSHOP_PRODUCTS}</a></li>
+        <li><a id="generalTab_addproduct" title="{TXT_PRINTSHOP_ADD_PRODUCT}" onclick="selectTab('addproduct')" href="javascript:{}">{TXT_PRINTSHOP_ADD_PRODUCT}</a></li>
+    </ul>
+    <div id="products" class="generalTab" style="display: block;">
 	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psEntriesTable">
         <thead>
     		<tr>
@@ -984,10 +843,6 @@ var setMessage = function(message){
 		<!-- END noEntry -->
 		</tbody>
 	</table>
-
-
-
-
 	<br />
 	<table cellpadding="2" cellspacing="0" border="0">
 	   <tbody>
@@ -1005,7 +860,139 @@ var setMessage = function(message){
     		</tr>
 		</tbody>
 	</table>
+	<div id="pspaging" align="center">{PRINTSHOP_PAGING}</div>
+	</div>
+    <div id="addproduct" class="generalTab" style="display: none;">
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" id="psAddTable">
+	   <thead>
+        <tr>
+            <th colspan="16">{TXT_PRINTSHOP_ADD_PRODUCT}</th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr class="row3">
+            <td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_TYPE_TITLE}</span></td>
+			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_FORMAT_TITLE}</span></td>
+			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_FRONT_TITLE}</span></td>
+			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_BACK_TITLE}</span></td>
+			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_WEIGHT_TITLE}</span></td>
+			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{TXT_PRINTSHOP_PAPER_TITLE}</span></td>
+			<td nowrap="nowrap" width="13%" colspan="2">&nbsp;</td>
+			<td nowrap="nowrap" colspan="2">&nbsp;</td>
+        </tr>
+        <tr class="row3">
+            <td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_TYPE_DD}</span></td>
+			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_FORMAT_DD}</span></td>
+			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_FRONT_DD}</span></td>
+			<td nowrap="nowrap" width="12%" colspan="2"><span style="font-weight:bold;">{ENTRY_BACK_DD}</span></td>
+			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{ENTRY_WEIGHT_DD}</span></td>
+			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">{ENTRY_PAPER_DD}</span></td>
+			<td nowrap="nowrap" width="13%" colspan="2">&nbsp;</td>
+			<td colspan="2" style="text-align: right;" nowrap="nowrap"><span style="font-weight:bold;"><input type="button" name="psAddProduct" value="{TXT_PRINTSHOP_ADD}" /></span></td>
+        </tr>
+        <tr class="row3">
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_0}
+            </td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_1}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_2}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_3}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_4}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_5}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_6}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_7}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_8}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_9}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_10}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_11}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_12}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_13}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_14}
+			</td>
+			<td nowrap="nowrap">
+			{PRINTSHOP_PRICE_15}
+			</td>
+        </tr>
+        <tr class="row3">
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_0_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_0" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_1_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_1" />
+			</td>
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_2_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_2" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_3_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_3" />
+			</td>
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_4_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_4" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_5_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_5" />
+			</td>
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_6_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_6" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_7_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_7" />
+			</td>
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_8_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_8" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_9_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_9" />
+			</td>
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_10_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_10" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_11_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_11" />
+			</td>
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_12_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_12" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_13_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_13" />
+			</td>
+            <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_14_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_14" />
+    	    </td>
+    	    <td nowrap="nowrap">
+                <input {PRINTSHOP_PRICE_15_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_15" />
+			</td>
+        </tr>
+       </tbody>
+	</table>
+    </div>
 </form>
 <br />
-<div id="pspaging" align="center">{PRINTSHOP_PAGING}</div>
 <!-- END module_printshop_main -->

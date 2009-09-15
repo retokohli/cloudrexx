@@ -314,8 +314,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
              AND (`n`.`startdate`<=CURDATE() OR `n`.`startdate`='0000-00-00')
              AND (`n`.`enddate`>=CURDATE() OR `n`.`enddate`='0000-00-00')
              AND `n`.`activestatus`='1'
-             AND `n`.`is_validated`='1'
-           AND c.lang_id=".(!empty($previewLangId) ? $previewLangId : FRONTEND_LANG_ID));
+             AND `n`.`is_validated`='1'")
+          ." AND c.lang_id=".(!empty($previewLangId) ? $previewLangId : FRONTEND_LANG_ID);
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult === false || $objResult->EOF) {
         if ($plainSection == 'error') {
