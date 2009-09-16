@@ -381,7 +381,7 @@ class User_Profile_Attribute
             'children'        => true,
             'multiline'        => false,
             'movable'        => false,
-            'protection'    => true,
+            'protection'    => false,
             'special'        => array(),
             'data_type'        => 'array'
         ),
