@@ -129,6 +129,8 @@ Modul: Digital Asset Management
 - Die Auflistung der Unterkategorien erfolgt anhand der benutzerdefinierten
   Sortieren.
 - Zeilenumbrüche beim Beschreibungstext eines Downloads werden angezeigt.
+- Der Download von Dateien, welche Leerzeichen im Dateinamen enthalten,
+  funktioniert.
 
 Modul: Dokumenten System
 - Kompatibel mit der Alias Verwaltung.
