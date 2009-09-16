@@ -1324,10 +1324,7 @@ JS_CODE;
             $objDownload->incrementDownloadCount();
 
             if ($objDownload->getType() == 'file') {
-                header("Content-Type: application/force-download");
-                header("Content-Disposition: attachment; filename=". htmlspecialchars($objDownload->getSourceName()));
-                header("Content-Length: ".filesize(ASCMS_PATH.$objDownload->getSource()));
-                readfile(ASCMS_PATH.$objDownload->getSource());
+                $objDownload->send();
             } else {
                 // add socket -> prevent to hide the source from the customer
                 CSRF::header('Location: '.$objDownload->getSource());

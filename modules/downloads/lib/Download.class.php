@@ -9,6 +9,11 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
+
+/**
  * Digital Asset Management Download
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
@@ -350,6 +355,16 @@ class Download {
         if (next($this->arrLoadedDownloads) === false || !$this->load(key($this->arrLoadedDownloads))) {
             $this->EOF = true;
         }
+    }
+
+    public function send()
+    {
+        $objHTTPDownload = new HTTP_Download();
+        $objHTTPDownload->setFile(ASCMS_PATH.$this->getSource());
+        $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, htmlspecialchars($this->getSourceName()));
+        $objHTTPDownload->setContentType();
+        $objHTTPDownload->send('application/force-download');
+        exit;
     }
 
     public function getName($langId)
