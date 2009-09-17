@@ -1496,7 +1496,7 @@ if (MY_DEBUG) echo("ticketTable(): sorting order: ".$objSorting->getOrder()."<br
             'SUPPORT_PAGING'                    =>
                 getPaging(
                     $ticketCount, $this->supportTicketOffset,
-                    $baseUri.$objSorting->getOrderUriEncoded(), '', true
+                    $baseUri.'&amp'.$objSorting->getOrderUriEncoded(), '', true
                 ),
         ));
 
