@@ -42,6 +42,15 @@ class Hotel
     const TEXT_POLICY      = 'hotelcard_hotel_policy';
 
     /**
+     * Various Hotel status, pretty much self-descriptive
+     */
+// TODO:  Apply these!
+    const STATUS_UNKNOWN  = 0;
+    const STATUS_ACCOUNT  = 1;
+    const STATUS_VERIFIED = 2;
+    const STATUS_CLOSED   = 3;
+
+   /**
      * A complete list of all Hotel database table field names
      *
      * Mind that there are other (temporary) fields not listed here,
@@ -62,7 +71,7 @@ class Hotel
         'numof_rooms',
         'hotel_name',
         'hotel_address',
-        'hotel_zip',
+//        'hotel_zip',
         'hotel_location',
         'hotel_region',
         'description_text_id',
@@ -89,7 +98,7 @@ class Hotel
         'billing_gender',
         'billing_address',
         'billing_company',
-        'billing_zip',
+//        'billing_zip',
         'billing_location',
         'billing_country_id',
         'billing_tax_id',
@@ -99,7 +108,8 @@ class Hotel
         'checkout_to',
         'comment',
         'found_how',
-        'register_time',
+        'registration_time',
+        'status',
     );
 
     /**
@@ -146,20 +156,26 @@ class Hotel
               FROM `".DBPREFIX."module_hotelcard_hotel`
              WHERE `id`=$hotel_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) return false;
+        if (!$objResult) return self::errorHandler();
+        if ($objResult->EOF) return false;
         $objHotel = new Hotel();
         foreach (self::$arrFieldnames as $name) {
             $objHotel->arrFieldvalues[$name] = $objResult->fields[$name];
         }
         // Text
-        $objHotel->arrFieldvalues['group'] =
-            Text::getById($objHotel->getFieldvalue('group_id'), FRONTEND_LANG_ID);
-        $objHotel->arrFieldvalues['description_text'] =
-            Text::getById($objHotel->getFieldvalue('description_text_id'), FRONTEND_LANG_ID);
-        $objHotel->arrFieldvalues['policy_text'] =
-            Text::getById($objHotel->getFieldvalue('policy_text_id'), FRONTEND_LANG_ID);
-        $objHotel->arrFieldvalues['accomodation_type'] =
-            Text::getById($objHotel->getFieldvalue('accomodation_type_id'), FRONTEND_LANG_ID);
+        $objText = Text::getById(
+            $objHotel->getFieldvalue('group_id'), FRONTEND_LANG_ID);
+//echo("Hotel::getById($hotel_id): Text ".var_export($objText, true)."<br />");
+        $objHotel->arrFieldvalues['group'] = $objText->getText();
+        $objText = Text::getById(
+            $objHotel->getFieldvalue('description_text_id'), FRONTEND_LANG_ID);
+        $objHotel->arrFieldvalues['description_text'] = $objText->getText();
+        $objText = Text::getById(
+            $objHotel->getFieldvalue('policy_text_id'), FRONTEND_LANG_ID);
+        $objHotel->arrFieldvalues['policy_text'] = $objText->getText();
+        $objText = Text::getById(
+            $objHotel->getFieldvalue('accomodation_type_id'), FRONTEND_LANG_ID);
+        $objHotel->arrFieldvalues['accomodation_type'] = $objText->getText();
 //        $objHotel->arrFieldvalues['hotel_region'] =
 //            Text::getById($objHotel->getFieldvalue('hotel_region'), FRONTEND_LANG_ID);
         // Image
@@ -174,12 +190,12 @@ class Hotel
         $arrId = self::getIdArray($count, $order, $filter, $offset, $limit);
         $arrHotels = array();
         foreach ($arrId as $hotel_id) {
-            $arrHotel = self::getById($hotel_id);
-            if (empty($arrHotel)) {
+            $objHotel = self::getById($hotel_id);
+            if (!$objHotel) {
                 --$count;
                 continue;
             }
-            $arrHotels[$hotel_id] = &$arrHotel;
+            $arrHotels[$hotel_id] = $objHotel;
         }
         return $arrHotels;
     }
@@ -210,9 +226,9 @@ class Hotel
               (empty($filter['id']) ? '' : " AND `hotel`.`id`=".$filter['id']).
               (empty($filter['accomodation_type_id']) ? '' : " AND `hotel`.`accomodation_type_id`=".$filter['accomodation_type_id']).
               (empty($filter['lang_id']) ? '' : " AND `hotel`.`lang_id`=".$filter['lang_id']).
-              (empty($filter['rating']) ? '' : " AND `hotel`.`rating`=".$filter['rating']).
+              (empty($filter['rating']) ? '' : " AND `hotel`.`rating`='".$filter['rating']."'").
               (empty($filter['recommended']) ? '' : " AND `hotel`.`recommended`=".$filter['recommended']).
-              (empty($filter['hotel_zip']) ? '' : " AND `hotel`.`hotel_zip`=".$filter['hotel_zip']).
+              (empty($filter['hotel_location']) ? '' : " AND `hotel`.`hotel_location`=".$filter['hotel_location']).
               (empty($filter['hotel_region']) ? '' : " AND `hotel`.`hotel_region`=".$filter['hotel_region']).
               (empty($term)
                 ? ''
@@ -221,7 +237,6 @@ class Hotel
                  ".$arrSqlPolicy['text']." LIKE '%$term%' OR
                  `hotel`.`hotel_name` LIKE '%$term%' OR
                  `hotel`.`hotel_address` LIKE '%$term%' OR
-                 `hotel`.`hotel_zip` LIKE '%$term%' OR
                  `hotel`.`hotel_location` LIKE '%$term%' OR
                  `hotel`.`hotel_region` LIKE '%$term%' OR
                  `hotel`.`description_text_id` LIKE '%$term%' OR
@@ -327,14 +342,16 @@ class Hotel
             if ($value <= 0) return false;
             break;
 
-          // TINYINT(1), small numbers -> Make sure it's an integer
-          case 'rating':
-            $value = intval($value);
-            break;
-
           // TINYINT(1), flags -> chop down to boolean
           case 'recommended':
+            if ($value === '') return false;
             $value = !empty($value);
+            break;
+
+          // TINYINT(1), small number, greater than zero
+          case 'status':
+            $value = intval($value);
+            if ($value == 0) return false;
             break;
 
           // ENUM('M','F'), gender -> If she's not female, he's male
@@ -347,10 +364,18 @@ class Hotel
             $value = (preg_match('/[wf]/i', $value) ? 'F' : 'M');
             break;
 
+          // VARCHAR(3), usually small numbers, or '-' for no rating.
+          // The empty string means that none has been selected.
+          // If it's too long, the database will chop off the tail.
+          case 'rating':
+            $value = trim(strip_tags($value));
+            if ($value === '') return false;
+            break;
+
           // TINYTEXT, names and address stuff -> Strip tags and possibly other crap
           case 'hotel_name':
           case 'hotel_address':
-          case 'hotel_zip':
+//          case 'hotel_zip':
           case 'hotel_location':
           case 'hotel_region':
           case 'contact_name':
@@ -365,6 +390,7 @@ class Hotel
           case 'billing_location':
           case 'billing_tax_id':
             $value = trim(strip_tags($value));
+            if (empty($value)) return false;
             break;
 
           // TINYTEXT, phone or fax number -> Strip crap and format as such
@@ -374,7 +400,29 @@ class Hotel
           case 'reservation_fax':
           case 'accountant_phone':
           case 'accountant_fax':
-            $value = preg_replace('/[^0-9+]/', '', $value);
+//echo("1 Phone $name is $value...<br />");
+            $value = trim(strip_tags($value));
+//echo("2 Phone $name is $value...<br />");
+            // Fix "+41" to "0041"
+            $value = preg_replace('/^\\+/', '00', $value);
+//echo("3 Phone $name is $value...<br />");
+            // Strip any other non-numbers
+            $value = preg_replace('/\\D/', '', $value);
+//echo("4 Phone $name is $value...<br />");
+
+            // Accept toll-free numbers
+            // I guess these are beginning with
+            // 0800, 0840, 0842, 0844, or 0848
+            if (preg_match('/^08(?:00|40|42|44|48)\d{4,}/', $value)) break;
+
+            // The number must be 10 or 13 digits, with a leading zero
+//echo("5 Phone $name is $value, length ".strlen($value)."<br />");
+            if (   (   strlen($value) != 10 && strlen($value) != 13)
+                || !preg_match('/^0/', $value)) return false;
+            if (strlen($value) == 10)
+                // Replace "033" by "004133"
+                $value = preg_replace('/^0/', '0041', $value);
+//echo("fixed to $value<br />");
             break;
 
           // TINYTEXT, e-mail address -> Verify
@@ -389,7 +437,9 @@ class Hotel
 
           // TINYTEXT, URI -> Verify
           case 'hotel_uri':
-            if ($value !== '' && !FWValidator::isUri($value)) return false;
+//            if (!preg_match('/^http\:\/\//', $value)) $value = 'http://'.$value;
+            if (!FWValidator::hasProto($value)) $value = 'http://'.$value;
+            if (!FWValidator::isUri($value)) return false;
             break;
 
           // TIME -> Verify (
@@ -404,18 +454,24 @@ class Hotel
             // Remove non-digits and insert a colon
             $value = preg_replace('/\D/', '', $value);
             $value = preg_replace('/^(\d?\d)(\d\d)/', '\1:\2', $value);
+            if (empty($value)) return false;
             break;
 
           // TEXT -> Strip tags and possibly other crap
+          case 'description_text': // See above
+            // Need
+            $value = trim(strip_tags($value));
+            if (strlen($value) < 100 || strlen($value) > 500) return false;
+            break;
           case 'comment':
           case 'found_how':
             // These are temporary string versions of text fields that
             // will be stored externally in multiple languages.
             // They replace their ID counterparts upon inserting or updating.
           case 'group':            // See above
-          case 'description_text': // See above
           case 'policy_text':      // See above
             $value = trim(strip_tags($value));
+            if (empty($value)) return false;
             break;
 
           default:
@@ -462,7 +518,8 @@ class Hotel
               FROM `".DBPREFIX."module_hotelcard_hotel`
              WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) return self::errorHandler();
+        if (!$objResult) return self::errorHandler();
+        if ($objResult->EOF) return false;
         return true;
     }
 
@@ -531,7 +588,12 @@ class Hotel
             unset($this->arrFieldvalues['group']);
         }
 
-        if ($this->recordExists()) return $this->update();
+
+        if ($this->recordExists()) {
+//echo("Exists<br />");
+            return $this->update();
+        }
+//echo("Does not exist<br />");
         return $this->insert();
     }
 
@@ -545,7 +607,10 @@ class Hotel
         global $objDatabase;
 
         unset($this->arrFieldvalues['id']);
-        if (empty($this->arrFieldvalues)) return false;
+        if (empty($this->arrFieldvalues)) {
+//die("no fields to insert");
+          return false;
+        }
         $query = "
             INSERT INTO `".DBPREFIX."module_hotelcard_hotel` (
               `".join('`,`', array_keys($this->arrFieldvalues))."`
@@ -567,14 +632,24 @@ class Hotel
     {
         global $objDatabase;
 
+//echo("Updating hotel<br />".var_export($this, true)."<hr />");
         $strFields = '';
-        foreach ($this->arrFieldvalues as $name => $value) {
+        foreach (self::$arrFieldnames as $name) {
             if ($name == 'id') continue;
+            if (!isset($this->arrFieldvalues[$name])) {
+//echo("no value for $name: ".$this->arrFieldvalues[$name]."<br />");
+                continue;
+            }
+            $value = $this->arrFieldvalues[$name];
+//echo("adding $name => $value<br />");
             $strFields .=
-                 (empty($strFields) ? ',' : '').
+                 (empty($strFields) ? '' : ',').
                  "`$name`='$value'";
         }
-        if (empty($strFields)) return false;
+        if (empty($strFields)) {
+//die("no fields to update");
+            return false;
+        }
         $query = "
             UPDATE `".DBPREFIX."module_hotelcard_hotel`
                SET $strFields
@@ -585,11 +660,16 @@ class Hotel
     }
 
 
-    static function insertFromSession()
+    static function storeFromSession()
     {
         global $_ARRAYLANG;
 
-        $objHotel = new Hotel();
+        $hotel_id =
+            (isset($_SESSION['hotelcard']['hotel_id'])
+                ? $_SESSION['hotelcard']['hotel_id'] : 0);
+
+        $objHotel = Hotel::getById($hotel_id);
+        if (!$objHotel) $objHotel = new Hotel();
         foreach (Hotel::getFieldnames() as $name) {
             if (!isset($_SESSION['hotelcard'][$name])) {
 //echo("Note: missing value for $name<br />");
@@ -626,17 +706,9 @@ class Hotel
               default:
                 // No special action for the remaining ones
             }
-            if ($objHotel->setFieldvalue($name, $value)) {
-//echo("Success name $name, value $value<br />");
-                continue;
-            }
-//echo("FAILED: name $name, value '$value'<br />");
-            Hotelcard::addMessage(sprintf(
-                $_ARRAYLANG['TXT_HOTELCARD_ERROR_ILLEGAL_VALUE'],
-                $_ARRAYLANG['TXT_HOTELCARD_'.strtoupper($name)],
-                $value));
-// Test only!
-//                return false;
+            // The return value is ignored here, which means that illegal
+            // values are silently skipped.
+            $objHotel->setFieldvalue($name, $value);
         }
         if (!$objHotel->store()) {
 //echo("ERROR: Failed to store hotel<br />");
@@ -645,74 +717,81 @@ class Hotel
         $hotel_id = $objHotel->getFieldvalue('id');
 //echo("Stored hotel ID $hotel_id<br />");
 
-        // Store the hotel facilities
-        if (empty($_SESSION['hotelcard']['hotel_facility_id'])) {
-//echo("ERROR: Missing hotel facilities<br />");
-            return false;
-        }
-        foreach (array_keys($_SESSION['hotelcard']['hotel_facility_id']) as $hotel_facility_id) {
-            if (HotelFacility::addRelation(
-                $hotel_id, $hotel_facility_id)) continue;
-            Hotelcard::addMessage(sprintf(
-                $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_HOTEL_FACILITY'],
-                HotelFacility::getFacilityNameById($hotel_facility_id)));
-            return false;
-        }
-
-        // Store the room types
-        if (empty($_SESSION['hotelcard']['room_type_1'])) {
-//echo("ERROR: Missing room types<br />");
-            return false;
-        }
-        for ($i = 1; $i <= 4; ++$i) {
-            // Skip types without a name
-            if (empty($_SESSION['hotelcard']['room_type_'.$i])) continue;
-            $room_type_id = HotelRoom::storeType(
-                $hotel_id,
-                $_SESSION['hotelcard']['room_type_'.$i],
-                $_SESSION['hotelcard']['room_available_'.$i],
-                $_SESSION['hotelcard']['room_price_'.$i]);
-            if (!$room_type_id) {
-                Hotelcard::addMessage(sprintf(
-                    $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_TYPE'],
-                    $_SESSION['hotelcard']['room_type_'.$i]));
+        // Store the hotel facilities, if present
+        if (isset($_SESSION['hotelcard']['hotel_facility_id'])) {
+            // Clear all relations, then add the current ones
+            if (!HotelFacility::deleteByHotelId($hotel_id))
+//echo("ERROR: Failed to delete Hotel Facilities for Hotel ID $hotel_id<br />");
                 return false;
-            }
-            // Store the room facilities
-            foreach ($_SESSION['hotelcard']['room_facility_id_'.$i]
-                    as $room_facility_id => $room_facility_name) {
-                if (HotelRoom::addFacility(
-                    $room_type_id, $room_facility_id)) continue;
+            foreach (array_keys($_SESSION['hotelcard']['hotel_facility_id']) as $hotel_facility_id) {
+                if (HotelFacility::addRelation(
+                    $hotel_id, $hotel_facility_id)) continue;
                 Hotelcard::addMessage(sprintf(
-                    $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_FACILITY'],
-                    $room_facility_name));
+                    $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_HOTEL_FACILITY'],
+                    HotelFacility::getFacilityNameById($hotel_facility_id)));
                 return false;
             }
         }
 
-// TODO
-        // Create a subfolder for the hotel images
-        if (File::make_folder(ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id)) {
-            // Move the image there, if any
-            if (!empty($_SESSION['hotelcard']['image_filename'])) {
-                if (!File::move(
-                    ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.
-                        $_SESSION['hotelcard']['image_filename'],
-                    ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id.'/'.
-                        $_SESSION['hotelcard']['image_filename'])) {
-echo("ERROR: Failed to move image to folder ".ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$hotel_id."<br />");
+        // Store the room types, if present
+        if (isset($_SESSION['hotelcard']['room_type_1'])) {
+            // Clear all room type and related room facility data,
+            // then add the current
+            if (!HotelRoom::deleteByHotelId($hotel_id))
+//echo("ERROR: Failed to delete Roomtypes for Hotel ID $hotel_id<br />");
+                return false;
+            for ($i = 1; $i <= 4; ++$i) {
+                // Skip types without a name
+                if (   empty($_SESSION['hotelcard']['room_type_'.$i])
+                    || empty($_SESSION['hotelcard']['room_available_'.$i])
+                    || empty($_SESSION['hotelcard']['room_price_'.$i]))
+                    continue;
+                $room_type_id = HotelRoom::storeType(
+                    $hotel_id,
+                    $_SESSION['hotelcard']['room_type_'.$i],
+                    $_SESSION['hotelcard']['room_available_'.$i],
+                    $_SESSION['hotelcard']['room_price_'.$i],
+                    (empty($_SESSION['hotelcard']['breakfast_included_'.$i])
+                      ? false : true)
+                );
+                if (!$room_type_id) {
+                    Hotelcard::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_TYPE'],
+                        $_SESSION['hotelcard']['room_type_'.$i]));
+                    return false;
+                }
+                // Store the room facilities
+                foreach ($_SESSION['hotelcard']['room_facility_id_'.$i]
+                        as $room_facility_id => $room_facility_name) {
+                    if (HotelRoom::addFacility(
+                        $room_type_id, $room_facility_id)) continue;
+                    Hotelcard::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_FACILITY'],
+                        $room_facility_name));
+                    return false;
                 }
             }
         }
-        $_SESSION['hotelcard']['registration_id'] = $hotel_id;
-        $_SESSION['hotelcard']['registration_date'] = time();
+        $_SESSION['hotelcard']['hotel_id'] = $hotel_id;
+//echo("Stored Hotel, ID in session: ".$_SESSION['hotelcard']['hotel_id']."<br />");
+        $_SESSION['hotelcard']['registration_time'] = time();
         return true;
     }
 
 
     static function getLastRegistrationDate()
     {
+        global $objDatabase;
 
+        $query = "
+            SELECT MAX(`registration_time`) AS `registration_time`
+              FROM `".DBPREFIX."module_hotelcard_hotel`";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        if ($objResult->EOF) return '-';
+        $registration_time = $objResult->fields['registration_time'];
+        if (empty($registration_time)) $registration_time = '-';
+        return $registration_time;
     }
 
 
@@ -775,12 +854,11 @@ echo("ERROR: Failed to move image to folder ".ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.
               `accomodation_type_id` INT(10) UNSIGNED NULL DEFAULT NULL,
               `lang_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT 'Preferred language.\nIs NULL if none is selected.',
               `image_id` INT(10) UNSIGNED NULL DEFAULT NULL,
-              `rating` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
+              `rating` VARCHAR(3) NOT NULL DEFAULT '-',
               `recommended` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Defaults to zero.\nRecommended if non-zero. In that case, the value *SHOULD* be 1.',
               `numof_rooms` INT(5) UNSIGNED NULL DEFAULT NULL,
               `hotel_name` TINYTEXT NOT NULL DEFAULT '',
               `hotel_address` TINYTEXT NULL DEFAULT NULL,
-              `hotel_zip` TINYTEXT NULL DEFAULT NULL,
               `hotel_location` TINYTEXT NULL DEFAULT NULL,
               `hotel_region` TINYTEXT NULL DEFAULT NULL,
               `description_text_id` INT(10) UNSIGNED NULL DEFAULT NULL,
@@ -807,22 +885,22 @@ echo("ERROR: Failed to move image to folder ".ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.
               `billing_gender` ENUM('M','F') NULL DEFAULT NULL,
               `billing_address` TINYTEXT NULL DEFAULT NULL,
               `billing_company` TINYTEXT NULL DEFAULT NULL,
-              `billing_zip` TINYTEXT NULL DEFAULT NULL,
               `billing_location` TINYTEXT NULL DEFAULT NULL,
               `billing_country_id` INT(10) NULL DEFAULT NULL,
               `billing_tax_id` TINYTEXT NULL DEFAULT NULL,
-              `checkin_from` TIME NULL DEFAULT NULL,
-              `checkin_to` TIME NULL DEFAULT NULL,
-              `checkout_from` TIME NULL DEFAULT NULL,
-              `checkout_to` TIME NULL DEFAULT NULL,
+              `checkin_from` TIME NULL DEFAULT '05:00',
+              `checkin_to` TIME NULL DEFAULT '23:30',
+              `checkout_from` TIME NULL DEFAULT '05:00',
+              `checkout_to` TIME NULL DEFAULT '12:00',
               `comment` TEXT NULL DEFAULT NULL,
               `found_how` TEXT NULL DEFAULT NULL,
-              `register_time` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `registration_time` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `status` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
               PRIMARY KEY (`id`),
               INDEX `hotel_type_id` (`accomodation_type_id` ASC),
               INDEX `hotel_group_id` (`group_id` ASC),
               INDEX `hotel_region` (`hotel_region`(8) ASC),
-              INDEX `register_time` (`register_time` ASC)
+              INDEX `registration_time` (`registration_time` ASC)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;

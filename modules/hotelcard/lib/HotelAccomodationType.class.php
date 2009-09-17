@@ -65,10 +65,10 @@ class HotelAccomodationType
             SELECT `type`.`id`, `type`.`ord` ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_hotelcard_hotel_accomodation_type` AS `type`".
                    $arrSqlName['join']."
-             ORDER BY `type`.`ord` ASC
-        ";
+             ORDER BY `type`.`ord` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
+        if ($objResult->EOF) return self::errorHandler();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
             $text_id = $objResult->fields['name_text_id'];
@@ -105,6 +105,9 @@ class HotelAccomodationType
 
     /**
      * Returns the array of all accomodation type names, indexed by their ID
+     *
+     * Note that it's important that the first entry ("please choose")
+     * has a zero index.
      * @return  array               The accomodation type names array
      *                              on success, false otherwise
      */
@@ -117,16 +120,22 @@ class HotelAccomodationType
             self::init();
         }
         if (empty($arrName)) {
-            foreach (self::$arrAccomodationTypes as $id => $arrAccomodationType) {
+            foreach (self::$arrAccomodationTypes as $arrAccomodationType) {
+                $id = $arrAccomodationType['id'];
+                if ($id == 1) $id = 0;
                 $arrName[$id] = $arrAccomodationType['name'];
             }
         }
+
         return $arrName;
     }
 
 
     /**
      * Returns the accomodation type name for the given ID
+     *
+     * If the ID is empty (or zero), the entry with ID 1 is returned.
+     * This is the "please choose" option.
      * @return  string              The accomodation type name on success,
      *                              false otherwise
      */
@@ -134,6 +143,7 @@ class HotelAccomodationType
     {
 //echo("HotelAccomodationType::getNameById($id):  Entered<br />");
         if (empty(self::$arrAccomodationTypes)) self::init();
+        if (empty($id)) $id = 1;
         return (isset(self::$arrAccomodationTypes[$id])
             ? self::$arrAccomodationTypes[$id]['name'] : false);
     }
@@ -173,8 +183,9 @@ class HotelAccomodationType
 
         // Add types
         $arrTypes = array(
-            // language ID => name
-            array(
+            // ord => language arrays
+            0 => array(
+                // language ID => name
                 1 => '-- Hoteltyp wählen --',
                 2 => '-- Select hotel type --',
                 3 => '-- Select hotel type --',
@@ -230,8 +241,7 @@ class HotelAccomodationType
 
         // The first option ("please choose") *MUST* have the ordinal 0 (zero)
         // in order for the selection dropdown to work properly.
-        $ord = 0;
-        foreach ($arrTypes as $arrLang) {
+        foreach ($arrTypes as $ord => $arrLang) {
             $text_id = 0;
             foreach ($arrLang as $lang_id => $name) {
                 $objText = new Text(
@@ -250,7 +260,7 @@ class HotelAccomodationType
                 INSERT INTO `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (
                   `name_text_id`, `ord`
                 ) VALUES (
-                  $text_id, ".$ord++."
+                  $text_id, $ord
                 )";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;

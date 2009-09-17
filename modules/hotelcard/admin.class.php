@@ -2,6 +2,8 @@
 
 define('_HOTELCARD_DEBUG', 0);
 
+//echo(nl2br(htmlentities(var_export($_SERVER, true)))."<br />");
+
 /**
  * Class Hotelcard
  *
@@ -17,6 +19,7 @@ define('_HOTELCARD_DEBUG', 0);
 require_once ASCMS_CORE_PATH.'/Filetype.class.php';
 require_once ASCMS_CORE_PATH.'/Imagetype.class.php';
 require_once ASCMS_CORE_PATH.'/Image.class.php';
+require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
 require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 require_once ASCMS_CORE_PATH.'/Sorting.class.php';
 require_once ASCMS_CORE_PATH.'/Text.class.php';
@@ -51,6 +54,12 @@ require_once ASCMS_MODULE_PATH.'/hotelcard/lib/Hotel.class.php';
 class Hotelcard
 {
     /**
+     * Mail template key for the hotel registration confirmation
+     */
+    const MAILTEMPLATE_HOTEL_REGISTRATION_CONFIRMATION =
+        'hotelcard_hotel_registration_confirmation';
+
+    /**
      * Page title
      * @var     string
      * @static
@@ -84,7 +93,7 @@ class Hotelcard
      * @static
      * @access  private
      */
-    private static $baseUri;
+    private static $uriBase;
 
 
     /**
@@ -93,15 +102,6 @@ class Hotelcard
      */
     function init()
     {
-        if (self::$objTemplate) return;
-
-        if (_HOTELCARD_DEBUG & 1) DBG::enable_error_reporting();
-        if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb();
-
-        // Sigma template
-        self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotelcard/template');
-        CSRF::add_placeholder(self::$objTemplate);
-        self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
     }
 
 
@@ -112,21 +112,40 @@ class Hotelcard
     {
         global $objTemplate, $_ARRAYLANG;
 
+        // Sigma template
+        self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotelcard/template');
+        CSRF::add_placeholder(self::$objTemplate);
+        self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+
+if (_HOTELCARD_DEBUG) {
+    DBG::enable_firephp();
+    if (_HOTELCARD_DEBUG & 1) DBG::enable_error_reporting();
+    if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();;
+DBG::log('debug enabled');
+}
+
         $cmd = (isset($_GET['cmd']) ? $_GET['cmd'] : '');
         $act = (isset($_GET['act']) ? $_GET['act'] : '');
 //        $tpl = (isset($_GET['tpl']) ? $_GET['tpl'] : '');
 
         // Used for setting up the sorting headers and others
-        self::$baseUri =
-            'index.php?cmd='.$cmd.
+        self::$uriBase =
+            CONTREXX_DIRECTORY_INDEX.'?cmd='.$cmd.
             (empty($act) ? '' : '&amp;act='.$act);
-//echo("URI base is ".self::$baseUri."<br />");
+//echo("URI base is ".self::$uriBase."<br />");
+        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$uriBase);
 
         $result = true;
         $subnavigation = '';
         switch ($act) {
             case 'settings':
                 $result &= self::settings();
+                break;
+            case 'mailtemplate_overview':
+                $result &= self::mailtemplate_overview();
+                break;
+            case 'mailtemplate_edit':
+                $result &= self::mailtemplate_edit();
                 break;
             case 'hotels':
                 $subnavigation =
@@ -149,7 +168,7 @@ class Hotelcard
         }
 
 //        $objTemplate->setGlobalVariable(array(
-//            'MODULE_URI_BASE' => self::$baseUri,
+//            'MODULE_URI_BASE' => self::$uriBase,
 //        ));
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'          => self::$pageTitle,
@@ -160,7 +179,8 @@ class Hotelcard
                 '<a href="index.php?cmd=hotelcard">'.$_ARRAYLANG['TXT_HOTELCARD_OVERVIEW'].'</a>'.
                 '<a href="index.php?cmd=hotelcard&amp;act=hotels">'.$_ARRAYLANG['TXT_HOTELCARD_HOTELS'].'</a>'.
 //                '<a href="index.php?cmd=hotelcard&amp;act=reservations">'.$_ARRAYLANG['TXT_HOTELCARD_RESERVATIONS'].'</a>'.
-                '<a href="index.php?cmd=hotelcard&amp;act=settings">'.$_ARRAYLANG['TXT_HOTELCARD_SETTINGS'].'</a>',
+                '<a href="index.php?cmd=hotelcard&amp;act=settings">'.$_ARRAYLANG['TXT_HOTELCARD_SETTINGS'].'</a>'.
+                '<a href="index.php?cmd=hotelcard&amp;act=mailtemplate_overview">'.$_ARRAYLANG['TXT_HOTELCARD_MAILTEMPLATE'].'</a>',
             'CONTENT_SUBNAVIGATION' => $subnavigation,
         ));
         return true;
@@ -183,22 +203,22 @@ class Hotelcard
         self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_SETTINGS'];
         if (!self::$objTemplate->loadTemplateFile('settings.html', true, true))
             die("Failed to load template settings.html");
-        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
+        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$uriBase);
 
         // *MUST* reinitialise after storing!
-        SettingDb::init(MODULE_ID, 'admin');
+        SettingDb::init('admin');
         $result = true && SettingDb::show(
             self::$objTemplate,
             $_ARRAYLANG['TXT_HOTELCARD_SETTING_SECTION_ADMIN'],
             'TXT_HOTELCARD_SETTING_'
         );
-        SettingDb::init(MODULE_ID, 'frontend');
+        SettingDb::init('frontend');
         $result &= SettingDb::show(
             self::$objTemplate,
             $_ARRAYLANG['TXT_HOTELCARD_SETTING_SECTION_FRONTEND'],
             'TXT_HOTELCARD_SETTING_'
         );
-        SettingDb::init(MODULE_ID, 'backend');
+        SettingDb::init('backend');
         $result &= SettingDb::show(
             self::$objTemplate,
             $_ARRAYLANG['TXT_HOTELCARD_SETTING_SECTION_BACKEND'],
@@ -226,14 +246,14 @@ class Hotelcard
 
         // Compare POST with current settings.
         // Only store what was changed.
-        SettingDb::init(MODULE_ID);
+        SettingDb::init();
         unset($_POST['store']);
         foreach ($_POST as $name => $value) {
 //echo("Updating $name to $value (");
             $value = contrexx_stripslashes($value);
             SettingDb::set($name, $value);
         }
-        $result = SettingDb::storeAll();
+        $result = SettingDb::updateAll();
         // No changes detected
         if ($result === '') return true;
         if ($result) {
@@ -261,7 +281,7 @@ class Hotelcard
         self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_HOTELS'];
         if (!self::$objTemplate->loadTemplateFile('hotels.html', true, true))
             die("Failed to load template settings.html");
-        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
+        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$uriBase);
 
 // TODO
 
@@ -282,10 +302,10 @@ class Hotelcard
         self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_OVERVIEW'];
         if (!self::$objTemplate->loadTemplateFile('overview.html', true, true))
             die("Failed to load template settings.html");
-        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$baseUri);
+        self::$objTemplate->setGlobalVariable('MODULE_URI_BASE', self::$uriBase);
 
         $objSorting = new Sorting(
-            self::$baseUri,
+            self::$uriBase,
             array(
                 'id', 'hotel_name',
             ),
@@ -305,14 +325,14 @@ class Hotelcard
             'lang_id' => (isset($_REQUEST['lang_id']) ? $_REQUEST['lang_id'] : ''),
             'rating' => (isset($_REQUEST['rating']) ? $_REQUEST['rating'] : ''),
             'recommended' => (isset($_REQUEST['recommended']) ? $_REQUEST['recommended'] : ''),
-            'hotel_zip' => (isset($_REQUEST['hotel_zip']) ? $_REQUEST['hotel_zip'] : ''),
+            'hotel_location' => (isset($_REQUEST['hotel_location']) ? $_REQUEST['hotel_location'] : ''),
             'hotel_region' => (isset($_REQUEST['hotel_region']) ? $_REQUEST['hotel_region'] : ''),
 // TODO:  More to come...  maybe
         );
         $offset = Paging::getPosition();
         $limit = SettingDb::getValue('hotel_per_page_backend');
         $arrHotels = Hotel::getArray($count, $order, $filter, $offset, $limit);
-        $last_registration_date = Hotel::getLastRegistrationDate();
+        $last_registration_time = Hotel::getLastRegistrationDate();
 
         self::$objTemplate->setGlobalVariable(array(
             'TXT_HOTELCARD_NAME' => $_ARRAYLANG['TXT_HOTELCARD_NAME'],
@@ -324,7 +344,7 @@ class Hotelcard
         ));
         $arrOverview = array(
             'HOTEL_NUMOF' => $count,
-            'HOTEL_LAST_REGISTRATION' => $last_registration_date
+            'HOTEL_LAST_REGISTRATION' => $last_registration_time
         );
         $i = 0;
         foreach ($arrOverview as $name => $value) {
@@ -339,21 +359,86 @@ class Hotelcard
             ));
             self::$objTemplate->parse('hotelcard_row');
         }
-        foreach ($arrHotels as $arrHotel) {
+        foreach ($arrHotels as $objHotel) {
             self::$objTemplate->setVariable(array(
                 'HOTELCARD_ROWCLASS'   => (++$i % 2) + 1,
-                'HOTELCARD_HOTEL_ID'   => $arrHotel['id'],
-                'HOTELCARD_HOTEL_NAME' => $arrHotel['hotel_name'],
+                'HOTELCARD_HOTEL_ID'   => $objHotel->getFieldvalue('id'),
+                'HOTELCARD_HOTEL_NAME' => $objHotel->getFieldvalue('hotel_name'),
 // TODO: Compose some useful abstract
-                'HOTELCARD_HOTEL_INFO' => $arrHotel['hotel_uri'],
+                'HOTELCARD_HOTEL_INFO' => $objHotel->getFieldvalue('hotel_uri'),
 // TODO
                 'HOTELCARD_FUNCTIONS'  => '',
             ));
             self::$objTemplate->parse('hotelcard_hotel_row');
-
         }
-
         return true;
+    }
+
+
+    /**
+     * Set up the Mailtemplate overview page
+     * @return  boolean             True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function mailtemplate_overview()
+    {
+        global $_ARRAYLANG;
+
+        self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_MAILTEMPLATE_OVERVIEW'];
+        SettingDb::init();
+        self::$objTemplate = MailTemplate::overview(
+            SettingDb::getValue('mailtemplate_per_page_backend')
+        );
+        return (bool)self::$objTemplate;
+    }
+
+
+    /**
+     * Set up the Mailtemplate edit page
+     * @return  boolean             True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function mailtemplate_edit()
+    {
+        global $_ARRAYLANG;
+
+        self::$pageTitle = $_ARRAYLANG['TXT_HOTELCARD_MAILTEMPLATE_EDIT'];
+        self::$objTemplate = MailTemplate::edit();
+        return (bool)self::$objTemplate;
+    }
+
+
+    /**
+     * Adds the string $strErrorMessage to the error messages.
+     *
+     * If necessary, inserts a line break tag (<br />) between
+     * error messages.
+     * @param   string  $strErrorMessage    The error message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function addError($strErrorMessage)
+    {
+        self::$strErrMessage .=
+            (self::$strErrMessage != '' && $strErrorMessage != ''
+                ? '<br />' : ''
+            ).$strErrorMessage;
+    }
+
+
+    /**
+     * Adds the string $strOkMessage to the success messages.
+     *
+     * If necessary, inserts a line break tag (<br />) between
+     * messages.
+     * @param   string  $strOkMessage       The message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function addMessage($strOkMessage)
+    {
+        self::$strOkMessage .=
+            (self::$strOkMessage != '' && $strOkMessage != ''
+                ? '<br />' : ''
+            ).$strOkMessage;
     }
 
 
@@ -412,42 +497,71 @@ class Hotelcard
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
         }
+
+DBG::log("Hotelcard::errorHandler(): Settings init()<br />");
+        // Add missing settings
+        SettingDb::init();
+
+DBG::log("Hotelcard::errorHandler(): Settings delete, module ID ".MODULE_ID."<br />");
+// To reset the default settings, enable
+//        SettingDb::deleteModule();
+
+DBG::log("Hotelcard::errorHandler(): Settings add<br />");
+        SettingDb::add('admin_email', 'info@hotelcard.ch', 101, 'email', '', 'admin');
+        SettingDb::add('hotel_minimum_rooms_days', 180, 201, 'text', '', 'admin');
+        SettingDb::add('user_profile_attribute_hotel_id', '', 301, 'dropdown_user_custom_attribute', '', 'admin');
+        SettingDb::add('hotel_usergroup', '', 401, 'dropdown_usergroup', '', 'admin');
+
+        SettingDb::add('hotel_per_page_frontend', '10', 1, 'text', '', 'frontend');
+        SettingDb::add('hotel_default_order_frontend', 'price DESC', 2, 'text', '', 'frontend');
+        SettingDb::add('hotel_max_pictures', '3', 3, 'text', '', 'frontend');
+        SettingDb::add('terms_and_conditions_1', '[AGB hier]', 6, 'wysiwyg', '', 'frontend');
+        SettingDb::add('terms_and_conditions_2', '[Terms and Conditions here]', 7, 'wysiwyg', '', 'frontend');
+        SettingDb::add('terms_and_conditions_3', '[AGB ici]', 8, 'wysiwyg', '', 'frontend');
+        SettingDb::add('terms_and_conditions_4', '[AGB qui]', 9, 'wysiwyg', '', 'frontend');
+
+        SettingDb::add('hotel_per_page_backend', '10', 1, 'text', '', 'backend');
+        SettingDb::add('mailtemplate_per_page_backend', '10', 2, 'text', '', 'backend');
+        SettingDb::add('hotel_default_order_backend', 'name ASC', 3, 'text', '', 'backend');
+
+        // Add mail templates.  Uses the current FRONTEND_LANG_ID
+        /*
+<admin_email>
+<contact_email>
+<contact_name>
+<hotel_name>
+<registration_time>
+<username>
+<password>
+        */
+DBG::log("Hotelcard::errorHandler(): Mail templates delete, key ".self::MAILTEMPLATE_HOTEL_REGISTRATION_CONFIRMATION."<br />");
+        MailTemplate::deleteTemplateByKey(self::MAILTEMPLATE_HOTEL_REGISTRATION_CONFIRMATION);
+DBG::log("Hotelcard::errorHandler(): Mail templates add<br />");
+        MailTemplate::storeTemplate(array(
+            'key'     => Hotelcard::MAILTEMPLATE_HOTEL_REGISTRATION_CONFIRMATION,
+            'name'    => 'Bestätigung über die erfolgreiche Registration des Hotels',
+            'from'    => 'info@hotelcard.ch',
+            'to'      => '<contact_email>',
+            'bcc'     => '<admin_email>',
+            'sender'  => 'Hotelcard Registration',
+            'subject' => 'Danke für Ihre Registrierung auf hotelcard.ch',
+            'message' =>
+                "<contact_salutation> <contact_name>,\n\n\n".
+                "Sie haben das Hotel <hotel_name> am <registration_time> registriert.\n\n".
+                "Bitte bewahren Sie diese Nachricht auf und geben Sie Ihre Registrations ID <hotel_id> an, wenn Sie mit uns Kontakt aufnehmen.\n\n\n".
+                "Bearbeiten Sie Ihre Hotel- und Zimmerdaten unter http://www.hotelcard.ch/index.php?section=hotelcard&cmd=edit_hotel\n\n".
+                "Die Zugangsdaten für Ihr hotelcard.ch Benutzerkonto:\n\n".
+                "Benutzername: <username>\n".
+                "Passwort: <password>\n\n".
+                "Diese Bestätigung wurde gesendet an <contact_email>\n\n\n".
+                "Freundliche Grüsse\n\n".
+                "Das hotelcard.ch Team\n".
+                "http://www.hotelcard.ch/",
+
+        ));
+
         // Always!
         return false;
-    }
-
-
-    /**
-     * Adds the string $strErrorMessage to the error messages.
-     *
-     * If necessary, inserts a line break tag (<br />) between
-     * error messages.
-     * @param   string  $strErrorMessage    The error message to add
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function addError($strErrorMessage)
-    {
-        self::$strErrMessage .=
-            (self::$strErrMessage != '' && $strErrorMessage != ''
-                ? '<br />' : ''
-            ).$strErrorMessage;
-    }
-
-
-    /**
-     * Adds the string $strOkMessage to the success messages.
-     *
-     * If necessary, inserts a line break tag (<br />) between
-     * messages.
-     * @param   string  $strOkMessage       The message to add
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function addMessage($strOkMessage)
-    {
-        self::$strOkMessage .=
-            (self::$strOkMessage != '' && $strOkMessage != ''
-                ? '<br />' : ''
-            ).$strOkMessage;
     }
 
 }

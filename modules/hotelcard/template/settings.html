@@ -1,37 +1,37 @@
 <!-- start settings.html -->
-<form name="formSettings" method="post" action="{MODULE_URI_BASE}&amp;xyz">
-  <div class="table">
-    <div class="thead">
-      <div class="tr" style="width: 100%;">
-        <div class="th" style="width: 25%;">
+<form name="formSettings" method="post" action="{MODULE_URI_BASE}" >
+  <table class="adminlist" border="0" cellspacing="0" cellpadding="2" width="100%" summary="">
+    <thead>
+      <tr>
+        <th width="25%">
           <b>{TXT_SETTING_NAME}</b>
-        </div>
-        <div class="th" style="width: 75%;">
+        </th>
+        <th width="75%">
           <b>{TXT_SETTING_VALUE}</b>
-        </div>
-      </div>
-    </div>
-    <div class="tbody">
+        </th>
+      </tr>
+    </thead>
+    <tbody>
 <!-- BEGIN core_setting_db_section -->
-      <div class="tr_section">
-        <div class="td" style="width: 100%;font-weight: bold;">
+      <tr class="row3">
+        <td colspan="2">
           {TXT_SETTING_SECTION}
-        </div>
-      </div>
+        </td>
+      </tr>
 <!-- BEGIN core_setting_db_row -->
-      <div class="trrow{SETTINGS_ROWCLASS}">
-        <div class="td" style="width: 25%;">
+      <tr class="row{SETTING_ROWCLASS}">
+        <td valign="top">
           {SETTING_NAME}
-        </div>
-        <div class="td" style="width: 25%;">
+        </td>
+        <td valign="top">
           {SETTING_VALUE}
-        </div>
-        <div class="td" style="width: 50%;">&nbsp;</div>
-      </div>
+        </td>
+      </tr>
 <!-- END core_setting_db_row -->
+
 <!-- END core_setting_db_section -->
-    </div>
-  </div>
+    </tbody>
+  </table>
   <br />
   <br />
   <input type="submit" value="{TXT_SETTING_STORE}" name="store" style="margin-left:30px;" /><br />
