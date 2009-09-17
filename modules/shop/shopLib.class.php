@@ -809,6 +809,33 @@ class ShopLibrary
         $imageFileSource = preg_replace($shopImageFolderRe, '', $imageFileTarget);
         return true;
     }
+
+
+    /**
+     * Returns a string with HTML code for the letter
+     * dropdown menu options
+     * @param   integer     $selected   The optional preselected letter
+     * @return  string                  The Menuoptions HTML code
+     */
+    static function getListletterMenuoptions($selected)
+    {
+        global $_ARRAYLANG;
+
+        $strMenuoptions =
+            '<option value="'.$index.'"'.
+            ($selected == $index ? ' selected="selected"' : '').
+            '>'.$_ARRAYLANG['TXT_SHOP_ALL'].'</option>';
+        for ($i = 65; $i < 92; ++$i) {
+            $letter = chr($i);
+            $strMenuoptions .=
+                '<option value="'.$letter.'"'.
+                ($selected == $letter ? ' selected="selected"' : '').
+                '>'.$letter.'</option>';
+        }
+        return $strMenuoptions;
+
+    }
+
 }
 
 ?>
