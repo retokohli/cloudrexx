@@ -3298,13 +3298,14 @@ class shopmanager extends ShopLibrary
 
         // Set up filter and display options
         $shopCustomerOrderField = 'order_date';
-        $shopCustomerOrder = "$shopCustomerOrderField DESC";
+        $shopCustomerOrder = $shopCustomerOrderField;
         $shopOrderStatus = -1;
         $shopCustomerType = -1;
+        $shopListLetter = '';
         $shopSearchTerm = '';
-        if (!empty($_POST['shopSearchTerm'])) {
+        if (!empty($_REQUEST['shopSearchTerm'])) {
             $shopSearchTerm = htmlspecialchars(
-                $_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET
+                $_REQUEST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET
             );
             // Check if the user wants to search the pseudo "account names".
             // These may be customized with pre- or postfixes.
@@ -3326,35 +3327,35 @@ class shopmanager extends ShopLibrary
                     OR email LIKE '%$shopSearchTerm%'
                     $shopSearchAccount)";
         }
-        if (isset($_POST['shopCustomerType'])) {
-            $shopCustomerType = intval($_POST['shopCustomerType']);
+        if (isset($_REQUEST['shopCustomerType'])) {
+            $shopCustomerType = intval($_REQUEST['shopCustomerType']);
             if ($shopCustomerType == 0 || $shopCustomerType == 1) {
                 $shopSearchPattern .= " AND is_reseller=$shopCustomerType";
             }
         }
-        if (isset($_POST['shopOrderStatus'])) {
-        	$shopOrderStatus = $_POST['shopOrderStatus'];
+        if (isset($_REQUEST['shopOrderStatus'])) {
+        	$shopOrderStatus = $_REQUEST['shopOrderStatus'];
             if (   is_numeric($shopOrderStatus)
-                && $_POST['shopOrderStatus'] >= 0
-                && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
-                $shopOrderStatus = intval($_POST['shopOrderStatus']);
+                && $_REQUEST['shopOrderStatus'] >= 0
+                && $_REQUEST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
+                $shopOrderStatus = intval($_REQUEST['shopOrderStatus']);
                 $shopSearchPattern .= " AND order_status='$shopOrderStatus'";
 	            // Check "Show pending orders" as well if these are selected
 	            if ($shopOrderStatus == SHOP_ORDER_STATUS_PENDING) {
-	                $_POST['shopShowPendingOrders'] = 1;
+	                $_REQUEST['shopShowPendingOrders'] = 1;
 	            }
             } else {
             	// Ignore.
             	$shopOrderStatus = '';
             }
         }
-        if (isset($_POST['shopListSort'])) {
+        if (isset($_REQUEST['shopListSort'])) {
             $shopCustomerOrderField =
-                addslashes(strip_tags($_POST['shopListSort']));
-            $shopCustomerOrder = "$shopCustomerOrderField DESC";
+                addslashes(strip_tags($_REQUEST['shopListSort']));
+            $shopCustomerOrder = $shopCustomerOrderField;
         }
         // let the user choose whether to see pending orders or not
-        if (!isset($_POST['shopShowPendingOrders'])) {
+        if (!isset($_REQUEST['shopShowPendingOrders'])) {
             $shopSearchPattern .=
                 ' AND order_status!='.SHOP_ORDER_STATUS_PENDING;
         } else {
@@ -3362,12 +3363,12 @@ class shopmanager extends ShopLibrary
                 'SHOP_SHOW_PENDING_ORDERS_CHECKED', ' checked="checked"'
             );
         }
-        if (!empty($_POST['shopListLetter'])) {
-            $shopLetter = htmlspecialchars(
-                $_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET
+        if (!empty($_REQUEST['shopListLetter'])) {
+            $shopListLetter = htmlspecialchars(
+                $_REQUEST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET
             );
-            $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
-            $shopSearchPattern .= " AND LEFT($shopListOrder, 1)='$shopLetter'";
+            $shopListSort = addslashes(strip_tags($_REQUEST['shopListSort']));
+            $shopSearchPattern .= " AND LEFT($shopListSort, 1)='$shopListLetter'";
         }
 
         self::$objTemplate->setVariable(array(
@@ -3388,9 +3389,9 @@ class shopmanager extends ShopLibrary
             'TXT_CONFIRM_CHANGE_STATUS' => $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'],
             'TXT_SEARCH' => $_ARRAYLANG['TXT_SEARCH'],
             'TXT_SEND_TEMPLATE_TO_CUSTOMER' => str_replace('TXT_ORDER_COMPLETE',
-                            $_ARRAYLANG['TXT_ORDER_COMPLETE'],
-                            $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']
-                ),
+                $_ARRAYLANG['TXT_ORDER_COMPLETE'],
+                $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']
+            ),
             'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
             'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
@@ -3401,8 +3402,8 @@ class shopmanager extends ShopLibrary
 //            'SHOP_ORDER_STATUS_MENU' =>
 //                $this->getOrderStatusMenu($shopOrderStatus),
             'SHOP_ORDER_STATUS_MENUOPTIONS' => $this->getOrderStatusMenuoptions($shopOrderStatus, true),
-            'SHOP_CUSTOMER_TYPE_MENUOPTIONS' => Customers::getCustomerTypeMenu($shopCustomerType),
-            'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getCustomerSortMenu($shopCustomerOrderField),
+            'SHOP_CUSTOMER_TYPE_MENUOPTIONS' => Customers::getCustomerTypeMenuoptions($shopCustomerType),
+            'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getCustomerSortMenuoptions($shopCustomerOrderField),
             // Protected download user account validity
             'TXT_SHOP_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
         ));
@@ -3423,8 +3424,7 @@ class shopmanager extends ShopLibrary
                    ".DBPREFIX."module_shop".MODULE_INDEX."_orders o
              WHERE c.customerid=o.customerid
                    $shopSearchPattern
-          ORDER BY $shopCustomerOrder
-        ";
+          ORDER BY $shopCustomerOrder DESC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             $this->errorHandling();
@@ -3436,10 +3436,18 @@ class shopmanager extends ShopLibrary
             $paging = getPaging(
                 $count,
                 $pos,
-                '&amp;cmd=shop'.MODULE_INDEX.'&amp;act=orders',
+                '&amp;cmd=shop'.MODULE_INDEX.'&amp;act=orders'.
+                  ($shopSearchTerm ? '&amp;shopSearchTerm='.$shopSearchTerm : '').
+                  ($shopListLetter ? '&amp;shopListLetter='.$shopListLetter : '').
+                  ($shopCustomerOrder != 'customerid' ? '&amp;shopListSort='.$shopCustomerOrder : ''),
                 $_ARRAYLANG['TXT_ORDERS'],
                 $viewPaging
             );
+            self::$objTemplate->setVariable(array(
+                'SHOP_ORDER_PAGING' => $paging,
+                'SHOP_CUSTOMER_LISTLETTER' => $shopListLetter,
+ //                'SHOP_LISTLETTER_MENUOPTIONS' => self::getListletterMenuoptions,
+            ));
         }
         $objResult = $objDatabase->SelectLimit($query, $shopPagingLimit, $pos);
         if (!$objResult) {
@@ -3515,7 +3523,6 @@ class shopmanager extends ShopLibrary
                     $objResult->MoveNext();
                 }
             }
-            self::$objTemplate->setVariable('SHOP_ORDER_PAGING', $paging);
         }
     }
 
@@ -4315,8 +4322,8 @@ class shopmanager extends ShopLibrary
             'TXT_CUSTOMER_TYP' => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
             'TXT_CUSTOMER' => $_ARRAYLANG['TXT_CUSTOMER'],
             'TXT_RESELLER' => $_ARRAYLANG['TXT_RESELLER'],
-            'TXT_INACTIVE' => $_ARRAYLANG['TXT_INACTIVE'],
-            'TXT_ACTIVE' => $_ARRAYLANG['TXT_ACTIVE'],
+//            'TXT_INACTIVE' => $_ARRAYLANG['TXT_INACTIVE'],
+//            'TXT_ACTIVE' => $_ARRAYLANG['TXT_ACTIVE'],
             'TXT_SORT_ORDER' => $_ARRAYLANG['TXT_SORT_ORDER'],
             'TXT_LAST_NAME' => $_ARRAYLANG['TXT_LAST_NAME'],
             'TXT_FIRST_NAME' => $_ARRAYLANG['TXT_FIRST_NAME'],
@@ -4340,70 +4347,84 @@ class shopmanager extends ShopLibrary
             'TXT_MAKE_SELECTION' => $_ARRAYLANG['TXT_MAKE_SELECTION'],
         ));
         self::$objTemplate->setGlobalVariable(array(
-            'TXT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
+//            'TXT_STATUS' => $_ARRAYLANG['TXT_STATUS'],
             'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS'],
             'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
             'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS'],
         ));
-        //set search
-        $shopSearchPattern = "";
-        $shopCustomerOrder = "customerid DESC";
-        if (isset($_POST['shopSearchCustomers']) OR isset($_POST['shopListLetter'])) {
-            if ($_POST['shopCustomerStatus']<2) {
-                $shopCustomerStatus = intval($_POST['shopCustomerStatus']);
-                $shopSearchPattern = " AND customer_status = $shopCustomerStatus";
 
-            }
-            if ($_POST['shopCustomer']<2) {
-                $shopCustomer = intval($_POST['shopCustomer']);
-                $shopSearchPattern .= " AND is_reseller = $shopCustomer";
-            }
-            if ($_POST['shopSearchTerm'] != '') {
-                $shopSearchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopSearchPattern .=
-                    " AND (customerid LIKE '%$shopSearchTerm%'
-                        OR company LIKE '%$shopSearchTerm%'
-                        OR firstname LIKE '%$shopSearchTerm%'
-                        OR lastname LIKE '%$shopSearchTerm%'
-                        OR address LIKE '%$shopSearchTerm%'
-                        OR city LIKE '%$shopSearchTerm%'
-                        OR phone LIKE '%$shopSearchTerm%'
-                        OR email LIKE '%$shopSearchTerm%')";
-            }
-            if ($_POST['shopListLetter'] != '') {
-                $shopLetter = htmlspecialchars($_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
-                $shopSearchPattern .= " AND LEFT($shopListOrder,1) = '$shopLetter' ";
-            }
-            if (isset($_POST['shopListSort'])) {
-                $shopCustomerOrder = addslashes(strip_tags($_POST['shopListSort']))." DESC";
-            }
+        $shopCustomerStatus = -1;
+        $shopCustomer = -1;
+        $shopSearchTerm = '';
+        $shopListLetter = '';
+        $shopSearchPattern = '';
+        $shopCustomerOrder = 'customerid';
+        if (   isset($_REQUEST['shopCustomerStatus'])
+            && $_REQUEST['shopCustomerStatus'] >= 0) {
+            $shopCustomerStatus = intval($_REQUEST['shopCustomerStatus']);
+            $shopSearchPattern = " AND customer_status=$shopCustomerStatus";
         }
+        if (   isset($_REQUEST['shopCustomer'])
+            && $_REQUEST['shopCustomer'] >= 0) {
+            $shopCustomer = intval($_REQUEST['shopCustomer']);
+            $shopSearchPattern .= " AND is_reseller=$shopCustomer";
+        }
+        if (!empty($_REQUEST['shopSearchTerm'])) {
+            $shopSearchTerm = contrexx_addslashes(trim(strip_tags($_REQUEST['shopSearchTerm'])));
+            $shopSearchPattern .= "
+                AND (   customerid LIKE '%$shopSearchTerm%'
+                     OR company LIKE '%$shopSearchTerm%'
+                     OR firstname LIKE '%$shopSearchTerm%'
+                     OR lastname LIKE '%$shopSearchTerm%'
+                     OR address LIKE '%$shopSearchTerm%'
+                     OR city LIKE '%$shopSearchTerm%'
+                     OR phone LIKE '%$shopSearchTerm%'
+                     OR email LIKE '%$shopSearchTerm%')";
+        }
+        if (isset($_REQUEST['shopListSort'])) {
+            $shopCustomerOrder = contrexx_addslashes(trim(strip_tags($_REQUEST['shopListSort'])));
+        }
+        if (!empty($_REQUEST['shopListLetter'])) {
+            $shopListLetter = $_REQUEST['shopListLetter'];
+            $shopSearchPattern .= " AND LEFT(`$shopCustomerOrder`, 1)='$shopListLetter'";
+        }
+
         // create query
         $query = "
             SELECT customerid, company, firstname, lastname,
                    address, city, zip, phone, email, customer_status
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
              WHERE 1 $shopSearchPattern
-          ORDER BY $shopCustomerOrder
-        ";
+             ORDER BY $shopCustomerOrder DESC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             $this->errorHandling();
         } else {
-            $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+            $pos = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
             $count = $objResult->RecordCount();
             if ($count == 0) {
                 self::$objTemplate->hideBlock('shopCustomersOverview');
             }
             $shopPagingLimit = intval($_CONFIG['corePagingLimit']);
-            $viewPaging = false; //by default, the paging view is disabled
-            if ($count > $shopPagingLimit) { //if count contains more entrys than the paging limit, set paging to true
-                $viewPaging = true;
-            }
-            $paging = getPaging($count, $pos, "&amp;cmd=shop".MODULE_INDEX."&amp;act=customers", "<b>".$_ARRAYLANG['TXT_CUSTOMERS_ENTRIES']."</b>", $viewPaging);
-            //$query .= " LIMIT $pos, $shopPagingLimit";
+            $paging = getPaging(
+                $count, $pos,
+                '&amp;cmd=shop'.MODULE_INDEX.'&amp;act=customers'.
+                  ($shopCustomerStatus >= 0 ? '&amp;shopCustomerStatus='.$shopCustomerStatus : '').
+                  ($shopCustomer >= 0 ? '&amp;shopCustomer='.$shopCustomer : '').
+                  ($shopSearchTerm ? '&amp;shopSearchTerm='.$shopSearchTerm : '').
+                  ($shopListLetter ? '&amp;shopListLetter='.$shopListLetter : '').
+                  ($shopCustomerOrder != 'customerid' ? '&amp;shopListSort='.$shopCustomerOrder : ''),
+                "<b>".$_ARRAYLANG['TXT_CUSTOMERS_ENTRIES']."</b>");
+            self::$objTemplate->setVariable(array(
+                'SHOP_CUSTOMER_PAGING' => $paging,
+                'SHOP_CUSTOMER_TERM' => htmlentities($shopSearchTerm),
+                'SHOP_CUSTOMER_LISTLETTER' => $shopListLetter,
+                'SHOP_CUSTOMER_TYPE_MENUOPTIONS' => Customers::getCustomerTypeMenuoptions($shopCustomer),
+                'SHOP_CUSTOMER_STATUS_MENUOPTIONS' => Customers::getCustomerStatusMenuoptions($shopCustomerStatus),
+                'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getCustomerSortMenuoptions($shopCustomerOrder),
+//                'SHOP_LISTLETTER_MENUOPTIONS' => self::getListletterMenuoptions,
+            ));
         }
         if (!($objResult = $objDatabase->SelectLimit($query, $shopPagingLimit, $pos))) {
             //if query has errors, call errorhandling
@@ -4415,28 +4436,21 @@ class shopmanager extends ShopLibrary
                 if ($objResult->fields['customer_status'] == 1) {
                     $shopCustomerStatus = "led_green.gif";
                 }
-                if (($i % 2) == 0) {
-                    $class='row1';
-                } else {
-                    $class='row2';
-                }
                 self::$objTemplate->setVariable(array(
-                'SHOP_ROWCLASS' => $class,
-                'SHOP_CUSTOMERID' => $objResult->fields['customerid'],
-                'SHOP_COMPANY' => $objResult->fields['company'] == '' ? '&nbsp;' : $objResult->fields['company'],
-                'SHOP_NAME' => $objResult->fields['firstname'].'&nbsp;'.$objResult->fields['lastname'],
-                'SHOP_ADDRESS' => $objResult->fields['address'] == '' ? '&nbsp;' : $objResult->fields['address'],
-                'SHOP_ZIP' => $objResult->fields['zip'],
-                'SHOP_CITY' => $objResult->fields['city'],
-                'SHOP_PHONE' => $objResult->fields['phone'] == '' ? '&nbsp;' : $objResult->fields['phone'],
-                'SHOP_EMAIL' => $objResult->fields['email'] == '' ? '&nbsp;' : $objResult->fields['email'],
-                'SHOP_CUSTOMER_STATUS_IMAGE' => $shopCustomerStatus,
+                    'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
+                    'SHOP_CUSTOMERID' => $objResult->fields['customerid'],
+                    'SHOP_COMPANY' => $objResult->fields['company'] == '' ? '&nbsp;' : $objResult->fields['company'],
+                    'SHOP_NAME' => $objResult->fields['firstname'].'&nbsp;'.$objResult->fields['lastname'],
+                    'SHOP_ADDRESS' => $objResult->fields['address'] == '' ? '&nbsp;' : $objResult->fields['address'],
+                    'SHOP_ZIP' => $objResult->fields['zip'],
+                    'SHOP_CITY' => $objResult->fields['city'],
+                    'SHOP_PHONE' => $objResult->fields['phone'] == '' ? '&nbsp;' : $objResult->fields['phone'],
+                    'SHOP_EMAIL' => $objResult->fields['email'] == '' ? '&nbsp;' : $objResult->fields['email'],
+                    'SHOP_CUSTOMER_STATUS_IMAGE' => $shopCustomerStatus,
                 ));
                 self::$objTemplate->parse('customersRow');
-                ++$i;
                 $objResult->MoveNext();
             }
-            self::$objTemplate->setVariable('SHOP_CUSTOMER_PAGING',$paging);
         }
         return true;
     }
@@ -5763,6 +5777,7 @@ class shopmanager extends ShopLibrary
     function errorHandling()
     {
         global $_ARRAYLANG;
+
         self::addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
     }
 
