@@ -33,7 +33,7 @@ class Image
     /**
      * The default "no image" URI
      */
-    const NO_IMAGE_SRC = 'images/modules/hotelcard/no_image.gif';
+    const PATH_NO_IMAGE = 'images/modules/hotelcard/no_image.gif';
 
     /**
      * Size limit in bytes for images being uploaded or stored
@@ -222,7 +222,7 @@ class Image
 // Should not be necessary, as the proper File methods are used to get this path
 //        File::pathRelativeToRoot($path);
         $path = preg_replace('/\.thumb$/', '', $path);
-        if ($path == self::NO_IMAGE_SRC) {
+        if ($path == self::PATH_NO_IMAGE) {
             $this->path = '';
         } else {
             $this->path = strip_tags($path);
@@ -296,13 +296,19 @@ class Image
      */
     function replace($image_id, $ord, $path, $image_type_key='', $width=false, $height=false)
     {
+//echo("Image::replace($image_id, $ord, $path, $image_type_key, $width, $height): Entered<br />");
         $objImage = Image::getById($image_id, $ord);
-        if (!$objImage && empty($image_type_key)) return false;
+        if (!$objImage && empty($image_type_key)) {
+//echo("Image::replace(): Image not found and empty key<br />");
+            return false;
+        }
         if (!$objImage) $objImage = new Image($ord);
+
         $imageSize = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$path);
         if ($width === false || $height === false) {
             $width = $imageSize[0];
             $height = $imageSize[1];
+//echo("Image::replace(): Image size: $width/$height<br />");
         }
         $path_parts = pathinfo($path);
 
@@ -317,6 +323,7 @@ class Image
         $objImage->setFileTypeKey(Filetype::getTypeIdForExtension($path_parts['extension']));
         $objImage->setWidth($width);
         $objImage->setHeight($height);
+//echo("Image::replace(): Storing Image<br />");
         return $objImage->store();
     }
 
@@ -501,13 +508,14 @@ class Image
      * Select an object by ID from the database.
      * @static
      * @param       integer     $id             The object ID
-     * @param       integer     $ord            The ordinal number
+     * @param       integer     $ord            The optional ordinal number,
+     *                                          defaults to zero
      * @return      Image                       The object on success,
      *                                          false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getById($image_id, $ord)
+    static function getById($image_id, $ord=0)
     {
         global $objDatabase;
 
@@ -553,27 +561,28 @@ class Image
      *    [...]
      *  )
      * @static
-     * @param       integer     $image_id        The Image ID
+     * @param       integer     $image_id       The Image ID
+     * @param       integer     $key            The optional key
      * @param       integer     $ord            The optional ordinal number
      * @return      array                       The fields array on success,
      *                                          false otherwise
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getArrayById($image_id, $ord=false)
+    static function getArrayById($image_id, $key=false, $ord=false)
     {
         global $objDatabase;
 
+        if (empty($image_id)) return false;
+        // This may not be what you want, but it's your fault in that case
         $query = "
-            SELECT `ord`, `image_type_key`, `file_type_key`,
+            SELECT `image_type_key`, `file_type_key`,
                    `path`, `width`, `height`
               FROM ".DBPREFIX."core_image
-             WHERE id=$image_id
-               ".($ord === false ? 'ORDER BY ord ASC' : "AND ord=$ord")
-        ;
+             WHERE id=$image_id".
+               ($key !== false ? " AND `image_type_key`='".addslashes($key)."'" : '').
+               ($ord !== false ? " AND `ord`=$ord" : '');
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return self::errorHandler();
-        }
+        if (!$objResult) return self::errorHandler();
         $arrImage = array();
         while (!$objResult->EOF) {
             $arrImage[$objResult->fields['ord']] = array(
@@ -763,7 +772,7 @@ class Image
         //    - For those with valid file upload parameters (no error):
         //      insert or update the file and image.
         //    - For those with invalid parameters (error):
-        //      - If theres no ID, ignore it
+        //      - If there's no ID, ignore it
         //      - If ID and ord are valid, but the src has been posted empty,
         //        delete the file and image.
         // - Post with image selection from the file browser:
@@ -822,7 +831,8 @@ class Image
             // The image original name is only set when uploading images
             if ($image_name) {
                 // Uploads must go to the target folder
-                $image_src = $target_folder_path.'/'.uniqid().'_'.$image_name;
+//                $image_src = $target_folder_path.'/'.uniqid().'_'.$image_name;
+                $image_src = $target_folder_path.'/'.$image_name;
 //echo("Image::processPostFiles(): Uploading $image_name to $image_src<br />");
                 if (!File::uploadFileHttp(
                     $name, $image_src,
@@ -836,7 +846,7 @@ class Image
                 }
             }
             // Delete the image if the src has been posted, but is empty
-            if ($image_src === '' && $objImage->getPath()) {
+            if ($objImage->getPath() && $image_src === '') {
 //echo("Image::processPostFiles(): Deleting ".$objImage->getPath()."<br />");
                 unset($_SESSION['image'][$name]);
                 // Also delete the files (image and thumb)
@@ -891,15 +901,30 @@ class Image
     }
 
 
-    static function getSession($key)
+    /**
+     * Returns the image data stored in the session for the given key
+     *
+     * If no such image is present, returns an image created from the
+     * default path given, if any.
+     * If the given default image does not exist, returns the Image class
+     * default Image.
+     * If that fails, too, returns false
+     * @param   string    $key            The image key
+     * @return  Image                     The default Image
+     */
+    static function getFromSessionByKey($key)
     {
-//echo("Image::getSession($key): Found ".var_export($_SESSION['image'][$key], true)."<br />");
-        if (   empty($_SESSION['image'][$key])
-            || empty($_SESSION['image'][$key]['id'])) return false;
-        return self::getById(
-            $_SESSION['image'][$key]['id'],
-            $_SESSION['image'][$key]['ord']
-        );
+        if (   isset($_SESSION['image'][$key])
+            && isset($_SESSION['image'][$key]['id'])) {
+//echo("Image::getFromSessionByKey($key): Found ".var_export($_SESSION['image'][$key], true)."<br />");
+            $objImage = self::getById(
+                $_SESSION['image'][$key]['id'],
+                $_SESSION['image'][$key]['ord']
+            );
+            if ($objImage) return $objImage;
+//echo("Image::getFromSessionByKey($key): Could not get the image<br />");
+        }
+        return false;
     }
 
 
@@ -996,7 +1021,7 @@ class Image
               `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
               `ord` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value allowing multiple images to be stored for the same image ID and type.\nUsed for sorting.\nDefaults to zero.',
               `image_type_key` TINYTEXT NULL DEFAULT NULL COMMENT 'Defaults to NULL, which is an untyped image.',
-              `file_type_key` TINYTEXT NULL DEFAULT NULL COMMENT 'Image type is unknown if NULL.',
+              `file_type_key` TINYTEXT NULL DEFAULT NULL COMMENT 'File type is unknown if NULL.',
               `path` TEXT NOT NULL COMMENT 'Path *SHOULD* be relative to the ASCMS_DOCUMENT_ROOT (document root + path offset).\nOmit leading slashes, these will be cut.',
               `width` INT UNSIGNED NULL COMMENT 'Width is unknown if NULL.',
               `height` INT UNSIGNED NULL COMMENT 'Height is unknown if NULL.',

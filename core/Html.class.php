@@ -16,6 +16,14 @@ require_once(ASCMS_FRAMEWORK_PATH.'/Javascript.class.php');
 require_once(ASCMS_CORE_PATH.'/Image.class.php');
 
 /**
+ * Some basic and often used (and frequently misspelt) HTML attributes
+ */
+define('HTML_ATTRIBUTE_CHECKED',  ' checked="checked"');
+define('HTML_ATTRIBUTE_SELECTED', ' selected="selected"');
+define('HTML_ATTRIBUTE_DISABLED', ' disabled="disabled"');
+// more...?
+
+/**
  * HTML class
  *
  * Provides some commonly used HTML elements
@@ -198,7 +206,7 @@ class Html
         foreach ($arrOptions as $key => $value) {
             $options .=
                 '<option value="'.$key.'"'.
-                ($selected == $key ? ' selected="selected"' : '').
+                ("$selected" == "$key" ? ' selected="selected"' : '').
                 '>'.$value."</option>\n";
         }
         return $options;
@@ -336,7 +344,6 @@ class Html
             if (empty($index[$name_stripped])) $index[$name_stripped] = 0;
             $id = $name.'-'.++$index[$name_stripped];
             $checkboxgroup .=
-                '<p>'.
                 self::getCheckbox(
                     $name.'['.$key.']', $value, $id,
                     (in_array($key, $arrChecked)),
@@ -346,10 +353,9 @@ class Html
                     $id,
                     $arrLabel[$key],
                     $attributeLabel
-                ).
-                "</p>\n";
+                );
         }
-        return $checkboxgroup;
+        return '<span class="inputgroup">'.$checkboxgroup."</span>\n";
     }
 
 
@@ -393,7 +399,9 @@ class Html
      * @param   string    $for          The for attribute of the label
      * @param   string    $text         The text of the label
      * @param   string    $attribute    Additional optional attributes
-     * @return unknown
+     * @return  string                  The HTML code for the label with
+     *                                  the text
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getLabel($for, $text, $attribute='')
     {
@@ -401,6 +409,35 @@ class Html
             '<label for="'.$for.'"'.
             ($attribute ? ' '.$attribute : '').
             '>'.$text."</label>\n";
+    }
+
+
+    /**
+     * Returns an image tag for the given Image object
+     *
+     * This adds alt, width, and height attributes with the values returned
+     * by {@see Image::getPath()}, {@see Image::getWidth()}, and
+     * {@see Image::getHeight()} methods repectively.
+     * If the $attribute parameter contains one of the alt, width, or height
+     * attributes (or corresponding style information), these will override
+     * the data from the Image object.
+     * @param   Image     $objImage     The Image object
+     * @param   string    $attribute    Additional optional attributes
+     * @return  string                  The HTML code for the image tag
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getImage($objImage, $attribute='')
+    {
+        return
+            '<image src="'.$objImage->getPath().'"'.
+            (preg_match('/width[:=]/', $attribute)
+              ? '' : ' width="'.$objImage->getWidth().'"').
+            (preg_match('/height[:=]/', $attribute)
+              ? '' : ' height="'.$objImage->getHeight().'"').
+            (preg_match('/alt\=]/', $attribute)
+              ? '' : ' alt="'.$objImage->getPath().'"').
+            ($attribute ? ' '.$attribute : '').
+            " />\n";
     }
 
 
@@ -484,21 +521,31 @@ class Html
      * The file upload element will provide the new image chosen by the user
      * when the form is posted, while the hidden fields represent the previous
      * state when the page was generated.
+     * The $path_default will replace the path of the image shown if that is
+     * empty, but the path posted back will remain empty so the default image
+     * is not accidentally stored.
      * See {@see Image::updatePostImages()} and {@see Image::uploadAndStore()}
      * for more information and examples.
      * @param   Image   $objImage       The image object
      * @param   string  $id             The base name for the elements IDs
      * @param   mixed   $imagetype_key  The optional Image type key
+     * @param   string  $path_default   The optional path of a default image
      * @return  string                  The HTML code for all the elements
      */
-    static function getImageChooserUpload($objImage, $id, $imagetype_key=false)
-    {
+    static function getImageChooserUpload(
+        $objImage, $id, $imagetype_key=false, $path_default=''
+    ) {
         global $_CORELANG;
 
-        JS::registerCode(self::getJavascript());
+        JS::registerCode(self::getJavascript($path_default));
         if (empty($objImage)) $objImage = new Image(0);
+        $path = $objImage->getPath();
+        if (empty($path)) {
+//echo("Html::getImageChooserUpload(): Fixed empty path to default $path_default<br />");
+            $path = $path_default;
+        }
         return
-            '<img id="'.$id.'_img" src="'.$objImage->getPath().'"'.
+            '<img id="'.$id.'_img" src="'.$path.'"'.
             ' style="width:'.$objImage->getWidth().
             'px; height:'.$objImage->getHeight().'px;"'.
             ' title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'"'.
@@ -547,8 +594,17 @@ class Html
     }
 
 
-    static function getJavascript()
+    /**
+     * A few JS scripts used by the Html and Image classes
+     * @todo    The Image class part should be moved
+     * @param   string    $path_default     The optional path to the
+     *                                      default image
+     * @return  string                      The Javascript code
+     */
+    static function getJavascript($path_default)
     {
+        global $_CORELANG; //$_ARRAYLANG,
+
         return '
 function openWindow(theURL, winName, features)
 {
@@ -585,7 +641,8 @@ function SetUrl(url, width, height, alt)
 
 function clearImage(id, index)
 {
-  document.getElementById(id+"_img").src = "'.Image::NO_IMAGE_SRC.'";
+  document.getElementById(id+"_img").src = "'.
+  ($path_default ? $path_default : Image::PATH_NO_IMAGE).'";
   document.getElementById(id+"_clear").style.display = "none";
   if (document.getElementById(id+"_src"))
     document.getElementById(id+"_src").value = "";
@@ -593,6 +650,44 @@ function clearImage(id, index)
     document.getElementById(id+"_width").value = "";
   if (document.getElementById(id+"_height"))
     document.getElementById(id+"_height").value = "";
+}
+
+/**
+ * Limit the textarea content length
+ *
+ * The count_min and count_max elements show the required and possible
+ * number of characters left.
+ * limit_min and limit_max specify the required and possible number of
+ * characters.
+ */
+function lengthLimit(textarea, count_min, count_max, limit_min, limit_max)
+{
+  if (textarea.value.length > limit_max) {
+    textarea.value = textarea.value.substring(0, limit_max);
+  } else {
+    count_max.value = limit_max - textarea.value.length;
+  }
+  if (textarea.value.length > limit_min) {
+    count_min.value = 0;
+  } else {
+    count_min.value = limit_min - textarea.value.length;
+  }
+}
+
+function toggleDisplay(button_element, target_id)
+{
+  var target_element = document.getElementById(target_id);
+  if (!target_element) alert("cannot find target "+target_id);
+
+  if (target_element.style.display == "block") {
+    target_element.style.display = "none";
+    button_element.innerHTML = "'.$_CORELANG['TXT_CORE_HTML_TOGGLE_OPEN'].'";
+//alert("closed");
+  } else {
+    target_element.style.display = "block";
+    button_element.innerHTML = "'.$_CORELANG['TXT_CORE_HTML_TOGGLE_CLOSE'].'";
+//alert("opened");
+  }
 }
 ';
     }
