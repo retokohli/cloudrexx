@@ -318,6 +318,7 @@ class HotelFacility
      * If found, invalid IDs are removed from the array, and false is
      * returned.  If the array contains nothing but positive integers as keys,
      * returns true.
+     * Also returns false if the argument is no array.
      * Note that calling this function with an empty array will return
      * true.  Calling it twice with the same array will always return true
      * after the second run.
@@ -332,6 +333,7 @@ class HotelFacility
      */
     static function validateFacilityIdArray(&$arrFacility)
     {
+        if (!is_array($arrFacility)) return false;
         $result = true;
         foreach (array_keys($arrFacility) as $facility_id) {
             if (is_integer($facility_id) && $facility_id > 0) {
@@ -442,6 +444,24 @@ class HotelFacility
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
         return false;
+    }
+
+
+    /**
+     * Deletes any facility relations for the given Hotel ID
+     * @param   integer   $hotel_id     The Hotel ID
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function deleteByHotelId($hotel_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_has_facility`
+             WHERE `hotel_id`=$hotel_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
     }
 
 
@@ -691,35 +711,36 @@ class HotelFacility
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group` (
-              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
               `name_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value, used for sorting the groups.',
-              PRIMARY KEY (`id`),
+              PRIMARY KEY (`id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
 
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility` (
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
               `name_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               `facility_group_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value, used for sorting the services within each group.',
-              PRIMARY KEY (`name_text_id`, `facility_group_id`),
+              PRIMARY KEY (`id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
 
         // Add data
         // Groups
@@ -1296,7 +1317,7 @@ class HotelFacility
                     $name, $lang_id,
                     MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP, $text_id);
                 if (!$objText->store()) {
-die("failed to add Text for facility group $ord_group: $name");
+//die("failed to add Text for facility group $group: $name");
 //                    return false;
                 }
                 $text_id = $objText->getId();
@@ -1305,13 +1326,13 @@ die("failed to add Text for facility group $ord_group: $name");
                 INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility_group` (
                   `name_text_id`, `ord`
                 ) VALUES (
-                  $text_id, $ord_group
+                  $text_id, ".++$ord_group."
                 )");
             if (!$objResult) {
 //echo("HotelFacility::errorHandler(): Failed to insert group $name<br />");
                 continue;
             }
-            $arrGroupId[$group] = $objResult->Insert_ID();
+            $arrGroupId[$group] = $objDatabase->Insert_ID();
         }
 
         foreach ($arrFacilities as $group => $arrFacility) {
@@ -1323,7 +1344,7 @@ die("failed to add Text for facility group $ord_group: $name");
                         $name, $lang_id,
                         MODULE_ID, self::TEXT_HOTELCARD_FACILITY, $text_id);
                     if (!$objText->store()) {
-die("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
+//die("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
 //                        continue;
                     }
                     $text_id = $objText->getId();
@@ -1335,7 +1356,7 @@ die("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
                       $text_id, $group_id, $ord_facility
                     )");
                 if (!$objResult) {
-die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
+//die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
 //                    continue;
                 }
             }
@@ -1345,7 +1366,7 @@ die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility` (
@@ -1355,7 +1376,7 @@ die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-die("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
 //            return false;
         }
 // TODO: Add data

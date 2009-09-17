@@ -38,14 +38,15 @@ class HotelRoom
      * The array is of the form
      *  array(
      *    room type ID => array(
-     *      'id'             => room type ID,
-     *      'name'           => type name,
-     *      'number_default' => default number of rooms available per day,
-     *      'price_default'  => default price per day,
-     *      'facilities'  => array (
+     *      'id'                 => room type ID,
+     *      'name'               => type name,
+     *      'number_default'     => default number of rooms available per day,
+     *      'price_default'      => default price per day,
+     *      'breakfast_included' => type name,
+     *      'facilities'         => array (
      *        facility ID => facility name,
      *        ... more ...
-     *      'availabilities'   => array(
+     *      'availabilities'     => array(
      *        date => array(
      *          'number_total'     => number of rooms available that day,
      *          'number_booked'    => number of rooms booked that day,
@@ -113,13 +114,19 @@ class HotelRoom
         if (empty($hotel_id)) return false;
         if (empty(self::$arrFacilities)) self::initFacilities();
 
+        // Flush previous types that belong to a different hotel
+        if (   empty(self::$arrRoomtypes)
+            || $hotel_id != self::$hotel_id)
+            self::$arrRoomtypes = array();
+
         // Room type
         $arrSqlName = Text::getSqlSnippets(
             '`type`.`type_text_id`', FRONTEND_LANG_ID,
             MODULE_ID, self::TEXT_HOTELCARD_ROOM_TYPE
         );
         $query = "
-            SELECT `type`.`number_default`, `type`.`price_default`
+            SELECT `type`.`number_default`, `type`.`price_default`,
+                   `type`.`breakfast_included`
                    ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_hotelcard_room_type` AS `type`".
                    $arrSqlName['join']."
@@ -127,12 +134,7 @@ class HotelRoom
             ($room_type_id ? " AND `type`.`type_text_id`=$room_type_id" : '')."
              ORDER BY `type`.`type_text_id` ASC";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult)
-die;//return self::errorHandler();
-        // Flush previous types that belong to a different hotel
-        if (   empty(self::$arrRoomtypes)
-            || $hotel_id != self::$hotel_id)
-            self::$arrRoomtypes = array();
+        if (!$objResult) return self::errorHandler();
         while (!$objResult->EOF) {
             $room_type_id = $objResult->fields['type_text_id'];
             $strName = $objResult->fields[$arrSqlName['text']];
@@ -141,12 +143,13 @@ die;//return self::errorHandler();
                 if ($objText) $strName = $objText->getText();
             }
             self::$arrRoomtypes[$room_type_id] = array(
-                'id'             => $room_type_id,
-                'name'           => $strName,
-                'number_default' => $objResult->fields['number_default'],
-                'price_default'  => $objResult->fields['price_default'],
-                'facilities'     => array(),
-                'availabilities' => array(),
+                'id'                 => $room_type_id,
+                'name'               => $strName,
+                'number_default'     => $objResult->fields['number_default'],
+                'price_default'      => $objResult->fields['price_default'],
+                'breakfast_included' => (bool)$objResult->fields['breakfast_included'],
+                'facilities'         => array(),
+                'availabilities'     => array(),
             );
             $objResult->MoveNext();
         }
@@ -161,8 +164,7 @@ die;//return self::errorHandler();
                  WHERE `relation`.`room_type_id`=$room_type_id
                  ORDER BY `facility`.`ord` ASC";
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult)
-die;//return self::errorHandler();
+            if (!$objResult) return self::errorHandler();
             while (!$objResult->EOF) {
                 $facility_id = $objResult->fields['room_facility_id'];
                 $strName = self::$arrFacilities[$facility_id]['name'];
@@ -183,8 +185,7 @@ die;//return self::errorHandler();
                   ($date_to   ? " AND `availability`.`date`<='$date_to'"   : '')."
                  ORDER BY `availability`.`date` ASC";
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult)
-die;//return self::errorHandler();
+            if (!$objResult) return self::errorHandler();
             while (!$objResult->EOF) {
                 $date = $objResult->fields['date'];
                 $arrRoomtype['availabilities'][$date] = array(
@@ -196,6 +197,8 @@ die;//return self::errorHandler();
                 $objResult->MoveNext();
             }
         }
+        // Remember the previous Hotel ID
+        self::$hotel_id = $hotel_id;
 //echo("HotelRoom::init($hotel_id, $room_type_id): made<br />".var_export(self::$arrRoomtypes, true)."<hr />");
         return true;
     }
@@ -315,6 +318,23 @@ die;//return self::errorHandler();
 
 
     /**
+     * Returns an array with all options available for the "breakfast included"
+     * dropdown menu
+     * @return    array           The breakfast included options array
+     */
+    static function getBreakfastIncludedArray()
+    {
+        global $_ARRAYLANG;
+
+        return array(
+            '' => $_ARRAYLANG['TXT_HOTELCARD_BREAKFAST_INCLUDED_PLEASE_CHOOSE'],
+             1 => $_ARRAYLANG['TXT_HOTELCARD_BREAKFAST_INCLUDED_YES'],
+             0 => $_ARRAYLANG['TXT_HOTELCARD_BREAKFAST_INCLUDED_NO'],
+        );
+    }
+
+
+    /**
      * Returns true if the facility record with the given ID exists,
      * false otherwise
      * @param   integer   $facility_id    The facility ID
@@ -412,6 +432,7 @@ die;//return self::errorHandler();
      * @param   string    $name             The room type name
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
+     * @param   integer   $breakfast_included   Breakfast is included if true
      * @param   integer   $room_type_id     The optional room type ID
      * @return  integer                     The ID of the record inserted or
      *                                      updated on success, zero otherwise
@@ -419,7 +440,8 @@ die;//return self::errorHandler();
      * @global  ADONewConnection  $objDatabase
      */
     static function storeType(
-        $hotel_id, $name, $number_default=1, $price_default=100, $room_type_id=0
+        $hotel_id, $name, $number_default, $price_default,
+        $breakfast_included, $room_type_id=0
     ) {
         global $objDatabase;
 
@@ -445,9 +467,10 @@ die;//return self::errorHandler();
         $number_default = intval($number_default);
         $price_default = intval($price_default);
         if (self::recordTypeExists($room_type_id))
-            return self::updateType($room_type_id, $number_default, $price_default);
+            return self::updateType(
+                $room_type_id, $number_default, $price_default, $breakfast_included);
         return self::insertType(
-            $room_type_id, $hotel_id, $number_default, $price_default);
+            $room_type_id, $hotel_id, $number_default, $price_default, $breakfast_included);
     }
 
 
@@ -516,20 +539,24 @@ die;//return self::errorHandler();
      * @param   integer   $room_type_id     The room type ID
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
+     * @param   integer   $breakfast_included   Breakfast is included in the
+     *                                      price if true
      * @return  integer                     The ID of the record inserted or
      *                                      updated on success, zero otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
-    static function updateType($room_type_id, $number_default, $price_default)
-    {
+    static function updateType(
+        $room_type_id, $number_default, $price_default, $breakfast_included
+    ) {
         global $objDatabase;
 
         if (empty($room_type_id)) return false;
         $query = "
             UPDATE `".DBPREFIX."module_hotelcard_room_type`
                SET `number_default`=$number_default,
-                   `price_default`=$price_default
+                   `price_default`=$price_default,
+                   `breakfast_included`=$breakfast_included
              WHERE `type_text_id`=$room_type_id";
         $objResult = $objDatabase->Execute($query);
         return ($objResult ? $room_type_id : 0);
@@ -545,25 +572,54 @@ die;//return self::errorHandler();
      * @param   integer   $hotel_id         The hotel ID
      * @param   integer   $number_default   The default number of rooms per day
      * @param   integer   $price_default    The default price per day
+     * @param   integer   $breakfast_included   Breakfast is included in the
+     *                                      price if true
      * @return  integer                     The ID of the record inserted or
      *                                      updated on success, zero otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
     static function insertType(
-        $room_type_id, $hotel_id, $number_default, $price_default
+        $room_type_id, $hotel_id, $number_default, $price_default,
+        $breakfast_included
     ) {
         global $objDatabase;
 
         if (empty($room_type_id) || empty($hotel_id)) return false;
         $query = "
             INSERT INTO `".DBPREFIX."module_hotelcard_room_type` (
-                `type_text_id`, `hotel_id`, `number_default`, `price_default`
+                `type_text_id`, `hotel_id`,
+                `number_default`, `price_default`,
+                `breakfast_included`
             ) VALUES (
-                $room_type_id, $hotel_id, $number_default, $price_default
+                $room_type_id, $hotel_id,
+                $number_default, $price_default,
+                ".($breakfast_included ? 1 : 0)."
             )";
         $objResult = $objDatabase->Execute($query);
         return ($objResult ? $room_type_id : 0);
+    }
+
+
+    static function deleteByHotelId($hotel_id)
+    {
+        global $objDatabase;
+
+        self::init($hotel_id);
+        foreach (self::$arrRoomtypes as $arrRoomtype) {
+            $room_type_id = $arrRoomtype['id'];
+            $query = "
+                DELETE FROM `".DBPREFIX."module_hotelcard_room_available`
+                 WHERE `room_type_id`=$room_type_id";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return self::errorHandler();
+        }
+        $query = "
+            DELETE FROM `".DBPREFIX."module_hotelcard_room_type`
+             WHERE `hotel_id`=$hotel_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
     }
 
 
@@ -719,11 +775,12 @@ die;//return self::errorHandler();
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_type` (
-              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
               `type_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              `hotel_id` INT UNSIGNED NOT NULL DEFAULT '0',
+              `hotel_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
               `number_default` INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Default number of rooms available for this type',
               `price_default` DECIMAL(7,2) UNSIGNED NOT NULL DEFAULT 100.00,
+              `breakfast_included` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
               PRIMARY KEY (`id`),
               INDEX `room_type_text_id` (`type_text_id` ASC)
             ) ENGINE=MYISAM";
@@ -761,7 +818,7 @@ die;//return self::errorHandler();
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_room_facility` (
-              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
               `name_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               PRIMARY KEY (`id`)

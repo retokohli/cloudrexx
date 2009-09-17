@@ -1,77 +1,79 @@
 <!-- start overview.html -->
 <form name="formHotelcardOverview" method="post" action="{MODULE_URI_BASE}">
-  <div class="table">
-    <div class="thead">
-      <div class="tr" style="width: 100%;">
-        <div class="th" style="width: 25%;">
+  <table class="adminlist" border="0" cellspacing="0" cellpadding="2" width="100%" summary="">
+    <thead>
+      <tr>
+        <th width="25%">
           <b>{TXT_HOTELCARD_NAME}</b>
-        </div>
-        <div class="th" style="width: 75%;">
+        </th>
+        <th width="75%">
           <b>{TXT_HOTELCARD_VALUE}</b>
-        </div>
-      </div>
-    </div>
-    <div class="tbody">
+         </th>
+       </tr>
+     </thead>
+    <tbody>
 <!-- BEGIN hotelcard_section -->
-      <div class="tr_section">
-        <div class="td" style="width: 100%;font-weight: bold;">
+      <tr class="row3">
+        <td colspan="2">
           {HOTELCARD_SECTION}
-        </div>
-      </div>
+         </td>
+       </tr>
 <!-- BEGIN hotelcard_row -->
-      <div class="trrow{HOTELCARD_ROWCLASS}">
-        <div class="td" style="width: 25%;">
+      <tr class="row{HOTELCARD_ROWCLASS}">
+        <td valign="top">
           {HOTELCARD_NAME}
-        </div>
-        <div class="td" style="width: 25%;">
+         </td>
+        <td valign="top">
           {HOTELCARD_VALUE}
-        </div>
-        <div class="td" style="width: 50%;">&nbsp;</div>
-      </div>
+         </td>
+       </tr>
 <!-- END hotelcard_row -->
 <!-- END hotelcard_section -->
-    </div>
-  </div>
+     </tbody>
+   </table>
   <br />
   <br />
-  <div class="table">
-    <div class="thead">
-      <div class="tr" style="width: 100%;">
-        <div class="th" style="width: 10%;">
+  <table class="adminlist" border="0" cellspacing="0" cellpadding="2" width="100%" summary="">
+    <thead>
+      <tr class="row3">
+        <th width="10%">
           <b>{TXT_HOTELCARD_HOTEL_ID}</b>
-        </div>
-        <div class="th" style="width: 30%;">
+        </th>
+         <th width="30%">
           <b>{TXT_HOTELCARD_HOTEL_NAME}</b>
-        </div>
-        <div class="th" style="width: 50%;">
+        </th>
+         <th width="50%">
           <b>{TXT_HOTELCARD_HOTEL_INFO}</b>
-        </div>
-        <div class="th" style="width: 10%;">
+        </th>
+         <th width="10%">
           <b>{TXT_HOTELCARD_FUNCTIONS}</b>
-        </div>
-      </div>
-    </div>
-    <div class="tbody">
+        </th>
+       </tr>
+     </thead>
+<!-- BEGIN hotelcard_hotel_list -->
+    <tbody>
 <!-- BEGIN hotelcard_hotel_row -->
-      <div class="trrow{HOTELCARD_ROWCLASS}">
-        <div class="td" style="width: 10%;">
+      <tr class="row{HOTELCARD_ROWCLASS}">
+        <td width="10%">
           <b>{HOTELCARD_HOTEL_ID}</b>
-        </div>
-        <div class="td" style="width: 30%;">
+        </td>
+        <td width="30%">
           <b>{HOTELCARD_HOTEL_NAME}</b>
-        </div>
-        <div class="td" style="width: 50%;">
+        </td>
+        <td width="50%">
           <b>{HOTELCARD_HOTEL_INFO}</b>
-        </div>
-        <div class="td" style="width: 10%;">
+        </td>
+        <td width="10%">
           <b>{HOTELCARD_FUNCTIONS}</b>
-        </div>
-      </div>
+        </td>
+       </tr>
 <!-- END hotelcard_hotel_row -->
-    </div>
-  </div>
+     </tbody>
+<!-- END hotelcard_hotel_list -->
+   </table>
   <br />
   <br />
-  <input type="submit" value="{TXT_HOTELCARD_STORE}" name="store" style="margin-left:30px;" /><br />
+  <input type="submit" value="{TXT_HOTELCARD_STORE}" name="store" style="margin-left: 30px;" />
+  <br />
 </form>
 <!-- end overview.html -->

@@ -32,6 +32,10 @@ class HotelRating
      */
     const RATING_TO   = 1;
     /**
+     * If true, an additional option for "not rated" is added
+     */
+    const INCLUDE_NOT_RATED = true;
+    /**
      * Symbol to use for the rating, is multiplied according to the value
      */
     const STAR        = '*';
@@ -46,42 +50,31 @@ class HotelRating
 
 
     /**
-     * Returns HTML code for a dropdown menu with the available ratings
-     *
-     * Note that iff the $selected parameter is the empty sting or missing,
-     * an additional option will be added on top of the others asking
-     * the user to "please choose".
-     * @param   string      $name       The menu name attribute value
-     * @param   string      $selected   The optional preselected index
-     * @param   string      $onchange   The optional onchange attribute value
-     * @param   string      $attribute  Optional additional attributes
-     * @return  string                  The dropdown menu HTML code
+     * Returns an array with the available ratings
+     * @return  array             The ratings array
      */
-    public static function getMenu($name, $selected='', $onchange='', $attribute='')
+    public static function getArray()
     {
         global $_ARRAYLANG;
-
         static $arrRating = array();
+
         if (empty($arrRating)) {
-//            if ($selected === '')
-                $arrRating[''] = $_ARRAYLANG['TXT_HOTELCARD_RATING_PLEASE_CHOOSE'];
-//echo("HotelRating::getMenu($name, $selected, $onchange, $attribute): Making rating array...<br />");
+            $arrRating[''] = $_ARRAYLANG['TXT_HOTELCARD_RATING_PLEASE_CHOOSE'];
+//echo("HotelRating::getArray(): Making rating array...<br />");
+            if (self::INCLUDE_NOT_RATED)
+                $arrRating['-'] = $_ARRAYLANG['TXT_HOTELCARD_RATING_NONE'];
             for ($index = self::RATING_FROM;
                  (   (   self::RATING_FROM < self::RATING_TO
                       && $index <= self::RATING_TO)
                   || $index >= self::RATING_TO);
                 $index += (self::RATING_FROM < self::RATING_TO ? 1 : -1)) {
                 $rating = self::getString($index);
-//echo("HotelRating::getMenu($name, $selected, $onchange, $attribute): Adding index $index => $rating<br />");
+//echo("HotelRating::getArray(): Adding index $index => $rating<br />");
                 $arrRating[$index] = $rating;
             }
         }
-//echo("HotelRating::getMenu($name, $selected, $onchange, $attribute): Made rating array ".var_export($arrRating, true)."<br />");
-        return Html::getSelect(
-            $name,
-            $arrRating,
-            $selected, $onchange, $attribute
-        );
+//echo("HotelRating::getArray(): Made rating array ".var_export($arrRating, true)."<br />");
+        return $arrRating;
     }
 
 
