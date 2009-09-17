@@ -16,8 +16,7 @@ require_once ASCMS_CORE_PATH.'/Html.class.php';
  * Manages settings stored in the database
  *
  * Before trying to access a modules' settings, *DON'T* forget to call
- * {@see SettingDb::init()} with the current MODULE_ID before calling
- * getValue() for the first time!
+ * {@see SettingDb::init()} before calling getValue() for the first time!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @version     2.2.0
@@ -47,15 +46,6 @@ class SettingDb
     private static $arrSettings = false;
 
     /**
-     * The module ID last used to {@see init()} the settings.
-     * Defaults to zero.
-     * @var     integer
-     * @static
-     * @access  private
-     */
-    private static $module_id = 0;
-
-    /**
      * The key last used to {@see init()} the settings.
      * Defaults to false (ignored).
      * @var     string
@@ -68,7 +58,7 @@ class SettingDb
      * Changes flag
      *
      * This flag is set to true as soon as any change to the settings is detected.
-     * It is cleared whenever {@see storeAll()} is called.
+     * It is cleared whenever {@see updateAll()} is called.
      * @var     boolean
      * @static
      * @access  private
@@ -78,47 +68,42 @@ class SettingDb
 
     /**
      * Initialize the settings entries from the database with key/value pairs
-     * for the given module ID and key
+     * for the current module ID and the given key
      *
-     * A $key value of false is ignored; any records with the given $module_id
-     * are included in this case.
+     * A $key value of false is ignored.  All records with the current module ID
+     * taken from the global MODULE_ID constant are included in this case.
      * Note that the setting name *SHOULD* be unambiguous whether $key is
      * empty or not.  If there are two settings with the same name but different
      * $key values, the second one will overwrite the first!
      * @internal  The records are ordered by
-     *            `module_id` ASC, `key` ASC, `ord` ASC, `name` ASC
-     * @param   integer   $module_id  The module ID, or zero for core,
-     *                                defaults to zero
-     * @param   string    $key        The key, or false
+     *            `key` ASC, `ord` ASC, `name` ASC
+     * @param   string    $key        The key, or false.  Defaults to false
      * @return  boolean               True on success, false otherwise
      */
-    function init($module_id=0, $key=false)
+    function init($key=false)
     {
         global $objDatabase;
 
         self::flush();
-//echo("SettingDb::init($module_id, $key): Entered<br />");
+//echo("SettingDb::init($key): Entered<br />");
         $objResult = $objDatabase->Execute("
-            SELECT `name`, `module_id`, `key`,
-                   `value`,
+            SELECT `name`, `key`, `value`,
                    `type`, `values`, `ord`
               FROM ".DBPREFIX."core_setting
-             WHERE `module_id`=$module_id".
+             WHERE `module_id`=".MODULE_ID.
              ($key === false ? '' : " AND `key`='".addslashes($key)."'")."
-             ORDER BY `module_id` ASC, `key` ASC, `ord` ASC, `name` ASC
-        ");
+             ORDER BY `key` ASC, `ord` ASC, `name` ASC");
         if (!$objResult) return self::errorHandler();
-        self::$module_id = $module_id;
         self::$key = $key;
         self::$arrSettings = array();
         while (!$objResult->EOF) {
             self::$arrSettings[$objResult->fields['name']] = array(
-                'module_id' => $objResult->fields['module_id'],
-                'key' => $objResult->fields['key'],
-                'value' => $objResult->fields['value'],
-                'type' => $objResult->fields['type'],
-                'values' => $objResult->fields['values'],
-                'ord' => $objResult->fields['ord'],
+                'module_id' => MODULE_ID,
+                'key'       => $objResult->fields['key'],
+                'value'     => $objResult->fields['value'],
+                'type'      => $objResult->fields['type'],
+                'values'    => $objResult->fields['values'],
+                'ord'       => $objResult->fields['ord'],
             );
 //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
             $objResult->MoveNext();
@@ -136,7 +121,6 @@ class SettingDb
     static function flush()
     {
         self::$arrSettings = false;
-        self::$module_id   = 0;
         self::$key         = false;
         self::$flagChanged = false;
     }
@@ -154,24 +138,21 @@ class SettingDb
 
 
     /**
-     * Returns the settings array with key/value pairs for the given
-     * module ID and key
+     * Returns the settings array for the current module ID and the
+     * given key
      *
      * See {@see init()} on how the arguments are used.
-     * If the method is called successively using the same arguments,
+     * If the method is called successively using the same $key argument,
      * the current settings are returned without calling {@see init()}.
      * Thus, changes made by calling {@see set()} will be preserved.
-     * @param   integer   $module_id  The module ID, or zero for core,
-     *                                defaults to zero
      * @param   string    $key        The key, or false
      * @return  array                 The settings array on success,
      *                                false otherwise
      */
-    function getArray($module_id=0, $key=false)
+    function getArray($key=false)
     {
-        if (   self::$module_id !== $module_id
-            || self::$key !== $key) {
-            if (!self::init($module_id, $key)) return false;
+        if (self::$key !== $key) {
+            if (!self::init($key)) return false;
         }
         return self::$arrSettings;
     }
@@ -204,7 +185,7 @@ class SettingDb
      * If the new value is not equal to the old one, it is updated,
      * and $flagChanged set to true.
      * Otherwise, nothing happens.
-     * @see init(), storeAll()
+     * @see init(), updateAll()
      * @param   string    $name       The settings name
      * @param   string    $value      The settings value
      * @return  boolean               True if the value has been changed,
@@ -215,11 +196,11 @@ class SettingDb
         if (   !isset(self::$arrSettings[$name])
             || (   isset(self::$arrSettings[$name])
                 && self::$arrSettings[$name]['value'] != $value)) {
-//echo("SettingsDb::set($name, $value): Added/updated<br />");
+//echo("SettingDb::set($name, $value): Added/updated<br />");
             self::$flagChanged = true;
             self::$arrSettings[$name]['value'] = $value;
         }
-//echo("SettingsDb::set($name, $value): Leaving<br />");
+//echo("SettingDb::set($name, $value): Leaving<br />");
         return self::$flagChanged;
     }
 
@@ -234,13 +215,13 @@ class SettingDb
      * @return  mixed               True on success, false on failure,
      *                              the empty string if no change is detected.
      */
-    function storeAll()
+    function updateAll()
     {
         if (!self::$flagChanged) return '';
 
         $success = true;
         foreach (self::$arrSettings as $name => $arrSetting) {
-            $success &= self::store($name, $arrSetting['value']);
+            $success &= self::update($name, $arrSetting['value']);
         }
         if ($success) {
             self::$flagChanged = false;
@@ -267,15 +248,14 @@ class SettingDb
      * @static
      * @global  mixed     $objDatabase    Database connection object
      */
-    static function store($name, $value, $ord=false)
+    static function update($name, $value, $ord=false)
     {
         global $objDatabase;
 
-        // Fail if the module ID is false, the name is invalid
+        // Fail if the name is invalid
         // or the setting does not exist already
 // TODO: Add error messages for individual errors
-        if (   self::$module_id === false
-            || empty($name)
+        if (   empty($name)
             || !isset(self::$arrSettings[$name]))
             return false;
 
@@ -288,29 +268,20 @@ class SettingDb
                SET `value`='".addslashes($value)."'".
                    ($ord !== false ? ", `ord`=$ord" : '')."
              WHERE `name`='".addslashes($name)."'
-               AND `module_id`=".self::$module_id.
+               AND `module_id`=".MODULE_ID.
              (self::$key !== false ? " AND `key`='".addslashes(self::$key)."'" : ''));
-//echo("Result is a ".get_class($objResult)."<br />");
-//        if (is_a($objResult, 'ADORecordSet_empty') || $objResult->AffectedRows() == 0) {
-//        if ($objResult->AffectedRows() == 0) {
-//echo("Warning:  SettingDb::store($name, $value, $ord):  Updating the setting affected zero rows!<br />");
-//            return false;
-//        }
-//    }
         if (!$objResult) return self::errorHandler();
         return true;
     }
 
 
     /**
-     * Add a new record to the currently loaded settings
+     * Add a new record to the settings
      *
      * The class *MUST* have been initialized by calling {@see init()}
      * or {@see getArray()} before this method is called.
-     * Fails if the current $module_id is false or no settings are loaded.
-     * The present $module_id and $key stored in the class are used
-     * as defaults.
-     * If the current $key is false, it *MUST* be specified.
+     * The present $key stored in the class is used as a default.
+     * If the current class $key is empty, it *MUST* be specified in the call.
      * @param   string    $name     The setting name
      * @param   string    $value    The value
      * @param   integer   $ord      The ordinal value for sorting,
@@ -319,24 +290,22 @@ class SettingDb
      *                              defaults to 'text'
      * @param   string    $values   The values for type 'dropdown',
      *                              defaults to the empty string
-     * @param   string    $key      The key, defaults to the key stored
-     *                              in the class
+     * @param   string    $key      The optional key
      * @return  boolean             True on success, false otherwise
      */
-    static function add($name, $value, $ord=0, $type='text', $values='', $key=false)
+    static function add($name, $value, $ord=false, $type='text', $values='', $key=false)
     {
         global $objDatabase;
 
-        // Fail if the module ID is false or the name is invalid
-        if (   self::$module_id === false
-            || self::$arrSettings === false
+        // Fail if the name is invalid
+        if (   self::$arrSettings === false
             || empty($name))
             return false;
 
         // This can only be done with a non-empty key!
+        // Use the current key, if present, otherwise fail
         if ($key === false) {
             if (self::$key === false) return false;
-            // Use the current key, if present
             $key = self::$key;
         }
 
@@ -345,13 +314,14 @@ class SettingDb
             SELECT 1
               FROM `".DBPREFIX."core_setting`
              WHERE `name`='".addslashes($name)."'
-               AND `module_id`=".self::$module_id.
+               AND `module_id`=".MODULE_ID.
              (self::$key === false ? '' : " AND `key`='".addslashes(self::$key)."'"));
         if (!$objResult) return self::errorHandler();
         if (!$objResult->EOF) {
-            // Entry exists already!
-// TODO:  Add error message
+            // Such an entry exists already, fail
             return false;
+            // update it
+            //return self::update($name, $value, $ord);
         }
 
         // Not present, insert it
@@ -366,12 +336,12 @@ class SettingDb
                 `ord`
             ) VALUES (
                 '".addslashes($name)."',
-                ".self::$module_id.",
+                ".MODULE_ID.",
                 '".addslashes($key)."',
                 '".addslashes($value)."',
                 '".addslashes($type)."',
                 '".addslashes($values)."',
-                $ord
+                ".intval($ord)."
             )");
         if (!$objResult) return self::errorHandler();
         return true;
@@ -413,6 +383,8 @@ class SettingDb
      * @return  boolean                           True on success, false otherwise
      * @todo    Add functionality to handle arrays within arrays
      * @todo    Add functionality to handle special form elements
+     * @todo    Verify special values like e-mail addresses in methods
+     *          that store them, like add(), update(), and updateAll()
      */
     static function show($objTemplateLocal, $section='', $prefix='TXT_')
     {
@@ -443,43 +415,49 @@ class SettingDb
             );
             return true;
         }
-        $i = 0;
 
+        $i = 0;
         foreach (self::$arrSettings as $name => $arrSetting) {
             // Determine HTML element for type and apply values and selected
             $element = '';
             $value = $arrSetting['value'];
-            $value_align = (is_numeric($value) ? ' text-align: right;' : '');
+            $value_align = (is_numeric($value) ? 'text-align: right;' : '');
             switch ($arrSetting['type']) {
               // Dropdown menu
               case 'dropdown':
 // TODO:  Use the Html class to create the dropdown
-                $element =
-                    '<select name="'.$name.
-                    '" style="width: 220px;'.$value_align.'" >';
-                foreach (self::splitValues($arrSetting['values']) as $some_value) {
-                    $element .=
-                        '<option value="'.$some_value.'"'.
-                        ($value == $some_value ? ' selected="selected"' : '').
-                        '>'.$some_value.'</option>';
-                }
-                $element .= '</select>';
+                $element = Html::getSelect(
+                    $name, self::splitValues($arrSetting['values']), $value,
+                    '',
+                    'style="width: 220px;'.$value_align.'"');
                 break;
-
               case 'dropdown_user_custom_attribute':
-//DBG::enable_error_reporting();
-//DBG::enable_adodb_debug();
-                    $element = Html::getSelect(
+                $element = Html::getSelect(
                     $name,
                     User_Profile_Attribute::getCustomAttributeNameArray(),
                     $arrSetting['value'],
                     '', 'style="width: 220px;"'
                 );
                 break;
+              case 'dropdown_usergroup':
+                $element = Html::getSelect(
+                    $name,
+                    UserGroup::getNameArray(),
+                    $arrSetting['value'],
+                    '', 'style="width: 220px;"'
+                );
+                break;
+              case 'wysiwyg':
+                $element = get_wysiwyg_editor($name, $value);
+                break;
+
 // More...
 //              case '':
 //                break;
+
               // Default to text input fields
+              case 'text':
+              case 'email':
               default:
                 $element =
                     '<input type="text" style="width: 220px;'.$value_align.'" '.
@@ -510,6 +488,25 @@ class SettingDb
 
 
     /**
+     * Deletes all entries for the current module
+     *
+     * This is for testing purposes only.  Use with care!
+     * The global MODULE_ID determines the current module ID.
+     * @return    boolean               True on success, false otherwise
+     */
+    static function deleteModule()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            DELETE FROM `".DBPREFIX."core_setting`
+             WHERE `module_id`=".MODULE_ID);
+        if (!$objResult) return self::errorHandler();
+        return true;
+    }
+
+
+    /**
      * Should be called whenever there's a problem with the settings table
      *
      * Tries to fix or recreate the settings table.
@@ -522,9 +519,7 @@ class SettingDb
 echo("SettingDb::errorHandler(): Entered<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."core_setting", $arrTables)) {
-            // TODO:  Fix it!
-        } else {
+        if (!in_array(DBPREFIX."core_setting", $arrTables)) {
             $query = "
                 CREATE TABLE `".DBPREFIX."core_setting` (
                   `name` TINYTEXT NOT NULL,
@@ -541,42 +536,8 @@ echo("SettingDb::errorHandler(): Entered<br />");
 echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
         }
 
-        // Mind:  For funny values, apply addslashes()!
-        $arrRecord = array(
-            // name => array(module ID, key, value, type, values, ord)
-
-            // module hotelcard default settings
-            'hotel_minimum_rooms_days' => array(10013, 'admin', '180', 'text', '180', 0),
-            'hotel_default_description_en' => array(10013, 'admin', 'Description', 'text', 'Description', 2),
-            'hotel_default_description_de' => array(10013, 'admin', 'Beschreibung', 'text', 'Beschreibung', 1),
-            'user_attribute_hotel_id' => array(10013, 'admin', '1', 'dropdown_user_custom_attribute', '', 3),
-
-            'hotel_per_page_frontend' => array(10013, 'frontend', '10', 'text', '10', 1),
-            'hotel_default_order_frontend' => array(10013, 'frontend', 'price DESC', 'text', 'price DESC', 2),
-            'hotel_max_pictures' => array(10013, 'frontend', '3', 'text', '3', 2),
-
-            'hotel_per_page_backend' => array(10013, 'backend', '10', 'text', '10', 1),
-            'hotel_default_order_backend' => array(10013, 'backend', 'name ASC', 'text', 'name ASC', 2),
-
-
-        );
-        foreach ($arrRecord as $name => $arrSetting) {
-            $objResult = $objDatabase->Execute("
-                SELECT 1
-                  FROM `".DBPREFIX."core_setting`
-                 WHERE `name`='".addslashes($name)."'");
-            if (!$objResult) return false;
-            if ($objResult->EOF) {
-                $objResult = $objDatabase->Execute("
-                    INSERT INTO `".DBPREFIX."core_setting` (
-                        `name`, `module_id`, `key`, `value`, `type`, `values`, `ord`
-                    ) VALUES (
-                        '".addslashes($name)."', '".join("', '", $arrSetting)."'
-                    )");
-                if (!$objResult) return false;
-echo("SettingDb::errorHandler(): Added record ('".join("', '", $arrSetting)."')<br />");
-            }
-        }
+        // Use SettingDb::add(); in your module code to add missing and
+        // new settings.
 
         // More to come...
 

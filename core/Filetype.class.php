@@ -205,7 +205,7 @@ class Filetype
 
         $objResult = $objDatabase->Execute("
             CREATE TABLE `".DBPREFIX."core_file_type` (
-              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT DEFAULT 0,
+              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
               `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
               `extension` VARCHAR(16) NULL COMMENT 'Extension without the leading dot',
               `mime_type` VARCHAR(32) NULL COMMENT 'Mime type',

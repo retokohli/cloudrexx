@@ -84,7 +84,10 @@ class Sorting
 
     /**
      * Constructor
-     * @param   string  $baseURI        The base page URI.
+     *
+     * Note that the base page URI is handed over by reference and that
+     * the order parameter name is removed from that, if present.
+     * @param   string  $baseURI        The base page URI, by reference
      * @param   array   $arrFieldName   The acceptable field names.
      * @param   array   $arrHeaderName  The header names for displaying.
      * @param   boolean $flagDefaultAsc The flag indicating the default order
@@ -93,9 +96,13 @@ class Sorting
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true,
+        &$baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true,
         $orderUriParameter=self::ORDER_PARAMETER_NAME
     ) {
+        // Remove the order parameter name argument from the base URI
+        $baseUri = preg_replace(
+            '/'.preg_quote($this->orderUriParameter, '\=[^&]*\&?/').'/',
+            '', $baseUri);
         $this->baseUri        = $baseUri;
         $this->arrFieldName   = $arrFieldName;
         $this->arrHeaderName  = $arrHeaderName;
@@ -201,6 +208,10 @@ class Sorting
 
     /**
      * Returns the current order string (SQL-ish syntax)
+     *
+     * Note that this adds backticks around the order field name.
+     * So, if you use qualified names, omit the first and last backticks
+     * when initializing the Sorting object, like "table`.`field".
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -243,7 +254,6 @@ class Sorting
      *
      * The returned string contains both the parameter name, 'order',
      * and the current order string value.
-     * It is ready to be used in an URI in a link.
      * @param   string  $field    The optional order field
      * @return  string            URI encoded order string
      * @author  Reto Kohli <reto.kohli@comvation.com>
@@ -254,7 +264,10 @@ class Sorting
             $field = $this->orderField;
         }
         return
-            '&amp;'.$this->orderUriParameter.
+// TODO: I guess that it's better to leave it to another piece of code
+// whether to add '?' or '&'...?
+            //'&amp;'.
+            $this->orderUriParameter.
             '='.urlencode("$field $this->orderDirection");
     }
 
