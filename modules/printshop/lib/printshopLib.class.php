@@ -330,7 +330,8 @@ class PrintshopLibrary {
                   FROM `'.DBPREFIX.'module_printshop_order`
                   WHERE `orderId` = '.intval($orderId);
 
-        return $objDatabase->SelectLimit($query, 1)->fields;
+        $objRS = $objDatabase->SelectLimit($query, 1);
+        return $objRS->fields;
     }
 
 
