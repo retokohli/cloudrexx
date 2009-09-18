@@ -2298,6 +2298,105 @@ CREATE TABLE `contrexx_module_podcast_template` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `description` (`description`)
 ) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_printshop_back` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `back` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `back` (`back`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_printshop_format` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `format` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `format` (`format`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_printshop_front` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `front` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `front` (`front`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_printshop_order` (
+  `orderId` int(10) unsigned NOT NULL auto_increment,
+  `type` int(10) unsigned NOT NULL,
+  `format` int(10) unsigned NOT NULL,
+  `front` int(10) unsigned NOT NULL,
+  `back` int(10) unsigned NOT NULL,
+  `weight` int(10) unsigned NOT NULL,
+  `paper` int(10) unsigned NOT NULL,
+  `status` tinyint(4) NOT NULL,
+  `price` double NOT NULL,
+  `amount` int(11) NOT NULL,
+  `file1` varchar(255) NOT NULL,
+  `file2` varchar(255) NOT NULL,
+  `file3` varchar(255) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `telephone` varchar(255) NOT NULL,
+  `comment` text NOT NULL,
+  `shipment` enum('pickup','messenger','mail') NOT NULL default 'pickup',
+  `invoiceCompany` varchar(255) NOT NULL,
+  `invoiceContact` varchar(255) NOT NULL,
+  `invoiceAddress1` varchar(255) NOT NULL,
+  `invoiceAddress2` varchar(255) NOT NULL,
+  `invoiceZip` varchar(255) NOT NULL,
+  `invoiceCity` varchar(255) NOT NULL,
+  `shipmentCompany` varchar(255) NOT NULL,
+  `shipmentContact` varchar(255) NOT NULL,
+  `shipmentAddress1` varchar(255) NOT NULL,
+  `shipmentAddress2` varchar(255) NOT NULL,
+  `shipmentZip` varchar(255) NOT NULL,
+  `shipmentCity` varchar(255) NOT NULL,
+  PRIMARY KEY  (`orderId`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_printshop_paper` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `paper` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `paper` (`paper`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_printshop_product` (
+  `type` int(11) NOT NULL,
+  `format` int(11) NOT NULL,
+  `front` int(11) NOT NULL,
+  `back` int(11) NOT NULL,
+  `weight` int(11) NOT NULL,
+  `paper` int(11) NOT NULL,
+  `price_0` double unsigned NOT NULL default '0',
+  `price_1` double unsigned NOT NULL default '0',
+  `price_2` double unsigned NOT NULL default '0',
+  `price_3` double unsigned NOT NULL default '0',
+  `price_4` double unsigned NOT NULL default '0',
+  `price_5` double unsigned NOT NULL default '0',
+  `price_6` double unsigned NOT NULL default '0',
+  `price_7` double unsigned NOT NULL default '0',
+  `price_8` double unsigned NOT NULL default '0',
+  `price_9` double unsigned NOT NULL default '0',
+  `price_10` double unsigned NOT NULL default '0',
+  `price_11` double unsigned NOT NULL default '0',
+  `price_12` double unsigned NOT NULL default '0',
+  `price_13` double unsigned NOT NULL default '0',
+  `price_14` double unsigned NOT NULL default '0',
+  `price_15` double unsigned NOT NULL default '0',
+  PRIMARY KEY  (`type`,`format`,`front`,`back`,`weight`,`paper`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_printshop_settings` (
+  `name` varchar(255) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY  (`name`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_printshop_type` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `type` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `type` (`type`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_printshop_weight` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `weight` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `weight` (`weight`)
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_recommend` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
