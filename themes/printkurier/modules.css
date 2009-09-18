@@ -2259,6 +2259,7 @@ dl.data_module img {
 
 #printshop input.radio {
     margin: 1px; padding: 0px;
+    clear: both;
 }
 
 #printshop .shipmentSelection, #printshop .shipmentSelection label {
