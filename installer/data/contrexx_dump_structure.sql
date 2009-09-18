@@ -987,6 +987,7 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `mime_type` enum('image','document','pdf','media','archive','application','link') NOT NULL default 'image',
   `source` varchar(255) NOT NULL default '',
   `source_name` varchar(255) NOT NULL default '',
+  `md5_sum` varchar(32) default '',
   `icon` enum('_blank','avi','bmp','css','doc','dot','exe','fla','gif','htm','html','inc','jpg','js','mp3','nfo','pdf','php','png','pps','ppt','rar','swf','txt','wma','xls','zip') NOT NULL default '_blank',
   `size` int(10) unsigned NOT NULL default '0',
   `image` varchar(255) NOT NULL default '',
