@@ -113,6 +113,7 @@ class Printshop extends PrintshopLibrary {
             'TXT_PRINTSHOP_PAPER_TITLE'                 => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
             'TXT_PRINTSHOP_SUMMARY'                     => $_ARRAYLANG['TXT_PRINTSHOP_SUMMARY'],
             'TXT_PRINTSHOP_PRICE_PER_PIECE'             => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_PER_PIECE'],
+            'TXT_PRINTSHOP_CURRENCY'                    => $this->_arrSettings['currency'],
             'TXT_PRINTSHOP_AMOUNT'                      => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT'],
             'TXT_PRINTSHOP_TYPE'                        => $_ARRAYLANG['TXT_PRINTSHOP_TYPE'],
             'TXT_PRINTSHOP_DATA_PREPARATION'            => $_ARRAYLANG['TXT_PRINTSHOP_DATA_PREPARATION'],
@@ -492,9 +493,7 @@ EOJ;
         	                        .'</label><br />';
         }
 
-        $acceptTermsCheckbox = '<input '.(!empty($acceptTerms) ? 'checked="checked"' : '').'
-                                 type="checkbox" id="psAcceptTerms" name="psAcceptTerms" />
-                                <label for="psAcceptTerms">'.$_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'].'</label>';
+        $acceptTermsCheckbox = $this->_getTermsCheckbox();
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_FORMAT_TITLE'        => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
@@ -537,6 +536,7 @@ EOJ;
             'TXT_PRINTSHOP_TELEPHONE'           => $_ARRAYLANG['TXT_PRINTSHOP_TELEPHONE'],
             'TXT_PRINTSHOP_ACCEPT_TERMS'		=> $_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'],
             'TXT_PRINTSHOP_SUBMIT_ORDER'		=> $_ARRAYLANG['TXT_PRINTSHOP_SUBMIT_ORDER'],
+            'TXT_PRINTSHOP_SHIPMENT_TYPE'               => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_TYPE'],
             'PRINTSHOP_CURRENCY'                => $this->_arrSettings['currency'],
             'PRINTSHOP_DATA_PREPARATION_PRICE'  => number_format($this->_arrSettings['dataPreparationPrice'], 2),
             'PRINTSHOP_AMOUNT'                  => $amount,
@@ -717,29 +717,12 @@ EOJ;
         var amount = parseInt(\$J('#amount').val());
         var printCost = 0;
         var calculation = [];
-        if(amount > priceThresholds[1] - 1){ //check if print amount is not only in first threshold area, which is 1 to priceThresholds[1]-1
-            //process the first range
-            printCost += (priceThresholds[1] - 1) * price[0];
-            amount    -= priceThresholds[1] - 1;
-            calculation.push('a 1-'+(priceThresholds[1] - 1)+' * '+price[0]+' ='+printCost);
+        var i = -1;
 
-            for(i = 1; i <= 15; i++){
-                if(amount < priceThresholds[i+1] - 1){
-                    printCost += amount * price[i];
-                    calculation.push('b '+priceThresholds[i]+'-'+(1*priceThresholds[i]-1+1*amount)+' * '+price[i]+' ='+printCost);
-                    break;
-                }else{
-                    printCost += (priceThresholds[i+1] - 1) * price[i];
-                    amount    -= priceThresholds[i] - 1;
-                    calculation.push('c '+priceThresholds[i]+'-'+(1*priceThresholds[i+1]-1)+' * '+price[i]+' ='+printCost);
-                }
-            }
-        }else{ //it's only in the first range
-            printCost   += amount * price[0];
-            calculation.push('d 1-'+amount+' * '+price[0]+' ='+printCost);
-        }
+        do{ i++ }
+             while( amount >= priceThresholds[i] && i < 15 );
 
-//        console.log(calculation);
+        printCost = amount * price[i];
 
         var roundedPrice = roundPrice(printCost.toFixed(2));
         var subtotal = 1*printCost + 1*dataPreparationPrice;
@@ -883,11 +866,28 @@ EOJ;
 
 
     /**
+     * return the html for the accept terms checkbox
+     *
+     * @return string
+     */
+    function _getTermsCheckbox($acceptTerms = ''){
+        global $_ARRAYLANG;
+
+        return '<input '.(!empty($acceptTerms) ? 'checked="checked"' : 'sd="ff"').'
+                 type="checkbox" id="psAcceptTerms" name="psAcceptTerms" />
+                <label for="psAcceptTerms">'
+                .sprintf($_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'], '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=agb">', '</a>')
+                .'</label>';
+    }
+
+
+    /**
      * check if the order is complete and call handler if positive
      *
      */
     function _checkOrder(){
         global $_ARRAYLANG;
+
         $subject = !empty($_POST['psSubject']) ? contrexx_addslashes($_POST['psSubject']) : '';
         $type = !empty($_POST['psType']) ? intval($_POST['psType']) : '';
         $format = !empty($_POST['psFormat']) ? intval($_POST['psFormat']) : '';
@@ -915,9 +915,7 @@ EOJ;
         $comment = !empty($_POST['psComment']) ? contrexx_addslashes($_POST['psComment']) : '';
         $acceptTerms = !empty($_POST['psAcceptTerms']) ? contrexx_addslashes($_POST['psAcceptTerms']) : '';
 
-        $acceptTermsCheckbox = '<input '.(!empty($acceptTerms) ? 'checked="checked"' : 'sd="ff"').'
-                                 type="checkbox" id="psAcceptTerms" name="psAcceptTerms" />
-                                <label for="psAcceptTerms">'.$_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'].'</label>';
+        $acceptTermsCheckbox = $this->_getTermsCheckbox($acceptTerms);
 
         $this->_objTpl->setVariable(array(
             'PRINTSHOP_SUBJECT'         => $subject,
@@ -1076,6 +1074,10 @@ EOJ;
         $amount             = $arrOrder['amount'];
         $price              = $arrOrder['price'];
 
+        $imageLinks         = 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file1']."\n".
+                              'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file2']."\n".
+                              'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file3']."\n";
+
         $customerBody = str_replace(
             array(
                 '%SUBJECT%', '%TYPE%', '%FORMAT%', '%FRONT%', '%BACK%', '%PAPER%', '%WEIGHT%',
@@ -1094,8 +1096,9 @@ EOJ;
 
         //mail for customer
         $mailer->AddAddress($email);
-        $mailer->From     = $this->_arrSettings['senderEmail'];
-        $mailer->FromName = $this->_arrSettings['senderEmail'];
+        $mailer->From     = !empty($this->_arrSettings['senderEmail'])     ? $this->_arrSettings['senderEmail']     : $_CONFIG['contactFormEmail'];
+        $mailer->FromName = !empty($this->_arrSettings['senderEmailName']) ? $this->_arrSettings['senderEmailName'] : $_CONFIG['coreAdminName'];
+
         $mailer->Subject = $this->_arrSettings['emailSubjectCustomer'];
         $mailer->IsHTML(false);
         $mailer->Body = $customerBody;
@@ -1104,7 +1107,7 @@ EOJ;
         //mail for vendor
         $mailer->ClearAddresses();
         $mailer->From     = $email;
-        $mailer->FromName = $this->_arrSettings['senderEmail'];
+        $mailer->FromName = $invoiceContact;
         $mailer->AddAddress($this->_arrSettings['orderEmail']);
         $mailer->Subject = $this->_arrSettings['emailSubjectVendor'];
         $vendorBody = str_replace(
@@ -1112,13 +1115,13 @@ EOJ;
                 '%SUBJECT%', '%TYPE%', '%FORMAT%', '%FRONT%', '%BACK%', '%PAPER%', '%WEIGHT%',
                 '%INVOICE_COMPANY%', '%INVOICE_CONTACT%', '%INVOICE_ADDRESS1%', '%INVOICE_ADDRESS2%', '%INVOICE_ZIP%', '%INVOICE_CITY%',
                 '%SHIPMENT_COMPANY%', '%SHIPMENT_CONTACT%', '%SHIPMENT_ADDRESS1%', '%SHIPMENT_ADDRESS2%', '%SHIPMENT_ZIP%', '%SHIPMENT_CITY%',
-                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%'
+                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%', '%IMAGE_LINKS%'
             ),
             array(
                 $subject, $type, $format, $front, $back, $paper, $weight,
                 $invoiceCompany, $invoiceContact, $invoiceAddress1, $invoiceAddress2, $invoiceZip, $invoiceCity,
                 $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity,
-                $email, $telephone, $comment, $amount, $price
+                $email, $telephone, $comment, $amount, $price, $imageLinks
             ),
             $this->_arrSettings['emailTemplateCustomer']
         );

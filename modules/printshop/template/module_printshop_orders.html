@@ -11,7 +11,6 @@ var submitForm = function(){
     return false;
 }
 
-
 var createTooltip = function(j){
     var $toolTipDiv = $J('<div id="psToolTip'+j+'">'+Text[j][1]+'</div>').appendTo('body');
     var pos = $J(this).position();
@@ -29,9 +28,7 @@ var createTooltip = function(j){
     });
 }
 
-
 $J(document).ready(function(){
-
 
 //end onload
 });
@@ -42,15 +39,14 @@ $J(document).ready(function(){
 </script>
 
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
-<br />
-
-
 
 <form name="frmSettings" method="post" action="{DIRECTORY_INDEX}?cmd=printshop&amp;act=saveSettings">
+    <!-- BEGIN orderTabmenu -->
     <ul id="tabmenu">
         <li><a id="generalTab_openOrders" title="{TXT_PRINTSHOP_OPEN_ORDERS" onclick="selectTab('openOrders')" href="javascript:{}">{TXT_PRINTSHOP_OPEN_ORDERS}</a></li>
         <li><a id="generalTab_closedOrders" class="active" title="{TXT_PRINTSHOP_CLOSED_ORDERS}" onclick="selectTab('closedOrders')" href="javascript:{}">{TXT_PRINTSHOP_CLOSED_ORDERS}</a></li>
     </ul>
+    <!-- END orderTabmenu -->
      <div id="openOrders" class="generalTab" style="display: block;">
       <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <thead>
@@ -82,9 +78,11 @@ $J(document).ready(function(){
           <td style="text-align: right;">{PRINTSHOP_CURRENCY} {PRINTSHOP_PRICE}</td>
           <td style="text-align: right;">
             <div class="psAction">
+                <!-- BEGIN orderMove -->
                 <a href="{DIRECTORY_INDEX}?cmd=printshop&act=changeStatus&orderId={PRINTSHOP_ORDER_ID}">
                     <img border="0" src="images/icons/next.gif" title="{TXT_PRINTSHOP_MOVE_TO_CLOSED}" alt="{TXT_PRINTSHOP_MOVE_TO_CLOSED}" />
                 </a>
+                <!-- END orderMove -->
                 <a href="{DIRECTORY_INDEX}?cmd=printshop&act=detail&orderId={PRINTSHOP_ORDER_ID}">
                     <img border="0" src="images/icons/viewmag.png" title="{TXT_PRINTSHOP_VIEW_DETAILS}" alt="{TXT_PRINTSHOP_VIEW_DETAILS}" />
                 </a>
