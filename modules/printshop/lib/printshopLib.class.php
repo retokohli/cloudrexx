@@ -28,6 +28,7 @@ class PrintshopLibrary {
     var $_settingNames = array(
         'orderEmail',
         'senderEmail',
+        'senderEmailName',
         'entriesPerPage',
         'priceThresholds',
         'dataPreparationPrice',
@@ -38,6 +39,7 @@ class PrintshopLibrary {
         'emailTemplateCustomer',
         'emailSubjectVendor',
         'emailTemplateVendor',
+        'orderStatusEnabled',
     );
     var $_priceThresholdCount = 16;
     var $_priceThresholds;

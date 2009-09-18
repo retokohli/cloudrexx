@@ -261,7 +261,7 @@ class PrintshopAdmin extends PrintshopLibrary {
                 $this->_objTpl->parse('showEntry');
             }
             $this->_objTpl->setVariable(array(
-                'PRINTSHOP_PAGING'  => getPaging($arrEntries['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
+                'PRINTSHOP_PAGING'  => getPaging($arrEntries['count'], $this->_pos, '&cmd=printshop&act=products', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
             ));
         }else{
             $this->_objTpl->touchBlock('noEntry');
@@ -373,7 +373,7 @@ class PrintshopAdmin extends PrintshopLibrary {
         $this->_objTpl->loadTemplateFile('module_printshop_orders.html', true, true);
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_PRINTSHOP_OPEN_ORDERS'     => $_ARRAYLANG['TXT_PRINTSHOP_OPEN_ORDERS'],
+            'TXT_PRINTSHOP_OPEN_ORDERS'     => $this->_arrSettings['orderStatusEnabled'] > 0 ? $_ARRAYLANG['TXT_PRINTSHOP_OPEN_ORDERS'] : $_ARRAYLANG['TXT_PRINTSHOP_ORDERS_TITLE'],
             'TXT_PRINTSHOP_CLOSED_ORDERS'   => $_ARRAYLANG['TXT_PRINTSHOP_CLOSED_ORDERS'],
             'TXT_PRINTSHOP_PRICE'           => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_TITLE'],
             'TXT_PRINTSHOP_COMPANY'         => $_ARRAYLANG['TXT_PRINTSHOP_COMPANY'],
@@ -391,24 +391,42 @@ class PrintshopAdmin extends PrintshopLibrary {
         $arrOrdersOpen = $this->_getOrders(1);
         $arrOrdersClosed = $this->_getOrders(0);
 
-        if($arrOrdersOpen['count'] > 0){
-            foreach ($arrOrdersOpen['entries'] as $index => $arrOrder) {
-                $this->_setOrderTemplateVars($index, $arrOrder);
-                $this->_objTpl->parse('orderOpen');
+        if($this->_arrSettings['orderStatusEnabled'] > 0){
+            if($arrOrdersOpen['count'] > 0){
+                foreach ($arrOrdersOpen['entries'] as $index => $arrOrder) {
+                    $this->_setOrderTemplateVars($index, $arrOrder);
+                    $this->_objTpl->parse('orderMove');
+                    $this->_objTpl->parse('orderOpen');
+                }
             }
-        }
 
-        if($arrOrdersClosed['count'] > 0){
-            foreach ($arrOrdersClosed['entries'] as $index => $arrOrder) {
-                $this->_setOrderTemplateVars($index, $arrOrder);
-                $this->_objTpl->parse('orderClosed');
+            if($arrOrdersClosed['count'] > 0){
+                foreach ($arrOrdersClosed['entries'] as $index => $arrOrder) {
+                    $this->_setOrderTemplateVars($index, $arrOrder);
+                    $this->_objTpl->parse('orderClosed');
+                    $this->_objTpl->parse('orderMove');
+                }
             }
+            $this->_objTpl->setVariable(array(
+                'PRINTSHOP_PAGING_OPEN'   => getPaging($arrOrdersOpen['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
+                'PRINTSHOP_PAGING_CLOSED' => getPaging($arrOrdersClosed['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
+            ));
+            $this->_objTpl->touchBlock('orderTabmenu');
+        }else{
+            $arrOrders = array_merge($arrOrdersOpen['entries'], $arrOrdersClosed['entries']);
+            if(count($arrOrders) > 0){
+                foreach ($arrOrders as $index => $arrOrder) {
+                    $this->_setOrderTemplateVars($index, $arrOrder);
+                    $this->_objTpl->parse('orderOpen');
+                }
+            }
+            $this->_objTpl->setVariable(array(
+                'PRINTSHOP_PAGING_OPEN'   => getPaging(count($arrOrders), $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
+            ));
+            $this->_objTpl->hideBlock('orderClosed');
+            $this->_objTpl->hideBlock('orderMove');
+            $this->_objTpl->hideBlock('orderTabmenu');
         }
-        $this->_objTpl->setVariable(array(
-            'PRINTSHOP_PAGING_OPEN'    => getPaging($arrOrdersOpen['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
-            'PRINTSHOP_PAGING_CLOSED'  => getPaging($arrOrdersClosed['count'], $this->_pos, '&cmd=printshop', $_ARRAYLANG['TXT_PRINTSHOP_ENTRY'], true, $this->_limit),
-        ));
-
     }
 
 
@@ -726,6 +744,8 @@ class PrintshopAdmin extends PrintshopLibrary {
         $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'];
         $this->_objTpl->loadTemplateFile('module_printshop_settings.html', true, true);
 
+        $checked = 'checked="checked"';
+
         $this->_objTpl->setVariable(array(
             'TXT_PRINTSHOP_SETTINGS_TITLE'              => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_TITLE'],
             'TXT_PRINTSHOP_EMAIL_HELP'                  => $_ARRAYLANG['TXT_PRINTSHOP_EMAIL_HELP'],
@@ -747,9 +767,17 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_PRINTSHOP_SETTINGS_EMAIL'              => $_ARRAYLANG['TXT_PRINTSHOP_SETTINGS_EMAIL'],
             'TXT_PRINTSHOP_SENDER_EMAIL'                => $_ARRAYLANG['TXT_PRINTSHOP_SENDER_EMAIL'],
             'TXT_PRINTSHOP_SENDER_EMAIL_HELP'           => $_ARRAYLANG['TXT_PRINTSHOP_SENDER_EMAIL_HELP'],
+            'TXT_PRINTSHOP_SENDER_EMAIL_NAME'           => $_ARRAYLANG['TXT_PRINTSHOP_SENDER_EMAIL_NAME'],
+            'TXT_PRINTSHOP_SENDER_EMAIL_NAME_HELP'      => $_ARRAYLANG['TXT_PRINTSHOP_SENDER_EMAIL_NAME_HELP'],
+            'TXT_PRINTSHOP_ORDER_STATUS_ENABLED'        => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_STATUS_ENABLED'],
+            'TXT_PRINTSHOP_ORDER_STATUS_ENABLED_HELP'   => $_ARRAYLANG['TXT_PRINTSHOP_ORDER_STATUS_ENABLED_HELP'],
+            'TXT_PRINTSHOP_UPLOADED_IMAGES'             => $_ARRAYLANG['TXT_PRINTSHOP_UPLOADED_IMAGES'],
+            'TXT_PRINTSHOP_UPLOAD_LOCATION'             => $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_LOCATION'],
+            'TXT_PRINTSHOP_UPLOAD_LOCATION_HELP'        => $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_LOCATION_HELP'],
             'TXT_SAVE'                                  => $_CORELANG['TXT_SAVE'],
             'PRINTSHOP_ORDER_EMAIL'                     => $this->_arrSettings['orderEmail'],
             'PRINTSHOP_SENDER_EMAIL'                    => $this->_arrSettings['senderEmail'],
+            'PRINTSHOP_SENDER_EMAIL_NAME'               => $this->_arrSettings['senderEmailName'],
             'PRINTSHOP_ENTRIES_PER_PAGE'                => $this->_arrSettings['entriesPerPage'],
             'PRINTSHOP_PRICE_THRESHOLDS'                => $this->_arrSettings['priceThresholds'],
             'PRINTSHOP_DATA_PREPARATION_PRICE'          => $this->_arrSettings['dataPreparationPrice'],
@@ -760,6 +788,7 @@ class PrintshopAdmin extends PrintshopLibrary {
             'PRINTSHOP_EMAIL_TEMPLATE_VENDOR'           => $this->_arrSettings['emailTemplateVendor'],
             'PRINTSHOP_EMAIL_SUBJECT_CUSTOMER'          => $this->_arrSettings['emailSubjectCustomer'],
             'PRINTSHOP_EMAIL_SUBJECT_VENDOR'            => $this->_arrSettings['emailSubjectVendor'],
+            'PRINTSHOP_ORDER_STATUS_ENABLED'            => $this->_arrSettings['orderStatusEnabled'] > 0 ? $checked : '',
         ));
     }
 
@@ -779,6 +808,9 @@ class PrintshopAdmin extends PrintshopLibrary {
                 switch($setting){
                     case 'entriesPerPage':
                         $_POST[$setting] = !empty($_POST[$setting]) && intval($_POST[$setting]) > 0 ? $_POST[$setting] : $_CONFIG['corePagingLimit'];
+                    break;
+                    case 'orderStatusEnabled':
+                        $_POST[$setting] = !empty($_POST[$setting]) && intval($_POST[$setting]) > 0 ? 1 : 0;
                     break;
                     default:
                         $_POST[$setting] = !empty($_POST[$setting]) ? $_POST[$setting] : '';
