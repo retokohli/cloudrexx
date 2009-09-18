@@ -1048,7 +1048,7 @@ EOJ;
             }
         }
 
-        $arrOrder = $this->_getOrder($orderId);
+        $arrOrder           = $this->_getOrder($orderId);
         $type               = $this->_getAttributeName('type', $arrOrder['type']);
         $format             = $this->_getAttributeName('format', $arrOrder['format']);
         $front              = $this->_getAttributeName('front', $arrOrder['front']);
@@ -1074,9 +1074,9 @@ EOJ;
         $amount             = $arrOrder['amount'];
         $price              = $arrOrder['price'];
 
-        $imageLinks         = 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file1']."\n".
-                              'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file2']."\n".
-                              'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file3']."\n";
+        $imageLinks         = (!empty($arrOrder['file1']) ? 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file1']."\n" : '').
+                              (!empty($arrOrder['file2']) ? 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file2']."\n" : '').
+                              (!empty($arrOrder['file3']) ? 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$arrOrder['file3']."\n" : '');
 
         $customerBody = str_replace(
             array(
@@ -1110,6 +1110,7 @@ EOJ;
         $mailer->FromName = $invoiceContact;
         $mailer->AddAddress($this->_arrSettings['orderEmail']);
         $mailer->Subject = $this->_arrSettings['emailSubjectVendor'];
+        $mailer->IsHTML(false);
         $vendorBody = str_replace(
             array(
                 '%SUBJECT%', '%TYPE%', '%FORMAT%', '%FRONT%', '%BACK%', '%PAPER%', '%WEIGHT%',
@@ -1123,11 +1124,11 @@ EOJ;
                 $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity,
                 $email, $telephone, $comment, $amount, $price, $imageLinks
             ),
-            $this->_arrSettings['emailTemplateCustomer']
+            $this->_arrSettings['emailTemplateVendor']
         );
+
         $mailer->Body = $vendorBody;
         $mailer->Send();
-
     }
 
 
