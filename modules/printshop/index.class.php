@@ -1066,7 +1066,7 @@ EOJ;
         if(!empty($_GET['psType'])){
             $type = intval($_GET['psType']);
         }
-        return $this->_getAttributeName('type', $type);
+        return !empty($type) ? $this->_getAttributeName('type', $type) : '';
     }
 
 
