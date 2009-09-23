@@ -1613,9 +1613,9 @@ switch ($plainSection) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPrintshopModule = new Printshop($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPrintshopModule->getPage());
-        $printshop_pagetitle = $objPrintshopModule->getPageTitle();
-        $page_metatitle = $printshop_pagetitle;
-        $page_title     = $printshop_pagetitle;
+        $printshop_pagetitle = ' '.$objPrintshopModule->getPageTitle();
+        $page_metatitle .= $printshop_pagetitle;
+        $page_title     = '';
     break;
 
     case 'hotelcard':

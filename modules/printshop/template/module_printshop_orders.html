@@ -51,23 +51,27 @@ $J(document).ready(function(){
       <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <thead>
         <tr>
-          <th colspan="10">{TXT_PRINTSHOP_OPEN_ORDERS}</th>
+          <th colspan="12">{TXT_PRINTSHOP_OPEN_ORDERS}</th>
         </tr>
         <tr class="row3">
+            <td width="2%">#</td>
+            <td>{TXT_PRINTSHOP_SUBJECT}</td>
             <td>{TXT_PRINTSHOP_COMPANY}</td>
             <td>{TXT_PRINTSHOP_CONTACT}</td>
             <td>{TXT_PRINTSHOP_ADDRESS} 1</td>
             <td>{TXT_PRINTSHOP_ADDRESS} 2</td>
             <td>{TXT_PRINTSHOP_ZIP}</td>
             <td>{TXT_PRINTSHOP_CITY}</td>
-            <td>{TXT_PRINTSHOP_AMOUNT}</td>
-            <td style="text-align: right;">{TXT_PRINTSHOP_PRICE}</td>
-            <td style="text-align: right;">{TXT_PRINTSHOP_FUNCTIONS}</td>
+            <td width="5%">{TXT_PRINTSHOP_AMOUNT}</td>
+            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_PRICE}</td>
+            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_FUNCTIONS}</td>
         </tr>
         </thead>
         <tbody>
         <!-- BEGIN orderOpen -->
         <tr class="{PRINTSHOP_ROW_CLASS} mainRow">
+          <td>{PRINTSHOP_ORDER_ID}</td>
+          <td>{PRINTSHOP_SUBJECT}</td>
           <td>{PRINTSHOP_COMPANY}</td>
           <td>{PRINTSHOP_CONTACT}</td>
           <td>{PRINTSHOP_ADDRESS1}</td>
@@ -75,8 +79,8 @@ $J(document).ready(function(){
           <td>{PRINTSHOP_ZIP}</td>
           <td>{PRINTSHOP_CITY}</td>
           <td>{PRINTSHOP_AMOUNT}</td>
-          <td style="text-align: right;">{PRINTSHOP_CURRENCY} {PRINTSHOP_PRICE}</td>
-          <td style="text-align: right;">
+          <td nowrap="nowrap" style="text-align: right;">{PRINTSHOP_CURRENCY} {PRINTSHOP_PRICE}</td>
+          <td nowrap="nowrap" style="text-align: right;">
             <div class="psAction">
                 <!-- BEGIN orderMove -->
                 <a href="{DIRECTORY_INDEX}?cmd=printshop&act=changeStatus&orderId={PRINTSHOP_ORDER_ID}">
@@ -101,23 +105,27 @@ $J(document).ready(function(){
       <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <thead>
         <tr>
-          <th colspan="10">{TXT_PRINTSHOP_CLOSED_ORDERS}</th>
+          <th colspan="12">{TXT_PRINTSHOP_CLOSED_ORDERS}</th>
         </tr>
         <tr class="row3">
+            <td width="2%">#</td>
+            <td>{TXT_PRINTSHOP_SUBJECT}</td>
             <td>{TXT_PRINTSHOP_COMPANY}</td>
             <td>{TXT_PRINTSHOP_CONTACT}</td>
             <td>{TXT_PRINTSHOP_ADDRESS} 1</td>
             <td>{TXT_PRINTSHOP_ADDRESS} 2</td>
             <td>{TXT_PRINTSHOP_ZIP}</td>
             <td>{TXT_PRINTSHOP_CITY}</td>
-            <td>{TXT_PRINTSHOP_AMOUNT}</td>
-            <td style="text-align: right;">{TXT_PRINTSHOP_PRICE}</td>
-            <td style="text-align: right;">{TXT_PRINTSHOP_FUNCTIONS}</td>
+            <td width="5%">{TXT_PRINTSHOP_AMOUNT}</td>
+            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_PRICE}</td>
+            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_FUNCTIONS}</td>
         </tr>
         </thead>
         <tbody>
         <!-- BEGIN orderClosed -->
         <tr class="{PRINTSHOP_ROW_CLASS} mainRow">
+          <td>{PRINTSHOP_ORDER_ID}</td>
+          <td>{PRINTSHOP_SUBJECT}</td>
           <td>{PRINTSHOP_COMPANY}</td>
           <td>{PRINTSHOP_CONTACT}</td>
           <td>{PRINTSHOP_ADDRESS1}</td>
