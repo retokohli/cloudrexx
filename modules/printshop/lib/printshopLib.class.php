@@ -40,6 +40,7 @@ class PrintshopLibrary {
         'emailSubjectVendor',
         'emailTemplateVendor',
         'orderStatusEnabled',
+        'mandatoryImageUploadEnabled',
     );
     var $_priceThresholdCount = 16;
     var $_priceThresholds;

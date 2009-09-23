@@ -65,8 +65,8 @@ table td.none {
 	width:260px;
 	margin:0.25em 0.25em 0.25em 0em;
 	padding:4px;
-	background-color:#f6f6f6;
-	border:1px solid #c6c6c6;
+	background-color:#FBFFEF;
+	border:1px solid #99CC00;
 }
 
 #content_wrapper input[type=submit],
@@ -78,8 +78,9 @@ input.reset {
 	width:auto;
 	margin:0.25em 0.25em 0.25em 0em;
 	padding:4px 10px 4px 10px;
-	background-color:#f6f6f6;
-	border:1px solid #c6c6c6;
+	background-color:#FBFFEF;
+	border:1px solid #99CC00;
+
 }
 
 #content_wrapper input[type=checkbox],
@@ -89,8 +90,8 @@ input.radio{
 	width:auto;
 	margin:0.25em 0.25em 0.25em 0em;
 	padding:4px 15px 4px 15px;
-	background-color:#f6f6f6;
-	border:1px solid #c6c6c6;
+	background-color:#FBFFEF;
+	border:1px solid #99CC00;
         float: left;
 }
 
@@ -98,16 +99,16 @@ input.radio{
 	width:270px;
 	margin:0.25em 0.25em 0.25em 0em;
 	padding:4px 4px 4px 4px;
-	background-color:#f6f6f6;
-	border:1px solid #c6c6c6;
+	background-color:#FBFFEF;
+	border:1px solid #99CC00;
 }
 
 #content_wrapper textarea {
 	width:260px;
 	margin:0.25em 0.25em 0.25em 0em;
 	padding:4px;
-	background-color:#f6f6f6;
-	border:1px solid #c6c6c6;
+	background-color:#FBFFEF;
+	border:1px solid #99CC00;
 	font-size:1.0em;
 	height: 60px;
 	font-family: "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
@@ -116,6 +117,6 @@ input.radio{
 #content_wrapper input:focus,
 #content_wrapper select:focus,
 #content_wrapper textarea:focus {
-	background-color:#FBFFEF;
-	border:1px solid #99CC00;
+	background-color:#f6f6f6;
+	border:1px solid #c6c6c6;
 }

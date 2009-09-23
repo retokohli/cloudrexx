@@ -495,6 +495,17 @@ EOJ;
 
         $acceptTermsCheckbox = $this->_getTermsCheckbox();
 
+        $dataUploadHelpDescription = $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC'];
+        if($this->_arrSettings['mandatoryImageUploadEnabled'] < 1){
+            $emailLink  = '<a   id="psUploadEmailLink" href="'.CONTREXX_DIRECTORY_INDEX.'?section=imprint"
+                                title="'.$_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_MAIL'].'">'
+                            .$_ARRAYLANG['TXT_PRINTSHOP_EMAIL'].'</a>';
+            $mailLink   = '<a   id="psMailLink" href="'.CONTREXX_DIRECTORY_INDEX.'?section=imprint"
+                                title="'.$_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_MAIL'].'">'
+                            .$_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_MAIL'].'</a>';
+            $dataUploadHelpDescription .= sprintf('<br />'.$_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC2'], $emailLink, $mailLink);
+        }
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_FORMAT_TITLE'        => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
             'TXT_PRINTSHOP_FRONT_TITLE'         => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
@@ -511,7 +522,7 @@ EOJ;
             'TXT_PRINTSHOP_UPLOAD_DATA_TITLE'   => $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_TITLE'],
             'TXT_PRINTSHOP_FILE'                => $_ARRAYLANG['TXT_PRINTSHOP_FILE'],
             'TXT_PRINTSHOP_CHOOSE_FILE'         => $_ARRAYLANG['TXT_PRINTSHOP_CHOOSE_FILE'],
-            'TXT_PRINTSHOP_UPLOAD_DATA_DESC'    => $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC'],
+            'TXT_PRINTSHOP_UPLOAD_DATA_DESC'    => $dataUploadHelpDescription,
             'TXT_PRINTSHOP_SUBJECT'             => $_ARRAYLANG['TXT_PRINTSHOP_SUBJECT'],
             'TXT_PRINTSHOP_ORDERDETAILS'        => $_ARRAYLANG['TXT_PRINTSHOP_ORDERDETAILS'],
             'TXT_PRINTSHOP_AMOUNT_COST_SHIP'    => $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT_COST_SHIP'],
@@ -577,11 +588,17 @@ EOJ;
         $weight = $arrFilter['weight'];
         $paper  = $arrFilter['paper'];
 
+        $vendorEmail = implode("','", str_split($this->_arrSettings['orderEmail']));
+
+        $mandatoryImageUploadEnabled = $this->_arrSettings['mandatoryImageUploadEnabled'] > 0 ? 'true' : 'false';
+
         $DI   = CONTREXX_DIRECTORY_INDEX;
         JS::activate('jquery');
         JS::activate('excanvas');
         $JS =<<< EOJ
 (function(){
+    var mandatoryImageUploadEnabled = $mandatoryImageUploadEnabled;
+
     var mandatoryFields = [
             'amount',
             'psSubject',
@@ -604,10 +621,19 @@ EOJ;
     var shipmentPriceMail        = parseFloat(($shipmentPriceMail).toFixed(2));
     var shipmentPriceMessenger   = parseFloat(($shipmentPriceMessenger).toFixed(2));
     var shipmentPrice            = 0.00;
+    var vendorEmail              = ['$vendorEmail'];
 
     \$J(document).ready(function(){
         //get price informations
         initPrices();
+
+        //unobfuscate email
+        \$J('#psUploadEmailLink').click(function(){
+            \$J(this).attr('href', 'mailto:' + vendorEmail.join(''));
+        });
+
+        //highlight active navigation (use css_name psType_$type in content manager for this to work)
+        \$J('.psType_$type').css({color:'black'});
 
         //price recalculation
         \$J('.shipmentSelection input').change(function(){
@@ -755,6 +781,9 @@ EOJ;
         var error = false;
 
         \$J(mandatoryFields).each(function(i, j){
+            if(!mandatoryImageUploadEnabled && j == 'psImage1'){
+                return;
+            }
             if(j != 'psImage1'){
                 \$J('#'+j).val(\$J('#'+j).val().replace(/^\s+(.*?)\s+$/, '$1'));
             }
@@ -767,7 +796,10 @@ EOJ;
         });
 
 
-        if(!\$J('#psAttributeBack').text().match(/$strBlank/) && \$J('#psImage2').val().replace(/^\s+(.*?)\s+$/, '$1') == ''){
+        if( mandatoryImageUploadEnabled
+            && !\$J('#psAttributeBack').text().match(/$strBlank/)
+            && \$J('#psImage2').val().replace(/^\s+(.*?)\s+$/, '$1') == '')
+        {
             \$J('#psImage2').addClass('missing');
             missing = true;
         }else{
@@ -985,18 +1017,19 @@ EOJ;
 
         }
 
-        if($this->_getAttributeName('back', $back) != $this->_blank){
-            if(empty( $arrImages[2] )){
-                $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_BACK']);
+        if($this->_arrSettings['mandatoryImageUploadEnabled'] > 0){
+            if($this->_getAttributeName('back', $back) != $this->_blank){
+                if(empty( $arrImages[2] )){
+                    $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_BACK']);
+                    return false;
+                }
+            }
+
+            if(empty( $arrImages[1] )){
+                $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_FRONT']);
                 return false;
             }
         }
-
-        if(empty( $arrImages[1] )){
-            $this->_setError($_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_FRONT']);
-            return false;
-        }
-
 
         if(empty($subject)      || empty($amount)  || empty($shipment) || empty($invContact)  || empty($invAddress1)
         || empty($invAddress2)  || empty($invZip)  || empty($invCity)  || empty($shipContact) || empty($shipAddress1)
@@ -1027,7 +1060,13 @@ EOJ;
      * @return string
      */
     function getPageTitle(){
-        return '';
+        if(!empty($_GET['type'])){
+            $type = intval($_GET['type']);
+        }
+        if(!empty($_GET['psType'])){
+            $type = intval($_GET['psType']);
+        }
+        return $this->_getAttributeName('type', $type);
     }
 
 
@@ -1083,13 +1122,13 @@ EOJ;
                 '%SUBJECT%', '%TYPE%', '%FORMAT%', '%FRONT%', '%BACK%', '%PAPER%', '%WEIGHT%',
                 '%INVOICE_COMPANY%', '%INVOICE_CONTACT%', '%INVOICE_ADDRESS1%', '%INVOICE_ADDRESS2%', '%INVOICE_ZIP%', '%INVOICE_CITY%',
                 '%SHIPMENT_COMPANY%', '%SHIPMENT_CONTACT%', '%SHIPMENT_ADDRESS1%', '%SHIPMENT_ADDRESS2%', '%SHIPMENT_ZIP%', '%SHIPMENT_CITY%',
-                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%'
+                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%', '%ORDER_ID%'
             ),
             array(
                 $subject, $type, $format, $front, $back, $paper, $weight,
                 $invoiceCompany, $invoiceContact, $invoiceAddress1, $invoiceAddress2, $invoiceZip, $invoiceCity,
                 $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity,
-                $email, $telephone, $comment, $amount, $price
+                $email, $telephone, $comment, $amount, $price, $orderId
             ),
             $this->_arrSettings['emailTemplateCustomer']
         );
@@ -1116,13 +1155,13 @@ EOJ;
                 '%SUBJECT%', '%TYPE%', '%FORMAT%', '%FRONT%', '%BACK%', '%PAPER%', '%WEIGHT%',
                 '%INVOICE_COMPANY%', '%INVOICE_CONTACT%', '%INVOICE_ADDRESS1%', '%INVOICE_ADDRESS2%', '%INVOICE_ZIP%', '%INVOICE_CITY%',
                 '%SHIPMENT_COMPANY%', '%SHIPMENT_CONTACT%', '%SHIPMENT_ADDRESS1%', '%SHIPMENT_ADDRESS2%', '%SHIPMENT_ZIP%', '%SHIPMENT_CITY%',
-                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%', '%IMAGE_LINKS%'
+                '%EMAIL%', '%TELEPHONE%', '%COMMENTS%', '%AMOUNT%', '%PRICE%', '%IMAGE_LINKS%', '%ORDER_ID%'
             ),
             array(
                 $subject, $type, $format, $front, $back, $paper, $weight,
                 $invoiceCompany, $invoiceContact, $invoiceAddress1, $invoiceAddress2, $invoiceZip, $invoiceCity,
                 $shipCompany, $shipContact, $shipAddress1, $shipAddress2, $shipZip, $shipCity,
-                $email, $telephone, $comment, $amount, $price, $imageLinks
+                $email, $telephone, $comment, $amount, $price, $imageLinks, $orderId
             ),
             $this->_arrSettings['emailTemplateVendor']
         );
