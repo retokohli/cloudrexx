@@ -2383,7 +2383,7 @@ CREATE TABLE `contrexx_module_printshop_product` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_printshop_settings` (
   `name` varchar(255) NOT NULL,
-  `value` varchar(255) NOT NULL,
+  `value` text NOT NULL,
   PRIMARY KEY  (`name`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_printshop_type` (

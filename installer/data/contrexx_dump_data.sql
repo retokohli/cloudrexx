@@ -2807,12 +2807,12 @@ INSERT INTO `contrexx_module_printshop_format` (`id`, `format`) VALUES (4,'A6 (1
 INSERT INTO `contrexx_module_printshop_front` (`id`, `front`) VALUES (1,'s/w');
 INSERT INTO `contrexx_module_printshop_front` (`id`, `front`) VALUES (2,'4-farbig');
 INSERT INTO `contrexx_module_printshop_paper` (`id`, `paper`) VALUES (1,'sattiniert');
-INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('currency','Fr.');
+INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('currency','CHF');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('dataPreparationPrice','50');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('emailSubjectCustomer','Vielen Dank für Ihre Bestellung!');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('emailSubjectVendor','Es wurde eine neue Bestellung im Online Shop getätigt');
-INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('emailTemplateCustomer','Ihre Bestellung wurde folgendermassen registriert:\\r\\n\\r\\nBetreff: %SUBJECT%\\r\\n\\r\\nProdukt: %TYPE%\\r\\nFormat: %FORMAT%\\r\\nVorderseite: %FRONT%\\r\\nRückseite: %BACK%\\r\\nPapier: %PAPER%\\r\\nGrammatur: %WEIGHT%\\r\\n\\r\\nRechnungsaddresse:\\r\\n%INVOICE_COMPANY%\\r');
-INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('emailTemplateVendor','Betreff: %SUBJECT%\\r\\n\\r\\nProdukt: %TYPE%\\r\\nFormat: %FORMAT%\\r\\nVorderseite: %FRONT%\\r\\nRückseite: %BACK%\\r\\nPapier: %PAPER%\\r\\nGrammatur: %WEIGHT%\\r\\n\\r\\nRechnungsaddresse:\\r\\n%INVOICE_COMPANY%\\r\\n%INVOICE_CONTACT%\\r\\n%INVOICE_ADDRESS1%\\r\\n%INVOICE_ADDR');
+INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('emailTemplateCustomer','Ihre Bestellung (Bestellnummer: %ORDER_ID%) wurde folgendermassen registriert:\r\n\r\nBetreff: %SUBJECT%\r\n\r\nProdukt: %TYPE%\r\nFormat: %FORMAT%\r\nVorderseite: %FRONT%\r\nRückseite: %BACK%\r\nPapier: %PAPER%\r\nGrammatur: %WEIGHT%\r\n\r\nStückzahl: %AMOUNT%\r\nPreis: %PRICE%\r\n\r\nRechnungsaddresse:\r\n%INVOICE_COMPANY%\r\n%INVOICE_CONTACT%\r\n%INVOICE_ADDRESS1%\r\n%INVOICE_ADDRESS2%\r\n%INVOICE_ZIP%\r\n%INVOICE_CITY%\r\n\r\nLieferaddresse:\r\n%SHIPMENT_COMPANY%\r\n%SHIPMENT_CONTACT%\r\n%SHIPMENT_ADDRESS1%\r\n%SHIPMENT_ADDRESS2%\r\n%SHIPMENT_ZIP%\r\n%SHIPMENT_CITY%\r\n\r\nE-Mail: %EMAIL%\r\nTelefon: %TELEPHONE%\r\nBemerkungen: \r\n%COMMENTS%\r\n\r\n');
+INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('emailTemplateVendor','Bestell-ID: %ORDER_ID%\r\nBetreff: %SUBJECT%\r\n\r\nProdukt: %TYPE%\r\nFormat: %FORMAT%\r\nVorderseite: %FRONT%\r\nRückseite: %BACK%\r\nPapier: %PAPER%\r\nGrammatur: %WEIGHT%\r\n\r\nStückzahl: %AMOUNT%\r\nPreis: %PRICE%\r\n\r\nRechnungsaddresse:\r\n%INVOICE_COMPANY%\r\n%INVOICE_CONTACT%\r\n%INVOICE_ADDRESS1%\r\n%INVOICE_ADDRESS2%\r\n%INVOICE_ZIP%\r\n%INVOICE_CITY%\r\n\r\nLieferaddresse:\r\n%SHIPMENT_COMPANY%\r\n%SHIPMENT_CONTACT%\r\n%SHIPMENT_ADDRESS1%\r\n%SHIPMENT_ADDRESS2%\r\n%SHIPMENT_ZIP%\r\n%SHIPMENT_CITY%\r\n\r\nE-Mail: %EMAIL%\r\nTelefon: %TELEPHONE%\r\nBemerkungen: \r\n%COMMENTS%\r\n\r\nLinks zu den hochgeladenen Bildern:\r\n%IMAGE_LINKS%\r\n');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('entriesPerPage','20');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('orderEmail','');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('senderEmail','');
@@ -2821,6 +2821,7 @@ INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('ship
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('senderEmailName','');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('orderStatusEnabled','1');
 INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('shipmentPriceMessenger','30');
+INSERT INTO `contrexx_module_printshop_settings` (`name`, `value`) VALUES ('mandatoryImageUploadEnabled','1');
 INSERT INTO `contrexx_module_printshop_type` (`id`, `type`) VALUES (1,'Flyer');
 INSERT INTO `contrexx_module_printshop_type` (`id`, `type`) VALUES (2,'Visitenkarten');
 INSERT INTO `contrexx_module_printshop_type` (`id`, `type`) VALUES (3,'Postkarten');
