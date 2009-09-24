@@ -28,8 +28,14 @@ var createTooltip = function(j){
     });
 }
 
-$J(document).ready(function(){
+var confirmDelete = function(){
+    return confirm
+}
 
+$J(document).ready(function(){
+    $J('.psDelete').click(function(){
+        return confirm('{TXT_PRINTSHOP_DELETE_ENTRY}');
+    });
 //end onload
 });
 
@@ -54,17 +60,17 @@ $J(document).ready(function(){
           <th colspan="12">{TXT_PRINTSHOP_OPEN_ORDERS}</th>
         </tr>
         <tr class="row3">
-            <td width="2%">#</td>
-            <td>{TXT_PRINTSHOP_SUBJECT}</td>
-            <td>{TXT_PRINTSHOP_COMPANY}</td>
-            <td>{TXT_PRINTSHOP_CONTACT}</td>
-            <td>{TXT_PRINTSHOP_ADDRESS} 1</td>
-            <td>{TXT_PRINTSHOP_ADDRESS} 2</td>
-            <td>{TXT_PRINTSHOP_ZIP}</td>
-            <td>{TXT_PRINTSHOP_CITY}</td>
-            <td width="5%">{TXT_PRINTSHOP_AMOUNT}</td>
-            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_PRICE}</td>
-            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_FUNCTIONS}</td>
+            <td width="2%"><b>#</b></td>
+            <td><b>{TXT_PRINTSHOP_SUBJECT}</b></td>
+            <td><b>{TXT_PRINTSHOP_COMPANY}</b></td>
+            <td><b>{TXT_PRINTSHOP_CONTACT}</b></td>
+            <td><b>{TXT_PRINTSHOP_ADDRESS} 1</b></td>
+            <td><b>{TXT_PRINTSHOP_ADDRESS} 2</b></td>
+            <td><b>{TXT_PRINTSHOP_ZIP}</b></td>
+            <td><b>{TXT_PRINTSHOP_CITY}</b></td>
+            <td width="5%"><b>{TXT_PRINTSHOP_AMOUNT}</b></td>
+            <td width="5%" style="text-align: right;"><b>{TXT_PRINTSHOP_PRICE}</b></td>
+            <td width="5%" style="text-align: right;"><b>{TXT_PRINTSHOP_FUNCTIONS}</b></td>
         </tr>
         </thead>
         <tbody>
@@ -90,12 +96,16 @@ $J(document).ready(function(){
                 <a href="{DIRECTORY_INDEX}?cmd=printshop&act=detail&orderId={PRINTSHOP_ORDER_ID}">
                     <img border="0" src="images/icons/viewmag.png" title="{TXT_PRINTSHOP_VIEW_DETAILS}" alt="{TXT_PRINTSHOP_VIEW_DETAILS}" />
                 </a>
+                <a href="{DIRECTORY_INDEX}?cmd=printshop&act=delOrder&orderId={PRINTSHOP_ORDER_ID}">
+                    <img class="psDelete" border="0" src="images/icons/delete.gif" title="{TXT_PRINTSHOP_DELETE}" alt="{TXT_PRINTSHOP_DELETE}" />
+                </a>
             </div>
           </td>
         </tr>
         <!-- END orderOpen -->
         </tbody>
       </table>
+      <br />
       <div>
         {PRINTSHOP_PAGING_OPEN}
       </div>
@@ -108,17 +118,17 @@ $J(document).ready(function(){
           <th colspan="12">{TXT_PRINTSHOP_CLOSED_ORDERS}</th>
         </tr>
         <tr class="row3">
-            <td width="2%">#</td>
-            <td>{TXT_PRINTSHOP_SUBJECT}</td>
-            <td>{TXT_PRINTSHOP_COMPANY}</td>
-            <td>{TXT_PRINTSHOP_CONTACT}</td>
-            <td>{TXT_PRINTSHOP_ADDRESS} 1</td>
-            <td>{TXT_PRINTSHOP_ADDRESS} 2</td>
-            <td>{TXT_PRINTSHOP_ZIP}</td>
-            <td>{TXT_PRINTSHOP_CITY}</td>
-            <td width="5%">{TXT_PRINTSHOP_AMOUNT}</td>
-            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_PRICE}</td>
-            <td width="5%" style="text-align: right;">{TXT_PRINTSHOP_FUNCTIONS}</td>
+            <td width="2%"><b>#</b></td>
+            <td><b>{TXT_PRINTSHOP_SUBJECT}</b></td>
+            <td><b>{TXT_PRINTSHOP_COMPANY}</b></td>
+            <td><b>{TXT_PRINTSHOP_CONTACT}</b></td>
+            <td><b>{TXT_PRINTSHOP_ADDRESS} 1</b></td>
+            <td><b>{TXT_PRINTSHOP_ADDRESS} 2</b></td>
+            <td><b>{TXT_PRINTSHOP_ZIP}</b></td>
+            <td><b>{TXT_PRINTSHOP_CITY}</b></td>
+            <td width="5%"><b>{TXT_PRINTSHOP_AMOUNT}</b></td>
+            <td width="5%" style="text-align: right;"><b>{TXT_PRINTSHOP_PRICE}</b></td>
+            <td width="5%" style="text-align: right;"><b>{TXT_PRINTSHOP_FUNCTIONS}</b></td>
         </tr>
         </thead>
         <tbody>
@@ -142,12 +152,16 @@ $J(document).ready(function(){
                 <a href="{DIRECTORY_INDEX}?cmd=printshop&act=detail&orderId={PRINTSHOP_ORDER_ID}">
                     <img border="0" src="images/icons/viewmag.png"" title="{TXT_PRINTSHOP_VIEW_DETAILS}" alt="{TXT_PRINTSHOP_VIEW_DETAILS}" />
                 </a>
+                <a href="{DIRECTORY_INDEX}?cmd=printshop&act=delOrder&orderId={PRINTSHOP_ORDER_ID}">
+                    <img class="psDelete" border="0" src="images/icons/delete.gif" title="{TXT_PRINTSHOP_DELETE}" alt="{TXT_PRINTSHOP_DELETE}" />
+                </a>
             </div>
           </td>
         </tr>
         <!-- END orderClosed -->
         </tbody>
       </table>
+      <br />
       <div>
         {PRINTSHOP_PAGING_CLOSED}
       </div>

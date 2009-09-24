@@ -547,7 +547,8 @@ EOJ;
             'TXT_PRINTSHOP_TELEPHONE'           => $_ARRAYLANG['TXT_PRINTSHOP_TELEPHONE'],
             'TXT_PRINTSHOP_ACCEPT_TERMS'		=> $_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'],
             'TXT_PRINTSHOP_SUBMIT_ORDER'		=> $_ARRAYLANG['TXT_PRINTSHOP_SUBMIT_ORDER'],
-            'TXT_PRINTSHOP_SHIPMENT_TYPE'               => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_TYPE'],
+            'TXT_PRINTSHOP_SAME_AS_INVOICE_ADDR'=> $_ARRAYLANG['TXT_PRINTSHOP_SAME_AS_INVOICE_ADDR'],
+            'TXT_PRINTSHOP_SHIPMENT_TYPE'       => $_ARRAYLANG['TXT_PRINTSHOP_SHIPMENT_TYPE'],
             'PRINTSHOP_CURRENCY'                => $this->_arrSettings['currency'],
             'PRINTSHOP_DATA_PREPARATION_PRICE'  => number_format($this->_arrSettings['dataPreparationPrice'], 2),
             'PRINTSHOP_AMOUNT'                  => $amount,
@@ -632,6 +633,17 @@ EOJ;
             \$J(this).attr('href', 'mailto:' + vendorEmail.join(''));
         });
 
+        //copy invoice address to shipment address
+        \$J('#psSameAddress').click(function(){
+            \$J('#psCompanyS'   ).val(\$J('#psCompanyI').val());
+            \$J('#psContactS'   ).val(\$J('#psContactI').val());
+            \$J('#psAddress1S'  ).val(\$J('#psAddress1I').val());
+            \$J('#psAddress2S'  ).val(\$J('#psAddress2I').val());
+            \$J('#psZipS'       ).val(\$J('#psZipI').val());
+            \$J('#psCityS'      ).val(\$J('#psCityI').val());
+            return false;
+        });
+
         //highlight active navigation (use css_name psType_$type in content manager for this to work)
         \$J('.psType_$type').css({color:'black'});
 
@@ -639,6 +651,12 @@ EOJ;
         \$J('.shipmentSelection input').change(function(){
             updateShipmentPrice.apply(this);
         });
+
+        //terms link popup
+        \$J('#psTermsLink').click(function(){
+            var popUp = window.open(\$J(this).attr('href'));
+            return false;
+        })
 
         //form pre submit check
         \$J('#psSubmitOrder').click(function(){
@@ -908,7 +926,7 @@ EOJ;
         return '<input '.(!empty($acceptTerms) ? 'checked="checked"' : 'sd="ff"').'
                  type="checkbox" id="psAcceptTerms" name="psAcceptTerms" />
                 <label for="psAcceptTerms">'
-                .sprintf($_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'], '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=agb">', '</a>')
+                .sprintf($_ARRAYLANG['TXT_PRINTSHOP_ACCEPT_TERMS'], '<a id="psTermsLink" href="'.CONTREXX_DIRECTORY_INDEX.'?section=agb">', '</a>')
                 .'</label>';
     }
 

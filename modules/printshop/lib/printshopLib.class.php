@@ -299,7 +299,8 @@ class PrintshopLibrary {
                   `invoiceCompany`, `invoiceContact`, `invoiceAddress1`, `invoiceAddress2`, `invoiceZip`, `invoiceCity`,
                   `shipmentCompany`, `shipmentContact`, `shipmentAddress1`, `shipmentAddress2`, `shipmentZip`, `shipmentCity`
                   FROM `".DBPREFIX."module_printshop_order`
-                  WHERE `status` = ".intval($status);
+                  WHERE `status` = ".intval($status)."
+                  ORDER BY `orderId` DESC";
 
         $objRS = $objDatabase->SelectLimit($query, $this->_limit, $this->_pos);
 

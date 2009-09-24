@@ -77,6 +77,11 @@ class PrintshopAdmin extends PrintshopLibrary {
                 $this->_delProduct();
             break;
 
+            case 'delOrder':
+                $this->_delOrder();
+                $this->showOrders();
+            break;
+
             case 'getProducts':
                 $this->_getProducts();
             break;
@@ -149,6 +154,17 @@ class PrintshopAdmin extends PrintshopLibrary {
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+    }
+
+    /**
+     * deletes an order
+     *
+     */
+    function _delOrder(){
+        global $objDatabase, $_ARRAYLANG;
+        if($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_printshop_order` WHERE `orderId`='.intval($_GET['orderId']))){
+            $this->_strOkMessage = $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_DELETED'];
+        }
     }
 
 
@@ -325,7 +341,7 @@ class PrintshopAdmin extends PrintshopLibrary {
             'PRINTSHOP_SUBJECT'                     => $arrOrder['subject'],
             'PRINTSHOP_EMAIL'                       => $arrOrder['email'],
             'PRINTSHOP_TELEPHONE'                   => $arrOrder['telephone'],
-            'PRINTSHOP_COMMENT'                     => $arrOrder['comment'],
+            'PRINTSHOP_COMMENT'                     => nl2br($arrOrder['comment']),
             'PRINTSHOP_SHIPMENT_COMPANY'            => $arrOrder['shipmentCompany'],
             'PRINTSHOP_SHIPMENT_CONTACT'            => $arrOrder['shipmentContact'],
             'PRINTSHOP_SHIPMENT_ADDRESS1'           => $arrOrder['shipmentAddress1'],
@@ -388,6 +404,8 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_PRINTSHOP_VIEW_DETAILS'    => $_ARRAYLANG['TXT_PRINTSHOP_VIEW_DETAILS'],
             'TXT_PRINTSHOP_MOVE_TO_CLOSED'  => $_ARRAYLANG['TXT_PRINTSHOP_MOVE_TO_CLOSED'],
             'TXT_PRINTSHOP_FUNCTIONS'       => $_ARRAYLANG['TXT_PRINTSHOP_SUBTITLE_ACTIONS'],
+            'TXT_PRINTSHOP_DELETE'          => $_ARRAYLANG['TXT_PRINTSHOP_DELETE'],
+            'TXT_PRINTSHOP_DELETE_ENTRY'    => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_ENTRY'],
             'PRINTSHOP_CURRENCY'            => $this->_arrSettings['currency'],
         ));
 
@@ -699,21 +717,20 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_PRINTSHOP_ADD_ATTRIBUTE'           => $_ARRAYLANG['TXT_PRINTSHOP_ADD_ATTRIBUTE'],
             'TXT_PRINTSHOP_UPDATE_ATTRIBUTE'        => $_ARRAYLANG['TXT_PRINTSHOP_UPDATE_ATTRIBUTE'],
             'TXT_PRINTSHOP_ENTER_ATTRIBUTE'         => $_ARRAYLANG['TXT_PRINTSHOP_ENTER_ATTRIBUTE'],
-
             'TXT_PRINTSHOP_ATTRIBUTE_NAME'          => $_ARRAYLANG['TXT_PRINTSHOP_ATTRIBUTE_NAME'],
             'TXT_PRINTSHOP_SUBTITLE_ACTIONS'        => $_ARRAYLANG['TXT_PRINTSHOP_SUBTITLE_ACTIONS'],
             'TXT_PRINTSHOP_DELETE_ENTRY'            => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_ENTRY'],
             'TXT_PRINTSHOP_DELETE_SELECTED'         => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_SELECTED'],
             'TXT_PRINTSHOP_ALREADY_EXISTS'          => $_ARRAYLANG['TXT_PRINTSHOP_ALREADY_EXISTS'],
             'TXT_PRINTSHOP_FADE_OUT'                => $_ARRAYLANG['TXT_PRINTSHOP_FADE_OUT'],
-
             'TXT_PRINTSHOP_TYPE_TITLE'              => $_ARRAYLANG['TXT_PRINTSHOP_TYPE_TITLE'],
             'TXT_PRINTSHOP_FORMAT_TITLE'            => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
             'TXT_PRINTSHOP_FRONT_TITLE'             => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
             'TXT_PRINTSHOP_BACK_TITLE'              => $_ARRAYLANG['TXT_PRINTSHOP_BACK_TITLE'],
             'TXT_PRINTSHOP_PAPER_TITLE'             => $_ARRAYLANG['TXT_PRINTSHOP_PAPER_TITLE'],
             'TXT_PRINTSHOP_WEIGHT_TITLE'            => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
-
+            'TXT_PRINTSHOP_EDIT'                    => $_ARRAYLANG['TXT_PRINTSHOP_EDIT'],
+            'TXT_PRINTSHOP_DELETE'                  => $_ARRAYLANG['TXT_PRINTSHOP_DELETE'],
             'TXT_SELECT_ALL'                        => $_CORELANG['TXT_SELECT_ALL'],
             'TXT_DESELECT_ALL'                      => $_CORELANG['TXT_DESELECT_ALL'],
             'TXT_MULTISELECT_SELECT'                => $_CORELANG['TXT_MULTISELECT_SELECT'],
