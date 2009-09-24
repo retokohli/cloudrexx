@@ -2224,6 +2224,17 @@ dl.data_module img {
     background-color: #ffffff;
     clear: both;
     margin-bottom: 4px;
+    border-top: 1px solid black;
+}
+
+#printshop .psContent {
+    width: 975px;
+    background-color: #ffffff;
+    clear: both;
+    margin-bottom: 4px;
+    border-top: 1px solid black;
+    padding: 7px;
+    min-height: 380px;
 }
 
 #printshop table.psOrderTable {
@@ -2251,6 +2262,7 @@ dl.data_module img {
 
 #printshop input.text {
     margin: 1px; padding: 0px;
+    height: 21px;
 }
 
 #printshop .missing {
@@ -2289,6 +2301,7 @@ dl.data_module img {
 
 #printshop input.file {
     margin: 1px; padding: 0px;
+    height: 21px;
 }
 
 #printshop th {
@@ -2373,7 +2386,7 @@ div#printshop input#psShipment2 {
 }
 
 #printshop textarea {
-    width: 253px;
+    width: 520px;
     height: 100px;
 }
 

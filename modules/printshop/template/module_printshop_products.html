@@ -242,6 +242,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     var $form = $('form[name=frmShowEntries]');
     $form.submit(submitForm);
 
+    //highlight handling
     $J('.rowSub,.rowMain,.rowSubmit').live('mouseover', function(){
         var $row = $J(this);
         var rowClass = $row.is('.row1') ? '.row1' : '.row2';
@@ -268,7 +269,6 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
             $row = $row.prev();
         }
     });
-
     $J('.rowMain').live('click', function(){
         if($J(this).next().is(':hidden')){
             $J(this).next().show();
@@ -277,11 +277,19 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         }
     });
 
+    //stop checkbox click event bubble
     $J('[name=selectedEntriesId[]]').click(function(e){
         e.stopPropagation();
     });
 
+    //tooltip setup and input checks for threshold prices
     $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+        if(j > 0){ //add visual aid for price thresholds data table
+            $J('.psNote'+j).closest('td').css({
+                    borderLeft:'1px solid #aaccee'
+            });
+        }
+
         $J('[name=psPrice_'+j+']').focus(function(){ //create tooltip on the fly
             createTooltip.call(this, j);
         });
@@ -763,6 +771,56 @@ var setMessage = function(message){
     			<td nowrap="nowrap" width="13%" colspan="2"><span style="font-weight:bold;">&nbsp;</span></td>
     			<td style="text-align: right;" nowrap="nowrap"  colspan="2"><span style="font-weight:bold;">&nbsp;</span></td>
     		</tr>
+    		<tr class="row3">
+    			<td nowrap="nowrap">
+    			<span class="psNote0">{PRINTSHOP_PRICE_0}</span>
+                </td>
+    			<td nowrap="nowrap">
+    			<span class="psNote1">{PRINTSHOP_PRICE_1}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote2">{PRINTSHOP_PRICE_2}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote3">{PRINTSHOP_PRICE_3}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote4">{PRINTSHOP_PRICE_4}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote5">{PRINTSHOP_PRICE_5}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote6">{PRINTSHOP_PRICE_6}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote7">{PRINTSHOP_PRICE_7}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote8">{PRINTSHOP_PRICE_8}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote9">{PRINTSHOP_PRICE_9}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote10">{PRINTSHOP_PRICE_10}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote11">{PRINTSHOP_PRICE_11}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote12">{PRINTSHOP_PRICE_12}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote13">{PRINTSHOP_PRICE_13}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote14">{PRINTSHOP_PRICE_14}</span>
+    			</td>
+    			<td nowrap="nowrap">
+    			<span class="psNote15">{PRINTSHOP_PRICE_15}</span>
+    			</td>
+            </tr>
     		<!-- BEGIN showEntry -->
     		<tr class="{ENTRY_ROWCLASS} rowMain">
     		<!--  <input {PRINTSHOP_PRICE_0_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_0" />  -->
