@@ -933,7 +933,7 @@ INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VA
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (11,'Armenia','AM','ARM');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (12,'Aruba','AW','ABW');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (13,'Australia','AU','AUS');
-INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (14,'Ã–sterreich','AT','AUT');
+INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (14,'Austria','AT','AUT');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (15,'Azerbaijan','AZ','AZE');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (16,'Bahamas','BS','BHS');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (17,'Bahrain','BH','BHR');
@@ -1000,7 +1000,7 @@ INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VA
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (78,'Gabon','GA','GAB');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (79,'Gambia','GM','GMB');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (80,'Georgia','GE','GEO');
-INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (81,'Deutschland','DE','DEU');
+INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (81,'Germany','DE','DEU');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (82,'Ghana','GH','GHA');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (83,'Gibraltar','GI','GIB');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (84,'Greece','GR','GRC');
@@ -1123,7 +1123,7 @@ INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VA
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (201,'Svalbard and Jan Mayen Islands','SJ','SJM');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (202,'Swaziland','SZ','SWZ');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (203,'Sweden','SE','SWE');
-INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (204,'Schweiz','CH','CHE');
+INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (204,'Switzerland','CH','CHE');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (205,'Syrian Arab Republic','SY','SYR');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (206,'Taiwan','TW','TWN');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (207,'Tajikistan','TJ','TJK');
