@@ -99,4 +99,6 @@ $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_LOCATION_HELP'] = "Sie finden alle hochgeladen
 $_ARRAYLANG['TXT_PRINTSHOP_ORDER_ID'] = "Bestell-ID";
 $_ARRAYLANG['TXT_PRINTSHOP_MANDATORY_IMAGE_UPLOAD_ENABLED'] = "Bilder hochladen obligatorisch";
 $_ARRAYLANG['TXT_PRINTSHOP_MANDATORY_IMAGE_UPLOAD_ENABLED_HELP'] = "Ist diese Einstellung aktiv, dann müssen bei einer Bestellung mindestens ein bzw. bei bedruckter Rückseite zwei Bilder hochgeladen werden.";
+$_ARRAYLANG['TXT_PRINTSHOP_DELETE'] = "Löschen";
+$_ARRAYLANG['TXT_PRINTSHOP_EDIT'] = "Bearbeiten";
 ?>
