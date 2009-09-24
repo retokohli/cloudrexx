@@ -6,13 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_search
  */
-$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Risultati della ricerca";
-$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "La ricerca di <strong>%s</strong> fornisce %d risultato(s) (separati da importanza)";
-$_ARRAYLANG['TXT_RELEVANCE'] = "Importanza";
-$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "Nessun documento corrisponde ai criteri di ricerca <strong>%s</strong>.";
-$_ARRAYLANG['TXT_SEARCH'] = "Ricercare";
-$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Volete osservare i criteri di ricerca.";
-$_ARRAYLANG['TXT_UNTITLED'] = "Senza titolo";
+$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Résultats de la recherche";
+$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "La recherche de <strong>%s</strong> fournit %d résultat(s) (triés par pertinence)";
+$_ARRAYLANG['TXT_RELEVANCE'] = "Pertinence";
+$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "Aucun document ne correspond aux critères de recherche <strong>%s</strong>.";
+$_ARRAYLANG['TXT_SEARCH'] = "Rechercher";
+$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Veuillez saisir les critères de recherche.";
+$_ARRAYLANG['TXT_UNTITLED'] = "Sans titre";
 $_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_HITS'] = "La recherche de <strong>%s</strong> fournit %d résultat(s)";
 $_ARRAYLANG['TXT_SEARCH_RESULTS_SORT_BY'] = "Trié par";
 $_ARRAYLANG['TXT_HITS'] = "Touvés";

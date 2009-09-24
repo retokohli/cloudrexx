@@ -64,4 +64,5 @@ $_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_BACK'] = "Sie müssen mindestens
 $_ARRAYLANG['TXT_PRINTSHOP_INVALID_EXTENSION'] = "Ungültiger Dateityp. Es können nur Dateien mit der Endung .JPG, .GIF oder .PNG hochgeladen werden.";
 $_ARRAYLANG['TXT_PRINTSHOP_ERROR_UPLOADING_FILE'] = "Beim Hochladen der Datei ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Webmaster, falls das Problem besteht.";
 $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC2'] = "Sie können uns die Bilder auch per %s oder %s nachsenden.";
+$_ARRAYLANG['TXT_PRINTSHOP_SAME_AS_INVOICE_ADDR'] = "Gleiche Adresse wie für die Rechnung";
 ?>
