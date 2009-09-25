@@ -24,9 +24,9 @@
             var $J = jQuery.noConflict();
             $J(function(){//DOM is ready when calling this fn
                  if($J('div#printshop').length == 0){
-                     var contentHtml = $J('#fe_PreviewContent').html();
-                     $J('#fe_PreviewContent').empty();
-                     $J('<div id="printshop"><div class="psContent"></div></div>').appendTo('#fe_PreviewContent');
+                     var contentHtml = $J('#content_wrapper').html();
+                     $J('#content_wrapper').empty();
+                     $J('<div id="printshop"><div class="psContent"></div></div>').appendTo('#content_wrapper');
                      $J('#printshop .psContent').html(contentHtml);
                 }
 
@@ -36,7 +36,7 @@
 
             });
         //]]>
-      </script></script>
+      </script>
   </head>
   <body>
       <div id="container">
