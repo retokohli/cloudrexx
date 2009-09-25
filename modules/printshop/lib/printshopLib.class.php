@@ -306,7 +306,8 @@ class PrintshopLibrary {
 
         $objRSCount = $objDatabase->Execute('SELECT FOUND_ROWS() AS `rows`');
         $arrOrders = array(
-            'count' => intval($objRSCount->fields['rows'])
+            'count'     => intval($objRSCount->fields['rows']),
+            'entries'   => array(),
         );
         while(!$objRS->EOF){
             $arrOrders['entries'][] = $objRS->fields;
