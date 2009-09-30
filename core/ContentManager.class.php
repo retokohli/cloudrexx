@@ -3020,6 +3020,9 @@ class ContentManager
     {
         global $objDatabase;
 
+        //remove rewriting, as it will break JSON syntax
+        @ini_set('url_rewriter.tags', "");
+
         $data   = $_GET['data'];
         $pageId = intval($_REQUEST['page']);
         $langId = intval($_REQUEST['lang']);
