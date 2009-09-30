@@ -69,6 +69,11 @@ $_CONFIG['coreCharacterEncoding'] = ''; // example 'UTF-8'
 */
 @ini_set('arg_separator.output', '&amp;');
 
+/**
+* Set url rewriter tags
+*/
+@ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
+
 /*
 * Enable Frontend editing
 */
