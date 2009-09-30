@@ -140,7 +140,7 @@ class aliasLib
                         if (isset($arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]])) {
                             $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['title'] = $objAlias->fields['catname'];
                             $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET
-                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($objAlias->fields['lang'], 'lang') : null)
+                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($objAlias->fields['lang'], 'lang') : null)
                                 .'/'.CONTREXX_DIRECTORY_INDEX
                                 .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
                                 .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
@@ -241,7 +241,7 @@ class aliasLib
             if ($objAlias !== false && $objAlias->RecordCount() == 1) {
                 $arrAlias['title'] = $objAlias->fields['catname'];
                 $arrAlias['pageUrl'] = ASCMS_PATH_OFFSET
-                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($arrAlias['lang'], 'lang') : null)
+                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($arrAlias['lang'], 'lang') : null)
                     .'/'.CONTREXX_DIRECTORY_INDEX
                     .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
                     .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
