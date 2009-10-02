@@ -15,16 +15,32 @@
  * TKaelin @ 2.0.2: wrote new regex based on http://en.wikipedia.org/wiki/E-mail_address
  * Dave V, @ 2.1.2: re-wrote regex according to http://www.regular-expressions.info/email.html
  * Reto Kohli @ 2.2.0: Fixed e-mail regex for use with standard slashes as delimiters
+ * @since   2.0.0
  */
 define('VALIDATOR_REGEX_EMAIL',
     '[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
 );
+
 /**
- * Regular Expressions for URIs
- * Reto Kohli @ 2.2.0: Added regex for URIs
+ * Regular Expression for URI protocols
+ *
+ * Known protocols include HTTP, HTTPS, FTP, and FTPS.
+ * @author  Reto Kohli <reto.kohli@comvation.com>
+ * @since   2.2.0
+ */
+define('VALIDATOR_REGEX_URI_PROTO',
+      '(?:(?:ht|f)tps?\:\/\/)'
+);
+
+/**
+ * Regular Expression for URIs
+ * @author  Reto Kohli <reto.kohli@comvation.com>
+ * @since   2.2.0
  */
 define('VALIDATOR_REGEX_URI',
-    '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
+      VALIDATOR_REGEX_URI_PROTO.
+      '?((([\w\d-]{2,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)){4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
+//    '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
 );
 
 /**
@@ -67,6 +83,21 @@ class FWValidator
     static function isUri($string)
     {
         return (bool)preg_match('/^'.VALIDATOR_REGEX_URI.'$/i', $string);
+    }
+
+
+    /**
+     * Returns true if the given string starts with a protocol
+     *
+     * See {@see VALIDATOR_REGEX_URI_PROTO} for known protocols.
+     * @param   string  $string The string to be tested
+     * @return  boolean         True if the string starts with an URI,
+     *                          false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function hasProto($string)
+    {
+        return (bool)preg_match('/^'.VALIDATOR_REGEX_URI_PROTO.'/i', $string);
     }
 
 
