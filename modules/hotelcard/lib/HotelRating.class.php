@@ -59,7 +59,6 @@ class HotelRating
         static $arrRating = array();
 
         if (empty($arrRating)) {
-            $arrRating[''] = $_ARRAYLANG['TXT_HOTELCARD_RATING_PLEASE_CHOOSE'];
 //echo("HotelRating::getArray(): Making rating array...<br />");
             if (self::INCLUDE_NOT_RATED)
                 $arrRating['-'] = $_ARRAYLANG['TXT_HOTELCARD_RATING_NONE'];
