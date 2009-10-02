@@ -575,7 +575,7 @@ class Image
         if (empty($image_id)) return false;
         // This may not be what you want, but it's your fault in that case
         $query = "
-            SELECT `image_type_key`, `file_type_key`,
+            SELECT `ord`, `image_type_key`, `file_type_key`,
                    `path`, `width`, `height`
               FROM ".DBPREFIX."core_image
              WHERE id=$image_id".
@@ -586,7 +586,7 @@ class Image
         $arrImage = array();
         while (!$objResult->EOF) {
             $arrImage[$objResult->fields['ord']] = array(
-                'id'             => $objResult->fields['id'],
+                'id'             => $image_id,
                 'ord'            => $objResult->fields['ord'],
                 'image_type_key' => $objResult->fields['image_type_key'],
                 'file_type_key'  => $objResult->fields['file_type_key'],
@@ -601,7 +601,10 @@ class Image
 
 
     /**
-     * Create a new thumbnail for the image object.
+     * Create a new thumbnail for the image object
+     *
+     * This uses this Images' key to determine the Imagetype and its
+     * default thumbnail size.
      * @return  boolean         True on success, false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -625,15 +628,22 @@ class Image
 
 
     /**
-     * Returns the scaled down size array.
+     * Returns a scaled image size array
      *
      * The $size array is the same as the one returned by {@see getimagesize()}.
+     * One of $maxwidth and $maxheight may be zero, in which case it is ignored.
+     * The size is then calculated to fit the other while maintaining the
+     * ratio.  If both are zero, the original $size is returned unchanged.
      * @param   array       $size         The Image size array
      * @param   integer     $maxwidth     The maximum width
      * @param   integer     $maxheight    The maximum height
+     * @return  array                     The scaled size array
      */
     static function getScaledSize($size, $maxwidth, $maxheight)
     {
+        if ($maxwidth == 0 && $maxheight == 0) return $size;
+        if ($maxwidth == 0) $maxwidth = 1e9;
+        if ($maxheight == 0) $maxheight = 1e9;
         $ratio    = $size[0] / $size[1];
         $maxratio = $maxwidth / $maxheight;
         if ($ratio < $maxratio) {
@@ -664,28 +674,54 @@ class Image
      * @static
      */
     static function createThumbnail(
-        $image_path, $maxWidth=160, $maxHeight=120, $quality=90)
-    {
-        File::pathRelativeToRoot($image_path);
-        $original_size = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$image_path);
-        $thumbnail_size = self::getScaledSize(
+        $image_path, $maxWidth=160, $maxHeight=120, $quality=90
+    ) {
+        return self::scale(
+            $image_path, self::getThumbnailFilename($image_path),
+            true, $maxWidth, $maxHeight, $quality);
+    }
+
+
+    /**
+     * Create a scaled version of a picture.
+     *
+     * Both the width and height of the thumbnail may be
+     * specified; the picture will still be scaled to fit within the given
+     * sizes while keeping the original width/height ratio.
+     * In addition to that, this method tries to delete an existing
+     * target image before attempting to write the new one.
+     * Note that scaled images are always created as jpeg image files!
+     * @param   string  $source_path    The source image file path
+     * @param   string  $target_path    The target image file path
+     * @param   boolean $force          If true, the target image is forced
+     *                                  to be overwritten
+     * @param   integer $maxWidth       The maximum width of the image
+     * @param   integer $maxHeight      The maximum height of the image
+     * @param   integer $quality        The desired jpeg thumbnail quality
+     * @return  bool                    True on success, false otherwise.
+     * @static
+     */
+    static function scale(
+        $source_path, $target_path, $force=false,
+        $maxWidth=160, $maxHeight=120, $quality=90
+    ) {
+        File::pathRelativeToRoot($source_path);
+        $original_size = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
+        $scaled_size = self::getScaledSize(
             $original_size, $maxWidth, $maxHeight);
-        $image = self::load();
-        if (!$image) {
-            return false;
-        }
-        $thumb = false;
-        if (function_exists ("imagecreatetruecolor"))
-            $thumb = @imagecreatetruecolor($thumbnail_size[0], $thumbnail_size[1]);
-        if (!$thumb)
-            $thumb = ImageCreate($thumbnail_size[0], $thumbnail_size[1]);
+        $source_image = self::load();
+        if (!$source_image) return false;
+        $target_image = false;
+        if (function_exists ('imagecreatetruecolor'))
+            $target_image = @imagecreatetruecolor($scaled_size[0], $scaled_size[1]);
+        if (!$target_image)
+            $target_image = ImageCreate($scaled_size[0], $scaled_size[1]);
         imagecopyresized(
-            $thumb, $image, 0, 0, 0, 0,
-            $thumbnail_size[0] + 1, $thumbnail_size[1] + 1,
+            $target_image, $source_image, 0, 0, 0, 0,
+            $scaled_size[0] + 1, $scaled_size[1] + 1,
             $original_size[0]  + 1, $original_size[1]  + 1
         );
-        $thumb_path = self::getThumbnailFilename($image_path);
-        return self::saveJpeg($thumb, $thumb_path, $quality, true);
+        return self::saveJpeg($target_image, $target_path, $quality, $force);
     }
 
 
@@ -705,9 +741,9 @@ class Image
 //echo("Image::getThumbnailFilename(): $image_path is a thumbnail already<br />");
             return $image_path;
         }
-        // Insert the thumbnail suffix *before* the original extension
+        // Insert the thumbnail suffix *before* the original extension, if any
         $thumb_path = preg_replace(
-            '/(?:\.\w+)$/', self::THUMBNAIL_SUFFIX.'.jpg', $image_path);
+            '/(?:\.\w+)?$/', self::THUMBNAIL_SUFFIX.'.jpg', $image_path);
 //echo("Image::getThumbnailFilename(): fixed $image_path to $thumb_path<br />");
         return $thumb_path;
     }
@@ -757,12 +793,14 @@ class Image
      * in the session under $_SESSION['image'][<field_name>].
      * @param   string  $target_folder_path   The target folder path for
      *                                        uploaded images only
-     * @return  boolean             True if all images have been processed
-     *                              successfully, false if errors occurred,
+     * @return  integer             The Image ID if all images have been
+     *                              processed successfully,
+     *                              false if errors occurred,
      *                              or the empty string if nothing changed
      */
     static function processPostFiles($target_folder_path)
     {
+//echo("Image::processPostFiles($target_folder_path): Entered<br />");
         // Cases:
         // If present, pick the path, ID, ord and type from the session,
         // overwrite with those from the post.
@@ -790,10 +828,13 @@ class Image
         if (is_array($_POST)) {
             $match = array();
             foreach (array_keys($_POST) as $name) {
-                if (preg_match('/^(\w+)_src$/', $name, $match))
+                if (!preg_match('/^(\w+)_src$/', $name, $match)) continue;
+                if (!in_array($match[1], $arrName))
                     $arrName[] = $match[1];
             }
         }
+//echo("Image::processPostFiles($target_folder_path): Made name array<br />".var_export($arrName, true)."<hr />");
+
         $result = ''; // No change
 //echo("Image::processPostFiles(): Collected image field names: ".var_export($arrName, true)."<hr />"."FILES: ".var_export($_FILES, true)."<hr />"."POST: ".var_export($_POST, true)."<hr />");
         // Process all images found
@@ -833,6 +874,12 @@ class Image
                 // Uploads must go to the target folder
 //                $image_src = $target_folder_path.'/'.uniqid().'_'.$image_name;
                 $image_src = $target_folder_path.'/'.$image_name;
+                if (!$objImage->delete(true)) {
+//echo("Image::processPostFiles(): Failed deleting $image_src<br />");
+                } else {
+//echo("Image::processPostFiles(): Deleted $image_src<br />");
+
+                }
 //echo("Image::processPostFiles(): Uploading $image_name to $image_src<br />");
                 if (!File::uploadFileHttp(
                     $name, $image_src,
@@ -884,10 +931,10 @@ class Image
                     // for reference as long as the session is alive
                     if ($image_name)
                         $_SESSION['image'][$name]['name'] = $image_name;
-                    $_SESSION['image'][$name]['src']  = $objImage->getPath();
-                    $_SESSION['image'][$name]['id']   = $objImage->getId();
-                    $_SESSION['image'][$name]['ord']  = $objImage->getOrd();
-                    $_SESSION['image'][$name]['type'] = $objImage->getImageTypeKey();
+                    $_SESSION['image'][$name]['src']  = $objImage->path;
+                    $_SESSION['image'][$name]['id']   = $objImage->id;
+                    $_SESSION['image'][$name]['ord']  = $objImage->ord;
+                    $_SESSION['image'][$name]['type'] = $objImage->image_type_key;
 //echo("Image::processPostFiles(): Successfully stored image $name, ID ".$objImage->getId()."<hr />");
                     if ($result === '') $result = true;
                 } else {
@@ -896,8 +943,8 @@ class Image
                 }
             }
         }
-        return $result;
-//echo("processPostFiles($image_type, $target_folder_path): Added FILES<br />".nl2br(var_export($_FILES, true))."<hr />".(isset($_SESSION['hotelcard']) ? "Collected<br />".nl2br(var_export($_SESSION['hotelcard'], true))."<hr />" : ''));
+//echo("Image::processPostFiles(): Result ".var_export($result, true).", image ID $objImage->id<br />");
+        return ($result === true ? $objImage->id : $result);
     }
 
 
@@ -931,9 +978,11 @@ class Image
     /**
      * Uploads an image file and stores its information in the database
      * @param   string  $upload_field_name  File input field name
-     * @param   string  $target_path        Target path, relative to the document
-     *                                      root, including the file name
-     * @return  integer                     The new image ID on success, false otherwise
+     * @param   string  $target_path        Target path, relative to the
+     *                                      document root, including the
+     *                                      file name
+     * @return  integer                     The new image ID on success,
+     *                                      false otherwise
      * @author    Reto Kohli <reto.kohli@comvation.com>
      */
     static function uploadAndStore(
@@ -1008,6 +1057,8 @@ class Image
     function errorHandler()
     {
         global $objDatabase;
+
+die("Image::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."core_image", $arrTables)) {
