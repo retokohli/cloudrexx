@@ -468,6 +468,7 @@ class ProductAttribute
     	// Mind: value entries in the array may be new and have to
         // be inserted, even though the object itself has got a valid ID!
         foreach ($this->arrValue as $arrValue) {
+// Note: Text::replace() now returns the ID, not the object!
 //            // The Text ID is not set for values that have been added
 //            $text_id =
 //                (empty($arrValue['text_value_id'])

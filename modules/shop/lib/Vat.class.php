@@ -520,6 +520,7 @@ class Vat
             $rate = $vatRates[$id];
             if (   self::$arrVat[$id]['class'] != $class
                 || self::$arrVat[$id]['rate']  != $rate) {
+// Note: Text::replace() now returns the ID, not the object!
 //                $objText = Text::replace(
 //                    $text_class_id, LANG_ID, $class,
 //                    MODULE_ID, TEXT_SHOP_VAT_CLASS
@@ -562,6 +563,7 @@ class Vat
 
         $vatRate = doubleval($vatRate);
         if ($vatRate >= 0) {
+// Note: Text::replace() now returns the ID, not the object!
 //            $objText = Text::replace(
 //                0, BACKEND_LANG_ID, $vatClass, MODULE_ID, TEXT_SHOP_VAT_CLASS
 //            );

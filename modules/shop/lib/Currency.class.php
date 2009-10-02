@@ -543,6 +543,7 @@ class Currency
             $is_active = (isset($_POST['currencyActive'][$currency_id]) ? 1 : 0);
             // The default currency must be activated
             $is_active = ($is_default ? 1 : $is_active);
+// Note: Text::replace() now returns the ID, not the object!
 //            $objText = Text::replace(
 //                self::$arrCurrency[$currency_id]['text_name_id'],
 //                FRONTEND_LANG_ID,
