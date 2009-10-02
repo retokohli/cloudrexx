@@ -105,9 +105,6 @@ class HotelAccomodationType
 
     /**
      * Returns the array of all accomodation type names, indexed by their ID
-     *
-     * Note that it's important that the first entry ("please choose")
-     * has a zero index.
      * @return  array               The accomodation type names array
      *                              on success, false otherwise
      */
@@ -122,7 +119,6 @@ class HotelAccomodationType
         if (empty($arrName)) {
             foreach (self::$arrAccomodationTypes as $arrAccomodationType) {
                 $id = $arrAccomodationType['id'];
-                if ($id == 1) $id = 0;
                 $arrName[$id] = $arrAccomodationType['name'];
             }
         }
@@ -159,7 +155,7 @@ class HotelAccomodationType
     {
         global $objDatabase;
 
-//echo("HotelAccomodationType::errorHandler(): Entered<br />");
+die("HotelAccomodationType::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel_accomodation_type", $arrTables)) {
@@ -184,14 +180,14 @@ class HotelAccomodationType
         // Add types
         $arrTypes = array(
             // ord => language arrays
-            0 => array(
-                // language ID => name
-                1 => '-- Hoteltyp wählen --',
-                2 => '-- Select hotel type --',
-                3 => '-- Select hotel type --',
-                4 => '-- Select hotel type --',
-            ),
-            array(
+//            0 => array(
+//                // language ID => name
+//                1 => '-- Hoteltyp wählen --',
+//                2 => '-- Select hotel type --',
+//                3 => '-- Select hotel type --',
+//                4 => '-- Select hotel type --',
+//            ),
+            1 => array(
                 1 => 'Hotel',
                 2 => 'Hotel',
                 3 => 'Hotel',

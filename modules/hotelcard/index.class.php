@@ -1,7 +1,5 @@
 <?php
 
-define('_HOTELCARD_DEBUG', 0);
-
 if (isset($_REQUEST['test']))
 $_SESSION['hotelcard'] = array (
 //'step_complete' => 3,
@@ -52,7 +50,7 @@ array (
 'breakfast_included_2' => '1',
 'confirm_terms' => '0',
 'step_current' => 0,
-'hotel_image_type' => 'hotelcard_hotel_title',
+'image_type' => 'hotelcard_hotel_title',
 );
 
 // Test stuff
@@ -91,6 +89,7 @@ require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 require_once ASCMS_CORE_PATH.'/Sorting.class.php';
 require_once ASCMS_CORE_PATH.'/Text.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
+require_once 'lib/HotelcardLibrary.class.php';
 require_once 'lib/Hotel.class.php';
 require_once 'lib/HotelAccomodationType.class.php';
 require_once 'lib/HotelCheckInOut.class.php';
@@ -141,11 +140,6 @@ class Hotelcard
     const INCOMPLETE_CLASS = ' class="error"';
 
     /**
-     * Format with HTML code for mandatory field marks
-     */
-    const MANDATORY_FIELD_HTML = '<span style="color: red;">&nbsp;*</span>';
-
-    /**
      * Mail template key for the hotel registration confirmation
      */
     const MAILTEMPLATE_HOTEL_REGISTRATION_CONFIRMATION =
@@ -157,6 +151,7 @@ class Hotelcard
      * @static
      */
     private static $objTemplate = false;
+
     /**
      * Page Title
      *
@@ -165,17 +160,10 @@ class Hotelcard
      * @static
      */
     private static $page_title = '';
-    /**
-     * The page content
-     *
-     * Handed over when {@see getPage()} is called
-     * @var   string
-     * @static
-     */
-    private static $page_content = '';
+
     /**
      * Status / error message
-     * @var string
+     * @var   string
      * @static
      */
     private static $message = '';
@@ -188,20 +176,11 @@ class Hotelcard
      */
     static function getPage($page_content)
     {
-
-if (_HOTELCARD_DEBUG) {
-    DBG::enable_firephp();
-    if (_HOTELCARD_DEBUG & 1) DBG::enable_error_reporting();
-    if (_HOTELCARD_DEBUG & 2) DBG::enable_adodb_debug();
-DBG::log('debug enabled');
-}
-
-        self::$page_content = $page_content;
         // PEAR Sigma template
         self::$objTemplate = new HTML_Template_Sigma('.');
         CSRF::add_placeholder(self::$objTemplate);
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        self::$objTemplate->setTemplate(self::$page_content, true, true);
+        self::$objTemplate->setTemplate($page_content, true, true);
 
         // Load settings
 // TODO: Move this where it is needed
@@ -218,14 +197,17 @@ DBG::log('debug enabled');
                 $result &= self::addHotel();
                 break;
             case 'edit_hotel':
+            case 'edit_hotel_availability':
+            case 'edit_hotel_details':
+            case 'edit_hotel_roomtypes':
 //echo("Edit Hotel<br />");
-                // Edit the hotel/s associated with the logged in user
+                // We have different templates and contents here, but the
+                // User and Hotel ID must be verified in any of these cases.
                 $result &= self::editHotel();
                 break;
             case 'terms':
                 $result &= self::terms();
                 break;
-            case 'edit_hotel':
 
             // Ajax
             case 'get_locations':
@@ -252,7 +234,7 @@ DBG::log('debug enabled');
 
             case 'overview':
             default:
-                $result &= self::overview();
+//                $result &= self::overview();
         }
 //        $result &= (empty(self::$message));
 //        if (!$result) {
@@ -282,12 +264,16 @@ DBG::log('debug enabled');
     {
         global $_ARRAYLANG, $_CORELANG;
 
+        JS::activate('wz_tooltip');
+//echo("addHotel(): Entered<hr />");
+
         // Day of the week, number and string abbreviation
         $arrDow = explode(',', $_CORELANG['TXT_CORE_DAY_ARRAY']);
 
         // Gobble up all posted data whatsoever
         foreach ($_POST as $key => $value) {
-            $_SESSION['hotelcard'][$key] = $value;
+            $_SESSION['hotelcard'][$key] = (is_array($_POST[$key])
+                ? $value : contrexx_stripslashes($value));
         }
 //echo("Added POST<br />".nl2br(var_export($_POST, true))."<hr />");
 
@@ -297,15 +283,19 @@ DBG::log('debug enabled');
         if (   empty($_SESSION['hotelcard']['contact_name'])
             && isset($_SESSION['hotelcard']['step'])
             && $_SESSION['hotelcard']['step'] > 1) {
+// TODO:  TEST ONLY
 //echo("Detected EOW -- Redirecting...<br />");
             unset($_SESSION['hotelcard']);
+            unset($_SESSION['image']);
             CSRF::header('Location: index.php');
             exit;
         }
 
-        // Look for uploaded image files and try storing them.
-        // The filename and resulting image ID are stored in the session array.
-        self::processPostFiles();
+//         Look for uploaded image files and try storing them.
+//         The filename and resulting image ID are stored in the session array.
+//echo("addHotel(): Going to process Files...<hr />");
+//
+//        self::processPostFiles();
 //echo("Session:<br />".nl2br(var_export($_SESSION['hotelcard'], true))."<hr />");
 
         // If the form has been posted, automatically move to the next step
@@ -354,14 +344,6 @@ DBG::log('debug enabled');
 
 //echo("Trying step $_SESSION['hotelcard']['step_current'] FAILED<br />");
 
-        // After the last step has been completed, go back to the hotelcard
-        // start page.  Also unset the session data.
-//        if ($_SESSION['hotelcard']['step_current'] > self::HOTEL_REGISTRATION_STEPS) {
-//            unset($_SESSION['hotelcard']);
-//            CSRF::header('Location: index.php?section=hotelcard');
-//            exit;
-//        }
-
         // Set up the step bar
         for ($i = 1; $i <= self::HOTEL_REGISTRATION_STEPS; ++$i) {
             self::$objTemplate->setVariable(array(
@@ -400,16 +382,25 @@ DBG::log('debug enabled');
                 // 2 - Registration date
                 // 3 - hotelcard.ch online ID
                 // 4 - terms and conditions
-                (isset($_SESSION['hotelcard']['contact_name'])
-                    ? $_SESSION['hotelcard']['contact_name'] : ''),
+                (isset($_SESSION['hotelcard']['lastname'])
+                  ? ($_SESSION['hotelcard']['contact_gender'] == 'M'
+                      ? $_ARRAYLANG['TXT_HOTELCARD_SALUTATION_MALE']
+                      : $_ARRAYLANG['TXT_HOTELCARD_SALUTATION_FEMALE']).' '.
+                    $_SESSION['hotelcard']['lastname']
+                  : ''),
+//                (isset($_SESSION['hotelcard']['contact_name'])
+//                    ? $_SESSION['hotelcard']['contact_name'] : ''),
+
                 (isset($_SESSION['hotelcard']['registration_time'])
                     ? $arrDow[date('w', $_SESSION['hotelcard']['registration_time'])].
                       ', '.
                       date(ASCMS_DATE_SHORT_FORMAT,
                           $_SESSION['hotelcard']['registration_time'])
                     : ''),
+
                 (isset($_SESSION['hotelcard']['hotel_id'])
                     ? $_SESSION['hotelcard']['hotel_id'] : ''),
+
                 SettingDb::getValue('terms_and_conditions_'.FRONTEND_LANG_ID)),
         ));
         // Show the submit button in all but the last step
@@ -424,9 +415,9 @@ DBG::log('debug enabled');
             );
         } else {
             // That was the last step, then.
-            // Unset the session -- maybe someone likes to enter another hotel
-            unset($_SESSION['hotelcard']);
-            unset($_SESSION['image']);
+            // Unset the contact name to mark this session obsolete
+// Comment for TESTING ONLY, so you can reload the last page
+            unset($_SESSION['hotelcard']['contact_name']);
         }
 //echo("Steps done<br />");
         return $result_step;
@@ -446,13 +437,28 @@ DBG::log('debug enabled');
      */
     static function processPostFiles()
     {
+//echo("processPostFiles(): Entered<br />");
+
         if (empty($_SESSION['hotelcard']['hotel_id'])) {
 //echo("processPostFiles(): No Hotel ID<br />");
             return false;
         }
-        return Image::processPostFiles(
-            ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.$_SESSION['hotelcard']['hotel_id']
+//echo("processPostFiles(): Calling Image::processPostFiles()<br />");
+        $result = Image::processPostFiles(
+            ASCMS_HOTELCARD_IMAGES_FOLDER.'/'.
+            $_SESSION['hotelcard']['hotel_id']
         );
+        if ($result === '') {
+//echo("No change to the image<br />");
+            return true;
+        }
+        if ($result > 0) {
+            $_SESSION['hotelcard']['image_id'] = $result;
+//echo("Set image_id to $result<br />");
+            return true;
+        }
+//echo("Error handling image<br />");
+        return false;
     }
 
 
@@ -491,93 +497,6 @@ DBG::log('debug enabled');
 
 
     /**
-     * Parse and display the form data as provided
-     *
-     * The $arrFields argument must be an array of rows, with single rows
-     * containing fields like this:
-     *  array(
-     *    'label' => 'Label text',
-     *    'input' => 'Input form element or text',
-     *    'mandatory' => boolean,
-     *    'class' => 'optional_class_name',
-     *    'error' => 'Optional error message to be added on top of the input',
-     *  )
-     * All fields are optional.
-     * If both label and input are missing, the
-     * array is recursively scanned for valid sub rows with at least a label
-     * or an input.
-     * If only the input is empty, the label is displayes as a header (<h2>).
-     * If the mandatory flag evaluates to true, the label is marked with a
-     * trailing non-breakable space, and an asterisk.
-     * If the class value is not empty, it is inserted into the otherwise
-     * empty class attribute of the label tag.
-     * If the error value is not empty, it is added on top of the input
-     * element or text.
-     * @param   array   $arrFields    The array of rows to be displayed
-     * @return  void
-     */
-    static function parseDataTable($arrFields)
-    {
-        global $_ARRAYLANG;
-
-        foreach ($arrFields as $row_data) {
-//echo("Hotelcard::parseDataTable(): row_data is ".nl2br(htmlentities(var_export($row_data, true), ENT_QUOTES, CONTREXX_CHARSET))."<hr />");
-
-            if (!is_array($row_data)) return false;
-
-            // Some rows contain the special index, which contains
-            // HTML content that is inserted as-is
-            if (isset($row_data['special'])) {
-                self::$objTemplate->setVariable(
-                    'HOTELCARD_DATA_SPECIAL', $row_data['special']);
-                self::$objTemplate->parse('hotelcard_data');
-                continue;
-            }
-
-            // Some other "rows" contain arrays of rows (i.e.,
-            // hotel facilities).  Recurse into them
-            if (   empty($row_data['label'])
-                && empty($row_data['input'])) {
-//echo("Hotelcard::parseDataTable(): &gt;&gt;&gt;<br />");
-                self::parseDataTable($row_data);
-//echo("Hotelcard::parseDataTable(): &lt;&lt;&lt;<br />");
-                continue;
-            }
-
-//echo("Language variable $label => ".$_ARRAYLANG[$label]."<br />");
-
-            $mandatory = (empty($row_data['mandatory']) ? false : true);
-            $label = (isset($row_data['label']) ? $row_data['label'] : '');
-            $input = (isset($row_data['input']) ? $row_data['input'] : '');
-            $class = (isset($row_data['class']) ? $row_data['class'] : '');
-            $error = (isset($row_data['error']) ? $row_data['error'].'<br />' : '');
-
-//echo("Hotelcard::parseDataTable(): class: $class<br />");
-            if (empty($input)) {
-                // Parse header
-                self::$objTemplate->setVariable(
-                    'HOTELCARD_DATA_HEADER',
-                        (preg_match('/^TXT_/', $label)
-                            ? $_ARRAYLANG[$label] : $label)
-                );
-            } else {
-                self::$objTemplate->setVariable(array(
-                    'HOTELCARD_DATA_LABEL' =>
-                        (preg_match('/^TXT_/', $label)
-                            ? $_ARRAYLANG[$label] : $label).
-                        ($mandatory
-                            ? self::MANDATORY_FIELD_HTML : ''),
-                    'HOTELCARD_DATA_LABEL_CLASS' => $class,
-                    'HOTELCARD_DATA_INPUT' => $error.$input,
-                ));
-            }
-            self::$objTemplate->parse('hotelcard_data');
-        }
-        return true;
-    }
-
-
-    /**
      * Verifies that the fields contain some proper values
      *
      * For any missing or invalid values, adds the 'class' index to the
@@ -587,7 +506,7 @@ DBG::log('debug enabled');
      * @param   array   $arrFields    The array with field names as keys
      * @return  void
      */
-    static function verifyMandatoryFields(&$arrFields)
+    static function verifyAndStoreHotel(&$arrFields)
     {
         global $_ARRAYLANG;
 
@@ -596,12 +515,23 @@ DBG::log('debug enabled');
         if ($_SESSION['hotelcard']['step_posted'] != $_SESSION['hotelcard']['step_current'])
             return false;
 
-        // This variable is reported as being "never used" three times(!)
+        // This variable is reported as being "never used" two times(!)
         // by the code analyzer.  Ignore that sucker...
         $complete = true;
-        $objTestHotel = new Hotel();
-        foreach ($arrFields as $name => $row_data) {
 
+        $hotel_id =
+            (isset($_SESSION['hotelcard']['hotel_id'])
+                ? $_SESSION['hotelcard']['hotel_id'] : 0);
+//echo("Got Hotel ID from Session: $hotel_id<br />");
+        $objHotel = Hotel::getById($hotel_id);
+        if (!$objHotel) {
+//echo("Got NO Hotel, making new<br />");
+            $objHotel = new Hotel();
+        } else {
+//echo("Got Hotel with ID $hotel_id<br />");
+        }
+
+        foreach ($arrFields as $name => $row_data) {
             // Ignore "dummy" values.
             // Note that it's not mandatory to filter those here; they would
             // just pass through.  However, this eases debugging.
@@ -610,28 +540,28 @@ DBG::log('debug enabled');
                 '/^(?:contact_data|hotel_facilities'.
                 '|room_type_data_\d'.
                 // Dummies, no input
-                '|dummy_div_open_\d|dummy_div_close_\d'.
+                '|dummy_'.
                 // register_date is a generated field, not editable
                 '|register_date)/',
-                $name))
-                continue;
+                $name)
+            ) continue;
 
             $value = (isset($_SESSION['hotelcard'][$name])
                 ? $_SESSION['hotelcard'][$name] : '');
-//echo("Hotelcard::verifyMandatoryFields(): $name => ".var_export($value, true)."<br />");
+//echo("Hotelcard::verifyAndStoreHotel(): $name => ".var_export($value, true)."<br />");
 
             // Test if the value is valid whether it's mandatory or not.
             // First, try to set the parameter in the hotel object.
             // If false is returned, it's a Hotel field, but the value
             // is rejected.
-            if ($objTestHotel->setFieldvalue($name, $value)) {
-//echo("Hotelcard::verifyMandatoryFields(): Set $name to $value<br />");
-                if ($objTestHotel->getFieldvalue($name) !== null) {
-                    // Value has been accepted by the Hotel class,
-                    // update the session
+            if ($objHotel->setFieldvalue($name, $value)) {
+//echo("Hotelcard::verifyAndStoreHotel(): Set $name to $value<br />");
+                if ($objHotel->getFieldvalue($name) !== null) {
+                    // Value has been accepted by the Hotel class;
+                    // update the session with the actual value
                     $_SESSION['hotelcard'][$name] =
-                        $objTestHotel->getFieldvalue($name);
-//echo("Hotelcard::verifyMandatoryFields(): Accepted $name to be ".$_SESSION['hotelcard'][$name]."<br />");
+                        $objHotel->getFieldvalue($name);
+//echo("Hotelcard::verifyAndStoreHotel(): Accepted $name to be ".$_SESSION['hotelcard'][$name]."<br />");
                     continue;
                 }
                 // else... The value was accepted but did not change the
@@ -639,25 +569,28 @@ DBG::log('debug enabled');
                 // The non-hotel cases are handled below.
             } else {
                 // The value has been rejected
-//echo("Hotelcard::verifyMandatoryFields(): Rejected mandatory field $name value '$value'<br />");
-                // If the field is not mandatory and empty, however, just
-                // ignore it
+                // If the field is empty, but not mandatory, just ignore it
                 if (empty($row_data['mandatory']) && empty($value))
                     continue;
+//echo("Hotelcard::verifyAndStoreHotel(): Rejected mandatory field $name value '$value'<br />");
                 $complete = false;
                 $arrFields[$name]['class'] = self::INCOMPLETE_CLASS;
                 continue;
             }
 
-//echo("Hotelcard::verifyMandatoryFields(): Checking field $name: ".var_export($value, true)."<br />");
+//echo("Hotelcard::verifyAndStoreHotel(): Checking field $name: ".var_export($value, true)."<br />");
 
+            $arrMatch = array();
+            $index = 0;
+            if (preg_match('/_(\d)$/', $name, $arrMatch)) {
+                $index = $arrMatch[1];
+            }
             $result = false;
             // All the remaining special cases
             switch ($name) {
-              case 'hotel_image_id':
+              case 'image_id':
               case 'bsubmit':
-                // Workaround for the image and submit buttons.
-                // Always let them pass.
+                // Image and submit buttons: always let them pass.
                 $result = true;
                 break;
               case 'hotel_facility_id':
@@ -668,12 +601,20 @@ DBG::log('debug enabled');
               case 'room_type_3':
               case 'room_type_4':
                 $result = HotelRoom::validateRoomtypeName($value);
+//echo("room type name set to $value<br />");
                 break;
               case 'room_available_1':
               case 'room_available_2':
               case 'room_available_3':
               case 'room_available_4':
                 $result = HotelRoom::validateRoomtypeNumber($value);
+                if (empty($_SESSION['hotelcard']['room_type_'.$index])) {
+//echo("Ignoring invalid room number $value for unused room type ".$index."<br />");
+                    continue 2;
+                }
+                // Set $value to anything non-empty and invalid if it's needed,
+                // so the illegal value is recognised below.
+                if (!$result) $value = 'invalid';
                 break;
               case 'room_price_1':
               case 'room_price_2':
@@ -681,14 +622,10 @@ DBG::log('debug enabled');
               case 'room_price_4':
                 // Prices for i > 1 must be considered invalid if zero
                 // only if they are in use
-//echo("Field $name, price $value<br />");
-                $arrMatch = array();
-                if (preg_match('/^room_price_(\d)$/', $name, $arrMatch)) {
 //echo("Field $name => number ".$arrMatch[1].", price $value => room type ".$_SESSION['hotelcard']['room_type_'.$arrMatch[1]]."<br />");
-                    if (empty($_SESSION['hotelcard']['room_type_'.$arrMatch[1]])) {
-//echo("Ignoring invalid price $value for unused room type ".$arrMatch[1]."<br />");
-                        continue;
-                    }
+                if (empty($_SESSION['hotelcard']['room_type_'.$index])) {
+//echo("Ignoring invalid price $value for unused room type ".$index."<br />");
+                    continue 2;
                 }
                 $result = HotelRoom::validateRoomtypePrice($value);
                 break;
@@ -702,41 +639,124 @@ DBG::log('debug enabled');
               case 'breakfast_included_2':
               case 'breakfast_included_3':
               case 'breakfast_included_4':
-                $result = ($value !== '');
+//echo("*** breakfast selection is ".var_export($value, true)." for room type ".$index."<br />");
+                  $result = ($value !== '');
+                if (empty($_SESSION['hotelcard']['room_type_'.$index])) {
+//echo("Ignoring invalid breakfast selection $value for unused room type ".$index."<br />");
+                    continue;
+                }
+                // Set $value to anything non-empty and invalid if it's needed,
+                // so the illegal value is recognised below.
+                if (!$result) $value = 'invalid';
                 break;
               case 'confirm_terms':
                 $result = (!empty($value));
                 break;
               default:
-//echo("Hotelcard::verifyMandatoryFields(): WARNING: Missed name $name: ".var_export($value, true)."<br />");
+//echo("Hotelcard::verifyAndStoreHotel(): WARNING: Missed name $name: ".var_export($value, true)."<br />");
             }
             // The value may have been fixed by the verification method
             $_SESSION['hotelcard'][$name] = $value;
             if ($result) continue;
 
-            // Check the fields that did not fit into the hotel object
-            if (empty($value)) {
-                // Don't bother if it's empty and not mandatory
-                if (empty($row_data['mandatory'])) {
-//echo("Hotelcard::verifyMandatoryFields(): Ignored empty non-mandatory field $name value '$value'<br />");
-                    continue;
-                }
-                // Mandatory fields must not be empty
-                $complete = false;
-                $arrFields[$name]['class'] = self::INCOMPLETE_CLASS;
-//echo("Hotelcard::verifyMandatoryFields(): Rejected empty mandatory field $name value '$value'<br />");
+            // Don't bother if it's empty and not mandatory
+            if (empty($row_data['mandatory']) && empty($value)) {
+//echo("Hotelcard::verifyAndStoreHotel(): Ignored empty non-mandatory field $name value '$value'<br />");
                 continue;
             }
-
-//echo("Hotelcard::verifyMandatoryFields(): ***** name $name value ".var_export($value, true)." is invalid<br />");
+            // Mandatory fields must not be empty
+//echo("Hotelcard::verifyAndStoreHotel(): Rejected empty mandatory field $name value '$value'<br />");
             $complete = false;
             $arrFields[$name]['class'] = self::INCOMPLETE_CLASS;
         }
-        if (!$complete)
+        if (!$complete) {
             self::addMessage($_ARRAYLANG['TXT_HOTELCARD_MISSING_MANDATORY_DATA']);
+            return false;
+        }
 
-//die();
+        // Store the Hotel
+        $hotel_id = $objHotel->store();
+        if (!$hotel_id) {
+            self::addMessage($_ARRAYLANG['TXT_HOTELCARD_ERROR_STORING_HOTEL']);
+            return false;
+        }
 
+        $_SESSION['hotelcard']['hotel_id'] = $hotel_id;
+        $_SESSION['hotelcard']['registration_time'] =
+            $objHotel->getFieldvalue('registration_time');
+//echo("Stored Hotel, ID in session: ".$_SESSION['hotelcard']['hotel_id']."<br />");
+
+        // Store the hotel facilities, if present
+        if (isset($_SESSION['hotelcard']['hotel_facility_id'])) {
+            // Clear all relations, then add the current ones
+            if (!HotelFacility::deleteByHotelId($hotel_id)) {
+//echo("ERROR: Failed to delete Hotel Facilities for Hotel ID $hotel_id<br />");
+                return false;
+            }
+            foreach (array_keys($_SESSION['hotelcard']['hotel_facility_id']) as $hotel_facility_id) {
+                if (HotelFacility::addRelation(
+                    $hotel_id, $hotel_facility_id)) continue;
+//echo("ERROR: Failed to store Hotel Facilities for Hotel ID $hotel_id<br />");
+                Hotelcard::addMessage(sprintf(
+                    $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_HOTEL_FACILITY'],
+                    HotelFacility::getFacilityNameById($hotel_facility_id)));
+                return false;
+            }
+//echo("Stored Hotel Facilities for Hotel ID $hotel_id<br />");
+        }
+
+        // Store the room types, if present
+        if (isset($_SESSION['hotelcard']['room_type_1'])) {
+            // Clear all room type and related room facility data,
+            // then add the current
+            if (!HotelRoom::deleteByHotelId($hotel_id)) {
+//echo("ERROR: Failed to delete Roomtypes for Hotel ID $hotel_id<br />");
+                return false;
+            }
+            for ($i = 1; $i <= 4; ++$i) {
+//echo("Adding Room Type $i:<br />");
+                // Skip types without a name
+                if (   empty($_SESSION['hotelcard']['room_type_'.$i])
+                    || empty($_SESSION['hotelcard']['room_available_'.$i])
+                    || empty($_SESSION['hotelcard']['room_price_'.$i]))
+                    continue;
+//echo("Room Type ".$_SESSION['hotelcard']['room_type_'.$i].", number ".$_SESSION['hotelcard']['room_available_'.$i].", price ".$_SESSION['hotelcard']['room_price_'.$i]."<br />");
+                $room_type_id = HotelRoom::storeType(
+                    $hotel_id,
+                    $_SESSION['hotelcard']['room_available_'.$i],
+                    $_SESSION['hotelcard']['room_price_'.$i],
+                    (empty($_SESSION['hotelcard']['breakfast_included_'.$i])
+                      ? false : true)
+                );
+                if (!$room_type_id) {
+                    Hotelcard::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOMTYPE'],
+                        $_SESSION['hotelcard']['room_type_'.$i]));
+//echo("ERROR: Failed to add Roomtypes for Hotel ID $hotel_id<br />");
+                    return false;
+                }
+                // Rename the room type
+                if (!HotelRoom::renameType(
+                    $room_type_id, $_SESSION['hotelcard']['room_type_'.$i])) {
+//echo("ERROR: Failed to rename Roomtype ID $room_type_id to ".$_SESSION['hotelcard']['room_type_'.$i]."<br />");
+                    return false;
+                }
+
+                // Store the room facilities
+                foreach ($_SESSION['hotelcard']['room_facility_id_'.$i]
+                        as $room_facility_id => $room_facility_name) {
+//echo("Adding Room Facility $room_facility_name (ID $room_facility_id)<br />");
+                    if (HotelRoom::addFacility(
+                        $room_type_id, $room_facility_id)) continue;
+//echo("ERROR: Failed to add Room Facilites for Hotel ID $hotel_id<br />");
+                    Hotelcard::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_HOTELCARD_ERROR_FAILED_TO_ADD_ROOM_FACILITY'],
+                        $room_facility_name));
+                    return false;
+                }
+            }
+//echo("Stored Room Types and Facilites for Hotel ID $hotel_id<br />");
+        }
         return $complete;
     }
 
@@ -765,7 +785,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_HOTEL_NAME',
                 'input' => Html::getInputText('hotel_name',
                     (isset($_SESSION['hotelcard']['hotel_name'])
-                        ? $_SESSION['hotelcard']['hotel_name'] : ''),
+                        ? $_SESSION['hotelcard']['hotel_name'] : ''), false,
                     'style="text-align: left;"'),
             ),
             'group' => array( // Mind that this goes into a lookup table!
@@ -773,7 +793,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_GROUP',
                 'input' => Html::getInputText('group',
                     (isset($_SESSION['hotelcard']['group'])
-                        ? $_SESSION['hotelcard']['group'] : ''),
+                        ? $_SESSION['hotelcard']['group'] : ''), false,
                     'style="text-align: left;"'),
             ),
             'accomodation_type_id' => array(
@@ -790,7 +810,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_HOTEL_ADDRESS',
                 'input' => Html::getInputText('hotel_address',
                     (isset($_SESSION['hotelcard']['hotel_address'])
-                        ? $_SESSION['hotelcard']['hotel_address'] : ''),
+                        ? $_SESSION['hotelcard']['hotel_address'] : ''), false,
                     'style="text-align: left;"'),
             ),
 //            'hotel_zip' => array(
@@ -798,7 +818,7 @@ DBG::log('debug enabled');
 //                'label' => 'TXT_HOTELCARD_HOTEL_ZIP',
 //                'input' => Html::getInputText('hotel_zip',
 //                    (isset($_SESSION['hotelcard']['hotel_zip'])
-//                        ? $_SESSION['hotelcard']['hotel_zip'] : ''),
+//                        ? $_SESSION['hotelcard']['hotel_zip'] : ''), false,
 //                        'style="text-align: left;"'),
 //            ),
             'hotel_region' => array(
@@ -808,15 +828,14 @@ DBG::log('debug enabled');
                 'hotel_region',
                     (isset($_SESSION['hotelcard']['hotel_region'])
                       ? array()
-                      : array('' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_REGION_PLEASE_CHOOSE']))
-                      + State::getArray(true),
+                      :   array('' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_REGION_PLEASE_CHOOSE']))
+                        + State::getArray(true),
                     (isset($_SESSION['hotelcard']['hotel_region'])
                       ? $_SESSION['hotelcard']['hotel_region']
                       : (isset($_SESSION['hotelcard']['hotel_location'])
                           ? State::getByLocation($_SESSION['hotelcard']['hotel_location'])
-                          : '')),
+                          : '')), 'hotel_region',
                     'new Ajax.Updater(\'hotel_location\', \'index.php?section=hotelcard&amp;act=get_locations&amp;state=\'+document.getElementById(\'hotel_region\').value, { method: \'get\' });'),
-                    //document.forms.form_hotelcard.submit();'),
             ),
             'hotel_location' => array(
                 'mandatory' => true,
@@ -826,7 +845,7 @@ DBG::log('debug enabled');
                       ? Location::getArrayByState($_SESSION['hotelcard']['hotel_region'], '%1$s (%2$s)')
                       : array($_ARRAYLANG['TXT_HOTELCARD_PLEASE_CHOOSE_REGION'])),
                     (isset($_SESSION['hotelcard']['hotel_location'])
-                        ? $_SESSION['hotelcard']['hotel_location'] : ''),
+                        ? $_SESSION['hotelcard']['hotel_location'] : ''), 'hotel_location',
                     '', 'style="text-align: left;"'),
             ),
 //            'hotel_country_id' => array(
@@ -835,7 +854,7 @@ DBG::log('debug enabled');
 //                'input' => Html::getSelect(
 //                    'hotel_country_id', Country::getNameArray(),
 //                    (isset($_SESSION['hotelcard']['hotel_country_id'])
-//                        ? $_SESSION['hotelcard']['hotel_country_id'] : '')),
+//                        ? $_SESSION['hotelcard']['hotel_country_id'] : '')), false,
 //            ),
             'contact_data' => array(
                 'mandatory' => false,
@@ -847,27 +866,29 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_CONTACT_NAME',
                 'input' => Html::getInputText('contact_name',
                     (isset($_SESSION['hotelcard']['contact_name'])
-                        ? $_SESSION['hotelcard']['contact_name'] : ''),
+                        ? $_SESSION['hotelcard']['contact_name'] : ''), false,
                     'style="text-align: left;"'),
             ),
             'contact_gender' => array(
                 'mandatory' => true,
                 'label' => 'TXT_HOTELCARD_CONTACT_GENDER',
-                'input' => Html::getRadioGroup(
-                    'contact_gender',
-                    array(
-                        'M' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_MALE'],
-                        'F' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_FEMALE'],
-                    ),
-                    (isset($_SESSION['hotelcard']['contact_gender'])
-                        ? $_SESSION['hotelcard']['contact_gender'] : '')),
+                'input' => '<span class="inputgroup">'.
+                    Html::getRadioGroup(
+                        'contact_gender',
+                        array(
+                            'M' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_MALE'],
+                            'F' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_FEMALE'],
+                        ),
+                        (isset($_SESSION['hotelcard']['contact_gender'])
+                            ? $_SESSION['hotelcard']['contact_gender'] : '')).
+                    "</span>\n",
             ),
             'contact_position' => array(
                 'mandatory' => false,
                 'label' => 'TXT_HOTELCARD_CONTACT_POSITION',
                 'input' => Html::getInputText('contact_position',
                     (isset($_SESSION['hotelcard']['contact_position'])
-                        ? $_SESSION['hotelcard']['contact_position'] : ''),
+                        ? $_SESSION['hotelcard']['contact_position'] : ''), false,
                     'style="text-align: left;"'),
             ),
             'contact_department' => array(
@@ -875,7 +896,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_CONTACT_DEPARTMENT',
                 'input' => Html::getInputText('contact_department',
                     (isset($_SESSION['hotelcard']['contact_department'])
-                        ? $_SESSION['hotelcard']['contact_department'] : ''),
+                        ? $_SESSION['hotelcard']['contact_department'] : ''), false,
                     'style="text-align: left;"'),
             ),
             'contact_phone' => array(
@@ -883,7 +904,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_CONTACT_PHONE',
                 'input' => Html::getInputText('contact_phone',
                     (isset($_SESSION['hotelcard']['contact_phone'])
-                        ? $_SESSION['hotelcard']['contact_phone'] : ''),
+                        ? $_SESSION['hotelcard']['contact_phone'] : ''), false,
                         'style="text-align: left;"'),
             ),
             'contact_fax' => array(
@@ -891,7 +912,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_CONTACT_FAX',
                 'input' => Html::getInputText('contact_fax',
                     (isset($_SESSION['hotelcard']['contact_fax'])
-                        ? $_SESSION['hotelcard']['contact_fax'] : ''),
+                        ? $_SESSION['hotelcard']['contact_fax'] : ''), false,
                         'style="text-align: left;"'),
             ),
             'contact_email' => array(
@@ -899,7 +920,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_CONTACT_EMAIL',
                 'input' => Html::getInputText('contact_email',
                     (isset($_SESSION['hotelcard']['contact_email'])
-                        ? $_SESSION['hotelcard']['contact_email'] : ''),
+                        ? $_SESSION['hotelcard']['contact_email'] : ''), false,
                     'style="text-align: left;"'),
             ),
             'contact_email_retype' => array(
@@ -907,12 +928,12 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_CONTACT_EMAIL_RETYPE',
                 'input' => Html::getInputText('contact_email_retype',
                     (isset($_SESSION['hotelcard']['contact_email_retype'])
-                        ? $_SESSION['hotelcard']['contact_email_retype'] : ''),
+                        ? $_SESSION['hotelcard']['contact_email_retype'] : ''), false,
                     'style="text-align: left;"'),
             ),
         );
         // Verify the data already present if it's the current step
-        $complete = self::verifyMandatoryFields($arrFields);
+        $complete = self::verifyAndStoreHotel($arrFields);
         // Only verify the e-mail addresses after the fields have been
         // filled out
         if ($complete) {
@@ -930,7 +951,7 @@ DBG::log('debug enabled');
         }
         if ($complete && isset($_POST['bsubmit'])) return true;
 //echo("Showing step 1<br />");
-        self::parseDataTable($arrFields);
+        HotelcardLibrary::parseDataTable(self::$objTemplate, $arrFields);
         return false; // Still running
     }
 
@@ -962,7 +983,7 @@ DBG::log('debug enabled');
             'confirm_terms' => array(
                 'mandatory' => true,
                 'label' => 'TXT_HOTELCARD_CONFIRM_TERMS',
-                'input' => Html::getCheckbox('confirm_terms', 1, '',
+                'input' => Html::getCheckbox('confirm_terms', 1, false,
                     isset($_SESSION['hotelcard']['confirm_terms'])
                 ),
             ),
@@ -972,122 +993,103 @@ DBG::log('debug enabled');
             ),
         );
         // Verify the data already present
-        $complete = self::verifyMandatoryFields($arrFields);
+        $complete = self::verifyAndStoreHotel($arrFields);
         if ($complete && isset($_POST['bsubmit'])) {
-//echo("Step 2 complete<br />");
-//echo("Step 1 complete<br />");
-            if (!Hotel::storeFromSession()) {
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_ERROR_STORING_HOTEL']);
-                $complete = false;
-            } else {
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_HOTEL_STORED_SUCCESSFULLY']);
-
-                if (empty($_SESSION['hotelcard']['username'])) {
+            if (empty($_SESSION['hotelcard']['username'])) {
 //echo("No username in session<br />");
-                    $objUser = new User();
-//global $objFWUser;
-//$objUser = $objFWUser->objUser;
-//                    $objUser = $objUser->getUser(26);
-//echo("User: ".nl2br(htmlentities(var_export($objUser, true)))."<hr />");
-                    $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
-                    $objUser->setEmail($_SESSION['hotelcard']['contact_email']);
-                    $arrMatch = array();
-                    if (preg_match(
-                        '/^([\S\s]*)\s+([\S\s]+)$/',
-                        $_SESSION['hotelcard']['contact_name'], $arrMatch
-                    )) {
-                        $firstname = $arrMatch[1];
-                        $lastname = $arrMatch[2];
+                $objUser = new User();
+                $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
+                $objUser->setEmail($_SESSION['hotelcard']['contact_email']);
+                $arrMatch = array();
+                if (preg_match(
+                    '/^([\S\s]*)\s+([\S\s]+)$/',
+                    $_SESSION['hotelcard']['contact_name'], $arrMatch
+                )) {
+                    $firstname = $arrMatch[1];
+                    $lastname = $arrMatch[2];
 //echo("first $firstname, last $lastname<br />");
-                        $objUser->setProfile(array(
-                            'firstname' => array(0 => $firstname),
-                            'lastname'  => array(0 => $lastname),
-                            SettingDb::getValue('user_profile_attribute_hotel_id') =>
-                                array(0 => $_SESSION['hotelcard']['hotel_id']),
-                        ));
-                        $username = User::makeUsername($firstname, $lastname);
-                        if (!$username) {
-                            self::addMessage(sprintf(
-                                $_ARRAYLANG['TXT_HOTELCARD_REGISTRATION_CREATING_USERNAME_FAILED'],
-                                $_SESSION['hotelcard']['contact_email']));
-                            $complete = false;
-                        } else {
-                            $password = User::makePassword();
+                    $objUser->setProfile(array(
+                        'firstname' => array(0 => $firstname),
+                        'lastname'  => array(0 => $lastname),
+                        SettingDb::getValue('user_profile_attribute_hotel_id') =>
+                            array(0 => $_SESSION['hotelcard']['hotel_id']),
+                    ));
+                    $username = User::makeUsername($firstname, $lastname);
+                    if (!$username) {
+                        self::addMessage(sprintf(
+                            $_ARRAYLANG['TXT_HOTELCARD_REGISTRATION_CREATING_USERNAME_FAILED'],
+                            $_SESSION['hotelcard']['contact_email']));
+                        $complete = false;
+                    } else {
+                        $password = User::makePassword();
 //echo("user: $username / $password<br />");
-                            $objUser->setUsername($username);
-                            $objUser->setPassword($password);
-                            $objUser->setEmail($_SESSION['hotelcard']['contact_email']);
-                            $objUser->setGroups(array(SettingDb::getValue('hotel_usergroup')));
-                            $objUser->setActiveStatus(1);
-                            if ($objUser->store()) {
-                                $_SESSION['hotelcard']['lastname'] = $lastname;
-                                $_SESSION['hotelcard']['username'] = $username;
-                                $_SESSION['hotelcard']['password'] = $password;
+                        $objUser->setUsername($username);
+                        $objUser->setPassword($password);
+                        $objUser->setEmail($_SESSION['hotelcard']['contact_email']);
+                        $objUser->setGroups(array(SettingDb::getValue('hotel_usergroup')));
+                        $objUser->setActiveStatus(1);
+                        if ($objUser->store()) {
+                            $_SESSION['hotelcard']['lastname'] = $lastname;
+                            $_SESSION['hotelcard']['username'] = $username;
+                            $_SESSION['hotelcard']['password'] = $password;
 //echo("user stored, session: ".$_SESSION['hotelcard']['username']." / ".$_SESSION['hotelcard']['password']."<br />");
-                            } else {
+                              $hotel_id = $_SESSION['hotelcard']['hotel_id'];
+                              $objHotel = Hotel::getById($hotel_id);
+                              if ($objHotel) {
+                                  $objHotel->setFieldvalue('status', Hotel::STATUS_ACCOUNT);
+                                  $objHotel->store();
+                              } else {
+DBG::log("Failed to update status to ACCOUNT");
+                              }
+                        } else {
 //echo("ERROR: Failed to store user<br />");
-                                self::addMessage(sprintf(
-                                    $_ARRAYLANG['TXT_HOTELCARD_REGISTRATION_CREATING_USER_FAILED'],
-                                    $_SESSION['hotelcard']['contact_email']));
-                                // Clear the contact e-mail
-                                $_SESSION['hotelcard']['contact_email'] = '';
-                                $_SESSION['hotelcard']['contact_email_retype'] = '';
-                                // Re-init the e-mail fields.
-                                // Have to reset the retype field, too, because of the tabindex.
-                                $arrFields['contact_email'] = array(
-                                    'mandatory' => true,
-                                    'label' => 'TXT_HOTELCARD_CONTACT_EMAIL',
-                                    'input' => Html::getInputText('contact_email', '',
+                            self::addMessage(sprintf(
+                                $_ARRAYLANG['TXT_HOTELCARD_REGISTRATION_CREATING_USER_FAILED'],
+                                $_SESSION['hotelcard']['contact_email']));
+                            // Clear the contact e-mail
+                            $_SESSION['hotelcard']['contact_email'] = '';
+                            $_SESSION['hotelcard']['contact_email_retype'] = '';
+                            // Re-init the e-mail fields.
+                            // Have to reset the retype field, too, because of the tabindex.
+                            $arrFields['contact_email'] = array(
+                                'mandatory' => true,
+                                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL',
+                                'input' => Html::getInputText('contact_email', '', false,
+                                'style="text-align: left;"'),
+                            );
+                            $arrFields['contact_email_retype'] = array(
+                                'mandatory' => true,
+                                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL_RETYPE',
+                                'input' => Html::getInputText('contact_email_retype', '', false,
                                     'style="text-align: left;"'),
-                                );
-                                $arrFields['contact_email_retype'] = array(
-                                    'mandatory' => true,
-                                    'label' => 'TXT_HOTELCARD_CONTACT_EMAIL_RETYPE',
-                                    'input' => Html::getInputText('contact_email_retype', '',
-                                        'style="text-align: left;"'),
-                                );
-/*
-                                $arrFields['contact_email']['input'] =
-                                    Html::getInputText('contact_email', '',
-                                        'style="text-align: left;"');
-                                $arrFields['contact_email']['class'] = self::INCOMPLETE_CLASS;
-                                $arrFields['contact_email_retype']['input'] =
-                                    Html::getInputText('contact_email_retype', '',
-                                        'style="text-align: left;"');
-*/
-                                $complete = false;
-                            }
+                            );
+                            $complete = false;
                         }
                     }
                 }
-                if (empty($_SESSION['hotelcard']['mail_sent'])) {
+            }
+            if (empty($_SESSION['hotelcard']['mail_sent'])) {
 //echo("Mail not sent yet<br />");
-                    // If it hasn't happened before, send a confirmation by e-mail.
-                    // Note that this may fail and will be retried on submitting
-                    // this step if it did.
-                    if (self::sendRegistrationConfirmationMail()) {
+                // If it hasn't happened before, send a confirmation by e-mail.
+                // Note that this may fail and will be retried on submitting
+                // this step if it did.
+                if (self::sendRegistrationConfirmationMail()) {
 //echo("Mail sent<br />");
-                        $_SESSION['hotelcard']['mail_sent'] = 1;
-                        $hotel_id = $_SESSION['hotelcard']['hotel_id'];
-                        $objHotel = Hotel::getById($hotel_id);
-                        if ($objHotel) {
-                            $objHotel->setFieldvalue('status', Hotel::STATUS_ACCOUNT);
-                            $objHotel->store();
-//                            if (!$objHotel->store()) {
-////echo("failed to update the status for the hotel with ID $hotel_id<br />");
-//                            } else {
-////echo("Successfully updated the status for the hotel with ID $hotel_id<br />");
-//                            }
-//                        } else {
-//echo("failed to get the hotel with ID $hotel_id<br />");
-                        }
+                    $_SESSION['hotelcard']['mail_sent'] = 1;
+                    $hotel_id = $_SESSION['hotelcard']['hotel_id'];
+                    $objHotel = Hotel::getById($hotel_id);
+                    if ($objHotel) {
+                        $objHotel->setFieldvalue('status', Hotel::STATUS_CONFIRMED);
+                        $objHotel->store();
+                    } else {
+DBG::log("Failed to update status to CONFIRMED");
                     }
                 }
             }
         }
         if ($complete) return true;
 //echo("Showing step 2<br />");
-        self::parseDataTable($arrFields);
+        HotelcardLibrary::parseDataTable(self::$objTemplate, $arrFields);
         return false; // Still running
     }
 
@@ -1102,6 +1104,16 @@ DBG::log('debug enabled');
     {
         global $_ARRAYLANG;
 
+        // Look for uploaded image files and try storing them.
+        // The filename and resulting image ID are stored in the session array.
+        // Note that images *CAN NOT* be processed in the first step,
+        // while the Hotel hasn't been stored yet.  It requires the hotel_id
+        // index in the session array to be set and valid.
+//echo("addHotel(): Going to process Files...<hr />");
+        self::processPostFiles();
+//echo("Session:<br />".nl2br(var_export($_SESSION['hotelcard'], true))."<hr />");
+
+
 //echo("Rating: ".$_SESSION['hotelcard']['rating']."<hr />");
         $arrFields = array(
 //            'additional_data' => array(
@@ -1114,7 +1126,7 @@ DBG::log('debug enabled');
                 'label' => 'TXT_HOTELCARD_NUMOF_ROOMS',
                 'input' => Html::getInputText('numof_rooms',
                     (isset($_SESSION['hotelcard']['numof_rooms'])
-                        ? $_SESSION['hotelcard']['numof_rooms'] : ''),
+                        ? $_SESSION['hotelcard']['numof_rooms'] : ''), false,
                     'style="text-align: left;"'),
             ),
             'description_text' => array(
@@ -1127,14 +1139,20 @@ DBG::log('debug enabled');
                     'onkeyup="lengthLimit(this, this.form.count_min, this.form.count_max, 100, 500);"').
                 '<br />'.
                 sprintf($_ARRAYLANG['TXT_HOTELCARD_TEXT_LENGTH_MINIMUM_MAXIMUM'],
-                    html::getInputText('count_min', 100, 'disabled="disabled" style="width: 30px;"'),
-                    html::getInputText('count_max', 500, 'disabled="disabled" style="width: 30px;"')),
+                    html::getInputText('count_min', 100, 'count_min',
+                        'disabled="disabled" style="width: 30px;"'),
+                    html::getInputText('count_max', 500, 'count_max',
+                        'disabled="disabled" style="width: 30px;"')),
             ),
             'rating' => array(
                 'mandatory' => true,
                 'label' => 'TXT_HOTELCARD_RATING',
                 'input' => Html::getSelect('rating',
-                    HotelRating::getArray(),
+                    (isset($_SESSION['hotelcard']['rating'])
+                      ? array()
+                      : array('' =>
+                          $_ARRAYLANG['TXT_HOTELCARD_RATING_PLEASE_CHOOSE']))
+                    + HotelRating::getArray(),
                     (isset($_SESSION['hotelcard']['rating'])
                         ? $_SESSION['hotelcard']['rating'] : '')),
             ),
@@ -1148,16 +1166,21 @@ DBG::log('debug enabled');
 //echo("Setting up group ID $group_id, name $group_name<br />");
             $arrFacilities = HotelFacility::getFacilityNameArray($group_id, true);
 //echo("Setting up Facilities: ".var_export($arrFacilities, true)."<br />");
+//echo("Hotel Facilities: ".var_export($_SESSION['hotelcard']['hotel_facility_id'], true)."<br />");
+//echo("POST: ".var_export($_POST, true)."<br />");
             $arrFields['hotel_facility_id'][$group_id] = array(
                 'mandatory' => false,
                 //'label' => '<b>'.$group_name.'</b>',
                 'label' => $group_name,
-                'input' => Html::getCheckboxGroup(
-                    'hotel_facility_id',
-                    $arrFacilities, $arrFacilities,
-                    (   isset($_SESSION['hotelcard']['hotel_facility_id'])
-                      ? array_keys($_SESSION['hotelcard']['hotel_facility_id'])
-                      : '')),
+                'input' => '<span class="inputgroup">'.
+                    Html::getCheckboxGroup(
+                        'hotel_facility_id',
+                        $arrFacilities, $arrFacilities,
+                        (   isset($_SESSION['hotelcard']['hotel_facility_id'])
+                         && is_array($_SESSION['hotelcard']['hotel_facility_id'])
+                          ? array_keys($_SESSION['hotelcard']['hotel_facility_id'])
+                          : '')).
+                    "</span>\n",
             );
         }
         $arrFields += array(
@@ -1169,16 +1192,16 @@ DBG::log('debug enabled');
                         ? ''
                         : (FWValidator::hasProto($_SESSION['hotelcard']['hotel_uri'])
                             ? '' : 'http://').
-                          $_SESSION['hotelcard']['hotel_uri']),
+                          $_SESSION['hotelcard']['hotel_uri']), false,
                     'style="text-align: left;"'),
             ),
-            'hotel_image_id' => array(
+            'image_id' => array(
                 'mandatory' => false,
                 'label' => 'TXT_HOTELCARD_IMAGE',
                 'input' => Html::getImageChooserUpload(
                     Image::getFromSessionByKey(
-                        'hotel_image', self::IMAGE_PATH_HOTEL_DEFAULT),
-                    'hotel_image', self::IMAGETYPE_TITLE,
+                        'image', self::IMAGE_PATH_HOTEL_DEFAULT),
+                    'image', self::IMAGETYPE_TITLE,
                     self::IMAGE_PATH_HOTEL_DEFAULT),
             ),
             'found_how' => array(
@@ -1191,17 +1214,14 @@ DBG::log('debug enabled');
         );
         // Verify the data already present
 //echo("Before:<br />".htmlentities(var_export($arrFields, true), ENT_QUOTES, CONTREXX_CHARSET)."<hr />");
-        $complete = self::verifyMandatoryFields($arrFields);
+        if (   isset($_POST['bsubmit'])
+            && self::verifyAndStoreHotel($arrFields)) {
 //echo("After:<br />".htmlentities(var_export($arrFields, true), ENT_QUOTES, CONTREXX_CHARSET)."<hr />");
-        if ($complete && isset($_POST['bsubmit'])) {
-            if (!Hotel::storeFromSession()) {
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_ERROR_STORING_HOTEL']);
-                $complete = false;
-            }
+            return true;
         }
-        if ($complete) return true;
 //echo("Showing step 3<br />");
-        self::parseDataTable($arrFields);
+        HotelcardLibrary::parseDataTable(self::$objTemplate, $arrFields);
+        JS::registerCode(Html::getJavascript_Text());
         return false; // Still running
     }
 
@@ -1216,46 +1236,63 @@ DBG::log('debug enabled');
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $complete = true;
         // The actual labels and values are set in the loop below
-        // Show room type form content four times
-        $arrFields = array();
+        // First, show the tabs to select the room types
+        $arrFields = array(
+            'dummy_ul_open' => array(
+                'special' => '<ul class="roomtype_ul">',
+            ),
+        );
+        // The list of tabs
+        for ($i = 1; $i <= 4; ++$i) {
+//echo("Room type $i: ".(isset($_SESSION['hotelcard']['room_type_'.$i]) ? $_SESSION['hotelcard']['room_type_'.$i] : '')."<br />");
+            $arrFields['dummy_li_'.$i] = array(
+                'special' =>
+                    '<li class="roomtype_li'.($i == 1 ? '_active' : '').'"'.
+                    ' id="roomtype_li-'.$i.'"'.
+                    // showTab(tab_base, div_base, active_suffix, min_suffix, max_suffix)
+                    ' onclick="showTab(\'roomtype_li-\', \'roomtype-\', '.$i.', 1, 4)">'.
+//                    ($i > 1 && empty($_SESSION['hotelcard']['room_type_'.$i])
+//                      ? $_CORELANG['TXT_CORE_HTML_TOGGLE_OPEN']
+//                      : $_CORELANG['TXT_CORE_HTML_TOGGLE_CLOSE']).'>'.
+                    sprintf($_ARRAYLANG['TXT_HOTELCARD_ROOMTYPE_NUMBER'], $i).
+                    '</li>'
+//                    '<b class="toggleRoomtype" id="toggleRoomtype-'.$i.'"'.
+//                    '</b>'
+            );
+        }
+        $arrFields['dummy_ul_close'] = array(
+            'special' => '</ul>',
+        );
+
+        // Show room type form content four times:
         for ($i = 1; $i <= 4; ++$i) {
 //echo("Room type $i: ".(isset($_SESSION['hotelcard']['room_type_'.$i]) ? $_SESSION['hotelcard']['room_type_'.$i] : '')."<br />");
 
+            $breakfast_included =
+                (isset($_SESSION['hotelcard']['breakfast_included_'.$i])
+                  ? $_SESSION['hotelcard']['breakfast_included_'.$i] : '');
             // Only the first type is mandatory
             $arrFields += array(
-                'room_type_data_'.$i => array(
-                  'mandatory' => false,
-                  'label' => sprintf($_ARRAYLANG['TXT_HOTELCARD_ROOM_TYPE_NUMBER'], $i),
-                  'input' =>
-                      '<b class="toggleRoomtype" id="toggleRoomtype-'.$i.'"'.
-                      ' onclick="toggleDisplay(this, \'roomtype-'.$i.'\')">'.
-                      ($i > 1 && empty($_SESSION['hotelcard']['room_type_'.$i])
-                        ? $_CORELANG['TXT_CORE_HTML_TOGGLE_OPEN']
-                        : $_CORELANG['TXT_CORE_HTML_TOGGLE_CLOSE']).
-                      '</b>'
-                ),
                 'dummy_div_open_'.$i => array(
                     'special' =>
                         '<div id="roomtype-'.$i.'" style="display: '.
-                        ($i > 1 && empty($_SESSION['hotelcard']['room_type_'.$i])
-                            ? 'none' : 'block').'">'
+                        ($i == 1 ? 'block' : 'none').'">'
                 ),
                 'room_type_'.$i => array(
-                  'mandatory' => ($i == 1),
-                  'label' => 'TXT_HOTELCARD_ROOM_TYPE',
-                  'input' => Html::getInputText('room_type_'.$i,
-                      (isset($_SESSION['hotelcard']['room_type_'.$i])
-                          ? $_SESSION['hotelcard']['room_type_'.$i] : ''),
-                      'style="text-align: left;"'),
+                    'mandatory' => ($i == 1),
+                    'label' => 'TXT_HOTELCARD_ROOMTYPE',
+                    'input' => Html::getInputText('room_type_'.$i,
+                        (isset($_SESSION['hotelcard']['room_type_'.$i])
+                            ? $_SESSION['hotelcard']['room_type_'.$i] : ''), false,
+                        'style="text-align: left;"'),
                 ),
                 'room_available_'.$i => array(
                     'mandatory' => ($i == 1),
                     'label' => 'TXT_HOTELCARD_ROOM_AVAILABLE',
                     'input' => Html::getInputText('room_available_'.$i,
                         (isset($_SESSION['hotelcard']['room_available_'.$i])
-                            ? $_SESSION['hotelcard']['room_available_'.$i] : ''),
+                            ? $_SESSION['hotelcard']['room_available_'.$i] : ''), false,
                         'style="text-align: left;"'),
                 ),
                 'room_price_'.$i => array(
@@ -1263,16 +1300,15 @@ DBG::log('debug enabled');
                     'label' => 'TXT_HOTELCARD_ROOM_PRICE',
                     'input' => Html::getInputText('room_price_'.$i,
                         (isset($_SESSION['hotelcard']['room_price_'.$i])
-                            ? $_SESSION['hotelcard']['room_price_'.$i] : ''),
+                            ? $_SESSION['hotelcard']['room_price_'.$i] : ''), false,
                         'style="text-align: left;"'),
                 ),
                 'breakfast_included_'.$i => array(
                     'mandatory' => ($i == 1),
                     'label' => 'TXT_HOTELCARD_BREAKFAST_INCLUDED',
                     'input' => Html::getSelect('breakfast_included_'.$i,
-                        HotelRoom::getBreakfastIncludedArray(),
-                            (isset($_SESSION['hotelcard']['breakfast_included_'.$i])
-                                ? $_SESSION['hotelcard']['breakfast_included_'.$i] : ''),
+                        HotelRoom::getBreakfastIncludedArray($breakfast_included),
+                        $breakfast_included, false,
                         '', 'style="text-align: left;"'),
                 ),
                 // Note: These are checkbox groups and are thus posted as
@@ -1280,12 +1316,14 @@ DBG::log('debug enabled');
                 'room_facility_id_'.$i => array(
                     'mandatory' => false,
                     'label' => 'TXT_HOTELCARD_ROOM_FACILITY_ID',
-                    'input' => Html::getCheckboxGroup('room_facility_id_'.$i,
-                        HotelRoom::getFacilityNameArray(true),
-                        HotelRoom::getFacilityNameArray(true),
-                        (   isset($_SESSION['hotelcard']['room_facility_id_'.$i])
-                         && is_array($_SESSION['hotelcard']['room_facility_id_'.$i])
-                            ? array_keys($_SESSION['hotelcard']['room_facility_id_'.$i]) : '')),
+                    'input' => '<span class="inputgroup">'.
+                        Html::getCheckboxGroup('room_facility_id_'.$i,
+                            HotelRoom::getFacilityNameArray(true),
+                            HotelRoom::getFacilityNameArray(true),
+                            (   isset($_SESSION['hotelcard']['room_facility_id_'.$i])
+                             && is_array($_SESSION['hotelcard']['room_facility_id_'.$i])
+                              ? array_keys($_SESSION['hotelcard']['room_facility_id_'.$i]) : '')).
+                        "</span>\n",
                 ),
                 'dummy_div_close_'.$i => array(
                     // This closes the div id=roomtype opened above
@@ -1294,18 +1332,15 @@ DBG::log('debug enabled');
             );
         }
         // Add JS for the toggle block
-        JS::registerCode(Html::getJavascript(self::IMAGE_PATH_HOTEL_DEFAULT ));
+        JS::registerCode(Html::getJavascript_Element());
 
-        $complete = self::verifyMandatoryFields($arrFields);
-        if ($complete && isset($_POST['bsubmit'])) {
-            if (!Hotel::storeFromSession()) {
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_ERROR_STORING_HOTEL']);
-                $complete = false;
-            }
+        if (   isset($_POST['bsubmit'])
+            && self::verifyAndStoreHotel($arrFields)) {
+//echo("After:<br />".htmlentities(var_export($arrFields, true), ENT_QUOTES, CONTREXX_CHARSET)."<hr />");
+            return true;
         }
-        if ($complete) return true;
 //echo("Still Room type 1: ".(isset($_SESSION['hotelcard']['room_type_1']) ? $_SESSION['hotelcard']['room_type_1'] : '')."<br />");
-        self::parseDataTable($arrFields);
+        HotelcardLibrary::parseDataTable(self::$objTemplate, $arrFields);
 //echo("Showing step 4<br />");
         return false; // Still running
     }
@@ -1323,107 +1358,15 @@ DBG::log('debug enabled');
 
 //echo("Creditcards: ".var_export($_SESSION['hotelcard']['creditcard_id'], true)."<hr />");
 //echo("Room facilities: ".var_export($_SESSION['hotelcard']['room_facility_id'], true)."<hr />");
-        $arrFields = array();
-        foreach ($_SESSION['hotelcard'] as $name => $value) {
-            // Skip fields that are irrelevant or handled separately.
-            // room_available, room_price, room_facility_id are all arrays
-            // and handled together with room_type in the loop below.
-            if (preg_match(
-                '/^(?:bsubmit|step'.
-                '|hotel_id|group_id'.
-                '|contact_email_retype'.
-                '|confirm_terms|registration_time'.
-                '|hotel_image_(?:ord|src|type)'.
-                '|lastname|username|password'.
-                // These are part of the room type handling below
-                '|room_(?:type_[d234]|available_|price_|facility_id_)'.
-                '|breakfast_included_'.
-                // Skipped on purpose (unused)
-                '|check'.
-                // Skipped on purpose (dummies)
-                '|dummy_div_open_'.
-                '|dummy_div_close_'.
-                // No longer used
-//                '|image_src|image_width|image_height'.
-//                '|image_file'.
-                ')/',
-                $name)) {
-//echo("Skipped field name $name, value ".var_export($value, true)."<br />");
-                continue;
-            }
 
-            // Fix values that are IDs, special, or arrays of anything
-            if (preg_match('/country_id$/', $name)) {
-                $value = Country::getNameById($value);
-            } elseif (preg_match('/region$/', $name)) {
-                $value = State::getFullname($value);
-            } elseif (preg_match('/location$/', $name)) {
-                // 204 is the country ID of switzerland
-                $value = $value.' '.Location::getCityByZip($value, 204);
-            } elseif (preg_match('/^accomodation_type_id$/', $name)) {
-                $value = HotelAccomodationType::getNameById($value);
-            } elseif (preg_match('/^creditcard_id$/', $name)) {
-                $value = join(', ', $value);
-            } elseif (preg_match('/^lang_id$/', $name)) {
-                $value = FWLanguage::getLanguageParameter($value, 'name');
-            } elseif (preg_match('/gender$/', $name)) {
-                $value = (preg_match('/[wf]/i', $value)
-                  ? $_ARRAYLANG['TXT_HOTELCARD_GENDER_FEMALE']
-                  : $_ARRAYLANG['TXT_HOTELCARD_GENDER_MALE']);
-            } elseif (preg_match('/^rating$/', $name)) {
-                $value = HotelRating::getString($value);
-            } elseif (preg_match('/^hotel_facility_id$/', $name)) {
-                $value = join(', ', $value);
-            } elseif (preg_match('/^hotel_image_id$/', $name)) {
-                $ord = (isset($_SESSION['hotelcard']['hotel_image_ord'])
-                    ? $_SESSION['hotelcard']['hotel_image_ord'] : 0);
-                $objImage = Image::getById($value, $ord);
-                if (!$objImage) continue;
-                $value = Html::getImage($objImage);
-                //preg_replace('/^[0-9a-f]+_/', '', $objImage->getPath());
-            } elseif (preg_match('/^room_type_1$/', $name)) {
-                // Catch room type 1 only, as this is the only one mandatory.
-                // Collect *all* hotel room data available now, any other
-                // room and breakfast parameter will be skipped.
-                $room_data = '';
-                for ($i = 1; $i <= 4; ++$i) {
-//echo("index $index, room_type $room_type<br />");
-                    if (empty($_SESSION['hotelcard']['room_type_'.$i])) continue;
-                    $room_data .=
-                        sprintf($_ARRAYLANG['TXT_HOTELCARD_ROOM_TYPE_NUMBER'], $i).
-                        '<br />'.
-                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_TYPE'].': '.
-                        $_SESSION['hotelcard']['room_type_'.$i].'<br />'.
-                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_AVAILABLE'].': '.
-                        $_SESSION['hotelcard']['room_available_'.$i].'<br />'.
-                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_PRICE'].': '.
-                        $_SESSION['hotelcard']['room_price_'.$i].'<br />'.
-                        ($_SESSION['hotelcard']['breakfast_included_'.$i]
-                          ? $_ARRAYLANG['TXT_HOTELCARD_BREAKFAST_INCLUDED']
-                          : $_ARRAYLANG['TXT_HOTELCARD_BREAKFAST_NOT_INCLUDED']).'<br />'.
-                        $_ARRAYLANG['TXT_HOTELCARD_ROOM_FACILITY_ID'].': '.
-                        (isset($_SESSION['hotelcard']['room_facility_id_'.$i])
-                          ? join(', ', $_SESSION['hotelcard']['room_facility_id_'.$i])
-                          : '').'<br /><br />';
-                }
-                $name = 'room_types';
-                $value = $room_data;
-            } else {
-//echo("Unhandled field name $name, value ".var_export($value, true)."<br />");
-            }
-            $name = 'TXT_HOTELCARD_'.strtoupper($name);
-            if (empty($value) || empty($_ARRAYLANG[$name])) {
-//echo("Note: Empty value or no language entry for $name<br />");
-                continue;
-            }
-//echo("Language variable $name => ".$_ARRAYLANG[$name]."<br />");
-            $arrFields[$name] = array(
-                'label' => $_ARRAYLANG[$name],
-                'input' => $value,
-            );
-        }
-//echo("Showing step 5<br />");
-        self::parseDataTable($arrFields);
+if (!defined('_DEBUG')) return false;
+
+        $hotel_id =
+            (isset($_SESSION['hotelcard']['hotel_id'])
+                ? $_SESSION['hotelcard']['hotel_id'] : 0);
+        HotelcardLibrary::hotel_view(self::$objTemplate, $hotel_id);
+
+//echo("Got Hotel ID from Session: $hotel_id<br />");
         return false; // This last step is never successful
     }
 
@@ -1452,7 +1395,7 @@ DBG::log('debug enabled');
         $replace = array(
             SettingDb::getValue('admin_email'),
             $_SESSION['hotelcard']['contact_email'],
-            ($_SESSION['hotelcard']['contact_gender'] == M
+            ($_SESSION['hotelcard']['contact_gender'] == 'M'
               ? $_ARRAYLANG['TXT_HOTELCARD_SALUTATION_MALE']
               : $_ARRAYLANG['TXT_HOTELCARD_SALUTATION_FEMALE']),
             $_SESSION['hotelcard']['lastname'],
@@ -1487,8 +1430,9 @@ DBG::log('debug enabled');
      * Determines the hotel ID from the User field selected in the settings.
      * There is no way to fake this ID with the request, so no user may
      * change other than her own hotel data.
-     * @todo    Maybe there should be a way to manage more than one hotel
-     * for a single user.  If so, some kind of selection needs to be added.
+     * @todo    This might have to be adapted if any single user may be managing
+     * more than one hotel at a time.  In that case, a list of hotels can be
+     * shown instead.
      * @return  boolean             True on success, false otherwise
      */
     static function editHotel()
@@ -1505,31 +1449,34 @@ DBG::log('debug enabled');
         SettingDb::init('admin');
         $attribute_id = SettingDb::getValue('user_profile_attribute_hotel_id');
         $hotel_id = User_Profile_Attribute::getAttributeValue($attribute_id, $user_id);
-//die("attribute ID $attribute_id, got hotel ID $hotel_id<br />");
+        if (empty($hotel_id)) {
+            CSRF::header('Location: index.php?section=hotelcard');
+            exit();
+        }
+//echo("attribute ID $attribute_id, got hotel ID $hotel_id<br />");
 //$hotel_id = 6;
 
-        $view = (isset($_REQUEST['view']) ? $_REQUEST['view'] : '');
-        switch ($view) {
-          case 'full':
-            self::editHotelFull($hotel_id);
-          default:
-            // Overview
-            self::editHotelOverview($hotel_id);
+        self::$objTemplate->setVariable(
+            'HOTELCARD_EDIT_HOTEL_MENU',
+            self::getEditHotelMenu());
+
+        switch ($_GET['act']) {
+          case 'edit_hotel_details':
+            return self::editHotelDetails($hotel_id);
+          case 'edit_hotel_roomtypes':
+            return self::editHotelRoomtypes($hotel_id);
         }
-        return true;
+        return self::editHotelAvailability($hotel_id);
     }
 
 
     /**
-     * Shows the overview for the hotel ID specified
-     *
-     * @todo    This might have to be adapted if any single user may be managing
-     * more than one hotel at a time.  In that case, a list of hotels can be
-     * shown instead.
+     * Shows the availablility of the different roomtypes for the hotel ID
+     * specified
      * @param   integer   $hotel_id     The selected hotel ID
      * @return  boolean                 True on success, false otherwise
      */
-    static function editHotelOverview($hotel_id)
+    static function editHotelAvailability($hotel_id)
     {
         global $_ARRAYLANG, $_CORELANG;
 
@@ -1547,36 +1494,50 @@ DBG::log('debug enabled');
             return false;
         }
 
+        // Range for the dates to be shown.
+        // Problems may occur if we work with times too close to midnight here,
+        // probably because of DST switching.  Thus, two hours are added to
+        // the times stored in the session.  This won't affect the dates
+        // being shown and stored.
+        $_SESSION['hotelcard']['date_from'] = (isset($_REQUEST['date_from'])
+            ? strtotime($_REQUEST['date_from']) + 7200
+            : (isset($_SESSION['hotelcard']['date_from'])
+                ? $_SESSION['hotelcard']['date_from']
+                : strtotime('tomorrow') + 7200));
+        $_SESSION['hotelcard']['date_to'] = (isset($_REQUEST['date_to'])
+            ? strtotime($_REQUEST['date_to']) + 7200
+            : (isset($_SESSION['hotelcard']['date_to'])
+                ? $_SESSION['hotelcard']['date_to']
+                : strtotime('+1 month') + 7200));
+//echo("Date from ".$_SESSION['hotelcard']['date_from'].", to ".$_SESSION['hotelcard']['date_to']."<br />");
+
         // Store changes, if any.
         // The type IDs and more information is taken from the post parameters.
         if (isset($_POST['bsubmit'])) self::updateHotel($hotel_id);
 
-        // Range for the dates to be shown
-        $_SESSION['hotelcard']['date_from'] = (isset($_REQUEST['date_from'])
-            ? $_REQUEST['date_from']
-            : (isset($_SESSION['hotelcard']['date_from'])
-                ? $_SESSION['hotelcard']['date_from']
-                : strtotime('tomorrow')));
-        $_SESSION['hotelcard']['date_to'] = (isset($_REQUEST['date_to'])
-            ? $_REQUEST['date_to']
-            : (isset($_SESSION['hotelcard']['date_to'])
-                ? $_SESSION['hotelcard']['date_to']
-                : strtotime('+2 months')));
-        $time_from = strtotime($_SESSION['hotelcard']['date_from']);
-        $time_to = strtotime($_SESSION['hotelcard']['date_to']);
 
         // Abbreviations for day of the week
         $arrDow = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
+        $arrMoy = explode(',', $_CORELANG['TXT_CORE_MONTH_ARRAY']);
+
+        // Fetch the room types and availabilities
+        $arrRoomTypes = HotelRoom::getTypeArray(
+            $hotel_id, 0,
+            $_SESSION['hotelcard']['date_from'],
+            $_SESSION['hotelcard']['date_to']
+        );
 
         // Spray language variables all over
-        self::$objTemplate->setGlobalVariable($_ARRAYLANG);
-        self::$objTemplate->setGlobalVariable(array(
-            'HOTELCARD_FORM_SUBMIT_VALUE' => $_ARRAYLANG['TXT_HOTELCARD_FORM_SUBMIT_STORE'],
+        self::$objTemplate->setGlobalVariable(
+            $_ARRAYLANG
+          + array(
             'HOTELCARD_HOTEL_ID'          => $hotel_id,
             'HOTELCARD_DATE_FROM'         => Html::getSelectDate(
-                'date_from', $_SESSION['hotelcard']['date_from']),
+                'date_from',
+                date('d.m.Y', $_SESSION['hotelcard']['date_from'])),
             'HOTELCARD_DATE_TO'           => Html::getSelectDate(
-                'date_to', $_SESSION['hotelcard']['date_to']),
+                'date_to',
+                date(ASCMS_DATE_SHORT_FORMAT, $_SESSION['hotelcard']['date_to'])),
             // Datepicker language and settings
             'HOTELCARD_DPC_TODAY_TEXT'    => $_CORELANG['TXT_CORE_TODAY'],
             'HOTELCARD_DPC_BUTTON_TITLE'  => $_ARRAYLANG['TXT_HOTELCARD_OPEN_CALENDAR'],
@@ -1585,60 +1546,40 @@ DBG::log('debug enabled');
             // Reformat from "Su,Mo,Tu,We,Th,Fr,Sa"
             // to "'Su','Mo','Tu','We','Th','Fr','Sa'"
             'HOTELCARD_DPC_DAY_NAMES'     => "'".join("','", $arrDow)."'",
+            'HOTELCARD_FORM_SUBMIT_BUTTON_1' =>
+                Html::getInputButton('bsubmit',
+                    $_ARRAYLANG['TXT_HOTELCARD_FORM_SUBMIT_STORE'],
+                    'submit', false),
+            'HOTELCARD_ROOMTYPE_INDEX_MAX' => count($arrRoomTypes),
         ));
-/*        array(
-            'TXT_HOTELCARD_ROOM_TYPE_ID' => $_ARRAYLANG[],
-            'TXT_HOTELCARD_DATE'
-            'TXT_HOTELCARD_TOTAL'
-            'TXT_HOTELCARD_BOOKED'
-            'TXT_HOTELCARD_CANCELLED'
-            'TXT_HOTELCARD_PRICE'
-            'TXT_HOTELCARD_FACILITY_ID'
-            'TXT_HOTELCARD_FACILITY_NAME'
-            'TXT_HOTELCARD_FACILITY_SELECTED'
-            'TXT_HOTELCARD_ROOM_TYPE'
-            'TXT_HOTELCARD_NUMBER_DEFAULT'
-            'TXT_HOTELCARD_PRICE_DEFAULT'
-            'TXT_HOTELCARD_DATE_FROM'
-            'TXT_HOTELCARD_DATE_TO'
-        )); */
 
-        // Fetch the room types and availabilities
-        $arrRoomTypes = HotelRoom::getTypeArray(
-            $hotel_id, 0,
-            date('Y-m-d', $time_from),
-            date('Y-m-d', $time_to)
-        );
-        // Fill up the room type array if there are less than four.
-        // The negative indices will be ignored after they are posted back
-        // and are stored.
-        $not_id = 0;
-        while (count($arrRoomTypes) < 4) {
-            $arrRoomTypes[--$not_id] = array(
-                'name' => '',
-                'number_default' => '',
-                'price_default' => '',
-                'facilities' => array(),
-                'availabilities' => array(),
-            );
-        };
-
-        // Complete list of all facilites for reference
-        $arrAllFacilities = HotelRoom::getFacilityNameArray();
-
-        foreach ($arrRoomTypes as $type_id => $arrRoomType) {
-            self::$objTemplate->setGlobalVariable(array(
-                'HOTELCARD_ROOM_TYPE_ID' => $type_id,
-            ));
-
-            $name              = $arrRoomType['name'];
-            $number_default    = $arrRoomType['number_default'];
-            $price_default     = $arrRoomType['price_default'];
+        $index_li = 0;
+        foreach ($arrRoomTypes as $room_type_id => $arrRoomType) {
+            $room_type_name     = $arrRoomType['name'];
+            $number_default     = $arrRoomType['number_default'];
+            $price_default      = $arrRoomType['price_default'];
             // We just need the keys to see which are provided
-            $arrFacility_id    = array_keys($arrRoomType['facilities']);
+//            $arrFacility_id    = array_keys($arrRoomType['facilities']);
             $arrAvailabilities = $arrRoomType['availabilities'];
-            for ($time = $time_from; $time <= $time_to; $time += 86400) {
+//echo("roomtype $room_type_name, default number $number_default, price $price_default, bf ".var_export($breakfast_included, true)."<br />");
+            $first_date = true;
+            for ($time = $_SESSION['hotelcard']['date_from'];
+                $time <= $_SESSION['hotelcard']['date_to'];
+                $time += 86400
+            ) {
                 $date = date('Y-m-d', $time);
+                $day = date('j', $time);
+                $month = $arrMoy[date('m', $time)];
+                $year = date('Y', $time);
+                if ($first_date == true || $day == 1) {
+                    self::$objTemplate->setVariable(array(
+                        'HOTELCARD_ROWCLASS'  => 'row3',
+                        'HOTELCARD_DATE'      => "$month $year",
+                    ));
+                    self::$objTemplate->parse('hotelcard_day');
+                    $first_date = false;
+                }
+                //echo("time $time -> date $date<br />");
                 $arrAvailability = (empty($arrAvailabilities[$date])
                   ? array(
                       'number_total'     => $number_default,
@@ -1653,42 +1594,427 @@ DBG::log('debug enabled');
                 // Day of the week, number and string abbreviation
                 $intDow           = date('w', $time);
                 $strDow           = $arrDow[$intDow];
-//echo("Room type $type_id: $name: number_total $number_total, number_booked $number_booked, number_cancelled$number_cancelled, price $price<br />");
+//echo("Room type $room_type_id: $room_type_name: number_total $number_total, number_booked $number_booked, number_cancelled$number_cancelled, price $price<br />");
                 self::$objTemplate->setVariable(array(
-                    'HOTELCARD_ROWCLASS'     => ($intDow % 6 ? 'row1' : 'row2'),
-                    'HOTELCARD_DATE'         => $strDow.', '.date(ASCMS_DATE_SHORT_FORMAT, $time),
-                    'HOTELCARD_TOTAL'        => html::getInputText('availability['.$type_id.']['.$date.'][number_total]', $number_total, 'style="width: 40px; text-align: right;"'),
-                    'HOTELCARD_BOOKED'       => html::getInputText('availability['.$type_id.']['.$date.'][number_booked]', $number_booked, 'style="width: 40px; text-align: right;"'),
-                    'HOTELCARD_CANCELLED'    => html::getInputText('availability['.$type_id.']['.$date.'][number_cancelled]', $number_cancelled, 'style="width: 40px; text-align: right;"'),
-                    'HOTELCARD_PRICE'        => html::getInputText('availability['.$type_id.']['.$date.'][price]', $price, 'style="width: 80px; text-align: right;"'),
+                    'HOTELCARD_ROWCLASS'  => ($intDow % 6 ? 'row1' : 'row2'),
+                    'HOTELCARD_DATE'      => "$strDow, $day.",
+                    'HOTELCARD_TOTAL'     => html::getInputText(
+                        'availability['.$room_type_id.']['.$date.'][number_total]',
+                        $number_total, false, 'style="width: 40px; text-align: right;"'),
+                    'HOTELCARD_BOOKED'    => html::getInputText(
+                        'availability['.$room_type_id.']['.$date.'][number_booked]',
+                        $number_booked, false, 'style="width: 40px; text-align: right;"'),
+                    'HOTELCARD_CANCELLED' => html::getInputText(
+                        'availability['.$room_type_id.']['.$date.'][number_cancelled]',
+                        $number_cancelled, false, 'style="width: 40px; text-align: right;"'),
+                    'HOTELCARD_PRICE'     => html::getInputText(
+                        'availability['.$room_type_id.']['.$date.'][price]',
+                        $price, false, 'style="width: 80px; text-align: right;"'),
                 ));
                 self::$objTemplate->parse('hotelcard_day');
             }
-            foreach ($arrAllFacilities as $facility_id => $facility_name) {
-//echo("Room type $type_id: facility_id $facility_id, facility_name $facility_name, ".(in_array($facility_id, $arrFacility_id) ? 'selected' : '')."<br />");
-                self::$objTemplate->setVariable(array(
-//                    'HOTELCARD_FACILITY_ID'   => $facility_id,
-                    'HOTELCARD_FACILITY_NAME' => $facility_name,
-                    'HOTELCARD_FACILITY'      => Html::getCheckbox(
-                        $type_id.'[facility_id]', $facility_id, '',
-                        in_array($facility_id, $arrFacility_id)),
-                ));
-                self::$objTemplate->parse('hotelcard_facility');
-            }
-            self::$objTemplate->setVariable(array(
-                'HOTELCARD_ROOM_TYPE'      => Html::getInputText('roomtype['.$type_id.'][room_type]', $name, 'style="width: 200px;"'),
-                'HOTELCARD_NUMBER_DEFAULT' => Html::getInputText('roomtype['.$type_id.'][number_default]', $number_default, 'style="width: 200px; text-align: right;"'),
-                'HOTELCARD_PRICE_DEFAULT'  => Html::getInputText('roomtype['.$type_id.'][price_default]', $price_default, 'style="width: 200px; text-align: right;"'),
+
+            // <li> switch
+            self::$objTemplate->setGlobalVariable(array(
+                'HOTELCARD_ROOMTYPE_INDEX' => ++$index_li,
+                'HOTELCARD_ROOMTYPE_DISPLAY' => ($index_li == 1 ? 'block' : 'none'),
+                'HOTELCARD_ROOMTYPE_LI_CLASS' => ($index_li == 1 ? '_active' : ''),
+                'HOTELCARD_ROOMTYPE_NAME' =>
+                    ($room_type_name
+                      ? $room_type_name
+                      : $_ARRAYLANG['TXT_HOTELCARD_NEW_ROOMTYPE']),
             ));
+            self::$objTemplate->touchBlock('hotelcard_roomtype_li');
+            self::$objTemplate->parse('hotelcard_roomtype_li');
+            self::$objTemplate->touchBlock('hotelcard_roomtype');
             self::$objTemplate->parse('hotelcard_roomtype');
         }
-        self::$objTemplate->touchBlock('hotelcard_form_date');
+        self::$objTemplate->setVariable('HOTELCARD_FORM_SUBMIT_BUTTON_2',
+            Html::getInputButton('bsubmit',
+            $_ARRAYLANG['TXT_HOTELCARD_FORM_SUBMIT_STORE'],
+            'submit', false));
+        JS::registerCode(Html::getJavascript_Element());
+        //self::$objTemplate->touchBlock('hotelcard_form_date');
         return true;
     }
 
 
     /**
-     * OBSOLETE -- Needs a fix
+     * Shows the page for editing or adding room types
+     *
+     * @param   integer   $hotel_id     The selected hotel ID
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function editHotelRoomtypes($hotel_id)
+    {
+        global $_ARRAYLANG, $_CORELANG;
+
+        $objhotel = Hotel::getById($hotel_id);
+// TODO:  Add error message, maybe a redirect
+        if (empty($objhotel)) {
+            self::addMessage($_ARRAYLANG['TXT_HOTELCARD_ERROR_HOTEL_ID_NOT_FOUND'].' '.$hotel_id);
+            return false;
+        }
+
+        // Store changes, if any.
+        // The type IDs and more information is taken from the post parameters.
+        if (isset($_POST['bsubmit'])) self::updateHotel(
+            $hotel_id,
+            $_SESSION['hotelcard']['date_from'],
+            $_SESSION['hotelcard']['date_to']
+        );
+
+        // Fetch the room types and availabilities
+        $arrRoomTypes = HotelRoom::getTypeArray($hotel_id);
+        $arrRoomTypes[-1] = array(
+            'name' => '',
+            'number_default' => '',
+            'price_default' => '',
+            'breakfast_included' => '',
+            'facilities' => array(),
+            'availabilities' => array(),
+        );
+
+        // Spray language variables all over
+        self::$objTemplate->setGlobalVariable(
+            $_ARRAYLANG
+          + array(
+            'HOTELCARD_FORM_SUBMIT_VALUE' => $_ARRAYLANG['TXT_HOTELCARD_FORM_SUBMIT_STORE'],
+            'HOTELCARD_HOTEL_ID'          => $hotel_id,
+            'HOTELCARD_ROOMTYPE_INDEX_MAX' => count($arrRoomTypes),
+        ));
+
+        // Complete list of all facilites for reference
+        $arrAllFacilities = HotelRoom::getFacilityNameArray();
+        $index_li = 0;
+        foreach ($arrRoomTypes as $room_type_id => $arrRoomType) {
+//            self::$objTemplate->setGlobalVariable(array(
+//                'HOTELCARD_ROOMTYPE_ID' => $room_type_id,
+//            ));
+
+            $room_type_name     = $arrRoomType['name'];
+            $number_default     = $arrRoomType['number_default'];
+            $price_default      = $arrRoomType['price_default'];
+            $breakfast_included = $arrRoomType['breakfast_included'];
+
+            // <li> switch
+            self::$objTemplate->setGlobalVariable(array(
+                'HOTELCARD_ROOMTYPE_INDEX' => ++$index_li,
+                'HOTELCARD_ROOMTYPE_DISPLAY' => ($index_li == 1 ? 'block' : 'none'),
+                'HOTELCARD_ROOMTYPE_LI_CLASS' => ($index_li == 1 ? '_active' : ''),
+                'HOTELCARD_ROOMTYPE_NAME' =>
+                    ($room_type_name
+                      ? $room_type_name
+                      : $_ARRAYLANG['TXT_HOTELCARD_NEW_ROOMTYPE']),
+            ));
+            self::$objTemplate->touchBlock('hotelcard_roomtype_li');
+            self::$objTemplate->parse('hotelcard_roomtype_li');
+
+            $arrFields = array(
+//                'dummy_div_open_'.$room_type_id => array(
+//                    'special' =>
+//                        '<div id="roomtype-'.$room_type_id.'" style="display: '.
+//                        ($room_type_id == 1 ? 'block' : 'none').'">'
+//                ),
+                'room_type_'.$room_type_id => array(
+                    'mandatory' => ($index_li == 1),
+                    'label' => 'TXT_HOTELCARD_ROOMTYPE',
+                    'input' => Html::getInputText(
+                        'roomtype['.$room_type_id.'][room_type]',
+                        $room_type_name, false, 'style="width: 200px;"'),
+                ),
+                'room_available_'.$room_type_id => array(
+                    'mandatory' => ($index_li == 1),
+                    'label' => 'TXT_HOTELCARD_ROOM_AVAILABLE',
+                    'input' => Html::getInputText(
+                        'roomtype['.$room_type_id.'][number_default]',
+                        $number_default, false, 'style="width: 200px; text-align: right;"'),
+                ),
+                'room_price_'.$room_type_id => array(
+                    'mandatory' => ($index_li == 1),
+                    'label' => 'TXT_HOTELCARD_ROOM_PRICE',
+                    'input' => Html::getInputText(
+                        'roomtype['.$room_type_id.'][price_default]',
+                        $price_default, false, 'style="width: 200px; text-align: right;"'),
+                ),
+                'breakfast_included_'.$room_type_id => array(
+                    'mandatory' => ($index_li == 1),
+                    'label' => 'TXT_HOTELCARD_BREAKFAST_INCLUDED',
+                    'input' => Html::getSelect(
+                        'roomtype['.$room_type_id.'][breakfast_included]',
+                        HotelRoom::getBreakfastIncludedArray($breakfast_included),
+                        $breakfast_included, false, '',
+                        'style="width: 200px;"'),
+                ),
+                // Note: These are checkbox groups and are thus posted as
+                // arrays, like 'room_facility_id_1[]'
+                'room_facility_id_'.$room_type_id => array(
+                    'mandatory' => false,
+                    'label' => 'TXT_HOTELCARD_ROOM_FACILITY_ID',
+                    'input' => '<span class="inputgroup">'.
+                        Html::getCheckboxGroup(
+                            'facilities['.$room_type_id.']',
+                            $arrAllFacilities, $arrAllFacilities,
+                            array_keys($arrRoomType['facilities']),
+                            'facilities-'.$room_type_id).
+                        "</span>\n",
+                ),
+//                'dummy_div_close_'.$room_type_id => array(
+//                    // This closes the div id=roomtype opened above
+//                    'special' => '</div>',
+//                ),
+            );
+            HotelcardLibrary::parseDataTable(self::$objTemplate, $arrFields);
+            self::$objTemplate->parse('hotelcard_roomtype');
+        }
+        JS::registerCode(Html::getJavascript_Element());
+        return true;
+    }
+
+
+    /**
+     * Show the page for editing the Hotel details, like the contact address
+     * or the images
+     * @todo    Write me!
+     * @param   integer     $hotel_id     The ID of the Hotel to be edited
+     * @return  boolean                   True on success, false otherwise
+     */
+    static function editHotelDetails($hotel_id)
+    {
+        global $_ARRAYLANG;
+
+self::addMessage("Ich bin noch nicht geschrieben!");
+return false;
+die("Hotelcard::editHotelDetails($hotel_id):  Write me first!");
+
+        $arrFields = array(
+            'lang_id' => array(
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_LANG_ID',
+                'input' => FWLanguage::getMenuActiveOnly(
+                    (isset($_SESSION['hotelcard']['lang_id'])
+                        ? $_SESSION['hotelcard']['lang_id'] : FRONTEND_LANG_ID),
+                    'lang_id', 'document.forms.form_hotelcard.submit();'),
+            ),
+            'hotel_name' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_HOTEL_NAME',
+                'input' => Html::getInputText('hotel_name',
+                    (isset($_SESSION['hotelcard']['hotel_name'])
+                        ? $_SESSION['hotelcard']['hotel_name'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'group' => array( // Mind that this goes into a lookup table!
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_GROUP',
+                'input' => Html::getInputText('group',
+                    (isset($_SESSION['hotelcard']['group'])
+                        ? $_SESSION['hotelcard']['group'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'accomodation_type_id' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_ACCOMODATION_TYPE_ID',
+                'input' => Html::getSelect(
+                    'accomodation_type_id',
+                    HotelAccomodationType::getNameArray(),
+                    (isset($_SESSION['hotelcard']['accomodation_type_id'])
+                        ? $_SESSION['hotelcard']['accomodation_type_id'] : 0)),
+            ),
+            'hotel_address' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_HOTEL_ADDRESS',
+                'input' => Html::getInputText('hotel_address',
+                    (isset($_SESSION['hotelcard']['hotel_address'])
+                        ? $_SESSION['hotelcard']['hotel_address'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'hotel_region' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_HOTEL_REGION',
+                'input' => Html::getSelect(
+                'hotel_region',
+                    (isset($_SESSION['hotelcard']['hotel_region'])
+                      ? array()
+                      :   array('' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_REGION_PLEASE_CHOOSE']))
+                        + State::getArray(true),
+                    (isset($_SESSION['hotelcard']['hotel_region'])
+                      ? $_SESSION['hotelcard']['hotel_region']
+                      : (isset($_SESSION['hotelcard']['hotel_location'])
+                          ? State::getByLocation($_SESSION['hotelcard']['hotel_location'])
+                          : '')), 'hotel_region',
+                    'new Ajax.Updater(\'hotel_location\', \'index.php?section=hotelcard&amp;act=get_locations&amp;state=\'+document.getElementById(\'hotel_region\').value, { method: \'get\' });'),
+                    //document.forms.form_hotelcard.submit();'),
+            ),
+            'hotel_location' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_HOTEL_LOCATION',
+                'input' => Html::getSelect('hotel_location',
+                    (isset($_SESSION['hotelcard']['hotel_region'])
+                      ? Location::getArrayByState($_SESSION['hotelcard']['hotel_region'], '%1$s (%2$s)')
+                      : array($_ARRAYLANG['TXT_HOTELCARD_PLEASE_CHOOSE_REGION'])),
+                    (isset($_SESSION['hotelcard']['hotel_location'])
+                        ? $_SESSION['hotelcard']['hotel_location'] : ''), 'hotel_location',
+                    '', 'style="text-align: left;"'),
+            ),
+            'contact_data' => array(
+                'mandatory' => false,
+                'label' => $_ARRAYLANG['TXT_HOTELCARD_CONTACT_DATA'],
+                'input' => '',
+            ),
+            'contact_name' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_CONTACT_NAME',
+                'input' => Html::getInputText('contact_name',
+                    (isset($_SESSION['hotelcard']['contact_name'])
+                        ? $_SESSION['hotelcard']['contact_name'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'contact_gender' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_CONTACT_GENDER',
+                'input' => '<span class="inputgroup">'.
+                    Html::getRadioGroup(
+                    'contact_gender',
+                    array(
+                        'M' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_MALE'],
+                        'F' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_FEMALE'],
+                    ),
+                    (isset($_SESSION['hotelcard']['contact_gender'])
+                        ? $_SESSION['hotelcard']['contact_gender'] : '')).
+                    "</span>\n",
+            ),
+            'contact_position' => array(
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_CONTACT_POSITION',
+                'input' => Html::getInputText('contact_position',
+                    (isset($_SESSION['hotelcard']['contact_position'])
+                        ? $_SESSION['hotelcard']['contact_position'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'contact_department' => array(
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_CONTACT_DEPARTMENT',
+                'input' => Html::getInputText('contact_department',
+                    (isset($_SESSION['hotelcard']['contact_department'])
+                        ? $_SESSION['hotelcard']['contact_department'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'contact_phone' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_CONTACT_PHONE',
+                'input' => Html::getInputText('contact_phone',
+                    (isset($_SESSION['hotelcard']['contact_phone'])
+                        ? $_SESSION['hotelcard']['contact_phone'] : ''), false,
+                        'style="text-align: left;"'),
+            ),
+            'contact_fax' => array(
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_CONTACT_FAX',
+                'input' => Html::getInputText('contact_fax',
+                    (isset($_SESSION['hotelcard']['contact_fax'])
+                        ? $_SESSION['hotelcard']['contact_fax'] : ''), false,
+                        'style="text-align: left;"'),
+            ),
+            'contact_email' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL',
+                'input' => Html::getInputText('contact_email',
+                    (isset($_SESSION['hotelcard']['contact_email'])
+                        ? $_SESSION['hotelcard']['contact_email'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'contact_email_retype' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL_RETYPE',
+                'input' => Html::getInputText('contact_email_retype', '', false,
+                    'style="text-align: left;"'),
+            ),
+            'numof_rooms' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_NUMOF_ROOMS',
+                'input' => Html::getInputText('numof_rooms',
+                    (isset($_SESSION['hotelcard']['numof_rooms'])
+                        ? $_SESSION['hotelcard']['numof_rooms'] : ''), false,
+                    'style="text-align: left;"'),
+            ),
+            'description_text' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_DESCRIPTION_TEXT',
+                'input' => Html::getTextarea('description_text',
+                    (isset($_SESSION['hotelcard']['description_text'])
+                        ? $_SESSION['hotelcard']['description_text'] : ''),
+                    '', '',
+                    'onkeyup="lengthLimit(this, this.form.count_min, this.form.count_max, 100, 500);"').
+                '<br />'.
+                sprintf($_ARRAYLANG['TXT_HOTELCARD_TEXT_LENGTH_MINIMUM_MAXIMUM'],
+                    html::getInputText('count_min', 100, 'count_min',
+                        'disabled="disabled" style="width: 30px;"'),
+                    html::getInputText('count_max', 500, 'count_max',
+                        'disabled="disabled" style="width: 30px;"')),
+            ),
+            'rating' => array(
+                'mandatory' => true,
+                'label' => 'TXT_HOTELCARD_RATING',
+                'input' => Html::getSelect('rating',
+                    HotelRating::getArray(),
+                    (isset($_SESSION['hotelcard']['rating'])
+                        ? $_SESSION['hotelcard']['rating'] : '')),
+            ),
+            'hotel_facilities' => array(
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_HOTEL_FACILITY_ID',
+                'input' => '',
+            ),
+        );
+        foreach (HotelFacility::getGroupNameArray() as $group_id => $group_name) {
+//echo("Setting up group ID $group_id, name $group_name<br />");
+            $arrFacilities = HotelFacility::getFacilityNameArray($group_id, true);
+//echo("Setting up Facilities: ".var_export($arrFacilities, true)."<br />");
+            $arrFields['hotel_facility_id'][$group_id] = array(
+                'mandatory' => false,
+                'label' => $group_name,
+                'input' => '<span class="inputgroup">'.
+                    Html::getCheckboxGroup(
+                        'hotel_facility_id',
+                        $arrFacilities, $arrFacilities,
+                        (   isset($_SESSION['hotelcard']['hotel_facility_id'])
+                          ? array_keys($_SESSION['hotelcard']['hotel_facility_id'])
+                          : '')).
+                    "</span>\n",
+            );
+        }
+        $arrFields += array(
+            'hotel_uri' => array(
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_HOTEL_URI',
+                'input' => Html::getInputText('hotel_uri',
+                    (empty($_SESSION['hotelcard']['hotel_uri'])
+                        ? '' // 'http://'
+                        : $_SESSION['hotelcard']['hotel_uri']), false,
+                    'style="text-align: left;"'),
+            ),
+            'image_id' => array(
+                'mandatory' => false,
+                'label' => 'TXT_HOTELCARD_IMAGE',
+                'input' => Html::getImageChooserUpload(
+                    Image::getFromSessionByKey('image', self::IMAGE_PATH_HOTEL_DEFAULT),
+                    'image', self::IMAGETYPE_TITLE),
+            ),
+        );
+        // Verify the data already present
+        if (   isset($_POST['bsubmit'])
+            && self::verifyAndStoreHotel($arrFields)) {
+//echo("After:<br />".htmlentities(var_export($arrFields, true), ENT_QUOTES, CONTREXX_CHARSET)."<hr />");
+            self::addMessage($_ARRAYLANG['TXT_HOTELCARD_HOTEL_UPDATED_SUCCESSFULLY']);
+        }
+//echo("Showing step 5<br />");
+        HotelcardLibrary::parseDataTable(self::$objTemplate, $arrFields);
+        return false; // Still running
+    }
+
+
+    /**
      * Store any changes made to a hotel in the database
      *
      * Picks any data available from the $_POST array and calls class methods
@@ -1697,64 +2023,108 @@ DBG::log('debug enabled');
      */
     static function updateHotel($hotel_id)
     {
-        die("Hotelcard::updateHotel($hotel_id):  Fix me!");
+        global $_ARRAYLANG;
 
-        if (empty($_POST)) return '';
+//echo("Hotelcard::updateHotel($hotel_id):  Entered");
+
+        if (empty($_POST)) {
+//echo("No POST<br />");
+            return '';
+        }
 //echo("Hotelcard::updateHotel($hotel_id):  POST:<br />".nl2br(var_export($_POST, true))."<hr />");
 
 //DBG::enable_adodb_debug();
 //DBG::enable_error_reporting();
+        $result = '';
 
-        foreach ($_POST as $name => $value) {
-            switch ($name) {
-              case 'availability':
-                  // Array indexed by room type IDs,
-                  // containing date => availability pairs:
-                  //  availability[room_type_id][date] =>
-                  //    array(number_total, number_booked, number_cancelled, price)
-                  foreach ($value as $room_type_id => $arrAvailability) {
-                      if (HotelRoom::storeAvailabilityArray(
-                          $room_type_id, $arrAvailability) === false)
-// TODO: Add error message
-                          return false;
-                  }
-                  break;
-              case 'roomtype':
-                  // Array indexed by room type IDs,
-                  // containing room type parameters:
-                  //  roomtype[room_type_id] =>
-                  //    array(number_total, number_booked, number_cancelled, price)
-                  foreach ($value as $room_type_id => $arrRoomtype) {
-                      $room_type = $arrRoomtype['room_type'];
-                      $number_default = $arrRoomtype['number_default'];
-                      $price_default = $arrRoomtype['price_default'];
-                      if (HotelRoom::storeType(
-                          $hotel_id, $room_type,
-                          $number_default, $price_default,
-                          ($room_type_id > 0 ? $room_type_id : 0)) === false)
-// TODO: Add error message
-                          return false;
-                  }
-                  break;
-              default:
-// TODO: Add error message
-                  return false;
+        if (isset($_POST['roomtype'])) {
+            foreach ($_POST['roomtype'] as $room_type_id => $arrRoomtype) {
+    //echo("Roomtype<br />");
+                // Array indexed by room type IDs,
+                // containing room type parameters:
+                //  roomtype[room_type_id] =>
+                //    array(number_total, number_booked, number_cancelled, price)
+
+                $room_type = $arrRoomtype['room_type'];
+
+                // Ignore room types with empty names
+                if (empty($room_type)) {
+    //echo("Skipping Room type ID $room_type_id<br />");
+                    continue;
+                }
+    //echo("Roomtype ID $room_type_id<br />");
+
+                $number_default = $arrRoomtype['number_default'];
+                $price_default = $arrRoomtype['price_default'];
+                $breakfast_included = $arrRoomtype['breakfast_included'];
+
+                if (!HotelRoom::storeType(
+                    $hotel_id,
+                    $number_default, $price_default,
+                    $breakfast_included,
+                    ($room_type_id > 0 ? $room_type_id : 0))
+                ) {
+                    self::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_HOTELCARD_ERROR_STORING_ROOMTYPE'],
+                        $room_type)
+                    );
+                    return false;
+                }
+                // Rename the room type
+                if (!HotelRoom::renameType(
+                    $room_type_id, $room_type)) {
+    //echo("ERROR: Failed to rename Roomtype ID $room_type_id to $room_type<br />");
+                    return false;
+                }
+                if ($result === '') $result = true;
             }
+        }
+
+//echo("Room types:<br />".var_export($arrRoomtype, true)."<br />");
+        if (isset($_POST['availability'])) {
+            foreach ($_POST['availability'] as $room_type_id => $arrAvailability) {
+                // Array indexed by room type IDs,
+                // containing date => availability pairs:
+                //  availability[room_type_id][date] =>
+                //    array(number_total, number_booked, number_cancelled, price)
+
+    //echo("Availability<br />");
+                if (!HotelRoom::storeAvailabilityArray(
+                    $room_type_id, $arrAvailability)
+                ) {
+                    self::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_HOTELCARD_ERROR_STORING_AVAILABILITY'],
+                        $room_type)
+                    );
+                    return false;
+                }
+                if ($result === '') $result = true;
+            }
+        }
+        if ($result === true) {
+            self::addMessage(
+                $_ARRAYLANG['TXT_HOTELCARD_HOTEL_UPDATED_SUCCESSFULLY']);
         }
         return true;
     }
 
 
-    /**
-     * Set up the overview page
-     *
-     * @todo    Contents have yet to be defined
-     * @return  boolean             True on success, false otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function overview()
+    static function getEditHotelMenu()
     {
-        return true;
+        global $_ARRAYLANG;
+
+        return '
+<a href="index.php?section=hotelcard&amp;cmd=edit_hotel" title="">
+  '.$_ARRAYLANG['TXT_HOTELCARD_EDIT_HOTEL_AVAILABILITY'].'
+</a>
+<a href="index.php?section=hotelcard&amp;cmd=edit_hotel_roomtypes" title="">
+  '.$_ARRAYLANG['TXT_HOTELCARD_EDIT_HOTEL_ROOMTYPES'].'
+</a>
+<a href="index.php?section=hotelcard&amp;cmd=edit_hotel_details" title="">
+  '.$_ARRAYLANG['TXT_HOTELCARD_EDIT_HOTEL_DETAILS'].'
+</a>
+<br /><br />
+';
     }
 
 
@@ -1767,7 +2137,8 @@ DBG::log('debug enabled');
     static function terms()
     {
         return self::$objTemplate->setVariable(
-            'TXT_HOTELCARD_NOTE_TEXT', SettingDb::getValue('terms_and_conditions_'.FRONTEND_LANG_ID)
+            'TXT_HOTELCARD_NOTE_TEXT',
+            SettingDb::getValue('terms_and_conditions_'.FRONTEND_LANG_ID)
         );
     }
 
@@ -1799,6 +2170,8 @@ DBG::log('debug enabled');
     static function errorHandler()
     {
         global $objDatabase;
+
+die("Hotelcard::errorHandler(): disabled!<br />");
 
         // Verify that the module is installed
         $query = "
@@ -1871,413 +2244,6 @@ DBG::log('debug enabled');
             $_SESSION['hotelcard']['step_current']);
     }
 
-
-    /**
-     * Edit a hotel, full version
-     * @todo    Write me!
-     * @param   integer     $hotel_id     The ID of the Hotel to be edited
-     * @return  boolean                   True on success, false otherwise
-     */
-    static function editHotelFull($hotel_id)
-    {
-        global $_ARRAYLANG;
-
-die("Hotelcard::editHotelFull($hotel_id):  Write me first!");
-
-        $arrFields = array(
-            'lang_id' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_LANG_ID',
-                'input' => FWLanguage::getMenuActiveOnly(
-                    (isset($_SESSION['hotelcard']['lang_id'])
-                        ? $_SESSION['hotelcard']['lang_id'] : FRONTEND_LANG_ID),
-                    'lang_id', 'document.forms.form_hotelcard.submit();'),
-            ),
-            'hotel_name' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_HOTEL_NAME',
-                'input' => Html::getInputText('hotel_name',
-                    (isset($_SESSION['hotelcard']['hotel_name'])
-                        ? $_SESSION['hotelcard']['hotel_name'] : ''),
-                    'style="text-align: left;"'),
-            ),
-            'group' => array( // Mind that this goes into a lookup table!
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_GROUP',
-                'input' => Html::getInputText('group',
-                    (isset($_SESSION['hotelcard']['group'])
-                        ? $_SESSION['hotelcard']['group'] : ''),
-                    'style="text-align: left;"'),
-            ),
-            'accomodation_type_id' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_ACCOMODATION_TYPE_ID',
-                'input' => Html::getSelect(
-                    'accomodation_type_id',
-                    HotelAccomodationType::getNameArray(),
-                    (isset($_SESSION['hotelcard']['accomodation_type_id'])
-                        ? $_SESSION['hotelcard']['accomodation_type_id'] : 0)),
-            ),
-            'hotel_address' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_HOTEL_ADDRESS',
-                'input' => Html::getInputText('hotel_address',
-                    (isset($_SESSION['hotelcard']['hotel_address'])
-                        ? $_SESSION['hotelcard']['hotel_address'] : ''),
-                    'style="text-align: left;"'),
-            ),
-//            'hotel_zip' => array(
-//                'mandatory' => true,
-//                'label' => 'TXT_HOTELCARD_HOTEL_ZIP',
-//                'input' => Html::getInputText('hotel_zip',
-//                    (isset($_SESSION['hotelcard']['hotel_zip'])
-//                        ? $_SESSION['hotelcard']['hotel_zip'] : ''),
-//                        'style="text-align: left;"'),
-//            ),
-            'hotel_region' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_HOTEL_REGION',
-                'input' => Html::getSelect(
-                'hotel_region',
-                    (isset($_SESSION['hotelcard']['hotel_region'])
-                      ? array()
-                      : array('' => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_REGION_PLEASE_CHOOSE']))
-                      + State::getArray(true),
-                    (isset($_SESSION['hotelcard']['hotel_region'])
-                      ? $_SESSION['hotelcard']['hotel_region']
-                      : (isset($_SESSION['hotelcard']['hotel_location'])
-                          ? State::getByLocation($_SESSION['hotelcard']['hotel_location'])
-                          : '')),
-                    'new Ajax.Updater(\'hotel_location\', \'index.php?section=hotelcard&amp;act=get_locations&amp;state=\'+document.getElementById(\'hotel_region\').value, { method: \'get\' });'),
-                    //document.forms.form_hotelcard.submit();'),
-            ),
-            'hotel_location' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_HOTEL_LOCATION',
-                'input' => Html::getSelect('hotel_location',
-                    (isset($_SESSION['hotelcard']['hotel_region'])
-                      ? Location::getArrayByState($_SESSION['hotelcard']['hotel_region'], '%1$s (%2$s)')
-                      : array($_ARRAYLANG['TXT_HOTELCARD_PLEASE_CHOOSE_REGION'])),
-                    (isset($_SESSION['hotelcard']['hotel_location'])
-                        ? $_SESSION['hotelcard']['hotel_location'] : ''),
-                    '', 'style="text-align: left;"'),
-            ),
-//            'hotel_country_id' => array(
-//                'mandatory' => false,
-//                'label' => 'TXT_HOTELCARD_HOTEL_COUNTRY_ID',
-//                'input' => Html::getSelect(
-//                    'hotel_country_id', Country::getNameArray(),
-//                    (isset($_SESSION['hotelcard']['hotel_country_id'])
-//                        ? $_SESSION['hotelcard']['hotel_country_id'] : '')),
-//            ),
-            'contact_data' => array(
-                'mandatory' => false,
-                'label' => $_ARRAYLANG['TXT_HOTELCARD_CONTACT_DATA'],
-                'input' => '',
-            ),
-            'contact_name' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_CONTACT_NAME',
-                'input' => Html::getInputText('contact_name',
-                    (isset($_SESSION['hotelcard']['contact_name'])
-                        ? $_SESSION['hotelcard']['contact_name'] : ''),
-                    'style="text-align: left;"'),
-            ),
-            'contact_gender' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_CONTACT_GENDER',
-                'input' => Html::getRadioGroup(
-                    'contact_gender',
-                    array(
-                        'M' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_MALE'],
-                        'F' => $_ARRAYLANG['TXT_HOTELCARD_GENDER_FEMALE'],
-                    ),
-                    (isset($_SESSION['hotelcard']['contact_gender'])
-                        ? $_SESSION['hotelcard']['contact_gender'] : '')),
-            ),
-            'contact_position' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_CONTACT_POSITION',
-                'input' => Html::getInputText('contact_position',
-                    (isset($_SESSION['hotelcard']['contact_position'])
-                        ? $_SESSION['hotelcard']['contact_position'] : ''),
-                    'style="text-align: left;"'),
-            ),
-            'contact_department' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_CONTACT_DEPARTMENT',
-                'input' => Html::getInputText('contact_department',
-                    (isset($_SESSION['hotelcard']['contact_department'])
-                        ? $_SESSION['hotelcard']['contact_department'] : ''),
-                    'style="text-align: left;"'),
-            ),
-            'contact_phone' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_CONTACT_PHONE',
-                'input' => Html::getInputText('contact_phone',
-                    (isset($_SESSION['hotelcard']['contact_phone'])
-                        ? $_SESSION['hotelcard']['contact_phone'] : ''),
-                        'style="text-align: left;"'),
-            ),
-            'contact_fax' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_CONTACT_FAX',
-                'input' => Html::getInputText('contact_fax',
-                    (isset($_SESSION['hotelcard']['contact_fax'])
-                        ? $_SESSION['hotelcard']['contact_fax'] : ''),
-                        'style="text-align: left;"'),
-            ),
-            'contact_email' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL',
-                'input' => Html::getInputText('contact_email',
-                    (isset($_SESSION['hotelcard']['contact_email'])
-                        ? $_SESSION['hotelcard']['contact_email'] : ''),
-                    'style="text-align: left;"'),
-            ),
-            'contact_email_retype' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL_RETYPE',
-                'input' => Html::getInputText('contact_email_retype', '',
-                    'style="text-align: left;"'),
-            ),
-// The terms are inserted in the step heading
-//            'terms_header' => array(
-//                'mandatory' => false,
-//                'label' => 'TXT_HOTELCARD_TERMS_AND_CONDITIONS',
-//            ),
-//            'terms' => array(
-//                'mandatory' => false,
-//                'input' => SettingDb::getValue('terms_and_conditions_'.FRONTEND_LANG_ID),
-//            ),
-            'register_date' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_REGISTER_DATE',
-                'input' => date(ASCMS_DATE_SHORT_FORMAT),
-            ),
-//            'additional_data' => array(
-//                'mandatory' => false,
-//                'label' => $_ARRAYLANG['TXT_HOTELCARD_ADDITIONAL_DATA'],
-//                'input' => '',
-//            ),
-            'numof_rooms' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_NUMOF_ROOMS',
-                'input' => Html::getInputText('numof_rooms',
-                    (isset($_SESSION['hotelcard']['numof_rooms'])
-                        ? $_SESSION['hotelcard']['numof_rooms'] : ''),
-                    'style="text-align: left;"'),
-            ),
-            'description_text' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_DESCRIPTION_TEXT',
-                'input' => Html::getTextarea('description_text',
-                    (isset($_SESSION['hotelcard']['description_text'])
-                        ? $_SESSION['hotelcard']['description_text'] : ''),
-                    '', '',
-                    'onkeyup="lengthLimit(this, this.form.count_min, this.form.count_max, 100, 500);"').
-                '<br />'.
-                sprintf($_ARRAYLANG['TXT_HOTELCARD_TEXT_LENGTH_MINIMUM_MAXIMUM'],
-                    html::getInputText('count_min', 100, 'disabled="disabled" style="width: 30px;"'),
-                    html::getInputText('count_max', 500, 'disabled="disabled" style="width: 30px;"')),
-            ),
-            'rating' => array(
-                'mandatory' => true,
-                'label' => 'TXT_HOTELCARD_RATING',
-                'input' => Html::getSelect('rating',
-                    HotelRating::getArray(),
-                    (isset($_SESSION['hotelcard']['rating'])
-                        ? $_SESSION['hotelcard']['rating'] : '')),
-            ),
-            'hotel_facilities' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_HOTEL_FACILITY_ID',
-                'input' => '',
-            ),
-        );
-        foreach (HotelFacility::getGroupNameArray() as $group_id => $group_name) {
-//echo("Setting up group ID $group_id, name $group_name<br />");
-            $arrFacilities = HotelFacility::getFacilityNameArray($group_id, true);
-//echo("Setting up Facilities: ".var_export($arrFacilities, true)."<br />");
-            $arrFields['hotel_facility_id'][$group_id] = array(
-                'mandatory' => false,
-                'label' => $group_name,
-                'input' => Html::getCheckboxGroup(
-                    'hotel_facility_id',
-                    $arrFacilities, $arrFacilities,
-                    (   isset($_SESSION['hotelcard']['hotel_facility_id'])
-                      ? array_keys($_SESSION['hotelcard']['hotel_facility_id'])
-                      : '')),
-            );
-        }
-        $arrFields += array(
-            'hotel_uri' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_HOTEL_URI',
-                'input' => Html::getInputText('hotel_uri',
-                    (empty($_SESSION['hotelcard']['hotel_uri'])
-                        ? '' // 'http://'
-                        : $_SESSION['hotelcard']['hotel_uri']),
-                    'style="text-align: left;"'),
-            ),
-            'hotel_image_id' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_IMAGE',
-                'input' => Html::getImageChooserUpload(
-                    Image::getFromSessionByKey('hotel_image', self::IMAGE_PATH_HOTEL_DEFAULT),
-                    'hotel_image', self::IMAGETYPE_TITLE),
-            ),
-            'found_how' => array(
-                'mandatory' => false,
-                'label' => 'TXT_HOTELCARD_FOUND_HOW',
-                'input' => Html::getTextarea('found_how',
-                (isset($_SESSION['hotelcard']['found_how'])
-                    ? $_SESSION['hotelcard']['found_how'] : '')),
-            ),
-        );
-        for ($i = 1; $i <= 4; ++$i) {
-//echo("Room type $i: ".(isset($_SESSION['hotelcard']['room_type_'.$i]) ? $_SESSION['hotelcard']['room_type_'.$i] : '')."<br />");
-
-            // Only the first type is mandatory
-            $arrFields += array(
-                'room_type_data_'.$i => array(
-                  'mandatory' => false,
-                  'label' => sprintf($_ARRAYLANG['TXT_HOTELCARD_ROOM_TYPE_NUMBER'], $i),
-                  'input' => '',
-                ),
-                'room_type_'.$i => array(
-                  'mandatory' => ($i == 1),
-                  'label' => 'TXT_HOTELCARD_ROOM_TYPE',
-                  'input' => Html::getInputText('room_type_'.$i,
-                      (isset($_SESSION['hotelcard']['room_type_'.$i])
-                          ? $_SESSION['hotelcard']['room_type_'.$i] : ''),
-                      'style="text-align: left;"'),
-                ),
-                'room_available_'.$i => array(
-                    'mandatory' => ($i == 1),
-                    'label' => 'TXT_HOTELCARD_ROOM_AVAILABLE',
-                    'input' => Html::getInputText('room_available_'.$i,
-                        (isset($_SESSION['hotelcard']['room_available_'.$i])
-                            ? $_SESSION['hotelcard']['room_available_'.$i] : ''),
-                        'style="text-align: left;"'),
-                ),
-                'room_price_'.$i => array(
-                    'mandatory' => ($i == 1),
-                    'label' => 'TXT_HOTELCARD_ROOM_PRICE',
-                    'input' => Html::getInputText('room_price_'.$i,
-                        (isset($_SESSION['hotelcard']['room_price_'.$i])
-                            ? $_SESSION['hotelcard']['room_price_'.$i] : ''),
-                        'style="text-align: left;"'),
-                ),
-                // Note: These are checkbox groups and are thus posted as
-                // arrays, like 'room_facility_id[1][]'
-                'room_facility_id_'.$i => array(
-                    'mandatory' => false,
-                    'label' => 'TXT_HOTELCARD_ROOM_FACILITY_ID',
-                    'input' => Html::getCheckboxGroup('room_facility_id_'.$i,
-                        HotelRoom::getFacilityNameArray(true),
-                        HotelRoom::getFacilityNameArray(true),
-                        (isset($_SESSION['hotelcard']['room_facility_id_'.$i])
-                            ? array_keys($_SESSION['hotelcard']['room_facility_id_'.$i]) : '')),
-                ),
-            );
-        }
-        // Verify the data already present
-        $complete = self::verifyMandatoryFields($arrFields);
-        if ($complete && isset($_POST['bsubmit'])) {
-            if ($_SESSION['hotelcard']['contact_email'] !=
-                  $_SESSION['hotelcard']['contact_email_retype']) {
-                $complete = false;
-                $arrFields['contact_email']['error'] = self::INCOMPLETE_CLASS;
-                $arrFields['contact_email_retype']['error'] = self::INCOMPLETE_CLASS;
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_EMAILS_DO_NOT_MATCH']);
-            } elseif (!FWValidator::isEmail($_SESSION['hotelcard']['contact_email'])) {
-                $complete = false;
-                $arrFields['contact_email']['error'] = self::INCOMPLETE_CLASS;
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_EMAIL_IS_INVALID']);
-            }
-        }
-        // Verify the data already present
-        $complete = self::verifyMandatoryFields($arrFields);
-        if ($complete && isset($_POST['bsubmit'])) {
-//echo("Step 2 complete<br />");
-//echo("Step 1 complete<br />");
-            if (!Hotel::storeFromSession()) {
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_ERROR_STORING_HOTEL']);
-                $complete = false;
-            } else {
-                self::addMessage($_ARRAYLANG['TXT_HOTELCARD_HOTEL_STORED_SUCCESSFULLY']);
-
-                if (empty($_SESSION['hotelcard']['username'])) {
-//echo("No username in session<br />");
-                    $objUser = new User();
-//global $objFWUser;
-//$objUser = $objFWUser->objUser;
-//                    $objUser = $objUser->getUser(26);
-//echo("User: ".nl2br(htmlentities(var_export($objUser, true)))."<hr />");
-                    $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
-                    $objUser->setEmail($_SESSION['hotelcard']['contact_email']);
-                    list($firstname, $lastname) = preg_split(
-                        '/\s+/',
-                        $_SESSION['hotelcard']['contact_name'].' '.
-                        $_SESSION['hotelcard']['contact_name'] //, 2
-                    );
-//echo("first $firstname, last $lastname<br />");
-                    $objUser->setProfile(array(
-                        'firstname' => array(0 => $firstname),
-                        'lastname'  => array(0 => $lastname),
-                        SettingDb::getValue('user_profile_attribute_hotel_id') =>
-                            array(0 => $_SESSION['hotelcard']['hotel_id']),
-                    ));
-                    $username = User::makeUsername($firstname, $lastname);
-                    if (!$username) {
-                        self::addMessage(sprintf(
-                            $_ARRAYLANG['TXT_HOTELCARD_REGISTRATION_CREATING_USERNAME_FAILED'],
-                            $_SESSION['hotelcard']['contact_email']));
-                        $complete = false;
-                    } else {
-                        $password = User::makePassword();
-//echo("user: $username / $password<br />");
-                        $objUser->setUsername($username);
-                        $objUser->setPassword($password);
-                        $objUser->setEmail($_SESSION['hotelcard']['contact_email']);
-                        $objUser->setGroups(array(SettingDb::getValue('hotel_usergroup')));
-                        if ($objUser->store()) {
-                            $_SESSION['hotelcard']['username'] = $username;
-                            $_SESSION['hotelcard']['password'] = $password;
-//echo("user stored, session: ".$_SESSION['hotelcard']['username']." / ".$_SESSION['hotelcard']['password']."<br />");
-                        } else {
-//echo("ERROR: Failed to store user<br />");
-                            self::addMessage(sprintf(
-                                $_ARRAYLANG['TXT_HOTELCARD_REGISTRATION_CREATING_USER_FAILED'],
-                                $_SESSION['hotelcard']['contact_email']));
-                            // Clear the contact e-mail
-                            $_SESSION['hotelcard']['contact_email'] = '';
-                            // Re-init the e-mail fields.
-                            // Have to reset the retype field, too, because of the tabindex.
-                            $arrFields['contact_email'] = array(
-                                'mandatory' => true,
-                                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL',
-                                'input' => Html::getInputText('contact_email', '',
-                                'style="text-align: left;"'),
-                            );
-                            $arrFields['contact_email_retype'] = array(
-                                'mandatory' => true,
-                                'label' => 'TXT_HOTELCARD_CONTACT_EMAIL_RETYPE',
-                                'input' => Html::getInputText('contact_email_retype', '',
-                                    'style="text-align: left;"'),
-                            );
-                            $complete = false;
-                        }
-                    }
-                }
-            }
-        }
-//echo("Showing step 5<br />");
-        self::parseDataTable($arrFields);
-        return false; // Still running
-
-    }
 }
 
 ?>

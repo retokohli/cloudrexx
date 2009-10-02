@@ -172,12 +172,10 @@ class RelHotelCreditcard
     {
         global $objDatabase;
 
-//echo("RelHotelCreditcard::errorHandler(): Entered<br />");
+die("RelHotelCreditcard::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."module_hotelcard_hotel_accepts_creditcard", $arrTables)) {
-            // TODO:  Fix it!
-        } else {
+        if (!in_array(DBPREFIX."module_hotelcard_hotel_accepts_creditcard", $arrTables)) {
             $query = "
                 CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_accepts_creditcard` (
                   `hotel_id` INT UNSIGNED NOT NULL DEFAULT 0,

@@ -202,7 +202,7 @@ class HotelFacility
      * @return  array                 The facilities array on success,
      *                                false otherwise
      */
-    function getFacilityNameArray($group_id, $short=false)
+    function getFacilityNameArray($group_id=0, $short=false)
     {
         static $arrFacilityName = false;
 
@@ -704,14 +704,14 @@ class HotelFacility
     {
         global $objDatabase;
 
-//echo("HotelFacility::errorHandler(): Entered<br />");
+die("HotelFacility::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility_group", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group` (
@@ -722,13 +722,13 @@ echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
 
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility` (
@@ -740,12 +740,12 @@ echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
 
         // Add data
         // Groups
         $arrFacilityGroup = array(
-// TODO: Properly translate the group names to French and Italian
+// TODO: Translate the group names to French and Italian
             'general' => array(
                 1 => 'Allgemein', // Deutsch
                 2 => 'General',   // English
@@ -776,7 +776,7 @@ echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_
                     3 => 'Air Conditioning', // fr
                     4 => 'Air Conditioning', // it
                 ),
-// TODO: Add all the entries in English, French, and Italian
+// TODO: Translate all the entries in English, French, and Italian
                 array(
                     1 => 'Fahrstuhl',
                     2 => '', // en
@@ -1366,7 +1366,7 @@ echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility` (
@@ -1376,10 +1376,9 @@ echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
 //            return false;
         }
-// TODO: Add data
 
         // More to come...
 
