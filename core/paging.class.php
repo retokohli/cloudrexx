@@ -1,12 +1,13 @@
 <?php
+
 /**
  * Paging
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @version 1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)
+ * @version     2.2.0
  * @package     contrexx
  * @subpackage  core
- * @todo        Edit PHP DocBlocks!
  */
 
 //Security-Check
@@ -15,177 +16,208 @@ if (eregi("paging.class.php",$_SERVER['PHP_SELF'])) {
     die();
 }
 
-
 /**
- * Function getPaging
+ * OBSOLETE
+ * Use the {@see Paging::getPaging()} method instead.
  *
- * helping function for the Paging class
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @access public
- * @version 1.0.0
- * @global  array       Configuration
- * @global  array       Core language
- * @param   int         $count
- * @param   int         $pos
- * @param   string      $extargv
- * @param   string      $paging_text
- * @param   boolean     $showeverytime
- * @param   int         $limit
- * @return  string      Result
+ * Returs a string representing the complete paging HTML code for the
+ * current page.
+ * Note that the old $pos parameter is obsolete as well,
+ * see {@see getPosition()}.
+ * @copyright CONTREXX CMS - COMVATION AG
+ * @author    Comvation Development Team <info@comvation.com>
+ * @access    public
+ * @version   1.0.0
+ * @global    array       $_CONFIG        Configuration
+ * @global    array       $_CORELANG      Core language
+ * @param     int         $count          The number of rows being displayed
+ * @param     int         $pos            The offset from the first row
+ * @param     string      $uri_parameter
+ * @param     string      $paging_text
+ * @param     boolean     $showeverytime
+ * @param     int         $limit
+ * @return    string      Result
+ * @todo      Change the system to use the new, static class method,
+ *            then remove this one.
  */
-function getPaging($count, $pos, $extargv, $paging_text, $showeverytime = false, $limit = null)
+function getPaging($count, $pos, $uri_parameter, $paging_text, $showeverytime=false, $limit=null)
 {
-    global $_CONFIG, $_CORELANG;
-
-    if ($count > 0) {
-        $int_num_result = (empty($limit)) ? intval($_CONFIG['corePagingLimit']) : $limit;
-        if (($count > $int_num_result) OR ($showeverytime == true)) {
-            $p = new Paging( $count, $pos, $int_num_result, $extargv );
-            $array_paging = $p->getPagingArray();
-            $array_row_paging = $p->getPagingRowArray();
-            $paging = $paging_text.' '.$array_paging['lower'].' '.$_CORELANG['TXT_TO'].' '.$array_paging['upper'].' '.$_CORELANG['TXT_FROM'].' '. $array_paging['total'];
-
-            //$paging .= '&nbsp;&nbsp;[&nbsp;'. $array_paging['previous_link'] .''.$_CORELANG['txtBack'].'</a>&nbsp;&nbsp;' ;
-            $paging .= '&nbsp;&nbsp;[&nbsp;'.$array_paging['first'].'&lt;&lt;</a>&nbsp;&nbsp;' ;
-
-            $currpage=$p->getCurrentPage();
-            $totalpages=sizeof($array_row_paging);
-            //if ($currpage>2 && $totalpages>3) $paging .='..';
-
-            if ($currpage > 2) $paging .= $array_row_paging[$currpage-3].'&nbsp;';
-            if ($currpage > 1) $paging .= $array_row_paging[$currpage-2].'&nbsp;';
-            if ($currpage > 0) $paging .= $array_row_paging[$currpage-1].'&nbsp;';
-
-            $paging .= $array_row_paging[$currpage] .'&nbsp;';
-
-            if ($currpage < $totalpages-1) $paging .= $array_row_paging[$currpage+1].'&nbsp;';
-            if ($currpage < $totalpages-2) $paging .= $array_row_paging[$currpage+2].'&nbsp;';
-            if ($currpage < $totalpages-3) $paging .= $array_row_paging[$currpage+3].'&nbsp;';
-
-            $paging .= '&nbsp;'.$array_paging['last'] .'&gt;&gt;</a>&nbsp;]';
-            return $paging;
-        } else
-            return '';
-    } else
-        return '';
+    return Paging::getPaging(
+        $count, $uri_parameter, $paging_text, $showeverytime, $limit
+    );
 }
 
 
 /**
- * Class Paging
- *
- * Creates the link for paging
- * @package contrexx
- * @subpackage core
- * @version 1.0.0
+ * Creates the paging
+ * @package     contrexx
+ * @subpackage  core
+ * @version     2.2.0
+ * @author      Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)
  */
 class Paging
 {
-    var $result_per_page;
-    var $row;
-    var $cur_position;
-    var $ext_argv;
-
     /**
-     * Constructor
-     * @param     integer  $row
-     * @param     integer  $cur_position
-     * @param     integer  $result_per_page
-     * @param     string   $ext_argv
+     * Returs a string representing the complete paging HTML code for the
+     * current page
+     * @author    Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)
+     * @access    public
+     * @global    array       $_CONFIG        Configuration
+     * @global    array       $_CORELANG      Core language
+     * @param     integer     $count          The number of rows available
+     * @param     string      $uri_parameter  Optional additional URI parameters,
+     *                                        *MUST* start with an URI encoded
+     *                                        ampersand (&amp;)
+     * @param     string      $paging_text    The text to be put in front of the paging
+     * @param     boolean     $showeverytime  If true, the paging is shown even if
+     *                                        $count is less than the number of rows
+     *                                        on a single page
+     * @param     integer     $limit          The optional maximum number of
+     *                                        rows to be shown on a single page.
+     *                                        Defaults to the corePagingLimit
+     *                                        setting.
+     * @return    string                      HTML code for the paging
      */
-    function __construct($row, $cur_position, $result_per_page=30, $ext_argv='')
+    static function getPaging($count, &$uri_parameter, $paging_text, $showeverytime=false, $limit=0)
     {
-        $this->row = $row;
-        $this->result_per_page = $result_per_page;
-        $this->cur_position = $cur_position;
-        $this->ext_argv = urldecode( $ext_argv );
-    }
+        global $_CONFIG, $_CORELANG;
 
+        $results_per_page =
+            (empty($limit) ? intval($_CONFIG['corePagingLimit']) : $limit);
+        if ($count <= $limit && !$showeverytime) return '';
+        $numof_rows = $count;
 
-    /**
-     * Get the number of pages to be displayed
-     *
-     * This function returns the total number of pages to be displayed.
-     * @return    integer  Number of pages
-     */
-    function getNumberOfPage()
-    {
-        $int_nbr_page = $this->row / $this->result_per_page;
-        return $int_nbr_page;
-    }
+        // Remove the old position parameter from the URI
+        Html::stripUriParam($uri_parameter, 'pos');
+        // Replace leading '?', '&', or '&amp;' by a leading '&amp;'
+        $uri_parameter = preg_replace(
+            '/^(?:\?|\&(?:amp;)?)?/', '&amp;', $uri_parameter);
 
+// I don't think it's a good idea to decode the URI without re-encoding
+// it later (see getPagingArray())!
+//        $uri_parameter = urldecode($uri_parameter);
+        $uri_parameter = $uri_parameter;
+        // Strip script path, script name, and query mark (?) from the
+        // local URI
+        $uri_parameter = preg_replace('/.*?index.php\??/', '', $uri_parameter);
+        // Prepend an encoded ampersand if the query is not empty
+        if ($uri_parameter) $uri_parameter = '&amp;'.$uri_parameter;
 
-    /**
-     * Get the page number
-     *
-     * This function returns the current page number.
-     * @return    integer  Page number
-     */
-    function getCurrentPage()
-    {
-        $int_cur_page = ( $this->cur_position * $this->getNumberOfPage() ) / $this->row;
-        return number_format( $int_cur_page, 0 );
-    }
+        $position = self::getPosition();
+        // Fix illegal values:
+        // The position must be in the range [0 .. numof_rows - 1].
+        // If it's outside this range, reset it to zero
+        if ($position < 0 || $position >= $numof_rows)
+            $position = $numof_rows - 1;
 
+        // Total number of pages: [1 .. n]
+        $numof_pages = intval(0.999 + $numof_rows / $results_per_page);
+        // Current page number: [1 .. numof_pages]
+        $page_number = 1 + intval($position / $results_per_page);
 
-    /**
-    * Get the paging array
-    *
-    * This function returns the paging.
-    * @return    array    Paging array
-    * @todo There has to be a better description than the current one.
-    *       What is a 'paging', after all?
-    */
-    function getPagingArray()
-    {
-        $array_paging['lower'] = ( $this->cur_position + 1 );
-
-        if ($this->cur_position + $this->result_per_page >= $this->row) {
-          $array_paging['upper'] = $this->row;
-        } else {
-          $array_paging['upper'] = ( $this->cur_position + $this->result_per_page );
+        $corr_value = $results_per_page;
+        if ($numof_rows % $results_per_page) {
+            $corr_value = $numof_rows % $results_per_page;
         }
 
-        $array_paging['total'] = $this->row;
-        $array_paging['first'] = "<a href=\"index.php?pos=0".$this->ext_argv ."\">";
-
-        if ($this->row % $this->result_per_page ==0) {
-           $corr_value=$this->result_per_page;
-        } else {
-           $corr_value=$this->row % $this->result_per_page;
+        // Set up the base navigation entries
+        $array_paging = array(
+            'first' => '<a href="index.php?pos=0'.$uri_parameter.'">',
+            'last'  => '<a href="index.php?pos='.($numof_rows - $corr_value).$uri_parameter.'">',
+            'total' => $numof_rows,
+            'lower' => $position + 1,
+            'upper' => $numof_rows,
+        );
+        if ($position + $results_per_page < $numof_rows) {
+            $array_paging['upper'] = $position + $results_per_page;
         }
-        $array_paging['last'] = "<a href=\"index.php?pos=". ($this->row - $corr_value).$this->ext_argv ."\">";
-
-        if ($this->cur_position != 0) {
-          $array_paging['previous_link'] = "<a href=\"index.php?pos=". ( $this->cur_position - $this->result_per_page ).$this->ext_argv ."\">";
+        if ($position != 0) {
+            $array_paging['previous_link'] =
+                '<a href="index.php?pos='.
+                ($position - $results_per_page).
+                $uri_parameter.'">';
+        }
+        if (($numof_rows - $position) > $results_per_page) {
+            $int_new_position = $position + $results_per_page;
+            $array_paging['next_link'] =
+                '<a href="index.php?pos='.$int_new_position.
+                $uri_parameter.'">';
         }
 
-        if (($this->row - $this->cur_position ) > $this->result_per_page)
-        {
-            $int_new_position = $this->cur_position + $this->result_per_page;
-            $array_paging['next_link'] = "<a href=\"index.php?pos=$int_new_position". $this->ext_argv ."\">";
-        }
-        return $array_paging;
-    }
-
-    /**
-     * Get the paging row array
-     *
-     * This function returns an array of string (href link with the page number)
-     * @return    array    Array of links to all pages
-     */
-    function getPagingRowArray()
-    {
-        for ($i=0; $i<$this->getNumberOfPage(); $i++) {
-            if ($i == $this->getCurrentPage()) {
-                $array_all_page[$i] = "<b>". ($i+1) ."</b>";
+        // Add single pages, indexed by page numbers [1 .. numof_pages]
+        for ($i = 1; $i <= $numof_pages; ++$i) {
+            if ($i == $page_number) {
+                $array_paging[$i] = '<b>'.$i.'</b>';
             } else {
-                $int_new_position   = $i * $this->result_per_page;
-                $array_all_page[$i] = "<a href=\"index.php?pos=$int_new_position$this->ext_argv\">". ($i+1) ."</a>";
+                $array_paging[$i] =
+                    '<a href="index.php?pos='.
+                    (($i-1) * $results_per_page).
+                    $uri_parameter.'">'.$i.'</a>';
             }
         }
-        return $array_all_page;
+
+        $paging =
+            $paging_text.' '.
+            $array_paging['lower'].' '.$_CORELANG['TXT_TO'].' '.$array_paging['upper'].' '.
+            $_CORELANG['TXT_FROM'].' '.$array_paging['total'].
+            '&nbsp;&nbsp;[&nbsp;'.$array_paging['first'].'&lt;&lt;</a>&nbsp;&nbsp;';
+        if ($page_number > 3) $paging .= $array_paging[$page_number-3].'&nbsp;';
+        if ($page_number > 2) $paging .= $array_paging[$page_number-2].'&nbsp;';
+        if ($page_number > 1) $paging .= $array_paging[$page_number-1].'&nbsp;';
+        $paging .= $array_paging[$page_number].'&nbsp;';
+        if ($page_number < $numof_pages-0) $paging .= $array_paging[$page_number+1].'&nbsp;';
+        if ($page_number < $numof_pages-1) $paging .= $array_paging[$page_number+2].'&nbsp;';
+        if ($page_number < $numof_pages-2) $paging .= $array_paging[$page_number+3].'&nbsp;';
+        $paging .= '&nbsp;'.$array_paging['last'].'&gt;&gt;</a>&nbsp;]';
+//echo("Paging::getPaging(count $count, uri_parameter $uri_parameter, paging_text $paging_text, showeverytime $showeverytime, limit $limit):<br />"."results_per_page ".$results_per_page."<br />numof_rows ".$numof_rows."<br />position ".$position."<br />uri_parameter ".$uri_parameter."<br />page_number ".$page_number."<br />numof_pages ".$numof_pages."<br />"."PAGING: ".htmlentities($paging)."<br />".$paging."<hr />");
+        return $paging;
     }
+
+
+    /**
+     * Returns the current offset
+     *
+     * If the parameter 'pos' is present in the request, it overrides
+     * the value stored in the session, if any.  Defaults to zero.
+     * @return  integer           The position offset
+     */
+    static function getPosition()
+    {
+        if (!isset($_SESSION['paging']['pos']))
+            $_SESSION['paging']['pos'] = 0;
+        if (isset($_REQUEST['pos'])) {
+            $position = intval($_REQUEST['pos']);
+            unset($_REQUEST['pos']);
+            $_SESSION['paging']['pos'] = $position;
+        }
+        return $_SESSION['paging']['pos'];
+    }
+
+
+    /**
+     * Resets the paging offset to zero
+     *
+     * Call this if your query results in less records than the offset.
+     */
+    static function reset()
+    {
+        $_SESSION['paging']['pos'] = 0;
+        unset($_REQUEST['pos']);
+    }
+
 }
+
+/* TEST */
+//getPaging( 99,   0, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,   0, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(101,   0, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,   9, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,  10, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,  11, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,  89, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,  90, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,  91, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100,  99, '&foo=bar', 'Paging_Text', true, 10);
+//getPaging(100, 100, '&foo=bar', 'Paging_Text', true, 10);
+
 ?>
