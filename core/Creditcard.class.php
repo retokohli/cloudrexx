@@ -220,7 +220,7 @@ class Creditcard
     {
         global $objDatabase;
 
-//echo("Creditcard::errorHandler(): Entered<br />");
+die("Creditcard::errorHandler(): Disabled!<br />");
 
         $query = "
             DROP TABLE IF EXISTS `".DBPREFIX."core_creditcard`";

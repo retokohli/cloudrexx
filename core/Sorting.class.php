@@ -106,16 +106,22 @@ class Sorting
         $this->baseUri        = $baseUri;
         $this->arrFieldName   = $arrFieldName;
         $this->arrHeaderName  = $arrHeaderName;
+//echo("Sorting::__construct(baseUri=$baseUri, arrFieldName=$arrFieldName, arrHeaderName=$arrHeaderName, flagDefaultAsc=$flagDefaultAsc, orderUriParameter=$orderUriParameter):<br />"."Field names: ".var_export($this->arrFieldName, true)."<br />"."Header names: ".var_export($this->arrHeaderName, true)."<hr />");
+
         $this->flagDefaultAsc = $flagDefaultAsc;
         // Default order parameter name.  Change if needed.
         $this->orderUriParameter = $orderUriParameter;
         // By default, the table will be sorted by the first field,
         // according to the direction flag.
+        // The default is overridden by the order stored in the session, if any.
         // If the order parameter is present in the $_REQUEST array,
         // however, it is used instead.
         $this->setOrder(
             (empty($_REQUEST[$this->orderUriParameter])
-                ? $this->arrFieldName[0].' '.($this->flagDefaultAsc ? 'ASC' : 'DESC')
+                ? (empty($_SESSION['sorting'][$this->orderUriParameter])
+                    ? $this->arrFieldName[0].' '.
+                      ($this->flagDefaultAsc ? 'ASC' : 'DESC')
+                    : $_SESSION['sorting'][$this->orderUriParameter])
                 : $_REQUEST[$this->orderUriParameter]
             )
         );
@@ -194,7 +200,7 @@ class Sorting
             '" title="'.$orderDirectionString.'" />';
 
         $field  = $this->arrFieldName[$fieldIndex];
-        $header = $this->arrHeaderName[$fieldIndex];
+        $header = $this->arrHeaderName[$field];
         $strHeader =
             "<a href='$this->baseUri".
             $this->getOrderReverseUriEncoded($field).
@@ -230,7 +236,7 @@ class Sorting
      */
     function setOrder($order)
     {
-        list($orderField, $orderDirection) = split(' ', $order);
+        list ($orderField, $orderDirection) = split(' ', $order);
         // If the order field isn't in the list of accepted field names,
         // fall back to default
         if (!in_array($orderField, $this->arrFieldName)) {
@@ -246,6 +252,7 @@ class Sorting
         }
         $this->orderField     = $orderField;
         $this->orderDirection = $orderDirection;
+        $_SESSION['sorting'][$this->orderUriParameter] = $order;
     }
 
 

@@ -1,7 +1,14 @@
 <?php
 
+/**
+ * OBSOLETE -- See {@see core/Mailtemplate.class.php}
+ */
+
 require_once ASCMS_CORE_PATH.'/Text.class.php';
 
+/**
+ * OBSOLETE -- See {@see core/Mailtemplate.class.php}
+ */
 class Mail
 {
     /**
@@ -401,6 +408,7 @@ class Mail
                 $template_id = 0;
             }
         }
+// Note: Text::replace() now returns the ID, not the object!
 //        $objTextName = Text::replace(
 //            $text_name_id, FRONTEND_LANG_ID, $_POST['shopMailTemplate'],
 //            MODULE_ID, TEXT_SHOP_MAIL_NAME

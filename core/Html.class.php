@@ -16,7 +16,20 @@ require_once(ASCMS_FRAMEWORK_PATH.'/Javascript.class.php');
 require_once(ASCMS_CORE_PATH.'/Image.class.php');
 
 /**
+ * Global constants defining the names of various status
+ * for almost anything
+ *
+ * See {@see Html::getLed()}
+ */
+define('HTML_STATUS_RED',    'red');
+define('HTML_STATUS_YELLOW', 'yellow');
+define('HTML_STATUS_GREEN',  'green');
+
+/**
  * Some basic and often used (and frequently misspelt) HTML attributes
+ *
+ * Note the leading space that allows you to add the placeholder right after
+ * the preceeding attribute without wasting whitespace when it's unused
  */
 define('HTML_ATTRIBUTE_CHECKED',  ' checked="checked"');
 define('HTML_ATTRIBUTE_SELECTED', ' selected="selected"');
@@ -36,6 +49,63 @@ define('HTML_ATTRIBUTE_DISABLED', ' disabled="disabled"');
 class Html
 {
     /**
+     * Icon used on the link for removing a HTML element
+     */
+    const ICON_ELEMENT_REMOVE  = 'images/icons/delete.gif';
+
+    /**
+     * Icon used on the link for adding a HTML element
+     * @todo    Find a better icon for this
+     */
+    const ICON_ELEMENT_ADD     = 'images/icons/check.gif';
+
+    /**
+     * Icon used on the link for viewing any entry
+     */
+    const ICON_FUNCTION_VIEW  = 'images/icons/viewmag.png';
+
+    /**
+     * Icon used on the link for deleting any entry
+     */
+    const ICON_FUNCTION_DELETE  = 'images/icons/delete.gif';
+
+    /**
+     * Icon used on the link for copying any entry
+     */
+    const ICON_FUNCTION_COPY    = 'images/icons/copy.gif';
+
+    /**
+     * Icon used on the link for editing any entry
+     */
+    const ICON_FUNCTION_EDIT    = 'images/icons/edit.gif';
+
+    /**
+     * Icon used for red status
+     */
+    const ICON_STATUS_RED       = 'images/icons/status_red.gif';
+
+    /**
+     * Icon used for yellow status
+     */
+    const ICON_STATUS_YELLOW    = 'images/icons/status_yellow.gif';
+
+    /**
+     * Icon used for green status
+     */
+    const ICON_STATUS_GREEN     = 'images/icons/status_green.gif';
+
+    /**
+     * Icon used for the checked status
+     */
+    const ICON_STATUS_CHECKED   = 'images/icons/check.gif';
+
+    /**
+     * Icon used for the unchecked status
+     */
+    const ICON_STATUS_UNCHECKED = 'images/icons/pixel.gif';
+
+
+    /**
      * Index counter for all editable elements
      *
      * Incremented for and added to each element in the order they are created
@@ -43,23 +113,27 @@ class Html
      */
     private static $tabindex = 0;
 
+
     /**
      * Returns HTML code for a text imput field
      *
-     * The $name parameter is used for both the element name and id attributes.
+     * If the $id parameter is false, the id attribute is not set.
+     * If it's empty (but not false), the name is used instead.
      * If the custom attributes parameter $attribute is empty, and
      * is_numeric($value) evaluates to true, the text is right aligned
      * within the input element.
      * @param   string    $name         The element name
      * @param   string    $value        The element value
+     * @param   string    $id           The optional element id
      * @param   string    $attribute    Additional optional attributes
      * @return  string                  The HTML code for the element
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getInputText($name, $value, $attribute='')
+    static function getInputText($name, $value, $id=false, $attribute='')
     {
         return
-            '<input type="text" name="'.$name.'" id="'.$name.'"'.
+            '<input type="text" name="'.$name.'"'.
+            ($id ? ' id="'.$id.'"' : ($id === false ? '' : $name)).
             ' value="'.$value.'" tabindex="'.++self::$tabindex.'"'.
             ($attribute
               ? ' '.$attribute
@@ -93,23 +167,30 @@ class Html
     /**
      * Returns HTML code for a file upload input field
      *
-     * The $name parameter is used for both the element name and id attributes.
+     * If the $id parameter is false, the id attribute is not set.
+     * If it's empty (but not false), the name is used instead.
      * @param   string    $name         The element name
+     * @param   string    $id           The optional element id
      * @param   string    $maxlength    The optional maximum accepted size
      * @param   string    $mimetype     The optional accepted MIME type
      * @param   string    $attribute    Additional optional attributes
+     * @param   boolean   $visible      If true, the input element is set
+     *                                  invisible.  Defaults to false
      * @return  string                  The HTML code for the element
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getInputFileupload(
-        $name, $maxlength='', $mimetype='', $attribute=''
+        $name, $id=false, $maxlength='', $mimetype='', $attribute='', $visible=true
     ) {
         return
-            '<input type="file" name="'.$name.'" id="'.$name.'"'.
+            '<input type="file" name="'.$name.'"'.
+            ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
+            ' id="'.($id ? $id : $name).'"'.
             ' tabindex="'.++self::$tabindex.'"'.
             ($maxlength ? ' maxlength="'.$maxlength.'"' : '').
             ($mimetype ? ' accept="'.$mimetype.'"' : '').
             ($attribute ? ' '.$attribute : '').
+            ($visible ? '' : ' style="display: none;"').
             " />\n";
     }
 
@@ -135,28 +216,65 @@ class Html
             ($cols ? ' cols="'.$cols.'"' : '').
             ($rows ? ' rows="'.$rows.'"' : '').
             ($attribute ? ' '.$attribute : '').
-            '>'.$value."</textarea>\n";
+            '>'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).
+            "</textarea>\n";
     }
 
 
     /**
      * Returns HTML code for a hidden imput field
      *
-     * The $name parameter is used for both the element name and id attributes.
+     * If the $id parameter is false, the id attribute is not set.
+     * If it's empty (but not false), the name is used instead.
      * @todo    Maybe the optional attributes will never be used
      *          and can be removed?
      * @param   string    $name         The element name
      * @param   string    $value        The element value
+     * @param   string    $id           The element id, if non-empty
      * @param   string    $attribute    Additional optional attributes
      * @return  string                  The HTML code for the element
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getHidden($name, $value, $attribute='')
+    static function getHidden($name, $value, $id=false, $attribute='')
     {
         return
-            '<input type="hidden" name="'.$name.'" id="'.$name.'"'.
+            '<input type="hidden" name="'.$name.'"'.
+            ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
             ' value="'.$value.'"'.
             ($attribute ? ' '.$attribute : '')." />\n";
+    }
+
+
+    /**
+     * Returns HTML code for a button
+     *
+     * If the $id parameter is false, the id attribute is not set.
+     * If it's empty (but not false), the name is used instead.
+     * @param   string    $name         The element name
+     * @param   string    $value        The element value
+     * @param   string    $type         The button type, defaults to 'submit'
+     * @param   string    $id           The element id, if non-empty
+     * @param   string    $attribute    Additional optional attributes
+     * @param   string    $label        The optional label text
+     * @param   string    $label_attribute  The optional label attributes
+     * @return  string                  The HTML code for the element
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getInputButton(
+        $name, $value, $type='submit', $id=false, $attribute='',
+        $label='', $label_attribute=''
+    ) {
+        if (   $type != 'submit'
+            && $type != 'reset'
+            && $type != 'button') $type = 'submit';
+        $id = ($id === false ? '' : ' id="'.($id ? $id : $name).'"');
+        return
+            '<input type="'.$type.'" name="'.$name.'"'.$id.
+            ' tabindex="'.++self::$tabindex.'"'.
+            ' value="'.$value.'"'.
+            ($attribute ? ' '.$attribute : '')." />\n".
+            ($label
+              ? Html::getLabel($id, $label, $label_attribute) : '');
     }
 
 
@@ -164,18 +282,19 @@ class Html
      * Returns HTML code for a dropdown menu
      *
      * If the name is empty, the empty string is returned.
-     * The $name parameter is used for both the element name and id attributes.
-     * Mind that thus, it *MUST* be unique on your page.
+     * If the $id parameter is false, the id attribute is not set.
+     * If it's empty (but not false), the name is used instead.
      * @param   string    $name         The element name
      * @param   array     $arrOptions   The options array
      * @param   string    $selected     The optional preselected option key
+     * @param   string    $id           The optional element id
      * @param   string    $onchange     The optional onchange event script
      * @param   string    $attribute    Additional optional attributes
      * @return  string                  The HTML code for the element
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getSelect(
-        $name, $arrOptions=array(), $selected='', $onchange='', $attribute=''
+        $name, $arrOptions=array(), $selected='', $id=false, $onchange='', $attribute=''
     ) {
 //echo("getSelect($name, ".var_export($arrOptions, true).", $selected, $onchange, $attribute): Entered<br />");
         if (empty($name)) {
@@ -183,7 +302,8 @@ class Html
             return '';
         }
         $menu =
-            '<select id="'.$name.'" name="'.$name.'"'.
+            '<select name="'.$name.'"'.
+            ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
             ' tabindex="'.++self::$tabindex.'"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').
             ($attribute ? ' '.$attribute : '').
@@ -261,7 +381,7 @@ class Html
                 );
         }
 //echo("getRadioGroup(): Made ".htmlentities($radiogroup, ENT_QUOTES, CONTREXX_CHARSET)."<br />");
-        return '<span class="inputgroup">'.$radiogroup."</span>\n";
+        return $radiogroup;
     }
 
 
@@ -269,7 +389,8 @@ class Html
      * Returns HTML code for a radio button
      *
      * If the name is empty, the empty string is returned.
-     * Mind that the id *MUST* be unique on your page.
+     * If the $id parameter is false, the id attribute is not set.
+     * If it's empty (but not false), the name is used instead.
      * @param   string    $name         The element name
      * @param   array     $value        The element value
      * @param   string    $id           The optional element id
@@ -281,7 +402,7 @@ class Html
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getRadio(
-        $name, $value, $id='', $checked=false, $onchange='', $attribute='')
+        $name, $value, $id=false, $checked=false, $onchange='', $attribute='')
     {
 
 //echo("getRadio($name, $value, $id, $checked, $onchange, $attribute): Entered<br />");
@@ -289,7 +410,7 @@ class Html
         if (empty($name)) return '';
         return
             '<input type="radio" name="'.$name.'" value="'.$value.'"'.
-            ($id ? ' id="'.$id.'"' : '').
+            ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
             ($checked ? ' checked="checked"' : '').
             ' tabindex="'.++self::$tabindex.'"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').
@@ -318,6 +439,7 @@ class Html
      * @param   array     $arrOptions   The options array
      * @param   array     $arrLabel     The optional label text array
      * @param   string    $arrChecked   The optional preselected option keys
+     * @param   string    $id           The optional element id
      * @param   string    $onchange     The optional onchange event script
      * @param   string    $attributeRadio    Additional optional attributes
      *                                  for the checkbox elements
@@ -327,7 +449,7 @@ class Html
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getCheckboxGroup(
-        $name, $arrOptions, $arrLabel='', $arrChecked='',
+        $name, $arrOptions, $arrLabel='', $arrChecked='', $id='',
         $onchange='', $attributeCheckbox='', $attributeLabel=''
     ) {
         static $index = array();
@@ -339,23 +461,24 @@ class Html
         $name_stripped = preg_replace('/\[.*$/', '', $name);
         if (!is_array($arrLabel)) $arrLabel = array();
         if (!is_array($arrChecked)) $arrChecked = array();
+        if (empty($id)) $id = $name;
         $checkboxgroup = '';
         foreach ($arrOptions as $key => $value) {
             if (empty($index[$name_stripped])) $index[$name_stripped] = 0;
-            $id = $name.'-'.++$index[$name_stripped];
+            $id_local = $id.'-'.++$index[$name_stripped];
             $checkboxgroup .=
                 self::getCheckbox(
-                    $name.'['.$key.']', $value, $id,
+                    $name.'['.$key.']', $value, $id_local,
                     (in_array($key, $arrChecked)),
                     $onchange, $attributeCheckbox
                 ).
                 self::getLabel(
-                    $id,
+                    $id_local,
                     $arrLabel[$key],
                     $attributeLabel
                 );
         }
-        return '<span class="inputgroup">'.$checkboxgroup."</span>\n";
+        return $checkboxgroup;
     }
 
 
@@ -363,7 +486,9 @@ class Html
      * Returns HTML code for a checkbox
      *
      * If the name is empty, the empty string is returned.
-     * Mind that the id parameter *MUST* be unique on your page.
+     * The $value is htmlentities()d to prevent side effects.
+     * If the $id parameter is false, the id attribute is not set.
+     * If it's empty (but not false), the name is used instead.
      * @param   string    $name         The element name
      * @param   string    $value        The element value, defaults to 1 (one)
      * @param   string    $id           The optional element id
@@ -374,15 +499,16 @@ class Html
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getCheckbox(
-        $name, $value=1, $id='', $checked=false, $onchange='', $attribute=''
+        $name, $value=1, $id=false, $checked=false, $onchange='', $attribute=''
     ) {
 
 //echo("getCheckbox($name, $value, $id, $checked, $onchange, $attribute): Entered<br />");
 
         if (empty($name)) return '';
         return
-            '<input type="checkbox" name="'.$name.'" value="'.$value.'"'.
-            ($id ? ' id="'.$id.'"' : '').
+            '<input type="checkbox" name="'.$name.'"'.
+            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
             ($checked ? ' checked="checked"' : '').
             ' tabindex="'.++self::$tabindex.'"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').
@@ -394,8 +520,9 @@ class Html
     /**
      * Wraps the content in a label
      *
-     * Mind that the $for parameter must match the id of the contained
-     * element in $content.
+     * The $text is htmlentities()d to prevent side effects.
+     * Mind that the $for parameter must match the id attribute of the
+     * contained element in $content.
      * @param   string    $for          The for attribute of the label
      * @param   string    $text         The text of the label
      * @param   string    $attribute    Additional optional attributes
@@ -408,7 +535,7 @@ class Html
         return
             '<label for="'.$for.'"'.
             ($attribute ? ' '.$attribute : '').
-            '>'.$text."</label>\n";
+            '>'.htmlentities($text, ENT_QUOTES, CONTREXX_CHARSET)."</label>\n";
     }
 
 
@@ -428,16 +555,42 @@ class Html
      */
     static function getImage($objImage, $attribute='')
     {
+        $width = $objImage->getWidth();
+        $height = $objImage->getHeight();
         return
-            '<image src="'.$objImage->getPath().'"'.
-            (preg_match('/width[:=]/', $attribute)
-              ? '' : ' width="'.$objImage->getWidth().'"').
-            (preg_match('/height[:=]/', $attribute)
-              ? '' : ' height="'.$objImage->getHeight().'"').
-            (preg_match('/alt\=]/', $attribute)
+            '<img src="'.$objImage->getPath().'"'.
+            (   empty($width)
+             || preg_match('/width[:=]/i', $attribute)
+              ? '' : ' width="'.$width.'"').
+            (   empty($height)
+             || preg_match('/height[:=]/i', $attribute)
+              ? '' : ' height="'.$height.'"').
+            (preg_match('/alt\=/i', $attribute)
               ? '' : ' alt="'.$objImage->getPath().'"').
             ($attribute ? ' '.$attribute : '').
             " />\n";
+    }
+
+
+    /**
+     * Returns an image tag for the given Image path
+     *
+     * This adds alt, width, and height attributes with the values returned
+     * by {@see Image::getPath()}, {@see Image::getWidth()}, and
+     * {@see Image::getHeight()} methods repectively.
+     * If the $attribute parameter contains one of the alt, width, or height
+     * attributes (or corresponding style information), these will override
+     * the data from the Image object.
+     * @param   Image     $objImage     The Image object
+     * @param   string    $attribute    Additional optional attributes
+     * @return  string                  The HTML code for the image tag
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getImageByPath($image_path, $attribute='')
+    {
+        $objImage = new Image();
+        $objImage->setPath($image_path);
+        return self::getImage($objImage, $attribute);
     }
 
 
@@ -468,7 +621,7 @@ class Html
     {
         global $_CORELANG;
 
-        Javascript::registerCode(self::getJavascript());
+        Javascript::registerCode(self::getJavascript_Image(Image::PATH_NO_IMAGE));
         if (empty($objImage)) $objImage = new Image(0);
         $type_element =
             '<input type="hidden" id="'.$id.'_type" name="'.$id.'_type"'.
@@ -537,15 +690,15 @@ class Html
     ) {
         global $_CORELANG;
 
-        JS::registerCode(self::getJavascript($path_default));
+        JS::registerCode(self::getJavascript_Image($path_default));
         if (empty($objImage)) $objImage = new Image(0);
         $path = $objImage->getPath();
-        if (empty($path)) {
-//echo("Html::getImageChooserUpload(): Fixed empty path to default $path_default<br />");
-            $path = $path_default;
-        }
+//        if (empty($path)) {
+////echo("Html::getImageChooserUpload(): Fixed empty path to default $path_default<br />");
+//            $path = $path_default;
+//        }
         return
-            '<img id="'.$id.'_img" src="'.$path.'"'.
+            '<img id="'.$id.'_img" src="'.($path ? $path : $path_default).'"'.
             ' style="width:'.$objImage->getWidth().
             'px; height:'.$objImage->getHeight().'px;"'.
             ' title="'.$_CORELANG['TXT_CORE_CHOOSE_IMAGE'].'"'.
@@ -553,13 +706,35 @@ class Html
             self::getHidden($id.'_type',
               ($imagetype_key !== false
                 ? $imagetype_key : $objImage->getImageTypeKey())).
-            ($objImage->getPath()
+            ($path
                 ? self::getClearImageCode($id).
                   self::getHidden($id.'_id', $objImage->getId()).
                   self::getHidden($id.'_ord', $objImage->getOrd()).
                   self::getHidden($id.'_src', $objImage->getPath())
                 : '').
-            self::getInputFileupload($id);
+            // Set the upload element to visible only if no image path is set
+            self::getInputFileupload($id, '', '', '', '', empty($path));
+    }
+
+
+    static function getRemoveAddLinks($id)
+    {
+        JS::registerCode(self::getJavascript_Element());
+        $objImageRemove = new Image();
+        $objImageRemove->setPath(self::ICON_ELEMENT_REMOVE );
+        $objImageRemove->setWidth(16);
+        $objImageRemove->setHeight(16);
+        $objImageAdd = new Image();
+        $objImageAdd->setPath(self::ICON_ELEMENT_ADD);
+        $objImageAdd->setWidth(16);
+        $objImageAdd->setHeight(16);
+        return
+            '<a href="javascript:void(0);" '.
+            'onclick="removeElement(\''.$id.'\');">'.
+            self::getImage($objImageRemove, 'border="0"').'</a>'.
+            '<a href="javascript:void(0);" '.
+            'onclick="cloneElement(\''.$id.'\');">'.
+            self::getImage($objImageAdd, 'border="0"').'</a>';
     }
 
 
@@ -581,7 +756,7 @@ class Html
     {
         static $index = 0;
 
-        JS::registerCode(self::getJavascript());
+        JS::activate('datepicker');
         return
             '<input type="text" name="'.$name.
 //            '" id="DPC_edit'.++$index.'_YYYY-MM-DD" '.
@@ -595,13 +770,224 @@ class Html
 
 
     /**
+     * Returns HTML code for the functions available in many list views
+     *
+     * The $arrFunction array must look something like:
+     *  array(
+     *    'view'   => The view action parameter,
+     *    'copy'   => The copy action parameter,
+     *    'edit'   => The edit action parameter,
+     *    'delete' => The delete action parameter,
+     *  )
+     * You may omit any indices that do not apply, those icons will not be
+     * included.
+     * The action parameter will look like "act=what_to_do" in most cases
+     * and replaces any other parameter or parameters already present
+     * in the current page URI.  You may also specify javascript code,
+     * this *MUST* start with "javascript:" and will replace the page URI.
+     * Empty actions will usually lead back to the module start page.
+     * @param   array   $arrFunction    The array of functions and actions
+     * @return  string                  The HTML code for the function column
+     */
+    static function getBackendFunctions($arrFunction)
+    {
+        $uri = htmlentities(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+        $function_html = '';
+        foreach ($arrFunction as $function => $action) {
+            $objImage = new Image();
+            switch ($function) {
+              case 'view':
+                $objImage->setPath(self::ICON_FUNCTION_VIEW);
+                break;
+              case 'copy':
+                $objImage->setPath(self::ICON_FUNCTION_COPY);
+                break;
+              case 'edit':
+                $objImage->setPath(self::ICON_FUNCTION_EDIT);
+                break;
+              case 'delete':
+                $objImage->setPath(self::ICON_FUNCTION_DELETE);
+                break;
+              default:
+                continue 2;
+            }
+            $objImage->setWidth(16);
+            $objImage->setHeight(16);
+            $_uri = $uri;
+            if (preg_match('/^javascript\:/i', $action)) {
+                $_uri = $action;
+            } else {
+                self::replaceUriParameter($_uri, $action);
+            }
+            $function_html .=
+                '<a href="'.$_uri.'">'.
+                self::getImage($objImage, 'border="0"').'</a>';
+        }
+        return '<div style="text-align: right;">'.$function_html.'</div>';
+    }
+
+
+    /**
+     * Returns HTML code to represent some status with a colored LED image
+     *
+     * Colors currently available include green, yellow, and red.
+     * For unknown colors, the empty string is returned.
+     * The $alt parameter value is added as the images' alt attribute value,
+     * if non-empty.
+     * The $action parameter may include URI parameters to be inserted in the
+     * href attribute of a link, which is added if $action is non-empty.
+     * @param   string    $color      The LED color
+     * @param   string    $alt        The optional alt attribute for the image
+     * @param   string    $action     The optional action URI parameters
+     * @return  string                The LED HTML code on success, the
+     *                                empty string otherwise
+     */
+    static function getLed($status='', $alt='', $action='')
+    {
+        $objImage = new Image();
+        switch ($status) {
+          case 'green':
+            $objImage->setPath(self::ICON_STATUS_GREEN);
+            break;
+          case 'yellow':
+            $objImage->setPath(self::ICON_STATUS_YELLOW);
+            break;
+          case 'red':
+            $objImage->setPath(self::ICON_STATUS_RED);
+            break;
+          default:
+            // Unknown color.  Return the empty string.
+            return '';
+        }
+//echo("Html::getLed($status, $action): led is ".$objImage->getPath()."<br />");
+        $objImage->setWidth(10);
+        $objImage->setHeight(10);
+        $led_html = self::getImage(
+            $objImage,
+            'border="0"'.($alt ? ' alt="'.$alt.'" title="'.$alt.'"' : ''));
+        if ($action) {
+            $uri =
+                htmlentities(CONTREXX_DIRECTORY_INDEX.
+                    (empty($_SERVER['QUERY_STRING'])
+                      ? '' : '?'.$_SERVER['QUERY_STRING']));
+            self::replaceUriParameter($uri, $action);
+            $led_html = '<a href="'.$uri.'">'.$led_html.'</a>';
+        }
+        return $led_html;
+    }
+
+
+    /**
+     * Returns HTML code for either a checked or unchecked icon
+     * for indicating yes/no status
+     *
+     * For the time being, the unchecked status is represented by
+     * an empty space, aka pixel.gif
+     * @param   boolean   $status     If true, the checked box is returned,
+     *                                the unchecked otherwise
+     * @return  string                The HTML code with the checkbox icon
+     * @todo    There should be an unchecked icon other than "pixel.gif"
+     */
+    static function getCheckmark($status='')
+    {
+        $objImage = new Image();
+        $objImage->setPath($status
+            ? self::ICON_STATUS_CHECKED : self::ICON_STATUS_UNCHECKED);
+        $objImage->setWidth(16);
+        $objImage->setHeight(16);
+        $checkmark_html = self::getImage($objImage, 'border="0"');
+        return $checkmark_html;
+    }
+
+
+    /**
+     * Remove the parameter and its value from the URI string,
+     * by reference
+     *
+     * If the parameter cannot be found, the URI is left unchanged.
+     * @param   string    $uri              The URI, by reference
+     * @param   string    $parameter_name   The name of the parameter
+     * @return  string                      The former parameter value,
+     *                                      or the empty string
+     */
+    static function stripUriParam(&$uri, $parameter_name)
+    {
+        $match = array();
+//echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): Entered<br />");
+
+        $re =
+            '/'.preg_quote($parameter_name, '/').
+            '\=?([^&]*)(?:\&(?:amp\;)?)?/';
+//echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): regex ".htmlentities($re)."<br />");
+        $uri = preg_match_replace(
+            $re,
+            '',
+            $uri,
+            $match
+        );
+        // Remove trailing '?', '&', or '&amp;'
+        $uri = preg_replace('/(?:\?|\&(?:amp\;)?)$/', '', $uri);
+//echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): stripped $count times ".var_export($match, true)."<br />");
+        if (empty($match[1])) return '';
+        return $match[1];
+    }
+
+
+    /**
+     * Replaces the URI parameters given in the URI, by reference
+     *
+     * The $parameter string is an URI query string starting with '?',
+     * '&' or '&amp;', a parameter name, or none of those.
+     * Parameters whose names are present in the URI already are replaced
+     * with the new values from the $parameter string.
+     * Parameters are not already present in the URI are appended.
+     * The replaced/added parameters are separated by '&amp;'.
+     * @param   string    $uri        The full URI, by reference
+     * @param   string    $parameter  The parameters to be replaced or added
+     * @return  void
+     */
+    static function replaceUriParameter(&$uri, $parameter)
+    {
+//echo("Html::replaceUriParameter(".htmlentities($uri).", ".htmlentities($parameter)."): Entered<br />");
+        $match = array();
+        // Remove
+        if (preg_match('/^.*\?(.+)$/', $parameter, $match)) {
+//        if (preg_match('/^(.*)\?(.+)$/', $parameter, $match)) {
+//            $bogus_index = $match[1];
+            $parameter = $match[2];
+//echo("Html::replaceUriParameter(): Split parameter in bogus index $bogus_index and parameter ".htmlentities($parameter)."<br />");
+        }
+        $arrParts = preg_split('/\&(?:amp;)?/', $parameter, -1, PREG_SPLIT_NO_EMPTY);
+
+//echo("Html::replaceUriParameter(): parts: ".htmlentities(var_export($arrParts, true))."<br />");
+        foreach ($arrParts as $parameter) {
+//echo("Html::replaceUriParameter(): processing parameter ".htmlentities($parameter)."<br />");
+
+            if (!preg_match('/^([^=]+)\=?(.*)$/', $parameter, $match)) {
+//echo("Html::replaceUriParameter(): skipped illegal parameter ".htmlentities($parameter)."<br />");
+                continue;
+            }
+            self::stripUriParam($uri, $match[1]);
+//            $old = self::stripUriParam($uri, $match[1]);
+//echo("Html::replaceUriParameter(): stripped to ".htmlentities($uri).", removed ".htmlentities($old)."<br />");
+            $uri .=
+                (preg_match('/\?/', $uri) ? '&amp;' : '?').
+                $parameter;
+//echo("Html::replaceUriParameter(): added to ".htmlentities($uri)."<br />");
+        }
+//        $uri = ($index ? $index.'?' : '&amp;').$uri;
+//echo("Html::replaceUriParameter(".htmlentities($uri).", ".htmlentities($parameter)."): Exiting<hr />");
+    }
+
+
+    /**
      * A few JS scripts used by the Html and Image classes
      * @todo    The Image class part should be moved
      * @param   string    $path_default     The optional path to the
      *                                      default image
      * @return  string                      The Javascript code
      */
-    static function getJavascript($path_default)
+    static function getJavascript_Image($path_default='')
     {
         global $_CORELANG; //$_ARRAYLANG,
 
@@ -639,10 +1025,12 @@ function SetUrl(url, width, height, alt)
   document.getElementById(field_id+"_height").value = height;
 }
 
-function clearImage(id, index)
+// Clear the image data and replace it with the no-image.
+// Also (re)display the element with ID id, usually the file upload input
+function clearImage(id)
 {
   document.getElementById(id+"_img").src = "'.
-  ($path_default ? $path_default : Image::PATH_NO_IMAGE).'";
+  (empty($path_default) ? Image::PATH_NO_IMAGE : $path_default).'";
   document.getElementById(id+"_clear").style.display = "none";
   if (document.getElementById(id+"_src"))
     document.getElementById(id+"_src").value = "";
@@ -650,8 +1038,22 @@ function clearImage(id, index)
     document.getElementById(id+"_width").value = "";
   if (document.getElementById(id+"_height"))
     document.getElementById(id+"_height").value = "";
+  if (document.getElementById(id))
+    document.getElementById(id).style.display = "inline";
 }
+';
+    }
 
+
+    /**
+     * A few JS scripts used by the Html class
+     * @return  string                      The Javascript code
+     */
+    static function getJavascript_Text()
+    {
+        global $_CORELANG; //$_ARRAYLANG,
+
+        return '
 /**
  * Limit the textarea content length
  *
@@ -673,7 +1075,19 @@ function lengthLimit(textarea, count_min, count_max, limit_min, limit_max)
     count_min.value = limit_min - textarea.value.length;
   }
 }
+';
+    }
 
+
+    /**
+     * A few JS scripts used by the Html class
+     * @return  string                      The Javascript code
+     */
+    static function getJavascript_Element()
+    {
+        global $_CORELANG; //$_ARRAYLANG,
+
+        return '
 function toggleDisplay(button_element, target_id)
 {
   var target_element = document.getElementById(target_id);
@@ -688,6 +1102,50 @@ function toggleDisplay(button_element, target_id)
     button_element.innerHTML = "'.$_CORELANG['TXT_CORE_HTML_TOGGLE_CLOSE'].'";
 //alert("opened");
   }
+}
+
+function showTab(tab_id_base, div_id_base, active_suffix, min_suffix, max_suffix)
+{
+  for (var i = min_suffix; i <= max_suffix; ++i) {
+    var tab_id = tab_id_base + i;
+    var tab_element = document.getElementById(tab_id);
+if (!tab_element) return; //alert("cannot find tab "+tab_id);
+    var div_id = div_id_base + i;
+    var div_element = document.getElementById(div_id);
+if (!div_element) return; //alert("cannot find div "+div_id);
+
+    if (active_suffix == i) {
+      div_element.style.display = "block";
+      tab_element.setAttribute(\'class\', tab_element.getAttribute(\'class\').replace(/(?:_active)?$/, "_active"));
+//alert("opened");
+    } else {
+      div_element.style.display = "none";
+      tab_element.setAttribute(\'class\', tab_element.getAttribute(\'class\').replace(/(?:_active)?$/, ""));
+//alert("closed");
+    }
+  }
+}
+
+// Removes the element with the given ID
+function removeElement(id)
+{
+  var element = document.getElementById(id);
+  if (!element) return;
+  element.parentNode.removeChild(element);
+}
+
+// Appends a clone of the element with the given ID after itself
+function cloneElement(id)
+{
+  var element = document.getElementById(id);
+  if (!element) {
+alert("Error: no such element: "+id);
+    return;
+  }
+  var clone = Element.clone(element);
+  clone.setAttribute("id", id+"-");
+alert("Clone:\n"+clone.toString());
+  element.appendChild(clone);
 }
 ';
     }

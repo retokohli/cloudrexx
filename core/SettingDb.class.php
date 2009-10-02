@@ -184,7 +184,7 @@ class SettingDb
      * is set to true.
      * If the new value is not equal to the old one, it is updated,
      * and $flagChanged set to true.
-     * Otherwise, nothing happens.
+     * Otherwise, nothing happens, and false is returned
      * @see init(), updateAll()
      * @param   string    $name       The settings name
      * @param   string    $value      The settings value
@@ -193,27 +193,30 @@ class SettingDb
      */
     function set($name, $value)
     {
-        if (   !isset(self::$arrSettings[$name])
-            || (   isset(self::$arrSettings[$name])
-                && self::$arrSettings[$name]['value'] != $value)) {
+        if (   isset(self::$arrSettings[$name])
+            && self::$arrSettings[$name]['value'] != $value) {
 //echo("SettingDb::set($name, $value): Added/updated<br />");
             self::$flagChanged = true;
             self::$arrSettings[$name]['value'] = $value;
+            return true;
         }
-//echo("SettingDb::set($name, $value): Leaving<br />");
-        return self::$flagChanged;
+//echo("SettingDb::set($name, $value): No change, leaving<br />");
+        return false;
     }
 
 
     /**
-     * Stores all settings entries present in the $arrSettings object array variable
+     * Stores all settings entries present in the $arrSettings object
+     * array variable
      *
-     * Returns boolean true if all records were stored successfully, false if any one
-     * failed, or the empty string if no change to the settings has been detected
-     * and thus nothing has been stored at all.
-     * Upon success, also resets the $flagChanged object variable to false.
-     * @return  mixed               True on success, false on failure,
-     *                              the empty string if no change is detected.
+     * Returns boolean true if all records were stored successfully,
+     * false otherwise.
+     * Upon success, also resets the $flagChanged class variable to false.
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new values been {@see set()}.
+     * Note that this method does not work for adding new settings.
+     * See {@see add()} on how to do this.
+     * @return  boolean                   True on success, false otherwise
      */
     function updateAll()
     {
@@ -227,50 +230,43 @@ class SettingDb
             self::$flagChanged = false;
             return true;
         }
-        return self::errorHandler();
+        return false;
     }
 
 
     /**
-     * Changes the value for the given name in the settings
-     * and updates the database as necessary.
+     * Updates the value for the given name in the settings table
      *
-     * Returns true both if the value has been updated successfully
-     * and if it hasn't been changed.
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new value been {@see set()}.
+     * Sets $flagChanged to true and returns true if the value has been
+     * updated successfully.
      * Note that this method does not work for adding new settings.
      * See {@see add()} on how to do this.
      * @param   string    $name   The settings name
-     * @param   string    $value  The settings value
-     * @param   integer   $ord    The optional ordinal number, ignored
-     *                            if false. Defaults to false.
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
      * @static
      * @global  mixed     $objDatabase    Database connection object
      */
-    static function update($name, $value, $ord=false)
+    static function update($name)
     {
         global $objDatabase;
 
         // Fail if the name is invalid
         // or the setting does not exist already
 // TODO: Add error messages for individual errors
-        if (   empty($name)
-            || !isset(self::$arrSettings[$name]))
-            return false;
+        if (empty($name)) return false;
+        if (!isset(self::$arrSettings[$name])) return false;
 
-        // Return the empty string if nothing changes
-        if (!self::set($name, $value)) return true;
-
-        // Exists, update it
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_setting`
-               SET `value`='".addslashes($value)."'".
-                   ($ord !== false ? ", `ord`=$ord" : '')."
+               SET `value`='".addslashes(self::$arrSettings[$name]['value'])."'
              WHERE `name`='".addslashes($name)."'
                AND `module_id`=".MODULE_ID.
              (self::$key !== false ? " AND `key`='".addslashes(self::$key)."'" : ''));
         if (!$objResult) return self::errorHandler();
+        self::$flagChanged = true;
         return true;
     }
 
@@ -298,9 +294,7 @@ class SettingDb
         global $objDatabase;
 
         // Fail if the name is invalid
-        if (   self::$arrSettings === false
-            || empty($name))
-            return false;
+        if (empty($name)) return false;
 
         // This can only be done with a non-empty key!
         // Use the current key, if present, otherwise fail
@@ -308,21 +302,12 @@ class SettingDb
             if (self::$key === false) return false;
             $key = self::$key;
         }
+        // Initialize if necessard
+        if (self::$arrSettings === false || self::$key != $key)
+            self::init($key);
 
-        // Does the setting exist already?
-        $objResult = $objDatabase->Execute("
-            SELECT 1
-              FROM `".DBPREFIX."core_setting`
-             WHERE `name`='".addslashes($name)."'
-               AND `module_id`=".MODULE_ID.
-             (self::$key === false ? '' : " AND `key`='".addslashes(self::$key)."'"));
-        if (!$objResult) return self::errorHandler();
-        if (!$objResult->EOF) {
-            // Such an entry exists already, fail
-            return false;
-            // update it
-            //return self::update($name, $value, $ord);
-        }
+        // Such an entry exists already, fail
+        if (self::getValue($name)) return false;
 
         // Not present, insert it
         $objResult = $objDatabase->Execute("
@@ -360,24 +345,35 @@ class SettingDb
      *    Prefix:   'TXT_'
      *  Results in placeholders to be set as follows:
      *    Placeholder         Value
-     *    SETTING_NAME        The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
-     *    SETTING_VALUE       '1'
-     *    SETTING_PARAMETER   'shop_dummy'
+     *    SETTINGDB_NAME        The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
+     *    SETTINGDB_VALUE       The HTML element for the setting type with
+     *                          a name attribute of 'shop_dummy'
      *
-     * Placeholders:  The parameter name is written to SETTING_PARAMETER,
-     * The settings' name is to SETTING_NAME, and the value to SETTING_VALUE.
+     * Placeholders:
+     * The settings' name is to SETTINGDB_NAME, and the input element to
+     * SETTINGDB_VALUE.
      * Set the default block to parse after each array entry if it
      * differs from the default 'core_setting_db'.
      * Make sure to define all the language variables that are expected
      * to be defined here!
      * In addition, some entries from $_CORELANG are set up. These are both
      * used as placeholder name and language array index:
-     *  - TXT_CORE_SETTING_STORE
-     *  - TXT_CORE_SETTING_NAME
-     *  - TXT_CORE_SETTING_VALUE
-     * @param   HTML_Template_Sigma $objTemplateLocal  Template object
+     *  - TXT_CORE_SETTINGDB_STORE
+     *  - TXT_CORE_SETTINGDB_NAME
+     *  - TXT_CORE_SETTINGDB_VALUE
+     *
+     * The template object is given by reference, and if the block
+     * 'core_settingdb_row' is not present, is replaced by the default backend
+     * template.
+     * $uriBase *SHOULD* be the URI for the current module start page, without
+     * any 'act' parameter, i.e. 'index.php?section=mymodule'.
+     * If you want your settings to be stored, you *MUST* handle the parameter
+     * 'act=settings' in your modules' getPage() method, check for the 'bsubmit'
+     * index in the $_POST array, and call {@see SettingDb::store()}.
+     * @param   HTML_Template_Sigma $objTemplateLocal   Template object
+     * @param   string              $uriBase      The base URI for the module.
      * @param   string              $section      The section header text to add
-     *                                            if not empty
+     * @param   string              $tabName      The tab name to add
      * @param   string              $prefix       The prefix for language variables,
      *                                            defaults to 'TXT_'
      * @return  boolean                           True on success, false otherwise
@@ -386,32 +382,49 @@ class SettingDb
      * @todo    Verify special values like e-mail addresses in methods
      *          that store them, like add(), update(), and updateAll()
      */
-    static function show($objTemplateLocal, $section='', $prefix='TXT_')
-    {
+    static function show(
+        &$objTemplateLocal, $uriBase, $section='', $tabName='', $prefix='TXT_'
+    ) {
         global $objTemplate, $_CORELANG, $_ARRAYLANG;
+        static $tab_index = 0;
+
+//$objTemplate->setCurrentBlock();
+//echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
+
+        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+            $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+            if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
+                die("Failed to load template settingDb.html");
+        }
+        if (!preg_match('/[&;]act\=/', $uriBase))
+            $uriBase .= '&amp;act=settings';
+        $objTemplateLocal->setGlobalVariable('URI_BASE', $uriBase);
 
         // Default headings and elements
         $objTemplateLocal->setGlobalVariable(array(
-            'TXT_SETTINGS'      => $_CORELANG['TXT_CORE_SETTINGS'],
-            'TXT_SETTING_STORE' => $_CORELANG['TXT_CORE_SETTING_STORE'],
-            'TXT_SETTING_NAME'  => $_CORELANG['TXT_CORE_SETTING_NAME'],
-            'TXT_SETTING_VALUE' => $_CORELANG['TXT_CORE_SETTING_VALUE'],
+            'TXT_CORE_SETTINGDB'       => $_CORELANG['TXT_CORE_SETTINGDB'],
+            'TXT_CORE_SETTINGDB_STORE' => $_CORELANG['TXT_CORE_SETTINGDB_STORE'],
+            'TXT_CORE_SETTINGDB_NAME'  => $_CORELANG['TXT_CORE_SETTINGDB_NAME'],
+            'TXT_CORE_SETTINGDB_VALUE' => $_CORELANG['TXT_CORE_SETTINGDB_VALUE'],
         ));
 
-        if ($objTemplateLocal->blockExists('core_setting_db_row'))
-            $objTemplateLocal->setCurrentBlock('core_setting_db_row');
-//echo("SettingDb::show(objTemplate, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
+        if ($objTemplateLocal->blockExists('core_settingdb_row'))
+            $objTemplateLocal->setCurrentBlock('core_settingdb_row');
+//echo("SettingDb::show(objTemplateLocal, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
         if (!is_array(self::$arrSettings)) {
             $objTemplate->setVariable(
                 'CONTENT_STATUS_MESSAGE',
-                $_CORELANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING']
+                $_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING']
             );
             return false;
         }
         if (empty(self::$arrSettings)) {
             $objTemplate->setVariable(
                 'CONTENT_STATUS_MESSAGE',
-                $_CORELANG['TXT_CORE_SETTINGS_NONE_FOUND']
+                sprintf(
+                    $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
+                    $tabName, $section
+                )
             );
             return true;
         }
@@ -421,22 +434,37 @@ class SettingDb
             // Determine HTML element for type and apply values and selected
             $element = '';
             $value = $arrSetting['value'];
+
+            if (empty($value)) {
+                $objTemplate->setVariable(
+                    'CONTENT_STATUS_MESSAGE',
+                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
+                        $_ARRAYLANG[$prefix.strtoupper($name)],
+                        $name)
+                );
+            }
+            if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
+                $objTemplate->setVariable(
+                    'CONTENT_STATUS_MESSAGE',
+                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_MISSING_LANGUAGE'],
+                        $prefix.strtoupper($name),
+                        $name)
+                );
+            }
             $value_align = (is_numeric($value) ? 'text-align: right;' : '');
             switch ($arrSetting['type']) {
               // Dropdown menu
               case 'dropdown':
-// TODO:  Use the Html class to create the dropdown
                 $element = Html::getSelect(
                     $name, self::splitValues($arrSetting['values']), $value,
-                    '',
+                    '', '',
                     'style="width: 220px;'.$value_align.'"');
                 break;
               case 'dropdown_user_custom_attribute':
                 $element = Html::getSelect(
                     $name,
                     User_Profile_Attribute::getCustomAttributeNameArray(),
-                    $arrSetting['value'],
-                    '', 'style="width: 220px;"'
+                    $arrSetting['value'], '', '', 'style="width: 220px;"'
                 );
                 break;
               case 'dropdown_usergroup':
@@ -444,12 +472,24 @@ class SettingDb
                     $name,
                     UserGroup::getNameArray(),
                     $arrSetting['value'],
-                    '', 'style="width: 220px;"'
+                    '', '', 'style="width: 220px;"'
                 );
                 break;
               case 'wysiwyg':
+                // These must be treated differently, as wysiwyg editors
+                // claim the full width
                 $element = get_wysiwyg_editor($name, $value);
-                break;
+                $objTemplateLocal->setVariable(array(
+                    'CORE_SETTINGDB_ROW'       => $_ARRAYLANG[$prefix.strtoupper($name)],
+                    'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
+                ));
+                $objTemplateLocal->parseCurrentBlock();
+                $objTemplateLocal->setVariable(array(
+                    'CORE_SETTINGDB_ROW'       => $element.'<br /><br />',
+                    'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
+                ));
+                $objTemplateLocal->parseCurrentBlock();
+                continue 2;
 
 // More...
 //              case '':
@@ -460,30 +500,65 @@ class SettingDb
               case 'email':
               default:
                 $element =
-                    '<input type="text" style="width: 220px;'.$value_align.'" '.
-                    'name="'.$name.'" value="'.$value.'" />';
+                    Html::getInputText(
+                        $name, $value, '',
+                        'style="width: 220px;'.$value_align.'"');
             }
 
             $objTemplateLocal->setVariable(array(
-                'SETTING_NAME'        => $_ARRAYLANG[$prefix.strtoupper($name)],
-                'SETTING_VALUE'       => $element,
-                'SETTING_VALUE_ALIGN' => $value_align,
-                'SETTING_PARAMETER'   => $name,
-                'SETTING_ROWCLASS'    => (++$i % 2 ? '1' : '2'),
+                'CORE_SETTINGDB_NAME'        => $_ARRAYLANG[$prefix.strtoupper($name)],
+                'CORE_SETTINGDB_VALUE'       => $element,
+                'CORE_SETTINGDB_ROWCLASS2'    => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
-//echo("SettingDb::show(objTemplate, $prefix): shown $name => $value<br />");
+//echo("SettingDb::show(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
 
         if (   !empty($section)
-            && $objTemplateLocal->blockExists('core_setting_db_section')) {
-//echo("SettingDb::show(objTemplate, $section, $prefix): creating section $section<br />");
+            && $objTemplateLocal->blockExists('core_settingdb_section')) {
+//echo("SettingDb::show(objTemplateLocal, $section, $prefix): creating section $section<br />");
             $objTemplateLocal->setVariable(array(
-                'TXT_SETTING_SECTION' => $section,
+                'CORE_SETTINGDB_SECTION' => $section,
             ));
-            $objTemplateLocal->parse('core_setting_db_section');
+            $objTemplateLocal->parse('core_settingdb_section');
+        }
+
+        // Set up tab, if any
+        if (!empty($tabName)) {
+            $objTemplateLocal->setGlobalVariable(array(
+                'CORE_SETTINGDB_TAB_NAME'  => $tabName,
+                'CORE_SETTINGDB_TAB_INDEX' => ++$tab_index,
+                'CORE_SETTINGDB_TAB_CLASS' => ($tab_index == 1 ? 'active' : ''),
+                'CORE_SETTINGDB_TAB_DISPLAY' => ($tab_index == 1 ? 'block' : 'none'),
+            ));
+            $objTemplateLocal->touchBlock('core_settingdb_tab_row');
+            $objTemplateLocal->parse('core_settingdb_tab_row');
+            $objTemplateLocal->touchBlock('core_settingdb_tab_div');
+            $objTemplateLocal->parse('core_settingdb_tab_div');
         }
         return true;
+    }
+
+
+    /**
+     * Update and store all settings found in the $_POST array
+     * @return  boolean                 True on success,
+     *                                  the empty string if none was changed,
+     *                                  or false on failure
+     */
+    static function storeFromPost()
+    {
+//echo("SettingDb::storeFromPost(): Entered<br />");
+        // Compare POST with current settings.
+        // Only store what was changed.
+        self::init(false);
+        unset($_POST['store']);
+//        unset($_POST['csrf']);
+        foreach ($_POST as $name => $value) {
+            $value = contrexx_stripslashes($value);
+            SettingDb::set($name, $value);
+        }
+        return self::updateAll();
     }
 
 
@@ -516,7 +591,7 @@ class SettingDb
     {
         global $objDatabase;
 
-echo("SettingDb::errorHandler(): Entered<br />");
+die("SettingDb::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (!in_array(DBPREFIX."core_setting", $arrTables)) {

@@ -332,10 +332,10 @@ class Country
     {
         global $objDatabase;
 
-echo("Country::errorHandler(): Entered<br />");
+die("Country::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (!in_array(DBPREFIX."core_setting", $arrTables)) {
+        if (!in_array(DBPREFIX."core_country", $arrTables)) {
             $query = "
                 CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_country` (
                   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -360,8 +360,8 @@ die("Country::errorHandler(): Failed to truncate table ".DBPREFIX."core_country"
 
         // Remove old country names
         Text::deleteByKey(self::TEXT_CORE_COUNTRY_NAME);
-// TODO: Remove
-        Text::deleteByKey('CORE_COUNTRY'); // Obsolete
+// Obsolete
+//        Text::deleteByKey('CORE_COUNTRY');
 
 /*
         // Insert all country names into the multilanguage text table
@@ -796,7 +796,7 @@ class State
 
         global $objDatabase;
 
-echo("State::errorHandler(): Entered<br />");
+die("State::errorHandler(): Disabled!<br />");
 
         $query = "DROP TABLE IF EXISTS `".DBPREFIX."core_zip`";
         $objResult = $objDatabase->Execute($query);
@@ -827,34 +827,35 @@ echo("State::errorHandler(): Entered<br />");
         if (!$objResult) return false;
 
         // Add the full state names to the text table
-        Text::replace(null, FRONTEND_LANG_ID, 'Appenzell Innerrhoden', 0, self::TEXT_STATE.'_AI');
-        Text::replace(null, FRONTEND_LANG_ID, 'Appenzell Ausserrhoden', 0, self::TEXT_STATE.'_AR');
-        Text::replace(null, FRONTEND_LANG_ID, 'Bern', 0, self::TEXT_STATE.'_BE');
-        Text::replace(null, FRONTEND_LANG_ID, 'Basel Land', 0, self::TEXT_STATE.'_BL');
-        Text::replace(null, FRONTEND_LANG_ID, 'Basel Stadt', 0, self::TEXT_STATE.'_BS');
-        Text::replace(null, FRONTEND_LANG_ID, 'Deutschland', 0, self::TEXT_STATE.'_DE');
-        Text::replace(null, FRONTEND_LANG_ID, 'Fürstentum Liechtenstein', 0, self::TEXT_STATE.'_FL');
-        Text::replace(null, FRONTEND_LANG_ID, 'Fribourg', 0, self::TEXT_STATE.'_FR');
-        Text::replace(null, FRONTEND_LANG_ID, 'Genève', 0, self::TEXT_STATE.'_GE');
-        Text::replace(null, FRONTEND_LANG_ID, 'Glarus', 0, self::TEXT_STATE.'_GL');
-        Text::replace(null, FRONTEND_LANG_ID, 'Graubünden', 0, self::TEXT_STATE.'_GR');
-        Text::replace(null, FRONTEND_LANG_ID, 'Italien', 0, self::TEXT_STATE.'_IT');
-        Text::replace(null, FRONTEND_LANG_ID, 'Jura', 0, self::TEXT_STATE.'_JU');
-        Text::replace(null, FRONTEND_LANG_ID, 'Luzern', 0, self::TEXT_STATE.'_LU');
-        Text::replace(null, FRONTEND_LANG_ID, 'Neuchâtel', 0, self::TEXT_STATE.'_NE');
-        Text::replace(null, FRONTEND_LANG_ID, 'Nidwalden', 0, self::TEXT_STATE.'_NW');
-        Text::replace(null, FRONTEND_LANG_ID, 'Obwalden', 0, self::TEXT_STATE.'_OW');
-        Text::replace(null, FRONTEND_LANG_ID, 'Sankt Gallen', 0, self::TEXT_STATE.'_SG');
-        Text::replace(null, FRONTEND_LANG_ID, 'Schaffhausen', 0, self::TEXT_STATE.'_SH');
-        Text::replace(null, FRONTEND_LANG_ID, 'Soloturn', 0, self::TEXT_STATE.'_SO');
-        Text::replace(null, FRONTEND_LANG_ID, 'Schwyz', 0, self::TEXT_STATE.'_SZ');
-        Text::replace(null, FRONTEND_LANG_ID, 'Thurgau', 0, self::TEXT_STATE.'_TG');
-        Text::replace(null, FRONTEND_LANG_ID, 'Ticino', 0, self::TEXT_STATE.'_TI');
-        Text::replace(null, FRONTEND_LANG_ID, 'Uri', 0, self::TEXT_STATE.'_UR');
-        Text::replace(null, FRONTEND_LANG_ID, 'Vaud', 0, self::TEXT_STATE.'_VD');
-        Text::replace(null, FRONTEND_LANG_ID, 'Valais', 0, self::TEXT_STATE.'_VS');
-        Text::replace(null, FRONTEND_LANG_ID, 'Zug', 0, self::TEXT_STATE.'_ZG');
-        Text::replace(null, FRONTEND_LANG_ID, 'Zürich', 0, self::TEXT_STATE.'_ZH');
+        // Note: Text::replace() returns the ID
+        Text::replace(false, FRONTEND_LANG_ID, 'Appenzell Innerrhoden', 0, self::TEXT_STATE.'_AI');
+        Text::replace(false, FRONTEND_LANG_ID, 'Appenzell Ausserrhoden', 0, self::TEXT_STATE.'_AR');
+        Text::replace(false, FRONTEND_LANG_ID, 'Bern', 0, self::TEXT_STATE.'_BE');
+        Text::replace(false, FRONTEND_LANG_ID, 'Basel Land', 0, self::TEXT_STATE.'_BL');
+        Text::replace(false, FRONTEND_LANG_ID, 'Basel Stadt', 0, self::TEXT_STATE.'_BS');
+        Text::replace(false, FRONTEND_LANG_ID, 'Deutschland', 0, self::TEXT_STATE.'_DE');
+        Text::replace(false, FRONTEND_LANG_ID, 'Fürstentum Liechtenstein', 0, self::TEXT_STATE.'_FL');
+        Text::replace(false, FRONTEND_LANG_ID, 'Fribourg', 0, self::TEXT_STATE.'_FR');
+        Text::replace(false, FRONTEND_LANG_ID, 'Genève', 0, self::TEXT_STATE.'_GE');
+        Text::replace(false, FRONTEND_LANG_ID, 'Glarus', 0, self::TEXT_STATE.'_GL');
+        Text::replace(false, FRONTEND_LANG_ID, 'Graubünden', 0, self::TEXT_STATE.'_GR');
+        Text::replace(false, FRONTEND_LANG_ID, 'Italien', 0, self::TEXT_STATE.'_IT');
+        Text::replace(false, FRONTEND_LANG_ID, 'Jura', 0, self::TEXT_STATE.'_JU');
+        Text::replace(false, FRONTEND_LANG_ID, 'Luzern', 0, self::TEXT_STATE.'_LU');
+        Text::replace(false, FRONTEND_LANG_ID, 'Neuchâtel', 0, self::TEXT_STATE.'_NE');
+        Text::replace(false, FRONTEND_LANG_ID, 'Nidwalden', 0, self::TEXT_STATE.'_NW');
+        Text::replace(false, FRONTEND_LANG_ID, 'Obwalden', 0, self::TEXT_STATE.'_OW');
+        Text::replace(false, FRONTEND_LANG_ID, 'Sankt Gallen', 0, self::TEXT_STATE.'_SG');
+        Text::replace(false, FRONTEND_LANG_ID, 'Schaffhausen', 0, self::TEXT_STATE.'_SH');
+        Text::replace(false, FRONTEND_LANG_ID, 'Soloturn', 0, self::TEXT_STATE.'_SO');
+        Text::replace(false, FRONTEND_LANG_ID, 'Schwyz', 0, self::TEXT_STATE.'_SZ');
+        Text::replace(false, FRONTEND_LANG_ID, 'Thurgau', 0, self::TEXT_STATE.'_TG');
+        Text::replace(false, FRONTEND_LANG_ID, 'Ticino', 0, self::TEXT_STATE.'_TI');
+        Text::replace(false, FRONTEND_LANG_ID, 'Uri', 0, self::TEXT_STATE.'_UR');
+        Text::replace(false, FRONTEND_LANG_ID, 'Vaud', 0, self::TEXT_STATE.'_VD');
+        Text::replace(false, FRONTEND_LANG_ID, 'Valais', 0, self::TEXT_STATE.'_VS');
+        Text::replace(false, FRONTEND_LANG_ID, 'Zug', 0, self::TEXT_STATE.'_ZG');
+        Text::replace(false, FRONTEND_LANG_ID, 'Zürich', 0, self::TEXT_STATE.'_ZH');
 
         // More to come...
 
@@ -943,6 +944,62 @@ class Location
         if (!$objResult) return self::errorHandler();
         if ($objResult->EOF) return false;
         return $objResult->fields['city'];
+    }
+
+
+    static function getSqlSnippets($field_foreign_zip, $alias=false)
+    {
+        static $table_alias_index = 0;
+
+        if (empty($field_foreign_zip)) return false;
+        $table_alias = 'location_'.++$table_alias_index;
+        $field_zip = $table_alias.'_zip';
+        $field_city = ($alias ? $alias : $table_alias.'_city');
+        $query_field =
+            ', '.$field_foreign_zip.
+            ', `'.$table_alias.'`.`zip`  AS `'.$field_zip.'`'.
+            ', `'.$table_alias.'`.`city` AS `'.$field_city.'`';
+        $query_join =
+            ' LEFT JOIN `'.DBPREFIX.'core_zip` as `'.$table_alias.'`'.
+            ' ON `'.$table_alias.'`.`zip`='.$field_foreign_zip;
+// Unfortunately, we don't have these in multiple lanugages yet
+//            ' AND `'.$table_alias.'`.`lang_id`='.$lang_id.
+//echo("Text::getSqlSnippets(): got name /$field_id_name/, made ");
+            // Remove table name, dot and backticks, if any
+            $field_foreign_zip = preg_replace(
+                '/`?\w*`?\.?`?(\w+)`?/', '$1', $field_foreign_zip);
+//echo("/$field_id_name/<br />");
+        return array(
+            'zip'   => $field_zip,
+            'city'  => $field_city,
+            'name'  => $field_foreign_zip,
+            'alias' => $table_alias,
+            'field' => $query_field,
+            'join'  => $query_join,
+        );
+    }
+
+
+    static function getMatching($location, $state)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT DISTINCT `city`
+              FROM `".DBPREFIX."core_zip`
+             WHERE 1
+             ".($location ? " AND `city` LIKE '".addslashes($location)."%'" : '')."
+             ".($state ? " AND `state`='".addslashes($state)."'" : '')."
+             ORDER BY `city` ASC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) die();
+        $arrLocations = array();
+        while (!$objResult->EOF) {
+            $arrLocations[] =
+                $objResult->fields['city'];
+            $objResult->MoveNext();
+        }
+        die(join(',', $arrLocations));
     }
 
 
@@ -1253,8 +1310,10 @@ class Region
     {
         global $objDatabase;
 
+die("Region::errorHandler(): Disabled!<br />");
+
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (!in_array(DBPREFIX."core_setting", $arrTables)) {
+        if (!in_array(DBPREFIX."core_region", $arrTables)) {
             $query = "
               CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_region` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
