@@ -224,7 +224,7 @@ class aliasLib
 
     function _setAliasTarget(&$arrAlias)
     {
-        global $objDatabase;
+        global $objDatabase, $_CONFIG;
 
         if ($arrAlias['type'] == 'local') {
             $objAlias = $objDatabase->SelectLimit("
