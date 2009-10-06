@@ -95,6 +95,8 @@ Benutzerverwaltung
   aktiven Gruppe Mitglied ist.
 - Beim Speichern einer Benutzergruppe gehen die Modul-Spezifischen Berechtigungen
   nicht verloren.
+- Die Funktion "Kennwort Zurücksetzen" funktioniert mit Benutzern, welche
+  automatisch über den Online Shop erstellt wurden.
 
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.

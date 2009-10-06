@@ -250,10 +250,21 @@ class FWUser extends User_Setting
     {
         global $_CORELANG, $_CONFIG, $_LANGID;
 
+// TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
+// original code:
+//        $objUser = $this->objUser->getUsers(
+//            array('email' => $email, 'is_active' => true), null, null, null, 1
+//        );
+// workaround code:
         $objUser = $this->objUser->getUsers(
-            array('email' => $email, 'is_active' => true), null, null, null, 1
+            array('email' => array('REGEXP' => '^(shop_customer_[0-9]+_[0-9]+_[0-9]-)?'.str_replace('.', '\.', $email).'$'), 'is_active' => true), null, null, null
         );
+// END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         if ($objUser) {
+// TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
+// workaround code:
+            while (!$objUser->EOF) {
+// END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
             $objUserMail = $this->getMail();
             $objUser->setRestoreKey();
             if ($objUser->store() &&
@@ -324,17 +335,33 @@ class FWUser extends User_Setting
 
 
                 if ($objMail->Send()) {
-                    return true;
+// TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
+// original code:
+//                    return true;
+// workaround code:
+                    $status = true;
+// END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
                 } else {
                     $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
                 }
             } else {
                 $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
             }
+// TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
+// workaround code:
+            $objUser->next();
+        }
+// END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         } else {
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST']."<br />";
         }
 
+// TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
+// workaround code:
+        if ($status) {
+            return true;
+        }
+// END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         return false;
     }
 
