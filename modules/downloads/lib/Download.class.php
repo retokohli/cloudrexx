@@ -28,6 +28,7 @@ class Download {
     private $mime_type;
     private $source;
     private $source_name;
+    private $md5_sum;
     private $icon;
     private $size;
     private $image;
@@ -59,6 +60,7 @@ class Download {
             'mime_type'                         => 'string',
             'source'                            => 'string',
             'source_name'                       => 'string',
+            'md5_sum'                           => 'string',
             'icon'                              => 'string',
             'size'                              => 'int',
             'image'                             => 'string',
@@ -255,6 +257,7 @@ class Download {
         $this->mime_type = $this->defaultMimeType;
         $this->source = '';
         $this->source_name = '';
+        $this->md5_sum = '';
         $this->icon = $this->defaultIcon;
         $this->size = 0;
         $this->image = '';
@@ -469,6 +472,7 @@ class Download {
                 $this->mime_type = isset($this->arrLoadedDownloads[$id]['mime_type']) ? $this->arrLoadedDownloads[$id]['mime_type'] : $this->defaultMimeType;
                 $this->source = isset($this->arrLoadedDownloads[$id]['source']) ? $this->arrLoadedDownloads[$id]['source'] : '';
                 $this->source_name = isset($this->arrLoadedDownloads[$id]['source_name']) ? $this->arrLoadedDownloads[$id]['source_name'] : '';
+                $this->md5_sum = isset($this->arrLoadedDownloads[$id]['md5_sum']) ? $this->arrLoadedDownloads[$id]['md5_sum'] : '';
                 $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
                 $this->image = isset($this->arrLoadedDownloads[$id]['image']) ? $this->arrLoadedDownloads[$id]['image'] : '';
@@ -983,6 +987,7 @@ class Download {
                     `mime_type` = '".$this->mime_type."',
                     `source` = '".addslashes($this->source)."',
                     `source_name` = '".addslashes($this->source_name)."',
+                    `md5_sum` = '".addslashes($this->md5_sum)."',
                     `icon` = '".addslashes($this->icon)."',
                     `size` = ".intval($this->size).",
                     `image` = '".addslashes($this->image)."',
@@ -1009,6 +1014,7 @@ class Download {
                     `mime_type`,
                     `source`,
                     `source_name`,
+                    `md5_sum`,
                     `icon`,
                     `size`,
                     `image`,
@@ -1029,6 +1035,7 @@ class Download {
                     '".$this->mime_type."',
                     '".addslashes($this->source)."',
                     '".addslashes($this->source_name)."',
+                    '".addslashes($this->md5_sum)."',
                     '".addslashes($this->icon)."',
                     ".intval($this->size).",
                     '".addslashes($this->image)."',
@@ -1331,6 +1338,11 @@ class Download {
         return $this->source_name;
     }
 
+    public function getMD5Sum()
+    {
+        return $this->md5_sum;
+    }
+
     public function getIcon($small = false)
     {
         return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.Download::$arrMimeTypes[$this->getMimeType()][($small ? 'icon_small' : 'icon')];
@@ -1520,6 +1532,7 @@ class Download {
             $extension = strtolower(pathinfo($source, PATHINFO_EXTENSION));
             $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
             $this->source_name = isset($sourceName) ? $sourceName : basename($source);
+            $this->md5_sum = md5_file(ASCMS_PATH.$source);
         }
 
         $this->source = $source;
