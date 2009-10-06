@@ -63,6 +63,7 @@
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
+ *   DBG_ADODB_ERROR     - show ADODB queriy errors only
  *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
