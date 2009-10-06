@@ -1,6 +1,21 @@
 <!-- start module_downloads_download_modify.html -->
 <script language="javascript">
 // <![CDATA[
+downloadsCurrentDescriptionLanguage = {DOWNLOADS_DESCRIPTION_LANGUAGE};
+
+function downloadsSwitchDescription(langId)
+{
+    document.getElementById('downloads_download_description_tab_'+downloadsCurrentDescriptionLanguage).setAttribute('class', 'inactive');
+    oFCKeditor = FCKeditorAPI.GetInstance('downloads_download_description_preview');
+    document.getElementById('downloads_download_description_'+downloadsCurrentDescriptionLanguage).value = oFCKeditor.GetHTML();
+    if (typeof(langId) != 'undefined') {
+        oFCKeditor.SetHTML(document.getElementById('downloads_download_description_'+langId).value);
+        downloadsCurrentDescriptionLanguage = langId;
+        document.getElementById('downloads_download_description_tab_'+langId).setAttribute('class', 'active');
+    }
+
+    return true;
+}
 
 function downloadsSelectAll()
 {
@@ -347,7 +362,7 @@ function downloadsAdjustSourceConfig()
     <li><a id="downloadsTab_downloadPermissions" href="javascript:void(0)" onclick="selectTab('downloadPermissions')" title="{TXT_DOWNLOADS_PERMISSIONS}">{TXT_DOWNLOADS_PERMISSIONS}</a></li>
 </ul>
 
-<form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" onsubmit="downloadsSelectAll()" method="post">
+<form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" onsubmit="downloadsSelectAll();downloadsSwitchDescription()" method="post">
 <!-- start div downloadsTab_downloadGeneral -->
     <div id="downloadGeneral" class="downloadsTab">
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -374,11 +389,16 @@ function downloadsAdjustSourceConfig()
                     <td>{TXT_DOWNLOADS_DESCRIPTION}</td>
                     <td>
                         <!-- BEGIN downloads_download_description -->
-                        <textarea id="downloads_download_description_0" cols="10" rows="5" onchange="downloadsSyncNameFields(this.value,'textarea','downloads_download_description')" style="width:300px;">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</textarea> <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_description_lang_div').style.display = (document.getElementById('downloads_download_description_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
-                        <div id="downloads_download_description_lang_div" style="display:none;">
+                        <ul class="tabmenu">
                         <!-- BEGIN downloads_download_description_list -->
-                            <textarea name="downloads_download_description[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_description_{DOWNLOADS_DOWNLOAD_LANG_ID}" cols="10" rows="5" style="margin-top:1px; width:300px;">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</textarea> {DOWNLOADS_DOWNLOAD_LANG_DESCRIPTION}<br />
+                            <li><a href="javascript:void(0);" class="{DOWNLOADS_DOWNLOAD_LANG_DISPLAY_STATUS}" title="{DOWNLOADS_DOWNLOAD_LANG_DESCRIPTION}" onclick="downloadsSwitchDescription({DOWNLOADS_DOWNLOAD_LANG_ID})" id="downloads_download_description_tab_{DOWNLOADS_DOWNLOAD_LANG_ID}">{DOWNLOADS_DOWNLOAD_LANG_DESCRIPTION}</a><textarea name="downloads_download_description[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_description_{DOWNLOADS_DOWNLOAD_LANG_ID}" cols="1" rows="1" style="display:none;">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</textarea></li>
+
                         <!-- END downloads_download_description_list -->
+                        </ul>
+
+                        <div class="tabContainer" style="padding:1px;">
+                            <br />
+                            {DOWNLOADS_DOWNLOAD_DESCRIPTION_PREVIEW}
                         </div>
                         <!-- END downloads_download_description -->
                     </td>
