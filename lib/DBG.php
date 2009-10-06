@@ -4,9 +4,10 @@ define('DBG_NONE'       ,  0);
 define('DBG_PHP'        ,  1);
 define('DBG_ADODB'      ,  2);
 define('DBG_ADODB_TRACE',  4);
-define('DBG_LOG_FILE'   ,  8);
-define('DBG_LOG_FIREPHP', 16);
-define('DBG_ALL'        , 31);
+define('DBG_ADODB_ERROR',  8);
+define('DBG_LOG_FILE'   , 16);
+define('DBG_LOG_FIREPHP', 32);
+define('DBG_ALL'        , 63);
 
 
 class DBG
@@ -38,7 +39,7 @@ class DBG
             self::enable_file();
         if (_DEBUG & DBG_LOG_FIREPHP)
             self::enable_firephp();
-        if ((_DEBUG & DBG_ADODB) || (_DEBUG & DBG_ADODB_TRACE))
+        if ((_DEBUG & DBG_ADODB) || (_DEBUG & DBG_ADODB_TRACE) || (_DEBUG & DBG_ADODB_ERROR))
             self::enable_adodb();
         if (_DEBUG & DBG_PHP) {
             self::enable_error_reporting();
@@ -311,9 +312,12 @@ class DBG
 
 function DBG_log_adodb($msg)
 {
-    DBG::log(
-        _DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP
-            ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET) : $msg, preg_match('#^[0-9]+:#', $msg) ? 'error' : (preg_match('#\(mysql\):\s(UPDATE|DELETE|INSERT)#', $msg) ? 'info' : 'log'));
+    $error = preg_match('#^[0-9]+:#', $msg);
+    if ($error || (_DEBUG & DBG_ADODB) || (_DEBUG & DBG_ADODB_TRACE)) {
+        DBG::log(
+            _DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP
+                ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET) : $msg, $error ? 'error' : (preg_match('#\(mysql\):\s(UPDATE|DELETE|INSERT)#', $msg) ? 'info' : 'log'));
+    }
 }
 
 ?>
