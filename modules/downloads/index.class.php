@@ -1262,6 +1262,8 @@ JS_CODE;
 
     private function download()
     {
+        global $objInit;
+
         $objDownload = new Download();
         $objDownload->load(!empty($_GET['download']) ? intval($_GET['download']) : 0);
         if (!$objDownload->EOF) {
@@ -1280,7 +1282,7 @@ JS_CODE;
                 // the user isn't the owner of the download
                 && $objDownload->getOwnerId() != $this->userId
             ) {
-                Permission::noAccess();
+                Permission::noAccess(base64_encode($objInit->getPageUri()));
             }
 
             $objDownload->incrementDownloadCount();

@@ -139,6 +139,8 @@ Modul: Digital Asset Management
 - Zeilenumbrüche beim Beschreibungstext eines Downloads werden angezeigt.
 - Der Download von Dateien, welche Leerzeichen im Dateinamen enthalten,
   funktioniert.
+- Nach der Authentifizierung erfolgt die Weiterleitung auf einen geschützten
+  Download korrekt.
 
 Modul: Dokumenten System
 - Kompatibel mit der Alias Verwaltung.
