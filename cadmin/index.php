@@ -17,6 +17,7 @@
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
+ *   DBG_ADODB_ERROR     - show ADODB queriy errors only
  *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *   DBG_ALL             - sets all debug flags
@@ -332,7 +333,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('content_master.html');
 }
 
-// CSRF protection. From this point on, we can assume that 
+// CSRF protection. From this point on, we can assume that
 // the user is logged in, but nothing else has happened.
 // Note that we only do the check as long as there's no
 // cmd given; this is so we can reload the main screen if
