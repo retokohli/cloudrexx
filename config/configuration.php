@@ -74,12 +74,6 @@ $_CONFIG['coreCharacterEncoding'] = ''; // example 'UTF-8'
 */
 @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
 
-/*
-* Enable Frontend editing
-*/
-$_CONFIG['frontendEditingStatus'] = 'on'; // on|off
-
-
 /**
 * -------------------------------------------------------------------------
 * Set constants
