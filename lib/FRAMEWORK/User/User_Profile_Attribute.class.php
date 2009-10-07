@@ -1701,64 +1701,21 @@ class User_Profile_Attribute
 
 
     /**
-     * Returns the attribute value for the given attribute and user ID
-     * @param     integer   $attributeId    The attribute ID
-     * @param     integer   $userId         The user ID
-     * @return    string                    The attribute value on success,
-     *                                      false otherwise
-     * @global    mixed     $objDatabase    Database connection object
-     * @static
-     * @author    Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function getAttributeValue($attributeId, $userId)
-    {
-        global $objDatabase;
-
-        if (empty($attributeId) || empty($userId)) return false;
-        $objResult = $objDatabase->Execute("
-            SELECT `value`
-              FROM `contrexx_access_user_attribute_value`
-             WHERE attribute_id=$attributeId
-               AND user_id=$userId");
-        if (!$objResult || $objResult->EOF) return false;
-        return $objResult->fields['value'];
-    }
-
-
-    /**
-     * Returns an array of all custom attribute names in the selected language
+     * Returns an array of all custom attribute names
      *
-     * If the $langId parameter is empty, the language is taken from the
-     * global LANG_ID constant.
-     * @param     integer   $langId         The optional language ID
      * @return    array                     An array with attribute names indexed
-     *                                      by their IDs on success,
-     *                                      false otherwise
-     * @global    mixed     $objDatabase    Database connection object
-     * @static
-     * @author    Reto Kohli <reto.kohli@comvation.com>
+     *                                      by their IDs
      */
-    static function getCustomAttributeNameArray($langId=0)
+    public function getCustomAttributeNameArray()
     {
-        global $objDatabase;
-
-        if (empty($langId)) $langId = LANG_ID;
-        $objResult = $objDatabase->Execute("
-            SELECT `id`, `name`
-              FROM `contrexx_access_user_attribute`
-             INNER JOIN `contrexx_access_user_attribute_name`
-                ON id=attribute_id
-             WHERE lang_id=$langId
-             ORDER BY order_id ASC");
-        if (!$objResult) return false;
         $arrNames = array();
-        while (!$objResult->EOF) {
-            $arrNames[$objResult->fields['id']] = $objResult->fields['name'];
-            $objResult->MoveNext();
+        foreach ($this->getSortedAttributeIds() as $attributeId) {
+            if ($this->isCustomAttribute($attributeId)) {
+                $arrNames[$attributeId] = str_pad('', $this->getLevel($attributeId)*2, '..').htmlentities($this->arrAttributes[$attributeId]['names'][$this->langId], ENT_QUOTES, CONTREXX_CHARSET);
+            }
         }
         return $arrNames;
     }
-
 }
 
 ?>
