@@ -469,9 +469,10 @@ class SettingDb
               case 'dropdown_user_custom_attribute':
 //DBG::enable_error_reporting();
 //DBG::enable_adodb_debug();
+                    $objFWUser = FWUser::getFWUserObject();
                     $element = Html::getSelect(
                     $name,
-                    User_Profile_Attribute::getCustomAttributeNameArray(),
+                    $objFWUser->objUser->objAttribute->getCustomAttributeNameArray(),
                     $arrSetting['value'],
                     '', 'style="width: 220px;"'
                 );

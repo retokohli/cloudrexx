@@ -934,7 +934,7 @@ echo("Note: No language entry for $name, skipped<br />");
         $user_id = $objUser->getId();
         SettingDb::init(MODULE_ID);
         $attribute_id = SettingDb::getValue('user_attribute_hotel_id');
-        $hotel_id = User_Profile_Attribute::getAttributeValue($attribute_id, $user_id);
+        $hotel_id = $objUser->getProfileAttribute($attribute_id);
 //die("attribute ID $attribute_id, got hotel ID $hotel_id<br />");
 
 $hotel_id = 6;
