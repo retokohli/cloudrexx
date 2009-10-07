@@ -461,9 +461,10 @@ class SettingDb
                     'style="width: 220px;'.$value_align.'"');
                 break;
               case 'dropdown_user_custom_attribute':
+                $objFWUser = FWUser::getFWUserObject();
                 $element = Html::getSelect(
                     $name,
-                    User_Profile_Attribute::getCustomAttributeNameArray(),
+                    $objFWUser->objUser->objAttribute->getCustomAttributeNameArray(),
                     $arrSetting['value'], '', '', 'style="width: 220px;"'
                 );
                 break;

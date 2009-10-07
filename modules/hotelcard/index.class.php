@@ -1448,7 +1448,7 @@ if (!defined('_DEBUG')) return false;
 // TODO: Perhaps the init() can be limited to just the 'admin' key?
         SettingDb::init('admin');
         $attribute_id = SettingDb::getValue('user_profile_attribute_hotel_id');
-        $hotel_id = User_Profile_Attribute::getAttributeValue($attribute_id, $user_id);
+        $hotel_id = $objUser->getProfileAttribute($attribute_id);
         if (empty($hotel_id)) {
             CSRF::header('Location: index.php?section=hotelcard');
             exit();
