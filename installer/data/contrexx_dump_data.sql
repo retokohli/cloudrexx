@@ -188,8 +188,10 @@ INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('notif
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('profile_thumbnail_pic_height','60',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('profile_thumbnail_pic_width','80',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('session_user_interval','0',1);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_accept_tos_on_signup','0',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_activation','',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_activation_timeout','1',0);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_captcha','0',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_config_email_access','',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_config_profile_access','',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_delete_account','',1);
