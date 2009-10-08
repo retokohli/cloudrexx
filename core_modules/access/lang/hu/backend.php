@@ -254,4 +254,6 @@ $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Add a new, personal category to th
 $_ARRAYLANG['TXT_ACCESS_HOMEPAGE'] = "Homepage";
 $_ARRAYLANG['TXT_ACCESS_BROWSE'] = "Browse";
 $_ARRAYLANG['TXT_ACCESS_HOMEPAGE_DESC'] = "Select the web page to which the associated users of this group should be redirected to after they had successfully been authenticated.";
+$_ARRAYLANG['TXT_ACCESS_TOS_SINGUP_DESC'] = "Users must accept the <a href=\"%s\" target=\"_blank\" title=\"ToS\">ToS</a> when signing up.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
 ?>

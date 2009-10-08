@@ -254,4 +254,6 @@ $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Für diesen Benutzer eine neue, pe
 $_ARRAYLANG['TXT_ACCESS_HOMEPAGE'] = "Startseite";
 $_ARRAYLANG['TXT_ACCESS_BROWSE'] = "Durchsuchen";
 $_ARRAYLANG['TXT_ACCESS_HOMEPAGE_DESC'] = "Wählen Sie hier die Seite, auf welcher die Benutzer dieser Gruppe landen sollen, nachdem sich die Benutzer erfolgreich authentifiziert haben.";
+$_ARRAYLANG['TXT_ACCESS_TOS_SINGUP_DESC'] = "Benutzer müssen bei der Registrierung die <a href=\"%s\" target=\"_blank\" title=\"AGB's\">AGB's</a> akzeptieren.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Allgemeine Geschäftsbedingungen";
 ?>

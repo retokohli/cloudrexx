@@ -76,4 +76,7 @@ $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Enregistrer";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Compte utilisateur mis à jour";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous. (Il s'agit d'une protection anti-spambot)";
 $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTCHA";
+$_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "I confirm the correctness of the entered data and I know the  <a href=\"%s\" target=\"_blank\" title=\"Terms of Service\">Terms of Service</a> and accept them.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
+$_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "You have to accept the Terms of Service to sign up!";
 ?>
