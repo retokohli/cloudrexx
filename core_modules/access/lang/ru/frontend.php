@@ -76,4 +76,7 @@ $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Сохранить";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto wurde erfolgreich gespeichert";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Для активации этой опции пользователь должен ввести код изображенный на картинке, чтобы иметь возможность отправть контактную форму. Это необходимо для блокирования автоматических записей генерируемых спамботами.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Указанная строка символов была неправильной!";
+$_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "I confirm the correctness of the entered data and I know the  <a href=\"%s\" target=\"_blank\" title=\"Terms of Service\">Terms of Service</a> and accept them.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
+$_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "You have to accept the Terms of Service to sign up!";
 ?>
