@@ -1679,14 +1679,17 @@ class AccessManager extends AccessLib
 
     function _configCommunity()
     {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         $assignedGroups = '';
         $notAssignedGroups = '';
         $status = true;
 
         $arrSettings = User_Setting::getSettings();
-
+        $uriTos = ASCMS_PATH_OFFSET
+            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FRONTEND_LANG_ID, 'lang') : NULL)
+            .'/'.CONTREXX_DIRECTORY_INDEX
+            .'?section=agb';
         $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_community', 'module_access_config_community.html');
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_COMMUNITY'                              => $_ARRAYLANG['TXT_ACCESS_COMMUNITY'],
@@ -1696,6 +1699,8 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_CHECK_ALL'                              => $_ARRAYLANG['TXT_ACCESS_CHECK_ALL'],
             'TXT_ACCESS_UNCHECK_ALL'                            => $_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL'],
             'TXT_ACCESS_ASSOCIATED_GROUPS'                      => $_ARRAYLANG['TXT_ACCESS_ASSOCIATED_GROUPS'],
+            'TXT_ACCESS_TOS'                                    => $_ARRAYLANG['TXT_ACCESS_TOS'],
+            'TXT_ACCESS_TOS_SINGUP_DESC'                        => sprintf($_ARRAYLANG['TXT_ACCESS_TOS_SINGUP_DESC'], $uriTos),
             'TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'    => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'],
             'TXT_ACCESS_ACTIVATION_BY_USER'                     => $_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_USER'],
             'TXT_ACCESS_ACTIVATION_BY_AUTHORIZED_PERSON'        => $_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_AUTHORIZED_PERSON'],
@@ -1714,6 +1719,8 @@ class AccessManager extends AccessLib
             } else {
                 $arrSettings['assigne_to_groups']['value'] = '';
             }
+
+            $arrSettings['user_accept_tos_on_signup']['status'] = !empty($_POST['accessUserTos']);
 
             if (!empty($_POST['accessUserActivation']) && intval($_POST['accessUserActivation']) > 0) {
                 $arrSettings['user_activation']['status'] = 1;
@@ -1762,6 +1769,7 @@ class AccessManager extends AccessLib
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_NOT_ASSOCIATED_GROUPS'     => $notAssignedGroups,
             'ACCESS_USER_ASSOCIATED_GROUPS'         => $assignedGroups,
+            'ACCESS_USER_TOS'                       => $arrSettings['user_accept_tos_on_signup']['status'] ? 'checked="checked"' : '',
             'ACCESS_USER_ACTIVATION_1'              => $arrSettings['user_activation']['status'] ? 'checked="checked"' : '',
             'ACCESS_USER_ACTIVATION_0'              => $arrSettings['user_activation']['status'] ? '': 'checked="checked"',
             'ACCESS_USER_ACTIVATION_BOX_1'          => $arrSettings['user_activation']['status'] ? 'block' : 'none',

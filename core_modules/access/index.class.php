@@ -411,14 +411,13 @@ class Access extends AccessLib
         }
 
         $objUser = new User();
+        $arrSettings = User_Setting::getSettings();
+
 
         if (isset($_POST['access_signup'])) {
-            $arrSettings = User_Setting::getSettings();
-
             $objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
             $objUser->setEmail(isset($_POST['access_user_email']) ? trim(contrexx_stripslashes($_POST['access_user_email'])) : '');
             $objUser->setFrontendLanguage(isset($_POST['access_user_frontend_language']) ? intval($_POST['access_user_frontend_language']) : 0);
-
             $objUser->setGroups(explode(',', $arrSettings['assigne_to_groups']['value']));
 
             if (
@@ -449,6 +448,7 @@ class Access extends AccessLib
                 )
                 && $objUser->checkMandatoryCompliance()
 				&& $this->checkCaptcha()
+                && $this->checkToS()
                 && $objUser->signUp()
             ) {
                 if ($this->handleSignUp($objUser)) {
@@ -513,6 +513,20 @@ class Access extends AccessLib
 			'TXT_ACCESS_CAPTCHA_DESCRIPTION'=> $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION']
 		));
 
+        // set terms and conditions
+        if ($this->_objTpl->blockExists('access_tos')) {
+            if ($arrSettings['user_accept_tos_on_signup']['status']) {
+                $uriTos = CONTREXX_SCRIPT_PATH.'?section=agb';
+                $this->_objTpl->setVariable(array(
+                    'TXT_ACCESS_TOS'    => $_ARRAYLANG['TXT_ACCESS_TOS'],
+                    'ACCESS_TOS'    => '<input type="checkbox" name="access_user_tos" id="access_user_tos"'.(!empty($_POST['access_user_tos']) ? ' checked="checked"' : '').' /><label for="access_user_tos">'.sprintf($_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'], $uriTos).'</label>'
+                ));
+                $this->_objTpl->parse('access_tos');
+            } else {
+                $this->_objTpl->hideBlock('access_tos');
+            }
+        }
+
         $this->_objTpl->parse('access_signup_form');
     }
 
@@ -527,6 +541,19 @@ class Access extends AccessLib
 		} else {
 			return true;
 		}
+    }
+
+    private function checkTos()
+    {
+        global $_ARRAYLANG;
+
+        $arrSettings = User_Setting::getSettings();
+        if (!$arrSettings['user_accept_tos_on_signup']['status'] || !empty($_POST['access_user_tos'])) {
+            return true;
+        }
+
+        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'];
+        return false;
     }
 
     function handleSignUp($objUser)
