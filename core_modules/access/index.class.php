@@ -505,13 +505,21 @@ class Access extends AccessLib
         ));
 
 		// set captcha
-		$objCaptcha = new Captcha();
-        $this->_objTpl->setVariable(array(
-		    'ACCESS_CAPTCHA_OFFSET'			=> $objCaptcha->getOffset(),
-            'ACCESS_CAPTCHA_URL'			=> $objCaptcha->getUrl(),
-            'ACCESS_CAPTCHA_ALT'			=> $objCaptcha->getAlt(),
-			'TXT_ACCESS_CAPTCHA_DESCRIPTION'=> $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION']
-		));
+        if ($this->_objTpl->blockExists('access_captcha')) {
+            if ($arrSettings['user_captcha']['status']) {
+                $objCaptcha = new Captcha();
+                $this->_objTpl->setVariable(array(
+                    'ACCESS_CAPTCHA_OFFSET'			=> $objCaptcha->getOffset(),
+                    'ACCESS_CAPTCHA_URL'			=> $objCaptcha->getUrl(),
+                    'ACCESS_CAPTCHA_ALT'			=> $objCaptcha->getAlt(),
+                    'TXT_ACCESS_CAPTCHA'            => $_ARRAYLANG['TXT_ACCESS_CAPTCHA'],
+                    'TXT_ACCESS_CAPTCHA_DESCRIPTION'=> $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION']
+                ));
+                $this->_objTpl->parse('access_captcha');
+            } else {
+                $this->_objTpl->hideBlock('access_captcha');
+            }
+        }
 
         // set terms and conditions
         if ($this->_objTpl->blockExists('access_tos')) {
@@ -534,13 +542,15 @@ class Access extends AccessLib
     {
 		global $_ARRAYLANG;
 
+        $arrSettings = User_Setting::getSettings();
 		$objCaptcha = new Captcha();
-		if(!$objCaptcha->compare($_POST['accessSignUpCaptcha'], $_POST['accessSignUpCaptchaOffset'])) {
-			$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'];
-			return false;
-		} else {
-			return true;
+
+		if(!$arrSettings['user_captcha']['status'] || $objCaptcha->compare($_POST['accessSignUpCaptcha'], $_POST['accessSignUpCaptchaOffset'])) {
+            return true;
 		}
+
+        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'];
+        return false;
     }
 
     private function checkTos()

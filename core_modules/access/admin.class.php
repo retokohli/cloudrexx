@@ -1701,6 +1701,8 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_ASSOCIATED_GROUPS'                      => $_ARRAYLANG['TXT_ACCESS_ASSOCIATED_GROUPS'],
             'TXT_ACCESS_TOS'                                    => $_ARRAYLANG['TXT_ACCESS_TOS'],
             'TXT_ACCESS_TOS_SINGUP_DESC'                        => sprintf($_ARRAYLANG['TXT_ACCESS_TOS_SINGUP_DESC'], $uriTos),
+            'TXT_ACCESS_CAPTCHA'                                => $_ARRAYLANG['TXT_ACCESS_CAPTCHA'],
+            'TXT_ACCESS_CAPTCHA_SIGNUP_DESC'                    => $_ARRAYLANG['TXT_ACCESS_CAPTCHA_SIGNUP_DESC'],
             'TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'    => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'],
             'TXT_ACCESS_ACTIVATION_BY_USER'                     => $_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_USER'],
             'TXT_ACCESS_ACTIVATION_BY_AUTHORIZED_PERSON'        => $_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_AUTHORIZED_PERSON'],
@@ -1721,6 +1723,7 @@ class AccessManager extends AccessLib
             }
 
             $arrSettings['user_accept_tos_on_signup']['status'] = !empty($_POST['accessUserTos']);
+            $arrSettings['user_captcha']['status'] = !empty($_POST['accessUserCaptcha']);
 
             if (!empty($_POST['accessUserActivation']) && intval($_POST['accessUserActivation']) > 0) {
                 $arrSettings['user_activation']['status'] = 1;
@@ -1770,6 +1773,7 @@ class AccessManager extends AccessLib
             'ACCESS_USER_NOT_ASSOCIATED_GROUPS'     => $notAssignedGroups,
             'ACCESS_USER_ASSOCIATED_GROUPS'         => $assignedGroups,
             'ACCESS_USER_TOS'                       => $arrSettings['user_accept_tos_on_signup']['status'] ? 'checked="checked"' : '',
+            'ACCESS_USER_CAPTCHA'                   => $arrSettings['user_captcha']['status'] ? 'checked="checked"' : '',
             'ACCESS_USER_ACTIVATION_1'              => $arrSettings['user_activation']['status'] ? 'checked="checked"' : '',
             'ACCESS_USER_ACTIVATION_0'              => $arrSettings['user_activation']['status'] ? '': 'checked="checked"',
             'ACCESS_USER_ACTIVATION_BOX_1'          => $arrSettings['user_activation']['status'] ? 'block' : 'none',
