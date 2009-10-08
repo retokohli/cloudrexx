@@ -79,4 +79,5 @@ $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Die eingegebene Zeichenfolge w
 $_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"%s\" target=\"_blank\" title=\"Geschäftsbedingungen\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
 $_ARRAYLANG['TXT_ACCESS_TOS'] = "Allgemeine Geschäftsbedingungen";
 $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "Sie müssen die Allgemeinen Geschäftsbedingungen akzeptieren!";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "CAPTCHA";
 ?>
