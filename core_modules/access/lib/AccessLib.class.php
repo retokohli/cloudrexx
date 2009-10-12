@@ -103,7 +103,7 @@ class AccessLib
             'password'        => '<input type="password" name="[NAME]" value="" autocomplete="off" />',
             'checkbox'        => '<input type="hidden" name="[NAME]" /><input type="checkbox" name="[NAME]" value="1" [CHECKED] />',
             'menu'            => '<select name="[NAME]">[VALUE]</select>',
-            'menu_option'     => '<option value="[VALUE]"[SELECTED]>[VALUE_TXT]</option>',
+            'menu_option'     => '<option value="[VALUE]"[SELECTED][STYLE]>[VALUE_TXT]</option>',
             'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null){switch(pntEl.nodeName){case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if(elDiv.getElementsByTagName(\'a\').length>0){elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
             'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_SHORT_FORMAT)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
 
@@ -154,10 +154,11 @@ class AccessLib
             case 'uri':
                 $uri = $objUser->getProfileAttribute($attributeId, $historyId);
                 if (empty($uri)) {
-                    if ($this->_objTpl->blockExists($block.'_no_link')) {
+                    $arrPlaceholders['_VALUE'] = '';
+                    /*if ($this->_objTpl->blockExists($block.'_no_link')) {
                         $this->_objTpl->setVariable('TXT_ACCESS_NO_SPECIFIED', $_CORELANG['TXT_ACCESS_NO_SPECIFIED']);
                         $this->_objTpl->touchBlock($block.'_no_link');
-                    }
+                    }*/
                     if ($this->_objTpl->blockExists($block.'_link')) {
                         $this->_objTpl->hideBlock($block.'_link');
                     }
@@ -205,6 +206,9 @@ class AccessLib
 
             case 'menu':
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
+                if ($arrPlaceholders['_VALUE'] == '0' || $arrPlaceholders['_VALUE'] == 'gender_undefined') {
+                    $arrPlaceholders['_VALUE'] = '';
+                }
                 if ($this->_objTpl->blockExists($this->attributeNamePrefix.'_'.$attributeId.'_children')) {
                     foreach ($objAttribute->getChildren() as $childAttributeId) {
                         $this->parseAttribute($objUser, $childAttributeId, $historyId, $edit, false, true, false, $useMagicBlock);
@@ -803,11 +807,11 @@ class AccessLib
      * @param string $valueText
      * @return string
      */
-    private function getMenuOptionAttributeCode($value, $selected, $valueText)
+    private function getMenuOptionAttributeCode($value, $selected, $valueText, $style = null)
     {
         return str_replace(
-            array('[VALUE]', '[SELECTED]', '[VALUE_TXT]'),
-            array(htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET), ($selected == $value ? ' selected="selected"' : ''), htmlentities($valueText, ENT_QUOTES, CONTREXX_CHARSET)),
+            array('[VALUE]', '[SELECTED]', '[VALUE_TXT]', '[STYLE]'),
+            array(htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET), ($selected == $value ? ' selected="selected"' : ''), htmlentities($valueText, ENT_QUOTES, CONTREXX_CHARSET), ($style ? ' style="'.$style.'"' : '')),
             $this->arrAttributeTypeTemplates['menu_option']
         );
     }
@@ -831,6 +835,7 @@ class AccessLib
             :
             htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET);
     }
+
 
     function _getAtrributeCode($objUser, $attributeId, $historyId, $edit = false)
     {
@@ -877,11 +882,19 @@ class AccessLib
             case 'menu':
                 if ($edit) {
                     $childrenCode = array();
+                    if ($objAttribute->isCustomAttribute()) {
+                        if ($objAttribute->isMandatory()) {
+                            $childrenCode[] = $this->getMenuOptionAttributeCode('0', $objUser->getProfileAttribute($objAttribute->getId(), $historyId), $_CORELANG['TXT_ACCESS_PLEASE_SELECT'], 'border-bottom:1px solid #000000;');
+                        } else {
+                            $childrenCode[] = $this->getMenuOptionAttributeCode('0', $objUser->getProfileAttribute($objAttribute->getId(), $historyId), $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'], 'border-bottom:1px solid #000000;');
+                        }
+                    }
+
                     foreach ($objAttribute->getChildren() as $childAttributeId) {
                         $childrenCode[] = $this->_getAtrributeCode($objUser, $childAttributeId, $historyId, $edit);
                     }
                     $value = join($childrenCode);
-                } elseif ($objAttribute->isCoreAttribute($attributeId)) {
+                } elseif ($objAttribute->isCoreAttribute()) {
                     foreach ($objAttribute->getChildren() as $childAttributeId) {
                         $objChildAtrribute = $objAttribute->getById($childAttributeId);
                         if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute($objAttribute->getId(), $historyId)) {
@@ -898,7 +911,16 @@ class AccessLib
                 break;
 
             case 'menu_option':
-                $code = $this->getMenuOptionAttributeCode($objAttribute->getMenuOptionValue(), $objUser->getProfileAttribute($objAttribute->getParent(), $historyId), $objAttribute->getName());
+                $mandatory = false;
+                $selectOption = false;
+                if ($objAttribute->isCoreAttribute() && $objAttribute->isUnknownOption()) {
+                    $selectOption = true;
+                    $objParentAttribute = $objAttribute->getById($objAttribute->getParent());
+                    if ($objParentAttribute->isMandatory()) {
+                        $mandatory= true;
+                    }
+                }
+                $code = $this->getMenuOptionAttributeCode($objAttribute->getMenuOptionValue(), $objUser->getProfileAttribute($objAttribute->getParent(), $historyId), $mandatory ? $_CORELANG['TXT_ACCESS_PLEASE_SELECT'] : $objAttribute->getName(), $selectOption ? 'border-bottom:1px solid #000000' : '');
                 break;
 
             case 'group':

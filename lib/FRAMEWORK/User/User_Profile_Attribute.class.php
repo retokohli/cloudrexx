@@ -70,7 +70,8 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'gender',
-            'desc'                => 'TXT_ACCESS_UNKNOWN',
+            'desc'                => 'TXT_ACCESS_NOT_SPECIFIED',
+            'unknown'              => true,
             'order_id'            => 0
         ),
         'gender_female' => array(
@@ -106,8 +107,9 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'title',
-            'desc'                => 'TXT_ACCESS_UNKNOWN',
+            'desc'                => 'TXT_ACCESS_NOT_SPECIFIED',
             'value'                => '0',
+            'unknown'              => true,
             'order_id'            => 0
         ),
         'firstname' => array(
@@ -179,8 +181,9 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'country',
-            'desc'                => 'TXT_ACCESS_UNKNOWN',
+            'desc'                => 'TXT_ACCESS_NOT_SPECIFIED',
             'value'                => '0',
+            'unknown'              => true,
             'order_id'            => 0
         ),
         'phone_office' => array(
@@ -345,7 +348,7 @@ class User_Profile_Attribute
         'menu' => array(
             'desc'            => 'TXT_ACCESS_MENU',
             'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => false,
+            'mandatory'        => true,
             'children'        => true,
             'multiline'        => false,
             'movable'        => true,
@@ -718,14 +721,26 @@ class User_Profile_Attribute
                 }
                 asort($arrChildren, SORT_NUMERIC);
             } else {
+                $unknownMenuOption = null;
                 foreach ($arrAttributeIds as $childAttributeId) {
-                    $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][$this->langId];
+                    if (empty($unknownMenuOption)
+                        && $this->arrAttributes[$childAttributeId]['type'] == 'menu_option'
+                        && !empty($this->arrAttributes[$childAttributeId]['unknown'])
+                    ) {
+                        $unknownMenuOption = array($childAttributeId => $this->arrAttributes[$childAttributeId]['names'][$this->langId]);
+                    } else {
+                        $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][$this->langId];
+                    }
                 }
 
                 if (isset($this->arrAttributes[$attributeId]['sort_type']) && $this->arrAttributes[$attributeId]['sort_type'] == 'desc') {
                     arsort($arrChildren, SORT_STRING);
                 } else {
                     asort($arrChildren, SORT_STRING);
+                }
+
+                if (!empty($unknownMenuOption)) {
+                    $arrChildren = array_merge($unknownMenuOption, $arrChildren);
                 }
             }
             $this->arrAttributeRelations[$attributeId] = array_keys($arrChildren);
@@ -1134,25 +1149,31 @@ class User_Profile_Attribute
     }
 
 
-    function hasMandatoryOption()
+    public function hasMandatoryOption()
     {
         return isset($this->arrTypes[$this->type]['mandatory']) && $this->arrTypes[$this->type]['mandatory'];
     }
 
 
-    function hasChildOption()
+    public function hasChildOption()
     {
         return isset($this->arrTypes[$this->type]['children']) && $this->arrTypes[$this->type]['children'];
     }
 
 
-    function hasMovableOption()
+    public function hasMovableOption()
     {
         return isset($this->arrTypes[$this->type]['movable']) && $this->arrTypes[$this->type]['movable'];
     }
 
 
-    function hasSameParentHistoryAttribute($attributeId)
+    public function hasSortableOption()
+    {
+        return isset($this->arrTypes[$this->type]['children']) && $this->arrTypes[$this->type]['children'];
+    }
+
+
+    private function hasSameParentHistoryAttribute($attributeId)
     {
         $tmpAttributeId = $this->id;
         $parentHistoryId = 0;
@@ -1181,7 +1202,7 @@ class User_Profile_Attribute
     }
 
 
-    function hasProtectionOption()
+    public function hasProtectionOption()
     {
         return isset($this->arrTypes[$this->type]['protection']) && $this->arrTypes[$this->type]['protection'];
     }
@@ -1205,6 +1226,15 @@ class User_Profile_Attribute
     function isMandatory()
     {
         return $this->mandatory;
+    }
+
+
+    public function isUnknownOption($attributeId = null)
+    {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
+        return isset($this->arrAttributes[$attributeId]['unknown']) && $this->arrAttributes[$attributeId]['unknown'];
     }
 
 
@@ -1328,25 +1358,31 @@ class User_Profile_Attribute
     }
 
 
-    function isProtected()
+    public function isProtected()
     {
         return $this->protected;
     }
 
 
-    function isCoreAttribute($attributeId)
+    public function isCoreAttribute($attributeId = null)
     {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
         return isset($this->arrCoreAttributes[$attributeId]);
     }
 
 
-    function isCustomAttribute($attributeId)
+    public function isCustomAttribute($attributeId = null)
     {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
         return in_array($attributeId, $this->arrCustomAttributes);
     }
 
 
-    function setNames($arrNames)
+    public function setNames($arrNames)
     {
         $this->arrName = array();
         foreach ($arrNames as $langId => $name) {
@@ -1356,7 +1392,7 @@ class User_Profile_Attribute
     }
 
 
-    function setType($type)
+    public function setType($type)
     {
         if (in_array($type, array_keys($this->arrTypes))) {
             $this->type = $type;
@@ -1366,19 +1402,19 @@ class User_Profile_Attribute
     }
 
 
-    function setMultiline($multiline=false)
+    public function setMultiline($multiline=false)
     {
         $this->multiline = $multiline;
     }
 
 
-    function setMandatory($mandatory = 0)
+    public function setMandatory($mandatory = 0)
     {
         $this->mandatory = intval($mandatory);
     }
 
 
-    function setParent($parentId = 0)
+    public function setParent($parentId = 0)
     {
         global $_ARRAYLANG;
         if (($parentId == 0 || isset($this->arrAttributes[$parentId])) && $this->isAllowedParentType($parentId) && $this->isAllowedParentAttribute($parentId)) {
@@ -1390,7 +1426,7 @@ class User_Profile_Attribute
     }
 
 
-    function setSortType($type)
+    public function setSortType($type)
     {
         if (in_array($type, array_keys($this->arrSortTypes))) {
             $this->sort_type = $type;
@@ -1400,7 +1436,7 @@ class User_Profile_Attribute
     }
 
 
-    function setChildOrder($arrChildOrder)
+    public function setChildOrder($arrChildOrder)
     {
         $pattern = array();
         foreach ($arrChildOrder as $childId => $orderId) {
@@ -1410,7 +1446,7 @@ class User_Profile_Attribute
     }
 
 
-    function setProtection($arrGroups)
+    public function setProtection($arrGroups)
     {
         $this->access_group_ids = array();
         foreach ($arrGroups as $groupId) {
@@ -1420,7 +1456,7 @@ class User_Profile_Attribute
     }
 
 
-    function setSpecialProtection($special)
+    public function setSpecialProtection($special)
     {
         if (in_array($special, $this->arrTypes[$this->type]['special'])) {
             $this->access_special = $special;
@@ -1428,32 +1464,10 @@ class User_Profile_Attribute
     }
 
 
-    function removeProtection()
+    public function removeProtection()
     {
         $this->access_id = 0;
         $this->protected = false;
-    }
-
-
-    /**
-     * Load attribute name in each language
-     *
-     * @return mixed Array with names, which may also contains no elements, or FALSE on failure.
-     */
-    function getAttributeNames($id)
-    {
-        global $objDatabase;
-
-        $arrNames = array();
-        $objName = $objDatabase->Execute('SELECT `lang_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `attribute_id` = '.$id);
-        if ($objName !== false) {
-            while (!$objName->EOF) {
-                $arrNames[$objName->fields['lang_id']] = $objName->fields['name'];
-                $objName->MoveNext();
-            }
-            return $arrNames;
-        }
-        return array();
     }
 
 
@@ -1635,6 +1649,48 @@ class User_Profile_Attribute
     function getDataType()
     {
         return $this->arrTypes[$this->type]['data_type'];
+    }
+
+
+    /**
+     * Get an array containing all types that can be set to mandatory.
+     *
+     * @return array
+     */
+    public function getMandatoryTypes()
+    {
+        static $arrTypes = null;
+
+        if (empty($arrTypes)) {
+            $arrTypes = array();
+            foreach ($this->arrTypes as $type => $arrType) {
+                if ($arrType['mandatory']) {
+                    $arrTypes[] = $type;
+                }
+            }
+        }
+        return $arrTypes;
+    }
+
+
+    /**
+     * Get an array containing all types that can be sorted.
+     *
+     * @return array
+     */
+    public function getSortableTypes()
+    {
+        static $arrTypes = null;
+
+        if (empty($arrTypes)) {
+            $arrTypes = array();
+            foreach ($this->arrTypes as $type => $arrType) {
+                if ($arrType['children']) {
+                    $arrTypes[] = $type;
+                }
+            }
+        }
+        return $arrTypes;
     }
 
 

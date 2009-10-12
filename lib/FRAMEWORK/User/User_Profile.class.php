@@ -135,7 +135,13 @@ class User_Profile
             }
 
             foreach ($arrHistoryIds as $historyId) {
-                if (empty($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])) {
+                if (
+                    empty($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])
+                    || $this->objAttribute->isCoreAttribute($attributeId)
+                       && ($objAttribute = $this->objAttribute->getById($attributeId))
+                       && $objAttribute->getType() == 'menu'
+                       && $objAttribute->isUnknownOption($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])
+                ) {
                     $this->error_msg[] = $_CORELANG['TXT_ACCESS_FILL_OUT_ALL_REQUIRED_FIELDS'];
                     return false;
                 }
