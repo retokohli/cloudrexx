@@ -131,7 +131,7 @@ class AccessManager extends AccessLib
                     break;
 
                     default:
-                       $gender = $_CORELANG['TXT_ACCESS_UNKNOWN'];
+                       $gender = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
                     break;
                 }
 
@@ -1645,6 +1645,10 @@ class AccessManager extends AccessLib
                 $this->_configDeleteAttribute();
                 break;
 
+            case 'attributeCode':
+                $this->_configAttributeCode();
+                break;
+
             case 'mails':
                 $this->_configMails();
                 break;
@@ -2131,6 +2135,8 @@ class AccessManager extends AccessLib
             'ACCESS_MUST_STORE_BEFORE_CONTINUE_MSG'     => $objAttribute->getId() ? $_ARRAYLANG['TXT_ACCESS_STORE_CHANGED_ATTRIBUTE_MSG'] : $_ARRAYLANG['TXT_ACCESS_MUST_STORE_NEW_ATTRIBUTE_MSG'],
             'ACCESS_IS_NEW_ATTRIBUTE'                   => $objAttribute->getId() ? 'false' : 'true',
             'ACCESS_JAVASCRIPT_FUNCTIONS'               => $this->getJavaScriptCode(),
+            'ACCESS_SORTABLE_TYPE_LIST'                 => implode("', '", $objAttribute->getSortableTypes()),
+            'ACCESS_MANDATORY_TYPE_LIST'                => implode("', '", $objAttribute->getMandatoryTypes()),
             'TXT_ACCESS_INVALID_PARENT_ATTRIBUTE'       => $_ARRAYLANG['TXT_ACCESS_INVALID_PARENT_ATTRIBUTE'],
             'TXT_ACCESS_CHANGES_WILL_BE_LOST'           => $_ARRAYLANG['TXT_ACCESS_CHANGES_WILL_BE_LOST'],
             'TXT_ACCESS_EXTENDED'                       => $_ARRAYLANG['TXT_ACCESS_EXTENDED'],
@@ -2228,6 +2234,7 @@ class AccessManager extends AccessLib
             'ACCESS_ATTRIBUTE_CHILD_FRAME_DISPLAY'      => $objAttribute->hasChildOption() ? '' : 'none',
             'ACCESS_ATTRIBUTE_CHILD_FRAME_ROWS'         => count($objAttribute->getChildren()) + 2,
             'ACCESS_ATTRIBUTE_SORT_FRAME_DISPLAY'       => $objAttribute->hasChildOption() ? '' : 'none',
+            'ACCESS_ATTRIBUTE_SORT_FRAME_ROW'           => $objAttribute->hasMandatoryOption() && $objAttribute->hasSortableOption() ? 'row1' : 'row2',
             'ACCESS_ATTRIBUTE_SORT_TYPE'                => $objAttribute->isSortOrderModifiable() ? $objAttribute->getSortTypeMenu('name="access_attribute_sort_type" style="width:300px;" onchange="accessSwitchSortType(this.value)"') : $objAttribute->getSortTypeDescription(),
             'ACCESS_ATTRIBUTE_NOT_ASSOCIATED_GROUPS'    => $notAssociatedGroups,
             'ACCESS_USER_ASSOCIATED_GROUPS'             => $associatedGroups,
@@ -2362,6 +2369,35 @@ class AccessManager extends AccessLib
                     return $this->_configAttributes();
                 }
             }
+        } else {
+            $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_PROFILE_ATTRIBUTE_SPECIFIED'];
+            $_REQUEST['id'] = 0;
+            return $this->_configAttributes();
+        }
+    }
+
+
+    /**
+     * Show the HTML code of an attribute.
+     *
+     * @todo: This method is not yet usable. Extend to method $this->getUnparsedAtrributeCode() so that it returns the unparsed HTML code.
+     */
+    private function _configAttributeCode()
+    {
+        global $_ARRAYLANG;
+
+        $objFWUser = FWUser::getFWUserObject();
+        $objAttribute = new User_Profile_Attribute();
+        $attributeId = isset($_GET['id']) ? contrexx_addslashes($_GET['id']) : 0;
+        if ($attributeId && ($objAttribute = $objFWUser->objUser->objAttribute->getById($attributeId))) {
+            $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_attribute_code', 'module_access_config_attribute_code.html');
+            $this->_objTpl->setVariable(array(
+                'TXT_ACCESS_ATTRIBUTE_CODE_DESC'    => $_ARRAYLANG['TXT_ACCESS_ATTRIBUTE_CODE_DESC'],
+                'TXT_ACCESS_BACK'                   => $_ARRAYLANG['TXT_ACCESS_BACK'],
+                'ACCESS_ATTRIBUTE_CODE_TITLE'       => '',
+                'ACCESS_ATTRIBUTE_CODE'             => $this->getUnparsedAtrributeCode($attributeId)
+            ));
+            $this->_objTpl->parse('module_access_config_attribute_code');
         } else {
             $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_PROFILE_ATTRIBUTE_SPECIFIED'];
             $_REQUEST['id'] = 0;

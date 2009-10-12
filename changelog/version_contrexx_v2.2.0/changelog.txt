@@ -36,6 +36,10 @@ Benutzerverwaltung
   Akzeptieren erweitert werden.
 - Mit dem neuen Platzhalter [[USER_COUNT]] kann die Anzahl Mitglieder
   in der index.html des Layouts ausgegeben werden.
+- Profil Eigenschaften vom Typ Auswahlmenü können als Pflichtfeld definiert
+  werden.
+- Die Profil Eigenschaften Geschlecht, Anrede, Land und Webseite werden nur
+  aufgelistet, sofern eine Option ausgewählt wurde.
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
