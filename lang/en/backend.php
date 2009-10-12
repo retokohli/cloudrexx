@@ -1050,4 +1050,5 @@ $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
 $_ARRAYLANG['TXT_CSRF_TITLE'] = "An error hqas occurred";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = "For security reasons, this action has been blocked. If this message appears repeatedly, try to use fewer browser windows / tabs.";
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Click here to continue.";
+$_ARRAYLANG['TXT_ACCESS_PLEASE_SELECT'] = "Please select...";
 ?>
