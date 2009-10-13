@@ -197,6 +197,8 @@ Modul: User to User Nachrichten
 
 Modul: Wissensdatenbank
 - Verbesserte Live-Suche.
+- Verbesserung der WYSIWYG-Editor Einbindung bei der Bearbeitungsmaske
+  eines Artikels.
 
 Statistik
 - Die Zählung der Besucher erfolgt korrekt.
