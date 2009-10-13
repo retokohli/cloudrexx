@@ -60,5 +60,9 @@ Modul: Statistik
 - Um die Ladegeschwindigkeit zu erhöhen, wird der Counter neu mittels
   AJAX aktualisiert, falls möglich
 
+Modul: Wissensdatenbank
+- Verbesserung der WYSIWYG-Editor Einbindung bei der Bearbeitungsmaske
+  eines Artikels.
+
 Update
 - Update-SQL-Query im Kalendermodul gefixt

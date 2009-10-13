@@ -1051,6 +1051,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	       "TABS_NAME"         => $lang['long'],
     	       "TABS_DIV_ID"       => $lang['long'],
     	       "TABS_LINK_ID"      => $lang['long'],
+               "TABS_LANG_ID"      => $langId,
     	       "TABS_CLASS"        => ($first) ? "active" : "inactive",
     	    ));
     	    $this->tpl->parse("showLanguageTabs");
@@ -1072,12 +1073,22 @@ class KnowledgeAdmin extends KnowledgeLibrary
                "QUESTION"          => (isset($article['content'][$langId]) ?
                                        $article['content'][$langId]['question']
                                        : ''),
-               "ANSWER"            => get_wysiwyg_editor('answer_'.$langId,
-                                       (isset($article['content'][$langId]) ?
-                                       $article['content'][$langId]['answer']
-                                       : ''))
+               "ANSWER"            => isset($article['content'][$langId]) ?
+                                       htmlentities($article['content'][$langId]['answer'], ENT_QUOTES, CONTREXX_CHARSET)
+                                       : '',
     	    ));
     	    $this->tpl->parse("langDiv");
+
+            if ($first) {
+                $this->tpl->setVariable(array(
+                    "ANSWER_PREVIEW"        => get_wysiwyg_editor('answer_preview',
+                                               isset($article['content'][$langId]) ?
+                                               $article['content'][$langId]['answer']
+                                               : ''),
+                   "KNOWLEDGE_ANSWER_LANG"  => $langId
+                ));
+            }
+
     	    $first = false;
     	}
 

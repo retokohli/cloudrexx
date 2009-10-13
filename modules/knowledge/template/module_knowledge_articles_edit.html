@@ -15,6 +15,19 @@ var checkCategory = function()
     }
 }
 
+knowledgeCurrentAnswerLanguage = {KNOWLEDGE_ANSWER_LANG};
+
+function knowledgeSwitchAnswer(langId)
+{
+    oFCKeditor = FCKeditorAPI.GetInstance('answer_preview');
+    document.getElementById('answer_'+knowledgeCurrentAnswerLanguage).value = oFCKeditor.GetHTML();
+    if (typeof(langId) != 'undefined') {
+        oFCKeditor.SetHTML(document.getElementById('answer_'+langId).value);
+        knowledgeCurrentAnswerLanguage = langId;
+    }
+
+    return true;
+}
 
 /* ]]> */
 </script>
@@ -24,7 +37,7 @@ var checkCategory = function()
 </div>
 
 
-<form action="index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act={ACTION}" method="post" onsubmit="return checkCategory();">
+<form action="index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act={ACTION}" method="post" onsubmit="knowledgeSwitchAnswer();return checkCategory();">
 <table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
     <thead>
         <tr>
@@ -55,12 +68,13 @@ var checkCategory = function()
 <br /> <br />
 <ul id="tabmenu">
 	<!-- BEGIN showLanguageTabs -->
-	<li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" onclick="selectTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
+	<li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:void(0);" onclick="selectTab('{TABS_DIV_ID}');knowledgeSwitchAnswer({TABS_LANG_ID})" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
 	<!-- END showLanguageTabs -->
 </ul>
 
 <!-- BEGIN langDiv -->
 <div id="{ID}" style="display: {DISPLAY}" class="editArticle">
+<textarea name="answer_{LANG_ID}" id="answer_{LANG_ID}" cols="1" rows="1" style="display:none;">{ANSWER}</textarea>
 <table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
     <thead>
         <tr>
@@ -93,14 +107,6 @@ var checkCategory = function()
                     <a href="javascript: void(0);" onclick="Tags_{LANG_ID}.getTags('alphabetical')">{TXT_ALPHABETICAL}</a>
             </td>
         </tr>
-        <tr>
-            <th colspan="3">{TXT_ANSWER}</th>
-        </tr>
-        <tr class="row2">
-            <td colspan="3">
-                {ANSWER}
-           </td>
-         </tr>
     </tbody>
 </table>
 </div>
@@ -112,6 +118,21 @@ var Tags_{LANG_ID} = new Tags('tags_{LANG_ID}', '{LANG_ID}');
 /* ]]> */
 </script>
 <!-- END langDiv -->
+
+<table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
+    <thead>
+        <tr>
+            <th colspan="3">{TXT_ANSWER}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="row2">
+            <td colspan="3">
+                {ANSWER_PREVIEW}
+           </td>
+         </tr>
+    </tbody>
+</table>
 
 <br /><br />
 <!-- BEGIN edit_id -->
