@@ -434,7 +434,7 @@ class Forum extends ForumLibrary
             $FCKeditorBasePath = "/editor/fckeditor/";
             $strMessageInputHTML = get_wysiwyg_editor('thread_message', $content, 'forum', $_LANGID);
         }else{ //plain textarea
-            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.$content.'</textarea>';
+            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>';
         }
 
         $this->_objTpl->setGlobalVariable(array(
@@ -454,8 +454,8 @@ class Forum extends ForumLibrary
             'FORUM_CAPTCHA_IMAGE_URL'    =>    $url,
             'FORUM_CAPTCHA_IMAGE_ALT'    =>    $alt,
             'FORUM_FORUM_ID'            =>    $intForumId, // the category id via GET
-            'FORUM_SUBJECT'                =>    $subject,
-            'FORUM_KEYWORDS'            =>    $keywords,
+            'FORUM_SUBJECT'                =>    htmlentities($subject, ENT_QUOTES, CONTREXX_CHARSET),
+            'FORUM_KEYWORDS'            =>    htmlentities($keywords, ENT_QUOTES, CONTREXX_CHARSET),
             'FORUM_MESSAGE_INPUT'        =>    $strMessageInputHTML,
         ));
 
@@ -578,8 +578,8 @@ class Forum extends ForumLibrary
                         ) VALUES (
                             NULL, '.    $intForumId.', '.    $intLastThreadId.', 0,
                             '.$userId.', '.time().',         0,                    0,
-                            0,             0, '.                $icon.", '".        $subject."',
-                            '".$keywords."' ,'".$content."' , '".$fileInfo['name']."'
+                            0,             0, '.                $icon.", '".        addslashes($subject)."',
+                            '".addslashes($keywords)."' ,'".addslashes($content)."' , '".$fileInfo['name']."'
                         )";
             if($objDatabase->Execute($insertQuery) !== false){
                 $lastInsertId = $objDatabase->Insert_ID();
