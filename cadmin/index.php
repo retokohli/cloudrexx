@@ -22,7 +22,7 @@
  *
  * Use DBG::activate($level) and DBG::deactivate($level)
  * to activate/deactivate a debug level.
- * Calling the methods without specifying a debug level
+ * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
