@@ -1041,7 +1041,7 @@ function _adodb_debug_execute(&$zthis, $sql, $inputarr)
 # pretty print the debug_backtrace function
 function _adodb_backtrace($printOrArr=true,$levels=9999,$skippy=0)
 {
-    if (_DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP) {
+    if (DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP) {
         DBG::stack();
         return '';
     }

@@ -13,18 +13,20 @@
 
 /**
  * Debug level, see lib/DBG.php
- *   DBG_NONE            - Turn debugging off
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
  *   DBG_ADODB_ERROR     - show ADODB queriy errors only
  *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
- *   DBG_ALL             - sets all debug flags
+ *
+ * Use DBG::activate($level) and DBG::deactivate($level)
+ * to activate/deactivate a debug level.
+ * Calling these methods without specifying a debug level
+ * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-define('_DEBUG', DBG_NONE);
-DBG::__internal__setup();
+DBG::deactivate();
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -73,9 +75,9 @@ if ($objDatabase === false) {
     die('Database error: '.$strErrMessage);
 }
 
-if (_DEBUG & DBG_ADODB_TRACE) {
+if (DBG::getMode() & DBG_ADODB_TRACE) {
     DBG::enable_adodb_debug(true);
-} elseif (_DEBUG & DBG_ADODB) {
+} elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
     DBG::enable_adodb_debug();
 } else {
     DBG::disable_adodb_debug();
