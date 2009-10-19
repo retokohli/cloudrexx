@@ -59,18 +59,20 @@
 
 /**
  * Debug level, see lib/DBG.php
- *   DBG_NONE            - Turn debugging off
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
  *   DBG_ADODB_ERROR     - show ADODB queriy errors only
  *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
- *   DBG_ALL             - sets all debug flags
+ *
+ * Use DBG::activate($level) and DBG::deactivate($level)
+ * to activate/deactivate a debug level.
+ * Calling the methods without specifying a debug level
+ * will either activate or deactivate all levels.
  */
 include_once('lib/DBG.php');
-define('_DEBUG', DBG_NONE);
-DBG::__internal__setup();
+DBG::deactivate();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -139,9 +141,9 @@ if ($objDatabase === false) {
     );
 }
 
-if (_DEBUG & DBG_ADODB_TRACE) {
+if (DBG::getMode() & DBG_ADODB_TRACE) {
     DBG::enable_adodb_debug(true);
-} elseif (_DEBUG & DBG_ADODB) {
+} elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
     DBG::enable_adodb_debug();
 } else {
     DBG::disable_adodb_debug();
@@ -266,6 +268,7 @@ $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $pageId  = $objInit->getPageID($page, $section, $command, $history);
 }
+
 $is_home = $objInit->is_home;
 
 $objCounter = new statsLibrary();
@@ -1842,7 +1845,6 @@ foreach ($objInit->arrLang as $key => $value) {
     $objTemplate->setVariable(array('LANG_CHANGE_'.strtoupper($value['lang']) => $LangURL));
 }
 
-
 //-------------------------------------------------------
 // set global template variables
 //-------------------------------------------------------
@@ -1888,7 +1890,6 @@ $objTemplate->setVariable(array(
     'TXT_CORE_LAST_MODIFIED_PAGE' => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE'   => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
 ));
-
 
 if ($objTemplate->blockExists('access_logged_in')) {
     $objFWUser = FWUser::getFWUserObject();

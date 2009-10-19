@@ -19,29 +19,75 @@ class DBG
     private static $enable_dump  = null;
     private static $enable_time  = null;
     private static $firephp      = null;
+    private static $log_file     = null;
+    private static $log_firephp  = null;
+    private static $log_adodb    = null;
     private static $last_time    = null;
     private static $start_time   = null;
+    private static $mode         = 0;
 
     public function __construct()
     {
         throw new Exception('This is a static class! No need to create an object!');
     }
 
-    public static function __internal__setup()
-    {
-        self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
 
-        if (!defined('_DEBUG'))
-            define('_DEBUG', DBG_NONE);
+    public static function activate($mode = null)
+    {
+        if (!self::$fileskiplength) {
+            self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
+        }
+
+        if (empty($mode)) {
+            self::$mode = DBG_ALL;
+        } else {
+            self::$mode = self::$mode | $mode;
+        }
+
+        self::__internal__setup();
 
         self::enable_all();
-        if (_DEBUG & DBG_LOG_FILE)
+    }
+
+
+    public static function deactivate($mode = null)
+    {
+        if (empty($mode)) {
+            self::$mode = DBG_NONE;
+            self::disable_all();
+        } else {
+            self::$mode = self::$mode  & ~$mode;
+        }
+
+        self::__internal__setup();
+    }
+
+
+    public static function __internal__setup()
+    {
+        // log to file dbg.log
+        if (self::$mode & DBG_LOG_FILE) {
             self::enable_file();
-        if (_DEBUG & DBG_LOG_FIREPHP)
+        } else {
+            self::disable_file();
+        }
+
+        // log to FirePHP
+        if (self::$mode & DBG_LOG_FIREPHP) {
             self::enable_firephp();
-        if ((_DEBUG & DBG_ADODB) || (_DEBUG & DBG_ADODB_TRACE) || (_DEBUG & DBG_ADODB_ERROR))
+        } else {
+            self::disable_firephp();
+        }
+
+        // log mysql queries
+        if ((self::$mode & DBG_ADODB) || (self::$mode & DBG_ADODB_TRACE) || (self::$mode & DBG_ADODB_ERROR)) {
             self::enable_adodb();
-        if (_DEBUG & DBG_PHP) {
+        } else {
+            self::disable_adodb_debug();
+        }
+
+        // log php warnings/erros/notices...
+        if (self::$mode & DBG_PHP) {
             self::enable_error_reporting();
         } else {
             self::disable_error_reporting();
@@ -49,20 +95,67 @@ class DBG
     }
 
 
-    public static function enable_file()
+    public static function getMode()
     {
+        return self::$mode;
+    }
+
+
+    private static function enable_file()
+    {
+        if (self::$log_file) return;
+
+        // disable firephp first
+        self::disable_firephp();
+
+        self::$log_file = true;
         self::setup('dbg.log', 'w');
         set_error_handler('DBG::phpErrorHandler');
     }
 
 
-    static function enable_firephp()
+    private static function disable_file()
     {
-        if (require_once('firephp/FirePHP.class.php')) {
-            ob_start();
-            self::$firephp = FirePHP::getInstance(true);
-            self::$firephp->registerErrorHandler();
+        if (!self::$log_file) return;
+
+        self::$log_file = false;
+        fclose(self::$dbg_fh);
+        self::$dbg_fh = null;
+        restore_error_handler();
+    }
+
+
+    private static function enable_firephp()
+    {
+        if (self::$log_firephp) return;
+
+        if (headers_sent($file, $line)) {
+            trigger_error("Can't activate FirePHP! Headers already sent in $file on line $line'", E_USER_NOTICE);
+            return;
         }
+
+        // disable file first
+        self::disable_file();
+
+        ob_start();
+        if (!isset(self::$firephp)) {
+            require_once 'firephp/FirePHP.class.php';
+            self::$firephp = FirePHP::getInstance(true);
+        }
+        self::$firephp->registerErrorHandler(false);
+        self::$firephp->setEnabled(true);
+        self::$log_firephp = true;
+    }
+
+
+    private static function disable_firephp()
+    {
+        if (!self::$log_firephp) return;
+
+        self::$firephp->setEnabled(false);
+        self::$log_firephp = false;
+        ob_end_clean();
+        restore_error_handler();
     }
 
 
@@ -72,6 +165,15 @@ class DBG
         self::enable_trace();
         self::enable_dump ();
         self::enable_time ();
+    }
+
+
+    static function disable_all()
+    {
+        self::disable_msg();
+        self::disable_trace();
+        self::disable_dump();
+        self::disable_time();
     }
 
 
@@ -94,7 +196,7 @@ class DBG
     static function setup($file, $mode='a')
     {
         if (self::$dbg_fh) fclose(self::$dbg_fh);
-        if (!is_null(self::$firephp)) return true; //no need to setup ressources, we're using firephp
+        if (self::$log_firephp) return true; //no need to setup ressources, we're using firephp
         self::$dbg_fh = fopen($file, $mode);
         return true;
     }
@@ -102,7 +204,9 @@ class DBG
 
     static function enable_trace()
     {
-        self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING TRACE XXXXXXXXXXXXXXXX');
+        if (self::$enable_trace) return;
+
+        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING TRACE XXXXXXXXXXXXXXXX');
         self::$enable_trace = 1;
     }
 
@@ -110,14 +214,20 @@ class DBG
     // Redirect ADODB output to us instead of STDOUT.
     static function enable_adodb()
     {
-        if (!(_DEBUG & DBG_LOG_FILE)) self::setup('php://output');
-        if (!defined('ADODB_OUTP')) define('ADODB_OUTP', 'DBG_log_adodb');
+        if (!self::$log_adodb) {
+            if (!(self::$mode & DBG_LOG_FILE)) self::setup('php://output');
+            if (!defined('ADODB_OUTP')) define('ADODB_OUTP', 'DBG_log_adodb');
+            self::$log_adodb = true;
+        }
+        self::enable_adodb_debug(self::$mode & DBG_ADODB_TRACE);
     }
 
 
     static function enable_adodb_debug($flagTrace=false)
     {
         global $objDatabase;
+
+        if (!isset($objDatabase)) return;
 
         if ($flagTrace) {
             $objDatabase->debug = 99;
@@ -131,20 +241,26 @@ class DBG
     {
         global $objDatabase;
 
+        if (!isset($objDatabase)) return;
+
         $objDatabase->debug = 0;
+        self::$log_adodb = false;
     }
 
 
     static function disable_trace()
     {
+        if (!self::$enable_trace) return;
+
+        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING TRACE XXXXXXXXXXXXXXX');
         self::$enable_trace = 0;
     }
 
 
     static function enable_time()
     {
-        self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING TIME XXXXXXXXXXXXXXXXX');
         if (!self::$enable_time) {
+            //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING TIME XXXXXXXXXXXXXXXXX');
             self::$enable_time = 1;
             self::$start_time = microtime(true);
             self::$last_time  = microtime(true);
@@ -152,28 +268,47 @@ class DBG
     }
 
 
+    static function disable_time()
+    {
+        if (!self::$enable_time) return;
+
+        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING TIME XXXXXXXXXXXXXXXX');
+        self::$enable_time = 0;
+    }
+
+
     static function enable_dump()
     {
-        self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING DUMP XXXXXXXXXXXXXXXXX');
+        if (self::$enable_dump) return;
+
+        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING DUMP XXXXXXXXXXXXXXXXX');
         self::$enable_dump = 1;
     }
 
 
     static function disable_dump()
     {
+        if (!self::$enable_dump) return;
+
+        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING DUMP XXXXXXXXXXXXXXXX');
         self::$enable_dump = 0;
     }
 
 
     static function enable_msg()
     {
-        self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING MSG XXXXXXXXXXXXXXXXXX');
+        if (self::$enable_msg) return;
+
+        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING MSG XXXXXXXXXXXXXXXXXX');
         self::$enable_msg = 1;
     }
 
 
     static function disable_msg()
     {
+        if (!self::$enable_msg) return;
+
+        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING MSG XXXXXXXXXXXXXXXXX');
         self::$enable_msg = 0;
     }
 
@@ -227,7 +362,7 @@ class DBG
     static function dump($val)
     {
         if (!self::$enable_dump) return;
-        if (!is_null(self::$firephp)) {
+        if (self::$log_firephp) {
             self::$firephp->log($val);
             return;
         }
@@ -298,7 +433,7 @@ class DBG
 
     private static function _log($text, $firephp_action='log', $additional_args=null)
     {
-        if (   !is_null(self::$firephp)
+        if (self::$log_firephp
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
         } else {
@@ -313,9 +448,9 @@ class DBG
 function DBG_log_adodb($msg)
 {
     $error = preg_match('#^[0-9]+:#', $msg);
-    if ($error || (_DEBUG & DBG_ADODB) || (_DEBUG & DBG_ADODB_TRACE)) {
+    if ($error || (DBG::getMode() & DBG_ADODB) || (DBG::getMode() & DBG_ADODB_TRACE)) {
         DBG::log(
-            _DEBUG & DBG_LOG_FILE || _DEBUG & DBG_LOG_FIREPHP
+            DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP
                 ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET) : $msg, $error ? 'error' : (preg_match('#\(mysql\):\s(UPDATE|DELETE|INSERT)#', $msg) ? 'info' : 'log'));
     }
 }

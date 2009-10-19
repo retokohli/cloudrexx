@@ -43,9 +43,9 @@ class Contrexx_Update
             die($errorMsg);
         }
 
-        if (_DEBUG & DBG_ADODB_TRACE) {
+        if (DBG::getMode() & DBG_ADODB_TRACE) {
             DBG::enable_adodb_debug(true);
-        } elseif (_DEBUG & DBG_ADODB) {
+        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
             DBG::enable_adodb_debug();
         } else {
             DBG::disable_adodb_debug();
