@@ -102,4 +102,7 @@ $_ARRAYLANG['TXT_PRINTSHOP_MANDATORY_IMAGE_UPLOAD_ENABLED'] = "Bilder hochladen 
 $_ARRAYLANG['TXT_PRINTSHOP_MANDATORY_IMAGE_UPLOAD_ENABLED_HELP'] = "Ist diese Einstellung aktiv, dann müssen bei einer Bestellung mindestens ein bzw. bei bedruckter Rückseite zwei Bilder hochgeladen werden.";
 $_ARRAYLANG['TXT_PRINTSHOP_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_PRINTSHOP_EDIT'] = "Bearbeiten";
+$_ARRAYLANG['TXT_PRINTSHOP_COPY'] = "Kopieren";
+$_ARRAYLANG['TXT_PRINTSHOP_PRODUCT_EXISTED_UPDATED'] = "Das definierte Produkt hat bereits existiert, die Preise wurden angepasst.";
+$_ARRAYLANG['TXT_PRINTSHOP_PRODUCT_UPDATED'] = "Die Preise wurden angepasst.";
 ?>
