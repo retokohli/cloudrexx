@@ -2211,7 +2211,7 @@ dl.data_module img {
     width: 150px;
     padding: 0px;
     height: 23px;
-    border: 1px solid #CCCCCC;
+    border: 1px solid #99CC00;
 }
 
 #printshop .selected {
@@ -2392,6 +2392,9 @@ div#printshop input#psShipment2 {
 
 #printshop #psSubmitOrder {
     margin: 0px; padding: 0px;
+    width: 150px;
+    height: 23px;
+    border: 1px solid #99CC00;
 }
 
 #printshop #okMessage div {
@@ -2410,4 +2413,9 @@ div#printshop input#psShipment2 {
     padding: 2px;
     margin-bottom: 3px;
     width: 984px;
+}
+
+#psPricePrints {
+    margin-left: 16px;
+    font-weight: bold;
 }

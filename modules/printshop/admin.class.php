@@ -213,24 +213,27 @@ class PrintshopAdmin extends PrintshopLibrary {
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_PRINTSHOP_NO_ENTRY'         => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'],
-            'TXT_PRINTSHOP_ADD'              => $_ARRAYLANG['TXT_PRINTSHOP_ADD'],
-            'TXT_PRINTSHOP_ADD_PRODUCT'      => $_ARRAYLANG['TXT_PRINTSHOP_ADD_PRODUCT'],
-            'TXT_PRINTSHOP_PRODUCTS'         => $_ARRAYLANG['TXT_PRINTSHOP_PRODUCTS'],
-            'TXT_PRINTSHOP_PRICE_TITLE'      => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_TITLE'],
-            'TXT_PRINTSHOP_FACTOR_TITLE'     => $_ARRAYLANG['TXT_PRINTSHOP_FACTOR_TITLE'],
-            'TXT_PRINTSHOP_SUBTITLE_ACTIONS' => $_ARRAYLANG['TXT_PRINTSHOP_SUBTITLE_ACTIONS'],
-            'TXT_PRINTSHOP_FIELDS_REQUIRED'  => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'],
-            'TXT_PRINTSHOP_DELETE_ENTRY'     => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_ENTRY'],
-            'TXT_PRINTSHOP_DELETE_SELECTED'  => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_SELECTED'],
-            'TXT_PRINTSHOP_FADE_OUT'         => $_ARRAYLANG['TXT_PRINTSHOP_FADE_OUT'],
-            'TXT_PRINTSHOP_SAVE'             => $_ARRAYLANG['TXT_PRINTSHOP_SAVE'],
-            'TXT_ADD_SUBMIT'                 => $_CORELANG['TXT_SAVE'],
-            'TXT_SELECT_ALL'                 => $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_DESELECT_ALL'               => $_CORELANG['TXT_DESELECT_ALL'],
-            'TXT_MULTISELECT_SELECT'         => $_CORELANG['TXT_MULTISELECT_SELECT'],
-            'TXT_MULTISELECT_DELETE'         => $_CORELANG['TXT_MULTISELECT_DELETE'],
-            'PRINTSHOP_PAGING_LIMIT'         => $this->_arrSettings['entriesPerPage'],
+            'TXT_PRINTSHOP_NO_ENTRY'                => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'],
+            'TXT_PRINTSHOP_ADD'                     => $_ARRAYLANG['TXT_PRINTSHOP_ADD'],
+            'TXT_PRINTSHOP_ADD_PRODUCT'             => $_ARRAYLANG['TXT_PRINTSHOP_ADD_PRODUCT'],
+            'TXT_PRINTSHOP_PRODUCTS'                => $_ARRAYLANG['TXT_PRINTSHOP_PRODUCTS'],
+            'TXT_PRINTSHOP_PRICE_TITLE'             => $_ARRAYLANG['TXT_PRINTSHOP_PRICE_TITLE'],
+            'TXT_PRINTSHOP_FACTOR_TITLE'            => $_ARRAYLANG['TXT_PRINTSHOP_FACTOR_TITLE'],
+            'TXT_PRINTSHOP_SUBTITLE_ACTIONS'        => $_ARRAYLANG['TXT_PRINTSHOP_SUBTITLE_ACTIONS'],
+            'TXT_PRINTSHOP_FIELDS_REQUIRED'         => $_ARRAYLANG['TXT_PRINTSHOP_FIELDS_REQUIRED'],
+            'TXT_PRINTSHOP_DELETE_ENTRY'            => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_ENTRY'],
+            'TXT_PRINTSHOP_DELETE_SELECTED'         => $_ARRAYLANG['TXT_PRINTSHOP_DELETE_SELECTED'],
+            'TXT_PRINTSHOP_FADE_OUT'                => $_ARRAYLANG['TXT_PRINTSHOP_FADE_OUT'],
+            'TXT_PRINTSHOP_SAVE'                    => $_ARRAYLANG['TXT_PRINTSHOP_SAVE'],
+            'TXT_PRINTSHOP_COPY'                    => $_ARRAYLANG['TXT_PRINTSHOP_COPY'],
+            'TXT_PRINTSHOP_PRODUCT_EXISTED_UPDATED' => $_ARRAYLANG['TXT_PRINTSHOP_PRODUCT_EXISTED_UPDATED'],
+            'TXT_PRINTSHOP_PRODUCT_UPDATED'         => $_ARRAYLANG['TXT_PRINTSHOP_PRODUCT_UPDATED'],
+            'TXT_ADD_SUBMIT'                        => $_CORELANG['TXT_SAVE'],
+            'TXT_SELECT_ALL'                        => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'                      => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_MULTISELECT_SELECT'                => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_MULTISELECT_DELETE'                => $_CORELANG['TXT_MULTISELECT_DELETE'],
+            'PRINTSHOP_PAGING_LIMIT'                => $this->_arrSettings['entriesPerPage'],
         ));
         $arrFilter = array();
         foreach ($this->_arrAvailableAttributes as $attribute) {
@@ -451,6 +454,12 @@ class PrintshopAdmin extends PrintshopLibrary {
     }
 
 
+    /**
+     * set the template vars
+     *
+     * @param integer $index row index
+     * @param array $arrOrder data of the order to be used for replacement
+     */
     function _setOrderTemplateVars($index, $arrOrder){
         $this->_objTpl->setGlobalVariable(array(
             'PRINTSHOP_ORDER_ID'    => !empty($arrOrder['orderId'])             ? $arrOrder['orderId']          : '&nbsp;',
@@ -485,6 +494,7 @@ class PrintshopAdmin extends PrintshopLibrary {
         $arrFilter['weight'] = !empty($_POST['psFilterWeight']) ? contrexx_addslashes($_POST['psFilterWeight']) : '';
         $arrFilter['paper']  = !empty($_POST['psFilterPaper'])  ? contrexx_addslashes($_POST['psFilterPaper']) : '';
 
+        $arrEntriesData = array();
         $arrEntries = $this->_getEntries($arrFilter);
         if($arrEntries['count'] == 0){
             die(json_encode(array('error' => $_ARRAYLANG['TXT_PRINTSHOP_NO_ENTRY'])));
@@ -494,7 +504,7 @@ class PrintshopAdmin extends PrintshopLibrary {
             for($index = 0; $index < $this->_priceThresholdCount; $index++) {
                 $arrPrice[$index] = $arrEntry['price_'.$index];
             }
-                $arrEntriesData[] =array(
+                $arrEntriesData[] = array(
                 'type'          => $arrEntry['type'],
                 'format'        => $arrEntry['format'],
                 'front'         => $arrEntry['front'],
@@ -514,6 +524,10 @@ class PrintshopAdmin extends PrintshopLibrary {
     }
 
 
+    /**
+     * updates a product
+     *
+     */
     function _updateProduct(){
         global $_ARRAYLANG;
 
@@ -523,7 +537,23 @@ class PrintshopAdmin extends PrintshopLibrary {
         $back   = !empty($_POST['psBack'])   ? contrexx_addslashes($_POST['psBack']) : '';
         $weight = !empty($_POST['psWeight']) ? contrexx_addslashes($_POST['psWeight']) : '';
         $paper  = !empty($_POST['psPaper'])  ? contrexx_addslashes($_POST['psPaper']) : '';
-        $price  = array();
+        $oldtype   = !empty($_POST['psOldType'])   ? contrexx_addslashes($_POST['psOldType']) : '';
+        $oldformat = !empty($_POST['psOldFormat']) ? contrexx_addslashes($_POST['psOldFormat']) : '';
+        $oldfront  = !empty($_POST['psOldFront'])  ? contrexx_addslashes($_POST['psOldFront']) : '';
+        $oldback   = !empty($_POST['psOldBack'])   ? contrexx_addslashes($_POST['psOldBack']) : '';
+        $oldweight = !empty($_POST['psOldWeight']) ? contrexx_addslashes($_POST['psOldWeight']) : '';
+        $oldpaper  = !empty($_POST['psOldPaper'])  ? contrexx_addslashes($_POST['psOldPaper']) : '';
+        $oldprice  = array();
+
+        $newProductExsisted = false;
+        if(array($oldtype, $oldformat, $oldfront, $oldback, $oldweight, $oldpaper)
+        != array($type,    $format,    $front,    $back,    $weight,    $paper)
+        && $this->productExists($type, $format, $front, $back, $weight, $paper))
+        {//new product exists, so this one will be update, hence delete the old one.
+            $this->delProduct($oldtype, $oldformat, $oldfront, $oldback, $oldweight, $oldpaper);
+            $newProductExsisted = true;
+        }
+
         foreach ($this->_priceThresholds as $index => $threshold){
             if(!isset($_POST['psPrice_'.$index])){
                 $_POST['psPrice_'.$index] = 0;
@@ -537,9 +567,16 @@ class PrintshopAdmin extends PrintshopLibrary {
 
         if($this->addProduct($type, $format, $front, $back, $weight, $paper, $price) !== false){
             die(json_encode(array(
-                'error'     => 'null',
-                'ok'        => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_UPDATED'],
-                'price'     => $price,
+                'error'             => 'null',
+                'ok'                => $_ARRAYLANG['TXT_PRINTSHOP_ENTRY_UPDATED'],
+                'price'             => $price,
+                'type'              => $this->_getAttributeName('type', $type),
+                'format'            => $this->_getAttributeName('format', $format),
+                'front'             => $this->_getAttributeName('front', $front),
+                'back'              => $this->_getAttributeName('back', $back),
+                'weight'            => $this->_getAttributeName('weight', $weight),
+                'paper'             => $this->_getAttributeName('paper', $paper),
+                'newProductExisted' => $newProductExsisted,
             )));
         }else{
             die(json_encode(array('error' => 'DB error.'.__FILE__.':'.__LINE__)));

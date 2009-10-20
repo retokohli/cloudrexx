@@ -105,6 +105,8 @@ class Printshop extends PrintshopLibrary {
             die(json_encode(current($arrEntry['entries'])));
         }
 
+        $dataPreparationPrice = $this->_arrSettings['currency'].' '.number_format($this->_arrSettings['dataPreparationPrice'], 2);
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_FORMAT_TITLE'                => $_ARRAYLANG['TXT_PRINTSHOP_FORMAT_TITLE'],
             'TXT_PRINTSHOP_FRONT_TITLE'                 => $_ARRAYLANG['TXT_PRINTSHOP_FRONT_TITLE'],
@@ -120,6 +122,10 @@ class Printshop extends PrintshopLibrary {
             'TXT_PRINTSHOP_EXCL_TAX'                    => $_ARRAYLANG['TXT_PRINTSHOP_EXCL_TAX'],
             'TXT_PRINTSHOP_COMMIT_ORDER'                => $_ARRAYLANG['TXT_PRINTSHOP_COMMIT_ORDER'],
             'TXT_PRINTSHOP_PRICES_THRESHOLD_AMOUNT'     => $_ARRAYLANG['TXT_PRINTSHOP_PRICES_THRESHOLD_AMOUNT'],
+            'TXT_PRINTSHOP_PRINT_COST'                  => $_ARRAYLANG['TXT_PRINTSHOP_PRINT_COST'],
+            'TXT_PRINTSHOP_CURRENCY'                    => $this->_arrSettings['currency'],
+            'PRINTSHOP_DATA_PREPARATION_PRICE'          => $dataPreparationPrice,
+            'PRINTSHOP_TAX'                             => $this->_vatPercent,
         ));
 
         foreach($this->_arrAvailableAttributes as $attribute){
@@ -162,6 +168,11 @@ class Printshop extends PrintshopLibrary {
             window.console = {log: function(msg){window.log+=msg.toString();}}
         }
 
+        //set default value for amount
+        if(isNaN(parseInt(\$J('#amount').val()))){
+            \$J('#amount').val(1);
+        }
+
         //form submit handler, redirect to order page
         \$J('#psSubmit').click(function(){
             var format = \$J('#psAttributeFormat li.selected').attr('id').replace(/.*_(\d+)$/g, '$1');
@@ -202,7 +213,19 @@ class Printshop extends PrintshopLibrary {
                 var amount = \$J(this).text();
             }
             \$J('#amount').val(parseInt(amount));
+            updatePrice();
         });
+
+        \$J('#amount').bind('keyup change', function(){
+            \$J(this).val(\$J(this).val().replace(/[^\d]/g, ''));
+            if(\$J(this).val() == ''){
+                \$J(this).val('1');
+                \$J(this).select();
+            }
+            updatePrice();
+        });
+
+
 
         \$J('#printshopCanvas').click(function(e){
             clickLiAtPos(e);
@@ -313,7 +336,26 @@ class Printshop extends PrintshopLibrary {
         });
         var x = setTimeout(initCanvas, 100); //give poor IE some time
         updateFilter();
-    });
+    }); //end document ready
+
+    var priceThresholds = [];
+    var price = [];
+
+    var updatePrice = function(){
+        var amount = parseInt(\$J('#amount').val());
+        var printCost = 0;
+        var i = -1;
+        do{ i++ }
+             while( amount > priceThresholds[i] && i < 15 );
+
+        printCost = amount * price[i];
+        var roundedPrice = roundPrice(printCost.toFixed(2));
+        \$J('#psPriceForPrints').text(printCost.toFixed(2));
+    }
+
+    var roundPrice = function(flt){
+        return parseFloat(Math.floor(20*flt)/20);
+    }
 
     var updateFilter = function(){
         var filters = getFilters();
@@ -369,6 +411,8 @@ class Printshop extends PrintshopLibrary {
 
     var updateInfoDisplay = function(data){
         var NA = 'N/A';
+        var lastPrice;
+
         if(data){
             \$J('#psSummaryType').text(data.type);
             \$J('#psSummaryFormat').text(data.format);
@@ -376,7 +420,13 @@ class Printshop extends PrintshopLibrary {
             \$J('#psSummaryBack').text(data.back);
             \$J('#psSummaryWeight').text(data.weight);
             \$J('#psSummaryPaper').text(data.paper);
-            \$J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i, j){
+            \$J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i, j){
+                if(data['price_'+j] > 0){
+                    \$J('#price_'+j).text(data['price_'+j]);
+                    lastPrice = data['price_'+j];
+                }else{
+                    data['price_'+j] = lastPrice;
+                }
                 \$J('#price_'+j).text(data['price_'+j]);
             });
             \$J('#psSubmit').removeAttr('disabled');
@@ -388,10 +438,21 @@ class Printshop extends PrintshopLibrary {
             \$J('#psSummaryBack').text(NA);
             \$J('#psSummaryWeight').text(NA);
             \$J('#psSummaryPaper').text(NA);
-            \$J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i, j){
+            \$J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i, j){
                 \$J('#price_'+j).text(NA);
             });
             \$J('#psSubmit').attr('disabled', 'disabled');
+        }
+
+        \$J('.priceThreshold').each(function(i){
+            priceThresholds[priceThresholds.length] = parseInt(\$J(this).text().replace(/(\d+)/, '$1'));
+            price[i] = parseFloat(\$J('#price_'+i).text());
+        });
+        updatePrice();
+        if(parseInt(\$J('#amount').val()) < 1){
+            \$J('#psSubmit').attr('disabled', 'disabled');
+        }else{
+            \$J('#psSubmit').removeAttr('disabled');
         }
     }
 
@@ -593,6 +654,8 @@ EOJ;
 
         $mandatoryImageUploadEnabled = $this->_arrSettings['mandatoryImageUploadEnabled'] > 0 ? 'true' : 'false';
 
+        $vatFactor = $this->_vatPercent/100;
+
         $DI   = CONTREXX_DIRECTORY_INDEX;
         JS::activate('jquery');
         JS::activate('excanvas');
@@ -711,7 +774,7 @@ EOJ;
     var paper           = $paper;
     var price           = [];
     var priceThresholds = [];
-
+    var vatFactor       = $vatFactor;
 
     var updateShipmentPrice = function(){
         var index = parseInt(\$J(this).attr('id').replace(/.*(\d+)$/, '$1'));
@@ -738,9 +801,9 @@ EOJ;
             dataType: 'json',
             success: function(data){
                 if(data.entry.price_0){
-                    \$J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i, j){
+                    \$J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i, j){
                         if(data.entry['price_'+j] > 0){
-                            lastPrice = data.entry['price_'+j]
+                            lastPrice = data.entry['price_'+j];
                             price[j]  = data.entry['price_'+j];
                         }else{
                             price[j]  = lastPrice;
@@ -760,17 +823,16 @@ EOJ;
     var updatePrice = function(){
         var amount = parseInt(\$J('#amount').val());
         var printCost = 0;
-        var calculation = [];
         var i = -1;
 
         do{ i++ }
-             while( amount >= priceThresholds[i] && i < 15 );
+             while( amount > priceThresholds[i] && i < 15 );
 
         printCost = amount * price[i];
 
         var roundedPrice = roundPrice(printCost.toFixed(2));
         var subtotal = 1*printCost + 1*dataPreparationPrice;
-        var vat = 1*subtotal * 0.071;
+        var vat = 1*subtotal * vatFactor;
         var grossPrice = 1*subtotal + 1*vat;
         var totalPrice = 1*grossPrice + 1*shipmentPrice;
 
