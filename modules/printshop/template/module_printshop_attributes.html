@@ -236,7 +236,7 @@ var resetRowClasses = function(){
 
 var submitError = function(xhr, textStatus, errorThrown){
     $J('#errormessagetarget').append('<div id="alertbox">AJAX['+textStatus+']: '+errorThrown+'</div>').find(':last-child')
-                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
 }
 
 var setError = function(message){
@@ -244,7 +244,7 @@ var setError = function(message){
         <span class="messageFadeout"><a href="#" target="_self" title="{TXT_PRINTSHOP_FADE_OUT}">\
        <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
     </a></span>'+message+'</div>').find(':last-child')
-                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
 }
 
 

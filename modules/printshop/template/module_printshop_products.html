@@ -105,6 +105,34 @@ var deleteSelectedEntries = function(){
     });
 }
 
+var copyEntry = function(){
+    var price   = [];
+    var $td     = [];
+    var $input  = [];
+    var $tr     = $J(this).closest('tr');
+    var $trSub  = $tr.next();
+
+    var type    = getValueFromText('type', $J.trim($tr.find('td.pstype').text()));
+    var format  = getValueFromText('format', $J.trim($tr.find('td.psformat').text()));
+    var front   = getValueFromText('front', $J.trim($tr.find('td.psfront').text()));
+    var back    = getValueFromText('back', $J.trim($tr.find('td.psback').text()));
+    var weight  = getValueFromText('weight', $J.trim($tr.find('td.psweight').text()));
+    var paper   = getValueFromText('paper', $J.trim($tr.find('td.pspaper').text()));
+
+    $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
+        var newPrice = $J('.psPrice_'+j, $trSub).find('span').text().replace(/(?:^\s+|(\s)\s+|\s+$)/g, '$1');
+        $J('#psAddTable [name=psPrice_'+j+']').val(newPrice);
+    });
+
+    $J('#psAddTable [name=psType]').val(type);
+    $J('#psAddTable [name=psFormat]').val(format);
+    $J('#psAddTable [name=psFront]').val(front);
+    $J('#psAddTable [name=psBack]').val(back);
+    $J('#psAddTable [name=psWeight]').val(weight);
+    $J('#psAddTable [name=psPaper]').val(paper);
+    selectTab('addproduct');
+}
+
 var editEntry = function(){
     var $tr     = $J(this).closest('tr');
     var $trSub  = $tr.next();
@@ -112,18 +140,31 @@ var editEntry = function(){
         $trSub.show();
     }
     var rowClass    = $tr.is('.row1') ? 'row1' : 'row2';
+
     var price       = []
     var $td         = [];
     var $input      = [];
-    $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+    $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
         $td[j]          = $J('.psPrice_'+j, $trSub);
         $input[j]       = $td[j].find('input');
         price[j]        = $td[j].find('span').text().replace(/(?:^\s+|(\s)\s+|\s+$)/g, '$1');
     });
 
-    //if no input field, then append input and submit and add handlers
+    //if no input field, then append selects, input and submit and add handlers
     if($td[0].find('input').length == 0){
-        $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+         $J.each(['type', 'format', 'front', 'back', 'weight', 'paper'], function(i, attr){
+            var attrCapital = attr.charAt(0).toUpperCase() + attr.slice(1);
+            var attrValue = $J.trim($J('.ps'+attr, $tr).text());
+            $J('.psAttr'+attrCapital, $tr).hide();
+            $J('#psAddTable [name=ps'+attrCapital+']')
+            .clone()
+            .find('option:first-child').remove().end() //remove the first option from the cloned select, since it's only garbage in this case
+            .attr('name', 'ps'+attrCapital)
+            .val(getValueFromText(attr, attrValue))
+            .appendTo($J('.ps'+attr, $tr)).click(function(){return false;})
+        });
+
+        $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
             $td[j].find('span').html('<input type="text" class="priceInput" name="psPrice_'+j+'" value="'+price[j]+'" size="6" />');
             if(j == 15){
                $J('<tr class="'+rowClass+' rowSubmit">\
@@ -146,7 +187,7 @@ var editEntry = function(){
 
         $submit.one('click', function(){
             var inputPrice  = [];
-            $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+            $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
                 inputPrice[j]  = $td[j].find('input').val() || 0;
             });
             if(inputPrice[0].replace(/[^\d.]/g, '') == ''){
@@ -154,36 +195,49 @@ var editEntry = function(){
                 return false;
             }
 
-            var type   = getValueFromText('type', $J.trim($tr.find('td.pstype').text()));
-            var format = getValueFromText('format', $J.trim($tr.find('td.psformat').text()));
-            var front  = getValueFromText('front', $J.trim($tr.find('td.psfront').text()));
-            var back   = getValueFromText('back', $J.trim($tr.find('td.psback').text()));
-            var weight = getValueFromText('weight', $J.trim($tr.find('td.psweight').text()));
-            var paper  = getValueFromText('paper', $J.trim($tr.find('td.pspaper').text()));
+            var type   = $J('[name=psType] option:selected', $tr).val();
+            var format = $J('[name=psFormat] option:selected', $tr).val();
+            var front  = $J('[name=psFront] option:selected', $tr).val();
+            var back   = $J('[name=psBack] option:selected', $tr).val();
+            var weight = $J('[name=psWeight] option:selected', $tr).val();
+            var paper  = $J('[name=psPaper] option:selected', $tr).val();
+
+            var oldtype   = getValueFromText('type', $J.trim($tr.find('td.pstype span').text()));
+            var oldformat = getValueFromText('format', $J.trim($tr.find('td.psformat span').text()));
+            var oldfront  = getValueFromText('front', $J.trim($tr.find('td.psfront span').text()));
+            var oldback   = getValueFromText('back', $J.trim($tr.find('td.psback span').text()));
+            var oldweight = getValueFromText('weight', $J.trim($tr.find('td.psweight span').text()));
+            var oldpaper  = getValueFromText('paper', $J.trim($tr.find('td.pspaper span').text()));
 
             var params = $J.param({
-                psType:     type,
-                psFormat:   format,
-                psFront:    front,
-                psBack:     back,
-                psWeight:   weight,
-                psPaper:    paper,
-                psPrice_0:  inputPrice[0],
-                psPrice_1:  inputPrice[1],
-                psPrice_2:  inputPrice[2],
-                psPrice_3:  inputPrice[3],
-                psPrice_4:  inputPrice[4],
-                psPrice_5:  inputPrice[5],
-                psPrice_6:  inputPrice[6],
-                psPrice_7:  inputPrice[7],
-                psPrice_8:  inputPrice[8],
-                psPrice_9:  inputPrice[9],
-                psPrice_10: inputPrice[10],
-                psPrice_11: inputPrice[11],
-                psPrice_12: inputPrice[12],
-                psPrice_13: inputPrice[13],
-                psPrice_14: inputPrice[14],
-                psPrice_15: inputPrice[15],
+                psType:      type,
+                psFormat:    format,
+                psFront:     front,
+                psBack:      back,
+                psWeight:    weight,
+                psPaper:     paper,
+                psOldType:   oldtype,
+                psOldFormat: oldformat,
+                psOldFront:  oldfront,
+                psOldBack:   oldback,
+                psOldWeight: oldweight,
+                psOldPaper:  oldpaper,
+                psPrice_0:   inputPrice[0],
+                psPrice_1:   inputPrice[1],
+                psPrice_2:   inputPrice[2],
+                psPrice_3:   inputPrice[3],
+                psPrice_4:   inputPrice[4],
+                psPrice_5:   inputPrice[5],
+                psPrice_6:   inputPrice[6],
+                psPrice_7:   inputPrice[7],
+                psPrice_8:   inputPrice[8],
+                psPrice_9:   inputPrice[9],
+                psPrice_10:  inputPrice[10],
+                psPrice_11:  inputPrice[11],
+                psPrice_12:  inputPrice[12],
+                psPrice_13:  inputPrice[13],
+                psPrice_14:  inputPrice[14],
+                psPrice_15:  inputPrice[15],
                 json:       'save'
             });
 
@@ -198,24 +252,49 @@ var editEntry = function(){
                         $J(this).one('click', arguments.callee);
                         return;
                     }
-                    $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
-                        $td[j].find('span').fadeOut(500, function(){
-                            $td[j].data('default', data.price[j]);
-                            $td[j].find('span').html(data.price[j]);
-                            $td[j].find('span').fadeIn(500);
+                    if(data.newProductExisted){
+                        setMessage('{TXT_PRINTSHOP_PRODUCT_EXISTED_UPDATED}');
+                        $tr.remove();
+                        resetRowClasses();
+                        var currentPage = parseInt($J('#pspaging b').text());
+                        getEntries((currentPage - 1) * pagingLimit);
+                    }else{
+                        $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
+                            $td[j].find('span').fadeOut(500, function(){
+                                $td[j].data('default', data.price[j]);
+                                $td[j].find('span').html(data.price[j]);
+                                $td[j].find('span').fadeIn(500);
+                            });
                         });
-                    });
-                    $trSub.next().remove();
-    //                            setMessage(data.ok);
+
+                        $J.each(['type', 'format', 'front', 'back', 'weight', 'paper'], function(i, attr){
+                            var attrCapital = attr.charAt(0).toUpperCase() + attr.slice(1);
+                            var attrValue = $J.trim($J('.ps'+attr, $tr).text());
+                            $J('[name=ps'+attrCapital+']', $tr).fadeOut(500, function(){
+                                $J(this).remove();
+                                $J('.psAttr'+attrCapital, $tr).text(data[attr]).fadeIn(500);
+                            });
+                        });
+                        $trSub.next().remove();
+                        setMessage('{TXT_PRINTSHOP_PRODUCT_UPDATED}');
+                    }
+    //              setMessage(data.ok);
                 },
                 error: function(xhr, textStatus, errorThrown){submitError(xhr, textStatus, errorThrown);}
             });
             return false;
         });
     }else{ //restore default value
-        $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+        $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
             $td[j].find('span').html($td[j].data('default'));
         });
+
+        $J.each(['type', 'format', 'front', 'back', 'weight', 'paper'], function(i, attr){
+            var attrCapital = attr.charAt(0).toUpperCase() + attr.slice(1);
+            $J('.psAttr'+attrCapital, $tr).show();
+            $J('[name=ps'+attrCapital+']', $tr).remove();
+        });
+
         $trSub.next().remove();
     }
 }
@@ -280,10 +359,11 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     //stop checkbox click event bubble
     $J('[name=selectedEntriesId[]]').click(function(e){
         e.stopPropagation();
+        return true;
     });
 
     //tooltip setup and input checks for threshold prices
-    $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+    $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
         if(j > 0){ //add visual aid for price thresholds data table
             $J('.psNote'+j).closest('td').css({
                     borderLeft:'1px solid #aaccee'
@@ -315,10 +395,16 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     });
 
     //set default values for each entry
-    $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+    $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
         $('.psPrice_'+j).each(function(){
             $(this).data('default', $(this).text());
         });
+    });
+
+    //add copy link handler
+    $('.pscopy').live('click', function(event){
+        copyEntry.apply(this); //call editEntry in this context
+        return false;
     });
 
     //add delete link handler
@@ -337,7 +423,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 
     $('input[name=psAddProduct]').click(function(){$
         var price = [];
-        $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+        $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
             price[j] = $('input[name=psPrice_'+j+']').val().replace(/[^\d.]/g, '');
         });
 
@@ -393,10 +479,14 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         return false;
     });
 
-    $('a#pagingLast').data('totalEntries', {PRINTSHOP_TOTAL_ENTRIES})
+    $('a#pagingLast').data('totalEntries', {PRINTSHOP_TOTAL_ENTRIES}-1)
     .click(function(e){
         e.preventDefault();
-        getEntries((Math.ceil($('a#pagingLast').data('totalEntries')/pagingLimit)-1)*10);
+        var pos = (Math.ceil($('a#pagingLast').data('totalEntries')/pagingLimit)-1)*10;
+        if(pos > $('a#pagingLast').data('totalEntries')){
+            pos = $('a#pagingLast').data('totalEntries');
+        }
+        getEntries(pos);
         return false;
     });
 
@@ -464,19 +554,24 @@ var updateEntries = function(data, textStatus){
     		<td colspan="10"><div align="center"><br />{TXT_PRINTSHOP_NO_ENTRY}<br /><br /></div></td>\
     	</tr>').appendTo($J('#psEntriesTable tbody')).hide().fadeIn(500);
     }
+
     var htmlRow = '';
     for(var row = 0; row < data.entries.length; row++){
         var rowClass = row % 2 == 0 ? 'row1' : 'row2';
         var price    = data.entries[row].price;
-        htmlRow += '<tr class="'+rowClass+' rowMain"><td class="pstype" colspan="2"><input type="checkbox" value="" name="selectedEntriesId[]"/> '+getTextFromValue('type', data.entries[row]['type'])+'</td>\
-                    <td class="psformat" colspan="2">'+getTextFromValue('format', data.entries[row].format)+'</td>\
-                    <td class="psfront" colspan="2">'+getTextFromValue('front', data.entries[row].front)+'</td>\
-                    <td class="psback" colspan="2">'+getTextFromValue('back', data.entries[row].back)+'</td>\
-                    <td class="psweight" colspan="2">'+getTextFromValue('weight', data.entries[row].weight)+'</td>\
-                    <td class="pspaper" colspan="2">'+getTextFromValue('paper', data.entries[row].paper)+'</td>\
+        htmlRow += '<tr class="'+rowClass+' rowMain"><td class="pstype" colspan="2"><input type="checkbox" value="" name="selectedEntriesId[]"/>\
+                                                    <span class="psAttrType">'+getTextFromValue('type', data.entries[row]['type'])+'</span></td>\
+                    <td class="psformat" colspan="2"><span class="psAttrFormat">'+getTextFromValue('format', data.entries[row].format)+'</span></td>\
+                    <td class="psfront" colspan="2"><span class="psAttrFront">'+getTextFromValue('front', data.entries[row].front)+'</span></td>\
+                    <td class="psback" colspan="2"><span class="psAttrBack">'+getTextFromValue('back', data.entries[row].back)+'</span></td>\
+                    <td class="psweight" colspan="2"><span class="psAttrWeight">'+getTextFromValue('weight', data.entries[row].weight)+'</span></td>\
+                    <td class="pspaper" colspan="2"><span class="psAttrPaper">'+getTextFromValue('paper', data.entries[row].paper)+'</span></td>\
                     <td colspan="2">&nbsp;</td>\
                     <td class="psaction" nowrap="nowrap" colspan="2">\
                         <div align="right">\
+                            <a href="#" class="pscopy" target="_self" title="{TXT_PRINTSHOP_COPY}">\
+        					   <img src="images/icons/copy.gif" border="0" alt="{TXT_PRINTSHOP_COPY}" title="{TXT_PRINTSHOP_COPY}" />\
+            	       		</a>\
                             <a class="psedit" title="" target="_self" href="#">\
                                 <img border="0" title="" alt="" src="images/icons/edit.gif"/>\
                             </a>\
@@ -578,16 +673,20 @@ var addRow = function(data, textStatus){
     var $rows = $J('#psEntriesTable tbody tr.row2.rowMain,#psEntriesTable tbody tr.row1.rowMain');
     var className = $rows.length % 2 ? 'row2' : 'row1';
     $J('<tr class="'+className+' rowMain">\
-    		<td class="pstype" colspan="2"><input type="checkbox" name="selectedEntries[]" /> '+type+'</td>\
-    		<td class="psformat" colspan="2">'+format+'</td>\
-    		<td class="psfront" colspan="2">'+front+'</td>\
-    		<td class="psback" colspan="2">'+back+'</td>\
-    		<td class="psweight" colspan="2">'+weight+'</td>\
-    		<td class="pspaper" colspan="2">'+paper+'</td>\
+    		<td class="pstype" colspan="2"><input type="checkbox" name="selectedEntries[]" />\
+    		                                  <span class="psAttrType"> '+type+'</span></td>\
+    		<td class="psformat" colspan="2"><span class="psAttrFormat">'+format+'</span></td>\
+    		<td class="psfront" colspan="2"><span class="psAttrFront">'+front+'</span></td>\
+    		<td class="psback" colspan="2"><span class="psAttrBack">'+back+'</span></td>\
+    		<td class="psweight" colspan="2"><span class="psAttrWeight">'+weight+'</span></td>\
+    		<td class="pspaper" colspan="2"><span class="psAttrPaper">'+paper+'</span></td>\
     		<td colspan="2">&nbsp;</td>\
     		<td colspan="2" nowrap="nowrap" class="psaction">\
     			<div align="right">\
-    				<a class="psedit" href="#" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
+        			<a href="#" class="pscopy" target="_self" title="{TXT_PRINTSHOP_COPY}">\
+    					   <img src="images/icons/copy.gif" border="0" alt="{TXT_PRINTSHOP_COPY}" title="{TXT_PRINTSHOP_COPY}" />\
+    	       		</a>\
+        			<a class="psedit" href="#" target="_self" title="{TXT_PRINTSHOP_EDIT}">\
     				   <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />\
     				</a>\
     				<a class="psdelete" href="#" target="_self" title="{TXT_PRINTSHOP_DELETE}">\
@@ -647,7 +746,7 @@ var addRow = function(data, textStatus){
 				</td>\
     		</tr>')
     .appendTo('#psEntriesTable tbody');
-    $J([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]).each(function(i,j){
+    $J.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], function(i,j){
        $J('psPrice_'+j).data('default', price[j]);
     });
     $J('#pagingUpper').text(parseInt($J('#pagingUpper').text())+1);
@@ -708,7 +807,7 @@ var resetRowClasses = function(){
 
 var submitError = function(xhr, textStatus, errorThrown){
     $J('#errormessagetarget').append('<div id="alertbox">AJAX['+textStatus+']: '+errorThrown+'</div>').find(':last-child')
-                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
 }
 
 var setError = function(message){
@@ -716,7 +815,7 @@ var setError = function(message){
         <span class="messageFadeout"><a href="#" target="_self" title="{TXT_PRINTSHOP_FADE_OUT}">\
 		   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
 		</a></span>'+message+'</div>').find(':last-child')
-        .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+        .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
 }
 
 var setMessage = function(message){
@@ -724,7 +823,7 @@ var setMessage = function(message){
         <span class="messageFadeout"><a href="#" target="_self" title="{TXT_PRINTSHOP_FADE_OUT}">\
 		   <img src="images/icons/delete.gif" border="0" alt="{TXT_PRINTSHOP_FADE_OUT}" title="{TXT_PRINTSHOP_FADE_OUT}" />\
 		</a></span>'+message+'</div>').find(':last-child')
-                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
 }
 
 
@@ -824,16 +923,20 @@ var setMessage = function(message){
     		<!-- BEGIN showEntry -->
     		<tr class="{ENTRY_ROWCLASS} rowMain">
     		<!--  <input {PRINTSHOP_PRICE_0_DISABLED} size="6" style="width: 35px;" type="text" name="psPrice_0" />  -->
-    			<td class="pstype" colspan="2"><input type="checkbox" name="selectedEntriesId[]" value="{PRINTSHOP_ATTRIBUTE_ID}" /> {ENTRY_TYPE}</td>
-    			<td class="psformat" colspan="2">{ENTRY_FORMAT}</td>
-    			<td class="psfront" colspan="2">{ENTRY_FRONT}</td>
-    			<td class="psback" colspan="2">{ENTRY_BACK}</td>
-    			<td class="psweight" colspan="2">{ENTRY_WEIGHT}</td>
-    			<td class="pspaper" colspan="2">{ENTRY_PAPER}</td>
+    			<td class="pstype" colspan="2"><input type="checkbox" name="selectedEntriesId[]" value="{PRINTSHOP_ATTRIBUTE_ID}" />
+    			                                 <span class="psAttrType">{ENTRY_TYPE}</span></td>
+    			<td class="psformat" colspan="2"><span class="psAttrFormat">{ENTRY_FORMAT}</span></td>
+    			<td class="psfront" colspan="2"><span class="psAttrFront">{ENTRY_FRONT}</span></td>
+    			<td class="psback" colspan="2"><span class="psAttrBack">{ENTRY_BACK}</span></td>
+    			<td class="psweight" colspan="2"><span class="psAttrWeight">{ENTRY_WEIGHT}</span></td>
+    			<td class="pspaper" colspan="2"><span class="psAttrPaper">{ENTRY_PAPER}</span></td>
 <!--class="psprice" -->
     			<td colspan="2">&nbsp;</td>
     			<td colspan="2" nowrap="nowrap" class="psaction">
         			<div align="right">
+    					<a href="#" class="pscopy" target="_self" title="{TXT_PRINTSHOP_COPY}">
+    					   <img src="images/icons/copy.gif" border="0" alt="{TXT_PRINTSHOP_COPY}" title="{TXT_PRINTSHOP_COPY}" />
+    					</a>
     					<a href="#" class="psedit" target="_self" title="{TXT_PRINTSHOP_EDIT}">
     					   <img src="images/icons/edit.gif" border="0" alt="{TXT_PRINTSHOP_EDIT}" title="{TXT_PRINTSHOP_EDIT}" />
     					</a>

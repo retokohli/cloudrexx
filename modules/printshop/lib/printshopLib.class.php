@@ -42,6 +42,7 @@ class PrintshopLibrary {
         'orderStatusEnabled',
         'mandatoryImageUploadEnabled',
     );
+    var $_vatPercent = 7.6;
     var $_priceThresholdCount = 16;
     var $_priceThresholds;
     var $_shipmentEnum = array('pickup', 'messenger', 'mail');
