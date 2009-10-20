@@ -694,6 +694,85 @@ class Navigation
         return $langNavigation;
     }
 
+
+    /**
+     * Get a list of language change url placeholders
+     *
+     * Parses the language change placeholders which can be used to switch
+     * to the corresponding pages of the current page in an other language.
+     * Returns a two dimensional  array of which the key represents the placeholder
+     * in the form LANG_CHANGE_EN (EN is the ISO 639-1 language code of the language)
+     * and its value contains the actual url that links to the corresponding page
+     * in the according language.
+     *
+     * @global ADONewConnection
+     * @global array
+     * @return array
+     */
+    public function getParsedLanguageChangePlaceholders($pageId)
+    {
+        global $objDatabase, $_CONFIG;
+
+        $arrLanguageChangePlaceholders = array();
+        $arrLangPages = array();
+        $arrLanguages = FWLanguage::getLanguageArray();
+        $URLquery  = preg_replace(
+                        array(
+                            '#\&?langId\=[0-9]+#',
+                            '#\&?setLang\=[0-9]+#',
+                            '#\&?section\=[a-z0-9-_]+#i',
+                            '#\&?cmd\=[a-z0-9_-]+#i'
+                        ), '', $_SERVER['QUERY_STRING']);
+        $URLquery = htmlspecialchars($URLquery, ENT_QUOTES, CONTREXX_CHARSET);
+
+        $objResult = $objDatabase->Execute(
+            "SELECT tblN.`lang`,
+                    tblN.`cmd`,
+                    tblM.`name`
+            FROM `".DBPREFIX."content_navigation` AS tblN
+            INNER JOIN `".DBPREFIX."modules` AS tblM ON tblM.`id` = tblN.`module`
+            WHERE tblN.`catid` = ".$pageId
+        );
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $arrLangPages[$objResult->fields['lang']] = array(
+                    'section'   => $objResult->fields['name'],
+                    'cmd'       => $objResult->fields['cmd']
+                );
+                $objResult->MoveNext();
+            }
+        }
+
+        foreach ($arrLanguages as $arrLanguage) {
+            // only parse frontend languages
+            if ($arrLanguage['frontend']) {
+                $arrParams = array();
+
+                // get section url modifier
+                if (!empty($arrLangPages[$arrLanguage['id']]['section'])) {
+                    $arrParams[] = 'section='.$arrLangPages[$arrLanguage['id']]['section'];
+                }
+
+                // get cmd url modifier
+                if (!empty($arrLangPages[$arrLanguage['id']]['cmd'])) {
+                    $arrParams[] = 'cmd='.$arrLangPages[$arrLanguage['id']]['cmd'];
+                }
+
+                if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                    $LangURL = ASCMS_PATH_OFFSET.'/'.$arrLanguage['lang'].'/'.CONTREXX_DIRECTORY_INDEX.'?'.implode('&amp;', $arrParams).$URLquery;
+                } else {
+                    $arrParams[] = 'setLang='.$arrLanguage['id'];
+                    $LangURL = CONTREXX_DIRECTORY_INDEX.'?'.implode('&amp;', $arrParams).$URLquery;
+                }
+
+                $arrLanguageChangePlaceholders['LANG_CHANGE_'.strtoupper($arrLanguage['lang'])] = $LangURL;
+            }
+        }
+
+        return $arrLanguageChangePlaceholders;
+    }
+
+
     static function is_local_url($url) {
         $url = strtolower($url);
         if (strpos($url, 'http://' ) === 0) return false;
