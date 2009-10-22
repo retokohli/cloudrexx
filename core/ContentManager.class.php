@@ -1580,10 +1580,23 @@ class ContentManager
         $err = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
         if ($err) $objTemplate->setVariable("ALIAS_STATUS", $err);
 
+        $objNavbar = new ContentSitemap(0);
+        $catidarray = $objNavbar->getCurrentSonArray($pageId);
+        if(isset($_POST['cssNameNavRecursive']) && !empty($_POST['cssNameNavRecursive'])) {
+            foreach ($catidarray as $value) {
+                if ($boolDirectUpdate) {
+                    $objDatabase->Execute("
+                        UPDATE ".DBPREFIX."content_navigation
+                           SET css_name='".$cssNameNav."',
+                               `target`='".$redirectTarget."'
+                         WHERE catid=".$value.'
+                           AND `lang`='.$langId);
+                }
+            }
+        }
+
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
-            $catidarray = $objNavbar->getCurrentSonArray($pageId);
-
             foreach ($catidarray as $value) {
                 if ($boolDirectUpdate) {
                     $objDatabase->Execute("
