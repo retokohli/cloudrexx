@@ -1192,18 +1192,21 @@ function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
       <tbody>
           <tr class="row2">
               <td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
-              <td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" /></td>
+              <td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" />
+                &nbsp; {TXT_RECURSIVE_CHANGE}
+                <input type="checkbox" name="cssNameNavRecursive" value="1" />
+              </td>
             </tr>
             <tr class="row1">
               <td>{TXT_TARGET}</td>
               <td>
-                   <select name="redirectTarget" style="margin-right:5px;">
-              <option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
-                <option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
-              <option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
-              <option value="_self">{TXT_TARGET_SELF} (_self)</option>
-              <option value="_top">{TXT_TARGET_TOP} (_top)</option>
-            </select>
+              <select name="redirectTarget" style="margin-right:5px;">
+                  <option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
+                  <option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
+                  <option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
+                  <option value="_self">{TXT_TARGET_SELF} (_self)</option>
+                  <option value="_top">{TXT_TARGET_TOP} (_top)</option>
+              </select>
            </td>
            </tr>
        </tbody>
