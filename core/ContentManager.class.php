@@ -1582,7 +1582,7 @@ class ContentManager
 
         $objNavbar = new ContentSitemap(0);
         $catidarray = $objNavbar->getCurrentSonArray($pageId);
-        if(isset($_POST['cssNameNavRecursive']) && !empty($_POST['cssNameNavRecursive'])) {
+        if (isset($_POST['cssNameNavRecursive']) && !empty($_POST['cssNameNavRecursive'])) {
             foreach ($catidarray as $value) {
                 if ($boolDirectUpdate) {
                     $objDatabase->Execute("
@@ -1594,9 +1594,7 @@ class ContentManager
                 }
             }
         }
-
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
-            $objNavbar = new ContentSitemap(0);
             foreach ($catidarray as $value) {
                 if ($boolDirectUpdate) {
                     $objDatabase->Execute("
