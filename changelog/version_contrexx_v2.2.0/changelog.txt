@@ -17,6 +17,11 @@ Allgemein
 - Neue Platzhalter für Datumsfragmente:
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
 
+Content Manager
+- Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden.
+- Editeren einer Seite in mehreren Sprachen auf einmal
+- Vorschau-Funktion
+
 Benutzerverwaltung
 - Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
   Kategorie beim Digital Asset Management Modul erstellt werden.
@@ -43,8 +48,6 @@ Benutzerverwaltung
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
-- Editeren einer Seite in mehreren Sprachen auf einmal
-- Vorschau-Funktion
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
