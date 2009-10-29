@@ -17,6 +17,9 @@ Modul: Dokumenten System
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Allgemein
+- Die Inhaltsnavigation wird bei einer Designvorschau angezeigt.
+
 Alias Verwaltung
 - Aliase welche Leerzeichen enthalten werden in der Inhalts-Navigation
   korrekt ausgegeben.
