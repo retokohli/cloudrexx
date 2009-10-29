@@ -79,7 +79,7 @@ FCKEditor
 ****************************************
 * Behobene Fehler **********************
 ****************************************
-Allgemein:
+Allgemein
 - Die im Benutzerprofil definierte bevorzugte Frontend-Sprache wird nach der
   Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
   Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
@@ -92,6 +92,7 @@ Allgemein:
   funktioniert.
 - Bei der Inhaltsnavigation wird beim Typ 'dropdown' ab der zweiten Ebene
   auch ein CSS-Style (active/inactive) ausgegeben.
+- Die Inhaltsnavigation wird bei einer Designvorschau angezeigt.
 
 Alias Verwaltung
 - Aliase welche Leerzeichen enthalten werden in der Inhalts-Navigation

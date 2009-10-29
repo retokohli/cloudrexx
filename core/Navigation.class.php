@@ -76,6 +76,18 @@ class Navigation
         global $objDatabase, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
+
+        //check for preview and if theme exists in database
+        $currentThemesId='';
+        if (!empty($_GET['preview'])) {
+            $objRS=$objDatabase->SelectLimit("SELECT id
+                                        FROM ".DBPREFIX."skins
+                                        WHERE id = ".intval($_GET['preview']), 1);
+            if ($objRS->RecordCount() == 1) {
+                $currentThemesId = intval($_GET['preview']);
+            }
+        }
+
         $query = "SELECT n.cmd,
                          n.catid,
                          n.catname,
@@ -114,18 +126,6 @@ class Navigation
                      AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
                 ORDER BY n.parcat DESC, n.displayorder";
         $objResult = $objDatabase->Execute($query);
-
-        //check for preview and if theme exists in database
-        $currentThemesId='';
-        if (isset($_GET['preview'])) {
-            $objRS=$objDatabase->SelectLimit("SELECT id
-                                        FROM ".DBPREFIX."skins
-                                        WHERE id = ".intval($_GET['preview']), 1);
-            if ($objRS->RecordCount() == 1) {
-                $currentThemesId = intval($_GET['preview']);
-            }
-        }
-
 
         if ($objDatabase->Affected_Rows() > 0) {
             while (!$objResult->EOF) {
