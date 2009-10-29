@@ -758,11 +758,19 @@ class Navigation
                     $arrParams[] = 'cmd='.$arrLangPages[$arrLanguage['id']]['cmd'];
                 }
 
-                if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                    $LangURL = ASCMS_PATH_OFFSET.'/'.$arrLanguage['lang'].'/'.CONTREXX_DIRECTORY_INDEX.'?'.implode('&amp;', $arrParams).$URLquery;
-                } else {
+                if ($_CONFIG['useVirtualLanguagePath'] != 'on') {
                     $arrParams[] = 'setLang='.$arrLanguage['id'];
-                    $LangURL = CONTREXX_DIRECTORY_INDEX.'?'.implode('&amp;', $arrParams).$URLquery;
+                }
+
+                if (substr($URLquery, 0, 5) == '&amp;') {
+                    $URLquery = substr($URLquery, 5);
+                }
+
+                $arrParams[] = $URLquery;
+                $LangURL = CONTREXX_DIRECTORY_INDEX.'?'.implode('&amp;', $arrParams);
+
+                if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                    $LangURL = ASCMS_PATH_OFFSET.'/'.$arrLanguage['lang'].'/'.$LangURL;
                 }
 
                 $arrLanguageChangePlaceholders['LANG_CHANGE_'.strtoupper($arrLanguage['lang'])] = $LangURL;
