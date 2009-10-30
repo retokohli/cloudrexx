@@ -265,35 +265,37 @@ class Calendar extends calendarLibrary
             }
 
             if (empty($_POST['endDate'])) {
-// TODO: Never used
-//                $dayEnd   = isset($_REQUEST['dayEndID']) ? '&amp;dayEndID='.$_REQUEST['dayEndID'] : '';
-// TODO: Never used
-//                $monthEnd = isset($_REQUEST['monthEndID']) ? '&amp;monthEndID='.$_REQUEST['monthEndID'] : '';
-// TODO: Never used
-//                $yearEnd  = isset($_REQUEST['yearEndID']) ? '&amp;yearEndID='.$_REQUEST['yearEndID'] : '';
-//                if ($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
-// TODO: Never used
-//                    $dayEnd   = isset($_REQUEST['dayID']) ? '&amp;dayEndID='.$_REQUEST['dayID'] : date("t", mktime(0, 0, 0, $month, $day, $year));
-// TODO: Never used
-//                    $monthEnd = isset($_REQUEST['monthID']) ? '&amp;monthEndID='.$_REQUEST['monthID'] : date("m", mktime());
-// TODO: Never used
-//                    $yearEnd  = isset($_REQUEST['yearID']) ? '&amp;yearEndID='.$_REQUEST['yearID'] : date("Y", mktime());
-//                }
+                $dayEnd   = isset($_REQUEST['dayEndID'])
+                    ? '&amp;dayEndID='.$_REQUEST['dayEndID'] : '';
+                $monthEnd = isset($_REQUEST['monthEndID'])
+                    ? '&amp;monthEndID='.$_REQUEST['monthEndID'] : '';
+                $yearEnd  = isset($_REQUEST['yearEndID'])
+                    ? '&amp;yearEndID='.$_REQUEST['yearEndID'] : '';
+                if ($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
+                    $dayEnd   = isset($_REQUEST['dayID'])
+                        ? '&amp;dayEndID='.$_REQUEST['dayID']
+                        : date("t", mktime(0, 0, 0, $month, $day, $year));
+                    $monthEnd = isset($_REQUEST['monthID'])
+                        ? '&amp;monthEndID='.$_REQUEST['monthID'] : date("m", mktime());
+                    $yearEnd  = isset($_REQUEST['yearID'])
+                        ? '&amp;yearEndID='.$_REQUEST['yearID'] : date("Y", mktime());
+                }
             } else {
                 $datearr = explode("-", $_POST['endDate']);
-// TODO: Never used
-//                $enddate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
-// TODO: Never used
-//                $dayEnd   = '&amp;dayEndID='.date("d", $enddate);
-// TODO: Never used
-//                $monthEnd = '&amp;monthEndID='.date("m", $enddate);
-// TODO: Never used
-//                $yearEnd  = '&amp;yearEndID='.date("Y", $enddate);
+                $enddate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+                $dayEnd   = '&amp;dayEndID='.date("d", $enddate);
+                $monthEnd = '&amp;monthEndID='.date("m", $enddate);
+                $yearEnd  = '&amp;yearEndID='.date("Y", $enddate);
             }
 
             $category = isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
             $term     = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
-            $link = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.$year.$month.$day.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+            $link     =
+                '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.
+                $year.$month.$day.$yearEnd.$monthEnd.$dayEnd.$term.$category.
+                '&amp;id='.intval($key).'">'.
+                htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+
             $this->_objTpl->setVariable(array(
                 'CALENDAR_PRIORITY'     => $priority,
                 'CALENDAR_PRIORITY_IMG' => $priorityImg,
@@ -419,10 +421,7 @@ class Calendar extends calendarLibrary
             "\n<!--\nfunction goTo()\n{\nwindow.location.href = ".
             '"'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&catid='.
             $_GET['catid'].'&month="+document.goToForm.goToMonth.value+'.
-            '"&year="+document.goToForm.goToYear.value;'."\n}\n\n\n";
-// TODO: $requestUri is not defined
-//        $java_script .= "function categories()\n{\nwindow.location.href = \"".$requestUri."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
-        $java_script .=
+            '"&year="+document.goToForm.goToYear.value;'."\n}\n\n\n".
             "function categories()\n{\nwindow.location.href = \"".
             CONTREXX_DIRECTORY_INDEX.
             '?section=calendar&catid="+document.selectCategory.inputCategory.value;'.
@@ -673,9 +672,7 @@ class Calendar extends calendarLibrary
 
                     $this->_objTpl->setVariable(array(
                         'CALENDAR_REGISTRATIONS_STATUS' => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFUL'],
-// TODO: $id is not defined
-//                        'CALENDAR_LINK_BACK'            => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=event&amp;id='.$id.$day.$month.$year.'">'.$_CORELANG['TXT_BACK'].'</a>',
-                        'CALENDAR_LINK_BACK'            =>
+                        'CALENDAR_LINK_BACK' =>
                             '<a href="'.CONTREXX_DIRECTORY_INDEX.
                             '?section=calendar'.$this->mandateLink.
                             '&amp;cmd=event&amp;id='.$day.$month.$year.'">'.
@@ -795,7 +792,8 @@ class Calendar extends calendarLibrary
      * @todo this function is way too huge. split it into subfunctions und make this file smaller
      * @return boolean
      */
-    function _showAddEventForm() {
+    function _showAddEventForm()
+    {
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         $this->_objTpl->setTemplate($this->pageContent);
@@ -1514,7 +1512,7 @@ class Calendar extends calendarLibrary
             $filename = $finfo['filename'];
             $ext = ".".$finfo['extension'];
 // TODO: Never used
-//          $dirWeb = $finfoWeb['dirname']."/";
+//            $dirWeb = $finfoWeb['dirname']."/";
 
             $targetFile = $this->uploadImgPath.$sessid.$_SESSION['calendar']['uploadedimageext'][$formfield];
             $targetFilename = $filename.$ext;
