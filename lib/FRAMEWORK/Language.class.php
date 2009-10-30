@@ -23,7 +23,16 @@ class FWLanguage
     private static $arrLanguages = false;
 
     /**
-     * Loads the language config from database.
+     * ID of the default language
+     *
+     * @var integer
+     * @access private
+     */
+    private static $defaultLangId;
+
+
+    /*
+     * Loads the language config from the database
      *
      * This used to be in __construct but is also
      * called from core/language.class.php to reload
@@ -52,9 +61,27 @@ class FWLanguage
                     'backend'    => $objResult->fields['backend'],
                     'is_default' => $objResult->fields['is_default'],
                 );
+                if ($objResult->fields['is_default'] == 'true') {
+                    self::$defaultLangId = $objResult->fields['id'];
+                }
                 $objResult->MoveNext();
             }
         }
+    }
+
+
+    /**
+     * Returns the ID of the default language
+     *
+     * @return integer Language ID
+     */
+    static function getDefaultLangId()
+    {
+        if (empty(self::$defaultLangId)) {
+            self::init();
+        }
+
+        return self::$defaultLangId;
     }
 
 
