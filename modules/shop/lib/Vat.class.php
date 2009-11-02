@@ -104,9 +104,18 @@ class Vat
      * @param   boolean     True if the shop home country and the
      *                      ship-to country are identical
      */
-    static function isHomeCountry($is_home_country)
+    static function setIsHomeCountry($is_home_country)
     {
         self::$is_home_country = $is_home_country;
+    }
+    /**
+     * Get the home country flag
+     * @return  boolean     True if the shop home country and the
+     *                      ship-to country are identical
+     */
+    static function getIsHomeCountry()
+    {
+        return self::$is_home_country;
     }
 
     /**
