@@ -671,9 +671,10 @@ $_ARRAYLANG['TXT_SHOP_SAFERPAY_WINDOWOPTION_2'] = "New window";
 $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "Email address";
 $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "recipient e-mail address";
 $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Please enter the recipient e-mail address";
-$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "New shipment condition";
-$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "At least one of the values must be different to zero";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "Neue Versandkondition";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "Mindestens einer der Werte muss ungleich Null sein";
 $_ARRAYLANG['TXT_SHOP_DEL_ICON'] = "Remove Image";
 $_ARRAYLANG['TXT_SHOP_ORDER_ABBREV'] = "Order";
 $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'] = "Note: the image file '%1\$s' has been renamed to '%2\$s'";
+$_ARRAYLANG['TXT_SHOP_ALL'] = "alle";
 ?>
