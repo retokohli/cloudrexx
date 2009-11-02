@@ -39,6 +39,9 @@ function changeStatus(pageId)
           if (confirm('{TXT_DELETE_ALL}')) {
             submit();
           }
+		  else {
+			frmContentSitemap_MultiAction.selectedIndex = 0;
+		  }
         break;
         default: //do nothing
       }
