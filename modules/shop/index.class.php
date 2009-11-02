@@ -213,10 +213,6 @@ class Shop extends ShopLibrary
 //        if (empty($_COOKIE['PHPSESSID'])) $this->_authenticate();
 
         Vat::isReseller($this->objCustomer && $this->objCustomer->isReseller());
-        Vat::isHomeCountry(
-               empty($_SESSION['shop']['countryId2'])
-            || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
-        );
         // May be omitted, those structures are initialized on first use
         Vat::init();
         Currency::init();
@@ -758,9 +754,7 @@ class Shop extends ShopLibrary
                 $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
             }
             $arrSize = $arrDefaultImageSize;
-            if ($imageName) {
-                $imageName = $imageName;
-            } else {
+            if (!$imageName) {
                 // Look for a picture in the Products.
                 $imageName = Products::getPictureByCategoryId($id);
             }
@@ -769,12 +763,14 @@ class Shop extends ShopLibrary
                 $imageName = ShopCategories::getPictureById($id);
             }
             if ($imageName) {
-                // Image found!  Use that instead of the default.
-                $thumbnailPath =
-                    ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
-                    $imageName.self::thumbnailSuffix;
-                $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
-                $this->scaleImageSizeToThumbnail($arrSize);
+                if (file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$imageName.self::thumbnailSuffix)) {
+                    // Image found!  Use that instead of the default.
+                    $thumbnailPath =
+                        ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                        $imageName.self::thumbnailSuffix;
+                    $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
+                    $this->scaleImageSizeToThumbnail($arrSize);
+                }
             }
 
             $this->objTemplate->setVariable(array(
@@ -3335,12 +3331,16 @@ die("YYY");
         if (empty($_SESSION['shop']['shipment_price']))
             $_SESSION['shop']['shipment_price'] = 0;
 
+        Vat::setIsHomeCountry(
+               empty($_SESSION['shop']['countryId2'])
+            || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
+        );
         // VAT enabled?
         if (Vat::isEnabled()) {
             // VAT included?
             if (Vat::isIncluded()) {
                 // home country equals shop country; VAT is included already
-                if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
+                if (Vat::getIsHomeCountry()) {
                     $_SESSION['shop']['vat_price'] = $_SESSION['shop']['cart']['total_vat_amount'];
                     $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
                         $_SESSION['shop']['total_price']    +
@@ -3364,7 +3364,7 @@ die("YYY");
                 }
             } else {
                 // VAT is excluded
-                if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
+                if (Vat::getIsHomeCountry()) {
                     // home country equals shop country; add VAT.
                     // the VAT on the products has already been calculated and set in the cart.
                     // now we add the default VAT to the shipping and payment cost.

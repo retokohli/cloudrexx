@@ -729,10 +729,12 @@ class shopmanager extends ShopLibrary
         if (isset($_REQUEST['group'])) {
             $query = '';
             $fieldNames = '';
+            $pictureFieldIndex = -1;
             switch ($_REQUEST['group']) {
                 // products - plain fields:
                 case 'tproduct':
                     $content_location = "ProdukteTabelle.csv";
+                    $pictureFieldIndex = 2;
                     $fieldNames = array(
                         'id', 'product_id', 'picture', 'title', 'catid', 'handler',
                         'normalprice', 'resellerprice', 'shortdesc', 'description',
@@ -757,8 +759,9 @@ class shopmanager extends ShopLibrary
                 // products - custom:
                 case 'rproduct':
                     $content_location = "ProdukteRelationen.csv";
+                    $pictureFieldIndex = 1;
                     $fieldNames = array(
-                        'product_id', 'picture', 'title',
+                        'id', 'product_id', 'picture', 'title',
                         'catid', 'category', 'parentcategory', 'handler',
                         'normalprice', 'resellerprice', 'discountprice', 'is_special_offer',
                         'shortdesc', 'description',
@@ -775,7 +778,7 @@ class shopmanager extends ShopLibrary
                     // c2.catid *MAY* be NULL (if c1.catid is root)
                     // vat_id *MAY* be NULL
                     $query = "
-                        SELECT p.product_id, p.picture, p.title,
+                        SELECT p.id, p.product_id, p.picture, p.title,
                                p.catid, c1.catname as category, c2.catname as parentcategory, p.handler,
                                p.normalprice, p.resellerprice, p.discountprice, p.is_special_offer,
                                p.shortdesc, p.description, p.stock, p.stock_visibility,
@@ -896,7 +899,16 @@ class shopmanager extends ShopLibrary
                 while (!$objResult->EOF) {
                     $arrRow = $objResult->FetchRow();
                     $arrReplaced = array();
-                    foreach ($arrRow as $field) {
+                    // Decode the pictures
+                    foreach ($arrRow as $index => $field) {
+                        if ($index == 'picture') {
+                            $arrPictures = Products::getShopImagesFromBase64String($field);
+                            $field =
+                                'http://'.
+                                $_SERVER['HTTP_HOST'].'/'.
+                                ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                                $arrPictures[1]['img'];
+                        }
                         $arrReplaced[] = str_replace('"', '""', $field);
                     }
                     $fileContent .= '"'.join('";"', $arrReplaced)."\"\n";
@@ -3618,79 +3630,79 @@ class shopmanager extends ShopLibrary
                 $orderStatus                         = $objResult->fields['order_status'];
                 $shipperName                         = Shipment::getShipperName($shippingId);
                 $groupCustomerId             = $objResult->fields['group_id'];
-		        Vat::isReseller($isReseller);
-		        Vat::isHomeCountry(
-		               empty($this->arrConfig['country_id']['value'])
-		            || $this->arrConfig['country_id']['value'] == $ship_to_country_id
-		        );
+                Vat::isReseller($isReseller);
+                Vat::setIsHomeCountry(
+                       empty($this->arrConfig['country_id']['value'])
+                    || $this->arrConfig['country_id']['value'] == $ship_to_country_id
+                );
                 self::$objTemplate->setVariable(array(
-	                'SHOP_CUSTOMER_ID' => $objResult->fields['customerid' ],
-	                'SHOP_ORDERID' => $objResult->fields['orderid'],
-	                'SHOP_DATE' => $objResult->fields['order_date'],
-	                'SHOP_ORDER_STATUS' => ($type == 1
-	                    ? $this->getOrderStatusMenu(
-	                        $orderStatus,
-	                        'shopOrderStatusId',
-	                        'swapSendToStatus(this.value)'
-	                      )
-	                    : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus]),
-	                'SHOP_SEND_MAIL_STYLE' => ($orderStatus == SHOP_ORDER_STATUS_CONFIRMED
-	                        ? 'display: inline;'
-	                        : 'display: none;'
-	                    ),
-	                'SHOP_SEND_MAIL_STATUS' => ($type == 1
-	                        ? ($orderStatus != SHOP_ORDER_STATUS_CONFIRMED
-	                            ? ' checked="checked"'
-	                            : ''
-	                          )
-	                        : ''
-	                    ),
-	                'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($shopCurrencyOrderSum),
-	                'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
-	                'SHOP_PREFIX' => $objResult->fields['prefix'],
-	                'SHOP_COMPANY' => $objResult->fields['company'],
-	                'SHOP_FIRSTNAME' => $objResult->fields['firstname'],
-	                'SHOP_LASTNAME' => $objResult->fields['lastname'],
-	                'SHOP_ADDRESS' => $objResult->fields['address'],
-	                'SHOP_ZIP' => $objResult->fields['zip'],
-	                'SHOP_CITY' => $objResult->fields['city'],
-	                'SHOP_COUNTRY' => Country::getNameById($countryId),
-	                'SHOP_SHIP_PREFIX' => $objResult->fields['ship_prefix'],
-	                'SHOP_SHIP_COMPANY' => $objResult->fields['ship_company'],
-	                'SHOP_SHIP_FIRSTNAME' => $objResult->fields['ship_firstname'],
-	                'SHOP_SHIP_LASTNAME' => $objResult->fields['ship_lastname'],
-	                'SHOP_SHIP_ADDRESS' => $objResult->fields['ship_address'],
-	                'SHOP_SHIP_ZIP' => $objResult->fields['ship_zip'],
-	                'SHOP_SHIP_CITY' => $objResult->fields['ship_city'],
-	                'SHOP_SHIP_COUNTRY' => ($type == 1
-	                        ? $this->_getCountriesMenu('shopShipCountry', $ship_to_country_id)
-	                        : Country::getNameById($ship_to_country_id)
-	                    ),
-	                'SHOP_SHIP_PHONE' => $objResult->fields['ship_phone'],
-	                'SHOP_PHONE' => $objResult->fields['phone'],
-	                'SHOP_FAX' => $objResult->fields['fax'],
-	                'SHOP_EMAIL' => $shopMailTo,
-	                    'SHOP_PAYMENTTYPE' => Payment::getProperty($paymentId, 'name'),
-	                'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
-	                'SHOP_CCDATE' => $objResult->fields['ccdate'],
-	                'SHOP_CCNAME' => $objResult->fields['ccname'],
-	                'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
-	                'SHOP_CUSTOMER_NOTE' => $objResult->fields['customer_note'],
-	                'SHOP_CUSTOMER_IP' => $objResult->fields['customer_ip'] == ''
-	                        ? '&nbsp;'
-	                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
-	                          $objResult->fields['customer_ip'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-	                          $objResult->fields['customer_ip'].'</a>',
-	                'SHOP_CUSTOMER_HOST' => $objResult->fields['customer_host'] == ''
-	                        ? '&nbsp;'
-	                        : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
-	                          $objResult->fields['customer_host'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-	                          $objResult->fields['customer_host'].'</a>',
-	                'SHOP_CUSTOMER_LANG' => $objResult->fields['customer_lang'] == '' ? '&nbsp;' : $objResult->fields['customer_lang'],
-	                'SHOP_CUSTOMER_BROWSER' => $objResult->fields['customer_browser'] == '' ? '&nbsp;' : $objResult->fields['customer_browser'],
-	                'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'],
-	                'SHOP_LAST_MODIFIED' => ($shopLastModified == 0 ? $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED'] : $shopLastModified.'&nbsp;'.$_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.$objResult->fields['modified_by']),
-	                'SHOP_SHIPPING_TYPE' => $shipperName,
+                    'SHOP_CUSTOMER_ID' => $objResult->fields['customerid' ],
+                    'SHOP_ORDERID' => $objResult->fields['orderid'],
+                    'SHOP_DATE' => $objResult->fields['order_date'],
+                    'SHOP_ORDER_STATUS' => ($type == 1
+                        ? $this->getOrderStatusMenu(
+                            $orderStatus,
+                            'shopOrderStatusId',
+                            'swapSendToStatus(this.value)'
+                          )
+                        : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus]),
+                    'SHOP_SEND_MAIL_STYLE' => ($orderStatus == SHOP_ORDER_STATUS_CONFIRMED
+                            ? 'display: inline;'
+                            : 'display: none;'
+                        ),
+                    'SHOP_SEND_MAIL_STATUS' => ($type == 1
+                            ? ($orderStatus != SHOP_ORDER_STATUS_CONFIRMED
+                                ? ' checked="checked"'
+                                : ''
+                              )
+                            : ''
+                        ),
+                    'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($shopCurrencyOrderSum),
+                    'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
+                    'SHOP_PREFIX' => $objResult->fields['prefix'],
+                    'SHOP_COMPANY' => $objResult->fields['company'],
+                    'SHOP_FIRSTNAME' => $objResult->fields['firstname'],
+                    'SHOP_LASTNAME' => $objResult->fields['lastname'],
+                    'SHOP_ADDRESS' => $objResult->fields['address'],
+                    'SHOP_ZIP' => $objResult->fields['zip'],
+                    'SHOP_CITY' => $objResult->fields['city'],
+                    'SHOP_COUNTRY' => Country::getNameById($countryId),
+                    'SHOP_SHIP_PREFIX' => $objResult->fields['ship_prefix'],
+                    'SHOP_SHIP_COMPANY' => $objResult->fields['ship_company'],
+                    'SHOP_SHIP_FIRSTNAME' => $objResult->fields['ship_firstname'],
+                    'SHOP_SHIP_LASTNAME' => $objResult->fields['ship_lastname'],
+                    'SHOP_SHIP_ADDRESS' => $objResult->fields['ship_address'],
+                    'SHOP_SHIP_ZIP' => $objResult->fields['ship_zip'],
+                    'SHOP_SHIP_CITY' => $objResult->fields['ship_city'],
+                    'SHOP_SHIP_COUNTRY' => ($type == 1
+                            ? $this->_getCountriesMenu('shopShipCountry', $ship_to_country_id)
+                            : Country::getNameById($ship_to_country_id)
+                        ),
+                    'SHOP_SHIP_PHONE' => $objResult->fields['ship_phone'],
+                    'SHOP_PHONE' => $objResult->fields['phone'],
+                    'SHOP_FAX' => $objResult->fields['fax'],
+                    'SHOP_EMAIL' => $shopMailTo,
+                        'SHOP_PAYMENTTYPE' => Payment::getProperty($paymentId, 'name'),
+                    'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
+                    'SHOP_CCDATE' => $objResult->fields['ccdate'],
+                    'SHOP_CCNAME' => $objResult->fields['ccname'],
+                    'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
+                    'SHOP_CUSTOMER_NOTE' => $objResult->fields['customer_note'],
+                    'SHOP_CUSTOMER_IP' => $objResult->fields['customer_ip'] == ''
+                            ? '&nbsp;'
+                            : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+                              $objResult->fields['customer_ip'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+                              $objResult->fields['customer_ip'].'</a>',
+                    'SHOP_CUSTOMER_HOST' => $objResult->fields['customer_host'] == ''
+                            ? '&nbsp;'
+                            : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+                              $objResult->fields['customer_host'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+                              $objResult->fields['customer_host'].'</a>',
+                    'SHOP_CUSTOMER_LANG' => $objResult->fields['customer_lang'] == '' ? '&nbsp;' : $objResult->fields['customer_lang'],
+                    'SHOP_CUSTOMER_BROWSER' => $objResult->fields['customer_browser'] == '' ? '&nbsp;' : $objResult->fields['customer_browser'],
+                    'SHOP_COMPANY_NOTE' => $objResult->fields['company_note'],
+                    'SHOP_LAST_MODIFIED' => ($shopLastModified == 0 ? $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED'] : $shopLastModified.'&nbsp;'.$_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.$objResult->fields['modified_by']),
+                    'SHOP_SHIPPING_TYPE' => $shipperName,
                 ));
 
                 // set shipment price or remove it from the details overview if empty
