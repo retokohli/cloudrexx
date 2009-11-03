@@ -465,7 +465,7 @@ class ProductAttribute
      */
     function storeValues()
     {
-    	// Mind: value entries in the array may be new and have to
+        // Mind: value entries in the array may be new and have to
         // be inserted, even though the object itself has got a valid ID!
         foreach ($this->arrValue as $arrValue) {
 // Note: Text::replace() now returns the ID, not the object!
