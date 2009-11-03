@@ -131,67 +131,66 @@
   }
 
     var SetUrl = function(url, width, height, alt) {
+        switch(ltype){
+          case 'img':
+            notDefined = true;
+            elInput = document.getElementById("hi_"+fieldID);
 
-    switch(ltype){
-        case 'img':
-           notDefined = true;
-          elInput = document.getElementById("hi_"+fieldID);
+            elInput.style.display='none';
+            elInput.setAttribute('name', 'hi_'+fieldID);
+            elInput.setAttribute('id', 'hi_'+fieldID);
+            elInput.setAttribute('value', url);
 
-        elInput.setAttribute('type', 'hidden');
-        elInput.setAttribute('name', 'hi_'+fieldID);
-        elInput.setAttribute('id', 'hi_'+fieldID);
-        elInput.setAttribute('value', url);
+            if(document.getElementById('lnk_'+fieldID) == null){
+              notDefined = true;
+              }else{
+                notDefined = false;
+              }
 
-        if(document.getElementById('lnk_'+fieldID) == null){
-          notDefined = true;
-          }else{
-            notDefined = false;
-          }
-
-        fileRegExp = /.+\/(.+)$/;
-        fileRegExp.exec(url);
+            fileRegExp = /.+\/(.+)$/;
+            fileRegExp.exec(url);
 
 
-        if(notDefined){
-          elTxt = document.createTextNode(RegExp.$1);
-        }
+            if(notDefined){
+              elTxt = document.createTextNode(RegExp.$1);
+            }
 
-        img = document.getElementById("img"+fieldID);
-        img.src = url;
-        if(width > height){
-          fact = 60 / width;
-          img.style.width = width*fact+'px';
-          img.style.height = height*fact+'px';
-        }else{
-          fact = 60 / height;
-          img.style.height = height*fact+'px';
-          img.style.width = width*fact+'px';
-        }
-        if(notDefined){
-          elALink = document.createElement('a');
-        }else{
-          elALink = document.getElementById("lnk_"+fieldID);
-        }
-        elALink.setAttribute('href', url);
-        elALink.setAttribute('target', '_blank');
-        elALink.setAttribute('id', 'lnk_'+fieldID);
-        elALink.setAttribute('title', '{TXT_IMMO_SHOW_FILE}');
+            img = document.getElementById("img"+fieldID);
+            img.src = url;
+            if(width > height){
+              fact = 60 / width;
+              img.style.width = width*fact+'px';
+              img.style.height = height*fact+'px';
+            }else{
+              fact = 60 / height;
+              img.style.height = height*fact+'px';
+              img.style.width = width*fact+'px';
+            }
+            if(notDefined){
+              elALink = document.createElement('a');
+            }else{
+              elALink = document.getElementById("lnk_"+fieldID);
+            }
+            elALink.setAttribute('href', url);
+            elALink.setAttribute('target', '_blank');
+            elALink.setAttribute('id', 'lnk_'+fieldID);
+            elALink.setAttribute('title', '{TXT_IMMO_SHOW_FILE}');
 
-        if(notDefined){
-          elALink.appendChild(elTxt);
-          img.parentNode.appendChild(elALink);
-          img.parentNode.appendChild(elInput);
-          img.parentNode.insertBefore(document.createElement('br'), elALink);
-        }else{
-          elALink.removeChild(elTxt);
-          elTxt = document.createTextNode(RegExp.$1);
-          elALink.appendChild(elTxt);
-        }
-      break;
+            if(notDefined){
+              elALink.appendChild(elTxt);
+              img.parentNode.appendChild(elALink);
+              img.parentNode.appendChild(elInput);
+              img.parentNode.insertBefore(document.createElement('br'), elALink);
+            }else{
+              elALink.removeChild(elTxt);
+              elTxt = document.createTextNode(RegExp.$1);
+              elALink.appendChild(elTxt);
+            }
+          break;
 
-      case 'pdf':
-        document.getElementsByName(elName)[0].value = url;
-      break;
+          case 'pdf':
+            document.getElementsByName(elName)[0].value = url;
+          break;
       }
   }
 

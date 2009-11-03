@@ -945,7 +945,7 @@ class ContentManager
         }
         $langCount = 0;
         $activeLangCount = 0;
-// TODO: selected frontend lang active tab
+
         foreach (FWLanguage::getLanguageArray() as $arrLang) {
             $checked = '';
             ++$langCount;
