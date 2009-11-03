@@ -129,6 +129,7 @@ class DBG
     {
         if (self::$log_firephp) return;
 
+        $file = $line = '';
         if (headers_sent($file, $line)) {
             trigger_error("Can't activate FirePHP! Headers already sent in $file on line $line'", E_USER_NOTICE);
             return;
@@ -451,7 +452,11 @@ function DBG_log_adodb($msg)
     if ($error || (DBG::getMode() & DBG_ADODB) || (DBG::getMode() & DBG_ADODB_TRACE)) {
         DBG::log(
             DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP
-                ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET) : $msg, $error ? 'error' : (preg_match('#\(mysql\):\s(UPDATE|DELETE|INSERT)#', $msg) ? 'info' : 'log'));
+                ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET)
+                : $msg, $error
+                    ? 'error'
+                    : (preg_match('#\(mysql\):\s(UPDATE|DELETE|INSERT)#', $msg)
+                        ? 'info' : 'log'));
     }
 }
 
