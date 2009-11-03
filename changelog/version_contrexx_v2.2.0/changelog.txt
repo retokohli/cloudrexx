@@ -18,9 +18,10 @@ Allgemein
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
 
 Content Manager
-- Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden.
+- Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden
 - Editeren einer Seite in mehreren Sprachen auf einmal
 - Vorschau-Funktion
+(- Seiten können per drag&drop strukturiert werden )
 
 Benutzerverwaltung
 - Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
