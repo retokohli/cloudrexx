@@ -230,8 +230,9 @@ class ContentSitemap
         	$this->rowIndex++;
         	$hasChildren = isset($arrPage['children']) && is_array($arrPage['children']);
 
-            if (!$this->navCmd[$pageId] && $this->navModul[$pageId]) {
+            if (!$this->navCmd[$pageId] && $this->navModule[$pageId]) {
                 $objTpl->touchBlock('repository');
+                $objTpl->parse('repository');
             } else {
                 $objTpl->hideBlock('repository');
             }
