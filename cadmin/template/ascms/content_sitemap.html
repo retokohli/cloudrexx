@@ -3,8 +3,8 @@
 <!-- // confirm delete page
 function deletePage(pageId)
 {
-    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=delete&pageId="+pageId);
+  if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=delete&pageId="+pageId);
 }
 
 function deleteContent(contentId)
@@ -15,38 +15,37 @@ function deleteContent(contentId)
 
 function repositoryPage(pageId)
 {
-    if(confirm('{TXT_CONFIRM_REPOSITORY}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=addrepository&pageid="+pageId);
+  if(confirm('{TXT_CONFIRM_REPOSITORY}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=addrepository&pageid="+pageId);
 }
 
 function changeStatus(pageId)
 {
-    if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
-        window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=changestatus&pageId="+pageId);
+  if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=changestatus&pageId="+pageId);
 }
-  function selectMultiAction()
+function selectMultiAction()
+{
+  with (document.form)
   {
-    with (document.form)
-    {
-      switch (frmContentSitemap_MultiAction.value) {
-        case 'activate':
+    switch (frmContentSitemap_MultiAction.value) {
+      case 'activate':
+        submit();
+      break;
+      case 'deactivate':
+        submit();
+       break;
+      case 'delete':
+        if (confirm('{TXT_DELETE_ALL}')) {
           submit();
-        break;
-        case 'deactivate':
-          submit();
-        break;
-        case 'delete':
-          if (confirm('{TXT_DELETE_ALL}')) {
-            submit();
-          }
-		  else {
-			frmContentSitemap_MultiAction.selectedIndex = 0;
-		  }
-        break;
-        default: //do nothing
-      }
+        } else {
+          frmContentSitemap_MultiAction.selectedIndex = 0;
+        }
+      break;
+      default: //do nothing
     }
   }
+}
 // -->
 </script>
 <form name="form" action="index.php?cmd=content&amp;act=mod" method="post">
@@ -89,7 +88,7 @@ function changeStatus(pageId)
 <!-- BEGIN pageRow -->
 <tr class="{SITEMAP_ROWCLASS}">
 <td><div style="padding-left: {SITEMAP_ROW_PADDING}px">
-<input type="checkbox" name="selectedPages[]" id="selectedPages" value="{SITEMAP_PAGE_ID}" />
+<input type="checkbox" name="selectedPages[]" value="{SITEMAP_PAGE_ID}" />
 {SITEMAP_PAGE_LEVEL}
 <input {SITEMAP_DISPLAYORDER_DISABLED} class="tree_input" maxlength="5" size="3" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_new[{SITEMAP_PAGE_ID}]" />
 <input type="hidden" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_old[{SITEMAP_PAGE_ID}]" />
@@ -101,7 +100,7 @@ function changeStatus(pageId)
 <td nowrap="nowrap">{SITEMAP_REPOSITORY}
 <a href="index.php?cmd=content&amp;act=new&amp;pageId={SITEMAP_PAGE_ID}"><img src="images/icons/copy.gif" alt="{TXT_TEMPLATE}" title="{TXT_TEMPLATE}" border="0" /></a>
 <a href="index.php?cmd=content&amp;act=edit&amp;pageId={SITEMAP_PAGE_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" title="{TXT_EDIT}" border="0" /></a>
-<a href="javascript:deletePage('{SITEMAP_PAGE_ID}');" alt="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" title="{TXT_DELETE}" border="0" /></a></td>
+<a href="javascript:deletePage('{SITEMAP_PAGE_ID}');" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" title="{TXT_DELETE}" border="0" /></a></td>
 </tr>
 <!-- END pageRow -->
 </table>
