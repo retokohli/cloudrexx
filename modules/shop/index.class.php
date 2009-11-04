@@ -3341,7 +3341,13 @@ die("YYY");
             if (Vat::isIncluded()) {
                 // home country equals shop country; VAT is included already
                 if (Vat::getIsHomeCountry()) {
-                    $_SESSION['shop']['vat_price'] = $_SESSION['shop']['cart']['total_vat_amount'];
+                    $_SESSION['shop']['vat_price'] = Currency::formatPrice(
+                        $_SESSION['shop']['cart']['total_vat_amount'] +
+                        Vat::calculateOtherTax(
+                            $_SESSION['shop']['payment_price']  +
+                            $_SESSION['shop']['shipment_price']
+                        )
+                    );
                     $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
@@ -3370,7 +3376,7 @@ die("YYY");
                     // now we add the default VAT to the shipping and payment cost.
                     $_SESSION['shop']['vat_price'] = Currency::formatPrice(
                         $_SESSION['shop']['cart']['total_vat_amount'] +
-                        Vat::calculateDefaultTax(
+                        Vat::calculateOtherTax(
                             $_SESSION['shop']['payment_price'] +
                             $_SESSION['shop']['shipment_price']
                         ));
