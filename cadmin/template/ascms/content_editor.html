@@ -351,12 +351,12 @@ var setFrameContent = function(html){
     if(!_CONTREXX_EXPERT_MODE && typeof FCKeditorAPI != 'undefined'){
         var $frame = $J('iframe', $form).contents();
         if(FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG){
-            $frame.find('iframe').contents().find('body').html(html);
+            //does setdata always work in IE?
+            FCKeditorAPI.GetInstance('html').SetData(html);
+//            $frame.find('iframe').contents().find('body').html(html); //if we use .html(), then javascript code gets executed...
         }else{
             $frame.find('textarea').val(html);
         }
-        //don't use the FCKeditor SetData method, as it causes the weird permission denied error in IE
-        //FCKeditorAPI.GetInstance('html').SetData(html);
     }
 }
 
