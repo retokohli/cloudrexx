@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_contact
  */
+$_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Esta es la informaci&oacute;n enviada por el formulario de contacto de la Web ";
+$_ARRAYLANG['TXT_CONTACT_FORM'] = "Nuevo formulario de contacto en la entrada";
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Fecha";
 $_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Nombre del host";
 $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "Direcci&oacute;n IP";
@@ -36,7 +38,8 @@ $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'] = "Funciones";
 $_ARRAYLANG['TXT_CONTACT_DETAILS'] = "Detalles";
 $_ARRAYLANG['TXT_CONTACT_DELETE_ENTRY'] = "Eliminar Entrada";
 $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME'] = "Formulario de contacto, entradas de %NAME%";
-$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'] = "Podr&iacute;a ser posible que este archivo est&eacute; infectado por un virus o troyano, \\n ya que se ha sido subido por alguien desconocido. \ \n\\n \¿Desea abrirlo de todas formas?";
+$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'] = "Podr&iacute;a ser posible que este archivo est&eacute; infectado por un virus o troyano, \n ya que se ha sido subido por alguien desconocido. \ 
+\n \¿Desea abrirlo de todas formas?";
 $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'] = "\¡Esta acci&oacute;n no se puede deshacer!";
 $_ARRAYLANG['TXT_CONTACT_NAME'] = "Nombre";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'] = "Direcci&oacute;n(es) de destinatario(s)";
@@ -71,6 +74,7 @@ $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_UNIQUE_MSG'] = "\¡Cada campo tiene un nombr
 $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED'] = "\¡El formulario de contacto ha sido guardado con &eacute;xito!";
 $_ARRAYLANG['TXT_CONTACT_YES'] = "S&iacute;";
 $_ARRAYLANG['TXT_CONTACT_NO'] = "No";
+$_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Subidas";
 $_ARRAYLANG['TXT_CONTACT_USE_AS_TEMPLATE'] = "Utilizar como plantilla para un nuevo formulario";
 $_ARRAYLANG['TXT_CONTACT_SELECTBOX'] = "Seleccionar men&uacute;";
 $_ARRAYLANG['TXT_CONTACT_TEXTAREA'] = "&Aacute;rea de texto multil&iacute;nea";
@@ -96,6 +100,7 @@ $_ARRAYLANG['TXT_CONTACT_SUBMIT_SELECT'] = "Seleccionar acci&oacute;n";
 $_ARRAYLANG['TXT_CONTACT_SUBMIT_DELETE'] = "Eliminar seleccionados";
 $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_ENTRIES'] = "\¿Est&aacute; seguro de que desea eliminar estas entradas?";
 $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] = "\¡Por favor, compruebe los campos!";
+$_ARRAYLANG['TXT_FEEDBACK_ERROR'] = "\¡Se han producido uno o m&aacute;s errores. Por favor, utilice el bot&oacute;n \"volver\" de su navegador para regresar al formulario y comprobar sus campos!";
 $_ARRAYLANG['TXT_CONTACT_DOWNLOAD'] = "Descargar";
 $_ARRAYLANG['TXT_CONTACT_CSV_FILE'] = "Fichero CSV";
 $_ARRAYLANG['TXT_CONTACT_SPAM_PROTECTION_WORD_LIST'] = "Lista de palabras para la protecci&oacute;n spam";
@@ -122,7 +127,16 @@ $_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'] = "Mostrar el formulario de nu
 $_ARRAYLANG['TXT_CONTACT_LANG'] = "Idioma";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Detalles";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Entradas";
+$_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_FAILED'] = "\¡El fichero %s no pudo ser enviado a causa de un error!";
+$_ARRAYLANG['TXT_CONTACT_FILE_EXTENSION_NOT_ALLOWED'] = "\¡El fichero %s fue rechazado debido a que tiene una extensi&oacute;n no permitida!";
+$_ARRAYLANG['TXT_CONTACT_FAILED_SUBMIT_REQUEST'] = "\¡La solicitud no pudo ser enviada debido a un error!";
+$_ARRAYLANG['TXT_CONTACT_FILE_SIZE_EXCEEDS_LIMIT'] = "\¡El fichero %s no fue subido debido a que el tama&ntilde;o era mayor que el permitido (%s)!";
+$_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "\¡El fichero no pudo ser subido ya que era demasiado grande!";
+$_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "\¡El fichero %s no fue subido correctamente!";
+$_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "\¡El archivo no se ha subido correctamente!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "protecci&oacute;n CAPTCHA";
+$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Por favor, escriba los caracteres de la imagen en el campo de texto destinado para ello. Esto es necesario para que el sistema sepa que usted no es un robot de spam.";
+$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "\¡La cadena de caracteres introducida no es v&aacute;lida!";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Activando esta opci&oacute;n se asegura de que una copia exacta de los datos del formulario ser&aacute; enviada al remitente.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Copia al remitente CC";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Si estilo propio de CSS est&aacute; en uso, este formulario tiene el ID y CSS clase: <strong> 'contactForm_ \ $ FormularNummer' </ strong>, por ejemplo, contactForm_2. Por defecto, s&oacute;lo 'contactForm' es usado por estos atributos.";
