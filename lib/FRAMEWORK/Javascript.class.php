@@ -94,6 +94,20 @@ class JS
             ),
             'specialcode'  => 'var $J = jQuery.noConflict();',
         ),
+        'nestedsortable'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/inestedsortable.js'
+            ),
+            'dependencies'  => array(
+                'interface'
+            ),
+        ),
+        'interface'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/interface.js'
+            ),
+        ),
+
         'scriptaculous' => array(
             'jsfiles'       => array(
                 'lib/javascript/scriptaculous/scriptaculous.js'

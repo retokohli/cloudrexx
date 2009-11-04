@@ -44,6 +44,9 @@ class ContentSitemap
     public $navIsRedirect = array();
     public $langId;
     public $requiredModuleNames = array('home','ids','error','login','core');
+    public $nestedLists = '';
+    public $nestedNavigation;
+    private $rowIndex = 0;
 
     /**
     * Constructor
@@ -122,7 +125,191 @@ class ContentSitemap
             $objResult->MoveNext();
         }
         unset($arrModules);
+        $this->nestedNavigation = $this->buildNestedNavigationArray();
         return true;
+    }
+
+    /**
+     * builds the nested navigation array
+     *
+     * @param array $flatTree the flat navigation array (as in $this->navtable)
+     * @param integer $level current level (helper argument)
+     * @return array nested navigation array
+     */
+    function buildNestedNavigationArray($flatTree = array(), $level = 1)
+    {
+        if(count($flatTree) == 0){ //if empty, use full tree
+            $flatTree = $this->navtable[0];
+        }
+        $arrNestedTree = array();
+        foreach ($flatTree as $pageId => $title) {
+        	if(array_key_exists($pageId, $this->navtable)){
+                $arrNestedTree[$pageId] = array(
+                    'pageId'    => $pageId,
+                    'level'     => $level,
+                    'title'     => $title,
+                    'children'  => $this->buildNestedNavigationArray($this->navtable[$pageId], $level + 1),
+                );
+        	}else{
+                $arrNestedTree[$pageId] = array(
+                    'pageId'    => $pageId,
+                    'level'     => $level,
+                    'title'     => $title,
+                );
+        	}
+        }
+        return $arrNestedTree;
+    }
+
+
+    /**
+     * returns the nested navigation tree as an unordered list (HTML string)
+     *
+     * @param integer $rootPageId the page ID of the root element, whole tree if not specified.
+     * @return string HTML unordered list: the nested navigation tree
+     */
+
+
+    function _getNestedTemplate($index = 0){
+        $template = file_get_contents(ASCMS_ADMIN_TEMPLATE_PATH.'/content_sitemap_nested_list.html');
+        return str_replace('{INDEX}', $index, $template);
+    }
+
+
+    /**
+     * recursively parse the nested sitemap
+     *
+     * @param array $arrNestedNavigation nested array of pages
+     * @param string $ulRootId ID of the roo UL element
+     * @param string $ulClass class ot the UL elements
+     * @param string $liClasses classes of the LI elements
+     * @param string $handlerClass class of the drag handler
+     * @param HTML_Template_Sigma $objTpl sigma template object, must be null on initial call
+     * @return string parsed nested list
+     */
+    function parseNestedSitemap($arrNestedNavigation, $ulRootId = 'sortableNavigation', $ulClass = 'sortableNavigation', $liClasses = 'sortablePage', $handlerClass = 'sort-handle', &$objTpl = null)
+    {
+        global $_CORELANG;
+
+        $first = false;
+        if(is_null($objTpl)){
+            $objTpl = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+            $objTpl->setErrorHandling(PEAR_ERROR_DIE);
+            $objTpl->loadTemplateFile('content_sitemap_nested_list.html', true, true);
+            $objTpl->setGlobalVariable(array(
+                'TXT_EDIT'                      => $_CORELANG['TXT_EDIT'],
+                'TXT_DELETE'                    => $_CORELANG['TXT_DELETE'],
+                'TXT_TEMPLATE'                  => $_CORELANG['TXT_TEMPLATE'],
+                'TXT_PAGE_ACTIVATE'             => $_CORELANG['TXT_PAGE_ACTIVATE'],
+                'TXT_ADD_REPOSITORY'            => $_CORELANG['TXT_ADD_REPOSITORY'],
+       	        'DIRECTORY_INDEX'               => CONTREXX_DIRECTORY_INDEX,
+            ));
+
+            $first = true;
+        }
+        if($first){
+            $objTpl->setVariable(array(
+                'SITEMAP_ROOT_UL_ID' => 'id="'.$ulRootId.'"',
+            ));
+        }
+
+        $objTpl->setVariable(array(
+            'SITEMAP_UL_CLASS'  => $ulClass,
+        ));
+
+        $objTpl->parse('list_start');
+   	    $objTpl->parse('list');
+
+   	    $arrIndex = 0;
+        foreach ($arrNestedNavigation as $pageId => $arrPage) {
+            $arrIndex++;
+        	$rc      = "row".($this->rowIndex % 2 == 0 ? 1 : 2);         //rowclass
+        	if($this->navIsValidated[$pageId] == 0){
+        	    $rc = "rowWarn";
+        	}
+        	$this->rowIndex++;
+        	$hasChildren = isset($arrPage['children']) && is_array($arrPage['children']);
+
+            if (!$this->navCmd[$pageId] && $this->navModul[$pageId]) {
+                $objTpl->touchBlock('repository');
+            } else {
+                $objTpl->hideBlock('repository');
+            }
+
+            if($hasChildren){
+                $objTpl->parse('treenodeicon');
+            }
+
+            $moduleReference = '';
+            if (empty($this->navModule[$pageId])) {
+                $this->navModule[$pageId] = "&nbsp;";
+            } else {
+                $moduleName = $this->navModule[$pageId];
+                // Set $moduleName for
+                //  news, calendar, community, directory, docsys, egov, feed,
+                //  forum, gallery, guestbook, livecam, market, media\d&archive=archive1,
+                //  memberdir, newsletter, podcast, recommend, shop, voting, blog (soon),
+                //  support (soon), contact (no content for the time being),
+                //  (more to come).
+                // Clear $moduleName for
+                //  core, error, login (-> user?), agb, imprint, privacy, search,
+                //  sitemap, home, ids, (more to come).
+                // Don't link to these modules.
+                $moduleReference = preg_replace(
+                    '/^(?:core|error|login||agb|imprint|privacy|search|sitemap|home|ids)$/',
+                    '',
+                    $moduleName
+                );
+                // Fix the following URI parts to include necessary parts.
+                $moduleReference = preg_replace(
+                    '/^media(\d)$/',
+                    'media&amp;archive=archive$1',
+                    $moduleReference
+                );
+            }
+
+       	    $objTpl->setVariable(array(
+       	        'SITEMAP_PAGE_ID'               => $arrPage['pageId'],
+       	        'SITEMAP_UL_CLASS'              => $ulClass,
+       	        'SITEMAP_LI_CLASSES'            => $liClasses,
+       	        'SITEMAP_HANDLER_CLASS'         => $handlerClass,
+       	        'SITEMAP_ROWCLASS'              => $rc,
+       	        'SITEMAP_LED_COLOR'             => $this->navActiveStatus[$pageId] == 1 ? 'green' : 'red',
+       	        'IS_CORE'                       => in_array($this->navModule[$pageId], $this->requiredModuleNames) ? '_core' : '',
+       	        'IS_VISIBLE'                    => $this->navDisplaystatus[$pageId] == 'on' ? 'on' : 'off',
+       	        'IS_REDIRECT'                   => $this->navIsRedirect[$pageId] ? '_redirect' : '',
+       	        'IS_LOCKED'                     => $this->navProtected[$pageId] ? 'locked' : '',
+       	        'SITEMAP_PAGE_TITLE'            => htmlentities($arrPage['title'], ENT_QUOTES, CONTREXX_CHARSET),
+       	        'SITEMAP_PAGE_TITLE_HREF'       => $this->_getPageClickHref($moduleReference, $pageId),
+       	        'SITEMAP_USERNAME'              => $this->navUsername[$pageId],
+       	        'SITEMAP_LAST_EDITED'           => $this->navChangelog[$pageId],
+       	        'SITEMAP_PAGE_NODE_CLASS'       => $hasChildren ? 'hasChildren nodeExpanded' : 'hasNoChildren',
+       	        'SITEMAP_MODULE'                => $this->navModule[$pageId],
+       	        'SITEMAP_PAGE_CMD'              => $this->navCmd[$pageId],
+       	    ));
+            $objTpl->hideBlock('list_start');
+
+            $objTpl->parse('item_start');
+            $objTpl->parse('list');
+
+           	if($hasChildren){
+
+
+           	    $this->parseNestedSitemap($arrPage['children'], $ulRootId, $ulClass, $liClasses, $handlerClass, $objTpl);
+        	}
+        	$objTpl->touchBlock('item_end');
+            $objTpl->parse('item_end');
+            $objTpl->parse('list');
+
+        }
+        $objTpl->touchBlock('list_end');
+        $objTpl->parse('list_end');
+        $objTpl->parse('list');
+
+        if($first){
+            file_put_contents('output.txt', $objTpl->get());
+            return $objTpl->get();
+        }
     }
 
     /**
@@ -206,6 +393,8 @@ class ContentSitemap
             'TXT_SUBMIT_DELETE'          => $_CORELANG['TXT_MULTISELECT_DELETE'],
             'TXT_SUBMIT_ACTIVATE'        => $_CORELANG['TXT_MULTISELECT_ACTIVATE'],
             'TXT_SUBMIT_DEACTIVATE'      => $_CORELANG['TXT_MULTISELECT_DEACTIVATE'],
+            'TXT_DATABASE_QUERY_ERROR'   => $_CORELANG['TXT_DATABASE_QUERY_ERROR'],
+            'DIRECTORY_INDEX'            => CONTREXX_DIRECTORY_INDEX,
         ));
 
         foreach (FWLanguage::getLanguageArray() as $arrLang){
@@ -222,153 +411,14 @@ class ContentSitemap
             $objTpl->parse('languages_tab');
         }
 
-        $objTpl->setCurrentBlock('siteRow');
         $objTpl->setVariable(array(
             'CONTENT_ID'     => $this->langId,
             'CONTENT_NAME'   => FWLanguage::getLanguageParameter($this->langId, 'name'),
         ));
-        $objTpl->parseCurrentBlock();
+        $objTpl->parse('header');
 
-        $objTpl->setCurrentBlock('pageRow');
-        $treeArray = $this->doAdminTreeArray();
-        $treeArrayCopy = $treeArray;
-        $arrLevel = array();
+        $objTpl->setVariable('SITEMAP_NESTED_PAGES', $this->parseNestedSitemap($this->nestedNavigation, 'sortableNavigation'));
 
-        $i=0;
-        foreach ($treeArrayCopy as $key => $value) {
-           $arrLevel[$key]=$value;
-           $arrKey[$i]=$key;
-           $i++;
-        }
-
-        $i=0;
-        $n=0;
-        $arrayTreeParents = $this->getCurrentTreeArray($expandCatId);
-        $thisTree = false;
-        $topLevelId = 0;
-
-        foreach ($treeArray as $key => $value) {
-            $expand = false;
-            $level = intval($value);
-            if (isset($arrKey[$n+1])) {
-                $nextLevel = $arrLevel[$arrKey[$n+1]];
-            } else {
-                $nextLevel = 0;
-            }
-            //echo "level: $level  Key : $key NextLevel : $nextLevel<br>";
-
-            if ($this->navIsValidated[$key] == 0) {
-                $class = 'rowWarn';
-            } else {
-                $class = (($i % 2) == 0) ? "row1" : "row2";
-            }
-
-
-
-            if ($expandAll OR $level==0) {
-                $expand=true;
-                $topLevelId = $expandCatId;
-            } else {
-                if ((in_array ($this->navparentId[$key], $arrayTreeParents)) || $thisTree || $topLevelId==$this->navparentId[$key]) {
-                    $thisTree = ($key==$expandCatId) ? true : false;
-                    $expand = true;
-                }
-            }
-
-            if ($expand) {
-                $width=($level)*18;
-                $requiredModule    = in_array($this->navModule[$key], $this->requiredModuleNames) ? "_core" : "";
-                if (empty($requiredModule)) {
-                    $isRedirect = ($this->navIsRedirect[$key]) ? '_redirect' : '';
-                }
-
-                // start active or inactive folder icon
-                $folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_off".$requiredModule.$isRedirect.".gif' width=15 height='13' border='0' title='".$_CORELANG['TXT_STATUS_INVISIBLY']."' alt='".$_CORELANG['TXT_STATUS_INVISIBLY']."' /></a>&nbsp;";
-                if ($this->navProtected[$key]) {
-                    $folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_off_locked".$requiredModule.".gif' width='15' border='0' height='13' title='".$_CORELANG['TXT_STATUS_INVISIBLY']."' alt='".$_CORELANG['TXT_STATUS_INVISIBLY']."' /></a>&nbsp;";
-                }
-
-                if ($this->navDisplaystatus[$key]=="on") {
-                    $folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_on".$requiredModule.$isRedirect.".gif' width='15' height='13' border='0' title='".$_CORELANG['TXT_STATUS_VISIBLE']."' alt='".$_CORELANG['TXT_STATUS_VISIBLE']."' /></a>&nbsp;";
-                    if ($this->navProtected[$key]){
-                        $folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_on_locked".$requiredModule.".gif' width='15' height='13' border='0' title='".$_CORELANG['TXT_STATUS_VISIBLE']."' alt='".$_CORELANG['TXT_STATUS_VISIBLE']."' /></a>&nbsp;";
-                    }
-                } // end active or inactive folder icon
-
-                if ($this->navActiveStatus[$key]=='1') {
-                    $activeIcon = '<a href="?cmd=content&amp;act=changeActiveStatus&amp;id='.$key.'"><img src="images/icons/led_green.gif" border="0" title="'.$_CORELANG['TXT_PAGE_ACTIVATE'].'" alt="'.$_CORELANG['TXT_PAGE_ACTIVATE'].'" /></a>';
-                } else {
-                    $activeIcon = '<a href="?cmd=content&amp;act=changeActiveStatus&amp;id='.$key.'"><img src="images/icons/led_red.gif" border="0" title="'.$_CORELANG['TXT_PAGE_ACTIVATE'].'" alt="'.$_CORELANG['TXT_PAGE_ACTIVATE'].'" /></a>';
-                }
-
-                $folderLinkIcon = "<img src='images/icons/pixel.gif' width='11' height='11' alt='' title='' />&nbsp;";
-                if ($nextLevel>$level) {
-                    if ($expandAll AND $expandCatId==0) {
-                        $folderLinkIcon = "<a href='?cmd=content&amp;act=expand&amp;catId=$key'><img src='images/icons/minuslink.gif' border='0' width='11' height='11' alt='' title='' /></a>&nbsp;";
-                    } elseif ($key==$expandCatId) {
-                        $folderLinkIcon = "<a href='?cmd=content&amp;act=expand&amp;catId=$key'><img src='images/icons/minuslink.gif' border='0' width='11' height='11' alt='' title='' /></a>&nbsp;";
-                    } else {
-                        $folderLinkIcon = "<a href='?cmd=content&amp;act=expand&amp;catId=$key'><img src='images/icons/pluslink.gif' border='0' width='11' height='11' alt='' title='' /></a>&nbsp;";
-                    }
-                }
-                if (!$this->navCmd[$key] && $this->navModule[$key]) {
-                    $repository= "<a href=\"javascript:repositoryPage('$key')\"><img src='images/icons/upload.gif' border='0' alt='".$_CORELANG['TXT_ADD_REPOSITORY']."' title='".$_CORELANG['TXT_ADD_REPOSITORY']."' /></a>";
-                } else {
-                    $repository= "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
-                }
-
-                $moduleReference = '';
-                if (empty($this->navModule[$key])) {
-                    $this->navModule[$key]="&nbsp;";
-                } else {
-                    $moduleName = $this->navModule[$key];
-                    // Set $moduleName for
-                    //  news, calendar, community, directory, docsys, egov, feed,
-                    //  forum, gallery, guestbook, livecam, market, media\d&archive=archive1,
-                    //  memberdir, newsletter, podcast, recommend, shop, voting, blog (soon),
-                    //  support (soon), contact (no content for the time being),
-                    //  (more to come).
-                    // Clear $moduleName for
-                    //  core, error, login (-> user?), agb, imprint, privacy, search,
-                    //  sitemap, home, ids, (more to come).
-                    // Don't link to these modules.
-                    $moduleReference = preg_replace(
-                        '/^(?:core|error|login||agb|imprint|privacy|search|sitemap|home|ids)$/',
-                        '',
-                        $moduleName
-                    );
-                    // Fix the following URI parts to include necessary parts.
-                    $moduleReference = preg_replace(
-                        '/^media(\d)$/',
-                        'media&amp;archive=archive$1',
-                        $moduleReference
-                    );
-                }
-
-                $objTpl->setVariable(array(
-                    'SITEMAP_DISPLAYORDER_DISABLED' => (Permission::checkAccess(35, 'static', true) ? '' : 'disabled="disabled"'),
-                    'SITEMAP_PAGE_MODULE'           => $this->navModule[$key],
-                    'SITEMAP_PAGE_CMD'              => $this->navCmd[$key],
-                    'SITEMAP_PAGE_DISPLAYORDER'     => $this->navdisplayorder[$key],
-                    'SITEMAP_PAGE_USERNAME'         => $this->navUsername[$key],
-                    'SITEMAP_PAGE_CHANGELOG'        => $this->navChangelog[$key],
-                    'SITEMAP_ROWCLASS'              => $class,
-                    'SITEMAP_ROW_PADDING'           => $width,
-                    'SITEMAP_PAGE_LEVEL'            => $folderLinkIcon.$activeIcon.'&nbsp;'.$folderIcon,
-                    'SITEMAP_PAGE_ID'               => $key,
-                    'SITEMAP_PAGE_NAME'             => htmlentities($this->navName[$key], ENT_QUOTES, CONTREXX_CHARSET),
-                    'SITEMAP_REPOSITORY'            => $repository,
-                    // New behavior: Go to module administration or content
-                    'SITEMAP_PAGE_LINK'             =>
-                        (empty($moduleReference)
-                          ? "index.php?cmd=content&amp;act=edit&amp;pageId=$key"
-                          : "javascript:showEditModeWindow('$moduleReference','$key');"),
-                ));
-                $objTpl->parseCurrentBlock();
-                $i++;
-            }
-            $n++;
-        }
         // New in 2.0: editmode selector window
         $objTpl->setVariable(array(
             'TXT_EDITMODE_TITLE'   => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
@@ -441,6 +491,69 @@ class ContentSitemap
             }
         }
         return $this->treeArray;
+    }
+
+    /**
+     * find a path to a key of any-dimensional arrays
+     * this is a helper function only
+     *
+     * @param mixed $needle the key to search for (any valid array key)
+     * @param array $haystack the array to search in
+     * @param array $path recursion helper argument
+     * @return array path to the key if found, otherwise false
+     */
+    function getSubArrayPathByKey($needle, $haystack, $path = array())
+    {
+        if(!is_array($haystack))
+            return false;
+        foreach($haystack as $key => $val) {
+            if(is_array($val) && $subPath = getSubArrayPathByKey($needle, $val, $path)) {
+                $path = array_merge($path, array($key), $subPath);
+                return $path;
+            }elseif($key == $needle){
+                $path[] = $key;
+                return $path;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * find a subarray by key
+     *
+     * @param mixed $needle the key to search for
+     * @param array $haystack the arary to search in
+     * @return array the sub array if the key $needle was foud in the array $haystack, otherwise false
+     */
+    function getSubArrayByKey($needle, $haystack)
+    {
+        $arrPath = getSubArrayPathByKey($needle, $haystack);
+        if($arrPath){
+            foreach ($arrPath as $key) {
+            	$haystack = $haystack[$key];
+            }
+            return $haystack;
+        }else{
+            return false;
+        }
+    }
+
+
+    /**
+     * returns the string for the <a> href for the current page
+     *
+     * @param integer $pageId
+     * @return string href
+     */
+    function _getPageClickHref($moduleReference, $pageId)
+    {
+        $strHref = '';
+        if(empty($moduleReference)){
+            $strHref = CONTREXX_DIRECTORY_INDEX.'?cmd=content&amp;act=edit&amp;pageId='.$pageId;
+        }else{
+            $strHref = "javascript:showEditModeWindow('".$moduleReference."', '".$pageId."')";
+        }
+        return $strHref;
     }
 }
 

@@ -614,3 +614,183 @@ div.td {
 /*	white-space: nowrap;*/
 }
 
+.sortableNavigation {
+    display: block;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sortableNavigation ul {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    padding-left: 16px;
+}
+
+.sortablePage {
+    display: block;
+    width: 100%;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    clear: both;
+}
+
+div.row1 {
+    background-color: #F4F7FF;
+    border-bottom: 1px solid #DDE4FF;
+    height: 25px;
+}
+
+div.row2 {
+    background-color: #FBFCFD;
+    border-bottom: 1px solid #DDE4FF;
+    height: 25px;
+}
+
+.sort-handle { /*the drag handle*/
+    cursor: move;
+    width: 17px;
+    background-image: url(../../../images/icons/updown.gif);
+    background-repeat: no-repeat;
+    background-position: center left;
+    clear: left;
+    float: left;
+    height: 25px;
+    width: 17px;
+    margin: 0;
+    padding: 0;
+    margin-right: 3px;
+}
+
+.nshover {
+    background-color: #eeeeee;
+}
+
+.nsactive {
+    background-color: #F4F7FF;
+}
+
+.nestedHighlight{
+    background-color: #A4F7FF;
+}
+
+.nshelper {
+    border: 2px dashed #777777;
+    margin: 0;
+    padding: 0;
+}
+
+.siteMapHeader {
+    float: right;
+    height: 25px;
+    line-height: 25px;
+    overflow: hidden
+}
+
+.siteMapColumn {
+    float: right;
+    height: 25px;
+    line-height: 25px;
+    overflow: hidden
+}
+
+.siteMapColumn img {
+    vertical-align: text-bottom;
+    border: 0;
+}
+
+.siteMapPage {
+    height: 25px;
+    line-height: 25px;
+    padding-left: 6px;
+    overflow: hidden
+}
+
+.siteMapPage input {
+    vertical-align: middle;
+}
+
+.adminRow {
+    line-height: 25px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.adminHeader {
+    background-color: #0A50A1;
+    color: white;
+    padding-left: 6px;
+    font-weight: bold;
+}
+
+.adminHeader a:hover {
+    background-color:#DCE4FF;
+    color:#0A50A1;
+    text-decoration:none;
+}
+
+.adminHeader a {
+    color:white;
+}
+
+.siteMapModule {
+    width: 175px;
+}
+
+.siteMapLastEdited {
+    width: 175px;
+}
+
+.siteMapUser {
+    width: 150px;
+}
+
+.siteMapFunctions {
+    width: 75px;
+    text-align: right;
+    padding-right: 6px;
+}
+
+.icon {
+    width: 15px;
+    height: 13px;
+    border: 0px;
+    vertical-align: text-top;
+}
+
+a.hasNoChildren {
+    cursor: pointer;
+}
+.row1 a.hasNoChildren:hover {
+    cursor: default;
+    background-color: #F4F7FF;
+}
+
+.row2 a.hasNoChildren:hover {
+    cursor: default;
+    background-color: #FBFCFD;
+}
+
+a.hasChildren {
+
+}
+
+a.nodeExpanded {
+    background: url(../../../images/icons/minuslink.gif) no-repeat 0 0;
+    width: 11px;
+    height: 11px;
+}
+a.nodeCollapsed {
+    background: url(../../../images/icons/pluslink.gif) no-repeat 0 0;
+    width: 11px;
+    height: 11px;
+}
+

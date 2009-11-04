@@ -157,6 +157,10 @@ class ContentManager
         }
 
         switch ($_GET['act']) {
+            case "updateSorting":
+                $success = $this->_updateSorting();
+                die(json_encode(array('success' => $success)));
+            break;
         case "deleteAll":
             Permission::checkAccess(53, 'static');
             $this->_deleteAll();
@@ -240,6 +244,67 @@ class ContentManager
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
+    }
+
+
+    /**
+     * recursive function to save the new page sorting
+     *
+     * @param array $arrPageTree tree of the new sorting: array( array('id'[, 'children' => array('id'[, 'children')]]... ) )
+     */
+
+    /**
+     * recursive function to save the new page sorting
+     *
+     * @param array $arrPageTree tree of the new sorting: array( array('id'[, 'children' => array('id'[, 'children')]]... ) )
+     * @param integer $pId current parent ID
+     * @param bool $success success status
+     * @return bool $success if there was an error or not
+     */
+    function _updateSorting($arrPageTree = null, $pId = 0, $success = true)
+    {
+        global $objDatabase;
+        if(is_null($arrPageTree)){
+            $arrPageTree = $_POST['sortableNavigation'];
+            $first = true;
+            $pId = 0;
+        }else{
+            $first = false;
+        }
+        $displayOrder = 1;
+        foreach ($arrPageTree as $arrPage) {
+            $arrPage['id'] = intval($arrPage['id']);
+            if($arrPage['id'] < 1){
+                continue;
+            }
+            $query = 'UPDATE '.DBPREFIX.'content_navigation
+                         SET `displayorder`='.$displayOrder.',
+                             `parcat`='.$pId.'
+                       WHERE `catid`='.$arrPage['id'].'
+                         AND `lang`='.$this->langId;
+            if(!$objDatabase->Execute($query)){
+                $success = false;
+            }
+            if ($this->boolHistoryEnabled) {
+                $query = 'UPDATE '.DBPREFIX.'content_navigation_history
+                             SET `changelog`='.time().',
+                                 `displayorder`='.$displayOrder.',
+                                 `parcat`='.$pId.'
+                           WHERE `catid`='.$arrPage['id'].'
+                             AND `lang`='.$this->langId.'
+                             AND is_active="1"';
+                if(!$objDatabase->Execute($query)){
+                    $success = false;
+                }
+            }
+        	if(is_array($arrPage['children'])){
+        	    $this->_updateSorting($arrPage['children'], $arrPage['id'], $success);
+        	}
+            $displayOrder++;
+        }
+        if($first){
+            return $success;
+        }
     }
 
 
@@ -511,29 +576,9 @@ class ContentManager
         global $objDatabase, $objTemplate, $_CORELANG;
 
         $this->pageTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
+        JS::activate('nestedsortable');
 
         if ($_GET['act'] == "mod") {
-            foreach ($_POST['catid'] as $value) {
-                $displayorder_old = intval($_POST['displayorder_old'][$value]);
-                $displayorder_new = intval($_POST['displayorder_new'][$value]);
-                if ($displayorder_old != $displayorder_new) {
-                    $objDatabase->Execute("
-                        UPDATE ".DBPREFIX."content_navigation
-                           SET displayorder=".$displayorder_new."
-                         WHERE catid=".intval($value)."
-                           AND `lang`=".$this->langId);
-                    if ($this->boolHistoryEnabled) {
-                        $objDatabase->Execute('
-                            UPDATE '.DBPREFIX.'content_navigation_history
-                               SET changelog='.time().',
-                                   displayorder='.$displayorder_new.'
-                             WHERE catid='.intval($value).'
-                               AND `lang`='.$this->langId.'
-                               AND is_active="1"');
-                    }
-                }
-            }
-
             switch ($_POST['frmContentSitemap_MultiAction']) {
                 case 'delete':
                     Permission::checkAccess(26, 'static');
@@ -565,7 +610,6 @@ class ContentManager
         }
         $objNavbar = new ContentSitemap(0);
         $objTemplate->setVariable('ADMIN_CONTENT', $objNavbar->getSiteMap());
-        //$objTemplate->addBlock('ADMIN_CONTENT', 'siteMap', $objNavbar->getSiteMap());
     }
 
 
@@ -2739,7 +2783,8 @@ class ContentManager
             $objResult = $objDatabase->Execute('
                 SELECT parcat, backend_access_id
                   FROM '.DBPREFIX.'content_navigation
-                 WHERE catid='.$intPid);
+                 WHERE catid='.$intPid.'
+                 AND lang='.$this->langId);
             if ($objResult->RecordCount() > 0) {
                 $row = $objResult->FetchRow();
                 if (   $boolFirst && $row['backend_access_id']
