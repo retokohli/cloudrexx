@@ -9,7 +9,7 @@ function _galleryUpdate()
             array(
                 'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'pid'                    => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
-                'sorting'                => array('type' => 'TINYINT(3)', 'notnull' => true, 'default' => '0'),
+                'sorting'                => array('type' => 'INT(6)',  'notnull' => true, 'default' => '0'),
                 'status'                 => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
                 'comment'                => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
                 'voting'                 => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
@@ -17,6 +17,30 @@ function _galleryUpdate()
                 'backend_access_id'      => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
                 'frontendProtected'      => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
                 'frontend_access_id'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0')
+            )
+        );
+        UpdateUtil::table(
+
+            DBPREFIX.'module_gallery_pictures',
+            array(
+                'id'                     => array('type' => 'INT(11)',          'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'catid'                  => array('type' => 'INT(11)',          'notnull' => true, 'default' => '0'),
+                'validated'              => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                'status'                 => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'catimg'                 => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                'sorting'                => array('type' => 'INT(6) UNSIGNED',  'notnull' => true, 'default' => '999'),
+                'size_show'              => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                'path'                   => array('type' => 'TEXT',             'notnull' => true),
+                'link'                   => array('type' => 'TEXT',             'notnull' => true),
+                'lastedit'               => array('type' => 'INT(14)',          'notnull' => true, 'default' => '0'),
+                'size_type'              => array('type' =>"SET('abs', 'proz')",'notnull' => true, 'default' => 'proz'),
+                'size_proz'              => array('type' => "INT(3)",           'notnull' => true, 'default' => '0'),
+                'size_abs_h'             => array('type' => 'INT(11)',          'notnull' => true, 'default' => '0'),
+                'size_abs_w'             => array('type' => 'INT(11)',          'notnull' => true, 'default' => '0'),
+                'quality'                => array('type' => 'TINYINT(3)',       'notnull' => true, 'default' => '0')
+            ),
+            array(
+                'galleryPicturesIndex' => array('type' => 'FULLTEXT', fields => array('path'))
             )
         );
     }
