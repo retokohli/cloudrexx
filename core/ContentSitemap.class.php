@@ -232,7 +232,6 @@ class ContentSitemap
 
             if (!$this->navCmd[$pageId] && $this->navModule[$pageId]) {
                 $objTpl->touchBlock('repository');
-                $objTpl->parse('repository');
             } else {
                 $objTpl->hideBlock('repository');
             }
