@@ -59,6 +59,10 @@ function changeStatus(pageId)
                 $J('form[name=userFrontendLangIdForm]').submit();
         });
 
+        $J('#'+rootUlId+' li div.sort-handle').mousedown(function(){
+            collapseNode.apply($J('a.hasChildren,a.hasNoChildren', $J(this).closest('li')));
+        });
+
         initSortable();
 
         $J('.hasChildren').live('click', function(){
@@ -77,22 +81,16 @@ function changeStatus(pageId)
     });
 
     var nodeHandler = function(){
-        var $sublist = $J(this).closest('li').find('ul:eq(0)');
         if($J(this).is('.nodeExpanded')){
-            $sublist.hide();
-            $J(this).removeClass('nodeExpanded');
-            $J(this).addClass('nodeCollapsed');
+            collapseNode.apply(this);
         } else {
-            $sublist.show();
-            $J(this).removeClass('nodeCollapsed');
-            $J(this).addClass('nodeExpanded');
+            expandNode.apply(this);
         }
-        resetRowClasses();
     }
 
     var initSortable = function(){
         //turn the nested lists into draggable and sortable objects
-        $J('#sortableNavigation').NestedSortable({
+        $J('#'+rootUlId).NestedSortable({
             accept: 'sortablePage',
             ghosting: true,
             opacity: 0.5,
@@ -110,11 +108,21 @@ function changeStatus(pageId)
             onOut: function(){},
             onStop: function(){
                 i=0;
-                 $J('#'+rootUlId+' li').each(function(){
-                    var node    =  $J(this).find('a.hasChildren:first,a.hasNoChildren:first');
+                $J('#'+rootUlId+' li').each(function(){
+                    var node    =  $J('a.hasChildren, a.hasNoChildren', this);
                     node.removeClass('hasChildren hasNoChildren nodeExpanded nodeCollapsed');
-                    var total   = $J(this).children('ul').find('li').length;
-                    var visible = $J(this).children('ul:visible').find('li').length;
+                    var visible = 0;
+                    var total   = 0;
+                    $J('> ul', this).each(function(){
+                        if($J('li', this).length == 0){
+                            return;
+                        }
+                        total++;
+                        if(this.style.display != 'none'){
+                            visible++;
+                        }
+
+                    });
                     if(total > 0){
                         if(visible > 0){
                             node.addClass('hasChildren nodeExpanded');
@@ -144,25 +152,47 @@ function changeStatus(pageId)
         });
     }
 
+    var collapseNode = function(){
+        if($J(this).closest('li').children('ul').length == 0){
+            return;
+        }
+        $J(this).closest('li').children('ul').hide();
+        $J(this).removeClass('nodeExpanded').addClass('nodeCollapsed');
+        resetRowClasses();
+    }
+
+    var expandNode = function(){
+        if($J(this).closest('li').children('ul').length == 0){
+            return;
+        }
+        $J(this).closest('li').children('ul').show();
+        $J(this).removeClass('nodeCollapsed').addClass('nodeExpanded');
+        resetRowClasses();
+    }
+
     var collapseAll = function(){
-        $J('.hasChildren').closest('li').children('ul').hide();
-        $J('.hasChildren').removeClass('nodeExpanded').addClass('nodeCollapsed')
+        $J('a.hasChildren').closest('li').children('ul').hide();
+        $J('a.hasChildren').removeClass('nodeExpanded').addClass('nodeCollapsed');
         resetRowClasses();
         return false;
     }
 
     var expandAll = function(){
-        $J('.hasChildren').closest('li').children('ul').show();
-        $J('.hasChildren').removeClass('nodeCollapsed').addClass('nodeExpanded')
+        $J('a.hasChildren').closest('li').children('ul').show();
+        $J('a.hasChildren').removeClass('nodeCollapsed').addClass('nodeExpanded');
         resetRowClasses();
         return false;
     }
 
 
     var resetRowClasses = function(){
-        $J('#sortableNavigation li').children('div').removeClass('row1 row2');
-        $J('#sortableNavigation li:visible').each(function(i){
-            $J(this).children('div').addClass('row' + (i % 2 == 0 ? 1 : 2));
+        i=0;
+        $J('#sortableNavigation li > div').each(function(){
+            $J(this).removeClass('row1 row2');
+            if($J(this).closest('ul')[0].style.display == 'none'){
+                return;
+            }
+            $J(this).addClass('row' + (i++ % 2 == 0 ? 1 : 2));
         });
     }
 
@@ -213,11 +243,11 @@ function changeStatus(pageId)
 {SITEMAP_NESTED_PAGES}
 
 <br />
-<input type="submit" value="{TXT_SAVE_CHANGES}" name="Submit" style="margin-left:30px;" />
+<!--<input type="submit" value="{TXT_SAVE_CHANGES}" name="Submit" style="margin-left:30px;" />-->
 <table summary="" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td>
-      <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+      <img style="margin-left: 24px;" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
       <a href="#" onclick="changeCheckboxes('form','selectedPages[]',true); return false;">{TXT_SELECT_ALL}</a> /
       <a href="#" onclick="changeCheckboxes('form','selectedPages[]',false); return false;">{TXT_DESELECT_ALL}</a>
       <img alt="-" title="-" src="images/icons/strike.gif" />
