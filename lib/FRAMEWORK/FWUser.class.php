@@ -216,7 +216,9 @@ class FWUser extends User_Setting
      */
     function checkCode($validationCode)
     {
-        return $_SESSION['auth']['secid'] === $validationCode;
+        return
+            (   isset($_SESSION['auth']['secid'])
+             && $_SESSION['auth']['secid'] === $validationCode);
     }
 
 
