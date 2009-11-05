@@ -960,8 +960,11 @@ class BlogLibrary {
         $strIntroduction    = strip_tags($strFullMessage);
         $intNumberOfChars   = intval($this->_arrSettings['blog_general_introduction']);
 
-        if ($intNumberOfChars > 0) {
-            $strIntroduction = (strlen($strIntroduction) > $intNumberOfChars) ? substr($strIntroduction, 0, $intNumberOfChars).' ...' : $strIntroduction;
+        if ($intNumberOfChars > 0 and strlen($strIntroduction) > $intNumberOfChars) {
+            $strIntroduction = substr($strIntroduction, 0, $intNumberOfChars);
+            $strIntroduction = preg_replace('#&\w{0,4}$#m', '', $strIntroduction);
+            $strIntroduction = preg_replace('#\s.{1,5}$#m', ' ', $strIntroduction);
+            $strIntroduction .= "&hellip;";
         }
 
         return $strIntroduction;
