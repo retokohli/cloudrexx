@@ -35,22 +35,19 @@
             <input type="checkbox" name="selectedPages[]" value="{SITEMAP_PAGE_ID}" />
             <input type="hidden" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_old[{SITEMAP_PAGE_ID}]" />
             <input type="hidden" value="{SITEMAP_PAGE_ID}" name="catid[{SITEMAP_PAGE_ID}]" />
-
-            <a href="javascript:changeStatus({SITEMAP_PAGE_ID});">
-                <img class="icon" src="images/icons/folder_{IS_VISIBLE}{IS_CORE}{IS_REDIRECT}.gif"
-                    title="{TXT_STATUS_INVISIBLY}" alt="{TXT_STATUS_INVISIBLY}" />
-            </a>
-            <a href="{DIRECTORY_INDEX}?cmd=content&amp;act=changeActiveStatus&amp;id={SITEMAP_PAGE_ID}">
-                <img class="icon" src="images/icons/led_{SITEMAP_LED_COLOR}.gif" border="0" title="{TXT_PAGE_ACTIVATE}" alt="{TXT_PAGE_ACTIVATE}" />
-            </a>
-
             <!-- BEGIN treenodeicon -->
             <a class="{SITEMAP_PAGE_NODE_CLASS}" href="{DIRECTORY_INDEX}?cmd=content&amp;act=expand&amp;catId={SITEMAP_PAGE_ID}">
                 &nbsp;&nbsp;&nbsp;
             </a>&nbsp;
             <!-- END treenodeicon -->
-
-            <a href="{SITEMAP_PAGE_TITLE_HREF}">{SITEMAP_PAGE_TITLE}</a>
+            <a href="{DIRECTORY_INDEX}?cmd=content&amp;act=changeActiveStatus&amp;id={SITEMAP_PAGE_ID}">
+                <img class="icon" src="images/icons/led_{SITEMAP_LED_COLOR}.gif" border="0" title="{TXT_PAGE_ACTIVATE}" alt="{TXT_PAGE_ACTIVATE}" />
+            </a>
+            <a href="javascript:changeStatus({SITEMAP_PAGE_ID});">
+                <img class="icon" src="images/icons/folder_{IS_VISIBLE}{IS_CORE}{IS_REDIRECT}.gif"
+                    title="{TXT_STATUS_INVISIBLY}" alt="{TXT_STATUS_INVISIBLY}" />
+            </a>&nbsp;
+            <a href="{SITEMAP_PAGE_TITLE_HREF}"><b>{SITEMAP_PAGE_TITLE}</b></a>
         </div>
     </div>
     <!-- END item_start -->
