@@ -1576,7 +1576,7 @@ CREATE TABLE `contrexx_module_immo_field` (
   `order` int(11) NOT NULL default '1000',
   `mandatory` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_immo_fieldname` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `field_id` int(10) unsigned NOT NULL default '0',
@@ -1586,7 +1586,7 @@ CREATE TABLE `contrexx_module_immo_fieldname` (
   KEY `field_id` (`field_id`),
   KEY `lang_id` (`lang_id`),
   KEY `name` (`name`(5))
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_immo_image` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `immo_id` int(11) NOT NULL default '0',
