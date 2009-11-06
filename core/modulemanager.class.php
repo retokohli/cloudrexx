@@ -312,17 +312,8 @@ class modulemanager
                     $modulerepid = $objResult->fields['id'];
                     $username = $objResult->fields['username'];
 
-                    $catid = '';
-                    $objRS = $objDatabase->SelectLimit('
-                        SELECT `catid` FROM `'.DBPREFIX.'content_navigation`
-                        WHERE `module`='.$moduleid.'
-                        ORDER BY `lang` ASC', 1);
-                    if($objRS->RecordCount() == 1){
-                        $catid = $paridarray[$modulerepid] = $objRS->fields['catid'];
-                    }else{
-                        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
-                        $catid = $objRS->fields['nextId'];
-                    }
+                    $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
+                    $catid = $objRS->fields['nextId'];
 
                     $query = "
                         INSERT INTO ".DBPREFIX."content_navigation
@@ -381,17 +372,10 @@ class modulemanager
                     $name = $objResult->fields['name'];
                 }
                 $username = $objFWUser->objUser->getUsername();
-                $objRS = $objDatabase->SelectLimit('
-                    SELECT `catid`
-                      FROM `'.DBPREFIX.'content_navigation`
-                     WHERE `module`='.$module_id.'
-                     ORDER BY `lang` ASC', 1);
-                if($objRS->RecordCount() == 1){
-                    $catid = $paridarray[$modulerepid] = $objRS->fields['catid'];
-                }else{
-                    $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
-                    $catid = $objRS->fields['nextId'];
-                }
+
+                $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
+                $catid = $objRS->fields['nextId'];
+
                 $query = "
                     INSERT INTO ".DBPREFIX."content_navigation
                        SET catid='$catid',
