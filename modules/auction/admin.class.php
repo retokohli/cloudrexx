@@ -68,11 +68,12 @@ class Auction extends auctionLibrary
         $this->mediaWebPath = ASCMS_AUCTION_UPLOAD_WEB_PATH . '/';
         $this->settings = $this->getSettings();
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=auction'>".$_CORELANG['TXT_OVERVIEW']."</a>
-                                                        <a href='index.php?cmd=auction&act=addCategorie'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
-                                                        <a href='index.php?cmd=auction&act=addEntry '>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
-                                                        <a href='index.php?cmd=auction&act=entries'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
-                                                        <a href='index.php?cmd=auction&act=settings'>".$_CORELANG['TXT_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION",
+            "<a href='index.php?cmd=auction'>".$_CORELANG['TXT_OVERVIEW']."</a>
+            <a href='index.php?cmd=auction&act=addCategorie'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
+            <a href='index.php?cmd=auction&act=addEntry'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
+            <a href='index.php?cmd=auction&act=entries'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
+            <a href='index.php?cmd=auction&act=settings'>".$_CORELANG['TXT_SETTINGS']."</a>");
     }
 
     /**
