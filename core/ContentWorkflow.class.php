@@ -336,8 +336,8 @@ class ContentWorkflow {
                         $strIcon = '<a href="javascript:restoreDeleted(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_DELETED_RESTORE'].'" title="'.$_CORELANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>';
                     break;
                     case 'unvalidated':
-                        $strIcon = '<a href="?cmd=workflow&amp;act=validate&amp;acc=1&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_up.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" border="0" align="middle" /></a>&nbsp;';
-                        $strIcon .= '<a href="?cmd=workflow&amp;act=validate&amp;acc=0&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_down.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" border="0" align="middle" /></a>&nbsp;';
+                        $strIcon = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=workflow&amp;act=validate&amp;acc=1&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_up.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" border="0" align="middle" /></a>&nbsp;';
+                        $strIcon .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=workflow&amp;act=validate&amp;acc=0&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_down.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" border="0" align="middle" /></a>&nbsp;';
                         $s = isset($arrModules[$objResult->fields['navModule']]) ? $arrModules[$objResult->fields['navModule']] : '';
                         $c = $objResult->fields['navCMD'];
                         $section = ($s=="" || $s == '-') ? "" : "&amp;section=$s";
@@ -360,7 +360,7 @@ class ContentWorkflow {
                         if(!$boolPageExists) {
                             $strIcon = '<img src="images/icons/empty.gif" alt="'.$_CORELANG['TXT_HISTORY_DELETED'].'" title="'.$_CORELANG['TXT_HISTORY_DELETED'].'" border="0" />';
                         } else {
-                            $strIcon = '<a href="?cmd=content&amp;act=edit&amp;pageId='.$objResult->fields['navPageId'].'"><img src="images/icons/details.gif" alt="'.$_CORELANG['TXT_DETAILS'].'" title="'.$_CORELANG['TXT_DETAILS'].'" border="0" /></a>';
+                            $strIcon = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=content&amp;act=edit&amp;pageId='.$objResult->fields['navPageId'].'"><img src="images/icons/details.gif" alt="'.$_CORELANG['TXT_DETAILS'].'" title="'.$_CORELANG['TXT_DETAILS'].'" border="0" /></a>';
                         }
                 }
 
@@ -808,6 +808,7 @@ class ContentWorkflow {
     function showClean() {
         global $objTemplate, $objDatabase, $_CORELANG;
 
+        $this->strPageTitle = $_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'];
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_history_clean', 'content_history_clean.html');
         $objTemplate->setVariable(array(
             'TXT_HISTORY_CLEAN_TITLE'       => $_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'],
