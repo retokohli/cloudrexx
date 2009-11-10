@@ -4,7 +4,7 @@
 function deleteProduct(id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delProduct&id="+id);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delProduct&id="+id);
 }
 
 function shopProductsDoAction(obj,act)
@@ -104,10 +104,12 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
           <input type="checkbox" name="shownonstartpage[{SHOP_PRODUCT_ID}]" value="1"{SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED} />
           <input type="hidden" name="shownonstartpageOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD}" />
         </td>
+        <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME}">{SHOP_PRODUCT_NAME}</a></td>
+        <!-- Edit the Product title in the overview:
         <td>
           <input type="text" name="title[{SHOP_PRODUCT_ID}]" size="40" maxlength="255" value="{SHOP_TITLE}" />
           <input type="hidden" name="titleOld[{SHOP_PRODUCT_ID}]" value="{SHOP_TITLE}" />
-        </td>
+        </td-->
         <td><input maxlength="255" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="10" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
         <td>
           <input type="checkbox" name="specialOffer[{SHOP_PRODUCT_ID}]" value="1"{SHOP_PRODUCT_SPECIAL_OFFER} />
@@ -120,6 +122,8 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
         <td><input type="text" name="price1[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE1}" size="6" maxlength="10" /><input type="hidden" name="price1Old[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE1}" /></td>
         <td><input type="text" name="price2[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE2}" size="6" maxlength="10" /><input type="hidden" name="price2Old[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE2}" /></td>
         <td>{SHOP_PRODUCT_VAT_MENU}<input type="hidden" name="taxIdOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_VAT_ID}" /></td>
+        <!--td><input type="text" name="weight[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" size="10" maxlength="10" /><input type="hidden" name="weightOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" /></td-->
+        <!--td>{SHOP_DISTRIBUTION_MENU}<input type="hidden" name="distributionOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISTRIBUTION}" /></td-->
         <td>{SHOP_DISTRIBUTION}</td>
         <td><input type="text" name="stock[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" size="5" maxlength="5" /><input type="hidden" name="stockOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" /></td>
         <td nowrap="nowrap"><div style="text-align:right;">

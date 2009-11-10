@@ -33,15 +33,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
 class Discount
 {
     /**
-     * Constructor
-     * @return  Discount
-     */
-    function __construct()
-    {
-    }
-
-
-    /**
      * Returns the HTML dropdown menu options with all of the
      * count type discount names plus a neutral option ("none")
      *
@@ -165,8 +156,7 @@ class Discount
               FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
              WHERE `group_id`=$id
                AND `count`<=$count
-             ORDER BY `count` DESC
-        ";
+             ORDER BY `count` DESC";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if (!$objResult || $objResult->EOF) return 0;
         return $objResult->fields['rate'];
@@ -188,8 +178,7 @@ class Discount
         $query = "
             SELECT unit
               FROM `".DBPREFIX."module_shop_discountgroup_count_name`
-             WHERE id=$id
-        ";
+             WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return '';
         return $objResult->fields['unit'];
@@ -221,8 +210,7 @@ class Discount
         $query = "
             SELECT 1
               FROM `".DBPREFIX."module_shop_discountgroup_count_name`
-             WHERE id=$id
-        ";
+             WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         if ($objResult->RecordCount() == 1) {
@@ -231,8 +219,7 @@ class Discount
                 UPDATE `".DBPREFIX."module_shop_discountgroup_count_name`
                    SET name='$groupName',
                        unit='$groupUnit'
-                 WHERE id=$id
-            ";
+                 WHERE id=$id";
         } else {
             // Insert
             $query = "
@@ -241,8 +228,7 @@ class Discount
                 ) VALUES (
                     '".addslashes($groupName)."',
                     '".addslashes($groupUnit)."'
-                )
-            ";
+                )";
         }
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -253,8 +239,7 @@ class Discount
         // Remove old counts and rates
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
-             WHERE group_id=$id
-        ";
+             WHERE group_id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
@@ -267,8 +252,7 @@ class Discount
                     group_id, count, rate
                 ) VALUES (
                     $id, $count, $rate
-                )
-            ";
+                )";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
         }
@@ -293,16 +277,14 @@ class Discount
         // Remove counts and rates
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
-             WHERE group_id=$id
-        ";
+             WHERE group_id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
         // Remove the group itself
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_discountgroup_count_name`
-             WHERE id=$id
-        ";
+             WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -326,17 +308,13 @@ class Discount
 
         $arrGroup = Discount::getCustomerGroupArray();
         if ($arrGroup === false) return false;
-        $strMenuOptions =
-            '<option value="0">'.
-            $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
-            '</option>';
-        foreach ($arrGroup as $id => $name) {
-            $strMenuOptions .=
-                '<option value="'.$id.'"'.
-                ($selectedId == $id ? ' selected="selected"' : '').
-                '>'.$name.'</option>';
-        }
-        return $strMenuOptions;
+        $arrGroup = array(
+            0 =>
+                '<option value="0">'.
+                $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
+                '</option>',
+        ) + $arrGroup;
+        return Html::getOptions($arrGroup, $selectedId);
     }
 
 
@@ -357,17 +335,13 @@ class Discount
 
         $arrGroup = Discount::getArticleGroupArray();
         if ($arrGroup === false) return false;
-        $strMenuOptions =
-            '<option value="0">'.
-            $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
-            '</option>';
-        foreach ($arrGroup as $id => $name) {
-            $strMenuOptions .=
-                '<option value="'.$id.'"'.
-                ($selectedId == $id ? ' selected="selected"' : '').
-                '>'.$name.'</option>';
-        }
-        return $strMenuOptions;
+        $arrGroup = array(
+            0 =>
+                '<option value="0">'.
+                $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
+                '</option>',
+        ) + $arrGroup;
+        return Html::getOptions($arrGroup, $selectedId);
     }
 
 
@@ -388,8 +362,7 @@ class Discount
         $query = "
             SELECT *
               FROM `".DBPREFIX."module_shop_customer_group`
-             ORDER BY id ASC
-        ";
+             ORDER BY id ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrGroup = array();
@@ -418,8 +391,7 @@ class Discount
         $query = "
             SELECT *
               FROM `".DBPREFIX."module_shop_article_group`
-             ORDER BY id ASC
-        ";
+             ORDER BY id ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrGroup = array();
@@ -451,8 +423,7 @@ class Discount
 
         $query = "
             SELECT *
-              FROM `".DBPREFIX."module_shop_rel_discount_group`
-        ";
+              FROM `".DBPREFIX."module_shop_rel_discount_group`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrRate = array();
@@ -488,8 +459,7 @@ class Discount
             SELECT `rate`
               FROM `".DBPREFIX."module_shop_rel_discount_group`
              WHERE `customer_group_id`=$groupCustomerId
-               AND `article_group_id`=$groupArticleId
-        ";
+               AND `article_group_id`=$groupArticleId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return 0;
         return $objResult->fields['rate'];
@@ -515,8 +485,7 @@ class Discount
         $query = "
             SELECT `name`
               FROM `".DBPREFIX."module_shop_customer_group`
-             WHERE `id`=$id
-        ";
+             WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         if (!$objResult->EOF) return $objResult->fields['name'];
@@ -546,8 +515,7 @@ class Discount
         global $objDatabase;
 
         $query = "
-            TRUNCATE TABLE `".DBPREFIX."module_shop_rel_discount_group`
-        ";
+            TRUNCATE TABLE `".DBPREFIX."module_shop_rel_discount_group`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         foreach ($arrDiscountRate as $groupCustomerId => $arrArticleRow) {
@@ -560,8 +528,7 @@ class Discount
                         `customer_group_id`, `article_group_id`, `rate`
                     ) VALUES (
                         $groupCustomerId, $groupArticleId, $rate
-                    )
-                ";
+                    )";
                 $objResult = $objDatabase->Execute($query);
                 if (!$objResult) return false;
             }
@@ -589,24 +556,21 @@ class Discount
                 name
             ) VALUES (
                 '".addslashes($groupName)."'
-            )
-        ";
+            )";
         // Maybe the record exists if the ID is not zero
         if ($id > 0) {
             $query_exists = "
                 SELECT 1
                   FROM `".DBPREFIX."module_shop_customer_group`
-                 WHERE id=$id
-            ";
+                 WHERE id=$id";
             $objResult = $objDatabase->Execute($query_exists);
             if (!$objResult) return false;
-            if ($objResult->RecordCount() == 1) {
+            if ($objResult->RecordCount()) {
                 // Exists, update
                 $query = "
                     UPDATE `".DBPREFIX."module_shop_customer_group`
                        SET name='$groupName'
-                     WHERE id=$id
-                ";
+                     WHERE id=$id";
             }
         }
         $objResult = $objDatabase->Execute($query);
@@ -634,15 +598,13 @@ class Discount
                 name
             ) VALUES (
                 '".addslashes($groupName)."'
-            )
-        ";
+            )";
         // Maybe the record exists if the ID is not zero
         if ($id > 0) {
             $query_exists = "
                 SELECT 1
                   FROM `".DBPREFIX."module_shop_article_group`
-                 WHERE id=$id
-            ";
+                 WHERE id=$id";
             $objResult = $objDatabase->Execute($query_exists);
             if (!$objResult) return false;
             if ($objResult->RecordCount() == 1) {
@@ -650,8 +612,7 @@ class Discount
                 $query = "
                     UPDATE `".DBPREFIX."module_shop_article_group`
                        SET name='$groupName'
-                     WHERE id=$id
-                ";
+                     WHERE id=$id";
             }
         }
         $objResult = $objDatabase->Execute($query);
@@ -677,15 +638,13 @@ class Discount
         // Remove the group itself
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_customer_group`
-             WHERE id=$id
-        ";
+             WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         // Remove related rates
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_rel_discount_group`
-             WHERE customer_group_id=$id
-        ";
+             WHERE customer_group_id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -709,15 +668,13 @@ class Discount
         // Remove the group itself
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_article_group`
-             WHERE id=$id
-        ";
+             WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         // Remove related rates
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_rel_discount_group`
-             WHERE article_group_id=$id
-        ";
+             WHERE article_group_id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;

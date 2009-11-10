@@ -115,10 +115,9 @@ class PaymentProcessing
             SELECT id, type, name, description,
                    company_url, status, picture, text
               FROM '.DBPREFIX.'module_shop_payment_processors
-          ORDER BY id
-        ';
+          ORDER BY id';
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             self::$arrPaymentProcessor[$objResult->fields['id']] = array(
                 'id'          => $objResult->fields['id'],
                 'type'        => $objResult->fields['type'],
@@ -144,6 +143,24 @@ class PaymentProcessing
     {
         if (!is_array(self::$arrPaymentProcessor)) self::init();
         self::$processorId = $processorId;
+    }
+
+
+    /**
+     * Returns an array with all the payment processor names indexed
+     * by their ID.
+     * @return  array             The payment processor name array
+     *                            on success, the empty array on failure.
+     * @static
+     */
+    static function getPaymentProcessorNameArray()
+    {
+        if (empty(self::$arrPaymentProcessor)) self::init();
+        $arrName = array();
+        foreach (self::$arrPaymentProcessor as $id => $arrProcessor) {
+            $arrName[$id] = $arrProcessor['name'];
+        }
+        return $arrName;
     }
 
 
@@ -234,12 +251,12 @@ class PaymentProcessing
         switch (self::getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */
-                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
+                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
                 break;
             case 'Internal_LSV':
                 /* Redirect browser */
-                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
+                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
                 break;
             case 'Internal_CreditCard':
@@ -352,7 +369,7 @@ class PaymentProcessing
                      function openSaferpay()
                      {
                          strUrl = '$payInitUrl';
-                         if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1){
+                         if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1) {
                              strUrl += \"&WINDOWMODE=Standalone\";
                          }
                          oWin = window.open(strUrl, 'SaferpayTerminal',
@@ -526,22 +543,12 @@ class PaymentProcessing
     {
         global $_ARRAYLANG;
 
-        if (!is_array(self::$arrPaymentProcessor)) self::init();
-        $strMenuoptions =
-            (empty($selected_id)
-              ? '<option value="" selected="selected">'.
-                $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
-                "</option>\n"
-              : ''
-            );
-        foreach (array_keys(self::$arrPaymentProcessor) as $id) {
-            $strMenuoptions .=
-                '<option value="'.$id.'"'.
-                ($id == $selected_id ? ' selected="selected"' : '').'>'.
-                self::$arrPaymentProcessor[$id]['name'].
-                "</option>\n";
-        }
-        return $strMenuoptions;
+        $arrName = self::getPaymentProcessorNameArray();
+        if (empty($selected_id))
+            $arrName = array(
+                0 => $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'],
+            ) + $arrName;
+        return Html::getOptions($arrName, $selected_id);
     }
 
 }

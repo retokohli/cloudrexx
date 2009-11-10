@@ -88,7 +88,7 @@ class upload
         $error = "This file type is not permitted: $userfile_type<br />"; // set the error message
         // if the file is in the list of MIME TYPE permitted
         // set the error to empty string
-        foreach($this->file_permitted as $permitted) {
+        foreach ($this->file_permitted as $permitted) {
             if ($userfile_type == $permitted) $error = "";
         }
         // if filesize is <= 0 or  > $max_filesize
@@ -261,7 +261,7 @@ class upload
             $thumb_path = $pre_name.$image_name; // complete path to thumbnail dir
         }
 
-        if ($this->resize_jpeg($image_path, $thumb_path, $percent)){
+        if ($this->resize_jpeg($image_path, $thumb_path, $percent)) {
             return $image_name;
         }
         return 'Error while creating thumbnail<br />';

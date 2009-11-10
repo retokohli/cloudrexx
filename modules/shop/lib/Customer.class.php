@@ -11,14 +11,6 @@
  * @todo        Test!
  */
 
-/*
-
-Changes to the customer table:
-ALTER TABLE `contrexx_module_shop_customers`
-ADD `group_id` INT(10) UNSIGNED NULL DEFAULT NULL;
-
-*/
-
 /**
  * Customer as used in the Shop.
  *

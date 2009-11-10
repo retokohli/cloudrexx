@@ -385,9 +385,9 @@ Hmmm...  I dunno where this came from.  Might be useful:
                     $key_name = $key;
                     break;
             }
-            if($key == 'txtOrderTotal'){
+            if ($key == 'txtOrderTotal') {
                 $value = $this->arrShopOrder[$key]*100;
-            }else {
+            } else {
                 $value = $this->arrShopOrder[$key];
             }
             $this->form .= "<input type='hidden' name='$key_name' value='$value' />\n";

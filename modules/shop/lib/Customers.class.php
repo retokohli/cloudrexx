@@ -1,7 +1,7 @@
 <?php
+
 /**
  * Shop Customer
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     2.1.0
@@ -9,7 +9,6 @@
  * @subpackage  module_shop
  * @todo        Test!
  */
-
 
 /**
  * Customer as used in the Shop.
@@ -26,78 +25,74 @@
 class Customers
 {
     /**
-     * Create a Customers helper object (PHP4)
-     */
-    function Customers()
-    {
-        $this->__construct();
-    }
-
-
-    /**
      * Create a Customers helper object (PHP5)
      */
     function __construct()
     {
-
     }
 
 
     /**
-     * Returns a string with HTML code for the Customer type dropdown menu.
-     * @param   integer     $selectedType   The optional preselected type
-     * @return  string                      The Menu HTML code
+     * Returns a string with HTML code for the Customer type
+     * dropdown menu options
+     * @param   integer     $selected   The optional preselected type
+     * @return  string                  The Menuoptions HTML code
+     * @static
      */
-    function getCustomerTypeMenu($selectedType=-1)
+    static function getCustomerTypeMenuoptions($selected=-1)
     {
         global $_ARRAYLANG;
 
         $arrType = array(
-            -1 => 'TXT_CUSTOMER_TYP',
-             0 => 'TXT_CUSTOMER',
-             1 => 'TXT_RESELLER'
+            -1 => '--&nbsp;'.$_ARRAYLANG['TXT_CUSTOMER_TYP'].'&nbsp;--',
+             0 => $_ARRAYLANG['TXT_CUSTOMER'],
+             1 => $_ARRAYLANG['TXT_RESELLER'],
         );
-        $strMenu = '';
-        foreach ($arrType as $index => $strType) {
-            $strMenu .=
-                '<option value="'.$index.'"'.
-                ($selectedType == $index ? ' selected="selected"' : '').
-                '>'.
-                (   $index == -1
-                    ? '-- '.$_ARRAYLANG[$strType].' --'
-                    : $_ARRAYLANG[$strType]
-                ).
-                '</option>';
-        }
-        return $strMenu;
+        return Html::getOptions($arrType, $selected);
     }
 
 
     /**
-     * Returns a string with HTML code for the Customer sorting dropdown menu.
-     * @param   integer     $selectedField  The optional preselected field name
-     * @return  string                      The Menu HTML code
+     * Returns a string with HTML code for the Customer status
+     * dropdown menu options
+     * @param   integer     $selected   The optional preselected status
+     * @return  string                  The Menuoptions HTML code
+     * @static
      */
-    function getCustomerSortMenu($selectedField='')
+    static function getCustomerStatusMenuoptions($selected)
+    {
+        global $_ARRAYLANG;
+
+        $arrStatus = array(
+            -1 => '--&nbsp;'.$_ARRAYLANG['TXT_STATUS'].'&nbsp;--',
+             0 => $_ARRAYLANG['TXT_INACTIVE'],
+             1 => $_ARRAYLANG['TXT_ACTIVE'],
+        );
+        return Html::getOptions($arrStatus, $selected);
+    }
+
+
+    /**
+     * Returns a string with HTML code for the Customer sorting
+     * dropdown menu options
+     * @param   integer     $selected   The optional preselected order
+     * @return  string                  The Menuoptions HTML code
+     */
+    function getCustomerSortMenuoptions($selected='customerid')
     {
         global $_ARRAYLANG;
 
         $arrField = array(
-            'lastname'  => 'TXT_LAST_NAME',
-            'firstname' => 'TXT_FIRST_NAME',
-            'company'   => 'TXT_COMPANY'
+// TODO: The customer ID cannot be used for the time being, as there may be
+// a name conflict in the resulting query.
+// See the customer overview code in the backend.
+//            'customerid' => $_ARRAYLANG['TXT_SHOP_ID'],
+            'lastname'   => $_ARRAYLANG['TXT_LAST_NAME'],
+            'firstname'  => $_ARRAYLANG['TXT_FIRST_NAME'],
+            'company'    => $_ARRAYLANG['TXT_COMPANY'],
         );
-        $strMenu = '';
-        foreach ($arrField as $index => $strField) {
-            $strMenu .=
-                '<option value="'.$index.'"'.
-                ($selectedField == $index ? ' selected="selected"' : '').
-                '>'.$_ARRAYLANG[$strField].'</option>';
-        }
-        return $strMenu;
+        return Html::getOptions($arrField, $selected);
     }
-
-
 
 }
 

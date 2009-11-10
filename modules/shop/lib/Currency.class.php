@@ -66,37 +66,34 @@ class Currency
     {
         global $objDatabase;
 
-//        $arrSqlName = Text::getSqlSnippets(
-//            '`currency`.`text_name_id`', FRONTEND_LANG_ID,
-//            MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
-//        );
+        $arrSqlName = Text::getSqlSnippets(
+            '`currency`.`text_name_id`', FRONTEND_LANG_ID,
+            MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
+        );
         $query = "
             SELECT `currency`.`id`, `currency`.`code`, `currency`.`symbol`,
                    `currency`.`rate`, `currency`.`sort_order`,
                    `currency`.`status`, `currency`.`is_default`,
                    `currency`.`name`".
-//                   $arrSqlName['field']."
-            "
+                   $arrSqlName['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_currencies` AS `currency`".
-//                   $arrSqlName['join']."
-            "
-             ORDER BY `currency`.`id` ASC
-        ";
+                   $arrSqlName['join']."
+             ORDER BY `currency`.`id` ASC";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-//            $text_name_id = $objResult->fields[$arrSqlName['name']];
-//            $strName = $objResult->fields[$arrSqlName['text']];
-//            if ($strName === null) {
-//                $objText = Text::getById($text_name_id, 0);
-//                $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-//                $strName = $objText->getText();
-//            }
+            $text_name_id = $objResult->fields[$arrSqlName['name']];
+            $strName = $objResult->fields[$arrSqlName['text']];
+            if ($strName === null) {
+                $objText = Text::getById($text_name_id, 0);
+                $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+                $strName = $objText->getText();
+            }
             self::$arrCurrency[$objResult->fields['id']] = array(
                 'id' => $objResult->fields['id'],
                 'code' => $objResult->fields['code'],
                 'symbol' => $objResult->fields['symbol'],
                 'name' => $objResult->fields['name'], //$strName,
-//                'text_name_id' => $text_name_id,
+                'text_name_id' => $text_name_id,
                 'rate' => $objResult->fields['rate'],
                 'sort_order' => $objResult->fields['sort_order'],
                 'status' => $objResult->fields['status'],
@@ -106,7 +103,6 @@ class Currency
                 self::$defaultCurrencyId = $objResult->fields['id'];
             $objResult->MoveNext();
         }
-
         if (isset($_REQUEST['currency'])) {
             $currency_id = intval($_REQUEST['currency']);
             $_SESSION['shop']['currencyId'] =
@@ -119,7 +115,6 @@ class Currency
                 (isset(self::$arrCurrency[$active_currency_id])
                     ? $active_currency_id : self::$defaultCurrencyId
                 );
-
         }
         if (!isset($_SESSION['shop']['currencyId'])) {
             $_SESSION['shop']['currencyId'] = self::$defaultCurrencyId;
@@ -447,8 +442,8 @@ class Currency
         if (empty($_GET['currencyId'])) return '';
         $currency_id = $_GET['currencyId'];
         if ($currency_id == self::$defaultCurrencyId) return false;
-//        $text_id = self::$arrCurrency[$currency_id]['text_name_id'];
-//        if (!Text::deleteById($text_id)) return false;
+        $text_id = self::$arrCurrency[$currency_id]['text_name_id'];
+        if (!Text::deleteById($text_id)) return false;
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
              WHERE id=$currency_id
@@ -477,23 +472,23 @@ class Currency
         $_POST['currencyDefaultNew'] =
             (empty($_POST['currencyDefaultNew']) ? 0 : 1);
 
-//        $objText = new Text(
-//            $_POST['currencyNameNew'], FRONTEND_LANG_ID,
-//            MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
-//        );
-//        if (!$objText->store()) return false;
-//        $query = "
-//            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_currencies (
-//                code, symbol, text_name_id, rate, status, is_default
-//            ) VALUES (
-//                '".addslashes($_POST['currencyCodeNew'])."',
-//                '".addslashes($_POST['currencySymbolNew'])."',
-//                ".$objText->getId().",
-//                '".addslashes($_POST['currencyRateNew'])."',
-//                ".intval($_POST['currencyActiveNew']).",
-//                ".intval($_POST['currencyDefaultNew'])."
-//            )
-//        ";
+        $objText = new Text(
+            $_POST['currencyNameNew'], FRONTEND_LANG_ID,
+            MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
+        );
+        if (!$objText->store()) return false;
+        $query = "
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_currencies (
+                code, symbol, text_name_id, rate, status, is_default
+            ) VALUES (
+                '".addslashes($_POST['currencyCodeNew'])."',
+                '".addslashes($_POST['currencySymbolNew'])."',
+                ".$objText->getId().",
+                '".addslashes($_POST['currencyRateNew'])."',
+                ".intval($_POST['currencyActiveNew']).",
+                ".intval($_POST['currencyDefaultNew'])."
+            )
+        ";
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_currencies (
                 code, symbol, name, rate, status, is_default
@@ -543,25 +538,24 @@ class Currency
             $is_active = (isset($_POST['currencyActive'][$currency_id]) ? 1 : 0);
             // The default currency must be activated
             $is_active = ($is_default ? 1 : $is_active);
-//            $objText = Text::replace(
-//                self::$arrCurrency[$currency_id]['text_name_id'],
-//                FRONTEND_LANG_ID,
-//                $_POST['currencyName'][$currency_id],
-//                MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
-//            );
-//            if (!$objText) return false;
+// Note: Text::replace() now returns the ID, not the object!
+            $text_id = Text::replace(
+                self::$arrCurrency[$currency_id]['text_name_id'],
+                FRONTEND_LANG_ID,
+                $_POST['currencyName'][$currency_id],
+                MODULE_ID, TEXT_SHOP_CURRENCIES_NAME
+            );
+            if (!$text_id) return false;
             $query = "
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
                    SET code='".addslashes($code)."',
                        symbol='".addslashes($_POST['currencySymbol'][$currency_id])."',
-                       name='".addslashes($_POST['currencyName'][$currency_id])."', ".
-//                       text_name_id=".$objText->getId().",
-                "
+                       name='".addslashes($_POST['currencyName'][$currency_id])."',
+                       text_name_id=$text_id,
                        rate='".addslashes($_POST['currencyRate'][$currency_id])."',
                        status=$is_active,
                        is_default=$is_default
-                 WHERE id=$currency_id
-            ";
+                 WHERE id=$currency_id";
             if (!$objDatabase->Execute($query)) return false;
         } // end foreach
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");

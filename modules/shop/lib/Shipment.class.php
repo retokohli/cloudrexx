@@ -270,13 +270,15 @@ class Shipment
         global $_ARRAYLANG;
 
         if (empty(self::$arrShippers)) self::init();
-        $menu = (intval($selectedId) == 0
-            ? '<option value="0" selected="selected">'.
-              $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
-              "</option>\n"
-            : ''
-        );
         $arrId = self::getCountriesRelatedShippingIdArray($countryId);
+        $menu =
+            (   intval($selectedId) == 0
+             && count($arrId) > 1
+                ? '<option value="0" selected="selected">'.
+                  $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
+                  "</option>\n"
+                : ''
+            );
         $haveShipper = false;
         foreach (array_keys(self::$arrShippers) as $sid) {
             // only show suitable shipments in the menu if the user is on the payment page,

@@ -41,8 +41,7 @@ class Payment
             SELECT id, name, processor_id, costs, costs_free_sum,
                    sort_order, status
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
-          ORDER BY id
-        ";
+          ORDER BY id";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
             self::$arrPayment[$objResult->fields['id']] = array(
@@ -109,7 +108,7 @@ class Payment
         if (empty(self::$arrPayment)) self::init();
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $arrAcceptedCurrencyCodes = array();
-        $arrPaypalAcceptedCurrencyCodes = Paypal::getAcceptedCurrencyCodeArray();
+        $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
         foreach ($arrCurrencies as $arrCurrency) {
             if (   $arrCurrency['status']
                 && in_array($arrCurrency['code'],
@@ -128,8 +127,7 @@ class Payment
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `p`
                 ON `z`.`zones_id`=`p`.`zones_id`
              WHERE `c`.`countries_id`=".intval($countryId)."
-               AND `z`.`activation_status`=1
-        ";
+               AND `z`.`activation_status`=1";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
             if (   isset(self::$arrPayment[$objResult->fields['payment_id']])
@@ -155,7 +153,7 @@ class Payment
      */
     static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
     {
-           global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $menu =
             '<select name="paymentId"'.
@@ -200,7 +198,7 @@ class Payment
                 "</option>\n"
               : ''
             );
-        foreach($arrPaymentId as $id) {
+        foreach ($arrPaymentId as $id) {
             $strMenuoptions .=
                 '<option value="'.$id.'"'.
                 ($id == $selectedId ? ' selected="selected"' : '').'>'.
@@ -243,8 +241,7 @@ class Payment
         $query = "
             SELECT `processor_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_payment`
-             WHERE `id`=$paymentId
-        ";
+             WHERE `id`=$paymentId";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF)
             return $objResult->fields['processor_id'];
