@@ -154,6 +154,7 @@ class Zones
 
         if (empty($_POST['zone_name_new'])) return '';
         $strName = $_POST['zone_name_new'];
+// Note: Text::replace() now returns the ID, not the object!
 //        $objText = Text::replace(
 //            0, FRONTEND_LANG_ID, $strName,
 //            MODULE_ID, TEXT_SHOP_ZONES_NAME
@@ -214,6 +215,7 @@ class Zones
         if (empty(self::$arrZone)) self::init();
         foreach ($_POST['zone_list'] as $zone_id) {
             $strName = $_POST['zone_name'][$zone_id];
+// Note: Text::replace() now returns the ID, not the object!
 //            $text_name_id = self::$arrZone[$zone_id]['text_name_id'];
 //            $objText = Text::replace(
 //                $text_name_id, FRONTEND_LANG_ID, $strName,

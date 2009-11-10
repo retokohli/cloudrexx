@@ -123,8 +123,8 @@ class Csv_bv
         if (feof($this->mHandle)) return false;
         ++$this->mRowCount;
         // Skip empty rows if asked to
-        if ($this->mSkipEmptyRows){
-            if ($arr_row[0] === ''  && count($arr_row) === 1){
+        if ($this->mSkipEmptyRows) {
+            if ($arr_row[0] === ''  && count($arr_row) === 1) {
                 --$this->mRowCount;
                 ++$this->mSkippedRowCount;
                 $arr_row = $this->NextLine();

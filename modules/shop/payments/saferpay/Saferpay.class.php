@@ -501,7 +501,7 @@ class Saferpay
                 $this->arrError[] = $attribute." isn't valid.";
                 return false;
             case 'ACCOUNTID':
-                if($this->isTest) {
+                if ($this->isTest) {
                     $this->arrShopOrder[$attribute] = $this->testAccountId;
                 }
                 if ($this->arrShopOrder[$attribute] == '') {

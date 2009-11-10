@@ -59,6 +59,14 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategory.class.php';
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
 /**
+ * Attribute: Object
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Attribute.class.php';
+/**
+ * Attribute: Various Helpers and display functions
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Attributes.class.php';
+/**
  * Discount: Custom calculations for discounts
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
@@ -133,7 +141,7 @@ class Shop extends ShopLibrary
     private $arrParentCategoriesTable = array();
 
     private $statusMessage = '';
-    private $arrProductAttributes = array();
+    private $arrAttributes = array();
     private static $inactiveStyleName = 'inactive';
     private static $activeStyleName = 'active';
     private static $defaultImage = '';
@@ -191,6 +199,7 @@ class Shop extends ShopLibrary
 
         // PEAR Sigma template
         $this->objTemplate = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
         // Global module index for clones
@@ -204,10 +213,6 @@ class Shop extends ShopLibrary
 //        if (empty($_COOKIE['PHPSESSID'])) $this->_authenticate();
 
         Vat::isReseller($this->objCustomer && $this->objCustomer->isReseller());
-        Vat::isHomeCountry(
-               empty($_SESSION['shop']['countryId2'])
-            || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
-        );
         // May be omitted, those structures are initialized on first use
         Vat::init();
         Currency::init();
@@ -319,7 +324,7 @@ class Shop extends ShopLibrary
                     break;
                 case 'paypalIpnCheck':
                     require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-                    $objPaypal = new Paypal;
+                    $objPaypal = new PayPal;
                     $objPaypal->ipnCheck();
                     exit;
                     break;
@@ -333,12 +338,12 @@ class Shop extends ShopLibrary
                 // *DO NOT* remove this!  Needed for site testing.
                 case 'testIpn':
                     require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    Paypal::testIpn(); // die()s!
+                    PayPal::testIpn(); // die()s!
                 // Test for PayPal IPN validation
                 // *DO NOT* remove this!  Needed for site testing.
                 case 'testIpnValidate':
                     require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    Paypal::testIpnValidate(); // die()s!
+                    PayPal::testIpnValidate(); // die()s!
                 default:
                     $this->products();
                     break;
@@ -363,6 +368,7 @@ class Shop extends ShopLibrary
         }
 
         $objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate($shopNavbarContent, true, true);
 
@@ -595,7 +601,7 @@ class Shop extends ShopLibrary
         global $_ARRAYLANG;
 
         if (!$this->objCustomer) {
-            header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=login');
+            CSRF::header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=login');
             exit;
         }
 
@@ -748,9 +754,7 @@ class Shop extends ShopLibrary
                 $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
             }
             $arrSize = $arrDefaultImageSize;
-            if ($imageName) {
-                $imageName = $imageName;
-            } else {
+            if (!$imageName) {
                 // Look for a picture in the Products.
                 $imageName = Products::getPictureByCategoryId($id);
             }
@@ -759,12 +763,14 @@ class Shop extends ShopLibrary
                 $imageName = ShopCategories::getPictureById($id);
             }
             if ($imageName) {
-                // Image found!  Use that instead of the default.
-                $thumbnailPath =
-                    ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
-                    $imageName.self::thumbnailSuffix;
-                $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
-                $this->scaleImageSizeToThumbnail($arrSize);
+                if (file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$imageName.self::thumbnailSuffix)) {
+                    // Image found!  Use that instead of the default.
+                    $thumbnailPath =
+                        ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                        $imageName.self::thumbnailSuffix;
+                    $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
+                    $this->scaleImageSizeToThumbnail($arrSize);
+                }
             }
 
             $this->objTemplate->setVariable(array(
@@ -1336,21 +1342,21 @@ class Shop extends ShopLibrary
      * JavaScript code contained within the Shop page to verify that
      * all mandatory choices have been made before any Product can
      * be added to the cart.
-     * @param   integer     $product_Id     The Product ID
+     * @param   integer     $product_id     The Product ID
      * @param   string      $formName       The name of the HTML form containing
      *                                      the Product and options
      * @param   integer     $cartProdId     The optional cart Product ID,
      *                                      false if not applicable.
      * @param   boolean     $flagUpload     If a product has an upload
-     *                                      ProductAttribute associated with it,
+     *                                      Attribute associated with it,
      *                                      this parameter will be set to true
      * @return  string                      The string with the HTML code
      */
-    function productOptions($product_Id, $formName, $cartProdId=false, &$flagUpload=false)
+    function productOptions($product_id, $formName, $cartProdId=false, &$flagUpload=false)
     {
         global $_ARRAYLANG;
 
-        // Semicolon separated list of ProductAttribute name IDs to verify
+        // Semicolon separated list of Attribute name IDs to verify
         // before the Product is added to the cart
         $checkOptionIds = '';
         // check if the product option block exists in the template
@@ -1361,18 +1367,21 @@ class Shop extends ShopLibrary
             // associated with it in the cart.
             // This is needed to correctly update those Products.
             if ($cartProdId !== false)
-                $product_Id =
+                $product_id =
                     $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
-            $arrAttributeNames = ProductAttributes::getNameArrayByProductId($product_Id);
-            // When there are no ProductAttributes for this Product, hide the
+            $arrAttributeNames = Attributes::getNameArrayByProductId($product_id);
+            // When there are no Attributes for this Product, hide the
             // options blocks
             if (empty($arrAttributeNames)) {
                 $this->objTemplate->hideBlock('shopProductOptionsRow');
                 $this->objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
-                // Loop through the ProductAttribute Names for the Product
-                foreach ($arrAttributeNames as $optionId => $arrAttributeName) {
-                    $arrAttributeValues = ProductAttributes::getValueArrayByNameId($optionId);
+                // Loop through the Attribute Names for the Product
+                foreach ($arrAttributeNames as $attribute_id => $arrAttributeName) {
+                    $arrAttributeValues = Attributes::getValueArrayByNameId($attribute_id);
+                    $arrRelation = Attributes::getRelationArray($product_id);
+                    // This attribute does not apply for this product
+                    if (empty($arrRelation)) continue;
                     $selectValues = '';
                     // create head of option menu/checkbox/radiobutton
                     switch ($arrAttributeName['type']) {
@@ -1380,9 +1389,9 @@ class Shop extends ShopLibrary
                       // There is no hidden input field here, as there is no
                       // mandatory choice, the status need not be verified.
                         $selectValues =
-                            '<select name="productOption['.$optionId.
+                            '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
-                            $product_Id.'-'.$optionId.'-'.$domId.
+                            $product_id.'-'.$attribute_id.'-'.$domId.
                             '" style="width:180px;">'."\n".
                             '<option value="0">'.
                             $arrAttributeName['name'].'&nbsp;'.
@@ -1390,23 +1399,23 @@ class Shop extends ShopLibrary
                         break;
                       case '1': // Radio buttons
                         // The hidden input field carries the name of the
-                        // ProductAttribute, indicating a mandatory option.
+                        // Attribute, indicating a mandatory option.
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$attribute_id.
                             '" value="'.$arrAttributeName['name'].'" />'."\n";
-                        $checkOptionIds .= "$optionId;";
+                        $checkOptionIds .= "$attribute_id;";
                         break;
                       // No container for checkboxes (2), as there is no
                       // mandatory choice, their status need not be verified.
                       case '3': // Dropdown menu (mandatory attribute)
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$attribute_id.
                             '" value="'.$arrAttributeName['name'].'" />'."\n".
-                            '<select name="productOption['.$optionId.
+                            '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
-                            $product_Id.'-'.$optionId.'-'.$domId.
+                            $product_id.'-'.$attribute_id.'-'.$domId.
                             '" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
@@ -1416,7 +1425,7 @@ class Shop extends ShopLibrary
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
                                 : ''
                             );
-                        $checkOptionIds .= "$optionId;";
+                        $checkOptionIds .= "$attribute_id;";
                         break;
 
                       case '4': // Text field, optional
@@ -1424,9 +1433,9 @@ class Shop extends ShopLibrary
                       case '5': // Text field, mandatory
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$attribute_id.
                             '" value="'.$arrAttributeName['name'].'" />'."\n";
-                        $checkOptionIds .= "$optionId;";
+                        $checkOptionIds .= "$attribute_id;";
                         break;
 
                       case '6': // Upload field, optional
@@ -1434,14 +1443,16 @@ class Shop extends ShopLibrary
                       case '7': // Upload field, mandatory
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
-                            $product_Id.'-'.$optionId.
+                            $product_id.'-'.$attribute_id.
                             '" value="'.$arrAttributeName['name'].'" />'."\n";
-                        $checkOptionIds .= "$optionId;";
+                        $checkOptionIds .= "$attribute_id;";
                         break;
                     }
 
                     $i = 0;
                     foreach ($arrAttributeValues as $value_id => $arrValue) {
+                        // This option does not apply to this product
+                        if (!isset($arrRelation[$value_id])) continue;
                         $valuePrice = '';
                         $selected   = false;
                         // Show the price only if non-zero
@@ -1453,8 +1464,8 @@ class Shop extends ShopLibrary
                         // mark the option value as selected if it was before
                         // and this page was requested from the cart
                         if (   $cartProdId !== false
-                            && isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId])) {
-                            if (in_array($value_id, $_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId]))
+                            && isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$attribute_id])) {
+                            if (in_array($value_id, $_SESSION['shop']['cart']['products'][$cartProdId]['options'][$attribute_id]))
                                 $selected = true;
                         }
                         // create option menu/checkbox/radiobutton
@@ -1469,24 +1480,24 @@ class Shop extends ShopLibrary
                           case '1': // Radio buttons
                             $selectValues .=
                                 '<input type="radio" name="productOption['.
-                                $optionId.']" id="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $attribute_id.']" id="productOption-'.
+                                $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$value_id.'"'.
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $product_id.'-'.$attribute_id.'-'.$domId.
                                 '">&nbsp;'.$arrValue['value'].$valuePrice.
                                 "</label><br />\n";
                             break;
                           case '2': // Checkboxes
                             $selectValues .=
                                 '<input type="checkbox" name="productOption['.
-                                $optionId.']['.$i.']" id="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $attribute_id.']['.$i.']" id="productOption-'.
+                                $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$value_id.'"'.
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
-                                $product_Id.'-'.$optionId.'-'.$domId.
+                                $product_id.'-'.$attribute_id.'-'.$domId.
                                 '">&nbsp;'.$arrValue['value'].$valuePrice.
                                 "</label><br />\n";
                             break;
@@ -1501,20 +1512,20 @@ class Shop extends ShopLibrary
                           case '5': // Text field, mandatory
 //                            $valuePrice = '&nbsp;';
                             $selectValues .=
-                                '<input type="text" name="productOption['.$optionId.
-                                ']" id="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.
+                                '<input type="text" name="productOption['.$attribute_id.
+                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$arrValue['value'].'" style="width:180px;" />'.
-                                '<label for="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.'">'.
+                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
                                 $valuePrice."</label><br />\n";
                             break;
                           case '6': // UploadText field, optional
                           case '7': // Text field, mandatory
 //                            $valuePrice = '&nbsp;';
                             $selectValues .=
-                                '<input type="file" name="productOption['.$optionId.
-                                ']" id="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.
+                                '<input type="file" name="productOption['.$attribute_id.
+                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
                                 '" style="width:180px;" />'.
-                                '<label for="productOption-'.$product_Id.'-'.$optionId.'-'.$domId.'">'.
+                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
                                 $valuePrice."</label><br />\n";
                             break;
                         }
@@ -1555,7 +1566,7 @@ class Shop extends ShopLibrary
                         'SHOP_PRODUCT_OPTIONS_NAME'  => $arrAttributeName['name'],
                         'SHOP_PRODUCT_OPTIONS_TITLE' =>
                             '<a href="javascript:{}" onclick="toggleOptions('.
-                            $product_Id.')" title="'.
+                            $product_id.')" title="'.
                             $_ARRAYLANG['TXT_OPTIONS'].'">'.
                             $_ARRAYLANG['TXT_OPTIONS']."</a>\n",
                     ));
@@ -1567,7 +1578,7 @@ class Shop extends ShopLibrary
         }
         return
             "return checkProductOption('shopProductForm$formName', ".
-            "$product_Id, '".
+            "$product_id, '".
             substr($checkOptionIds, 0, strlen($checkOptionIds)-1)."');";
     }
 
@@ -1727,7 +1738,7 @@ class Shop extends ShopLibrary
                 $optionPrice = 0;
                 foreach ($arrProduct['options'] as $arrValueIds) {
                     foreach ($arrValueIds as $value_id) {
-                       $productAttributeValuePrice = ProductAttribute::getValuePriceById($value_id);
+                       $productAttributeValuePrice = Attribute::getValuePriceById($value_id);
                        $optionPrice += $productAttributeValuePrice;
                     }
                 }
@@ -1751,7 +1762,7 @@ class Shop extends ShopLibrary
      * Note that this also sets up several discount information placeholders
      * in the current block of the template.
      * @param   integer $productId          The Product ID
-     * @param   double  $priceOptions       The price for ProductAttributes,
+     * @param   double  $priceOptions       The price for Attributes,
      *                                      if any, or 0 (zero)
      * @param   integer $count              The number of products, defaults
      *                                      to 1 (one)
@@ -1868,7 +1879,7 @@ class Shop extends ShopLibrary
     /**
      * Returns the JavaScript functions used by the shop
      *
-     * If at least one Product has an upload field ProductAttribute associated
+     * If at least one Product has an upload field Attribute associated
      * with it, the $flagUpload parameter *MUST* be set to true.  Note that this
      * will force the respective product form to use mutipart/form-data encoding
      * and disable the JSON cart for the complete page.
@@ -1881,12 +1892,12 @@ class Shop extends ShopLibrary
     function getJavascriptCode($flagUpload=false)
     {
         global $_ARRAYLANG, $_CONFIGURATION;
-        if(!empty($_GET[session_name()])){
+        if (!empty($_GET[session_name()])) {
             session_write_close();
             session_id($_GET[session_name()]);
             session_start();
-        }else{
-            if(!isset($_SESSION['shop']['cart'])){
+        } else {
+            if (!isset($_SESSION['shop']['cart'])) {
                 session_start();
             }
         }
@@ -1903,7 +1914,7 @@ function viewPicture(picture,features)
 Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
 Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
 Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
-window.onload = function(){
+window.onload = function() {
     Shadowbox.init();
 };
 
@@ -2367,29 +2378,29 @@ sendReq('', 1);
                             $arrCartProductOptions = array_keys($arrProduct['options']);
                             $arrProductOptions = array_keys($arrNewProduct['options']);
                             $arrProductOptions = array();
-                            foreach ($arrNewProduct['options'] as $optionId => $value) {
+                            foreach ($arrNewProduct['options'] as $attribute_id => $value) {
                                 if (empty($value)) {
                                     continue;
                                 }
-                                $arrProductOptions[] = $optionId;
+                                $arrProductOptions[] = $attribute_id;
                             }
                             // check for the same options
                             if ($arrCartProductOptions == $arrProductOptions) {
                                 // check for the same option values
-                                foreach ($arrNewProduct['options'] as $optionId => $value) {
+                                foreach ($arrNewProduct['options'] as $attribute_id => $value) {
                                     if (empty($value)) continue;
-                                    if (is_array($arrProduct['options'][$optionId])) {
+                                    if (is_array($arrProduct['options'][$attribute_id])) {
                                         $arrPostValues = array();
                                         if (is_array($value)) {
                                             $arrPostValues = array_values($value);
                                         } else {
                                             array_push($arrPostValues, $value);
                                         }
-                                        if ($arrPostValues != $arrProduct['options'][$optionId]) {
+                                        if ($arrPostValues != $arrProduct['options'][$attribute_id]) {
                                             continue 2;
                                         }
                                     } else {
-                                        if (!isset($arrProduct['options'][$optionId][$value])) {
+                                        if (!isset($arrProduct['options'][$attribute_id][$value])) {
                                             continue 2;
                                         }
                                     }
@@ -2434,31 +2445,31 @@ sendReq('', 1);
             //options array
             $_SESSION['shop']['cart']['products'][$cartProdId]['options'] = array();
             if (isset($arrNewProduct['options']) && count($arrNewProduct['options']) > 0) {
-                foreach ($arrNewProduct['options'] as $optionId => $value_id) {
-                    // Get ProductAttribute
-                    $objProductAttribute = ProductAttribute::getByNameId($optionId);
-                    if (!$objProductAttribute) continue;
-                    $type = $objProductAttribute->getType();
+                foreach ($arrNewProduct['options'] as $attribute_id => $value_id) {
+                    // Get Attribute
+                    $objAttribute = Attribute::getByNameId($attribute_id);
+                    if (!$objAttribute) continue;
+                    $type = $objAttribute->getType();
                     if (   $type == SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_OPTIONAL
                         || $type == SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_MANDATORY) {
                         if ($value_id == '') continue;
                     }
                     if (   $type == SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL
                         || $type == SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY) {
-                        $value_id = $this->uploadFile($optionId);
+                        $value_id = $this->uploadFile($attribute_id);
                         if ($value_id == '') {
                             continue;
                         }
                     }
-                    if (!isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId])) {
-                        $_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($optionId)] = array();
+                    if (!isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$attribute_id])) {
+                        $_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($attribute_id)] = array();
                     }
                     if (is_array($value_id) && count($value_id) != 0) {
                         foreach ($value_id as $id) {
-                            array_push($_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($optionId)], $id);
+                            array_push($_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($attribute_id)], $id);
                         }
                     } elseif (!empty($value_id)) {
-                        array_push($_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($optionId)],
+                        array_push($_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($attribute_id)],
                             contrexx_stripslashes($value_id));
                     }
                 }
@@ -2492,7 +2503,7 @@ sendReq('', 1);
     {
         // go to the next step
         if (isset($_POST['continue'])) {
-            header("Location: index.php?section=shop".MODULE_INDEX."&cmd=login");
+            CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=login");
             exit;
         }
     }
@@ -2538,23 +2549,23 @@ sendReq('', 1);
                 $productOptions      = '';
                 $productOptionsPrice =  0;
                 // get option names
-                foreach ($_SESSION['shop']['cart']['products'][$cartProdId]['options'] as $optionId => $arrValueIds) {
-                    $objProductAttribute = ProductAttribute::getByNameId($optionId);
+                foreach ($_SESSION['shop']['cart']['products'][$cartProdId]['options'] as $attribute_id => $arrValueIds) {
+                    $objAttribute = Attribute::getByNameId($attribute_id);
                     // Should be tested!
-                    //if (!$objProductAttribute) { ... }
-                      $arrValues = $objProductAttribute->getValueArray();
+                    //if (!$objAttribute) { ... }
+                      $arrValues = $objAttribute->getValueArray();
                     foreach ($arrValueIds as $value_id) {
-                        // Note that the ProductAttribute values are indexed
+                        // Note that the Attribute values are indexed
                         // starting from 1!
                         // For types 4..7, the value entered in the text box is
                         // stored in $value_id.  Overwrite the value taken from
                         // the database.
-                        if ($objProductAttribute->getType() > 3) {
-                            //$arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                        if ($objAttribute->getType() > 3) {
+                            //$arrValues = Attributes::getValueArrayByNameId($attribute_id);
                             $arrValue = current($arrValues);
                             $arrValue['value'] = $value_id;
                         } else {
-                            //$arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                            //$arrValues = Attributes::getValueArrayByNameId($attribute_id);
                             $arrValue = $arrValues[$value_id];
                         }
                         if (!is_array($arrValue)) continue;
@@ -2815,7 +2826,7 @@ sendReq('', 1);
         // Redirect if the login was completed successfully:
 //        // Special redirects
 //        if ($redirect == 'shop') {
-//            header('Location: index.php?section=shop');
+//            CSRF::header('Location: index.php?section=shop');
 //            exit;
 //        }
 //         //Add more special redirects here as needed.
@@ -2823,12 +2834,12 @@ sendReq('', 1);
         if (!empty($redirect)) {
             $decodedRedirect = base64_decode($redirect);
             if (!empty($decodedRedirect)) {
-                header('Location: index.php?'.$decodedRedirect);
+                CSRF::header('Location: index.php?'.$decodedRedirect);
                 exit;
             }
         }
         // Default: Redirect to the account page
-        header('Location: index.php?section=shop&cmd=account');
+        CSRF::header('Location: index.php?section=shop&cmd=account');
         exit;
     }
 
@@ -2849,7 +2860,7 @@ sendReq('', 1);
         $this->_hideCurrencyNavbar = true;
 
         if (empty($_POST) || !is_array($_POST)) return;
-        foreach($_POST as $key => $value) {
+        foreach ($_POST as $key => $value) {
             $value = (get_magic_quotes_gpc()
                 ? strip_tags(trim($value))
                 : addslashes(strip_tags(trim($value))));
@@ -2928,7 +2939,7 @@ sendReq('', 1);
         }
 
         if (!empty($_POST['email']) && !$this->objCustomer) {
-            if (!Mail::isValidAddress($_POST['email'])) {
+            if (!FWValidator::isEmail($_POST['email'])) {
                 $status .= '<br />'.$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'];
             }
             if (!$this->_checkEmailIntegrity($_POST['email'])) {
@@ -2947,7 +2958,7 @@ sendReq('', 1);
         global $objDatabase;
 
 /*
-        foreach($_POST as $key => $value) {
+        foreach ($_POST as $key => $value) {
             $value = contrexx_addslashes(strip_tags(trim($value)));
             $_SESSION['shop'][$key] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
         }
@@ -2966,9 +2977,9 @@ sendReq('', 1);
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult) {
             if ($objResult->RecordCount() == 1) {
-                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
+                CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
             } else {
-                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
+                CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
             }
             exit;
         }
@@ -3123,7 +3134,7 @@ sendReq('', 1);
         $this->_parseCart();
         // Reloading or loading without sessions
         if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: index.php?section=shop".MODULE_INDEX);
+            CSRF::header("Location: index.php?section=shop".MODULE_INDEX);
             exit;
         }
 
@@ -3176,20 +3187,20 @@ die("Z1");
                 if (isset($_SESSION['shop']['currencyIdPrev'])) {
                     $_SESSION['shop']['currencyId'] = $_SESSION['shop']['currencyIdPrev'];
                     unset($_SESSION['shop']['currencyIdPrev']);
-                    header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
+                    CSRF::header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
                     exit;
                 }
             } else {
                 // PayPal payment processor (processor ID 2)
 die("Z2");
                 require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                $objPaypal = new Paypal;
+                $objPaypal = new PayPal;
                 if (!in_array(Currency::getActiveCurrencyCode(), Paypal::getAcceptedCurrencyCodeArray())) {
                     foreach (Currency::getCurrencyArray() as $arrCurrency) {
                         if ($arrCurrency['status'] && $arrCurrency['code'] == $this->arrConfig['paypal_default_currency']['value']) {
                             $_SESSION['shop']['currencyIdPrev'] = $_SESSION['shop']['currencyId'];
                             $_SESSION['shop']['currencyId'] = $arrCurrency['id'];
-                            header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
+                            CSRF::header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
                             exit;
                         }
                     }
@@ -3320,13 +3331,23 @@ die("YYY");
         if (empty($_SESSION['shop']['shipment_price']))
             $_SESSION['shop']['shipment_price'] = 0;
 
+        Vat::setIsHomeCountry(
+               empty($_SESSION['shop']['countryId2'])
+            || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
+        );
         // VAT enabled?
         if (Vat::isEnabled()) {
             // VAT included?
             if (Vat::isIncluded()) {
                 // home country equals shop country; VAT is included already
-                if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
-                    $_SESSION['shop']['vat_price'] = $_SESSION['shop']['cart']['total_vat_amount'];
+                if (Vat::getIsHomeCountry()) {
+                    $_SESSION['shop']['vat_price'] = Currency::formatPrice(
+                        $_SESSION['shop']['cart']['total_vat_amount'] +
+                        Vat::calculateOtherTax(
+                            $_SESSION['shop']['payment_price']  +
+                            $_SESSION['shop']['shipment_price']
+                        )
+                    );
                     $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
@@ -3349,13 +3370,13 @@ die("YYY");
                 }
             } else {
                 // VAT is excluded
-                if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
+                if (Vat::getIsHomeCountry()) {
                     // home country equals shop country; add VAT.
                     // the VAT on the products has already been calculated and set in the cart.
                     // now we add the default VAT to the shipping and payment cost.
                     $_SESSION['shop']['vat_price'] = Currency::formatPrice(
                         $_SESSION['shop']['cart']['total_vat_amount'] +
-                        Vat::calculateDefaultTax(
+                        Vat::calculateOtherTax(
                             $_SESSION['shop']['payment_price'] +
                             $_SESSION['shop']['shipment_price']
                         ));
@@ -3437,7 +3458,7 @@ die("YYY");
 
             if ($agbStatus && $shipmentStatus && $paymentStatus) {
                 // everything is set and valid
-                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
+                CSRF::header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
                 exit;
             } else {
                 // something is missing od invalid
@@ -3678,7 +3699,7 @@ right after the customer logs in!
 
         // if the cart is missing, return to the shop
         if (empty($_SESSION['shop']['cart'])) {
-            header('Location: index.php?section=shop'.MODULE_INDEX);
+            CSRF::header('Location: index.php?section=shop'.MODULE_INDEX);
             exit;
         }
         // hide currency navbar
@@ -3866,18 +3887,18 @@ right after the customer logs in!
                     return false;
                 }
                 $orderItemsId = $objDatabase->Insert_ID();
-                foreach ($arrProduct['options'] as $optionId => $arrValueIds) {
-                    $objProductAttribute = ProductAttribute::getByNameId($optionId);
-                    if (!$objProductAttribute) {
+                foreach ($arrProduct['options'] as $attribute_id => $arrValueIds) {
+                    $objAttribute = Attribute::getByNameId($attribute_id);
+                    if (!$objAttribute) {
                         continue;
                     }
-                    $name = $objProductAttribute->getName();
+                    $name = $objAttribute->getName();
                     foreach ($arrValueIds as $value_id) {
-                        if ($objProductAttribute->getType() > 3) {
+                        if ($objAttribute->getType() > 3) {
                             // There is no value ID stored for text and upload
                             // fields.  Thus, we use the name ID to get the
                             // values' values.
-                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                            $arrValues = Attributes::getValueArrayByNameId($attribute_id);
                             // There is exactly one value record for these
                             // types.  Use this and overwrite the "default"
                             // value with the text or file name.
@@ -3886,7 +3907,7 @@ right after the customer logs in!
                         } else {
                             // There is exactly one value record for the value
                             // ID given.  Use this.
-                            $arrValues = ProductAttributes::getValueArrayByNameId($optionId);
+                            $arrValues = Attributes::getValueArrayByNameId($attribute_id);
                             $arrValue = $arrValues[$value_id];
                         }
                         if (!is_array($arrValue)) {
@@ -3997,7 +4018,7 @@ right after the customer logs in!
                     $priceOptions = (empty($arrProduct['optionPrice'])
                         ? 0 : $arrProduct['optionPrice']
                     );
-                    // Note:  The ProductAttribute options' price is added
+                    // Note:  The Attribute options' price is added
                     // to the price here!
                     $price = $this->_getProductPrice(
                         $arrProduct['id'],
@@ -4008,19 +4029,19 @@ right after the customer logs in!
                     $productOptions = '';
                     if (is_array($arrProduct['options'])
                      && count($arrProduct['options']) > 0) {
-                        foreach ($arrProduct['options'] as $optionId => $arrValueIds) {
+                        foreach ($arrProduct['options'] as $attribute_id => $arrValueIds) {
                             if (count($arrValueIds) > 0) {
-                                $objProductAttribute = ProductAttribute::getByNameId($optionId);
+                                $objAttribute = Attribute::getByNameId($attribute_id);
                                 // Should be tested!
-                                //if (!$objProductAttribute) { ... }
+                                //if (!$objAttribute) { ... }
                                 $productOptions .=
                                     ($productOptions ? '<br />' : '').'- '.
-                                    ProductAttribute::getNameById($optionId).': ';
+                                    Attribute::getNameById($attribute_id).': ';
                                 $productOptionsValues = '';
                                 foreach ($arrValueIds as $value_id) {
                                     if (intval($value_id)) {
                                         $optionValue =
-                                            ProductAttribute::getValueNameById($value_id);
+                                            Attribute::getValueNameById($value_id);
                                     } else {
                                         $optionValue = ShopLibrary::stripUniqidFromFilename($value_id);
                                         if (   $optionValue != $value_id
@@ -4474,7 +4495,7 @@ right after the customer logs in!
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
             $copies = explode(',', trim($objResult->fields['value']));
-            foreach($copies as $sendTo) {
+            foreach ($copies as $sendTo) {
                 Mail::send($sendTo, $mailFrom, $mailFromText, $mailSubject, $mailBody);
             }
         }
@@ -5055,7 +5076,7 @@ right after the customer logs in!
 
     /**
      * Upload a file to be associated with a product in the cart
-     * @param   integer   $productAttributeId   The ProductAttribute ID the
+     * @param   integer   $productAttributeId   The Attribute ID the
      *                                          file belongs to
      * @return  string                          The file name on success,
      *                                          the empty string otherwise

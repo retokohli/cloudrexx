@@ -4,7 +4,7 @@
 function deleteCategory(catId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcat&id="+catId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcat&{CSRF_PARAM}&id="+catId);
 }
 
 function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
@@ -71,7 +71,7 @@ function SetUrl(url, width, height, alt)
 
 function cancelEdit()
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=cat");
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=cat");
 }
 // -->
 </script>
@@ -220,7 +220,7 @@ function cancelEdit()
                This may corrupt the image selection and update process. -->
           <a href="javascript:void(0);" name="modCatImageLink" id="lnk"
               title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
-              onclick="openBrowser('index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop{MODULE_INDEX}', '1', 'width=800,height=640,resizable=yes,status=no,scrollbars=yes');">
+              onclick="openBrowser('index.php?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true&amp;type=shop{MODULE_INDEX}', '1', 'width=800,height=640,resizable=yes,status=no,scrollbars=yes');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
             <img id="img"
                 style="border:none;"

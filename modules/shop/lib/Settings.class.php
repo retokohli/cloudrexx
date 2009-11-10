@@ -112,7 +112,7 @@ class Settings
 //             ORDER BY `country`.`id`
 //        ";
 //        $objResult = $objDatabase->Execute($query);
-//        while(!$objResult->EOF) {
+//        while (!$objResult->EOF) {
 //            $this->arrCountries[$objResult->fields['id']] = array(
 //                'id' => $objResult->fields['id'],
 //                'name' => $objResult->fields[$arrSqlName['name']],
@@ -130,7 +130,7 @@ class Settings
              ORDER BY countries_id
         ";
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->arrCountries[$objResult->fields['countries_id']] = array(
                 'countries_id' => $objResult->fields['countries_id'],
                 'countries_name' => $objResult->fields['countries_name'],
@@ -261,7 +261,7 @@ class Settings
     {
         global $objDatabase;
         if (isset($_POST['currency']) && !empty($_POST['currency'])) {
-             foreach ($_POST['currencyCode'] as $cId => $value){
+             foreach ($_POST['currencyCode'] as $cId => $value) {
                  $is_default=($_POST['currencyDefault']==$cId)?1:0;
                  $status = isset($_POST['currencyActive'][$cId])?1:0;
 

@@ -7,14 +7,14 @@ function delMail(mailId)
     alert("{TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE}");
   } else {
     if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-      window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delMailId="+mailId);
+      window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&delMailId="+mailId);
   }
 }
 
 function delTpl(tplId)
 {
   if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delTplId="+tplId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&delTplId="+tplId);
 }
 
 function sendMail()
@@ -32,7 +32,7 @@ function sendMail()
 
 function loadTpl(tplId, langId, strTab)
 {
-  var strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
+  var strUri = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
   if (document.getElementById('portMail')) {
     if (document.shopFormEdit.elements['portMail'].checked == true) {
       strUri += "&portLangId="+document.shopFormEdit.elements['loadedLangId'].value;

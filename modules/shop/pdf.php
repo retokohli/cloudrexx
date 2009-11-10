@@ -102,7 +102,7 @@ class pdfCreator
 
         // set currency symbol
         $objResult = $objDatabase->Execute("SELECT symbol FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE is_default=1");
-        if(!$objResult->EOF){
+        if (!$objResult->EOF) {
             $this->currencySymbol = $objResult->fields['symbol'];
         }
 

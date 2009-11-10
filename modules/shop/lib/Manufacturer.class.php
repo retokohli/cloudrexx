@@ -26,46 +26,41 @@ class Manufacturer
     {
         global $objDatabase;
 
-//        $arrSqlName = Text::getSqlSnippets('`manufacturer`.text_name_id', FRONTEND_LANG_ID);
-//        $arrSqlUrl = Text::getSqlSnippets('`manufacturer`.text_url_id', FRONTEND_LANG_ID);
-//        $query = "
-//            SELECT `manufacturer`.`id`".
-//                   $arrSqlName['field'].$arrSqlUrl['field']."
-//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer` as `manufacturer`".
-//                   $arrSqlName['join'].$arrSqlUrl['join'];
+        $arrSqlName = Text::getSqlSnippets('`manufacturer`.text_name_id', FRONTEND_LANG_ID);
+        $arrSqlUrl = Text::getSqlSnippets('`manufacturer`.text_url_id', FRONTEND_LANG_ID);
         $query = "
-            SELECT `manufacturer`.`id`,
-                   `manufacturer`.`name`, `manufacturer`.`url`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer` as `manufacturer`
-        ";
+            SELECT `manufacturer`.`id`".
+                   $arrSqlName['field'].$arrSqlUrl['field']."
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer` as `manufacturer`".
+                   $arrSqlName['join'].$arrSqlUrl['join'];
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-//            $text_name_id = $objResult->fields[$arrSqlName['name']];
-//            $strName = $objResult->fields[$arrSqlName['text']];
-//            // Replace Text in a missing language by another, if available
-//            if ($text_name_id && $strName === null) {
-//                $objText = Text::getById($text_name_id, 0);
-//                if ($objText)
-//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-//                    $strName = $objText->getText();
-//            }
-//            $text_url_id = $objResult->fields[$arrSqlUrl['name']];
-//            $strUrl = $objResult->fields[$arrSqlUrl['text']];
-//            // Replace Text in a missing language by another, if available
-//            if ($text_url_id && $strUrl === null) {
-//                $objText = Text::getById($text_url_id, 0);
-//                if ($objText)
-//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-//                    $strUrl = $objText->getText();
-//            }
+            $text_name_id = $objResult->fields[$arrSqlName['name']];
+            $strName = $objResult->fields[$arrSqlName['text']];
+            // Replace Text in a missing language by another, if available
+            if ($text_name_id && $strName === null) {
+                $objText = Text::getById($text_name_id, 0);
+                if ($objText)
+                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+                    $strName = $objText->getText();
+            }
+            $text_url_id = $objResult->fields[$arrSqlUrl['name']];
+            $strUrl = $objResult->fields[$arrSqlUrl['text']];
+            // Replace Text in a missing language by another, if available
+            if ($text_url_id && $strUrl === null) {
+                $objText = Text::getById($text_url_id, 0);
+                if ($objText)
+                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+                    $strUrl = $objText->getText();
+            }
             self::$arrManufacturer[$id] = array(
                 'id' => $id,
-                'name' => $objResult->fields['name'], //$strName,
-//                'text_name_id' => $text_name_id,
-                'url' => $objResult->fields['url'], //$strUrl,
-//                'text_url_id' => $text_url_id,
+                'name' => $strName,
+                'text_name_id' => $text_name_id,
+                'url' => $strUrl,
+                'text_url_id' => $text_url_id,
             );
             $objResult->MoveNext();
         }
@@ -77,60 +72,52 @@ class Manufacturer
     {
         global $objDatabase;
 
-//        $objTextName = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_MANUFACTURER_NAME);
-//        if ($objTextName->store()) {
-//            $objTextUrl = new Text($url, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_MANUFACTURER_URL);
-//            if ($objTextUrl->store()) {
-//                $query = "
-//                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer (
-//                        text_name_id, text_url_id
-//                    ) VALUES (
-//                        ".$objTextName->getId().",
-//                        ".$objTextUrl->getId()."
-//                    )
-//                ";
+        $objTextName = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_MANUFACTURER_NAME);
+        if ($objTextName->store()) {
+            $objTextUrl = new Text($url, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_MANUFACTURER_URL);
+            if ($objTextUrl->store()) {
                 $query = "
                     INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer (
-                        name, url
+                        text_name_id, text_url_id
                     ) VALUES (
-                        ".addslashes($name).",
-                        ".addslashes($url).",
+                        ".$objTextName->getId().",
+                        ".$objTextUrl->getId()."
                     )
                 ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) return true;
-//                Text::deleteById($objTextUrl->getId());
-//            }
-//            Text::deleteById($objTextName->getId());
-//        }
+                Text::deleteById($objTextUrl->getId());
+            }
+            Text::deleteById($objTextName->getId());
+        }
         return false;
     }
 
 
     static function update($name, $url, $id)
     {
-        if (empty($id)) return false;
-//        if (empty(self::$arrManufacturer)) self::init();
-//        if (empty(self::$arrManufacturer[$id]))
-//            return self::insert($name, $url);
-//        $arrManufacturer = self::$arrManufacturer[$id];
-//        $objTextName = Text::getById($arrManufacturer['text_name_id'], FRONTEND_LANG_ID);
-//        if (!$objTextName) return false;
-//        $objTextUrl = Text::getById($arrManufacturer['text_url_id'], FRONTEND_LANG_ID);
-//        if (!$objTextUrl) return false;
-//        $objTextName->setText($name);
-//        $objTextName->setLanguageId(FRONTEND_LANG_ID);
-//        if (!$objTextName->store()) return false;
-//        $objTextUrl->setText($url);
-//        $objTextUrl->setLanguageId(FRONTEND_LANG_ID);
-//        if (!$objTextUrl->store()) return false;
         global $objDatabase;
+
+        if (empty(self::$arrManufacturer)) self::init();
+        // If the ID is not present in the array already, insert it.
+        // This especially applies to zero IDs
+        if (empty(self::$arrManufacturer[$id]))
+            return self::insert($name, $url);
+        // Otherwise, update the present record
+        $arrManufacturer = self::$arrManufacturer[$id];
+        $text_name_id = Text::getById($arrManufacturer['text_name_id'], FRONTEND_LANG_ID);
+        if (!$text_name_id) return false;
+        $text_url_id = Text::getById($arrManufacturer['text_url_id'], FRONTEND_LANG_ID);
+        if (!$text_url_id) return false;
+        $text_name_id = Text::replace($text_name_id, FRONTEND_LANG_ID, $name);
+        if (!$text_name_id) return false;
+        $text_url_id = Text::replace($text_url_id, FRONTEND_LANG_ID, $url);
+        if (!$text_url_id) return false;
         $query = "
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
-               SET name='".addslashes($name)."',
-                   url='".addslashes($url)."'
-             WHERE id=$id
-        ";
+            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer`
+               SET `text_name_id`=$text_name_id,
+                   `text_url_id`=$text_url_id
+             WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
         return false;
@@ -142,16 +129,15 @@ class Manufacturer
         global $objDatabase;
 
         if (empty($id)) return false;
-//        if (empty(self::$arrManufacturer)) self::init();
-//        $arrManufacturer = self::$arrManufacturer[$id];
-//        if (!Text::deleteById($arrManufacturer['text_name_id'])) return false;
-//        if (!Text::deleteById($arrManufacturer['text_url_id'])) return false;
+        if (empty(self::$arrManufacturer)) self::init();
+        $arrManufacturer = self::$arrManufacturer[$id];
+        if (!Text::deleteById($arrManufacturer['text_name_id'])) return false;
+        if (!Text::deleteById($arrManufacturer['text_url_id'])) return false;
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
-             WHERE id=$id
-        ";
+             WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
-        return ($objResult ? true : false);
+        return (bool)$objResult;
     }
 
 
@@ -182,17 +168,12 @@ class Manufacturer
      */
     static function getMenu($selected_id=0)
     {
-        global $_ARRAYLANG;
-
-        $strMenuoptions = self::getMenuoptions($selected_id);
-        if (empty($strMenuoptions)) return '';
-        return
-            '<select name="manufacturerId" style="width: 180px;">'.
-            '<option value="0">'.
-            $_ARRAYLANG['TXT_ALL_MANUFACTURER'].
-            '</option>'.
-            $strMenuoptions.
-            '</select>';
+        if (empty(self::$arrManufacturer)) self::init();
+        return Html::getSelect(
+            'manufacturerId', self::$arrManufacturer,
+            $selected_id, false, '',
+            'style="width: 180px;"'
+        );
     }
 
 
@@ -208,14 +189,9 @@ class Manufacturer
     static function getMenuoptions($selected_id=0)
     {
         if (empty(self::$arrManufacturer)) self::init();
-        $strMenu = '';
-        foreach (self::$arrManufacturer as $id => $arrManufacturer) {
-            $strMenu .=
-                '<option value="'.$id.'"'.
-                ($selected_id == $id ? ' selected="selected"' : '').
-                '>'.$arrManufacturer['name'].'</option>';
-        }
-        return $strMenu;
+        return Html::getOptions(
+            self::$arrManufacturer, $selected_id
+        );
     }
 
 

@@ -104,9 +104,18 @@ class Vat
      * @param   boolean     True if the shop home country and the
      *                      ship-to country are identical
      */
-    static function isHomeCountry($is_home_country)
+    static function setIsHomeCountry($is_home_country)
     {
         self::$is_home_country = $is_home_country;
+    }
+    /**
+     * Get the home country flag
+     * @return  boolean     True if the shop home country and the
+     *                      ship-to country are identical
+     */
+    static function getIsHomeCountry()
+    {
+        return self::$is_home_country;
     }
 
     /**
@@ -278,10 +287,6 @@ class Vat
 
     /**
      * Returns true if VAT is enabled, false otherwise
-     * @param   boolean     $is_home_country  True for the home country,
-     *                                        false otherwise
-     * @param   boolean     $is_reseller      True for resellers,
-     *                                        false otherwise
      * @return  boolean     True if VAT is enabled, false otherwise.
      * @static
      */
@@ -297,10 +302,6 @@ class Vat
 
     /**
      * Returns true if VAT is included, false otherwise
-     * @param   boolean     $is_home_country  True for the home country,
-     *                                        false otherwise
-     * @param   boolean     $is_reseller      True for resellers,
-     *                                        false otherwise
      * @return  boolean     True if VAT is included, false otherwise.
      * @static
      */
@@ -520,6 +521,7 @@ class Vat
             $rate = $vatRates[$id];
             if (   self::$arrVat[$id]['class'] != $class
                 || self::$arrVat[$id]['rate']  != $rate) {
+// Note: Text::replace() now returns the ID, not the object!
 //                $objText = Text::replace(
 //                    $text_class_id, LANG_ID, $class,
 //                    MODULE_ID, TEXT_SHOP_VAT_CLASS
@@ -562,6 +564,7 @@ class Vat
 
         $vatRate = doubleval($vatRate);
         if ($vatRate >= 0) {
+// Note: Text::replace() now returns the ID, not the object!
 //            $objText = Text::replace(
 //                0, BACKEND_LANG_ID, $vatClass, MODULE_ID, TEXT_SHOP_VAT_CLASS
 //            );
@@ -660,8 +663,8 @@ class Vat
     {
         if (!is_array(self::$arrVat)) self::init();
         // Is the vat enabled at all?
-        if (self::isEnabled(self::$is_home_country, self::$is_reseller)) {
-            if (self::isIncluded(self::$is_home_country, self::$is_reseller)) {
+        if (self::isEnabled()) {
+            if (self::isIncluded()) {
                 // Gross price; calculate the included VAT amount, like
                 // $amount = $price - 100 * $price / (100 + $rate)
                 return $price - 100*$price / (100+$rate);
@@ -708,18 +711,35 @@ class Vat
 
 
     /**
-     * Returns the VAT amount using the default rate for the given net price.
+     * Returns the VAT amount using the default rate for the given price.
      *
      * Note that the amount returned is not formatted as a currency,
      * nor are any checks performed on whether VAT is active or not!
-     * @param   double  $price  The net price
-     * @return  double          The VAT amount to add to the net price
+     * @param   double  $price  The price
+     * @return  double          The VAT amount
      * @static
      */
     static function calculateDefaultTax($price)
     {
-        $amount = $price * self::$vatDefaultRate / 100;
-        return $amount;
+        return self::amount(self::$vatDefaultRate, $price);
+// Old and incorrect:
+//        $amount = $price * self::$vatDefaultRate / 100;
+//        return $amount;
+    }
+
+
+    /**
+     * Returns the VAT amount using the other rate for the given price.
+     *
+     * Note that the amount returned is not formatted as a currency.
+     * @param   double  $price  The price
+     * @return  double          The VAT amount
+     * @static
+     */
+    static function calculateOtherTax($price)
+    {
+        $otherRate = self::getRate(self::$vatOtherId);
+        return self::amount($otherRate, $price);
     }
 
 }
