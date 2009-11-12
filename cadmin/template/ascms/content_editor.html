@@ -537,7 +537,12 @@ var swapLanguage = function(aElement){
 //    $J('#ajaxstatus').text('Loading '+$a.text());
 
     //reset undo history
-    if(!_CONTREXX_EXPERT_MODE && FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG && typeof FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo != 'undefined'){
+    if(!_CONTREXX_EXPERT_MODE && FCKeditorAPI.GetInstance('html')
+        && FCKeditorAPI.GetInstance('html').EditorWindow
+        && FCKeditorAPI.GetInstance('html').EditorWindow.parent
+        && FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo
+        && FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG)
+    {
         var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
         FCKUndo.SavedData = new Array() ;
         FCKUndo.CurrentIndex = -1 ;
