@@ -82,4 +82,5 @@ $_ARRAYLANG['TXT_ACCESS_SITE'] = "Side";
 $_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Send besked";
 $_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Tilføj til adressebog";
 $_ARRAYLANG['TXT_ADD_ADDRESS'] = "Tilføj til adressebog";
+$_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "Der EmpfÃ¤nger %s hat sich vom Newsletter abgemeldet.";
 ?>
