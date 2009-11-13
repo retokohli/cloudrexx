@@ -2,7 +2,18 @@
 
 class Manufacturer
 {
+    /**
+     * Text keys
+     */
+    const TEXT_NAME = 'shop_manufacturer_name';
+    const TEXT_URI  = 'shop_manufacturer_uri';
+
+    /**
+     * Static class data with the manufacturers
+     * @var   array
+     */
     private static $arrManufacturer = false;
+
 
     /**
      * Initialise the Manufacturer array
@@ -43,7 +54,8 @@ class Manufacturer
             if ($text_name_id && $strName === null) {
                 $objText = Text::getById($text_name_id, 0);
                 if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+// Mark missing language entries
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
                     $strName = $objText->getText();
             }
             $text_url_id = $objResult->fields[$arrSqlUrl['name']];
@@ -52,7 +64,8 @@ class Manufacturer
             if ($text_url_id && $strUrl === null) {
                 $objText = Text::getById($text_url_id, 0);
                 if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+// Mark missing language entries
+//                  $objText->markDifferentLanguage(FRONTEND_LANG_ID);
                     $strUrl = $objText->getText();
             }
             self::$arrManufacturer[$id] = array(
@@ -68,32 +81,60 @@ class Manufacturer
     }
 
 
+    /**
+     * Clears the static data in the class
+     *
+     * Call this whenever the database has been modified, before you
+     * access the manufacturer array for reading
+     * @return  void
+     * @static
+     */
+    static function reset()
+    {
+        self::$arrManufacturer = false;
+    }
+
+
+    /**
+     * Inserts a new manufacturer
+     * @param   string    $name     The manufacturer name
+     * @param   string    $url      The manufacturer URL
+     * @return  boolean             True on success, false otherwise
+     * @static
+     */
     static function insert($name, $url)
     {
         global $objDatabase;
 
-        $objTextName = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_MANUFACTURER_NAME);
-        if ($objTextName->store()) {
-            $objTextUrl = new Text($url, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_MANUFACTURER_URL);
-            if ($objTextUrl->store()) {
-                $query = "
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer (
-                        text_name_id, text_url_id
-                    ) VALUES (
-                        ".$objTextName->getId().",
-                        ".$objTextUrl->getId()."
-                    )
-                ";
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult) return true;
-                Text::deleteById($objTextUrl->getId());
-            }
-            Text::deleteById($objTextName->getId());
+        $text_name_id = Text::replace(
+            0, FRONTEND_LANG_ID, $name, MODULE_ID, self::TEXT_NAME);
+        if (!$text_name_id) return false;
+        $text_url_id = Text::replace(
+            0, FRONTEND_LANG_ID, $url, MODULE_ID, self::TEXT_URI);
+        if ($text_url_id) {
+            $query = "
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer (
+                    text_name_id, text_url_id
+                ) VALUES (
+                    $text_name_id, $text_url_id
+                )";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) return true;
+            Text::deleteById($text_url_id);
         }
+        Text::deleteById($text_name_id);
         return false;
     }
 
 
+    /**
+     * Updates an existing manufacturer
+     * @param   string    $name     The manufacturer name
+     * @param   string    $url      The manufacturer URL
+     * @param   integer   $id       The manufacturer ID
+     * @return  boolean             True on success, false otherwise
+     * @static
+     */
     static function update($name, $url, $id)
     {
         global $objDatabase;
@@ -105,25 +146,34 @@ class Manufacturer
             return self::insert($name, $url);
         // Otherwise, update the present record
         $arrManufacturer = self::$arrManufacturer[$id];
-        $text_name_id = Text::getById($arrManufacturer['text_name_id'], FRONTEND_LANG_ID);
+        $text_name_id = Text::replace(
+            $arrManufacturer['text_name_id'], FRONTEND_LANG_ID,
+            $name, MODULE_ID, self::TEXT_NAME);
         if (!$text_name_id) return false;
-        $text_url_id = Text::getById($arrManufacturer['text_url_id'], FRONTEND_LANG_ID);
-        if (!$text_url_id) return false;
-        $text_name_id = Text::replace($text_name_id, FRONTEND_LANG_ID, $name);
-        if (!$text_name_id) return false;
-        $text_url_id = Text::replace($text_url_id, FRONTEND_LANG_ID, $url);
-        if (!$text_url_id) return false;
-        $query = "
-            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer`
-               SET `text_name_id`=$text_name_id,
-                   `text_url_id`=$text_url_id
-             WHERE `id`=$id";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult) return true;
+        $text_url_id = Text::replace(
+            $arrManufacturer['text_url_id'], FRONTEND_LANG_ID,
+            $url, MODULE_ID, self::TEXT_URI);
+        if ($text_url_id) {
+            $query = "
+                UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer`
+                   SET `text_name_id`=$text_name_id,
+                       `text_url_id`=$text_url_id
+                 WHERE `id`=$id";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) return true;
+            Text::deleteById($text_url_id);
+        }
+        Text::deleteById($text_name_id);
         return false;
     }
 
 
+    /**
+     * Deletes a manufacturer
+     * @param   integer   $id       The manufacturer ID
+     * @return  boolean             True on success, false otherwise
+     * @static
+     */
     static function delete($id)
     {
         global $objDatabase;
