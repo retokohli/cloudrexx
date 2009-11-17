@@ -3102,7 +3102,7 @@ sendReq('', 1);
             'TXT_FAX_NUMBER'           => $_ARRAYLANG['TXT_FAX_NUMBER'],
             'TXT_SHOP_CONTINUE_ARROW'  => $_ARRAYLANG['TXT_SHOP_CONTINUE_ARROW'],
             'SHOP_ACCOUNT_STATUS' => $status,
-            'SHOP_ACCOUNT_ACTION' => "?section=shop".MODULE_INDEX."&amp;cmd=account"
+            'SHOP_ACCOUNT_ACTION' => "index.php?section=shop".MODULE_INDEX."&amp;cmd=account"
         ));
     }
 
@@ -3119,6 +3119,10 @@ sendReq('', 1);
      */
     function payment()
     {
+        if (!$this->verifySessionAddress()) {
+            CSRF::header("Location: index.php?section=shop".MODULE_INDEX);
+            exit;
+        }
         // call first, because the _initPaymentDetails method requires the
         // shipmentId which is stored in the session array by this.
         $this->_getShipperMenu();
@@ -3133,7 +3137,7 @@ sendReq('', 1);
     {
         $this->_parseCart();
         // Reloading or loading without sessions
-        if (!isset($_SESSION['shop']['cart'])) {
+        if (!$this->verifySessionAddress()) {
             CSRF::header("Location: index.php?section=shop".MODULE_INDEX);
             exit;
         }
@@ -3697,9 +3701,9 @@ right after the customer logs in!
     {
         global $objDatabase, $_ARRAYLANG;
 
-        // if the cart is missing, return to the shop
-        if (empty($_SESSION['shop']['cart'])) {
-            CSRF::header('Location: index.php?section=shop'.MODULE_INDEX);
+        // if the cart or address is missing, return to the shop
+        if (!$this->verifySessionAddress()) {
+            CSRF::header("Location: index.php?section=shop".MODULE_INDEX);
             exit;
         }
         // hide currency navbar
@@ -5116,6 +5120,38 @@ right after the customer logs in!
         return '';
     }
 
+
+    /**
+     * Returns true if the cart is non-empty and all necessary address
+     * information has been stored in the session
+     * @return    boolean               True on success, false otherwise
+     */
+    function verifySessionAddress()
+    {
+        global $_ARRAYLANG;
+
+        // check the submission
+        if (   empty($_SESSION['shop']['cart'])
+            || empty($_SESSION['shop']['prefix'])
+            || empty($_SESSION['shop']['lastname'])
+            || empty($_SESSION['shop']['firstname'])
+            || empty($_SESSION['shop']['address'])
+            || empty($_SESSION['shop']['zip'])
+            || empty($_SESSION['shop']['city'])
+            || empty($_SESSION['shop']['phone'])
+            || (empty($_SESSION['shop']['email']) && !$this->objCustomer)
+            || (empty($_SESSION['shop']['password']) && !$this->objCustomer)
+            || !empty($_SESSION['shop']['shipment'])
+            && (   empty($_SESSION['shop']['prefix2'])
+                || empty($_SESSION['shop']['lastname2'])
+                || empty($_SESSION['shop']['firstname2'])
+                || empty($_SESSION['shop']['address2'])
+                || empty($_SESSION['shop']['zip2'])
+                || empty($_SESSION['shop']['city2'])
+                || empty($_SESSION['shop']['phone2']))
+        ) return false;
+        return true;
+    }
 }
 
 ?>
