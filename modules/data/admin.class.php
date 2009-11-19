@@ -218,11 +218,8 @@ class DataAdmin extends DataLibrary {
     		'TXT_DISPLAY_MODE'                  =>  $_ARRAYLANG['TXT_DISPLAY_MODE']
     	));
 
-    	$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-
     	//Show Categories
-    	$arrCategories = $this->createCategoryArray($intPagingPosition, $this->getPagingLimit());
-
+    	$arrCategories = $this->createCategoryArray();
 
     	if (count($arrCategories) > 0) {
     	    $catTree = $this->buildCatTree($arrCategories, 0);
