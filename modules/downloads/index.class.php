@@ -825,7 +825,7 @@ JS_CODE;
         $allowDeleteCategories = !$objCategory->getManageSubcategoriesAccessId()
                             || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
                             || $objCategory->getOwnerId() == $this->userId;
-        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId(), 'is_active' => true), null, array('order' => 'asc'), null, $categoryLimit);
+        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId(), 'is_active' => true), null, array('order' => 'asc', 'name' => 'asc'), null, $categoryLimit);
 
         if ($objSubcategory->EOF) {
             $this->objTemplate->hideBlock($arrCategoryBlocks[0]);
