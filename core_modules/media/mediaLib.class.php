@@ -105,6 +105,7 @@ class MediaLibrary {
                 for($x = 0; $x < count($file['name']); $x++){
                     $tmpFile  = $file['tmp_name'][$x];
                     $fileName = $this->_replaceCharacters($file['name'][$x]);
+                    $fileName = preg_replace("/[^\x2c-\x7d]/", "_", $fileName, -1, $count);
 
                     if(!empty($fileName)){
                         if (!FWValidator::is_file_ending_harmless($fileName)) {
@@ -131,7 +132,6 @@ class MediaLibrary {
                         $ok = 0;
                         $err = 0;
 
-                        $fileName = preg_replace("/[^\x2c-\x7d]/", "_", $fileName, -1, $count);
                         if ($count > 0) {
                             $warn = true;
                         } else {
