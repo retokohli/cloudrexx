@@ -1346,7 +1346,7 @@ class ContactManager extends ContactLib
                     $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
                     $options = explode(',', $arrField['attributes']);
                     foreach ($options as $index => $option) {
-                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
+                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
                     }
                     $sourcecode[] = '</p>';
                     break;
@@ -1355,7 +1355,7 @@ class ContactManager extends ContactLib
                     $options = explode(',', $arrField['attributes']);
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                     foreach ($options as $index => $option) {
-                        $sourcecode[] = "<option>".$option."</option>";
+                        $sourcecode[] = "<option {SELECTED_".$fieldId."_".$index."}>".$option."</option>";
                     }
                     $sourcecode[] = "</select>";
                     break;
@@ -1366,7 +1366,7 @@ class ContactManager extends ContactLib
                 case 'recipient':
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_recipient" id=contactFormField_'.$fieldId.'">';
                     foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
-                        $sourcecode[] = '<option value="'.$index.'">'.$arrRecipient['name'].'</option>';
+                        $sourcecode[] = '<option value="'.$index.'" {SELECTED_'.$fieldId.'_'.$index.'}>'.$arrRecipient['name'].'</option>';
                     }
                     $sourcecode[] = "</select>";
                     break;
