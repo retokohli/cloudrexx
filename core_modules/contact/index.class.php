@@ -696,18 +696,33 @@ class Contact extends ContactLib
 
         $arrFields = array();
         if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
-            $objFields = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_contact_form_field` WHERE `id_form`='.$formId);
+            $objFields = $objDatabase->Execute('SELECT `id`, `type`, `attributes` FROM `'.DBPREFIX.'module_contact_form_field` WHERE `id_form`='.$formId);
             if ($objFields !== false) {
                 while (!$objFields->EOF) {
+                    if($objFields->fields['type'] == 'recipient'){
+                        if(!empty($_GET['contactFormField_recipient'])){
+                            $_POST['contactFormField_recipient'] = $_GET['contactFormField_recipient'];
+                        }
+                        if(!empty($_POST['contactFormField_recipient'])){
+                            $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$_POST['contactFormField_recipient']] = 'selected="selected"';
+                        }
+                    }
                     if (!empty($_GET[$objFields->fields['id']])) {
+                        if(in_array($objFields->fields['type'], array('select', 'radio'))){
+                            $index = array_search($_GET['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
+                            $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
+                        }
                         $arrFields[$objFields->fields['id'].'_VALUE'] = $_GET[$objFields->fields['id']];
                     }
                     if(!empty($_POST['contactFormField_'.$objFields->fields['id']])){
+                        if(in_array($objFields->fields['type'], array('select', 'radio'))){
+                            $index = array_search($_POST['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
+                            $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
+                        }
                         $arrFields[$objFields->fields['id'].'_VALUE'] = $_POST['contactFormField_'.$objFields->fields['id']];
                     }
                     $objFields->MoveNext();
                 }
-
                 $this->objTemplate->setVariable($arrFields);
             }
         }
