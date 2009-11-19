@@ -578,6 +578,7 @@ class Category
             //.(count($arrSelectLocaleExpressions) ? ', tblL.`'.implode('`, tblL.`', $arrSelectLocaleExpressions).'`' : '')
             .'FROM `'.DBPREFIX.'module_downloads_category` AS tblC'
             .(/*count($arrSelectLocaleExpressions) || */$arrQuery['tables']['locale'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblL ON tblL.`category_id` = tblC.`id`' : '')
+            .($arrQuery['tables']['localeSort'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblLS ON tblLS.`category_id` = tblC.`id`' : '')
             .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
             .' GROUP BY tblC.`id`'
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
@@ -787,10 +788,11 @@ class Category
 
     private function setSortedCategoryIdList($arrSort, $sqlCondition = null, $limit = null, $offset = null)
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
 
         $arrCustomSelection = array();
         $joinLocaleTbl = false;
+        $joinLocaleSortTbl = false;
         $arrCategoryIds = array();
         $arrSortExpressions = array();
         $nr = 0;
@@ -813,8 +815,9 @@ class Category
                     if (isset($this->arrAttributes['core'][$attribute])) {
                         $arrSortExpressions[] = 'tblC.`'.$attribute.'` '.$direction;
                     } elseif (isset($this->arrAttributes['locale'][$attribute])) {
-                        $arrSortExpressions[] = 'tblL.`'.$attribute.'` '.$direction;
-                        $joinLocaleTbl = true;
+                        $arrSortExpressions[] = 'tblLS.`'.$attribute.'` '.$direction;
+                        $arrCustomSelection[] = 'tblLS.`lang_id` = '.$_LANGID ;
+                        $joinLocaleSortTbl = true;
                     }
                 } elseif ($attribute == 'special') {
                     $arrSortExpressions[] = $direction;
@@ -825,6 +828,7 @@ class Category
         $query = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT tblC.`id`
             FROM `'.DBPREFIX.'module_downloads_category` AS tblC'
             .($joinLocaleTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblL ON tblL.`category_id` = tblC.`id`' : '')
+            .($joinLocaleSortTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblLS ON tblLS.`category_id` = tblC.`id`' : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
@@ -852,13 +856,12 @@ class Category
 
         return array(
             'tables' => array(
-                'locale'    => $joinLocaleTbl
+                'locale'    => $joinLocaleTbl,
+                'localeSort'=> $joinLocaleSortTbl
             ),
             'conditions'    => $arrCustomSelection,
             'sort'          => $arrSortExpressions
         );
-
-        return $arrCategoryIds;
     }
 
     public function reset()
