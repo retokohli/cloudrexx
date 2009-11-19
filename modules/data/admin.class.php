@@ -186,22 +186,22 @@ class DataAdmin extends DataLibrary {
         $this->_objTpl->loadTemplateFile('module_data_categories.html',true,true);
 
         $this->_objTpl->setVariable(array(
-            'TXT_OVERVIEW_TITLE'                =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'],
-            'TXT_OVERVIEW_SUBTITLE_NAME'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
-            'TXT_OVERVIEW_SUBTITLE_ACTIVE'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIVE_LANGUAGES'],
-            'TXT_OVERVIEW_SUBTITLE_ACTIONS'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
-            'TXT_OVERVIEW_DELETE_CATEGORY_JS'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_JS'],
-            'TXT_OVERVIEW_MARKED'                =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_MARKED'],
-            'TXT_OVERVIEW_SELECT_ALL'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_SELECT'],
-            'TXT_OVERVIEW_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DESELECT'],
-            'TXT_OVERVIEW_SUBMIT_SELECT'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
-            'TXT_OVERVIEW_SUBMIT_DELETE'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
-               'TXT_OVERVIEW_SUBMIT_DELETE_JS'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE_JS'],
-            'TXT_ADD_TITLE'                        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_TITLE'],
-            'TXT_ADD_NAME'                        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
-            'TXT_ADD_EXTENDED'                    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
-            'TXT_ADD_LANGUAGES'                    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-            'TXT_ADD_SUBMIT'                    =>    $_ARRAYLANG['TXT_SAVE'],
+            'TXT_OVERVIEW_TITLE'                =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'],
+            'TXT_OVERVIEW_SUBTITLE_NAME'        =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
+            'TXT_OVERVIEW_SUBTITLE_ACTIVE'      =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIVE_LANGUAGES'],
+            'TXT_OVERVIEW_SUBTITLE_ACTIONS'     =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
+            'TXT_OVERVIEW_DELETE_CATEGORY_JS'   =>  $_ARRAYLANG['TXT_DATA_CATEGORY_DELETE_JS'],
+            'TXT_OVERVIEW_MARKED'               =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_MARKED'],
+            'TXT_OVERVIEW_SELECT_ALL'           =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_SELECT'],
+            'TXT_OVERVIEW_DESELECT_ALL'         =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DESELECT'],
+            'TXT_OVERVIEW_SUBMIT_SELECT'        =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
+            'TXT_OVERVIEW_SUBMIT_DELETE'        =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
+            'TXT_OVERVIEW_SUBMIT_DELETE_JS'     =>  $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE_JS'],
+            'TXT_ADD_TITLE'                     =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_TITLE'],
+            'TXT_ADD_NAME'                      =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
+            'TXT_ADD_EXTENDED'                  =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
+            'TXT_ADD_LANGUAGES'                 =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
+            'TXT_ADD_SUBMIT'                    =>  $_ARRAYLANG['TXT_SAVE'],
             'TXT_PLACEHOLDERS'                  =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
             'TXT_PARENT_CAT'                    =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
             "TXT_TOP_LEVEL"                     =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
@@ -217,11 +217,8 @@ class DataAdmin extends DataLibrary {
             'TXT_DISPLAY_MODE'                  =>  $_ARRAYLANG['TXT_DISPLAY_MODE']
         ));
 
-        $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-
         //Show Categories
-        $arrCategories = $this->createCategoryArray($intPagingPosition, $this->getPagingLimit());
-
+        $arrCategories = $this->createCategoryArray();
 
         if (count($arrCategories) > 0) {
             $catTree = $this->buildCatTree($arrCategories, 0);
@@ -235,14 +232,14 @@ class DataAdmin extends DataLibrary {
         //Show Add-Category Form
         if (count($this->_arrLanguages) > 0) {
             $intCounter = 0;
-               $arrLanguages = array(0 => '', 1 => '', 2 => '');
+            $arrLanguages = array(0 => '', 1 => '', 2 => '');
 
             foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
                 $arrLanguages[$intCounter%3] .= '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 
                 $this->_objTpl->setVariable(array(
-                    'ADD_NAME_LANGID'    =>    $intLanguageId,
-                    'ADD_NAME_LANG'        =>    $arrTranslations['long'].' ['.$arrTranslations['short'].']'
+                    'ADD_NAME_LANGID'   =>    $intLanguageId,
+                    'ADD_NAME_LANG'     =>    $arrTranslations['long'].' ['.$arrTranslations['short'].']'
                 ));
 
                 $this->_objTpl->parse('addCategoryNameFields');
@@ -256,25 +253,25 @@ class DataAdmin extends DataLibrary {
                                             ');
             $intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
 
-               $this->_objTpl->setVariable(array(
+            $this->_objTpl->setVariable(array(
                 'ADD_LANGUAGES_1'    =>    $arrLanguages[0],
                 'ADD_LANGUAGES_2'    =>    $arrLanguages[1],
-                   'ADD_LANGUAGES_3'    =>    $arrLanguages[2],
-                   'TXT_PLACEHOLDER'    => $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-                   'PLACEHOLDER'        => "CAT_".$intNextCategoryId,
-                   'PAGE_SELECT_DISPLAY' => "none"
-               ));
+                'ADD_LANGUAGES_3'    =>    $arrLanguages[2],
+                'TXT_PLACEHOLDER'    => $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+                'PLACEHOLDER'        => "CAT_".$intNextCategoryId,
+                'PAGE_SELECT_DISPLAY' => "none"
+            ));
 
-           // show the frontend pages
-           $frontPages = $this->getFrontendPages();
-           foreach ($frontPages as $pageId => $pageVal) {
-               $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
-               $this->_objTpl->setVariable(array(
-                   "FRONTEND_PAGE"     => $pageName,
-                   "FRONTEND_PAGE_ID"  => $pageVal['cmd']
-               ));
-               $this->_objTpl->parse("frontendPage");
-           }
+            // show the frontend pages
+            $frontPages = $this->getFrontendPages();
+            foreach ($frontPages as $pageId => $pageVal) {
+                $pageName =  $pageVal['name']." (cmd: ".$pageVal['cmd'].")";
+                $this->_objTpl->setVariable(array(
+                    "FRONTEND_PAGE"     => $pageName,
+                    "FRONTEND_PAGE_ID"  => $pageVal['cmd']
+                ));
+                $this->_objTpl->parse("frontendPage");
+            }
         }
     }
 
