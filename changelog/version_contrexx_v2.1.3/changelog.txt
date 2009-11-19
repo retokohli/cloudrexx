@@ -37,8 +37,8 @@ Modul: Bildergalerie
   ImageRotate() Funktion nicht verfügbar ist.
 
 Modul: Digital Asset Management
-- Die Auflistung der Unterkategorien erfolgt anhand der benutzerdefinierten
-  Sortieren.
+- Die Auflistung der Kategorien erfolgt in einem ersten Schritt anhand der
+  benutzerdefinierten Sortierung und danach nach alphabetischer Reihenfolge.
 - Zeilenumbrüche beim Beschreibungstext eines Downloads werden angezeigt.
 - Der Download von Dateien, welche Leerzeichen im Dateinamen enthalten,
   funktioniert.
