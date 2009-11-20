@@ -89,4 +89,7 @@ $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Activar la notificaci&oacut
 $_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "Sin escolta";
 $_ARRAYLANG['TXT_CALENDAR_FRONTENDSAVEOK'] = "Entrada guardada con &eacute;xito";
 $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
+$_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE'] = "Ungültige Dateiendung.";
+$_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_PIC'] = "Bild Upload";
+$_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_ATTACHMENT'] = "Anhang Upload";
 ?>
