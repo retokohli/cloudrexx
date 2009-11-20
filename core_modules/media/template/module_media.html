@@ -275,7 +275,10 @@ function openWindow(theURL,winName,features)
 		<table width="100%" style="height:50;" cellspacing="0" cellpadding="5" border="0">
 			<tr>
 				<td valign="middle">
-					<img src="images/icons/arrow.gif" width="38" height="22" alt="arrow" />
+                    <img src="images/icons/arrow.gif" width="38" height="22" alt="^" title="^" />
+                    <a href="#" onclick="changeCheckboxes('fileList','formSelected[]',true); return false;">{TXT_SELECT_ALL}</a> /
+                    <a href="#" onclick="changeCheckboxes('fileList','formSelected[]',false); return false;">{TXT_DESELECT_ALL}</a>
+                    <img alt="-" title="-" src="images/icons/strike.gif" />
 					<select name="selectAction" onchange="mediaDoAction();">
 						<option value="0" selected="selected">{TXT_MEDIA_SELECT_ACTION}</option>
 						<option value="cut">{TXT_MEDIA_CUT}</option>
