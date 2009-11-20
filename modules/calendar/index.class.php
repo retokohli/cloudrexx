@@ -876,14 +876,16 @@ class Calendar extends calendarLibrary
 
         try {
             if (!empty($_POST['saveNewEvent'])) {
-                $insertError = false;
+                $insertError = array(
+                    'pic' => false,
+                    'attachment' => false
+                );
                 try {
                     $this->_checkUploadTypes('pic', $this->uploadImgTypes);
                     $form['pic'] = $this->_uploadImageIfNot('pic');
                 } catch (Exception $e) {
                     $this->_clearUpload('pic');
-                    $_ARRAYLANG['TXT_CALENDAR_PICTUREUPLOAD_NOTE'] .= "<br />".$this->errorBox($_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE']);
-                    $insertError = true;
+                    $insertError['pic'] = true;
                 }
 
                 try {
@@ -891,18 +893,28 @@ class Calendar extends calendarLibrary
                     $form['attachment'] = ($this->_uploadImageIfNot('attachment') ? $_SESSION['calendar']['uploadedimagerealname']['attachment'] : '');
                 } catch (Exception $e) {
                     $this->_clearUpload('attachment');
-                    $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT_NOTE'] .= "<br />".$this->errorBox($_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE']);
-                    $insertError = true;
+                    $insertError['attachment'] = true;
                 }
 
-                if ($insertError) {
-                    throw new Exception($_ARRAYLANG['TXT_CALENDAR_GENERAL_ERROR']);
+                $strError = '';
+                foreach ($insertError as $type => $isError) {
+                	if($isError){
+                	   $strError .= $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_'.strtoupper($type)].': '
+                	             .  $this->errorBox($_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE']).'<br />';
+                	}
+                }
+
+                if(!empty($strError)){
+                    throw new Exception($strError);
                 }
 
                 //these are the essentials
                 $boolHasOrganizer = ($form['organizerid'] or (!empty($form['organizer']) && !empty($form['organizermail'])));
                 if (empty($form['catid']) or empty($form['title']) or !$boolHasOrganizer) {
-                    throw new Exception($_ARRAYLANG['TXT_CALENDAR_INSERT_RESTRICTION']);
+                    throw new Exception($_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED']
+                                   .': '.$_ARRAYLANG['TXT_CALENDAR_TITLE']
+                                   .', '.$_ARRAYLANG['TXT_CALENDAR_ORGANIZER']
+                                   .', '.$_ARRAYLANG['TXT_CALENDAR_MAIL']);
                 }
 
                 if (!empty($form['pic'])) {
