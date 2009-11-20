@@ -258,10 +258,12 @@ class MediaManager extends MediaLibrary {
     * Overview Media Data
     *
     * @global     array     $_ARRAYLANG
+    * @global     array     $_CONFIG
+    * @global     array     $_CORELANG
     * @return    string    parsed content
     */
     function _overviewMedia(){
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_media.html', true, true);
 
@@ -486,6 +488,8 @@ class MediaManager extends MediaLibrary {
         else
         {
             $this->_objTpl->setVariable(array(
+                'TXT_SELECT_ALL'           => $_CORELANG['TXT_SELECT_ALL'],
+                'TXT_DESELECT_ALL'         => $_CORELANG['TXT_DESELECT_ALL'],
                 'TXT_MEDIA_SELECT_ACTION'  => $_ARRAYLANG['TXT_MEDIA_SELECT_ACTION'],
                 'TXT_MEDIA_CUT'            => $_ARRAYLANG['TXT_MEDIA_CUT'],
                 'TXT_MEDIA_COPY'           => $_ARRAYLANG['TXT_MEDIA_COPY'],
