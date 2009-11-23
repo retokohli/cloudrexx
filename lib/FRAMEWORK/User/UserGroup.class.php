@@ -58,11 +58,6 @@ class UserGroup {
      */
     var $error_msg;
 
-    function UserGroup()
-    {
-        $this->__construct();
-    }
-
     function __construct()
     {
         $this->clean();
