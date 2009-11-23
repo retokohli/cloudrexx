@@ -156,9 +156,9 @@ class FWUser extends User_Setting
         session_destroy();
 
         if ($this->backendMode) {
-            header('Location: ../'.CONTREXX_DIRECTORY_INDEX);
+            CSRF::header('Location: ../'.CONTREXX_DIRECTORY_INDEX);
         } else {
-            header('Location: '.(!empty($_REQUEST['redirect'])
+            CSRF::header('Location: '.(!empty($_REQUEST['redirect'])
                 ? urldecode($_REQUEST['redirect'])
                 : CONTREXX_DIRECTORY_INDEX.'?section=login'));
         }

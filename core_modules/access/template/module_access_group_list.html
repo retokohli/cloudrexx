@@ -5,13 +5,13 @@ function accessDeleteGroup(id, name)
 {
   strMsg = '{TXT_ACCESS_CONFIRM_DELETE_GROUP}';
   if (confirm(strMsg.replace('%s', name)+'\n{TXT_ACCESS_OPERATION_IRREVERSIBLE}')) {
-        window.location.replace('index.php?cmd=access&act=group&tpl=delete&group_type_filter={ACCESS_GROUP_TYPE_FILTER}&sort={ACCESS_SORT_STATUS}&by={ACCESS_SORT_BY}&id='+id);
+        window.location.replace('index.php?cmd=access&{CSRF_PARAM}&act=group&tpl=delete&group_type_filter={ACCESS_GROUP_TYPE_FILTER}&sort={ACCESS_SORT_STATUS}&by={ACCESS_SORT_BY}&id='+id);
     }
 }
 
 function accessChangeGroupStatus(id)
 {
-  window.location.replace('index.php?cmd=access&act=group&tpl=changeStatus&group_type_filter={ACCESS_GROUP_TYPE_FILTER}&sort={ACCESS_SORT_STATUS}&by={ACCESS_SORT_BY}&id='+id);
+	window.location.replace('index.php?cmd=access&{CSRF_PARAM}&act=group&tpl=changeStatus&group_type_filter={ACCESS_GROUP_TYPE_FILTER}&sort={ACCESS_SORT_STATUS}&by={ACCESS_SORT_BY}&id='+id);
 }
 // ]]>
 </script>

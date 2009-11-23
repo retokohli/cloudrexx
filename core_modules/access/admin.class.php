@@ -52,6 +52,7 @@ class AccessManager extends AccessLib
 
         parent::__construct();
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/access/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable('CONTENT_NAVIGATION', /*' <a href="index.php?cmd=access" title="'.$_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'">'.$_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>
@@ -375,7 +376,7 @@ class AccessManager extends AccessLib
             'ACCESS_TYPE'                       => $_ARRAYLANG['TXT_ACCESS_TYPE'].($orderBy == 'type' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
             'ACCESS_SORT_BY'                    => $orderBy,
             'ACCESS_GROUP_TYPE_FILTER'          => $groupTypeFilter,
-            'ACCESS_GROUP_TYPE_MENU'            => $this->getGroupTypeMenu($groupTypeFilter, 'name="group_type_filter" onchange="window.location.replace(\'index.php?cmd=access&amp;act=group&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter=\'+this.value)"')
+            'ACCESS_GROUP_TYPE_MENU'            => $this->getGroupTypeMenu($groupTypeFilter, 'name="group_type_filter" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access&amp;act=group').'&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter=\'+this.value)"')
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -918,9 +919,9 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_OPERATION_IRREVERSIBLE'     => $_ARRAYLANG['TXT_ACCESS_OPERATION_IRREVERSIBLE'],
             'TXT_ACCESS_SEARCH'                     => $_ARRAYLANG['TXT_ACCESS_SEARCH'],
             'TXT_ACCESS_USER_LIST'                  => $_ARRAYLANG['TXT_ACCESS_USER_LIST'],
-            'ACCESS_GROUP_MENU'                     => $this->getGroupMenu($groupId, 'name="access_group_id" onchange="window.location.replace(\'index.php?cmd=access&amp;act=user&amp;groupId=\'+this.value+\'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'\')"'),
-            'ACCESS_USER_STATUS_MENU'               => $this->getUserStatusMenu($userStatusFilter, 'name="user_status_filter" onchange="window.location.replace(\'index.php?cmd=access&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter=\'+this.value+\'&amp;user_role_filter='.$userRoleFilter.'\')"'),
-            'ACCESS_USER_ROLE_MENU'                 => $this->getUserRoleMenu($userRoleFilter, 'name="user_role_filter" onchange="window.location.replace(\'index.php?cmd=access&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter=\'+this.value)"'),
+            'ACCESS_GROUP_MENU'                     => $this->getGroupMenu($groupId, 'name="access_group_id" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId=\'+this.value+\'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'\')"'),
+            'ACCESS_USER_STATUS_MENU'               => $this->getUserStatusMenu($userStatusFilter, 'name="user_status_filter" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter=\'+this.value+\'&amp;user_role_filter='.$userRoleFilter.'\')"'),
+            'ACCESS_USER_ROLE_MENU'                 => $this->getUserRoleMenu($userRoleFilter, 'name="user_role_filter" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter=\'+this.value)"'),
             'ACCESS_GROUP_IP'                       => $groupId,
             'ACCESS_SEARCH_VALUE'                   => htmlentities(join(' ', $search), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_SORT_DIRECTION'                 => $orderDirection,

@@ -85,7 +85,15 @@ class User extends User_Profile
     private $is_active;
 
     /**
-     * The ID of a user group that should be used as the primary one     *     * @var integer     * @access private     */    private $primary_group;    /**     * Administrator status
+     * The ID of a user group that should be used as the primary one
+     *
+     * @var integer
+     * @access private
+     */
+    private $primary_group;
+
+    /**
+     * Administrator status
      *
      * @var boolean
      * @access private
