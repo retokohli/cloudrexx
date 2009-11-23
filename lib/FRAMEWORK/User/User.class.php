@@ -448,7 +448,7 @@ class User extends User_Profile
         if (empty($this->primary_group)) {
             $FWUser = FWUser::getFWUserObject();
             $this->arrGroups = $this->loadGroups(!$FWUser->isBackendMode());
-            return $this->arrGroups[0];
+            return count($this->arrGroups) ? $this->arrGroups[0] : 0;
         }
         return $this->primary_group;
     }
@@ -1669,6 +1669,10 @@ class User extends User_Profile
      */
     public function setPrimaryGroup($groupId)
     {
+        if (!isset($this->arrGroups)) {
+            $this->arrGroups = $this->loadGroups();
+        }
+
         if (in_array($groupId, $this->arrGroups)) {
             $this->primary_group = $groupId;
         } elseif (count($this->arrGroups)) {
