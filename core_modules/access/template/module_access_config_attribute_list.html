@@ -5,7 +5,7 @@ function accessDeleteAttribute(id,name)
 {
   msg = '{TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG}';
   if (confirm(msg.replace('%s', name)+'\n\n{TXT_ACCESS_OPERATION_IRREVERSIBLE}')) {
-    window.location.href = 'index.php?cmd=access&act=config&tpl=deleteAttribute&id='+id;
+		window.location.href = 'index.php?cmd=access&{CSRF_PARAM}&act=config&tpl=deleteAttribute&id='+id;
   }
 }
 // ]]>
@@ -69,5 +69,5 @@ function accessDeleteAttribute(id,name)
   </table>
   <br />
 </form>
-<input type="button" value="{TXT_ACCESS_ADD_NEW_PROFILE_ATTRIBUTE}" onclick="window.location.href='index.php?cmd=access&amp;act=config&amp;tpl=modifyAttribute'" />
+<input type="button" value="{TXT_ACCESS_ADD_NEW_PROFILE_ATTRIBUTE}" onclick="window.location.href='index.php?cmd=access&{CSRF_PARAM}&amp;act=config&amp;tpl=modifyAttribute'" />
 <!-- end module_access_config_attribute_list.html -->

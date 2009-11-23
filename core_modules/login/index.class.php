@@ -39,6 +39,7 @@ class Login
     function __construct($pageContent)
     {
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
     }
@@ -228,7 +229,7 @@ class Login
         }
 
         if ((!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
-            header('Location: '.(empty($redirect) ? (($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? $objGroup->getHomepage() : CONTREXX_SCRIPT_PATH) : base64_decode($redirect)));
+            CSRF::header('Location: '.(empty($redirect) ? (($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? $objGroup->getHomepage() : CONTREXX_SCRIPT_PATH) : base64_decode($redirect)));
             exit;
         } else {
             if (isset($_POST['login'])) {

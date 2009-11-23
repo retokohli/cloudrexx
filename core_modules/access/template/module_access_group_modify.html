@@ -189,7 +189,7 @@ function accessSetScrollPos()
   </div>
   <div style="clear:left;">
     <br />
-    <input type="button" value="{TXT_ACCESS_CANCEL}" name="access_cancel" onclick="window.location.href='index.php?cmd=access&amp;act=group'" />
+		<input type="button" value="{TXT_ACCESS_CANCEL}" name="access_cancel" onclick="window.location.href='index.php?cmd=access&{CSRF_PARAM}&amp;act=group'" />
     <input type="submit" name="access_save_group" value="{TXT_ACCESS_SAVE}" />
   </div>
 </form>
