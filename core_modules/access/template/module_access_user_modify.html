@@ -31,7 +31,7 @@
 <!-- BEGIN access_additional_functions_tab --><li><a id="userTab_modifyUser4" href="javascript:void(0);" onclick="selectTab('modifyUser4')" title="{TXT_ACCESS_ADDITIONAL_FUNCTIONS}">{TXT_ACCESS_ADDITIONAL_FUNCTIONS}</a></li><!-- END access_additional_functions_tab -->
 </ul>
 
-<form action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessSelectAllGroups(document.getElementById('access_user_associated_groups'))" method="post" enctype="multipart/form-data" id="access">
+<form action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessAssociatedGroups=document.getElementById('access_user_associated_groups');if(accessAssociatedGroups !== null){accessSelectAllGroups(accessAssociatedGroups);}" method="post" enctype="multipart/form-data" id="access">
 <!-- start modifyUser1 div -->
 <div id="modifyUser1" class="userTab" style="display:block">
   <table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user account informations">
