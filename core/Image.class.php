@@ -736,7 +736,7 @@ class Image
     static function getThumbnailFilename($image_path)
     {
         if (preg_match(
-            '/'.preg_quote(self::THUMBNAIL_SUFFIX.'.jpg', '/').'/',
+            '/'.preg_quote(self::THUMBNAIL_SUFFIX.'.jpg', '/').'$/',
             $image_path)) {
 //echo("Image::getThumbnailFilename(): $image_path is a thumbnail already<br />");
             return $image_path;

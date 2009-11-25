@@ -493,8 +493,9 @@ class Products
             $height = 0;
             // If the thumbnail exists and is newer than the picture,
             // don't create it again.
-            if (file_exists($imagePath.'.thumb')
-             && filemtime($imagePath.'.thumb') > filemtime($imagePath)) {
+            $thumb_name = ImageManager::getThumbnailFilename($imagePath);
+            if (   file_exists($thumb_name)
+                && filemtime($thumb_name) > filemtime($imagePath)) {
                 //$this->addMessage("Hinweis: Thumbnail fuer Produkt ID '$id' existiert bereits");
                 // Need the original size to update the record, though
                 list($width, $height) =

@@ -345,10 +345,9 @@ class downloads extends DownloadsLibrary
                 $this->objTemplate->hideBlock('downloads_advanced_file_upload');
             }
         }
-
         $this->parseGlobalStuff($objCategory);
-
     }
+
 
     private function processFormUpload(&$fileName, &$fileExtension, &$suffix)
     {
@@ -356,7 +355,7 @@ class downloads extends DownloadsLibrary
 
         $inputField = 'downloads_upload_file';
         if (!isset($_FILES[$inputField]) || !is_array($_FILES[$inputField])) {
-            return;
+            return false;
         }
 
         $fileName = !empty($_FILES[$inputField]['name']) ? $_FILES[$inputField]['name'] : '';
@@ -368,22 +367,18 @@ class downloads extends DownloadsLibrary
                 include_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
                 $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_SIZE_EXCEEDS_LIMIT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET), FWSystem::getMaxUploadFileSize());
                 break;
-
             case UPLOAD_ERR_FORM_SIZE:
                 //Die hochgeladene Datei überschreitet die in dem HTML Formular mittels der Anweisung MAX_FILE_SIZE angegebene maximale Dateigrösse.
                 $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_TOO_LARGE'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
                 break;
-
             case UPLOAD_ERR_PARTIAL:
                 //Die Datei wurde nur teilweise hochgeladen.
                 $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
                 break;
-
             case UPLOAD_ERR_NO_FILE:
                 //Es wurde keine Datei hochgeladen.
                 continue;
                 break;
-
             default:
                 if (!empty($fileTmpName)) {
                     $suffix = '';
@@ -423,6 +418,7 @@ class downloads extends DownloadsLibrary
         $fileExtension = $objFileUploader->getUploadFileExtension();
         $suffix = $objFileUploader->getUploadFileSuffix();
     }
+
 
     private function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory)
     {
@@ -467,6 +463,7 @@ class downloads extends DownloadsLibrary
             return true;
         }
     }
+
 
     private function processUpload($objCategory)
     {
@@ -674,14 +671,17 @@ class downloads extends DownloadsLibrary
 
         $imageSrc = $objCategory->getImage();
         if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
-            if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
-                $thumbnailSrc = $imageSrc.'.thumb';
+            $thumb_name = ImageManager::getThumbnailFilename($imageSrc);
+            if (file_exists(ASCMS_PATH.$thumb_name)) {
+                $thumbnailSrc = $thumb_name;
             } else {
-                $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                $thumbnailSrc = ImageManager::getThumbnailFilename(
+                    $this->defaultCategoryImage['src']);
             }
         } else {
             $imageSrc = $this->defaultCategoryImage['src'];
-            $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            $thumbnailSrc = ImageManager::getThumbnailFilename(
+                $this->defaultCategoryImage['src']);
         }
 
         $this->objTemplate->setVariable(array(
@@ -692,13 +692,14 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_CATEGORY_IMAGE_SRC'          => $imageSrc,
             'DOWNLOADS_CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-            'DOWNLOADS_CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc
+            'DOWNLOADS_CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc,
         ));
 
         $this->parseGroups($objCategory);
 
         $this->objTemplate->parse('downloads_category');
     }
+
 
     private function parseGroups($objCategory)
     {
@@ -727,6 +728,7 @@ class downloads extends DownloadsLibrary
             $this->objTemplate->hideBlock('downloads_category_group_list');
         }
     }
+
 
     private function parseCrumbtrail($objParentCategory)
     {
@@ -906,14 +908,17 @@ JS_CODE;
 
         $imageSrc = $objCategory->getImage();
         if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
-            if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
-                $thumbnailSrc = $imageSrc.'.thumb';
+            $thumb_name = ImageManager::getThumbnailFilename($imageSrc);
+            if (file_exists(ASCMS_PATH.$thumb_name)) {
+                $thumbnailSrc = $thumb_name;
             } else {
-                $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                $thumbnailSrc = ImageManager::getThumbnailFilename(
+                    $this->defaultCategoryImage['src']);
             }
         } else {
             $imageSrc = $this->defaultCategoryImage['src'];
-            $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            $thumbnailSrc = ImageManager::getThumbnailFilename(
+                $this->defaultCategoryImage['src']);
         }
 
         // parse delete icon link
@@ -1078,19 +1083,24 @@ JS_CODE;
 
         $imageSrc = $objDownload->getImage();
         if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
-            if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
-                $thumbnailSrc = $imageSrc.'.thumb';
+            $thumb_name = ImageManager::getThumbnailFilename($imageSrc);
+            if (file_exists(ASCMS_PATH.$thumb_name)) {
+                $thumbnailSrc = $thumb_name;
             } else {
-                $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                $thumbnailSrc = ImageManager::getThumbnailFilename(
+                    $this->defaultCategoryImage['src']);
             }
-
             $image = $this->getHtmlImageTag($imageSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
             $thumbnail = $this->getHtmlImageTag($thumbnailSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
         } else {
             $imageSrc = $this->defaultCategoryImage['src'];
-            $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+            $thumbnailSrc = ImageManager::getThumbnailFilename(
+                $this->defaultCategoryImage['src']);
             $image = $this->getHtmlImageTag($this->defaultCategoryImage['src'], htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));;
-            $thumbnail = $this->getHtmlImageTag($this->defaultCategoryImage['src'].'.thumb', htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+            $thumbnail = $this->getHtmlImageTag(
+                ImageManager::getThumbnailFilename(
+                    $this->defaultCategoryImage['src']),
+                htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
         }
 
         // parse delete icon link
@@ -1196,17 +1206,20 @@ JS_CODE;
 
                 $imageSrc = $objRelatedDownload->getImage();
                 if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
-                    if (file_exists(ASCMS_PATH.$imageSrc.'.thumb')) {
-                        $thumbnailSrc = $imageSrc.'.thumb';
+                    $thumb_name = ImageManager::getThumbnailFilename($imageSrc);
+                    if (file_exists(ASCMS_PATH.$thumb_name)) {
+                        $thumbnailSrc = $thumb_name;
                     } else {
-                        $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                        $thumbnailSrc = ImageManager::getThumbnailFilename(
+                            $this->defaultCategoryImage['src']);
                     }
 
                     $image = $this->getHtmlImageTag($imageSrc, htmlentities($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
                     $thumbnail = $this->getHtmlImageTag($thumbnailSrc, htmlentities($objRelatedDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
                 } else {
                     $imageSrc = $this->defaultCategoryImage['src'];
-                    $thumbnailSrc = $this->defaultCategoryImage['src'].'.thumb';
+                    $thumbnailSrc = ImageManager::getThumbnailFilename(
+                        $this->defaultCategoryImage['src']);
                     $image = '';
                     $thumbnail = '';
                 }
@@ -1355,6 +1368,7 @@ JS_CODE;
             return round($bytes/pow(1024, 3), 2).' '.$_ARRAYLANG['TXT_DOWNLOADS_GBYTE'];
         }
     }
+
 }
 
 ?>

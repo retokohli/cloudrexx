@@ -28,25 +28,25 @@ class AccessLib
     /**
      * @access private
      */
-    var $_objTpl;
+    public $_objTpl;
 
     /**
      * @access private
      * @var array
      */
-    var $arrAttachedJSFunctions = array();
+    public $arrAttachedJSFunctions = array();
 
     /**
      * @access private
      * @var array
      */
-    var $_arrNoAvatar = array(
+    public $_arrNoAvatar = array(
         'src'        => '0_noavatar.gif',
         'width'        => 121,
         'height'    => 160
     );
 
-    var $_arrNoPicture = array(
+    public $_arrNoPicture = array(
         'src'        => '0_no_picture.gif',
         'width'        => 80,
         'height'    => 84
@@ -61,32 +61,27 @@ class AccessLib
     protected $objUserFW;
 
     /**
-     * @access private
-     *
-     * @var string
-     */
-    var $_imageThumbnailSuffix = '.thumb';
-
-    /**
      * Sign to mark mandatory fields as required
      *
      * @var string
      */
-    var $_mandatorySign = '<strong style="padding: 0px 2px 0px 2px;color:#f00;">*</strong>';
+    public $_mandatorySign = '<strong style="padding: 0px 2px 0px 2px;color:#f00;">*</strong>';
 
     /**
      * @access private
      */
-    var $attributeNamePrefix = 'access_profile_attribute';
+    public $attributeNamePrefix = 'access_profile_attribute';
 
-    var $arrAttributeTypeTemplates;
+    public $arrAttributeTypeTemplates;
 
     private $arrAccountAttributes;
+
 
     function __construct()
     {
         $this->loadAttributeTypeTemplates();
     }
+
 
     /**
      * Load the html code template of the different attribute types
@@ -104,13 +99,17 @@ class AccessLib
             'checkbox'        => '<input type="hidden" name="[NAME]" /><input type="checkbox" name="[NAME]" value="1" [CHECKED] />',
             'menu'            => '<select name="[NAME]">[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED]>[VALUE_TXT]</option>',
-            'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null){switch(pntEl.nodeName){case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if(elDiv.getElementsByTagName(\'a\').length>0){elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
+            'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while ((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null) {switch(pntEl.nodeName) {case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if (elDiv.getElementsByTagName(\'a\').length>0) {elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
             'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_SHORT_FORMAT)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
 
         );
     }
 
-    function parseAttribute($objUser, $attributeId, $historyId = 0, $edit = false, $return = false, $isChild = false, $inFrame = false, $useMagicBlock = true, $arrAdditionalPlaceholders = null)
+
+    function parseAttribute(
+        $objUser, $attributeId, $historyId=0, $edit=false, $return=false,
+        $isChild=false, $inFrame=false, $useMagicBlock=true,
+        $arrAdditionalPlaceholders=null)
     {
         global $_CORELANG;
 
@@ -123,34 +122,30 @@ class AccessLib
         if ($edit && $objAttribute->isProtected() && !Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true) && !$objAttribute->checkModifyPermission()) {
             $edit = false;
         }
-
         if ($return) {
             return $this->_getAtrributeCode($objUser, $attributeId, $historyId, $edit);
         }
 
         $arrPlaceholders = array(
-            ''                => $this->_getAtrributeCode($objUser, $attributeId, $historyId, $edit),
-            '_DESC'            => htmlentities($objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET),
-            '_NAME'            => $attributeName,
-            '_ID'            => $attributeId,
-            '_HISTORY_ID'    => $historyId
+            ''            => $this->_getAtrributeCode($objUser, $attributeId, $historyId, $edit),
+            '_DESC'       => htmlentities($objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+            '_NAME'       => $attributeName,
+            '_ID'         => $attributeId,
+            '_HISTORY_ID' => $historyId,
         );
         if (is_array($arrAdditionalPlaceholders)) {
             $arrPlaceholders = array_merge($arrPlaceholders, $arrAdditionalPlaceholders);
         }
-
 
         switch ($objAttribute->getType()) {
             case 'date':
                 $value = $objUser->getProfileAttribute($attributeId, $historyId);
                 $arrPlaceholders['_VALUE'] = $value !== false && $value !== '' ? htmlentities(date(ASCMS_DATE_SHORT_FORMAT, intval($value)), ENT_QUOTES, CONTREXX_CHARSET) : '';
                 break;
-
             case 'text':
             case 'mail':
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($attributeId, $historyId), ENT_QUOTES, CONTREXX_CHARSET);
                 break;
-
             case 'uri':
                 $uri = $objUser->getProfileAttribute($attributeId, $historyId);
                 if (empty($uri)) {
@@ -165,9 +160,9 @@ class AccessLib
                     $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($attributeId, $historyId), ENT_QUOTES, CONTREXX_CHARSET);
                     if ($this->_objTpl->blockExists($block.'_link')) {
                         $this->_objTpl->setVariable(array(
-                            'TXT_ACCESS_URL_OPEN_RISK_MSG'                        => $_CORELANG['TXT_ACCESS_URL_OPEN_RISK_MSG'],
-                            'TXT_ACCESS_CONFIRM_OPEN_URL'                        => $_CORELANG['TXT_ACCESS_CONFIRM_OPEN_URL'],
-                            'TXT_ACCESS_VISIT_WEBSITE'                            => $_CORELANG['TXT_ACCESS_VISIT_WEBSITE']
+                            'TXT_ACCESS_URL_OPEN_RISK_MSG' => $_CORELANG['TXT_ACCESS_URL_OPEN_RISK_MSG'],
+                            'TXT_ACCESS_CONFIRM_OPEN_URL'  => $_CORELANG['TXT_ACCESS_CONFIRM_OPEN_URL'],
+                            'TXT_ACCESS_VISIT_WEBSITE'     => $_CORELANG['TXT_ACCESS_VISIT_WEBSITE'],
                         ));
                         $this->_objTpl->touchBlock($block.'_link');
                     }
@@ -176,7 +171,6 @@ class AccessLib
                     }
                 }
                 break;
-
             case 'image':
                 $arrSettings = User_Setting::getSettings();
 
@@ -189,7 +183,8 @@ class AccessLib
                     $arrPlaceholders['_VALUE'] = $_CORELANG['TXT_ACCESS_NO_PICTURE'];
                 }
                 $arrPlaceholders['_THUMBNAIL'] = $this->getImageAttributeCode($objUser, $attributeName, $image, $attributeId, '', $historyId, $edit, true);
-                $arrPlaceholders['_THUMBNAIL_SRC'] = $arrPlaceholders['_SRC'].$this->_imageThumbnailSuffix;
+                $arrPlaceholders['_THUMBNAIL_SRC'] =
+                    ImageManager::getThumbnailFilename($arrPlaceholders['_SRC']);
                 $arrPlaceholders['_UPLOAD_NAME'] = $this->attributeNamePrefix.'_images['.$objAttribute->getId().']['.$historyId.']';
                 $arrPlaceholders['_MAX_FILE_SIZE'] = $this->getLiteralSizeFormat($arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_size']['value']);
                 $arrPlaceholders['_MAX_WIDTH'] = $arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_width']['value'];
@@ -198,11 +193,9 @@ class AccessLib
 //                    $arrPlaceholders['_DESC'] = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 //                }
                 break;
-
             case 'checkbox':
                 $arrPlaceholders['_CHECKED'] = $objUser->getProfileAttribute($attributeId, $historyId) ? 'checked="checked"' : '';
                 break;
-
             case 'menu':
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
                 if ($this->_objTpl->blockExists($this->attributeNamePrefix.'_'.$attributeId.'_children')) {
@@ -211,7 +204,6 @@ class AccessLib
                     }
                 }
                 break;
-
             case 'frame':
                 foreach ($objAttribute->getChildren() as $childAttributeId) {
                     $this->parseAttribute($objUser, $childAttributeId, $historyId, $edit, false, true, true, $useMagicBlock);
@@ -219,12 +211,10 @@ class AccessLib
 
                 $arrPlaceholders['_VALUE'] = $objAttribute->getMenuOptionValue();
                 break;
-
             case 'menu_option':
                 $arrPlaceholders['_VALUE'] = $objAttribute->getMenuOptionValue();
                 $arrPlaceholders['_SELECTED'] = $objAttribute->getMenuOptionValue() == $objUser->getProfileAttribute($objAttribute->getParent(), $historyId) ? 'selected="selected"' : '';
                 break;
-
             case 'group':
                 if ($this->_objTpl->blockExists($this->attributeNamePrefix.'_'.$attributeId.'_children')) {
                     foreach ($objAttribute->getChildren() as $childAttributeId) {
@@ -232,7 +222,6 @@ class AccessLib
                     }
                 }
                 break;
-
             case 'history':
                 if (!isset($objUser->arrAttributeHistories[$objUser->getId()][$attributeId])) {
                     $objUser->arrAttributeHistories[$objUser->getId()][$attributeId] = array();
@@ -262,8 +251,6 @@ class AccessLib
         if (!$edit && isset($arrPlaceholders['_VALUE']) && $arrPlaceholders['_VALUE'] == '') {
             return false;
         }
-
-
         if ($inFrame) {
             $objFrameAttribute = $objAttribute->getById($objAttribute->getParent());
         }
@@ -328,6 +315,7 @@ class AccessLib
         return true;
     }
 
+
     protected function getLiteralSizeFormat($bytes)
     {
         $exp = floor(log($bytes, 1024));
@@ -353,6 +341,7 @@ class AccessLib
         return round(($bytes / pow(1024, $exp)), 1).$suffix;
     }
 
+
     protected function getBytesOfLiteralSizeFormat($literalSize)
     {
         $subpatterns = array();
@@ -375,6 +364,7 @@ class AccessLib
         }
     }
 
+
     private function parseAttributePlaceholders($arrPlaceholders, $defined = false, $attributeIdUC = 0, $frameIdUC = 0, $childIdUC = 0, $frame = false, $child = false)
     {
         foreach ($arrPlaceholders as $key => $value) {
@@ -395,6 +385,7 @@ class AccessLib
             $this->_objTpl->setVariable($key, $value);
         }
     }
+
 
     private function loadAccountAttributes()
     {
@@ -459,6 +450,7 @@ class AccessLib
         $this->loadLanguageAccountAttribute();
     }
 
+
     private function loadLanguageAccountAttribute()
     {
         global $_CORELANG;
@@ -473,6 +465,7 @@ class AccessLib
             }
         }
     }
+
 
     protected function parseAccountAttributes($objUser, $edit = false)
     {
@@ -562,6 +555,7 @@ class AccessLib
         }*/
     }
 
+
     /**
      * Return the html code for a text attribute
      *
@@ -582,6 +576,7 @@ class AccessLib
             : $value;
     }
 
+
     /**
      * Return the html code for a password attribute
      *
@@ -594,6 +589,7 @@ class AccessLib
     {
         return str_replace('[NAME]', $name, $this->arrAttributeTypeTemplates['password']);
     }
+
 
     /**
      * Return the html code for an email attribute
@@ -615,6 +611,7 @@ class AccessLib
             : $value;
     }
 
+
     /**
      * Return the html code for a textarea attribtue
      *
@@ -634,6 +631,7 @@ class AccessLib
             )
             : nl2br($value);
     }
+
 
     /**
      * Return the html code for an URI attribute
@@ -656,6 +654,7 @@ class AccessLib
             : (!empty($uri) ? '<a href="'.$uri.'" title="'.$_CORELANG['TXT_ACCESS_VISIT_WEBSITE'].'">'.htmlentities($uri, ENT_QUOTES, CONTREXX_CHARSET).'</a>' : $_CORELANG['TXT_ACCESS_NO_SPECIFIED']);
     }
 
+
     /**
      * Return the html code for a date attribute
      *
@@ -675,6 +674,7 @@ class AccessLib
             )
             : $value;
     }
+
 
     /**
      * Return the html code for an image attribute
@@ -706,12 +706,17 @@ class AccessLib
 
         if ($value !== false && $value !== '' && (!$edit || file_exists($imageRepo.$value))) {
             $imageSet = true;
-            $image['src'] = $imageRepoWeb.$value.($thumbnail ? $this->_imageThumbnailSuffix : '');
+            $image['src'] =
+                $imageRepoWeb.($thumbnail
+                    ? ImageManager::getThumbnailFilename($value) : $value);
             $image['path'] = htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET);
 
         } else {
             $imageSet = false;
-            $image['src'] = $imageRepoWeb.$arrNoImage['src'].($thumbnail ? $this->_imageThumbnailSuffix : '');
+            $image['src'] =
+                $imageRepoWeb.($thumbnail
+                    ? ImageManager::getThumbnailFilename($arrNoImage['src'])
+                    : $arrNoImage['src']);
             $image['path'] = '';
         }
 
@@ -769,6 +774,7 @@ class AccessLib
             : '<img src="'.$image['src'].'" alt="'.($attributeId == 'picture' ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $image['path']).'" border="0" />';
     }
 
+
     /**
      * Return the html code for a checkbox attribute
      *
@@ -790,6 +796,7 @@ class AccessLib
             : ($value ? $_ARRAYLANG['TXT_ACCESS_YES'] : $_ARRAYLANG['TXT_ACCESS_NO']);
     }
 
+
     /**
      * Return the html code of a dropdown menu option
      *
@@ -806,6 +813,7 @@ class AccessLib
             $this->arrAttributeTypeTemplates['menu_option']
         );
     }
+
 
     /**
      * Return the html code of a menu attribute
@@ -826,6 +834,7 @@ class AccessLib
             :
             htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET);
     }
+
 
     function _getAtrributeCode($objUser, $attributeId, $historyId, $edit = false)
     {
@@ -897,7 +906,7 @@ class AccessLib
                 break;
 
             case 'group':
-                $code = '<select name="'.$attributeName.'" onchange="for (i=0; i < this.options.length; i++){document.getElementById(this.options[i].value).style.display = (i == this.selectedIndex ? \'\' : \'none\')}">';
+                $code = '<select name="'.$attributeName.'" onchange="for (i=0; i < this.options.length; i++) {document.getElementById(this.options[i].value).style.display = (i == this.selectedIndex ? \'\' : \'none\')}">';
 
                 $arrFramesCode = array();
                 $firstFrame = true;
@@ -973,8 +982,8 @@ class AccessLib
                                 newEntry.removeAttribute(\'id\');
                                 regex=/([a-z_]+)\[([0-9]+)]\[(?:[0-9]+)\](?:\[([a-z]+)\])?/;
                                 elTypes=[\'a\',\'input\',\'select\',\'radio\',\'checkbox\'];
-                                for(y=0;y<elTypes.length;y++){
-                                    for(i=0;i<newEntry.getElementsByTagName(elTypes[y]).length;i++){
+                                for (y=0;y<elTypes.length;y++) {
+                                    for (i=0;i<newEntry.getElementsByTagName(elTypes[y]).length;i++) {
                                         if (typeof(newEntry.getElementsByTagName(elTypes[y])[i].name) != \'undefined\' && newEntry.getElementsByTagName(elTypes[y])[i].name.length) {
                                             arrName=regex.exec(newEntry.getElementsByTagName(elTypes[y])[i].name);
                                             newEntry.getElementsByTagName(elTypes[y])[i].setAttribute(\'name\',arrName[1]+\'[\'+arrName[2]+\'][new][\'+(typeof(arrName[3]) != \'undefined\' ? arrName[3] : \'\')+\']\');
@@ -991,6 +1000,7 @@ class AccessLib
 
         return $code.($objAttribute->isMandatory() && $edit ? $this->_mandatorySign : '');
     }
+
 
     function getJavaScriptCode()
     {
@@ -1013,7 +1023,7 @@ function accessSetWebsite(elInput, elDiv, elLink)
     if (typeof(newWebsite) == 'string') {
         if (newWebsite == 'http://') {
             newWebsite = '';
-        } else if(newWebsite != '' && newWebsite.substring(0, 7) != 'http://') {
+        } else if (newWebsite != '' && newWebsite.substring(0, 7) != 'http://') {
             newWebsite = 'http://'+newWebsite;
         }
 
@@ -1089,7 +1099,7 @@ JSaccessRemoveChildsOfElement
 // <![CDATA[
 function accessSelectAllGroups(CONTROL)
 {
-    for(var i = 0;i < CONTROL.length;i++)
+    for (var i = 0;i < CONTROL.length;i++)
     {
         CONTROL.options[i].selected = true;
     }
@@ -1103,7 +1113,7 @@ JSaccessSelectAllGroups
 // <![CDATA[
 function accessDeselectAllGroups(CONTROL)
 {
-    for(var i = 0;i < CONTROL.length;i++)
+    for (var i = 0;i < CONTROL.length;i++)
     {
         CONTROL.options[i].selected = false;
     }
@@ -1219,7 +1229,7 @@ function SetUrl(url, width, height, alt)
         }
 
         // zoom the image if necessary
-        if(imgFactor != 1){
+        if (imgFactor != 1) {
             document.getElementById(accessProcessingImage+'_image').style.width = width * imgFactor + "px";
             document.getElementById(accessProcessingImage+'_image').style.height = height * imgFactor + "px";
             intZoom = imgFactor;
@@ -1264,6 +1274,7 @@ JSconfirmUserNotification
         return $javaScriptCode;
     }
 
+
     protected function parseLetterIndexList($URI, $paramName, $selectedLetter)
     {
         global $_CORELANG;
@@ -1302,10 +1313,12 @@ JSconfirmUserNotification
         }
     }
 
+
     function detachAllJavaScriptFunctions()
     {
         $this->arrAttachedJSFunctions = array();
     }
+
 
     function attachJavaScriptFunction($function)
     {
@@ -1329,6 +1342,7 @@ JSconfirmUserNotification
             }
         }
     }
+
 
     function addUploadedImagesToProfile($objUser, &$arrProfile, $arrImages)
     {
@@ -1398,11 +1412,13 @@ JSconfirmUserNotification
         }
     }
 
+
     function isImageWithinAllowedSize($size, $profilePic)
     {
         $arrSettings = User_Setting::getSettings();
         return $size <= $arrSettings['max_'.($profilePic ? 'profile_' : '').'pic_size']['value'];
     }
+
 
     function moveUploadedImageInToPlace($objUser, $tmpImageName, $name, $profilePic = false)
     {
@@ -1461,6 +1477,7 @@ JSconfirmUserNotification
         return $imageName;
     }
 
+
     function createThumbnailOfImage($imageName, $profilePic=false)
     {
         static $objImage, $arrSettings;
@@ -1493,26 +1510,41 @@ JSconfirmUserNotification
             )) {
                 return false;
             }
-
-            return $objImage->saveNewImage(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$imageName.'.thumb');
+            $thumb_name = ImageManager::getThumbnailFilename($imageName);
+            return $objImage->saveNewImage(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$thumb_name);
         } else {
             return $objImage->_createThumbWhq(
                 ASCMS_ACCESS_PHOTO_IMG_PATH.'/',
                 ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/',
                 $imageName,
                 $arrSettings['max_thumbnail_pic_width']['value'],
-                $arrSettings['max_thumbnail_pic_height']['value']
+                $arrSettings['max_thumbnail_pic_height']['value'],
+                70
             );
         }
     }
+
 
     function removeUselessImages()
     {
         global $objDatabase;
 
+        // Regex matching folders and files not to be deleted
+        $noAvatarThumbSrc = ImageManager::getThumbnailFilename(
+            $this->_arrNoAvatar['src']);
+        $noPictureThumbSrc = ImageManager::getThumbnailFilename(
+            $this->_arrNoPicture['src']);
+        $ignoreRe =
+            '/(?:\.(?:\.?|svn)'.
+            '|'.preg_quote($this->_arrNoAvatar['src'], '/').
+            '|'.preg_quote($noAvatarThumbSrc, '/').
+            '|'.preg_quote($this->_arrNoPicture['src'], '/').
+            '|'.preg_quote($noPictureThumbSrc, '/').')$/';
+
         $arrTrueFalse = array(true, false);
         foreach ($arrTrueFalse as $profilePics) {
-            $imagePath = $profilePics ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH;
+            $imagePath = ($profilePics
+                ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH);
             $arrImages = array();
             $offset = 0;
             $step = 50000;
@@ -1522,19 +1554,18 @@ JSconfirmUserNotification
             if (CONTREXX_PHP5) {
                 $arrImages = scandir($imagePath);
             } else {
+// TODO: We're PHP5 *ONLY* now.  This is obsolete
                 $dh  = opendir($imagePath);
-                while (false !== ($image = readdir($dh))) {
+                $image = readdir($dh);
+                while ($image !== false) {
                     $arrImages[] = $image;
+                    $image = readdir($dh);
                 }
                 closedir($dh);
             }
-
-            unset($arrImages[array_search('.', $arrImages)]);
-            unset($arrImages[array_search('..', $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoAvatar['src'], $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoAvatar['src'].'.thumb', $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoPicture['src'], $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoPicture['src'].'.thumb', $arrImages)]);
+            foreach ($arrImages as $index => $file) {
+                if (preg_match($ignoreRe, $file)) unset($arrImages[$index]);
+            }
 
             if ($profilePics) {
                 $query = "
@@ -1575,19 +1606,20 @@ JSconfirmUserNotification
                     $arrImagesDb = array();
                     while (!$objImage->EOF) {
                         $arrImagesDb[] = $objImage->fields['picture'];
-                        $arrImagesDb[] = $objImage->fields['picture'].'.thumb';
+                        $arrImagesDb[] = ImageManager::getThumbnailFilename(
+                            $objImage->fields['picture']);
                         $objImage->MoveNext();
                     }
                     $offset += $step;
                     $arrImages = array_diff($arrImages, $arrImagesDb);
                 }
             }
-
             array_walk($arrImages, create_function('$img', 'unlink("'.$imagePath.'/".$img);'));
         }
 
         return true;
     }
+
 
     /*function unloadUploadedImage($tmpImageName)
     {
@@ -1608,8 +1640,6 @@ JSconfirmUserNotification
             false;
         }
     }*/
-
-
 
 
     /*function _zoomProfilePic(&$picWidth, &$picHeight)
@@ -1650,4 +1680,5 @@ JSconfirmUserNotification
     }*/
 
 }
+
 ?>

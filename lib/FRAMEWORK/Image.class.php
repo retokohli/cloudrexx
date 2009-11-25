@@ -54,10 +54,7 @@ class ImageManager
 
 
     /**
-     * Load Image
-     *
-     * Loads an existing image into a variable
-     *
+     * Loads an image
      * @access   public
      * @param    string [$file] path and filename of the existing image
      * @return   bool
@@ -108,8 +105,9 @@ class ImageManager
         $thumbHeight = $tmpSize[1] * $factor;
         if (!$_objImage->loadImage($strPath.$file)) return false;
         if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
-        if (!$_objImage->saveNewImage($strPath . $file . '.thumb')) return false;
-        if (!$objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) return false;
+        $thumb_name = self::getThumbnailFilename($file);
+        if (!$_objImage->saveNewImage($strPath.$thumb_name)) return false;
+        if (!$objFile->setChmod($strPath, $strWebPath, $thumb_name)) return false;
         return true;
     }
 
@@ -289,7 +287,9 @@ class ImageManager
      */
     function saveNewImage($file, $forceOverwrite=false)
     {
-        if ($this->imageCheck == 1 && !empty($this->newImage) && (!file_exists($file) || $forceOverwrite)) {
+        if (   $this->imageCheck == 1
+            && !empty($this->newImage)
+            && (!file_exists($file) || $forceOverwrite)) {
             $this->newImageFile = $file;
 
             switch($this->newImageType) {
@@ -302,8 +302,9 @@ class ImageManager
                 case 2:  // jpg
                     $function = 'imagejpeg';
                     break;
-                case 3:  // png
-                    $function = 'imagepng';
+                case 3:  // png -> make a jpeg thumbnail, too
+//                    $function = 'imagepng';
+                    $function = 'imagejpeg';
                     break;
                 default:
                     return false;
@@ -379,9 +380,10 @@ class ImageManager
      * the maximum size.
      * The array returned looks like
      *  array(
-     *    'style'   => 'style="height: <scaled_height>px; width: <scaled_width>px;"'
-     *    'width'   => original width plus one in pixels
-     *    'height'  => original height pluis one in pixels
+     *    'style'   => 'style="height: <scaled_height>px; width: <scaled_width>px;"',
+     *    'width'   => original width plus one in pixels,
+     *    'height'  => original height pluis one in pixels,
+     *  )
      * @todo    Reto asks:  Who wrote this?
      * @todo    Reto asks:  Why is 1 added to the original size?
      * @todo    The $webPath argument is not used.  Remove.
@@ -428,16 +430,22 @@ class ImageManager
      */
     function _imageCreateFromFile($file)
     {
+        $arrSizeInfo = getimagesize($file);
+        if (!is_array($arrSizeInfo)) return false;
         $type = $this->_isImage($file);
+        $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * 1.8;
         switch($type) {
-            case 1:  // gif
+            case 1: // gif
                 $function = 'imagecreatefromgif';
                 break;
-            case 2:  // jpg
+            case 2: // jpg
                 $function = 'imagecreatefromjpeg';
+                $potentialRequiredMemory *=
+                    ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'];
                 break;
-            case 3:  // png
+            case 3: // png
                 $function = 'imagecreatefrompng';
+                $potentialRequiredMemory *= 4;
                 break;
             default:
                 return '';
@@ -447,21 +455,17 @@ class ImageManager
         $objSystem = new FWSystem();
         if ($objSystem === false) return false;
 
-        $arrSizeInfo = getimagesize($file);
-        if (!is_array($arrSizeInfo)) return false;
-
         $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
         if (empty($memoryLimit)) {
-            // set default php memory limit of 8MBytes
-            $memoryLimit = 8*pow(1024, 2);
+            // set default php memory limit of 8 MBytes
+            $memoryLimit = 8 * pow(1024, 2);
         }
 
-        $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'] * 1.8;
         if (function_exists('memory_get_usage')) {
             $potentialRequiredMemory += memory_get_usage();
         } else {
-            // add a default of 3MBytes
-            $potentialRequiredMemory += 3*pow(1024, 2);
+            // add a default of 3 MBytes
+            $potentialRequiredMemory += 3 * pow(1024, 2);
         }
 
         if ($potentialRequiredMemory > $memoryLimit) {
@@ -476,7 +480,7 @@ class ImageManager
      * Returns the image type as determined by getimagesize() for the given file.
      *
      * Only accepts web image types (GIF, JPG, or PNG).
-     * If the function imagecreatefromgif() is not available, GIF images aren't
+     * If the function imagecreatefromgif () is not available, GIF images aren't
      * accepted.
      * False is returned for images/files that are not supported.
      * @access    private
@@ -514,6 +518,23 @@ class ImageManager
         $getImageSize = @getimagesize($file);
         if ($getImageSize) return $getImageSize;
         return false;
+    }
+
+
+    /**
+     * Returns the file name for the thumbnail image
+     *
+     * Replaces the .png extension with .jpg, if found.
+     * This works around the PNG bug in PHP.
+     * Does append the .thumb extension if not already present.
+     * @param   string    $file_name        The image file name
+     * @return  string                      The thumbnail file name
+     */
+    static function getThumbnailFilename($file_name)
+    {
+        if (preg_match('/\.thumb$/', $file_name)) return $file_name;
+        $thumb_name = preg_replace('/\.png$/', '.jpg', $file_name);
+        return $thumb_name.'.thumb';
     }
 
 }

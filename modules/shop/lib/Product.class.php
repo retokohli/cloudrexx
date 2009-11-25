@@ -1036,7 +1036,7 @@ class Product
                         $fileArr = array();
                         preg_match('/(.+)(\.\w+)$/', $strFileName, $fileArr);
                         $pictureName = $fileArr[1].$fileArr[2];
-                        $thumbName = $pictureName.'.thumb';
+                        $thumbName = ImageManager::getThumbnailFilename($pictureName);
                         // Continue even if deleting the images fails
                         @unlink(ASCMS_PATH.$thumbName);
                         @unlink(ASCMS_PATH.$pictureName);
