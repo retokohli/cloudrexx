@@ -2380,7 +2380,8 @@ class shopmanager extends ShopLibrary
             $flagEditTabActive = true;
             $arrShopCategory = ShopCategories::getArrayById($id);
             $pictureFilename = $arrShopCategory['picture'];
-            $picturePath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$pictureFilename.self::thumbnailSuffix;
+            $picturePath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                ImageManager::getThumbnailFilename($pictureFilename);
             if ($pictureFilename == '') {
                 $picturePath = self::$defaultImage;
             }
@@ -3207,16 +3208,28 @@ class shopmanager extends ShopLibrary
             'SHOP_STOCK_VISIBILITY' => ($objProduct->isStockVisible() ? ' checked="checked"' : ''),
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
                 Manufacturer::getMenuoptions($objProduct->getManufacturerId()),
-            'SHOP_PICTURE1_IMG_SRC' => (!empty($arrImages[1]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix)
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix
+            'SHOP_PICTURE1_IMG_SRC' =>
+                (   !empty($arrImages[1]['img'])
+                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
+                        ImageManager::getThumbnailFilename($arrImages[1]['img']))
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                      ImageManager::getThumbnailFilename($arrImages[1]['img'])
                     : self::$defaultImage
                 ),
-            'SHOP_PICTURE2_IMG_SRC' => (!empty($arrImages[2]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[2]['img'].self::thumbnailSuffix)
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[2]['img'].self::thumbnailSuffix
+            'SHOP_PICTURE2_IMG_SRC' =>
+                (   !empty($arrImages[2]['img'])
+                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
+                        ImageManager::getThumbnailFilename($arrImages[2]['img']))
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                      ImageManager::getThumbnailFilename($arrImages[2]['img'])
                     : self::$defaultImage
                 ),
-            'SHOP_PICTURE3_IMG_SRC' => (!empty($arrImages[3]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[3]['img'].self::thumbnailSuffix)
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[3]['img'].self::thumbnailSuffix
+            'SHOP_PICTURE3_IMG_SRC' =>
+                (   !empty($arrImages[3]['img'])
+                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
+                        ImageManager::getThumbnailFilename($arrImages[3]['img']))
+                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                      ImageManager::getThumbnailFilename($arrImages[3]['img'])
                     : self::$defaultImage
                 ),
             'SHOP_PICTURE1_IMG_SRC_NO_THUMB' => (!empty($arrImages[1]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[1]['img'])

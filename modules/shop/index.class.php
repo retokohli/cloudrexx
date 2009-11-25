@@ -131,7 +131,6 @@ function shopUseSession()
 class Shop extends ShopLibrary
 {
     const noPictureName = 'no_picture.gif';
-    const thumbnailSuffix = '.thumb';
     const usernamePrefix = 'user';
 
     private $pageContent;
@@ -763,11 +762,11 @@ class Shop extends ShopLibrary
                 $imageName = ShopCategories::getPictureById($id);
             }
             if ($imageName) {
-                if (file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$imageName.self::thumbnailSuffix)) {
+                $thumb_name = ImageManager::getThumbnailFilename($imageName);
+                if (file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$thumb_name)) {
                     // Image found!  Use that instead of the default.
                     $thumbnailPath =
-                        ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
-                        $imageName.self::thumbnailSuffix;
+                        ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$thumb_name;
                     $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
                     $this->scaleImageSizeToThumbnail($arrSize);
                 }
@@ -1031,7 +1030,8 @@ class Shop extends ShopLibrary
                     }
                     $arrSize = $arrDefaultImageSize;
                 } else {
-                    $thumbnailPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'].self::thumbnailSuffix;
+                    $thumbnailPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                        ImageManager::getThumbnailFilename($image['img']);
                     if ($image['width'] && $image['height']) {
                         $pictureLink =
                             ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'].
@@ -1620,11 +1620,13 @@ class Shop extends ShopLibrary
                 $arrSize = $arrDefaultImageSize;
             } else {
                 if ($arrImages[1]['width'] && $arrImages[1]['height']) {
-                    $arrThumbnailPath[$i] = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix;
+                    $arrThumbnailPath[$i] = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                        ImageManager::getThumbnailFilename($arrImages[1]['img']);
                     // Thumbnail display size
                     $arrSize = array($arrImages[1]['width'], $arrImages[1]['height']);
                 } else {
-                    $arrThumbnailPath[$i] = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img'].self::thumbnailSuffix;
+                    $arrThumbnailPath[$i] = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                        ImageManager::getThumbnailFilename($arrImages[1]['img']);
                     $arrSize = getimagesize(ASCMS_PATH.$arrThumbnailPath[$i]);
                 }
                 $this->scaleImageSizeToThumbnail($arrSize);
@@ -1892,12 +1894,12 @@ class Shop extends ShopLibrary
     function getJavascriptCode($flagUpload=false)
     {
         global $_ARRAYLANG, $_CONFIGURATION;
-        if(!empty($_GET[session_name()])){
+        if (!empty($_GET[session_name()])) {
             session_write_close();
             session_id($_GET[session_name()]);
             session_start();
-        }else{
-            if(!isset($_SESSION['shop']['cart'])){
+        } else {
+            if (!isset($_SESSION['shop']['cart'])) {
                 session_start();
             }
         }
@@ -1914,7 +1916,7 @@ function viewPicture(picture,features)
 Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
 Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
 Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
-window.onload = function(){
+window.onload = function() {
     Shadowbox.init();
 };
 
@@ -2860,7 +2862,7 @@ sendReq('', 1);
         $this->_hideCurrencyNavbar = true;
 
         if (empty($_POST) || !is_array($_POST)) return;
-        foreach($_POST as $key => $value) {
+        foreach ($_POST as $key => $value) {
             $value = (get_magic_quotes_gpc()
                 ? strip_tags(trim($value))
                 : addslashes(strip_tags(trim($value))));
@@ -2958,7 +2960,7 @@ sendReq('', 1);
         global $objDatabase;
 
 /*
-        foreach($_POST as $key => $value) {
+        foreach ($_POST as $key => $value) {
             $value = contrexx_addslashes(strip_tags(trim($value)));
             $_SESSION['shop'][$key] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
         }
@@ -4499,7 +4501,7 @@ right after the customer logs in!
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
             $copies = explode(',', trim($objResult->fields['value']));
-            foreach($copies as $sendTo) {
+            foreach ($copies as $sendTo) {
                 Mail::send($sendTo, $mailFrom, $mailFromText, $mailSubject, $mailBody);
             }
         }

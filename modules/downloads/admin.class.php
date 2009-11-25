@@ -278,9 +278,7 @@ class downloads extends DownloadsLibrary
 
     private function groups()
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG, $objInit;
-
-        $objFWUser = FWUser::getFWUserObject();
+        global $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         Permission::checkAccess(142, 'static');
 
@@ -689,8 +687,9 @@ class downloads extends DownloadsLibrary
         // parse image attribute
         $image = $objCategory->getImage();
         if (!empty($image) && file_exists(ASCMS_PATH.$image)) {
-            if (file_exists(ASCMS_PATH.$image.'.thumb')) {
-                $imageSrc = $image.'.thumb';
+            $thumb_name = ImageManager::getThumbnailFilename($image);
+            if (file_exists(ASCMS_PATH.$thumb_name)) {
+                $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
             }
@@ -705,7 +704,7 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_DEFAULT_CATEGORY_IMAGE'          => $this->defaultCategoryImage['src'],
             'DOWNLOADS_DEFAULT_CATEGORY_IMAGE_WIDTH'    => $this->defaultCategoryImage['width'].'px',
             'DOWNLOADS_DEFAULT_CATEGORY_IMAGE_HEIGHT'   => $this->defaultCategoryImage['height'].'px',
-            'DOWNLOADS_CATEGORY_IMAGE_REMOVE_DISPLAY'   => empty($image) ? 'none' : ''
+            'DOWNLOADS_CATEGORY_IMAGE_REMOVE_DISPLAY'   => empty($image) ? 'none' : '',
         ));
 
         // parse name and description attributres
@@ -1440,8 +1439,9 @@ class downloads extends DownloadsLibrary
         // parse image attribute
         $image = $objDownload->getImage();
         if (!empty($image) && file_exists(ASCMS_PATH.$image)) {
-            if (file_exists(ASCMS_PATH.$image.'.thumb')) {
-                $imageSrc = $image.'.thumb';
+            $thumb_name = ImageManager::getThumbnailFilename($image);
+            if (file_exists(ASCMS_PATH.$thumb_name)) {
+                $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
             }
@@ -1588,10 +1588,9 @@ class downloads extends DownloadsLibrary
 
 
     /**
-     * @todo  Document.
-     * @todo  Argument $parentCategoryId is not used.  Remove.
+     * @todo  Documentation
      */
-    private function updateCategoryOrder($parentCategoryId, $arrCategoryOrder)
+    private function updateCategoryOrder($arrCategoryOrder)
     {
         global $_LANGID, $_ARRAYLANG;
 
@@ -1702,9 +1701,11 @@ class downloads extends DownloadsLibrary
         if (isset($_POST['downloads_category_select_action'])) {
             switch ($_POST['downloads_category_select_action']) {
                 case 'order':
-                    $this->updateCategoryOrder($this->parentCategoryId, isset($_POST['downloads_category_order']) && is_array($_POST['downloads_category_order']) ? $_POST['downloads_category_order'] : array());
+                    $this->updateCategoryOrder(
+                           isset($_POST['downloads_category_order'])
+                        && is_array($_POST['downloads_category_order'])
+                            ? $_POST['downloads_category_order'] : array());
                     break;
-
                 case 'delete':
                     $this->deleteCategories(isset($_POST['downloads_category_id']) && is_array($_POST['downloads_category_id']) ? $_POST['downloads_category_id'] : array(), isset($_POST['downloads_category_delete_recursive']) && $_POST['downloads_category_delete_recursive']);
                     break;
@@ -1730,7 +1731,6 @@ class downloads extends DownloadsLibrary
                         $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
                     }
                     break;
-
                 case 'unlink':
                     $this->unlinkDownloadsFromCategory($objCategory, isset($_POST['downloads_download_id']) && is_array($_POST['downloads_download_id']) ? $_POST['downloads_download_id'] : array());
                     break;
