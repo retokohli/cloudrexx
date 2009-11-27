@@ -118,7 +118,7 @@ class PaymentProcessing
           ORDER BY id
         ';
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             self::$arrPaymentProcessor[$objResult->fields['id']] = array(
                 'id'          => $objResult->fields['id'],
                 'type'        => $objResult->fields['type'],
@@ -352,7 +352,7 @@ class PaymentProcessing
                      function openSaferpay()
                      {
                          strUrl = '$payInitUrl';
-                         if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1){
+                         if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1) {
                              strUrl += \"&WINDOWMODE=Standalone\";
                          }
                          oWin = window.open(strUrl, 'SaferpayTerminal',
@@ -386,28 +386,22 @@ class PaymentProcessing
         global $_ARRAYLANG;
 
         $arrShopOrder = array(
-            'txtShopId'           => Settings::getValueByName('yellowpay_shop_id'),
-            'Hash_seed'           => Settings::getValueByName('yellowpay_hash_seed'),
-            'txtLangVersion'      => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
-            'txtOrderTotal'       => $_SESSION['shop']['grand_total_price'],
-            'txtArtCurrency'      => Currency::getActiveCurrencyCode(),
-            'txtOrderIDShop'      => $_SESSION['shop']['orderid'],
-            'txtShopPara'         => 'source=shop',
-            'deliveryPaymentType' => Settings::getValueByName('yellowpay_authorization_type'),
-            'acceptedPaymentMethods' => Settings::getValueByName('yellowpay_accepted_payment_methods'),
+            'PSPID'    => Settings::getValueByName('yellowpay_shop_id'),
+            'orderID'  => $_SESSION['shop']['orderid'],
+            'amount'   => intval($_SESSION['shop']['grand_total_price']*100),
+            'language' => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+            'currency' => Currency::getActiveCurrencyCode(),
         );
-
-        $objYellowpay = new Yellowpay();
-        $yellowpayForm = $objYellowpay->getForm(
+        $yellowpayForm = Yellowpay::getForm(
             $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']
         );
-        if (count($objYellowpay->arrError) > 0) {
+        if (_PAYMENT_DEBUG && count(Yellowpay::$arrError) > 0) {
             $strError =
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
-                '</b>';
+                '<br /></b>';
             if (_PAYMENT_DEBUG) {
-                $strError .= join('<br />', $objYellowpay->arrError); //.'<br />';
+                $strError .= join('<br />', Yellowpay::$arrError); //.'<br />';
             }
             return $strError.'</font>';
         }
@@ -485,9 +479,7 @@ class PaymentProcessing
                     return intval($_REQUEST['orderid']);
                 break;
             case 'yellowpay':
-                if (isset($_POST['txtOrderIDShop']))
-                    return intval($_POST['txtOrderIDShop']);
-                break;
+                return Yellowpay::checkin();
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
                 require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');

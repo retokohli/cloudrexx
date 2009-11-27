@@ -112,7 +112,7 @@ class Settings
 //             ORDER BY `country`.`id`
 //        ";
 //        $objResult = $objDatabase->Execute($query);
-//        while(!$objResult->EOF) {
+//        while (!$objResult->EOF) {
 //            $this->arrCountries[$objResult->fields['id']] = array(
 //                'id' => $objResult->fields['id'],
 //                'name' => $objResult->fields[$arrSqlName['name']],
@@ -130,7 +130,7 @@ class Settings
              ORDER BY countries_id
         ";
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->arrCountries[$objResult->fields['countries_id']] = array(
                 'countries_id' => $objResult->fields['countries_id'],
                 'countries_name' => $objResult->fields['countries_name'],
@@ -166,7 +166,11 @@ class Settings
             Settings::storeSetting('telephone', $_POST['telephone']);
             Settings::storeSetting('fax', $_POST['fax']);
             Settings::storeSetting('yellowpay_shop_id', $_POST['yellowpay_shop_id'], (!empty($_POST['yellowpay_status']) ? 1 : 0));
-            Settings::storeSetting('yellowpay_hash_seed', $_POST['yellowpay_hash_seed']);
+//            Settings::storeSetting('yellowpay_hash_seed', $_POST['yellowpay_hash_seed']);
+// Replaced by
+            Settings::storeSetting('yellowpay_hash_signature_in', $_POST['yellowpay_hash_signature_in']);
+            Settings::storeSetting('yellowpay_hash_signature_out', $_POST['yellowpay_hash_signature_out']);
+
             Settings::storeSetting('yellowpay_authorization_type', $_POST['yellowpay_authorization_type']);
             Settings::storeSetting('yellowpay_accepted_payment_methods', $strYellowpayAcceptedPM);
             Settings::storeSetting('yellowpay_use_testserver', $_POST['yellowpay_use_testserver']);
@@ -191,8 +195,8 @@ class Settings
             Settings::storeSetting('shop_weight_enable', (!empty($_POST['shop_weight_enable']) ? 1 : 0));
             Settings::storeSetting(
                 'shop_show_products_default',
-	                (!empty($_POST['shop_show_products_default'])
-	                    ? $_POST['shop_show_products_default'] : 0)
+                    (!empty($_POST['shop_show_products_default'])
+                        ? $_POST['shop_show_products_default'] : 0)
             );
             // Mind that this defaults to 1.
             Settings::storeSetting(
@@ -261,7 +265,7 @@ class Settings
     {
         global $objDatabase;
         if (isset($_POST['currency']) && !empty($_POST['currency'])) {
-             foreach ($_POST['currencyCode'] as $cId => $value){
+             foreach ($_POST['currencyCode'] as $cId => $value) {
                  $is_default=($_POST['currencyDefault']==$cId)?1:0;
                  $status = isset($_POST['currencyActive'][$cId])?1:0;
 
@@ -530,20 +534,20 @@ class Settings
             $strCountryIdActive = join(',', $_POST['list1']);
             $strCountryIdInactive = join(',', $_POST['list2']);
             if ($strCountryIdActive) {
-	            $query = "
-	                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-	                   SET activation_status=1
-	                 WHERE countries_id IN ($strCountryIdActive)
-	            ";
-	            $objDatabase->Execute($query);
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+                       SET activation_status=1
+                     WHERE countries_id IN ($strCountryIdActive)
+                ";
+                $objDatabase->Execute($query);
             }
             if ($strCountryIdInactive) {
-	            $query = "
-	                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-	                   SET activation_status=0
-	                 WHERE countries_id IN ($strCountryIdInactive)
-	            ";
-	            $objDatabase->Execute($query);
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+                       SET activation_status=0
+                     WHERE countries_id IN ($strCountryIdInactive)
+                ";
+                $objDatabase->Execute($query);
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
         }

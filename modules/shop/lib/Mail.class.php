@@ -24,7 +24,7 @@ class Mail
      */
     static function reset()
     {
-    	self::$lang_id = false;
+        self::$lang_id = false;
     }
 
 
@@ -106,7 +106,7 @@ class Mail
             );
             $objResult->MoveNext();
         }
-       	$objResult = $objDatabase->Execute("
+           $objResult = $objDatabase->Execute("
             SELECT `content`.`tpl_id`,
                    `content`.`from_mail`, `content`.`xsender`,
                    `content`.`subject`, `content`.`message`
@@ -178,7 +178,7 @@ class Mail
 //                'subject' => $objResult->fields['subject'],
 //                'message' => $objResult->fields['message'],
 //            );
-        	$id = $objResult->fields['tpl_id'];
+            $id = $objResult->fields['tpl_id'];
             if (!self::$arrTemplate[$id]['available']) {
                 self::$arrTemplate[$id]['available'] = true;
                 self::$arrTemplate[$id]['from'] = $objResult->fields['from_mail'];
@@ -262,7 +262,7 @@ class Mail
      */
     static function getTemplate($template_id, $lang_id=0)
     {
-    	if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
         self::init($lang_id);
         return self::$arrTemplate[$template_id];
     }

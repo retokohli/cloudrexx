@@ -18,7 +18,6 @@
  */
 // post-2.1
 //require_once ASCMS_CORE_PATH.'/Text.class.php';
-
 require_once ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/shopLib.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
@@ -110,29 +109,8 @@ class shopmanager extends ShopLibrary
     private static $strOkMessage  = '';
     private static $pageTitle = '';
     private static $arrCategoryTreeName = array();
-    // OBSOLETE: private $categoryTreeSorting   = array();
-    // OBSOLETE: private $categoryTreeStatus    = array();
     private static $defaultImage = '';
     private static $uploadDir = false;
-
-    // ProductAttributes
-    // OBSOLETE: private $defaultAttributeOption = 0;
-    // OBSOLETE: private $arrAttributes = array();
-    // OBSOLETE: private $defaultCurrency = '';
-    /**
-     * OBSOLETE
-     * The highest ProductAttribute value ID present
-     * @var   integer
-    private $highestIndex = 0;
-     */
-
-    /**
-     * OBSOLETE
-     * Exchange object
-     * @access  public
-     * @var     Exchange
-    private $objExchange;
-     */
 
     /**
      * Settings object
@@ -212,11 +190,6 @@ class shopmanager extends ShopLibrary
             case 'settings':
                 $this->_showSettings();
                 break;
-/* OBSOLETE
-            case 'exchange':
-                $this->showExchange();
-                break;
-*/
             case 'cat':
                 $this->showCategories();
                 break;
@@ -1573,7 +1546,12 @@ class shopmanager extends ShopLibrary
             'TXT_SHOP_PAYPAL_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_SHOP_PAYPAL_DEFAULT_CURRENCY'],
             'TXT_YELLOWPAY_POSTFINANCE' => $_ARRAYLANG['TXT_YELLOWPAY_POSTFINANCE'],
             'TXT_SHOP_ID' => $_ARRAYLANG['TXT_SHOP_ID'],
-            'TXT_HASH_SEED' => $_ARRAYLANG['TXT_HASH_SEED'],
+//            'TXT_HASH_SEED' => $_ARRAYLANG['TXT_HASH_SEED'],
+// Replaced by
+            'TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN'],
+            'TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT'],
+            'TXT_SHOP_YELLOWPAY_PSPID' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_PSPID'],
+
             'TXT_IMMEDIATE' => $_ARRAYLANG['TXT_IMMEDIATE'],
             'TXT_DEFERRED' => $_ARRAYLANG['TXT_DEFERRED'],
             'TXT_SHOP_ACCEPTED_PAYMENT_METHODS' => $_ARRAYLANG['TXT_SHOP_ACCEPTED_PAYMENT_METHODS'],
@@ -1830,8 +1808,6 @@ class shopmanager extends ShopLibrary
                     'TXT_MAIL_TEMPLATES' => $_ARRAYLANG['TXT_MAIL_TEMPLATES'],
                     'TXT_REPLACEMENT_DIRECTORY' => $_ARRAYLANG['TXT_REPLACEMENT_DIRECTORY'],
                     'TXT_SHOP_ADD_EDIT' => $_ARRAYLANG['TXT_ADD'],
-//                    'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],
-//                    'TXT_ADD' => $_ARRAYLANG['TXT_ADD'],
                     'TXT_SEND_TEMPLATE' => $_ARRAYLANG['TXT_SEND_TEMPLATE'],
                     'TXT_TEMPLATE' => $_ARRAYLANG['TXT_TEMPLATE'],
                     'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
@@ -2157,7 +2133,6 @@ class shopmanager extends ShopLibrary
                     'TXT_SHOP_VAT_NEW' => $_ARRAYLANG['TXT_SHOP_VAT_NEW'],
                     'TXT_SHOP_VAT_RATES' => $_ARRAYLANG['TXT_SHOP_VAT_RATES'],
                     'TXT_SHOP_VAT' => $_ARRAYLANG['TXT_SHOP_VAT'],
-//                    'TXT_TAXES' => $_ARRAYLANG['TXT_TAXES'],
                     'TXT_SHOP_VAT_CONFIRM_DELETE' => $_ARRAYLANG['TXT_SHOP_VAT_CONFIRM_DELETE'],
                     'TXT_SHOP_VAT_INCLUDED' => $_ARRAYLANG['TXT_SHOP_PRICES_VAT_INCLUDED'],
                     'TXT_SHOP_VAT_EXCLUDED' => $_ARRAYLANG['TXT_SHOP_PRICES_VAT_EXCLUDED'],
@@ -2209,14 +2184,6 @@ class shopmanager extends ShopLibrary
                 require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                 $paypalStatus = ($this->arrConfig['paypal_account_email']['status'] == 1) ? ' checked="checked"' : '';
 
-                $objYellowpay = new Yellowpay(
-                    $this->arrConfig['yellowpay_accepted_payment_methods']['value'],
-                    $this->arrConfig['yellowpay_authorization_type']['value']
-                );
-                $yellowpayStatus =
-                    ($this->arrConfig['yellowpay_shop_id']['status'] == 1
-                        ? ' checked="checked"' : ''
-                    );
                 $yellowpayTest = $this->arrConfig['yellowpay_use_testserver']['value'];
                 $yellowpayTestCheckedYes = ($yellowpayTest ? ' checked="checked"' : '');
                 $yellowpayTestCheckedNo = ($yellowpayTest ? '' : ' checked="checked"');
@@ -2240,8 +2207,14 @@ class shopmanager extends ShopLibrary
                         ),
 
                     'SHOP_YELLOWPAY_SHOP_ID' => $this->arrConfig['yellowpay_shop_id']['value'],
-                    'SHOP_YELLOWPAY_STATUS' => $yellowpayStatus,
-                    'SHOP_YELLOWPAY_HASH_SEED' => $this->arrConfig['yellowpay_hash_seed']['value'],
+                    'SHOP_YELLOWPAY_STATUS' =>
+                        ($this->arrConfig['yellowpay_shop_id']['status'] == 1
+                            ? ' checked="checked"' : ''),
+//                    'SHOP_YELLOWPAY_HASH_SEED' => $this->arrConfig['yellowpay_hash_seed']['value'],
+// Replaced by
+                    'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => $this->arrConfig['yellowpay_hash_signature_in']['value'],
+                    'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => $this->arrConfig['yellowpay_hash_signature_out']['value'],
+
                     'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => $objYellowpay->getKnownPaymentMethodCheckboxes(),
                     'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' => $objYellowpay->getAuthorizationMenuoptions(),
                     'SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
@@ -3886,7 +3859,6 @@ class shopmanager extends ShopLibrary
                 $optionName = $objResult->fields['product_option_name'];
                 $optionValueOriginal = $objResult->fields['product_option_value'];
                 $optionValue = ShopLibrary::stripUniqidFromFilename($optionValueOriginal);
-// shirtprint
                 // Link an uploaded image name to its file
                 if (   $optionValue != $optionValueOriginal
                     && file_exists(ASCMS_PATH.'/'.$this->uploadDir.'/'.$optionValueOriginal)) {
@@ -4125,8 +4097,6 @@ class shopmanager extends ShopLibrary
         self::$objTemplate->setGlobalVariable(array(
             'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS']
         ));
-
-
     }
 
 

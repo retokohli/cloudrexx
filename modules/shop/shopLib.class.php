@@ -58,7 +58,6 @@ define('SHOP_PAYMENT_RESULT_COUNT',           3);
 class ShopLibrary
 {
     const noPictureName = 'no_picture.gif';
-    const thumbnailSuffix = '.thumb';
 
     /**
      * @todo These class variable *SHOULD* be initialized in the constructor,
@@ -205,7 +204,7 @@ class ShopLibrary
         $menu = "\n<select name=\"".$menuName."\">\n";
         $menu .= ($selectedId==0) ? "<option value=\"0\" selected=\"selected\">All</option>\n" : "<option value=\"0\">All</option>\n";
 
-        foreach($arrLanguage AS $id => $data)
+        foreach ($arrLanguage AS $id => $data)
         {
             $selected = (intval($selectedId)==$id) ? "selected=\"selected\"" : "";
             $menu .="<option value=\"".$id."\" $selected>".$data['name']."</option>\n";
@@ -735,13 +734,13 @@ class ShopLibrary
      */
     static function getOrderStatusMenuoptions($selected='', $flagFilter=false)
     {
-   	    global $_ARRAYLANG;
+           global $_ARRAYLANG;
 
         $strMenuoptions =
             ($flagFilter
-	            ? '<option value="">-- '.
-	              $_ARRAYLANG['TXT_STATUS'].
-	              " --</option>\n"
+                ? '<option value="">-- '.
+                  $_ARRAYLANG['TXT_STATUS'].
+                  " --</option>\n"
                 : ''
             );
         for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {

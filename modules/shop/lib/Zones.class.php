@@ -246,23 +246,23 @@ class Zones
             ");
             if (!$objResult) return false;
             if (!empty($_POST['selected_countries'][$zone_id])) {
-	            foreach ($_POST['selected_countries'][$zone_id] as $country_id) {
-//	                $objResult = $objDatabase->Execute("
-//	                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-//	                        zone_id, country_id
-//	                    ) VALUES (
-//	                        $zone_id, $country_id
-//	                    )
-//	                ");
-	                $objResult = $objDatabase->Execute("
-	                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-	                        zones_id, countries_id
-	                    ) VALUES (
-	                        $zone_id, $country_id
-	                    )
-	                ");
-	                if (!$objResult) return false;
-	            }
+                foreach ($_POST['selected_countries'][$zone_id] as $country_id) {
+//                    $objResult = $objDatabase->Execute("
+//                        INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
+//                            zone_id, country_id
+//                        ) VALUES (
+//                            $zone_id, $country_id
+//                        )
+//                    ");
+                    $objResult = $objDatabase->Execute("
+                        INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
+                            zones_id, countries_id
+                        ) VALUES (
+                            $zone_id, $country_id
+                        )
+                    ");
+                    if (!$objResult) return false;
+                }
             }
         }
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");

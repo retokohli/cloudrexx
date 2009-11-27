@@ -43,7 +43,7 @@ function addCat()
 {
   var selectFile = document.getElementById("file_field");
   var selectcats = document.getElementById("cats");
-  if (selectFile.selectedIndex >= 0){
+  if (selectFile.selectedIndex >= 0) {
     selectcats[selectcats.length] =  new Option(selectFile[selectFile.selectedIndex].text,selectFile[selectFile.selectedIndex].value);
   }
   resetKat();
@@ -86,7 +86,7 @@ function resetHidden()
 
 function SaveImage()
 {
-  if (document.getElementById("ImgName").value != ""){
+  if (document.getElementById("ImgName").value != "") {
     document.forms.frmSelectFields.submit();
   } else {
     alert("{TXT_SHOP_IMPORT_ENTER_TEMPLATE_NAME}");
@@ -121,7 +121,7 @@ function MakeImportCategories()
 
 function DeleteImg(ImgID)
 {
-  if (confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")){
+  if (confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")) {
     document.location.href = 'index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&deleteImg=1&img='+ImgID;
   }
 }
