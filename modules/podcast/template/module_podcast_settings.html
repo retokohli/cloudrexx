@@ -49,20 +49,43 @@ var mySelectTab = function(divId){
           </td>
         </tr>
         <tr class="row1">
+					<td>{TXT_PODCAST_DEFAULT_MEDIUM}</td>
+					<td>
+						<input type="radio" name="podcast_settings_default_medium" id="podcast_settings_default_medium_none" value="none" {PODCAST_SETTINGS_DEFAULT_MEDIUM_NONE} /> <label for="podcast_settings_default_medium_none">{TXT_PODCAST_NONE}</label><br />
+						<input type="radio" name="podcast_settings_default_medium" id="podcast_settings_default_medium_newest" value="newest" {PODCAST_SETTINGS_DEFAULT_MEDIUM_NEWEST} /> <label for="podcast_settings_default_medium_newest">{TXT_PODCAST_NEWEST_MEDIUM}</label><br />
+						<input type="radio" name="podcast_settings_default_medium" id="podcast_settings_default_medium_selected" value="selected" {PODCAST_SETTINGS_DEFAULT_MEDIUM_SELECTED} /> <label for="podcast_settings_default_medium_selected">{TXT_PODCAST_SELECTED_MEDIUM}:</label> {PODCAST_SETTINGS_DEFAULT_MEDIUM_SELECTION_MENU}
+					</td>
+				</tr>
+				<tr class="row2">
           <td>{TXT_PODCAST_FEED_TITLE}</td>
           <td><input type="text" name="podcast_settings_feed_title" value="{PODCAST_SETTINGS_FEED_TITLE}" style="width:400px;" /></td>
         </tr>
-        <tr class="row2">
+				<tr class="row1">
           <td>{TXT_PODCAST_FEED_DESCRIPTION}</td>
           <td><input type="text" name="podcast_settings_feed_description" value="{PODCAST_SETTINGS_FEED_DESCRIPTION}" style="width:400px;" /></td>
         </tr>
-        <tr class="row1">
+				<tr class="row2">
           <td>{TXT_PODCAST_FEED_IMAGE}</td>
           <td><input type="text" name="podcast_settings_feed_image" id="podcast_settings_feed_image" value="{PODCAST_SETTINGS_FEED_IMAGE}" style="width:287px;" /> <input type="button" value="{TXT_PODCAST_BROWSE}" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" style="width:110px;" /></td>
         </tr>
+				<tr class="row1">
+					<td>{TXT_PODCAST_FEED_ITEM_COUNT}</td>
+					<td><input type="text" name="podcast_settings_feed_item_count" value="{PODCAST_SETTINGS_FEED_ITEM_COUNT}" style="width:50px;" /></td>
+				</tr>
         <tr class="row2">
           <td>{TXT_PODCAST_FEED_LINK}</td>
           <td><a href="{PODCAST_SETTINGS_FEED_URL}" title="{TXT_PODCAST_FEED_LINK}">{PODCAST_SETTINGS_FEED_URL}</a></td>
+				</tr>
+				<tr class="row1">
+					<td>{TXT_PODCAST_ENABLE_RECOMMEND_BY_EMAIL}</td>
+					<td>
+						<input type="radio" name="podcast_settings_enable_recommend_by_email" id="podcast_settings_enable_recommend_by_email_1"
+                            value="1" {PODCAST_SETTINGS_ENABLE_RECOMMEND_BY_EMAIL_1} />
+						  <label for="podcast_settings_enable_recommend_by_email_1">{TXT_PODCAST_ENABLED}</label><br />
+						<input type="radio" name="podcast_settings_enable_recommend_by_email" id="podcast_settings_enable_recommend_by_email_0"
+                            value="0" {PODCAST_SETTINGS_ENABLE_RECOMMEND_BY_EMAIL_0} />
+						  <label for="podcast_settings_enable_recommend_by_email_0">{TXT_PODCAST_DISABLED}</label><br />
+					</td>
         </tr>
       </tbody>
     </table>

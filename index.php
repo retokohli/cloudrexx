@@ -836,15 +836,47 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // get latest podcast entries
 //-------------------------------------------------------
-$podcastFirstBlock = false;
 if (!empty($_CONFIG['podcastHomeContent'])) {
-    $modulespath = 'modules/podcast/homeContent.class.php';
+    $modulespath = "modules/podcast/homeContent.class.php";
     if (file_exists($modulespath)) {
-        /** @ignore */
+        /**
+         * @ignore
+         */
         require_once($modulespath);
+
+		// podcast video
         $podcastHomeContentInPageContent = false;
         $podcastHomeContentInPageTemplate = false;
         $podcastHomeContentInThemesPage = false;
+
+        if (strpos($page_content, '{PODCAST_VIDEO_FILE}') !== false) {
+            $podcastHomeContentInPageContent = true;
+        }
+        if (strpos($page_template, '{PODCAST_VIDEO_FILE}') !== false) {
+            $podcastHomeContentInPageTemplate = true;
+        }
+        if (strpos($themesPages['index'], '{PODCAST_VIDEO_FILE}') !== false) {
+            $podcastHomeContentInThemesPage = true;
+        }
+        if ($podcastHomeContentInPageContent || $podcastHomeContentInPageTemplate || $podcastHomeContentInThemesPage) {
+            $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
+            $objPodcast = new podcastHomeContent($themesPages['podcast_video_content']);
+        }
+        if ($podcastHomeContentInPageContent) {
+            $page_content = str_replace('{PODCAST_VIDEO_FILE}', $objPodcast->getVideoContent(), $page_content);
+        }
+        if ($podcastHomeContentInPageTemplate) {
+            $page_template = str_replace('{PODCAST_VIDEO_FILE}', $objPodcast->getVideoContent(), $page_template);
+        }
+        if ($podcastHomeContentInThemesPage) {
+            $themesPages['index'] = str_replace('{PODCAST_VIDEO_FILE}', $objPodcast->getVideoContent(), $themesPages['index']);
+        }
+
+		// latest podcast entries
+        $podcastHomeContentInPageContent = false;
+        $podcastHomeContentInPageTemplate = false;
+        $podcastHomeContentInThemesPage = false;
+
         if (strpos($page_content, '{PODCAST_FILE}') !== false) {
             $podcastHomeContentInPageContent = true;
         }
@@ -865,13 +897,7 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
             $page_template = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_template);
         }
         if ($podcastHomeContentInThemesPage) {
-            $podcastFirstBlock = false;
-            if(strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
-                $podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
-                $contentPos      = strpos($themesPages['index'], '{CONTENT_FILE}');
-                $podcastFirstBlock   = $podcastBlockPos < $contentPos ? true : false;
-            }
-            $themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
+            $themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $themesPages['index']);
         }
     }
 }
@@ -1448,7 +1474,8 @@ switch ($plainSection) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPodcast = new podcast($page_content);
-        $objTemplate->setVariable('CONTENT_TEXT', $objPodcast->getPage($podcastFirstBlock));
+        $objTemplate->setVariable("CONTENT_TEXT", $objPodcast->getPage());
+		$page_title = $page_metatitle = $objPodcast->getPageTitle($page_title);
         break;
 
     //-------------------------------------------------------

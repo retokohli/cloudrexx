@@ -22,7 +22,7 @@ function podcast_media_do_action(action) {
 </script>
 <form action="index.php?cmd=podcast&amp;act=deleteMedium" name="podcast_media_form" id="podcast_media_form" method="post">
 <!-- BEGIN podcast_category_menu -->
-{PODCAST_CATEGORY_MENU}<br /><br />
+{PODCAST_CATEGORY_MENU} <input type="text" name="podcast_media_keyword" id="podcast_media_keyword" value="{PODCAST_MEDIA_SEARCH}" style="width:200px;" onkeypress="if(event.keyCode==13){document.location.href='index.php?cmd=podcast&amp;podcast_media_keyword='+document.getElementById('podcast_media_keyword').value+'&amp;podcast_media_category='+document.getElementById('podcast_media_category').value;}" /> <input type="button" name="podcast_media_search" value="{TXT_PODCAST_SEARCH}" onclick="document.location.href='index.php?cmd=podcast&amp;podcast_media_keyword='+document.getElementById('podcast_media_keyword').value+'&amp;podcast_media_category='+document.getElementById('podcast_media_category').value"/><br /><br />
 <!-- END podcast_category_menu -->
 <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
   <tbody>
@@ -40,7 +40,7 @@ function podcast_media_do_action(action) {
       </tr>
       <!-- BEGIN podcast_media_list -->
         <tr class="{PODCAST_ROW_CLASS}">
-          <td><input type="checkbox" name="podcast_medium_selected[]" value="{PODCAST_MEDIUM_ID}" /><img src="images/icons/{PODCAST_MEDIUM_STATUS_IMG}" width="13" height="13" alt="{PODCAST_MEDIUM_STATUS_TXT}" /></td>
+					<td><input type="checkbox" name="podcast_medium_selected[]" value="{PODCAST_MEDIUM_ID}" /><a href="index.php?cmd=podcast&amp;act=flipStatus&amp;id={PODCAST_MEDIUM_ID}&amp;status={PODCAST_MEDIUM_STATUS}" title="{PODCAST_MEDIUM_STATUS_SWITCH_TXT}"><img src="images/icons/{PODCAST_MEDIUM_STATUS_IMG}" width="13" height="13" border="0" alt="{PODCAST_MEDIUM_STATUS_TXT}" /></a></td>
           <td>{PODCAST_MEDIUM_DATE}</td>
           <td><a href="index.php?cmd=podcast&amp;act=showMedium&amp;id={PODCAST_MEDIUM_ID}" title="{TXT_PODCAST_SHOW_MEDIUM}">{PODCAST_MEDIUM_TITLE}</a></td>
           <td>{PODCAST_MEDIUM_AUTHOR}</td>

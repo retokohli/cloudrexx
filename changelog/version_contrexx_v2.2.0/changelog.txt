@@ -71,6 +71,18 @@ Modul: Digital Asset Management
 Modul: Dokumenten System
 - Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
 
+Modul: Mediathek
+- Das Modul Podcast wurde in Mediathek umbenannt.
+- Der Begriff "Kategorie" wurde umbenannt in "Rubrik".
+- Mit dem Layout Template [[PODCAST_VIDEO]] (podcast_video.html) kann ein
+  ausgewähltes Medium an beliebiger Stelle im Layout dargestellt werden.
+- Das Frontend, sowie das Backend verfügt über eine Volltextsuche.
+- Der Block podcast_latest ermöglicht die Auflistung der neusten Zugänge in
+  der Mediathek.
+- Versand von Empfehlungen per E-Mail.
+- WYSIWYG-Editor bei der Beschreibung eines Mediums.
+- Shortcut zum (De)Aktivieren eines Mediums bei der Übersichtsseite im Backend.
+
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
 
