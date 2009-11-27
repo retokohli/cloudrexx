@@ -15,7 +15,7 @@
       </tr>
       <tr class="row1" style="vertical-align:top;">
         <td>{TXT_PODCAST_DESCRIPTION}</td>
-        <td colspan="3"><textarea name="podcast_medium_description" cols="150" rows="10" style="width:450px; height:100px;">{PODCAST_MEDIUM_DESCRIPTION}</textarea></td>
+				<td colspan="3">{PODCAST_MEDIUM_DESCRIPTION}</td>
       </tr>
       <tr class="row2">
         <td>{TXT_PODCAST_SOURCE}</td>
@@ -40,7 +40,7 @@
         <td>{TXT_PODCAST_FILESIZE}</td>
         <td colspan="3"><input {PODCAST_MEDIUM_YOUTUBE_DISABLED} type="text" value="{PODCAST_MEDIUM_FILESIZE}" name="podcast_medium_filesize" style="width:50px; text-align:right;" /> {TXT_PODCAST_BYTES}</td>
       </tr>
-      <tr class="row1">
+			<tr class="row1" style="vertical-align:top;">
         <td>{TXT_PODCAST_THUMBNAIL}</td>
         <td colspan="3"><a href="javascript:void(0);" id="podcast_thumbnail_link" title="{TXT_PODCAST_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('?cmd=fileBrowser&amp;standalone=true&amp;path=/', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');" >{TXT_PODCAST_EDIT_OR_ADD_IMAGE}<br /> <img id="podcast_thumbnail"  style="border: none;" src="{PODCAST_MEDIUM_THUMBNAIL_SRC}" title="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" alt="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" /></a></td>
       </tr>
