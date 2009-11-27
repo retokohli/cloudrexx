@@ -140,10 +140,10 @@ class Exchange
 
 /*  TODO: This seems obsolete.  As does the whole class.
         // Check if we are in the right step
-        if($this->arrExchangeStep['import'] != $this->arrExchangeSteps['import'][0]) {
+        if ($this->arrExchangeStep['import'] != $this->arrExchangeSteps['import'][0]) {
 //$this->checkStep('import');
         }
-        if(!$this->arrExchangeStep['export'] != $this->arrExchangeSteps['export'][0]) {
+        if (!$this->arrExchangeStep['export'] != $this->arrExchangeSteps['export'][0]) {
 //$this->checkStep('export');
         }
 */
@@ -198,7 +198,7 @@ class Exchange
                         'text'    => "Kunden"
                         ));
                 $this->_objTpl->setCurrentBlock('tablesExport');
-                for($i=0;$i<count($_SESSION['shop_exchange_export']['tables']);$i++) {
+                for ($i=0;$i<count($_SESSION['shop_exchange_export']['tables']);$i++) {
                     $this->_objTpl->setVariable(array(
                             'TABLE_NAME'        => $_SESSION['shop_exchange_export']['tables'][$i]['name'],
                             'TXT_TABLE_NAME'    => $_SESSION['shop_exchange_export']['tables'][$i]['text']
@@ -211,11 +211,11 @@ class Exchange
 
             case 'selectCategories':
                 // Check if we are in the right step
-//                if($this->checkStep('export')){break;}
+//                if ($this->checkStep('export')) {break;}
 
                 // Gets the selected table
-                for($i=0;$i<count($_SESSION['shop_exchange_export']['tables']);$i++) {
-                    if(in_array($_POST['table'],$_SESSION['shop_exchange_export']['tables'][$i])) {
+                for ($i=0;$i<count($_SESSION['shop_exchange_export']['tables']);$i++) {
+                    if (in_array($_POST['table'],$_SESSION['shop_exchange_export']['tables'][$i])) {
                         $_SESSION['shop_exchange_export']['table'] = array(
                                 'name'    => $_SESSION['shop_exchange_export']['tables'][$i]['name'],
                                 'text'    => $_SESSION['shop_exchange_export']['tables'][$i]['text']
@@ -231,9 +231,9 @@ class Exchange
                         // Gets the product selection list
                         $query = "SELECT catid, parentid, catname
                                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
-                        if(!($objResult = $objDatabase->Execute($query))) {
+                        if (!($objResult = $objDatabase->Execute($query))) {
                             $i=0;
-                            while(!$objResult->EOF) {
+                            while (!$objResult->EOF) {
                                 $arrCategorie[$i] = array(
                                                         'catid'        => $objResult->fields['catid'],
                                                         'parentid'    => $objResult->fields['parentid'],
@@ -244,8 +244,8 @@ class Exchange
                             }
 
                             // Generates the categorie lists
-                            for($i=0;$i<count($arrCategorie);$i++) {
-                                if($arrCategorie[$i]['parentid'] != 0) {
+                            for ($i=0;$i<count($arrCategorie);$i++) {
+                                if ($arrCategorie[$i]['parentid'] != 0) {
                                     $arrCategorie[$i]['catname'] = $arrCategorie[$arrCategorie[$i]['parentid']]['catname']."_".$arrCategorie[$i]['catname'];
                                 }
                                 $this->_objTpl->setCurrentBlock('categorieList_selectCategories');
@@ -275,7 +275,7 @@ class Exchange
 
             case 'selectCols':
                 // Check if we are in the right step
-//                if($this->checkStep('export')){break;}
+//                if ($this->checkStep('export')) {break;}
 
                 $this->_objTpl->setVariable(array(
                         'FILENAME' => $_SESSION['shop_exchange_export']['table']['text']
@@ -284,7 +284,7 @@ class Exchange
                 switch($_SESSION['shop_exchange_export']['table']['name']) {
                     case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         $this->_objTpl->setCurrentBlock('categorieList_selectCols');
-                        for($i=0;$i<count($_REQUEST['categories']);$i++) {
+                        for ($i=0;$i<count($_REQUEST['categories']);$i++) {
                             $_SESSION['shop_exchange_export']['products']['categories'][$i] = array(
                                     'id' => $_REQUEST['categories'][$i]
                                     );
@@ -303,7 +303,7 @@ class Exchange
                 $arrMetadata = $objDb->metadata();
 
                 $this->_objTpl->setCurrentBlock('Cols');
-                for($i=0;$i<count($arrMetadata);$i++) {
+                for ($i=0;$i<count($arrMetadata);$i++) {
                     $this->_objTpl->setVariable(array(
                             'COL' => $arrMetadata[$i]['name']
                             ));
@@ -315,7 +315,7 @@ class Exchange
 
             case 'download':
                 // Check if we are in the right step
-//                if($this->checkStep('export')){break;}
+//                if ($this->checkStep('export')) {break;}
 
                 $_SESSION['shop_exchange_export']['file']['type'] = $_POST['type'];
                 $_SESSION['shop_exchange_export']['cols'] = $_POST['cols'];
@@ -324,8 +324,8 @@ class Exchange
                 switch ($_SESSION['shop_exchange_export']['file']['type']) {
                     case "csv":
                         $link = $this->strExportLink.'?content=SELECT ';
-                        for($i=0;$i<count($_SESSION['shop_exchange_export']['cols']);$i++) {
-                            if($i>0) {
+                        for ($i=0;$i<count($_SESSION['shop_exchange_export']['cols']);$i++) {
+                            if ($i>0) {
                                 $link .= ",";
                             }
                             $link .= $_SESSION['shop_exchange_export']['cols'][$i];
@@ -334,8 +334,8 @@ class Exchange
                             case DBPREFIX."module_shop".MODULE_INDEX."_products":
                                 $link .=" FROM ".$_SESSION['shop_exchange_export']['table']['name']." WHERE ";
                                 $first = true;
-                                for($i=0;$i<count($_SESSION['shop_exchange_export']['products']['categories']);$i++) {
-                                        if($first) {
+                                for ($i=0;$i<count($_SESSION['shop_exchange_export']['products']['categories']);$i++) {
+                                        if ($first) {
                                             $link .= "catid=";
                                             $first = false;
                                         } else {
@@ -374,7 +374,7 @@ class Exchange
         global $objDatabase, $_ARRAYLANG;
         print "IMPORT";
 //        $this->selectPage('import',$this->arrExchangeStep['import']);
-        switch($step){
+        switch($step) {
             case 'none':
                 $this->arrExchangeStep['import'] = $this->arrExchangeSteps['import'][0];
                 break;
@@ -395,7 +395,7 @@ class Exchange
                                 ));
 
                 $this->_objTpl->setCurrentBlock('tablesImport');
-                for($i=0;$i<count($_SESSION['shop_exchange_import']['tables']);$i++) {
+                for ($i=0;$i<count($_SESSION['shop_exchange_import']['tables']);$i++) {
                     $this->_objTpl->setVariable(array(
                             'TABLE_NAME'        => $_SESSION['shop_exchange_import']['tables'][$i]['name'],
                             'TXT_TABLE_NAME'    => $_SESSION['shop_exchange_import']['tables'][$i]['text']
@@ -408,7 +408,7 @@ class Exchange
 
             case 'selectFiletype': // Gets the file type of the file to import and displays some file type specifies option
                 // Check if we are in the right step
-//                if($this->checkStep('import')){break;}
+//                if ($this->checkStep('import')) {break;}
 
                 $_SESSION['shop_exchange_import']['file'] = $_FILES['file'];
                 $this->_objTpl->setVariable(array(
@@ -416,8 +416,8 @@ class Exchange
                         ));
 
                 // Gets the selected table
-                for($i=0;$i<count($_SESSION['shop_exchange_import']['tables']);$i++) {
-                    if(array_search($_POST['table'],$_SESSION['shop_exchange_import']['tables'][$i])) {
+                for ($i=0;$i<count($_SESSION['shop_exchange_import']['tables']);$i++) {
+                    if (array_search($_POST['table'],$_SESSION['shop_exchange_import']['tables'][$i])) {
                         $_SESSION['shop_exchange_import']['table'] = array(
                                 'name'    => $_SESSION['shop_exchange_import']['tables'][$i]['name'],
                                 'text'    => $_SESSION['shop_exchange_import']['tables'][$i]['text'],
@@ -435,8 +435,8 @@ class Exchange
                             'TYPE'            => $type,
                             'DESCRIPTION'    => $description[0]
                             ));
-                    if(in_array($_SESSION['shop_exchange_import']['file']['type'],$description)) {
-                        if(move_uploaded_file($_SESSION['shop_exchange_import']['file']['tmp_name'], $this->strImportPath.$_SESSION['shop_exchange_import']['file']['name'])) {
+                    if (in_array($_SESSION['shop_exchange_import']['file']['type'],$description)) {
+                        if (move_uploaded_file($_SESSION['shop_exchange_import']['file']['tmp_name'], $this->strImportPath.$_SESSION['shop_exchange_import']['file']['name'])) {
                             $fileType = $type;
                             $this->_objTpl->setVariable(array(
                                     'SELECTED' => "selected"
@@ -477,7 +477,7 @@ class Exchange
 
             case 'importOptions': // Displays the col assignment and the import options
                 // Check if we are in the right step
-//                if($this->checkStep('import')){break;}
+//                if ($this->checkStep('import')) {break;}
 
                 $arrImportCols = array();
 
@@ -500,22 +500,22 @@ class Exchange
                 switch($_SESSION['shop_exchange_import']['file']['type']) {
                     case "csv":
                         $strStart = 0;
-                        for($i=0;$i<strlen($fileContent);$i++) {
+                        for ($i=0;$i<strlen($fileContent);$i++) {
                             // If the end of line is reached, continue to read the cells
-                            if(ord(substr($fileContent,$i,1)) == 13 && ord(substr($fileContent,$i+1,1)) == 10) {
+                            if (ord(substr($fileContent,$i,1)) == 13 && ord(substr($fileContent,$i+1,1)) == 10) {
                                 array_push($arrImportCols,substr($fileContent,$strStart,$i-$strStart));
                                 $strStart = $i+2;
                                 $col=0;
                                 $row=0;
-                                for($j=$strStart;$j<strlen($fileContent);$j++) {
-                                    if(ord(substr($fileContent,$j,1)) == 13 && ord(substr($fileContent,$j+1,1)) == 10)
+                                for ($j=$strStart;$j<strlen($fileContent);$j++) {
+                                    if (ord(substr($fileContent,$j,1)) == 13 && ord(substr($fileContent,$j+1,1)) == 10)
                                     {
                                         $arrImportRows[$row][$arrImportCols[$col]] = substr($fileContent,$strStart,$j-($strStart));
                                         $strStart = $j+2;
                                         $col=0;
                                         $row++;
                                     }
-                                    if(substr($fileContent,$j,1) == $_SESSION['shop_exchange_import']['file']['separator']) {
+                                    if (substr($fileContent,$j,1) == $_SESSION['shop_exchange_import']['file']['separator']) {
                                         $arrImportRows[$row][$arrImportCols[$col]] = substr($fileContent,$strStart,$j-$strStart);
                                         $strStart = $j+1;
                                         $col++;
@@ -523,7 +523,7 @@ class Exchange
                                 }
                                 break;
                             }
-                            if(substr($fileContent,$i,1) == $_SESSION['shop_exchange_import']['file']['separator']) {
+                            if (substr($fileContent,$i,1) == $_SESSION['shop_exchange_import']['file']['separator']) {
                                 array_push($arrImportCols,substr($fileContent,$strStart,$i-$strStart));
                                 $strStart = $i+1;
                             }
@@ -552,12 +552,12 @@ class Exchange
                 foreach ($arrImportCols as $colName) {
                     $isSelected = false;
                     $this->_objTpl->setCurrentBlock('colList');
-                    for($i=0;$i<count($arrMetadata);$i++) {
+                    for ($i=0;$i<count($arrMetadata);$i++) {
                         $this->_objTpl->setVariable(array(
                                 'COL_DB' => $arrMetadata[$i]['name'],
                                 'COL_DB_TEXT' => $arrMetadata[$i]['name']
                                 ));
-                        if($arrMetadata[$i]['name'] == $colName) {
+                        if ($arrMetadata[$i]['name'] == $colName) {
                             $this->_objTpl->setVariable(array(
                                     'SELECTED' => "selected"
                                     ));
@@ -569,7 +569,7 @@ class Exchange
                             'COL_DB' => "",
                             'COL_DB_TEXT' => "TXT_NOT_ASSIGNED"
                             ));
-                    if(!$isSelected) {
+                    if (!$isSelected) {
                         $this->_objTpl->setVariable(array(
                                 'SELECTED' => "selected"
                                 ));
@@ -587,7 +587,7 @@ class Exchange
 
             case 'importRecords': // Import the records into the database table
                 // Check if we are in the right step
-//                if($this->checkStep('import')){break;}
+//                if ($this->checkStep('import')) {break;}
 
                 $arrIds = array();
                 $arrKeepIds = array();
@@ -600,34 +600,34 @@ class Exchange
                 $_SESSION['shop_exchange_import']['importCols'] = $arrImportCols;
 
                 // Delete the ID col assignment if requested
-                if($_POST['optionId'] == "dontImport") {
+                if ($_POST['optionId'] == "dontImport") {
                     $_SESSION['shop_exchange_import']['importCols'][$_SESSION['shop_exchange_import']['table']['id']] = "";
                 }
 
                 // Get the existing IDs from the database table
                 $query = "SELECT ".$_SESSION['shop_exchange_import']['table']['id']." FROM ".$_SESSION['shop_exchange_import']['table']['name'];
                 $objResult = $objDatabase->Execute($query);
-                while(!$objResult->EOF) {
+                while (!$objResult->EOF) {
                     array_push($arrIds,$objResult->fields[$_SESSION['shop_exchange_import']['table']['id']]);
                     $objResult->MoveNext();
                 }
 
                 // Clear the table
-                if($_POST['optionImport'] == "del") {
+                if ($_POST['optionImport'] == "del") {
                     switch($_SESSION['shop_exchange_import']['table']['name']) {
                         case DBPREFIX.'module_shop_products':
                             // Check if there are products that are still in use by an ordering
                             $query = "SELECT productid FROM ".DBPREFIX.'module_shop_order_items';
                             $objResult = $objDatabase->Execute($query);
-                            while(!$objResult->EOF) {
-                                if(in_array($objResult->fields['productid'],$arrIds)) {
+                            while (!$objResult->EOF) {
+                                if (in_array($objResult->fields['productid'],$arrIds)) {
                                     array_push($arrProducts,$objResult->fields['productid']);
                                 }
                                 $objResult->MoveNext();
                             }
                             // Generate a list of data records to keep in the table
-                            for($i=0;$i<count($arrIds);$i++) {
-                                if(in_array($arrIds[$i],$arrProducts)) {
+                            for ($i=0;$i<count($arrIds);$i++) {
+                                if (in_array($arrIds[$i],$arrProducts)) {
                                     array_push($arrKeepIds,$arrIds[$i]);
                                 } else {
                                     $arrIds[array_search($arrIds[$i],$arrIds)] = "";
@@ -639,7 +639,7 @@ class Exchange
                     // Generate a string of data records to keep in the table
                     $first = true;
                     foreach ($arrKeepIds as $id) {
-                        if($first) {
+                        if ($first) {
                             $strIds .= " WHERE ";
                             $first = false;
                         }
@@ -657,11 +657,11 @@ class Exchange
                     $strCols = "";
                     $strValues = "";
                     foreach ($row as $key => $value) {
-                        if($_SESSION['shop_exchange_import']['importCols'][$key])
+                        if ($_SESSION['shop_exchange_import']['importCols'][$key])
                         {
                             // Delete the ID-col value if it exists already in the database table
-                            if($_SESSION['shop_exchange_import']['importCols'][$key] == $_SESSION['shop_exchange_import']['table']['id']) {
-                                if(in_array($value,$arrIds)) {
+                            if ($_SESSION['shop_exchange_import']['importCols'][$key] == $_SESSION['shop_exchange_import']['table']['id']) {
+                                if (in_array($value,$arrIds)) {
                                     $value = "";
                                 } else {
                                     array_push($arrIds,$value);
@@ -698,10 +698,10 @@ class Exchange
     */
     function selectPage($method,$step)
     {
-        for($i=0;$i<count($this->arrExchangeSteps[$method]);$i++) {
-            if(($this->arrExchangeSteps[$method][$i] == $step and $this->strMethod == $method) or ($i == 0 and $this->strMethod != $method)) {
+        for ($i=0;$i<count($this->arrExchangeSteps[$method]);$i++) {
+            if (($this->arrExchangeSteps[$method][$i] == $step and $this->strMethod == $method) or ($i == 0 and $this->strMethod != $method)) {
                 $this->_objTpl->touchBlock($method.'_'.$this->arrExchangeSteps[$method][$i]);
-            }else{
+            } else {
                 $this->_objTpl->hideBlock($method.'_'.$this->arrExchangeSteps[$method][$i]);
             }
         }
@@ -730,7 +730,7 @@ class Exchange
     */
     function checkStep($method)
     {
-        if($_SESSION['shop_exchange_'.$method]['step_old'] != $this->arrExchangeSteps[$method][array_search($this->arrExchangeStep[$method],$this->arrExchangeSteps[$method])-1]) {
+        if ($_SESSION['shop_exchange_'.$method]['step_old'] != $this->arrExchangeSteps[$method][array_search($this->arrExchangeStep[$method],$this->arrExchangeSteps[$method])-1]) {
             //Display the import page with a status message
             $this->_objTpl->setVariable(array(
                     'CONTENT_STATUS' => "TXT_".strtoupper($method)."_PROCEDURE_WAS_NOT_VALID_ANY_LONGER"

@@ -155,16 +155,16 @@ class Payment
      */
     static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
     {
-   	    global $_ARRAYLANG;
+           global $_ARRAYLANG;
 
         $menu =
             '<select name="paymentId"'.
             ($onchange ? ' onchange="'.$onchange.'"' : '').'>'.
             (intval($selectedId) == 0 && $onchange
-	            ? '<option value="0" selected="selected">'.
-	              $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'].
-	              "</option>\n"
-	            : ''
+                ? '<option value="0" selected="selected">'.
+                  $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'].
+                  "</option>\n"
+                : ''
             ).
             self::getPaymentMenuoptions($selectedId, $countryId).
             "</select>\n";
@@ -200,7 +200,7 @@ class Payment
                 "</option>\n"
               : ''
             );
-        foreach($arrPaymentId as $id) {
+        foreach ($arrPaymentId as $id) {
             $strMenuoptions .=
                 '<option value="'.$id.'"'.
                 ($id == $selectedId ? ' selected="selected"' : '').'>'.

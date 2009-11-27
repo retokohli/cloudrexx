@@ -140,7 +140,7 @@ class Shipment
      */
     static function getShipperName($shipperId)
     {
-    	if (empty($shipperId)) return '';
+        if (empty($shipperId)) return '';
         if (empty(self::$arrShippers)) self::init(true);
         if (empty(self::$arrShippers[$shipperId])) return '';
         return self::$arrShippers[$shipperId]['name'];
@@ -168,7 +168,7 @@ class Shipment
     static function getShipmentsArray()
     {
         if (empty(self::$arrShippments)) self::init();
-    	return self::$arrShipments;
+        return self::$arrShipments;
     }
 
 

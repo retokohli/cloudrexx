@@ -1894,15 +1894,6 @@ class Shop extends ShopLibrary
     function getJavascriptCode($flagUpload=false)
     {
         global $_ARRAYLANG, $_CONFIGURATION;
-        if (!empty($_GET[session_name()])) {
-            session_write_close();
-            session_id($_GET[session_name()]);
-            session_start();
-        } else {
-            if (!isset($_SESSION['shop']['cart'])) {
-                session_start();
-            }
-        }
 
         $javascriptCode =
 "<script language=\"JavaScript\" type=\"text/javascript\">
@@ -3355,7 +3346,7 @@ die("YYY");
                         )
                     );
                     $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
-                        $_SESSION['shop']['total_price']    +
+                        $_SESSION['shop']['cart']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price']
                     );
@@ -3366,7 +3357,7 @@ die("YYY");
                     // must use every single orderitem in the cart to calculate the VAT now
                     $_SESSION['shop']['vat_price'] = $_SESSION['shop']['cart']['total_vat_amount'];
                     $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
-                        $_SESSION['shop']['total_price']    +
+                        $_SESSION['shop']['cart']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price'] -
                         $_SESSION['shop']['vat_price']
@@ -3387,7 +3378,7 @@ die("YYY");
                             $_SESSION['shop']['shipment_price']
                         ));
                     $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
-                        $_SESSION['shop']['total_price']    +
+                        $_SESSION['shop']['cart']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price'] +
                         $_SESSION['shop']['vat_price']);
@@ -3397,7 +3388,7 @@ die("YYY");
                     // foreign country; do not add VAT
                     $_SESSION['shop']['vat_price']         = '0.00';
                     $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
-                        $_SESSION['shop']['total_price']   +
+                        $_SESSION['shop']['cart']['total_price']   +
                         $_SESSION['shop']['payment_price'] +
                         $_SESSION['shop']['shipment_price']
                     );
@@ -3411,7 +3402,7 @@ die("YYY");
             $_SESSION['shop']['vat_products_txt']  = '';
             $_SESSION['shop']['vat_grand_txt']     = '';
             $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
-                $_SESSION['shop']['total_price']   +
+                $_SESSION['shop']['cart']['total_price']   +
                 $_SESSION['shop']['payment_price'] +
                 $_SESSION['shop']['shipment_price']);
         }
@@ -4064,7 +4055,6 @@ right after the customer logs in!
                                 $productOptions .= $productOptionsValues;
                             }
                         }
-                        $productOptions .= '</i>';
                     }
 
                     // Test the distribution method for delivery
@@ -4094,7 +4084,9 @@ right after the customer logs in!
                         'SHOP_PRODUCT_TITLE'        =>
                             str_replace(
                                 '"', '&quot;',
-                                $objResult->fields['title'].'<br /><i>'.$productOptions).'</i>',
+                                $objResult->fields['title'].
+                                ($productOptions
+                                  ? '<br /><i>'.$productOptions.'</i>' : '')),
                         'SHOP_PRODUCT_OPTIONS'      =>
                             '<i>'.$productOptions.'</i>',
                         'SHOP_PRODUCT_PRICE'        => Currency::formatPrice(($price)*$arrProduct['quantity']),

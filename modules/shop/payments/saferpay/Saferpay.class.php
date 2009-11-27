@@ -387,11 +387,11 @@ class Saferpay
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payConfirm'].'?'.$this->attributes);
         if (!$this->arrTemp['result']) {
-	        // Try socket connection as well
-	        $this->arrTemp['result'] =
-	            Socket::getHttp10Response(
-	                $this->gateway['payConfirm'].'?'.$this->attributes
-	            );
+            // Try socket connection as well
+            $this->arrTemp['result'] =
+                Socket::getHttp10Response(
+                    $this->gateway['payConfirm'].'?'.$this->attributes
+                );
         }
 
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
@@ -501,7 +501,7 @@ class Saferpay
                 $this->arrError[] = $attribute." isn't valid.";
                 return false;
             case 'ACCOUNTID':
-                if($this->isTest) {
+                if ($this->isTest) {
                     $this->arrShopOrder[$attribute] = $this->testAccountId;
                 }
                 if ($this->arrShopOrder[$attribute] == '') {
