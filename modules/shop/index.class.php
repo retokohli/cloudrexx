@@ -4294,6 +4294,7 @@ right after the customer logs in!
         } else {
             $this->addMessage($_ARRAYLANG['TXT_NO_PENDING_ORDER']);
         }
+        // Comment this for testing, so you can reuse the same account and cart
         $this->destroyCart();
         // clear backup ID, avoid success() from being run again
         unset($_SESSION['shop']['orderid_checkin']);

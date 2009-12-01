@@ -2215,8 +2215,8 @@ class shopmanager extends ShopLibrary
                     'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => $this->arrConfig['yellowpay_hash_signature_in']['value'],
                     'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => $this->arrConfig['yellowpay_hash_signature_out']['value'],
 
-                    'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => $objYellowpay->getKnownPaymentMethodCheckboxes(),
-                    'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' => $objYellowpay->getAuthorizationMenuoptions(),
+                    'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => Yellowpay::getKnownPaymentMethodCheckboxes(),
+                    'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' => Yellowpay::getAuthorizationMenuoptions(),
                     'SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
                     'SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
 

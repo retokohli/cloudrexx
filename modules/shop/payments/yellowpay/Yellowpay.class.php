@@ -273,9 +273,9 @@ class Yellowpay
         // protocol (http:// or https://)
         $base_uri = $_SERVER['HTTP_REFERER'];
         $match = array();
-        if (preg_match('/^(.+section=shop)/', $base_uri, $match))
+        if (preg_match('/^(.+section=shop)/', $base_uri, $match)) {
             $base_uri = $match[1];
-        if (!FWValidator::isUri($base_uri)) {
+        } else {
             self::$arrError[] = 'Failed to determine base URI: '.$base_uri;
             return '';
         }
@@ -309,9 +309,18 @@ class Yellowpay
             'action="http://localhost/c_trunk/modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
             ">\n";
 */
-        if (!self::addHash()) return 'No hash';
-        if (!self::verifyKeys()) return 'No verify';
-        if (!self::addKeys()) return 'no keys';
+        if (!self::addHash()) {
+            self::$arrError[] = 'ERROR: Failed to compute hash';
+            return false;
+        }
+        if (!self::verifyKeys()) {
+            self::$arrError[] = 'ERROR: Failed to verify keys';
+            return false;
+        }
+        if (!self::addKeys()) {
+            self::$arrError[] = 'ERROR: Failed to add keys';
+            return false;
+        }
         if ($autopost) {
             self::$form .=
                 '<script type="text/javascript">/* <![CDATA[ */ '.
@@ -445,7 +454,9 @@ class Yellowpay
             case 'declineurl':
             case 'exceptionurl':
             case 'cancelurl':
-                if (FWValidator::isUri($value)) return $value;
+//                if (FWValidator::isUri($value)) return $value;
+// *SHOULD* verify the URIs, but the expression is not fit
+                if ($value) return $value;
                 break;
             // Optional
             // optional customer details, highly recommended for fraud prevention: see chapter 5.2
@@ -513,7 +524,6 @@ class Yellowpay
             case 'Alias':
             case 'AliasUsage':
             case 'AliasOperation':
-                return false;
                 break;
         }
         self::$arrError[] = "Invalid field '$key', value '$value'";
@@ -565,6 +575,7 @@ class Yellowpay
         if ($_GET['SHASIGN'] == $hash) {
             return true;
         }
+        self::$arrError[] = 'Invalid SHASIGN value in request';
         return false;
     }
 
