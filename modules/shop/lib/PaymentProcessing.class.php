@@ -395,7 +395,7 @@ class PaymentProcessing
         $yellowpayForm = Yellowpay::getForm(
             $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']
         );
-        if (_PAYMENT_DEBUG && count(Yellowpay::$arrError) > 0) {
+        if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
             $strError =
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
@@ -479,7 +479,21 @@ class PaymentProcessing
                     return intval($_REQUEST['orderid']);
                 break;
             case 'yellowpay':
-                return Yellowpay::checkin();
+                $order_id = Yellowpay::checkin();
+//                if (!$order_id) {
+//                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
+//                        global $_ARRAYLANG;
+//                        echo('<font color="red"><b>'.
+//                        $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
+//                        '</b><br />'.
+//                        'Errors:<br />'.
+//                        join('<br />', Yellowpay::$arrError).
+//                        'Warnings:<br />'.
+//                        join('<br />', Yellowpay::$arrWarning).
+//                        '</font>');
+//                    }
+//                }
+                return $order_id;
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
                 require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
