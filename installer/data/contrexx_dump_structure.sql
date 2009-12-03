@@ -519,11 +519,23 @@ CREATE TABLE `contrexx_module_block_blocks` (
   `random` int(1) NOT NULL default '0',
   `random_2` int(1) NOT NULL default '0',
   `random_3` int(1) NOT NULL default '0',
+  `random_4` int(1) NOT NULL default '0',
   `global` int(1) NOT NULL default '0',
   `active` int(1) NOT NULL default '0',
   `order` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_block_categories` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `parent` int(10) NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  `order` int(10) NOT NULL default '0',
+  `status` tinyint(1) NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
