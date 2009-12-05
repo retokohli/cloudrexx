@@ -514,6 +514,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_block_blocks` (
   `id` int(10) unsigned NOT NULL auto_increment,
+  `cat` int(10) unsigned NOT NULL default '0',
   `content` text NOT NULL,
   `name` varchar(255) NOT NULL default '',
   `random` int(1) NOT NULL default '0',
