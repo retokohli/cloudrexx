@@ -62,6 +62,13 @@ class blockManager extends blockLibrary
     var $_strErrMessage = '';
 
     /**
+     * row class index
+     *
+     * @var integer
+     */
+    var $_index = 0;
+
+    /**
     * Constructor
     */
     function blockManager()
@@ -93,8 +100,13 @@ class blockManager extends blockLibrary
             $this->_strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
         }
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "   ".($_CONFIG['blockStatus'] == '1' ? "<a href='index.php?cmd=block&amp;act=overview'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a><a href='index.php?cmd=block&amp;act=modify'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>" : "")."
-                                                            <a href='index.php?cmd=block&amp;act=settings'>".$_ARRAYLANG['TXT_BLOCK_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "   "
+            .($_CONFIG['blockStatus'] == '1'
+                 ? "<a href='index.php?cmd=block&amp;act=overview'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a>
+                    <a href='index.php?cmd=block&amp;act=modify'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>"
+                 : "")
+            ."<a href='index.php?cmd=block&amp;act=settings'>".$_ARRAYLANG['TXT_BLOCK_SETTINGS']."</a>"
+            ."<a href='index.php?cmd=block&amp;act=categories'>".$_ARRAYLANG['TXT_BLOCK_CATEGORIES']."</a>");
     }
 
     /**
@@ -165,7 +177,23 @@ class blockManager extends blockLibrary
             $this->_globalBlockOff();
             $this->_showOverview();
             break;
-
+        case 'categories':
+            if(!empty($_POST['frmCategorySubmit'])){
+                $this->saveCategory();
+            }
+            $this->showCategories();
+            break;
+        case 'editCategory':
+            $this->editCategory();
+            break;
+        case 'deleteCategory':
+            $this->deleteCategory();
+            $this->showCategories();
+            break;
+        case 'multiactionCategory':
+            $this->doEntryMultiAction($_REQUEST['frmShowCategoriesMultiAction']);
+            $this->showCategories();
+            break;
         default:
             $this->_showOverview();
             break;
@@ -197,6 +225,8 @@ class blockManager extends blockLibrary
         $this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_BLOCKS'];
         $this->_objTpl->loadTemplateFile('module_block_overview.html');
 
+        $catId = !empty($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
+
         $this->_objTpl->setVariable(array(
             'TXT_BLOCK_BLOCKS'                  => $_ARRAYLANG['TXT_BLOCK_BLOCKS'],
             'TXT_BLOCK_NAME'                    => $_ARRAYLANG['TXT_BLOCK_NAME'],
@@ -218,10 +248,16 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_CONFIRM_DELETE_BLOCK'    => $_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'],
             'TXT_SAVE_CHANGES'                  => $_CORELANG['TXT_SAVE_CHANGES'],
             'TXT_BLOCK_OPERATION_IRREVERSIBLE'  => $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'],
-            'TXT_BLOCK_STATUS'                  => $_ARRAYLANG['TXT_BLOCK_STATUS']
+            'TXT_BLOCK_STATUS'                  => $_ARRAYLANG['TXT_BLOCK_STATUS'],
+            'TXT_BLOCK_CATEGORY'                => $_ARRAYLANG['TXT_BLOCK_CATEGORY'],
+            'TXT_BLOCK_CATEGORIES_ALL'          => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ALL'],
+            'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
+            'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
+            'CSRF_KEY'                          => CSRF::key(),
+            'CSRF_CODE'                         => CSRF::code(),
         ));
 
-        $arrBlocks = &$this->_getBlocks();
+        $arrBlocks = &$this->_getBlocks($_REQUEST['catId']);
         if (count($arrBlocks)>0) {
             $rowNr = 0;
             foreach ($arrBlocks as $blockId => $arrBlock) {
@@ -235,29 +271,34 @@ class blockManager extends blockLibrary
                 }
 
                 if ($arrBlock['random'] ==  '1') {
-                    $random = "<img src='images/icons/refresh.gif' width='16' height='16' border='0' alt='' />";
+                    $random = "<img src='images/icons/refresh.gif' width='16' height='16' border='0' alt='random 1' title='random 1' />";
                 } else {
-                    $random = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
+                    $random = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
                 }
 
                 if ($arrBlock['random2'] ==  '1') {
-                    $random2 = "<img src='images/icons/refresh2.gif' width='16' height='16' border='0' alt='' />";
+                    $random2 = "<img src='images/icons/refresh2.gif' width='16' height='16' border='0' alt='random 2' title='random 2' />";
                 } else {
-                    $random2 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
+                    $random2 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
                 }
 
                 if ($arrBlock['random3'] ==  '1') {
-                    $random3 = "<img src='images/icons/refresh3.gif' width='16' height='16' border='0' alt='' />";
+                    $random3 = "<img src='images/icons/refresh3.gif' width='16' height='16' border='0' alt='random 3' title='random 3' />";
                 } else {
-                    $random3 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
+                    $random3 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
+                }
+
+                if ($arrBlock['random4'] ==  '1') {
+                    $random3 = "<img src='images/icons/refresh.gif' width='16' height='16' border='0' alt='random 4' title='random 4' />";
+                } else {
+                    $random3 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
                 }
 
                 if ($arrBlock['global'] ==  '1') {
-                    $global = "<img src='images/icons/upload.gif' width='16' height='16' border='0' alt='' />";
+                    $global = "<img src='images/icons/upload.gif' width='16' height='16' border='0' alt='upload' title='upload' /> />";
                 } else {
                     $global = "&nbsp;";
                 }
-
 
                 $this->_objTpl->setVariable(array(
                     'BLOCK_ROW_CLASS'       => $rowNr % 2 ? "row1" : "row2",
@@ -265,6 +306,7 @@ class blockManager extends blockLibrary
                     'BLOCK_RANDOM'          => $random,
                     'BLOCK_RANDOM_2'        => $random2,
                     'BLOCK_RANDOM_3'        => $random3,
+                    'BLOCK_CATEGORY_NAME'   => $this->_categoryNames[$arrBlock['cat']],
                     'BLOCK_GLOBAL'          => $global,
                     'BLOCK_ORDER'           => $arrBlock['order'],
                     'BLOCK_PLACEHOLDER'     => $this->blockNamePrefix.$blockId,
@@ -291,6 +333,164 @@ class blockManager extends blockLibrary
     }
 
     /**
+     * show the categories
+     *
+     * @global array module language array
+     */
+    function showCategories()
+    {
+        global $_ARRAYLANG;
+
+        $catId = !empty($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
+        $this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_CATEGORIES'];
+        $this->_objTpl->loadTemplateFile('module_block_categories.html');
+
+        $this->_objTpl->setVariable(array(
+            'TXT_BLOCK_CATEGORIES'                  => $_ARRAYLANG['TXT_BLOCK_CATEGORIES'],
+            'TXT_BLOCK_CATEGORIES_MANAGE'           => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_MANAGE'],
+            'TXT_BLOCK_CATEGORIES_ADD'              => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ADD'],
+            'TXT_BLOCK_FUNCTIONS'                   => $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'],
+            'TXT_BLOCK_NAME'                        => $_ARRAYLANG['TXT_BLOCK_NAME'],
+            'TXT_BLOCK_NONE'                        => $_ARRAYLANG['TXT_BLOCK_NONE'],
+            'TXT_BLOCK_PARENT'                      => $_ARRAYLANG['TXT_BLOCK_PARENT'],
+            'TXT_BLOCK_SELECT_ALL'                  => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
+            'TXT_BLOCK_DESELECT_ALL'                => $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'],
+            'TXT_BLOCK_SUBMIT_SELECT'               => $_ARRAYLANG['TXT_BLOCK_SUBMIT_SELECT'],
+            'TXT_BLOCK_SUBMIT_DELETE'               => $_ARRAYLANG['TXT_BLOCK_SUBMIT_DELETE'],
+            'TXT_BLOCK_NO_CATEGORIES_FOUND'         => $_ARRAYLANG['TXT_BLOCK_NO_CATEGORIES_FOUND'],
+            'TXT_BLOCK_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'],
+            'TXT_BLOCK_CATEGORIES_DELETE_INFO_HEAD' => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_INFO_HEAD'],
+            'TXT_BLOCK_CATEGORIES_DELETE_INFO'      => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_INFO'],
+            'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown(),
+            'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
+            'CSRF_KEY'                              => CSRF::key(),
+            'CSRF_CODE'                             => CSRF::code(),
+        ));
+
+        $arrCategories = $this->_getCategories();
+        if(count($arrCategories) == 0){
+            $this->_objTpl->touchBlock('noCategories');
+            return;
+        }
+
+        $this->_objTpl->hideBlock('noCategories');
+        $this->_parseCategories($arrCategories[0]);  //first array contains all root categories (parent id 0)
+    }
+
+    function deleteCategory()
+    {
+        global $_ARRAYLANG;
+
+        if($this->_deleteCategory($_REQUEST['id'])){
+            $this->_strOkMessage  = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_OK'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_ERROR'];
+        }
+    }
+
+    /**
+     * recursively parse the categories
+     *
+     * @param array $arrCategories
+     * @param integer $level
+     * @param integer $index
+     */
+    function _parseCategories($arrCategories, $level = 0)
+    {
+        foreach ($arrCategories as $parentId => $arrCategory) {
+            $this->_objTpl->setVariable(array(
+                'BLOCK_CATEGORY_ROWCLASS'   => $this->_index++ % 2 == 0 ? 'row1' : 'row2',
+                'BLOCK_CATEGORY_ID'         => $arrCategory['id'],
+                'BLOCK_CATEGORY_NAME'       => str_repeat('&nbsp;', $level*4).$arrCategory['name'],
+            ));
+
+            if(empty($this->_categories[$arrCategory['id']])){
+                $this->_objTpl->touchBlock('deleteCategory');
+                $this->_objTpl->touchBlock('checkboxCategory');
+            }
+
+            $this->_objTpl->parse('showCategories');
+            if(!empty($this->_categories[$arrCategory['id']])){
+                $this->_parseCategories($this->_categories[$arrCategory['id']], $level+1);
+            }
+        }
+    }
+
+
+    function editCategory()
+    {
+        global $_ARRAYLANG;
+
+        $catId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+        $this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_EDIT'];
+        $this->_objTpl->loadTemplateFile('module_block_categories_edit.html');
+
+        $arrCategory = $this->_getCategory($_GET['id']);
+
+        $this->_objTpl->setVariable(array(
+            'TXT_BLOCK_NAME'                        => $_ARRAYLANG['TXT_BLOCK_NAME'],
+            'TXT_BLOCK_SAVE'                        => $_ARRAYLANG['TXT_BLOCK_SAVE'],
+            'TXT_BLOCK_PARENT'                      => $_ARRAYLANG['TXT_BLOCK_PARENT'],
+            'TXT_BLOCK_NONE'                        => $_ARRAYLANG['TXT_BLOCK_NONE'],
+            'TXT_BLOCK_CATEGORIES_EDIT'             => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_EDIT'],
+            'BLOCK_CATEGORY_ID'                     => $catId,
+            'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown($arrCategory['parent'], $catId),
+            'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
+            'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
+        ));
+    }
+
+
+    /**
+    * Performs the action for the dropdown-selection on the entry page.
+    *
+    * @param string $strAction: the action passed by the formular.
+    */
+    function doEntryMultiAction($strAction='')
+    {
+        global $_ARRAYLANG;
+
+        $success = true;
+        switch ($strAction) {
+            case 'delete':
+                foreach($_REQUEST['selectedCategoryId'] as $intEntryId) {
+                    if(!$this->_deleteCategory($intEntryId)){
+                        $success = false;
+                    }
+                }
+                if(!$success){
+                    $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_ERROR'];
+                } else {
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_OK'];
+                }
+                break;
+            default:
+                //do nothing!
+        }
+    }
+
+    /**
+     * saves a category
+     *
+     */
+    function saveCategory()
+    {
+        global $_ARRAYLANG;
+
+        $id     = !empty($_POST['frmCategoryId'    ])    ? $_POST['frmCategoryId'    ]    : 0;
+        $parent = !empty($_POST['frmCategoryParent'])    ? $_POST['frmCategoryParent']    : 0;
+        $name   = !empty($_POST['frmCategoryName'  ])    ? $_POST['frmCategoryName'  ]    : '-';
+        $order  = !empty($_POST['frmCategoryOrder' ])    ? $_POST['frmCategoryOrder' ]    : 1;
+        $status = !empty($_POST['frmCategoryStatus'])    ? $_POST['frmCategoryStatus']    : 1;
+
+        if($this->_saveCategory($id, $parent, $name, $order, $status)){
+            $this->_strOkMessage  = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ADD_OK'];
+        } else {
+            $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ADD_ERROR'];
+        }
+    }
+
+    /**
     * Show modify block
     *
     * Show the block modification page
@@ -305,10 +505,12 @@ class blockManager extends blockLibrary
         global $_ARRAYLANG, $objDatabase;
 
         $blockId                = isset($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
+        $blockCat               = 0;
         $blockName              = '';
         $blockRandom            = 0;
         $blockRandom2           = 0;
         $blockRandom3           = 0;
+        $blockRandom4           = 0;
         $blockContent           = '';
         $blockAssociatedLangIds = array();
 
@@ -317,11 +519,13 @@ class blockManager extends blockLibrary
 
 
         if (isset($_POST['block_save_block'])) {
+            $blockCat               = isset($_POST['blockCat']) ? $_POST['blockCat'] : 0;
             $blockContent           = isset($_POST['blockBlockContent']) ? $_POST['blockBlockContent'] : '';
             $blockName              = isset($_POST['blockName']) ? $_POST['blockName'] : '';
             $blockRandom            = isset($_POST['blockRandom']) ? intval($_POST['blockRandom']) : 0;
             $blockRandom2           = isset($_POST['blockRandom2']) ? intval($_POST['blockRandom2']) : 0;
             $blockRandom3           = isset($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
+            $blockRandom4           = isset($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
             $blockGlobal            = isset($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
             $blockPages             = array();
             $blockPages             = isset($_POST['selectedPages']) ? $_POST['selectedPages'] : '';;
@@ -341,14 +545,14 @@ class blockManager extends blockLibrary
             }
 
             if ($blockId != 0) {
-                if ($this->_updateBlock($blockId, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockGlobal, $blockAssociatedLangIds)) {
+                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
                     return $this->_showOverview();
                 } else {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
                 }
             } else {
-                if ($this->_addBlock($blockId, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockGlobal, $blockAssociatedLangIds)) {
+                if ($this->_addBlock($blockId, $blockCat, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], $blockName);
                     return $this->_showOverview();
                 } else {
@@ -356,12 +560,14 @@ class blockManager extends blockLibrary
                 }
             }
         } elseif (($arrBlock = &$this->_getBlock($blockId)) !== false) {
-            $blockName = $arrBlock['name'];
-            $blockRandom = $arrBlock['random'];
-            $blockRandom2 = $arrBlock['random2'];
-            $blockRandom3 = $arrBlock['random3'];
-            $blockGlobal = $arrBlock['global'];
-            $blockContent = $arrBlock['content'];
+            $blockName      = $arrBlock['name'];
+            $blockCat       = $arrBlock['cat'];
+            $blockRandom    = $arrBlock['random'];
+            $blockRandom2   = $arrBlock['random2'];
+            $blockRandom3   = $arrBlock['random3'];
+            $blockRandom4   = $arrBlock['random4'];
+            $blockGlobal    = $arrBlock['global'];
+            $blockContent   = $arrBlock['content'];
             $blockAssociatedLangIds = $this->_getAssociatedLangIds($blockId);
         } else {
             $blockAssociatedLangIds = array_keys(FWLanguage::getLanguageArray());
@@ -381,6 +587,7 @@ class blockManager extends blockLibrary
             'BLOCK_RANDOM'                      => $blockRandom == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_2'                    => $blockRandom2 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_3'                    => $blockRandom3 == '1' ? 'checked="checked"' : '',
+            'BLOCK_RANDOM_4'                    => $blockRandom4 == '1' ? 'checked="checked"' : '',
             'BLOCK_GLOBAL'                      => $blockGlobal == '1' ? 'checked="checked"' : '',
             'BLOCK_CONTENT'                     => get_wysiwyg_editor('blockBlockContent', $blockContent)
         ));
@@ -495,17 +702,19 @@ class blockManager extends blockLibrary
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_BLOCK_CONTENT'             => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
-            'TXT_BLOCK_NAME'                => $_ARRAYLANG['TXT_BLOCK_NAME'],
-            'TXT_BLOCK_RANDOM'              => $_ARRAYLANG['TXT_BLOCK_RANDOM'],
-            'TXT_BLOCK_RANDOM'              => $_ARRAYLANG['TXT_BLOCK_RANDOM'],
-            'TXT_BLOCK_GLOBAL'              => $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'],
-            'TXT_BLOCK_FRONTEND_LANGUAGES'  => $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
-            'TXT_BLOCK_SAVE'                => $_ARRAYLANG['TXT_BLOCK_SAVE'],
-            'TXT_BLOCK_DEACTIVATE'          => $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
-            'TXT_SHOW_ON_ALL_PAGES'         => $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'],
-            'TXT_SHOW_ON_SELECTED_PAGES'    => $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
-            'BLOCK_FORM_ONSUBMIT'           => $formOnSubmit,
+            'TXT_BLOCK_CONTENT'                 => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
+            'TXT_BLOCK_NAME'                    => $_ARRAYLANG['TXT_BLOCK_NAME'],
+            'TXT_BLOCK_RANDOM'                  => $_ARRAYLANG['TXT_BLOCK_RANDOM'],
+            'TXT_BLOCK_GLOBAL'                  => $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'],
+            'TXT_BLOCK_FRONTEND_LANGUAGES'      => $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
+            'TXT_BLOCK_SAVE'                    => $_ARRAYLANG['TXT_BLOCK_SAVE'],
+            'TXT_BLOCK_DEACTIVATE'              => $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
+            'TXT_SHOW_ON_ALL_PAGES'             => $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'],
+            'TXT_SHOW_ON_SELECTED_PAGES'        => $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
+            'TXT_BLOCK_PARENT'                  => $_ARRAYLANG['TXT_BLOCK_PARENT'],
+            'TXT_BLOCK_NONE'                    => $_ARRAYLANG['TXT_BLOCK_NONE'],
+            'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
+            'BLOCK_FORM_ONSUBMIT'               => $formOnSubmit,
         ));
     }
 

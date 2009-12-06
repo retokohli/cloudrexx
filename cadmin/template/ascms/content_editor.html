@@ -676,7 +676,7 @@ var switchLangTab = function(inputLangElement){
         if(index == 0){ //if it's the first language always insert it before the first child
             $J('#contentLanguages li:first-child').before(insNode);
         } else if(index == len-1){ //if it's the last language always insert after the last child
-           $J('#contentLanguages li:last').after(insNode);
+            $J('#contentLanguages li:last').after(insNode);
         } else {
             //otherwise get all checked after the clicked input and insert it at the correct position
             var numberOfCheckedBefore = $J('#availableLanguages input:gt('+index+'):checked').length
@@ -892,14 +892,13 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     });
 
     if($('input[name=expertmode]', $form).attr('checked')){
-        var $frame = $('textarea[name=html]', $form);
-        $frame.after('<input type="hidden" id="html" name="html" style="display:none" />');
-        $('input[name=html]', $form).val($frame.val());
-        $frame.after('<input  type="hidden" id="html___Config"\
+        var $textarea = $('textarea[name=html]', $form);
+        $textarea.after('<input type="hidden" id="html" name="html" style="display:none" />');
+        $('input[name=html]', $form).val($textarea.val());
+        $textarea.after('<input  type="hidden" id="html___Config"\
                               value="CustomConfigurationsPath=/editor/FCKeditorConfig.php?langId%3D%26absoluteURIs%3D" style="display:none" />\
                       <iframe id="html___Frame" s'+/*url_rewriter.tags workaround*/'rc="/editor/fckeditor/editor/fckeditor.html?InstanceName=html&amp;Toolbar=Default"\
                               width="100%" height="450" frameborder="0" scrolling="no"></iframe>');
-        $frame  = $('iframe', $form);
         $('iframe', $form).hide();
     }else{
         html = $('input[name=html]', $form).val();

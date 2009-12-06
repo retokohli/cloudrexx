@@ -109,23 +109,33 @@ function showOrHide(strElement, strShortCut)
     <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
       <tbody>
         <tr>
-          <th colspan="4">{BLOCK_MODIFY_TITLE}</th>
+          <th colspan="5">{BLOCK_MODIFY_TITLE}</th>
+        </tr>
+        <tr class="row1">
+          <td width="16%">{TXT_BLOCK_NAME}:</td>
+          <td width="84%" colspan="4"><input type="text" name="blockName" value="{BLOCK_NAME}" size="50" /></td>
         </tr>
         <tr class="row2">
-          <td width="16%">{TXT_BLOCK_NAME}:</td>
-          <td width="84%" colspan="3"><input type="text" name="blockName" value="{BLOCK_NAME}" size="50" /></td>
+          <td width="16%">{TXT_BLOCK_PARENT}:</td>
+          <td width="84%" colspan="4">
+            <select name="blockCat">
+                <option value="0">{TXT_BLOCK_NONE}</option>
+                {BLOCK_CATEGORIES_PARENT_DROPDOWN}
+            </select>
+          </td>
         </tr>
         <tr class="row1">
           <td>{TXT_BLOCK_RANDOM}:</td>
           <td><input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/>[[BLOCK_RANDOMIZER]]</td>
           <td><input type="checkbox" name="blockRandom2" value="1" {BLOCK_RANDOM_2}/>[[BLOCK_RANDOMIZER_2]]</td>
           <td><input type="checkbox" name="blockRandom3" value="1" {BLOCK_RANDOM_3}/>[[BLOCK_RANDOMIZER_3]]</td>
+          <td><input type="checkbox" name="blockRandom4" value="1" {BLOCK_RANDOM_4}/>[[BLOCK_RANDOMIZER_4]]</td>
         </tr>
         <tr class="row2" style="vertical-align:top;">
           <td width="16%">{TXT_BLOCK_FRONTEND_LANGUAGES}</td>
           <td width="20%"><!-- BEGIN block_associated_language_0 --><a id="blockLangTab_Lang{BLOCK_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{BLOCK_LANG_ID2}'); showOrHide('{BLOCK_LANG_ID2}', '{BLOCK_SELECTED_LANG_SHORTCUT2}')" title="" hidefocus>{BLOCK_LANG_NAME}</a> {BLOCK_LANG_STATUS}<br /><!-- END block_associated_language_0 --></td>
           <td width="20%"><!-- BEGIN block_associated_language_1 --><a id="blockLangTab_Lang{BLOCK_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{BLOCK_LANG_ID2}'); showOrHide('{BLOCK_LANG_ID2}', '{BLOCK_SELECTED_LANG_SHORTCUT2}')" title="" hidefocus>{BLOCK_LANG_NAME}</a> {BLOCK_LANG_STATUS}<br /><!-- END block_associated_language_1 --></td>
-          <td width="44%"><!-- BEGIN block_associated_language_2 --><a id="blockLangTab_Lang{BLOCK_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{BLOCK_LANG_ID2}'); showOrHide('{BLOCK_LANG_ID2}', '{BLOCK_SELECTED_LANG_SHORTCUT2}')" title="" hidefocus>{BLOCK_LANG_NAME}</a> {BLOCK_LANG_STATUS}<br /><!-- END block_associated_language_2 --></td>
+          <td width="44%" colspan="2"><!-- BEGIN block_associated_language_2 --><a id="blockLangTab_Lang{BLOCK_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{BLOCK_LANG_ID2}'); showOrHide('{BLOCK_LANG_ID2}', '{BLOCK_SELECTED_LANG_SHORTCUT2}')" title="" hidefocus>{BLOCK_LANG_NAME}</a> {BLOCK_LANG_STATUS}<br /><!-- END block_associated_language_2 --></td>
         </tr>
     </table>
     <br />

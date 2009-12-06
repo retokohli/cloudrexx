@@ -1,43 +1,46 @@
 <!-- START module_block_overview.html -->
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
+var __CSRF__ = {key:'{CSRF_KEY}', code:'{CSRF_CODE}'};
+var __CSRF__PARAM__ = __CSRF__.key+'='+__CSRF__.code;
+
 function selectMultiAction()
 {
   with (document.frmBlocks) {
     switch (frmBlocksMultiAction.value) {
       case 'activate':
-        action='?cmd=block&act=activate';
+        action='{DIRECTORY_INDEX}?cmd=block&act=activate&'+__CSRF__PARAM__;
         submit();
         break;
 
       case 'deactivate':
-        action='?cmd=block&act=deactivate';
+        action='{DIRECTORY_INDEX}?cmd=block&act=deactivate&'+__CSRF__PARAM__;
         submit();
         break;
 
       case 'random':
-        action='?cmd=block&act=random';
+        action='{DIRECTORY_INDEX}?cmd=block&act=random&'+__CSRF__PARAM__;
         submit();
         break;
 
       case 'random_off':
-        action='?cmd=block&act=random_off';
+        action='{DIRECTORY_INDEX}?cmd=block&act=random_off&'+__CSRF__PARAM__;
         submit();
         break;
 
       case 'global':
-        action='?cmd=block&act=global';
+        action='{DIRECTORY_INDEX}?cmd=block&act=global&'+__CSRF__PARAM__;
         submit();
         break;
 
       case 'global_off':
-        action='?cmd=block&act=global_off';
+        action='{DIRECTORY_INDEX}?cmd=block&act=global_off&'+__CSRF__PARAM__;
         submit();
         break;
 
       case 'delete':
         if (confirm('{TXT_BLOCK_DELETE_SELECTED_BLOCKS}\n{TXT_BLOCK_OPERATION_IRREVERSIBLE}')) {
-          action='?cmd=block&act=del';
+          action='{DIRECTORY_INDEX}?cmd=block&act=del&'+__CSRF__PARAM__;
           submit();
         }
         break;
@@ -51,24 +54,31 @@ function blockDeleteBlock(blockId, blockName)
 {
   strConfirmMsg = '{TXT_BLOCK_CONFIRM_DELETE_BLOCK}';
   if (confirm(strConfirmMsg.replace('%s', blockName)+'\n{TXT_BLOCK_OPERATION_IRREVERSIBLE}')) {
-    window.location.href = 'index.php?cmd=block&act=del&blockId='+blockId;
+    window.location.href = '{DIRECTORY_INDEX}?cmd=block&act=del&blockId='+blockId+'&'+__CSRF__PARAM__;
   }
 }
 
 // ]]>
 </script>
-<form name="frmBlocks" method="post" action="?cmd=block">
+<form name="frmBlocks" method="get" action="{DIRECTORY_INDEX}?cmd=block">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
     <tbody>
       <tr>
-        <th colspan="7">{TXT_BLOCK_BLOCKS}</th>
+        <th colspan="6">{TXT_BLOCK_BLOCKS}</th>
+        <th>
+            <select name="blockCategory" onchange="location.href='{DIRECTORY_INDEX}?'+__CSRF__PARAM__+'&cmd=block&catId='+this.options[this.options.selectedIndex].value">
+                <option value="0">{TXT_BLOCK_CATEGORIES_ALL}</option>
+                {BLOCK_CATEGORIES_DROPDOWN}
+            </select>
+        </th>
       </tr>
       <tr class="row3">
-          <td width="1%" style="text-align:left; font-weight:bold;">#</td>
-          <td width="1%" style="text-align:left; font-weight:bold;">{TXT_BLOCK_STATUS}</td>
+        <td width="1%" style="text-align:left; font-weight:bold;">#</td>
+        <td width="1%" style="text-align:left; font-weight:bold;">{TXT_BLOCK_STATUS}</td>
         <td width="23%" style="font-weight:bold;">{TXT_BLOCK_NAME}</td>
         <td width="10%" style="font-weight:bold;">{TXT_BLOCK_PLACEHOLDER}</td>
-        <td width="60%" style="font-weight:bold;">{TXT_BLOCK_RANDOM}</td>
+        <td width="40%" style="font-weight:bold;">{TXT_BLOCK_RANDOM}</td>
+        <td width="20%" style="font-weight:bold;">{TXT_BLOCK_CATEGORY}</td>
         <td width="5%" style="text-align:right; font-weight:bold;">{TXT_BLOCK_FUNCTIONS}</td>
       </tr>
       <!-- BEGIN blockBlockList -->
@@ -77,7 +87,8 @@ function blockDeleteBlock(blockId, blockName)
           <td width="1%" style="text-align:center; font-weight:bold;">{BLOCK_STATUS}</td>
           <td width="23%"><input maxlength="5" size="1" value="{BLOCK_ORDER}" name="displayorder[{BLOCK_ID}]" >&nbsp;<a href="index.php?cmd=block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}">{BLOCK_NAME}</a></td>
           <td width="10%">[[{BLOCK_PLACEHOLDER}]]</td>
-          <td width="60%" style="text-align:left;">{BLOCK_RANDOM}&nbsp;{BLOCK_RANDOM_2}&nbsp;{BLOCK_RANDOM_3}</td>
+          <td width="40%" style="text-align:left;">{BLOCK_RANDOM}&nbsp;{BLOCK_RANDOM_2}&nbsp;{BLOCK_RANDOM_3}</td>
+          <td width="20%" style="text-align:left;">{BLOCK_CATEGORY_NAME}</td>
           <td width="5%" style="text-align:right;">
             <a href="index.php?cmd=block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}"><img src="images/icons/edit.gif" width="16" height="16" alt="{BLOCK_MODIFY}" border="0" /></a>
             <a href="index.php?cmd=block&amp;act=copy&amp;blockId={BLOCK_ID}" title="{BLOCK_COPY}"><img src="images/icons/copy.gif" width="16" height="16" alt="{BLOCK_COPY}" border="0" /></a>

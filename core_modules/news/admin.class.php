@@ -1290,7 +1290,7 @@ class newsManager extends newsLibrary {
 
             // find out original user's id
             $orig_user_sql = "
-                SELECT userid 
+                SELECT userid
                 FROM ".DBPREFIX."module_news
                 WHERE id = '$id'
             ";
