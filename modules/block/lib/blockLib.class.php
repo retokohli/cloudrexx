@@ -534,7 +534,7 @@ class blockLibrary
                     : ''
                  )
                 .(
-                  in_array($arrCategory['id'], $this->_getChildCategories($catId)) || $catId == $arrCategory['id'] //disable children and self
+                  ( $catId > 0 && in_array($arrCategory['id'], $this->_getChildCategories($catId)) ) || $catId == $arrCategory['id'] //disable children and self
                     ? 'disabled="disabled"'
                     : ''
                  )
@@ -567,7 +567,7 @@ class blockLibrary
         global $objDatabase;
 
         $id = intval($id);
-        if($id == $parent){ //don't allow category to attach to itself
+        if($id > 0 && $id == $parent){ //don't allow category to attach to itself
             return false;
         }
 
@@ -648,19 +648,22 @@ class blockLibrary
      * just to make this clear:
      * note that $somearray['somekey'][] = $foo adds $foo to $somearray['somekey'] rather than overwriting it.
      *
+     * @param bool force refresh from DB
      * @see blockManager::_parseCategories for parse example
      * @see blockLibrary::_getCategoriesDropdown for parse example
      * @global ADONewConnection
      * @global array
      * @return array all available categories
      */
-    function _getCategories()
+    function _getCategories($refresh = false)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if(!empty($this->_categories)){
+        if(!empty($this->_categories) && !$refresh){
             return $this->_categories;
         }
+
+        $this->_categories = array();
 
         $this->_categoryNames[0] = $_ARRAYLANG['TXT_BLOCK_NONE'];
         $objRS = $objDatabase->Execute('

@@ -367,7 +367,7 @@ class blockManager extends blockLibrary
             'CSRF_CODE'                             => CSRF::code(),
         ));
 
-        $arrCategories = $this->_getCategories();
+        $arrCategories = $this->_getCategories(true);
         if(count($arrCategories) == 0){
             $this->_objTpl->touchBlock('noCategories');
             return;
@@ -416,7 +416,10 @@ class blockManager extends blockLibrary
         }
     }
 
-
+    /**
+     * prepare and show the edit category page
+     *
+     */
     function editCategory()
     {
         global $_ARRAYLANG;
