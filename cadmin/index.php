@@ -26,7 +26,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-DBG::deactivate();
+DBG::activate();
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
