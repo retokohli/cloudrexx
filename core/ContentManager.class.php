@@ -1410,19 +1410,19 @@ class ContentManager
                         'CHANGELOG_ID'            => $objResult->fields['navID'],
                         'CHANGELOG_DATE'          => date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
                         'CHANGELOG_USER'          => $objResult->fields['navUsername'],
-                        'CHANGELOG_TITLE'         => stripslashes($objResult->fields['navCatname']),
-                        'CHANGELOG_PAGETITLE'     => stripslashes($objResult->fields['conTitle']),
-                        'CHANGELOG_METATITLE'     => stripslashes($objResult->fields['conMetaTitle']),
-                        'CHANGELOG_METADESC'      => stripslashes($objResult->fields['conMetaDesc']),
-                        'CHANGELOG_METAKEY'       => stripslashes($objResult->fields['conMetaKeywords']),
+                        'CHANGELOG_TITLE'         => htmlentities(stripslashes($objResult->fields['navCatname']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_PAGETITLE'     => htmlentities(stripslashes($objResult->fields['conTitle']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_METATITLE'     => htmlentities(stripslashes($objResult->fields['conMetaTitle']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_METADESC'      => htmlentities(stripslashes($objResult->fields['conMetaDesc']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_METAKEY'       => htmlentities(stripslashes($objResult->fields['conMetaKeywords']), ENT_QUOTES, CONTREXX_CHARSET),
                         'CHANGELOG_CATEGORY'      => $strTree,
                         'CHANGELOG_STARTDATE'     => $objResult->fields['navStartdate'],
                         'CHANGELOG_ENDDATE'       => $objResult->fields['navEnddate'],
                         'CHANGELOG_THEME'         => stripslashes($arrThemes[$objResult->fields['navTheme']]),
-                        'CHANGELOG_OPTIONAL_CSS'  => (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
-                        'CHANGELOG_CMD'           => (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
+                        'CHANGELOG_OPTIONAL_CSS'  => (empty($objResult->fields['conCssName'])) ? '-' : htmlentities(stripslashes($objResult->fields['conCssName']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_CMD'           => (empty($objResult->fields['navCMD'])) ? '-' : htmlentities($objResult->fields['navCMD'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CHANGELOG_SECTION'       => $arrModules[$objResult->fields['navModule']],
-                        'CHANGELOG_REDIRECT'      => (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
+                        'CHANGELOG_REDIRECT'      => (empty($objResult->fields['conRedirect'])) ? '-' : htmlentities($objResult->fields['conRedirect'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CHANGELOG_SOURCEMODE'    => strtoupper($objResult->fields['conExpertMode']),
                         'CHANGELOG_CACHINGSTATUS' => ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
                         'CHANGELOG_FRONTEND'      => stripslashes($strFrontendGroups),
@@ -2324,9 +2324,14 @@ class ContentManager
             if ($objResult) {
                 if ($objResult->RecordCount()>0) {
                     $sectionName = $objResult->fields['name'];
-                    $this->strErrMessage[] = $_CORELANG['TXT_PAGE_WITH_SAME_MODULE_EXIST']." ".$sectionName." ".$cmd;
-                    $this->setModule=$section;
-                    $this->setCmd=$cmd+1;
+                    $this->setModule = $section;
+                    if(preg_match('/(\D+)(\d+)$/', $cmd, $matches)){
+                        $newCmd = $matches[1].(intval($matches[2])+1);
+                    } else {
+                        $newCmd = $cmd.'_1';
+                    }
+                    $this->setCmd = $newCmd;
+                    $this->strErrMessage[] = sprintf($_CORELANG['TXT_PAGE_WITH_SAME_MODULE_EXIST'], $newCmd);
                     return false;
                 }
                 return true;
@@ -3455,19 +3460,19 @@ class ContentManager
                         'CHANGELOG_ID'            => $objResult->fields['navID'],
                         'CHANGELOG_DATE'          => date('d.m.Y H:i:s',$objResult->fields['navChangelog']),
                         'CHANGELOG_USER'          => $objResult->fields['navUsername'],
-                        'CHANGELOG_TITLE'         => stripslashes($objResult->fields['navCatname']),
-                        'CHANGELOG_PAGETITLE'     => stripslashes($objResult->fields['conTitle']),
-                        'CHANGELOG_METATITLE'     => stripslashes($objResult->fields['conMetaTitle']),
-                        'CHANGELOG_METADESC'      => stripslashes($objResult->fields['conMetaDesc']),
-                        'CHANGELOG_METAKEY'       => stripslashes($objResult->fields['conMetaKeywords']),
+                        'CHANGELOG_TITLE'         => htmlentities(stripslashes($objResult->fields['navCatname']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_PAGETITLE'     => htmlentities(stripslashes($objResult->fields['conTitle']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_METATITLE'     => htmlentities(stripslashes($objResult->fields['conMetaTitle']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_METADESC'      => htmlentities(stripslashes($objResult->fields['conMetaDesc']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_METAKEY'       => htmlentities(stripslashes($objResult->fields['conMetaKeywords']), ENT_QUOTES, CONTREXX_CHARSET),
                         'CHANGELOG_CATEGORY'      => $strTree,
                         'CHANGELOG_STARTDATE'     => $objResult->fields['navStartdate'],
                         'CHANGELOG_ENDDATE'       => $objResult->fields['navEnddate'],
                         'CHANGELOG_THEME'         => stripslashes($arrThemes[$objResult->fields['navTheme']]),
-                        'CHANGELOG_OPTIONAL_CSS'  => (empty($objResult->fields['conCssName'])) ? '-' : stripslashes($objResult->fields['conCssName']),
-                        'CHANGELOG_CMD'           => (empty($objResult->fields['navCMD'])) ? '-' : $objResult->fields['navCMD'],
+                        'CHANGELOG_OPTIONAL_CSS'  => (empty($objResult->fields['conCssName'])) ? '-' : htmlentities(stripslashes($objResult->fields['conCssName']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'CHANGELOG_CMD'           => (empty($objResult->fields['navCMD'])) ? '-' : htmlentities($objResult->fields['navCMD'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CHANGELOG_SECTION'       => $arrModules[$objResult->fields['navModule']],
-                        'CHANGELOG_REDIRECT'      => (empty($objResult->fields['conRedirect'])) ? '-' : $objResult->fields['conRedirect'],
+                        'CHANGELOG_REDIRECT'      => (empty($objResult->fields['conRedirect'])) ? '-' : htmlentities($objResult->fields['conRedirect'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CHANGELOG_SOURCEMODE'    => strtoupper($objResult->fields['conExpertMode']),
                         'CHANGELOG_CACHINGSTATUS' => ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
                         'CHANGELOG_FRONTEND'      => stripslashes($strFrontendGroups),
