@@ -18,6 +18,20 @@ function _blockUpdate()
         }
     }
 
+    if(!in_array('start', $arrColumns)){
+        $query = "ALTER TABLE `".DBPREFIX."module_block_blocks` ADD `start` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `name`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
+    if(!in_array('end', $arrColumns)){
+        $query = "ALTER TABLE `".DBPREFIX."module_block_blocks` ADD `end` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `start`";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
     return true;
 }
 ?>

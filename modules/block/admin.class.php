@@ -105,8 +105,8 @@ class blockManager extends blockLibrary
                  ? "<a href='index.php?cmd=block&amp;act=overview'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a>
                     <a href='index.php?cmd=block&amp;act=modify'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>"
                  : "")
-            ."<a href='index.php?cmd=block&amp;act=settings'>".$_ARRAYLANG['TXT_BLOCK_SETTINGS']."</a>"
-            ."<a href='index.php?cmd=block&amp;act=categories'>".$_ARRAYLANG['TXT_BLOCK_CATEGORIES']."</a>");
+            ."<a href='index.php?cmd=block&amp;act=categories'>".$_ARRAYLANG['TXT_BLOCK_CATEGORIES']."</a>"
+     	    ."<a href='index.php?cmd=block&amp;act=settings'>".$_ARRAYLANG['TXT_BLOCK_SETTINGS']."</a>");
     }
 
     /**
@@ -407,6 +407,8 @@ class blockManager extends blockLibrary
             if(empty($this->_categories[$arrCategory['id']])){
                 $this->_objTpl->touchBlock('deleteCategory');
                 $this->_objTpl->touchBlock('checkboxCategory');
+            } else {
+                $this->_objTpl->touchBlock('deleteCategoryEmpty');
             }
 
             $this->_objTpl->parse('showCategories');
@@ -422,7 +424,7 @@ class blockManager extends blockLibrary
      */
     function editCategory()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $catId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_EDIT'];
@@ -436,10 +438,13 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_PARENT'                      => $_ARRAYLANG['TXT_BLOCK_PARENT'],
             'TXT_BLOCK_NONE'                        => $_ARRAYLANG['TXT_BLOCK_NONE'],
             'TXT_BLOCK_CATEGORIES_EDIT'             => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_EDIT'],
+            'TXT_BLOCK_BACK'                        => $_CORELANG['TXT_BACK'],
             'BLOCK_CATEGORY_ID'                     => $catId,
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown($arrCategory['parent'], $catId),
             'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
+            'CSRF_KEY'                              => CSRF::key(),
+            'CSRF_CODE'                             => CSRF::code(),
         ));
     }
 
@@ -494,6 +499,64 @@ class blockManager extends blockLibrary
     }
 
     /**
+     * parse the date and time from the form submit and convert into a timestamp
+     *
+     * @param string nameprefix of the form fields (${name}Date,${name}Hour,${name}Minute)
+     * @return integer timestamps
+     */
+    function _parseTimestamp($name)
+    {
+        $date    = $_POST[$name.'Date'];
+        $hour    = $_POST[$name.'Hour'];
+        $minutes = $_POST[$name.'Minute'];
+        $timestamp = strtotime("$date $hour:$minutes:00");
+
+        return $timestamp !== false
+            ? $timestamp
+            : time();
+    }
+
+    /**
+     * parses the hours dropdown
+     *
+     * @param integer $date selects the options according to timestamp $date
+     * @return void
+     */
+    function _parseHours($date)
+    {
+        $options = array();
+        for($hour = 0; $hour <= 23; $hour++){
+            $selected = '';
+            $hourFmt = sprintf('%02d', $hour);
+            if($hourFmt == date('H', $date)){
+                $selected = 'selected="selected"';
+            }
+            $options[] = '<option value="'.$hourFmt.'" '.$selected.'>'.$hourFmt.'</option>';
+        }
+        return implode('\n', $options);
+    }
+
+    /**
+     * parses the minutes dropdown
+     *
+     * @param integer $date selects the options according to timestamp $date
+     * @return void
+     */
+    function _parseMinutes($date)
+    {
+        $options = array();
+        for($minute = 0; $minute <= 59; $minute++){
+            $selected = '';
+            $minuteFmt = sprintf('%02d', $minute);
+            if($minuteFmt == date('i', $date)){
+                $selected = 'selected="selected"';
+            }
+            $options[] = '<option value="'.$minuteFmt.'" '.$selected.'>'.$minuteFmt.'</option>';
+        }
+        return implode('\n', $options);
+    }
+
+    /**
     * Show modify block
     *
     * Show the block modification page
@@ -507,9 +570,12 @@ class blockManager extends blockLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
+        $today                  = strtotime(date('Y-m-d'));
         $blockId                = isset($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
         $blockName              = '';
+        $blockStart             = $today;
+        $blockEnd               = $today+3600*24*365;
         $blockRandom            = 0;
         $blockRandom2           = 0;
         $blockRandom3           = 0;
@@ -525,6 +591,8 @@ class blockManager extends blockLibrary
             $blockCat               = isset($_POST['blockCat']) ? $_POST['blockCat'] : 0;
             $blockContent           = isset($_POST['blockBlockContent']) ? $_POST['blockBlockContent'] : '';
             $blockName              = isset($_POST['blockName']) ? $_POST['blockName'] : '';
+            $blockStart             = $this->_parseTimestamp('inputStart');
+            $blockEnd               = $this->_parseTimestamp('inputEnd');
             $blockRandom            = isset($_POST['blockRandom']) ? intval($_POST['blockRandom']) : 0;
             $blockRandom2           = isset($_POST['blockRandom2']) ? intval($_POST['blockRandom2']) : 0;
             $blockRandom3           = isset($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
@@ -548,14 +616,14 @@ class blockManager extends blockLibrary
             }
 
             if ($blockId != 0) {
-                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
+                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
                     return $this->_showOverview();
                 } else {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
                 }
             } else {
-                if ($this->_addBlock($blockId, $blockCat, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
+                if ($this->_addBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], $blockName);
                     return $this->_showOverview();
                 } else {
@@ -564,6 +632,8 @@ class blockManager extends blockLibrary
             }
         } elseif (($arrBlock = &$this->_getBlock($blockId)) !== false) {
             $blockName      = $arrBlock['name'];
+            $blockStart     = $arrBlock['start'];
+            $blockEnd       = $arrBlock['end'];
             $blockCat       = $arrBlock['cat'];
             $blockRandom    = $arrBlock['random'];
             $blockRandom2   = $arrBlock['random2'];
@@ -583,10 +653,17 @@ class blockManager extends blockLibrary
             $blockId = 0;
         }
 
+
         $this->_objTpl->setVariable(array(
             'BLOCK_ID'                          => $blockId,
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
             'BLOCK_NAME'                        => htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET),
+            'BLOCK_START'                       => strftime('%Y-%m-%d', $blockStart),
+            'BLOCK_END'                         => strftime('%Y-%m-%d', $blockEnd),
+            'BLOCK_START_HOURS'                 => $this->_parseHours($blockStart),
+            'BLOCK_START_MINUTES'               => $this->_parseMinutes($blockStart),
+            'BLOCK_END_HOURS'                   => $this->_parseHours($blockEnd),
+            'BLOCK_END_MINUTES'                 => $this->_parseMinutes($blockEnd),
             'BLOCK_RANDOM'                      => $blockRandom == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_2'                    => $blockRandom2 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_3'                    => $blockRandom3 == '1' ? 'checked="checked"' : '',
@@ -716,6 +793,8 @@ class blockManager extends blockLibrary
             'TXT_SHOW_ON_SELECTED_PAGES'        => $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
             'TXT_BLOCK_PARENT'                  => $_ARRAYLANG['TXT_BLOCK_PARENT'],
             'TXT_BLOCK_NONE'                    => $_ARRAYLANG['TXT_BLOCK_NONE'],
+            'TXT_BLOCK_SHOW_FROM'               => $_ARRAYLANG['TXT_BLOCK_SHOW_FROM'],
+            'TXT_BLOCK_SHOW_UNTIL'              => $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'],
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
             'BLOCK_FORM_ONSUBMIT'               => $formOnSubmit,
         ));
