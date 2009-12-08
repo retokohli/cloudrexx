@@ -90,7 +90,7 @@ class blockLibrary
 
         if (!is_array($this->_arrBlocks)) {
             $objBlock = $objDatabase->Execute("
-                SELECT id, cat, name, `order`, random, random_2, random_3, random_4, active, global
+                SELECT id, cat, name, start, end, `order`, random, random_2, random_3, random_4, active, global
                 FROM ".DBPREFIX."module_block_blocks
                 $WHERE
                 ORDER BY `order`");
@@ -100,6 +100,8 @@ class blockLibrary
                     $this->_arrBlocks[$objBlock->fields['id']] = array(
                         'cat'       => $objBlock->fields['cat'],
                         'name'      => $objBlock->fields['name'],
+                        'start'     => $objBlock->fields['start'],
+                        'end'       => $objBlock->fields['end'],
                         'order'     => $objBlock->fields['order'],
                         'status'    => $objBlock->fields['active'],
                         'random'    => $objBlock->fields['random'],
@@ -127,15 +129,15 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    function _addBlock($id, $cat, $content, $name, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)
+    function _addBlock($id, $cat, $content, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)
     {
         global $objDatabase;
 
         $query = "INSERT INTO ".DBPREFIX."module_block_blocks
-                         (cat, content, name,
+                         (cat, content, name, start, end,
                           random, random_2, random_3, random_4,
                           global, active)
-                  VALUES (".intval($cat).", '".contrexx_addslashes($content)."', '".contrexx_addslashes($name)."',
+                  VALUES (".intval($cat).", '".contrexx_addslashes($content)."', '".contrexx_addslashes($name)."', $start, $end,
                           ".$blockRandom.", ".$blockRandom2.", ".$blockRandom3.", ".$blockRandom4." ,
                           ".$blockGlobal.", 1)";
 
@@ -185,17 +187,14 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    function _updateBlock($id, $cat, $content, $name, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)
+    function _updateBlock($id, $cat, $content, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_block_blocks SET cat=".intval($cat).", content='".contrexx_addslashes($content)."', name='".contrexx_addslashes($name)."', random='".$blockRandom."', random_2='".$blockRandom2."', random_3='".$blockRandom3."', random_4='".$blockRandom4."', global='".$blockGlobal."' WHERE id=".$id) !== false) {
+        if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_block_blocks SET cat=".intval($cat).", content='".contrexx_addslashes($content)."', name='".contrexx_addslashes($name)."', start=".intval($start).", end=".intval($end).", random='".$blockRandom."', random_2='".$blockRandom2."', random_3='".$blockRandom3."', random_4='".$blockRandom4."', global='".$blockGlobal."' WHERE id=".$id) !== false) {
             if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$id) !== false) {
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$id) !== false) {
-
-
-
-                    foreach ($blockAssociatedLangIds as $langId => $value) {
+                  foreach ($blockAssociatedLangIds as $langId => $value) {
                         if($value == 1) {
                             $arrSelectedPages       = $_POST[$langId.'_selectedPages'];
                             $blockId                = $id;
@@ -282,11 +281,13 @@ class blockLibrary
     {
         global $objDatabase;
 
-        $objBlock = $objDatabase->SelectLimit("SELECT cat, name, random, random_2, random_3, random_4, content, global FROM ".DBPREFIX."module_block_blocks WHERE id=".$id, 1);
+        $objBlock = $objDatabase->SelectLimit("SELECT cat, name, start, end, random, random_2, random_3, random_4, content, global FROM ".DBPREFIX."module_block_blocks WHERE id=".$id, 1);
         if ($objBlock !== false && $objBlock->RecordCount() == 1) {
             return array(
                 'cat'       => $objBlock->fields['cat'],
                 'name'      => $objBlock->fields['name'],
+                'start'     => $objBlock->fields['start'],
+                'end'       => $objBlock->fields['end'],
                 'random'    => $objBlock->fields['random'],
                 'random2'   => $objBlock->fields['random_2'],
                 'random3'   => $objBlock->fields['random_3'],
@@ -335,12 +336,13 @@ class blockLibrary
                                                 WHERE   tblBlock.id=".$id."
                                                 AND     tblBlock.active=1", 1
                                                 );*/
-
+        $now = time();
         $query = "  SELECT tblBlock.content, tblLang.lang_id
                     FROM ".DBPREFIX."module_block_blocks AS tblBlock
                     INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.id = ".$id."
+                    AND ".$now." BETWEEN `tblBlock`.`start` AND `tblBlock`.`end`
                     AND tblBlock.active = 1
                     AND tblLang.lang_id = ".$_LANGID;
         $objRs = $objDatabase->Execute($query);
@@ -396,12 +398,14 @@ class blockLibrary
             $where  = "  AND tblPage.lang_id=".$_LANGID." AND ((tblPage.block_id=tblBlock.id AND tblPage.page_id=".intval($pageId).") OR tblLang.all_pages='1')";
         }
 
+        $now = time();
         $objBlock = $objDatabase->Execute(" SELECT  tblBlock.id, tblBlock.content
                                                 FROM    ".DBPREFIX."module_block_blocks AS tblBlock,
                                                         ".$tables."
                                                 WHERE   (tblLang.lang_id=".$_LANGID." AND tblLang.block_id=tblBlock.id)
                                                         ".$where."
                                                 AND     tblBlock.active=1
+                                                AND ".$now." BETWEEN `tblBlock`.`start` AND `tblBlock`.`end`
                                                 GROUP   BY tblBlock.id
                                                 ORDER BY `order`
                                                 ");
@@ -430,11 +434,13 @@ class blockLibrary
     {
         global $objDatabase, $_LANGID;
 
+        $now = time();
         $query = "  SELECT tblBlock.id
                     FROM ".DBPREFIX."module_block_blocks AS tblBlock
                     INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.active= 1
+                    AND ".$now." BETWEEN `tblBlock`.`start` AND `tblBlock`.`end`
                     AND tblLang.lang_id = ".$_LANGID." ";
 
         //Get Block Name and Status

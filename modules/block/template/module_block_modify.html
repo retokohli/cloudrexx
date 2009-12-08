@@ -1,5 +1,6 @@
 <!-- START module_block_block.html -->
 <script language="JavaScript" type="text/javascript">
+// <![CDATA[
 function move(from, dest, add, remove)
 {
   if (from.selectedIndex < 0) {
@@ -102,6 +103,24 @@ function showOrHide(strElement, strShortCut)
     all_pages.checked = true;
   }
 }
+// ]]>
+</script>
+<script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+
+  DatePickerControl.onSelect = function(inputid)
+  {
+    var startdate = document.getElementsByName('blockFormModifyBlock')[0].inputStartDate.value.replace(/-/g, "");
+    var enddate = document.getElementsByName('blockFormModifyBlock')[0].inputEndDate.value.replace(/-/g, "");
+
+    if (startdate > enddate) {
+      var date = document.getElementsByName('blockFormModifyBlock')[0].inputStartDate.value;
+      document.getElementsByName('blockFormModifyBlock')[0].inputEndDate.value = date;
+    }
+  }
+
+// ]]>
 </script>
 
 <form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="{BLOCK_FORM_ONSUBMIT}">
@@ -114,6 +133,33 @@ function showOrHide(strElement, strShortCut)
         <tr class="row1">
           <td width="16%">{TXT_BLOCK_NAME}:</td>
           <td width="84%" colspan="4"><input type="text" name="blockName" value="{BLOCK_NAME}" size="50" /></td>
+        </tr>
+        <tr class="row2">
+            <td valign="middle">{TXT_BLOCK_SHOW_FROM}:</td>
+            <td valign="middle" colspan="4">
+                <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START}" style="width: 8em;" />
+                <select name="inputStartHour" style="margin-left: 10px">
+                    {BLOCK_START_HOURS}
+                </select>
+                :
+                <select name="inputStartMinute">
+                    {BLOCK_START_MINUTES}
+                </select>
+                <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_BLOCK_WHOLE_DAY}</a>
+            </td>
+        </tr>
+        <tr class="row1">
+            <td valign="middle">{TXT_BLOCK_SHOW_UNTIL}:</td>
+            <td valign="middle" colspan="4">
+                <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END}" style="width:8em;" />
+                <select name="inputEndHour" style="margin-left: 10px">
+                    {BLOCK_END_HOURS}
+                </select>
+                :
+                <select name="inputEndMinute">
+                    {BLOCK_END_MINUTES}
+                </select>
+            </td>
         </tr>
         <tr class="row2">
           <td width="16%">{TXT_BLOCK_PARENT}:</td>
