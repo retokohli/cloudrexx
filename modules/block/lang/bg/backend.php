@@ -82,4 +82,8 @@ $_ARRAYLANG['TXT_BLOCK_CATEGORIES_EDIT'] = "Kategorie bearbeiten";
 $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_INFO_HEAD'] = "Informationen zum Löschen von Kategorien";
 $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_INFO'] = "Es können nur Kategorien gelöscht werden, welche keine Unterkategorien enthalten.<br />Falls eine Kategorie gelöscht wird, welche noch bei Blöcken zugewiesen ist, wird diese Zuweisung vorher entfernt.";
 $_ARRAYLANG['TXT_BLOCK_CATEGORY'] = "Kategorie";
+$_ARRAYLANG['TXT_BLOCK_SHOW_FROM'] = "Anzeigen ab";
+$_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'] = "Anzeigen bis";
+$_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'] = "Immer anzeigen";
+$_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'] = "Zeitgesteuertes Anzeigen";
 ?>
