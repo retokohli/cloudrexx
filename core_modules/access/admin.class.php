@@ -1116,7 +1116,10 @@ class AccessManager extends AccessLib
                 $arrProfile = $_POST['access_profile_attribute'];
 
                 if (isset($_FILES['access_profile_attribute_images']) && is_array($_FILES['access_profile_attribute_images'])) {
-                    $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images']);
+                    $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images']);
+                    if (is_array($upload_res)) {
+                        $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $upload_res);
+                    }
                 }
 
                 $objUser->setProfile($arrProfile);
