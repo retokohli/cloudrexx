@@ -86,7 +86,7 @@ class AliasAdmin extends aliasLib
         }
 
         $arrConfig = $this->_getConfig();
-        if ($arrConfig['aliasStatus'] == '') {
+        if (!$arrConfig['aliasStatus']) {
             if ($this->_isModRewriteInUse()) {
                 $this->_setAliasAdministrationStatus(true);
                 $this->_initConfig();
