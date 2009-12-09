@@ -32,6 +32,16 @@ function _blockUpdate()
         }
     }
 
+    if(in_array('end', $arrColumns) && in_array('start', $arrColumns)){
+        $now = time();
+        $later = 0x7FFFFFFF; //set to max timestamp (is signed 32-bit int)
+        $query = "UPDATE `".DBPREFIX."module_block_blocks`
+                  SET `start` = $now, `end` = $later";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
     return true;
 }
 ?>
