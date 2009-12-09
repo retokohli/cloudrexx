@@ -10,6 +10,10 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+
+
+require_once ASCMS_FRAMEWORK_PATH ."/Image.class.php";
+
 /**
  * News headlines
  *
