@@ -35,6 +35,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Attribute.class.php';
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Attributes.class.php';
 
+require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
 /**
  * Product as available in the Shop.
