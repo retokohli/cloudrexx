@@ -15,6 +15,7 @@ $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
  * Includes
  */
 require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
+require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
 
 /**
  * DataAdmin
