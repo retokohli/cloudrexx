@@ -78,6 +78,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Country.class.php';
  * Manufacturer: Name and URL
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Manufacturer.class.php';
+require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
 
 /**
