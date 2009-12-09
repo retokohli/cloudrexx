@@ -108,18 +108,56 @@ function showOrHide(strElement, strShortCut)
 <script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
+    (function(){
+        DatePickerControl.onSelect = function(inputid)
+        {
+            var startdate = document.getElementsByName('blockFormModifyBlock')[0].inputStartDate.value.replace(/-/g, "");
+            var enddate = document.getElementsByName('blockFormModifyBlock')[0].inputEndDate.value.replace(/-/g, "");
 
-  DatePickerControl.onSelect = function(inputid)
-  {
-    var startdate = document.getElementsByName('blockFormModifyBlock')[0].inputStartDate.value.replace(/-/g, "");
-    var enddate = document.getElementsByName('blockFormModifyBlock')[0].inputEndDate.value.replace(/-/g, "");
+            if (startdate > enddate) {
+              var date = document.getElementsByName('blockFormModifyBlock')[0].inputStartDate.value;
+              document.getElementsByName('blockFormModifyBlock')[0].inputEndDate.value = date;
+            }
+        }
 
-    if (startdate > enddate) {
-      var date = document.getElementsByName('blockFormModifyBlock')[0].inputStartDate.value;
-      document.getElementsByName('blockFormModifyBlock')[0].inputEndDate.value = date;
-    }
-  }
+        $J(function(){
+            var $inputDateEnd   = $J('[name=inputEndDate]');
+            var $inputDateStart = $J('[name=inputStartDate]');
+            var $spansDate      = $J('#startTime,#endTime');
+            var $spansAlways    = $J('#startTimeAlways,#endTimeAlways');
+            var $a = $J('#blockShowAlways');
+            var hideInputs = function(){
+                $spansDate.hide();
+                $spansAlways.show();
+                $a.text('{TXT_BLOCK_SHOW_TIMED}');
+            }
 
+            var showInputs = function(){
+                $spansDate.show();
+                $spansAlways.hide();
+                $a.text('{TXT_BLOCK_SHOW_ALWAYS}');
+            }
+
+            $a.click(function(){
+                if($inputDateEnd.is(':hidden')){
+                    showInputs();
+                } else {
+                    hideInputs();
+                }
+            });
+            if($inputDateEnd.val() == '2038-01-19'){ //check if we display always
+                hideInputs();
+            }
+            $J('[name=blockFormModifyBlock]').submit(function(){
+                if($inputDateEnd.is(':hidden')){
+                    var now = new Date();
+                    var today = now.getFullYear()+'-'+now.getMonth()+'-'+now.getDate();
+                    $inputDateEnd.val('2038-01-19');
+                    $inputDateStart.val(today);
+                }
+            });
+        });
+    })();
 // ]]>
 </script>
 
@@ -137,28 +175,38 @@ function showOrHide(strElement, strShortCut)
         <tr class="row2">
             <td valign="middle">{TXT_BLOCK_SHOW_FROM}:</td>
             <td valign="middle" colspan="4">
-                <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START}" style="width: 8em;" />
-                <select name="inputStartHour" style="margin-left: 10px">
-                    {BLOCK_START_HOURS}
-                </select>
-                :
-                <select name="inputStartMinute">
-                    {BLOCK_START_MINUTES}
-                </select>
-                <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_BLOCK_WHOLE_DAY}</a>
+                <span id="startTime">
+                    <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START}" style="width: 8em;" />
+                    <select name="inputStartHour" style="margin-left: 10px">
+                        {BLOCK_START_HOURS}
+                    </select>
+                    :
+                    <select name="inputStartMinute">
+                        {BLOCK_START_MINUTES}
+                    </select>
+                </span>
+                <span id="startTimeAlways" style="display:none;">
+                    {TXT_BLOCK_SHOW_ALWAYS}
+                </span>
+                <a style="margin-left: 15px;" href="#" id="blockShowAlways">{TXT_BLOCK_SHOW_ALWAYS}</a>
             </td>
         </tr>
         <tr class="row1">
             <td valign="middle">{TXT_BLOCK_SHOW_UNTIL}:</td>
             <td valign="middle" colspan="4">
-                <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END}" style="width:8em;" />
-                <select name="inputEndHour" style="margin-left: 10px">
-                    {BLOCK_END_HOURS}
-                </select>
-                :
-                <select name="inputEndMinute">
-                    {BLOCK_END_MINUTES}
-                </select>
+                <span id="endTime">
+                    <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END}" style="width:8em;" />
+                    <select name="inputEndHour" style="margin-left: 10px">
+                        {BLOCK_END_HOURS}
+                    </select>
+                    :
+                    <select name="inputEndMinute">
+                        {BLOCK_END_MINUTES}
+                    </select>
+                </span>
+                <span id="endTimeAlways" style="display:none;">
+                    {TXT_BLOCK_SHOW_ALWAYS}
+                </span>
             </td>
         </tr>
         <tr class="row2">
