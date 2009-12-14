@@ -135,6 +135,7 @@ function showOrHide(strElement, strShortCut)
             var showInputs = function(){
                 $spansDate.show();
                 $spansAlways.hide();
+                DatePickerControl.relocateButtons();
                 $a.text('{TXT_BLOCK_SHOW_ALWAYS}');
             }
 
@@ -174,7 +175,7 @@ function showOrHide(strElement, strShortCut)
         </tr>
         <tr class="row2">
             <td valign="middle">{TXT_BLOCK_SHOW_FROM}:</td>
-            <td valign="middle" colspan="4">
+            <td valign="middle" colspan="4" style="height: 27px;">
                 <span id="startTime">
                     <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START}" style="width: 8em;" />
                     <select name="inputStartHour" style="margin-left: 10px">
@@ -193,7 +194,7 @@ function showOrHide(strElement, strShortCut)
         </tr>
         <tr class="row1">
             <td valign="middle">{TXT_BLOCK_SHOW_UNTIL}:</td>
-            <td valign="middle" colspan="4">
+            <td valign="middle" colspan="4" style="height: 27px;">
                 <span id="endTime">
                     <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END}" style="width:8em;" />
                     <select name="inputEndHour" style="margin-left: 10px">
@@ -210,7 +211,7 @@ function showOrHide(strElement, strShortCut)
             </td>
         </tr>
         <tr class="row2">
-          <td width="16%">{TXT_BLOCK_PARENT}:</td>
+          <td width="16%">{TXT_BLOCK_CATEGORY}:</td>
           <td width="84%" colspan="4">
             <select name="blockCat">
                 <option value="0">{TXT_BLOCK_NONE}</option>

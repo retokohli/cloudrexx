@@ -257,13 +257,10 @@ class blockManager extends blockLibrary
             'CSRF_CODE'                         => CSRF::code(),
         ));
 
-        $arrBlocks = &$this->_getBlocks($_REQUEST['catId']);
+        $arrBlocks = &$this->_getBlocks($catId);
         if (count($arrBlocks)>0) {
             $rowNr = 0;
             foreach ($arrBlocks as $blockId => $arrBlock) {
-
-
-
                 if ($arrBlock['status'] ==  '1') {
                     $status = "<a href='index.php?cmd=block&amp;act=deactivate&amp;blockId=".$blockId."' title='".$_ARRAYLANG['TXT_BLOCK_ACTIVE']."'><img src='images/icons/led_green.gif' width='13' height='13' border='0' alt='".$_ARRAYLANG['TXT_BLOCK_ACTIVE']."' /></a>";
                 }else{
@@ -580,6 +577,7 @@ class blockManager extends blockLibrary
         $blockRandom2           = 0;
         $blockRandom3           = 0;
         $blockRandom4           = 0;
+        $blockGlobal            = 0;
         $blockContent           = '';
         $blockAssociatedLangIds = array();
 
@@ -674,7 +672,7 @@ class blockManager extends blockLibrary
 
         $arrLanguages = &FWLanguage::getLanguageArray();
         $langNr = 0;
-
+        $formOnSubmit = '';
         foreach ($arrLanguages as $langId => $arrLanguage) {
             $column = $langNr % 3;
             $langStatus = "";
@@ -765,7 +763,7 @@ class blockManager extends blockLibrary
                 'BLOCK_SELECTED_LANG_NAME'          => $arrLanguage['name'],
                 'TXT_BLOCK_ACTIVATE'                => $_ARRAYLANG['TXT_BLOCK_ACTIVATE'],
                 'TXT_BLOCK_SHOW_ON_ALL_PAGES'       => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'],
-                'TXT_BLOCK_SHOW_ON_SELECTED_PAGES'  => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_SELECTED_ALL_'],
+//                'TXT_BLOCK_SHOW_ON_SELECTED_PAGES'  => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_SELECTED_ALL_'],
                 'TXT_BLOCK_FRONTEND_PAGES'          => $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'],
                 'TXT_BLOCK_LANG_SHOW'               => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'],
                 'BLOCK_PAGES_DISPLAY'               => $langAllPages == 1 ? 'none' : 'block',
@@ -791,7 +789,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_DEACTIVATE'              => $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
             'TXT_SHOW_ON_ALL_PAGES'             => $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'],
             'TXT_SHOW_ON_SELECTED_PAGES'        => $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
-            'TXT_BLOCK_PARENT'                  => $_ARRAYLANG['TXT_BLOCK_PARENT'],
+            'TXT_BLOCK_CATEGORY'                => $_ARRAYLANG['TXT_BLOCK_CATEGORY'],
             'TXT_BLOCK_NONE'                    => $_ARRAYLANG['TXT_BLOCK_NONE'],
             'TXT_BLOCK_SHOW_FROM'               => $_ARRAYLANG['TXT_BLOCK_SHOW_FROM'],
             'TXT_BLOCK_SHOW_UNTIL'              => $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'],
