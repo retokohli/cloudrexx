@@ -2,6 +2,7 @@
 
 function _newsletterUpdate()
 {
+    global $objDatabase;
     try{
         UpdateUtil::table(
             DBPREFIX.'module_newsletter_category',
@@ -79,6 +80,54 @@ function _newsletterUpdate()
     catch (UpdateException $e) {
         return UpdateUtil::DefaultActionHandler($e);
     }
+    DBG::msg("Done checking tables.. going to check settings");
+    $settings = array(
+        'sender_mail'             => array('setid' =>  1, 'setname' => 'sender_mail',             'setvalue' => 'info@example.com', 'status' => 1),
+        'sender_name'             => array('setid' =>  2, 'setname' => 'sender_name',             'setvalue' => 'admin',            'status' => 1),
+        'reply_mail'              => array('setid' =>  3, 'setname' => 'reply_mail',              'setvalue' => 'info@example.com', 'status' => 1),
+        'mails_per_run'           => array('setid' =>  4, 'setname' => 'mails_per_run',           'setvalue' => '30',               'status' => 1),
+        'text_break_after'        => array('setid' =>  5, 'setname' => 'text_break_after',        'setvalue' => '100',              'status' => 1),
+        'test_mail'               => array('setid' =>  6, 'setname' => 'test_mail',               'setvalue' => 'info@example.com', 'status' => 1),
+        'overview_entries_limit'  => array('setid' =>  7, 'setname' => 'overview_entries_limit',  'setvalue' => '10',               'status' => 1),
+        'rejected_mail_operation' => array('setid' =>  8, 'setname' => 'rejected_mail_operation', 'setvalue' => 'delete',           'status' => 1),
+        'defUnsubscribe'          => array('setid' =>  9, 'setname' => 'defUnsubscribe',          'setvalue' => '0',                'status' => 1),
+        'notifyOnUnsubscribe'     => array('setid' => 10, 'setname' => 'notifyOnUnsubscribe',     'setvalue' => '1',                'status' => 1),
+    );
+
+    try {
+        DBG::msg("Reading current settings");
+        $res = UpdateUtil::sql("SELECT * FROM ".DBPREFIX."module_newsletter_settings");
+        while (!$res->EOF) {
+            $field = $res->fields['setname'];
+            DBG::msg("...merging $field with default settings");
+            $settings[$field]['setvalue'] = $res->fields['setvalue'];
+            $res->MoveNext();
+        }
+        DBG::msg("Updating settings");
+        foreach ($settings as $entry) {
+            $setid = intval    ($entry['setid']);
+            $field = addslashes($entry['setname']);
+            $value = addslashes($entry['setvalue']);
+            $status= intval    ($entry['status']);
+            DBG::msg("...deleting field $field");
+            UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setid = '$setid' OR setname = '$field'");
+            DBG::msg("...rewriting field $field");
+            UpdateUtil::sql("
+                INSERT INTO ".DBPREFIX."module_newsletter_settings 
+                    (setid, setname, setvalue, status)
+                VALUES (
+                    '$setid', '$field', '$value', '$status'
+                );
+            ");
+
+        }
+        DBG::msg("Done with newsletter update");
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
 
     return true;
 }
