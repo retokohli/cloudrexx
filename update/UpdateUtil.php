@@ -118,21 +118,24 @@ class UpdateUtil {
     private static function cry($msg, $sql) {
         throw new Update_DatabaseException($msg, $sql);
     }
-    private static function sql($statement) {
+
+
+    public static function sql($statement) {
         global $objDatabase;
         # ugly, ugly hack so it does not return Insert_ID when we didn't insert
-        $objDatabase->lastInsID   = NULL;
-        $objDatabase->hasInsertID = false;
         $objResult = $objDatabase->Execute($statement);
         if ($objResult === false) {
             self::cry($objDatabase->ErrorMsg(), $statement);
-        } elseif ($objDatabase->Insert_ID()) {
-            return $objDatabase->Insert_ID();
-        } else {
-            return $objResult;
         }
-        return $result;
+        return $objResult;
     }
+
+    public static function insert($statement) {
+        global $objDatabase;
+        self::sql($statement);
+        return $objDatabase->Insert_ID();
+    }
+
 
     private function check_columns($name, $struc) {
         global $objDatabase;
@@ -447,7 +450,7 @@ class UpdateUtil {
                         `backend_access_id` = ".$objContent->fields['backend_access_id'].",
                         `themes_id` = ".$objContent->fields['themes_id'].",
                         `css_name` = '".$objContent->fields['css_name']."'";
-                $historyId = self::sql($query);
+                $historyId = self::insert($query);
 
                 $query = "
                     INSERT INTO `".DBPREFIX."content_history`
