@@ -118,7 +118,9 @@ class UpdateUtil {
     private static function cry($msg, $sql) {
         throw new Update_DatabaseException($msg, $sql);
     }
-    private static function sql($statement) {
+
+
+    public static function sql($statement) {
         global $objDatabase;
         # ugly, ugly hack so it does not return Insert_ID when we didn't insert
         $objResult = $objDatabase->Execute($statement);
@@ -128,7 +130,7 @@ class UpdateUtil {
         return $objResult;
     }
 
-    private static function insert($statement) {
+    public static function insert($statement) {
         global $objDatabase;
         self::sql($statement);
         return $objDatabase->Insert_ID();
