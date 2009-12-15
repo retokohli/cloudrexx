@@ -665,6 +665,8 @@ class newsletter extends NewsletterLib
 
         require_once(ASCMS_CORE_PATH.'/SmtpSettings.class.php');
 
+        $act = $copy ? 'copyMail' : 'editMail';
+
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_MAIL_ID'                  => ($copy ? 0 : $mailId),
             'NEWSLETTER_MAIL_SUBJECT'             => htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
@@ -674,9 +676,9 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_MAIL_TEXT_CONTENT_STAUTS' => $mailFormat == 'text' ? 'block' : 'none',
             'NEWSLETTER_MAIL_HTML_CONTENT_CLASS'  => $mailFormat != 'text' ? 'active' : '',
             'NEWSLETTER_MAIL_TEXT_CONTENT_CLASS'  => $mailFormat == 'text' ? 'active' : '',
-            'NEWSLETTER_MAIL_FORMAT_MENU'         => $this->_getMailFormatMenu($mailFormat, 'name="newsletter_mail_format" id="newsletter_mail_format" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act=editMail&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()" style="width:300px;"'),
+            'NEWSLETTER_MAIL_FORMAT_MENU'         => $this->_getMailFormatMenu($mailFormat, 'name="newsletter_mail_format" id="newsletter_mail_format" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act='.$act.'&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()" style="width:300px;"'),
             'NEWSLETTER_MAIL_PRIORITY_MENU'       => $this->_getMailPriorityMenu($mailPriority, 'name="newsletter_mail_priority" style="width:300px;"'),
-            'NEWSLETTER_MAIL_TEMPLATE_MENU'       => $this->_getTemplateMenu($mailTemplate, 'name="newsletter_mail_template" style="width:300px;" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act=editMail&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()"'),
+            'NEWSLETTER_MAIL_TEMPLATE_MENU'       => $this->_getTemplateMenu($mailTemplate, 'name="newsletter_mail_template" style="width:300px;" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act='.$act.'&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()"'),
             'NEWSLETTER_MAIL_SENDER_MAIL'         => htmlentities($mailSenderMail, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_MAIL_SENDER_NAME'         => htmlentities($mailSenderName, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_MAIL_REPLY'               => htmlentities($mailReply, ENT_QUOTES, CONTREXX_CHARSET),
