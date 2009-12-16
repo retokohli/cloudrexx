@@ -580,6 +580,7 @@ class blockManager extends blockLibrary
         $blockGlobal            = 0;
         $blockContent           = '';
         $blockAssociatedLangIds = array();
+        $langAllPages           = 1;
 
         $this->_objTpl->loadTemplateFile('module_block_modify.html');
 

@@ -726,7 +726,7 @@ class settingsManager
     {
         $useCSS = "off";
         // Initialize database object
-        require_once('../core/API.php');
+        require_once('../../core/API.php');
         $strErrMessage = '';
         $objDatabase = getDatabaseObject($strErrMessage);
         if ($objDatabase === false)
@@ -748,7 +748,8 @@ class settingsManager
             $objResult = $objDatabase->Execute($query);
             if ($objResult) $folderName = $objResult->fields['foldername'];
         }
-        return ($useCSS == "on" && !empty($folderName)) ? "FCKConfig.EditorAreaCSS = FCKConfig.BasePath + '../../../themes/".$folderName."/style.css';" : "";
+//        return ($useCSS == "on" && !empty($folderName)) ? "EditorAreaCSS = FCKConfig.BasePath + '../../../themes/".$folderName."/style.css';" : "";
+        return ($useCSS == "on" && !empty($folderName)) ? "config.contentsCss = CKEDITOR.getUrl('../../themes/".$folderName."/style.css');" : "";
     }
 
 }
