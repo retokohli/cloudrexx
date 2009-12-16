@@ -141,6 +141,11 @@ class JS
                 'lib/javascript/excanvas.compiled.js'
             ),
         ),
+        'ckeditor'     => array(
+            'jsfiles'       => array(
+                'editor/ckeditor/ckeditor_source.js'
+            ),
+        ),
     );
 
     /**

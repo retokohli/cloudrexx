@@ -252,7 +252,7 @@ class FileBrowser {
         ));
 
         $this->_setNavigation();
-        $this->_setContent($_GET['noAliases']);
+        $this->_setContent(!empty($_GET['noAliases']) ? $_GET['noAliases'] : false);
         $this->_setUploadForm();
         $this->_showStatus();
         $this->_objTpl->show();

@@ -286,7 +286,8 @@ function openWindow(theURL,winName,features){
 var getFrameContent = function(){
     var $form = $J('form[name=formContent]');
     if(!_CONTREXX_EXPERT_MODE){
-        return FCKeditorAPI.GetInstance('html').GetData(true);
+//        return FCKeditorAPI.GetInstance('html').GetData(true);
+        return CKEDITOR.instances.html.getData();
     }else if($J('iframe:hidden', $form).length == 1){
         return $J('textarea[name=html]', $form).val();
     }
@@ -348,15 +349,17 @@ var setFrameContent = function(html){
     var $form = $J('form[name=formContent]');
     $J('input[name=html]', $form).val(html);
     $J('textarea[name=html]', $form).val(html);
-    if(!_CONTREXX_EXPERT_MODE && typeof FCKeditorAPI != 'undefined'){
-        var $frame = $J('iframe', $form).contents();
-        if(FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG){
+//    if(!_CONTREXX_EXPERT_MODE && typeof FCKeditorAPI != 'undefined'){
+    if(!_CONTREXX_EXPERT_MODE && typeof CKEDITOR != 'undefined'){
+//        var $frame = $J('iframe', $form).contents();
+//        if(CKEDITOR.instances.html.mode == 'wysiwyg'){
             //does setdata always work in IE?
-            FCKeditorAPI.GetInstance('html').SetData(html);
+//            FCKeditorAPI.GetInstance('html').SetData(html);
+        CKEDITOR.instances.html.setData(html);
 //            $frame.find('iframe').contents().find('body').html(html); //if we use .html(), then javascript code gets executed...
-        }else{
-            $frame.find('textarea').val(html);
-        }
+//        }else{
+//            $frame.find('textarea').val(html);
+//        }
     }
 }
 
@@ -365,11 +368,13 @@ var setEditor = function(){
     var html  = getFrameContent();
     if($J('input[name=expertmode]', $form).attr('checked')){
         $frame  = $J('iframe', $form);
-        $J('iframe', $form).hide();
-        $J('textarea[name=html]', $form).show();
+//        $J('iframe', $form).hide();
+        $J('#cke_html', $form).hide();
+        $J('textarea[name=html]', $form).show().css({visibility: 'visible'});
     }else{
         $frame  = $J('textarea[name=html]', $form);
-        $J('iframe', $form).show();
+//        $J('iframe', $form).show();
+        $J('#cke_html', $form).show();
         $frame.hide();
     }
     setFrameContent(html);
@@ -404,7 +409,12 @@ var submitForm = function(event){
         $J('select[name="assignedBlocks[]"]', $form).children().attr('selected', 'selected');
         var postData = $form.serialize();
 
-        var contentData = $J('input[name=html]', $form).data(langName);
+        if( $J('textarea[name=html]').is(':hidden')){
+            var contentData = $J('input[name=html]', $form).data(langName);
+        }else{
+            var contentData = CKEDITOR.instances.html.getData();
+        }
+
         if($J(this).closest('li').is(':last-child')){
             postData += '&'+$J.param({lastUpdate: 1});
             if(_CONTREXX_SITEMAP_ENABLED){
@@ -537,20 +547,23 @@ var swapLanguage = function(aElement){
 //    $J('#ajaxstatus').text('Loading '+$a.text());
 
     //reset undo history
-    if(!_CONTREXX_EXPERT_MODE && FCKeditorAPI.GetInstance('html')
-        && FCKeditorAPI.GetInstance('html').EditorWindow
-        && FCKeditorAPI.GetInstance('html').EditorWindow.parent
-        && FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo
-        && FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG)
-    {
-        var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
-        FCKUndo.SavedData = new Array() ;
-        FCKUndo.CurrentIndex = -1 ;
-        FCKUndo.TypesCount = 0 ;
-        FCKUndo.Changed = false ;
-        FCKUndo.Typing = false ;
-        FCKUndo.SaveLocked = false ;
+    if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances.html){
+        CKEDITOR.instances.html.resetUndo()
     }
+//    if(!_CONTREXX_EXPERT_MODE && FCKeditorAPI.GetInstance('html')
+//        && FCKeditorAPI.GetInstance('html').EditorWindow
+//        && FCKeditorAPI.GetInstance('html').EditorWindow.parent
+//        && FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo
+//        && FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG)
+//    {
+//        var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
+//        FCKUndo.SavedData = new Array() ;
+//        FCKUndo.CurrentIndex = -1 ;
+//        FCKUndo.TypesCount = 0 ;
+//        FCKUndo.Changed = false ;
+//        FCKUndo.Typing = false ;
+//        FCKUndo.SaveLocked = false ;
+//    }
 
     var lastActive = $J('#contentLanguages li a.active').text();
     var $form = $J('form[name=formContent]');
@@ -893,13 +906,14 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 
     if($('input[name=expertmode]', $form).attr('checked')){
         var $textarea = $('textarea[name=html]', $form);
-        $textarea.after('<input type="hidden" id="html" name="html" style="display:none" />');
-        $('input[name=html]', $form).val($textarea.val());
-        $textarea.after('<input  type="hidden" id="html___Config"\
-                              value="CustomConfigurationsPath=/editor/FCKeditorConfig.php?langId%3D%26absoluteURIs%3D" style="display:none" />\
-                      <iframe id="html___Frame" s'+/*url_rewriter.tags workaround*/'rc="/editor/fckeditor/editor/fckeditor.html?InstanceName=html&amp;Toolbar=Default"\
-                              width="100%" height="450" frameborder="0" scrolling="no"></iframe>');
-        $('iframe', $form).hide();
+//        $textarea.after('<input type="hidden" id="html" name="html" style="display:none" />');
+//        $('input[name=html]', $form).val($textarea.val());
+//        $textarea.after('<input  type="hidden" id="html___Config"\
+//                              value="CustomConfigurationsPath=/editor/FCKeditorConfig.php?langId%3D%26absoluteURIs%3D" style="display:none" />\
+//                      <iframe id="html___Frame" s'+/*url_rewriter.tags workaround*/'rc="/editor/fckeditor/editor/fckeditor.html?InstanceName=html&amp;Toolbar=Default"\
+//                              width="100%" height="450" frameborder="0" scrolling="no"></iframe>');
+//        $('iframe', $form).hide();
+
     }else{
         html = $('input[name=html]', $form).val();
         var $frame  = $('iframe', $form);
@@ -919,7 +933,10 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     }
 
-//    $('[name=expertmode]', $form).click(setEditor);
+    $('[name=expertmode]', $form).click(function(){
+        _CONTREXX_EXPERT_MODE = !_CONTREXX_EXPERT_MODE;
+        setEditor();
+    });
     $('[name=preview]', $form).click(previewContent);
     $form.submit(submitForm);
 
@@ -939,72 +956,74 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     });
 
-    if($('input[name=expertmode]').attr('checked') || (typeof FCKeditorAPI != 'undefined' && FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE)){
+    if($('input[name=expertmode]').attr('checked') || (typeof CKEDITOR != 'undefined' /*&& CKEDITOR.GetInstance('html').Status == FCK_STATUS_COMPLETE*/)){
         $('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
     }
-});
 
+   var numTry = 0;
+    (function(){ //poll if editor is loaded
+        if(typeof CKEDITOR == 'undefined' && CKEDITOR.status != 'basic_loaded'){
+            if(numTry > 50){ //give up after 50 tries, something seems to be REALLY slow.
+                $J('#ajaxbusy,#ajaxwait').hide();
+                return false;
+            }
+            var x = setTimeout(arguments.callee, 200);
+            return false;
+        }else{
+            if(typeof CKEDITOR.instances.html != 'undefined' || $J('form[name=formContent] input[name=TypeSelection]:checked').val() == 'redirect'){
+                $J('#ajaxbusy,#ajaxwait').hide();
+            }
+            setEditor();
+        }
+    })();//end poll
+}); //end document ready (~onload)
 })();//execute anonymous function
+
 
 if(typeof console === 'undefined'){
     console = {};
     console.log = function(s){window.status=s;}
 }
 
-var numTry = 0;
-(function(){ //poll if editor is loaded
-    if(typeof FCKeditorAPI == 'undefined'){
-        if(numTry > 50){ //give up after 50 tries, something seems to be REALLY slow.
-            $J('#ajaxbusy,#ajaxwait').hide();
-            return false;
-        }
-        var x = setTimeout(arguments.callee, 200);
-        return false;
-    }else{
-        if(FCKeditorAPI.GetInstance('html').Status == FCK_STATUS_COMPLETE || $J('form[name=formContent] input[name=TypeSelection]:checked').val() == 'redirect'){
-            $J('#ajaxbusy,#ajaxwait').hide();
-        }
-    }
-})();
 
-function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
-    if(editor.Name == 'html'){
-//# OnAfterLinkedFieldUpdate - fired right after the hidden linked field attached to the editor has its contents updated. It happens usually when the form is being posted.
-//# OnAfterSetHTML - fired once the HTML is loaded in the editor (including when changing views).
-//# OnStatusChange - fired when the editor status changes. The following constants are also available globally in the page: FCK_STATUS_NOTLOADED, FCK_STATUS_ACTIVE and FCK_STATUS_COMPLETE.
-//# OnSelectionChange - fired when the actual selection in the editor area changes (including cursor position and keystrokes). Note: In IE, this event does not fire on every keystroke, but only on some random keystrokes.
-//        editor.Events.AttachEvent( 'OnSelectionChange', function(){
-//            html = editor.GetData(true);
-//            $J('form[name=formContent] input[name=html]').val(html);
-//            $J('form[name=formContent] textarea[name=html]').val(html);
-//        });
-//        editor.Events.AttachEvent( 'OnSelectionChange', function(){
-//            console.log('selection');
-//        });
-//        editor.Events.AttachEvent( 'OnStatusChange', function(){
-//            console.log('status');
-//        });
-//        editor.Events.AttachEvent( 'OnAfterSetHTML', function(){
-//            console.log('set');
-//        });
-//        editor.Events.AttachEvent( 'OnAfterLinkedFieldUpdate', function(){
-//            console.log('linked');
-//        });
-//
-        editorParent = FCKeditorAPI.GetInstance('html').EditorWindow.parent;
-        FCK = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCK;
-        form = FCK.GetParentForm();
-        editorParent.FCKTools.RemoveEventListener( form , 'submit',  FCK.UpdateLinkedField);
-        $J('#ajaxbusy,#ajaxwait').hide();
-    }
-}
+//function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
+//    if(editor.Name == 'html'){
+////# OnAfterLinkedFieldUpdate - fired right after the hidden linked field attached to the editor has its contents updated. It happens usually when the form is being posted.
+////# OnAfterSetHTML - fired once the HTML is loaded in the editor (including when changing views).
+////# OnStatusChange - fired when the editor status changes. The following constants are also available globally in the page: FCK_STATUS_NOTLOADED, FCK_STATUS_ACTIVE and FCK_STATUS_COMPLETE.
+////# OnSelectionChange - fired when the actual selection in the editor area changes (including cursor position and keystrokes). Note: In IE, this event does not fire on every keystroke, but only on some random keystrokes.
+////        editor.Events.AttachEvent( 'OnSelectionChange', function(){
+////            html = editor.GetData(true);
+////            $J('form[name=formContent] input[name=html]').val(html);
+////            $J('form[name=formContent] textarea[name=html]').val(html);
+////        });
+////        editor.Events.AttachEvent( 'OnSelectionChange', function(){
+////            console.log('selection');
+////        });
+////        editor.Events.AttachEvent( 'OnStatusChange', function(){
+////            console.log('status');
+////        });
+////        editor.Events.AttachEvent( 'OnAfterSetHTML', function(){
+////            console.log('set');
+////        });
+////        editor.Events.AttachEvent( 'OnAfterLinkedFieldUpdate', function(){
+////            console.log('linked');
+////        });
+////
+//        editorParent = FCKeditorAPI.GetInstance('html').EditorWindow.parent;
+//        FCK = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCK;
+//        form = FCK.GetParentForm();
+//        editorParent.FCKTools.RemoveEventListener( form , 'submit',  FCK.UpdateLinkedField);
+//        $J('#ajaxbusy,#ajaxwait').hide();
+//    }
+//}
 
 
 // ]]>
 </script>
 
 <div id="ajaxbusy"></div>
-<div id="ajaxwait"><img src="../../../../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}<br /><span id="ajaxstatus"> </span> </p></div>
+<div id="ajaxwait"><img src="../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}<br /><span id="ajaxstatus"> </span> </p></div>
 
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
 <br />
