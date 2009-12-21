@@ -517,6 +517,8 @@ CREATE TABLE `contrexx_module_block_blocks` (
   `cat` int(10) unsigned NOT NULL default '0',
   `content` text NOT NULL,
   `name` varchar(255) NOT NULL default '',
+  `start` int(10) unsigned NOT NULL default '0',
+  `end` int(10) unsigned NOT NULL default '0',
   `random` int(1) NOT NULL default '0',
   `random_2` int(1) NOT NULL default '0',
   `random_3` int(1) NOT NULL default '0',
