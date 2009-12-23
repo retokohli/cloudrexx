@@ -356,8 +356,6 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_SUBMIT_DELETE'               => $_ARRAYLANG['TXT_BLOCK_SUBMIT_DELETE'],
             'TXT_BLOCK_NO_CATEGORIES_FOUND'         => $_ARRAYLANG['TXT_BLOCK_NO_CATEGORIES_FOUND'],
             'TXT_BLOCK_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'],
-            'TXT_BLOCK_CATEGORIES_DELETE_INFO_HEAD' => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_INFO_HEAD'],
-            'TXT_BLOCK_CATEGORIES_DELETE_INFO'      => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_DELETE_INFO'],
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown(),
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
             'CSRF_KEY'                              => CSRF::key(),
