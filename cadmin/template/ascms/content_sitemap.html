@@ -8,12 +8,6 @@ function deletePage(pageId)
         window.location.replace("index.php?cmd=content&act=delete&pageId="+pageId);
 }
 
-function deleteContent(contentId)
-{
-  if(confirm('{TXT_CONFIRM_DELETE_CONTENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=content&act=deleteAll&contentId="+contentId);
-}
-
 function repositoryPage(pageId)
 {
     if(confirm('{TXT_CONFIRM_REPOSITORY}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
@@ -230,8 +224,8 @@ function changeStatus(pageId)
 <div>
     <div class="siteMapFunctions siteMapColumn row2">
         <a href="index.php?cmd=content&amp;act=copyAll"><img src="images/icons/copy.gif" alt="{TXT_COPY_CONTENT}" title="{TXT_COPY_CONTENT}" border="0" /></a>
+        <img class="icon" src='images/icons/pixel.gif' alt="" title="" />&nbsp;
         <img class="icon" src='images/icons/pixel.gif' alt="" title="" />
-        <a href="javascript:deleteContent('{CONTENT_ID}');"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" title="{TXT_DELETE}" border="0" /></a>
     </div>
     <div class="siteMapPage row2">
        <img class="icon" src="images/icons/root_active.gif" alt="" border="0" align="middle" />&nbsp;&nbsp;&nbsp;Frontend [<b>{CONTENT_NAME}</b>]
