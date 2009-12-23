@@ -1434,12 +1434,12 @@ EOF;
 	 */
 	protected function getJSEmbedCode($mediumCode)
 	{
+        JS::activate('jquery');
 		$mediumCode = addcslashes($mediumCode, "\r\n'");
-
         $embedCode = <<< EOF
 <script type="text/javascript">
 //<![CDATA[
-	$(document).ready(function(){
+	\$J(document).ready(function(){
 		try{
 			$('#podcast_container').replaceWith('$mediumCode');
 		}catch(e){}
@@ -1457,12 +1457,13 @@ EOF;
 
 	protected function getResizeThumbnailsJS($thumbSize)
 	{
+        JS::activate('jquery');
         $embedCode = <<< EOF
 <script type="text/javascript">
 //<![CDATA[
     var thumbSizeMax = $thumbSize;
 
-    $(document).ready(function(){
+    \$J(document).ready(function(){
 		try{
 			bThumbnails = document.getElementsByName("podcast_thumbnails_block");
 			for(i=0;i<bThumbnails.length;i++){

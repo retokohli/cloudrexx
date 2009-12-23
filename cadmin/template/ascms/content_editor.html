@@ -1,6 +1,6 @@
 <!-- START content_editor.html -->
 <script type="text/javascript">
-// <[![CDATA
+/* <![CDATA[ */
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_CONTENT_TYPE_HELP}"];
 Text[1]=['','{CONTENT_ALIAS_HELPTEXT}'];
@@ -285,11 +285,10 @@ function openWindow(theURL,winName,features){
 (function(){  //wrap in anonyomous function to avoid polluting the global namespace
 var getFrameContent = function(){
     var $form = $J('form[name=formContent]');
-    if(!_CONTREXX_EXPERT_MODE){
-//        return FCKeditorAPI.GetInstance('html').GetData(true);
+    if(_CONTREXX_EXPERT_MODE){
+        return $J('textarea[name=html]:visible', $form).val();
+    }else{//if($J('iframe:hidden', $form).length == 1)
         return CKEDITOR.instances.html.getData();
-    }else if($J('iframe:hidden', $form).length == 1){
-        return $J('textarea[name=html]', $form).val();
     }
 }
 
@@ -337,7 +336,7 @@ var previewContent = function(){
     return false;
 }
 
-var waitMillisecs = function(millis){
+waitMillisecs = function(millis){
     var date = new Date();
     var curDate = null;
     do { curDate = new Date(); }
@@ -345,37 +344,33 @@ var waitMillisecs = function(millis){
     return true;
 }
 
-var setFrameContent = function(html){
+var setFrameContent = function(html, lastActive){
     var $form = $J('form[name=formContent]');
-    $J('input[name=html]', $form).val(html);
     $J('textarea[name=html]', $form).val(html);
-//    if(!_CONTREXX_EXPERT_MODE && typeof FCKeditorAPI != 'undefined'){
-    if(!_CONTREXX_EXPERT_MODE && typeof CKEDITOR != 'undefined'){
-//        var $frame = $J('iframe', $form).contents();
-//        if(CKEDITOR.instances.html.mode == 'wysiwyg'){
-            //does setdata always work in IE?
-//            FCKeditorAPI.GetInstance('html').SetData(html);
-        CKEDITOR.instances.html.setData(html);
-//            $frame.find('iframe').contents().find('body').html(html); //if we use .html(), then javascript code gets executed...
-//        }else{
-//            $frame.find('textarea').val(html);
-//        }
+    if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html){
+        CKEDITOR.instances.html.setData(html, function(){
+            //called after setData has finished
+        });
+    }
+}
+
+window.editorLoadCallbacks = [];
+var addEditorLoadCallback = function(fn){
+    if(typeof fn == 'function'){
+        window.editorLoadCallbacks[window.editorLoadCallbacks.length] = fn;
     }
 }
 
 var setEditor = function(){
     var $form = $J('form[name=formContent]');
     var html  = getFrameContent();
+
     if($J('input[name=expertmode]', $form).attr('checked')){
-        $frame  = $J('iframe', $form);
-//        $J('iframe', $form).hide();
         $J('#cke_html', $form).hide();
         $J('textarea[name=html]', $form).show().css({visibility: 'visible'});
     }else{
-        $frame  = $J('textarea[name=html]', $form);
-//        $J('iframe', $form).show();
+        $J('textarea[name=html]', $form).hide();
         $J('#cke_html', $form).show();
-        $frame.hide();
     }
     setFrameContent(html);
 }
@@ -392,28 +387,23 @@ var submitForm = function(event){
     var pageId  = $J('input[name=pageId]', $form).val();
     var $active = $J('#contentLanguages li a.active', $form);
     var last = false;
+
     $J('#contentLanguages li a').each(function(){
         var langId   = $J(this).attr('title').replace(/.*?(\d+)$/, '$1');
         var langName = $J(this).text();
 
-        switchTab(this);
+        switchTab(this, langName);
 
         if($J('form[name=formContent] input[name=newpage]').val() == ''){
             $J('form[name=formContent] input[name=newpage]').val('{TXT_CONTENT_NO_TITLE}')
         }
-        $J('input[name=html]', $form).attr('disabled', 'disabled');
         $J('textarea[name=html]', $form).attr('disabled', 'disabled');
 
         $J('select[name="assignedGroups[]"]', $form).children().attr('selected', 'selected');
         $J('select[name="assignedBackendGroups[]"]', $form).children().attr('selected', 'selected');
         $J('select[name="assignedBlocks[]"]', $form).children().attr('selected', 'selected');
+        var contentData = $J('textarea[name=html]').data(langName);
         var postData = $form.serialize();
-
-        if( $J('textarea[name=html]').is(':hidden')){
-            var contentData = $J('input[name=html]', $form).data(langName);
-        }else{
-            var contentData = CKEDITOR.instances.html.getData();
-        }
 
         if($J(this).closest('li').is(':last-child')){
             postData += '&'+$J.param({lastUpdate: 1});
@@ -425,7 +415,6 @@ var submitForm = function(event){
         postData += '&'+$J.param({  html:   contentData,
                                     langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
                                     langName: $J(this).attr('title').replace(/(.*?)_\d+$/, '$1')});
-        $J('input[name=html]', $form).removeAttr('disabled');
         $J('textarea[name=html]', $form).removeAttr('disabled');
 
         $J.ajax({
@@ -467,12 +456,12 @@ var submitForm = function(event){
            error: setDataFetchError
         });
     });
-    switchTab($active.get(0));
     _CONTREXX_FORCE_SWAP = false;
     if($J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
         location.href = '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId;
         return false;
     }
+    switchTab($active.get(0), $active.text());
     selectTab(activeContentTab);
     $J("#ajaxbusy,#ajaxwait").show();
     return false;
@@ -480,7 +469,7 @@ var submitForm = function(event){
 
 var submitError = function(xhr, textStatus, errorThrown){
      $J('#errormessagetarget').append('<div id="alertbox">AJAX['+textStatus+']: '+errorThrown+'</div>').find(':last-child')
-                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+                              .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
 }
 
 var submitComplete = function(xhr, textStatus){
@@ -492,10 +481,18 @@ var submitSuccess = function(data, textStatus){
     var lang   = data.langName;
     if(pageId < 0){
         $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_INSERT_PAGE}</div>').find(':last-child')
-                                .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+                                .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
     }else{
-        $J('#errormessagetarget').append('<div id="okbox">{TXT_SUCCESS_PAGE_SAVED}'+lang+'</div>').find(':last-child')
-                                .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(10000, function(){$J(this).remove()});
+        if($J('#okbox').length==1){
+            var $box = $J('#okbox');
+            var attrs = '';
+        }else{
+            var $box = $J('#errormessagetarget');
+            var attrs = 'style="position: fixed; width: '+($J("#availableLanguages").width()-10)+'px;\
+                                top: 10px;" id="okbox"';
+        }
+        $box.append('<div '+attrs+'>{TXT_SUCCESS_PAGE_SAVED} '+lang+'</div>').find(':last-child')
+                                .fadeIn('slow').animate({opacity: 1.0}, 3000).fadeOut(4000, function(){$J(this).remove()});
     }
 }
 
@@ -514,22 +511,24 @@ var filterInputs = function(){
     return $J(this).attr('id') != 'selectedChangelogId';
 }
 
-var switchTab = function(aElement){
+var switchTab = function(aElement, langName){
     $J('#contentLanguages li a').unbind('click');
     $J('#ajaxbusy,#ajaxwait').show();
     var $form = $J('form[name=formContent]');
     var $inputs = $J('input[type=checkbox],input[type=radio]', $form).filter(filterInputs);
     $inputs.attr('disabled', 'disabled');
-    swapLanguage(aElement);
+    swapLanguage(aElement, langName);
     makeTabActive(aElement);
     $J('form[name=formContent] input').removeAttr('disabled');
-    $J('#ajaxbusy,#ajaxwait').hide();
+    if(!_CONTREXX_FORCE_SWAP){
+        $J('#ajaxbusy,#ajaxwait').hide();
+    }
 }
 
 var getTabData = function(a){
     var $form = $J('form[name=formContent]');
     var langName = $J(a).text();
-    if(typeof $J('select[name=category]', $form).data(langName) != 'undefined' || $J(a).attr('title') == _CONTREXX_FIRST_ACTIVE_TAB){ //return if we have already have the data for this language
+    if(typeof $J('select[name=category]', $form).data(langName) != 'undefined' || $J(a).attr('title') == _CONTREXX_FIRST_ACTIVE_TAB){        //return if we have already have the data for this language
         return false;
     }
     getNavMenu(a);
@@ -538,7 +537,7 @@ var getTabData = function(a){
     }
 }
 
-var swapLanguage = function(aElement){
+var swapLanguage = function(aElement, langName){
     var $a = $J(aElement);
     if($a.is('.active') && !_CONTREXX_FORCE_SWAP){
         return false;
@@ -550,33 +549,18 @@ var swapLanguage = function(aElement){
     if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances.html){
         CKEDITOR.instances.html.resetUndo()
     }
-//    if(!_CONTREXX_EXPERT_MODE && FCKeditorAPI.GetInstance('html')
-//        && FCKeditorAPI.GetInstance('html').EditorWindow
-//        && FCKeditorAPI.GetInstance('html').EditorWindow.parent
-//        && FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo
-//        && FCKeditorAPI.GetInstance('html').EditMode == FCK_EDITMODE_WYSIWYG)
-//    {
-//        var FCKUndo = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCKUndo;
-//        FCKUndo.SavedData = new Array() ;
-//        FCKUndo.CurrentIndex = -1 ;
-//        FCKUndo.TypesCount = 0 ;
-//        FCKUndo.Changed = false ;
-//        FCKUndo.Typing = false ;
-//        FCKUndo.SaveLocked = false ;
-//    }
 
     var lastActive = $J('#contentLanguages li a.active').text();
     var $form = $J('form[name=formContent]');
     var $iFrame    = $form.find('iframe');
-    var $html      = $form.find('input[name=html]');
     var $textarea  = $form.find('textarea[name=html]');
 
-    $html.data(lastActive, getFrameContent());    //save frame contents for current lang
-
-    typeof $html.data($a.text()) == 'undefined'   //load frame contents for new lang
-      ?  setFrameContent('')
-      :  setFrameContent($html.data($a.text()));
-
+    if(typeof langName == 'undefined'){
+        $textarea.data(lastActive, getFrameContent());    //save frame contents for current lang
+        typeof $textarea.data($a.text()) == 'undefined'   //load frame contents for new lang
+          ?  setFrameContent('', lastActive)
+          :  setFrameContent($textarea.data($a.text()), lastActive);
+    }
     getTabData(aElement); //get nav menu dropdown and content data
 
     if(location.href.match(/act=edit/)){
@@ -703,7 +687,7 @@ var switchLangTab = function(inputLangElement){
         $J('#contentLanguages li a:contains('+tabName+')').one('click', function(){
             switchTab(this);
         });
-        $tab.trigger('setData', [tabName]); //click all language tabs to set the data
+        $tab.trigger('setData', [tabName]);
         $tabActive.click(); //back to newly added tab
     } else {
         $tab = $J('#contentLanguages li:contains('+tabName+')');
@@ -819,7 +803,7 @@ var setInputText = function(data, textStatus){
     var $container = $J('form[name=formContent]');
     for(name in data){
         if(name == 'content'){
-            $J('form[name=formContent] input[name=html]').data(langName, data[name]);
+            $J('form[name=formContent] textarea[name=html]').data(langName, data[name]);
             continue;
         }
         if(name == 'alias'){
@@ -876,6 +860,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     $('#ajaxwait').show();
     var $form = $('form[name=formContent]');
     window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
+    window._CONTREXX_CONTENT_READY = [];
     window._CONTREXX_FORCE_SWAP = false;
     window._CONTREXX_SITEMAP_ENABLED = false;
     window._CONTREXX_FIRST_ACTIVE_TAB = $('#contentLanguages li a.active').attr('title');
@@ -892,9 +877,6 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     })
     .bind("ajaxStop", function(){
         window._CONTREXX_REQUEST_ACTIVE = false;
-//        var x = setTimeout(function(){
-//            $('#ajaxbusy,#ajaxwait').hide();
-//        }, 5000);//hide after 5 secs if still visible
     });
 
      //set default options
@@ -904,21 +886,37 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         $(this).data('default', {options: defaultOptions, value: defaultValue});
     });
 
-    if($('input[name=expertmode]', $form).attr('checked')){
-        var $textarea = $('textarea[name=html]', $form);
-//        $textarea.after('<input type="hidden" id="html" name="html" style="display:none" />');
-//        $('input[name=html]', $form).val($textarea.val());
-//        $textarea.after('<input  type="hidden" id="html___Config"\
-//                              value="CustomConfigurationsPath=/editor/FCKeditorConfig.php?langId%3D%26absoluteURIs%3D" style="display:none" />\
-//                      <iframe id="html___Frame" s'+/*url_rewriter.tags workaround*/'rc="/editor/fckeditor/editor/fckeditor.html?InstanceName=html&amp;Toolbar=Default"\
-//                              width="100%" height="450" frameborder="0" scrolling="no"></iframe>');
-//        $('iframe', $form).hide();
-
+    if(_CONTREXX_EXPERT_MODE){
+        var $textarea = $('textarea[name=html]:last', $form);
+        CKEDITOR_BASEPATH = '/editor/ckeditor/';
+        $('<sc'+'ript></sc'+'ript>')
+            .attr('src', '../editor/ckeditor/ckeditor.js')
+            .attr('type', 'text/javascript')
+            .appendTo('head');
+        addEditorLoadCallback(function(){
+            CKEDITOR.replace('html', {
+                customConfig: CKEDITOR.getUrl('config.contrexx.js.php'),
+                width: '100%',
+                height: 450,
+                toolbar: 'Default'
+            });
+            CKEDITOR.on('instanceReady', function(event){
+                $('#cke_html').hide()
+                    .after('<textarea style="height:450px;width:100%;" name="html">'
+                             +CKEDITOR.instances.html.getData()+'</textarea>');
+            });
+        });
     }else{
-        html = $('input[name=html]', $form).val();
-        var $frame  = $('iframe', $form);
-        $frame.after('<textarea style="height:450px;width:100%;" name="html">'+html+'</textarea>');
-        $('textarea[name=html]', $form).hide();
+        (function(){
+            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html){
+                html = CKEDITOR.instances.html.getData();
+                var $editor  = $('#cke_html');
+                $editor.after('<textarea style="height:450px;width:100%;" name="html">'+html+'</textarea>');
+                $('textarea[name=html]', $form).hide();
+            }else{
+                setTimeout(arguments.callee, 100);
+            }
+        })()
     }
 
     $('form[name=formContent] th:first-child').each(
@@ -933,10 +931,11 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     }
 
-    $('[name=expertmode]', $form).click(function(){
-        _CONTREXX_EXPERT_MODE = !_CONTREXX_EXPERT_MODE;
-        setEditor();
-    });
+//    $('[name=expertmode]', $form).click(function(){
+//        setEditor();
+//        _CONTREXX_EXPERT_MODE = !_CONTREXX_EXPERT_MODE;
+//    });
+
     $('[name=preview]', $form).click(previewContent);
     $form.submit(submitForm);
 
@@ -956,13 +955,13 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     });
 
-    if($('input[name=expertmode]').attr('checked') || (typeof CKEDITOR != 'undefined' /*&& CKEDITOR.GetInstance('html').Status == FCK_STATUS_COMPLETE*/)){
+    if(_CONTREXX_EXPERT_MODE || (typeof CKEDITOR != 'undefined')){
         $('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
     }
 
    var numTry = 0;
     (function(){ //poll if editor is loaded
-        if(typeof CKEDITOR == 'undefined' && CKEDITOR.status != 'basic_loaded'){
+        if(typeof CKEDITOR == 'undefined' || CKEDITOR.status != 'basic_loaded' || typeof CKEDITOR.instances.html == 'undefined'){
             if(numTry > 50){ //give up after 50 tries, something seems to be REALLY slow.
                 $J('#ajaxbusy,#ajaxwait').hide();
                 return false;
@@ -970,8 +969,11 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
             var x = setTimeout(arguments.callee, 200);
             return false;
         }else{
-            if(typeof CKEDITOR.instances.html != 'undefined' || $J('form[name=formContent] input[name=TypeSelection]:checked').val() == 'redirect'){
+            if(CKEDITOR.instances.html || $J('form[name=formContent] input[name=TypeSelection]:checked').val() == 'redirect'){
                 $J('#ajaxbusy,#ajaxwait').hide();
+            }
+            for(var f=0;f < editorLoadCallbacks.length; f++){
+                editorLoadCallbacks[f]();
             }
             setEditor();
         }
@@ -985,41 +987,7 @@ if(typeof console === 'undefined'){
     console.log = function(s){window.status=s;}
 }
 
-
-//function FCKeditor_OnComplete(editor){ //hide wait layer on editor load
-//    if(editor.Name == 'html'){
-////# OnAfterLinkedFieldUpdate - fired right after the hidden linked field attached to the editor has its contents updated. It happens usually when the form is being posted.
-////# OnAfterSetHTML - fired once the HTML is loaded in the editor (including when changing views).
-////# OnStatusChange - fired when the editor status changes. The following constants are also available globally in the page: FCK_STATUS_NOTLOADED, FCK_STATUS_ACTIVE and FCK_STATUS_COMPLETE.
-////# OnSelectionChange - fired when the actual selection in the editor area changes (including cursor position and keystrokes). Note: In IE, this event does not fire on every keystroke, but only on some random keystrokes.
-////        editor.Events.AttachEvent( 'OnSelectionChange', function(){
-////            html = editor.GetData(true);
-////            $J('form[name=formContent] input[name=html]').val(html);
-////            $J('form[name=formContent] textarea[name=html]').val(html);
-////        });
-////        editor.Events.AttachEvent( 'OnSelectionChange', function(){
-////            console.log('selection');
-////        });
-////        editor.Events.AttachEvent( 'OnStatusChange', function(){
-////            console.log('status');
-////        });
-////        editor.Events.AttachEvent( 'OnAfterSetHTML', function(){
-////            console.log('set');
-////        });
-////        editor.Events.AttachEvent( 'OnAfterLinkedFieldUpdate', function(){
-////            console.log('linked');
-////        });
-////
-//        editorParent = FCKeditorAPI.GetInstance('html').EditorWindow.parent;
-//        FCK = FCKeditorAPI.GetInstance('html').EditorWindow.parent.FCK;
-//        form = FCK.GetParentForm();
-//        editorParent.FCKTools.RemoveEventListener( form , 'submit',  FCK.UpdateLinkedField);
-//        $J('#ajaxbusy,#ajaxwait').hide();
-//    }
-//}
-
-
-// ]]>
+/* ]]> */
 </script>
 
 <div id="ajaxbusy"></div>
