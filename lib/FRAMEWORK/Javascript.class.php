@@ -143,7 +143,7 @@ class JS
         ),
         'ckeditor'     => array(
             'jsfiles'       => array(
-                'editor/ckeditor/ckeditor_source.js'
+                'editor/ckeditor/ckeditor.js'
             ),
         ),
     );
