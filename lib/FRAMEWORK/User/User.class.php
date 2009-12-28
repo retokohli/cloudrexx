@@ -559,8 +559,8 @@ class User extends User_Profile
 
             if (in_array('group_id', array_keys($arrFilter)) && !empty($arrFilter['group_id'])) {
                 if (is_array($arrFilter['group_id'])) {
-                    foreach ($arrFilter['group_id'] as $condition => $groupId) {
-                        $arrGroupConditions[] = 'tblG.`group_id` '.$condition.' '.intval($groupId);
+                    foreach ($arrFilter['group_id'] as $groupId) {
+                        $arrGroupConditions[] = 'tblG.`group_id` = '.intval($groupId);
                     }
                     $groupTables = true;
                 } else {
