@@ -1978,7 +1978,8 @@ CREATE TABLE `contrexx_module_immo_content` (
   PRIMARY KEY  (`id`),
   KEY `field_id` (`field_id`),
   KEY `immo_id` (`immo_id`),
-  KEY `fieldvalue` (`fieldvalue`(64))
+  KEY `fieldvalue` (`fieldvalue`(64)),
+  KEY `immo_id_2` (`immo_id`,`lang_id`,`field_id`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
