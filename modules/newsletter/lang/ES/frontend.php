@@ -82,5 +82,5 @@ $_ARRAYLANG['TXT_ACCESS_SITE'] = "Web";
 $_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Enviar mensaje";
 $_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "A&ntilde;adir a la agenda";
 $_ARRAYLANG['TXT_ADD_ADDRESS'] = "A&ntilde;adir a la agenda";
-$_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "Der EmpfÃ¤nger %s hat sich vom Newsletter abgemeldet.";
+$_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "The recipient %s unsubscribed from the newsletter.";
 ?>
