@@ -1290,7 +1290,7 @@ class newsManager extends newsLibrary {
 
             // find out original user's id
             $orig_user_sql = "
-                SELECT userid 
+                SELECT userid
                 FROM ".DBPREFIX."module_news
                 WHERE id = '$id'
             ";
@@ -1462,7 +1462,7 @@ class newsManager extends newsLibrary {
                 $name=contrexx_strip_tags($name);
                 $id=intval($id);
 
-                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='$name',lang=$this->langId WHERE catid=$id") !== false) {
+                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='".contrexx_addslashes($name)."',lang=$this->langId WHERE catid=".intval($id)) !== false) {
                     $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
                 } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];

@@ -349,19 +349,15 @@ class news extends newsLibrary {
                 }
 
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
-                if (!empty($objResult->fields['newsimage'])) {
-                    $thumb_name = ImageManager::getThumbnailFilename(
-                        $objResult->fields['newsimage']);
-                    if (!empty($objResult->fields['newsimagethumbnail'])) {
-                        $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
-                        $imageSrc = $objResult->fields['newsimagethumbnail'];
-                    } elseif (file_exists(ASCMS_PATH.$thumb_name)) {
-                        $image = '<img src="'.$thumb_name.'" alt="'.$newstitle.'" />';
-                        $imageSrc = $thumb_name;
-                    } else {
-                        $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
-                        $imageSrc = $objResult->fields['newsimage'];
-                    }
+                if (!empty($objResult->fields['newsimagethumbnail'])) {
+                    $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
+                    $imageSrc = $objResult->fields['newsimagethumbnail'];
+                } elseif (!empty($objResult->fields['newsimage']) && file_exists(ASCMS_PATH.ImageManager::getThumbnailFilename($objResult->fields['newsimage']))) {
+                    $image = '<img src="'.ImageManager::getThumbnailFilename($objResult->fields['newsimage']).'" alt="'.$newstitle.'" />';
+                    $imageSrc = ImageManager::getThumbnailFilename($objResult->fields['newsimage']);
+                } elseif (!empty($objResult->fields['newsimage'])) {
+                    $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
+                    $imageSrc = $objResult->fields['newsimage'];
                 } else {
                     $image = "";
                 }
@@ -781,12 +777,14 @@ var rssFeedFont = "Arial, Verdana"; // {$_ARRAYLANG['TXT_NEWS_FONT']}
 var rssFeedLimit = 10; // {$_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT']}
 var rssFeedShowDate = true; // {$_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE']}
 var rssFeedTarget = "_blank"; // _blank | _parent | _self | _top
+var rssFeedContainer = "news_rss_feeds";
 // --&gt;
 &lt;/script&gt;
 &lt;script type="text/javascript" language="JavaScript" src="$jsFeedUrl"&gt;&lt;/script&gt;
 &lt;noscript&gt;
 &lt;a href="$rssFeedUrl"&gt;$hostname - {$_ARRAYLANG['TXT_NEWS_SHOW_NEWS']}&lt;/a&gt;
 &lt;/noscript&gt;
+&lt;div id="news_rss_feeds"&gt;&nbsp;&lt;/div&gt;
 RSS2JSCODE;
 
         $this->_objTpl->setVariable(array(
