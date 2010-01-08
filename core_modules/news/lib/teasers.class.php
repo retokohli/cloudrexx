@@ -92,6 +92,7 @@ class Teasers extends newsLibrary
                    news.title, news.teaser_frames,
                    news.catid, news.redirect,
                    cat.name AS category_name,
+                   news.text AS teaser_full_text,
                    news.teaser_text, news.teaser_show_link,
                    news.teaser_image_path, news.teaser_image_thumbnail_path
               FROM ".DBPREFIX."module_news AS news
@@ -145,17 +146,12 @@ class Teasers extends newsLibrary
                 } else {
                     $author = '';
                 }
-
-                if (!empty($objResult->fields['teaser_image_path'])) {
-                    $thumb_name = ImageManager::getThumbnailFilename(
-                        $objResult->fields['teaser_image_path']);
-                    if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
-                        $image = $objResult->fields['teaser_image_thumbnail_path'];
-                    } elseif (file_exists(ASCMS_PATH.$thumb_name)) {
-                        $image = $thumb_name;
-                    } else {
-                        $image = $objResult->fields['teaser_image_path'];
-                    }
+                if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
+                    $image = $objResult->fields['teaser_image_thumbnail_path'];
+                } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists(ASCMS_PATH.ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
+                    $image = ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']);
+                } elseif (!empty($objResult->fields['teaser_image_path'])) {
+                    $image = $objResult->fields['teaser_image_path'];
                 } else {
                     $image = ASCMS_MODULE_IMAGE_WEB_PATH.'/news/pixel.gif';
                 }
@@ -167,6 +163,7 @@ class Teasers extends newsLibrary
                     'redirect'          => $objResult->fields['redirect'],
                     'ext_url'           => $extUrl,
                     'category'          => $objResult->fields['category_name'],
+                    'teaser_full_text'  => $objResult->fields['teaser_full_text'],
                     'teaser_text'       => $objResult->fields['teaser_text'],
                     'teaser_show_link'  => $objResult->fields['teaser_show_link'],
                     'author'            => $author,
@@ -307,6 +304,7 @@ class Teasers extends newsLibrary
                         }
                         $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_TEXT}', nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text']), $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
                     } elseif ($this->administrate) {
@@ -318,6 +316,7 @@ class Teasers extends newsLibrary
                         $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', 'TXT_URL_TARGET', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', 'TXT_IMAGE_PATH', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_TEXT}', 'TXT_TEXT', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', 'TXT_FULL_TEXT', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', 'TEASER_AUTHOR', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', 'TEASER_EXT_URL', $teaserBlockCode);
                     } else {
