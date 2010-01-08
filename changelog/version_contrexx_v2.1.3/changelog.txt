@@ -41,6 +41,9 @@ News Manager
 - Ein Thumbnail einer News Meldung wird auch dann angezeigt, wenn kein
   normales Bild definiert wurde.
 
+Volltextsuche
+- Die News Meldungen werden mit einer entsprechenden Relevanz bewertet.
+
 Modul: Bildergalerie
 - Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
   ImageRotate() Funktion nicht verfügbar ist.
