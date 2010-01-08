@@ -36,7 +36,7 @@ $_ARRAYLANG['TXT_COUNTRY'] = "Land";
 $_ARRAYLANG['TXT_PHONE'] = "Telefon";
 $_ARRAYLANG['TXT_BIRTHDAY'] = "Geburtstag";
 $_ARRAYLANG['TXT_SAVE'] = "Speichern";
-$_ARRAYLANG['TXT_UNSUBSCRIBE'] = "Newsletter Abmelden";
+$_ARRAYLANG['TXT_UNSUBSCRIBE'] = "Unsubscribe";
 $_ARRAYLANG['TXT_AUTHENTICATION_FAILED'] = "Authentifizierung fehlgeschlagen";
 $_ARRAYLANG['TXT_CATEGORY_ERROR'] = "Es muss eine Kategorie mit mindestens einem Empfänger ausgewählt werden.";
 $_ARRAYLANG['TXT_NOT_VALID_EMAIL'] = "Diese E-Mail Adresse ist nicht gültig.";
@@ -82,4 +82,5 @@ $_ARRAYLANG['TXT_ACCESS_SITE'] = "Site";
 $_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Send Message";
 $_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Add to address book";
 $_ARRAYLANG['TXT_ADD_ADDRESS'] = "Add to address book";
+$_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "The recipient %s unsubscribed from the newsletter.";
 ?>

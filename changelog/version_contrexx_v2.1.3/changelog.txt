@@ -51,6 +51,8 @@ Modul: Kalender
 Modul: Newsletter
 - Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
   Sprachverzeichnissen.
+- Die Anzahl totaler Empfänger eines Newsletter wird nun zwischengespeichert,
+  damit die Auflistung der Newsletter Übersicht schneller erfolgt.
 
 Modul: Seitenempfehlung
 - Die Vorschaufunktion funktioniert.
