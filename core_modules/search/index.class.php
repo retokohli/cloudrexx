@@ -320,7 +320,8 @@ class Search
                                     text AS content,
                                     title AS title,
                                     date AS date,
-                                    redirect
+                                    redirect,
+                                    MATCH (text,title,teaser_text) AGAINST ('%$searchTerm%') AS score
                                 FROM
                                     ".DBPREFIX."module_news
                                 WHERE
