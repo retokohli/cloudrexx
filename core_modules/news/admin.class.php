@@ -1,5 +1,4 @@
 <?php
-
 /**
  * News manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -170,6 +169,7 @@ class newsManager extends newsLibrary {
         global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_saveSettings();
@@ -211,9 +211,9 @@ class newsManager extends newsLibrary {
                 $this->edit();
                 break;
 
-            case 'copy':
-                $this->edit(true);
-                break;
+			case 'copy':
+				$this->edit(true);
+				break;
 
             case 'delete':
                 $this->delete();
@@ -563,8 +563,8 @@ class newsManager extends newsLibrary {
         $newsurl2               = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
         $newscat                = intval($_POST['newsCat']);
         $userid                 = $objFWUser->objUser->getId();
-        $startDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-        $endDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+	    $startDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+		$endDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
@@ -588,7 +588,7 @@ class newsManager extends newsLibrary {
         if(empty($status)) {
             $status = 0;
             $startDate = "0000-00-00 00:00:00";
-            $endDate = "0000-00-00 00:00:00";
+	        $endDate = "0000-00-00 00:00:00";
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
@@ -933,7 +933,7 @@ class newsManager extends newsLibrary {
                                                         startdate,
                                                         enddate,
                                                         status,
-                                                        userid,
+														userid,
                                                         frontend_access_id,
                                                         backend_access_id,
                                                         teaser_only,
@@ -953,10 +953,10 @@ class newsManager extends newsLibrary {
             if($objResult->fields['status']==1){
                 $status = "checked=\"checked\"";
             }
-            if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
+			if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
                 $startDate = $objResult->fields['startdate'];
             }
-            if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
+			if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
                 $endDate = $objResult->fields['enddate'];
             }
 
@@ -1159,8 +1159,8 @@ class newsManager extends newsLibrary {
                 }
             }
 
-            $startDate        = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-            $endDate        = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+            $startDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+			$endDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
 
             $newsFrontendAccess     = !empty($_POST['news_read_access']);
             $newsFrontendGroups     = $newsFrontendAccess && isset($_POST['news_read_access_associated_groups']) && is_array($_POST['news_read_access_associated_groups']) ? array_map('intval', $_POST['news_read_access_associated_groups']) : array();
@@ -1462,7 +1462,7 @@ class newsManager extends newsLibrary {
                 $name=contrexx_strip_tags($name);
                 $id=intval($id);
 
-                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='$name',lang=$this->langId WHERE catid=$id") !== false) {
+                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='".contrexx_addslashes($name)."',lang=$this->langId WHERE catid=".intval($id)) !== false) {
                     $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
                 } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
@@ -2643,5 +2643,4 @@ class newsManager extends newsLibrary {
         ));
     }
 }
-
 ?>

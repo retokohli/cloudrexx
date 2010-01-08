@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Teasers
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -29,63 +30,49 @@ require_once ASCMS_FRAMEWORK_PATH ."/Image.class.php";
  */
 class Teasers extends newsLibrary
 {
-    var $_pageTitle;
-    var $_objTpl;
-    var $administrate;
-    var $arrTeaserTemplates = array();
-    var $arrTeaserFrameTemplates = array();
+    public $_pageTitle;
+    public $_objTpl;
+    public $administrate;
+    public $arrTeaserTemplates = array();
+    public $arrTeaserFrameTemplates = array();
 
-    var $arrTeaserFrames;
-    var $arrTeaserFrameNames;
-    var $arrTeasers;
+    public $arrTeaserFrames;
+    public $arrTeaserFrameNames;
+    public $arrTeasers;
 
-    var $arrFrameTeaserIds;
+    public $arrFrameTeaserIds;
 
-    var $arrNewsTeasers = array();
-    var $arrNewsCategories = array();
+    public $arrNewsTeasers = array();
+    public $arrNewsCategories = array();
 
-    var $_currentXMLElementId;
-    var $_currentXMLElement;
-    var $_currentXMLArrayToFill;
+    public $_currentXMLElementId;
+    public $_currentXMLElement;
+    public $_currentXMLArrayToFill;
 
-    /**
-    * constructor
-    */
-    function Teasers($administrate = false)
-    {
-        $this->__construct($administrate);
-    }
 
     /**
     * PHP5 constructor
-    *
     * @global HTML_Template_Sigma
     * @see HTML_Template_Sigma::setErrorHandling, HTML_Template_Sigma::setVariable, initialize()
     */
     function __construct($administrate = false)
     {
-        global $objTemplate;
-
         $this->administrate = $administrate;
 
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $this->_initialize();
-
     }
-
 
 
     function _initialize()
     {
         $this->initializeTeasers();
         $this->initializeTeaserFrames();
-
         //$this->_initializeTeaserTemplates();
         $this->initializeTeaserFrameTemplates();
     }
-
 
 
     function initializeTeasers()
@@ -100,58 +87,55 @@ class Teasers extends newsLibrary
         } else {
             $langId = $_LANGID;
         }
-
-        $objResult = $objDatabase->Execute("SELECT   news.id AS id,
-                                                     news.date AS date,
-                                                     news.userid AS userid,
-                                                     news.title AS title,
-                                                     news.teaser_frames AS teaser_frames,
-                                                     news.catid AS catid,
-                                                     news.redirect AS redirect,
-                                                     cat.name AS category_name,
-                                                     news.teaser_text AS teaser_text,
-                                                     news.teaser_show_link AS teaser_show_link,
-                                                     news.teaser_image_path AS teaser_image_path,
-                                                     news.teaser_image_thumbnail_path AS teaser_image_thumbnail_path
-                                                FROM ".DBPREFIX."module_news AS news
-                                        INNER JOIN   ".DBPREFIX."module_news_categories AS cat on cat.catid = news.catid
-                                                 WHERE news.lang=".$langId."
-                                                 ".($this->administrate == false ? "
-                                                 AND news.validated='1'
-                                                 AND news.status='1'
-                                                 AND (news.startdate<='".date('Y-m-d H:i:s')."' OR news.startdate='0000-00-00 00:00:00') AND (news.enddate>='".date('Y-m-d H:i:s')."' OR news.enddate='0000-00-00 00:00:00')" : "" )
-                                                   .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
-                                                        ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
-                                                            " AND (news.frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
-                                                            :   " AND news.frontend_access_id=0 ")
-                                                        :   '')."
-                                            ORDER BY date DESC");
-
+        $objResult = $objDatabase->Execute("
+            SELECT news.id, news.date, news.userid,
+                   news.title, news.teaser_frames,
+                   news.catid, news.redirect,
+                   cat.name AS category_name,
+                   news.text AS teaser_full_text,
+                   news.teaser_text, news.teaser_show_link,
+                   news.teaser_image_path, news.teaser_image_thumbnail_path
+              FROM ".DBPREFIX."module_news AS news
+             INNER JOIN ".DBPREFIX."module_news_categories AS cat ON cat.catid=news.catid
+             WHERE news.lang=".$langId.
+              ($this->administrate == false
+                ? " AND news.validated='1'
+                    AND news.status='1'
+                    AND (news.startdate<='".date('Y-m-d H:i:s').
+                    "' OR news.startdate='0000-00-00 00:00:00') AND (news.enddate>='".
+                    date('Y-m-d H:i:s')."' OR news.enddate='0000-00-00 00:00:00')"
+                : "" ).
+              ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()
+                ? (($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login()
+                    ? " AND (news.frontend_access_id IN (".implode(',',
+                          array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).
+                        ") OR userid = ".$objFWUser->objUser->getId().") "
+                    : " AND news.frontend_access_id=0 ")
+                : '')."
+             ORDER BY date DESC");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $arrFrames = explode(';', $objResult->fields['teaser_frames']);
-
                 foreach ($arrFrames as $frameId) {
                     if (!isset($this->arrFrameTeaserIds[$frameId])) {
                         $this->arrFrameTeaserIds[$frameId] = array();
                     }
                     array_push($this->arrFrameTeaserIds[$frameId], $objResult->fields['id']);
                 }
-
-                if(!empty($objResult->fields['redirect'])) {
+                if (!empty($objResult->fields['redirect'])) {
                     $extUrl = substr($objResult->fields['redirect'], 7);
                     $tmp    = explode('/', $extUrl);
                     $extUrl = "(".$tmp[0].")";
                 } else {
                     $extUrl = "";
                 }
-
-                if($this->administrate == false){
+                if ($this->administrate == false) {
                     $objFWUser = FWUser::getFWUserObject();
-                    if ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid'])) {
+                    $objUser = $objFWUser->objUser->getUser($objResult->fields['userid']);
+                    if ($objUser) {
                         $firstname = $objUser->getProfileAttribute('firstname');
                         $lastname = $objUser->getProfileAttribute('lastname');
-                        if(!empty($firstname) && !empty($lastname)) {
+                        if (!empty($firstname) && !empty($lastname)) {
                             $author = htmlentities($firstname.' '.$lastname, ENT_QUOTES, CONTREXX_CHARSET);
                         } else {
                             $author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -162,35 +146,34 @@ class Teasers extends newsLibrary
                 } else {
                     $author = '';
                 }
-
-                if (!empty($objResult->fields['teaser_image_path'])) {
-                    if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
-                        $image = $objResult->fields['teaser_image_thumbnail_path'];
-                    } elseif (file_exists(ASCMS_PATH.$objResult->fields['teaser_image_path'].".thumb")) {
-                        $image = $objResult->fields['teaser_image_path'].".thumb";
-                    } else {
-                        $image = $objResult->fields['teaser_image_path'];
-                    }
+                if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
+                    $image = $objResult->fields['teaser_image_thumbnail_path'];
+                } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists(ASCMS_PATH.ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
+                    $image = ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']);
+                } elseif (!empty($objResult->fields['teaser_image_path'])) {
+                    $image = $objResult->fields['teaser_image_path'];
                 } else {
                     $image = ASCMS_MODULE_IMAGE_WEB_PATH.'/news/pixel.gif';
                 }
                 $this->arrTeasers[$objResult->fields['id']] = array(
-                    'id'                    => $objResult->fields['id'],
-                    'date'                  => $objResult->fields['date'],
-                    'title'                 => $objResult->fields['title'],
-                    'teaser_frames'         => $objResult->fields['teaser_frames'],
-                    'redirect'              => $objResult->fields['redirect'],
-                    'ext_url'               => $extUrl,
-                    'category'              => $objResult->fields['category_name'],
-                    'teaser_text'           => $objResult->fields['teaser_text'],
-                    'teaser_show_link'      => $objResult->fields['teaser_show_link'],
-                    'author'                => $author,
-                    'teaser_image_path'     => $image
+                    'id'                => $objResult->fields['id'],
+                    'date'              => $objResult->fields['date'],
+                    'title'             => $objResult->fields['title'],
+                    'teaser_frames'     => $objResult->fields['teaser_frames'],
+                    'redirect'          => $objResult->fields['redirect'],
+                    'ext_url'           => $extUrl,
+                    'category'          => $objResult->fields['category_name'],
+                    'teaser_full_text'  => $objResult->fields['teaser_full_text'],
+                    'teaser_text'       => $objResult->fields['teaser_text'],
+                    'teaser_show_link'  => $objResult->fields['teaser_show_link'],
+                    'author'            => $author,
+                    'teaser_image_path' => $image,
                 );
                 $objResult->MoveNext();
             }
         }
     }
+
 
     function initializeTeaserFrames($id = 0)
     {
@@ -223,7 +206,6 @@ class Teasers extends newsLibrary
             }
         }
     }
-
 
 
     /**
@@ -279,6 +261,7 @@ class Teasers extends newsLibrary
         }
     }
 
+
     /**
     * Get teaser frame
     *
@@ -287,19 +270,18 @@ class Teasers extends newsLibrary
     * @access private
     * @return string
     */
-
-
-
     function _getTeaserFrame($id, $templateId)
     {
         $teaserFrame = "";
 
+        $arrTeaserBlocks = array();
         if (isset($this->arrTeaserFrameTemplates[$templateId]['html'])) {
             $teaserFrame = $this->arrTeaserFrameTemplates[$templateId]['html'];
             if (preg_match_all('/<!-- BEGIN (teaser_[0-9]+) -->/ms', $teaserFrame, $arrTeaserBlocks)) {
                 $funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
                 usort($arrTeaserBlocks[0], $funcSort);
                 usort($arrTeaserBlocks[1], $funcSort);
+                $arrMatch = array();
                 foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {
                     if (preg_match('/<!-- BEGIN '.$teaserBlock.' -->(.*)<!-- END '.$teaserBlock.' -->/s', $teaserFrame, $arrMatch)) {
                         $teaserBlockCode = $arrMatch[1];
@@ -322,6 +304,7 @@ class Teasers extends newsLibrary
                         }
                         $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_TEXT}', nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text']), $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
                     } elseif ($this->administrate) {
@@ -333,6 +316,7 @@ class Teasers extends newsLibrary
                         $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', 'TXT_URL_TARGET', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', 'TXT_IMAGE_PATH', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_TEXT}', 'TXT_TEXT', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', 'TXT_FULL_TEXT', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', 'TEASER_AUTHOR', $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', 'TEASER_EXT_URL', $teaserBlockCode);
                     } else {
@@ -347,11 +331,8 @@ class Teasers extends newsLibrary
                 }
             }
         }
-
         return $teaserFrame;
     }
-
-
 
 
     function getFirstTeaserFrameTemplateId()
@@ -362,10 +343,7 @@ class Teasers extends newsLibrary
     }
 
 
-
-
-
-    function getTeaserFrameTemplateMenu($selectedId, $attributeStr = '')
+    function getTeaserFrameTemplateMenu($selectedId)
     {
         $menu = "";
         foreach ($this->arrTeaserFrameTemplates as $teaserFrameTemplateId => $teaserFrameTemplate) {
@@ -380,7 +358,6 @@ class Teasers extends newsLibrary
     }
 
 
-
     function updateTeaserFrame($id, $templateId, $name)
     {
         global $objDatabase;
@@ -391,6 +368,7 @@ class Teasers extends newsLibrary
             return false;
         }
     }
+
 
     function addTeaserFrame($id, $templateId, $name)
     {
@@ -403,6 +381,7 @@ class Teasers extends newsLibrary
         }
     }
 
+
     function updateTeaserFrameTemplate($id, $description, $html, $sourceCodeMode)
     {
         global $objDatabase;
@@ -413,6 +392,7 @@ class Teasers extends newsLibrary
             return false;
         }
     }
+
 
     function addTeaserFrameTemplate($description, $html, $sourceCodeMode)
     {
@@ -437,6 +417,7 @@ class Teasers extends newsLibrary
         }
     }
 
+
     function deleteTeaserFrameTeamplte($templateId)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -455,7 +436,6 @@ class Teasers extends newsLibrary
     }
 
 
-
     function isUniqueFrameName($frameId, $frameName)
     {
         $arrFrameNames = array_flip($this->arrTeaserFrameNames);
@@ -467,5 +447,7 @@ class Teasers extends newsLibrary
             return false;
         }
     }
+
 }
+
 ?>
