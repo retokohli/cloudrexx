@@ -70,6 +70,7 @@ class newsletter extends NewsletterLib
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (!isset($_REQUEST['standalone'])) {
@@ -1138,6 +1139,7 @@ class newsletter extends NewsletterLib
             FROM ".DBPREFIX."module_newsletter AS tblMail
             ORDER BY status, id DESC", $_CONFIG['corePagingLimit'], $pos);
         if ($objMail !== false) {
+            $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
             while (!$objMail->EOF) {
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_MAIL_ROW_CLASS'        => $rowNr % 2 == 1 ? 'row1' : 'row2',
@@ -1149,7 +1151,7 @@ class newsletter extends NewsletterLib
                     'NEWSLETTER_MAIL_TEMPLATE'        => htmlentities($arrTemplates[$objMail->fields['template']]['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_DATE'            => date(ASCMS_DATE_FORMAT, $objMail->fields['date_create']),
                     'NEWSLETTER_MAIL_COUNT'            => $objMail->fields['count'],
-                    'NEWSLETTER_MAIL_USERS'            => $this->_getMailRecipientCount($objMail->fields['id'])
+					'NEWSLETTER_MAIL_USERS'			=> isset($arrMailRecipientCount[$objMail->fields['id']]) ? $arrMailRecipientCount[$objMail->fields['id']] : 0
                 ));
 
                 $this->_objTpl->setGlobalVariable('NEWSLETTER_MAIL_ID', $objMail->fields['id']);
@@ -2015,7 +2017,7 @@ class newsletter extends NewsletterLib
         ));
 
         if ($status) {
-            $mailRecipientCount = &$this->_getMailRecipientCount($mailId);
+            $mailRecipientCount = $this->_getMailRecipientCount($mailId);
             if ($mailRecipientCount > 0) {
                 $this->_objTpl->touchBlock('newsletter_mail_send_status');
                 $this->_objTpl->hideBlock('newsletter_mail_list_required');
@@ -2051,7 +2053,68 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function _getMailRecipientCount($mailId)
+    private function _getMailRecipientCount($mailId = null, $limit = 0, $pos = 0)
+    {
+        global $objDatabase;
+
+        $count = empty($mailId) ? array() : 0;
+
+        $objResult = $objDatabase->Execute("
+            SELECT `id`, `tmp_copy`
+            FROM   `".DBPREFIX."module_newsletter`
+            ".(!empty($mailId) ? "WHERE `id` = ".$mailId : '')."
+			ORDER BY status, id DESC
+            ".($limit ? "LIMIT $pos, $limit" : ''));
+        if ($objResult !== false) {
+            if (empty($mailId)) {
+                $count = $this->getFinalMailRecipientCount();
+                while (!$objResult->EOF) {
+                    if (!$objResult->fields['tmp_copy']) {
+                        $count[$objResult->fields['id']] = $this->getCurrentMailRecipientCount($objResult->fields['id']);
+                    }
+                    $objResult->MoveNext();
+                }
+            } else {
+                if ($objResult->fields['tmp_copy']) {
+                    $count = $this->getFinalMailRecipientCount($mailId);
+                } else {
+                    $count = $this->getCurrentMailRecipientCount($mailId);
+                }
+            }
+
+        }
+
+        return $count;
+    }
+
+    private function getFinalMailRecipientCount($mailId = null)
+    {
+        global $objDatabase;
+
+        $count = empty($mailId) ? array() : 0;
+
+		$objResult = $objDatabase->Execute("
+			SELECT
+                `id`,
+				`recipient_count`
+			FROM
+				`".DBPREFIX."module_newsletter`
+            ".(!empty($mailId) ? "WHERE `id` = ".$mailId : ''));
+		if ($objResult !== false && $objResult->RecordCount() > 0) {
+            if (empty($mailId)) {
+                while (!$objResult->EOF) {
+                    $count[$objResult->fields['id']] = $objResult->fields['recipient_count'];
+                    $objResult->MoveNext();
+                }
+            } else {
+                $count = $objResult->fields['recipient_count'];
+            }
+		}
+
+        return $count;
+    }
+
+	private function getCurrentMailRecipientCount($mailId)
     {
         global $objDatabase;
 
@@ -2102,7 +2165,7 @@ class newsletter extends NewsletterLib
         }
         $mailId = intval($_REQUEST['id']);
 
-        $mailRecipientCount = &$this->_getMailRecipientCount($mailId);
+        $mailRecipientCount = $this->_getMailRecipientCount($mailId);
         if ($mailRecipientCount == 0) {
             die($_ARRAYLANG['TXT_CATEGORY_ERROR']);
         }
@@ -2233,8 +2296,12 @@ class newsletter extends NewsletterLib
                 $objMail->MoveNext();
             }
             $date = time();
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter SET tmp_copy=1, date_sent=".$date." WHERE id=".$mailId);
 
+            $objResult = $objDatabase->Execute("SELECT COUNT(1) as recipient_count FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `newsletter` = $mailId GROUP BY `newsletter`");
+            if ($objResult !== false) {
+                $recipientCount = $objResult->fields['recipient_count'];
+                $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter SET tmp_copy=1, date_sent=".$date.", recipient_count=$recipientCount WHERE id=".$mailId);
+            }
         }
     }
 
@@ -2520,7 +2587,7 @@ class newsletter extends NewsletterLib
                  }
 
                 $arrRecipientTitles = &$this->_getRecipientTitles();
-                $title = $arrRecipientTitles[$objResultPN->fields['title']];
+                $title = isset($arrRecipientTitles[$objResultPN->fields['title']]) ? $arrRecipientTitles[$objResultPN->fields['title']] : '';
 
                 $array_1 = array(
                     '[[email]]', '[[uri]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]',
@@ -2785,6 +2852,7 @@ class newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
 
         $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
+        CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";
@@ -2808,7 +2876,7 @@ class newsletter extends NewsletterLib
         if (isset($_POST['import_cancel'])) {
             // Abbrechen. Siehe Abbrechen
             $objImport->cancel();
-            header("Location: index.php?cmd=newsletter&act=users&tpl=import");
+            CSRF::header("Location: index.php?cmd=newsletter&act=users&tpl=import");
             exit;
         } elseif ($_POST['fieldsSelected']) {
             // Speichern der Daten. Siehe Final weiter unten.
@@ -3429,7 +3497,7 @@ class newsletter extends NewsletterLib
         ));
 
         $search_params = addslashes("&SearchStatus={$_REQUEST['SearchStatus']}&keyword={$_REQUEST['keyword']}&SearchFields={$_REQUEST['SearchFields']}");
-        $this->_objTpl->setVariable('NEWSLETTER_LIST_MENU', $this->CategoryDropDown('newsletterListId', $newsletterListId, "id='newsletterListId' onchange=\"window.location.replace('index.php?cmd=newsletter&act=users&newsletterListId='+this.value + '$search_params')\""));
+        $this->_objTpl->setVariable('NEWSLETTER_LIST_MENU', $this->CategoryDropDown('newsletterListId', $newsletterListId, "id='newsletterListId' onchange=\"window.location.replace('index.php?cmd=newsletter&".CSRF::param()."&act=users&newsletterListId='+this.value + '$search_params')\""));
         if($_GET["addmailcode"]=="exe"){
             $query        = "SELECT id, code FROM ".DBPREFIX."module_newsletter_user where code=''";
             $objResult = $objDatabase->Execute($query);
@@ -3742,7 +3810,7 @@ class newsletter extends NewsletterLib
                 function DeleteUser(UserID, email) {
                     strConfirmMsg = "'.$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_RECIPIENT_OF_ADDRESS'].'";
                     if (confirm(strConfirmMsg.replace("%s", email)+"\n'.$_ARRAYLANG['TXT_NEWSLETTER_CANNOT_UNDO_OPERATION'].'")) {
-                        document.location.href = "index.php?cmd=newsletter&act=users&delete=exe&id="+UserID;
+                        document.location.href = "index.php?cmd=newsletter&'.CSRF::param().'&act=users&delete=exe&id="+UserID;
                     }
                 }
 

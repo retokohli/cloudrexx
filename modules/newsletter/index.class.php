@@ -43,6 +43,7 @@ class newsletter extends NewsletterLib
         global $_ARRAYLANG;
         $this->pageContent = $pageContent;
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $months = explode(',', $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY']);
         $i=0;
@@ -259,7 +260,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setTemplate($this->pageContent);
         $message = '';
 
-        if (($objUser = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE code='".contrexx_addslashes($_REQUEST['code'])."' AND email='".contrexx_addslashes($_REQUEST['mail'])."'", 1)) && $objUser->RecordCount() == 1) {
+        if (($objUser = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE code='".contrexx_addslashes($_REQUEST['code'])."' AND email='".contrexx_addslashes($_REQUEST['mail'])."' AND status='1'", 1)) && $objUser->RecordCount() == 1) {
             $objSystem = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings`");
             if ($objSystem !== false) {
                 while (!$objSystem->EOF) {

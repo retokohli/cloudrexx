@@ -189,6 +189,8 @@ Modul: Newsletter
 - Die Anmeldung und Bearbeitung des Profils funktioniert korrekt.
 - Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
   Sprachverzeichnissen.
+- Die Anzahl totaler Empfänger eines Newsletter wird nun zwischengespeichert,
+  damit die Auflistung der Newsletter Übersicht schneller erfolgt.
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
