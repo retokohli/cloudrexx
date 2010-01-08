@@ -205,7 +205,8 @@ function search_searchQuery($section, $searchTerm)
             $query ="SELECT id AS id,
                             text AS content,
                             title AS title,
-                            redirect
+                            redirect,
+                            MATCH (text,title,teaser_text) AGAINST ('%$searchTerm%') AS score
                       FROM ".DBPREFIX."module_news
                       WHERE (text LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') OR title LIKE ('%$searchTerm%') OR teaser_text LIKE ('%$searchTerm%'))
 		                AND lang=".$_LANGID."
