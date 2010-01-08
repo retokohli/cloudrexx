@@ -62,6 +62,7 @@ class news extends newsLibrary {
         $this->langId = $_LANGID;
 
         $this->_objTpl = new HTML_Template_Sigma();
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -176,7 +177,7 @@ class news extends newsLibrary {
                     if ($objResult->fields['userid'] && ($objFWUser = FWUser::getFWUserObject()) && ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid']))) {
                         $firstname = $objUser->getProfileAttribute('firstname');
                         $lastname = $objUser->getProfileAttribute('lastname');
-                        if(!empty($firstname) && !empty($lastname)) {
+                        if (!empty($firstname) && !empty($lastname)) {
                             $author = htmlentities($firstname.' '.$lastname, ENT_QUOTES, CONTREXX_CHARSET);
                         } else {
                             $author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -218,7 +219,7 @@ class news extends newsLibrary {
                 }
             }
         } else {
-            header("Location: ?section=news");
+            CSRF::header("Location: index.php?section=news");
             exit;
         }
 
@@ -318,7 +319,7 @@ class news extends newsLibrary {
         if (isset($_REQUEST['cmd'])) {
             if ($_REQUEST['cmd'] == $selected) {
                 $category = "&amp;cmd=".$_REQUEST['cmd'];
-            }else {
+            } else {
                 $category .= "&amp;cmd=".$_REQUEST['cmd'];
             }
         }
@@ -338,7 +339,7 @@ class news extends newsLibrary {
                 if ($objResult->fields['newsuid'] && ($objFWUser = FWUser::getFWUserObject()) && ($objUser = $objFWUser->objUser->getUser($objResult->fields['newsuid']))) {
                     $firstname = $objUser->getProfileAttribute('firstname');
                     $lastname = $objUser->getProfileAttribute('lastname');
-                    if(!empty($firstname) && !empty($lastname)) {
+                    if (!empty($firstname) && !empty($lastname)) {
                         $author = htmlentities($firstname.' '.$lastname, ENT_QUOTES, CONTREXX_CHARSET);
                     } else {
                         $author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -348,17 +349,15 @@ class news extends newsLibrary {
                 }
 
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
-                if (!empty($objResult->fields['newsimage'])) {
-                    if (!empty($objResult->fields['newsimagethumbnail'])) {
-                        $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
-                        $imageSrc = $objResult->fields['newsimagethumbnail'];
-                    } elseif (file_exists(ASCMS_PATH.$objResult->fields['newsimage'].".thumb")) {
-                        $image = '<img src="'.$objResult->fields['newsimage'].'.thumb" alt="'.$newstitle.'" />';
-                        $imageSrc = $objResult->fields['newsimage'].'.thumb';
-                    } else {
-                        $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
-                        $imageSrc = $objResult->fields['newsimage'];
-                    }
+                if (!empty($objResult->fields['newsimagethumbnail'])) {
+                    $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
+                    $imageSrc = $objResult->fields['newsimagethumbnail'];
+                } elseif (!empty($objResult->fields['newsimage']) && file_exists(ASCMS_PATH.ImageManager::getThumbnailFilename($objResult->fields['newsimage']))) {
+                    $image = '<img src="'.ImageManager::getThumbnailFilename($objResult->fields['newsimage']).'" alt="'.$newstitle.'" />';
+                    $imageSrc = ImageManager::getThumbnailFilename($objResult->fields['newsimage']);
+                } elseif (!empty($objResult->fields['newsimage'])) {
+                    $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
+                    $imageSrc = $objResult->fields['newsimage'];
                 } else {
                     $image = "";
                 }
@@ -377,11 +376,11 @@ class news extends newsLibrary {
 
                 if (!empty($image)) {
                     $this->_objTpl->setVariable(array(
-                           'NEWS_IMAGE'         => $image,
+                        'NEWS_IMAGE'         => $image,
                         'NEWS_IMAGE_SRC'     => $imageSrc,
                         'NEWS_IMAGE_ALT'     => $newstitle,
                         'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$image.'</a>'
-                        ));
+                    ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
                         $this->_objTpl->parse('news_image');
@@ -541,18 +540,18 @@ class news extends newsLibrary {
         }
 
         if (!$this->arrSettings['news_submit_news'] == '1' || (!$communityModul && $this->arrSettings['news_submit_only_community'] == '1')) {
-            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=news');
+            CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=news');
             exit;
         } elseif ($this->arrSettings['news_submit_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
             if ($objFWUser->objUser->login()) {
                 if (!Permission::checkAccess(61, 'static')) {
-                    header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess');
+                    CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess');
                     exit;
                 }
             } else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.$link);
+                CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.$link);
                 exit;
             }
         }
@@ -587,7 +586,7 @@ class news extends newsLibrary {
             $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsUrl2'])));
             $_POST['newsCat'] = intval($_POST['newsCat']);
 
-            if(!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+            if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
                 $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
 
@@ -736,15 +735,15 @@ class news extends newsLibrary {
         $values = "'" . join("', '", array_map('contrexx_addslashes', $insert_values)) . "'";
 
         $objResult = $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_news ( $into) 
+            INSERT INTO ".DBPREFIX."module_news ( $into)
             VALUES ( $values )"
         );
 
-        if ($objResult !== false){
+        if ($objResult !== false) {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED']."<br /><br />";
             $ins_id = $objDatabase->Insert_ID();
             return $ins_id;
-        } else{
+        } else {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR']."<br /><br />";
             return false;
         }
@@ -778,12 +777,14 @@ var rssFeedFont = "Arial, Verdana"; // {$_ARRAYLANG['TXT_NEWS_FONT']}
 var rssFeedLimit = 10; // {$_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT']}
 var rssFeedShowDate = true; // {$_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE']}
 var rssFeedTarget = "_blank"; // _blank | _parent | _self | _top
+var rssFeedContainer = "news_rss_feeds";
 // --&gt;
 &lt;/script&gt;
 &lt;script type="text/javascript" language="JavaScript" src="$jsFeedUrl"&gt;&lt;/script&gt;
 &lt;noscript&gt;
 &lt;a href="$rssFeedUrl"&gt;$hostname - {$_ARRAYLANG['TXT_NEWS_SHOW_NEWS']}&lt;/a&gt;
 &lt;/noscript&gt;
+&lt;div id="news_rss_feeds"&gt;&nbsp;&lt;/div&gt;
 RSS2JSCODE;
 
         $this->_objTpl->setVariable(array(
@@ -795,5 +796,4 @@ RSS2JSCODE;
         return $this->_objTpl->get();
     }
 }
-
 ?>

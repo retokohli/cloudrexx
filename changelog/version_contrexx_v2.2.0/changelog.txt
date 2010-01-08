@@ -50,6 +50,10 @@ Benutzerverwaltung
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
 
+News Manager
+- Bei den Teasern kann der neue Platzhalter [[TEASER_FULL_TEXT]] verwendet
+  werden, um den kompletten Inhalt der News Meldungen auszugeben.
+
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
   werden.
@@ -133,6 +137,9 @@ News Manager
   diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
 - Die Meldungen werden in der Administrationskonsole korrekt aufgelistet,
   wenn die Erweiterung 'Zugriffsschutz' aktiviert ist.
+- Der JavaScript RSS Feed news_de.js funktioniert korrekt.
+- Ein Thumbnail einer News Meldung wird auch dann angezeigt, wenn kein
+  normales Bild definiert wurde.
 
 Modul: Adressverzeichnis
 - Die Suche funktioniert in jedem Bereich.
