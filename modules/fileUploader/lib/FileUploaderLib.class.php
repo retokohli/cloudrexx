@@ -125,7 +125,7 @@ class FileUploaderLib {
         if (!isset($_FILES['file'])) {
             die('Error:No file has been uploaded!');
         } else {
-            $fileName = $_FILES['file']['name'];
+            $fileName = contrexx_stripslashes($_FILES['file']['name']);
             $partitionIndex = $_POST['partitionIndex'];
             $partitionCount = $_POST['partitionCount'];
             $fileId = $_POST['fileId'];
@@ -182,6 +182,11 @@ class FileUploaderLib {
                 $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->path;
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->path;
             break;
+            case 'themes':
+                $strPath    = ASCMS_THEMES_PATH.$this->path;
+                $strWebPath = ASCMS_THEMES_WEB_PATH.$this->path;
+            break;
+            case 'content':
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->path;
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->path;
@@ -229,7 +234,7 @@ class FileUploaderLib {
 
         // create thumbnail if the uploaded file is an image
         $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-        if (in_array($fileExtension, array('jpg', 'jpeg', 'png', 'gif'))) {
+        if (in_array(strtolower($fileExtension), array('jpg', 'jpeg', 'png', 'gif'))) {
             ImageManager::_createThumb($strPath.'/', $strWebPath.'/', basename($file));
         }
 

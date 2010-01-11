@@ -57,6 +57,9 @@ Modul: Digital Asset Management
 - Nach der Authentifizierung erfolgt die Weiterleitung auf einen geschützten
   Download korrekt.
 
+Modul: FileUploader
+- Das Hochladen von Dateien funktioniert im Layout & Design Manager.
+
 Modul: Kalender
 - Vergangene Termine/Veranstaltungen können angezeigt werden.
 
