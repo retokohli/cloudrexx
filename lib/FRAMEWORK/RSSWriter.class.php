@@ -237,7 +237,19 @@ class RSSWriter {
 
     function _createJS()
     {
-        $this->xmlDocument = "var rssFeedNews = new Array()\n";
+        $this->xmlDocument = <<<XMLJSOUTPUT
+if (document.body) {
+	document.write('<div id="news_js_rss_feed"></div>');
+}
+fnWinOnload = window.onload;
+window.onload = function() {
+    if (typeof(fnWinOnload) != 'undefined' && fnWinOnload != null) {
+        fnWinOnload();
+    }
+
+    var rssFeedNews = new Array();
+XMLJSOUTPUT;
+
         $nr = 0;
 
         foreach ($this->_arrItems as $arrItem) {
@@ -287,12 +299,17 @@ if (rssFeedNews.length < rssFeedLimit) {
     rssFeedLimit = rssFeedNews.length;
 }
 
+    rssFeedContainer = document.getElementById('news_js_rss_feed');
+    rssFeedContainer.innerHTML = '';
+
 var rssFeedNewsDate = "";
 for (nr = 0; nr < rssFeedLimit; nr++) {
     if (rssFeedShowDate) {
         rssFeedNewsDate = rssFeedNews[nr]['date'];
     }
-    document.write('<a href="'+rssFeedNews[nr]['link']+'" '+rssFeedTarget+' '+style+'>'+rssFeedNewsDate+' '+rssFeedNews[nr]['title']+'</a><br />');
+        rssCode = '<a href="'+rssFeedNews[nr]['link']+'" '+rssFeedTarget+' '+style+'>'+rssFeedNewsDate+' '+rssFeedNews[nr]['title']+'</a><br />';
+        rssFeedContainer.innerHTML += rssCode;
+    }
 }
 XMLJSOUTPUT;
 
