@@ -178,6 +178,9 @@ Modul: Digital Asset Management
 Modul: Dokumenten System
 - Kompatibel mit der Alias Verwaltung.
 
+Modul: FileUploader
+- Das Hochladen von Dateien funktioniert im Layout & Design Manager.
+
 Modul: Forum
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
