@@ -359,7 +359,7 @@ class downloads extends DownloadsLibrary
             return false;
         }
 
-        $fileName = !empty($_FILES[$inputField]['name']) ? $_FILES[$inputField]['name'] : '';
+        $fileName = !empty($_FILES[$inputField]['name']) ? contrexx_stripslashes($_FILES[$inputField]['name']) : '';
         $fileTmpName = !empty($_FILES[$inputField]['tmp_name']) ? $_FILES[$inputField]['tmp_name'] : '';
 
         switch ($_FILES[$inputField]['error']) {
@@ -396,6 +396,11 @@ class downloads extends DownloadsLibrary
 
                         if (@move_uploaded_file($fileTmpName, $file)) {
                             $fileName = $arrFile['filename'];
+
+                            if (in_array(strtolower($fileExtension), array('jpg', 'jpeg', 'png', 'gif'))) {
+                                ImageManager::_createThumb(ASCMS_DOWNLOADS_IMAGES_PATH.'/', ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/', $arrFile['filename'].$suffix.'.'.$arrFile['extension']);
+                            }
+
                             return true;
                         } else {
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
@@ -450,6 +455,9 @@ class downloads extends DownloadsLibrary
         $objDownload->setSource(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension, $fileName.'.'.$fileExtension);
         $objDownload->setActiveStatus(true);
         $objDownload->setMimeType($fileMimeType);
+        if ($objDownload->getMimeType() == 'image') {
+            $objDownload->setImage(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension);
+        }
         $this->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$fileName.$suffix.'.'.$fileExtension)) : null;
         $objDownload->setVisibility(true);
         $objDownload->setProtection(false);
@@ -594,7 +602,7 @@ class downloads extends DownloadsLibrary
         $objModulChecker = new ModuleChecker();
         if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
             if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
-                $path = 'index.php?section=fileUploader&amp;standalone=true&amp;type=downloads&catId='.$objCategory->getId();
+                $path = 'index.php?section=fileUploader&amp;standalone=true&amp;type=downloads&amp;catId='.$objCategory->getId();
                 $this->objTemplate->setVariable(array(
                     'DOWNLOADS_FILE_UPLOAD_BUTTON'  => '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_DOWNLOADS_BROWSE'].'" />',
                     'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE']
@@ -1091,12 +1099,16 @@ JS_CODE;
                 $thumbnailSrc = ImageManager::getThumbnailFilename(
                     $this->defaultCategoryImage['src']);
             }
+
+            $imageSrc = FWValidator::getEscapedSource($imageSrc);
+            $thumbnailSrc = FWValidator::getEscapedSource($thumbnailSrc);
             $image = $this->getHtmlImageTag($imageSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
             $thumbnail = $this->getHtmlImageTag($thumbnailSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
         } else {
-            $imageSrc = $this->defaultCategoryImage['src'];
-            $thumbnailSrc = ImageManager::getThumbnailFilename(
-                $this->defaultCategoryImage['src']);
+            $imageSrc = FWValidator::getEscapedSource($this->defaultCategoryImage['src']);
+            $thumbnailSrc = FWValidator::getEscapedSource(
+                ImageManager::getThumbnailFilename(
+                    $this->defaultCategoryImage['src']));
             $image = $this->getHtmlImageTag($this->defaultCategoryImage['src'], htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));;
             $thumbnail = $this->getHtmlImageTag(
                 ImageManager::getThumbnailFilename(

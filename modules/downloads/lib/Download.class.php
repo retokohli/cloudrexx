@@ -339,7 +339,7 @@ class Download {
     {
         $objHTTPDownload = new HTTP_Download();
         $objHTTPDownload->setFile(ASCMS_PATH.$this->getSource());
-        $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, htmlspecialchars($this->getSourceName()));
+        $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $this->getSourceName()));
         $objHTTPDownload->setContentType();
         $objHTTPDownload->send('application/force-download');
         exit;
