@@ -117,6 +117,7 @@ Alias Verwaltung
 
 Block System
 - Das Interface zur Auswahl der Frontend Seiten funktioniert korrekt.
+- Inhaltsplatzhalter werden beim Bearbeiten eines Blocks angezeigt.
 
 Benutzerverwaltung
 - Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
