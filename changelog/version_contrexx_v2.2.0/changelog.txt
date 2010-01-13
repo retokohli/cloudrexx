@@ -226,6 +226,7 @@ Modul: Shop
   vorhanden ist, wird die nächste vorhandene Sprache verwendet.
 - Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
 - Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
+- Bilder mit Sonderzeichen im Dateinamen werden unterstützt.
 
 Modul: User to User Nachrichten
 - Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.
