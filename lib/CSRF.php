@@ -91,6 +91,7 @@ class CSRF {
      */
     private static function __enhance_header($header)
     {
+        if (!self::__is_logged_in()) return $header;
         $result = array();
         if (!preg_match('#^(\w+):\s*(.*)$#i', $header, $result)) {
             // don't know what to do with it
@@ -344,13 +345,13 @@ class CSRF {
     }
 
 
-    private function __getkey($key)
+    private static function __getkey($key)
     {
         return !empty($_SESSION[self::$sesskey][$key]);
     }
 
 
-    private function __setkey($key, $value)
+    private static function __setkey($key, $value)
     {
         if (!isset($_SESSION[self::$sesskey])) {
             $_SESSION[self::$sesskey] = array();
@@ -361,7 +362,7 @@ class CSRF {
     }
 
 
-    private function __is_logged_in()
+    private static function __is_logged_in()
     {
         if (class_exists('FWUser')) {
             $objFWUser = FWUser::getFWUserObject();
