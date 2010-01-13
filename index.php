@@ -71,7 +71,7 @@
  * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
-include_once('lib/DBG.php');
+include_once(dirname(__FILE__).'/lib/DBG.php');
 DBG::deactivate();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
@@ -123,6 +123,8 @@ if ($_CONFIG['systemStatus'] != 'on') {
  */
 require_once dirname(__FILE__).'/core/API.php';
 require_once dirname(__FILE__).'/lib/CSRF.php';
+// Temporary fix until all GET operation requests will be replaced by POSTs
+CSRF::setFrontendMode();
 
 //-------------------------------------------------------
 // Initialize database object
@@ -267,6 +269,8 @@ $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $pageId  = $objInit->getPageID($page, $section, $command, $history);
+} else {
+    $pageId = 0;
 }
 
 $is_home = $objInit->is_home;
@@ -368,6 +372,11 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             $page_protected = 1;
         }
     }
+} else {
+    $page_title = '';
+    $page_protected = false;
+    $page_content = '';
+    $page_template = '';
 }
 
 //-------------------------------------------------------
