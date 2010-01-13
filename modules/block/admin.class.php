@@ -218,7 +218,10 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_CONFIRM_DELETE_BLOCK'    => $_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'],
             'TXT_SAVE_CHANGES'                  => $_CORELANG['TXT_SAVE_CHANGES'],
             'TXT_BLOCK_OPERATION_IRREVERSIBLE'  => $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'],
-            'TXT_BLOCK_STATUS'                  => $_ARRAYLANG['TXT_BLOCK_STATUS']
+            'TXT_BLOCK_STATUS'                  => $_ARRAYLANG['TXT_BLOCK_STATUS'],
+            'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
+            'CSRF_KEY'                          => CSRF::key(),
+            'CSRF_CODE'                         => CSRF::code(),
         ));
 
         $arrBlocks = &$this->_getBlocks();
@@ -318,6 +321,7 @@ class blockManager extends blockLibrary
 
         if (isset($_POST['block_save_block'])) {
             $blockContent           = isset($_POST['blockBlockContent']) ? $_POST['blockBlockContent'] : '';
+            $blockContent           = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $blockContent);
             $blockName              = isset($_POST['blockName']) ? $_POST['blockName'] : '';
             $blockRandom            = isset($_POST['blockRandom']) ? intval($_POST['blockRandom']) : 0;
             $blockRandom2           = isset($_POST['blockRandom2']) ? intval($_POST['blockRandom2']) : 0;
@@ -366,6 +370,8 @@ class blockManager extends blockLibrary
         } else {
             $blockAssociatedLangIds = array_keys(FWLanguage::getLanguageArray());
         }
+
+        $blockContent = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$blockContent);
 
         $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
         $this->_pageTitle = $pageTitle;
@@ -590,7 +596,7 @@ class blockManager extends blockLibrary
             }
         }
 
-        CSRF::header("LOCATION: ?cmd=block");
+        CSRF::header("Location: index.php?cmd=block");
     }
 
     /**
@@ -620,7 +626,7 @@ class blockManager extends blockLibrary
             }
         }
 
-        CSRF::header("LOCATION: ?cmd=block");
+        CSRF::header("Location: index.php?cmd=block");
     }
 
     /**
