@@ -618,7 +618,7 @@ class FileBrowser {
                     $arrEscapedPaths[] = FWValidator::getEscapedSource($arrFile['path']);
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".$arrFile['path']."',".$arrFile['width'].",".$arrFile['height'].",'')",
+                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".FWValidator::getEscapedSource($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
                         'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
                         'FILEBROWSER_FILE_NAME'             => $arrFile['name'],
                         'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
