@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File browser
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -29,19 +30,19 @@ require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
  */
 class FileBrowser {
 
-    var $_objTpl;
-    var $_pageTitle;
-    var $_okMessage = array();
-    var $_errMessage = array();
-    var $_arrFiles = array();
-    var $_arrDirectories = array();
-    var $_path = '';
-    var $_iconWebPath = '';
-    var $_frontendLanguageId = null;
-    var $_absoluteURIs = false;
-    var $_mediaType = '';
-    var $_arrWebpages = array();
-    var $_arrMediaTypes = array(
+    public $_objTpl;
+    public $_pageTitle;
+    public $_okMessage = array();
+    public $_errMessage = array();
+    public $_arrFiles = array();
+    public $_arrDirectories = array();
+    public $_path = '';
+    public $_iconWebPath = '';
+    public $_frontendLanguageId = null;
+    public $_absoluteURIs = false;
+    public $_mediaType = '';
+    public $_arrWebpages = array();
+    public $_arrMediaTypes = array(
         'files'     => 'TXT_FILEBROWSER_FILES',
         'webpages'  => 'TXT_FILEBROWSER_WEBPAGES',
         'media1'    => 'TXT_FILEBROWSER_MEDIA_1',
@@ -53,10 +54,10 @@ class FileBrowser {
         'podcast'   => 'TXT_FILEBROWSER_PODCAST',
         'downloads' => 'TXT_FILEBROWSER_DOWNLOADS'
     );
-    var $_shopEnabled;
-    var $_blogEnabled;
-    var $_podcastEnabled;
-    var $_downloadsEnabled;
+    public $_shopEnabled;
+    public $_blogEnabled;
+    public $_podcastEnabled;
+    public $_downloadsEnabled;
 
 
     /**
@@ -66,9 +67,8 @@ class FileBrowser {
     */
     function __construct()
     {
-        global $_ARRAYLANG;
-
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_iconPath = ASCMS_MODULE_IMAGE_WEB_PATH.'/fileBrowser/';
@@ -93,10 +93,10 @@ class FileBrowser {
      *
      * @return bool
      */
-    function _checkForModule($strModuleName){
+    function _checkForModule($strModuleName) {
         global $objDatabase;
-        if( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'", 1)) != false){
-            if($objRS->RecordCount() > 0){
+        if ( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'", 1)) != false) {
+            if ($objRS->RecordCount() > 0) {
                 return true;
             }
         }
@@ -105,13 +105,10 @@ class FileBrowser {
 
 
     /**
-    * Get media type
-    *
-    * Get the type of which media content should be displayed in the file browser
-    *
-    * @access private
-    * @see FileBrowser::_arrMediaTypes
-    */
+     * Get the type of which media content should be displayed in the file browser
+     * @access private
+     * @see FileBrowser::_arrMediaTypes
+     */
     function _getMediaType()
     {
         if (isset($_REQUEST['type']) && isset($this->_arrMediaTypes[$_REQUEST['type']])) {
@@ -121,11 +118,11 @@ class FileBrowser {
         }
     }
 
+
     /**
-    * Get the path
-    *
-    * @return string    current browsing path
-    */
+     * Get the path
+     * @return string    current browsing path
+     */
     function _getPath()
     {
         $path = "";
@@ -140,6 +137,7 @@ class FileBrowser {
         return $path;
     }
 
+
     function _setFrontendLanguageId()
     {
         global $_FRONTEND_LANGID;
@@ -151,6 +149,7 @@ class FileBrowser {
         }
     }
 
+
     function _checkURIReturnType()
     {
         if (!empty($_REQUEST['absoluteURIs'])) {
@@ -160,8 +159,8 @@ class FileBrowser {
 
 
     /**
-    * Set the backend page
-    */
+     * Set the backend page
+     */
     function getPage()
     {
         if (!isset($_REQUEST['act'])) {
@@ -193,6 +192,7 @@ class FileBrowser {
         if (!isset($_FILES['NewFile']) || is_null($_FILES['NewFile']['tmp_name']) || $_FILES['NewFile']['name'] == '') {
             $this->SendResults('202');
         } else {
+            $uploadFileName = '';
             $this->_uploadFile($_FILES['NewFile']['name'], $_FILES['NewFile']['tmp_name'], $uploadFileName);
             $this->SendResults( 0, ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path.$uploadFileName, $uploadFileName);
         }
@@ -200,13 +200,10 @@ class FileBrowser {
 
 
     /**
-    * Show file browser
-    *
-    * Show the file browser
-    *
-    * @access private
-    * @global array
-    */
+     * Show the file browser
+     * @access private
+     * @global array
+     */
     function _showFileBrowser()
     {
         global $_ARRAYLANG;
@@ -216,31 +213,31 @@ class FileBrowser {
         switch($this->_mediaType) {
             case 'media1':
                 $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->_path;
-            break;
+                break;
             case 'media2':
                 $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->_path;
-            break;
+                break;
             case 'media3':
                 $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->_path;
-            break;
+                break;
             case 'media4':
                 $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->_path;
-            break;
+                break;
             case 'webpages':
                 $strWebPath = 'Webpages (DB)';
-            break;
+                break;
             case 'shop':
                 $strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
-            break;
+                break;
             case 'blog':
                 $strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
-            break;
+                break;
             case 'podcast':
                 $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
-            break;
+                break;
             case 'downloads':
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-            break;
+                break;
             default:
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
@@ -258,36 +255,33 @@ class FileBrowser {
         $this->_objTpl->show();
     }
 
+
     /**
      * set the error/ok messages in the template
-     *
      * @return void
      */
     function _showStatus()
     {
-        $okMessage  = '';
-        $errMessage = '';
-
         $okMessage  = implode('<br />', $this->_okMessage);
         $errMessage = implode('<br />', $this->_errMessage);
 
-        if(!empty($errMessage)){
+        if (!empty($errMessage)) {
            $this->_objTpl->setVariable('FILEBROWSER_ERROR_MESSAGE', $errMessage);
-        }else{
+        } else {
            $this->_objTpl->hideBlock('errormsg');
         }
 
-        if(!empty($okMessage)){
+        if (!empty($okMessage)) {
             $this->_objTpl->setVariable('FILEBROWSER_OK_MESSAGE', $okMessage);
-        }else{
+        } else {
            $this->_objTpl->hideBlock('okmsg');
         }
     }
 
+
     /**
      * put $message in the array specified by type
      * for later use of $this->_showStatus();
-     *
      * @param string $message
      * @param string $type ('ok' or 'error')
      * @return void
@@ -295,7 +289,7 @@ class FileBrowser {
      */
     function _pushStatusMessage($message, $type = 'ok')
     {
-       switch ($type){
+       switch ($type) {
            case 'ok':
                array_push($this->_okMessage, $message);
                break;
@@ -307,16 +301,24 @@ class FileBrowser {
                break;
        }
     }
+
+
     /**
-    * Check if there is a file-upload in the current reqest
-    *
-    */
+     * Check if there is a file-upload in the current reqest
+     *
+     */
     function _checkUpload()
     {
         if (isset($_FILES['fileBrowserUploadFile']) && !empty($_FILES['fileBrowserUploadFile'])) {
-            $this->_uploadFile($_FILES['fileBrowserUploadFile']['name'], $_FILES['fileBrowserUploadFile']['tmp_name'],$tmp);
+            $tmp = '';
+            $this->_uploadFile(
+                $_FILES['fileBrowserUploadFile']['name'],
+                $_FILES['fileBrowserUploadFile']['tmp_name'],
+                $tmp
+            );
         }
     }
+
 
     private function checkMakeDir()
     {
@@ -324,6 +326,7 @@ class FileBrowser {
             $this->makeDir($_POST['newDir']);
         }
     }
+
 
     private function makeDir($dir)
     {
@@ -367,14 +370,15 @@ class FileBrowser {
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
 
-        if(preg_match('#^[0-9a-zA-Z_\-]+$#', $dir)){
+        if (preg_match('#^[0-9a-zA-Z_\-]+$#', $dir)) {
+            CSRF::check_code();
             $objFile = new File();
-            if(!$objFile->mkDir($strPath, $strWebPath, $dir)){
+            if (!$objFile->mkDir($strPath, $strWebPath, $dir)) {
                 $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $dir), 'error');
-            }else{
+            } else {
                 $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'], $dir));
             }
-        }else if(!empty($dir)){
+        } else if (!empty($dir)) {
             $this->_pushStatusMessage($_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS'], 'error');
         }
     }
@@ -382,7 +386,6 @@ class FileBrowser {
 
     /**
      * Upload a file
-     *
      * @param string $uploadFileName: the name of the file
      * @param string $tmpFileName: temporary name of th efile
      * @param string $uploadedFileName: reference to the file name after upload
@@ -390,6 +393,7 @@ class FileBrowser {
     function _uploadFile($uploadFileName, $tmpFileName, &$uploadedFileName)
     {
         global $_ARRAYLANG;
+
         $file = $uploadFileName;
         $fileExtension = '';
 
@@ -438,11 +442,11 @@ class FileBrowser {
         }
 
         if (@file_exists($strPath.$uploadFileName)) {
+            $arrSubPatterns = array();
             if (preg_match('/.*\.(.*)$/', $uploadFileName, $arrSubPatterns)) {
                 $fileName = substr($uploadFileName, 0, strrpos($uploadFileName, '.'));
                 $fileExtension = $arrSubPatterns[1];
                 $file = $fileName.'-'.$nr.'.'.$fileExtension;
-
                 while (@file_exists($strPath.$file)) {
                     $file = substr($uploadFileName, 0, strrpos($uploadFileName, '.')).'-'.$nr.'.'.$fileExtension;
                     $nr++;
@@ -454,56 +458,55 @@ class FileBrowser {
         $uploadedFileName = $file;
 
         if (move_uploaded_file($tmpFileName, $strPath.$file)) {
-            if (!isset($objFile)) {
-                $objFile = &new File();
-            }
+            $objFile = new File();
             $objFile->setChmod($strPath, $strWebPath, $file);
         }
-
         $fileType = pathinfo($strPath.$file);
-
-        if($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif'){
+        if ($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif') {
             if ($this->_createThumb($strPath, $strWebPath, $file)) {
               $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
             }
         }
+        return true;
     }
 
 
-    function _createThumb($strPath, $strWebPath, $file, $height = 80, $quality = 90)
+    /**
+     * @todo    OBSOLETE.  Use core/Image.class.php instead.
+     */
+    function _createThumb($strPath, $strWebPath, $file, $height=80, $quality=90)
     {
         global $_ARRAYLANG;
-        $objFile = &new File();
 
-        $_objImage = &new ImageManager();
-        $tmpSize    = getimagesize($strPath.$file);
-        $thumbWidth = $height / $tmpSize[1] * $tmpSize[0];
-        $_objImage->loadImage($strPath.$file);
-        $_objImage->resizeImage($thumbWidth, $height, $quality);
-        $_objImage->saveNewImage($strPath.$file . '.thumb');
-
-        if ($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
-           return true;
-        }
+        $objFile = new File();
+        $_objImage = new ImageManager();
+        $_objImage->_createThumbWhq(
+            $strPath, $strWebPath, $file, 1e10, $height, $quality
+        );
+//        $tmpSize = getimagesize($strPath.$file);
+//        $thumbWidth = $height / $tmpSize[1] * $tmpSize[0];
+//        $_objImage->loadImage($strPath.$file);
+//        $_objImage->resizeImage($thumbWidth, $height, $quality);
+//        $_objImage->saveNewImage($strPath.$file . '.thumb');
+        if ($objFile->setChmod($strPath, $strWebPath,
+            ImageManager::getThumbnailFilename($file)))
+            return true;
         return false;
     }
 
+
     /**
-    * Set the navigation in the file browser
-    *
-    * Set the navigation with the media type drop-down menu in the file browser
-    *
-    * @access private
-    * @see FileBrowser::_getMediaTypeMenu, _objTpl, _mediaType, _arrDirectories
-    */
+     * Set the navigation with the media type drop-down menu in the file browser
+     * @access private
+     * @see FileBrowser::_getMediaTypeMenu, _objTpl, _mediaType, _arrDirectories
+     */
     function _setNavigation()
     {
         global $_ARRAYLANG;
 
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
-
         $this->_objTpl->setVariable(array(
-            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value)" style="width:180px;"'),
+            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value)" style="width:180px;"'),
             'TXT_FILEBROWSER_PREVIEW'       => $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
         ));
 
@@ -520,15 +523,13 @@ class FileBrowser {
                 }
             }
         }
-
         $this->_objTpl->parse('fileBrowser_navigation');
     }
 
 
     /**
-    * Shows all files / pages in filebrowser
-    *
-    */
+     * Shows all files / pages in filebrowser
+     */
     function _setContent($noAliases=false)
     {
         global $objDatabase, $_CONFIG;
@@ -550,7 +551,7 @@ class FileBrowser {
             }
             $getPageId = (isset($_REQUEST['getPageId']) && $_REQUEST['getPageId'] == 'true') ? true : false;
 
-            $objContentTree = &new ContentTree($this->_frontendLanguageId);
+            $objContentTree = new ContentTree($this->_frontendLanguageId);
 
             $scriptPath = ($this->_absoluteURIs ?
                 $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ?
@@ -583,9 +584,7 @@ class FileBrowser {
 
                 $rowNr++;
             }
-
-        break;
-
+            break;
         case 'media1':
         case 'media2':
         case 'media3':
@@ -614,11 +613,13 @@ class FileBrowser {
                 }
             }
             if (count($this->_arrFiles) > 0) {
+                $arrEscapedPaths = array();
                 foreach ($this->_arrFiles as $arrFile) {
+                    $arrEscapedPaths[] = FWValidator::getEscapedSource($arrFile['path']);
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
                         'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".$arrFile['path']."',".$arrFile['width'].",".$arrFile['height'].",'')",
-                        'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview('".$arrFile['path']."',".$arrFile['width'].",".$arrFile['height'].")}",
+                        'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
                         'FILEBROWSER_FILE_NAME'             => $arrFile['name'],
                         'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
                         'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
@@ -627,50 +628,51 @@ class FileBrowser {
                     $this->_objTpl->parse('content_files');
                     $rowNr++;
                 }
+
+                $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
             }
 
             switch ($this->_mediaType) {
                 case 'media1':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA1_WEB_PATH);
-                break;
+                    break;
                 case 'media2':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA2_WEB_PATH);
-                break;
+                    break;
                 case 'media3':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA3_WEB_PATH);
-                break;
+                    break;
                 case 'media4':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA4_WEB_PATH);
-                break;
+                    break;
                 case 'shop':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_SHOP_IMAGES_WEB_PATH);
-                break;
+                    break;
                 case 'blog':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_BLOG_IMAGES_WEB_PATH);
-                break;
+                    break;
                 case 'podcast':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PODCAST_IMAGES_WEB_PATH);
-                break;
+                    break;
                 case 'downloads':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
-                break;
+                    break;
                 default:
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
             }
-            break;
         }
         $this->_objTpl->parse('fileBrowser_content');
     }
 
 
     /**
-    * Shows the upload-form in the filebrowser
-    */
+     * Shows the upload-form in the filebrowser
+     */
     function _setUploadForm()
     {
         global $_ARRAYLANG, $_CONFIG;
-        $objFWSystem = &new FWSystem();
 
+        $objFWSystem = new FWSystem();
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
         $this->_objTpl->setVariable(array(
             'FILEBROWSER_UPLOAD_TYPE'   => $this->_mediaType,
@@ -698,12 +700,10 @@ class FileBrowser {
 
 
     /**
-    * Read all files / directories of the current folder
-    *
-    */
+     * Read all files / directories of the current folder
+     */
     function _initFiles()
     {
-
         switch($this->_mediaType) {
             case 'media1':
                 $strPath = ASCMS_MEDIA1_PATH.$this->_path;
@@ -738,15 +738,22 @@ class FileBrowser {
         $arrFiles = array();
 
         if ($objDir) {
-            if ($this->_path !== "/" && preg_match('#(.*/).+[/]?$#',$this->_path, $path)) {
+            $path = array();
+            if (   $this->_path !== "/"
+                && preg_match('#(.*/).+[/]?$#', $this->_path, $path)) {
                 array_push($this->_arrDirectories, array('name' => '..', 'path' => $path[1], 'icon' => $this->_iconPath.'_folder.gif'));
             }
 
-            while ($file = readdir($objDir)) {
+            $file = readdir($objDir);
+            while ($file !== false) {
+// TODO: This match won't work for arbitrary thumbnail file names as they
+// may be created by the Image class!
                 if ($file == '.' || $file == '..' || preg_match('/\.thumb$/', $file) || $file == 'index.php') {
+                    $file = readdir($objDir);
                     continue;
                 }
                 array_push($arrFiles, $file);
+                $file = readdir($objDir);
             }
             closedir($objDir);
 
@@ -771,10 +778,9 @@ class FileBrowser {
 
 
     /**
-    * Search the icon for a file
-    *
-    * @param  string $file: The icon of this file will be searched
-    */
+     * Search the icon for a file
+     * @param  string $file: The icon of this file will be searched
+     */
     function _getIcon($file)
     {
         if (is_file($file)) {
@@ -786,18 +792,15 @@ class FileBrowser {
             $icon = '_folder';
         }
 
-        if (!file_exists(ASCMS_MODULE_IMAGE_PATH.'/fileBrowser/'.$icon.'.gif') or !isset($icon)){
+        if (!file_exists(ASCMS_MODULE_IMAGE_PATH.'/fileBrowser/'.$icon.'.gif') or !isset($icon)) {
             $icon = '_blank';
         }
         return $this->_iconPath.$icon.'.gif';
     }
 
 
-
-
     /**
      * Create html-source of a complete <select>-navigation
-     *
      * @param string $name: name of the <select>-tag
      * @param string $selectedType: which <option> will be "selected"?
      * @param string $attrs: further attributes of the <select>-tag
@@ -809,15 +812,16 @@ class FileBrowser {
 
         $menu = "<select name=\"".$name."\" ".$attrs.">";
         foreach ($this->_arrMediaTypes as $type => $text) {
-            if($type == 'shop' && !$this->_shopEnabled){ continue; }
-            if($type == 'blog' && !$this->_blogEnabled){ continue; }
-            if($type == 'podcast' && !$this->_podcastEnabled){ continue; }
-            if($type == 'downloads' && !$this->_downloadsEnabled){ continue; }
+            if ($type == 'shop' && !$this->_shopEnabled) { continue; }
+            if ($type == 'blog' && !$this->_blogEnabled) { continue; }
+            if ($type == 'podcast' && !$this->_podcastEnabled) { continue; }
+            if ($type == 'downloads' && !$this->_downloadsEnabled) { continue; }
             $menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$text]."</option>\n";
         }
         $menu .= "</select>";
         return $menu;
     }
+
 }
 
 ?>
