@@ -3185,24 +3185,24 @@ class shopmanager extends ShopLibrary
                 (   !empty($arrImages[1]['img'])
                  && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
                         ImageManager::getThumbnailFilename($arrImages[1]['img']))
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
-                      ImageManager::getThumbnailFilename($arrImages[1]['img'])
+                    ? FWValidator::getEscapedSource(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                          ImageManager::getThumbnailFilename($arrImages[1]['img']))
                     : self::$defaultImage
                 ),
             'SHOP_PICTURE2_IMG_SRC' =>
                 (   !empty($arrImages[2]['img'])
                  && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
                         ImageManager::getThumbnailFilename($arrImages[2]['img']))
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
-                      ImageManager::getThumbnailFilename($arrImages[2]['img'])
+                    ? FWValidator::getEscapedSource(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                      ImageManager::getThumbnailFilename($arrImages[2]['img']))
                     : self::$defaultImage
                 ),
             'SHOP_PICTURE3_IMG_SRC' =>
                 (   !empty($arrImages[3]['img'])
                  && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
                         ImageManager::getThumbnailFilename($arrImages[3]['img']))
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
-                      ImageManager::getThumbnailFilename($arrImages[3]['img'])
+                    ? FWValidator::getEscapedSource(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                      ImageManager::getThumbnailFilename($arrImages[3]['img']))
                     : self::$defaultImage
                 ),
             'SHOP_PICTURE1_IMG_SRC_NO_THUMB' => (!empty($arrImages[1]['img']) && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[1]['img'])
@@ -3502,7 +3502,7 @@ class shopmanager extends ShopLibrary
                         'SHOP_ORDERID' => $orderId,
                         'SHOP_TIP_ID' => $orderId,
                         'SHOP_TIP_NOTE' => ereg_replace(
-                                "\r\n|\n|\r", '<br />', htmlentities(strip_tags($tipNote))
+                                "\r\n|\n|\r", '<br />', htmlentities(strip_tags($tipNote), ENT_QUOTES, CONTREXX_CHARSET)
                             ),
                         'SHOP_TIP_LINK' => $tipLink,
                         'SHOP_DATE' => $objResult->fields['order_date'],

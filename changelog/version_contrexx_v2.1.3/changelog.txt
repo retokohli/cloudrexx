@@ -81,6 +81,7 @@ Modul: Seitenempfehlung
 Modul: Shop
 - Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
 - Die detaillierte Produkte Ansicht aus dem Warenkorb heraus funktioniert.
+- Bilder mit Sonderzeichen im Dateinamen werden unterstützt.
 
 Modul: Statistik
 - Um die Ladegeschwindigkeit zu erhöhen, wird der Counter neu mittels
