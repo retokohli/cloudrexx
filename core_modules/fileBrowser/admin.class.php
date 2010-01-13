@@ -249,7 +249,7 @@ class FileBrowser {
         ));
 
         $this->_setNavigation();
-        $this->_setContent();
+        $this->_setContent(!empty($_GET['noAliases']) ? $_GET['noAliases'] : false);
         $this->_setUploadForm();
         $this->_showStatus();
         $this->_objTpl->show();
@@ -530,7 +530,7 @@ class FileBrowser {
     /**
      * Shows all files / pages in filebrowser
      */
-    function _setContent()
+    function _setContent($noAliases=false)
     {
         global $objDatabase, $_CONFIG;
 
@@ -566,7 +566,8 @@ class FileBrowser {
                 $link = $scriptPath.CONTREXX_DIRECTORY_INDEX.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
 
                 $url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
-                if ($arrPage['alias']) {
+
+                if($arrPage['alias'] && !$noAliases) {
                     $url = "'" . $scriptPath . $arrPage['alias'] . "'";
                 }
 
@@ -591,7 +592,10 @@ class FileBrowser {
             Permission::checkAccess(7, 'static');       //Access Media-Archive
             Permission::checkAccess(38, 'static');  //Edit Media-Files
             Permission::checkAccess(39, 'static');  //Upload Media-Files
-        // No break here on purpose
+
+        //Hier soll wirklich kein break stehen! Beabsichtig!
+
+
         default:
             if (count($this->_arrDirectories) > 0) {
                 foreach ($this->_arrDirectories as $arrDirectory) {
@@ -609,11 +613,13 @@ class FileBrowser {
                 }
             }
             if (count($this->_arrFiles) > 0) {
+                $arrEscapedPaths = array();
                 foreach ($this->_arrFiles as $arrFile) {
+                    $arrEscapedPaths[] = FWValidator::getEscapedSource($arrFile['path']);
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
                         'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".$arrFile['path']."',".$arrFile['width'].",".$arrFile['height'].",'')",
-                        'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview('".$arrFile['path']."',".$arrFile['width'].",".$arrFile['height'].")}",
+                        'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
                         'FILEBROWSER_FILE_NAME'             => $arrFile['name'],
                         'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
                         'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
@@ -622,6 +628,8 @@ class FileBrowser {
                     $this->_objTpl->parse('content_files');
                     $rowNr++;
                 }
+
+                $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
             }
 
             switch ($this->_mediaType) {
