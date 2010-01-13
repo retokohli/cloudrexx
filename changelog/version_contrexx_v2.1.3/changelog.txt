@@ -36,6 +36,9 @@ Benutzerverwaltung
 - Die Funktion "Kennwort Zurücksetzen" funktioniert mit Benutzern, welche
   automatisch über den Online Shop erstellt wurden.
 
+Block System
+- Inhaltsplatzhalter werden beim Bearbeiten eines Blocks angezeigt.
+
 FileBrowser
 - Die Bild-Vorschau funktioniert bei Bildern mit Sonderzeichen im Dateinamen.
 
