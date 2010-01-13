@@ -131,6 +131,9 @@ Benutzerverwaltung
 - Die Funktion "Kennwort Zurücksetzen" funktioniert mit Benutzern, welche
   automatisch über den Online Shop erstellt wurden.
 
+FileBrowser
+- Die Bild-Vorschau funktioniert bei Bildern mit Sonderzeichen im Dateinamen.
+
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
 - Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn

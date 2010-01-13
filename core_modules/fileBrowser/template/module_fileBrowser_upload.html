@@ -1,10 +1,10 @@
 <!-- start module_fileBrowser_upload.html -->
 <form action="index.php?cmd=fileBrowser&amp;standalone=true&amp;type={FILEBROWSER_UPLOAD_TYPE}&amp;path={FILEBROWSER_UPLOAD_PATH}" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="MAX_FILE_SIZE" value="{FILEBROWSER_MAX_FILE_SIZE}" />
-     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="height:30px; margin:5px;" summary="upload form">
-    <tbody>
-      <tr>
-        <td>
+	<input type="hidden" name="MAX_FILE_SIZE" value="{FILEBROWSER_MAX_FILE_SIZE}" />
+   	<table border="0" cellpadding="0" cellspacing="0" width="100%" style="height:30px; margin:5px;" summary="upload form">
+		<tbody>
+			<tr>
+				<td>
                     <!-- BEGIN fileBrowser_simple_upload -->
                     <input type="file" name="fileBrowserUploadFile" />&nbsp;<input type="submit" name="uploadFile" value="{TXT_UPLOAD_FILE}" />
                     <!-- END fileBrowser_simple_upload -->
@@ -18,15 +18,15 @@
                     }
                     // ]]>
                     </script>
-                    <input type="button" name="fileBrowserUploadFile" value="{TXT_UPLOAD_FILE_MULTI}" onclick="openWindow('{FILEBROWSER_ADVANCED_UPLOAD_PATH}','','width=800,height=600,resizable=yes,status=no,scrollbars=no');" />
+                    <input type="button" name="fileBrowserUploadFile" value="{TXT_UPLOAD_FILE_MULTI}" onclick="openWindow('{FILEBROWSER_ADVANCED_UPLOAD_PATH}&{CSRF_PARAM}','','width=800,height=600,resizable=yes,status=no,scrollbars=no');" />
                     <!-- END fileBrowser_advanced_upload -->
                     <br /><br />
                 </td>
-      </tr>
-      <tr>
+			</tr>
+			<tr>
                 <td><input type="text" name="newDir" /> <input type="submit" name="createDir" value="{TXT_CREATE_DIRECTORY}" /></td>
-      </tr>
-    </tbody>
-  </table>
+			</tr>
+		</tbody>
+	</table>
 </form>
 <!-- end module_fileBrowser_upload.html -->
