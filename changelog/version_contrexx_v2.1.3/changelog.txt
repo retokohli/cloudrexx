@@ -36,6 +36,9 @@ Benutzerverwaltung
 - Die Funktion "Kennwort Zurücksetzen" funktioniert mit Benutzern, welche
   automatisch über den Online Shop erstellt wurden.
 
+FileBrowser
+- Die Bild-Vorschau funktioniert bei Bildern mit Sonderzeichen im Dateinamen.
+
 News Manager
 - Der JavaScript RSS Feed news_de.js funktioniert korrekt.
 - Ein Thumbnail einer News Meldung wird auch dann angezeigt, wenn kein
