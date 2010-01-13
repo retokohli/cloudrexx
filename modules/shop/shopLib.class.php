@@ -621,7 +621,7 @@ class ShopLibrary
                     $objResult->fields['product_option_value'];
                 if (file_exists($filename)) {
                     if (@unlink($filename)) {
-                        //$this->addMessage("Datei $filename gelscht");
+                        //$this->addMessage("Datei $filename geloescht");
                     } else {
                         $this->addError(sprintf($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $filename));
                     }
@@ -690,7 +690,7 @@ class ShopLibrary
             }
 */
         }
-        $this->addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
+//        $this->addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
         return true;
     }
 
@@ -772,6 +772,7 @@ class ShopLibrary
      * /var/www/mydomain/images/shop/folder/test.jpg becomes images/shop/folder/test.jpg
      * @param   string    $imageFileSource    The absolute image path, by reference
      * @return  boolean                       True on success, false otherwise
+     * @todo    The message on successful renaming cannot be displayed yet
      */
     static function moveImage(&$imageFileSource)
     {
@@ -788,12 +789,12 @@ class ShopLibrary
             if (   file_exists(ASCMS_PATH.$imageFileTarget)
                 && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
                 $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
-                self::addMessage(
-                    sprintf(
-                        $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'],
-                        basename($imageFileSource), basename($imageFileTarget)
-                    )
-                );
+//                self::addMessage(
+//                    sprintf(
+//                        $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'],
+//                        basename($imageFileSource), basename($imageFileTarget)
+//                    )
+//                );
             }
             if (!copy(ASCMS_PATH.$imageFileSource, ASCMS_PATH.$imageFileTarget)) {
                 self::addError(
@@ -821,9 +822,7 @@ class ShopLibrary
         global $_ARRAYLANG;
 
         $strMenuoptions =
-            '<option value="'.$index.'"'.
-            ($selected == $index ? ' selected="selected"' : '').
-            '>'.$_ARRAYLANG['TXT_SHOP_ALL'].'</option>';
+            '<option value="">'.$_ARRAYLANG['TXT_SHOP_ALL'].'</option>';
         for ($i = 65; $i < 92; ++$i) {
             $letter = chr($i);
             $strMenuoptions .=
