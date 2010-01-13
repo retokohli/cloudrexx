@@ -89,6 +89,7 @@ class blockManager extends blockLibrary
         global $objTemplate, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/block/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (isset($_POST['saveSettings'])) {
@@ -325,7 +326,7 @@ class blockManager extends blockLibrary
                 $objDatabase->Execute($query);
             }
 
-            header('Location: index.php?cmd=block');
+            CSRF::header('Location: index.php?cmd=block');
         }
     }
 
@@ -587,6 +588,7 @@ class blockManager extends blockLibrary
         if (isset($_POST['block_save_block'])) {
             $blockCat               = isset($_POST['blockCat']) ? $_POST['blockCat'] : 0;
             $blockContent           = isset($_POST['blockBlockContent']) ? $_POST['blockBlockContent'] : '';
+            $blockContent           = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $blockContent);
             $blockName              = isset($_POST['blockName']) ? $_POST['blockName'] : '';
             $blockStart             = $this->_parseTimestamp('inputStart');
             $blockEnd               = $this->_parseTimestamp('inputEnd');
@@ -642,6 +644,8 @@ class blockManager extends blockLibrary
         } else {
             $blockAssociatedLangIds = array_keys(FWLanguage::getLanguageArray());
         }
+
+        $blockContent = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$blockContent);
 
         $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
         $this->_pageTitle = $pageTitle;
@@ -880,7 +884,7 @@ class blockManager extends blockLibrary
             }
         }
 
-        header("LOCATION: ?cmd=block");
+        CSRF::header("Location: index.php?cmd=block");
     }
 
     /**
@@ -910,7 +914,7 @@ class blockManager extends blockLibrary
             }
         }
 
-        header("LOCATION: ?cmd=block");
+        CSRF::header("Location: index.php?cmd=block");
     }
 
     /**
@@ -1055,7 +1059,7 @@ class blockManager extends blockLibrary
                 $objDatabase->Execute($query);
             }
 
-            header('Location: index.php?cmd=block&act=settings');
+            CSRF::header('Location: index.php?cmd=block&act=settings');
         }
     }
 }
