@@ -71,7 +71,7 @@
  * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
-include_once('lib/DBG.php');
+include_once(dirname(__FILE__).'/lib/DBG.php');
 DBG::deactivate();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
@@ -114,7 +114,7 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 // Check if system is running
 //-------------------------------------------------------
 if ($_CONFIG['systemStatus'] != 'on') {
-    CSRF::header('location: offline.html');
+    header('location: offline.html');
     die(1);
 }
 
@@ -123,6 +123,8 @@ if ($_CONFIG['systemStatus'] != 'on') {
  */
 require_once dirname(__FILE__).'/core/API.php';
 require_once dirname(__FILE__).'/lib/CSRF.php';
+// Temporary fix until all GET operation requests will be replaced by POSTs
+CSRF::setFrontendMode();
 
 //-------------------------------------------------------
 // Initialize database object

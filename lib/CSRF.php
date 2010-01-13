@@ -67,6 +67,8 @@ class CSRF {
 
     private static $current_code = NULL;
 
+    private static $frontend_mode = false;
+
 
     private static function __get_code()
     {
@@ -92,6 +94,7 @@ class CSRF {
     private static function __enhance_header($header)
     {
         if (!self::__is_logged_in()) return $header;
+        if (self::$frontend_mode) return $header;
         $result = array();
         if (!preg_match('#^(\w+):\s*(.*)$#i', $header, $result)) {
             // don't know what to do with it
@@ -124,6 +127,8 @@ class CSRF {
      */
     public static function enhanceURI($uri)
     {
+        if (self::$frontend_mode) return $uri;
+
         $key = self::$formkey;
         $val = self::__get_code();
         $uri .= (strstr($uri, '?') ? '&' : '?')."$key=$val";
@@ -214,6 +219,7 @@ class CSRF {
     public static function check_code()
     {
         if (!self::__is_logged_in()) return;
+        if ($_SERVER['REQUEST_METHOD'] == 'GET' && self::$frontend_mode) return;
         if (self::$already_checked) return;
         self::$already_checked = true;
         // do not check if it's an AJAX request.  They're secure
@@ -390,6 +396,12 @@ class CSRF {
         !empty($_SERVER['REQUEST_URI'])  ? $_SERVER['REQUEST_URI']  = preg_replace($csrfUrlModifierPattern, '', $_SERVER['REQUEST_URI'])     : false;
         !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] = preg_replace($csrfUrlModifierPattern, '', $_SERVER['HTTP_REFERER'])    : false;
         !empty($_SERVER['argv'])         ? $_SERVER['argv']         = preg_grep($csrfUrlModifierPattern, $_SERVER['argv'], PREG_GREP_INVERT) : false;
+    }
+
+    public static function setFrontendMode()
+    {
+        self::$frontend_mode = true;
+        @ini_set('url_rewriter.tags', 'area=href,frame=src,iframe=src,input=src,form=,fieldset=');
     }
 }
 
