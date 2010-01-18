@@ -2941,6 +2941,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_printshop_format` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `format` varchar(255) NOT NULL,
+  `roundUpIndex` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `format` (`format`)
 ) TYPE=MyISAM ;

@@ -2970,10 +2970,10 @@ INSERT INTO `contrexx_module_podcast_template` (`id`, `description`, `template`,
 INSERT INTO `contrexx_module_printshop_back` (`id`, `back`) VALUES (1,'s/w');
 INSERT INTO `contrexx_module_printshop_back` (`id`, `back`) VALUES (2,'4-farbig');
 INSERT INTO `contrexx_module_printshop_back` (`id`, `back`) VALUES (3,'nicht bedruckt');
-INSERT INTO `contrexx_module_printshop_format` (`id`, `format`) VALUES (1,'A3 (29.7x 42cm)');
-INSERT INTO `contrexx_module_printshop_format` (`id`, `format`) VALUES (2,'A4 (21 x 29.7 cm)');
-INSERT INTO `contrexx_module_printshop_format` (`id`, `format`) VALUES (3,'A5 (14.8 x 21 cm)');
-INSERT INTO `contrexx_module_printshop_format` (`id`, `format`) VALUES (4,'A6 (10.5 x 14.8 cm)');
+INSERT INTO `contrexx_module_printshop_format` (`id`, `format`, `roundUpIndex`) VALUES (1,'A3 (29.7x 42cm)',0);
+INSERT INTO `contrexx_module_printshop_format` (`id`, `format`, `roundUpIndex`) VALUES (2,'A4 (21 x 29.7 cm)',0);
+INSERT INTO `contrexx_module_printshop_format` (`id`, `format`, `roundUpIndex`) VALUES (3,'A5 (14.8 x 21 cm)',0);
+INSERT INTO `contrexx_module_printshop_format` (`id`, `format`, `roundUpIndex`) VALUES (4,'A6 (10.5 x 14.8 cm)',0);
 INSERT INTO `contrexx_module_printshop_front` (`id`, `front`) VALUES (1,'s/w');
 INSERT INTO `contrexx_module_printshop_front` (`id`, `front`) VALUES (2,'4-farbig');
 INSERT INTO `contrexx_module_printshop_paper` (`id`, `paper`) VALUES (1,'sattiniert');
