@@ -26,7 +26,7 @@ $_ARRAYLANG['TXT_PRINTSHOP_PRICES_THRESHOLD_AMOUNT'] = "Die Tabelle zeigt den Pr
 $_ARRAYLANG['TXT_PRINTSHOP_FILE'] = "Datei";
 $_ARRAYLANG['TXT_PRINTSHOP_CHOOSE_FILE'] = "Datei auswählen";
 $_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_TITLE'] = "Daten hochladen";
-$_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC'] = "Bitte laden Sie Ihre Bilder, die gedruck werden sollen, auf unseren Server. (max. 2MB, erlaubte Dateiendungen: gif, png, jpg)";
+$_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC'] = "Bitte laden Sie Ihre Daten, die gedruck werden sollen, auf unseren Server. (max. 2MB, erlaubte Dateiendungen: gif, png, jpg)";
 $_ARRAYLANG['TXT_PRINTSHOP_SUBJECT'] = "Betreff";
 $_ARRAYLANG['TXT_PRINTSHOP_ORDERDETAILS'] = "Auftragsangaben";
 $_ARRAYLANG['TXT_PRINTSHOP_AMOUNT_COST_SHIP'] = "Auflage/Kosten/Versand";
@@ -63,6 +63,6 @@ $_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_FRONT'] = "Sie müssen mindesten
 $_ARRAYLANG['TXT_PRINTSHOP_MISSING_IMAGE_UPLOAD_BACK'] = "Sie müssen mindestens zwei Bild-Dateien als Druckvorlage hochladen (Vorder- und Rückseite). Es können nur Dateien mit der Endung .JPG, .GIF oder .PNG hochgeladen werden.";
 $_ARRAYLANG['TXT_PRINTSHOP_INVALID_EXTENSION'] = "Ungültiger Dateityp. Es können nur Dateien mit der Endung .JPG, .GIF oder .PNG hochgeladen werden.";
 $_ARRAYLANG['TXT_PRINTSHOP_ERROR_UPLOADING_FILE'] = "Beim Hochladen der Datei ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Webmaster, falls das Problem besteht.";
-$_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC2'] = "Sie können uns die Bilder auch per %s oder %s nachsenden.";
+$_ARRAYLANG['TXT_PRINTSHOP_UPLOAD_DATA_DESC2'] = "Sie können uns die Daten auch per %s oder %s nachsenden.";
 $_ARRAYLANG['TXT_PRINTSHOP_SAME_AS_INVOICE_ADDR'] = "Rechnungsadresse verwenden";
 ?>
