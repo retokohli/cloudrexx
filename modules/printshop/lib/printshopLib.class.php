@@ -127,6 +127,24 @@ class PrintshopLibrary {
 
 
     /**
+     * checks if the attribute has a roundUpIndex column
+     *
+     * @param string $attribute
+     * @return bool
+     */
+    function _hasRoundUpIndex($attribute){
+       switch($attribute){
+            case 'format':
+                $hasRoundUpIndex = true;
+                break;
+            default:
+                $hasRoundUpIndex = false;
+        }
+        return $hasRoundUpIndex;
+    }
+
+
+    /**
      * get the data of an attribute
      *
      * @param string $attribute
@@ -137,16 +155,24 @@ class PrintshopLibrary {
 
         $arrAttributes = array();
 
-        $query = 'SELECT `id`, `'.$attribute.'` AS `name`
+        if($this->_hasRoundUpIndex($attribute)){
+            $additionalQuery = ', `roundUpIndex`';
+        } else {
+            $additionalQuery = '';
+        }
+
+        $query = 'SELECT `id`, `'.$attribute.'` AS `name` '.$additionalQuery.'
                   FROM `'.DBPREFIX.'module_printshop_'.$attribute.'`';
+
         $objRS = $objDatabase->Execute($query);
         if($objRS->RecordCount() == 0){
             return false;
         }
         while(!$objRS->EOF){
             $arrAttributes[$objRS->fields['id']] = array(
-                'id'        =>  $objRS->fields['id'],
-                'name'      =>  $objRS->fields['name'],
+                'id'            =>  $objRS->fields['id'],
+                'name'          =>  $objRS->fields['name'],
+                'roundUpIndex'  =>  !empty($objRS->fields['roundUpIndex']) ? $this->_priceThresholds[$objRS->fields['roundUpIndex']]['threshold'] : '-',
             );
             $objRS->MoveNext();
         }
@@ -173,7 +199,6 @@ class PrintshopLibrary {
                     return false;
                 }
                 if($value > 0){
-//                    $join .= ' INNER JOIN `'.DBPREFIX.'module_printshop_'.$attribute.'` AS `a` ON (`a`.`'.$attribute.'`=``)';
                     $where .= ' AND `'.$attribute.'` = '.$value;
                 }
             }
@@ -187,10 +212,14 @@ class PrintshopLibrary {
                   FROM   `'.DBPREFIX.'module_printshop_product` AS `p`
                   WHERE '.$where.'
                   ORDER BY `type`, `format`, `front`, `back`, `weight`, `paper`';
-
         $objRS = $objDatabase->SelectLimit($query, $this->_limit, $this->_pos);
         $objRSCount = $objDatabase->Execute('SELECT FOUND_ROWS() AS `rows`');
         $count = intval($objRSCount->fields['rows']);
+
+        $query = 'SELECT `roundUpIndex`
+                  FROM   `'.DBPREFIX.'module_printshop_format`
+                  WHERE `id`='.$arrAttributesFilter['format'];
+        $objRS2 = $objDatabase->SelectLimit($query, 1);
         while(!$objRS->EOF){
             if($translated){
                 $arrEntries[] = array(
@@ -216,6 +245,7 @@ class PrintshopLibrary {
                     'price_13'      => $objRS->fields['price_13'],
                     'price_14'      => $objRS->fields['price_14'],
                     'price_15'      => $objRS->fields['price_15'],
+                    'roundUpIndex'  => $objRS2->fields['roundUpIndex'],
                 );
             }else{
                  $arrEntries[] = $objRS->fields;

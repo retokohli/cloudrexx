@@ -6,7 +6,6 @@
  * @package     contrexx
  * @subpackage  module_printshop
  */
-error_reporting(E_ALL);ini_set('display_errors',1);
 
 /**
  * Includes
@@ -103,6 +102,7 @@ class PrintshopAdmin extends PrintshopLibrary {
                             die(json_encode(array(
                                 'id' => $arrEntry['id'],
                                 'name' => $arrEntry['name'],
+                                'roundUpIndex' => $arrEntry['roundUpIndex'],
                                 'exists' => $arrEntry['exists']
                             )));
                         break;
@@ -692,7 +692,7 @@ class PrintshopAdmin extends PrintshopLibrary {
 
 
     /**
-     * edit the print attributes
+     * update the print attributes
      *
      * @param string $attribute
      * @param int $id
@@ -704,7 +704,9 @@ class PrintshopAdmin extends PrintshopLibrary {
         if(!$this->_isValidAtrribute($attribute)){
             return false;
         }
-        $attributeValue = contrexx_addslashes(trim($_POST['psAttributeName']));
+        $attributeValue                     = contrexx_addslashes(trim($_POST['psAttributeName']));
+        $_POST['psAttributeRoundUpIndex']   = !empty($_POST['psAttributeRoundUpIndex']) ? intval($_POST['psAttributeRoundUpIndex']) : 0;
+        $attributeRoundUpIndex              = $this->_hasRoundUpIndex($attribute) ? $_POST['psAttributeRoundUpIndex'] : 0;
 
         $query = 'SELECT `id` FROM `'.DBPREFIX.'module_printshop_'.$attribute.'`
                   WHERE `'.$attribute."`='$attributeValue'";
@@ -714,8 +716,6 @@ class PrintshopAdmin extends PrintshopLibrary {
             $alreadyExists = true;
             if($id == 0){
                 $id = $objRS->fields['id'];
-            }else{
-                return array('id' => $id, 'name' => $attributeValue, 'exists' => $alreadyExists);
             }
         }else{
             $alreadyExists = false;
@@ -724,17 +724,26 @@ class PrintshopAdmin extends PrintshopLibrary {
             }
         }
 
-        $query = 'INSERT INTO `'.DBPREFIX.'module_printshop_'.$attribute.'` (`id`, `'.$attribute."`)
-                    VALUES ($id, '$attributeValue')
-                  ON DUPLICATE KEY
-                    UPDATE  `id`         = LAST_INSERT_ID(`id`),
-                            `$attribute` = '".$attributeValue."'";
+        if($this->_hasRoundUpIndex($attribute)){
+            $query = 'INSERT INTO `'.DBPREFIX.'module_printshop_'.$attribute.'` (`id`, `'.$attribute."`, `roundUpIndex`)
+                        VALUES ($id, '$attributeValue', $attributeRoundUpIndex)
+                      ON DUPLICATE KEY
+                        UPDATE  `id`         = $id,
+                                `$attribute` = '".$attributeValue."',
+                                `roundUpIndex` = ".$attributeRoundUpIndex;
+        } else {
+            $query = 'INSERT INTO `'.DBPREFIX.'module_printshop_'.$attribute.'` (`id`, `'.$attribute."`)
+                        VALUES ($id, '$attributeValue')
+                      ON DUPLICATE KEY
+                        UPDATE  `id`         = $id,
+                                `$attribute` = '".$attributeValue."'";
+        }
         $objDatabase->Execute($query);
         $insertID = $objDatabase->Insert_ID();
         if($insertID > 0 ){
             $id = $insertID;
         }
-        return array('id' => $id, 'name' => $attributeValue, 'exists' => $alreadyExists);
+        return array('id' => $id, 'name' => $attributeValue, 'exists' => $alreadyExists, 'roundUpIndex' => $attributeRoundUpIndex);
     }
 
     /**
@@ -745,7 +754,12 @@ class PrintshopAdmin extends PrintshopLibrary {
     function showAttributes($attribute){
         global $_ARRAYLANG, $_CORELANG;
         $this->_strPageTitle = $_ARRAYLANG['TXT_PRINTSHOP_ATTRIBUTES'];
-        $this->_objTpl->loadTemplateFile('module_printshop_attributes.html', true, true);
+
+        if($this->_hasRoundUpIndex($attribute)){
+            $this->_objTpl->loadTemplateFile('module_printshop_attributes_round.html', true, true);
+        } else {
+            $this->_objTpl->loadTemplateFile('module_printshop_attributes.html', true, true);
+        }
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_PRINTSHOP_ATTRIBUTE'               => $_ARRAYLANG['TXT_PRINTSHOP_'.strtoupper($attribute).'_TITLE'],
@@ -768,6 +782,7 @@ class PrintshopAdmin extends PrintshopLibrary {
             'TXT_PRINTSHOP_WEIGHT_TITLE'            => $_ARRAYLANG['TXT_PRINTSHOP_WEIGHT_TITLE'],
             'TXT_PRINTSHOP_EDIT'                    => $_ARRAYLANG['TXT_PRINTSHOP_EDIT'],
             'TXT_PRINTSHOP_DELETE'                  => $_ARRAYLANG['TXT_PRINTSHOP_DELETE'],
+            'TXT_PRINTSHOP_ROUND_UP_INDEX'          => $_ARRAYLANG['TXT_PRINTSHOP_ROUND_UP_INDEX'],
             'TXT_SELECT_ALL'                        => $_CORELANG['TXT_SELECT_ALL'],
             'TXT_DESELECT_ALL'                      => $_CORELANG['TXT_DESELECT_ALL'],
             'TXT_MULTISELECT_SELECT'                => $_CORELANG['TXT_MULTISELECT_SELECT'],
@@ -777,14 +792,26 @@ class PrintshopAdmin extends PrintshopLibrary {
 
         $arrAttributes = $this->_getAttributes($attribute);
 
+        if($this->_hasRoundUpIndex($attribute)){
+            foreach ($this->_priceThresholds as $index => $threshold) {
+                if($index == 0){ continue; }
+                $this->_objTpl->setVariable(array(
+            	   'ATTRIBUTE_ROUND_UP_INDEX_VALUE'    => $index,
+            	   'ATTRIBUTE_ROUND_UP_INDEX_AMOUNT'   => $threshold['threshold'],
+                ));
+                $this->_objTpl->parse('priceThresholdOptions');
+            }
+        }
         if($arrAttributes){
             $index = 0;
             foreach ($arrAttributes as $id => $arrAttribute) {
                 $this->_objTpl->setVariable(array(
-                    'ENTRY_ROWCLASS'            => $index++ % 2 ? 'row2' : 'row1',
-                    'PRINTSHOP_ATTRIBUTE_ID'    => $arrAttribute['id'],
-                    'PRINTSHOP_ATTRIBUTE_NAME'  => $arrAttribute['name'],
+                    'ENTRY_ROWCLASS'                        => $index++ % 2 ? 'row2' : 'row1',
+                    'PRINTSHOP_ATTRIBUTE_ID'                => $arrAttribute['id'],
+                    'PRINTSHOP_ATTRIBUTE_NAME'              => $arrAttribute['name'],
+                    'PRINTSHOP_ATTRIBUTE_ROUND_UP_INDEX'    => $arrAttribute['roundUpIndex'],
                 ));
+
                 $this->_objTpl->parse('showEntry');
             }
         }else{
