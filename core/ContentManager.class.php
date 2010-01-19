@@ -101,7 +101,7 @@ class ContentManager
     public $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
     public $boolHistoryEnabled = false;
     public $boolHistoryActivate = false;
-
+    public $arrEditStatus = array('draft', 'ready_for_translation', 'translated', 'controlled', 'published');
 
     /**
      * Constructor
@@ -280,8 +280,8 @@ class ContentManager
             $query = 'UPDATE '.DBPREFIX.'content_navigation
                          SET `displayorder`='.$displayOrder.',
                              `parcat`='.$pId.'
-                       WHERE `catid`='.$arrPage['id'].'
-                         AND `lang`='.$this->langId;
+                       WHERE `catid`='.$arrPage['id']/*.'
+                         AND `lang`='.$this->langId*/;
             if(!$objDatabase->Execute($query)){
                 $success = false;
             }
@@ -290,8 +290,8 @@ class ContentManager
                              SET `changelog`='.time().',
                                  `displayorder`='.$displayOrder.',
                                  `parcat`='.$pId.'
-                           WHERE `catid`='.$arrPage['id'].'
-                             AND `lang`='.$this->langId.'
+                           WHERE `catid`='.$arrPage['id']./*'
+                             AND `lang`='.$this->langId.*/'
                              AND is_active="1"';
                 if(!$objDatabase->Execute($query)){
                     $success = false;
@@ -666,6 +666,11 @@ class ContentManager
                 'LANGUAGE_CHECKBOX', $langActivateCheckbox
             );
             $objTemplate->parse('languages_activate');
+
+            $objTemplate->setVariable(array(
+                'LANG_NAME' => $arrLang['name'],
+            ));
+            $objTemplate->parse('copyLangContent');
         }
 
         $objTemplate->setVariable('LANGUAGE_COUNT', $langCount+1);
@@ -725,6 +730,18 @@ class ContentManager
                 'CONTENT_TABLE_STYLE' => $tablestatus,
             ));
         }
+
+        //useContentFromLang dropdown language options
+        foreach (FWLanguage::getLanguageArray() as $arrLang) {
+            if ($arrLang['frontend'] == 1) {
+                $objTemplate->setVariable(array(
+                    'LANG_NAME' => $arrLang['name'],
+                    'LANG_ID'   => $arrLang['id'],
+                ));
+                $objTemplate->parse('contentFromLang');
+            }
+        }
+
         // Frontend Groups
         foreach ($this->arrAllFrontendGroups as $id => $name) {
             $existingFrontendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
@@ -738,75 +755,90 @@ class ContentManager
         $blocks = $this->getBlocks();
 
         $objTemplate->setVariable(array(
-            'CONTENT_CATID'                     => $pageId,
-            'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
-            'TXT_ERROR_COULD_NOT_INSERT_PAGE'   => str_replace("'", "\\'", $_CORELANG['TXT_ERROR_COULD_NOT_INSERT_PAGE']),
-            'TXT_SUCCESS_PAGE_SAVED'            => str_replace("'", "\\'", $_CORELANG['TXT_SUCCESS_PAGE_SAVED']),
-            'TXT_CONTENT_PLEASE_WAIT'           => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
-            'TXT_CONTENT_NO_TITLE'              => $_CORELANG['TXT_CONTENT_NO_TITLE'],
-            'TXT_LANGUAGES'                     => $_CORELANG['TXT_LANGUAGES'],
-            'TXT_PLEASE_WAIT_SITEMAP'           => $_CORELANG['TXT_PLEASE_WAIT_SITEMAP'],
-            'TXT_THEME_PREVIEW'                 => $_CORELANG['TXT_THEME_PREVIEW'],
-            'TXT_TARGET'                        => $_CORELANG['TXT_TARGET'],
-            'TXT_MORE_OPTIONS'                  => $_CORELANG['TXT_MORE_OPTIONS'],
-            'TXT_BASIC_DATA'                    => $_CORELANG['TXT_BASIC_DATA'],
-            'TXT_FRONTEND_PERMISSION'           => $_CORELANG['TXT_FRONTEND_PERMISSION'],
-            'TXT_RELATEDNESS'                   => $_CORELANG['TXT_BACKEND_RELATEDNESS'],
-            'TXT_CHANGELOG'                     => $_CORELANG['TXT_CHANGELOG'],
-            'TXT_PAGE_NAME'                     => $_CORELANG['TXT_PAGE_NAME'],
-            'TXT_MENU_NAME'                     => $_CORELANG['TXT_MENU_NAME'],
-            'TXT_NEW_CATEGORY'                  => $_CORELANG['TXT_NEW_CATEGORY'],
-            'TXT_VISIBLE'                       => $_CORELANG['TXT_VISIBLE'],
-            'TXT_CONTENT_TITLE'                 => $_CORELANG['TXT_PAGETITLE'],
-            'TXT_META_INFORMATIONS'             => $_CORELANG['TXT_META_INFORMATIONS'],
-            'TXT_META_TITLE'                    => $_CORELANG['TXT_META_TITLE'],
-            'TXT_META_DESCRIPTION'              => $_CORELANG['TXT_META_DESCRIPTION'],
-            'TXT_META_KEYWORD'                  => $_CORELANG['TXT_META_KEYWORD'],
-            'TXT_META_ROBOTS'                   => $_CORELANG['TXT_META_ROBOTS'],
-            'TXT_CONTENT'                       => $_CORELANG['TXT_CONTENT'],
-            'TXT_GENERAL_OPTIONS'               => $_CORELANG['TXT_GENERAL_OPTIONS'],
-            'TXT_START_DATE'                    => $_CORELANG['TXT_START_DATE'],
-            'TXT_END_DATE'                      => $_CORELANG['TXT_END_DATE'],
-            'TXT_EXPERT_MODE'                   => $_CORELANG['TXT_EXPERT_MODE'],
-            'TXT_MODULE'                        => $_CORELANG['TXT_MODULE'],
-            'TXT_NO_MODULE'                     => $_CORELANG['TXT_NO_MODULE'],
-            'TXT_REDIRECT'                      => $_CORELANG['TXT_REDIRECT'],
-            'TXT_BROWSE'                        => $_CORELANG['TXT_BROWSE'],
-            'TXT_CONTENT_ASSIGN_BLOCK'          => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
-            'TXT_NO_REDIRECT'                   => '',
-            'TXT_SOURCE_MODE'                   => $_CORELANG['TXT_SOURCE_MODE'],
-            'TXT_CACHING_STATUS'                => $_CORELANG['TXT_CACHING_STATUS'],
-            'TXT_THEMES'                        => $_CORELANG['TXT_THEMES'],
-            'TXT_STORE'                         => $_CORELANG['TXT_SAVE'],
-            'TXT_RECURSIVE_CHANGE'              => $_CORELANG['TXT_RECURSIVE_CHANGE'],
-            'TXT_PROTECTION'                    => $_CORELANG['TXT_PROTECTION'],
-            'TXT_PROTECTION_CHANGE'             => $_CORELANG['TXT_PROTECTION_CHANGE'],
-            'TXT_RECURSIVE_CHANGE'              => $_CORELANG['TXT_RECURSIVE_CHANGE'],
-            'TXT_GROUPS'                        => $_CORELANG['TXT_GROUPS'],
-            'TXT_GROUPS_DEST'                   => $_CORELANG['TXT_GROUPS_DEST'],
-            'TXT_SELECT_ALL'                    => $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_DESELECT_ALL'                  => $_CORELANG['TXT_DESELECT_ALL'],
-            'TXT_ACCEPT_CHANGES'                => $_CORELANG['TXT_ACCEPT_CHANGES'],
-            'TXT_PUBLIC_PAGE'                   => $_CORELANG['TXT_PUBLIC_PAGE'],
-            'TXT_BACKEND_RELEASE'               => $_CORELANG['TXT_BACKEND_RELEASE'],
-            'TXT_LIMIT_GROUP_RIGHTS'            => $_CORELANG['TXT_LIMIT_GROUP_RIGHTS'],
-            'TXT_TARGET_BLANK'                  => $_CORELANG['TXT_TARGET_BLANK'],
-            'TXT_TARGET_TOP'                    => $_CORELANG['TXT_TARGET_TOP'],
-            'TXT_TARGET_PARENT'                 => $_CORELANG['TXT_TARGET_PARENT'],
-            'TXT_TARGET_SELF'                   => $_CORELANG['TXT_TARGET_SELF'],
-            'TXT_OPTIONAL_CSS_NAME'             => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
-            'TXT_TYPE_SELECT'                   => $_CORELANG['TXT_CONTENT_TYPE'],
-            'TXT_CONTENT_TYPE_DEFAULT'          => $_CORELANG['TXT_CONTENT_TYPE_DEFAULT'],
-            'TXT_CONTENT_TYPE_REDIRECT'         => $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
-            'TXT_CONTENT_TYPE_HELP'             => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
-            'TXT_NAVIGATION'                    => $_CORELANG['TXT_NAVIGATION'],
-            'TXT_ASSIGN_BLOCK'                  => $_CORELANG['TXT_ASSIGN_BLOCK'],
-            'TXT_DEFAULT_ALIAS'                 => $_CORELANG['TXT_DEFAULT_ALIAS'],
-            'CONTENT_ALIAS_HELPTEXT'            => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
-            'CONTENT_ALIAS_DISABLE'             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-            'TXT_ERROR_NO_TITLE'                => $_CORELANG['TXT_ERROR_NO_TITLE'],
-            'TXT_BASE_URL'                      => self::mkurl('/'),
-            'CONTREXX_SITEMAP_ENABLED'          => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
+            'CONTENT_CATID'                                     => $pageId,
+            'DIRECTORY_INDEX'                                   => CONTREXX_DIRECTORY_INDEX,
+            'TXT_ERROR_COULD_NOT_INSERT_PAGE'                   => str_replace("'", "\\'", $_CORELANG['TXT_ERROR_COULD_NOT_INSERT_PAGE']),
+            'TXT_SUCCESS_PAGE_SAVED'                            => str_replace("'", "\\'", $_CORELANG['TXT_SUCCESS_PAGE_SAVED']),
+            'TXT_CONTENT_PLEASE_WAIT'                           => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
+            'TXT_CONTENT_NO_TITLE'                              => $_CORELANG['TXT_CONTENT_NO_TITLE'],
+            'TXT_LANGUAGES'                                     => $_CORELANG['TXT_LANGUAGES'],
+            'TXT_LANGUAGE'                                      => $_CORELANG['TXT_LANGUAGE'],
+            'TXT_PLEASE_WAIT_SITEMAP'                           => $_CORELANG['TXT_PLEASE_WAIT_SITEMAP'],
+            'TXT_THEME_PREVIEW'                                 => $_CORELANG['TXT_THEME_PREVIEW'],
+            'TXT_TARGET'                                        => $_CORELANG['TXT_TARGET'],
+            'TXT_MORE_OPTIONS'                                  => $_CORELANG['TXT_MORE_OPTIONS'],
+            'TXT_BASIC_DATA'                                    => $_CORELANG['TXT_BASIC_DATA'],
+            'TXT_FRONTEND_PERMISSION'                           => $_CORELANG['TXT_FRONTEND_PERMISSION'],
+            'TXT_RELATEDNESS'                                   => $_CORELANG['TXT_BACKEND_RELATEDNESS'],
+            'TXT_CHANGELOG'                                     => $_CORELANG['TXT_CHANGELOG'],
+            'TXT_PAGE_NAME'                                     => $_CORELANG['TXT_PAGE_NAME'],
+            'TXT_MENU_NAME'                                     => $_CORELANG['TXT_MENU_NAME'],
+            'TXT_NEW_CATEGORY'                                  => $_CORELANG['TXT_NEW_CATEGORY'],
+            'TXT_VISIBLE'                                       => $_CORELANG['TXT_VISIBLE'],
+            'TXT_ACTIVE'                                        => $_CORELANG['TXT_ACTIVE'],
+            'TXT_CONTENT_TITLE'                                 => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_META_INFORMATIONS'                             => $_CORELANG['TXT_META_INFORMATIONS'],
+            'TXT_META_TITLE'                                    => $_CORELANG['TXT_META_TITLE'],
+            'TXT_META_DESCRIPTION'                              => $_CORELANG['TXT_META_DESCRIPTION'],
+            'TXT_META_KEYWORD'                                  => $_CORELANG['TXT_META_KEYWORD'],
+            'TXT_META_ROBOTS'                                   => $_CORELANG['TXT_META_ROBOTS'],
+            'TXT_CONTENT'                                       => $_CORELANG['TXT_CONTENT'],
+            'TXT_GENERAL_OPTIONS'                               => $_CORELANG['TXT_GENERAL_OPTIONS'],
+            'TXT_START_DATE'                                    => $_CORELANG['TXT_START_DATE'],
+            'TXT_END_DATE'                                      => $_CORELANG['TXT_END_DATE'],
+            'TXT_EXPERT_MODE'                                   => $_CORELANG['TXT_EXPERT_MODE'],
+            'TXT_MODULE'                                        => $_CORELANG['TXT_MODULE'],
+            'TXT_NO_MODULE'                                     => $_CORELANG['TXT_NO_MODULE'],
+            'TXT_REDIRECT'                                      => $_CORELANG['TXT_REDIRECT'],
+            'TXT_BROWSE'                                        => $_CORELANG['TXT_BROWSE'],
+            'TXT_CONTENT_ASSIGN_BLOCK'                          => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+            'TXT_NO_REDIRECT'                                   => '',
+            'TXT_SOURCE_MODE'                                   => $_CORELANG['TXT_SOURCE_MODE'],
+            'TXT_CACHING_STATUS'                                => $_CORELANG['TXT_CACHING_STATUS'],
+            'TXT_THEMES'                                        => $_CORELANG['TXT_THEMES'],
+            'TXT_STORE'                                         => $_CORELANG['TXT_SAVE'],
+            'TXT_RECURSIVE_CHANGE'                              => $_CORELANG['TXT_RECURSIVE_CHANGE'],
+            'TXT_PROTECTION'                                    => $_CORELANG['TXT_PROTECTION'],
+            'TXT_PROTECTION_CHANGE'                             => $_CORELANG['TXT_PROTECTION_CHANGE'],
+            'TXT_RECURSIVE_CHANGE'                              => $_CORELANG['TXT_RECURSIVE_CHANGE'],
+            'TXT_GROUPS'                                        => $_CORELANG['TXT_GROUPS'],
+            'TXT_GROUPS_DEST'                                   => $_CORELANG['TXT_GROUPS_DEST'],
+            'TXT_SELECT_ALL'                                    => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'                                  => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_ACCEPT_CHANGES'                                => $_CORELANG['TXT_ACCEPT_CHANGES'],
+            'TXT_PUBLIC_PAGE'                                   => $_CORELANG['TXT_PUBLIC_PAGE'],
+            'TXT_BACKEND_RELEASE'                               => $_CORELANG['TXT_BACKEND_RELEASE'],
+            'TXT_LIMIT_GROUP_RIGHTS'                            => $_CORELANG['TXT_LIMIT_GROUP_RIGHTS'],
+            'TXT_TARGET_BLANK'                                  => $_CORELANG['TXT_TARGET_BLANK'],
+            'TXT_TARGET_TOP'                                    => $_CORELANG['TXT_TARGET_TOP'],
+            'TXT_TARGET_PARENT'                                 => $_CORELANG['TXT_TARGET_PARENT'],
+            'TXT_TARGET_SELF'                                   => $_CORELANG['TXT_TARGET_SELF'],
+            'TXT_OPTIONAL_CSS_NAME'                             => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
+            'TXT_TYPE_SELECT'                                   => $_CORELANG['TXT_CONTENT_TYPE'],
+            'TXT_CONTENT_TYPE_DEFAULT'                          => $_CORELANG['TXT_CONTENT_TYPE_DEFAULT'],
+            'TXT_CONTENT_TYPE_REDIRECT'                         => $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
+            'TXT_CONTENT_TYPE_HELP'                             => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
+            'TXT_NAVIGATION'                                    => $_CORELANG['TXT_NAVIGATION'],
+            'TXT_ASSIGN_BLOCK'                                  => $_CORELANG['TXT_ASSIGN_BLOCK'],
+            'TXT_DEFAULT_ALIAS'                                 => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'CONTENT_ALIAS_HELPTEXT'                            => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
+            'TXT_USE_CONTENT_FROM_LANGUAGE'                     => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE'],
+            'TXT_COPY_TO_EDITOR'                                => $_CORELANG['TXT_COPY_TO_EDITOR'],
+            'TXT_CONTENT_PARENT_PAGE'                           => $_CORELANG['TXT_CONTENT_PARENT_PAGE'],
+            'TXT_CONTENT_EDITSTATUS'                            => $_CORELANG['TXT_CONTENT_EDITSTATUS'],
+            'TXT_CONTENT_EDITSTATUS_DRAFT'                      => $_CORELANG['TXT_CONTENT_EDITSTATUS_DRAFT'],
+            'TXT_CONTENT_EDITSTATUS_READY_FOR_TRANSLATION'      => $_CORELANG['TXT_CONTENT_EDITSTATUS_READY_FOR_TRANSLATION'],
+            'TXT_CONTENT_EDITSTATUS_TRANSLATED'                 => $_CORELANG['TXT_CONTENT_EDITSTATUS_TRANSLATED'],
+            'TXT_CONTENT_EDITSTATUS_CONTROLLED'                 => $_CORELANG['TXT_CONTENT_EDITSTATUS_CONTROLLED'],
+            'TXT_CONTENT_EDITSTATUS_PUBLISHED'                  => $_CORELANG['TXT_CONTENT_EDITSTATUS_PUBLISHED'],
+            'TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'            => $_CORELANG['TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'],
+            'TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'            => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'],
+            'CONTENT_ALIAS_DISABLE'                             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
+            'TXT_ERROR_NO_TITLE'                                => $_CORELANG['TXT_ERROR_NO_TITLE'],
+            'TXT_BASE_URL'                                      => self::mkurl('/'),
+            'CONTREXX_SITEMAP_ENABLED'                          => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
+            'CSRF_KEY'                                          => CSRF::key(),
+            'CSRF_CODE'                                         => CSRF::code(),
         ));
 
         $objTemplate->hideBlock('deleteButton');
@@ -814,32 +846,33 @@ class ContentManager
         $objTemplate->hideBlock('changelog2');
 
         $objTemplate->setVariable(array(
-            'CONTENT_ACTION'                       => "add",
-            'CONTENT_TOP_TITLE'                    => $_CORELANG['TXT_NEW_PAGE'],
-            'CONTENT_DISPLAYSTATUS'                => ' checked="checked"',
-            'CONTENT_CACHING_STATUS'               => ' checked="checked"',
-            'CONTENT_CAT_MENU'                     => $this->getPageMenu(),
-            'CONTENT_CAT_MENU_NEW_PAGE'            =>
-                (Permission::checkAccess(127, 'static', true)
-                    ? '' : ' disabled="disabled" style="color:graytext;"'),
-            'CONTENT_FORM_ACTION'                  => "add",
-            'CONTENT_ROBOTS'                       => ' checked="checked"',
-            'CONTENT_THEMES_MENU'                  => $this->_getThemesMenu(),
-            'CONTENT_EXISTING_GROUPS'              => $existingFrontendGroups,
-            'CONTENT_PROTECTION_INACTIVE'          => ' checked="checked"',
-            'CONTENT_PROTECTION_ACTIVE'            => '',
-            'CONTENT_PROTECTION_DISPLAY'           => "none",
-            'CONTENT_CONTROL_BACKEND_INACTIVE'     => ' checked="checked"',
-            'CONTENT_CONTROL_BACKEND_ACTIVE'       => '',
-            'CONTENT_CONTROL_BACKEND_DISPLAY'      => "none",
-            'CONTENT_EXISTING_BACKEND_GROUPS'      => $existingBackendGroups,
-            'CONTENT_ASSIGNED_BACKEND_GROUPS'      => '',
-            'CONTENT_EXISTING_BLOCKS'              => $blocks[1],
-            'CONTENT_ASSIGNED_BLOCK'               => $blocks[0],
-            'CONTENT_TYPE_CHECKED_CONTENT'         => ' checked="checked"',
-            'CONTENT_TYPE_CHECKED_REDIRECT'        => '',
-            'CONTENT_TYPE_STYLE_CONTENT'           => ' style="display: block;"',
-            'CONTENT_TYPE_STYLE_REDIRECT'          => ' style="display: none;"',
+            'CONTENT_ACTION'                                    => "add",
+            'CONTENT_TOP_TITLE'                                 => $_CORELANG['TXT_NEW_PAGE'],
+            'CONTENT_ACTIVESTATUS'                              => ' checked="checked"',
+            'CONTENT_DISPLAYSTATUS'                             => ' checked="checked"',
+            'CONTENT_CACHING_STATUS'                            => ' checked="checked"',
+            'CONTENT_CAT_MENU'                                  => $this->getPageMenu(),
+            'CONTENT_CAT_MENU_NEW_PAGE'                         => (Permission::checkAccess(127, 'static', true)
+                                                                    ? '' : ' disabled="disabled" style="color:graytext;"'),
+            'CONTENT_FORM_ACTION'                               => "add",
+            'CONTENT_ROBOTS'                                    => ' checked="checked"',
+            'CONTENT_THEMES_MENU'                               => $this->_getThemesMenu(),
+            'CONTENT_EXISTING_GROUPS'                           => $existingFrontendGroups,
+            'CONTENT_PROTECTION_INACTIVE'                       => ' checked="checked"',
+            'CONTENT_PROTECTION_ACTIVE'                         => '',
+            'CONTENT_PROTECTION_DISPLAY'                        => "none",
+            'CONTENT_CONTROL_BACKEND_INACTIVE'                  => ' checked="checked"',
+            'CONTENT_CONTROL_BACKEND_ACTIVE'                    => '',
+            'CONTENT_CONTROL_BACKEND_DISPLAY'                   => "none",
+            'CONTENT_EXISTING_BACKEND_GROUPS'                   => $existingBackendGroups,
+            'CONTENT_ASSIGNED_BACKEND_GROUPS'                   => '',
+            'CONTENT_EXISTING_BLOCKS'                           => $blocks[1],
+            'CONTENT_ASSIGNED_BLOCK'                            => $blocks[0],
+            'CONTENT_TYPE_CHECKED_CONTENT'                      => ' checked="checked"',
+            'CONTENT_TYPE_CHECKED_REDIRECT'                     => '',
+            'CONTENT_TYPE_STYLE_CONTENT'                        => ' style="display: block;"',
+            'CONTENT_TYPE_STYLE_REDIRECT'                       => ' style="display: none;"',
+            'CONTENT_TYPE_STYLE_USE_CONTENT_FROM_LANG'          => ' style="display: none;"',
         ));
     }
 
@@ -1016,91 +1049,110 @@ class ContentManager
                     'LANGUAGE_CHECKBOX', $langActivateCheckbox
                 );
                 $objTemplate->parse('languages_activate');
+                $objTemplate->setVariable(array(
+                    'LANG_NAME' => $arrLang['name'],
+                ));
+                $objTemplate->parse('copyLangContent');
             }
         }
 
         $objTemplate->setVariable(array(
-            'LANGUAGE_COUNT'                   => $langCount+1,
-            'DIRECTORY_INDEX'                  => CONTREXX_DIRECTORY_INDEX,
-            'TXT_PLEASE_WAIT_SITEMAP'          => $_CORELANG['TXT_PLEASE_WAIT_SITEMAP'],
-            'TXT_LANGUAGES'                    => $_CORELANG['TXT_LANGUAGES'],
-            'TXT_THEME_PREVIEW'                => $_CORELANG['TXT_THEME_PREVIEW'],
-            'TXT_CONTENT_PLEASE_WAIT'          => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
-            'TXT_CONTENT_NO_TITLE'             => $_CORELANG['TXT_CONTENT_NO_TITLE'],
-            'TXT_ERROR_COULD_NOT_GET_DATA'     => $_CORELANG['TXT_ERROR_COULD_NOT_GET_DATA'],
-            'TXT_SUCCESS_PAGE_SAVED'           => $_CORELANG['TXT_SUCCESS_PAGE_SAVED'],
-            'TXT_TARGET'                       => $_CORELANG['TXT_TARGET'],
-            'TXT_MORE_OPTIONS'                 => $_CORELANG['TXT_MORE_OPTIONS'],
-            'TXT_BASIC_DATA'                   => $_CORELANG['TXT_BASIC_DATA'],
-            'TXT_FRONTEND_PERMISSION'          => $_CORELANG['TXT_FRONTEND_PERMISSION'],
-            'TXT_RELATEDNESS'                  => $_CORELANG['TXT_BACKEND_RELATEDNESS'],
-            'TXT_PAGE_NAME'                    => $_CORELANG['TXT_PAGE_NAME'],
-            'TXT_MENU_NAME'                    => $_CORELANG['TXT_MENU_NAME'],
-            'TXT_NEW_CATEGORY'                 => $_CORELANG['TXT_NEW_CATEGORY'],
-            'TXT_VISIBLE'                      => $_CORELANG['TXT_VISIBLE'],
-            'TXT_CONTENT_TITLE'                => $_CORELANG['TXT_PAGETITLE'],
-            'TXT_META_INFORMATIONS'            => $_CORELANG['TXT_META_INFORMATIONS'],
-            'TXT_META_TITLE'                   => $_CORELANG['TXT_META_TITLE'],
-            'TXT_META_DESCRIPTION'             => $_CORELANG['TXT_META_DESCRIPTION'],
-            'TXT_META_KEYWORD'                 => $_CORELANG['TXT_META_KEYWORD'],
-            'TXT_META_ROBOTS'                  => $_CORELANG['TXT_META_ROBOTS'],
-            'TXT_CONTENT'                      => $_CORELANG['TXT_CONTENT'],
-            'TXT_GENERAL_OPTIONS'              => $_CORELANG['TXT_GENERAL_OPTIONS'],
-            'TXT_START_DATE'                   => $_CORELANG['TXT_START_DATE'],
-            'TXT_END_DATE'                     => $_CORELANG['TXT_END_DATE'],
-            'TXT_EXPERT_MODE'                  => $_CORELANG['TXT_EXPERT_MODE'],
-            'TXT_MODULE'                       => $_CORELANG['TXT_MODULE'],
-            'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
-            'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
-            'TXT_BROWSE'                       => $_CORELANG['TXT_BROWSE'],
-            'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
-            'TXT_NO_REDIRECT'                  => '',
-            'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
-            'TXT_CACHING_STATUS'               => $_CORELANG['TXT_CACHING_STATUS'],
-            'TXT_THEMES'                       => $_CORELANG['TXT_THEMES'],
-            'TXT_STORE'                        => $_CORELANG['TXT_SAVE'],
-            'TXT_RECURSIVE_CHANGE'             => $_CORELANG['TXT_RECURSIVE_CHANGE'],
-            'TXT_PROTECTION'                   => $_CORELANG['TXT_PROTECTION'],
-            'TXT_PROTECTION_CHANGE'            => $_CORELANG['TXT_PROTECTION_CHANGE'],
-            'TXT_RECURSIVE_CHANGE'             => $_CORELANG['TXT_RECURSIVE_CHANGE'],
-            'TXT_GROUPS'                       => $_CORELANG['TXT_GROUPS'],
-            'TXT_GROUPS_DEST'                  => $_CORELANG['TXT_GROUPS_DEST'],
-            'TXT_SELECT_ALL'                   => $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_DESELECT_ALL'                 => $_CORELANG['TXT_DESELECT_ALL'],
-            'TXT_ACCEPT_CHANGES'               => $_CORELANG['TXT_ACCEPT_CHANGES'],
-            'TXT_PUBLIC_PAGE'                  => $_CORELANG['TXT_PUBLIC_PAGE'],
-            'TXT_BACKEND_RELEASE'              => $_CORELANG['TXT_BACKEND_RELEASE'],
-            'TXT_LIMIT_GROUP_RIGHTS'           => $_CORELANG['TXT_LIMIT_GROUP_RIGHTS'],
-            'TXT_TARGET_BLANK'                 => $_CORELANG['TXT_TARGET_BLANK'],
-            'TXT_TARGET_TOP'                   => $_CORELANG['TXT_TARGET_TOP'],
-            'TXT_TARGET_PARENT'                => $_CORELANG['TXT_TARGET_PARENT'],
-            'TXT_TARGET_SELF'                  => $_CORELANG['TXT_TARGET_SELF'],
-            'TXT_OPTIONAL_CSS_NAME'            => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
-            'TXT_DELETE'                       => $_CORELANG['TXT_DELETE'],
-            'TXT_DELETE_MESSAGE'               => $_CORELANG['TXT_DELETE_PAGE_JS'],
-            'TXT_CHANGELOG'                    => $_CORELANG['TXT_CHANGELOG'],
-            'TXT_CHANGELOG_DATE'               => $_CORELANG['TXT_DATE'],
-            'TXT_CHANGELOG_NAME'               => $_CORELANG['TXT_PAGETITLE'],
-            'TXT_CHANGELOG_USER'               => $_CORELANG['TXT_USER'],
-            'TXT_CHANGELOG_FUNCTIONS'          => $_CORELANG['TXT_FUNCTIONS'],
-            'TXT_CHANGELOG_SUBMIT'             => $_CORELANG['TXT_MULTISELECT_SELECT'],
-            'TXT_CHANGELOG_SUBMIT_DEL'         => $_CORELANG['TXT_MULTISELECT_DELETE'],
-            'TXT_CATEGORY'                     => $_CORELANG['TXT_CATEGORY'],
-            'TXT_DELETE_HISTORY_MSG'           => $_CORELANG['TXT_DELETE_HISTORY'],
-            'TXT_DELETE_HISTORY_MSG_ALL'       => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
-            'TXT_ACTIVATE_HISTORY_MSG'         => $_CORELANG['TXT_ACTIVATE_HISTORY_MSG'],
-            'TXT_TYPE_SELECT'                  => $_CORELANG['TXT_CONTENT_TYPE'],
-            'TXT_CONTENT_TYPE_DEFAULT'         => $_CORELANG['TXT_CONTENT_TYPE_DEFAULT'],
-            'TXT_CONTENT_TYPE_REDIRECT'        => $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
-            'TXT_CONTENT_TYPE_HELP'            => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
-            'TXT_NAVIGATION'                   => $_CORELANG['TXT_NAVIGATION'],
-            'TXT_ASSIGN_BLOCK'                 => $_CORELANG['TXT_ASSIGN_BLOCK'],
-            'CONTENT_ALIAS_HELPTEXT'           => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
-            'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
-            'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-            'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
-            'TXT_BASE_URL'             => self::mkurl('/'),
-            'CONTREXX_SITEMAP_ENABLED' => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
+            'LANGUAGE_COUNT'                                    => $langCount+1,
+            'DIRECTORY_INDEX'                                   => CONTREXX_DIRECTORY_INDEX,
+            'TXT_PLEASE_WAIT_SITEMAP'                           => $_CORELANG['TXT_PLEASE_WAIT_SITEMAP'],
+            'TXT_LANGUAGES'                                     => $_CORELANG['TXT_LANGUAGES'],
+            'TXT_LANGUAGE'                                      => $_CORELANG['TXT_LANGUAGE'],
+            'TXT_THEME_PREVIEW'                                 => $_CORELANG['TXT_THEME_PREVIEW'],
+            'TXT_CONTENT_PLEASE_WAIT'                           => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
+            'TXT_CONTENT_NO_TITLE'                              => $_CORELANG['TXT_CONTENT_NO_TITLE'],
+            'TXT_ERROR_COULD_NOT_GET_DATA'                      => $_CORELANG['TXT_ERROR_COULD_NOT_GET_DATA'],
+            'TXT_SUCCESS_PAGE_SAVED'                            => $_CORELANG['TXT_SUCCESS_PAGE_SAVED'],
+            'TXT_TARGET'                                        => $_CORELANG['TXT_TARGET'],
+            'TXT_MORE_OPTIONS'                                  => $_CORELANG['TXT_MORE_OPTIONS'],
+            'TXT_BASIC_DATA'                                    => $_CORELANG['TXT_BASIC_DATA'],
+            'TXT_FRONTEND_PERMISSION'                           => $_CORELANG['TXT_FRONTEND_PERMISSION'],
+            'TXT_RELATEDNESS'                                   => $_CORELANG['TXT_BACKEND_RELATEDNESS'],
+            'TXT_PAGE_NAME'                                     => $_CORELANG['TXT_PAGE_NAME'],
+            'TXT_MENU_NAME'                                     => $_CORELANG['TXT_MENU_NAME'],
+            'TXT_NEW_CATEGORY'                                  => $_CORELANG['TXT_NEW_CATEGORY'],
+            'TXT_VISIBLE'                                       => $_CORELANG['TXT_VISIBLE'],
+            'TXT_ACTIVE'                                        => $_CORELANG['TXT_ACTIVE'],
+            'TXT_CONTENT_TITLE'                                 => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_META_INFORMATIONS'                             => $_CORELANG['TXT_META_INFORMATIONS'],
+            'TXT_META_TITLE'                                    => $_CORELANG['TXT_META_TITLE'],
+            'TXT_META_DESCRIPTION'                              => $_CORELANG['TXT_META_DESCRIPTION'],
+            'TXT_META_KEYWORD'                                  => $_CORELANG['TXT_META_KEYWORD'],
+            'TXT_META_ROBOTS'                                   => $_CORELANG['TXT_META_ROBOTS'],
+            'TXT_CONTENT'                                       => $_CORELANG['TXT_CONTENT'],
+            'TXT_GENERAL_OPTIONS'                               => $_CORELANG['TXT_GENERAL_OPTIONS'],
+            'TXT_START_DATE'                                    => $_CORELANG['TXT_START_DATE'],
+            'TXT_END_DATE'                                      => $_CORELANG['TXT_END_DATE'],
+            'TXT_EXPERT_MODE'                                   => $_CORELANG['TXT_EXPERT_MODE'],
+            'TXT_MODULE'                                        => $_CORELANG['TXT_MODULE'],
+            'TXT_NO_MODULE'                                     => $_CORELANG['TXT_NO_MODULE'],
+            'TXT_REDIRECT'                                      => $_CORELANG['TXT_REDIRECT'],
+            'TXT_BROWSE'                                        => $_CORELANG['TXT_BROWSE'],
+            'TXT_CONTENT_ASSIGN_BLOCK'                          => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+            'TXT_NO_REDIRECT'                                   => '',
+            'TXT_SOURCE_MODE'                                   => $_CORELANG['TXT_SOURCE_MODE'],
+            'TXT_CACHING_STATUS'                                => $_CORELANG['TXT_CACHING_STATUS'],
+            'TXT_THEMES'                                        => $_CORELANG['TXT_THEMES'],
+            'TXT_STORE'                                         => $_CORELANG['TXT_SAVE'],
+            'TXT_RECURSIVE_CHANGE'                              => $_CORELANG['TXT_RECURSIVE_CHANGE'],
+            'TXT_PROTECTION'                                    => $_CORELANG['TXT_PROTECTION'],
+            'TXT_PROTECTION_CHANGE'                             => $_CORELANG['TXT_PROTECTION_CHANGE'],
+            'TXT_RECURSIVE_CHANGE'                              => $_CORELANG['TXT_RECURSIVE_CHANGE'],
+            'TXT_GROUPS'                                        => $_CORELANG['TXT_GROUPS'],
+            'TXT_GROUPS_DEST'                                   => $_CORELANG['TXT_GROUPS_DEST'],
+            'TXT_SELECT_ALL'                                    => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'                                  => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_ACCEPT_CHANGES'                                => $_CORELANG['TXT_ACCEPT_CHANGES'],
+            'TXT_PUBLIC_PAGE'                                   => $_CORELANG['TXT_PUBLIC_PAGE'],
+            'TXT_BACKEND_RELEASE'                               => $_CORELANG['TXT_BACKEND_RELEASE'],
+            'TXT_LIMIT_GROUP_RIGHTS'                            => $_CORELANG['TXT_LIMIT_GROUP_RIGHTS'],
+            'TXT_TARGET_BLANK'                                  => $_CORELANG['TXT_TARGET_BLANK'],
+            'TXT_TARGET_TOP'                                    => $_CORELANG['TXT_TARGET_TOP'],
+            'TXT_TARGET_PARENT'                                 => $_CORELANG['TXT_TARGET_PARENT'],
+            'TXT_TARGET_SELF'                                   => $_CORELANG['TXT_TARGET_SELF'],
+            'TXT_OPTIONAL_CSS_NAME'                             => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
+            'TXT_DELETE'                                        => $_CORELANG['TXT_DELETE'],
+            'TXT_DELETE_MESSAGE'                                => $_CORELANG['TXT_DELETE_PAGE_JS'],
+            'TXT_CHANGELOG'                                     => $_CORELANG['TXT_CHANGELOG'],
+            'TXT_CHANGELOG_DATE'                                => $_CORELANG['TXT_DATE'],
+            'TXT_CHANGELOG_NAME'                                => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CHANGELOG_USER'                                => $_CORELANG['TXT_USER'],
+            'TXT_CHANGELOG_FUNCTIONS'                           => $_CORELANG['TXT_FUNCTIONS'],
+            'TXT_CHANGELOG_SUBMIT'                              => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_CHANGELOG_SUBMIT_DEL'                          => $_CORELANG['TXT_MULTISELECT_DELETE'],
+            'TXT_CATEGORY'                                      => $_CORELANG['TXT_CATEGORY'],
+            'TXT_DELETE_HISTORY_MSG'                            => $_CORELANG['TXT_DELETE_HISTORY'],
+            'TXT_DELETE_HISTORY_MSG_ALL'                        => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
+            'TXT_ACTIVATE_HISTORY_MSG'                          => $_CORELANG['TXT_ACTIVATE_HISTORY_MSG'],
+            'TXT_TYPE_SELECT'                                   => $_CORELANG['TXT_CONTENT_TYPE'],
+            'TXT_CONTENT_TYPE_DEFAULT'                          => $_CORELANG['TXT_CONTENT_TYPE_DEFAULT'],
+            'TXT_CONTENT_TYPE_REDIRECT'                         => $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
+            'TXT_CONTENT_TYPE_HELP'                             => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
+            'TXT_NAVIGATION'                                    => $_CORELANG['TXT_NAVIGATION'],
+            'TXT_ASSIGN_BLOCK'                                  => $_CORELANG['TXT_ASSIGN_BLOCK'],
+            'CONTENT_ALIAS_HELPTEXT'                            => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
+            'TXT_USE_CONTENT_FROM_LANGUAGE'                     => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE'],
+            'TXT_COPY_TO_EDITOR'                                => $_CORELANG['TXT_COPY_TO_EDITOR'],
+            'TXT_CONTENT_PARENT_PAGE'                           => $_CORELANG['TXT_CONTENT_PARENT_PAGE'],
+            'TXT_CONTENT_EDITSTATUS'                            => $_CORELANG['TXT_CONTENT_EDITSTATUS'],
+            'TXT_CONTENT_EDITSTATUS_DRAFT'                      => $_CORELANG['TXT_CONTENT_EDITSTATUS_DRAFT'],
+            'TXT_CONTENT_EDITSTATUS_READY_FOR_TRANSLATION'      => $_CORELANG['TXT_CONTENT_EDITSTATUS_READY_FOR_TRANSLATION'],
+            'TXT_CONTENT_EDITSTATUS_TRANSLATED'                 => $_CORELANG['TXT_CONTENT_EDITSTATUS_TRANSLATED'],
+            'TXT_CONTENT_EDITSTATUS_CONTROLLED'                 => $_CORELANG['TXT_CONTENT_EDITSTATUS_CONTROLLED'],
+            'TXT_CONTENT_EDITSTATUS_PUBLISHED'                  => $_CORELANG['TXT_CONTENT_EDITSTATUS_PUBLISHED'],
+            'TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'            => $_CORELANG['TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'],
+            'TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'            => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'],
+            'TXT_DEFAULT_ALIAS'                                 => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'CONTENT_ALIAS_DISABLE'                             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
+            'TXT_ERROR_NO_TITLE'                                => $_CORELANG['TXT_ERROR_NO_TITLE'],
+            'TXT_BASE_URL'                                      => self::mkurl('/'),
+            'CONTREXX_SITEMAP_ENABLED'                          => $_CONFIG['xmlSitemapStatus'] == 'on' ? 'true' : 'false',
+            'CSRF_KEY'                                          => CSRF::key(),
+            'CSRF_CODE'                                         => CSRF::code(),
         ));
 
         if (!$this->boolHistoryEnabled) {
@@ -1131,19 +1183,32 @@ class ContentManager
                     $ed = get_wysiwyg_editor('html', $contenthtml);
                 }
 
-                if (empty($objResult->fields['redirect'])) {
+                if (!empty($objResult->fields['redirect'])) {
                     $objTemplate->setVariable(array(
-                        'CONTENT_TYPE_CHECKED_CONTENT'  => ' checked="checked"',
-                        'CONTENT_TYPE_CHECKED_REDIRECT' => '',
-                        'CONTENT_TYPE_STYLE_CONTENT'    => ' style="display: block;"',
-                        'CONTENT_TYPE_STYLE_REDIRECT'   => ' style="display: none;"',
+                        'CONTENT_TYPE_CHECKED_CONTENT'                  => '',
+                        'CONTENT_TYPE_CHECKED_REDIRECT'                 => ' checked="checked"',
+                        'CONTENT_TYPE_CHECKED_USE_CONTENT_FROM_LANG'    => '',
+                        'CONTENT_TYPE_STYLE_CONTENT'                    => ' style="display: none;"',
+                        'CONTENT_TYPE_STYLE_REDIRECT'                   => ' style="display: block;"',
+                        'CONTENT_TYPE_STYLE_USE_CONTENT_FROM_LANG'      => ' style="display: none;"',
+                    ));
+                } elseif (!empty($objResult->fields['useContentFromLang'])) {//0 means don't use content from any lang
+                    $objTemplate->setVariable(array(
+                        'CONTENT_TYPE_CHECKED_CONTENT'                  => '',
+                        'CONTENT_TYPE_CHECKED_REDIRECT'                 => '',
+                        'CONTENT_TYPE_CHECKED_USE_CONTENT_FROM_LANG'    => ' checked="checked"',
+                        'CONTENT_TYPE_STYLE_CONTENT'                    => ' style="display: none;"',
+                        'CONTENT_TYPE_STYLE_REDIRECT'                   => ' style="display: none;"',
+                        'CONTENT_TYPE_STYLE_USE_CONTENT_FROM_LANG'      => ' style="display: block;"',
                     ));
                 } else {
                     $objTemplate->setVariable(array(
-                        'CONTENT_TYPE_CHECKED_CONTENT'  => '',
-                        'CONTENT_TYPE_CHECKED_REDIRECT' => ' checked="checked"',
-                        'CONTENT_TYPE_STYLE_CONTENT'    => ' style="display: none;"',
-                        'CONTENT_TYPE_STYLE_REDIRECT'   => ' style="display: block;"',
+                        'CONTENT_TYPE_CHECKED_CONTENT'                  => ' checked="checked"',
+                        'CONTENT_TYPE_CHECKED_REDIRECT'                 => '',
+                        'CONTENT_TYPE_CHECKED_USE_CONTENT_FROM_LANG'    => '',
+                        'CONTENT_TYPE_STYLE_CONTENT'                    => ' style="display: block;"',
+                        'CONTENT_TYPE_STYLE_REDIRECT'                   => ' style="display: none;"',
+                        'CONTENT_TYPE_STYLE_USE_CONTENT_FROM_LANG'      => ' style="display: none;"',
                     ));
                 }
 
@@ -1172,9 +1237,23 @@ class ContentManager
                 unset($ed);
                 $redirect = $objResult->fields['redirect'];
             }
+
+            foreach (FWLanguage::getLanguageArray() as $arrLang) {
+                if ($arrLang['frontend'] == 1) {
+                    $objTemplate->setVariable(array(
+                        'LANG_NAME'     => $arrLang['name'],
+                        'LANG_ID'       => $arrLang['id'],
+                        'LANG_SELECTED' => $objResult->fields['useContentFromLang'] == $arrLang['id']
+                                            ? 'selected="selected"'
+                                            : '',
+                    ));
+                    $objTemplate->parse('contentFromLang');
+                }
+            }
+
             $objResult = $objDatabase->Execute("
                 SELECT module, lang, startdate, enddate,
-                       displaystatus, cachingstatus,
+                       displaystatus, activestatus, cachingstatus, editstatus,
                        catname, catid, target, cmd,
                        protected, themes_id, css_name
                   FROM ".DBPREFIX."content_navigation
@@ -1189,6 +1268,7 @@ class ContentManager
                 $catname = htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET);
                 $themesId = $objResult->fields['themes_id'];
                 $target = $objResult->fields['target'];
+                $editstatus = $objResult->fields['editstatus'];
 
                 $objTemplate->setVariable(array(
                     'CONTENT_MENU_NAME'         => $catname,
@@ -1197,12 +1277,17 @@ class ContentManager
                     'CONTENT_TARGET'            => ($target ? $target : '&nbsp;'),
                     'CONTENT_SHOW_CMD'          => $cmd,
                     'CONTENT_MODULE_MENU'       => $this->_getModuleMenu($moduleId),
+                    'CONTENT_ACTIVESTATUS'     =>
+                        ($objResult->fields['activestatus'] == 1
+                            ? ' checked="checked"' : ''),
                     'CONTENT_DISPLAYSTATUS'     =>
                         ($objResult->fields['displaystatus'] == "on"
                             ? ' checked="checked"' : ''),
                     'CONTENT_CACHING_STATUS'    =>
                         ($objResult->fields['cachingstatus'] == 1
                             ? ' checked="checked"' : ''),
+                    'EDITSTATUS_SELECTED_'
+                    .strtoupper($editstatus)    => 'selected="selected"',
                     'CONTENT_STARTDATE'         => $startDate,
                     'CONTENT_CATID'             => $pageId,
                     'CONTENT_ENDDATE'           => $endDate,
@@ -1440,6 +1525,43 @@ class ContentManager
 
 
     /**
+     * checks if the content of the specified $intLangId can be used as
+     * virtual content for $intPageId
+     *
+     * @param int $intDestLangId language ID of the content to be used
+     * @param int $intPageId the ID of the page
+     * @param int $intSrcLangId ID of language which will use the content of $intDestLangId
+     * @return int language id if valid, otherwise negative error value (-1 dest is not normal page, -2 source is already used by other page and must remain a normal content site)
+     */
+    function _checkUseContentFromLang($intDestLangId, $intPageId, $intSrcLangId){
+        global $objDatabase;
+        if($intDestLangId == $intSrcLangId){
+            return array('error' => 3);
+        }
+        $query = '  SELECT `useContentFromLang`, `redirect` FROM `'.DBPREFIX.'content`
+                    WHERE `id` = '.$intPageId.'
+                    AND `lang_id`='.$intDestLangId;
+        $objRS = $objDatabase->Execute($query);
+        //check if target language to be used is a normal content site
+        if($objRS->fields['useContentFromLang'] == 0 && empty($objRS->fields['redirect'])){
+            $arrUsedBy = array();
+            $query = '  SELECT `lang_id` AS `usedBy` FROM `'.DBPREFIX.'content`
+                        WHERE `id` = '.$intPageId.'
+                        AND `useContentFromLang`='.$intSrcLangId;
+            $objRS = $objDatabase->Execute($query);
+            while(!$objRS->EOF){
+                $arrUsedBy[] = $objRS->fields['usedBy'];
+                $objRS->MoveNext();
+            }
+            if(count($arrUsedBy) == 0){
+                return $intDestLangId;
+            }
+            return array('error' => 2, 'usedBy' => $arrUsedBy);
+        }
+        return array('error' => 1);
+    }
+
+    /**
      * Update page content
      */
     function updatePage()
@@ -1452,6 +1574,8 @@ class ContentManager
         $pageId = intval($_POST['pageId']);
         $langId = intval($_POST['langId']);
         $this->_checkModificationPermission($pageId, $langId);
+        $arrLang = FWLanguage::getLanguageArray();
+        $lastUpdate = !empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0 ? true : false;
 
         if ($_POST['formContent_HistoryMultiAction'] == 'delete') {
             if (is_array($_POST['selectedChangelogId'])) {
@@ -1474,6 +1598,14 @@ class ContentManager
         $displaystatus = "off";
         if ($_POST['displaystatus']== "on") {
             $displaystatus = "on";
+        }
+        $activestatus = 0;
+        if ($_POST['activestatus'] == 'on') {
+            $activestatus = 1;
+        }
+        $editstatus = 'draft';
+        if (in_array($_POST['editstatus'], $this->arrEditStatus)) {
+            $editstatus = $_POST['editstatus'];
         }
         $robotstatus = "noindex";
         if ($_POST['robots']== "index") {
@@ -1503,6 +1635,36 @@ class ContentManager
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
         $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirectUrl'])) : '';
+        if($_POST['TypeSelection'] == 'useContentFromLang'){
+            $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId, $langId);            
+            if(!empty($useContentFromLang['error'])){
+                switch ($useContentFromLang['error']) {
+                	case 1:
+              		    $error = sprintf($_CORELANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'], $arrLang[$langId]['name'], $arrLang[$_POST['useContentFromLang']]['name']);
+                		break;
+                	case 2:
+                	    $usedByLangs = array();
+                	    foreach ($useContentFromLang['usedBy'] as $usedByLangId) {
+                	       $usedByLangs[] = $arrLang[$usedByLangId]['name'];                	       
+                	    }
+                        $error = sprintf($_CORELANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'], $arrLang[$langId]['name'], implode(',', $usedByLangs));
+                	    break;
+                	case 3:
+                        $error = sprintf($_CORELANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'], $arrLang[$langId]['name']);
+                	    break;
+                	default:
+                	    die();                	    
+                		break;
+                }
+                die(json_encode(array(
+                    'error'         => $error,
+                    'langName'      => $langName,
+                    'lastUpdate'    => $lastUpdate,
+        		)));                
+            }
+        } else {
+            $useContentFromLang = 0;
+        }
         $match = array();
         if (preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)) {
             $redirect = 'mailto:'.$match[1];
@@ -1528,13 +1690,13 @@ class ContentManager
             $objDatabase->Execute("
                 INSERT INTO ".DBPREFIX."content (
                     id, lang_id, content, title, metatitle, metadesc,
-                    metakeys, css_name,metarobots,redirect,expertmode
+                    metakeys, css_name,metarobots,redirect,useContentFromLang,expertmode
                 ) VALUES (
                     '".$pageId."', '".$langId."', '".$contenthtml."',
                     '".$contenttitle."', '".$metatitle."',
                     '".$contentdesc."', '".$contentkey."',
                     '".$cssName."', '".$robotstatus."',
-                    '".$redirect."', '".$expertmode."')
+                    '".$redirect."', $useContentFromLang,'".$expertmode."')
                 ON DUPLICATE KEY UPDATE
                     id='".$pageId."',
                     lang_id='".$langId."',
@@ -1546,6 +1708,7 @@ class ContentManager
                     css_name='".$cssName."',
                     metarobots='".$robotstatus."',
                     redirect='".$redirect."',
+                    useContentFromLang='".$useContentFromLang."',
                     expertmode='".$expertmode."'"
                 );
                 /* WHERE id=".$pageId.' AND lang_id='.$langId */
@@ -1557,11 +1720,11 @@ class ContentManager
             if ($boolDirectUpdate) {
                 $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."content_navigation (
-                        catid, parcat, catname, target, displaystatus, cachingstatus,
+                        catid, parcat, catname, target, displaystatus, activestatus, cachingstatus, editstatus,
                         username, changelog, cmd, lang, module, startdate, enddate, themes_id, css_name
                     ) VALUES (
                         '".$pageId."', '".$parcat."', '".$catname."',
-                        '".$redirectTarget."', '".$displaystatus."', '".$cachingStatus."',
+                        '".$redirectTarget."', '".$displaystatus."', '".$activestatus."', '".$cachingStatus."', '".$editstatus."',
                         '".$objFWUser->objUser->getUsername()."',
                         '".$currentTime."', '".$command."',
                         '".$langId."', '".$moduleId."',
@@ -1574,7 +1737,9 @@ class ContentManager
                         catname='".$catname."',
                         target='".$redirectTarget."',
                         displaystatus='".$displaystatus."',
+                        activestatus='".$activestatus."',
                         cachingstatus='".$cachingStatus."',
+                        editstatus='".$editstatus."',
                         username='".$objFWUser->objUser->getUsername()."',
                         changelog='".$currentTime."',
                         cmd='".$command."',
@@ -1591,11 +1756,11 @@ class ContentManager
             if ($boolDirectUpdate) {
                    $objDatabase->Execute("
                       INSERT INTO  ".DBPREFIX."content_navigation (
-                          catid, catname, target, displaystatus, cachingstatus,
+                          catid, catname, target, displaystatus, activestatus, cachingstatus, editstatus,
                           username, changelog, cmd, lang, module, startdate, enddate, themes_id, css_name)
                       VALUES  (
                           '".$pageId."', '".$catname."',
-                          '".$redirectTarget."', '".$displaystatus."', '".$cachingStatus."',
+                          '".$redirectTarget."', '".$displaystatus."', '".$activestatus."', '".$cachingStatus."', '".$editstatus."',
                           '".$objFWUser->objUser->getUsername()."',
                           '".$currentTime."', '".$command."',
                           '".$langId."', '".$moduleId."',
@@ -1607,7 +1772,9 @@ class ContentManager
                           catname='".$catname."',
                           target='".$redirectTarget."',
                           displaystatus='".$displaystatus."',
+                          activestatus='".$activestatus."',
                           cachingstatus='".$cachingStatus."',
+                          editstatus='".$editstatus."',
                           username='".$objFWUser->objUser->getUsername()."',
                           changelog='".$currentTime."',
                           cmd='".$command."',
@@ -1707,7 +1874,9 @@ class ContentManager
                        target="'.$redirectTarget.'",
                        displayorder='.intval($objResult->fields['displayorder']).',
                        displaystatus="'.$displaystatus.'",
+                       activestatus="'.$activestatus.'",
                        cachingstatus="'.$cachingStatus.'",
+                       editstatus="'.$editstatus.'",
                        username="'.$objFWUser->objUser->getUsername().'",
                        changelog="'.$currentTime.'",
                        cmd="'.$command.'",
@@ -1734,6 +1903,7 @@ class ContentManager
                        css_name="'.$cssName.'",
                        metarobots="'.$robotstatus.'",
                        redirect="'.$redirect.'",
+                       useContentFromLang="'.$useContentFromLang.'",
                        expertmode="'.$expertmode.'"');
             $objDatabase->Execute('
                 INSERT INTO '.DBPREFIX.'content_logfile
@@ -1741,10 +1911,9 @@ class ContentManager
                        history_id='.$intHistoryId.',
                        is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"');
         }
-        $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
-        $lastUpdate = false;
-        if (!empty($_POST['lastUpdate']) && $_POST['lastUpdate'] > 0) {
-            $lastUpdate = true;
+        $_POST['assignedBlocks'] = !empty($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array();
+        $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);        
+        if ($lastUpdate) {
             //write caching-file, delete exisiting cache-files
             $objCache = new Cache();
             $objCache->writeCacheablePagesFile();
@@ -1807,10 +1976,19 @@ class ContentManager
         $langId = intval($_POST['langId']);
         $langName = $_POST['langName'];
         $displaystatus = ($_POST['displaystatus'] == "on" ? "on" : "off");
+        $activestatus = ($_POST['activestatus'] == "on" ? 1 : 0);
         $cachingstatus = (intval($_POST['cachingstatus']) == 1 ? 1 : 0);
         $expertmode = (!empty($_POST['expertmode']) && $_POST['expertmode'] == "y" ? "y" : "n");
+        $editstatus = 'draft';
+        if (in_array($_POST['editstatus'], $this->arrEditStatus)) {
+            $editstatus = $_POST['editstatus'];
+        }
         $robotstatus = ($_POST['robots'] == "index" ? "index" : "noindex");
-
+        if($_POST['TypeSelection'] == 'useContentFromLang'){
+            $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId);
+        } else {
+            $useContentFromLang = 0;
+        }
         $catname = strip_tags(contrexx_addslashes($_POST['newpage']));
         // Never used
         //$section = strip_tags(contrexx_addslashes($_POST['section']));
@@ -1871,14 +2049,14 @@ class ContentManager
         $q1 = "
             INSERT INTO ".DBPREFIX."content_navigation (
                 catid, parcat, catname, target, displayorder,
-                displaystatus, cachingstatus,
+                displaystatus, activestatus, cachingstatus, editstatus,
                 username, changelog,
                 cmd, lang, module,
                 startdate, enddate,
                 protected, themes_id, css_name
             ) VALUES (
                 ".$pageId.", ".$parcat.", '".$catname."', '".$redirectTarget."', '1',
-                '".$displaystatus."', '".$cachingstatus."',
+                '".$displaystatus."', '".$activestatus."', '".$cachingstatus."', '".$editstatus."' ,
                 '".$objFWUser->objUser->getUsername()."', '".$currentTime."',
                 '".$command."', '".$langId."', '".$modul."',
                 '".$startdate."', '".$enddate."',
@@ -1890,7 +2068,9 @@ class ContentManager
                 target='".$redirectTarget."',
                 displayorder='1',
                 displaystatus='".$displaystatus."',
+                activestatus='".$displaystatus."',
                 cachingstatus='".$cachingstatus."',
+                editstatus='".$editstatus."',
                 username='".$objFWUser->objUser->getUsername()."',
                 changelog='".$currentTime."',
                 cmd='".$command."',
@@ -1913,12 +2093,12 @@ class ContentManager
                 id, lang_id,
                 content, title, metatitle,
                 metadesc, metakeys, css_name,
-                metarobots, redirect, expertmode
+                metarobots, redirect, useContentFromLang, expertmode
             ) VALUES (
                 $pageId, $langId,
                 '".$contenthtml."', '".$contenttitle."', '".$metatitle."',
                 '".$contentdesc."', '".$contentkey."', '".$cssName."',
-                '".$robotstatus."', '".$contentredirect."', '".$expertmode."'
+                '".$robotstatus."', '".$contentredirect."', $useContentFromLang , '".$expertmode."'
             ) ON DUPLICATE KEY UPDATE
                 id=".$pageId.",
                 lang_id=".$langId.",
@@ -1930,6 +2110,7 @@ class ContentManager
                 css_name='".$cssName."',
                 metarobots='".$robotstatus."',
                 redirect='".$contentredirect."',
+                useContentFromLang='".$useContentFromLang."',
                 expertmode='".$expertmode."'";
         if ($objDatabase->Execute($q2) !== false) {
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
@@ -1982,7 +2163,9 @@ class ContentManager
                            target="'.$redirectTarget.'",
                            displayorder='.intval($objResult->fields['displayorder']).',
                            displaystatus="'.$displaystatus.'",
+                           activestatus="'.$activestatus.'",
                            cachingstatus="'.$cachingstatus.'",
+                           editstatus="'.$editstatus.'",
                            username="'.$objFWUser->objUser->getUsername().'",
                            changelog="'.$currentTime.'",
                            cmd="'.$command.'",
@@ -2014,6 +2197,7 @@ class ContentManager
                            css_name="'.$cssName.'",
                            metarobots="'.$robotstatus.'",
                            redirect="'.$contentredirect.'",
+                           useContentFromLang="'.$useContentFromLang.'",
                            expertmode="'.$expertmode.'"');
             }
             $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
@@ -3121,6 +3305,7 @@ class ContentManager
                 die(json_encode($objRS->fields));
                 break;
             case 'inputRadio':
+                $arrJson = array();
                 $protection = ($this->_getPageProtectionStatus($pageId, $langId) ? 1 : 0);  // frontend protection
                 $arrAssignedBackendGroups = $this->_getAssignedGroups('backend', $pageId, $langId);    // backend protection
                 $backendPermission = 0;
@@ -3131,21 +3316,24 @@ class ContentManager
                     }
                 }
                 $query = '
-                    SELECT `c`.`redirect` AS `TypeSelection`
-                      FROM `'.DBPREFIX.'content` AS `c`
-                     WHERE `c`.`id`='.$pageId.'
-                       AND `c`.`lang_id`='.$langId;
+                    SELECT `redirect`,
+                           `useContentFromLang`
+                    FROM  `'.DBPREFIX.'content`                                          
+                    WHERE `id`='.$pageId.'
+                    AND `lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
-                if (empty($objRS->fields['TypeSelection'])) {
-                    $objRS->fields['TypeSelection'] = 'content';
-                } else {
-                    $objRS->fields['TypeSelection'] = 'redirect';
+                if (!empty($objRS->fields['redirect'])) { //redirect isn't empty, set the type to redirect
+                    $arrJson['TypeSelection'] = 'redirect';
+                } elseif($objRS->fields['useContentFromLang'] > 0) { //useContentFromLang field isn't empty, set the type to useContentFromLang
+                    $arrJson['TypeSelection'] = 'useContentFromLang';                    
+                } else { //normal content
+                    $arrJson['TypeSelection'] = 'content';
                 }
-                $objRS->fields['protection']        = $protection;
-                $objRS->fields['backendPermission'] = $backendPermission;
-                $objRS->fields['langName']          = $langName;
+                $arrJson['protection']        = $protection;
+                $arrJson['backendPermission'] = $backendPermission;
+                $arrJson['langName']          = $langName;
                 header('Content-Type: application/json');
-                die(json_encode($objRS->fields));
+                die(json_encode($arrJson));
                 break;
             case 'navMenu':
                 global $_CORELANG;
@@ -3206,19 +3394,34 @@ class ContentManager
                 }
 
                 $objRS = $objDatabase->Execute("
-                    SELECT module, target, themes_id
-                      FROM ".DBPREFIX."content_navigation
-                     WHERE catid=$pageId
+                    SELECT `module`, `target`, `themes_id`, `editstatus`
+                      FROM `".DBPREFIX."content_navigation`
+                     WHERE `catid`=$pageId
                        AND `lang`=$langId");
-                $targets =
-                    '<option value="'.$objRS->fields['target'].'"'.
-                    ' selected="selected">'.$objRS->fields['target'].'</option>';
-// TODO: $target is not defined
-//                if (empty($target)) { $targets = '<option value=""></option>'; }
+                $objRS2 = $objDatabase->Execute("
+                    SELECT `useContentFromLang`
+                      FROM `".DBPREFIX."content`
+                     WHERE `id`=$pageId
+                       AND `lang_id`=$langId");                
+                
+                $targets = '<option value=""></option>';
                 foreach ($this->_arrRedirectTargets as $target) {
                     if (empty($target)) continue;
-                    $targets .= '<option value="'.$target.'">'.$_CORELANG['TXT_TARGET'.strtoupper($target)].' ('.$target.')</option>';
+                    $selected = $target == $objRS->fields['target'] ? ' selected="selected"' : '';                    
+                    $targets .= '<option'.$selected.' value="'.$target.'">'.$_CORELANG['TXT_TARGET'.strtoupper($target)].' ('.$target.')</option>';
                 }
+                
+                $arrLangs = FWLanguage::getLanguageArray();
+               	$useContentFromLang = array();
+                
+                foreach ($arrLangs as $arrLang) {
+                    if($arrLang['frontend'] != 1){
+                        continue;
+                    }
+                    $selected = $objRS2->fields['useContentFromLang'] == $arrLang['id'] ? ' selected="selected"' : '';
+                	$useContentFromLang[] = '<option'.$selected.' value="'.$arrLang['id'].'">'.$arrLang['name'].'</option>';
+                }
+                
                 $selects['themesId']['options']                 = $this->_getThemesMenu($objRS->fields['themes_id']);
                 $selects['themesId']['value']                   = $objRS->fields['themes_id'];
                 $selects['selectmodule']['options']             = '<option value="">'.$_CORELANG['TXT_NO_MODULE'].'</option>'.$this->_getModuleMenu($objRS->fields['module']);
@@ -3231,6 +3434,7 @@ class ContentManager
                 $selects['assignedBackendGroups[]']['options']  = $assignedBackendGroups;
                 $selects['existingBlocks[]']['options']         = $blocks[1];
                 $selects['assignedBlocks[]']['options']         = $blocks[0];
+                $selects['useContentFromLang'] ['options']      = implode("\n", $useContentFromLang);
                 $selects['langName']                            = $langName;
                 header('Content-Type: application/json');
                 die(json_encode($selects));

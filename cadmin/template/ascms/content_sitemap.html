@@ -2,6 +2,9 @@
 <script language="JavaScript" type="text/javascript">
 /* <![CDATA[ */
 
+__CSRF__ = {key:"{CSRF_KEY}", code:"{CSRF_CODE}"};
+__CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
+
 function deletePage(pageId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
@@ -19,8 +22,9 @@ function changeStatus(pageId)
     if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
         window.location.replace("index.php?cmd=content&act=changestatus&pageId="+pageId);
 }
-  function selectMultiAction()
-  {
+
+function selectMultiAction()
+{
     with (document.form)
     {
       switch (frmContentSitemap_MultiAction.value) {
@@ -34,21 +38,21 @@ function changeStatus(pageId)
           if (confirm('{TXT_DELETE_ALL}')) {
             submit();
           }
-		  else {
-			frmContentSitemap_MultiAction.selectedIndex = 0;
-		  }
+    	  else {
+    		frmContentSitemap_MultiAction.selectedIndex = 0;
+    	  }
         break;
         default: //do nothing
       }
     }
-  }
-
+}
+  
 (function(){ //wrap in anonyomous function to avoid polluting the global namespace
 
     var rootUlId = 'sortableNavigation';
 
-    $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
-        $('#tabmenu li a').click(function(){ //change language via upper right form with dropdown if tabmenu item gets clicked
+    $J(function(){
+        $J('#tabmenu li a').click(function(){ //change language via upper right form with dropdown if tabmenu item gets clicked
                 $J('form[name=userFrontendLangIdForm] :selected').val($J(this).attr('id').replace(/.*?(\d+)$/, '$1'));
                 $J('form[name=userFrontendLangIdForm]').submit();
         });
@@ -240,7 +244,7 @@ function changeStatus(pageId)
 <table summary="" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td>
-      <img style="margin-left: 24px;" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+      <img style="margin-left: 43px;" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
       <a href="#" onclick="changeCheckboxes('form','selectedPages[]',true); return false;">{TXT_SELECT_ALL}</a> /
       <a href="#" onclick="changeCheckboxes('form','selectedPages[]',false); return false;">{TXT_DESELECT_ALL}</a>
       <img alt="-" title="-" src="images/icons/strike.gif" />
@@ -278,28 +282,25 @@ function changeStatus(pageId)
 @*/
 
 function moveDivsToEndOfBodyTag() {
-  backgroundDiv = $('editMode_Background').remove();
-  windowDiv = $('editMode_Window').remove();
-
-  body = document.getElementsByTagName("body")[0];
-  new Insertion.Bottom(body, backgroundDiv);
-  new Insertion.Bottom(body, windowDiv);
+  $J('#editMode_Background').appendTo('body');
+  $J('#editMode_Window').appendTo('body')
 }
-window.onload = moveDivsToEndOfBodyTag;
+
+
+$J(moveDivsToEndOfBodyTag);
 
 function showEditModeWindow(cmdName, pageId) {
-  $('editMode_Code_Link1').href     = 'index.php?cmd=content'+"&amp;"[0]+'act=edit'+"&amp;"[0]+'pageId=' + pageId;
-  $('editMode_Code_Link2').href     = 'index.php?cmd=content'+"&amp;"[0]+'act=edit'+"&amp;"[0]+'pageId=' + pageId;
-  $('editMode_Content_Link1').href   = 'index.php?cmd=' + cmdName;
-  $('editMode_Content_Link2').href   = 'index.php?cmd=' + cmdName;
-
-  Effect.Appear('editMode_Background', {duration: 0.5, to: 0.5});
-  Effect.Appear('editMode_Window', {duration: 0.5});
+  $J('#editMode_Code_Link1').attr('href', '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId=' + pageId + "&" + __CSRF__QSTR);
+  $J('#editMode_Code_Link2').attr('href', '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId=' + pageId + "&" + __CSRF__QSTR);
+  $J('#editMode_Content_Link1').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&" + __CSRF__QSTR);
+  $J('#editMode_Content_Link2').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&" + __CSRF__QSTR);
+  $J('#editMode_Background').fadeIn('slow');
+  $J('#editMode_Window').fadeIn('slow');
 }
 
 function closeEditModeWindow() {
-  Effect.Fade('editMode_Background', {duration: 0.5, from: 0.5});
-  Effect.Fade('editMode_Window', {duration: 0.5, queue:{scope:'myscope', position:'end'}});
+  $J('#editMode_Background').fadeOut('slow');
+  $J('#editMode_Window').fadeOut('slow');
 }
 
 /* ]]> */

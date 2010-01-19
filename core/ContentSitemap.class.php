@@ -395,6 +395,8 @@ class ContentSitemap
             'TXT_SUBMIT_DEACTIVATE'      => $_CORELANG['TXT_MULTISELECT_DEACTIVATE'],
             'TXT_DATABASE_QUERY_ERROR'   => $_CORELANG['TXT_DATABASE_QUERY_ERROR'],
             'DIRECTORY_INDEX'            => CONTREXX_DIRECTORY_INDEX,
+            'CSRF_KEY'                   => CSRF::key(),
+            'CSRF_CODE'                  => CSRF::code(),
         ));
 
         foreach (FWLanguage::getLanguageArray() as $arrLang){
@@ -461,7 +463,7 @@ class ContentSitemap
     */
     function getCurrentSonArray($currentid)
     {
-        $list = $this->navtable[$currentid];
+        $list = !empty($this->navtable[$currentid]) ? $this->navtable[$currentid] : '';
         if (is_array($list)) {
             foreach (array_keys($list) as $pageId) {
                 array_push($this->navSons, $pageId);
