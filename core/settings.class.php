@@ -64,7 +64,7 @@ class settingsManager
         $objFile = new File();
 
         if (is_writable($this->strSettingsFile)
-             || $objFile->setChmod(dirname($this->strSettingsFile), substr(dirname($this->strSettingsFile), strlen(ASCMS_PATH_OFFSET)), '/'.basename($this->strSettingsFile))
+             || $objFile->setChmod(dirname($this->strSettingsFile), substr(dirname($this->strSettingsFile), strlen(ASCMS_PATH)), '/'.basename($this->strSettingsFile))
         ) {
             $this->writable = true;
         } else {
@@ -431,7 +431,7 @@ class settingsManager
         // POST to something else than index.php (frontend editing, ...)
         $arrRules['normal_files'] = array(
             'RewriteCond %{IS_SUBREQ} false',
-            'RewriteRule ^(?:'.implode('|', $arrLanguageCodes).')/(.*)$ '.ASCMS_PATH_OFFSET.'/$1 [L,NC]'
+            'RewriteRule ^('.implode('|', $arrLanguageCodes).')/(.*)$ '.ASCMS_PATH_OFFSET.'/$2 [L,NC]'
         );
 
         $arrRules['fallback'] = array(
