@@ -90,7 +90,8 @@ class Banner extends bannerLibrary
                            WHERE relation.group_id = ".$groupId."
                              AND relation.page_id = ".$teaserId."
                              AND relation.banner_id = system.id
-                             AND relation.type='teaser'";
+                             AND relation.type='teaser'
+                             AND system.status=1";
             } elseif (isset($_GET['lid'])) {
                 $levelId=intval($_GET['lid']);
 
@@ -101,7 +102,8 @@ class Banner extends bannerLibrary
                            WHERE relation.group_id = ".$groupId."
                              AND relation.page_id = ".$levelId."
                              AND relation.banner_id = system.id
-                             AND relation.type='level'";
+                             AND relation.type='level'
+                             AND system.status=1";
             } else {
                 $query = "SELECT system.banner_code AS banner_code,
                                  system.id AS id
@@ -111,7 +113,7 @@ class Banner extends bannerLibrary
                              AND relation.page_id = ".$pageId."
                              AND relation.banner_id = system.id
                              AND relation.type='content'
-                           ";
+                             AND system.status=1";
             }
 
             $objResult = $objDatabase->Execute($query);
@@ -137,7 +139,7 @@ class Banner extends bannerLibrary
                 ///////////////////////////////////
                 // show the default banner for this group
                 ///////////////////////////////////
-                $query = "SELECT id, banner_code FROM ".DBPREFIX."module_banner_system WHERE parent_id = ".$groupId." AND is_default=1";
+                $query = "SELECT id, banner_code FROM ".DBPREFIX."module_banner_system WHERE parent_id = ".$groupId." AND is_default=1 AND status=1";
                 $objResult = $objDatabase->SelectLimit($query, 1);
                 if ($objResult !== false) {
 

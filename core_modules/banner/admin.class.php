@@ -52,6 +52,7 @@ class Banner extends bannerLibrary {
         global  $_ARRAYLANG, $objInit, $objTemplate;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable('CONTENT_NAVIGATION','<a href="?cmd=banner">'.$_ARRAYLANG['TXT_BANNER_MENU_OVERVIEW'].'</a>
@@ -826,7 +827,7 @@ class Banner extends bannerLibrary {
         if ($objResult->RecordCount() > 0) {
             $strDropDown = '<select name="ddGroup" onChange="window.location=this.options[this.selectedIndex].value">';
             while (!$objResult->EOF) {
-                $strDropDown .= '<option value="?cmd=banner&act=group_details&id='.$objResult->fields['id'].'"'.(($objResult->fields['id'] == $intGid) ? ' selected' : '').'>'.$objResult->fields['name'].'</option>';
+                $strDropDown .= '<option value="'.CSRF::enhanceURI('index.php?cmd=banner').'&act=group_details&id='.$objResult->fields['id'].'"'.(($objResult->fields['id'] == $intGid) ? ' selected' : '').'>'.$objResult->fields['name'].'</option>';
                 $objResult->MoveNext();
             }
             $strDropDown .= '</select>';
