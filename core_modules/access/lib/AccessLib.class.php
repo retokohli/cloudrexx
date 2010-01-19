@@ -195,6 +195,7 @@ class AccessLib
                 break;
             case 'checkbox':
                 $arrPlaceholders['_CHECKED'] = $objUser->getProfileAttribute($attributeId, $historyId) ? 'checked="checked"' : '';
+                $arrPlaceholders['_VALUE'] = $objUser->getProfileAttribute($attributeId, $historyId);
                 break;
             case 'menu':
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
