@@ -43,6 +43,9 @@ Block System
 FileBrowser
 - Die Bild-Vorschau funktioniert bei Bildern mit Sonderzeichen im Dateinamen.
 
+Media Archive
+- Dateien mit Sonderzeichen im Dateinamen werden unterstützt.
+
 News Manager
 - Der JavaScript RSS Feed news_de.js funktioniert korrekt.
 - Ein Thumbnail einer News Meldung wird auch dann angezeigt, wenn kein
