@@ -105,4 +105,5 @@ $_ARRAYLANG['TXT_PRINTSHOP_EDIT'] = "Bearbeiten";
 $_ARRAYLANG['TXT_PRINTSHOP_COPY'] = "Kopieren";
 $_ARRAYLANG['TXT_PRINTSHOP_PRODUCT_EXISTED_UPDATED'] = "Das definierte Produkt hat bereits existiert, die Preise wurden angepasst.";
 $_ARRAYLANG['TXT_PRINTSHOP_PRODUCT_UPDATED'] = "Die Preise wurden angepasst.";
+$_ARRAYLANG['TXT_PRINTSHOP_ROUND_UP_INDEX'] = "Aufrunden zu nächster Menge ab";
 ?>
