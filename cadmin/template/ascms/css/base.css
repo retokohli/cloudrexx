@@ -393,7 +393,7 @@ table.subnavbar {
     color: black;
 }
 
-#alertbox {
+.alertbox, #alertbox {
 	border: 1px solid;
 	color: #ff0000;
 	background: #FFCCCC;
@@ -402,11 +402,11 @@ table.subnavbar {
 }
 
 
-#alertbox a {
+.alertbox a, #alertbox a {
     color: #fb5959;
 }
 
-#okbox {
+.okbox, #okbox {
 	border: #029202 1px solid;
 	color: #006900;
 	background: #B8FD9F;

@@ -21,7 +21,12 @@ Content Manager
 - Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden
 - Editeren einer Seite in mehreren Sprachen auf einmal
 - Vorschau-Funktion
-(- Seiten können per drag&drop strukturiert werden )
+- Die Seiten Struktur wird nun für alle Sprachen synchronisiert
+- Seiten können per drag&drop strukturiert werden
+- Neuer WYSIWYG Editor (siehe CKEDITOR unten)
+- Eine Contentseite kann nun auf eine andere Sprache verweisen und deren
+  Content verwenden, damit nicht Seiten mit gleichem Inhalt in mehreren
+  Sprachen erfasst werden müssen.
 
 Benutzerverwaltung
 - Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
@@ -90,8 +95,13 @@ Modul: Mediathek
 Modul: Shop
 - Bilder können von einem Produkt wieder entfernt werden.
 
-FCKEditor
-- Neue Version 2.6.4.1
+Modul: Block
+- Kategorien im Backend ermöglichen eine bessere Übersicht der Blöcke
+- Zeitgesteuertes Anzeigen von Blöcken
+
+FCKEditor => CKEDITOR
+- Der FCKEditor heisst neu CKEDITOR und wurde komplett neu geschrieben und
+  enthält viele Verbesserungen.
 
 ****************************************
 * Behobene Fehler **********************
