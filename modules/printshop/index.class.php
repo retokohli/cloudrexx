@@ -348,7 +348,7 @@ class Printshop extends PrintshopLibrary {
         do{ i++; }
              while( amount > priceThresholds[i] && i < 15 );
 
-        if(i > roundUpIndex && amount != priceThresholds[i]){
+        if(roundUpIndex && i > roundUpIndex && amount != priceThresholds[i]){
             amount = priceThresholds[i];
             \$J('#amount').val(amount);
         }
@@ -805,7 +805,7 @@ EOJ;
         \$J.ajax({
             url: '$DI?section=printshop&cmd=order&standalone=1',
             type: 'post',
-            data: {type: type, format: format, front: front, back: back, weight: weight, paper: paper},
+            data: {psType: type, psFormat: format, psFront: front, psBack: back, psWeight: weight, psPaper: paper},
             dataType: 'json',
             success: function(data){
                 if(data.entry.price_0){
@@ -818,7 +818,7 @@ EOJ;
                         }
                         priceThresholds[j]  = data.thresholds[j];
                     });
-                    roundUpIndex = data.roundUpIntex || 0;
+                    roundUpIndex = data.entry.roundUpIndex || 0;
                 }
                 updatePrice();
             }
@@ -837,7 +837,16 @@ EOJ;
         do{ i++ }
              while( amount > priceThresholds[i] && i < 15 );
 
-        printCost = amount * price[i];
+        if(roundUpIndex && i > roundUpIndex && amount != priceThresholds[i]){
+            amount = priceThresholds[i];
+            \$J('#amount').val(amount);
+        }
+
+        if(priceThresholds[i] > amount){
+            printCost = amount * price[i-1];
+        } else {
+            printCost = amount * price[i];
+        }
 
         var roundedPrice = roundPrice(printCost.toFixed(2));
         var subtotal = 1*printCost + 1*dataPreparationPrice;
@@ -853,16 +862,6 @@ EOJ;
         \$J('#psPriceShipment').text(shipmentPrice.toFixed(2));
         \$J('#psPriceTotal').text(roundPrice(totalPrice).toFixed(2));
         \$J('#psPrice').val(roundPrice(totalPrice).toFixed(2));
-    }
-
-    var submitOrder = function(){
-        \$J.ajax({
-            url: '$DI?section=printshop&cmd=',
-            type: 'post',
-            data: '',
-            dataType: 'json',
-            success: ''
-        });
     }
 
     var checkFilledFields = function(){

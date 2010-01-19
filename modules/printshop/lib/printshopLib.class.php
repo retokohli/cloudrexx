@@ -199,7 +199,7 @@ class PrintshopLibrary {
                     return false;
                 }
                 if($value > 0){
-                    $where .= ' AND `'.$attribute.'` = '.$value;
+                    $where .= ' AND `p`.`'.$attribute.'` = '.$value;
                 }
             }
         }
@@ -208,18 +208,14 @@ class PrintshopLibrary {
         foreach($this->_priceThresholds as $index => $price){
             $priceFieldsSQL .= '`p`.`'.$price['field'].($index < $this->_priceThresholdCount - 1 ? '`,' : '`');
         }
-        $query = 'SELECT SQL_CALC_FOUND_ROWS `p`.`type`, `p`.`format`, `p`.`front`, `p`.`back`, `p`.`weight`, `p`.`paper`, '.$priceFieldsSQL.'
+        $query = 'SELECT SQL_CALC_FOUND_ROWS `p`.`type`, `p`.`format`, `p`.`front`, `p`.`back`, `p`.`weight`, `p`.`paper`, '.$priceFieldsSQL.', `f`.`roundUpIndex`
                   FROM   `'.DBPREFIX.'module_printshop_product` AS `p`
+                  INNER JOIN `'.DBPREFIX.'module_printshop_format` AS `f` ON ( `p`.`format` = `f`.`id` )
                   WHERE '.$where.'
                   ORDER BY `type`, `format`, `front`, `back`, `weight`, `paper`';
         $objRS = $objDatabase->SelectLimit($query, $this->_limit, $this->_pos);
         $objRSCount = $objDatabase->Execute('SELECT FOUND_ROWS() AS `rows`');
         $count = intval($objRSCount->fields['rows']);
-
-        $query = 'SELECT `roundUpIndex`
-                  FROM   `'.DBPREFIX.'module_printshop_format`
-                  WHERE `id`='.$arrAttributesFilter['format'];
-        $objRS2 = $objDatabase->SelectLimit($query, 1);
         while(!$objRS->EOF){
             if($translated){
                 $arrEntries[] = array(
@@ -245,7 +241,7 @@ class PrintshopLibrary {
                     'price_13'      => $objRS->fields['price_13'],
                     'price_14'      => $objRS->fields['price_14'],
                     'price_15'      => $objRS->fields['price_15'],
-                    'roundUpIndex'  => $objRS2->fields['roundUpIndex'],
+                    'roundUpIndex'  => $objRS->fields['roundUpIndex'],
                 );
             }else{
                  $arrEntries[] = $objRS->fields;
