@@ -83,8 +83,8 @@
 	var openBrowser = function openBrowser(url, attrs) {
 		if(elInputThumbnailPath.value != ''){
 			pathRegExp =/\/images\/podcast\/?(.+)\/.+/;
-			pathRegExp.exec(elInputThumbnailPath.value);
-			url='index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=podcast&path=/'+RegExp.$1;
+			path = pathRegExp.exec(elInputThumbnailPath.value);
+			url='index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=podcast&path=/'+(path != null ? path[1] : '');
 		}
 		try{
 			if(!browserPopup.closed){

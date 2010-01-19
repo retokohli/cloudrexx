@@ -58,7 +58,7 @@ var mySelectTab = function(divId){
 				</tr>
 				<tr class="row1">
 					<td>{TXT_PODCAST_FEED_IMAGE}</td>
-					<td><input type="text" name="podcast_settings_feed_image" id="podcast_settings_feed_image" value="{PODCAST_SETTINGS_FEED_IMAGE}" style="width:287px;" /> <input type="button" value="{TXT_PODCAST_BROWSE}" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" style="width:110px;" /></td>
+					<td><input type="text" name="podcast_settings_feed_image" id="podcast_settings_feed_image" value="{PODCAST_SETTINGS_FEED_IMAGE}" style="width:287px;" /> <input type="button" value="{TXT_PODCAST_BROWSE}" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&amp;{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" style="width:110px;" /></td>
 				</tr>
 				<tr class="row2">
 					<td>{TXT_PODCAST_FEED_LINK}</td>
@@ -113,7 +113,7 @@ var mySelectTab = function(divId){
 			</tr>
 		</table>
 		<br />
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 			<tr>
 				<th colspan="4">{TXT_PODCAST_PLACEHOLDERS}</th>
 			</tr>
@@ -201,8 +201,8 @@ var mySelectTab = function(divId){
 					{TXT_PODCAST_MEDIA_VIEWS_COUNT}
 				</td>
 			</tr>
-			</tr>
-				<tr class="row1">
+			<tr>
+				<td class="row1">
 				<td >
 					[[PODCAST_MEDIA_ID]]
 				</td>
