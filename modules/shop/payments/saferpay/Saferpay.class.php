@@ -97,7 +97,8 @@ class Saferpay
         'payComplete' => array(
             'ACCOUNTID',
             'ID',
-            'TOKEN',
+// Not used
+//            'TOKEN',
         )
     );
 
@@ -313,7 +314,6 @@ class Saferpay
 
     /**
      * Generates a list of all attributes
-     *
      * @param   string  Step of the payment
      * @access  private
      * @return  string  Attributelist on success, empty string on failure
@@ -368,7 +368,6 @@ class Saferpay
 
     /**
      * Confirms the payment transaction
-     *
      * @access  public
      * @return  boolean     True on success, false otherwise
      */
@@ -379,8 +378,9 @@ class Saferpay
         $DATA = '';
         $SIGNATURE = '';
         parse_str($_SERVER['QUERY_STRING']);
-        $this->arrShopOrder['DATA']      = urlencode($DATA);
-        $this->arrShopOrder['SIGNATURE'] = urlencode($SIGNATURE);
+        // Note: parse_str()'s results comply with the magic quotes setting!
+        $this->arrShopOrder['DATA']      = urlencode(contrexx_stripslashes($DATA));
+        $this->arrShopOrder['SIGNATURE'] = urlencode(contrexx_stripslashes($SIGNATURE));
         $this->attributes = $this->getAttributeList('payConfirm');
 
         // This won't work without allow_url_fopen
@@ -409,7 +409,6 @@ class Saferpay
 
     /**
      * Completes the payment transaction
-     *
      * @param   array       Attributes
      * @access  public
      * @return  boolean     True on success, false otherwise
@@ -418,9 +417,16 @@ class Saferpay
     {
         $this->arrShopOrder = $arrShopOrder;
         $this->arrShopOrder['ID'] = $this->arrTemp['id'];
-        $this->arrShopOrder['TOKEN'] = $this->arrTemp['token'];
-        $this->attributes = $this->getAttributeList('payComplete');
-
+// Not used
+//        $this->arrShopOrder['TOKEN'] = $this->arrTemp['token'];
+        $this->attributes =
+            $this->getAttributeList('payComplete').
+            // Business account *ONLY*, like the test account
+            // There is no password setting (yet), so this is for
+            // future testing porposes *ONLY*
+            (Settings::getStatusByName('saferpay_use_test_account')
+              ? '&spPassword=XAjc3Kna'
+              : '');
         // This won't work without allow_url_fopen
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payComplete'].'?'.$this->attributes);
@@ -431,7 +437,6 @@ class Saferpay
                     $this->gateway['payComplete'].'?'.$this->attributes
                 );
         }
-
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             return true;
         }
@@ -442,26 +447,22 @@ class Saferpay
 
     /**
      * Returns the order ID of the transaction
-     *
      * @access  public
      * @return  integer The order ID
      */
     function getOrderId()
     {
+        $arrMatches = array();
         $strParams = urldecode(stripslashes($_GET['DATA']));
-        $arrMatches = array();
-        preg_match_all('/([A-Z]+)\=([^&]+)/', $strParams, $arrMatches);
-        $strParams = $arrMatches[2][0];
-        $arrMatches = array();
-        preg_match_all('/([a-z0-9]+)\="([^"]+)"/i', $strParams, $arrMatches);
-        $orderId = $arrMatches[2][array_search('ORDERID',$arrMatches[1])];
+        if (!preg_match('/\sORDERID\=\"(\d+)\"/', $strParams, $arrMatches))
+            return false;
+        $orderId = $arrMatches[1];
         return $orderId;
     }
 
 
     /**
      * Checks whether the given attribute exists in the array arrShopOrder.
-     *
      * @access  private
      * @param   string      Attribute to check for its existence
      * @return  boolean     True on success, false otherwise
@@ -478,7 +479,6 @@ class Saferpay
 
     /**
      * Verifies the value of an attribute for correctness.
-     *
      * @access  private
      * @param   string      Attribute to check for correctness
      * @return  boolean     True on success, false otherwise
