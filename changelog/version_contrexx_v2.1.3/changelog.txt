@@ -55,6 +55,9 @@ Modul: Bildergalerie
 - Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
   ImageRotate() Funktion nicht verfügbar ist.
 
+Modul: Datenlisten
+- Das Kopieren von Einträgen funktioniert.
+
 Modul: Digital Asset Management
 - Die Auflistung der Kategorien erfolgt in einem ersten Schritt anhand der
   benutzerdefinierten Sortierung und danach nach alphabetischer Reihenfolge.

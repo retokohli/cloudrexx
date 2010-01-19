@@ -97,6 +97,10 @@ class DataAdmin extends DataLibrary {
     			/*$objPerm->checkAccess(120, 'static');*/
     			$this->editEntry($_GET['id']);
     			break;
+    		case 'copyEntry':
+    			/*$objPerm->checkAccess(120, 'static');*/
+    			$this->editEntry($_GET['id'], true);
+    			break;
     		case 'updateEntry':
     			/*$objPerm->checkAccess(120, 'static');*/
     			$this->updateEntry();
