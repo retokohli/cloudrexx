@@ -75,6 +75,7 @@ class podcastManager extends podcastLib
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/podcast/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=podcast'>".$_ARRAYLANG['TXT_PODCAST_MEDIA']."</a>
@@ -270,7 +271,7 @@ class podcastManager extends podcastLib
         if ($mediaCount > 0 || $categoryId) {
 			$this->_objTpl->setVariable(array(
 				'TXT_PODCAST_SEARCH' 	=> $_ARRAYLANG['TXT_PODCAST_SEARCH'],
-				'PODCAST_CATEGORY_MENU' => $this->_getCategoriesMenu($categoryId, 'name="podcast_media_category" id="podcast_media_category" onchange="window.location.href=\'index.php?cmd=podcast&amp;podcast_media_category=\'+this.value" style="width:300px;"'),
+				'PODCAST_CATEGORY_MENU' => $this->_getCategoriesMenu($categoryId, 'name="podcast_media_category" id="podcast_media_category" onchange="window.location.href=\'index.php?cmd=podcast&amp;'.CSRF::param().'&amp;podcast_media_category=\'+this.value" style="width:300px;"'),
 				'PODCAST_MEDIA_SEARCH' 	=> htmlentities($search, ENT_QUOTES, CONTREXX_CHARSET)
 			));
             $this->_objTpl->touchBlock('podcast_category_menu');

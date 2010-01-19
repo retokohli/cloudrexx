@@ -41,6 +41,7 @@ class podcast extends podcastLib
     function __construct($pageContent)
     {
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
         parent::__construct();
@@ -354,7 +355,7 @@ class podcast extends podcastLib
 
         $menu = $this->_getCategoriesMenu($categoryId, 'id="podcast_category_menu"', true, true);
         if ($menu !== false) {
-            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=podcast&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
+            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=podcast&amp;'.CSRF::param().'&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
         }
 
 			if ($categoryId) {
