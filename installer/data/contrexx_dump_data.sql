@@ -4005,7 +4005,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (11,'coreAdminName','Administrator',1);
-INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (18,'corePagingLimit','4',1);
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (18,'corePagingLimit','30',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (19,'searchDescriptionLength','150',5);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (23,'coreIdsStatus','off',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (24,'coreAdminEmail','info@example.com',1);
