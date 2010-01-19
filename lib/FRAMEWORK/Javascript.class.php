@@ -90,7 +90,7 @@ class JS
         ),
         'jquery'     => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery-1.3.2.min.js'
+                'lib/javascript/jquery-1.4.min.js'
             ),
             'specialcode'  => 'var $J = jQuery.noConflict();',
         ),
@@ -215,11 +215,12 @@ class JS
      * the options to be used.
      * @param string $name
      * @param array $options
+     * @param bool $dependencies
      * @access public
      * @static
      * @return bool
      */
-    public static function activate($name, $options = null)
+    public static function activate($name, $options = null, $dependencies = true)
     {
         $name = strtolower($name);
         if (array_key_exists($name, self::$available) === false) {
@@ -229,7 +230,7 @@ class JS
         }
 
         $data = self::$available[$name];
-        if (!empty($data['dependencies'])) {
+        if (!empty($data['dependencies']) && $dependencies) {
             foreach ($data['dependencies'] as $dep) {
                 self::activate($dep);
             }
