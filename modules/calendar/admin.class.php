@@ -1043,6 +1043,10 @@ class calendarManager extends calendarLibrary
 					} else {
 						$seriesPatternCount		= intval($_POST['inputSeriesMonthlyDayCount']);
 						$seriesPatternMonth		= intval($_POST['inputSeriesMonthlyMonth_2']);
+                        if ($seriesPatternMonth < 1) {
+                            // the increment must be at least once a month, otherwise we will end up in a endless loop in the presence
+                            $seriesPatternMonth = 1;
+                        }
 						$seriesPatternWeekday	= $_POST['inputSeriesMonthlyWeekday'];
 						$seriesPatternDay		= 0;
 					}
