@@ -144,7 +144,7 @@ class MediaManager extends MediaLibrary
         if (substr($this->webPath, 0, strlen($tmp)) == $tmp) {
             $this->_objTpl->setVariable(array(  // navigation #1
                 'MEDIA_TREE_NAV_MAIN'      => "Home /", //$this->arrWebPaths[$x],
-                'MEDIA_TREE_NAV_MAIN_HREF' => CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path='.$this->arrWebPaths[$this->archive],
+                'MEDIA_TREE_NAV_MAIN_HREF' => CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path=' . rawurlencode($this->arrWebPaths[$this->archive])
             ));
 
             if (strlen($this->webPath) != strlen($tmp)) {
@@ -156,7 +156,7 @@ class MediaManager extends MediaLibrary
                         $tmpLink .= $path.'/';
                         $this->_objTpl->setVariable(array(  // navigation #2
                             'MEDIA_TREE_NAV_DIR'      => $path,
-                            'MEDIA_TREE_NAV_DIR_HREF' => CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path='.$this->arrWebPaths[$this->archive].$tmpLink,
+                            'MEDIA_TREE_NAV_DIR_HREF' => CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . rawurlencode($this->arrWebPaths[$this->archive] . $tmpLink)
                         ));
                         $this->_objTpl->parse('mediaTreeNavigation');
                     }
@@ -172,13 +172,13 @@ class MediaManager extends MediaLibrary
             if (is_array($dirTree[$key]['icon'])) {
                 for ($x = 0; $x < count($dirTree[$key]['icon']); $x++) {
                     if ($key == 'dir') {
-                        $tmpHref= CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path='.$this->webPath.$dirTree[$key]['name'][$x].'/';
+                        $tmpHref= CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path='.rawurlencode($this->webPath.$dirTree[$key]['name'][$x].'/');
                     } elseif ($key == 'file') {
                         if ($this->_isImage($this->path.$dirTree[$key]['name'][$x])) {
                             $tmpSize = getimagesize($this->path.$dirTree[$key]['name'][$x]);
                             $tmpHref = 'javascript:preview(\''.$this->webPath.$dirTree[$key]['name'][$x].'\','.$tmpSize[0].','.$tmpSize[1].');';
                         } else {
-                            $tmpHref = CONTREXX_SCRIPT_PATH.'?section='.$this->archive.'&amp;act=download&amp;path='.$this->webPath.'&amp;file='.$dirTree[$key]['name'][$x];
+                            $tmpHref = CONTREXX_SCRIPT_PATH.'?section='.$this->archive.'&amp;act=download&amp;path='.rawurlencode($this->webPath).'&amp;file='.rawurlencode($dirTree[$key]['name'][$x]);
                         }
                     }
                     $this->_objTpl->setVariable(array(
@@ -207,7 +207,7 @@ class MediaManager extends MediaLibrary
         }
 
         // parse variables
-        $tmpHref  = CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path='.$this->webPath;
+        $tmpHref  = CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path='.rawurlencode($this->webPath);
         $tmpIcon  = $this->_sortingIcons();
         $this->_objTpl->setVariable(array(  // parse dir content
             'MEDIA_NAME_HREF'     => $tmpHref.'&amp;sort=name&amp;sort_desc='.($this->sortBy == 'name' && !$this->sortDesc),
