@@ -173,7 +173,7 @@ function _calendarUpdate()
 
         		$newContent   = str_replace('<a href="index.php?section=calendar&amp;id={CALENDAR_NOTE_ID}">{TXT_CALENDAR_BACK}</a>', '{CALENDAR_LINK_BACK}', $newContent);
 
-        		$query = "UPDATE ".DBPREFIX."content SET content='".$newContent."' WHERE id='".$catId."'";
+        		$query = "UPDATE ".DBPREFIX."content SET content='".addslashes($newContent)."' WHERE id='".$catId."'";
         	    $objResultUpdate = $objDatabase->Execute($query);
 
         	    if ($objResultUpdate === false) {
