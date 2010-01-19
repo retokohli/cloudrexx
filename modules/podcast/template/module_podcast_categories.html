@@ -5,7 +5,7 @@ function podcast_delete_category(id, title)
 {
   strDeleteTitle = '{TXT_PODCAST_CONFIRM_DELETE_CATEGORY_MSG}';
   if (confirm(strDeleteTitle.replace('%s', '\''+title+'\'')+'\n{TXT_PODCAST_OPERATION_IRREVERSIBLE}')) {
-    window.location.href = "index.php?cmd=podcast&act=deleteCategory&id="+id;
+		window.location.href = "index.php?cmd=podcast&{CSRF_PARAM}&act=deleteCategory&id="+id;
   }
 }
 //]]>
@@ -37,5 +37,5 @@ function podcast_delete_category(id, title)
 </table>
 <br />
 {PODCAST_PAGING}
-<input type="button" onclick="window.location.href='index.php?cmd=podcast&amp;act=modifyCategory'" value="{TXT_PODCAST_ADD_NEW_CATEGORY}" />
+<input type="button" onclick="window.location.href='index.php?cmd=podcast&{CSRF_PARAM}&amp;act=modifyCategory'" value="{TXT_PODCAST_ADD_NEW_CATEGORY}" />
 <!-- end module_podcast_categories -->
