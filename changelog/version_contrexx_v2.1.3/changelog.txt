@@ -75,6 +75,9 @@ Modul: Newsletter
 - Die Anzahl totaler Empfänger eines Newsletter wird nun zwischengespeichert,
   damit die Auflistung der Newsletter Übersicht schneller erfolgt.
 
+Modul: Podcast
+- Das Paging funktioniert korrekt.
+
 Modul: Seitenempfehlung
 - Die Vorschaufunktion funktioniert.
 
