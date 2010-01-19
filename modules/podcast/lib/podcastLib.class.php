@@ -120,7 +120,7 @@ class podcastLib
         }
 
         $objMedium = $objDatabase->SelectLimit('
-            SELECT tblMedium.id,
+            SELECT DISTINCT tblMedium.id,
                    tblMedium.title,
                    tblMedium.youtube_id,
                    tblMedium.author,
