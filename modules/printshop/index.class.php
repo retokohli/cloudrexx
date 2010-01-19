@@ -6,8 +6,7 @@
  * @package     contrexx
  * @subpackage  module_printshop
  */
-error_reporting(E_ALL);ini_set('display_errors',1);
-//$objDatabase->debug=1;
+
 /**
  * Includes
  */
@@ -340,15 +339,27 @@ class Printshop extends PrintshopLibrary {
 
     var priceThresholds = [];
     var price = [];
+    var roundUpIndex = 0;
 
     var updatePrice = function(){
         var amount = parseInt(\$J('#amount').val());
         var printCost = 0;
         var i = -1;
-        do{ i++ }
+        do{ i++; }
              while( amount > priceThresholds[i] && i < 15 );
 
-        printCost = amount * price[i];
+        if(i > roundUpIndex && amount != priceThresholds[i]){
+            amount = priceThresholds[i];
+            \$J('#amount').val(amount);
+        }
+
+
+        if(priceThresholds[i] > amount){
+            printCost = amount * price[i-1];
+        } else {
+            printCost = amount * price[i];
+        }
+
         var roundedPrice = roundPrice(printCost.toFixed(2));
         \$J('#psPriceForPrints').text(printCost.toFixed(2));
     }
@@ -429,6 +440,7 @@ class Printshop extends PrintshopLibrary {
                 }
                 \$J('#price_'+j).text(data['price_'+j]);
             });
+            roundUpIndex = data.roundUpIndex || 0;
             \$J('#psSubmit').removeAttr('disabled');
         }else{
             \$J('#pricePerOne').text(NA);
@@ -449,11 +461,6 @@ class Printshop extends PrintshopLibrary {
             price[i] = parseFloat(\$J('#price_'+i).text());
         });
         updatePrice();
-        if(parseInt(\$J('#amount').val()) < 1){
-            \$J('#psSubmit').attr('disabled', 'disabled');
-        }else{
-            \$J('#psSubmit').removeAttr('disabled');
-        }
     }
 
     var updateLines = function(_offsetTop, \$affectedLi, toTop){
@@ -774,6 +781,7 @@ EOJ;
     var paper           = $paper;
     var price           = [];
     var priceThresholds = [];
+    var roundUpIndex    = 0;
     var vatFactor       = $vatFactor;
 
     var updateShipmentPrice = function(){
@@ -810,6 +818,7 @@ EOJ;
                         }
                         priceThresholds[j]  = data.thresholds[j];
                     });
+                    roundUpIndex = data.roundUpIntex || 0;
                 }
                 updatePrice();
             }
