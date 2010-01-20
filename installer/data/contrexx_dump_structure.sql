@@ -2946,8 +2946,8 @@ CREATE TABLE `contrexx_module_podcast_template` (
   `template` text NOT NULL,
   `extensions` varchar(255) NOT NULL default '',
   `js_embed` enum('0','1') NOT NULL default '1',
-  `player_offset_width` int(3) NOT NULL default '0',
-  `player_offset_height` int(3) NOT NULL default '0',
+  `player_offset_width` int(3) unsigned NOT NULL default '0',
+  `player_offset_height` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `description` (`description`)
 ) TYPE=MyISAM ;
