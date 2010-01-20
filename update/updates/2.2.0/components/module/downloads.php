@@ -1,7 +1,7 @@
 <?php
 function _downloadsUpdate()
 {
-    global $objDatabase, $_ARRAYLANG;
+    global $objDatabase;
 
     try{
         UpdateUtil::table(
@@ -12,7 +12,7 @@ function _downloadsUpdate()
                 'sender_mail'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'sender_name'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'subject'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'format'         => array('type' => 'ENUM(\'TEXT\',\'HTML\',\'MULTIPART\')', 'notnull' => true, 'default' => 'text'),
+                'format'         => array('type' => 'ENUM(\'text\',\'html\',\'multipart\')', 'notnull' => true, 'default' => 'text'),
                 'body_text'      => array('type' => 'TEXT', 'notnull' => true),
                 'body_html'      => array('type' => 'TEXT', 'notnull' => true)
             ),
@@ -25,12 +25,10 @@ function _downloadsUpdate()
         UpdateUtil::table(
             DBPREFIX.'module_downloads_notification_rel_category_user_group',
             array(
-                'category_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true),
-                'user_group_id'  => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true)
+                'category_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true),
+                'user_group_id'  => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true)
             ),
-            array(
-                'unique'           => array('fields' => array('category_id','user_group_id'), 'type' => 'UNIQUE')
-            ),
+            array(),
             'InnoDB'
         );
 
