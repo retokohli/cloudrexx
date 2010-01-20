@@ -258,4 +258,8 @@ $_ARRAYLANG['TXT_ACCESS_TOS_SINGUP_DESC'] = "Benutzer müssen bei der Registrier
 $_ARRAYLANG['TXT_ACCESS_TOS'] = "Allgemeine Geschäftsbedingungen";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "CAPTCHA";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA_SIGNUP_DESC'] = "Benutzer müssen bei der Registrierung eine Zeichenfolge abschreiben. Dies verhindert, dass sich Roboter registrieren können.";
+$_ARRAYLANG['TXT_ACCESS_CROP_THUMBNAIL_TXT'] = "Auf Thumbnail-Grösse zuschneiden";
+$_ARRAYLANG['TXT_ACCESS_SCALE_THUMBNAIL_TXT'] = "Auf Thumbnail-Grösse skalieren";
+$_ARRAYLANG['TXT_ACCESS_BACKGROUND_COLOR'] = "Hintergrundfarbe";
+$_ARRAYLANG['TXT_ACCESS_THUMBNAIL_GENERATION'] = "Thumbnail Generierung";
 ?>
