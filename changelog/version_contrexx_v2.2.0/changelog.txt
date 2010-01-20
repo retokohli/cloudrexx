@@ -51,6 +51,8 @@ Benutzerverwaltung
   werden.
 - Die Profil Eigenschaften Geschlecht, Anrede, Land und Webseite werden nur
   aufgelistet, sofern eine Option ausgewählt wurde.
+- Für das Profilbild-Thumbnail kann ausgewählt werden, ob das Bild auf die
+  Thumbnail-Grösse zugeschnitten oder skaliert werden soll.
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
