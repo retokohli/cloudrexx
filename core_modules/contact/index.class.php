@@ -127,6 +127,7 @@ class Contact extends ContactLib
         }
 
         $this->setCaptcha($useCaptcha);
+        $this->setProfileData();
         if ($this->objTemplate->blockExists('contact_form')) {
             if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
                 $this->objTemplate->hideBlock('contact_form');
@@ -136,6 +137,56 @@ class Contact extends ContactLib
         }
 
         return $this->objTemplate->get();
+    }
+
+    private function setProfileData()
+    {
+        if (!FWUser::getFWUserObject()->objUser->login()) {
+            return;
+        }
+
+        $objUser = FWUser::getFWUserObject()->objUser;
+
+        $this->objTemplate->setVariable(array(
+            'ACCESS_USER_ID'        => $objUser->getId(),
+            'ACCESS_USER_USERNAME'  => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+            'ACCESS_USER_EMAIL'     => htmlentities($objUser->getEmail(), ENT_QUOTES, CONTREXX_CHARSET),
+        ));
+
+        $objUser->objAttribute->reset();
+        while (!$objUser->objAttribute->EOF) {
+            $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+
+            switch ($objAttribute->getType())
+            {
+                case 'menu':
+                    if ($objAttribute->isCoreAttribute()) {
+                        foreach ($objAttribute->getChildren() as $childAttributeId) {
+                            $objChildAtrribute = $objAttribute->getById($childAttributeId);
+                            if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute($objAttribute->getId())) {
+                                $value = $objChildAtrribute->getName();
+                                break;
+                            }
+                        }
+                    } else {
+                        $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId()));
+                        $value = $objSelectedAttribute->getName();
+                    }
+                break;
+
+                case 'date':
+                    $value = $objUser->getProfileAttribute($objAttribute->getId());
+                    $value = $value !== false && $value !== '' ? date(ASCMS_DATE_SHORT_FORMAT, intval($value)) : '';
+                break;
+
+                default:
+                    $value = $objUser->getProfileAttribute($objAttribute->getId());
+                break;
+            }
+
+            $this->objTemplate->setVariable('ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($objAttribute->getId()), htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET));
+            $objUser->objAttribute->next();
+        }
     }
 
     function setCaptcha($useCaptcha)

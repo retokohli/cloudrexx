@@ -54,6 +54,16 @@ Benutzerverwaltung
 - Für das Profilbild-Thumbnail kann ausgewählt werden, ob das Bild auf die
   Thumbnail-Grösse zugeschnitten oder skaliert werden soll.
 
+Kontakte Manager
+- Alle Benutzerprofil Eigenschaften des Besuchers (sofern dieser Authentifiziert
+  ist) können anhand des Platzhalter Schemas
+  [[ACCESS_PROFILE_ATTRIBUTE_ATTRIBUTE-ID]] als vordefinierte Werte bei den
+  Formular Feldern verwendet werden. Zusätzlich stehen die folgenden
+  Benutzerkonto Eigenschaften zur Verfügung:
+    E-Mail: [[ACCESS_USER_EMAIL]]
+    Benutzername: [[ACCESS_USER_USERNAME]]
+    ID des Benutzers: [[ACCESS_USER_ID]]
+
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
 
