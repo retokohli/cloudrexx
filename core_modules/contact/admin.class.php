@@ -1304,6 +1304,8 @@ class ContactManager extends ContactLib
 
             $sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required.'</label>';
 
+            $arrField['attributes'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['attributes']);
+
             switch ($arrField['type']) {
                 case 'text':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes']).'" />';
