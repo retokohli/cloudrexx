@@ -76,6 +76,8 @@ Modul: Digital Asset Management
   die gleichen Platzhalter wie bei der Detailseite eines Downloads.
 - Für die Erfassung der Beschreibung eines Downloads oder Kategorie steht ein
   WYSIWYG-Editor zur Verfügung.
+- Beim Hinzufügen eines Downloads kann ein Benachrichtigungs-E-Mail an
+  ausgewählte Benutzergruppen versendet werden.
 
 Modul: Dokumenten System
 - Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
