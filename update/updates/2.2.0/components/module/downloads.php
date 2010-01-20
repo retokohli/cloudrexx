@@ -1,9 +1,14 @@
 <?php
 function _downloadsUpdate()
 {
-    global $objDatabase;
-
     try{
+        /* this check is kind of ugly, because it assumes that
+         * as long as the table contrexx_module_downloads_mail
+         * doesn't exist, the update hasn't been executed yet. */
+        if (!UpdateUtil::table_exist(DBPREFIX.'module_downloads_mail')) {
+            UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_download_locale` SET `description` = REPLACE(`description`, '\r\n','<br />')");
+        }
+
         UpdateUtil::table(
             DBPREFIX.'module_downloads_mail',
             array(
@@ -22,6 +27,18 @@ function _downloadsUpdate()
             'InnoDB'
         );
 
+        // insert default language mail
+        if (!UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."module_downloads_mail` WHERE `type` = 'new_entry'")->RecordCount()) {
+            UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_downloads_mail`
+                SET `type`          = 'new_entry',
+                    `sender_mail`   = 'noreply@example.com',
+                    `sender_name`   = 'Contrexx Demo',
+                    `subject`       = 'Neuer Eintrag im Download Verzeichnis',
+                    `body_text`     = 'Hallo [[RECIPIENT_FIRSTNAME]],\r\n\r\n[[PUBLISHER_FIRSTNAME]] [[PUBLISHER_LASTNAME]] hat bei der Rubrik [[CATEGORY]] den Download [[NAME]] hinzugefügt.\r\n\r\n[[LINK]]\r\n\r\n--\r\n[[SENDER]]\r\n',
+                    `body_html`     = ''
+            )");
+        }
+
         UpdateUtil::table(
             DBPREFIX.'module_downloads_notification_rel_category_user_group',
             array(
@@ -31,11 +48,6 @@ function _downloadsUpdate()
             array(),
             'InnoDB'
         );
-
-        $query = "INSERT INTO `".DBPREFIX."module_downloads_mail` VALUES ('new_entry',0,'noreply@example.com','Contrexx Demo','Neuer Eintrag im Download Verzeichnis','text','Hallo [[RECIPIENT_FIRSTNAME]],\r\n\r\n[[PUBLISHER_FIRSTNAME]] [[PUBLISHER_LASTNAME]] hat bei der Rubrik [[CATEGORY]] den Download [[NAME]] hinzugefügt.\r\n\r\n[[LINK]]\r\n\r\n--\r\n[[SENDER]]\r\n','')";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
