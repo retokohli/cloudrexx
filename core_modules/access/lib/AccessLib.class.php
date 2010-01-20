@@ -61,13 +61,6 @@ class AccessLib
     protected $objUserFW;
 
     /**
-     * @access private
-     *
-     * @var string
-     */
-    var $_imageThumbnailSuffix = '.thumb';
-
-    /**
      * Sign to mark mandatory fields as required
      *
      * @var string
@@ -80,6 +73,8 @@ class AccessLib
     var $attributeNamePrefix = 'access_profile_attribute';
 
     var $arrAttributeTypeTemplates;
+
+    protected $defaultProfileThumbnailScaleColor = '#FFFFFF';
 
     private $arrAccountAttributes;
 
@@ -185,12 +180,19 @@ class AccessLib
                 if (!$edit || file_exists(($attributeId == 'picture' ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH).'/'.$image)) {
                     $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
                 }
-                $arrPlaceholders['_SRC'] = ($attributeId == 'picture' ? ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/' : ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/').($arrPlaceholders['_VALUE'] ? $arrPlaceholders['_VALUE'] : ($attributeId == 'picture' ? $this->_arrNoAvatar['src'] : $this->_arrNoPicture['src']));
+                $arrPlaceholders['_SRC'] = ($attributeId == 'picture' ?
+                                                  ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'
+                                                : ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/')
+                                            .(!empty($arrPlaceholders['_VALUE']) ?
+                                                  $arrPlaceholders['_VALUE']
+                                                : ($attributeId == 'picture' ?
+                                                          $this->_arrNoAvatar['src']
+                                                        : $this->_arrNoPicture['src']));
                 if (empty($arrPlaceholders['_VALUE'])) {
                     $arrPlaceholders['_VALUE'] = $_CORELANG['TXT_ACCESS_NO_PICTURE'];
                 }
                 $arrPlaceholders['_THUMBNAIL'] = $this->getImageAttributeCode($objUser, $attributeName, $image, $attributeId, '', $historyId, $edit, true);
-                $arrPlaceholders['_THUMBNAIL_SRC'] = $arrPlaceholders['_SRC'].$this->_imageThumbnailSuffix;
+                $arrPlaceholders['_THUMBNAIL_SRC'] = ImageManager::getThumbnailFilename($arrPlaceholders['_SRC']);
                 $arrPlaceholders['_UPLOAD_NAME'] = $this->attributeNamePrefix.'_images['.$objAttribute->getId().']['.$historyId.']';
                 $arrPlaceholders['_MAX_FILE_SIZE'] = $this->getLiteralSizeFormat($arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_size']['value']);
                 $arrPlaceholders['_MAX_WIDTH'] = $arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_width']['value'];
@@ -715,13 +717,16 @@ class AccessLib
 
         if ($value !== false && $value !== '' && (!$edit || file_exists($imageRepo.$value))) {
             $imageSet = true;
-            $image['src'] = $imageRepoWeb.$value.($thumbnail ? $this->_imageThumbnailSuffix : '');
+            $image['src'] = $imageRepoWeb.$value;
             $image['path'] = htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET);
-
         } else {
             $imageSet = false;
-            $image['src'] = $imageRepoWeb.$arrNoImage['src'].($thumbnail ? $this->_imageThumbnailSuffix : '');
+            $image['src'] = $imageRepoWeb.$arrNoImage['src'];
             $image['path'] = '';
+        }
+
+        if ($thumbnail) {
+            $image['src'] = ImageManager::getThumbnailFilename($image['src']);
         }
 
         return $edit ?
@@ -1472,7 +1477,7 @@ JSaccessValidatePrimaryGroupAssociation
                 if ($historyId === 'new') {
                     foreach (array_keys($data) as $historyIndex) {
                         $arrUploadedImages[] = array(
-                            'name'            => $arrImages['name'][$attribute][$historyId][$historyIndex],
+                            'name'            => contrexx_stripslashes($arrImages['name'][$attribute][$historyId][$historyIndex]),
                             'tmp_name'        => $arrImages['tmp_name'][$attribute][$historyId][$historyIndex],
                             'error'            => $arrImages['error'][$attribute][$historyId][$historyIndex],
                             'size'            => $arrImages['size'][$attribute][$historyId][$historyIndex],
@@ -1481,7 +1486,7 @@ JSaccessValidatePrimaryGroupAssociation
                     }
                 } else {
                     $arrUploadedImages[] = array(
-                        'name'        => $arrImages['name'][$attribute][$historyId],
+                        'name'        => contrexx_stripslashes($arrImages['name'][$attribute][$historyId]),
                         'tmp_name'    => $arrImages['tmp_name'][$attribute][$historyId],
                         'error'        => $arrImages['error'][$attribute][$historyId],
                         'size'        => $arrImages['size'][$attribute][$historyId]
@@ -1610,21 +1615,28 @@ JSaccessValidatePrimaryGroupAssociation
             $rationWidth = $objImage->orgImageWidth / $arrSettings['profile_thumbnail_pic_width']['value'];
             $rationHeight = $objImage->orgImageHeight / $arrSettings['profile_thumbnail_pic_height']['value'];
 
-            if ($rationWidth < $rationHeight) {
-                $objImage->orgImageHeight = $objImage->orgImageHeight / $rationHeight * $rationWidth;
+            if ($arrSettings['profile_thumbnail_method']['value'] == 'crop') {
+                if ($rationWidth < $rationHeight) {
+                    $objImage->orgImageHeight = $objImage->orgImageHeight / $rationHeight * $rationWidth;
+                } else {
+                    $objImage->orgImageWidth = $objImage->orgImageWidth / $rationWidth * $rationHeight;
+                }
+
+                if (!$objImage->resizeImage(
+                    $arrSettings['profile_thumbnail_pic_width']['value'],
+                    $arrSettings['profile_thumbnail_pic_height']['value'],
+                    70
+                )) {
+                    return false;
+                }
             } else {
-                $objImage->orgImageWidth = $objImage->orgImageWidth / $rationWidth * $rationHeight;
+                $ration = max($rationWidth, $rationHeight);
+                $objImage->addBackgroundLayer(sscanf($arrSettings['profile_thumbnail_scale_color']['value'], '#%2X%2x%2x'),
+                                                $arrSettings['profile_thumbnail_pic_width']['value'],
+                                                $arrSettings['profile_thumbnail_pic_height']['value']);
             }
 
-            if (!$objImage->resizeImage(
-                $arrSettings['profile_thumbnail_pic_width']['value'],
-                $arrSettings['profile_thumbnail_pic_height']['value'],
-                70
-            )) {
-                return false;
-            }
-
-            return $objImage->saveNewImage(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$imageName.'.thumb');
+            return $objImage->saveNewImage(ImageManager::getThumbnailFilename(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$imageName));
         } else {
             return $objImage->_createThumbWhq(
                 ASCMS_ACCESS_PHOTO_IMG_PATH.'/',
@@ -1662,9 +1674,9 @@ JSaccessValidatePrimaryGroupAssociation
             unset($arrImages[array_search('.', $arrImages)]);
             unset($arrImages[array_search('..', $arrImages)]);
             unset($arrImages[array_search($this->_arrNoAvatar['src'], $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoAvatar['src'].'.thumb', $arrImages)]);
+            unset($arrImages[array_search(ImageManager::getThumbnailFilename($this->_arrNoAvatar['src']), $arrImages)]);
             unset($arrImages[array_search($this->_arrNoPicture['src'], $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoPicture['src'].'.thumb', $arrImages)]);
+            unset($arrImages[array_search(ImageManager::getThumbnailFilename($this->_arrNoPicture['src']), $arrImages)]);
 
             if ($profilePics) {
                 $query = "
@@ -1705,7 +1717,7 @@ JSaccessValidatePrimaryGroupAssociation
                     $arrImagesDb = array();
                     while (!$objImage->EOF) {
                         $arrImagesDb[] = $objImage->fields['picture'];
-                        $arrImagesDb[] = $objImage->fields['picture'].'.thumb';
+                        $arrImagesDb[] = ImageManager::getThumbnailFilename($objImage->fields['picture']);
                         $objImage->MoveNext();
                     }
                     $offset += $step;

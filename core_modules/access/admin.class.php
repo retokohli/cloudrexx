@@ -1834,8 +1834,12 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_EMAIL'                                  => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
             'TXT_ACCESS_SESSION_ON_INTERVAL'                    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
             'TXT_ACCESS_SESSION_DESCRIPTION'                    =>$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'],
-            'TXT_ACCESS_SESSION_TITLE'                             => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
-            'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE']
+            'TXT_ACCESS_SESSION_TITLE'                          => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
+            'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'],
+            'TXT_ACCESS_CROP_THUMBNAIL_TXT'                     => $_ARRAYLANG['TXT_ACCESS_CROP_THUMBNAIL_TXT'],
+            'TXT_ACCESS_SCALE_THUMBNAIL_TXT'                    => $_ARRAYLANG['TXT_ACCESS_SCALE_THUMBNAIL_TXT'],
+            'TXT_ACCESS_BACKGROUND_COLOR'                       => $_ARRAYLANG['TXT_ACCESS_BACKGROUND_COLOR'],
+            'TXT_ACCESS_THUMBNAIL_GENERATION'                   => $_ARRAYLANG['TXT_ACCESS_THUMBNAIL_GENERATION']
         ));
 
         if (isset($_POST['access_save_settings'])) {
@@ -1899,6 +1903,14 @@ class AccessManager extends AccessLib
 //                    // resize profile pics
 //                }
                 $arrSettings['max_profile_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']);
+            }
+
+            if (isset($_POST['accessProfileThumbnailMethod']) && $_POST['accessProfileThumbnailMethod'] == 'scale') {
+                $arrSettings['profile_thumbnail_method']['value'] = 'scale';
+                $color = !empty($_POST['accessProfileThumbnailScaleColor']) ? contrexx_stripslashes($_POST['accessProfileThumbnailScaleColor']) : NULL;
+                $arrSettings['profile_thumbnail_scale_color']['value'] = $this->validateHexRGBColor($color);
+            } else {
+                $arrSettings['profile_thumbnail_method']['value'] = 'crop';
             }
 
             if (!empty($_POST['accessMaxPicWidth'])) {
@@ -1993,8 +2005,30 @@ class AccessManager extends AccessLib
             'ACCESS_MAX_THUMBNAIL_PIC_HEIGHT'                       => $arrSettings['max_thumbnail_pic_height']['value'],
             'ACCESS_SESSION_USER_INTERVAL'                => $arrSettings['session_user_interval']['value'],
             'ACCESS_MAX_PIC_SIZE'                                   => $this->getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
+            'ACCESS_PROFILE_THUMBNAIL_CROP'                         => $arrSettings['profile_thumbnail_method']['value'] == 'crop' ? 'selected="selected"' : '',
+            'ACCESS_PROFILE_THUMBNAIL_SCALE'                        => $arrSettings['profile_thumbnail_method']['value'] == 'scale' ? 'selected="selected"' : '',
+            'ACCESS_PROFILE_THUMBNAIL_SCALE_BOX'                    => $arrSettings['profile_thumbnail_method']['value'] == 'scale' ? 'inline' : 'none',
+            'ACCESS_PROFILE_THUMBNAIL_SCALE_COLOR'                  => $arrSettings['profile_thumbnail_scale_color']['value']
         ));
         $this->_objTpl->parse('module_access_config_general');
+    }
+
+    private function validateHexRGBColor($color)
+    {
+        if (preg_match('/^#(?:[a-z0-9]{3}|[a-z0-9]{6})$/i', $color, $match)) {
+            if (strlen($match[0]) == 4) {
+                $color = $match[0];
+                $color[6] = $color[3];
+                $color[5] = $color[3];
+                $color[4] = $color[2];
+                $color[3] = $color[2];
+                $color[2] = $color[1];
+            }
+
+            return strtoupper($color);
+        }
+
+        return $this->defaultProfileThumbnailScaleColor;
     }
 
 
