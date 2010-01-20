@@ -90,6 +90,8 @@ class Category
     private $downloads;
     private $downloads_count;
 
+    private $notification_group_ids;
+
     private $arrAttributes = array(
         'core' => array(
             'id'                                => 'int',
@@ -188,6 +190,7 @@ class Category
         $this->descriptions = array();
         $this->downloads = null;
         $this->downloads_count = null;
+        $this->notification_group_ids = null;
         $this->permission_set = false;
         $this->EOF = true;
     }
@@ -395,6 +398,28 @@ class Category
         }
     }
 
+    public function getNotificationGroupIds()
+    {
+        if (!isset($this->notification_group_ids)) {
+            $this->loadNotificationGroupIds();
+        }
+        return $this->notification_group_ids;
+    }
+
+    private function loadNotificationGroupIds()
+    {
+        global $objDatabase;
+
+        $this->notification_group_ids = array();
+        $objResult = $objDatabase->Execute('SELECT `user_group_id` FROM `'.DBPREFIX.'module_downloads_notification_rel_category_user_group` WHERE `category_id` = '.$this->id);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->notification_group_ids[] = $objResult->fields['user_group_id'];
+                $objResult->MoveNext();
+            }
+        }
+    }
+
     public function hasSubcategories()
     {
         global $objDatabase;
@@ -517,6 +542,7 @@ class Category
                 $this->descriptions = isset($this->arrLoadedCategories[$id]['descriptions']) ? $this->arrLoadedCategories[$id]['descriptions'] : null;
                 $this->downloads = isset($this->arrLoadedCategories[$id]['downloads']) ? $this->arrLoadedCategories[$id]['downloads'] : null;
                 $this->downloads_count = isset($this->arrLoadedCategories[$id]['downloads_count']) ? $this->arrLoadedCategories[$id]['downloads_count'] : null;
+                $this->notification_group_ids = null;
                 $this->permission_set = false;
                 $this->EOF = false;
                 return true;
@@ -996,6 +1022,11 @@ class Category
             return false;
         }
 
+        if (!$this->storeNotificationGroups()) {
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_NOTIFICATIONS'];
+            return false;
+        }
+
         $objFWUser = FWUser::getFWUserObject();
         $objFWUser->objUser->getDynamicPermissionIds(true);
 
@@ -1187,6 +1218,40 @@ class Category
         }
     }
 
+    private function storeNotificationGroups()
+    {
+        global $objDatabase;
+
+        if (!isset($this->notification_group_ids)) {
+            return true;
+        }
+
+        $status = true;
+        $new = $this->notification_group_ids;
+        $this->loadNotificationGroupIds();
+        $old = $this->notification_group_ids;
+
+        // reset the current association
+        $this->notification_group_ids = $new;
+
+        $arrNew = array_diff($new, $old);
+        $arrRemoved = array_diff($old, $new);
+
+        foreach ($arrNew as $groupId) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_notification_rel_category_user_group` (`category_id`, `user_group_id`) VALUES (".$this->id.", ".intval($groupId).")") === false) {
+                $status = false;
+            }
+        }
+
+        foreach ($arrRemoved as $groupId) {
+            if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_downloads_notification_rel_category_user_group` WHERE `category_id` = ".$this->id." AND `user_group_id` = ".intval($groupId)) === false) {
+                $status = false;
+            }
+        }
+
+        return $status;
+    }
+
     private function validateName()
     {
         global $_ARRAYLANG;
@@ -1318,6 +1383,11 @@ class Category
     public function setDownloads($arrDownloads)
     {
         $this->downloads = count($arrDownloads) ? array_combine($arrDownloads, array_pad(array(), count($arrDownloads), 0)) : array();
+    }
+
+    public function setNotificationGroups($arrGroups)
+    {
+        $this->notification_group_ids = $arrGroups;
     }
 
     public function getErrorMsg()

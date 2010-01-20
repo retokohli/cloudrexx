@@ -473,6 +473,7 @@ class downloads extends DownloadsLibrary
             $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
             return false;
         } else {
+	        DownloadsLibrary::sendNotificationEmails($objDownload, $objCategory);
 			return true;
 		}
     }
@@ -562,15 +563,6 @@ class downloads extends DownloadsLibrary
                 'groups'    => array()
             )
         ));
-
-//
-//            foreach ($this->arrPermissionTypes as $protectionType) {
-//                $arrCategoryPermissions[$protectionType]['protected'] = isset($_POST['downloads_category_'.$protectionType]) && $_POST['downloads_category_'.$protectionType];
-//                $arrCategoryPermissions[$protectionType]['groups'] = !empty($_POST['downloads_category_'.$protectionType.'_associated_groups']) ? array_map('intval', $_POST['downloads_category_'.$protectionType.'_associated_groups']) : array();
-//            }
-//
-//            $objCategory->setPermissionsRecursive(!empty($_POST['downloads_category_apply_recursive']));
-//            $objCategory->setPermissions($arrCategoryPermissions);
 
         if (!$objSubcategory->store()) {
             $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objSubcategory->getErrorMsg());
