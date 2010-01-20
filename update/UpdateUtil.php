@@ -37,13 +37,7 @@ class UpdateUtil {
      *        )
      */
     public static function table($name, array $struc, array $idx = array(), $engine = 'MyISAM') {
-        global $objDatabase, $_ARRAYLANG;
-        $tableinfo = $objDatabase->MetaTables();
-        if ($tableinfo === false) {
-            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
-        }
-
-        if (in_array($name, $tableinfo)) {
+        if (self::table_exist($name)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
             self::check_dbtype($name, $engine);
@@ -54,13 +48,8 @@ class UpdateUtil {
     }
 
     public static function drop_table($name) {
-        global $objDatabase, $_ARRAYLANG;
-        $tableinfo = $objDatabase->MetaTables();
-        if ($tableinfo === false) {
-            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
-        }
-
-        if (in_array($name, $tableinfo)) {
+        global $objDatabase;
+        if (self::table_exist($name)) {
             $table_stmt = "DROP TABLE `$name`";
             if ($objDatabase->Execute($table_stmt) === false) {
                 self::cry($objDatabase->ErrorMsg(), $table_stmt);
