@@ -185,13 +185,15 @@ INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('max_p
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('max_thumbnail_pic_height','130',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('max_thumbnail_pic_width','130',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('notification_address','info@example.com',1);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('profile_thumbnail_method','scale',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('profile_thumbnail_pic_height','60',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('profile_thumbnail_pic_width','80',1);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('profile_thumbnail_scale_color','#FFFFFF',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('session_user_interval','0',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_accept_tos_on_signup','0',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_activation','',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_activation_timeout','1',0);
-INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_captcha','0',1);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_captcha','0',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_config_email_access','',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_config_profile_access','',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_delete_account','',1);
@@ -1650,6 +1652,7 @@ INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id
 INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`) VALUES (4,3,'Image 2','');
 INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`) VALUES (5,3,'Image 2','');
 INSERT INTO `contrexx_module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`) VALUES (6,3,'Image 2','');
+INSERT INTO `contrexx_module_downloads_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('new_entry',0,'noreply@example.com','Contrexx Demo','Neuer Eintrag im Download Verzeichnis','text','Hallo [[RECIPIENT_FIRSTNAME]],\r\n\r\n[[PUBLISHER_FIRSTNAME]] [[PUBLISHER_LASTNAME]] hat bei der Rubrik [[CATEGORY]] den Download [[NAME]] hinzugefügt.\r\n\r\n[[LINK]]\r\n\r\n--\r\n[[SENDER]]\r\n','');
 INSERT INTO `contrexx_module_downloads_rel_download_category` (`download_id`, `category_id`, `order`) VALUES (1,4,0);
 INSERT INTO `contrexx_module_downloads_rel_download_category` (`download_id`, `category_id`, `order`) VALUES (2,1,0);
 INSERT INTO `contrexx_module_downloads_rel_download_category` (`download_id`, `category_id`, `order`) VALUES (3,1,0);

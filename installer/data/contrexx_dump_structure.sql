@@ -1302,6 +1302,28 @@ CREATE TABLE `contrexx_module_downloads_group_locale` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_downloads_mail` (
+  `type` enum('new_entry') NOT NULL,
+  `lang_id` tinyint(2) unsigned NOT NULL default '0',
+  `sender_mail` varchar(255) NOT NULL default '',
+  `sender_name` varchar(255) NOT NULL default '',
+  `subject` varchar(255) NOT NULL default '',
+  `format` enum('text','html','multipart') NOT NULL default 'text',
+  `body_text` text NOT NULL,
+  `body_html` text NOT NULL,
+  UNIQUE KEY `mail` (`type`,`lang_id`)
+) TYPE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_downloads_notification_rel_category_user_group` (
+  `category_id` int(11) unsigned NOT NULL,
+  `user_group_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`category_id`,`user_group_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_downloads_rel_download_category` (
   `download_id` int(10) unsigned NOT NULL default '0',
   `category_id` int(10) unsigned NOT NULL default '0',
