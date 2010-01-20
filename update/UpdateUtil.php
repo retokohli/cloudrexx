@@ -37,7 +37,7 @@ class UpdateUtil {
      *        )
      */
     public static function table($name, array $struc, array $idx = array(), $engine = 'MyISAM') {
-        global $_CORELANG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
         $tableinfo = $objDatabase->MetaTables();
         if ($tableinfo === false) {
             throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
@@ -77,6 +77,15 @@ class UpdateUtil {
         return isset($col_info[strtoupper($col)]);
     }
 
+    public static function table_exist($name) {
+        global $objDatabase, $_ARRAYLANG;
+        $tableinfo = $objDatabase->MetaTables();
+        if ($tableinfo === false) {
+            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+        }
+        return in_array($name, $tableinfo);
+    }
+
     private static function check_dbtype($name, $engine) {
         global $objDatabase;
 
@@ -94,7 +103,7 @@ class UpdateUtil {
     }
 
     private static function create_table($name, array $struc, $idx, $engine) {
-        global $_CORELANG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         // create table statement
         $cols = array();
