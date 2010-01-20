@@ -2,8 +2,6 @@
 
 function _accessUpdate()
 {
-    global $objDatabase;
-
     try{
         UpdateUtil::table(
             DBPREFIX.'access_users',
@@ -43,47 +41,29 @@ function _accessUpdate()
                 'homepage'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
             )
         );
+
+
+        $arrSettings = array(
+            'user_accept_tos_on_signup'     => array('',            '0'),
+            'user_captcha'                  => array('',            '0'),
+            'profile_thumbnail_method'      => array('crop',        '1'),
+            'profile_thumbnail_scale_color' => array('#FFFFFF',     '1')
+        );
+
+        foreach ($arrSettings as $key => $arrSetting) {
+            if (!UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."access_settings` WHERE `key` = '".$key."'")->RecordCount()) {
+                UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (
+                    SET `key`       = '".$key."',
+                        `value`     = '".$arrSetting['value']."',
+                        `status`    = '".$arrSetting['status']."'
+                )");
+            }
+        }
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
         return UpdateUtil::DefaultActionHandler($e);
-    }
-
-
-    /****************
-     *
-     * ADD SETTINGS
-     *
-     ***************/
-    $arrSettings = array(
-        'user_accept_tos_on_signup'     => array('',            '0'),
-        'user_captcha'                  => array('',            '0'),
-        'profile_thumbnail_method'      => array('crop',        '1'),
-        'profile_thumbnail_scale_color' => array('#FFFFFF',     '1')
-    );
-
-    foreach ($arrSettings as $key => $arrSetting) {
-        $query = "SELECT 1 FROM `".DBPREFIX."access_settings` WHERE `key` = '".$key."'";
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult !== false) {
-            if ($objResult->RecordCount() == 0) {
-                $query = "INSERT INTO `".DBPREFIX."access_settings` (
-                    `key`,
-                    `value`,
-                    `status`
-                ) VALUES (
-                    '".$key."',
-                    '".$arrSetting['value']."',
-                    '".$arrSetting['status']."'
-                )";
-                if ($objDatabase->Execute($query) === false) {
-                    return _databaseError($query, $objDatabase->ErrorMsg());
-                }
-            }
-        } else {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
     }
 
     return true;
