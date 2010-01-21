@@ -109,7 +109,6 @@ class Search {
      */
     public function performSearch()
     {
-        global $objDBG;
         $status = 1;
 
 
