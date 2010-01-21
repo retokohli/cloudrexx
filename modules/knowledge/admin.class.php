@@ -74,6 +74,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         KnowledgeLibrary::__construct();
         $this->tpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/knowledge'.MODULE_INDEX.'/template');
+        CSRF::add_placeholder($this->tpl);
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->languageId = $objInit->userFrontendLangId;
         $objTemplate->setVariable("CONTENT_NAVIGATION","   <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=articles\">".$_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES']."</a>
@@ -115,12 +116,12 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     case 'update':
                         Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
                         $id = $this->updateCategory();
-                        header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+                        CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
                         break;
                     case 'insert':
                         Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
                         $id = $this->insertCategory();
-                        header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+                        CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
                         break;
                     case 'delete':
                         Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_CATEGORIES, 'static');
@@ -167,7 +168,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                         Permission::checkAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES, 'static');
                         $id = $this->updateArticle();
                         $content = $this->articleOverview();
-                        header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles&act=edit&id=".$id."&updated=true");
+                        CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles&act=edit&id=".$id."&updated=true");
                         break;
                     case 'getArticles':
                         Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
@@ -247,7 +248,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 $this->settings($content, $active);
                 break;
             default:
-                header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles");
+                CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles");
         }
 
         $objTemplate->setVariable(array(
@@ -915,6 +916,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
 
         $tpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH."/knowledge/template/");
+        CSRF::add_placeholder($tpl);
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $tpl->loadTemplateFile("module_knowledge_articles_overview_articlelist.html");
