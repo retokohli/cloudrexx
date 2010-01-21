@@ -107,6 +107,8 @@ class FWUser extends User_Setting
         $validationCode = isset($_POST['secid2']) && $_POST['secid2'] != '' ? contrexx_stripslashes($_POST['secid2']) : false;
 
         if (isset($username) && isset($password)) {
+            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+
             if ($this->isBackendMode()) {
                 if (!$this->checkCode($validationCode)) {
                     $this->arrStatusMsg['error'][] = $_CORELANG['TXT_SECURITY_CODE_IS_INCORRECT'];
@@ -130,13 +132,13 @@ class FWUser extends User_Setting
                     }
                 }
                 return true;
-            } else {
-                $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
             }
+
+            $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
+            $sessionObj->cmsSessionUserUpdate();
+            $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         }
 
-        $sessionObj->cmsSessionUserUpdate();
-        $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         return false;
     }
 
@@ -154,6 +156,7 @@ class FWUser extends User_Setting
             unset($_SESSION['auth']);
         }
         session_destroy();
+        setcookie (session_name(), '', time() - 3600, ASCMS_PATH_OFFSET);
 
         if ($this->backendMode) {
             CSRF::header('Location: ../'.CONTREXX_DIRECTORY_INDEX);

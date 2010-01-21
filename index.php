@@ -1009,7 +1009,7 @@ $page_content = str_replace('{TITLE}',  $page_title, $page_content);
 //-------------------------------------------------------
 switch ($plainSection) {
     //-------------------------------------------------------
-    // Login module
+    // Access module
     //-------------------------------------------------------
     case 'access':
         $modulespath = 'core_modules/access/index.class.php';
@@ -1027,7 +1027,6 @@ switch ($plainSection) {
         /** @ignore */
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         $objLogin = new Login($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
         break;
