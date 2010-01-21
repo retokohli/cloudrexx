@@ -1034,7 +1034,7 @@ function _adodb_debug_execute(&$zthis, $sql, $inputarr)
 		ADOConnection::outp($zthis->ErrorNo() .': '. $zthis->ErrorMsg());
 	}
 
-	if ($zthis->debug === 99) _adodb_backtrace(true,9999,2);
+	if ($zthis->debug === 99 && ($zthis->ErrorNo() || !(DBG::getMode() & DBG_ADODB_ERROR))) _adodb_backtrace(true,9999,2);
 	return $qID;
 }
 
