@@ -30,8 +30,8 @@ class searchKnowledge extends SearchInterface  {
         global $objDatabase;
 
         $query = "  SELECT articles.id as id, content.question as title, MATCH (content.answer, content.question) AGAINST ('%".$this->term."%' IN BOOLEAN MODE) as Relevance
-                    FROM `contrexx_module_knowledge".MODULE_INDEX."_articles` AS articles
-                    INNER JOIN `contrexx_module_knowledge".MODULE_INDEX."_article_content` AS content ON articles.id = content.article
+                    FROM `".DBPREFIX."module_knowledge".MODULE_INDEX."_articles` AS articles
+                    INNER JOIN `".DBPREFIX."module_knowledge".MODULE_INDEX."_article_content` AS content ON articles.id = content.article
                     WHERE lang = 1
                     AND active = 1
                     AND (   content.answer like '%".$this->term."%' OR
@@ -55,8 +55,8 @@ class searchKnowledge extends SearchInterface  {
         global $objDatabase;
 
         $query = "  SELECT categories.id as id , content.name as title, MATCH (content.name) AGAINST ('".htmlentities($this->term, ENT_QUOTES, CONTREXX_CHARSET)."' IN BOOLEAN MODE) as Relevance
-                    FROM `contrexx_module_knowledge".MODULE_INDEX."_categories_content` AS content
-                    INNER JOIN `contrexx_module_knowledge".MODULE_INDEX."_categories` AS categories ON content.category = categories.id
+                    FROM `".DBPREFIX."module_knowledge".MODULE_INDEX."_categories_content` AS content
+                    INNER JOIN `".DBPREFIX."module_knowledge".MODULE_INDEX."_categories` AS categories ON content.category = categories.id
                     WHERE lang = 1
                     AND active = 1
                     AND MATCH (content.name) AGAINST ('".htmlentities($this->term, ENT_QUOTES, CONTREXX_CHARSET)."' IN BOOLEAN MODE) HAVING Relevance > 0.2
