@@ -2509,6 +2509,7 @@ CREATE TABLE `contrexx_module_newsletter` (
   `smtp_server` int(10) unsigned NOT NULL default '0',
   `status` int(1) NOT NULL default '0',
   `count` int(11) NOT NULL default '0',
+  `recipient_count` int(11) unsigned NOT NULL default '0',
   `date_create` int(14) unsigned NOT NULL default '0',
   `date_sent` int(14) unsigned NOT NULL default '0',
   `tmp_copy` tinyint(1) NOT NULL default '0',
