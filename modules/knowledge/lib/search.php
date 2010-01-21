@@ -81,6 +81,7 @@ class Search
 
         // the template system
         $this->tpl = &new HTML_Template_Sigma('');
+        CSRF::add_placeholder($this->tpl);
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->tpl->loadTemplateFile($this->templateFile);
 
@@ -108,7 +109,6 @@ class Search
      */
     public function performSearch()
     {
-        global $objDBG;
         $status = 1;
 
 
