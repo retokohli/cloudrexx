@@ -36,7 +36,7 @@ class CSRF {
      * A high value increases usability, a low value
      * increases security. Tough call!
      */
-    static $validity_count = 4;
+    static $validity_count = 15;
 
     /**
      * This number defines how much any known code's validity
