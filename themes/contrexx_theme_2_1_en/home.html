@@ -2,201 +2,202 @@
 <script src="lib/javascript/scriptaculous/scriptaculous.js"></script>
 <script src="lib/javascript/accordion/javascript/accordion.js"></script>
 <div id="wrapper_banner">
-  <div id="banner">
-    <div id="banner_text">
-      {BLOCK_GLOBAL}
-    </div>
-  </div>
-</div>
+	<div id="banner">
+		<div id="banner_text">
+			{BLOCK_GLOBAL}
+		</div>
+	</div>
+</div> 
 
 <div id="wrapper_content">
-  <div id="content">
-    <div id="frame_home" class="clear">
-      <div id="frame_home_left">
-        <h1>{CONTENT_TITLE}</h1>
-        {CONTENT_TEXT}
-        <div id="boxes_home" class="clear">
-          <div class="box">
-            <h1>More Information</h1>
-            <div class="content" style="width: 602px;">
-              <h2>Let your website be found</h2>
-              Even when you just started creating your new website, you can look out for a couple of things to optimize your site for search engines. After creating the page, we suggest you submit your page at the most popular search engines like Google, Yahoo and Windows Live Search.
-              <p class="more"><a href="http://www.contrexx.com/wiki/de/index.php?title=Suchmaschinenoptimierung_(SEO)" class="out">More hints</a></p>
-            </div>
-            <div class="content">
-              <h2>Stay tuned</h2>
-              We are sure that Contrexx® is the right choice for you: Easy handling and our professional makes you feel at home. Contrexx® is under a constant development process. Stay tuned on our development and subscribe to our RSS feed.
-              <p class="more"><a href="http://www.contrexx.com/feed/news_headlines_de.xml" class="out">Contrexx RSS feed</a></p>
-            </div>
-            <div class="content">
-              <h2>Become a reference</h2>
-              You can submit your web project after completion. After a short check, we will put a link to your web project on our references page. This gives you your first external link to your website, increasing your relevance in search engines.
-              <p class="more"><a href="http://www.contrexx.com/de/index.php?section=directory&amp;cmd=add" class="out">Submit your site</a></p>
-            </div>
-          </div>
-          <div class="box">
-            <h1>Advertisement</h1>
-            <div class="content" style="width: 602px;">
-              <div align="center">{BLOCK_RANDOMIZER}&nbsp;{BLOCK_RANDOMIZER_2}&nbsp;{BLOCK_RANDOMIZER_3}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="frame_home_right">
-        <div class="box">
-          <h1>Newest entries</h1>
-          <div id="accordion">
-            <h2 class="toggler">News</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            {HEADLINES_FILE}
-          </div></div>
-
-            <h2 class="toggler">Forum</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            {FORUM_FILE}
-          </div></div>
-
-            <h2 class="toggler">Podcast</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            {PODCAST_FILE}
-          </div></div>
-
-            <h2 class="toggler">Blog</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            {BLOG_FILE}
-            <div class="content" style="width:278px;">
-              {BLOG_TAG_CLOUD}
-            </div>
-            <div class="content clear">
-            <p class="more"><a href="index.php?section=blog">More</a></p>
-            </div>
-          </div></div>
-
-            <h2 class="toggler">Directory</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            <!-- BEGIN directoryLatest_row_1 -->
-            <div class="content">
-            <p class="date">Added: {DIRECTORY_DATE}</p>
-            <h2><a href="index.php?section=directory&amp;cmd=detail&amp;id={DIRECTORY_ID}">{DIRECTORY_TITLE}</a></h2>{DIRECTORY_DESC}
-            </div>
-            <!-- END directoryLatest_row_1 -->
-            <div class="content">
-            <p class="more"><a href="index.php?section=directory">More</a></p>
-            </div>
-          </div></div>
-
-            <h2 class="toggler">Image gallery</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            <div class="content">
-              <div align="center">{GALLERY_RANDOM}</div>
-            </div>
-            <div class="content">
-            <p class="more"><a href="index.php?section=gallery">More</a></p>
-            </div>
-          </div></div>
-
-            <h2 class="toggler">Newsletter</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            <div class="content">
-              <div id="newsletter_home">{NEWSLETTER_BLOCK}</div>
-            </div>
-          </div></div>
-
-            <h2 class="toggler">Classified Ads</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            <!-- BEGIN marketLatest -->
-            <div class="content">
-              <p class="date">Online until {MARKET_DATE}</p>
-              <h2><a href="?section=market&amp;cmd=detail&amp;id={MARKET_ID}">{MARKET_TITLE}</a></h2>
-            </div>
-            <!-- END marketLatest -->
-            <div class="content">
-            <p class="more"><a href="index.php?section=market">More Ads</a></p>
-            </div>
-          </div></div>
-
-            <h2 class="toggler">Knowledge base</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
-            <div class="content"><p class="date">Most read articles</p></div>
-            {KNOWLEDGE_MOST_READ}
-            <div class="content"><p class="date">Best rated articles</p></div>
-            {KNOWLEDGE_BEST_RATED}
-            <div class="content">
-              {KNOWLEDGE_TAG_CLOUD}
-            </div>
-            <div class="content">
-              <p class="more"><a href="index.php?section=knowledge">More</a></p>
-            </div>
-          </div></div>
-
-            <h2 class="toggler">Events</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;">
-            {EVENTS_FILE}
-            </div>
-
-            <h2 class="toggler">Poll</h2>
-            <div class="accordion_content" style=" height: 0px; overflow:hidden;">
-            <div class="content">
-              <p class="date">March 6th, 2009</p>
-              <h2>How do you like our new website?</h2>
-              <div id="voting">
-                <form name="VotingForm" action="index.php?section=voting" method="post">
-                <input type="radio" name="votingoption" value="36" />Perfect<br />
-                <input type="radio" name="votingoption" value="37" />Wonderful<br />
-                <input type="radio" name="votingoption" value="38" />Nice<br />
-                <input type="radio" name="votingoption" value="39" />Not bad<br />
-                <input type="radio" name="votingoption" value="40" />Well...<br />
-                <input type="radio" name="votingoption" value="41" />I've seen better<br />
-                <input type="radio" name="votingoption" value="42" />Not at all!<br />
-                <br />
-                <input type="submit" value="¨Submit" name="Submit" />
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-        </div>
-
-        <!-- BEGIN access_latest_registered_member_list -->
-        <div class="box">
-          <h1 style="width:278px;">Newest members</h1>
-          <!-- BEGIN access_latest_registered_members -->
-          <div class="content" style="width:278px;">
-            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-              <tbody>
-                <tr>
-                  <td valign="top" width="50" class="none">
-                    <a href="index.php?section=access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}"><img src="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_THUMBNAIL_SRC}" border="0" alt="" /></a>
-                  </td>
-                  <td valign="top" class="none">
-                    <h2><a href="index.php?section=access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}">{ACCESS_USER_USERNAME}</a></h2>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <!-- END access_latest_registered_members -->
-          <div class="content">
-          <p class="more"><a href="index.php?section=access&amp;cmd=members">Member List</a></p>
-          </div>
-        </div>
-        <!-- END access_latest_registered_member_list -->
-      </div>
-    </div>
-  </div>
+	<div id="content">
+		<div id="frame_home" class="clear">
+			<div id="frame_home_left">
+				<h1>{CONTENT_TITLE}</h1>
+				{CONTENT_TEXT}
+				<div id="boxes_home" class="clear">
+					<div class="box">
+						<h1>More Information</h1>
+						<div class="content" style="width: 602px;">
+							<h2>Let your website be found</h2>
+							Even when you just started creating your new website, you can look out for a couple of things to optimize your site for search engines. After creating the page, we suggest you submit your page at the most popular search engines like Google, Yahoo and Windows Live Search.
+							<p class="more"><a href="http://www.contrexx.com/wiki/de/index.php?title=Suchmaschinenoptimierung_(SEO)" class="out">More hints</a></p>
+						</div>
+						<div class="content">
+							<h2>Stay tuned</h2>
+							We are sure that Contrexx® is the right choice for you: Easy handling and our professional makes you feel at home. Contrexx® is under a constant development process. Stay tuned on our development and subscribe to our RSS feed.
+							<p class="more"><a href="http://www.contrexx.com/feed/news_headlines_de.xml" class="out">Contrexx RSS feed</a></p>
+						</div>
+						<div class="content">
+							<h2>Become a reference</h2>
+							You can submit your web project after completion. After a short check, we will put a link to your web project on our references page. This gives you your first external link to your website, increasing your relevance in search engines.
+							<p class="more"><a href="http://www.contrexx.com/de/index.php?section=directory&amp;cmd=add" class="out">Submit your site</a></p>
+						</div>
+					</div>
+					<div class="box">
+						<h1>Advertisement</h1>
+						<div class="content" style="width: 602px;">
+							<div align="center">{BLOCK_RANDOMIZER}&nbsp;{BLOCK_RANDOMIZER_2}&nbsp;{BLOCK_RANDOMIZER_3}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="frame_home_right">
+				<div class="box">
+					<h1>Newest entries</h1>
+					<div id="accordion">
+						<h2 class="toggler">News</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{HEADLINES_FILE}
+					</div></div>
+					
+						<h2 class="toggler">Forum</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{FORUM_FILE}
+					</div></div>
+	
+						<h2 class="toggler">Podcast</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{PODCAST_FILE}
+					</div></div>
+					
+						<h2 class="toggler">Blog</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{BLOG_FILE}
+						<div class="content" style="width:278px;">
+							{BLOG_TAG_CLOUD}
+						</div>
+						<div class="content clear">
+						<p class="more"><a href="index.php?section=blog">More</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Directory</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<!-- BEGIN directoryLatest_row_1 -->
+						<div class="content">
+						<p class="date">Added: {DIRECTORY_DATE}</p>
+						<h2><a href="index.php?section=directory&amp;cmd=detail&amp;id={DIRECTORY_ID}">{DIRECTORY_TITLE}</a></h2>{DIRECTORY_DESC}
+						</div>
+						<!-- END directoryLatest_row_1 -->
+						<div class="content">
+						<p class="more"><a href="index.php?section=directory">More</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Image gallery</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<div class="content">
+							<div align="center">{GALLERY_RANDOM}</div>
+						</div>
+						<div class="content">
+						<p class="more"><a href="index.php?section=gallery">More</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Newsletter</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<div class="content">
+							<div id="newsletter_home">{NEWSLETTER_BLOCK}</div>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Classified Ads</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<!-- BEGIN marketLatest -->
+						<div class="content">
+							<p class="date">Online until {MARKET_DATE}</p>
+							<h2><a href="index.php?section=market&amp;cmd=detail&amp;id={MARKET_ID}">{MARKET_TITLE}</a></h2>
+						</div>
+						<!-- END marketLatest -->
+						<div class="content">
+						<p class="more"><a href="index.php?section=market">More Ads</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Knowledge base</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<div class="content"><p class="date">Most read articles</p></div>
+						{KNOWLEDGE_MOST_READ}
+						<div class="content"><p class="date">Best rated articles</p></div>
+						{KNOWLEDGE_BEST_RATED}
+						<div class="content">
+							{KNOWLEDGE_TAG_CLOUD}
+						</div>
+						<div class="content">
+							<p class="more"><a href="index.php?section=knowledge">More</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Events</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;">
+						{EVENTS_FILE}
+						</div>
+					
+						<h2 class="toggler">Poll</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;">
+						<div class="content">
+							<p class="date">March 6th, 2009</p>
+							<h2>How do you like our new website?</h2>
+							<div id="voting">
+								<form name="VotingForm" action="index.php?section=voting" method="post">
+								<input type="radio" name="votingoption" value="36" />Perfect<br />
+								<input type="radio" name="votingoption" value="37" />Wonderful<br />
+								<input type="radio" name="votingoption" value="38" />Nice<br />
+								<input type="radio" name="votingoption" value="39" />Not bad<br />
+								<input type="radio" name="votingoption" value="40" />Well...<br />
+								<input type="radio" name="votingoption" value="41" />I've seen better<br />
+								<input type="radio" name="votingoption" value="42" />Not at all!<br />
+								<br />
+								<input type="submit" value="¨Submit" name="Submit" />
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+				
+				<!-- BEGIN access_latest_registered_member_list -->
+				<div class="box">
+					<h1 style="width:278px;">Newest members</h1>
+					<!-- BEGIN access_latest_registered_members -->
+					<div class="content" style="width:278px;">
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+							<tbody>
+								<tr>
+									<td valign="top" width="50" class="none">
+										<a href="index.php?section=access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}"><img src="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_THUMBNAIL_SRC}" border="0" alt="" /></a>
+									</td>
+									<td valign="top" class="none">
+										<h2><a href="index.php?section=access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}">{ACCESS_USER_USERNAME}</a></h2>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<!-- END access_latest_registered_members -->
+					<div class="content">
+					<p class="more"><a href="index.php?section=access&amp;cmd=members">Member List</a></p>
+					</div>
+				</div>
+				<!-- END access_latest_registered_member_list -->
+			</div>
+		</div>
+	</div>
 </div>
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--
 var acc = new accordion(
-  'accordion',
-  {
-    classNames: {
-      toggle:       'toggler',
-      toggleActive: 'toggler_active',
-      content:      'accordion_content'
-    }
-  }
+	'accordion',
+	{
+		classNames: {
+			toggle:       'toggler',
+			toggleActive: 'toggler_active',
+			content:      'accordion_content'
+		}
+	}
 );
 acc.activate($$('.toggler')[0]);
 //--><!]]>
 </script>
+

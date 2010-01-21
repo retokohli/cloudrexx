@@ -1403,7 +1403,7 @@ table.news_meta td {
     margin: 0px;
     padding: 0px;
     list-style: none;
-    display: inline;
+    /*display: inline;*/
     border: none;
 }
 
@@ -1411,7 +1411,7 @@ table.news_meta td {
 #knowledge_new .articlelist .tags li {
     margin: 0px;
     padding: 0px;
-    display: inline;
+    /*display: inline;*/
     list-style: none;
     border: none;
 }
@@ -1651,14 +1651,15 @@ table.news_meta td {
     margin: 0px;
     padding: 0px;
     list-style: none;
-    display: inline;
+    /*display: inline;*/
     border: none;
 }
 
 #knowledge .tags li, #knowledge .articlelist .tags li {
     margin: 0px;
     padding: 0px;
-    display: inline;
+    float: left;
+    /*display: inline;*/
     list-style: none;
     border: none;
 }
@@ -1883,6 +1884,11 @@ dl.data_module img {
 	margin: 0px 0px 15px 0px;
 }
 
+#downloads div.delete {
+    clear: right;
+    float: right;
+}
+
 #downloads div.file_list .infos {
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
@@ -1956,7 +1962,7 @@ dl.data_module img {
 #downloads div.download {
 	padding: 0px 0px 10px 0px;
 	margin: 5px 0px 15px 0px;
-	width: 100%;
+	width: 200px;
     position: relative;
 }
 
