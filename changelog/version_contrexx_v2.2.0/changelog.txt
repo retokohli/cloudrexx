@@ -135,6 +135,7 @@ Allgemein
   auch ein CSS-Style (active/inactive) ausgegeben.
 - Die Inhaltsnavigation wird bei einer Designvorschau angezeigt.
 - Erstellung des XML Sitemaps funktioniert besser.
+- Session-Handling verbessert.
 
 Alias Verwaltung
 - Aliase welche Leerzeichen enthalten werden in der Inhalts-Navigation
