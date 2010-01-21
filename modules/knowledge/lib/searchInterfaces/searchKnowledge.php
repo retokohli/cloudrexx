@@ -13,7 +13,9 @@ class searchKnowledge extends SearchInterface  {
         $this->term = addslashes($term);
 
         $this->parseResults($this->searchArticles(), "formatArticleURI");
-        $this->parseResults($this->searchCategories(), "formatCategoryURI");
+
+// TODO: the search for categories has been deactivated due that the parsing method in the index.class.php isn't ready to parse categories.
+//       $this->parseResults($this->searchCategories(), "formatCategoryURI");
 
         return $this->results;
     }
