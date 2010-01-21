@@ -22,9 +22,11 @@ class DBG
     private static $log_file     = null;
     private static $log_firephp  = null;
     private static $log_adodb    = null;
+    private static $log_php      = 0;
     private static $last_time    = null;
     private static $start_time   = null;
     private static $mode         = 0;
+    private static $sql_query_cache = null;
 
     public function __construct()
     {
@@ -39,7 +41,7 @@ class DBG
         }
 
         if (empty($mode)) {
-            self::$mode = DBG_ALL;
+            self::$mode = DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP;
         } else {
             self::$mode = self::$mode | $mode;
         }
@@ -110,7 +112,6 @@ class DBG
 
         self::$log_file = true;
         self::setup('dbg.log', 'w');
-        set_error_handler('DBG::phpErrorHandler');
     }
 
 
@@ -198,7 +199,12 @@ class DBG
     {
         if (self::$dbg_fh) fclose(self::$dbg_fh);
         if (self::$log_firephp) return true; //no need to setup ressources, we're using firephp
-        self::$dbg_fh = fopen($file, $mode);
+        $suffix = '';
+        /*$nr = 0;
+        while (file_exists($file.$suffix)) {
+            $suffix = '.'.++$nr;
+        }*/
+        self::$dbg_fh = fopen($file.$suffix, $mode);
         return true;
     }
 
@@ -316,13 +322,19 @@ class DBG
 
     static function enable_error_reporting()
     {
-        error_reporting(E_ALL);
+        self::$log_php = E_ALL;// | E_STRICT;
+        error_reporting(self::$log_php);
         ini_set('display_errors', 1);
+
+        if (!self::$firephp) {
+            set_error_handler('DBG::phpErrorHandler');
+        }
     }
 
 
     static function disable_error_reporting()
     {
+        self::$log_php = 0;
         error_reporting(0);
         ini_set('display_errors', 0);
     }
@@ -371,24 +383,31 @@ class DBG
         print_r($val);
         $out = ob_get_clean();
         $out = str_replace("\n", "\n        ", $out);
-        self::_log('DUMP:   '.$out);
+        if (!self::$log_file) {
+            // we're logging directly to the browser
+            self::_log('DUMP:   <p><pre>'.htmlentities($out, ENT_QUOTES, CONTREXX_CHARSET).'</pre></p>');
+        } else {
+            self::_log('DUMP:   '.$out);
+        }
     }
 
 
     static function stack()
     {
+        if (!self::$log_file && !self::$log_firephp) echo '<pre>';
         $callers = debug_backtrace();
         self::_log("TRACE:  === STACKTRACE BEGIN ===");
         $err = error_reporting(E_ALL ^ E_NOTICE);
         foreach ($callers as $c) {
             $file  = self::_cleanfile($c['file']);
             $line  = $c['line'];
-            $class = $c['class'];
+            $class = isset($c['class']) ? $c['class'] : null;
             $func  = $c['function'];
             self::_log("        $file : $line (".(empty($class) ? $func : "$class::$func").")");
         }
         error_reporting($err);
         self::_log("        === STACKTRACE END ====");
+        if (!self::$log_file && !self::$log_firephp) echo '</pre>';
     }
 
 
@@ -403,7 +422,13 @@ class DBG
     public static function phpErrorHandler($errno, $errstr, $errfile, $errline)
     {
         // this error handler methode is only used if we are logging to a file
-        if (error_reporting() & $errno) {
+        $suppressed = '';
+
+        if (self::$log_php & $errno) {
+            if (!error_reporting()) {
+                $suppressed = ' (suppressed by script)';
+            }
+
             switch ($errno) {
                 case E_ERROR:
                     $type = 'FATAL ERROR';
@@ -417,11 +442,20 @@ class DBG
                 case E_NOTICE:
                     $type = 'NOTICE';
                     break;
+                case E_STRICT:
+                    $type = 'STRICT';
+                    break;
                 default:
                     $type = $errno;
                     break;
             }
-            self::_log("(php): $type: $errstr in $errfile on line $errline");
+
+            if (self::$log_file) {
+                self::_log("(php): $type$suppressed: $errstr in $errfile on line $errline");
+            }
+            if (!self::$log_file) {
+                self::_log("<p><strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong></p>");
+            }
         }
     }
 
@@ -437,27 +471,43 @@ class DBG
         if (self::$log_firephp
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
+        } elseif (self::$dbg_fh) {
+            fputs(self::$dbg_fh, $text."\n");
         } else {
-            if (self::$dbg_fh) {
-                fputs(self::$dbg_fh, $text."\n");
-            }
+            echo $text;
         }
     }
 
+    public static function setSQLQueryCache($msg)
+    {
+        self::$sql_query_cache = $msg;
+    }
+
+    public static function getSQLQueryCache()
+    {
+        return self::$sql_query_cache;
+    }
 }
 
 function DBG_log_adodb($msg)
 {
     $error = preg_match('#^[0-9]+:#', $msg);
-    if ($error || (DBG::getMode() & DBG_ADODB) || (DBG::getMode() & DBG_ADODB_TRACE)) {
+    if ($error || !(DBG::getMode() & DBG_ADODB_ERROR) || DBG::getMode() & DBG_ADODB) {
+        if ($error) {
+            DBG::log(
+                DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP
+                    ? html_entity_decode(strip_tags(DBG::getSQLQueryCache()), ENT_QUOTES, CONTREXX_CHARSET) : DBG::getSQLQueryCache(), 'error');
+        }
+
         DBG::log(
             DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP
                 ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET)
                 : $msg, $error
-                    ? 'error'
+                    ? 'info'
                     : (preg_match('#\(mysql\):\s(UPDATE|DELETE|INSERT)#', $msg)
                         ? 'info' : 'log'));
     }
+    DBG::setSQLQueryCache($msg);
 }
 
 ?>
