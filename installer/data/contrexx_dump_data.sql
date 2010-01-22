@@ -3,9 +3,6 @@ INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES
 INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (6,4);
 INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (6,5);
 INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (7,3);
-INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (62,3);
-INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (61,3);
-INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (64,3);
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (1,1);
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (5,1);
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (6,1);
@@ -799,7 +796,7 @@ INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `c
 INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (107,'1',1140,'Konto löschen','',4,'on','1','0','system',1235048714,'settings_delete',1,23,'0000-00-00','0000-00-00',0,0,0,0,'');
 INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (660,'1',97,'Kontakt Formular','',555,'off','1','0','system',1236248588,'4',1,6,'0000-00-00','0000-00-00',0,0,0,0,'');
 INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (1115,'1',97,'Suchen','',555,'off','1','0','system',1235047296,'',1,5,'0000-00-00','0000-00-00',0,0,0,0,'');
-INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (1139,'1',1,'Benutzerbereich','',10,'on','1','0','system',1236591512,'',1,23,'0000-00-00','0000-00-00',0,0,0,0,'');
+INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (1139,'1',1,'Benutzerbereich','',10,'on','1','0','system',1264183070,'',1,23,'0000-00-00','0000-00-00',0,0,0,0,'');
 INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (1140,'1',1139,'Kontoeinstellungen','',30,'on','1','0','system',1236163786,'settings_account',1,23,'0000-00-00','0000-00-00',0,0,0,0,'');
 INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (1143,'1',25,'Wissensdatenbank','',90,'on','1','0','system',1251121382,'',1,56,'0000-00-00','0000-00-00',0,0,0,0,'');
 INSERT INTO `contrexx_content_navigation` (`catid`, `is_validated`, `parcat`, `catname`, `target`, `displayorder`, `displaystatus`, `activestatus`, `cachingstatus`, `username`, `changelog`, `cmd`, `lang`, `module`, `startdate`, `enddate`, `protected`, `frontend_access_id`, `backend_access_id`, `themes_id`, `css_name`) VALUES (1144,'1',1143,'Search','',1,'off','1','0','system',1251121464,'search',1,56,'0000-00-00','0000-00-00',0,0,0,0,'');
@@ -4011,7 +4008,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (24,'coreAdminEmail','info@example.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (29,'contactFormEmail','info@example.com',6);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (34,'sessionLifeTime','3600',1);
-INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (35,'lastAccessId','53',1);
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (35,'lastAccessId','67',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (37,'newsTeasersStatus','1',8);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (39,'feedNewsMLStatus','0',22);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (40,'calendarheadlines','1',21);
@@ -4040,7 +4037,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (68,'dataUseModule','1',48);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (69,'frontendEditingStatus','on',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (70,'fileUploaderStatus','off',52);
-INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (71,'coreListProtectedPages','on',1);
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (71,'coreListProtectedPages','off',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (72,'useKnowledgePlaceholders','1',56);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (1,'printview','printview',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (2,'pdf','pdf',1);
