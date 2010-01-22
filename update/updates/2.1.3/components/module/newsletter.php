@@ -44,7 +44,7 @@ function _newsletterUpdate()
                 'smtp_server'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'status'         => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
                 'count'          => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
-                'recipient_count'=> array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'recipient_count'=> array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'count'),
                 'date_create'    => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'date_sent'      => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'tmp_copy'       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0')
