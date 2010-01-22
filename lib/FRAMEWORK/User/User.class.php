@@ -533,8 +533,6 @@ class User extends User_Profile
 
     private function getFilteredUserIdList($arrFilter = null, $search = null)
     {
-// TODO:  Never used
-//        $arrUserIds = array();
         $arrConditions = array();
         $arrSearchConditions = array();
         $tblCoreAttributes = false;
@@ -567,6 +565,11 @@ class User extends User_Profile
                     $arrGroupConditions[] = 'tblG.`group_id` = '.intval($arrFilter['group_id']);
                 }
                 $arrConditions[] = '('.implode(' OR ', $arrGroupConditions).')';
+
+                if (!FWUser::getFWUserObject()->isBackendMode()) {
+                    $arrConditions[] = "tblGF.`is_active` = 1 AND tblGF.`type` = 'frontend'";
+                }
+
                 $tblGroup = true;
             }
         }
@@ -575,8 +578,6 @@ class User extends User_Profile
         if (!empty($search)) {
             if (count($arrAccountConditions = $this->parseAccountSearchConditions($search))) {
                 $arrSearchConditions[] = implode(' OR ', $arrAccountConditions);
-// TODO:  Never used
-//                $tblAccount = true;
             }
             if (count($arrCoreAttributeConditions = $this->parseAttributeSearchConditions($search, true))) {
                 $arrSearchConditions[] = implode(' OR ', $arrCoreAttributeConditions);
@@ -826,6 +827,7 @@ class User extends User_Profile
             .(count($arrSelectCoreExpressions) || $arrQuery['tables']['core'] ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
             .($arrQuery['tables']['custom'] ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
             .($arrQuery['tables']['group'] ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
+            .($arrQuery['tables']['group'] && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id` = tblG.`group_id`' : '')
             .(count($arrQuery['joins']) ? ' '.implode(' ',$arrQuery['joins']) : '')
             .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
             .($arrQuery['group_tables'] ? ' GROUP BY tblU.`id`' : '')
@@ -986,6 +988,7 @@ class User extends User_Profile
             .($joinCoreTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
             .($joinCustomTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
             .($joinGroupTbl ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
+            .($joinGroupTbl && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id` = tblG.`group_id`' : '')
             .(count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
@@ -1482,6 +1485,7 @@ class User extends User_Profile
             INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblG ON tblG.`group_id` = tblR.`group_id`
             INNER JOIN `'.DBPREFIX.'access_group_'.$type.'_ids` AS tblI ON tblI.`group_id` = tblG.`group_id`
             WHERE tblU.`id` = '.$this->id.'
+                  AND tblG.`is_active`
             GROUP BY tblI.`access_id`
             ORDER BY tblI.`access_id`');
 
