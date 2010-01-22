@@ -211,9 +211,9 @@ class newsManager extends newsLibrary {
                 $this->edit();
                 break;
 
-			case 'copy':
-				$this->edit(true);
-				break;
+            case 'copy':
+                $this->edit(true);
+                break;
 
             case 'delete':
                 $this->delete();
@@ -563,8 +563,8 @@ class newsManager extends newsLibrary {
         $newsurl2               = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
         $newscat                = intval($_POST['newsCat']);
         $userid                 = $objFWUser->objUser->getId();
-	    $startDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-		$endDate				= (!preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+        $startDate              = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+        $endDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
@@ -588,7 +588,7 @@ class newsManager extends newsLibrary {
         if(empty($status)) {
             $status = 0;
             $startDate = "0000-00-00 00:00:00";
-	        $endDate = "0000-00-00 00:00:00";
+            $endDate = "0000-00-00 00:00:00";
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
@@ -727,7 +727,7 @@ class newsManager extends newsLibrary {
             'NEWS_CAT_MENU'                 => $this->getCategoryMenu($this->langId, $newscat),
             'NEWS_STARTDATE'                => $startDate,
             'NEWS_ENDDATE'                  => $endDate,
-            'NEWS_DATE'                     => date('H:i:s d.m.Y',$objResult->fields['date']),
+            'NEWS_DATE'                     => date('Y-m-d H:i:s'),
             'NEWS_CREATE_DATE'              => date(ASCMS_DATE_FORMAT),
             'NEWS_SOURCE'                   => htmlentities($newssource, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWS_URL1'                     => htmlentities($newsurl1, ENT_QUOTES, CONTREXX_CHARSET),
@@ -933,7 +933,7 @@ class newsManager extends newsLibrary {
                                                         startdate,
                                                         enddate,
                                                         status,
-														userid,
+                                                        userid,
                                                         frontend_access_id,
                                                         backend_access_id,
                                                         teaser_only,
@@ -953,10 +953,10 @@ class newsManager extends newsLibrary {
             if($objResult->fields['status']==1){
                 $status = "checked=\"checked\"";
             }
-			if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
+            if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
                 $startDate = $objResult->fields['startdate'];
             }
-			if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
+            if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
                 $endDate = $objResult->fields['enddate'];
             }
 
@@ -1012,7 +1012,7 @@ class newsManager extends newsLibrary {
                 'NEWS_TEASER_TEXT_LENGTH'       => strlen($teaserText),
                 'NEWS_TEASER_IMAGE_PATH'        => htmlentities($objResult->fields['teaser_image_path'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_TEASER_IMAGE_THUMBNAIL_PATH' => htmlentities($objResult->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWS_DATE'                     => date("Y-m-d"),
+                'NEWS_DATE'                     => date('Y-m-d H:i:s'),
                 'NEWS_SUBMIT_NAME'              => isset($_GET['validate']) ? 'validate' : 'store',
                 'NEWS_SUBMIT_NAME_TEXT'         => isset($_GET['validate']) ? $_ARRAYLANG['TXT_CONFIRM'] : $_ARRAYLANG['TXT_STORE']
             ));
@@ -1159,8 +1159,8 @@ class newsManager extends newsLibrary {
                 }
             }
 
-            $startDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-			$endDate		= (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+            $startDate      = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
+            $endDate        = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
 
             $newsFrontendAccess     = !empty($_POST['news_read_access']);
             $newsFrontendGroups     = $newsFrontendAccess && isset($_POST['news_read_access_associated_groups']) && is_array($_POST['news_read_access_associated_groups']) ? array_map('intval', $_POST['news_read_access_associated_groups']) : array();
