@@ -15,6 +15,7 @@ class  Dataviewer {
         global $_ARRAYLANG;
         $this->pageContent = $pageContent;
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -42,7 +43,7 @@ class  Dataviewer {
         $this->_objTpl->setTemplate($this->pageContent);
 
         if (!$this->isActive($projectname) || !in_array($_SESSION['userFrontendLangId'], $this->getLangID($projectname))) {
-            header("Location: index.php");
+			CSRF::header("Location: index.php");
         }
 
 

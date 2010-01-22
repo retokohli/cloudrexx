@@ -5,7 +5,7 @@
   function deleteConfirm(ID) {
       check = confirm("{TXT_DELETE_CONFIRMATION}")
     if(check == true) {
-      location.href = "index.php?cmd=dataviewer&delete="+ID;
+			location.href = "index.php?cmd=dataviewer&{CSRF_PARAM}&delete="+ID;
     }
   }
 /* ]]> */

@@ -24,6 +24,7 @@ class Dataviewer {
        global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/dataviewer/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setVariable("CONTENT_NAVIGATION",
                                         "<a href='index.php?cmd=dataviewer'>".$_ARRAYLANG['TXT_DATAVIEWER_OVERVIEW']."</a>
@@ -292,7 +293,7 @@ class Dataviewer {
                 $this->_objTpl->setVariable(array(
                     'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_PROJECT_CREATED']
                 ));
-                header("location:index.php?cmd=dataviewer&act=added");
+				CSRF::header("location:index.php?cmd=dataviewer&act=added");
             } else {
                 $this->_objTpl->setVariable(array(
                     'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_PROJECT_COULDNT_BE_CREATED']."<br />".$insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery
