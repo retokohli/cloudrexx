@@ -70,7 +70,7 @@ class Market extends marketLibrary
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=market'>".$_CORELANG['TXT_OVERVIEW']."</a>
                                                         <a href='index.php?cmd=market&act=addCategorie'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
-                                                        <a href='index.php?cmd=market&act=addEntry '>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
+                                                        <a href='index.php?cmd=market&act=addEntry'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
                                                         <a href='index.php?cmd=market&act=entries'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
                                                         <a href='index.php?cmd=market&act=settings'>".$_CORELANG['TXT_SETTINGS']."</a>");
     }
