@@ -16,6 +16,8 @@ WYSIWYG Editor kopiert wird, als Plaintext eingefügt. (FCKConfig.ForcePasteAsPl
 Allgemein
 - Neue Platzhalter für Datumsfragmente:
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
+- Neu, über den Modul Manager installierte Module, erscheinen nicht in der
+  Inhalts Navigation.
 
 Content Manager
 - Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden
