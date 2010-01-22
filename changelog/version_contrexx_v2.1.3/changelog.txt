@@ -9,6 +9,8 @@ Allgemein
 - Neue Platzhalter für Datumsfragmente:
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
 - Einige Sicherheitsprobleme behoben
+- Neu, über den Modul Manager installierte Module, erscheinen nicht in der
+  Inhalts Navigation.
 
 Modul: Dokumenten System
 - Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
