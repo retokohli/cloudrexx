@@ -279,7 +279,7 @@ function VotingSubmit(){
     global $objDatabase, $_COOKIE;
 
     if ($_COOKIE['votingcookie'] != '1') {
-        setcookie ("votingcookie", '1', time()+3600*24); // 1 Day
+        setcookie("votingcookie", '1', time()+3600*24, ASCMS_PATH_OFFSET.'/'); // 1 Day
         $votingOption = intval($_POST["votingoption"]);
 
         $query="SELECT voting_system_id from ".DBPREFIX."voting_results WHERE id=".$votingOption." ";

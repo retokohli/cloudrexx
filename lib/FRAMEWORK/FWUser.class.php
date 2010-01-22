@@ -119,7 +119,7 @@ class FWUser extends User_Setting
             if ($this->objUser->auth($username, $password, $this->isBackendMode())) {
                 if ($this->isBackendMode()) {
                     // sets cookie for 30 days
-                    setcookie("username", $this->objUser->getUsername(), time()+3600*24*30);
+                    setcookie("username", $this->objUser->getUsername(), time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     $this->log();
                 }
                 $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
@@ -128,7 +128,7 @@ class FWUser extends User_Setting
                 if (empty($_COOKIE['langId'])) {
                     $langId = $this->objUser->getFrontendLanguage();
                     if ($objInit->arrLang[$langId]['frontend']) {
-                        setcookie ("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+                        setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     }
                 }
                 return true;
@@ -156,7 +156,7 @@ class FWUser extends User_Setting
             unset($_SESSION['auth']);
         }
         session_destroy();
-        setcookie (session_name(), '', time() - 3600, ASCMS_PATH_OFFSET);
+        setcookie(session_name(), '', time() - 3600, ASCMS_PATH_OFFSET.'/');
 
         if ($this->backendMode) {
             CSRF::header('Location: ../'.CONTREXX_DIRECTORY_INDEX);
