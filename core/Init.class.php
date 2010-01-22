@@ -112,7 +112,7 @@ class InitCMS
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
         $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
         $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];
-        setcookie ('backendLangId', $backendLangId, time()+3600*24*30);
+        setcookie('backendLangId', $backendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
     }
 
 
@@ -141,7 +141,7 @@ class InitCMS
         }
 
         if ($setCookie) {
-            setcookie ("langId", $frontendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+            setcookie("langId", $frontendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
         }
 
         if (isset($_CONFIG['useVirtualLanguagePath'])
@@ -162,7 +162,7 @@ class InitCMS
             // user wants to enable/disable smallscreen mode.
             if ($_GET['smallscreen'] && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
                 // enable
-                setcookie('smallscreen', 1);
+                setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $is_small_screen = 1;
             }
             else {
@@ -170,7 +170,7 @@ class InitCMS
                 // available, or disabling requested. Both cases require the
                 // cookie to be set to zero, so the javascript doesn't redirect
                 // all the time!
-                setcookie('smallscreen', 0);
+                setcookie('smallscreen', 0, 0, ASCMS_PATH_OFFSET.'/');
                 $is_small_screen = 0;
             }
         } elseif (isset($_COOKIE['smallscreen'])) {
@@ -181,7 +181,7 @@ class InitCMS
             // auto detection
             if ($this->_is_mobile_phone() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
                 // same here: only set smallscreen mode if there IS a smallscreen theme
-                setcookie('smallscreen', 1);
+                setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $is_small_screen = 1;
             } else {
                 // Don't even think about setting the cookie
