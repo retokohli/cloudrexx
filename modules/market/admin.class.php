@@ -62,6 +62,7 @@ class Market extends marketLibrary
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/market/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';
         $this->mediaWebPath = ASCMS_MARKET_MEDIA_WEB_PATH . '/';
@@ -69,7 +70,7 @@ class Market extends marketLibrary
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=market'>".$_CORELANG['TXT_OVERVIEW']."</a>
                                                         <a href='index.php?cmd=market&act=addCategorie'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
-                                                        <a href='index.php?cmd=market&act=addEntry '>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
+                                                        <a href='index.php?cmd=market&act=addEntry'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
                                                         <a href='index.php?cmd=market&act=entries'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
                                                         <a href='index.php?cmd=market&act=settings'>".$_CORELANG['TXT_SETTINGS']."</a>");
     }
@@ -1090,7 +1091,7 @@ class Market extends marketLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=market&act=settings&tpl=spez_fields');
+                CSRF::header('Location: ?cmd=market&act=settings&tpl=spez_fields');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1171,7 +1172,7 @@ class Market extends marketLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=market&act=settings');
+                CSRF::header('Location: ?cmd=market&act=settings');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1243,7 +1244,7 @@ class Market extends marketLibrary
         if (isset($_POST['submitSettings'])) {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='".$_POST['mailOn']."' WHERE id='1'");
             if ($objResult !== false) {
-                header('Location: ?cmd=market&act=settings&tpl=email');
+                CSRF::header('Location: ?cmd=market&act=settings&tpl=email');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1320,7 +1321,7 @@ class Market extends marketLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=market&act=settings&tpl=email_code');
+                CSRF::header('Location: ?cmd=market&act=settings&tpl=email_code');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
