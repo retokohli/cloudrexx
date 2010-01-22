@@ -438,7 +438,7 @@ class Blog extends BlogLibrary  {
                                         vote = "'.$intVoting.'"
                                 ');
 
-            setcookie('BlogVoting['.$intMessageId.']', $intVoting);
+            setcookie('BlogVoting['.$intMessageId.']', $intVoting, 0, ASCMS_PATH_OFFSET.'/');
             $this->_strStatusMessage = $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_VOTING_INSERT_SUCCESS'];
         }
     }
@@ -541,7 +541,7 @@ class Blog extends BlogLibrary  {
                                 ');
 
             //Set a cookie with the current timestamp. Avoids flooding.
-            setcookie('BlogCommentLast', time());
+            setcookie('BlogCommentLast', time(), 0, ASCMS_PATH_OFFSET.'/');
 
             $this->_strStatusMessage = $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_SUCCESS'];
 
