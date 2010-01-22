@@ -170,6 +170,7 @@ News Manager
 - Der JavaScript RSS Feed news_de.js funktioniert korrekt.
 - Ein Thumbnail einer News Meldung wird auch dann angezeigt, wenn kein
   normales Bild definiert wurde.
+- Die Angabe des Publikationsdatums funktioniert korrekt.
 
 Volltextsuche
 - Die News Meldungen werden mit einer entsprechenden Relevanz bewertet.

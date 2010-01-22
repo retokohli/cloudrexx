@@ -107,7 +107,7 @@ function disableDate(){
 
 function setStartDate(){
 	with(document.news){
-	   if(startDate.value=="0000-00-00" || startDate.value==""){
+	   if(startDate.value=="0000-00-00 00:00:00" || startDate.value==""){
 	        startDate.value= "{NEWS_DATE}";
 	   }
     }
@@ -115,7 +115,7 @@ function setStartDate(){
 
 function setEndDate(){
     with(document.news){
-	   if(endDate.value=="0000-00-00" || endDate.value==""){
+	   if(endDate.value=="0000-00-00 00:00:00" || endDate.value==""){
 	        endDate.value = "{NEWS_DATE}";
 	   }
     }
