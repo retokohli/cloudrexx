@@ -1231,7 +1231,7 @@ END;
             "' AND date > $intVotingCheckTime AND picid=$intPicId LIMIT 1");
         if ($objResult->RecordCount() == 1) {
             $boolIpCheck = false;
-            setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime);
+            setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime, ASCMS_PATH_OFFSET.'/');
         } else {
             $boolIpCheck = true;
         }
@@ -1246,7 +1246,7 @@ END;
                 "INSERT INTO ".DBPREFIX."module_gallery_votes ".
                 "SET picid=$intPicId, date=".time().", ip='".$_SERVER['REMOTE_ADDR']."', ".
                 "md5='".$strMd5."', mark=$intMark");
-            setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime);
+            setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime, ASCMS_PATH_OFFSET.'/');
 
             $objCache->deleteAllFiles();
         }
