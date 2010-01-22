@@ -63,7 +63,7 @@ class cmsSession
             $this->_objDb = getDatabaseObject($errorMsg, true);
             $this->compatibelitiyMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
 
-            session_set_cookie_params(0, ASCMS_PATH_OFFSET);
+            session_set_cookie_params(0, ASCMS_PATH_OFFSET.'/');
             session_start();
         } else {
             $this->cmsSessionError();
