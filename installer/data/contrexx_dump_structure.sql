@@ -1636,7 +1636,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_gallery_categories` (
   `id` int(11) NOT NULL auto_increment,
   `pid` int(11) NOT NULL default '0',
-  `sorting` tinyint(3) NOT NULL default '0',
+  `sorting` int(6) NOT NULL default '0',
   `status` set('0','1') NOT NULL default '1',
   `comment` set('0','1') NOT NULL default '0',
   `voting` set('0','1') NOT NULL default '0',
@@ -1691,7 +1691,7 @@ CREATE TABLE `contrexx_module_gallery_pictures` (
   `validated` set('0','1') NOT NULL default '0',
   `status` set('0','1') NOT NULL default '1',
   `catimg` set('0','1') NOT NULL default '0',
-  `sorting` smallint(3) unsigned NOT NULL default '999',
+  `sorting` int(6) unsigned NOT NULL default '999',
   `size_show` set('0','1') NOT NULL default '1',
   `path` text NOT NULL,
   `link` text NOT NULL,
