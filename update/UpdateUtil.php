@@ -97,7 +97,7 @@ class UpdateUtil {
         // create table statement
         $cols = array();
         foreach ($struc as $col => $spec) {
-            $cols[] = "`$col` ". self::_colspec($spec);
+            $cols[] = "`$col` ". self::_colspec($spec, true);
         }
         $colspec    = join(",\n", $cols);
         $primaries  = join(",\n", self::_getprimaries($struc));
@@ -313,14 +313,17 @@ class UpdateUtil {
 
         return $descr;
     }
-    private function _colspec($spec) {
+    private function _colspec($spec, $create_tbl_operation = false) {
         $unsigned     = (array_key_exists('unsigned',       $spec)) ? $spec['unsigned']       : false;
         $notnull      = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
         $autoinc      = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
         $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
         $binary       = (array_key_exists('binary',         $spec)) ? $spec['binary']         : null;
-        $after        = (array_key_exists('after',          $spec)) ? $spec['after']          : false;
+
+        if (!$create_tbl_operation) {
+            $after    = (array_key_exists('after',          $spec)) ? $spec['after']          : false;
+        }
 
         $default_st = '';
         if (strtoupper($spec['type']) != 'BLOB' and strtoupper($spec['type']) != 'TEXT') {
