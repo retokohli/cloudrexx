@@ -48,6 +48,7 @@ function _memberdirUpdate()
                 'dirid'      => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0'),
                 'pic1'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'pic2'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                '0'          => array('type' => 'SMALLINT(5)', 'notnull' => true, 'unsigned' => true, 'default' => '0'),
                 '1'          => array('type' => 'TEXT'),
                 '2'          => array('type' => 'TEXT'),
                 '3'          => array('type' => 'TEXT'),
@@ -78,11 +79,11 @@ function _memberdirUpdate()
 
         foreach ($arrSettings as $key => $arrSetting) {
             if (!UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."module_memberdir_settings` WHERE `setname` = '".$key."'")->RecordCount()) {
-                UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_memberdir_settings` (
+                UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_memberdir_settings`
                     SET `setname`    = '".$key."',
-                        `setvalue`   = '".$arrSetting['value']."',
-                        `lang_id`    = '".$arrSetting['status']."'
-                )");
+                        `setvalue`   = '".$arrSetting[0]."',
+                        `lang_id`    = '".$arrSetting[1]."'
+                ");
             }
         }
 
@@ -95,21 +96,7 @@ function _memberdirUpdate()
 
 	require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 	$objFile = new File();
-	if (is_writeable(ASCMS_MEDIA_PATH.'/memberdir') || $objFile->setChmod(ASCMS_MEDIA_PATH.'/memberdir', ASCMS_MEDIA_WEB_PATH.'/memberdir', '')) {
-    	if ($mediaDir = @opendir(ASCMS_MEDIA_PATH.'/memberdir')) {
-    		while($file = readdir($mediaDir)) {
-    			if ($file != '.' && $file != '..') {
-    				if (!is_writeable(ASCMS_MEDIA_PATH.'/memberdir/'.$file) && !$objFile->setChmod(ASCMS_MEDIA_PATH.'/memberdir/', ASCMS_MEDIA_WEB_PATH.'/memberdir/', $file)) {
-    					setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_MEDIA_PATH.'/memberdir/'.$file, $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-    					return false;
-    				}
-    			}
-			}
-    	} else {
-    		setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_MEDIA_PATH.'/memberdir/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-    		return false;
-		}
-    } else {
+	if (!is_writeable(ASCMS_MEDIA_PATH.'/memberdir') && !$objFile->setChmod(ASCMS_MEDIA_PATH.'/memberdir', ASCMS_MEDIA_WEB_PATH.'/memberdir', '')) {
     	setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_MEDIA_PATH.'/memberdir/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
     	return false;
     }
