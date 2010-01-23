@@ -51,11 +51,11 @@ function _podcastUpdate()
 
         foreach ($arrSettings as $key => $arrSetting) {
             if (!UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."module_podcast_settings` WHERE `setname` = '".$key."'")->RecordCount()) {
-                UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_podcast_settings` (
+                UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_podcast_settings`
                     SET `setname`   = '".$key."',
-                        `setvalue`  = '".$arrSetting['value']."',
-                        `status`    = '".$arrSetting['status']."'
-                )");
+                        `setvalue`  = '".$arrSetting[0]."',
+                        `status`    = '".$arrSetting[1]."'
+                ");
             }
         }
     }
