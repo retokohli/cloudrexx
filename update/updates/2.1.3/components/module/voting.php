@@ -35,7 +35,7 @@ function _votingUpdate()
                 'zip'                => array('type' => 'VARCHAR(30)', 'notnull' => true, 'default' => ''),
                 'city'               => array('type' => 'VARCHAR(80)', 'notnull' => true, 'default' => ''),
                 'email'              => array('type' => 'VARCHAR(80)', 'notnull' => true, 'default' => ''),
-                'comment'            => array('type' => 'TEXT'),
+                'comment'            => array('type' => 'TEXT', 'after' => 'email'),
                 'voting_system_id'   => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'renamefrom' => 'voting_sytem_id'),
                 'date_entered'       => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr'=> 'CURRENT_TIMESTAMP'),
                 'forename'           => array('type' => 'VARCHAR(80)', 'notnull' => true, 'default' => '')
