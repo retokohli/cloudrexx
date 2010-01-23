@@ -52,11 +52,11 @@ function _accessUpdate()
 
         foreach ($arrSettings as $key => $arrSetting) {
             if (!UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."access_settings` WHERE `key` = '".$key."'")->RecordCount()) {
-                UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (
+                UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings`
                     SET `key`       = '".$key."',
-                        `value`     = '".$arrSetting['value']."',
-                        `status`    = '".$arrSetting['status']."'
-                )");
+                        `value`     = '".$arrSetting[0]."',
+                        `status`    = '".$arrSetting[1]."'
+                ");
             }
         }
     }
