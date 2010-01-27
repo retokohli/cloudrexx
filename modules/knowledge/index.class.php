@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Knowledge
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -26,39 +27,39 @@ class Knowledge extends KnowledgeLibrary
      *
      * @var object
      */
-	private $tpl;
+    private $tpl;
 
-	public $pageTitle;
+    public $pageTitle;
 
-	/**
-	* Call parent-constructor, set language id and create local template-object
+    /**
+    * Call parent-constructor, set language id and create local template-object
     *
     * @global $_LANGID
     */
-	public function __construct($pageContent)
-	{
-		global $_LANGID;
+    public function __construct($pageContent)
+    {
+        global $_LANGID;
 
-		KnowledgeLibrary::__construct();
+        KnowledgeLibrary::__construct();
 
-		$this->languageId = intval($_LANGID);
+        $this->languageId = intval($_LANGID);
 
-        $this->tpl = &new HTML_Template_Sigma('.');
+        $this->tpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->tpl);
-		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
-		$this->tpl->setTemplate($pageContent);
-		$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
-	}
+        $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->tpl->setTemplate($pageContent);
+        $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+    }
 
-	/**
-	 * Shows the page according to the requested action
-	 *
-	 * @global $_LANGID
-	 * @return string Requested Page
+    /**
+     * Shows the page according to the requested action
+     *
+     * @global $_LANGID
+     * @return string Requested Page
      */
-	public function getPage()
-	{
-	    global $_LANGID;
+    public function getPage()
+    {
+        global $_LANGID;
         JS::activate('prototype');
         JS::registerJS('modules/knowledge/frontend/fix_prototype.js');
         JS::activate('scriptaculous');
@@ -66,179 +67,182 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
 
-	    if (!isset($_GET['act'])) {
-	        $_GET['act'] = "";
-	    }
+        if (!isset($_GET['act'])) {
+            $_GET['act'] = "";
+        }
 
-	    /**
-	     * The ajax stuff
-	     */
-	    if ($_GET['act'] == "liveSearch") {
-    	   include(ASCMS_MODULE_PATH."/knowledge/lib/search.php");
-    	   $search = new Search();
-    	   $search->performSearch();
-    	   die();
-        } elseif($_GET['act'] == "hitArticle") {
-	        $this->hitArticle();
-	        break;
+        /**
+         * The ajax stuff
+         */
+        if ($_GET['act'] == "liveSearch") {
+           include(ASCMS_MODULE_PATH."/knowledge/lib/search.php");
+           $search = new Search();
+           $search->performSearch();
+           die();
+        } elseif ($_GET['act'] == "hitArticle") {
+            $this->hitArticle();
+// TODO: There is nothing to be broken break here!  What's the point?
+//            break;
         } elseif ($_GET['act'] == "rate") {
             $this->rate();
             die();
         }
 
-		if(!isset($_GET['cmd'])) {
-    		$_GET['cmd'] = '';
-    	}
+        if (!isset($_GET['cmd'])) {
+            $_GET['cmd'] = '';
+        }
 
-    	/**
-    	 * Normal stuff
-    	 */
-    	switch ($_GET['cmd']) {
-    	    case 'category':
-    	        $this->category();
-    	        break;
-    	    case 'article':
-    	        $this->article();
-    	        break;
-    	    case 'search':
-    	        $this->search();
-    	        break;
-    	    case 'start':
-    	    default:
-    	        if ($_GET['act'] == "mostRead") {
-    	            $this->mostRead();
-    	        } elseif ($_GET['act'] == "bestRated") {
-    	            $this->bestRated();
-    	        } else {
-        	        if (isset($_GET['id'])) {
-        	            $this->category();
-        	        } elseif (isset($_GET['tid'])) {
-        	            $this->showTag();
-        	        } else {
-        	           $this->frontPage();
-        	        }
-    	        }
-    	        break;
-    	}
+        /**
+         * Normal stuff
+         */
+        switch ($_GET['cmd']) {
+            case 'category':
+                $this->category();
+                break;
+            case 'article':
+                $this->article();
+                break;
+            case 'search':
+                $this->search();
+                break;
+            case 'start':
+            default:
+                if ($_GET['act'] == "mostRead") {
+                    $this->mostRead();
+                } elseif ($_GET['act'] == "bestRated") {
+                    $this->bestRated();
+                } else {
+                    if (isset($_GET['id'])) {
+                        $this->category();
+                    } elseif (isset($_GET['tid'])) {
+                        $this->showTag();
+                    } else {
+                       $this->frontPage();
+                    }
+                }
+                break;
+        }
 
-    	return $this->tpl->get();
-	}
+        return $this->tpl->get();
+    }
 
-	/**
-	 * The frontpage
-	 *
-	 * @global $_LANGID
-	 * @global $_ARRAYLANG
-	 */
-	private function frontPage()
-	{
-	    global $_LANGID, $_ARRAYLANG;
+    /**
+     * The frontpage
+     *
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     */
+    private function frontPage()
+    {
+        global $_LANGID, $_ARRAYLANG;
+        static $e;
 
-	    try {
-	        $this->categories->readCategories();
-	        $mostRead = $this->articles->getMostRead($_LANGID, $this->settings->get('most_read_sidebar_amount'));
-	        $bestRated = $this->articles->getBestRated($_LANGID, $this->settings->get('best_rated_sidebar_amount'));
-	    } catch (DatabaseError $e) {
-	        return;
-	    }
+        try {
+            $this->categories->readCategories();
+            $mostRead = $this->articles->getMostRead($_LANGID, $this->settings->get('most_read_sidebar_amount'));
+            $bestRated = $this->articles->getBestRated($_LANGID, $this->settings->get('best_rated_sidebar_amount'));
+        } catch (DatabaseError $e) {
+            return;
+        }
 
-	    $this->tpl->setGlobalVariable(array(
+        $this->tpl->setGlobalVariable(array(
             'TXT_MORE'      => $_ARRAYLANG['TXT_KNOWLEDGE_MORE'],
             'SEARCH_HASH'   => rand().time(), // this is needed because firefox always shows an annoying
-	                                         // dropdown with already entered strings in the searchbox
+                                             // dropdown with already entered strings in the searchbox
             'TXT_SEARCH'    => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH']
-	    ));
+        ));
 
-	    $rowcounter = 1;
-	    foreach ($this->categories->getCategoriesByParent(0) as $category) {
-	        if ($category['active']) {
-    	        $subcats = $this->categories->getCategoriesByParent($category['id']);
-    	        $i = 0;
-    	        while ($i < count($subcats) && $i <= $this->settings->get('max_subcategories')) {
-    	            $curSubCat = $subcats[$i];
-    	            if ($curSubCat['active']) {
-        	            $this->tpl->setVariable(array(
-        	               "SUBCAT_ID"         => $curSubCat['id'],
-        	               "SUBCAT_NAME"       => $curSubCat['content'][$_LANGID]['name']
-        	            ));
-        	            $this->tpl->parse("subcat");
-    	            }
-    	            $i++;
-    	        }
+        $rowcounter = 1;
+        foreach ($this->categories->getCategoriesByParent(0) as $category) {
+            if ($category['active']) {
+                $subcats = $this->categories->getCategoriesByParent($category['id']);
+                $i = 0;
+                while ($i < count($subcats) && $i <= $this->settings->get('max_subcategories')) {
+                    $curSubCat = $subcats[$i];
+                    if ($curSubCat['active']) {
+                        $this->tpl->setVariable(array(
+                           "SUBCAT_ID"         => $curSubCat['id'],
+                           "SUBCAT_NAME"       => $curSubCat['content'][$_LANGID]['name']
+                        ));
+                        $this->tpl->parse("subcat");
+                    }
+                    $i++;
+                }
 
-    	        $this->tpl->setVariable(array(
-    	           "CATEGORY_ID"       => $category['id'],
-    	           "CATEGORY_TITLE"    => $category['content'][$_LANGID]['name']
-    	        ));
-    	        $this->tpl->parse("category");
+                $this->tpl->setVariable(array(
+                   "CATEGORY_ID"       => $category['id'],
+                   "CATEGORY_TITLE"    => $category['content'][$_LANGID]['name']
+                ));
+                $this->tpl->parse("category");
 
-    	        // make a new row if wanted
-    	        if ($rowcounter % $this->settings->get('column_number') == 0) {
-    	            $this->tpl->parse("row");
-    	        }
-	        }
-	        $rowcounter++;
-	    }
-	    $this->tpl->parse("overview");
+                // make a new row if wanted
+                if ($rowcounter % $this->settings->get('column_number') == 0) {
+                    $this->tpl->parse("row");
+                }
+            }
+            $rowcounter++;
+        }
+        $this->tpl->parse("overview");
 
-	    /**
-	     * This counter is needed so every answer does have a unique id
-	     */
-	    $counter = 0;
-	    $counter = $this->parseArticleList($mostRead, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=mostRead");
-	    $this->parseArticleList($bestRated, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=bestRated");
+        /**
+         * This counter is needed so every answer does have a unique id
+         */
+        $counter = 0;
+        $counter = $this->parseArticleList($mostRead, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=mostRead");
+        $this->parseArticleList($bestRated, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=bestRated");
 
         JS::activate('prototype');
         JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
-	}
+    }
 
-	/**
-	 * Show a category
-	 *
-	 * @param int $id
-	 * @global $_LANGID
-	 * @global $_ARRAYLANG
-	 */
-	private function category($id=null)
-	{
-	    global $_LANGID, $_ARRAYLANG;
+    /**
+     * Show a category
+     *
+     * @param int $id
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     */
+    private function category($id=null)
+    {
+        global $_LANGID, $_ARRAYLANG;
+        static $e;
 
-	    try {
-	       $this->categories->readCategories();
-	       $this->articles->readArticles();
-	    } catch (DatabaseError $e) {
-	        return;
-	    }
+        try {
+           $this->categories->readCategories();
+           $this->articles->readArticles();
+        } catch (DatabaseError $e) {
+            return;
+        }
 
-	    if (empty($id)) {
-	        $id = intval($_GET['id']);
-	    }
+        if (empty($id)) {
+            $id = intval($_GET['id']);
+        }
 
       //JS::activate('prototype');
 
-	    $category = &$this->categories->categories[$id];
-	    $this->tpl->setVariable(array(
-	       "CATEGORY_TITLE"    => $category['content'][$_LANGID]['name'],
-	       'SEARCH_HASH'   => rand().time(), // this is needed because firefox always shows an annoying
-	                                         // dropdown with already entered strings in the searchbox
+        $category = &$this->categories->categories[$id];
+        $this->tpl->setVariable(array(
+           "CATEGORY_TITLE"    => $category['content'][$_LANGID]['name'],
+           'SEARCH_HASH'   => rand().time(), // this is needed because firefox always shows an annoying
+                                             // dropdown with already entered strings in the searchbox
            'TXT_SEARCH'    => $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH']
-	    ));
+        ));
 
-	    // check if there are subcategories and parse them if yes
-	    foreach ($this->categories->categories as $catId => $catVal) {
-	        if ($catVal['parent'] == $id) {
-	            // this is a subcategory
-	            $this->tpl->setVariable(array(
-	               "SUBCATEGORY_ID"        => $catId,
-	               "SUBCATEGORY_TITLE"     => $catVal['content'][$_LANGID]['name']
-	            ));
-	            $this->tpl->parse("subcategory");
-	        }
-	    }
-	    $this->tpl->parse("categories");
+        // check if there are subcategories and parse them if yes
+        foreach ($this->categories->categories as $catId => $catVal) {
+            if ($catVal['parent'] == $id) {
+                // this is a subcategory
+                $this->tpl->setVariable(array(
+                   "SUBCATEGORY_ID"        => $catId,
+                   "SUBCATEGORY_TITLE"     => $catVal['content'][$_LANGID]['name']
+                ));
+                $this->tpl->parse("subcategory");
+            }
+        }
+        $this->tpl->parse("categories");
 
         // lets parse articles because there are not sub categories
         $articles = $this->articles->getArticlesByCategory($id);
@@ -251,88 +255,89 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
-	}
+    }
 
-	/**
-	 * Show the most read articles
-	 *
-	 * @global $_ARRAYLANG
-	 * @global $_LANGID
-	 */
-	private function mostRead()
-	{
-	    global $_LANGID, $_ARRAYLANG;
+    /**
+     * Show the most read articles
+     *
+     * @global $_ARRAYLANG
+     * @global $_LANGID
+     */
+    private function mostRead()
+    {
+        global $_LANGID, $_ARRAYLANG;
 
-	    $articles = $this->articles->getMostRead($_LANGID);
+        $articles = $this->articles->getMostRead($_LANGID);
         $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], 0);
-	}
+    }
 
-	/**
-	 * Show the best rated articles
-	 *
-	 * @global $_LANGID
-	 * @global $_ARRAYLANG
-	 */
-	private function bestRated()
-	{
-	    global $_LANGID, $_ARRAYLANG;
+    /**
+     * Show the best rated articles
+     *
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     */
+    private function bestRated()
+    {
+        global $_LANGID, $_ARRAYLANG;
 
-	    $articles = $this->articles->getBestRated($_LANGID);
-	    $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], 0);
-	}
+        $articles = $this->articles->getBestRated($_LANGID);
+        $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], 0);
+    }
 
-	/**
-	 * Show an article
-	 *
-	 * @global $_LANGID
-	 * @global $_ARRAYLANG
-	 */
-	private function article()
-	{
-	    global $_LANGID, $_ARRAYLANG;
+    /**
+     * Show an article
+     *
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     */
+    private function article()
+    {
+        global $_LANGID, $_ARRAYLANG;
+        static $e;
 
-	    if (empty($_GET['id'])) {
-	        return;
-	    } else {
-	        $id = intval($_GET['id']);
-	    }
+        if (empty($_GET['id'])) {
+            return;
+        } else {
+            $id = intval($_GET['id']);
+        }
 
-	    try {
-	        $this->articles->readArticles(false, $_LANGID, $id);
-	        $this->categories->readCategories();
-	        $this->articles->hit($id);
-	        $tags = $this->tags->getByArticle($id, $_LANGID);
-	    } catch (DatabaseError $e) {
-	        return;
-	    }
-	    $article = $this->articles->articles[$id];
-	    $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
-	    $amount = $article['votes'];
+        try {
+            $this->articles->readArticles(false, $_LANGID, $id);
+            $this->categories->readCategories();
+            $this->articles->hit($id);
+            $tags = $this->tags->getByArticle($id, $_LANGID);
+        } catch (DatabaseError $e) {
+            return;
+        }
+        $article = $this->articles->articles[$id];
+        $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
+        $amount = $article['votes'];
 
-	    $this->tpl->setVariable(array(
-	       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
-	       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
-	       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
-	       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
-	       "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
-	       "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
-	       "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
+        $this->tpl->setVariable(array(
+           "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
+           "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
+           "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
+           "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
+           "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
+           "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
+           "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
 
-	       "ARTICLEID"     => $id,
-	       "QUESTION"      => $article['content'][$_LANGID]['question'],
-	       "ANSWER"        => $article['content'][$_LANGID]['answer'],
-	       "AVERAGE"       => round($average, 2),
-	       "AMOUNT_OF_RATING" => $amount,
+           "ARTICLEID"     => $id,
+           "QUESTION"      => $article['content'][$_LANGID]['question'],
+           "ANSWER"        => $article['content'][$_LANGID]['answer'],
+           "AVERAGE"       => round($average, 2),
+           "AMOUNT_OF_RATING" => $amount,
 
-	       "MAX_RATING"    => $this->settings->get("max_rating"),
+           "MAX_RATING"    => $this->settings->get("max_rating"),
            "LOCKED"        => $this->checkLocking($id),
-	       "HITS"          => $article['hits'],
+           "HITS"          => $article['hits'],
 
-	       "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
-    	   "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
-	    ));
+           "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
+           "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
+        ));
 
-	    $this->showCrumbtrail($article['category']);
+        $this->showCrumbtrail($article['category']);
 
         $this->parseTags($tags);
 
@@ -341,107 +346,108 @@ class Knowledge extends KnowledgeLibrary
         JS::activate('prototype');
         JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
-	}
+    }
 
-	/**
-	 * Show the tags of an article
-	 *
-	 * @param array $tags
-	 * @global $_ARRAYLANG
-	 */
-	private function parseTags($tags)
-	{
-	    global $_ARRAYLANG;
+    /**
+     * Show the tags of an article
+     *
+     * @param array $tags
+     * @global $_ARRAYLANG
+     */
+    private function parseTags($tags)
+    {
+        global $_ARRAYLANG;
 
-	    $tag_keys = array_keys($tags);
-	    foreach ($tags as $id => $tag) {
-	        $this->tpl->setVariable(array(
-	           "TAGID"     => $id,
-	           "TAG"       => $tag['name']
-	        ));
-	        if ($tag_keys[count($tag_keys)-1] == $id) {
-	            $this->tpl->parse("lasttag");
-	        } else {
-	           $this->tpl->parse("tag");
-	        }
-	    }
-	    $this->tpl->setVariable("TXT_TAGS", $_ARRAYLANG['TXT_TAGS']);
-	    $this->tpl->parse("tags");
-	}
+        $tag_keys = array_keys($tags);
+        foreach ($tags as $id => $tag) {
+            $this->tpl->setVariable(array(
+               "TAGID"     => $id,
+               "TAG"       => $tag['name']
+            ));
+            if ($tag_keys[count($tag_keys)-1] == $id) {
+                $this->tpl->parse("lasttag");
+            } else {
+               $this->tpl->parse("tag");
+            }
+        }
+        $this->tpl->setVariable("TXT_TAGS", $_ARRAYLANG['TXT_TAGS']);
+        $this->tpl->parse("tags");
+    }
 
-	/**
-	 * Hit article
-	 *
-	 * Increment the hit counter of an article.
-	 * Called through ajax.
-	 */
-	private function hitArticle()
-	{
-	    $id = intval($_GET['id']);
+    /**
+     * Hit article
+     *
+     * Increment the hit counter of an article.
+     * Called through ajax.
+     */
+    private function hitArticle()
+    {
+        static $e;
 
-	    try {
-	        $this->articles->hit($id);
-	    } catch (DatabaseError $e) {
-	        return;
-	    }
-	    die();
-	}
+        $id = intval($_GET['id']);
+        try {
+            $this->articles->hit($id);
+        } catch (DatabaseError $e) {
+            return;
+        }
+        die();
+    }
 
-	/**
-	 * Show all articles of a tag
-	 *
-	 * @global $_LANGID
-	 * @global $_ARRAYLANG
-	 */
-	private function showTag()
-	{
-	    global $_LANGID, $_ARRAYLANG;
+    /**
+     * Show all articles of a tag
+     *
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     */
+    private function showTag()
+    {
+        global $_LANGID, $_ARRAYLANG;
 
-	    if (empty($_GET['tid'])) {
-	        return;
-	    } else {
-	        $id = $_GET['tid'];
-	    }
-	    try {
-	        $tag = $this->tags->getArticlesByTag($id);
-	        $this->articles->readArticles();
-	    } catch (DatabaseError $e) {
-	        echo $e->plain();
-	        return;
-	    }
+        if (empty($_GET['tid'])) {
+            return;
+        } else {
+            $id = $_GET['tid'];
+        }
+        try {
+            $tag = $this->tags->getArticlesByTag($id);
+            $this->articles->readArticles();
+        } catch (DatabaseError $e) {
+            echo $e->plain();
+            return;
+        }
 
         if (count($tag['articles'])) {
             foreach ($tag['articles'] as $articleid) {
                 $article = $this->articles->articles[$articleid];
                 if ($article['active']) {
-	                $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
-	                $amount = $article['votes'];
-    	            $this->tpl->setVariable(array(
-    	               "ARTICLE_ID"    => $articleid,
-    	               "QUESTION"      => $article['content'][$_LANGID]['question'],
-    	               "ANSWER"        => $article['content'][$_LANGID]['answer'],
-            	       "AVERAGE"       => round($average, 2),
-            	       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
-            	       "AMOUNT_OF_RATING" => $amount,
-            	       "MAX_RATING"    => $this->settings->get("max_rating"),
+                    $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
+                    $amount = $article['votes'];
+                    $this->tpl->setVariable(array(
+                       "ARTICLE_ID"    => $articleid,
+                       "QUESTION"      => $article['content'][$_LANGID]['question'],
+                       "ANSWER"        => $article['content'][$_LANGID]['answer'],
+                       "AVERAGE"       => round($average, 2),
+                       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
+                       "AMOUNT_OF_RATING" => $amount,
+                       "MAX_RATING"    => $this->settings->get("max_rating"),
                        "LOCKED"        => $this->checkLocking($articleid),
-            	       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
-            	       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
-	                   "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
-        	           "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
-        	           "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
-	                   "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
-    	            ));
+                       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
+                       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
+                       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
+                       "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
+                       "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
+                       "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
+                    ));
 
-    	            try {
-    	                $tags = $this->tags->getByArticle($articleid, $_LANGID);
-    	            } catch (DatabaseError $e) {
-    	                // nothing yet
-    	            }
+                    try {
+                        $tags = $this->tags->getByArticle($articleid, $_LANGID);
+                    } catch (DatabaseError $e) {
+                        // nothing yet
+                    }
 
-    	            $this->parseTags($tags);
+                    $this->parseTags($tags);
 
-    	            $this->tpl->parse("article");
+                    $this->tpl->parse("article");
                 }
             }
             $this->tpl->setVariable(array(
@@ -450,22 +456,23 @@ class Knowledge extends KnowledgeLibrary
             ));
             $this->tpl->parse("articles");
         }
-	}
+    }
 
-	/**
-	 * Show the search results
-	 *
-	 * @global $_ARRAYLANG
-	 * @global $_LANGID
-	 */
-	private function search()
-	{
-	    global $_ARRAYLANG, $_LANGID;
+    /**
+     * Show the search results
+     *
+     * @global $_ARRAYLANG
+     * @global $_LANGID
+     */
+    private function search()
+    {
+        global $_ARRAYLANG, $_LANGID;
+        static $e;
 
         require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterface.php";
         require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterfaces/searchKnowledge.php";
 
-	    $searchterm = !empty($_GET['term']) ? $_GET['term'] : "";
+        $searchterm = !empty($_GET['term']) ? $_GET['term'] : "";
 
         if (!empty($searchterm)) {
             $search = new searchKnowledge();
@@ -509,11 +516,9 @@ class Knowledge extends KnowledgeLibrary
                    try {
                        $tags = $this->tags->getByArticle($articleid, $_LANGID);
                    } catch (DatabaseError $e) {
-                           // nothing yet
+                       // nothing yet
                    }
-
                    $this->parseTags($tags);
-
                    $this->tpl->parse("article");
                 }
             }
@@ -530,52 +535,53 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS("modules/knowledge/rating.js");
         JS::registerJS("modules/knowledge/frontend/search.js");
         JS::registerJS("modules/knowledge/frontend/slider.js");
-	}
+    }
 
-	/**
-	 * Show an article list
-	 *
-	 * @param array $articles
-	 * @param string $title
-	 * @global $_ARRAYLANG
-	 * @global $_LANGID
-	 * @return int
-	 */
-	private function parseArticleList($articles, $title, $counter=0, $url="")
-	{
-	    global $_ARRAYLANG, $_LANGID;
+    /**
+     * Show an article list
+     *
+     * @param array $articles
+     * @param string $title
+     * @global $_ARRAYLANG
+     * @global $_LANGID
+     * @return int
+     */
+    private function parseArticleList($articles, $title, $counter=0, $url="")
+    {
+        global $_ARRAYLANG, $_LANGID;
+        static $e;
 
         if (count($articles)) {
             foreach ($articles as $articleKey => $article) {
                 if ($article['active']) {
-	                $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
-	                $amount = $article['votes'];
-    	            $this->tpl->setVariable(array(
-    	               "ARTICLE_ID"    => $articleKey,
-    	               "COUNTER"       => $counter++,
+                    $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
+                    $amount = $article['votes'];
+                    $this->tpl->setVariable(array(
+                       "ARTICLE_ID"    => $articleKey,
+                       "COUNTER"       => $counter++,
 
-    	               "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
-            	       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
-            	       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
-            	       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
-            	       "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
-            	       "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
-            	       "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
+                       "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
+                       "TXT_TAGS"      => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
+                       "TXT_HITS"      => $_ARRAYLANG['TXT_KNOWLEDGE_HITS'],
+                       "TXT_CREATED"   => $_ARRAYLANG['TXT_KNOWLEDGE_CREATED'],
+                       "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
+                       "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
+                       "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
 
-            	       "QUESTION"      => $article['content'][$_LANGID]['question'],
-            	       "ANSWER"        => $article['content'][$_LANGID]['answer'],
-            	       "AVERAGE"       => round($average, 2),
-            	       "AMOUNT_OF_RATING" => $amount,
+                       "QUESTION"      => $article['content'][$_LANGID]['question'],
+                       "ANSWER"        => $article['content'][$_LANGID]['answer'],
+                       "AVERAGE"       => round($average, 2),
+                       "AMOUNT_OF_RATING" => $amount,
 
-            	       "MAX_RATING"    => $this->settings->get("max_rating"),
+                       "MAX_RATING"    => $this->settings->get("max_rating"),
                        "LOCKED"        => $this->checkLocking($articleKey),
-            	       "HITS"          => $article['hits'],
+                       "HITS"          => $article['hits'],
 
-            	       "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
-                	   "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
-    	            ));
+                       "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
+                       "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
+                    ));
 
-    	            try {
+                    try {
                         $tags = $this->tags->getByArticle($articleKey, $_LANGID);
                     } catch (DatabaseError $e) {
                         // nothing yet
@@ -583,7 +589,7 @@ class Knowledge extends KnowledgeLibrary
 
 
                     $this->parseTags($tags);
-    	            $this->tpl->parse("article");
+                    $this->tpl->parse("article");
                 }
             }
             $this->tpl->setVariable("TXT_ARTICLELIST", $title);
@@ -595,93 +601,91 @@ class Knowledge extends KnowledgeLibrary
         }
 
         return $counter;
-	}
+    }
 
-	/**
-	 * Show the crumbtrail path
-	 *
-	 * @global $_LANGID
-	 * @global $_ARRAYLANG
-	 * @param int $id
-	 */
-	private function showCrumbtrail($id)
-	{
-	    global $_LANGID, $_ARRAYLANG;
+    /**
+     * Show the crumbtrail path
+     *
+     * @global $_LANGID
+     * @global $_ARRAYLANG
+     * @param int $id
+     */
+    private function showCrumbtrail($id)
+    {
+        global $_LANGID, $_ARRAYLANG;
 
-	    $this->tpl->setVariable(array(
+        $this->tpl->setVariable(array(
             "TXT_START"     => $_ARRAYLANG['TXT_START']
-	    ));
+        ));
 
-	    /**
-	     * Crumbtrail
-	     */
-	    $catPath = $this->getCatPath($id);
-	    foreach ($catPath as $pathElem) {
-	        $this->tpl->setVariable(array(
-	           "CRUMB"     => $this->categories->categories[$pathElem]['content'][$_LANGID]['name'],
-	           "ID"        => $pathElem
-	        ));
-	        $this->tpl->parse("crumb");
-	    }
-	    $this->tpl->parse("crumbtrail");
-	}
+        /**
+         * Crumbtrail
+         */
+        $catPath = $this->getCatPath($id);
+        foreach ($catPath as $pathElem) {
+            $this->tpl->setVariable(array(
+               "CRUMB"     => $this->categories->categories[$pathElem]['content'][$_LANGID]['name'],
+               "ID"        => $pathElem
+            ));
+            $this->tpl->parse("crumb");
+        }
+        $this->tpl->parse("crumbtrail");
+    }
 
-	/**
-	 * Get Category Path
-	 *
-	 * Get a liste of all preceeding categories for a
-	 * crumb path
-	 * @param int $id
-	 * @return array
-	 */
-	private function getCatPath($id)
-	{
-	    $this->catPath = array();
-	    $this->getCatPathR($this->categories->categoryTree, $id);
+    /**
+     * Get Category Path
+     *
+     * Get a liste of all preceeding categories for a
+     * crumb path
+     * @param int $id
+     * @return array
+     */
+    private function getCatPath($id)
+    {
+        $this->catPath = array();
+        $this->getCatPathR($this->categories->categoryTree, $id);
 
-	    return array_reverse($this->catPath);
-	}
+        return array_reverse($this->catPath);
+    }
 
-	/**
-	 * Recursive function to generate the crumb path list
-	 *
-	 * @param array $arr
-	 * @param int $id
-	 * @return bool
-	 */
-	private function getCatPathR($arr, $id)
-	{
+    /**
+     * Recursive function to generate the crumb path list
+     *
+     * @param array $arr
+     * @param int $id
+     * @return bool
+     */
+    private function getCatPathR($arr, $id)
+    {
 
-	    foreach ($arr as $key => $subcats) {
-	        if ($key == $id) {
-	            // this is the current category
-	            $this->catPath[] = $key;
-	            return true;
-	        }
-	        if ($subcats) {
-	            if ($this->getCatPathR($subcats, $id)) {
-	                // the current category is within this category
-	                $this->catPath[] = $key;
-	                return true;
-	            }
-	        }
-	    }
+        foreach ($arr as $key => $subcats) {
+            if ($key == $id) {
+                // this is the current category
+                $this->catPath[] = $key;
+                return true;
+            }
+            if ($subcats) {
+                if ($this->getCatPathR($subcats, $id)) {
+                    // the current category is within this category
+                    $this->catPath[] = $key;
+                    return true;
+                }
+            }
+        }
 
-	    return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Rate an article
-	 *
-	 * Called through ajax
-	 */
-	private function rate()
-	{
-        global $_CONFIG;
+    /**
+     * Rate an article
+     *
+     * Called through ajax
+     */
+    private function rate()
+    {
+        $id = intval($_POST['id']);
 
-	    $id = intval($_POST['id']);
-
-	    $rated = intval($_POST['rated']);
+        $rated = intval($_POST['rated']);
         if (!isset($_COOKIE['knowledge_rating_'.$id])) {
             try {
                 var_dump(setcookie('knowledge_rating_'.$id, 'rated', 0, ASCMS_PATH_OFFSET.'/'));
@@ -690,8 +694,8 @@ class Knowledge extends KnowledgeLibrary
                 die($e->plain());
             }
         }
-	    die();
-	}
+        die();
+    }
 
     /**
      * Return string for javascript if the cookie is set
@@ -706,3 +710,5 @@ class Knowledge extends KnowledgeLibrary
     }
 
 }
+
+?>
