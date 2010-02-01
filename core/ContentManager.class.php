@@ -645,18 +645,16 @@ class ContentManager
             $langCount++;
             $checked = '';
             $tabClass = 'inactive';
-            if ($arrLang['frontend'] == 0) continue;
-            if ($arrLang['id'] == $this->langId) {
-                $tabClass = 'active';
-                $defaultLang = $arrLang['id'];
-                $checked = ' checked="checked"';
-                $objTemplate->setVariable(array(
-                    'LANGUAGE_NAME'  => $arrLang['name'],
-                    'LANGUAGE_TITLE' => $arrLang['name'].'_'.$arrLang['id'],
-                    'TAB_CLASS'      => $tabClass,
-                ));
-                $objTemplate->parse('languages_tab');
-            }
+            if ($arrLang['frontend'] == 0) continue; //skip inactive languages
+            $tabClass = $arrLang['id'] == $this->langId ? 'active' : '';
+            $defaultLang = $arrLang['id'];
+            $checked = ' checked="checked"';
+            $objTemplate->setVariable(array(
+                'LANGUAGE_NAME'  => $arrLang['name'],
+                'LANGUAGE_TITLE' => $arrLang['name'].'_'.$arrLang['id'],
+                'TAB_CLASS'      => $tabClass,
+            ));
+            $objTemplate->parse('languages_tab');
             $langActivateCheckbox =
                 '<input type="checkbox" id="lang_'.
                 $arrLang['lang'].'_'.$arrLang['id'].'"'.$checked.' />'.
@@ -675,7 +673,7 @@ class ContentManager
 
         $objTemplate->setVariable('LANGUAGE_COUNT', $langCount+1);
 
-        if (isset($_GET['pageId']) & !empty($_GET['pageId'])) {
+        if (isset($_GET['pageId']) && !empty($_GET['pageId'])) {
             $pageId = intval($_GET['pageId']);
 
             $objResult = $objDatabase->Execute("
@@ -1027,7 +1025,9 @@ class ContentManager
             $checked = '';
             ++$langCount;
             $tabClass = 'inactive';
-            if (array_key_exists($arrLang['id'], $arrContentLanguages) && $arrLang['frontend'] == 1) {
+            if (/*removed due to change that every lang has to exists for each page, so always show all tabs*/
+            /*array_key_exists($arrLang['id'], $arrContentLanguages) && */
+            $arrLang['frontend'] == 1) {
                 $activeLangCount++;
                 if ($this->langId == $arrLang['id'])
                     $tabClass = 'active';
