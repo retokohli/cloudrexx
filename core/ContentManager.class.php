@@ -333,6 +333,7 @@ class ContentManager
             ));
 
             foreach (FWLanguage::getLanguageArray() as $key) {
+                if ($key['frontend'] == 0){ continue; }
                 if ($key['id'] == $this->langId) {
                     $objTemplate->setVariable(array(
                         'LANG_OLD_ID' => $this->langId,
