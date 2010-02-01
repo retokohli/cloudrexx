@@ -1066,4 +1066,5 @@ $_ARRAYLANG['TXT_CONTENT_EDITSTATUS_PUBLISHED'] = "veröffentlicht";
 $_ARRAYLANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'] = "%s: Die Sprache %s muss eine normale Contentseite sein, wenn diese als Vorlage verwendet werden soll.";
 $_ARRAYLANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'] = "Die Sprache %s wird noch als Vorlage für folgende Sprache(n) verwendet: %s";
 $_ARRAYLANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'] = "Die Sprache %s kann sich nicht selber referenzieren.";
+$_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCTIPTION'] = "Nach Kategorien und Ebenen strukturiertes Medien Verzeichnis";
 ?>
