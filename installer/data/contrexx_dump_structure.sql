@@ -218,9 +218,11 @@ CREATE TABLE `contrexx_content` (
   `metarobots` varchar(7) NOT NULL default 'index',
   `css_name` varchar(50) NOT NULL default '',
   `redirect` varchar(255) NOT NULL default '',
+  `useContentFromLang` smallint(5) unsigned NOT NULL default '0' COMMENT 'content of which language to use if typeUseContentFromLang is enabled',
   `expertmode` set('y','n') NOT NULL default 'n',
   PRIMARY KEY  (`id`,`lang_id`),
   KEY `lang_id` (`lang_id`),
+  KEY `useContentFromLang` (`useContentFromLang`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
@@ -238,9 +240,11 @@ CREATE TABLE `contrexx_content_history` (
   `metarobots` varchar(7) NOT NULL default 'index',
   `css_name` varchar(50) NOT NULL default '',
   `redirect` varchar(255) NOT NULL default '',
+  `useContentFromLang` smallint(5) unsigned NOT NULL default '0' COMMENT 'content of which language to use if typeUseContentFromLang is enabled',
   `expertmode` set('y','n') NOT NULL default 'n',
   PRIMARY KEY  (`id`),
   KEY `page_id` (`page_id`,`lang_id`),
+  KEY `useContentFromLang` (`useContentFromLang`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
@@ -267,6 +271,7 @@ CREATE TABLE `contrexx_content_navigation` (
   `displaystatus` set('on','off') NOT NULL default 'on',
   `activestatus` set('0','1') NOT NULL default '1',
   `cachingstatus` set('0','1') NOT NULL default '1',
+  `editstatus` enum('draft','ready_for_translation','translated','controlled','published') NOT NULL default 'draft',
   `username` varchar(40) NOT NULL default '',
   `changelog` int(14) default NULL,
   `cmd` varchar(50) NOT NULL default '',
@@ -299,6 +304,7 @@ CREATE TABLE `contrexx_content_navigation_history` (
   `displaystatus` set('on','off') NOT NULL default 'on',
   `activestatus` set('0','1') NOT NULL default '1',
   `cachingstatus` set('0','1') NOT NULL default '1',
+  `editstatus` enum('draft','ready_for_translation','translated','controlled','published') NOT NULL default 'draft',
   `username` varchar(40) NOT NULL default '',
   `changelog` int(14) default NULL,
   `cmd` varchar(50) NOT NULL default '',
