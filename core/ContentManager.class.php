@@ -1961,6 +1961,7 @@ class ContentManager
     function addPage()
     {
         global $objDatabase, $_CORELANG, $objTemplate;
+
         if (!empty($_POST['category'])) {
             $parcat = intval($_POST['category']);
         } else {
@@ -1986,7 +1987,32 @@ class ContentManager
         }
         $robotstatus = ($_POST['robots'] == "index" ? "index" : "noindex");
         if($_POST['TypeSelection'] == 'useContentFromLang'){
-            $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId);
+            $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId, $langId);
+            if(!empty($useContentFromLang['error'])){
+                switch ($useContentFromLang['error']) {
+                	case 1:
+              		    $error = sprintf($_CORELANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'], $arrLang[$langId]['name'], $arrLang[$_POST['useContentFromLang']]['name']);
+                		break;
+                	case 2:
+                	    $usedByLangs = array();
+                	    foreach ($useContentFromLang['usedBy'] as $usedByLangId) {
+                	       $usedByLangs[] = $arrLang[$usedByLangId]['name'];
+                	    }
+                        $error = sprintf($_CORELANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'], $arrLang[$langId]['name'], implode(',', $usedByLangs));
+                	    break;
+                	case 3:
+                        $error = sprintf($_CORELANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'], $arrLang[$langId]['name']);
+                	    break;
+                	default:
+                	    die();
+                		break;
+                }
+                die(json_encode(array(
+                    'error'         => $error,
+                    'langName'      => $langName,
+                    'lastUpdate'    => $lastUpdate,
+        		)));
+            }
         } else {
             $useContentFromLang = 0;
         }
@@ -2126,8 +2152,9 @@ class ContentManager
             $_POST['backendInherit'] = !empty($_POST['backendInherit']) ? $_POST['backendInherit'] : false;
             $_POST['assignedBackendGroups'] = !empty($_POST['assignedBackendGroups']) ? $_POST['assignedBackendGroups'] : array();
             $this->_setPageProtection($pageId, $parcat, $protect, $_POST['assignedBackendGroups'], 'backend', $_POST['backendInherit'], $langId);
-            $this->strOkMessage .= $homemessage;
-
+            if(!empty($homemessage)){
+                $this->strOkMessage .= $homemessage;
+            }
             // Write cache file if enabled
             $objCache = new Cache();
             $objCache->writeCacheablePagesFile();
@@ -2201,7 +2228,7 @@ class ContentManager
                            useContentFromLang="'.$useContentFromLang.'",
                            expertmode="'.$expertmode.'"');
             }
-            $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
+            $this->modifyBlocks(!empty($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array(), $pageId, $langId);
             die(json_encode(array(
                 'pageId'        => $pageId,
                 'langName'      => $langName,
@@ -3221,7 +3248,7 @@ class ContentManager
              WHERE page_id=".$pageId.' AND lang_id='.$langId
         );
         if ($objResult) {
-            foreach ($associatedBlockIds as $blockId) {
+            if($associatedBlockIds) foreach ($associatedBlockIds as $blockId) {
                 $objDatabase->Execute('
                     INSERT INTO '.DBPREFIX.'module_block_rel_pages
                        SET block_id='.$blockId.',
