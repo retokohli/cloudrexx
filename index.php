@@ -1545,6 +1545,9 @@ switch ($plainSection) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objForum = new Forum($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
+        if(!empty($objForum->pageTitle)){
+            $page_metatitle = $objForum->pageTitle;
+        }
 //        $moduleStyleFile = 'modules/forum/css/frontend_style.css';
         break;
 

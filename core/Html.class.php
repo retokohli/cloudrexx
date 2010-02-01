@@ -432,6 +432,11 @@ class Html
             ' />';
     }
 
+    static function stripUriParam($uri, $param){
+        $uri = html_entity_decode($uri, ENT_QUOTES, CONTREXX_CHARSET);
+        return preg_replace('/'.$param.'=[^&]+&?/', '', $uri);
+    }
+
 }
 
 ?>
