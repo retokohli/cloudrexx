@@ -25,9 +25,9 @@ require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
  */
 class Forum extends ForumLibrary
 {
-    var $_objTpl;
-    var $strError = ''; //errormessage for captcha
-
+    public $_objTpl;
+    public $strError = ''; //errormessage for captcha
+    public $pageTitle;
 
     /**
      * Constructor
@@ -723,6 +723,7 @@ class Forum extends ForumLibrary
         }
 
         $firstPost = current($arrPosts);
+        $this->pageTitle = $firstPost['subject'];
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
             require ASCMS_CORE_PATH.'/wysiwyg.class.php';
@@ -733,6 +734,7 @@ class Forum extends ForumLibrary
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';
         }
+
         $this->_objTpl->setGlobalVariable(array(
             'FORUM_JAVASCRIPT_GOTO'                 =>    $this->getJavascript('goto'),
             'FORUM_JAVASCRIPT_DELETE'               =>    $this->getJavascript('deletePost'),
@@ -1798,13 +1800,23 @@ class Forum extends ForumLibrary
                             </script>';
                 break;
             case 'insertText':
-                $boardId        = $data[0];
-                $threadId       = $data[1];
-                $firstPost      = $data[2];
-                $thanks         = $_ARRAYLANG['TXT_FORUM_RATING_THANKS'];
-                $confirmClose   = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_CONFIRM_'.$firstPost['is_locked']];
-                $confirmSticky  = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_'.$firstPost['is_sticky']];
-                $confirmDelete  = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM']."\\n".$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'];
+                if(!empty($data)){
+                    $boardId        = $data[0];
+                    $threadId       = $data[1];
+                    $firstPost      = $data[2];
+                    $thanks         = $_ARRAYLANG['TXT_FORUM_RATING_THANKS'];
+                    $confirmClose   = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_CONFIRM_'.$firstPost['is_locked']];
+                    $confirmSticky  = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_'.$firstPost['is_sticky']];
+                    $confirmDelete  = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM']."\\n".$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'];
+                }else{
+                    $boardId        = '';
+                    $threadId       = '';
+                    $firstPost      = '';
+                    $thanks         = $_ARRAYLANG['TXT_FORUM_RATING_THANKS'];
+                    $confirmClose   = '';
+                    $confirmSticky  = '';
+                    $confirmDelete  = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM']."\\n".$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'];
+                }
 
                 $allowedExtensions = str_replace(',', ', ', $this->_arrSettings['allowed_extensions']);
                 $strJavaScript = <<< EOJS
