@@ -310,7 +310,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
           SELECT `c`.`content`, `c`.`title`, `c`.`redirect`,
                  `c`.`metatitle`, `c`.`metadesc`,
                  `c`.`metakeys`, `c`.`metarobots`,
-                 `c`.`css_name`,
+                 `c`.`css_name`, `c`.`useContentFromLang`,
                  `n`.`catname`, `n`.`protected`,
                  `n`.`frontend_access_id`, `n`.`changelog`".
                  (!empty($history) ? ', `n`.`catid`' : '')."
@@ -355,6 +355,41 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $page_access_id = $objResult->fields['frontend_access_id'];
     $page_template  = $themesPages['content'];
     $page_modified  = $objResult->fields['changelog'];
+
+    //check if we're using content from another language and fetch if true
+    if($objResult->fields['useContentFromLang'] > 0){
+         $query = "
+          SELECT `c`.`content`
+            FROM `".DBPREFIX.(empty($history) ? 'content' : 'content_history')."` AS `c`,
+                 `".DBPREFIX.(empty($history) ? 'content_navigation' : 'content_navigation_history')."` AS `n`
+           WHERE `c`.`id`=".(empty($history) ? $pageId : $history)."
+             AND `c`.`id`=".(!empty($history) ? '`n`.`id`' : "`n`.`catid`
+             AND c.lang_id = n.lang
+             AND (`n`.`startdate`<=CURDATE() OR `n`.`startdate`='0000-00-00')
+             AND (`n`.`enddate`>=CURDATE() OR `n`.`enddate`='0000-00-00')
+             AND `n`.`activestatus`='1'
+             AND `n`.`is_validated`='1'")
+          ." AND c.lang_id=".$objResult->fields['useContentFromLang'];
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult === false || $objResult->EOF) {
+            if ($plainSection == 'error') {
+                // If the error module is not installed, show this
+                die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+            }
+            header('Location: index.php?section=error&id=404');
+            exit;
+        }
+        if ($frontPreview != 1) {
+            $page_content = ($frontEditing
+              ? ( ($frontEditingContent != '')
+                  ? $frontEditingContent
+                  : $objResult->fields["content"])
+              : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>');
+            $page_title = htmlentities(
+                $objResult->fields["title"], ENT_QUOTES, CONTREXX_CHARSET);
+        }
+    }
+
 
     if ($history) {
         $objPageProtection = $objDatabase->SelectLimit('

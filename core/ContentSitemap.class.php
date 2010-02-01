@@ -38,6 +38,7 @@ class ContentSitemap
     public $navCmd = array();
     public $navDisplaystatus = array();
     public $navActiveStatus = array();
+    public $navEditStatus = array();
     public $navProtection = array();
     public $navSons = array();
     public $navIsValidated = array();
@@ -81,6 +82,7 @@ class ContentSitemap
                          n.module AS section,
                          n.displaystatus AS displaystatus,
                          n.activestatus AS activestatus,
+                         n.editstatus AS editstatus,
                          n.parcat AS parcat,
                          n.protected AS protected,
                          FROM_UNIXTIME(n.changelog,'%d.%m.%Y %T') AS changelog,
@@ -113,6 +115,7 @@ class ContentSitemap
             $this->navProtected[$objResult->fields['catid']]=$objResult->fields['protected'];
             $this->navDisplaystatus[$objResult->fields['catid']]=$objResult->fields['displaystatus'];
             $this->navActiveStatus[$objResult->fields['catid']]=$objResult->fields['activestatus'];
+            $this->navEditStatus[$objResult->fields['catid']]=$objResult->fields['editstatus'];
             $this->navIsValidated[$objResult->fields['catid']] = $objResult->fields['isValidated'];
             $this->currentid = $currentid;
 
@@ -267,7 +270,6 @@ class ContentSitemap
                     $moduleReference
                 );
             }
-
        	    $objTpl->setVariable(array(
        	        'SITEMAP_PAGE_ID'               => $arrPage['pageId'],
        	        'SITEMAP_UL_CLASS'              => $ulClass,
@@ -282,7 +284,7 @@ class ContentSitemap
        	        'SITEMAP_PAGE_TITLE'            => htmlentities($arrPage['title'], ENT_QUOTES, CONTREXX_CHARSET),
        	        'SITEMAP_PAGE_TITLE_HREF'       => $this->_getPageClickHref($moduleReference, $pageId),
        	        'SITEMAP_USERNAME'              => $this->navUsername[$pageId],
-       	        'SITEMAP_LAST_EDITED'           => $this->navChangelog[$pageId],
+       	        'SITEMAP_LAST_EDITED'           => sprintf('%s (%s)', $this->navChangelog[$pageId], $_CORELANG['TXT_CONTENT_EDITSTATUS_'.strtoupper($this->navEditStatus[$pageId])]),
        	        'SITEMAP_PAGE_NODE_CLASS'       => $hasChildren ? 'hasChildren nodeExpanded' : 'hasNoChildren',
        	        'SITEMAP_MODULE'                => $this->navModule[$pageId],
        	        'SITEMAP_PAGE_CMD'              => $this->navCmd[$pageId],
