@@ -348,7 +348,7 @@ class Printshop extends PrintshopLibrary {
         do{ i++; }
              while( amount > priceThresholds[i] && i < 15 );
 
-        if(roundUpIndex && i > roundUpIndex && amount != priceThresholds[i]){
+        if(roundUpIndex > 0 && i > roundUpIndex && amount != priceThresholds[i] && amount < priceThresholds[priceThresholds.length-1]){
             amount = priceThresholds[i];
             \$J('#amount').val(amount);
         }
@@ -837,7 +837,7 @@ EOJ;
         do{ i++ }
              while( amount > priceThresholds[i] && i < 15 );
 
-        if(roundUpIndex && i > roundUpIndex && amount != priceThresholds[i]){
+        if(roundUpIndex > 0 && i > roundUpIndex && amount != priceThresholds[i] && amount < priceThresholds[priceThresholds.length-1]){
             amount = priceThresholds[i];
             \$J('#amount').val(amount);
         }

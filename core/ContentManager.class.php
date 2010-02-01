@@ -1531,7 +1531,7 @@ class ContentManager
      * @param int $intDestLangId language ID of the content to be used
      * @param int $intPageId the ID of the page
      * @param int $intSrcLangId ID of language which will use the content of $intDestLangId
-     * @return int language id if valid, otherwise negative error value (-1 dest is not normal page, -2 source is already used by other page and must remain a normal content site)
+     * @return int language id if valid, otherwise negative error value (1 => dest is not normal page, 2 => source is already used by other page and must remain a normal content site, 3 => self reference)
      */
     function _checkUseContentFromLang($intDestLangId, $intPageId, $intSrcLangId){
         global $objDatabase;
@@ -1636,7 +1636,7 @@ class ContentManager
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
         $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirectUrl'])) : '';
         if($_POST['TypeSelection'] == 'useContentFromLang'){
-            $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId, $langId);            
+            $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId, $langId);
             if(!empty($useContentFromLang['error'])){
                 switch ($useContentFromLang['error']) {
                 	case 1:
@@ -1645,7 +1645,7 @@ class ContentManager
                 	case 2:
                 	    $usedByLangs = array();
                 	    foreach ($useContentFromLang['usedBy'] as $usedByLangId) {
-                	       $usedByLangs[] = $arrLang[$usedByLangId]['name'];                	       
+                	       $usedByLangs[] = $arrLang[$usedByLangId]['name'];
                 	    }
                         $error = sprintf($_CORELANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'], $arrLang[$langId]['name'], implode(',', $usedByLangs));
                 	    break;
@@ -1653,14 +1653,14 @@ class ContentManager
                         $error = sprintf($_CORELANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'], $arrLang[$langId]['name']);
                 	    break;
                 	default:
-                	    die();                	    
+                	    die();
                 		break;
                 }
                 die(json_encode(array(
                     'error'         => $error,
                     'langName'      => $langName,
                     'lastUpdate'    => $lastUpdate,
-        		)));                
+        		)));
             }
         } else {
             $useContentFromLang = 0;
@@ -1912,7 +1912,7 @@ class ContentManager
                        is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"');
         }
         $_POST['assignedBlocks'] = !empty($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array();
-        $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);        
+        $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
         if ($lastUpdate) {
             //write caching-file, delete exisiting cache-files
             $objCache = new Cache();
@@ -3318,14 +3318,14 @@ class ContentManager
                 $query = '
                     SELECT `redirect`,
                            `useContentFromLang`
-                    FROM  `'.DBPREFIX.'content`                                          
+                    FROM  `'.DBPREFIX.'content`
                     WHERE `id`='.$pageId.'
                     AND `lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
                 if (!empty($objRS->fields['redirect'])) { //redirect isn't empty, set the type to redirect
                     $arrJson['TypeSelection'] = 'redirect';
                 } elseif($objRS->fields['useContentFromLang'] > 0) { //useContentFromLang field isn't empty, set the type to useContentFromLang
-                    $arrJson['TypeSelection'] = 'useContentFromLang';                    
+                    $arrJson['TypeSelection'] = 'useContentFromLang';
                 } else { //normal content
                     $arrJson['TypeSelection'] = 'content';
                 }
@@ -3402,18 +3402,20 @@ class ContentManager
                     SELECT `useContentFromLang`
                       FROM `".DBPREFIX."content`
                      WHERE `id`=$pageId
-                       AND `lang_id`=$langId");                
-                
+                       AND `lang_id`=$langId");
+
+                //redirect targets
                 $targets = '<option value=""></option>';
                 foreach ($this->_arrRedirectTargets as $target) {
                     if (empty($target)) continue;
-                    $selected = $target == $objRS->fields['target'] ? ' selected="selected"' : '';                    
+                    $selected = $target == $objRS->fields['target'] ? ' selected="selected"' : '';
                     $targets .= '<option'.$selected.' value="'.$target.'">'.$_CORELANG['TXT_TARGET'.strtoupper($target)].' ('.$target.')</option>';
                 }
-                
+
                 $arrLangs = FWLanguage::getLanguageArray();
                	$useContentFromLang = array();
-                
+
+               	//useContentFromLang
                 foreach ($arrLangs as $arrLang) {
                     if($arrLang['frontend'] != 1){
                         continue;
@@ -3421,7 +3423,14 @@ class ContentManager
                     $selected = $objRS2->fields['useContentFromLang'] == $arrLang['id'] ? ' selected="selected"' : '';
                 	$useContentFromLang[] = '<option'.$selected.' value="'.$arrLang['id'].'">'.$arrLang['name'].'</option>';
                 }
-                
+
+                //editStatus
+                $editStatus = array('<option value="">'.$_CORELANG['TXT_CONTENT_EDITSTATUS'].'</option>');
+                foreach ($this->arrEditStatus as $index => $value) {
+                    $selected = $objRS->fields['editstatus'] == $value ? ' selected="selected"' : '';
+                    $editStatus[] = sprintf('<option'.$selected.' value="'.$value.'">'.$_CORELANG['TXT_CONTENT_EDITSTATUS_'.strtoupper($value)].'</option>');
+                }
+
                 $selects['themesId']['options']                 = $this->_getThemesMenu($objRS->fields['themes_id']);
                 $selects['themesId']['value']                   = $objRS->fields['themes_id'];
                 $selects['selectmodule']['options']             = '<option value="">'.$_CORELANG['TXT_NO_MODULE'].'</option>'.$this->_getModuleMenu($objRS->fields['module']);
@@ -3434,7 +3443,8 @@ class ContentManager
                 $selects['assignedBackendGroups[]']['options']  = $assignedBackendGroups;
                 $selects['existingBlocks[]']['options']         = $blocks[1];
                 $selects['assignedBlocks[]']['options']         = $blocks[0];
-                $selects['useContentFromLang'] ['options']      = implode("\n", $useContentFromLang);
+                $selects['useContentFromLang']['options']       = implode("\n", $useContentFromLang);
+                $selects['editstatus']['options']               = implode("\n", $editStatus);
                 $selects['langName']                            = $langName;
                 header('Content-Type: application/json');
                 die(json_encode($selects));

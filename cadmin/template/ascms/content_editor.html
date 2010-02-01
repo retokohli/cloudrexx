@@ -327,12 +327,12 @@ var previewContent = function(){
     var pageId  = $J('input[name=pageId]', $form).val();
     var langId  = $J('#contentLanguages a.active', $form).attr('title').replace(/.*?(\d+)$/, '$1');
     var useContentFromLang = 0;
-    
+
     if($J('input[name=TypeSelection]:checked', $form).val() == 'useContentFromLang'){
         var useContentFromLang = $J('select[name=useContentFromLang] option:selected').text();
         var content = $J('textarea[name=html]').data(useContentFromLang);
     }
-    
+
     var cmd     = $J('input[name=command]', $form).val();
     var section = $J('select[name=selectmodule] option:selected', $form).text();
     var title   = $J('input[name=title]', $form).val();
@@ -487,7 +487,7 @@ var submitForm = function(event){
         });
     });
     _CONTREXX_FORCE_SWAP = false;
-    if($J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
+    if($J.browser.msie || $J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
         goToUrlCSRF('{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId);
         return false;
     }
@@ -497,14 +497,14 @@ var submitForm = function(event){
     return false;
 }
 
-var submitError = function(xhr, textStatus, errorThrown){ 
+var submitError = function(xhr, textStatus, errorThrown){
      if($J('.alertbox').length==1){
-        var $box = $J('.alertbox');            
+        var $box = $J('.alertbox');
         var attrs = '';
      }else{
-        var $box = $J('#errormessagetarget');            
+        var $box = $J('#errormessagetarget');
         var attrs = 'style="position: relative; width: '+($J('th', $J('form[name=formContent]')).eq(0).width()-10)+'px;" \
-                     class="alertbox"';            
+                     class="alertbox"';
      }
      $J('#errormessagetarget').append('<div class="alertbox">XHR['+textStatus+']: '+errorThrown+'</div>').find(':last-child')
                               .css({opacity: 0.9}).delay(3000).fadeOut(3000, function(){$J(this).remove()});
@@ -519,12 +519,12 @@ var submitSuccess = function(data, textStatus){
     var lang   = data.langName;
     if(data.error){ //we've had an invalid value for useContentLFromLang. show error
         if($J('.alertbox').length > 0){
-            var $box = $J('.alertbox');            
+            var $box = $J('.alertbox');
             var attrs = '';
         }else{
-            var $box = $J('#errormessagetarget');            
+            var $box = $J('#errormessagetarget');
             var attrs = 'style="position: relative; width: '+($J('th', $J('form[name=formContent]')).eq(0).width()-10)+'px;" \
-                         class="alertbox"';            
+                         class="alertbox"';
         }
         $box.append('<div '+attrs+'>'+data.error+'</div>').find(':last-child')
             .css({opacity: 0.9}).delay(4000).fadeOut(4000, function(){$J(this).remove()});
@@ -534,7 +534,7 @@ var submitSuccess = function(data, textStatus){
         $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_INSERT_PAGE}</div>').find(':last-child')
                                  .css({opacity: 0.9}).delay(4000).fadeOut(4000, function(){$J(this).remove()});
     }else{ //everything seems fine, show confirmation
-        if($J('.okbox').length > 0){ 
+        if($J('.okbox').length > 0){
             var $box = $J('.okbox');
             var attrs = '';
         }else{
@@ -681,9 +681,9 @@ var swapLanguage = function(aElement, langName){
     if($J('#type_useContentFromLang tr.row2').data(langName) == 'warn'){
         $J('#type_useContentFromLang tr.row2').addClass('warn');
     } else {
-        $J('#type_useContentFromLang tr.row2').removeClass('warn');        
+        $J('#type_useContentFromLang tr.row2').removeClass('warn');
     }
-    
+
     $J('input', $form).attr('disabled', 'disabled');
 
     $form.find('select').each(function(){
@@ -905,7 +905,7 @@ var setNavMenu = function(data, textStatus){
 var setDataFetchError = function(xhr, textStatus, errorThrown){
     $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_GET_DATA}</div>').find(':last-child')
                              .css({opacity: 0.9}).delay(3000).fadeOut(4000, function(){$J(this).remove()});
-//    $J('#ajaxbusy,#ajaxwait').hide();                             
+//    $J('#ajaxbusy,#ajaxwait').hide();
 }
 
 
