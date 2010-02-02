@@ -50,4 +50,5 @@ $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Псевдоним не мог и
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "Псевдоним для этой страницы уже был определен!";
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "Этот псевдоним нигде не активирован!<br />Кликните на иконку для повторной активации.";
 $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Использовать по умолчанию:";
+$_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'] = "Open alias in a new window";
 ?>

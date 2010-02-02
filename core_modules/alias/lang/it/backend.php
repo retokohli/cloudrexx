@@ -50,4 +50,5 @@ $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Alias %s non può essere utilizza
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "Vi è già un alias per la pagina %s!";
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "Questo alias è più attivo! <br /> Fare clic sul pulsante per riattivare";
 $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Usano di default:";
+$_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'] = "Open alias in a new window";
 ?>
