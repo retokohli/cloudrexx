@@ -1818,7 +1818,7 @@ class ContentManager
                         UPDATE ".DBPREFIX."content
                            SET css_name='".$cssName."'
                          WHERE id=".$value.'
-                           AND `lang`='.$langId);
+                           AND `lang_id`='.$langId);
                 }
             }
         }
