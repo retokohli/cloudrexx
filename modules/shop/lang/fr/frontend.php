@@ -253,7 +253,7 @@ $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL'] = "HT";
 $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL'] = "TTC";
 $_ARRAYLANG['TXT_SHOP_VAT_RATE'] = "Taux de TVA";
 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_SAFERPAY'] = "Erreur lors de l'initialisation de Saferpay";
-$_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'] = "Erreur lors de l'initialisation de Yellowpay";
+$_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'] = "Fehler beim initialisieren des Postfinance E-Payment";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "-- Veuillez choisir --";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'] = "-- Veuillez choisir --";
 ?>
