@@ -684,7 +684,7 @@ class ContentManager
                  WHERE lang_id=".$defaultLang."
                    AND id=".$pageId);
             if ($objResult && $objResult->RecordCount() > 0) {
-                $contenthtml= $objResult->fields['content'];
+                $contenthtml = htmlentities($objResult->fields['content'], ENT_QUOTES, CONTREXX_CHARSET);
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$contenthtml);
                 $objTemplate->setVariable(array(
                     'CONTENT_HTML'       => get_wysiwyg_editor('html', $contenthtml),
@@ -1173,7 +1173,7 @@ class ContentManager
                  WHERE c.id=$pageId
                    AND c.lang_id=$langId");
             if ($objResult && $objResult->RecordCount() > 0) {
-                $contenthtml = $objResult->fields['content'];
+                $contenthtml = htmlentities($objResult->fields['content'], ENT_QUOTES, CONTREXX_CHARSET);
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $contenthtml);
                 $expertmodeValue = '';
                 if ($objResult->fields['expertmode'] == "y" ) {
