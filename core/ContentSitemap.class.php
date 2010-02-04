@@ -309,7 +309,6 @@ class ContentSitemap
         $objTpl->parse('list');
 
         if($first){
-            file_put_contents('output.txt', $objTpl->get());
             return $objTpl->get();
         }
     }
