@@ -291,7 +291,7 @@ $_ARRAYLANG['TXT_PARTNERS_IMPORT_DATASOURCE'] = "Import-Datenquelle";
 $_ARRAYLANG['TXT_PARTNERS_DATASOURCE_NONE'] = "Keine Datenquelle";
 $_ARRAYLANG['TXT_PARTNERS_DATASOURCE_REFRESH'] = "Datenquelle beim speichern aktualisieren";
 $_ARRAYLANG['TXT_PARTNERS_DATASOURCE_SHOP_COUNTRIES'] = "Länderliste aus dem Shop-Modul";
-$_ARRAYLANG['TXT_PARTNERS_TOTAL'] = "Totale Partnerzahl:";
+$_ARRAYLANG['TXT_PARTNERS_TOTAL'] = "Totale Anzahl Partner:";
 $_ARRAYLANG['TXT_PARTNERS_SETTINGS_MISC'] = "Verschiedenes";
 $_ARRAYLANG['TXT_PARTNERS_SETTINGS_IMAGES'] = "Bilder";
 $_ARRAYLANG['TXT_PARTNERS_IMAGE_SCALE_WIDTH'] = "Partnerlogo auf diese Breite skalieren";
@@ -301,4 +301,5 @@ $_ARRAYLANG['TXT_PARTNERS_RESET_SEARCH'] = "Suche zurücksetzen";
 $_ARRAYLANG['TXT_PARTNERS_HIDE_EMPTY_LABELS'] = "Verstecke Labels, die keinen Partner zugewisen haben";
 $_ARRAYLANG['TXT_PARTNERS_LOOK_FOR_LABELFREE'] = "Partner ohne Labels";
 $_ARRAYLANG['TXT_PARTNERS_SPECIAL_SEARCH'] = "Spezial-Suchfunktionen";
+$_ARRAYLANG['TXT_PARTNERS_SEARCH_TEXT'] = "Suchtext";
 ?>
