@@ -52,7 +52,8 @@ class FileBrowser {
         'shop'      => 'TXT_FILEBROWSER_SHOP',
         'blog'      => 'TXT_FILEBROWSER_BLOG',
         'podcast'   => 'TXT_FILEBROWSER_PODCAST',
-        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS'
+        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS',
+        'partners'  => 'TXT_FILEBROWSER_PARTNERS'
     );
     public $_shopEnabled;
     public $_blogEnabled;
@@ -238,6 +239,9 @@ class FileBrowser {
             case 'downloads':
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
                 break;
+            case 'partners':
+                $strWebPath = ASCMS_PARTNERS_IMAGES_WEB_PATH.$this->_path;
+                break;
             default:
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
@@ -365,6 +369,10 @@ class FileBrowser {
                 $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
             break;
+            case 'partners':
+                $strPath    = ASCMS_PARTNERS_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_PARTNERS_IMAGES_WEB_PATH.$this->_path;
+            break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -429,6 +437,10 @@ class FileBrowser {
             case 'downloads':
                 $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'partners':
+                $strPath    = ASCMS_PARTNERS_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_PARTNERS_IMAGES_WEB_PATH.$this->_path;
             break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -657,6 +669,9 @@ class FileBrowser {
                 case 'downloads':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
                     break;
+                case 'partners':
+                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PARTNERS_IMAGES_WEB_PATH);
+                break;
                 default:
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
             }
@@ -728,6 +743,9 @@ class FileBrowser {
             break;
             case 'downloads':
                 $strPath = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
+            break;
+            case 'partners':
+                $strPath    = ASCMS_PARTNERS_IMAGES_PATH.$this->_path;
             break;
             default:
                 $strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
