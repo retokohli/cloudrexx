@@ -46,7 +46,7 @@
         <tr class="{ROW_CLASS}">
             <td>{PARTNERS_LANGUAGE}:</td>
             <td>
-                <input style="width: 400px;" type="text" name="name[{PARTNERS_LANGID}]"   value="{PARTNERS_LANGUAGE_SINGULAR}"/>
+                <input style="width: 400px;" type="text" name="name[{PARTNERS_LANGID}]" class="label_translation"  value="{PARTNERS_LANGUAGE_SINGULAR}"/>
             </td>
         </tr>
         <!-- END translation_entry -->
@@ -54,6 +54,19 @@
 
     <p/>
 </form>
+
+<script type="text/javascript">
+     (function(){
+         var translations = $$('.label_translation');
+         Event.observe(translations[0], 'change', function() {
+             translations.each(function(item){
+                 if (item.getValue() == '' && item != translations[0]) {
+                    item.setValue(translations[0].getValue());
+                 }
+             });
+         });
+     })();
+</script>
     <!-- BEGIN entries_block -->
     <div id="label_entries">
         <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
