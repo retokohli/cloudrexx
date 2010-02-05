@@ -131,12 +131,18 @@ class PartnersFrontend extends PartnersBase  {
             }
         }
 
+        $this->_objTpl->TXT_SEARCH_VALUE = $fulltext;
+
         // Search for label and fulltext data
         $data = Partner::search($fulltext, $label_search, 'frontend');
+        if ($data->count() == 0) {
+            if ($this->_objTpl->blockExists('no_results')) {
+                $this->_objTpl->touchBlock("no_results");
+            }
+            return;
+        }
 
         $url_template = "index.php?cmd=partners&search=" . htmlspecialchars($fulltext) . '&p=%p';
-
-        $this->_objTpl->TXT_SEARCH_VALUE = $fulltext;
 
         $this->_objTpl->PARTNERS_ROW_COUNT = $data->count();
 
@@ -145,6 +151,9 @@ class PartnersFrontend extends PartnersBase  {
         $pager = new NGView_Pager($data, Request::GET('p', 0));
         $pager->put_placeholders($this->_objTpl, $url_template);
 
+        if ($this->_objTpl->blockExists('no_results')) {
+            $this->_objTpl->hideBlock("no_results");
+        }
         foreach ($pager->current()->rs() as $partner) {
             $this->show_partner($partner);
             $this->_objTpl->parse('partner_entry');
