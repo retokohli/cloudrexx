@@ -161,8 +161,7 @@ class PartnersFrontend extends PartnersBase  {
 
     }
 
-    function show_partner($partner) {
-        DBG::msg("showing partner... {$partner->name}");
+    private function put_partner_vars($partner) {
         $this->_objTpl->PARTNER_ID            = $partner->id;
         $this->_objTpl->PARTNER_NAME          = $partner->name;
         $this->_objTpl->PARTNER_CONTACT_NAME  = $partner->first_contact_name;
@@ -177,20 +176,32 @@ class PartnersFrontend extends PartnersBase  {
         $this->_objTpl->PARTNER_QUOTE         = $partner->customer_quote;
         $this->_objTpl->setVariable('PARTNER_DESCRIPTION', $partner->description);
 
+    }
+
+    function show_partner($partner) {
+        DBG::msg("showing partner... {$partner->name}");
+        $this->put_partner_vars($partner);
+
         // parse labels separately (using the block name from the label AssignableLabel)
         foreach (AssignableLabel::all($this->langid())->rs() as $label) {
             $block = 'PARTNER_'.$label->label_placeholder;
             if ($this->_objTpl->blockExists($block)) {
+                DBG::msg("parsing block '$block' START");
+                $this->_objTpl->setCurrentBlock($block);
                 $entries = $partner->assigned_entries($this->langid(), $label->id);
                 foreach ($entries->rs() as $entry) {
                 	$this->_objTpl->setCurrentBlock($block.'_ENTRY');
+                    DBG::msg("parsing block '{$block}_ENTRY' START");
+                    DBG::msg("parsing block '{$block}_ENTRY': e_id = " . $entry->id);
+                    DBG::msg("parsing block '{$block}_ENTRY': text = " . $entry->hierarchic_name($this->langid()));
                     $this->_objTpl->ENTRY_ID   = $entry->id;
                     $this->_objTpl->LABEL_ID   = $entry->label_id;
                     $this->_objTpl->ENTRY_TEXT = $entry->hierarchic_name($this->langid());
                     $this->_objTpl->PARTNER_ID = $partner->id;
                     $this->_objTpl->parse($block.'_ENTRY');
+                    $this->_objTpl->_variables = array();
+                    DBG::msg("parsing block '{$block}_ENTRY' END");
                 }
-                $this->_objTpl->setCurrentBlock($block);
                 /*unset($this->_objTpl->_variables["ENTRY_ID"]);
                 unset($this->_objTpl->_variables["LABEL_ID"]);
                 unset($this->_objTpl->_variables["ENTRY_TEXT"]);
@@ -198,8 +209,11 @@ class PartnersFrontend extends PartnersBase  {
 
                 $this->_objTpl->LABEL_NAME = $label->name($this->langid());
                 $this->_objTpl->parse($block);
+                $this->_objTpl->_variables = array();
+                DBG::msg("parsing block '$block' END");
             }
         }
+        $this->put_partner_vars($partner);
 
         // parse label list, if present
         if ($this->_objTpl->blockExists('label_list')) {
@@ -211,9 +225,13 @@ class PartnersFrontend extends PartnersBase  {
                     $this->_objTpl->ENTRY_TEXT = $entry->hierarchic_name($this->langid());
                     $this->_objTpl->PARTNER_ID = $partner->id;
                     $this->_objTpl->parse('label_entry');
+                    $this->_objTpl->_variables = array();
+                    $this->put_partner_vars($partner);
                 }
                 $this->_objTpl->LABEL_NAME = $label->name($this->langid());
                 $this->_objTpl->parse('label_list');
+                $this->_objTpl->_variables = array();
+                $this->put_partner_vars($partner);
             }
         }
 
@@ -240,20 +258,7 @@ class PartnersFrontend extends PartnersBase  {
             }
             DBG::msg("$dbg_msg $action");
             // WHY THE FUCK, SIGMA, WHY THE FUCK?
-            $this->_objTpl->PARTNER_ID            = $partner->id;
-            $this->_objTpl->PARTNER_NAME          = $partner->name;
-            $this->_objTpl->PARTNER_CONTACT_NAME  = $partner->first_contact_name;
-            $this->_objTpl->PARTNER_CONTACT_EMAIL = $partner->first_contact_email;
-            $this->_objTpl->PARTNER_WEB_URL       = $partner->web_url;
-            $this->_objTpl->PARTNER_CITY          = $partner->city;
-            $this->_objTpl->PARTNER_ADDRESS       = $partner->address;
-            $this->_objTpl->PARTNER_ZIP_CODE      = $partner->zip_code;
-            $this->_objTpl->PARTNER_PHONE_NR      = $partner->phone_nr;
-            $this->_objTpl->PARTNER_FAX_NR        = $partner->fax_nr;
-            $this->_objTpl->PARTNER_LOGO_URL      = ($partner->logo_url == "" ? "http://open.thumbshots.org/image.aspx?url=".$partner->web_url : ASCMS_IMAGE_PATH . $partner->logo_url);
-            $this->_objTpl->PARTNER_QUOTE         = $partner->customer_quote;
-            $this->_objTpl->setVariable('PARTNER_DESCRIPTION', $partner->description);
-
+            $this->put_partner_vars($partner);
             $this->_objTpl->$action($b);
         }
     }
