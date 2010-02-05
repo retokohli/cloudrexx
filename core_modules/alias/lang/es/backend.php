@@ -6,8 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_alias
  */
-$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Alias";
-$_ARRAYLANG['TXT_ALIAS_ALIAS'] = "Alias";
+$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "SEO URL Aliases";
+$_ARRAYLANG['TXT_ALIAS_ALIAS'] = "SEO URL Alias";
 $_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Configuraci&oacute;n";
 $_ARRAYLANG['TXT_ALIAS_DELETE'] = "Eliminar";
 $_ARRAYLANG['TXT_ALIAS_MODIFY'] = "Modificar";
