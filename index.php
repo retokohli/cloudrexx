@@ -1653,7 +1653,8 @@ switch ($plainSection) {
         $objPartners = new PartnersFrontend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPartners->getPage());
 
-        $page_title = $objPartners->getTitle($page_title);
+        $page_title     = $objPartners->getTitle($page_title);
+        $page_metatitle = $page_title;
 
         break;
 
