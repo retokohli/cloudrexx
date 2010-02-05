@@ -1650,8 +1650,11 @@ switch ($plainSection) {
         /** @ignore */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objPartners = new Partners($page_content);
+        $objPartners = new PartnersFrontend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPartners->getPage());
+
+        $page_title = $objPartners->getTitle($page_title);
+
         break;
 
     //-------------------------------------------------------
