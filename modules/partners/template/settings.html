@@ -21,14 +21,14 @@
     <!-- BEGIN settings_parsing_labels -->
         <tr class="row3">
             <td><span style="font-weight: bold">{TXT_PARTNERS_LABEL} '{PARTNERS_ASSIGNABLELABEL}'</span></td>
-            <td style="width: 20em;"><span style="font-weight: bold;">{TXT_PARTNERS_BLOCK_TO_PARSE}</span></td>
-            <td style="width: 20px;">&nbsp;</td>
+            <td><span style="font-weight: bold;">{TXT_PARTNERS_BLOCK_TO_PARSE}</span></td>
+			<td>&nbsp;</td>
         </tr>
         <!-- BEGIN settings_parsing_label_entry -->
         <tr class="{ROW_CLASS}">
             <td>{ENTRY_NAME}</td>
             <td>{ENTRY_BLOCK}</td>
-            <td>
+            <td style="text-align: right">
                 <form method="POST" id="drop_entry_{ENTRY_ID}"
                     action="index.php?cmd=partners&amp;act=settings&amp;do=drop_parse_entry">
                 <input type="hidden" name="entry_id" value="{ENTRY_ID}"/>
@@ -81,13 +81,9 @@
             <td style="width: 400px;"><input type="checkbox" {PARTNERS_HIDE_EMPTY_CHECKED} value="1" name="hide_empty_labels"></td>
             <td> </td>
         </tr>
-
-        <tr class="row2">
-            <td> </td>
-            <td> <input style="width: 182px; "type="submit" value="{TXT_SAVE}"/> </td>
-            <td>&nbsp;</td>
-        </tr>
 	</table>
+	<p/>
+	<input type="submit" value="{TXT_SAVE}"/>
     </form>
 </div>
 
