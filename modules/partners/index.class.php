@@ -142,7 +142,7 @@ class PartnersFrontend extends PartnersBase  {
             return;
         }
 
-        $url_template = "index.php?cmd=partners&search=" . htmlspecialchars($fulltext) . '&p=%p';
+        $url_template = "index.php?section=partners&search=" . htmlspecialchars($fulltext) . '&p=%p';
 
         $this->_objTpl->PARTNERS_ROW_COUNT = $data->count();
 
@@ -202,11 +202,8 @@ class PartnersFrontend extends PartnersBase  {
                     $this->_objTpl->_variables = array();
                     DBG::msg("parsing block '{$block}_ENTRY' END");
                 }
-                /*unset($this->_objTpl->_variables["ENTRY_ID"]);
-                unset($this->_objTpl->_variables["LABEL_ID"]);
-                unset($this->_objTpl->_variables["ENTRY_TEXT"]);
-                unset($this->_objTpl->_variables["PARTNER_ID"]);*/
 
+                $this->_objTpl->LABEL_ID   = $entry->label_id;
                 $this->_objTpl->LABEL_NAME = $label->name($this->langid());
                 $this->_objTpl->parse($block);
                 $this->_objTpl->_variables = array();

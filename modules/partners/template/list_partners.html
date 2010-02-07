@@ -29,11 +29,11 @@
         <form name="search_partners">
         <input type="hidden" name="cmd" value="partners">
         <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-            <tr><th colspan="7">{TXT_PARTNERS_OVERVIEW_TITLE} ({TXT_PARTNERS_TOTAL} {PARTNERS_TOTAL})</th></tr>
+            <tr><th colspan="7">{TXT_SEARCH}</th></tr>
             <tr>
                 <td colspan="7">
                     <div style="float:left;">
-                        <label for="search">{TXT_SEARCH}</label> <br/> <br/>
+                        <label for="search">{TXT_PARTNERS_SEARCH_TEXT}</label> <br/> <br/>
                         <input type="text" value="{TXT_SEARCH_VALUE}" name="search" id="search"/>
                     </div>
                     <!-- BEGIN label_searchbox -->
@@ -61,6 +61,7 @@
 
 <form action="index.php?cmd=partners&amp;act=partnermultiaction" method="POST" id="entries_form">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+    <tr><th colspan="7">{TXT_PARTNERS_OVERVIEW_TITLE} ({TXT_PARTNERS_TOTAL} {PARTNERS_TOTAL})</th></tr>
     <tr class="row3">
         <td width="16"><input type="checkbox" id="toggleall_checkbox" onclick="toggle_all()"/></th>
         <td width="16">&nbsp;</td>
