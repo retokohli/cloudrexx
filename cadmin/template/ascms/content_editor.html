@@ -976,7 +976,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         });
     }else{
         (function(){
-            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html){
+            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html && $('#cke_html').length > 0){
                 html = CKEDITOR.instances.html.getData();
                 var $editor  = $('#cke_html');
                 $editor.after('<textarea style="height:450px;width:100%;" name="html">'+html+'</textarea>');
