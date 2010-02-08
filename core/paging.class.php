@@ -102,7 +102,7 @@ class Paging
             '/^(?:\?|\&(?:amp;)?)?/', '&amp;', $uri_parameter);
 
 // I don't think it's a good idea to decode the URI without re-encoding
-// it later (see getPagingArray())!
+// it again later...
 //        $uri_parameter = urldecode($uri_parameter);
         $uri_parameter = $uri_parameter;
         // Strip script path, script name, and query mark (?) from the
