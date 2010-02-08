@@ -13,3 +13,6 @@
 News Manager
 - Bei der Bearbeitung einer News Meldung wird der Teaser Text mit dem richtigen
   Zeichensatz angezeigt.
+
+Veranstaltungskalender
+- Das Bearbeiten der Veranstaltungen funktioniert.
