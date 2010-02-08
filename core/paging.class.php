@@ -45,10 +45,10 @@ if (eregi("paging.class.php",$_SERVER['PHP_SELF'])) {
  * @todo      Change the system to use the new, static class method,
  *            then remove this one.
  */
-function getPaging($count, $pos, $uri_parameter, $paging_text, $showeverytime=false, $limit=null)
+function getPaging($count, $pos=null, $uri_parameter, $paging_text, $showeverytime=false, $limit=null)
 {
     return Paging::getPaging(
-        $count, $uri_parameter, $paging_text, $showeverytime, $limit
+        $count, $pos, $uri_parameter, $paging_text, $showeverytime, $limit
     );
 }
 
@@ -70,6 +70,8 @@ class Paging
      * @global    array       $_CONFIG        Configuration
      * @global    array       $_CORELANG      Core language
      * @param     integer     $count          The number of rows available
+     * @param     integer     $position       The optional starting position
+     *                                        offset.  Defaults to null
      * @param     string      $uri_parameter  Optional additional URI parameters,
      *                                        *MUST* start with an URI encoded
      *                                        ampersand (&amp;)
@@ -83,7 +85,8 @@ class Paging
      *                                        setting.
      * @return    string                      HTML code for the paging
      */
-    static function getPaging($count, &$uri_parameter, $paging_text, $showeverytime=false, $limit=0)
+    static function getPaging(
+        $count, $position=null, &$uri_parameter, $paging_text, $showeverytime=false, $limit=0)
     {
         global $_CONFIG, $_CORELANG;
 
@@ -108,7 +111,9 @@ class Paging
         // Prepend an encoded ampersand if the query is not empty
         if ($uri_parameter) $uri_parameter = '&amp;'.$uri_parameter;
 
-        $position = self::getPosition();
+        if (empty($position))
+            $position = self::getPosition();
+
         // Fix illegal values:
         // The position must be in the range [0 .. numof_rows - 1].
         // If it's outside this range, reset it to zero
@@ -211,18 +216,5 @@ class Paging
     }
 
 }
-
-/* TEST */
-//getPaging( 99,   0, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,   0, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(101,   0, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,   9, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,  10, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,  11, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,  89, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,  90, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,  91, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100,  99, '&foo=bar', 'Paging_Text', true, 10);
-//getPaging(100, 100, '&foo=bar', 'Paging_Text', true, 10);
 
 ?>
