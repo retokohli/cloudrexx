@@ -10,4 +10,6 @@
 ****************************************
 * Behobene Fehler **********************
 ****************************************
-
+News Manager
+- Bei der Bearbeitung einer News Meldung wird der Teaser Text mit dem richtigen
+  Zeichensatz angezeigt.
