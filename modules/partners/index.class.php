@@ -102,9 +102,11 @@ class PartnersFrontend extends PartnersBase  {
     // {{{ Overview
 
     function default_action() {
+        global $_CORELANG;
         $fulltext     = Request::cached_GET('search');
         $label_search = array();
 
+        $this->_objTpl->add_tr('TXT_SEARCH');
         // Show AssignableLabel in template and also add search values to
         // $label_search so we can filter partners.
         foreach (AssignableLabel::all($this->langid())->rs() as $label) {
@@ -131,7 +133,8 @@ class PartnersFrontend extends PartnersBase  {
             }
         }
 
-        $this->_objTpl->TXT_SEARCH_VALUE = $fulltext;
+        $this->_objTpl->add_tr('TXT_SEARCH');
+        $this->_objTpl->global_TXT_SEARCH_VALUE = $fulltext;
 
         // Search for label and fulltext data
         $data = Partner::search($fulltext, $label_search, 'frontend');
@@ -158,7 +161,7 @@ class PartnersFrontend extends PartnersBase  {
             $this->show_partner($partner);
             $this->_objTpl->parse('partner_entry');
         }
-
+        $this->_objTpl->global_TXT_SEARCH = $_CORELANG['TXT_SEARCH'];
     }
 
     private function put_partner_vars($partner) {
@@ -180,7 +183,6 @@ class PartnersFrontend extends PartnersBase  {
 
     function show_partner($partner) {
         DBG::msg("showing partner... {$partner->name}");
-        $this->put_partner_vars($partner);
 
         // parse labels separately (using the block name from the label AssignableLabel)
         foreach (AssignableLabel::all($this->langid())->rs() as $label) {
@@ -254,10 +256,10 @@ class PartnersFrontend extends PartnersBase  {
                 continue;
             }
             DBG::msg("$dbg_msg $action");
-            // WHY THE FUCK, SIGMA, WHY THE FUCK?
             $this->put_partner_vars($partner);
             $this->_objTpl->$action($b);
         }
+        $this->put_partner_vars($partner);
     }
 
     function detail_action() {
