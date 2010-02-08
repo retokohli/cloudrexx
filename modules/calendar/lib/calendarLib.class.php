@@ -16,6 +16,7 @@
 require_once ASCMS_LIBRARY_PATH."/activecalendar/activecalendar.php";
 require_once ASCMS_MODULE_PATH."/calendar/lib/settings.class.php";
 require_once ASCMS_MODULE_PATH."/calendar/lib/event.class.php";
+require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 
 if (!class_exists("calendarLibrary")) {
 /**
