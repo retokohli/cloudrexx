@@ -593,7 +593,6 @@ class PartnersAdmin extends PartnersBase {
                 break;
         }
         if ($sql_fragment) {
-            DBG::dump($_POST);
             foreach (Request::POST('checked_partner') as $e_id) {
                 NGDb::parse_execute($sql_fragment, $e_id);
             }
@@ -700,7 +699,6 @@ class PartnersAdmin extends PartnersBase {
             $label->save();
 
             if ($new_action || Request::POST('enable_autoimport') == 'on') {
-                DBG::msg("GOING TO IMPORT DATASOURCE");
                 $ds = $this->datasource_importer($label);
                 $ds->import();
             }
@@ -839,9 +837,9 @@ class PartnersAdmin extends PartnersBase {
             $this->_objTpl->ENTRY_DEFAULTPARTNER_CHK = $entry->default_partner ? 'checked="checked"' : '';
             $this->_objTpl->ENTRY_PARSE_CUSTOM_BLOCK = $entry->parse_custom_block;
             $this->_objTpl->TXT_TITLE                = tr('TXT_PARTNERS_EDIT_ENTRY');
-            $this->_objTpl->ENTRY_ID                 = $entry->id;
-            $this->_objTpl->LABEL_ID                 = $entry->label_id;
-            $this->_objTpl->PARENT_ID                = $entry->parent_entry_id;
+            $this->_objTpl->global_ENTRY_ID                 = $entry->id;
+            $this->_objTpl->global_LABEL_ID                 = $entry->label_id;
+            $this->_objTpl->global_PARENT_ID                = $entry->parent_entry_id;
 
             foreach ($this->_languages() as $lang) {
                 $this->_objTpl->PARTNERS_LANGID            = $lang->id;
