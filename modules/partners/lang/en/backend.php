@@ -302,4 +302,5 @@ $_ARRAYLANG['TXT_PARTNERS_HIDE_EMPTY_LABELS'] = "Hide Labels with no partners as
 $_ARRAYLANG['TXT_PARTNERS_LOOK_FOR_LABELFREE'] = "Partners without labels";
 $_ARRAYLANG['TXT_PARTNERS_SPECIAL_SEARCH'] = "Special search functions";
 $_ARRAYLANG['TXT_PARTNERS_SEARCH_TEXT'] = "Search text";
+$_ARRAYLANG['TXT_PARTNERS_LINKED_USERID'] = "Owner (user-id)";
 ?>
