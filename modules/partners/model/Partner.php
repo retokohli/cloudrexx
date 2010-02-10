@@ -29,6 +29,7 @@ class Partner extends NGModel {
                     'logo_url',
                     'description',
                     'active',
+                    'user_id',
                 );
             case 'primary': return 'id';
         };
