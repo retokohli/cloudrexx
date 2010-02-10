@@ -134,10 +134,12 @@ class PartnersBase {
         $this->_objTpl->add_tr('TXT_PARTNERS_RESET_SEARCH');
         $this->_objTpl->add_tr('TXT_PARTNERS_HIDE_EMPTY_LABELS');
         $this->_objTpl->add_tr('TXT_PARTNERS_SEARCH_TEXT');
+        $this->_objTpl->add_tr('TXT_PARTNERS_LINKED_USERID');
         $this->_objTpl->PARTNERS_DROPDOWN_JS_LOCATION     = ASCMS_MODULE_WEB_PATH . '/partners/js/dropdown.js';
         $this->_objTpl->PARTNERS_LABELBROWSER_JS_LOCATION = ASCMS_MODULE_WEB_PATH . '/partners/js/labelbrowser.js';
         $this->_objTpl->PARTNERS_LABEL_JS_LOCATION        = ASCMS_MODULE_WEB_PATH . '/partners/js/labels.js';
         $this->_objTpl->PARTNERS_POPUP_JS_LOCATION        = ASCMS_MODULE_WEB_PATH . '/partners/js/popup.js';
+
     }
     //  }}}
 
