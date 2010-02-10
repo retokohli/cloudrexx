@@ -58,7 +58,7 @@ var LabelDropdown = (function(){
 
     var find_in_tree = function(dd, elem_id) {
         var td = treedata[dd.id];
-        
+
         var found = null;
 
         var _set = function(elem) {
@@ -87,7 +87,7 @@ var LabelDropdown = (function(){
     var crumble_id_gen = 0;
     var add_crumble = function(dd, elem, append) {
         var old_options = dd.options;
-        
+
         var crumble_id = "dropdown_crumble_" + (crumble_id_gen++);
         var crumble_id_a = crumble_id + "_a";
         var crumble_html = '<span id="'+crumble_id+'"><a href="#" id="'+crumble_id+'_a">'+elem.name+'</a>: </span>';

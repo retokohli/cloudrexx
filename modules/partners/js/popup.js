@@ -75,7 +75,7 @@ var Popup = {
         return false;
     },
     show: function() {
-        Popup.get_popup().slideDown(500);
+        Popup.get_popup().show();
     },
     hide: function() {
         Popup.get_popup().hide();
