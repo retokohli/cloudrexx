@@ -7,7 +7,7 @@ var LabelBrowser = (function(){
     var treedata = {};
     var selects  = {};
 
-    var __elem_id_gen = 1; 
+    var __elem_id_gen = 1;
     var elem_id = function() {
         return __elem_id_gen++;
     };
@@ -23,7 +23,7 @@ var LabelBrowser = (function(){
 
     var find_in_tree = function(id, elem_id) {
         var td = treedata[id];
-        
+
         var found = null;
 
         var _set = function(elem) {
@@ -55,9 +55,9 @@ var LabelBrowser = (function(){
         var target = $(id);
         target.value = current;
 
-        clear(id);
-        draw(id, current);
         if (children.length) {
+			clear(id);
+			draw(id, current);
             add(id, children, 0);
         }
     };
