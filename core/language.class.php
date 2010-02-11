@@ -99,6 +99,10 @@ class LanguageManager
                 $this->deleteLanguage();
                 $this->languageOverview();
             break;
+            case 'truncate':
+                $this->_truncate();
+                $this->languageOverview();
+                break;
             case 'vars':
                 $this->listVariables();
             break;
@@ -159,6 +163,30 @@ class LanguageManager
                     $this->strOkMessage = $_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
                     return true;
                 }
+            }
+            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+        }
+        return false;
+    }
+
+    /**
+     * Clears the contents of the selected language and sets all "useContentFromLang" fields of that language to the default language
+     *
+     * @global    array
+     * @global    ADONewConnection
+     * @return    boolean    True on success, false on failure
+     */
+    function _truncate(){
+        global $_CORELANG, $objDatabase;
+        $defaultLangId = FWLanguage::getDefaultLangId();
+        if (!empty($_REQUEST['id']) && $_REQUEST['id'] != $defaultLangId) {
+            $query = "  UPDATE `".DBPREFIX."content`
+                        SET `content`='',
+                            `useContentFromLang` = $defaultLangId
+                        WHERE lang_id=".intval($_REQUEST['id']);
+            if ($objDatabase->Execute($query)) {
+                $this->strOkMessage = $_CORELANG['TXT_LANGUAGE_TRUNCATE_SUCCESS'];
+                return true;
             }
             $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         }
@@ -896,7 +924,11 @@ class LanguageManager
             'TXT_ADMINISTRATION_PAGES'       => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
             'TXT_WEB_PAGES'                  => $_CORELANG['TXT_WEB_PAGES'],
             'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],
-            'TXT_DEFAULT_LANGUAGE'           => $_CORELANG['TXT_STANDARD_LANGUAGE']
+            'TXT_DEFAULT_LANGUAGE'           => $_CORELANG['TXT_STANDARD_LANGUAGE'],
+            'TXT_LANGUAGE_TRUNCATE_CONTENT'  => $_CORELANG['TXT_LANGUAGE_TRUNCATE_CONTENT'],
+            'TXT_LANGUAGE_TRUNCATE_CONFIRM'  => $_CORELANG['TXT_LANGUAGE_TRUNCATE_CONFIRM'],
+            'CSRF_KEY'                       => CSRF::key(),
+            'CSRF_CODE'                      => CSRF::code(),
         ));
         //end language variables
 
@@ -907,8 +939,15 @@ class LanguageManager
         }
 
         $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."languages ORDER BY id");
+        $defaultLangId = FWLanguage::getDefaultLangId();
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+                if($objResult->fields['id'] == $defaultLangId){
+                    $objTemplate->hideBlock('truncateLang');
+                }else{
+                    $objTemplate->touchBlock('truncateLang');
+                }
+
                 $checked = "";
                 if ($objResult->fields['is_default']=="true") {
                   $checked = "checked";

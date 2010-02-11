@@ -1,5 +1,5 @@
 <?php
-
+$objDatabase->debug=99;
 /**
  * Modulemanager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -341,11 +341,47 @@ class modulemanager
                                    metadesc='$title',
                                    metakeys='$title',
                                    metarobots='index',
-                                   expertmode='$expertmode'
-                        ";
+                                   expertmode='$expertmode'";
                         if ($objDatabase->Execute($query) === false) {
                             $this->errorHandling();
                             return false;
+                        }
+                        foreach (FWLanguage::getLanguageArray() as $arrLang) {
+                        	if($arrLang['frontend'] < 1 || $arrLang['id'] == $this->langId){
+                        	    continue;
+                        	}
+                        	$query = "
+                                INSERT INTO ".DBPREFIX."content_navigation
+                                 SET   catid='$catid',
+                                       parcat='$parcat',
+                                       catname='$title',
+                                       module='$moduleid',
+                                       cmd='$cmd',
+                                       displayorder='$displayorder',
+                                       username='$username',
+                                       changelog='$currentTime',
+                                       protected='0',
+                                       displaystatus='$displaystatus',
+                                       `lang`=".$arrLang['id'];
+                        	if ($objDatabase->Execute($query)) {
+                                $paridarray[$modulerepid] = $catid;
+                                $query = "
+                                    INSERT INTO ".DBPREFIX."content
+                                       SET id=$catid,
+                                           lang_id=".$arrLang['id'].",
+                                           content='',
+                                           title='$title',
+                                           metatitle='$title',
+                                           metadesc='$title',
+                                           metakeys='$title',
+                                           metarobots='index',
+                                           useContentFromLang=".FWLanguage::getDefaultLangId().",
+                                           expertmode='$expertmode'";
+                                if ($objDatabase->Execute($query) === false) {
+                                    $this->errorHandling();
+                                    return false;
+                                }
+                            }
                         }
                         $parcat = $catid;
                     } else {

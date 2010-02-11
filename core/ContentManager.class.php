@@ -646,10 +646,9 @@ class ContentManager
         foreach (FWLanguage::getLanguageArray() as $arrLang) {
             $langCount++;
             $checked = '';
-            $tabClass = 'inactive';
             if ($arrLang['frontend'] == 0) continue; //skip inactive languages
             $activeLangCount++;
-            $tabClass = $arrLang['id'] == $this->langId ? 'active' : '';
+            $tabClass = $arrLang['id'] == $this->langId ? 'active' : 'inactive';
             $defaultLang = $arrLang['id'];
             $checked = ' checked="checked"';
             $objTemplate->setVariable(array(
@@ -1041,13 +1040,11 @@ class ContentManager
         foreach (FWLanguage::getLanguageArray() as $arrLang) {
             $checked = '';
             ++$langCount;
-            $tabClass = 'inactive';
+            $tabClass = $arrLang['id'] == $this->langId ? 'active' : 'inactive';
             if (/*removed due to change that every lang has to exists for each page, so always show all tabs*/
             /*array_key_exists($arrLang['id'], $arrContentLanguages) && */
             $arrLang['frontend'] == 1) {
                 $activeLangCount++;
-                if ($this->langId == $arrLang['id'])
-                    $tabClass = 'active';
                 $checked = ' checked="checked"';
                 $objTemplate->setVariable(array(
                     'LANGUAGE_NAME'  => $arrLang['name'],
@@ -3347,7 +3344,7 @@ class ContentManager
                      WHERE c.id=".$pageId.' AND c.lang_id='.$langId, 1);
                 $alias = $objRS->fields['alias_url'];
                 $query = '
-                    SELECT `c`.`content`, `c`.`title`, `c`.`metatitle`,
+                    SELECT `c`.`content` AS `content`, `c`.`title`, `c`.`metatitle`,
                            `c`.`metadesc` AS `desc`, `c`.`redirect` AS `redirectUrl`,
                            `c`.`metakeys` AS `key`, `c`.`css_name` AS `cssName`, `n`.`cmd` AS `command`,
                            `n`.`catname` AS `newpage`, `n`.`startdate`, `n`.`enddate`, `n`.`css_name` AS `cssNameNav`
@@ -3358,6 +3355,7 @@ class ContentManager
                        AND `c`.`lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
                 $objRS->fields['langName'] = $langName;
+                $objRS->fields['content']  = !empty($objRS->fields['content']) ? $objRS->fields['content'] : '';
                 $objRS->fields['content']  = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $objRS->fields['content']);
                 $objRS->fields['alias']    = $alias;
                 header('Content-Type: application/json');
@@ -3417,10 +3415,26 @@ class ContentManager
                      WHERE `c`.`id`='.$pageId.'
                        AND `c`.`lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
-                $objRS->fields['displaystatus']   = ($objRS->fields['displaystatus'] == 'on'    ? ' checked="checked"' : '');
-                $objRS->fields['cachingstatus']   = ($objRS->fields['cachingstatus'] == 1       ? ' checked="checked"' : '');
-                $objRS->fields['expertmode']      = ($objRS->fields['expertmode']    == "y"     ? ' checked="checked"' : '');
-                $objRS->fields['robots']          = ($objRS->fields['robots']        == "index" ? ' checked="checked"' : '');
+                if(isset($objRS->fields['displaystatus'])){
+                    $objRS->fields['displaystatus']   = ($objRS->fields['displaystatus'] == 'on'    ? ' checked="checked"' : '');
+                } else {
+                    $objRS->fields['displaystatus']   = '';
+                }
+                if(isset($objRS->fields['cachingstatus'])){
+                    $objRS->fields['cachingstatus']   = ($objRS->fields['cachingstatus'] == 1       ? ' checked="checked"' : '');
+                } else {
+                    $objRS->fields['cachingstatus']   = '';
+                }
+                if(isset($objRS->fields['expertmode'])){
+                    $objRS->fields['expertmode']   = ($objRS->fields['expertmode']    == "y"     ? ' checked="checked"' : '');
+                } else {
+                    $objRS->fields['expertmode']   = '';
+                }
+                if(isset($objRS->fields['robots'])){
+                    $objRS->fields['robots']   = ($objRS->fields['robots']        == "index" ? ' checked="checked"' : '');
+                } else {
+                    $objRS->fields['robots']   = '';
+                }
                 $objRS->fields['themesRecursive'] = false;
                 $objRS->fields['backendInherit']  = false;
                 $objRS->fields['recursive']       = false;
@@ -3588,7 +3602,7 @@ class ContentManager
                             <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
                         </tr>
                         <tr>
-                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_CL_CATEGORY'].'</b></div></td>
+                            <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>'.$_CORELANG['TXT_CATEGORY'].'</b></div></td>
                             <td valign="top"><div style="border-bottom:0px;">{CHANGELOG_CATEGORY}</div></td>
                             <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
                             <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
@@ -3606,7 +3620,7 @@ class ContentManager
     <table summary="" cellpadding="3" cellspacing="0" border="0">
         <tr>
             <td>
-                <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="'.$_CORELANG['TXT_MARKED'].':" />
+                <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="->" />
                 <a href="#" onclick="changeCheckboxes(\'formContent\',\'selectedChangelogId[]\',true); return false;">'.$_CORELANG['TXT_SELECT_ALL'].'</a> /
                 <a href="#" onclick="changeCheckboxes(\'formContent\',\'selectedChangelogId[]\',false); return false;">'.$_CORELANG['TXT_DESELECT_ALL'].'</a>
                 <img src="images/icons/strike.gif" alt="layout" />
