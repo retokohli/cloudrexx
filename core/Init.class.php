@@ -717,7 +717,7 @@ class InitCMS
         $isMobile = false;
 // TODO: What a crap!  Check the indices for existence before reading them.
         $old_er = error_reporting(0);
-        $op = strtolower($_SERVER['HTTP_X_OPERAMINI_PHONE']);
+        $op = strtolower(isset($_SERVER['HTTP_X_OPERAMINI_PHONE']) ? $_SERVER['HTTP_X_OPERAMINI_PHONE'] : '');
         $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
         $ac = strtolower($_SERVER['HTTP_ACCEPT']);
         error_reporting($old_er);

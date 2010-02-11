@@ -35,8 +35,8 @@ class cacheLib
         $handleDir = opendir($this->strCachePath);
         if ($handleDir) {
             while ($strFile = readdir($handleDir)) {
-                if ($strFile != '.' && $strFile != '..' && $strFile != $this->strCacheablePagesFile) {
-                    unlink($this->strCachePath.$strFile);
+                if (!is_dir($this->strCachePath.$strFile) && $strFile != '.' && $strFile != '..' && $strFile != $this->strCacheablePagesFile) {
+                    @unlink($this->strCachePath.$strFile);
                 }
             }
             closedir($handleDir);

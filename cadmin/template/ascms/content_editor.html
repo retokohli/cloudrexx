@@ -643,6 +643,7 @@ var swapLanguage = function(aElement, langName){
 
     $form.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
         var $radio = $J($form.find('input[name='+$J(this).attr('name')+']:first'));
+        //console.log($form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']'));
         $radio.data(lastActive, $J(this).val());
         typeof $radio.data($a.text()) == 'undefined'
             ? $radio.click()
@@ -809,6 +810,7 @@ var getContentData = function(a){
        success: setSelect,
        error: setDataFetchError
     });
+
 
     $J.ajax({
        url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=history',
@@ -1009,6 +1011,22 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     if(location.href.match(/act=edit/)){ //if we're editing get tab data for all tabs except first one, which is already loaded
         $('#contentLanguages li a.inactive').each(function(){
             getTabData(this);
+        });
+    } else { //new page, only get the select dropdowns because thats the only thing that differs between the languages
+        var pageId = $J('form[name=formContent] input[name=pageId]').val();
+        $('#contentLanguages li a.inactive').each(function(){
+            var langId = $J(this).attr('title').replace(/.*?(\d+)$/, '$1');
+            var langName = $J(this).text();
+            $J.ajax({
+               url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=select',
+               type: 'POST',
+               async: true,
+               cache: false,
+               data: {page: pageId , lang: langId, langName: langName},
+               dataType: 'json',
+               success: setSelect,
+               error: setDataFetchError
+            });
         });
     }
 
