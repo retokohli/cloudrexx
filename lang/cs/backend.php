@@ -1068,4 +1068,5 @@ $_ARRAYLANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'] = "%s: Die Sprache 
 $_ARRAYLANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'] = "Die Sprache %s wird noch als Vorlage für folgende Sprache(n) verwendet: %s";
 $_ARRAYLANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'] = "Die Sprache %s kann sich nicht selber referenzieren.";
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCTIPTION'] = "Nach Kategorien und Ebenen strukturiertes Medien Verzeichnis";
+$_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Management and presentation of business partners";
 ?>

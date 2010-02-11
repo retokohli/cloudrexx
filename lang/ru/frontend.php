@@ -202,4 +202,5 @@ $_ARRAYLANG['TXT_CSRF_TITLE'] = "Ein Fehler ist aufgetreten";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = "Aus Sicherheitsgründen wurde diese Aktion blockiert. Falls diese Meldung wiederholt auftaucht, versuchen Sie, weniger Browserfenster offen zu halten.";
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 $_ARRAYLANG['TXT_ACCESS_PLEASE_SELECT'] = "Please select...";
+$_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Management and presentation of business partners";
 ?>
