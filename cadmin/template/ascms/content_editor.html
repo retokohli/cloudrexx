@@ -507,7 +507,7 @@ var submitError = function(xhr, textStatus, errorThrown){
                      class="alertbox"';
      }
      $J('#errormessagetarget').append('<div class="alertbox">XHR['+textStatus+']: '+errorThrown+'</div>').find(':last-child')
-                              .css({opacity: 0.9}).delay(3000).fadeOut(3000, function(){$J(this).remove()});
+                              .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
 }
 
 var submitComplete = function(xhr, textStatus){
@@ -527,12 +527,12 @@ var submitSuccess = function(data, textStatus){
                          class="alertbox"';
         }
         $box.append('<div '+attrs+'>'+data.error+'</div>').find(':last-child')
-            .css({opacity: 0.9}).delay(4000).fadeOut(4000, function(){$J(this).remove()});
+            .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
         $J('#type_useContentFromLang tr.row2').addClass('rowWarn'); //indicate wrong value
         $J('#type_useContentFromLang tr.row2').data(lang, 'warn'); //save for tab switches
     }else if(pageId < 0){ //page wasn't inserted, DB error? show error
         $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_INSERT_PAGE}</div>').find(':last-child')
-                                 .css({opacity: 0.9}).delay(4000).fadeOut(4000, function(){$J(this).remove()});
+                                 .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
     }else{ //everything seems fine, show confirmation
         if($J('.okbox').length > 0){
             var $box = $J('.okbox');
@@ -543,7 +543,7 @@ var submitSuccess = function(data, textStatus){
                          class="okbox"';
         }
         $box.append('<div '+attrs+'>{TXT_SUCCESS_PAGE_SAVED} '+lang+'</div>').find(':last-child')
-            .css({opacity: 0.9}).delay(4000).fadeOut(4000, function(){$J(this).remove()});
+            .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
         $J('#type_useContentFromLang tr.row2').removeClass('rowWarn');
         $J('#type_useContentFromLang tr.row2').data(lang, '');
     }
@@ -904,7 +904,7 @@ var setNavMenu = function(data, textStatus){
 
 var setDataFetchError = function(xhr, textStatus, errorThrown){
     $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_GET_DATA}</div>').find(':last-child')
-                             .css({opacity: 0.9}).delay(3000).fadeOut(4000, function(){$J(this).remove()});
+                             .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
 //    $J('#ajaxbusy,#ajaxwait').hide();
 }
 
@@ -913,6 +913,19 @@ var saveFormElementData = function(event, lang){
     //var $container = $J('form[name=formContent]');
     //skeleton for custom event handler, might be useful later
 }
+
+
+var resetRowClasses = function(){
+    var i=0;
+    $J('#content1 > table.adminlist tr').each(function(){
+        $J(this).removeClass('row1 row2');
+        if($J(this).is('.hidden')){
+            return;
+        }
+        $J(this).addClass('row' + (i++ % 2 == 0 ? 1 : 2));
+    });
+}
+
 
 //(function(){$J('#contentLanguages li a.inactive').eq(0).click();setTimeout(arguments.callee,100)})();
 $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
@@ -974,9 +987,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
                              +CKEDITOR.instances.html.getData()+'</textarea>');
             });
         });
-    }else{
+/*    }else{
         (function(){
-            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html && $('#cke_html').length > 0){
+            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html){
                 html = CKEDITOR.instances.html.getData();
                 var $editor  = $('#cke_html');
                 $editor.after('<textarea style="height:450px;width:100%;" name="html">'+html+'</textarea>');
@@ -984,7 +997,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
             }else{
                 setTimeout(arguments.callee, 100);
             }
-        })()
+        })()*/
     }
 
     $('form[name=formContent] th:first-child').each(
@@ -1057,6 +1070,19 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     $J('#copyLangContentBtn').click(function(){
         var content = $J('textarea[name=html]').data($J('#copyLangContentSel option:selected').val())
         setFrameContent(content);
+    });
+
+    $J('#toggleMetaData').toggle(function(){
+        $J(this).removeClass('nodeCollapsed');
+        $J(this).addClass('nodeExpanded');
+        $J('.meta').removeClass('hidden');
+        resetRowClasses();
+    },
+    function(){
+        $J(this).removeClass('nodeExpanded');
+        $J(this).addClass('nodeCollapsed');
+        $J('.meta').addClass('hidden');
+        resetRowClasses();
     });
 
 }); //end document ready (~onload)
@@ -1155,26 +1181,26 @@ if(typeof console === 'undefined'){
           </td>
         </tr>
         <tr class="row1">
-          <td>{TXT_CONTENT_TITLE}</td>
+          <td><a href="#" id="toggleMetaData" class="nodeCollapsed">&nbsp;&nbsp;&nbsp;&nbsp;</a><span style="margin-left: 3px;">{TXT_CONTENT_TITLE}<span></td>
           <td><input type="text" name="title" value="{CONTENT_TITLE_VAL}" maxlength="250" size="80" /></td>
         </tr>
-        <tr class="row2">
+        <tr class="row2 hidden meta">
           <td>{TXT_META_TITLE}</td>
           <td><input type="text" name="metatitle" value="{CONTENT_META_TITLE}" maxlength="250" size="80" /></td>
         </tr>
-        <tr class="row1">
+        <tr class="row1 hidden meta">
           <td>{TXT_META_DESCRIPTION}</td>
           <td><input type="text" name="desc" value="{CONTENT_DESC}" maxlength="250" size="80" /></td>
         </tr>
-        <tr class="row2">
+        <tr class="row2 hidden meta">
           <td>{TXT_META_KEYWORD}</td>
           <td><input type="text" name="key" value="{CONTENT_KEY}" size="80" /></td>
         </tr>
-        <tr class="row1" {CONTENT_ALIAS_DISABLE}>
+        <tr class="row2" {CONTENT_ALIAS_DISABLE}>
           <td>{TXT_DEFAULT_ALIAS}</td>
           <td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
         </tr>
-        <tr class="row2" {CONTENT_ALIAS_DISABLE}>
+        <tr class="row2 hidden" {CONTENT_ALIAS_DISABLE}>
           <td>&nbsp;</td>
           <td>{TXT_BASE_URL}<span style="font-weight: bold;" id="aliastarget">{CONTENT_ALIAS}</span></td>
         </tr>
@@ -1183,16 +1209,17 @@ if(typeof console === 'undefined'){
           <td>
             <input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
             <input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
+            <!-- BEGIN multilang_1 -->
             <input type="radio" id="typeUseContentFromLang" name="TypeSelection" value="useContentFromLang" onclick="modusSelection('type_useContentFromLang');" {CONTENT_TYPE_CHECKED_USE_CONTENT_FROM_LANG}><label for="typeUseContentFromLang">{TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG}</label>
-
-            <div style="float:right; text-align:right; min-width: 100%"> <input type="button" name="preview" value="{TXT_THEME_PREVIEW}" /> </div>
+            <!-- END multilang_1 -->
           </td>
         </tr>
+        <!-- BEGIN multilang_2 -->
         <tr class="row2">
             <td nowrap="nowrap">{TXT_USE_CONTENT_FROM_LANGUAGE}</td>
             <td>
                 <span>
-                    <select id="copyLangContentSel">
+                    <select id="copyLangContentSel" name="copyLangContent">
                         <!-- BEGIN copyLangContent -->
                         <option>{LANG_NAME}</option>
                         <!-- END copyLangContent -->
@@ -1202,6 +1229,7 @@ if(typeof console === 'undefined'){
 
             </td>
         </tr>
+        <!-- END multilang_2 -->
       </tbody>
     </table>
     <br />
@@ -1648,8 +1676,9 @@ if(typeof console === 'undefined'){
     <option {EDITSTATUS_SELECTED_READY_FOR_TRANSLATION} value="ready_for_translation">{TXT_CONTENT_EDITSTATUS_READY_FOR_TRANSLATION}</option>
     <option {EDITSTATUS_SELECTED_TRANSLATED} value="translated">{TXT_CONTENT_EDITSTATUS_TRANSLATED}</option>
     <option {EDITSTATUS_SELECTED_CONTROLLED} value="controlled">{TXT_CONTENT_EDITSTATUS_CONTROLLED}</option>
-    <option {EDITSTATUS_SELECTED_PUBLISHED} value="published">{TXT_CONTENT_EDITSTATUS_PUBLISHED}</option>
+    <!--<option {EDITSTATUS_SELECTED_PUBLISHED} value="published">{TXT_CONTENT_EDITSTATUS_PUBLISHED}</option>-->
   </select>
+  <input type="button" name="preview" value="{TXT_THEME_PREVIEW}" />
   <br />
 </form>
 

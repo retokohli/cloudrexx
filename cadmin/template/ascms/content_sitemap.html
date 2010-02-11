@@ -5,6 +5,9 @@
 __CSRF__ = {key:"{CSRF_KEY}", code:"{CSRF_CODE}"};
 __CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
 
+var blnExpandAll = {SITEMAP_EXPAND_ALL};
+var intExpandCatId = {SITEMAP_EXPAND_CAT_ID};
+
 function deletePage(pageId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
@@ -46,7 +49,7 @@ function selectMultiAction()
       }
     }
 }
-  
+
 (function(){ //wrap in anonyomous function to avoid polluting the global namespace
 
     var rootUlId = 'sortableNavigation';
@@ -74,14 +77,26 @@ function selectMultiAction()
 
         $J('#expandAllLink').click(expandAll);
         $J('#collapseAllLink').click(collapseAll);
-        collapseAll();
+        if(blnExpandAll){
+            expandAll(false);
+        } else {
+            collapseAll(false);
+            if(intExpandCatId > 0){
+                expandNode.apply($J('#pageId-'+intExpandCatId+' .nodeCollapsed'));
+                resetRowClasses();
+            }
+        }
     });
 
     var nodeHandler = function(){
         if($J(this).is('.nodeExpanded')){
             collapseNode.apply(this);
+            resetRowClasses();
         } else {
             expandNode.apply(this);
+            var pageId = $J(this).closest('li').attr('id').replace(/.*?(\d+)$/, '$1');
+            $J.get('{DIRECTORY_INDEX}?cmd=content&act=expand&catId='+pageId+'&'+__CSRF__QSTR);
+            resetRowClasses();
         }
     }
 
@@ -155,7 +170,8 @@ function selectMultiAction()
         }
         $J(this).closest('li').children('ul').hide();
         $J(this).removeClass('nodeExpanded').addClass('nodeCollapsed');
-        resetRowClasses();
+        //traverse up all nodes
+        //collapseNode.apply($J(this).closest('li').parent().closest('li'));
     }
 
     var expandNode = function(){
@@ -164,26 +180,33 @@ function selectMultiAction()
         }
         $J(this).closest('li').children('ul').show();
         $J(this).removeClass('nodeCollapsed').addClass('nodeExpanded');
-        resetRowClasses();
+        //traverse up all nodes
+        expandNode.apply($J(this).closest('li').parent().closest('li'));
     }
 
-    var collapseAll = function(){
+    var collapseAll = function(update){
         $J('a.hasChildren').closest('li').children('ul').hide();
         $J('a.hasChildren').removeClass('nodeExpanded').addClass('nodeCollapsed');
         resetRowClasses();
+        if(update){
+            $J.get('{DIRECTORY_INDEX}?standalone=1&cmd=content&act=collaps&'+__CSRF__QSTR);
+        }
         return false;
     }
 
-    var expandAll = function(){
+    var expandAll = function(update){
         $J('a.hasChildren').closest('li').children('ul').show();
         $J('a.hasChildren').removeClass('nodeCollapsed').addClass('nodeExpanded');
         resetRowClasses();
+        if(update){
+            $J.get('{DIRECTORY_INDEX}?standalone=1&cmd=content&act=expandAll&'+__CSRF__QSTR);
+        }
         return false;
     }
 
 
     var resetRowClasses = function(){
-        i=0;
+        var i=0;
         $J('#sortableNavigation li > div').each(function(){
             $J(this).removeClass('row1 row2');
             if($J(this).closest('ul')[0].style.display == 'none'){

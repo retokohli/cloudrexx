@@ -207,7 +207,6 @@ class ContentSitemap
                 'TXT_ADD_REPOSITORY'            => $_CORELANG['TXT_ADD_REPOSITORY'],
        	        'DIRECTORY_INDEX'               => CONTREXX_DIRECTORY_INDEX,
             ));
-
             $first = true;
         }
         if($first){
@@ -270,7 +269,9 @@ class ContentSitemap
                     $moduleReference
                 );
             }
-       	    $objTpl->setVariable(array(
+
+            $pageVisible = $this->navDisplaystatus[$pageId] == 'on';
+            $objTpl->setVariable(array(
        	        'SITEMAP_PAGE_ID'               => $arrPage['pageId'],
        	        'SITEMAP_UL_CLASS'              => $ulClass,
        	        'SITEMAP_LI_CLASSES'            => $liClasses,
@@ -278,7 +279,7 @@ class ContentSitemap
        	        'SITEMAP_ROWCLASS'              => $rc,
        	        'SITEMAP_LED_COLOR'             => $this->navActiveStatus[$pageId] == 1 ? 'green' : 'red',
        	        'IS_CORE'                       => in_array($this->navModule[$pageId], $this->requiredModuleNames) ? '_core' : '',
-       	        'IS_VISIBLE'                    => $this->navDisplaystatus[$pageId] == 'on' ? 'on' : 'off',
+       	        'IS_VISIBLE'                    => $pageVisible ? 'on' : 'off',
        	        'IS_REDIRECT'                   => $this->navIsRedirect[$pageId] ? '_redirect' : '',
        	        'IS_LOCKED'                     => $this->navProtected[$pageId] ? 'locked' : '',
        	        'SITEMAP_PAGE_TITLE'            => htmlentities($arrPage['title'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -288,6 +289,7 @@ class ContentSitemap
        	        'SITEMAP_PAGE_NODE_CLASS'       => $hasChildren ? 'hasChildren nodeExpanded' : 'hasNoChildren',
        	        'SITEMAP_MODULE'                => $this->navModule[$pageId],
        	        'SITEMAP_PAGE_CMD'              => $this->navCmd[$pageId],
+       	        'TXT_STATUS_VISIBILITY'         => $_CORELANG[$pageVisible ? 'TXT_STATUS_VISIBLE' : 'TXT_STATUS_INVISIBLY'],
        	    ));
             $objTpl->hideBlock('list_start');
 
@@ -295,15 +297,13 @@ class ContentSitemap
             $objTpl->parse('list');
 
            	if($hasChildren){
-
-
            	    $this->parseNestedSitemap($arrPage['children'], $ulRootId, $ulClass, $liClasses, $handlerClass, $objTpl);
         	}
         	$objTpl->touchBlock('item_end');
             $objTpl->parse('item_end');
             $objTpl->parse('list');
-
         }
+
         $objTpl->touchBlock('list_end');
         $objTpl->parse('list_end');
         $objTpl->parse('list');
@@ -332,34 +332,33 @@ class ContentSitemap
         // 2. expand all                :: $_GET[act]=expandAll
         // 3. expand current cat tree   :: $_GET[act]=expand, $_GET[catId]=xxx
         if (!isset($_SESSION['content']['expandAll'])) {
-            $_SESSION['content']['expandAll']=false;
+            $_SESSION['content']['expandAll'] = false;
         }
         if (!isset($_SESSION['content']['expandCat'])) {
-            $_SESSION['content']['expandCat']=0;
+            $_SESSION['content']['expandCat'] = 0;
         }
 
-        if ($_GET['act']=="collaps") {
-            $_SESSION['content']['expandAll']=false;
-            $_SESSION['content']['expandCat']=0;
+        if ($_GET['act'] == "collaps") {
+            $_SESSION['content']['expandAll'] = false;
+            $_SESSION['content']['expandCat'] = 0;
         }
 
-        if ($_GET['act']=="expandAll") {
-            $_SESSION['content']['expandAll']=true;
+        if ($_GET['act'] == "expandAll") {
+            $_SESSION['content']['expandAll'] = true;
         }
 
-        if ($_GET['act']=="expand") {
-            $_SESSION['content']['expandAll']=false;
-
-            if ($_SESSION['content']['expandCat']==0) { // no category is set
+        if ($_GET['act'] == "expand") {
+            $_SESSION['content']['expandAll'] = false;
+            if ($_SESSION['content']['expandCat'] == 0) { // no category is set
                 if (isset($_GET['catId'])){
                     $_SESSION['content']['expandCat']=intval($_GET['catId']);
                 }
             } else { // a category is already set
                 if (isset($_GET['catId'])) {
-                    if ($_SESSION['content']['expandCat']==intval($_GET['catId'])) {
-                        $_SESSION['content']['expandCat']=$this->navparentId[intval($_GET['catId'])];
+                    if ($_SESSION['content']['expandCat'] == intval($_GET['catId'])) {
+                        $_SESSION['content']['expandCat'] = $this->navparentId[intval($_GET['catId'])];
                     } else {
-                        $_SESSION['content']['expandCat']=intval($_GET['catId']);
+                        $_SESSION['content']['expandCat'] = intval($_GET['catId']);
                     }
                 } else {
                     $_SESSION['content']['expandCat'] = 0;
@@ -395,6 +394,8 @@ class ContentSitemap
             'TXT_SUBMIT_ACTIVATE'        => $_CORELANG['TXT_MULTISELECT_ACTIVATE'],
             'TXT_SUBMIT_DEACTIVATE'      => $_CORELANG['TXT_MULTISELECT_DEACTIVATE'],
             'TXT_DATABASE_QUERY_ERROR'   => $_CORELANG['TXT_DATABASE_QUERY_ERROR'],
+            'SITEMAP_EXPAND_ALL'         => $expandAll ? 'true' : 'false',
+            'SITEMAP_EXPAND_CAT_ID'      => $expandCatId,
             'DIRECTORY_INDEX'            => CONTREXX_DIRECTORY_INDEX,
             'CSRF_KEY'                   => CSRF::key(),
             'CSRF_CODE'                  => CSRF::code(),

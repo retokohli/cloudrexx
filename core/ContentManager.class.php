@@ -101,7 +101,7 @@ class ContentManager
     public $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
     public $boolHistoryEnabled = false;
     public $boolHistoryActivate = false;
-    public $arrEditStatus = array('draft', 'ready_for_translation', 'translated', 'controlled', 'published');
+    public $arrEditStatus = array('draft', 'ready_for_translation', 'translated', 'controlled'/*, 'published'*/);
 
     /**
      * Constructor
@@ -641,12 +641,14 @@ class ContentManager
         $pageId = $navHighId > $hisHighId ? $navHighId : $hisHighId;
 
         $langCount = 0;
+        $activeLangCount = 0;
 
         foreach (FWLanguage::getLanguageArray() as $arrLang) {
             $langCount++;
             $checked = '';
             $tabClass = 'inactive';
             if ($arrLang['frontend'] == 0) continue; //skip inactive languages
+            $activeLangCount++;
             $tabClass = $arrLang['id'] == $this->langId ? 'active' : '';
             $defaultLang = $arrLang['id'];
             $checked = ' checked="checked"';
@@ -666,10 +668,21 @@ class ContentManager
             );
             $objTemplate->parse('languages_activate');
 
-            $objTemplate->setVariable(array(
-                'LANG_NAME' => $arrLang['name'],
-            ));
-            $objTemplate->parse('copyLangContent');
+            if(FRONTEND_LANG_ID != $arrLang['id']){
+                $objTemplate->setVariable(array(
+                    'LANG_NAME' => $arrLang['name'],
+                ));
+                $objTemplate->parse('copyLangContent');
+            }
+        }
+
+        $multiLang = $activeLangCount > 1;
+        if(!$multiLang){
+            $objTemplate->hideBlock('multilang_1');
+            $objTemplate->hideBlock('multilang_2');
+        }else{
+            $objTemplate->touchBlock('multilang_1');
+            $objTemplate->touchBlock('multilang_2');
         }
 
         $objTemplate->setVariable('LANGUAGE_COUNT', $langCount+1);
@@ -679,12 +692,15 @@ class ContentManager
 
             $objResult = $objDatabase->Execute("
                 SELECT content, metadesc, metarobots,
-                       title, metakeys, css_name
+                       title, metakeys, css_name, expertmode
                   FROM ".DBPREFIX."content
                  WHERE lang_id=".$defaultLang."
                    AND id=".$pageId);
             if ($objResult && $objResult->RecordCount() > 0) {
-                $contenthtml = htmlentities($objResult->fields['content'], ENT_QUOTES, CONTREXX_CHARSET);
+                $contenthtml = $objResult->fields['content'];
+                if($objResult->fields['expertmode'] == 'n'){
+                    $contenthtml = htmlentities($contenthtml, ENT_QUOTES, CONTREXX_CHARSET);
+                }
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$contenthtml);
                 $objTemplate->setVariable(array(
                     'CONTENT_HTML'       => get_wysiwyg_editor('html', $contenthtml),
@@ -732,7 +748,7 @@ class ContentManager
 
         //useContentFromLang dropdown language options
         foreach (FWLanguage::getLanguageArray() as $arrLang) {
-            if ($arrLang['frontend'] == 1) {
+            if ($arrLang['frontend'] == 1 && FRONTEND_LANG_ID != $arrLang['id']) {
                 $objTemplate->setVariable(array(
                     'LANG_NAME' => $arrLang['name'],
                     'LANG_ID'   => $arrLang['id'],
@@ -1050,12 +1066,24 @@ class ContentManager
                     'LANGUAGE_CHECKBOX', $langActivateCheckbox
                 );
                 $objTemplate->parse('languages_activate');
-                $objTemplate->setVariable(array(
-                    'LANG_NAME' => $arrLang['name'],
-                ));
-                $objTemplate->parse('copyLangContent');
+                if(FRONTEND_LANG_ID != $arrLang['id']){
+                    $objTemplate->setVariable(array(
+                        'LANG_NAME' => $arrLang['name'],
+                    ));
+                    $objTemplate->parse('copyLangContent');
+                }
             }
         }
+
+        $multiLang = $activeLangCount > 1;
+        if(!$multiLang){
+            $objTemplate->hideBlock('multilang_1');
+            $objTemplate->hideBlock('multilang_2');
+        }else{
+            $objTemplate->touchBlock('multilang_1');
+            $objTemplate->touchBlock('multilang_2');
+        }
+
 
         $objTemplate->setVariable(array(
             'LANGUAGE_COUNT'                                    => $langCount+1,
@@ -1173,7 +1201,10 @@ class ContentManager
                  WHERE c.id=$pageId
                    AND c.lang_id=$langId");
             if ($objResult && $objResult->RecordCount() > 0) {
-                $contenthtml = htmlentities($objResult->fields['content'], ENT_QUOTES, CONTREXX_CHARSET);
+                $contenthtml = $objResult->fields['content'];
+                if($objResult->fields['expertmode'] == 'n'){
+                    $contenthtml = htmlentities($contenthtml, ENT_QUOTES, CONTREXX_CHARSET);
+                }
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $contenthtml);
                 $expertmodeValue = '';
                 if ($objResult->fields['expertmode'] == "y" ) {
@@ -1240,7 +1271,7 @@ class ContentManager
             }
 
             foreach (FWLanguage::getLanguageArray() as $arrLang) {
-                if ($arrLang['frontend'] == 1) {
+                if ($arrLang['frontend'] == 1 && FRONTEND_LANG_ID != $arrLang['id']) {
                     $objTemplate->setVariable(array(
                         'LANG_NAME'     => $arrLang['name'],
                         'LANG_ID'       => $arrLang['id'],
@@ -3442,14 +3473,15 @@ class ContentManager
 
                 $arrLangs = FWLanguage::getLanguageArray();
                	$useContentFromLang = array();
-
+                $copyLangContent = array();
                	//useContentFromLang
                 foreach ($arrLangs as $arrLang) {
-                    if($arrLang['frontend'] != 1){
+                    if($arrLang['frontend'] != 1 || $arrLang['id'] == $langId){
                         continue;
                     }
                     $selected = $objRS2->fields['useContentFromLang'] == $arrLang['id'] ? ' selected="selected"' : '';
                 	$useContentFromLang[] = '<option'.$selected.' value="'.$arrLang['id'].'">'.$arrLang['name'].'</option>';
+                	$copyLangContent[] = '<option>'.$arrLang['name'].'</option>';
                 }
 
                 //editStatus
@@ -3472,6 +3504,7 @@ class ContentManager
                 $selects['existingBlocks[]']['options']         = $blocks[1];
                 $selects['assignedBlocks[]']['options']         = $blocks[0];
                 $selects['useContentFromLang']['options']       = implode("\n", $useContentFromLang);
+                $selects['copyLangContent']['options']          = implode("\n", $copyLangContent);
                 $selects['editstatus']['options']               = implode("\n", $editStatus);
                 $selects['langName']                            = $langName;
                 header('Content-Type: application/json');
