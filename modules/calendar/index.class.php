@@ -190,7 +190,7 @@ class Calendar extends calendarLibrary
 
     	//get search term
     	if (isset($_REQUEST['keyword'])) {
-    		$term = htmlentities(addslashes($_REQUEST['keyword']), ENT_QUOTES, CONTREXX_CHARSET);
+    		$term = contrexx_addslashes($_REQUEST['keyword']);
     	} else {
     		$term = null;
     	}
@@ -286,6 +286,12 @@ class Calendar extends calendarLibrary
 				    $day 	= isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '';
     	    		$month 	= isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '';
     	    		$year 	= isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '';
+
+    	    		if($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
+                        $day     = isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '&amp;dayID=1';
+                        $month   = isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '&amp;monthID='.date("m", mktime());
+                        $year    = isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '&amp;yearID='.date("Y", mktime());
+                    }
             	} else {
             		$datearr = explode("-", $_POST['startDate']);
             		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
@@ -301,9 +307,9 @@ class Calendar extends calendarLibrary
     	    		$yearEnd 	= isset($_REQUEST['yearEndID']) ? '&amp;yearEndID='.$_REQUEST['yearEndID'] : '';
 
                     if($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
-                        $dayEnd     = isset($_REQUEST['dayID']) ? '&amp;dayEndID='.$_REQUEST['dayID'] : date("t", mktime(0, 0, 0, $month, $day, $year));
-                        $monthEnd   = isset($_REQUEST['monthID']) ? '&amp;monthEndID='.$_REQUEST['monthID'] : date("m", mktime());
-                        $yearEnd    = isset($_REQUEST['yearID']) ? '&amp;yearEndID='.$_REQUEST['yearID'] : date("Y", mktime());
+                        $dayEnd     = isset($_REQUEST['dayID']) ? '&amp;dayEndID='.$_REQUEST['dayID'] : '&amp;dayEndID='.date("t", mktime(0, 0, 0, $month, $day, $year));
+                        $monthEnd   = isset($_REQUEST['monthID']) ? '&amp;monthEndID='.$_REQUEST['monthID'] : '&amp;monthEndID='.date("m", mktime());
+                        $yearEnd    = isset($_REQUEST['yearID']) ? '&amp;yearEndID='.$_REQUEST['yearID'] : '&amp;yearEndID='.date("Y", mktime());
                     }
             	} else {
             		$datearr = explode("-", $_POST['endDate']);

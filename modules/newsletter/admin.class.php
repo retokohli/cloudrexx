@@ -402,27 +402,22 @@ class newsletter extends NewsletterLib
         if (isset($_POST['save'])) {
             $listName = isset($_POST['newsletter_list_name']) ? contrexx_addslashes($_POST['newsletter_list_name']) : '';
             $listStatus = (isset($_POST['newsletter_list_status']) && intval($_POST['newsletter_list_status']) == '1') ? intval($_POST['newsletter_list_status']) : 0;
-            $listNotificationEmail = isset($_POST['newsletter_list_notification_email']) ? contrexx_addslashes($_POST['newsletter_list_notification_email']) : '';
             if (!empty($listName)) {
                 if ($this->_checkUniqueListName($listId, $listName) !== false) {
-                    if($this->check_email($listNotificationEmail)){
-                        if ($listId == 0) {
-                            if ($this->_addList($listName, $listStatus, $listNotificationEmail) !== false) {
-                                $this->_strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_LIST_SUCCESSFULLY_CREATED'], $listName);
-                                return $this->_lists();
-                            } else {
-                                $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_COULD_NOT_CREATE_LIST'], $listName);
-                            }
+                    if ($listId == 0) {
+                        if ($this->_addList($listName, $listStatus) !== false) {
+                            $this->_strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_LIST_SUCCESSFULLY_CREATED'], $listName);
+                            return $this->_lists();
                         } else {
-                            if ($this->_updateList($listId, $listName, $listStatus, $listNotificationEmail) !== false) {
-                                $this->_strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_LIST_SUCCESSFULLY_UPDATED'], $listName);
-                                return $this->_lists();
-                            } else {
-                                $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_COULD_NOT_UPDATE_LIST'], $listName);
-                            }
+                            $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_COULD_NOT_CREATE_LIST'], $listName);
                         }
                     } else {
-                        $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_FAILED'], $listNotificationEmail);
+                        if ($this->_updateList($listId, $listName, $listStatus) !== false) {
+                            $this->_strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_LIST_SUCCESSFULLY_UPDATED'], $listName);
+                            return $this->_lists();
+                        } else {
+                            $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_COULD_NOT_UPDATE_LIST'], $listName);
+                        }
                     }
                 } else {
                     $this->_strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_DUPLICATE_LIST_NAME_MSG'];
@@ -437,7 +432,6 @@ class newsletter extends NewsletterLib
         } else {
             $listName = isset($_POST['newsletter_list_name']) ? contrexx_addslashes($_POST['newsletter_list_name']) : '';
             $listStatus = (isset($_POST['newsletter_list_status']) && intval($_POST['newsletter_list_status']) == '1') ? intval($_POST['newsletter_list_status']) : 0;
-            $listNotificationEmail = isset($_POST['newsletter_list_notification_email']) ? contrexx_addslashes($_POST['newsletter_list_notification_email']) : '';
         }
 
         $this->_objTpl->loadTemplateFile('module_newsletter_list_edit.html');
@@ -458,20 +452,18 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_LIST_ID'        => $listId,
             'NEWSLETTER_LIST_NAME'        => htmlentities($listName, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_LIST_STATUS'    => $listStatus == 1 ? 'checked="checked"' : '',
-            'NEWSLETTER_LIST_NOTIFICATION_EMAIL'    => htmlentities($listNotificationEmail, ENT_QUOTES, CONTREXX_CHARSET),
         ));
         return true;
     }
 
 
-    function _updateList($listId, $listName, $listStatus, $notificationEmail = '')
+    function _updateList($listId, $listName, $listStatus)
     {
         global $objDatabase;
 
         if ($objDatabase->Execute("
             UPDATE ".DBPREFIX."module_newsletter_category
                SET `name`='$listName',
-                   `notification_email` = '$notificationEmail',
                    `status`=$listStatus
              WHERE id=".intval($listId))) {
             return true;
@@ -481,11 +473,11 @@ class newsletter extends NewsletterLib
 
 
 
-    function _addList($listName, $listStatus, $notificationEmail = '')
+    function _addList($listName, $listStatus)
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_category (`name`, `status`, `notification_email`)
+        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_category (`name`, `status`)
                                     VALUES ('".$listName."', ".$listStatus.", '$notificationEmail')") !== false) {
             return true;
         } else {
@@ -4038,7 +4030,6 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable('TXT_TITLE', $_CORELANG['TXT_SETTINGS_MENU_SYSTEM']);
         if ($_POST["update"] == "exe") {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['def_unsubscribe'])."' WHERE setname='defUnsubscribe'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['notifyOnUnsubscribe'])."' WHERE setname='notifyOnUnsubscribe'");
         }
 
         // Load Values
@@ -4075,9 +4066,6 @@ class newsletter extends NewsletterLib
             'TXT_SAVE'                      => $_CORELANG['TXT_SETTINGS_SAVE'],
             'UNSUBSCRIBE_DEACTIVATE_ON'     => $deactivate,
             'UNSUBSCRIBE_DELETE_ON'         => $delete,
-            'NOTIFY_ON_UNSUBSCRIBE_'.
-                ($arrSystem['notifyOnUnsubscribe'] > 0
-                    ? 'ON' : 'OFF')         => 'checked="checked"',
         ));
     }
 }
