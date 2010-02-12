@@ -6,11 +6,11 @@
  */
 $arrUpdate = array(
 	'cmsName'			=> 'Contrexx&#174; Web Content Management System',
-	'cmsVersion'		=> '2.1.3',
+	'cmsVersion'		=> '2.1.4',
 	'cmsStatus'			=> 'Beta',
 	'cmsEdition'		=> 'Premium',
 	'cmsCodeName'		=> 'None',
-	'cmsReleaseDate'	=> '17.02.2009',
+	'cmsReleaseDate'	=> '1.03.2010',
 	'cmsFromVersion'	=> '1.2.0',
     'cmsRequiredPHP'   => '5.2.0',
     'cmsRequiredMySQL' => '4.1.2',
