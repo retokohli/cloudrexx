@@ -2324,7 +2324,7 @@ INSERT INTO `contrexx_module_newsletter_category` (`id`, `status`, `name`, `noti
 INSERT INTO `contrexx_module_newsletter_category` (`id`, `status`, `name`, `notification_email`) VALUES (3,0,'Testing 2.1','fritzli.grossen@schweiz.ch');
 INSERT INTO `contrexx_module_newsletter_confirm_mail` (`id`, `title`, `content`, `recipients`) VALUES (1,'[[url]] Newsletteraktivierung','Guten Tag [[sex]] [[lastname]] [[firstname]]\r\n\r\nIhre E-Mail Adresse wurde erfolgreich in unserer Newsletter Datenbank abgespeichert.\r\nUm Ihre E-Mail Adresse zu aktivieren, benutzen Sie bitte folgenden Link:\r\n[[code]]\r\n\r\nMit freundlichen\r\nGrÃ¼ssen\r\n[[url]] - Team\r\n\r\n\r\nAutomatisch generierte\r\nNachricht\r\n[[date]]','');
 INSERT INTO `contrexx_module_newsletter_confirm_mail` (`id`, `title`, `content`, `recipients`) VALUES (2,'[[url]] Newsletteraktivierung erfolgreich','Guten Tag [[sex]] [[lastname]] [[firstname]]\r\n\r\nIhre E-Mail Adresse wurde erfolgreich in unsererm Newsletter-System aktiviert.\r\nSie werden nun in Zukunft unsere Newsletter erhalten. \r\n\r\nMit freundlichen GrÃ¼ssen \r\n[[url]] - Team\r\n\r\n\r\nAutomatisch generierte Nachricht \r\n[[date]]','');
-INSERT INTO `contrexx_module_newsletter_confirm_mail` (`id`, `title`, `content`, `recipients`) VALUES (3,'[[url]] Newsletteraktivierung erfolgreich','Guten Tag [[sex]] [[lastname]] [[firstname]]\r\n\r\nIhre E-Mail Adresse wurde erfolgreich in unsererm Newsletter-System aktiviert.\r\nSie werden nun in Zukunft unsere Newsletter erhalten. \r\n\r\nMit freundlichen GrÃ¼ssen \r\n[[url]] - Team\r\n\r\n\r\nAutomatisch generierte Nachricht \r\n[[date]]','info@example.com');
+INSERT INTO `contrexx_module_newsletter_confirm_mail` (`id`, `title`, `content`, `recipients`) VALUES (3,'[[url]] - Neue Newsletter EmpfÃ¤nger [[action]]','Hallo Admin \r\n\r\nEine neue EmpfÃ¤nger [[action]] in ihrem Newsletter System. \r\n\r\nAutomatisch generierte Nachricht \r\n[[date]]','mail@example.com');
 INSERT INTO `contrexx_module_newsletter_rel_cat_news` (`newsletter`, `category`) VALUES (1,1);
 INSERT INTO `contrexx_module_newsletter_rel_user_cat` (`user`, `category`) VALUES (1,1);
 INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (1,'sender_mail','info@example.com',1);
@@ -2337,6 +2337,8 @@ INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue
 INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (8,'rejected_mail_operation','delete',1);
 INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (9,'defUnsubscribe','0',1);
 INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (10,'notifyOnUnsubscribe','1',1);
+INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (11,'notificationSubscribe','1',1);
+INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (12,'notificationUnsubscribe','1',1);
 INSERT INTO `contrexx_module_newsletter_template` (`id`, `name`, `description`, `html`, `text`, `required`) VALUES (1,'Standard','Standard Template','<html>\r\n<head>\r\n<title>[[subject]]</title>\r\n</head>\r\n<body>\r\n[[content]]\r\n<br /><br />\r\n[[profile_setup]]<br/>\r\n[[unsubscribe]]\r\n</body>\r\n</html>','[[content]]\r\n\r\n[[profile_setup]]\r\n[[unsubscribe]]',1);
 INSERT INTO `contrexx_module_newsletter_user` (`id`, `code`, `email`, `uri`, `sex`, `title`, `lastname`, `firstname`, `company`, `street`, `zip`, `city`, `country`, `phone`, `birthday`, `status`, `emaildate`) VALUES (1,'btKCKTku5u','noreply@example.com','','m',2,'Mustermann','Hans','','','','','','','',1,1153137001);
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (1,'Sehr geehrte Frau');
@@ -4344,5 +4346,5 @@ INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status
 		      frontend_lang_id, backend_lang_id, active, profile_access, restore_key,
 		      restore_key_time, u2u_active) 
 	VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,0,0,'','nobody',
-		      1,1,1,'members_only','',0,''); 
+		      1,1,1,'members_only','',0,'0'); 
     
