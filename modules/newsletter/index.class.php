@@ -83,6 +83,8 @@ class newsletter extends NewsletterLib
         return $this->_objTpl->get();
     }
 
+
+
     function _confirm(){
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
@@ -274,7 +276,6 @@ class newsletter extends NewsletterLib
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$objUser->fields['id']) && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE id=".$objUser->fields['id'])) {
                     //send notification
                     $this->_sendNotificationEmail(2, $objUser->fields['id']);
-                    $this->_sendUnsubscribeNotification($objUser->fields['id']);
                     $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
                 } else {
                     $message = $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'];
@@ -284,7 +285,6 @@ class newsletter extends NewsletterLib
                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status='0' WHERE id='".$objUser->fields['id']."'")) {
                     //send notification
                     $this->_sendNotificationEmail(2, $objUser->fields['id']);
-                    $this->_sendUnsubscribeNotification($objUser->fields['id']);
                     $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
                 } else {
                     $message = $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'];
@@ -597,7 +597,7 @@ class newsletter extends NewsletterLib
         global $_CONFIG, $_ARRAYLANG, $objDatabase;
         //action: 1 = subscribe | 2 = unsubscribe
 
-        $objSettings = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings` WHERE `setid` = '10' OR  `setid` = '11' ");
+        $objSettings = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings` WHERE `setname` = 'notificationSubscribe' OR  `setname` = 'notificationUnsubscribe' ");
         if ($objSettings !== false) {
             while (!$objSettings->EOF) {
                 $arrSettings[$objSettings->fields['setname']] = $objSettings->fields['setvalue'];
@@ -605,12 +605,11 @@ class newsletter extends NewsletterLib
             }
         }
 
-        if(($arrSettings['notificationSubscribe'] == 1 && $action == 1) || ($arrSettings['notificationUnubscribe'] == 1 && $action == 2)) {
+        if(($arrSettings['notificationSubscribe'] == 1 && $action == 1) || ($arrSettings['notificationUnsubscribe'] == 1 && $action == 2)) {
 
             if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 return false;
             }
-
             $objRecipient = $objDatabase->SelectLimit("SELECT sex, title, lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false) {
                 $arrRecipient['sex'] = $objRecipient->fields['sex'];
@@ -677,53 +676,7 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function _sendUnsubscribeNotification($recipientId)
-    {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
-        $arrSettings = &$this->_getSettings();
-        if ($arrSettings['notifyOnUnsubscribe']['setvalue'] == 1) {
-            if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') return false;
-            $objRecipient = $objDatabase->SelectLimit("SELECT lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
-            if ($objRecipient !== false) {
-                $strRecipientInfo = $objRecipient->fields['lastname'].', '.$objRecipient->fields['firstname'].
-                                    ' ('.$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'].': '.$objRecipient->fields['email'].')';
-            }
 
-            $objMail = new phpmailer();
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-
-            $arrAssociatedLists = $this->_getAssociatedListsOfRecipient($recipientId, false);
-            $arrLists           = $this->_getLists();
-
-            foreach ($arrAssociatedLists as $listId) {
-                $objMail->AddAddress($arrLists[$listId]['notification_email']);
-            }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $arrSettings['sender_mail']['setvalue'];
-            $objMail->FromName = $arrSettings['sender_name']['setvalue'];
-            $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
-            $objMail->Subject = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'];
-            $objMail->Priority = 3;
-            $objMail->IsHTML(false);
-            $objMail->Body = sprintf($_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'], $strRecipientInfo);
-
-            if ($objMail->Send()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
 
     function setBlock(&$code)
     {
