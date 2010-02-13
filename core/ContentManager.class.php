@@ -649,7 +649,6 @@ class ContentManager
             if ($arrLang['frontend'] == 0) continue; //skip inactive languages
             $activeLangCount++;
             $tabClass = $arrLang['id'] == $this->langId ? 'active' : 'inactive';
-            $defaultLang = $arrLang['id'];
             $checked = ' checked="checked"';
             $objTemplate->setVariable(array(
                 'LANGUAGE_NAME'  => $arrLang['name'],
@@ -688,12 +687,13 @@ class ContentManager
 
         if (isset($_GET['pageId']) && !empty($_GET['pageId'])) {
             $pageId = intval($_GET['pageId']);
-
             $objResult = $objDatabase->Execute("
-                SELECT content, metadesc, metarobots,
-                       title, metakeys, css_name, expertmode
-                  FROM ".DBPREFIX."content
-                 WHERE lang_id=".$defaultLang."
+                SELECT `c`.`content`, `c`.`metadesc`, `c`.`metarobots`,
+                       `c`.`title`, `c`.`metakeys`, `c`.`css_name`, `c`.`expertmode`, `n`.`catname`
+                  FROM `".DBPREFIX."content` AS `c`
+             LEFT JOIN `".DBPREFIX."content_navigation` AS `n`
+                    ON (`n`.`catid` = `c`.`id`)
+                 WHERE lang_id=".FRONTEND_LANG_ID."
                    AND id=".$pageId);
             if ($objResult && $objResult->RecordCount() > 0) {
                 $contenthtml = $objResult->fields['content'];
@@ -703,18 +703,20 @@ class ContentManager
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$contenthtml);
                 $objTemplate->setVariable(array(
                     'CONTENT_HTML'       => get_wysiwyg_editor('html', $contenthtml),
-                    'CONTENT_DESC'       => $objResult->fields['contentdesc'],
-                    'CONTENT_META_TITLE' => $objResult->fields['contenttitle'],
-                    'CONTENT_KEY'        => $objResult->fields['contentkey'],
+                    'CONTENT_DESC'       => $objResult->fields['metadesc'],
+                    'CONTENT_MENU_NAME'  => $objResult->fields['catname'].' ('.$_CORELANG['TXT_SITEMAP_COPY'].')',
+                    'CONTENT_TITLE_VAL'  => $objResult->fields['title'],
+                    'CONTENT_META_TITLE' => $objResult->fields['title'],
+                    'CONTENT_KEY'        => $objResult->fields['metakeys'],
                     'CONTENT_CSS_NAME'   => $objResult->fields['css_name'],
                 ));
             }
             $objResult = $objDatabase->Execute("
-                SELECT module, startdate, enddate,
+                SELECT module, startdate, enddate, metarobots
                        displaystatus, themes_id
                   FROM ".DBPREFIX."content_navigation
                  WHERE catid=".$pageId."
-                   AND `lang`=".$defaultLang);
+                   AND `lang`=".FRONTEND_LANG_ID);
             if ($objResult !== false && $objResult->RecordCount()>0) {
                 $moduleId = $objResult->fields['module'];
                 $startDate = $objResult->fields['startdate'];
@@ -847,6 +849,7 @@ class ContentManager
             'TXT_CONTENT_EDITSTATUS_PUBLISHED'                  => $_CORELANG['TXT_CONTENT_EDITSTATUS_PUBLISHED'],
             'TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'            => $_CORELANG['TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'],
             'TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'            => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'],
+            'TXT_SITEMAP_COPY'                                  => $_CORELANG['TXT_SITEMAP_COPY'],
             'CONTENT_ALIAS_DISABLE'                             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
             'TXT_ERROR_NO_TITLE'                                => $_CORELANG['TXT_ERROR_NO_TITLE'],
             'TXT_BASE_URL'                                      => self::mkurl('/'),
