@@ -1,5 +1,4 @@
 <?php
-$objDatabase->debug=99;
 /**
  * Modulemanager
  * @copyright   CONTREXX CMS - COMVATION AG

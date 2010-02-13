@@ -585,7 +585,7 @@ var getTabData = function(a){
         return false;
     }
     getNavMenu(a);
-    if(location.href.match(/act=edit/)){//fill contents from DB if we are editiing
+    if(location.href.match(/pageId=\d+/)){//fill contents from DB if we are editing or copying
         getContentData(a);
     }
 }
@@ -643,7 +643,8 @@ var swapLanguage = function(aElement, langName){
 
     $form.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
         var $radio = $J($form.find('input[name='+$J(this).attr('name')+']:first'));
-        //console.log($form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']'));
+        //wtf, if the following line is uncommented then switching the TypeSelection radio buttons doesn't work in FF when in expertmode
+        console.log($form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']'));
         $radio.data(lastActive, $J(this).val());
         typeof $radio.data($a.text()) == 'undefined'
             ? $radio.click()
@@ -869,6 +870,11 @@ var setInputText = function(data, textStatus){
         }
         if(name == 'alias'){
             $container.find('#aliastarget').data(langName, data[name]);
+            continue;
+        }
+        if(name == 'newpage'){
+            $J('form[name=formContent] input[name=newpage]').data(langName, data[name]+' ({TXT_SITEMAP_COPY})');
+            continue;
         }
         $container.find('input[name='+name+']').data(langName, data[name]);
     }
@@ -1008,7 +1014,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         }
     )
 
-    if(location.href.match(/act=edit/)){ //if we're editing get tab data for all tabs except first one, which is already loaded
+    if(location.href.match(/pageId=\d+/)){ //if we're editing or copying get tab data for all tabs except first one, which is already loaded
         $('#contentLanguages li a.inactive').each(function(){
             getTabData(this);
         });
