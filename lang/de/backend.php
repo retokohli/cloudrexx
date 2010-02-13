@@ -1067,4 +1067,8 @@ $_ARRAYLANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'] = "Die Sprache %s wird noch 
 $_ARRAYLANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'] = "Die Sprache %s kann sich nicht selber referenzieren.";
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCTIPTION'] = "Nach Kategorien und Ebenen strukturiertes Medien Verzeichnis";
 $_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Verwaltung und Präsentation von Geschäftspartnern";
+$_ARRAYLANG['TXT_SITEMAP_COPY'] = "Kopie";
+$_ARRAYLANG['TXT_LANGUAGE_TRUNCATE_CONFIRM'] = "Diese Aktion löscht alle Inhalte dieser Sprache und verwendet dafür den Inhalt der Standardsprache!";
+$_ARRAYLANG['TXT_LANGUAGE_TRUNCATE_SUCCESS'] = "Inhalte wurden erfolgreich gelöscht.";
+$_ARRAYLANG['TXT_LANGUAGE_TRUNCATE_CONTENT'] = "Inhalte löschen";
 ?>
