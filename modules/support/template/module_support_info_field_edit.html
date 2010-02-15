@@ -5,7 +5,7 @@ function supportInfoFieldDoAction(strAction, strForm, strCheckbox, objSelect)
     switch (strAction) {
       case 'deleteInfoFields':
         if (checkboxIsChecked(strForm, strCheckbox) == true) {
-          if (confirm('{TXT_SUPPORT_INFO_FIELDS_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')){
+          if (confirm('{TXT_SUPPORT_INFO_FIELDS_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
             document.forms[strForm].action =
               "index.php?cmd=support&act=infoFieldsDelete";
 //              "&supportInfoFieldOffset={SUPPORT_INFO_FIELD_OFFSET}"+
