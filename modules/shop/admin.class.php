@@ -2382,13 +2382,18 @@ class shopmanager extends ShopLibrary
             ));
         }
 
+        $max_width = intval($this->arrConfig['shop_thumbnail_max_width']['value']);
+        $max_height = intval($this->arrConfig['shop_thumbnail_max_height']['value']);
+        if (empty($max_width)) $max_width = 1e5;
+        if (empty($max_height)) $max_height = 1e5;
+
         self::$objTemplate->setVariable(array(
             'SHOP_CATEGORY_EDIT_ACTIVE' => ($flagEditTabActive ? 'active' : ''),
             'SHOP_CATEGORY_EDIT_DISPLAY' => ($flagEditTabActive ? 'block' : 'none'),
             'SHOP_CATEGORY_LIST_ACTIVE' => ($flagEditTabActive ? '' : 'active'),
             'SHOP_CATEGORY_LIST_DISPLAY' => ($flagEditTabActive ? 'none' : 'block'),
-            'SHOP_IMAGE_WIDTH' => $this->arrConfig['shop_thumbnail_max_width']['value'],
-            'SHOP_IMAGE_HEIGHT' => $this->arrConfig['shop_thumbnail_max_height']['value'],
+            'SHOP_IMAGE_WIDTH' => $max_width,
+            'SHOP_IMAGE_HEIGHT' => $max_height,
         ));
 
         self::$objTemplate->setCurrentBlock('catRow');
