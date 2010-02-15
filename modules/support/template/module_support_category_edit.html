@@ -5,7 +5,7 @@ function supportCategoryDoAction(strAction, strForm, strCheckbox, objSelect)
     switch (strAction) {
       case 'deleteCategories':
         if (checkboxIsChecked(strForm, strCheckbox) == true) {
-          if (confirm('{TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')){
+          if (confirm('{TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
             document.forms[strForm].action =
               "index.php?cmd=support&act=categoriesDelete";
 //              "&supportCategoryOffset={SUPPORT_CATEGORY_OFFSET}"+
