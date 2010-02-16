@@ -201,7 +201,7 @@ CREATE TABLE `contrexx_backups` (
   `size` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `date` (`date`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
