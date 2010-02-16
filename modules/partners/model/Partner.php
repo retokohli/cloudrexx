@@ -76,6 +76,9 @@ class Partner extends NGModel {
             }
             $frontend_where = "AND ptl.label_id IN (".join(',', $idlist).")";
         }
+        if ($mode == 'frontend') {
+            $active_only = 'AND active = 1';
+        }
 
         $partner_tbl = Partner::typeinfo('table');
         $sql = "
@@ -90,6 +93,7 @@ class Partner extends NGModel {
                 OR partner.city               LIKE '$fulltext%')
                 AND $label_where
                 $frontend_where
+                $active_only
             ORDER BY `name`
         ";
         #print("<pre>$sql</pre>");
