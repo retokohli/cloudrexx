@@ -62,7 +62,6 @@ class Banner extends bannerLibrary
 
     /**
      * Get page
-     *
      * @access public
      * @global object $objDatabase
      * @return string bannerCode
