@@ -3,7 +3,7 @@
 // <![CDATA[
   function memberdirDelete(pageId){
       if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-          window.location.replace("?cmd=memberdir&act=deleteMember&id="+pageId+"&dirid={DIRID}");
+	        window.location.replace("?cmd=memberdir&{CSRF_PARAM}&act=deleteMember&id="+pageId+"&dirid={DIRID}");
   }
 
   function selectMultiAction()
