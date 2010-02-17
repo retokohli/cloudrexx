@@ -572,7 +572,7 @@ class PartnersAdmin extends PartnersBase {
         $this->_objTpl->PARTNER_CUSTOMER_QUOTE=$partner->customer_quote;
         $this->_objTpl->PARTNER_CREATED       =$partner->creation_date;
         $this->_objTpl->PARTNER_USER_ID =      $partner->user_id;
-        $this->_objTpl->PARTNER_SORT_ORDER =   $partner->sort_order;
+        $this->_objTpl->PARTNER_SORT_ORDER =   $partner->sort_order ? $partner->sort_order : 100;
         $this->_objTpl->setVariable('PARTNER_CUSTOMER_DESCRIPTION', get_wysiwyg_editor('description', $partner->description));
 
 
