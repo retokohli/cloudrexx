@@ -1293,6 +1293,7 @@ CREATE TABLE `contrexx_module_downloads_group` (
   `is_active` tinyint(1) NOT NULL default '1',
   `type` enum('file','url') NOT NULL default 'file',
   `info_page` varchar(255) NOT NULL default '',
+  `sort_method` enum('alphabetically','custom') NOT NULL default 'alphabetically',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
@@ -1350,6 +1351,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_downloads_rel_group_category` (
   `group_id` int(10) unsigned NOT NULL default '0',
   `category_id` int(10) unsigned NOT NULL default '0',
+  `order` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`group_id`,`category_id`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
