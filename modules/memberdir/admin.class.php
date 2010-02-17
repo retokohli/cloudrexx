@@ -55,6 +55,7 @@ class MemberDirManager extends MemberDirLibrary
         global $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
+        CSRF::add_placeholder($this->_objTpl);
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -968,7 +969,7 @@ class MemberDirManager extends MemberDirLibrary
             if (!empty($_GET['id'])) {
                 $id = $_GET['id'];
             } else {
-                header("Location: index.php?cmd=memberdir");
+                CSRF::header("Location: index.php?cmd=memberdir");
             }
         }
 
@@ -1693,7 +1694,7 @@ class MemberDirManager extends MemberDirLibrary
 
         if (isset($_POST['import_cancel'])) {
             $importlib->cancel();
-            header("Location: index.php?cmd=memberdir&act=import");
+            CSRF::header("Location: index.php?cmd=memberdir&act=import");
             exit;
         } elseif ($_POST['fieldsSelected']) {
             $fieldnames = $this->getFieldData($_POST['directory']);
@@ -1738,7 +1739,7 @@ class MemberDirManager extends MemberDirLibrary
                     echo $objDatabase->ErrorMsg();
                 }
 
-                header("Location: index.php?cmd=memberdir&act=showdir&id=".$_POST['directory']);
+                CSRF::header("Location: index.php?cmd=memberdir&act=showdir&id=".$_POST['directory']);
             }
 
         } elseif ($_FILES['importfile']['size'] == 0) {
