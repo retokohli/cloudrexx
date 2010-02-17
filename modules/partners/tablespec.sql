@@ -19,6 +19,7 @@ CREATE TABLE `contrexx_module_partners` (
   `creation_date`       DATE,
   `customer_quote`      TEXT,
   `logo_url`            VARCHAR(160),
+  `sort_order`          INT NOT NULL DEFAULT 1,
   `description`         TEXT,
   `active`              TINYINT NOT NULL default 0,
   PRIMARY KEY  (`id`)
