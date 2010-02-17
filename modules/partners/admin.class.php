@@ -517,6 +517,7 @@ class PartnersAdmin extends PartnersBase {
             $partner->customer_quote =      Request::POST('customer_quote');
             $partner->logo_url =            Request::POST('logo_url');
             $partner->creation_date =       Request::POST('created');
+            $partner->sort_order =          Request::POST('sort_order');
             $partner->user_id =             Request::POST('user_id');
 
             $partner->description =         Request::POST('description');
@@ -571,6 +572,7 @@ class PartnersAdmin extends PartnersBase {
         $this->_objTpl->PARTNER_CUSTOMER_QUOTE=$partner->customer_quote;
         $this->_objTpl->PARTNER_CREATED       =$partner->creation_date;
         $this->_objTpl->PARTNER_USER_ID =      $partner->user_id;
+        $this->_objTpl->PARTNER_SORT_ORDER =   $partner->sort_order;
         $this->_objTpl->setVariable('PARTNER_CUSTOMER_DESCRIPTION', get_wysiwyg_editor('description', $partner->description));
 
 
