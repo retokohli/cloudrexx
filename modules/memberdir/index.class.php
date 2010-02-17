@@ -177,7 +177,7 @@ class memberDir extends MemberDirLibrary
 
             $this->_objTpl->setGlobalVariable(array(
                 "MEMBERDIR_DIRID"         => $dirid,
-                "MEMBERDIR_CHAR_LIST"     => $this->_getCharList("?section=memberdir&amp;id=".$dirid."&amp;sort=$sort"),
+                "MEMBERDIR_CHAR_LIST"     => $this->_getCharList(CONTREXX_DIRECTORY_INDEX."?section=memberdir&amp;cmd=".htmlentities($_GET['cmd'], ENT_QUOTES, CONTREXX_CHARSET)."&amp;id=".$dirid."&amp;sort=$sort"),
                 "MEMBERDIR_DESCRIPTION"   => nl2br($this->directories[$dirid]['description']),
             ));
 
