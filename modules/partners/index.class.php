@@ -103,12 +103,13 @@ class PartnersFrontend extends PartnersBase  {
 
     function default_action() {
         global $_CORELANG;
-        $fulltext     = Request::cached_GET('search');
+        $fulltext     = Request::GET('search');
         $label_search = array();
 
         $this->_objTpl->add_tr('TXT_SEARCH');
         // Show AssignableLabel in template and also add search values to
         // $label_search so we can filter partners.
+        $dd_searchstring = '';
         foreach (AssignableLabel::all($this->langid())->rs() as $label) {
             if (!$label->active) continue;
 
@@ -127,8 +128,9 @@ class PartnersFrontend extends PartnersBase  {
             $this->_objTpl->setVariable('TXT_PARTNERS_LABEL_SEARCHFIELD', $dropdown);
             $this->_objTpl->parse('label_searchbox');
 
-            $searched = Request::cached_GET($dropdown->dropdown_name());
+            $searched = Request::GET($dropdown->dropdown_name());
             if ($searched) {
+                $dd_searchstring .= '&' . $dropdown->dropdown_name() . '=' . $searched;
                 $label_search[] = intval($searched);
             }
         }
@@ -145,14 +147,15 @@ class PartnersFrontend extends PartnersBase  {
             return;
         }
 
-        $url_template = "index.php?section=partners&search=" . htmlspecialchars($fulltext) . '&p=%p';
+        $url_template = "index.php?section=partners"
+            ."&search=" . htmlspecialchars($fulltext) 
+            .$dd_searchstring
+            .'&p=%p';
 
-        $this->_objTpl->PARTNERS_ROW_COUNT = $data->count();
 
         $this->_objTpl->setGlobalVariable('ROW_CLASS', new NGView_Cycle('row2', 'row1'));
 
         $pager = new NGView_Pager($data, Request::GET('p', 0));
-        $pager->put_placeholders($this->_objTpl, $url_template);
 
         if ($this->_objTpl->blockExists('no_results')) {
             $this->_objTpl->hideBlock("no_results");
@@ -161,6 +164,8 @@ class PartnersFrontend extends PartnersBase  {
             $this->show_partner($partner);
             $this->_objTpl->parse('partner_entry');
         }
+        $this->_objTpl->PARTNERS_ROW_COUNT = $data->count();
+        $pager->put_placeholders($this->_objTpl, $url_template);
         $this->_objTpl->global_TXT_SEARCH = $_CORELANG['TXT_SEARCH'];
     }
 
