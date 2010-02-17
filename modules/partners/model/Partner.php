@@ -95,7 +95,7 @@ class Partner extends NGModel {
                 AND $label_where
                 $frontend_where
                 $active_only
-            ORDER BY `name`
+            ORDER BY `sort_order`, `name`
         ";
         #print("<pre>$sql</pre>");
         return new NGDb_Query($sql, 'Partner');
