@@ -209,6 +209,8 @@ class NGView_Pager {
      * @param string $url_tpl - URL template.
      */
     function put_placeholders($tpl, $url_tpl) {
+		$tpl->add_tr('TXT_PARTNERS_PAGE');
+		$tpl->add_tr('TXT_PARTNERS_ROW_COUNT');
         $tpl->setVariable('PAGER_NEXT_URL',     $this->next_url($url_tpl));
         $tpl->setVariable('PAGER_PREV_URL',     $this->prev_url($url_tpl));
         $tpl->setVariable('PAGER_NUM_PAGES',    $this->_pages());
