@@ -27,6 +27,7 @@ class Partner extends NGModel {
                     'fax_nr',
                     'customer_quote',
                     'logo_url',
+                    'sort_order',
                     'description',
                     'active',
                     'user_id',
