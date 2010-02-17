@@ -303,4 +303,5 @@ $_ARRAYLANG['TXT_PARTNERS_LOOK_FOR_LABELFREE'] = "Partner ohne Labels";
 $_ARRAYLANG['TXT_PARTNERS_SPECIAL_SEARCH'] = "Spezial-Suchfunktionen";
 $_ARRAYLANG['TXT_PARTNERS_SEARCH_TEXT'] = "Suchtext";
 $_ARRAYLANG['TXT_PARTNERS_LINKED_USERID'] = "Eigentümer (Benutzer-ID)";
+$_ARRAYLANG['TXT_PARTNERS_SORT_ORDER'] = "Sortierreihenfolge";
 ?>
