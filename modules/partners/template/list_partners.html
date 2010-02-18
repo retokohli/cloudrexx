@@ -61,10 +61,11 @@
 
 <form action="index.php?cmd=partners&amp;act=partnermultiaction" method="POST" id="entries_form">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-    <tr><th colspan="7">{TXT_PARTNERS_OVERVIEW_TITLE} ({TXT_PARTNERS_TOTAL} {PARTNERS_TOTAL})</th></tr>
+    <tr><th colspan="8">{TXT_PARTNERS_OVERVIEW_TITLE} ({TXT_PARTNERS_TOTAL} {PARTNERS_TOTAL})</th></tr>
     <tr class="row3">
         <td width="16"><input type="checkbox" id="toggleall_checkbox" onclick="toggle_all()"/></th>
         <td width="16">&nbsp;</td>
+        <td><span style="font-weight: bold">#</span></th>
         <td><span style="font-weight: bold">{TXT_PARTNERS_COMPANY_NAME}</span></th>
         <td><span style="font-weight: bold">{TXT_PARTNERS_COMPANY_CONTACT}</span</th>
         <td><span style="font-weight: bold">{TXT_PARTNERS_COMPANY_URL}</span</th>
@@ -75,6 +76,7 @@
     <tr class="{ROW_CLASS}" id="partner_row_{PARTNER_ID}">
         <td><input type="checkbox" id="checked_{PARTNER_ID}" class="partner_checkbox" name="checked_partner[]" value="{PARTNER_ID}"/></td>
         <td><img src="images/icons/led_{LED_COLOR}.gif"/></td>
+		<td><input type="text" name="partner_sort[{PARTNER_ID}]" style="width: 3em;" value="{PARTNER_SORT_ORDER}"/></th>
         <td><a href="index.php?cmd=partners&amp;act=editpartner&amp;id={PARTNER_ID}">{PARTNER_NAME}</a></td>
         <td><a href="mailto:{PARTNER_CONTACT_EMAIL}">{PARTNER_CONTACT_NAME}</a></td>
         <td><a href="{PARTNER_WEB_URL}">{PARTNER_WEB_URL}</a></td>
@@ -107,7 +109,7 @@
         <option value="activate"  >{TXT_ACTIVATE_DESIGN}</option>
         <option value="deactivate">{TXT_PARTNERS_DEACTIVATE}</option>
     </select>
-    <input type="submit" value="OK" style="display:none"/>
+    <input type="submit" value="OK"/>
 </form>
 
 <p/>

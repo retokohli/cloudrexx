@@ -411,6 +411,7 @@ class PartnersAdmin extends PartnersBase {
             foreach ($pager->current()->rs() as $partner) {
                 $this->_objTpl->PARTNER_ID            = $partner->id;
                 $this->_objTpl->PARTNER_NAME          = $partner->name;
+                $this->_objTpl->PARTNER_SORT_ORDER    = $partner->sort_order;
                 $this->_objTpl->PARTNER_CONTACT_NAME  = $partner->first_contact_name;
                 $this->_objTpl->PARTNER_CONTACT_EMAIL = $partner->first_contact_email;
                 $this->_objTpl->PARTNER_WEB_URL       = $partner->web_url;
@@ -559,6 +560,7 @@ class PartnersAdmin extends PartnersBase {
         }
         $this->_objTpl->PARTNER_ACTIVE =       $partner->active ? 'checked="checked"' : '';
         $this->_objTpl->PARTNER_NAME =         $partner->name;
+        $this->_objTpl->PARTNER_SORT_ORDER   = $partner->sort_order;
         $this->_objTpl->PARTNER_CONTACT_NAME = $partner->first_contact_name;
         $this->_objTpl->PARTNER_CONTACT_EMAIL =$partner->first_contact_email;
         $this->_objTpl->PARTNER_WEB_URL =      $partner->web_url;
@@ -579,6 +581,15 @@ class PartnersAdmin extends PartnersBase {
 
     }
 
+    function _multiaction_sort() {
+        NGMessaging::save(tr('TXT_PARTNERS_SORTING_UPDATED'), 'partners_success');
+        $tbl = Partner::typeinfo('table');
+        $sql = "UPDATE `$tbl` SET `sort_order` = %0 WHERE `id` = %1";
+        foreach ($_POST['partner_sort'] as $p_id => $sort_order) {
+            NGDb::parse_execute($sql, $sort_order, $p_id);
+        }
+    }
+
     function partnermultiaction_action() {
         // confirmation was done by javascript, so we just do what we're told!
         $tbl = Partner::typeinfo('table');
@@ -596,6 +607,8 @@ class PartnersAdmin extends PartnersBase {
                 NGMessaging::save(tr('TXT_PARTNERS_PARTNER_DEACTIVATED'), 'partners_success');
                 $sql_fragment = "UPDATE `$tbl` SET active=0 WHERE id= %0";
                 break;
+            default:
+                $this->_multiaction_sort();
         }
         if ($sql_fragment) {
             foreach (Request::POST('checked_partner') as $e_id) {
