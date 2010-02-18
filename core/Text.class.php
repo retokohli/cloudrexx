@@ -67,13 +67,6 @@ class Text
 
 
     /**
-     * @var     integer         $table_alias_index  The index for alias names
-     *                                              created for code snippets
-     */
-    private static $table_alias_index = 0;
-
-
-    /**
      * Create a Text object
      *
      * @access  public
@@ -226,13 +219,21 @@ class Text
     {
         global $objDatabase;
 
-        if (!$text_id) return false;
+//echo("Text::deleteById($text_id, $lang_id): Entered<br />");
+        if (!$text_id) {
+//echo("Text::deleteById($text_id, $lang_id): Empty ID<br />");
+            return true;
+        }
         $query = "
             DELETE FROM `".DBPREFIX."core_text`
              WHERE `id`=$text_id
                ".($lang_id == 0 ? '' : "AND `lang_id`=$lang_id");
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
+        if (!$objResult) {
+//die("Text::deleteById($text_id, $lang_id): Query failed<br />$query");
+            return self::errorHandler();
+        }
+//echo("Text::deleteById($text_id, $lang_id): Deleted<br />");
         return true;
     }
 
@@ -252,9 +253,7 @@ class Text
         global $objDatabase;
 
         if (!$lang_id) return false;
-        $query = "
-            DELETE FROM `".DBPREFIX."core_text`
-             WHERE `lang_id`=$lang_id";
+        $query = "DELETE FROM `".DBPREFIX."core_text` WHERE `lang_id`=$lang_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return true;
@@ -276,9 +275,10 @@ class Text
         if ($this->id == 0) return false;
         $query = "
             SELECT 1
-              FROM ".DBPREFIX."core_text
-             WHERE id=$this->id
-               AND lang_id=$this->lang_id";
+              FROM `".DBPREFIX."core_text`
+             WHERE `id`=$this->id
+               AND `lang_id`=$this->lang_id
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         if ($objResult->RecordCount() == 1) return true;
@@ -310,6 +310,8 @@ class Text
     function update()
     {
         global $objDatabase;
+
+//echo("Text::update(): ".var_export($this, true)."<br />");
 
         $query = "
             UPDATE `".DBPREFIX."core_text`
@@ -367,16 +369,18 @@ class Text
     /**
      * Add a new Text object directly to the database table
      *
-     * Mind that this method uses the current FRONTEND_LANG_ID and
-     * MODULE_ID global constants as language ID and Module ID,
-     * respectively.
+     * Mind that this method uses the  MODULE_ID global constant.
      * This is but a handy shortcut for those in the know.
      * @param   string    $text       The text string
+     * @param   string    $key        The key
+     * @param   string    $text       The optional language ID,
+     *                                defaults to FRONTEND_LANG_ID
      * @return  integer               The object ID on success, false otherwise
      */
-    static function add($text, $key)
+    static function add($text, $key, $lang_id=0)
     {
-        $objText = new Text($text, FRONTEND_LANG_ID, MODULE_ID, $key);
+        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        $objText = new Text($text, $lang_id, MODULE_ID, $key);
         if ($objText->store()) return $objText->getId();
         return false;
     }
@@ -394,9 +398,7 @@ class Text
     {
         global $objDatabase;
 
-        $query = "
-            SELECT MAX(`id`) AS `id`
-              FROM `".DBPREFIX."core_text`";
+        $query = "SELECT MAX(`id`) AS `id` FROM `".DBPREFIX."core_text`";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return self::errorHandler();
         // This will also work for an empty database table,
@@ -416,8 +418,9 @@ class Text
      * If no record is found for the given ID, creates a new object
      * with a warning message and returns it.
      * Note that in the last case, neither the module nor the key
-     * are set and remain at their default (null) value.  You should
-     * set them to the desired values before storing the object.
+     * are set and remain at their default (null) value.  You *MUST*
+     * set them to the desired values before storing the object,
+     * or you may never find that record again!
      * @static
      * @param       integer     $id             The object ID
      * @param       integer     $lang_id        The language ID
@@ -428,21 +431,101 @@ class Text
      */
     static function getById($text_id, $lang_id)
     {
+        global $objDatabase; //, $_CORELANG;
+
+        $objText = false;
+        if (intval($text_id)) {
+            $query = "
+                SELECT `id`, `lang_id`, `text`, `module_id`, `key`
+                  FROM `".DBPREFIX."core_text`
+                 WHERE `id`=$text_id
+                   ".($lang_id ? "AND `lang_id`=$lang_id" : '');
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return self::errorHandler();
+            if ($objResult->RecordCount()) {
+                $objText = new Text(
+                    $objResult->fields['text'],
+                    $objResult->fields['lang_id'],
+                    $objResult->fields['module_id'],
+                    $objResult->fields['key'],
+                    $objResult->fields['id']
+                );
+//echo("Text::getById($text_id, $lang_id): Got ".$objText->getText()."<br />");
+            } else {
+                if ($lang_id) {
+//echo("Text::getById($text_id, $lang_id): Missing language ID $lang_id, looking for replacement...<br />");
+                    $objText = self::getById($text_id, 0);
+                    if ($objText) {
+                        $objText->lang_id = $lang_id;
+//echo("Text::getById($text_id, $lang_id): Replacement language ID ".$objText->lang_id.", found ".$objText->getText()."<br />");
+//                        return $objText;
+                    }
+//else {echo("Text::getById($text_id, $lang_id): Missing language ID $lang_id, no replacement found!<br />");}
+                }
+            }
+        }
+        if (!$objText) {
+//echo("Text::getById($text_id, $lang_id): Missing text ID $text_id, returning new<br />");
+            $objText = new Text(
+                '', //$_CORELANG['TXT_CORE_TEXT_MISSING'],
+                $lang_id, null, null, $text_id
+            );
+        }
+        // Mark Text not present in the selected language
+        //$objText->markDifferentLanguage($lang_id);
+        return $objText;
+    }
+
+
+    /**
+     * Select an object by its key from the database
+     *
+     * This method is intended to provide a means to store arbitrary
+     * texts in various languages that don't need to be referred to by
+     * an ID, but some distinct key.  If the key is not unique, however,
+     * you will not be able to retrieve any particular of those records,
+     * but only the first one that is encountered.
+     * Note that if the $lang_id parameter is zero, this method picks the
+     * first language of the Text that it encounters.  This is useful
+     * for displaying records in languages which haven't been edited yet.
+     * If the Text cannot be found for the language ID given, the first
+     * language encountered is returned.
+     * If no record is found for the given key, creates a new object
+     * with a warning message and returns it.
+     * Note that in the last case, neither the module nor the text ID
+     * are set and remain at their default (null) value.  You should
+     * set them to the desired values before storing the object.
+     * @static
+     * @param       integer     $key            The key, must not be empty
+     * @param       integer     $lang_id        The language ID
+     * @return      Text                        The object on success,
+     *                                          false otherwise
+     * @global      mixed       $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getByKey($key, $lang_id)
+    {
         global $objDatabase, $_CORELANG;
 
-        if (empty($text_id)) return false;
+        if (empty($key)) return false;
         $query = "
             SELECT `id`, `lang_id`, `text`, `module_id`, `key`
               FROM `".DBPREFIX."core_text`
-             WHERE `id`=$text_id
+             WHERE `key`='".addslashes($key)."'
                ".($lang_id ? "AND `lang_id`=$lang_id" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         if ($objResult->RecordCount() == 0) {
-            if ($lang_id) return self::getById($text_id, 0);
+            if ($lang_id) {
+                $objText = self::getByKey($key, 0);
+                if ($objText) {
+                    $objText->lang_id = $lang_id;
+                    return $objText;
+                }
+            }
             return new Text(
                 $_CORELANG['TXT_CORE_TEXT_MISSING'],
-                $lang_id, null, null, $text_id
+                $lang_id, null, $key, null
             );
         }
         $objText = new Text(
@@ -450,7 +533,7 @@ class Text
             $objResult->fields['lang_id'],
             $objResult->fields['module_id'],
             $objResult->fields['key'],
-            $text_id
+            $objResult->fields['id']
         );
         // Mark Text not present in the selected language
         //$objText->markDifferentLanguage($lang_id);
@@ -459,33 +542,87 @@ class Text
 
 
     /**
-     * Store the Text record with the given Text and language ID
-     * with new values
+     * Replace or insert the Text record
      *
+     * If the Text ID is specified, looks for the same record in the
+     * given language, or any other language if that is not found.
+     * If the Text ID is false, but the key is valid, looks for a record
+     * with the same key.
+     * If no record is found this way, a new object is created.
+     * The parameters are applied, and the Text is then stored.
      * The optional arguments $module_id and $key are ignored if empty.
-     * If such a record exists, it is updated.  Otherwise, a new record
-     * is created.
-     * @param   integer     $text_id        The Text ID
+     * @param   integer     $text_id        The Text ID, or false
      * @param   integer     $lang_id        The language ID
      * @param   string      $strText        The text
      * @param   integer     $module_id      The optional module ID
      * @param   string      $key            The optional key
-     * @return  Text                        The Text object on success,
+     * @return  integer                     The Text ID on success,
      *                                      false otherwise
      */
-    static function replace($text_id, $lang_id, $strText, $module_id=0, $key='')
+    static function replace($text_id=false, $lang_id, $strText, $module_id=0, $key='')
     {
-        $objText = Text::getById($text_id, $lang_id);
+        if ($text_id === false) {
+            $objText = self::getByKey($key, $lang_id);
+//echo("replace($text_id, $lang_id, $strText, $module_id, $key): got by key: ".$objText->getText()."<br />");
+        } else {
+            $objText = Text::getById($text_id, $lang_id);
+//echo("replace($text_id, $lang_id, $strText, $module_id, $key): got by ID: ".$objText->getText()."<br />");
+        }
         if (   !$objText || !$objText->getLanguageId()
 // TODO:  This is not well defined yet
 //            || !$objText->getModuleId() || !$objText->getKey())
-        ) $objText = new Text('', $lang_id, 0, '', $text_id);
+        ) $objText = new Text('', 0, 0, '', $text_id);
         $objText->setText($strText);
         $objText->setLanguageId($lang_id);
         if ($module_id) $objText->module_id = $module_id;
         if ($key) $objText->key = $key;
         if (!$objText->store()) return false;
-        return $objText;
+        return $objText->id;
+    }
+
+
+    /**
+     * Deletes the Text record from the database
+     *
+     * If the optional $all_languages parameter evaluates to boolean true,
+     * all records with the same ID are deleted.  Otherwise, only the
+     * language of this object is affected.
+     * @param   boolean   $all_languages    Delete all languages if true
+     * @return  boolean                     True on success, false otherwise
+     */
+    function delete($all_languages=false)
+    {
+        global $objDatabase;
+
+        if (empty($this->id) || empty($this->lang_id)) return false;
+        $query = "
+            DELETE FROM `".DBPREFIX."core_text`
+             WHERE `id`=$this->id".
+             ($all_languages ? '' : " AND `lang_id`=$this->lang_id");
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
+    }
+
+
+    /**
+     * Deletes the Text records with the given key from the database
+     *
+     * Use with due care!
+     * @param   string    $key              The key to match
+     * @return  boolean                     True on success, false otherwise
+     */
+    static function deleteByKey($key)
+    {
+        global $objDatabase;
+
+        if (empty($key)) return false;
+        $query = "
+            DELETE FROM `".DBPREFIX."core_text`
+             WHERE `key`='".addslashes($key)."'";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
     }
 
 
@@ -496,45 +633,57 @@ class Text
      * The array returned looks as follows:
      *  array(
      *    'id'    => Text ID field alias, like "text_#_id"
-     *    'text'  => Text text field alias, like "text_#_text"
-     *    'name'  => Foreign key field name, usually like "text_*_id"
-     *    'alias' => table alias, like "text_#"; # is a unique integer index,
-     *    'field' => SQL SELECT field snippet, uses aliased field names
-     *               for the id ("text_#_id") and text ("text_#_text") fields,
+     *    'text'  => Text field alias, autocreated like "text_#_text",
+     *               or the alias that you provided in the $alias parameter.
+     *               Use the alias if you need to sort the result by that
+     *               text content.
+     *    'name'  => Text ID foreign key field name as specified in the
+     *               $field_id_name parameter, usually like "text_*_id"
+     *    'alias' => Automatically created table alias for the text table,
+     *               like "text_#"; # is a unique integer index
+     *    'field' => Field snippet to be included in the SQL SELECT, uses
+     *               aliased field names for the id ("text_#_id") and text
+     *               ("text_#_text") fields.
+     *               Note that a leading comma is already included!
      *    'join'  => SQL JOIN snippet, the LEFT JOIN with the core_text table
-     *               and conditions.
+     *               and conditions
      *  )
      * The '#' is replaced by a unique integer number.
      * The '*' may be any descriptive part of the name that disambiguates
      * multiple foreign keys in a single table, like 'name', or 'value'.
      * Note that the $lang_id parameter is mandatory and *MUST NOT* be
-     * emtpy.  Any of $module_id, $key, or $text_ids may be false, in which
-     * case they are ignored.
+     * emtpy.  Any of $module_id, $key, $alias, or $text_ids may be false,
+     * in which case they are ignored.
      * @static
      * @param       string      $field_id_name  The name of the text ID
      *                                          foreign key field
      * @param       integer     $lang_id        The language ID
      * @param       integer     $module_id      The optional module ID, or false
      * @param       string      $key            The optional key, or false
+     * @param       string      $alias          The optional text field alias,
+     *                                          or false
      * @param       integer     $text_ids       The optional comma separated
      *                                          list of Text IDs, or false
      * @return      array                       The array with SQL code parts
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     static function getSqlSnippets(
-        $field_id_name, $lang_id, $module_id=false, $key=false, $text_ids=false
+        $field_id_name, $lang_id,
+        $module_id=false, $key=false, $alias=false, $text_ids=false
     ) {
+        static $table_alias_index = 0;
+
         if (empty($field_id_name) || empty($lang_id)) return false;
-        $table_alias = 'text_'.++self::$table_alias_index;
+        $table_alias = 'text_'.++$table_alias_index;
         $field_id = $table_alias.'_id';
-        $field_text = $table_alias.'_text';
+        $field_text = ($alias ? $alias : $table_alias.'_text');
         $query_field =
             ', '.$field_id_name.
             ', `'.$table_alias.'`.`id`   AS `'.$field_id.'`'.
             ', `'.$table_alias.'`.`text` AS `'.$field_text.'`';
         $query_join =
             ' LEFT JOIN `'.DBPREFIX.'core_text` as `'.$table_alias.'`'.
-            ' ON `'.$table_alias.'`.`id`='.$field_id_name. //;
+            ' ON `'.$table_alias.'`.`id`='.$field_id_name.
             ' AND `'.$table_alias.'`.`lang_id`='.$lang_id.
             ($module_id !== false ? " AND `$table_alias`.`module_id`=$module_id"       : '').
             ($key       !== false ? " AND `$table_alias`.`key`='".addslashes($key)."'" : '').
@@ -684,54 +833,26 @@ class Text
     {
         global $objDatabase;
 
+ die("Text::errorHandler(): Disabled!<br />");
+
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."core_text", $arrTables)) {
-            $query = "DROP TABLE `".DBPREFIX."core_text`";
+        if (!in_array(DBPREFIX."core_text", $arrTables)) {
+            $query = "
+                CREATE TABLE `".DBPREFIX."core_text` (
+                  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                  `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+                  `module_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                  `key` TINYTEXT NOT NULL DEFAULT '',
+                  `text` TEXT NOT NULL DEFAULT '',
+                  PRIMARY KEY `id` (`id`, `lang_id`),
+                  INDEX `module_id` (`module_id` ASC),
+                  INDEX `key` (`key`(32) ASC),
+                  FULLTEXT `text` (`text`)
+                ) ENGINE=MyISAM
+            ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
         }
-        $query = "
-            CREATE TABLE `".DBPREFIX."core_text` (
-              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-              `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
-              `module_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              `key` TINYTEXT NOT NULL DEFAULT '',
-              `text` TEXT NOT NULL DEFAULT '',
-              PRIMARY KEY `id` (`id`, `lang_id`),
-              INDEX `module_id` (`module_id` ASC),
-              INDEX `key` (`key`(32) ASC),
-              FULLTEXT `text` (`text`)
-            ) ENGINE=MyISAM
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        // Insert all country names into the multilanguage text table
-        $query = "
-            INSERT INTO `".DBPREFIX."core_text` (
-              `id`, `lang_id`, `module_id`, `key`, `text`
-            )
-            SELECT NULL, 2, 0, 'CORE_COUNTRY', `name`
-              FROM `".DBPREFIX."lib_country`
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        //Insert all country name text IDs into the multilanguage country table.
-        //Note that the text foreign ID is used as the primary key as well!
-        $query = "
-            INSERT INTO `".DBPREFIX."core_country` (
-              `name_text_id`, `iso_code_2`, `iso_code_3`
-            )
-            SELECT DISTINCT `t`.`id`, `c`.`iso_code_2`, `c`.`iso_code_3`
-              FROM `".DBPREFIX."lib_country` AS `c`
-             INNER JOIN `".DBPREFIX."core_text` AS `t`
-                ON `c`.`name`=`t`.`text`
-             WHERE `t`.`key`='CORE_COUNTRY'
-               AND `t`.`lang_id`=2
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
 
         // More to come...
 

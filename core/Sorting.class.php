@@ -12,11 +12,6 @@
  */
 
 /**
- * URL modificator that definies the sort order
- */
-define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
-
-/**
  * Provides methods to create sorted tables
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,6 +22,14 @@ define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
  */
 class Sorting
 {
+    /**
+     * Default URL parameter name for the sorting order
+     *
+     * You *MUST* specify this yourself using {@see setOrderParameterName()}
+     * when using more than one Sorting at a time!
+     */
+    const ORDER_PARAMETER_NAME = 'x_order';
+
     /**
      * The base page URI to use.
      *
@@ -73,10 +76,18 @@ class Sorting
      */
     private $orderDirection;
 
+    /**
+     * The order parameter name for this Sorting
+     */
+    private $orderUriParameter;
+
 
     /**
      * Constructor
-     * @param   string  $baseURI        The base page URI.
+     *
+     * Note that the base page URI is handed over by reference and that
+     * the order parameter name is removed from that, if present.
+     * @param   string  $baseURI        The base page URI, by reference
      * @param   array   $arrFieldName   The acceptable field names.
      * @param   array   $arrHeaderName  The header names for displaying.
      * @param   boolean $flagDefaultAsc The flag indicating the default order
@@ -85,24 +96,58 @@ class Sorting
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true
+        &$baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true,
+        $orderUriParameter=self::ORDER_PARAMETER_NAME
     ) {
+        // Remove the order parameter name argument from the base URI
+        $baseUri = preg_replace(
+            '/'.preg_quote($this->orderUriParameter, '\=[^&]*\&?/').'/',
+            '', $baseUri);
         $this->baseUri        = $baseUri;
         $this->arrFieldName   = $arrFieldName;
         $this->arrHeaderName  = $arrHeaderName;
+//echo("Sorting::__construct(baseUri=$baseUri, arrFieldName=$arrFieldName, arrHeaderName=$arrHeaderName, flagDefaultAsc=$flagDefaultAsc, orderUriParameter=$orderUriParameter):<br />"."Field names: ".var_export($this->arrFieldName, true)."<br />"."Header names: ".var_export($this->arrHeaderName, true)."<hr />");
+
         $this->flagDefaultAsc = $flagDefaultAsc;
+        // Default order parameter name.  Change if needed.
+        $this->orderUriParameter = $orderUriParameter;
         // By default, the table will be sorted by the first field,
         // according to the direction flag.
+        // The default is overridden by the order stored in the session, if any.
         // If the order parameter is present in the $_REQUEST array,
         // however, it is used instead.
         $this->setOrder(
-            (empty($_REQUEST[SORTING_ORDER_PARAMETER_NAME])
-                ?   $this->arrFieldName[0].' '.
-                    ($this->flagDefaultAsc ? 'ASC' : 'DESC')
-                :   $_REQUEST[SORTING_ORDER_PARAMETER_NAME]
+            (empty($_REQUEST[$this->orderUriParameter])
+                ? (empty($_SESSION['sorting'][$this->orderUriParameter])
+                    ? $this->arrFieldName[0].' '.
+                      ($this->flagDefaultAsc ? 'ASC' : 'DESC')
+                    : $_SESSION['sorting'][$this->orderUriParameter])
+                : $_REQUEST[$this->orderUriParameter]
             )
         );
 //echo("Sorting::__construct(baseUri=$baseUri, arrFieldName=$arrFieldName, arrHeaderName=$arrHeaderName, flagDefaultAsc=$flagDefaultAsc):<br />made order: ".$this->getOrder()."<br />");
+    }
+
+
+    /**
+     * Set the order parameter name to be used for this Sorting
+     * @param   string    $parameter_name   The parameter name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setOrderParameterName($parameter_name)
+    {
+        $this->orderUriParameter = $parameter_name;
+    }
+
+
+    /**
+     * Returns the order parameter name used for this Sorting
+     * @return  string                      The parameter name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getOrderParameterName()
+    {
+        return $this->orderUriParameter;
     }
 
 
@@ -155,7 +200,7 @@ class Sorting
             '" title="'.$orderDirectionString.'" />';
 
         $field  = $this->arrFieldName[$fieldIndex];
-        $header = $this->arrHeaderName[$fieldIndex];
+        $header = $this->arrHeaderName[$field];
         $strHeader =
             "<a href='$this->baseUri".
             $this->getOrderReverseUriEncoded($field).
@@ -169,6 +214,10 @@ class Sorting
 
     /**
      * Returns the current order string (SQL-ish syntax)
+     *
+     * Note that this adds backticks around the order field name.
+     * So, if you use qualified names, omit the first and last backticks
+     * when initializing the Sorting object, like "table`.`field".
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -187,7 +236,7 @@ class Sorting
      */
     function setOrder($order)
     {
-        list($orderField, $orderDirection) = split(' ', $order);
+        list ($orderField, $orderDirection) = split(' ', $order);
         // If the order field isn't in the list of accepted field names,
         // fall back to default
         if (!in_array($orderField, $this->arrFieldName)) {
@@ -199,13 +248,11 @@ class Sorting
             break;
           default:
             $orderDirection =
-                ($this->flagDefaultAsc
-                    ? 'ASC'
-                    : 'DESC'
-                );
+                ($this->flagDefaultAsc ? 'ASC' : 'DESC');
         }
-        $this->orderField       = $orderField;
-        $this->orderDirection   = $orderDirection;
+        $this->orderField     = $orderField;
+        $this->orderDirection = $orderDirection;
+        $_SESSION['sorting'][$this->orderUriParameter] = $order;
     }
 
 
@@ -214,7 +261,6 @@ class Sorting
      *
      * The returned string contains both the parameter name, 'order',
      * and the current order string value.
-     * It is ready to be used in an URI in a link.
      * @param   string  $field    The optional order field
      * @return  string            URI encoded order string
      * @author  Reto Kohli <reto.kohli@comvation.com>
@@ -225,7 +271,10 @@ class Sorting
             $field = $this->orderField;
         }
         return
-            '&amp;'.SORTING_ORDER_PARAMETER_NAME.
+// TODO: I guess that it's better to leave it to another piece of code
+// whether to add '?' or '&'...?
+            //'&amp;'.
+            $this->orderUriParameter.
             '='.urlencode("$field $this->orderDirection");
     }
 
@@ -246,7 +295,7 @@ class Sorting
         }
         $orderDirectionReverse = $this->getOrderDirectionReverse();
         return
-            '&amp;'.SORTING_ORDER_PARAMETER_NAME.
+            '&amp;'.$this->orderUriParameter.
             '='.urlencode("$field $orderDirectionReverse");
     }
 

@@ -21,35 +21,124 @@
 class Filetype
 {
     /**
-     * Known extensions and corresponding MIME types are stored
-     * in this array upon the first access.
-     * @access  private
-     * @var     array
+     * Text key for the file type name
      */
-    private static $arrExtensions2MimeTypes = false;
+    const TEXT_NAME = 'core_filetype';
 
     /**
      * The default MIME type used if nothing is known about the data
-     * @access  private
-     * @var     string
      */
-    private static $strDefaultType = 'application/octet-stream';
+    const MIMETYPE_DEFAULT = 'application/octet-stream';
+
+    /**
+     * The MIME types of images known to work in web browsers
+     */
+    const MIMETYPE_IMAGES_WEB = 'image/jpeg,image/gif,image/png';
+
+    /**
+     * Size limit in bytes for files being uploaded or stored
+     *
+     * This is set to 2^20, or 1048576 -- aka one megabyte
+     */
+    const MAXIMUM_UPLOAD_FILE_SIZE = 1048576;
 
 
     /**
-     * Initialize the array of extensions and mime types on request
+     * Map known extensions to MIME types
+     * @access  private
+     * @var     array
+     */
+    private static $arrExtensions2Mimetypes = false;
+
+    /**
+     * Map MIME types to known extensions
+     * @access  private
+     * @var     array
+     */
+    private static $arrMimetypes2Extensions = false;
+
+
+    /**
+     * Initialize the arrays of extensions and mime types on request
+     *
+     * The arrays look like this:
+     *  $arrExtensions2Mimetypes = array(
+     *    Extension => array(
+     *      'id'        => ID,
+     *      'text_id'   => Text ID,
+     *      'name'      => Name,
+     *      'extension' => Extension,
+     *      'mimetype' => array(
+     *        MIME Type,
+     *        ... more ...
+     *      ),
+     *    ),
+     *    ... more ...
+     *  );
+     *
+     *  $arrMimetypes2Extensions = array(
+     *    MIME Type => array(
+     *      'id'        => ID,
+     *      'text_id'   => Text ID,
+     *      'name'      => Name,
+     *      'mimetype' => MIME Type,
+     *      'extension' => array(
+     *        Extension,
+     *        ... more ...
+     *      ),
+     *    ),
+     *    ... more ...
+     *  );
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @return  boolean             True on success, false otherwise
+     * @static
      */
-    function init()
+    static function init()
     {
-        $objResult = $objDatabase->Execute("
-            SELECT `id`, `extension`, `mime_type`
-              FROM `".DBPREFIX."core_file_type`");
-        if (!$objResult) return false;
+        global $objDatabase;
+
+        $arrSqlName = Text::getSqlSnippets(
+            '`filetype`.`name_text_id`', FRONTEND_LANG_ID,
+            0, self::TEXT_NAME
+        );
+        $query = "
+            SELECT `filetype`.`id`,
+                   `filetype`.`extension`, `filetype`.`mimetype`".
+                   $arrSqlName['field']."
+              FROM ".DBPREFIX."core_filetype AS `filetype`".
+                   $arrSqlName['join']."
+             ORDER BY `filetype`.`id` ASC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        self::$arrExtensions2Mimetypes = array();
         while (!$objResult->EOF) {
-            self::$arrExtensions2MimeTypes[$objResult->fields['extension']] =
-                $objResult->fields['mime_type'];
+            $id = $objResult->fields['id'];
+            $text_id = $objResult->fields[$arrSqlName['id']];
+            $strName = $objResult->fields[$arrSqlName['text']];
+            if ($strName === null) {
+                $objText = Text::getById($id, 0);
+                if ($objText) $strName = $objText->getText();
+            }
+            if (empty(self::$arrExtensions2Mimetypes[$objResult->fields['extension']]))
+                self::$arrExtensions2Mimetypes[$objResult->fields['extension']] =
+                    array(
+                        'id' => $id,
+                        'text_id' => $text_id,
+                        'name' => $strName,
+                        'extension' => $objResult->fields['extension'],
+                    );
+                self::$arrExtensions2Mimetypes[$objResult->fields['extension']]['mimetype'][] =
+                    $objResult->fields['mimetype'];
+            if (empty(self::$arrMimetypes2Extensions[$objResult->fields['mimetype']]))
+                self::$arrMimetypes2Extensions[$objResult->fields['mimetype']] =
+                    array(
+                        'id' => $id,
+                        'text_id' => $text_id,
+                        'name' => $strName,
+                        'mimetype' => $objResult->fields['mimetype'],
+                    );
+                self::$arrMimetypes2Extensions[$objResult->fields['mimetype']]['extension'][] =
+                    $objResult->fields['extension'];
             $objResult->MoveNext();
         }
         return true;
@@ -67,8 +156,8 @@ class Filetype
      */
     static function isKnownExtension($strExtension)
     {
-        if (empty(self::$arrExtensions2MimeTypes)) self::init();
-        return isset(self::$arrExtensions2MimeTypes[$strExtension]);
+        if (empty(self::$arrExtensions2Mimetypes)) self::init();
+        return isset(self::$arrExtensions2Mimetypes[$strExtension]);
     }
 
 
@@ -81,33 +170,81 @@ class Filetype
      * Use {@link isKnownExtension()} to test exactly that.
      * @static
      * @param   string     $strExtension    The file extension
-     * @return  string                      The corresponding MIME type
+     * @return  array                       The corresponding MIME types
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getMimeTypeForExtension($strExtension)
+    static function getMimetypesForExtension($strExtension)
     {
-        if (empty(self::$arrExtensions2MimeTypes)) self::init();
+        if (empty(self::$arrExtensions2Mimetypes)) self::init();
         // Make sure only the extension is present.
         // Chop the file name up to and including  the last dot
         $strChoppedExtension = preg_replace('/^.*\./', '', $strExtension);
         if (self::isKnownExtension($strChoppedExtension))
-            return self::$arrExtensions2MimeTypes[$strChoppedExtension];
-        return self::$strDefaultType;
+            return self::$arrExtensions2Mimetypes[$strChoppedExtension]['mimetype'];
+        return array(self::MIMETYPE_DEFAULT);
     }
 
 
     /**
-     * Return the default MIME type
+     * Returns an array of file name extensions that are valid for images
      *
-     * The value as stored in {@link $strDefaultType}.
-     * @static
-     * @return  string                      The default MIME type
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @static
+     * These include jpg, jpeg, gif, and png.
      */
-    static function getDefaultType()
+    static function getImageExtensions()
     {
-        return self::$strDefaultType;
+        return array('jpg', 'jpeg', 'gif', 'png', );
+    }
+
+
+    /**
+     * Returns an array of MIME types for accepted images
+     *
+     * These include those with the extensions returned by
+     * {@see getImageExtensions()}
+     */
+    static function getImageMimetypes()
+    {
+        $arrMimetypes = array();
+        foreach (self::getImageExtensions() as $extension) {
+        	 $arrMimetypes[] = self::$arrExtensions2Mimetypes[$extension]['mimetype'];
+        }
+        return $arrMimetypes;
+    }
+
+
+    /**
+     * Verify that the MIME type of the file matches the specified ones.
+     *
+     * $accepted_types is a comma separated list of accepted MIME types.
+     * If the $file_name does not have an extension, this method will
+     * invariably fail and return the empty string.
+     * (I would use mime_content_type(), but it seems that this function
+     * does not exist in my version of PHP?!?...?)
+     * @param   string    $file_name      The name of the file
+     * @param   string    $accepted_types The list of MIME types
+     * @return  string                    The actual MIME type if it matches
+     *                                    one of the accepted ones, the empty
+     *                                    string otherwise
+     */
+    static function matchMimetypes($file_name, $accepted_types)
+    {
+        $path_parts = pathinfo($file_name);
+//echo("Filetype::matchMimetypes($file_name, $accepted_types): path parts ".var_export($path_parts, true).")<br />");
+        $match = array();
+        if (isset($path_parts['extension'])) {
+            $extension = strtolower($path_parts['extension']);
+            $mime_types = self::getMimetypesForExtension($extension);
+            foreach ($mime_types as $mime_type) {
+//echo("Filetype::matchMimetypes(): Got MIME type $mime_type for extension $extension<br />");
+                if (preg_match('/('.preg_quote($mime_type, '/').')/',
+                    $accepted_types, $match)) {
+//echo("Filetype::matchMimetypes($file_name, $accepted_types): Extension ".$path_parts['extension']." accepted<br />");
+                    break;
+                }
+            }
+        }
+//echo("Filetype::matchMimetypes(): Matching MIME type for extension $extension: ".$match[1]."<br />");
+        return (string)$match[1];
     }
 
 
@@ -119,9 +256,10 @@ class Filetype
      */
     static function getTypeMenuoptions($selected='')
     {
-        if (empty(self::$arrExtensions2MimeTypes)) self::init();
+        if (empty(self::$arrExtensions2Mimetypes)) self::init();
         $strMenuoptions = '';
-        foreach (self::$arrExtensions2MimeTypes as $extension => $mimetype) {
+        foreach (self::$arrExtensions2Mimetypes as $extension => $arrType) {
+            $mimetype = $arrType['mimetype'];
             $strMenuoptions .=
                 '<option value="'.$mimetype.'"'.
                 ($selected == $mimetype ? ' selected="selected"' : '').
@@ -146,28 +284,25 @@ class Filetype
     {
         global $objDatabase;
 
+//die("Filetype::errorHandler(): Disabled!<br />");
+
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."core_file_type", $arrTables)) {
+        if (in_array(DBPREFIX."core_filetype", $arrTables)) {
             // The table does exist, but causes errors!  So...
             $objResult = $objDatabase->Execute("
-                DROP TABLE `".DBPREFIX."core_file_type`");
+                DROP TABLE `".DBPREFIX."core_filetype`");
             if (!$objResult) return false;
         }
 
         $objResult = $objDatabase->Execute("
-            CREATE TABLE `".DBPREFIX."core_file_type` (
-              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-              `extension` VARCHAR(16) NULL COMMENT 'Extension without the leading dot' ,
-              `mime_type` VARCHAR(32) NULL COMMENT 'Mime type' ,
-              PRIMARY KEY (`id`) ,
-              UNIQUE INDEX `type` USING BTREE (`extension`(16) ASC, `mime_type`(32) ASC) ,
-              INDEX `file_type_text_id` (`id` ASC) ,
-              CONSTRAINT `file_type_text_id`
-                FOREIGN KEY (`id` )
-                REFERENCES `".DBPREFIX."core_text` (`id` )
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION)
-            ENGINE = InnoDB");
+            CREATE TABLE `".DBPREFIX."core_filetype` (
+              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+              `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
+              `extension` VARCHAR(16) NULL COMMENT 'Extension without the leading dot',
+              `mimetype` VARCHAR(32) NULL COMMENT 'Mime type',
+              PRIMARY KEY (`id`),
+              UNIQUE INDEX `type` USING BTREE (`extension`(16) ASC, `mimetype`(32) ASC)
+            ) ENGINE=InnoDB");
         if (!$objResult) return false;
 
         /**
@@ -176,7 +311,7 @@ class Filetype
          * Note that these associations are arbitrary!
          * @var     array
          */
-        $arrExtensions2MimeTypes = array(
+        $arrExtensions2Mimetypes = array(
             '3dm' => 'x-world/x-3dmf',
             '3dmf' => 'x-world/x-3dmf',
             'ai' => 'application/postscript',
@@ -282,14 +417,28 @@ class Filetype
             'zip' => 'application/zip',
         );
 
-        foreach ($arrExtensions2MimeTypes as $extension => $mime_type) {
+        Text::deleteByKey(self::TEXT_NAME);
+
+        foreach ($arrExtensions2Mimetypes as $extension => $mimetype) {
+            $text_id = 0;
+// TODO:  Add proper names for the file types
+            $text_id = Text::replace(
+                $text_id, FRONTEND_LANG_ID,
+                $mimetype, MODULE_ID, self::TEXT_NAME);
+            if (!$text_id) {
+echo("Filetype::errorHandler(): Failed to store Text for type $mimetype<br />");
+                continue;
+            }
             $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."core_file_type` (
-                    `id`, `extension`, `mime_type`
+                INSERT INTO `".DBPREFIX."core_filetype` (
+                    `name_text_id`, `extension`, `mimetype`
                 ) VALUES (
-                    NULL, ".addslashes($extension).", ".addslashes($mime_type)."
+                    $text_id, '".addslashes($extension)."', '".addslashes($mimetype)."'
                 )");
-//            if (!$objResult) return false;
+            if (!$objResult) {
+echo("Filetype::errorHandler(): Failed to store file type $mimetype<br />");
+                continue;
+            }
         }
 
         // More to come...
