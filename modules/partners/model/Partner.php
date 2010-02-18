@@ -89,8 +89,10 @@ class Partner extends NGModel {
             $frontend_join
             WHERE (partner.name               LIKE '%$fulltext%'
                 OR partner.first_contact_name LIKE '%$fulltext%'
+                OR partner.first_contact_email LIKE '%$fulltext%'
                 OR partner.web_url            LIKE '%$fulltext%'
                 OR partner.address            LIKE '%$fulltext%'
+                OR partner.zip_code           LIKE '%$fulltext%'
                 OR partner.city               LIKE '%$fulltext%')
                 AND $label_where
                 $frontend_where
