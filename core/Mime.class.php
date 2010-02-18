@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * OBSOLETE -- See {@see Filetype.class.php}
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @package     contrexx
@@ -9,6 +10,7 @@
  */
 
 /**
+ * OBSOLETE -- See {@see Filetype.class.php}
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @package     contrexx
