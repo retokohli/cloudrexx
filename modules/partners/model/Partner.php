@@ -27,7 +27,7 @@ class Partner extends NGModel {
                     'fax_nr',
                     'customer_quote',
                     'logo_url',
-                    'sort_order',
+                    'num_installations',
                     'description',
                     'active',
                     'user_id',
@@ -97,7 +97,7 @@ class Partner extends NGModel {
                 AND $label_where
                 $frontend_where
                 $active_only
-            ORDER BY `sort_order`, `name`
+            ORDER BY `num_installations` DESC, `name`
         ";
         #print("<pre>$sql</pre>");
         return new NGDb_Query($sql, 'Partner');

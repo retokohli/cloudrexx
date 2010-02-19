@@ -65,7 +65,7 @@
     <tr class="row3">
         <td width="16"><input type="checkbox" id="toggleall_checkbox" onclick="toggle_all()"/></th>
         <td width="16">&nbsp;</td>
-        <td><span style="font-weight: bold">#</span></th>
+        <td><span style="font-weight: bold"># Inst</span></th>
         <td><span style="font-weight: bold">{TXT_PARTNERS_COMPANY_NAME}</span></th>
         <td><span style="font-weight: bold">{TXT_PARTNERS_COMPANY_CONTACT}</span</th>
         <td><span style="font-weight: bold">{TXT_PARTNERS_COMPANY_URL}</span</th>
@@ -76,7 +76,7 @@
     <tr class="{ROW_CLASS}" id="partner_row_{PARTNER_ID}">
         <td><input type="checkbox" id="checked_{PARTNER_ID}" class="partner_checkbox" name="checked_partner[]" value="{PARTNER_ID}"/></td>
         <td><img src="images/icons/led_{LED_COLOR}.gif"/></td>
-		<td><input type="text" name="partner_sort[{PARTNER_ID}]" style="width: 3em;" value="{PARTNER_SORT_ORDER}"/></th>
+		<td><input type="text" name="partner_inst[{PARTNER_ID}]" style="width: 3em;" value="{PARTNER_NUM_INSTALLATIONS}"/></th>
         <td><a href="index.php?cmd=partners&amp;act=editpartner&amp;id={PARTNER_ID}">{PARTNER_NAME}</a></td>
         <td><a href="mailto:{PARTNER_CONTACT_EMAIL}">{PARTNER_CONTACT_NAME}</a></td>
         <td><a href="{PARTNER_WEB_URL}">{PARTNER_WEB_URL}</a></td>
