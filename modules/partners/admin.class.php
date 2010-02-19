@@ -181,6 +181,26 @@ class PartnersAdmin extends PartnersBase {
 
     }
 
+    function statustoggle_action() {
+        $partner = Partner::get(Request::GET('id'));
+        $partner->active = ! $partner->active;
+        $partner->save();
+
+        $str = $partner->active
+            ? 'TXT_PARTNERS_PARTNER_ACTIVATED'
+            : 'TXT_PARTNERS_PARTNER_DEACTIVATED'
+        ;
+        NGMessaging::save(tr($str), 'partners_success');
+
+        if(strlen($_SERVER["HTTP_REFERER"]) > 5) {
+            CSRF::header('Location: '.$_SERVER["HTTP_REFERER"]);
+        }
+        else {
+            CSRF::header('Location: index.php?cmd=partners"');
+        }
+        exit();
+    }
+
     // }}}
 
     // {{{ Assigning labels and removing them
@@ -618,6 +638,7 @@ class PartnersAdmin extends PartnersBase {
         CSRF::header("Location: index.php?cmd=partners");
         exit();
     }
+
 
 
     //  }}}

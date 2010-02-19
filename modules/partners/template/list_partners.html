@@ -75,7 +75,7 @@
     <!-- BEGIN partner_entry -->
     <tr class="{ROW_CLASS}" id="partner_row_{PARTNER_ID}">
         <td><input type="checkbox" id="checked_{PARTNER_ID}" class="partner_checkbox" name="checked_partner[]" value="{PARTNER_ID}"/></td>
-        <td><img src="images/icons/led_{LED_COLOR}.gif"/></td>
+		<td><a href="index.php?cmd=partners&act=statustoggle&id={PARTNER_ID}"><img src="images/icons/led_{LED_COLOR}.gif" style="border:none"/></a></td>
 		<td><input type="text" name="partner_inst[{PARTNER_ID}]" style="width: 3em;" value="{PARTNER_NUM_INSTALLATIONS}"/></th>
         <td><a href="index.php?cmd=partners&amp;act=editpartner&amp;id={PARTNER_ID}">{PARTNER_NAME}</a></td>
         <td><a href="mailto:{PARTNER_CONTACT_EMAIL}">{PARTNER_CONTACT_NAME}</a></td>
