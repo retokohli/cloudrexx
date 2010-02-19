@@ -32,21 +32,50 @@ var LabelDropdown = (function(){
         // element, then fix up the crumble path.
         var active = find_in_tree(dd, current);
         var par = find_parent_of(dd, active.id);
+		var crumbletarget = par;
         if (par) {
             // parent entry found. we're on some sub-level.
             // Fill with our siblings.
-            fill(dd, par.children, par.id);
+
+			if(active.children.length) {
+				// we've got children. this means we go into the
+				// crumble, and the children get listed. Select
+				// the parent
+				fill(dd, active.children, par.id);
+				select(dd, par.id);
+				crumbletarget = active;
+			}
+			else {
+				// no children. we go into the list and should
+				// get selected
+				fill(dd, par.children, par.id);
+				select(dd, active.id);
+			}
         }
         else {
             // no parent entry found. we're selected on top level.
             fill(dd, treedata[dd.id], 0);
+
+			if(active.children.length) {
+				// we've got children. this means we go into the
+				// crumble, and the children get listed. Select
+				// the parent
+				fill(dd, active.children, 0);
+				crumbletarget = active;
+			}
+			else {
+				// no children. we go into the list and should
+				// get selected
+				fill(dd, treedata[dd.id], 0);
+				select(dd, active.id);
+			}
+
         }
-        select(dd, active.id);
 
         // Now, fix the crumble tree.
-        while (par) {
-            add_crumble(dd, par);
-            par = find_parent_of(dd, par.id);
+        while (crumbletarget) {
+            add_crumble(dd, crumbletarget);
+            crumbletarget = find_parent_of(dd, crumbletarget.id);
         }
 
     };
@@ -137,7 +166,7 @@ var LabelDropdown = (function(){
 
     var changed = function(dd) {
         var elem_id = dd.options[dd.selectedIndex].value;
-        init(dd, elem_id);
+        //init(dd, elem_id);
         push_current(dd);
     };
 
