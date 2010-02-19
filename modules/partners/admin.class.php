@@ -411,7 +411,7 @@ class PartnersAdmin extends PartnersBase {
             foreach ($pager->current()->rs() as $partner) {
                 $this->_objTpl->PARTNER_ID            = $partner->id;
                 $this->_objTpl->PARTNER_NAME          = $partner->name;
-                $this->_objTpl->PARTNER_SORT_ORDER    = $partner->sort_order;
+                $this->_objTpl->PARTNER_NUM_INSTALLATIONS= $partner->num_installations;
                 $this->_objTpl->PARTNER_CONTACT_NAME  = $partner->first_contact_name;
                 $this->_objTpl->PARTNER_CONTACT_EMAIL = $partner->first_contact_email;
                 $this->_objTpl->PARTNER_WEB_URL       = $partner->web_url;
@@ -518,7 +518,7 @@ class PartnersAdmin extends PartnersBase {
             $partner->customer_quote =      Request::POST('customer_quote');
             $partner->logo_url =            Request::POST('logo_url');
             $partner->creation_date =       Request::POST('created');
-            $partner->sort_order =          Request::POST('sort_order');
+            $partner->num_installations =   Request::POST('num_installations');
             $partner->user_id =             Request::POST('user_id');
 
             $partner->description =         Request::POST('description');
@@ -560,7 +560,6 @@ class PartnersAdmin extends PartnersBase {
         }
         $this->_objTpl->PARTNER_ACTIVE =       $partner->active ? 'checked="checked"' : '';
         $this->_objTpl->PARTNER_NAME =         $partner->name;
-        $this->_objTpl->PARTNER_SORT_ORDER   = $partner->sort_order;
         $this->_objTpl->PARTNER_CONTACT_NAME = $partner->first_contact_name;
         $this->_objTpl->PARTNER_CONTACT_EMAIL =$partner->first_contact_email;
         $this->_objTpl->PARTNER_WEB_URL =      $partner->web_url;
@@ -574,7 +573,7 @@ class PartnersAdmin extends PartnersBase {
         $this->_objTpl->PARTNER_CUSTOMER_QUOTE=$partner->customer_quote;
         $this->_objTpl->PARTNER_CREATED       =$partner->creation_date;
         $this->_objTpl->PARTNER_USER_ID =      $partner->user_id;
-        $this->_objTpl->PARTNER_SORT_ORDER =   $partner->sort_order ? $partner->sort_order : 100;
+        $this->_objTpl->PARTNER_NUM_INSTALLATIONS = $partner->num_installations ? $partner->num_installations : 0;
         $this->_objTpl->setVariable('PARTNER_CUSTOMER_DESCRIPTION', get_wysiwyg_editor('description', $partner->description));
 
 
@@ -584,9 +583,9 @@ class PartnersAdmin extends PartnersBase {
     function _multiaction_sort() {
         NGMessaging::save(tr('TXT_PARTNERS_SORTING_UPDATED'), 'partners_success');
         $tbl = Partner::typeinfo('table');
-        $sql = "UPDATE `$tbl` SET `sort_order` = %0 WHERE `id` = %1";
-        foreach ($_POST['partner_sort'] as $p_id => $sort_order) {
-            NGDb::parse_execute($sql, $sort_order, $p_id);
+        $sql = "UPDATE `$tbl` SET `num_installations` = %0 WHERE `id` = %1";
+        foreach ($_POST['partner_inst'] as $p_id => $inst) {
+            NGDb::parse_execute($sql, $inst, $p_id);
         }
     }
 
