@@ -304,4 +304,5 @@ $_ARRAYLANG['TXT_PARTNERS_SPECIAL_SEARCH'] = "Spezial-Suchfunktionen";
 $_ARRAYLANG['TXT_PARTNERS_SEARCH_TEXT'] = "Suchtext";
 $_ARRAYLANG['TXT_PARTNERS_LINKED_USERID'] = "Eigentümer (Benutzer-ID)";
 $_ARRAYLANG['TXT_PARTNERS_SORT_ORDER'] = "Sortierreihenfolge";
+$_ARRAYLANG['TXT_PARTNERS_NUM_INSTALLATIONS'] = "Anzahl Installationen";
 ?>
