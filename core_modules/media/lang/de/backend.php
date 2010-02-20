@@ -76,4 +76,5 @@ $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Vorhandene Dateien überschreiben";
 $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'] = "File Uploader";
 $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC'] = "Verwenden Sie den File Uploader um grosse oder mehrere Dateien auf einmal hoch zu laden.";
+$_ARRAYLANG['TXT_MEDIA_START_FILE_UPLOADER'] = "File Uploader starten...";
 ?>

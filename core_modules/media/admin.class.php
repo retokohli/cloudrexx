@@ -346,6 +346,7 @@ class MediaManager extends MediaLibrary
             $this->_objTpl->setVariable(array(
                 'FILEBROWSER_ADVANCED_UPLOAD_PATH'  => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->archive.'&amp;path='.urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1)),
                 'TXT_MEDIA_FILE_UPLOADER'           => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'],
+                'TXT_MEDIA_START_FILE_UPLOADER'     => $_ARRAYLANG['TXT_MEDIA_START_FILE_UPLOADER'],
                 'TXT_MEDIA_FILE_UPLOADER_DESC'      => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC']
             ));
 
