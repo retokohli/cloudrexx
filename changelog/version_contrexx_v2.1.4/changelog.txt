@@ -9,6 +9,10 @@ Media Archive
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
   File Uploader Moduls (sofern vorhanden) ausgewählt werden.
 
+File Browser
+- Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
+  File Uploader Moduls (sofern vorhanden) ausgewählt werden.
+
 
 ****************************************
 * Behobene Fehler **********************
