@@ -632,7 +632,7 @@ class FileBrowser {
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
                         'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".FWValidator::getEscapedSource($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
                         'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
-                        'FILEBROWSER_FILE_NAME'             => $arrFile['name'],
+                        'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
                         'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
                         'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
                         'FILEBROWSER_FILE_DIMENSION'        => (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
@@ -694,19 +694,18 @@ class FileBrowser {
             'FILEBROWSER_UPLOAD_PATH'   => $this->_path,
             'FILEBROWSER_MAX_FILE_SIZE' => $objFWSystem->getMaxUploadFileSize(),
             'TXT_CREATE_DIRECTORY'      => $_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'],
+            'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE']
         ));
 
         $objModulChecker = new ModuleChecker();
         if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
             $this->_objTpl->setVariable(array(
                 'TXT_UPLOAD_FILE_MULTI'                => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'],
+                'TXT_FILEBROWSER_START_FILE_UPLOADER'   => $_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER'],
                 'FILEBROWSER_ADVANCED_UPLOAD_PATH'    => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->_mediaType.'&amp;path='.urlencode($this->_path)
             ));
             $this->_objTpl->parse('fileBrowser_advanced_upload');
-            $this->_objTpl->hideBlock('fileBrowser_simple_upload');
         } else {
-            $this->_objTpl->setVariable('TXT_UPLOAD_FILE', $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE']);
-            $this->_objTpl->parse('fileBrowser_simple_upload');
             $this->_objTpl->hideBlock('fileBrowser_advanced_upload');
         }
 

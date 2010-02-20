@@ -19,6 +19,10 @@ Allgemein
 - Neu, über den Modul Manager installierte Module, erscheinen nicht in der
   Inhalts Navigation.
 
+File Browser
+- Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
+  File Uploader Moduls (sofern vorhanden) ausgewählt werden.
+
 Content Manager
 - Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden
 - Editeren einer Seite in mehreren Sprachen auf einmal
