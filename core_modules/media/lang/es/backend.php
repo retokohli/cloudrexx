@@ -74,4 +74,6 @@ $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Keys";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Tienda";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Contenido";
 $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Sobreescribir ficheros existentes";
+$_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'] = "File Uploader";
+$_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC'] = "Use the File Uploader to upload huge files or many files at once.";
 ?>
