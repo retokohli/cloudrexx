@@ -26,4 +26,5 @@ $_ARRAYLANG['TXT_FILEBROWSER_PODCAST'] = "Podcast";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'] = "Envoyer fichier(s)";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIADIR'] = "Dossiers";
 $_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'] = "Gestion des ressources numériques";
+$_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER'] = "or start File Uploader...";
 ?>
