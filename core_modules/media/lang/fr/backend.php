@@ -69,9 +69,11 @@ $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Aperçu des modèles";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Nouveau modèle";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activer";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Variable dossier";
-$_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED'] = "Some special characters ";
+$_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED'] = "Pour éviter les problèmes, les caractères spéciaux ont été remplacés par \"_\"";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Clés";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Contenu";
 $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Ecraser les fichiers existants";
+$_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'] = "File Uploader";
+$_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC'] = "Use the File Uploader to upload huge files or many files at once.";
 ?>

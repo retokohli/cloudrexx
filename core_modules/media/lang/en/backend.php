@@ -12,7 +12,7 @@ $_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Filesize";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Date";
 $_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permission";
 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Mediaarchive";
-$_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'] = "Image Administration";
+$_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'] = "Image Management";
 $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "This directory is empty";
 $_ARRAYLANG['TXT_MEDIA_NEW_DIRECTORY'] = "Create A New Directory";
 $_ARRAYLANG['TXT_MEDIA_CREATE'] = "Create";
@@ -74,4 +74,6 @@ $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Keys";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Overwrite existing files";
+$_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'] = "File Uploader";
+$_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC'] = "Use the File Uploader to upload huge files or many files at once.";
 ?>
