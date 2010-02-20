@@ -26,4 +26,5 @@ $_ARRAYLANG['TXT_FILEBROWSER_PODCAST'] = "Podcast";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'] = "Datei(en) hinaufladen";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIADIR'] = "Medien Verzeichnis";
 $_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'] = "Digital Asset Management";
+$_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER'] = "oder File Uploader starten...";
 ?>
