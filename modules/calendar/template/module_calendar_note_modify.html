@@ -4,19 +4,19 @@
 
 function checkNote()
 {
-  if(document.modifyCalendarNote.inputCategory.value == 0)
+  if (document.modifyCalendarNote.inputCategory.value == 0)
   {
     alert('{TXT_CALENDAR_ERROR_CATEGORY}');
     document.modifyCalendarNote.inputCategory.focus();
     return false;
   }
-  if(document.modifyCalendarNote.inputTitle.value == "")
+  if (document.modifyCalendarNote.inputTitle.value == "")
   {
     alert('{TXT_CALENDAR_ERROR_NAME}');
     document.modifyCalendarNote.inputTitle.focus();
     return false;
   }
-  if(document.modifyCalendarNote.inputEndDate.value < document.modifyCalendarNote.inputStartDate.value)
+  if (document.modifyCalendarNote.inputEndDate.value < document.modifyCalendarNote.inputStartDate.value)
   {
     alert('{TXT_CALENDAR_ERROR_DATE}');
     document.modifyCalendarNote.inputEndDate.focus();
@@ -60,14 +60,14 @@ function getFileBrowser(name, type)
   }
 
   if (type == 'webpages') {
-    openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    openWindow('index.php?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
   } else {
-    openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    openWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
   }
 }
 
 
-function openWindow(theURL,winName,features){
+function openWindow(theURL,winName,features) {
   browserPopup = window.open(theURL,"Browser",features);
   browserPopup.focus();
 }
@@ -145,7 +145,7 @@ function disableButtons(from,dest,add,remove)
 }
 
 function SelectAllList(CONTROL) {
-  for(var i = 0;i < CONTROL.length;i++)
+  for (var i = 0;i < CONTROL.length;i++)
   {
     CONTROL.options[i].selected = true;
   }
@@ -157,12 +157,12 @@ function showOrHide(strElement)
   seriesMastSelect  = document.getElementsByName('inputSeriesType')[0].value;
 
   if (strElement == 'selectGroups') {
-    if(addressorSelect == 2){
+    if (addressorSelect == 2) {
       document.getElementById(strElement).style.display = 'block';
       document.getElementById('mailTab').style.display = 'block';
       document.getElementById('mailTab2').style.display = 'none';
       document.getElementById('mailAgain').style.display = 'block';
-    } else if(addressorSelect == 1) {
+    } else if (addressorSelect == 1) {
       document.getElementById('mailTab').style.display = 'block';
       document.getElementById('mailTab2').style.display = 'none';
       document.getElementById(strElement).style.display = 'none';
@@ -176,15 +176,15 @@ function showOrHide(strElement)
   }
 
   if (strElement == 'seriesType') {
-    if(seriesMastSelect == 1){
+    if (seriesMastSelect == 1) {
       document.getElementById('seriesMaskDaily').style.display = 'block';
       document.getElementById('seriesMaskWeekly').style.display = 'none';
       document.getElementById('seriesMaskMonthly').style.display = 'none';
-    } else if(seriesMastSelect == 2) {
+    } else if (seriesMastSelect == 2) {
       document.getElementById('seriesMaskDaily').style.display = 'none';
       document.getElementById('seriesMaskWeekly').style.display = 'block';
       document.getElementById('seriesMaskMonthly').style.display = 'none';
-    } else if(seriesMastSelect == 3) {
+    } else if (seriesMastSelect == 3) {
       document.getElementById('seriesMaskDaily').style.display = 'none';
       document.getElementById('seriesMaskWeekly').style.display = 'none';
       document.getElementById('seriesMaskMonthly').style.display = 'block';

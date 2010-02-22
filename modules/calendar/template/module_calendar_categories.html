@@ -2,25 +2,25 @@
 <script language="JavaScript" type="text/javascript">
   function formCheck()
   {
-        if(document.form.name.value == "")
+        if (document.form.name.value == "")
         {
             alert("{TXT_CALENDAR_FORMCHECK_NAME}");
           document.form.name.focus();
             return false;
         }
-        if(document.form.status.value == "")
+        if (document.form.status.value == "")
         {
           alert("{TXT_CALENDAR_FORMCHECK_STATUS}");
           document.form.status.focus();
           return false;
           }
-        if(document.form.lang.value == "")
+        if (document.form.lang.value == "")
         {
             alert("{TXT_CALENDAR_FORMCHECK_LANG}");
           document.form.lang.focus();
             return false;
         }
-        if(document.form.status.value == "")
+        if (document.form.status.value == "")
         {
             alert("{TXT_CALENDAR_FORMCHECK_STATUS}");
           document.form.status.focus();
@@ -30,26 +30,26 @@
 
     function selectTodoCategory()
     {
-        if(document.form2.form_select_todo.value == "sort")
+        if (document.form2.form_select_todo.value == "sort")
       {
             document.form2.form_sort.value = "1";
           document.form2.submit();
       }
-        if(document.form2.ischecked.value != "0")
+        if (document.form2.ischecked.value != "0")
         {
-          if(document.form2.form_select_todo.value == "activate")
+          if (document.form2.form_select_todo.value == "activate")
           {
               document.form2.form_activate.value = "1";
             document.form2.submit();
           }
-          if(document.form2.form_select_todo.value == "deactivate")
+          if (document.form2.form_select_todo.value == "deactivate")
           {
               document.form2.form_deactivate.value = "1";
             document.form2.submit();
           }
-          if(document.form2.form_select_todo.value == "delete")
+          if (document.form2.form_select_todo.value == "delete")
           {
-            if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
+            if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
             {
                 document.form2.form_delete.value = "1";
                 document.form2.submit();
@@ -58,7 +58,7 @@
     }
       else
       {
-          if(document.form2.form_select_todo.value != "sort")
+          if (document.form2.form_select_todo.value != "sort")
           {
             alert("{TXT_CALENDAR_NO_OPERATION}");
           }
@@ -73,9 +73,9 @@
         var box      = elements['selected[]'];
         var box_cnt  = (typeof(box.length) != 'undefined') ? box.length : 0;
 
-        if(box_cnt)
+        if (box_cnt)
         {
-            for(var i = 0; i < box_cnt; i++)
+            for (var i = 0; i < box_cnt; i++)
             {
                 box[i].checked = do_check;
             }
@@ -85,7 +85,7 @@
             box.checked = do_check;
         }
         }
-        if(do_check == true)
+        if (do_check == true)
         {
             document.form2.ischecked.value = "{CALENDAR_TOTAL_RECORDS}";
         }
@@ -95,8 +95,8 @@
         }
       return true;
   }
-  function isChecked(isitchecked){
-    if(isitchecked == true)
+  function isChecked(isitchecked) {
+    if (isitchecked == true)
     {
         document.form2.ischecked.value++;
     }

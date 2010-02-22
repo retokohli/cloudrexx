@@ -3,7 +3,7 @@
 // <![CDATA[
 function deleteNote(Id)
 {
-  if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
+  if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
     window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=delete&id="+Id);
 }
 function category()
@@ -14,7 +14,7 @@ function category()
 
 function selectMultiAction()
 {
-  with (document.frmEventList){
+  with (document.frmEventList) {
     switch (frmEventList_MultiAction.value) {
       case 'delete':
         if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {

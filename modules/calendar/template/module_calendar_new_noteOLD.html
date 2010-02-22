@@ -4,49 +4,49 @@
 
 function newNote()
 {
-  if(document.newCalendarNote.inputCategory.value == 0)
+  if (document.newCalendarNote.inputCategory.value == 0)
   {
     alert("{TXT_CALENDAR_ERROR_CATEGORY}");
     document.newCalendarNote.inputCategory.focus();
     return false;
   }
-  if(document.newCalendarNote.inputName.value == "")
+  if (document.newCalendarNote.inputName.value == "")
   {
     alert("{TXT_CALENDAR_ERROR_NAME}");
     document.newCalendarNote.inputName.focus();
     return false;
   }
-  if(document.newCalendarNote.inputPlace.value == "")
+  if (document.newCalendarNote.inputPlace.value == "")
   {
     alert("{TXT_CALENDAR_ERROR_PLACE}");
     document.newCalendarNote.inputPlace.focus();
     return false;
   }
-  if(document.newCalendarNote.inputEndYear.value < document.newCalendarNote.inputYear.value)
+  if (document.newCalendarNote.inputEndYear.value < document.newCalendarNote.inputYear.value)
   {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.newCalendarNote.inputEndYear.focus();
     return false;
   }
-  if(document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value < document.newCalendarNote.inputMonth.value)
+  if (document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value < document.newCalendarNote.inputMonth.value)
   {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.newCalendarNote.inputEndMonth.focus();
     return false;
   }
-  if(document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value < document.newCalendarNote.inputDay.value)
+  if (document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value < document.newCalendarNote.inputDay.value)
   {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.newCalendarNote.inputEndDay.focus();
     return false;
   }
-  if(document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value == document.newCalendarNote.inputDay.value && document.newCalendarNote.inputEndTime.value <= document.newCalendarNote.inputTime.value)
+  if (document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value == document.newCalendarNote.inputDay.value && document.newCalendarNote.inputEndTime.value <= document.newCalendarNote.inputTime.value)
   {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.newCalendarNote.inputEndTime.focus();
     return false;
   }
-  if(document.newCalendarNote.inputComment.value == "")
+  if (document.newCalendarNote.inputComment.value == "")
   {
     alert("{TXT_CALENDAR_ERROR_COMMENT}");
     document.newCalendarNote.inputComment.focus();

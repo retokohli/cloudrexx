@@ -32,17 +32,12 @@ class calHeadlines extends calendarLibrary
     var $_objTemplate;
     var $objSeries;
 
+
     /**
      * Constructor php5
      */
-    function __construct($pageContent) {
-        $this->calHeadlines($pageContent);
-    }
-
-    /**
-     * Constructor php4
-     */
-    function calHeadlines($pageContent) {
+    function __construct($pageContent)
+    {
         $this->_pageContent = $pageContent;
         $this->_objTemplate = &new HTML_Template_Sigma('.');
     }
@@ -50,15 +45,14 @@ class calHeadlines extends calendarLibrary
 
     function getHeadlines()
     {
-        global $_CONFIG, $objDatabase, $_LANGID;
+        global $_CONFIG, $objDatabase;
 
         //get startdates
-        $day     = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date('d', mktime());
+        $day       = isset($_REQUEST['dayID']) ? $_REQUEST['dayID'] : date('d', mktime());
         $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date('m', mktime());
-        $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date('Y', mktime());
+        $year      = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date('Y', mktime());
 
         $startdate = mktime(0, 0, 0, $month, $day, $year);
-
 
         //get category
         if ($_CONFIG['calendarheadlinescat'] != 0) {
@@ -132,6 +126,7 @@ class calHeadlines extends calendarLibrary
             $this->_objTemplate->hideBlock('calendar_headlines_row');
         }
     }
+
 }
 
 ?>

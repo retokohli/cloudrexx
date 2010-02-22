@@ -3,14 +3,14 @@
 <!--
 function reset()
 {
-    if(confirm('{TXT_CALENDAR_RESET_STANDARD_CONFIRM}'))
+    if (confirm('{TXT_CALENDAR_RESET_STANDARD_CONFIRM}'))
         window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=style&style=reset");
 
 }
 
 function setStyle()
 {
-    if(document.setstyle.periodTime1.value >= document.setstyle.periodTime2.value)
+    if (document.setstyle.periodTime1.value >= document.setstyle.periodTime2.value)
   {
     alert("{TXT_CALENDAR_ERROR_PERIOD}");
     document.setstyle.periodTime2.focus();
