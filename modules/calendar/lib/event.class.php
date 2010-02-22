@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Calendar Class Event
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -7,17 +8,28 @@
  * @package     contrexx
  * @subpackage  module_calendar
  * @todo        Edit PHP DocBlocks!
+ */
+
+/**
+ * Calendar Class Event
  *
  * This Class was built in addition to module expansion..
  * its not used all over the module..
  * but if someone has to rewrite the module it might be quite useful
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_calendar
+ * @todo        Edit PHP DocBlocks!
  */
+class CalendarEvent
+{
+    public $values = array();
+    public $mandateLink;
 
-
-class CalendarEvent {
-    var $values = array();
-    var $mandateLink;
-    function __construct($mandate = '') {
+    function __construct($mandate = '')
+    {
         $this->mandateLink = $mandate;
         $this->values = array(
             'id'            => 0,
@@ -71,21 +83,25 @@ class CalendarEvent {
         );
     }
 
-    function set($values) {
-        if(!$values) {
+
+    function set($values)
+    {
+        if (!$values) {
             return false;
         }
         foreach ($values as $key => $value) {
-            if(isset($this->values[$key])) {
+            if (isset($this->values[$key])) {
                 $this->values[$key] = $value;
             }
         }
         return true;
     }
 
-    function insert($values) {
+
+    function insert($values)
+    {
         global $objDatabase;
-        if(!$this->set($values)) {
+        if (!$this->set($values)) {
             throw new Exception("could not insert event because of invalid arguments");
         }
 
@@ -124,13 +140,12 @@ class CalendarEvent {
         )";
 
         $objResult = $objDatabase->Execute($query);
-        if($objResult === false) {
+        if ($objResult === false) {
             throw  new Exception("error inserting new event with $query");
         }
-
         return $objDatabase->Insert_ID();
-
     }
+
 
     /**
      * Sets a new Active state for an event
@@ -139,19 +154,19 @@ class CalendarEvent {
      * @param integer $eventid
      * @return true on success, false otherwise
      */
-    function setActive($active, $eventid) {
+    function setActive($active, $eventid)
+    {
         global $objDatabase;
         $active = intval($active);
         $eventid = intval($eventid);
 
         $query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET active=$active WHERE id=$eventid";
         $objRs = $objDatabase->Execute($query);
-        if(!$objRs) {
+        if (!$objRs) {
             return false;
         }
         return true;
     }
-
 
 
     function get($id) {
@@ -159,13 +174,11 @@ class CalendarEvent {
         $id = intval($id);
         $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink." WHERE id=$id";
         $objRs = $objDatabase->Execute($query);
-        if(!$objRs) {
+        if (!$objRs) {
             echo $query."<br>";
             return false;
         }
-
         return $this->set($objRs->fields);
-
     }
 
 
@@ -174,13 +187,10 @@ class CalendarEvent {
     }
 
 
-
-
-
     function getActive() {
         return $this->values['active'];
     }
 
-
 }
+
 ?>

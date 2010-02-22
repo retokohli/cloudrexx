@@ -1,45 +1,45 @@
 <!-- START calendar_edit_note.html -->
 <script language="JavaScript" type="text/javascript">
 <!--
-function newNote(){
-  if(document.editCalendarNote.inputCat.value == ""){
+function newNote() {
+  if (document.editCalendarNote.inputCat.value == "") {
     alert("{TXT_CALENDAR_ERROR_CATEGORY}");
     document.editCalendarNote.inputCat.focus();
     return false;
   }
-  if(document.editCalendarNote.inputName.value == ""){
+  if (document.editCalendarNote.inputName.value == "") {
     alert("{TXT_CALENDAR_ERROR_NAME}");
     document.editCalendarNote.inputName.focus();
     return false;
   }
-  if(document.editCalendarNote.inputPlace.value == ""){
+  if (document.editCalendarNote.inputPlace.value == "") {
     alert("{TXT_CALENDAR_ERROR_PLACE}");
     document.editCalendarNote.inputPlace.focus();
     return false;
   }
-  if(document.editCalendarNote.inputEndYear.value < document.editCalendarNote.inputYear.value){
+  if (document.editCalendarNote.inputEndYear.value < document.editCalendarNote.inputYear.value) {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.editCalendarNote.inputEndYear.focus();
     return false;
   }
-  if(document.editCalendarNote.inputEndYear.value == document.editCalendarNote.inputYear.value && document.editCalendarNote.inputEndMonth.value < document.editCalendarNote.inputMonth.value){
+  if (document.editCalendarNote.inputEndYear.value == document.editCalendarNote.inputYear.value && document.editCalendarNote.inputEndMonth.value < document.editCalendarNote.inputMonth.value) {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.editCalendarNote.inputEndMonth.focus();
     return false;
   }
-  if(document.editCalendarNote.inputEndYear.value == document.editCalendarNote.inputYear.value && document.editCalendarNote.inputEndMonth.value == document.editCalendarNote.inputMonth.value && document.editCalendarNote.inputEndDay.value < document.editCalendarNote.inputDay.value)
+  if (document.editCalendarNote.inputEndYear.value == document.editCalendarNote.inputYear.value && document.editCalendarNote.inputEndMonth.value == document.editCalendarNote.inputMonth.value && document.editCalendarNote.inputEndDay.value < document.editCalendarNote.inputDay.value)
   {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.editCalendarNote.inputEndDay.focus();
     return false;
   }
-  if(document.editCalendarNote.inputEndYear.value == document.editCalendarNote.inputYear.value && document.editCalendarNote.inputEndMonth.value == document.editCalendarNote.inputMonth.value && document.editCalendarNote.inputEndDay.value == document.editCalendarNote.inputDay.value && document.editCalendarNote.inputEndTime.value <= document.editCalendarNote.inputTime.value)
+  if (document.editCalendarNote.inputEndYear.value == document.editCalendarNote.inputYear.value && document.editCalendarNote.inputEndMonth.value == document.editCalendarNote.inputMonth.value && document.editCalendarNote.inputEndDay.value == document.editCalendarNote.inputDay.value && document.editCalendarNote.inputEndTime.value <= document.editCalendarNote.inputTime.value)
   {
     alert("{TXT_CALENDAR_ERROR_DATE}");
     document.editCalendarNote.inputEndTime.focus();
     return false;
   }
-  if(document.editCalendarNote.inputComment.value == "")
+  if (document.editCalendarNote.inputComment.value == "")
   {
     alert("{TXT_CALENDAR_ERROR_COMMENT}");
     document.editCalendarNote.inputComment.focus();

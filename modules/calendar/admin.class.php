@@ -70,7 +70,7 @@ class calendarManager extends calendarLibrary
     {
         global $objTemplate, $objDatabase;
 
-        if (!isset($_REQUEST['act'])){
+        if (!isset($_REQUEST['act'])) {
             $_REQUEST['act'] = '';
         }
 
@@ -196,7 +196,7 @@ class calendarManager extends calendarLibrary
      */
     function showOverview()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_overview.html');
 
@@ -209,9 +209,9 @@ class calendarManager extends calendarLibrary
                    ORDER BY pos";
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $select = '';
-                if ($objResult->fields['id'] == $catid){
+                if ($objResult->fields['id'] == $catid) {
                     $select = ' selected="selected"';
                 }
 
@@ -304,7 +304,7 @@ class calendarManager extends calendarLibrary
         $rowcounter = 2;
 
         if ($objDatabase->Affected_Rows() > 0) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $today = time();
 
                 //
@@ -365,7 +365,7 @@ class calendarManager extends calendarLibrary
         // The List of months
         $i = 1;
         $monthnames = split(",", $_ARRAYLANG['TXT_MONTH_ARRAY']);
-        foreach($monthnames as $name) {
+        foreach ($monthnames as $name) {
             if ($i == $month) {
                 $selected = " selected=\"selected\"";
             } else {
@@ -384,7 +384,7 @@ class calendarManager extends calendarLibrary
         }
 
         // The lists of years
-        for($i = date("Y")-10; $i<=2037; $i++) {
+        for ($i = date("Y")-10; $i<=2037; $i++) {
             if ($i == intval($year)) {
                 $selected = " selected=\"selected\"";
             } else {
@@ -440,7 +440,7 @@ class calendarManager extends calendarLibrary
      */
     function showRegistrationList($id)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG , $_LANGID;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
 
@@ -455,7 +455,7 @@ class calendarManager extends calendarLibrary
 
         $i=0;
         if ($objResult !== false && $count != 0) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $this->getRegData($objResult->fields['id']);
 
                 $this->_objTpl->setVariable(array(
@@ -507,7 +507,7 @@ class calendarManager extends calendarLibrary
      */
     function showRegistrationDetail($id)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG , $_LANGID;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
 
@@ -515,9 +515,9 @@ class calendarManager extends calendarLibrary
 
         $i=0;
 
-        if(!empty($arrFieldsData)){
-            foreach($arrFieldsData as $fieldName => $fieldValue) {
-                if($fieldName != '' || $fieldValue != ''){
+        if (!empty($arrFieldsData)) {
+            foreach ($arrFieldsData as $fieldName => $fieldValue) {
+                if ($fieldName != '' || $fieldValue != '') {
                     $this->_objTpl->setVariable(array(
                         'CALENDAR_ROW'                  => ($i % 2) ? $class = 'row2' : $class = 'row1',
                         'CALENDAR_REG_FIELD_NAME'       => htmlentities($fieldName, ENT_QUOTES, CONTREXX_CHARSET),
@@ -614,7 +614,7 @@ class calendarManager extends calendarLibrary
     // delete note
     function delNote($id)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResultDel = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink." WHERE id = ".intval($id));
 
@@ -633,9 +633,9 @@ class calendarManager extends calendarLibrary
      */
     function modifyNote($id=null)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
-        if(!empty($id)) {
+        if (!empty($id)) {
             //edit note
             $this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_TERMIN'];
 
@@ -674,7 +674,7 @@ class calendarManager extends calendarLibrary
             $objResultCat = $objDatabase->Execute($query);
 
             if ($objResultCat !== false) {
-                while(!$objResultCat->EOF) {
+                while (!$objResultCat->EOF) {
                     $query = "SELECT lang
                                 FROM ".DBPREFIX."languages
                                WHERE id = '".$objResultCat->fields['lang']."'";
@@ -890,7 +890,7 @@ class calendarManager extends calendarLibrary
      */
     function writeNote()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $_POST['inputInfo'] = str_replace(' ', '', $_POST['inputInfo']);
         $return = 0;
@@ -969,7 +969,7 @@ class calendarManager extends calendarLibrary
             case 1;
                 if ($seriesStatus == 1) {
                     $seriesPatternType            = intval($_POST['inputSeriesDaily']);
-                    if($seriesPatternType == 1) {
+                    if ($seriesPatternType == 1) {
                         $seriesPatternWeekday    = 0;
                         $seriesPatternDay        = intval($_POST['inputSeriesDailyDays']);;
                     } else {
@@ -1002,7 +1002,7 @@ class calendarManager extends calendarLibrary
                 if ($seriesStatus == 1) {
                     $seriesPatternWeek            = intval($_POST['inputSeriesWeeklyWeeks']);
 
-                    for($i=1; $i <= 7; $i++) {
+                    for ($i=1; $i <= 7; $i++) {
                         if (isset($_POST['inputSeriesWeeklyDays'][$i])) {
                             $weekdayPattern .= "1";
                         } else {
@@ -1037,7 +1037,7 @@ class calendarManager extends calendarLibrary
             case 3;
                 if ($seriesStatus == 1) {
                     $seriesPatternType            = intval($_POST['inputSeriesMonthly']);
-                    if($seriesPatternType == 1) {
+                    if ($seriesPatternType == 1) {
                         $seriesPatternMonth        = intval($_POST['inputSeriesMonthlyMonth_1']);
                         $seriesPatternDay        = intval($_POST['inputSeriesMonthlyDay']);
                         $seriesPatternWeekday    = 0;
@@ -1095,8 +1095,8 @@ class calendarManager extends calendarLibrary
             }
         }
 
-        if($registration == 1){
-            switch($registrationAdresser){
+        if ($registration == 1) {
+            switch($registrationAdresser) {
                 case 0:
                     $groups         = "";
                     $all_groups     = 0;
@@ -1126,7 +1126,7 @@ class calendarManager extends calendarLibrary
             $registrationSubscriber = 0;
         }
 
-        if(!empty($id)) {
+        if (!empty($id)) {
             $query = "SELECT id
                         FROM ".DBPREFIX."module_calendar".$this->mandateLink."
                        WHERE id = '".addslashes($id)."'";
@@ -1374,11 +1374,11 @@ class calendarManager extends calendarLibrary
     // CASE cat
     function showCategories()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         //new categorie
-        if (isset($_GET['new']) and $_GET['new'] == 1){
-            if ($_POST['name'] != '' and $_POST['status'] != '' and $_POST['lang']){
+        if (isset($_GET['new']) and $_GET['new'] == 1) {
+            if ($_POST['name'] != '' and $_POST['status'] != '' and $_POST['lang']) {
                 $_POST['name'] = CONTREXX_ESCAPE_GPC ? strip_tags($_POST['name']) : addslashes(strip_tags($_POST['name']));
                 $query = "SELECT id
                               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
@@ -1386,17 +1386,17 @@ class calendarManager extends calendarLibrary
 
                 $objResult = $objDatabase->Execute($query);
 
-                if ($objDatabase->Affected_Rows() == 0){
+                if ($objDatabase->Affected_Rows() == 0) {
                     $query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_categories
                                         SET name = '".$_POST['name']."',
                                             status = '".intval($_POST['status'])."',
                                             lang = '".intval($_POST['lang'])."'";
                     $objDatabase->Execute($query);
                     $this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_MESSAGE_NEW_CATRGORY'];
-                }else{
+                } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_CALENDAR_MESSAGE_ERROR_EXISTING'];
                 }
-            }else{
+            } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_CALENDAR_MESSAGE_ERROR_FILL_IN_ALL'];
             }
         }
@@ -1404,28 +1404,28 @@ class calendarManager extends calendarLibrary
         //chg
         if (isset($_GET['chg']) and $_GET['chg'] == 1 and isset($_POST['selected']) and is_array($_POST['selected'])) {
             //delete
-            if ($_POST['form_delete'] != ''){
+            if ($_POST['form_delete'] != '') {
                 $ids = $_POST['selected'];
                 $x = 0;
 
-                foreach($ids as $id){
+                foreach ($ids as $id) {
                     $query = "SELECT id
                                   FROM ".DBPREFIX."module_calendar".$this->mandateLink."
                                  WHERE catid = '".intval($id)."'";
 
                     $objResult = $objDatabase->Execute($query);
 
-                    if ($objDatabase->Affected_Rows() == 0){
+                    if ($objDatabase->Affected_Rows() == 0) {
                         $query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
                                           WHERE id = '".intval($id)."'";
                         $objDatabase->SelectLimit($query, 1);
-                    } else{
+                    } else {
                         $x++;
                         continue;
                     }
                 }
 
-                if ($x > 0){
+                if ($x > 0) {
                     $this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_CAT_RECORDS'];
                 } else {
                     $this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_CAT_DELETE'];
@@ -1435,24 +1435,24 @@ class calendarManager extends calendarLibrary
 
                 $objResult = $objDatabase->Execute($query);
 
-                if ($objDatabase->Affected_Rows() == 0){
+                if ($objDatabase->Affected_Rows() == 0) {
                     $query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories";
                     $objDatabase->Execute($query);
                 }
             }
 
             //status
-            if ($_POST['form_activate'] != '' or $_POST['form_deactivate'] != ''){
+            if ($_POST['form_activate'] != '' or $_POST['form_deactivate'] != '') {
                 $ids = $_POST['selected'];
-                if ($_POST['form_activate'] != ''){
+                if ($_POST['form_activate'] != '') {
                     $to = 1;
                 }
 
-                if ($_POST['form_deactivate'] != ''){
+                if ($_POST['form_deactivate'] != '') {
                     $to = 0;
                 }
 
-                foreach($ids as $id){
+                foreach ($ids as $id) {
                     $query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_categories
                                    SET status = '".$to."'
                                  WHERE id = '".intval($id)."'";
@@ -1465,8 +1465,8 @@ class calendarManager extends calendarLibrary
         }
 
         //sort
-        if (isset($_GET['chg']) and $_GET['chg'] == 1 and $_POST['form_sort'] == 1){
-            for ($x = 0; $x < count($_POST['form_id']); $x++){
+        if (isset($_GET['chg']) and $_GET['chg'] == 1 and $_POST['form_sort'] == 1) {
+            for ($x = 0; $x < count($_POST['form_id']); $x++) {
                 $query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_categories
                                SET pos = '".intval($_POST['form_pos'][$x])."'
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
@@ -1481,9 +1481,9 @@ class calendarManager extends calendarLibrary
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $selected = '';
-                if ($_LANGID == $objResult->fields['id']){
+                if (LANG_ID == $objResult->fields['id']) {
                     $selected = ' selected="selected"';
                 }
 
@@ -1522,7 +1522,7 @@ class calendarManager extends calendarLibrary
         $i = 0;
 
         if ($objResult !== false) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 ($i % 2)                ? $class  = 'row1'  : $class  = 'row2';
                 ($objResult->fields['status'] == 1) ? $status = 'green' : $status = 'red';
 
@@ -1569,7 +1569,7 @@ class calendarManager extends calendarLibrary
     // CASE catedit
     function categoriesEdit()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         //set
         if (isset($_GET['set']) and $_GET['set'] == 1) {
@@ -1582,7 +1582,7 @@ class calendarManager extends calendarLibrary
 
                 $objResult = $objDatabase->Execute($query);
 
-                if ($objDatabase->affected_rows() == 0){
+                if ($objDatabase->affected_rows() == 0) {
                     $query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_categories
                                    SET name = '".$_POST['name']."',
                                        status = '".intval($_POST['status'])."',
@@ -1644,7 +1644,7 @@ class calendarManager extends calendarLibrary
             $objResult2 = $objDatabase->Execute($query);
 
             if ($objResult2 !== false) {
-                while(!$objResult2->EOF) {
+                while (!$objResult2->EOF) {
                     $selected = '';
                     if ($objResult->fields['lang'] == $objResult2->fields['id']) {
                         $selected = ' selected="selected"';
@@ -1678,7 +1678,7 @@ class calendarManager extends calendarLibrary
     // do search
     function search()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_overview.html');
         $this->_objTpl->setVariable("CONTENT", $this->pageContent);
@@ -1698,7 +1698,7 @@ class calendarManager extends calendarLibrary
         $objResult = $objDatabase->Execute($query);
 
         if ($objDatabase->Affected_Rows() > 0) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $today = time();
                 if ($objResult->fields['startdate'] > $today || $objResult->fields['enddate'] > $today) {
                     $status = "green";
@@ -1728,7 +1728,7 @@ class calendarManager extends calendarLibrary
      */
     function settings()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if ($_CONFIG['calendar'.$this->mandateLink.'headlines']) {
             $headlines_checked = "checked=\"checked\"";
@@ -1856,7 +1856,7 @@ class calendarManager extends calendarLibrary
         $array1     = explode(' ', $objResult->fields['stdCat']);
         $cats       = '';
 
-        foreach($array1 as $out){
+        foreach ($array1 as $out) {
             $array2           = explode('>', $out);
             $cats[$array2[0]] = $array2[1];
         }
@@ -1868,7 +1868,7 @@ class calendarManager extends calendarLibrary
 
         $objResult = $objDatabase->Execute($query);
 
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $lang[] = $objResult->fields['id'];
             $objResult->MoveNext();
         }
@@ -1879,7 +1879,7 @@ class calendarManager extends calendarLibrary
 
 
         if ($objResult !== false) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 if (array_search($objResult->fields['id'], $lang) != false) {
                     $query = "SELECT id,
                                         name
@@ -1890,9 +1890,9 @@ class calendarManager extends calendarLibrary
                     $objResult2 = $objDatabase->Execute($query);
 
                     $cal_option = '';
-                    while(!$objResult2->EOF){
+                    while (!$objResult2->EOF) {
                         $select = '';
-                        if ($cats[$objResult->fields['id']] == $objResult2->fields['id']){
+                        if ($cats[$objResult->fields['id']] == $objResult2->fields['id']) {
                             $select = ' selected="selected"';
                         }
                         $cal_option .= "<option value=\"".$objResult2->fields['id']."\"".$select.">".$objResult2->fields['name']."</option>\n";
@@ -2066,7 +2066,7 @@ class calendarManager extends calendarLibrary
      */
     function showPlaceholders()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_placeholder.html');
 
@@ -2099,8 +2099,8 @@ class calendarManager extends calendarLibrary
         global $_ARRAYLANG, $objDatabase;
 
         $arrStatusNote = $_POST['selectedEventId'];
-        if($arrStatusNote != null){
-            foreach ($arrStatusNote as $noteId){
+        if ($arrStatusNote != null) {
+            foreach ($arrStatusNote as $noteId) {
                 $query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET active='1' WHERE id=$noteId";
                 $objDatabase->Execute($query);
             }
@@ -2121,8 +2121,8 @@ class calendarManager extends calendarLibrary
         global $_ARRAYLANG, $objDatabase;
 
         $arrStatusNote = $_POST['selectedEventId'];
-        if($arrStatusNote != null){
-            foreach ($arrStatusNote as $noteId){
+        if ($arrStatusNote != null) {
+            foreach ($arrStatusNote as $noteId) {
                 $query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET active='0' WHERE id=$noteId";
                 $objDatabase->Execute($query);
             }
@@ -2198,7 +2198,7 @@ class calendarManager extends calendarLibrary
         $objResultReg   = $objDatabase->Execute($queryReg);
 
         if ($objResultReg !== false) {
-            while(!$objResultReg->EOF) {
+            while (!$objResultReg->EOF) {
                 $this->deleteRegistration($objResultReg->fields['id']);
                 $objResultReg->moveNext();
             }
@@ -2312,7 +2312,7 @@ class calendarManager extends calendarLibrary
      */
     function _toggleEvent() {
         $id = intval($_GET['id']);
-        if($this->objEvent->get($id)) {
+        if ($this->objEvent->get($id)) {
             $active = $this->objEvent->getActive();
             $this->objEvent->setActive(!$active, $id);
         }

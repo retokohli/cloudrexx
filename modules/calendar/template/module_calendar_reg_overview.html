@@ -3,7 +3,7 @@
 <!--
 function deleteReg(Id)
 {
-  if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+  if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
     window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+Id);
   }
 }
@@ -14,7 +14,7 @@ function selectMultiAction()
   with (document.frmRegList) {
     switch (frmRegList_MultiAction.value) {
       case 'delete':
-        if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+        if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
           action='?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}';
           submit();
         }

@@ -129,7 +129,7 @@ class calendarLibrary
                         header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
                         exit;
                     }
-                }else {
+                } else {
                     $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
                     header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                     exit;
@@ -152,8 +152,8 @@ class calendarLibrary
      * @param string $what to export
      * @param integer $id the ID of the event/category
      */
-    function _iCalExport($what, $id = 0){
-        switch($what){
+    function _iCalExport($what, $id = 0) {
+        switch($what) {
             case 'event':
                 $this->_iCalExportEvent($id);
                 break;
@@ -171,7 +171,7 @@ class calendarLibrary
      *
      * @param array $arrEvents array of events to export
      */
-    function _sendICal($arrEvents){
+    function _sendICal($arrEvents) {
         require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
 
         $c = new vcalendar();
@@ -188,23 +188,23 @@ class calendarLibrary
             $ev->setDtstart(array('timestamp' => $arrEvent['startdate']));
             $ev->setDtend(array('timestamp' => $arrEvent['enddate']));
             $ev->setAction('DISPLAY');
-            if(!empty($comment)){
+            if (!empty($comment)) {
                 $ev->setComment($comment);
                 $ev->setDescription($comment);
             }
-            if(!empty($place)){
+            if (!empty($place)) {
                 $ev->setLocation($place);
             }
-            if(!empty($arrEvent['priority'])){
+            if (!empty($arrEvent['priority'])) {
                 $ev->setPriority($arrEvent['priority']);
             }
-            if(!empty($name)){
+            if (!empty($name)) {
                 $ev->setSummary($name);
             }
-            if(!empty($categoryName)){
+            if (!empty($categoryName)) {
                 $ev->setCategories($categoryName);
             }
-            if(!empty($infoURL)){
+            if (!empty($infoURL)) {
                 $ev->setUrl($infoURL);
             }
             $ev->setClass('PUBLIC');
@@ -212,7 +212,7 @@ class calendarLibrary
             $c->addComponent($ev);
         }
 
-        if(trim($this->_filename) == ''){
+        if (trim($this->_filename) == '') {
             $this->_filename = 'event';
         }
 
@@ -229,7 +229,7 @@ class calendarLibrary
      * @param integer $id ID of the event
      * @return bool false on error
      */
-    function _iCalExportEvent($id){
+    function _iCalExportEvent($id) {
         require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
         //wrap this in an array, since it is only one event (see _sendICal() to understand)
         $this->_sendICal(array($this->getEventByID($id)));
@@ -241,8 +241,8 @@ class calendarLibrary
      * @param integer $id ID of the category
      * @return void
      */
-    function _iCalExportCategory($catID){
-        if($catID == 0){
+    function _iCalExportCategory($catID) {
+        if ($catID == 0) {
             $this->_iCalExportAll();
         }
         require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
@@ -257,7 +257,7 @@ class calendarLibrary
      *
      * @return void
      */
-    function _iCalExportAll(){
+    function _iCalExportAll() {
         $this->_filename = 'all';
         $this->_sendICal($this->_getAllEvents());
     }
@@ -268,23 +268,23 @@ class calendarLibrary
      *
      * @return array $arrEvents all Events
      */
-    function _getAllEvents(){
+    function _getAllEvents() {
         global $objDatabase, $_ARRAYLANG;
 
         $query = "    SELECT     `id`, `catid`,     `startdate`,     `enddate`,    `priority`,
                             `name`,     `comment`,        `placeName`,    `link`
                     FROM `".DBPREFIX."module_calendar".$this->mandateLink."`";
 
-        if(($objRS = $objDatabase->Execute($query)) !== false){
-            if($objRS->RecordCount() < 1){
+        if (($objRS = $objDatabase->Execute($query)) !== false) {
+            if ($objRS->RecordCount() < 1) {
                 return false;
             }
             $arrEvents = array();
-            while(!$objRS->EOF){
+            while (!$objRS->EOF) {
                 // cache the categoryNames to reduce amount of DB queries
-                if(!isset($this->_cachedCatNames[$objRS->fields['catid']])){
+                if (!isset($this->_cachedCatNames[$objRS->fields['catid']])) {
                     $categoryName = $this->_cachedCatNames[$objRS->fields['catid']] = $this->_getCategoryNameByEventId($objRS->fields['id']);
-                }else{
+                } else {
                     $categoryName = $this->_cachedCatNames[$objRS->fields['catid']];
                 }
 
@@ -303,7 +303,7 @@ class calendarLibrary
                 $objRS->MoveNext();
             }
             return $arrEvents;
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
         }
     }
@@ -314,22 +314,22 @@ class calendarLibrary
      * @param integer $eventID
      * return array $arrEvents;
      */
-    function getEventByID($eventID){
+    function getEventByID($eventID) {
         global $objDatabase, $_ARRAYLANG;
 
         $query = "    SELECT     `catid`,     `startdate`,     `enddate`,    `priority`,
                             `name`,     `comment`,        `placeName`,    `link`
                     FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
                     WHERE  `id` = ".$eventID."";
-        if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
-            if($objRS->RecordCount() < 1){
+        if (($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
+            if ($objRS->RecordCount() < 1) {
                 return false;
             }
 
             // cache the categoryNames to reduce amount of DB queries
-            if(!isset($this->_cachedCatNames[$objRS->fields['catid']])){
+            if (!isset($this->_cachedCatNames[$objRS->fields['catid']])) {
                 $categoryName = $this->_cachedCatNames[$objRS->fields['catid']] = $this->_getCategoryNameByEventId($eventID);
-            }else{
+            } else {
                 $categoryName = $this->_cachedCatNames[$objRS->fields['catid']];
             }
             return array(
@@ -344,7 +344,7 @@ class calendarLibrary
                 'place'         => html_entity_decode($objRS->fields['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
                 'info'             => html_entity_decode($objRS->fields['link'], ENT_QUOTES, CONTREXX_CHARSET),
             );
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
         }
     }
@@ -356,24 +356,24 @@ class calendarLibrary
      * @param integer $categoryID
      * @return array $arrEvents
      */
-    function getEventsFromCategoryByID($categoryID){
+    function getEventsFromCategoryByID($categoryID) {
         global $objDatabase, $_ARRAYLANG;
 
         $query = "    SELECT `id` FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
                     WHERE `catid` = ".$categoryID."";
-        if(($objRS = $objDatabase->Execute($query)) !== false){
-            if($objRS->RecordCount() < 1){
+        if (($objRS = $objDatabase->Execute($query)) !== false) {
+            if ($objRS->RecordCount() < 1) {
                 return false;
             }
             $this->_filename = $this->getCategoryNameFromCategoryId($categoryID);
             $arrEvents = array();
-            while(!$objRS->EOF){
+            while (!$objRS->EOF) {
                 array_push($arrEvents, $this->getEventByID($objRS->fields['id']));
                 $objRS->MoveNext();
             }
 
             return $arrEvents;
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
         }
     }
@@ -384,17 +384,17 @@ class calendarLibrary
      *
      * @param integer $catId
      */
-    function getCategoryNameFromCategoryId($catId){
+    function getCategoryNameFromCategoryId($catId) {
         global $objDatabase, $_ARRAYLANG;
 
         $query = "    SELECT `name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."_categories`
                     WHERE `id` = ".$catId."";
-        if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
-            if($objRS->RecordCount() < 1){
+        if (($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
+            if ($objRS->RecordCount() < 1) {
                 return false;
             }
             return $objRS->fields['name'];
-        }else{
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
         }
     }
@@ -407,20 +407,20 @@ class calendarLibrary
      * @return string $categoryName, bool false on failure
      *
      */
-    function _getCategoryNameByEventId($eventID){
-        global $objDatabase, $_LANGID;
+    function _getCategoryNameByEventId($eventID) {
+        global $objDatabase;
 
         $query = "    SELECT `c`.`name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."` AS `e`
                     INNER JOIN `".DBPREFIX."module_calendar".$this->mandateLink."_categories` AS `c`
                     ON (`e`.`catid` = `c`.`id`)
-                    WHERE `lang` = ".$_LANGID."
+                    WHERE `lang` = ".LANG_ID."
                     AND `e`.`id` = ".$eventID."";
-        if( ($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
-            if($objRS->RecordCount() < 1){
+        if ( ($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
+            if ($objRS->RecordCount() < 1) {
                 return false;
             }
             return $objRS->fields['name'];
-        }else{
+        } else {
             return false;
         }
 
@@ -434,7 +434,7 @@ class calendarLibrary
      * @param string $str to strip HTML tags from
      * @return string $str_without_html_tags
      */
-    function _filterHTML($str){
+    function _filterHTML($str) {
         $str = preg_replace('/<([^>]+)>/s', '', $str);
         return preg_replace('/[\s\t\r\n]{2,}+/s', "\n", $str);
     }
@@ -458,7 +458,7 @@ class calendarLibrary
     function dateNumber($number)
     {
       $number = intval($number);
-      if(strlen($number)==1)
+      if (strlen($number)==1)
       {
           $number = '0'.$number;
       }
@@ -470,7 +470,7 @@ class calendarLibrary
     {
         global $objDatabase, $_ARRAYLANG, $objInit;
 
-        if($catid != 0 && !empty($catid)) {
+        if ($catid != 0 && !empty($catid)) {
             $url_cat = "&amp;catid=$catid";
         } else {
             $url_cat = "";
@@ -592,8 +592,9 @@ class calendarLibrary
      * Returns multiple <option> tags for the
      * list of categories
      */
-    function category_list($selected_var, $name="categories") {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+    function category_list($selected_var, $name="categories")
+    {
+        global $objDatabase, $_ARRAYLANG;
 
         $calendar_categories = "<form action=\"#\" id=\"selectcat\">
             <select name=\"$name\" onchange=\"changecat()\"  id=\"calendarSelectcat\">
@@ -601,8 +602,7 @@ class calendarLibrary
 
         // makes the category list
         $query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
-              WHERE status = '1'".
-                  (!empty($_LANGID) && intval($_LANGID > 0) ? " AND lang = ".$_LANGID : '')."
+              WHERE status = '1' AND lang = ".LANG_ID."
               ORDER BY pos";
         $objResult = $objDatabase->Execute($query);
 
@@ -633,7 +633,7 @@ class calendarLibrary
      */
     function getNoteData($id, $type, $numBoxes)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
 
 
@@ -744,14 +744,14 @@ class calendarLibrary
 
         $active = "";
         //comment
-        if($type == "show") {
+        if ($type == "show") {
             $ed = $objResultNote->fields['comment'];
 
             //calender boxes
             $calendarbox = $this->getBoxes($numBoxes, $year, $month, $day);
 
             //priority
-            switch ($objResultNote->fields['priority']){
+            switch ($objResultNote->fields['priority']) {
                 case 1:
                     $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
                     $priorityImg    = "<img src='images/modules/calendar/very_height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' />";
@@ -786,7 +786,7 @@ class calendarLibrary
             $objResultCat = $objDatabase->Execute($query);
 
             if ($objResultCat !== false) {
-                while(!$objResultCat->EOF) {
+                while (!$objResultCat->EOF) {
                     $catName = $objResultCat->fields['name'];
                     $objResultCat->MoveNext();
                 }
@@ -808,7 +808,7 @@ class calendarLibrary
             $calendarbox = $this->getBoxes($numBoxes, $year, $month, $day);
 
             //priority
-            switch ($objResultNote->fields['priority']){
+            switch ($objResultNote->fields['priority']) {
                 case 1:
                     $veryHeight         = 'selected="selected"';
                     $height         = '';
@@ -865,7 +865,7 @@ class calendarLibrary
             $objResultCat = $objDatabase->Execute($query);
 
             if ($objResultCat !== false) {
-                while(!$objResultCat->EOF) {
+                while (!$objResultCat->EOF) {
                     $query = "SELECT lang
                                 FROM ".DBPREFIX."languages
                                WHERE id = '".$objResultCat->fields['lang']."'";
@@ -892,7 +892,7 @@ class calendarLibrary
 
 
         //access
-        switch ($objResultNote->fields['access']){
+        switch ($objResultNote->fields['access']) {
             case 0:
                 $public             = 'selected="selected"';
                 $community         = '';
@@ -906,7 +906,7 @@ class calendarLibrary
         }
 
         //registrations
-        switch ($objResultNote->fields['registration']){
+        switch ($objResultNote->fields['registration']) {
             case 0:
                 $registrationsActivated     = '';
                 break;
@@ -938,7 +938,7 @@ class calendarLibrary
             $registrationsAddresserSelectGroup        = 'selected="selected"';
         }
 
-        switch ($objResultNote->fields['notification']){
+        switch ($objResultNote->fields['notification']) {
             case 0:
                 $notification     = '';
                 break;
@@ -990,7 +990,7 @@ class calendarLibrary
         if ($objResultNote->fields['series_status'] == 1) {
             $seriesStatus = 'checked="checked"';
 
-            switch ($objResultNote->fields['series_type']){
+            switch ($objResultNote->fields['series_type']) {
                 case 1:
                     $seriesTypeDaily     = 'selected="selected"';
                     $seriesTypeWeekly     = '';
@@ -1038,7 +1038,7 @@ class calendarLibrary
             }
 
             $seriesPatternDouranceStart = date("Y-m-d", $objResultNote->fields['series_pattern_begin']);
-            switch ($objResultNote->fields['series_pattern_dourance_type']){
+            switch ($objResultNote->fields['series_pattern_dourance_type']) {
                 case 1:
                     $seriesPatternDourance1     = 'checked="checked"';
                     $seriesPatternDourance2     = '';
@@ -1181,7 +1181,7 @@ class calendarLibrary
         ));
 
         if (($objResultNote->fields['registration'] != 1 || $objResultNote->fields['public'] != 1) ||  $objResultNote->fields['num'] < $this->_countSubscriber($objResultNote->fields['id']) && $objResultNote->fields['num'] != 0 && $objResultNote->fields['num'] != '') {
-            if ($this->_objTpl->blockExists('calendarRegistration')){
+            if ($this->_objTpl->blockExists('calendarRegistration')) {
                 $this->_objTpl->hideBlock('calendarRegistration');
             }
         }
@@ -1237,7 +1237,7 @@ class calendarLibrary
         $objResultField = $objDatabase->Execute($queryField);
 
         if ($objResultField !== false) {
-            while(!$objResultField->EOF) {
+            while (!$objResultField->EOF) {
 
                 //get field data
                 $queryData = "SELECT reg_id, field_id, data
@@ -1261,7 +1261,7 @@ class calendarLibrary
         ));
 
         //field vars (statisch)
-        foreach($arrFieldsData as $fieldName => $fieldValue) {
+        foreach ($arrFieldsData as $fieldName => $fieldValue) {
             $this->_objTpl->setVariable(array(
                 'CALENDAR_REG_FIELD_'.strtoupper($fieldName)            => htmlentities($fieldValue, ENT_QUOTES, CONTREXX_CHARSET),
                 'TXT_CALENDAR_REG_FIELD_'.strtoupper($fieldName)        => htmlentities($fieldName, ENT_QUOTES, CONTREXX_CHARSET),
@@ -1279,7 +1279,7 @@ class calendarLibrary
      */
     function _countRegistrations($id)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $i = 0;
         $x = 0;
@@ -1292,7 +1292,7 @@ class calendarLibrary
         $objResultCount = $objDatabase->Execute($query);
 
         if ($objResultCount !== false) {
-            while(!$objResultCount->EOF) {
+            while (!$objResultCount->EOF) {
                 if ($objResultCount->fields['type'] == 1) {
                     $i++;
                 } else {
@@ -1316,7 +1316,7 @@ class calendarLibrary
      */
     function _countSubscriber($id)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         //get field key
         $queryFieldId = "SELECT id
@@ -1337,7 +1337,7 @@ class calendarLibrary
 
         //add escort
         if ($objResultCount !== false) {
-            while(!$objResultCount->EOF) {
+            while (!$objResultCount->EOF) {
                 $queryEscort     = "SELECT data
                                      FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_data
                                        WHERE reg_id = '".$objResultCount->fields['id']."' AND field_id='".$fieldId."'";
@@ -1363,7 +1363,7 @@ class calendarLibrary
      */
     function _getUserGroups($noteId, $type)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         //get selected groups
         $queryGroups         = "SELECT groups
@@ -1384,7 +1384,7 @@ class calendarLibrary
         $objResultGroups     = $objDatabase->Execute($queryGroups);
 
         if ($objResultGroups !== false) {
-            while(!$objResultGroups->EOF) {
+            while (!$objResultGroups->EOF) {
                 $arrGroups[$objResultGroups->fields['group_id']] = $objResultGroups->fields['group_name'];
                 $objResultGroups->moveNext();
             }
@@ -1392,13 +1392,13 @@ class calendarLibrary
 
         //make group select
         $options = "";
-        foreach($arrGroups as $groupKey => $groupName){
-            if($type == 0){
-                if (!in_array($groupKey, $arrSelectedGroups)){
+        foreach ($arrGroups as $groupKey => $groupName) {
+            if ($type == 0) {
+                if (!in_array($groupKey, $arrSelectedGroups)) {
                     $options .= "<option value='".$groupKey."'>".$groupName."</option>";
                 }
-            }else{
-                if (in_array($groupKey, $arrSelectedGroups)){
+            } else {
+                if (in_array($groupKey, $arrSelectedGroups)) {
                     $options .= "<option value='".$groupKey."'>".$groupName."</option>";
                 }
             }
@@ -1416,7 +1416,7 @@ class calendarLibrary
      */
     function _getFormular($noteId, $frmType, $arrUserData=null)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
 
          $arrSysFieldNames = array(
@@ -1450,7 +1450,7 @@ class calendarLibrary
                     $order        = $objResultField->fields['order'];
                     $type        = $objResultField->fields['type'];
 
-                    if(!empty($objResultField->fields['name'])){
+                    if (!empty($objResultField->fields['name'])) {
                         $status         = 'checked="checked"';
                         $statusImg        = 'green';
                     } else {
@@ -1458,14 +1458,14 @@ class calendarLibrary
                         $statusImg        = 'red';
                     }
 
-                    if(!empty($objResultField->fields['required']) == 1){
+                    if (!empty($objResultField->fields['required']) == 1) {
                         $required    = 'checked="checked"';
                     } else {
                         $required    = '';
                     }
                 }
 
-                if($i <= count($arrSysFieldNames)){
+                if ($i <= count($arrSysFieldNames)) {
                     $disabled     = 'readonly="readonly"';
                     $type        = 1;
                     $name        = $arrSysFieldNames[$i];
@@ -1474,7 +1474,7 @@ class calendarLibrary
                 }
 
                 //options
-                switch ($type){
+                switch ($type) {
                     case 1:
                         $options    .=    '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
                         $options    .=    '<option value="1" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
@@ -1528,7 +1528,7 @@ class calendarLibrary
             $objResultField     = $objDatabase->Execute($queryField);
 
             if ($objResultField !== false) {
-                while(!$objResultField->EOF) {
+                while (!$objResultField->EOF) {
 
                     if ($objResultField->fields['required'] == 1) {
                         $jsFields    .= 'if (document.getElementsByName("signForm['.$objResultField->fields['id'].']")[0].value == "") {
@@ -1539,7 +1539,7 @@ class calendarLibrary
                         $required     = "";
                     }
 
-                    switch ($objResultField->fields['type']){
+                    switch ($objResultField->fields['type']) {
                         case 1:
                             $inputField = '<input type="text" value="'.$arrUserData[$objResultField->fields['key']].'" name="signForm['.$objResultField->fields['id'].']" style="width: 250px;" />';
                             break;
@@ -1566,7 +1566,7 @@ class calendarLibrary
 
             $frmJS         =  '<script type="text/javascript">
                             <!--
-                            function checkFields(){
+                            function checkFields() {
                                 var errorMsg = "";
 
                                 with(document.getElementById("signForm")) {
@@ -1576,7 +1576,7 @@ class calendarLibrary
                                 if (errorMsg != "") {
                                     alert ("'.$_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'].':\n\n" + errorMsg);
                                     return false;
-                                }else{
+                                } else {
                                     return true;
                                 }
                             }
@@ -1645,7 +1645,7 @@ class calendarLibrary
         $objResultUser     = $objDatabase->Execute($queryUser);
 
         if ($objResultUser !== false) {
-            while(!$objResultUser->EOF) {
+            while (!$objResultUser->EOF) {
                 if ($objResultNote->fields['all_groups'] == 1) {
                     if (!empty($objResultUser->fields['email'])) {
                         $arrUsers[$objResultUser->fields['id']]['email']         = $objResultUser->fields['email'];
@@ -1655,7 +1655,7 @@ class calendarLibrary
                 } else {
                     if (!empty($objResultUser->fields['email'])) {
                         $arrGoupsUser = explode(",",$objResultUser->fields['groups']);
-                        foreach ($arrGoupsNote as $groupId){
+                        foreach ($arrGoupsNote as $groupId) {
                             if (in_array($groupId, $arrGoupsUser)) {
                                 $arrUsers[$objResultUser->fields['id']]['email']         = $objResultUser->fields['email'];
                                 $arrUsers[$objResultUser->fields['id']]['lastname']     = $objResultUser->fields['lastname'];
@@ -1689,7 +1689,7 @@ class calendarLibrary
                 }
             }
 
-            foreach($arrUsers as $userId => $arrUser){
+            foreach ($arrUsers as $userId => $arrUser) {
                 $mailTitleReloaded        = $mailTitle;
                 $mailContentReloaded    = $mailContent;
 
@@ -1708,11 +1708,11 @@ class calendarLibrary
                 $array_1 = array('[[FIRSTNAME]]', '[[LASTNAME]]', '[[REG_LINK]]', '[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[URL]]', '[[DATE]]', '[[NUM_SUBSCRIBER]]');
                 $array_2 = array($firstname, $lastname, $link, $title, $startdate, $enddate, $url, $date, $num);
 
-                for($x = 0; $x < 8; $x++){
+                for ($x = 0; $x < 8; $x++) {
                   $mailTitleReloaded = str_replace($array_1[$x], $array_2[$x], $mailTitleReloaded);
                 }
 
-                for($x = 0; $x < 8; $x++){
+                for ($x = 0; $x < 8; $x++) {
                   $mailContentReloaded = str_replace($array_1[$x], $array_2[$x], $mailContentReloaded);
                 }
 
@@ -1824,11 +1824,11 @@ class calendarLibrary
             $array_1 = array('[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[URL]]', '[[DATE]]', '[[REG_TYPE]]');
             $array_2 = array($firstname, $lastname, $title, $startdate, $enddate, $url, $date, $type);
 
-            for($x = 0; $x < 8; $x++){
+            for ($x = 0; $x < 8; $x++) {
               $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
             }
 
-            for($x = 0; $x < 8; $x++){
+            for ($x = 0; $x < 8; $x++) {
               $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
             }
 
@@ -1913,11 +1913,11 @@ class calendarLibrary
                 $array_1 = array('[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[E-MAIL]]', '[[URL]]', '[[DATE]]', '[[REG_TYPE]]');
                 $array_2 = array($firstname, $lastname, $title, $mail, $url, $date, $type);
 
-                for($x = 0; $x < 8; $x++){
+                for ($x = 0; $x < 8; $x++) {
                   $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
                 }
 
-                for($x = 0; $x < 8; $x++){
+                for ($x = 0; $x < 8; $x++) {
                   $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
                 }
 
@@ -1956,7 +1956,7 @@ class calendarLibrary
             $_ARRAYLANG['TXT_CALENDAR_FE_ALL'],
         );
         $options = "";
-        foreach($arrOptions as $key => $value) {
+        foreach ($arrOptions as $key => $value) {
             $strSelected = ($key == $selectedIndex) ? "selected='selected'" : '';
             $options .= "<option value='$key' $strSelected >$value</option>";
         }
@@ -2072,8 +2072,8 @@ class calendarLibrary
         $sessiontime = ini_get( 'session.gc_maxlifetime' );
         $basePath = $this->uploadImgPath.'uploads/';
         $handle = opendir($basePath);
-        while($file = readdir($handle)) {
-            if(filemtime ($basePath.$file) < (time() - $sessiontime)) {
+        while ($file = readdir($handle)) {
+            if (filemtime ($basePath.$file) < (time() - $sessiontime)) {
                 unlink($basePath.$file);
             }
         }

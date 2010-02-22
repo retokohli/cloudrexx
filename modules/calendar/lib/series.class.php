@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Calendar
+ * Calendar Series Manager
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_calendar
@@ -9,7 +9,7 @@
  */
 
 /**
- * Calendar
+ * Calendar Series Manager
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_calendar
@@ -26,8 +26,8 @@ class seriesManager
     public $eventList_category;
     public $eventList_callback = true;
     public $eventList_active;
+    public $mandateLink;
 
-       var $mandateLink;
 
     /**
      * PHP 5 Constructor.
@@ -59,8 +59,9 @@ class seriesManager
     }
 
 
-    function updateMainEvent($id) {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+    function updateMainEvent($id)
+    {
+        global $objDatabase, $_ARRAYLANG;
 
         foreach ($this->eventList as $key => $array) {
             if (array_search($id,$array)) {
@@ -85,7 +86,7 @@ class seriesManager
 
     function _getMainEvents()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         if ($this->eventList_auth == true) {
             $auth_where = "";
@@ -121,14 +122,14 @@ class seriesManager
 
                               WHERE
 
-                              cat.lang = $_LANGID AND (cal.`name` LIKE '%$this->eventList_term%' OR
+                              cat.lang = ".LANG_ID." AND (cal.`name` LIKE '%$this->eventList_term%' OR
                               cal.`comment` LIKE '%$this->eventList_term%' OR
                               cal.`placeName` LIKE '%$this->eventList_term%') AND ";
         } else {
             $term_where =     "FROM ".DBPREFIX."module_calendar".$this->mandateLink." AS cal
                             LEFT JOIN ".DBPREFIX."module_calendar".$this->mandateLink."_categories AS cat ON (cat.id = cal.catid)
 
-                            WHERE (cat.lang = '".$_LANGID."') AND ";
+                            WHERE (cat.lang = '".LANG_ID."') AND ";
         }
 
         if (isset($this->eventList_category) && $this->eventList_category != 0) {
@@ -215,7 +216,7 @@ class seriesManager
             $this->eventList_callback = false;
         }
         if (isset($count)) {
-            if($count == $this->eventList_maxsize) {
+            if ($count == $this->eventList_maxsize) {
                 $this->eventList_callback = false;
             }
         }
@@ -224,7 +225,7 @@ class seriesManager
         echo "abort cb: ".$abort."<br>";*/
         if (isset($date) && isset($this->eventList_enddate) && $this->eventList_enddate != 0) {
             //echo $date." - ".$this->eventList_enddate."<br>";
-            if($date > $this->eventList_enddate) {
+            if ($date > $this->eventList_enddate) {
                 //echo "weg<br>";
                 $this->eventList_callback = false;
             }
@@ -254,19 +255,19 @@ class seriesManager
             $startdate = isset($this->eventList[$key]) ? $this->eventList[$key]['startdate'] : '';
             $enddate   = isset($this->eventList[$key]) ? $this->eventList[$key]['enddate']   : '';
 
-            if((($startdate <= $this->eventList_startdate) && ($this->eventList_enddate <= $enddate))) {
+            if ((($startdate <= $this->eventList_startdate) && ($this->eventList_enddate <= $enddate))) {
                 $unset = false;
             } else {
-                if((($this->eventList_startdate <= $startdate) && ($this->eventList_enddate <= $enddate)) && (($startdate <= $this->eventList_enddate) && ($this->eventList_enddate <= $enddate))) {
+                if ((($this->eventList_startdate <= $startdate) && ($this->eventList_enddate <= $enddate)) && (($startdate <= $this->eventList_enddate) && ($this->eventList_enddate <= $enddate))) {
                     $unset = false;
                 } else {
-                    if((($startdate <= $this->eventList_startdate) && ($enddate <= $this->eventList_enddate)) && (($this->eventList_startdate <= $enddate) && ($enddate <= $this->eventList_enddate))) {
+                    if ((($startdate <= $this->eventList_startdate) && ($enddate <= $this->eventList_enddate)) && (($this->eventList_startdate <= $enddate) && ($enddate <= $this->eventList_enddate))) {
                         $unset = false;
                     } else {
-                        if((($this->eventList_startdate <= $startdate) && ($enddate <= $this->eventList_enddate))) {
+                        if ((($this->eventList_startdate <= $startdate) && ($enddate <= $this->eventList_enddate))) {
                             $unset = false;
                         } else {
-                            if($this->eventList_startdate <= $enddate) {
+                            if ($this->eventList_startdate <= $enddate) {
                                   $unset = false;
                             } else {
                                   $unset = true;
@@ -276,7 +277,7 @@ class seriesManager
                 }
             }
 
-            if($unset) {
+            if ($unset) {
                 unset($this->eventList[$key]);
             }
         }
@@ -288,7 +289,7 @@ class seriesManager
         $old_startdate      = $this->eventList[$key]['startdate'];
         $old_enddate        = $this->eventList[$key]['enddate'];
 
-        switch ($this->eventList[$key]['series_type']){
+        switch ($this->eventList[$key]['series_type']) {
             case 1:
                 //daily
                 if ($this->eventList[$key]['series_pattern_type'] == 1) {
@@ -345,10 +346,10 @@ class seriesManager
                 $i                     = 0;
                 $old_kw                = date("W", $old_startdate);
 
-                while(!$match){
+                while (!$match) {
                     $i++;
 
-                    if(substr($weekday_pattern, $old_weekday, 1) == 1) {
+                    if (substr($weekday_pattern, $old_weekday, 1) == 1) {
                         $add_days = $i;
                         $match = true;
                     } else {
@@ -407,7 +408,7 @@ class seriesManager
                     $add_days     = $month_days-$day+$this->eventList[$key]['series_pattern_day'];
                     $add_months = $this->eventList[$key]['series_pattern_month'];
 
-                    if($add_months > 1) {
+                    if ($add_months > 1) {
                         for ($i = 1; $i < $add_months; $i++) {
                            $next_month_days = date("t", mktime($hour, $minutes, $seconds, $month+$i, $day, $year));
                            $add_days = $add_days+$next_month_days;
@@ -440,7 +441,7 @@ class seriesManager
                     $match     = false;
                     $i        = 0;
                     while (!$match) {
-                        if(substr($weekday_pattern, $i, 1) == 1) {
+                        if (substr($weekday_pattern, $i, 1) == 1) {
                             $weekday = $i+1;
                             $match = true;
                         } else {
@@ -452,7 +453,7 @@ class seriesManager
                         $weekday = 0;
                     }
 
-                    if($count_pattern < 5) {
+                    if ($count_pattern < 5) {
                         $match     = false;
                         $d        = 1;
 
@@ -466,7 +467,7 @@ class seriesManager
                             }
                         }
 
-                        if($count_pattern > 1) {
+                        if ($count_pattern > 1) {
                            $count_pattern = 7*($count_pattern-1);
                         } else {
                            $count_pattern = 0;
@@ -525,7 +526,7 @@ class seriesManager
                 break;
                 case 3:
                     $end = $this->eventList[$key]['series_pattern_end'];
-                    if($new_startdate <= $this->eventList[$key]['series_pattern_end']) {
+                    if ($new_startdate <= $this->eventList[$key]['series_pattern_end']) {
                         $status = 1;
                         $this->_addEventToEventList($key, $new_startdate, $new_enddate, $end, $status);
                     }

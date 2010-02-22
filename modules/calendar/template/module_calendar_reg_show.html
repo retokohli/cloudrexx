@@ -3,7 +3,7 @@
 <script language="JavaScript" type="text/javascript">
 function confirmDeleteReg(Id)
 {
-  if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+  if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
     window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_REG_NOTE_ID}&id="+Id);
   }
 }

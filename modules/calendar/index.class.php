@@ -62,7 +62,7 @@ class Calendar extends calendarLibrary
         if (!isset($_REQUEST['cmd'])) {
             $_REQUEST['cmd'] = '';
         }
-        CSRF::add_code();
+//        CSRF::add_code();
         $this->_getEventList();
 
         switch ($_REQUEST['cmd']) {
@@ -180,7 +180,6 @@ class Calendar extends calendarLibrary
         //get events list
         $this->objSeries     = new seriesManager();
         $this->eventList     = $this->objSeries->getEventList($startdate,$enddate,$count, $auth, $term, $category, true);
-
     }
 
 
@@ -253,43 +252,43 @@ class Calendar extends calendarLibrary
             }
 
             if (empty($_POST['startDate'])) {
-			    $day 	= isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '';
-	    		$month 	= isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '';
-	    		$year 	= isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '';
+                $day   = isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '';
+                $month = isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '';
+                $year  = isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '';
 
 
-	    		if($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
+                if ($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
                     $day     = isset($_REQUEST['dayID']) ? '&amp;dayID='.$_REQUEST['dayID'] : '&amp;dayID=1';
                     $month   = isset($_REQUEST['monthID']) ? '&amp;monthID='.$_REQUEST['monthID'] : '&amp;monthID='.date("m", mktime());
                     $year    = isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '&amp;yearID='.date("Y", mktime());
                 }
-        	} else {
-        		$datearr = explode("-", $_POST['startDate']);
-        		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+            } else {
+                $datearr = explode("-", $_POST['startDate']);
+                $startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
 
-        		$day 	=  '&amp;dayID='.date("d", $startdate);
-	    		$month 	=  '&amp;monthID='.date("m", $startdate);
-	    		$year 	=  '&amp;yearID='.date("Y", $startdate);
-        	}
+                $day   =  '&amp;dayID='.date("d", $startdate);
+                $month =  '&amp;monthID='.date("m", $startdate);
+                $year  =  '&amp;yearID='.date("Y", $startdate);
+            }
 
-			if (empty($_POST['endDate'])) {
-			    $dayEnd 	= isset($_REQUEST['dayEndID']) ? '&amp;dayEndID='.$_REQUEST['dayEndID'] : '';
-	    		$monthEnd 	= isset($_REQUEST['monthEndID']) ? '&amp;monthEndID='.$_REQUEST['monthEndID'] : '';
-	    		$yearEnd 	= isset($_REQUEST['yearEndID']) ? '&amp;yearEndID='.$_REQUEST['yearEndID'] : '';
+            if (empty($_POST['endDate'])) {
+                $dayEnd   = isset($_REQUEST['dayEndID']) ? '&amp;dayEndID='.$_REQUEST['dayEndID'] : '';
+                $monthEnd = isset($_REQUEST['monthEndID']) ? '&amp;monthEndID='.$_REQUEST['monthEndID'] : '';
+                $yearEnd  = isset($_REQUEST['yearEndID']) ? '&amp;yearEndID='.$_REQUEST['yearEndID'] : '';
 
-                if($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
+                if ($_GET['cmd'] == 'boxes' && $_GET['act'] == 'list') {
                     $dayEnd     = isset($_REQUEST['dayID']) ? '&amp;dayEndID='.$_REQUEST['dayID'] : '&amp;dayEndID='.date("t", mktime(0, 0, 0, $month, $day, $year));
                     $monthEnd   = isset($_REQUEST['monthID']) ? '&amp;monthEndID='.$_REQUEST['monthID'] : '&amp;monthEndID='.date("m", mktime());
                     $yearEnd    = isset($_REQUEST['yearID']) ? '&amp;yearEndID='.$_REQUEST['yearID'] : '&amp;yearEndID='.date("Y", mktime());
                 }
-        	} else {
-        		$datearr = explode("-", $_POST['endDate']);
-        		$enddate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+            } else {
+                $datearr = explode("-", $_POST['endDate']);
+                $enddate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
 
-        		$dayEnd 	=  '&amp;dayEndID='.date("d", $enddate);
-	    		$monthEnd 	=  '&amp;monthEndID='.date("m", $enddate);
-	    		$yearEnd 	=  '&amp;yearEndID='.date("Y", $enddate);
-        	}
+                $dayEnd   =  '&amp;dayEndID='.date("d", $enddate);
+                $monthEnd =  '&amp;monthEndID='.date("m", $enddate);
+                $yearEnd  =  '&amp;yearEndID='.date("Y", $enddate);
+            }
 
             $category = isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
             $term     = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
@@ -901,13 +900,13 @@ class Calendar extends calendarLibrary
 
                 $strError = '';
                 foreach ($insertError as $type => $isError) {
-                	if($isError){
-                	   $strError .= $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_'.strtoupper($type)].': '
-                	             .  $this->errorBox($_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE']).'<br />';
-                	}
+                    if ($isError) {
+                       $strError .= $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_'.strtoupper($type)].': '
+                                 .  $this->errorBox($_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE']).'<br />';
+                    }
                 }
 
-                if(!empty($strError)){
+                if (!empty($strError)) {
                     throw new Exception($strError);
                 }
 
@@ -989,7 +988,7 @@ class Calendar extends calendarLibrary
                         if ($seriesStatus == 1) {
                             $seriesPatternWeek = intval($form['inputSeriesWeeklyWeeks']);
 
-                            for($i=1; $i <= 7; $i++) {
+                            for ($i=1; $i <= 7; $i++) {
                                 if (isset($form['inputSeriesWeeklyDays'][$i])) {
                                     $weekdayPattern .= "1";
                                 } else {
@@ -1112,7 +1111,6 @@ class Calendar extends calendarLibrary
         }
 
         if ($showForm) {
-
             $query = "SELECT id, name, lang
                           FROM ".DBPREFIX."module_calendar".MODULE_INDEX."_categories
                       ORDER BY 'pos'
@@ -1433,7 +1431,7 @@ class Calendar extends calendarLibrary
             if (!empty($_SESSION['calendar']['uploadedimagebasename'][$formfield])) {
                 $sessid = $_SESSION['calendar']['uploadedimagebasename'][$formfield];
             } else {
-                while(file_exists($this->uploadImgPath.$pathAdd.$sessid.$extension)) {
+                while (file_exists($this->uploadImgPath.$pathAdd.$sessid.$extension)) {
                     $sessid++;
                 }
             }
@@ -1533,7 +1531,7 @@ class Calendar extends calendarLibrary
             $targetFilename = $filename.$ext;
 // TODO: Never used
 //            $targetWeb  = $this->uploadImgWebPath.$sessid.$_SESSION['calendar']['uploadedimageext'][$formfield];
-            while(file_exists($targetFile)) {
+            while (file_exists($targetFile)) {
                 $targetFile = $dirname.$filename."-".$i.$ext;
 // TODO: Never used
 //                $targetWeb  = $dirWeb.$filename."-".$i.$ext;
