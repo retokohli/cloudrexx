@@ -432,7 +432,7 @@ class PartnersAdmin extends PartnersBase {
                 $this->_objTpl->PARTNER_ID            = $partner->id;
                 $this->_objTpl->PARTNER_NAME          = $partner->name;
                 $this->_objTpl->PARTNER_NUM_INSTALLATIONS= $partner->num_installations;
-                $this->_objTpl->PARTNER_CONTACT_NAME  = $partner->first_contact_name;
+                $this->_objTpl->PARTNER_CONTACT_NAME = $partner->first_contact_name ? $partner->first_contact_name : $partner->first_contact_email;
                 $this->_objTpl->PARTNER_CONTACT_EMAIL = $partner->first_contact_email;
                 $this->_objTpl->PARTNER_WEB_URL       = $partner->web_url;
                 $this->_objTpl->PARTNER_CITY          = $partner->city;
@@ -580,7 +580,7 @@ class PartnersAdmin extends PartnersBase {
         }
         $this->_objTpl->PARTNER_ACTIVE =       $partner->active ? 'checked="checked"' : '';
         $this->_objTpl->PARTNER_NAME =         $partner->name;
-        $this->_objTpl->PARTNER_CONTACT_NAME = $partner->first_contact_name;
+        $this->_objTpl->PARTNER_CONTACT_NAME  = $partner->first_contact_name;
         $this->_objTpl->PARTNER_CONTACT_EMAIL =$partner->first_contact_email;
         $this->_objTpl->PARTNER_WEB_URL =      $partner->web_url;
         $this->_objTpl->PARTNER_ZIP_CODE =     $partner->zip_code;

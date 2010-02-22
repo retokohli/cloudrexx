@@ -251,10 +251,6 @@ class Partner extends NGModel {
             $this->_valid_msg($callback, $_ARRAYLANG['TXT_PARTNERS_INV_EMAIL']);
             $valid = false;
         }
-        if(strlen($this->first_contact_name) < 3) {
-            $this->_valid_msg($callback, $_ARRAYLANG['TXT_PARTNERS_INV_CONTACT']);
-            $valid = false;
-        }
         if(strlen($this->name) < 3) {
             $this->_valid_msg($callback, $_ARRAYLANG['TXT_PARTNERS_INV_NAME']);
             $valid = false;
