@@ -29,8 +29,11 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  */
 class HotelFacility
 {
-    const TEXT_HOTELCARD_FACILITY = 'HOTELCARD_FACILITY';
-    const TEXT_HOTELCARD_FACILITY_GROUP = 'HOTELCARD_FACILITY_GROUP';
+    /**
+     * Text keys
+     */
+    const TEXT_HOTELCARD_FACILITY = 'hotelcard_facility';
+    const TEXT_HOTELCARD_FACILITY_GROUP = 'hotelcard_facility_group';
 
     /**
      * Array of hotel facilities
@@ -96,11 +99,16 @@ class HotelFacility
     /**
      * Initializes the facilities and groups data from the database
      *
+     * The $short parameter, if true, reduces the list of facilities to
+     * those with an ordinal value below 1000.
+     * The resulting array is ordered by the facility names, ascending.
      * Note that this does not read relations.  See {@see getRelationArray()}
      * for that.
+     * @param   boolean   $short        If true, only the short list is
+     *                                  set up and read
      * @global  ADONewConnection  $objDatabase
      */
-    static function init()
+    static function init($short=false)
     {
         global $objDatabase;
 
@@ -110,24 +118,30 @@ class HotelFacility
             MODULE_ID, self::TEXT_HOTELCARD_FACILITY
         );
         $query = "
-            SELECT `facility`.`facility_group_id`, `facility`.`ord`
-                   ".$arrSqlName['field']."
+            SELECT `facility`.`id`,  `facility`.`facility_group_id`,
+                   `facility`.`ord` ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_hotelcard_hotel_facility` AS `facility`".
-                   $arrSqlName['join']."
-             ORDER BY `facility`.`ord` ASC
-        ";
+                   $arrSqlName['join'].
+            ($short
+              ? " WHERE `facility`.`ord`<1000"
+              : '' //" ORDER BY `facility`.`ord` ASC"
+            )."
+             ORDER BY ".$arrSqlName['text']." ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         self::$arrFacilities = array();
         while (!$objResult->EOF) {
-            $id = $objResult->fields['name_text_id'];
+            $id = $objResult->fields['id'];
+            $text_id = $objResult->fields['name_text_id'];
             $strName = $objResult->fields[$arrSqlName['text']];
             if ($strName === null) {
-                $objText = Text::getById($id, 0);
+                $objText = Text::getById($text_id, 0);
                 if ($objText) $strName = $objText->getText();
+//echo("Missing Text, got replacement: $strName<br />");
             }
             self::$arrFacilities[$id] = array(
                 'id'       => $id,
+                'text_id'  => $text_id,
                 'group_id' => $objResult->fields['facility_group_id'],
                 'name'     => $strName,
                 'ord'      => $objResult->fields['ord'],
@@ -141,29 +155,43 @@ class HotelFacility
             MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP
         );
         $query = "
-            SELECT `name_text_id`, `ord` ".$arrSqlName['field']."
+            SELECT `group`.`id`, `group`.`ord` ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_hotelcard_hotel_facility_group` AS `group`".
                    $arrSqlName['join']."
-             ORDER BY `group`.`ord` ASC
-        ";
+             ORDER BY `group`.`ord` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         self::$arrGroups = array();
         while (!$objResult->EOF) {
-            $id = $objResult->fields['name_text_id'];
+            $id = $objResult->fields['id'];
+            $text_id = $objResult->fields['name_text_id'];
             $strName = $objResult->fields[$arrSqlName['text']];
             if ($strName === null) {
-                $objText = Text::getById($id, 0);
+                $objText = Text::getById($text_id, 0);
                 if ($objText) $strName = $objText->getText();
             }
             self::$arrGroups[$id] = array(
-                'id'   => $id,
-                'name' => $strName,
-                'ord'  => $objResult->fields['ord'],
+                'id'      => $id,
+                'text_id' => $text_id,
+                'name'    => $strName,
+                'ord'     => $objResult->fields['ord'],
             );
             $objResult->MoveNext();
         }
         return true;
+    }
+
+
+    /**
+     * Clears the internal data
+     *
+     * Always call this after modifying the database.
+     */
+    static function reset()
+    {
+        self::$arrFacilities = false;
+        self::$arrGroups = false;
+        self::$arrRelations = false;
     }
 
 
@@ -194,19 +222,23 @@ class HotelFacility
      *
      * The optional $group_id parameter limits the result to that group.
      * @param   integer   $group_id   The optional group ID
+     * @param   boolean   $short      If true, only a short list of the
+     *                                available facilities is returned,
+     *                                the full otherwise.
      * @return  array                 The facilities array on success,
      *                                false otherwise
      */
-    function getFacilityNameArray($group_id)
+    function getFacilityNameArray($group_id=0, $short=false)
     {
         static $arrFacilityName = false;
 
-        if (empty(self::$arrFacilities)) self::init();
+        if (empty(self::$arrFacilities)) self::init($short);
         if (empty($group_id)) {
             // There is no group ID.
             // Return the buffered array, or set it up first.
             if (empty($arrFacilityName)) {
                 foreach (self::$arrFacilities as $id => $arrFacility) {
+                    if ($short && $arrFacility['ord'] >= 1000) continue;
                     $arrFacilityName[$id] = $arrFacility['name'];
                 }
             }
@@ -215,7 +247,8 @@ class HotelFacility
         // This subset is not buffered.  Do not confuse it with the static one!
         $arrFacilityNameTemp = array();
         foreach (self::$arrFacilities as $facility_id => $arrFacility) {
-            if ($arrFacility['group_id'] != $group_id)
+            if (   ($short && $arrFacility['ord'] >= 1000)
+                || $arrFacility['group_id'] != $group_id)
                 continue;
             $arrFacilityNameTemp[$facility_id] = $arrFacility['name'];
         }
@@ -223,6 +256,11 @@ class HotelFacility
     }
 
 
+    /**
+     * Returns the Hotel facility name for the given facility ID
+     * @param   integer   $facility_id      The facility ID
+     * @return  string                      The facility name
+     */
     static function getFacilityNameById($facility_id)
     {
 //echo("HotelFacility::getFacilityNameById($facility_id): Entered<br />");
@@ -277,7 +315,7 @@ class HotelFacility
         $query = "
             SELECT 1
               FROM `".DBPREFIX."module_hotelcard_hotel_facility`
-             WHERE `name_text_id`=$id";
+             WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return (!(bool)$objResult->EOF);
@@ -298,10 +336,45 @@ class HotelFacility
         $query = "
             SELECT 1
               FROM `".DBPREFIX."module_hotelcard_hotel_facility_group`
-             WHERE `name_text_id`=$id";
+             WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return (!(bool)$objResult->EOF);
+    }
+
+
+    /**
+     * Validates the array of facilities given by reference
+     *
+     * If found, invalid IDs are removed from the array, and false is
+     * returned.  If the array contains nothing but positive integers as keys,
+     * returns true.
+     * Also returns false if the argument is no array.
+     * Note that calling this function with an empty array will return
+     * true.  Calling it twice with the same array will always return true
+     * after the second run.
+     * The $arrFacility array looks like
+     *  array(
+     *    facility ID => facility name,
+     *    ... more ...
+     *  )
+     * @param   array     $arrFacility      The array of facilities
+     * @return  boolean                     True if all IDs are valid,
+     *                                      false otherwise
+     */
+    static function validateFacilityIdArray(&$arrFacility)
+    {
+        if (!is_array($arrFacility)) return false;
+        $result = true;
+        foreach (array_keys($arrFacility) as $facility_id) {
+            if (is_integer($facility_id) && $facility_id > 0) {
+                continue;
+            }
+//echo("HotelFacility::validateFacilityIdArray(".var_export($arrFacility, true).": Invalid entry at index $facility_id<br />");
+            $result = false;
+            unset($arrFacility[$facility_id]);
+        }
+        return $result;
     }
 
 
@@ -324,61 +397,66 @@ class HotelFacility
         global $objDatabase;
 
         if (empty($name)) return false;
-
-        if ($id) $objText = Text::getById($id, FRONTEND_LANG_ID);
-        if (!$objText)
-            $objText = new Text(
-                $name, FRONTEND_LANG_ID, MODULE_ID,
-                self::TEXT_HOTELCARD_FACILITY, $id);
-        if (!$objText->store()) return false;
-        $id = $objText->getId();
-        if (self::recordFacilityExists($id)) {
-            return self::updateFacility($name, $group_id, $id, $ord);
+        $text_id = 0;
+        if ($id) {
+            if (empty(self::$arrFacilities)) self::init();
+            $text_id = self::$arrFacilities[$id]['text_id'];
         }
-        return self::insertFacility($name, $group_id, $id, $ord);
+        $text_id = Text::replace(
+            $text_id, FRONTEND_LANG_ID, $name,
+                MODULE_ID, self::TEXT_HOTELCARD_FACILITY);
+        if (!$text_id) return false;
+        if (self::recordFacilityExists($id)) {
+            return self::updateFacility($text_id, $group_id, $id, $ord);
+        }
+        return self::insertFacility($text_id, $group_id, $ord);
     }
 
 
     /**
      * Updates a facility
      *
-     * Mind that the related Text record is inserted in {@see storeFacility()}
-     * and is not affected here.
-     * @param   integer   $id         The facility ID
+     * Use {@see storeFacility()}.  Mind that the related Text record is not
+     * affected here.
+     * @param   integer   $text_id    The name Text ID
      * @param   integer   $group_id   The facility group ID
-     * @param   integer   $ord        The ordinal number, defaults to zero
+     * @param   integer   $id         The facility ID
+     * @param   integer   $ord        The optional ordinal number, defaults
+     *                                to zero
      * @return  boolean               True on success, false otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
-    static function updateFacility($id, $group_id, $ord=0)
+    private static function updateFacility($text_id, $group_id, $id, $ord=0)
     {
         global $objDatabase;
 
         $query = "
             UPDATE `".DBPREFIX."module_hotelcard_hotel_facility`
-               SET `facility_group_id`=$group_id,
+               SET `name_text_id`=$text_id,
+                   `facility_group_id`=$group_id,
                    `ord`=$ord
-             WHERE `name_text_id`=$id";
+             WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return false;
+        return self::errorHandler();
     }
 
 
     /**
      * Inserts a facility
      *
-     * Mind that the related Text record is inserted in {@see storeFacility()}
-     * and is not affected here, so the facility ID is known already.
-     * @param   integer   $id         The facility ID
+     * Use {@see storeFacility()}.  Mind that the related Text record is
+     * inserted already and is not affected here.
+     * @param   integer   $text_id    The name Text ID
      * @param   integer   $group_id   The facility group ID
-     * @param   integer   $ord        The ordinal number, defaults to zero
+     * @param   integer   $ord        The optional ordinal number, defaults
+     *                                to zero
      * @return  boolean               True on success, false otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
-    static function insertFacility($id, $group_id, $ord=0)
+    static function insertFacility($text_id, $group_id, $ord=0)
     {
         global $objDatabase;
 
@@ -386,11 +464,62 @@ class HotelFacility
             INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility` (
                 `name_text_id`, `facility_group_id`, `ord`
             ) VALUES (
-                $id, $group_id, $ord
+                $text_id, $group_id, $ord
             )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return false;
+        return self::errorHandler();
+    }
+
+
+    /**
+     * Deletes any facility relations for the given Hotel ID
+     * @param   integer   $hotel_id     The Hotel ID
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function deleteByHotelId($hotel_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_has_facility`
+             WHERE `hotel_id`=$hotel_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
+    }
+
+
+    /**
+     * Deletes the hotel facility with the given ID
+     *
+     * Also deletes any relations between Hotels and that facility,
+     * as well as the related Text records.
+     * @param   integer   $facility_id  The hotel facility ID
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function deleteFacilityById($facility_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_has_facility`
+             WHERE `facility_id`=$facility_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+
+        $arrFacilities = self::getFacilityArray();
+        if (empty($arrFacilities) || empty($arrFacilities[$facility_id]))
+            return false;
+        // Then, delete the Text and the record itself
+        $text_id = $arrFacilities[$facility_id]['text_id'];
+        if (!Text::deleteById($text_id, 0)) return false;
+        $query = "
+            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_facility`
+             WHERE `id`=$facility_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
     }
 
 
@@ -413,95 +542,147 @@ class HotelFacility
 
         if (empty($name)) return false;
 
-        if ($id) $objText = Text::getById($id, FRONTEND_LANG_ID);
-        if (!$objText)
-            $objText = new Text(
-                $name, FRONTEND_LANG_ID, MODULE_ID,
-                self::TEXT_HOTELCARD_FACILITY_GROUP, $id);
-        if (!$objText->store()) return false;
-        $id = $objText->getId();
-        if (self::recordFacilityGroupExists($id)) {
-            return self::updateFacilityGroup($name, $id, $ord);
+        $text_id = 0;
+        if ($id) {
+            if (empty(self::$arrGroups)) self::init();
+            $text_id = self::$arrGroups[$id]['text_id'];
         }
-        return self::insertFacilityGroup($name, $id, $ord);
+        $text_id = Text::replace(
+            $text_id, FRONTEND_LANG_ID, $name,
+            MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP);
+        if (!$text_id) return false;
+        if (self::recordFacilityGroupExists($id)) {
+            return self::updateFacilityGroup($text_id, $id, $ord);
+        }
+        return self::insertFacilityGroup($text_id, $ord);
     }
 
 
     /**
      * Updates a facility group
      *
+     * Use {@see storeFacilityGroup()} instead.
      * Mind that the related Text record is inserted in {@see storeFacility()}
      * and is not affected here.
+     * @param   integer   $text_id    The name Text ID
      * @param   integer   $id         The facility group ID
-     * @param   integer   $ord        The ordinal number, defaults to zero
+     * @param   integer   $ord        The optional ordinal number, defaults
+     *                                to zero
      * @return  boolean               True on success, false otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
-    static function updateFacilityGroup($id, $ord=0)
+    private static function updateFacilityGroup($text_id, $id, $ord=0)
     {
         global $objDatabase;
 
         $query = "
             UPDATE `".DBPREFIX."module_hotelcard_hotel_facility_group`
-               SET `ord`=$ord
-             WHERE `name_text_id`=$id";
+               SET `name_text_id`=$text_id,
+                   `ord`=$ord
+             WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return false;
+        return self::errorHandler();
     }
 
 
     /**
-     * Inserts a facility
+     * Inserts a facility group
      *
+     * Use {@see storeFacilityGroup()} instead.
      * Mind that the related Text record is inserted in {@see storeFacility()}
-     * and is not affected here, so the facility ID is known already.
-     * @param   integer   $id         The facility group ID
-     * @param   integer   $ord        The ordinal number, defaults to zero
+     * and is not affected here.
+     * @param   integer   $text_id    The name Text ID
+     * @param   integer   $ord        The optional ordinal number, defaults
+     *                                to zero
      * @return  boolean               True on success, false otherwise
      * @static
      * @global  ADONewConnection  $objDatabase
      */
-    static function insertFacilityGroup($id, $ord=0)
+    private static function insertFacilityGroup($text_id, $ord=0)
     {
         global $objDatabase;
 
+        $ord = intval((empty($ord) || !is_numeric($ord)) ? 100 : $ord);
         $query = "
-            INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility` (
+            INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility_group` (
                 `name_text_id`, `ord`
             ) VALUES (
-                $id, $ord
+                $text_id, $ord
             )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return false;
+        return self::errorHandler();
+    }
+
+
+    /**
+     * Deletes the hotel facility group with the given ID
+     *
+     * Also deletes contained facilities as well as any relations between
+     * Hotels and those facilities, and related Text records.
+     * @param   integer   $group_id     The hotel facility group ID
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function deleteGroupById($group_id)
+    {
+        global $objDatabase;
+
+        $arrFacilities = self::getFacilityArray($group_id);
+        if (empty($arrFacilities)) return false;
+        foreach (array_keys($arrFacilities) as $facility_id) {
+            if (!self::deleteFacilityById($facility_id)) return false;
+        }
+        $arrGroups = self::getGroupArray();
+        if (empty($arrGroups) || empty($arrGroups[$group_id])) return false;
+        // Then, delete the Text and the record itself
+        $text_id = $arrGroups[$group_id]['text_id'];
+        if (!Text::deleteById($text_id, 0)) return false;
+        $query = "
+            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_facility_group`
+            WHERE `id`=$group_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        return true;
     }
 
 
     /**
      * Initializes the hotel to facility relations
      *
-     * Reads the relations from the database for the hotel ID given, if any,
-     * or the complete table otherwise.  Mind your step!
-     * for that.
-     * @param   integer   $hotel_id     The optional hotel ID
+     * Reads the relations from the database for the hotel ID given.
+     * The facility IDs are sorted by the ordinal value from the facility
+     * table.
+     * The array returned looks like
+     *  array(
+     *    hotel ID => array(
+     *      facility ID => facility ID
+     *    ),
+     *    ... more ...
+     *  );
+     * @todo    The inner array value could be replaced by the facility name
+     *          in the current frontend language.
+     * @todo    This *COULD* be extended to include more than one Hotel,
+     *          but then perhaps it shouldn't.
+     * @param   integer   $hotel_id     The Hotel ID
      * @return  array                   The relation array on success,
      *                                  false otherwise
      * @global  ADONewConnection  $objDatabase
      * @static
      */
-    static function getRelationArray($hotel_id=0)
+    static function getRelationArray($hotel_id)
     {
         global $objDatabase;
 
-        if (   ($hotel_id && empty(self::$arrRelations[$hotel_id]))
+        if (empty($hotel_id)) return false;
+        if (   empty(self::$arrRelations[$hotel_id])
             || empty(self::$arrRelations)) {
             $query = "
                 SELECT `relation`.`hotel_id`, `relation`.`facility_id`
                   FROM `".DBPREFIX."module_hotelcard_hotel_has_facility` AS `relation`
                  INNER JOIN `".DBPREFIX."module_hotelcard_hotel_facility` AS `facility`
-                    ON `relation`.`facility_id`=`facility`.`name_text_id`".
+                    ON `relation`.`facility_id`=`facility`.`id`".
                 ($hotel_id ? " WHERE `relation`.`hotel_id`=$hotel_id" : '')."
                  ORDER BY `facility`.`ord` ASC";
             $objResult = $objDatabase->Execute($query);
@@ -510,7 +691,7 @@ class HotelFacility
             while (!$objResult->EOF) {
                 $hotel_id = $objResult->fields['hotel_id'];
                 $facility_id = $objResult->fields['facility_id'];
-                self::$arrRelations[$hotel_id] = $facility_id;
+                self::$arrRelations[$hotel_id][$facility_id] = $facility_id;
                 $objResult->MoveNext();
             }
         }
@@ -521,7 +702,10 @@ class HotelFacility
     /**
      * Returns true if the relation record with the given IDs exists,
      * false otherwise
-     * @param   integer   $hotelid        The hotel ID
+     *
+     * Note that this does not verify the existence of either the hotel
+     * nor the facility, but only the relation itself.
+     * @param   integer   $hotel_id        The hotel ID
      * @param   integer   $facility_id    The facility ID
      * @return  boolean                   True if the record exists,
      *                                    false otherwise
@@ -543,12 +727,32 @@ class HotelFacility
 
 
     /**
+     * Stores all the relations for the given Hotel ID
+     *
+     * Deletes any old relations first, then adds the current ones
+     * present in the array
+     * @param   integer   $hotel_id       The hotel ID
+     * @param   array     $arrFacilityId  The facility ID array
+     * @return  boolean                   True on success, false otherwise
+     * @static
+     */
+    static function storeRelations($hotel_id, $arrFacilityId)
+    {
+        if (!self::deleteByHotelId($hotel_id)) return false;
+        foreach ($arrFacilityId as $facility_id) {
+            if (!self::addRelation($hotel_id, $facility_id)) return false;
+        }
+        return true;
+    }
+
+
+    /**
      * Adds a relation for the given hotel and facility IDs
      *
      * Inserts a new relation if it's not present in the database yet.
      * There's no need for an update for this table.
      * If a record exists already, true is returned.
-     * @param   integer   $hotelid        The hotel ID
+     * @param   integer   $hotel_id        The hotel ID
      * @param   integer   $facility_id    The facility ID
      * @return  boolean                   True on success, false otherwise
      * @static
@@ -567,7 +771,7 @@ class HotelFacility
             )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return false;
+        return self::errorHandler();
     }
 
 
@@ -578,7 +782,7 @@ class HotelFacility
      * If no such record exists, true is returned anyway.
      * If the $facility_id argument is empty, all records for the
      * given $hotel_id are removed.
-     * @param   integer   $hotelid        The hotel ID
+     * @param   integer   $hotel_id        The hotel ID
      * @param   integer   $facility_id    The optional facility ID
      * @return  boolean                   True on success, false otherwise
      * @static
@@ -593,7 +797,7 @@ class HotelFacility
             ($facility_id ? " AND `facility_id`=$facility_id" : '');
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return false;
+        return self::errorHandler();
     }
 
 
@@ -607,194 +811,653 @@ class HotelFacility
     {
         global $objDatabase;
 
-echo("HotelFacility::errorHandler(): Entered<br />");
+die("HotelFacility::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility_group", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility_group` (
-              `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              `ord` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value, used for sorting the groups.',
-              PRIMARY KEY (`name_text_id`),
-              INDEX `facility_name_text_id` (`name_text_id` ASC),
-              CONSTRAINT `facility_name_text_id`
-                FOREIGN KEY (`name_text_id`)
-                REFERENCES `".DBPREFIX."core_text` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+              `name_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value, used for sorting the groups.',
+              PRIMARY KEY (`id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
-
-        // Add data
-        $arrFacilityGroup = array(
-            // name
-            'General',
-            'Activities',
-            'Services',
-        );
-        $ord = 0;
-        $arrGroupId = array();
-        foreach ($arrFacilityGroup as $name) {
-            $objText = new Text(
-                $name, 2, MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP);
-            if (!$objText->store()) {
-echo("HotelFacility::errorHandler(): Failed to store group text $name<br />");
-                continue;
-            }
-            $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility_group` (
-                  `name_text_id`, `ord`
-                ) VALUES (
-                  ".$objText->getId().", ".++$ord."
-                )");
-            if (!$objResult) {
-echo("HotelFacility::errorHandler(): Failed to insert group $name<br />");
-                continue;
-            }
-            $arrGroupId[$name] = $objText->getId();
-        }
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility_group<br />");
 
         if (in_array(DBPREFIX."module_hotelcard_hotel_facility", $arrTables)) {
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_facility` (
-              `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              `facility_group_id` INT UNSIGNED NOT NULL DEFAULT 0,
-              `ord` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value, used for sorting the services within each group.',
-              PRIMARY KEY (`name_text_id`, `facility_group_id`),
-              INDEX `facility_group_id` (`facility_group_id` ASC),
-              CONSTRAINT `facility_group_id`
-                FOREIGN KEY (`facility_group_id`)
-                REFERENCES `".DBPREFIX."module_hotelcard_hotel_facility_group` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+              `name_text_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `facility_group_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ordinal value, used for sorting the services within each group.',
+              PRIMARY KEY (`id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_facility<br />");
 
         // Add data
-        $arrFacility = array(
-            // name => group name
-            '24-Hour Front Desk' => 'General',
-            'Air Conditioning' => 'General',
-            'All Public and Private spaces non-smoking' => 'General',
-            'Allergy-Free Room Available' => 'General',
-            'Bar' => 'General',
-            'Breakfast Buffet' => 'General',
-            'Chapel/Shrine' => 'General',
-            'Continental Breakfast' => 'General',
-            'Design Hotel' => 'General',
-            'Designated Smoking Area' => 'General',
-            'Elevator' => 'General',
-            'Express Check-In/Check-Out' => 'General',
-            'Family Rooms' => 'General',
-            'Free Parking' => 'General',
-            'Garden' => 'General',
-            'Gay Friendly' => 'General',
-            'Heating' => 'General',
-            'Luggage Storage' => 'General',
-            'Newspapers' => 'General',
-            'Non-Smoking Rooms' => 'General',
-            'Parking' => 'General',
-            'Pets Allowed' => 'General',
-            'Restaurant' => 'General',
-            'Rooms/Facilities for Disabled Guests' => 'General',
-            'Safety Deposit Box' => 'General',
-            'Shops in Hotel' => 'General',
-            'Ski Storage' => 'General',
-            'Soundproofed Rooms' => 'General',
-            'Terrace' => 'General',
-            'Valet Parking' => 'General',
-            'BQ Facilities' => 'Activities',
-            'Billiards' => 'Activities',
-            'Bowling' => 'Activities',
-            'Canoeing' => 'Activities',
-            'Casino' => 'Activities',
-            'Children\'s Playground' => 'Activities',
-            'Cycling' => 'Activities',
-            'Darts' => 'Activities',
-            'Diving' => 'Activities',
-            'Fishing' => 'Activities',
-            'Fitness Centre' => 'Activities',
-            'Games Room' => 'Activities',
-            'Golf Course (within 3 km)' => 'Activities',
-            'Hammam' => 'Activities',
-            'Hiking' => 'Activities',
-            'Horse Riding' => 'Activities',
-            'Jacuzzi' => 'Activities',
-            'Karaoke' => 'Activities',
-            'Library' => 'Activities',
-            'Massage' => 'Activities',
-            'Mini Golf' => 'Activities',
-            'Sauna' => 'Activities',
-            'Ski School' => 'Activities',
-            'Skiing' => 'Activities',
-            'Snorkelling' => 'Activities',
-            'Solarium' => 'Activities',
-            'Spa & Wellness Centre' => 'Activities',
-            'Squash' => 'Activities',
-            'Indoor Swimming Pool' => 'Activities',
-            'Outdoor Swimming Pool' => 'Activities',
-            'Table Tennis' => 'Activities',
-            'Tennis Court' => 'Activities',
-            'Turkish/Steam Bath' => 'Activities',
-            'Windsurfing' => 'Activities',
-            'Airport Shuttle' => 'Services',
-            'ATM/Cash Machine on site' => 'Services',
-            'Babysitting/Child Services' => 'Services',
-            'Bicycle Rental' => 'Services',
-            'Breakfast in the Room' => 'Services',
-            'Bridal Suite' => 'Services',
-            'Business Centre' => 'Services',
-            'Car Rental' => 'Services',
-            'Currency Exchange' => 'Services',
-            'Dry Cleaning' => 'Services',
-            'Fax/Photocopying' => 'Services',
-            'Free Wi-Fi Internet Access Included' => 'Services',
-            'Barber/Beauty Shop' => 'Services',
-            'Internet Services' => 'Services',
-            'Ironing Service' => 'Services',
-            'Laundry' => 'Services',
-            'Meeting/Banquet Facilities' => 'Services',
-            'Packed Lunches' => 'Services',
-            'Room Service' => 'Services',
-            'Shoe Shine' => 'Services',
-            'Souvenirs/Gift Shop' => 'Services',
-            'Ticket Service' => 'Services',
-            'Tour Desk' => 'Services',
-            'VIP Room Facilities' => 'Services',
-            'Wi-Fi/Wireless LAN' => 'Services',
+        // Groups
+        $arrFacilityGroup = array(
+            'general' => array(
+                1 => 'Allgemein', // Deutsch
+                2 => 'General',   // English
+                3 => 'Géneral',   // Français
+                4 => 'Caratteristiche generali',  // Italiano
+            ),
+            'activities' => array(
+                1 => 'Aktivitäten', // Deutsch
+                2 => 'Activities',  // English
+                3 => 'Activités',   // Français
+                4 => 'Attività',    // Italiano
+            ),
+            'services' => array(
+                1 => 'Dienstleistungen', // Deutsch
+                2 => 'Services',         // English
+                3 => 'Prestations',      // Français
+                4 => 'Servizi',          // Italiano
+            ),
         );
 
-        $ord = 0;
-        foreach ($arrFacility as $name => $group) {
-            $objText = new Text(
-                $name, 2, MODULE_ID, self::TEXT_HOTELCARD_FACILITY);
-            if (!$objText->store()) {
-echo("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
-                continue;
+        $arrFacilities = array(
+            // General
+            'general' => array(
+                // Wizard
+                array(
+                    1 => 'Air Conditioning', // de
+                    2 => 'Air Conditioning', // en
+                    3 => 'Air Conditioning', // fr
+                    4 => 'Air Conditioning', // it
+                ),
+// NTH: Translate all the entries in English, French, and Italian
+                array(
+                    1 => 'Fahrstuhl',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Frühstück',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Restaurant',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Parkplätze',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+
+                // Edit only
+                1000 =>
+                array(
+                    1 => '24 Stunden Reception',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Nichtraucherbetrieb',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Allergiefreie Räume',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bar',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kapelle/Gebetsraum',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Designerhotel',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Abgetrennte Raucherzone',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Frühstücksbuffet',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Express Check-In/Check-Out',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Familienzimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Garten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Zentralheizung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Gepäckaufbewahrung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Gratis Parking',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Zeitungen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Nichtraucherzimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Haustiere erlaubt',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Behindertengerechte Infrastruktur',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Hotelsafe',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Einkaufsmöglichkeiten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Ski Aufbewahrung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Schallgedämmte Zimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Terrasse',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Parkierdienst',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+            ),
+            // Activities
+            'activities' => array(
+                // Wizard
+                array(
+                    1 => 'Fitnessraum',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Golfplatz (im Umkreis von 3 km)',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kinderspielplatz',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Spa & Wellness',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tennisplatz',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+
+                // Edit only
+                1000 =>
+                array(
+                    1 => 'Grillplatz',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Billiard',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bowling/Kegeln',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kanufahrten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Casino',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Radwege',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Dart',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tauchen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Fischen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Spielzimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Wanderwege',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Pferdereiten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Jacuzzi',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Karaoke',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bibliothek',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Massage',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Minigolf',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Sauna',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Ski Schule',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Skipisten',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Schnorcheln',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Solarium',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Squash',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Swimming Pool innen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Swimming Pool aussen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tischtennis',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Dampfbad',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Windsurfen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+            ),
+
+            // Services
+            'services' => array(
+                // Wizard
+                array(
+                    1 => 'Geldautomat im Gebäude',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Geldwechsel',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Internet Zugang',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Konferenzraum',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Zimmerservice',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+
+                // Edit only
+                1000 =>
+                array(
+                    1 => 'Airport Shuttle',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kinderkrippe/Hütdienst',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Fahrradvermietung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Frühstück im Zimmer',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Hochzeitssuite',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Autovermietung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Chemische Reinigung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Fax/Kopiergerät',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Kostenloser WiFi Internet Zugang inbegriffen',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Coiffeur/Schönheitssalon',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bügelservice',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Wäscheservice',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Bankettsaal',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Schuhreinigung',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Souvenirs/Geschenk Shop',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Ticket Verkauf',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'Tour Desk',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'VIP Räume',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+                array(
+                    1 => 'WiFi/Drahtloses Internet',
+                    2 => '', // en
+                    3 => '', // fr
+                    4 => '', // it
+                ),
+            ),
+        );
+
+        $ord_group = 0;
+        $arrGroupId = array();
+        foreach ($arrFacilityGroup as $group => $arrLang) {
+            $text_id = 0;
+            foreach ($arrLang as $lang_id => $name) {
+                $objText = new Text(
+                    $name, $lang_id,
+                    MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP, $text_id);
+                $objText->store(); //if (!$objText->store()) { die("failed to add Text for facility group $group: $name"); return false; }
+                $text_id = $objText->getId();
             }
             $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility` (
-                  `name_text_id`, `facility_group_id`, `ord`
+                INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility_group` (
+                  `name_text_id`, `ord`
                 ) VALUES (
-                  ".$objText->getId().", ".$arrGroupId[$group].", ".++$ord."
+                  $text_id, ".++$ord_group."
                 )");
             if (!$objResult) {
-echo("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
+//echo("HotelFacility::errorHandler(): Failed to insert group $name<br />");
                 continue;
+            }
+            $arrGroupId[$group] = $objDatabase->Insert_ID();
+        }
+
+        foreach ($arrFacilities as $group => $arrFacility) {
+            $group_id = $arrGroupId[$group];
+            foreach ($arrFacility as $ord_facility => $arrLang) {
+                $text_id = 0;
+                foreach ($arrLang as $lang_id => $name) {
+                    $objText = new Text(
+                        $name, $lang_id,
+                        MODULE_ID, self::TEXT_HOTELCARD_FACILITY, $text_id);
+                    $objText->store(); //if (!$objText->store()) { die("HotelFacility::errorHandler(): Failed to store facility text $name<br />"); continue; }
+                    $text_id = $objText->getId();
+                }
+                $objResult = $objDatabase->Execute("
+                    INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility` (
+                      `name_text_id`, `facility_group_id`, `ord`
+                    ) VALUES (
+                      $text_id, $group_id, $ord_facility
+                    )");
+                if (!$objResult) { //die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
+                    continue;
+                }
             }
         }
 
@@ -802,30 +1465,20 @@ echo("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
             $query = "DROP TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility`";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+//echo("HotelFacility::errorHandler(): Dropped table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility` (
-              `hotel_id` INT UNSIGNED NOT NULL,
-              `facility_id` INT UNSIGNED NOT NULL,
-              INDEX `facility_hotel_id` (`hotel_id` ASC),
-              INDEX `facility_id` (`facility_id` ASC),
-              PRIMARY KEY (`hotel_id`, `facility_id`),
-              CONSTRAINT `facility_hotel_id`
-                FOREIGN KEY (`hotel_id`)
-                REFERENCES `".DBPREFIX."module_hotelcard_hotel` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION,
-              CONSTRAINT `facility_id`
-                FOREIGN KEY (`facility_id`)
-                REFERENCES `".DBPREFIX."module_hotelcard_hotel_facility` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION
+              `hotel_id`    INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `facility_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              PRIMARY KEY (`hotel_id`, `facility_id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
-// TODO: Add data
+        if (!$objResult) {
+die("HotelFacility::errorHandler(): Failed to create table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+//            return false;
+        }
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
 
         // More to come...
 

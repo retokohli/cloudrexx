@@ -12,12 +12,6 @@
  */
 
 /**
- * Multilanguage text
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-
-/**
  * Hotelcard to Creditcard relation class
  * @version     2.2.0
  * @since       2.2.0
@@ -172,12 +166,10 @@ class RelHotelCreditcard
     {
         global $objDatabase;
 
-echo("RelHotelCreditcard::errorHandler(): Entered<br />");
+die("RelHotelCreditcard::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."module_hotelcard_hotel_accepts_creditcard", $arrTables)) {
-            // TODO:  Fix it!
-        } else {
+        if (!in_array(DBPREFIX."module_hotelcard_hotel_accepts_creditcard", $arrTables)) {
             $query = "
                 CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_accepts_creditcard` (
                   `hotel_id` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -198,10 +190,8 @@ echo("RelHotelCreditcard::errorHandler(): Entered<br />");
                 ) ENGINE=MYISAM";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-echo("RelHotelCreditcard::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_creditcard<br />");
+//echo("RelHotelCreditcard::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_accepts_creditcard<br />");
         }
-
-// TODO:  Try to DROP old records
 
         // More to come...
 
