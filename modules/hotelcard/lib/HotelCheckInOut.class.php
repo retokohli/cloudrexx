@@ -57,56 +57,36 @@ class HotelCheckInOut
 
 
     /**
-     * Returns HTML code for a dropdown menu with the available check in times
+     * Returns an array with the available check-in times
      *
-     * All option values represent times in 'HH:MM' format,
-     * the visible format in the menu is defined by the
-     * {@see HotelCheckInOut::TEMPLATE} constant.
-     * @param   string      $name       The menu name attribute value
-     * @param   string      $selected   The optional preselected index
-     * @param   string      $onchange   The optional onchange attribute value
-     * @param   string      $attribute  Optional additional attributes
-     * @return  string                  The dropdown menu HTML code
+     * All keys represent times in 'HH:MM' format, the values' format is
+     * defined by the {@see HotelCheckInOut::TEMPLATE} constant.
+     * @return  array                   The array of check-in times
      */
-    public static function getMenuCheckin(
-        $name, $selected='', $onchange='', $attribute=''
-    ) {
+    public static function getArrayCheckin()
+    {
         static $arrCheckin = array();
         if (empty($arrCheckin))
             $arrCheckin = self::getArray(self::CHECKIN_MIN, self::CHECKIN_MAX);
-//echo("getMenuCheckin($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckin, true)."<br />");
-        return Html::getSelect(
-            $name,
-            $arrCheckin,
-            $selected, $onchange, $attribute
-        );
+//echo("getArrayCheckin(): Made times ".var_export($arrCheckin, true)."<br />");
+        return $arrCheckin;
     }
 
 
     /**
-     * Returns HTML code for a dropdown menu with the available check out times
+     * Returns an array with the available check-out times
      *
-     * All option values represent times in 'HH:MM' format,
-     * the visible format in the menu is defined by the
-     * {@see HotelCheckInOut::TEMPLATE} constant.
-     * @param   string      $name       The menu name attribute value
-     * @param   string      $selected   The optional preselected index
-     * @param   string      $onchange   The optional onchange attribute value
-     * @param   string      $attribute  Optional additional attributes
-     * @return  string                  The dropdown menu HTML code
+     * All keys represent times in 'HH:MM' format, the values' format is
+     * defined by the {@see HotelCheckInOut::TEMPLATE} constant.
+     * @return  array                   The array of check-out times
      */
-    public static function getMenuCheckout(
-        $name, $selected='', $onchange='', $attribute=''
-    ) {
+    public static function getArrayCheckout()
+    {
         static $arrCheckout = array();
         if (empty($arrCheckout))
             $arrCheckout = self::getArray(self::CHECKOUT_MIN, self::CHECKOUT_MAX);
-//echo("getMenuCheckout($name, $selected, $onchange, $attribute): Made time ".var_export($arrCheckout, true)."<br />");
-        return Html::getSelect(
-            $name,
-            $arrCheckout,
-            $selected, $onchange, $attribute
-        );
+//echo("getArrayCheckout(): Made times ".var_export($arrCheckout, true)."<br />");
+        return $arrCheckout;
     }
 
 
@@ -115,8 +95,8 @@ class HotelCheckInOut
      * in intervals of self::INTERVAL
      *
      * Usable for both check in and check out times.
-     * All values represent times in 'HH:MM' format,
-     * the visible format in the menu is defined by the
+     * All keys represent times in 'HH:MM' format,
+     * the values' format is defined by the
      * {@see HotelCheckInOut::TEMPLATE} constant.
      * @param   integer   $time_from  The start time
      * @param   integer   $time_to    The end time
@@ -138,8 +118,6 @@ class HotelCheckInOut
 //echo("getArray($time_from, $time_to):: Made times ".var_export($arrTime, true)."<hr />");
         return $arrTime;
     }
-
-
 
 }
 
