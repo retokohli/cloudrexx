@@ -113,4 +113,6 @@ $_ARRAYLANG['TXT_PARTNERS_SPECIAL_SEARCH'] = "Special search functions";
 $_ARRAYLANG['TXT_PARTNERS_SEARCH_TEXT'] = "Search text";
 $_ARRAYLANG['TXT_PARTNERS_LINKED_USERID'] = "Owner (user-id)";
 $_ARRAYLANG['TXT_PARTNERS_SORT_ORDER'] = "Sort order";
+$_ARRAYLANG['TXT_PARTNERS_REGISTRATION_DONE'] = "You have been registered as a partner. Please note that the entry must be validated by an administrator before it will be visible.";
+$_ARRAYLANG['TXT_PARTNERS_INVALID_DATA'] = "One or more entries contain invalid data";
 ?>
