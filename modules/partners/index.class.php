@@ -56,6 +56,7 @@ class PartnersFrontend extends PartnersBase  {
         $this->settings = new Settings;
 
         JS::registerJS('modules/partners/js/dropdown.js');
+        JS::registerJS('modules/partners/js/labels.js');
         JS::registerJS('modules/partners/js/labelbrowser.js');
         JS::activate('prototype');
         JS::activate('scriptaculous');
@@ -107,6 +108,40 @@ class PartnersFrontend extends PartnersBase  {
     function signup_action() {
         $partner                      = new Partner();
 
+        $to_assign = array();
+
+        foreach (AssignableLabel::all($this->langid())->rs() as $label) {
+            if (!$label->active) continue;
+            DBG::msg("checking for label browser block " . 'PARTNER_'.$label->label_placeholder);
+            if (!$this->_objTpl->blockExists('PARTNER_'.$label->label_placeholder)) continue;
+            DBG::msg("...ok, found");
+
+            $dropdown = new LabelBrowserView(
+                ASCMS_MODULE_PATH.'/partners/template',
+                $label,
+                $this->langid()
+            );
+
+            if ($this->settings->hide_empty_labels) {
+                $dropdown->hide_empty();
+            }
+
+            $this->_objTpl->PARTNERS_LABEL_NAME            = $label->name($this->langid());
+            $this->_objTpl->TXT_PARTNERS_LABEL_NAME        = $dropdown->dropdown_name();
+            $this->_objTpl->LABEL_ID                       = $label->id;
+            $this->_objTpl->PARTNER_ID                     = $partner ? $partner->id : 0;
+            $this->_objTpl->setVariable('TXT_PARTNERS_LABEL_SEARCHFIELD', $dropdown);
+
+            $this->_objTpl->parse('PARTNER_'.$label->label_placeholder);
+
+            if(Request::is_post()) {
+                $assigned = Request::POST($dropdown->dropdown_name());
+                if ($assigned) {
+                    $to_assign[] = intval($assigned);
+                }
+            }
+        }
+
         if (Request::is_post()) {
             $partner->active              = 0;
             $partner->name                = Request::POST('name');
@@ -133,6 +168,10 @@ class PartnersFrontend extends PartnersBase  {
 
             if ($partner->validate(array($this, 'add_errormessage'))) {
                 $partner->save();
+                foreach ($to_assign as $entry_id) {
+                    $entry = LabelEntry::get($entry_id);
+                    $partner->assign_entry($entry);
+                }
                 $this->_objTpl->hideBlock('partner_signup_form');
                 $this->_objTpl->touchBlock('partner_signup_success');
             }
