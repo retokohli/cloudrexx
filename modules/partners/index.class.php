@@ -159,7 +159,7 @@ class PartnersFrontend extends PartnersBase  {
             $partner->description         = Request::POST('description');
             $this->_objTpl->setVariable(
                 'PARTNER_CUSTOMER_DESCRIPTION', 
-                get_wysiwyg_editor('description', $partner->description)
+                get_wysiwyg_editor('description', $partner->description, 'news')
             );
 
             if ($this->_intCurrentUserId) {
@@ -194,7 +194,7 @@ class PartnersFrontend extends PartnersBase  {
         else {
             $this->_objTpl->setVariable(
                 'PARTNER_CUSTOMER_DESCRIPTION', 
-                get_wysiwyg_editor('description', '')
+                get_wysiwyg_editor('description', $partner->description, 'news')
             );
 
         }
