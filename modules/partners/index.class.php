@@ -37,6 +37,8 @@ class PartnersFrontend extends PartnersBase  {
     // can be retreived after getPage() using getTitle().
     private $current_partner = null;
 
+    private $save_errors = array();
+
     //  }}}
 
     // {{{ Startup & Initialisation
@@ -54,7 +56,9 @@ class PartnersFrontend extends PartnersBase  {
         $this->settings = new Settings;
 
         JS::registerJS('modules/partners/js/dropdown.js');
+        JS::registerJS('modules/partners/js/labelbrowser.js');
         JS::activate('prototype');
+        JS::activate('scriptaculous');
         $this->_objTpl = new NGView('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($content);
@@ -98,6 +102,71 @@ class PartnersFrontend extends PartnersBase  {
     }
 
     // }}}
+    
+    // {{{ Signup / Edit
+    function signup_action() {
+        $partner                      = new Partner();
+
+        if (Request::is_post()) {
+            $partner->active              = 0;
+            $partner->name                = Request::POST('name');
+            $partner->first_contact_name  = Request::POST('contact');
+            $partner->first_contact_email = Request::POST('email');
+            $partner->web_url             = Request::POST('web_url');
+            $partner->address             = Request::POST('address');
+            $partner->city                = Request::POST('city');
+            $partner->zip_code            = Request::POST('zipcode');
+            $partner->phone_nr            = Request::POST('phone_nr');
+            $partner->fax_nr              = Request::POST('fax_nr');
+            $partner->customer_quote      = '';
+            $partner->creation_date       = date('Y-m-d');
+            $partner->num_installations   = 0;
+            $partner->description         = Request::POST('description');
+            $this->_objTpl->setVariable(
+                'PARTNER_CUSTOMER_DESCRIPTION', 
+                get_wysiwyg_editor('description', $partner->description)
+            );
+
+            if ($this->_intCurrentUserId) {
+                $partner->user_id = $this->_intCurrentUserId;
+            }
+
+            if ($partner->validate(array($this, 'add_errormessage'))) {
+                $partner->save();
+                $this->_objTpl->hideBlock('partner_signup_form');
+                $this->_objTpl->touchBlock('partner_signup_success');
+            }
+            else {
+                $this->_objTpl->PARTNER_NAME     = Request::POST('name');
+                $this->_objTpl->PARTNER_CONTACT  = Request::POST('contact');
+                $this->_objTpl->PARTNER_EMAIL    = Request::POST('email');
+                $this->_objTpl->PARTNER_WEB_URL  = Request::POST('web_url');
+                $this->_objTpl->PARTNER_ADDRESS  = Request::POST('address');
+                $this->_objTpl->PARTNER_CITY     = Request::POST('city');
+                $this->_objTpl->PARTNER_ZIPCODE  = Request::POST('zipcode');
+                $this->_objTpl->PARTNER_PHONE_NR = Request::POST('phone_nr');
+                $this->_objTpl->PARTNER_FAX_NR   = Request::POST('fax_nr');
+
+                $this->_objTpl->hideBlock('partner_signup_success');
+                $this->_objTpl->touchBlock('partner_signup_error');
+                $this->_objTpl->ERROR_MESSAGE = join('<p/>', $this->save_errors);
+            }
+        }
+        else {
+            $this->_objTpl->setVariable(
+                'PARTNER_CUSTOMER_DESCRIPTION', 
+                get_wysiwyg_editor('description', '')
+            );
+
+        }
+
+    }
+
+    function add_errormessage($msg) {
+        $this->save_errors[] = $msg;
+    }
+
+    // }}}
 
     // {{{ Overview
 
@@ -113,19 +182,21 @@ class PartnersFrontend extends PartnersBase  {
         foreach (AssignableLabel::all($this->langid())->rs() as $label) {
             if (!$label->active) continue;
 
-            $dropdown = new LabelDropdownView(
+            $dropdown = new LabelBrowserView(
                 ASCMS_MODULE_PATH.'/partners/template',
                 $label,
                 $this->langid()
             );
-
             if ($this->settings->hide_empty_labels) {
                 $dropdown->hide_empty();
             }
 
             $this->_objTpl->PARTNERS_LABEL_NAME            = $label->name($this->langid());
             $this->_objTpl->TXT_PARTNERS_LABEL_NAME        = $dropdown->dropdown_name();
+            $this->_objTpl->LABEL_ID                       = $label->id;
+            $this->_objTpl->PARTNER_ID                     = $partner ? $partner->id : 0;
             $this->_objTpl->setVariable('TXT_PARTNERS_LABEL_SEARCHFIELD', $dropdown);
+
             $this->_objTpl->parse('label_searchbox');
 
             $searched = Request::GET($dropdown->dropdown_name());
@@ -151,7 +222,6 @@ class PartnersFrontend extends PartnersBase  {
             ."&search=" . htmlspecialchars($fulltext) 
             .$dd_searchstring
             .'&p=%p';
-
 
         $this->_objTpl->setGlobalVariable('ROW_CLASS', new NGView_Cycle('row2', 'row1'));
 
