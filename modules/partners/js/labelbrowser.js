@@ -186,7 +186,7 @@ var LabelBrowser = (function(){
         target.insert({'after': '<div style="clear: both;" id="'+id+'_container"> </div>'});
 
 
-        treedata[id]  = tree.slice(1,tree.length);
+        treedata[id]  = tree;
         draw(id, current);
     };
 
