@@ -113,4 +113,6 @@ $_ARRAYLANG['TXT_PARTNERS_SPECIAL_SEARCH'] = "Special search functions";
 $_ARRAYLANG['TXT_PARTNERS_SEARCH_TEXT'] = "Suchtext";
 $_ARRAYLANG['TXT_PARTNERS_LINKED_USERID'] = "Owner (user-id)";
 $_ARRAYLANG['TXT_PARTNERS_SORT_ORDER'] = "Sort order";
+$_ARRAYLANG['TXT_PARTNERS_REGISTRATION_DONE'] = "Sie wurden als Partner registriert. Bitte beachten Sie, dass der Eintrag erst noch freigegeben werden muss.";
+$_ARRAYLANG['TXT_PARTNERS_INVALID_DATA'] = "Ein oder mehrere Einträge enthalten ungültige Daten";
 ?>
