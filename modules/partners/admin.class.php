@@ -553,9 +553,6 @@ class PartnersAdmin extends PartnersBase {
                 $logo_file = ASCMS_DOCUMENT_ROOT . '/images' . $partner->logo_url;
                 $logo_url  = ASCMS_IMAGE_PATH                . $partner->logo_url;
                 if ($partner->logo_url && file_exists($logo_file)) {
-                    print("saved: ".$partner->logo_url."<br/>");
-                    print("url:   ".$logo_url."<br/>");
-                    print("file:  ".$logo_file."<br/>");
                     if (!file_exists($logo_file.".thumb")) {
                         $path    = dirname($logo_file)."/";
                         $webpath = dirname($logo_url)."/";
@@ -837,7 +834,7 @@ class PartnersAdmin extends PartnersBase {
     }
     function force_ajax() {
         if (!Request::is_ajax()) {
-            NGMessaging::save(tr('TXT_ERROR_NOT_AJAX'), 'partners_success');
+            NGMessaging::save(tr('TXT_ERROR_NOT_AJAX'), 'partners_error');
             CSRF::header("Location: index.php?cmd=partners");
             die();
         }
