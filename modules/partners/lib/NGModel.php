@@ -1,5 +1,7 @@
 <?PHP
 
+require_once dirname(__FILE__)."/Trigger.php";
+
 class NGModel_Error              extends Exception {};
 class NGModel_NoPrimaryKey_Error extends NGModel_Error {};
 abstract class NGModel extends NGRecord {
@@ -148,10 +150,14 @@ abstract class NGModel extends NGRecord {
     function save() {
         if (!$this->dirty) return false;
         if ($this->__is_in_database) {
-            return $this->_update();
+            $res = $this->_update();
+            Trigger::event('updated', get_class($this), $this);
+            return $res;
         }
         DBG::trace();
-        return $this->_insert();
+        $res = $this->_insert();
+        Trigger::event('created', get_class($this), $this);
+        return $res;
     }
 
     /**
