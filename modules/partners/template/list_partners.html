@@ -30,8 +30,8 @@
         <input type="hidden" name="cmd" value="partners">
         <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
             <tr><th colspan="7">{TXT_SEARCH}</th></tr>
-            <tr>
-                <td colspan="7">
+            <tr class="row3">
+                <td>
                     <div style="float:left;">
                         <label for="search">{TXT_PARTNERS_SEARCH_TEXT}</label> <br/> <br/>
                         <input type="text" value="{TXT_SEARCH_VALUE}" name="search" id="search"/>
@@ -52,7 +52,9 @@
                         <input type="button" onclick="window.location='index.php?cmd=partners&reset_search=1'" value="{TXT_PARTNERS_RESET_SEARCH}"/>
                         <input type="button" onclick="window.location='index.php?cmd=partners&labelfree=1'" value="{TXT_PARTNERS_LOOK_FOR_LABELFREE}"/>
                     </div>
-                    <div style="clear: both"></div>
+					<div style="clear: both">
+						<br/>
+					</div>
                 </td>
             </tr>
         </table>
