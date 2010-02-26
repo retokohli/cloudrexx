@@ -31,6 +31,7 @@ class Partner extends NGModel {
                     'description',
                     'active',
                     'user_id',
+                    'import_ref',
                 );
             case 'primary': return 'id';
         };
