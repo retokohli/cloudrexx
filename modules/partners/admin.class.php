@@ -258,48 +258,6 @@ class PartnersAdmin extends PartnersBase {
         die($this->list_labels($partner, $label));
     }
 
-    /**
-     * Helper for listing labels. Returns an HTML fragment.
-     *
-     * @param Partner $partner Partner object for which to list entries.
-     * @param AssignableLabel $label Label for which to list entries.
-     */
-    function list_labels($partner, $label) {
-
-        $view = new NGView(ASCMS_MODULE_PATH.'/partners/template');
-        $view->loadTemplateFile('_partner_label.html',true,true);
-
-        if($partner) {
-            $new_entries = $partner->assigned_entries($this->langid(), $label->id)->rs();
-        }
-        else {
-            $idlist = $_SESSION['newpartner_labels'][$label->id];
-            $new_entries = $this->_label_entries_from_idlist($idlist ? $idlist : array());
-        }
-
-        $entries_to_sort = array();
-        foreach ($new_entries as $entry) {
-            $entries_to_sort[$entry->hierarchic_name($this->langid())] = $entry;
-        }
-        ksort($entries_to_sort);
-        foreach ($entries_to_sort as $entry) {
-            $view->ENTRY_ID   = $entry->id;
-            $view->LABEL_ID   = $entry->label_id;
-            $view->ENTRY_TEXT = $entry->hierarchic_name($this->langid());
-            $view->PARTNER_ID = $partner ? $partner->id : 0;
-            $view->parse('entry_line');
-        }
-
-        return $view->get();
-    }
-
-    private function _label_entries_from_idlist(array $list) {
-        $out = array();
-        foreach($list as $id) {
-            $out[] = LabelEntry::get($id);
-        }
-        return $out;
-    }
 
     /**
      * Provides the HTML needed for a popup for
@@ -831,13 +789,6 @@ class PartnersAdmin extends PartnersBase {
         $label->delete();
         die("OK");
 
-    }
-    function force_ajax() {
-        if (!Request::is_ajax()) {
-            NGMessaging::save(tr('TXT_ERROR_NOT_AJAX'), 'partners_error');
-            CSRF::header("Location: index.php?cmd=partners");
-            die();
-        }
     }
 
     /**

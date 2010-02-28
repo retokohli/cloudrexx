@@ -58,6 +58,7 @@ class PartnersFrontend extends PartnersBase  {
         JS::registerJS('modules/partners/js/dropdown.js');
         JS::registerJS('modules/partners/js/labels.js');
         JS::registerJS('modules/partners/js/labelbrowser.js');
+        JS::registerJS('modules/partners/js/labelfrontend.js');
         JS::activate('prototype');
         JS::activate('scriptaculous');
         $this->_objTpl = new NGView('.');
@@ -82,6 +83,10 @@ class PartnersFrontend extends PartnersBase  {
             $_GET['act']='default';
         }
         $act = $_GET['cmd'] ? $_GET['cmd'] : 'default';
+
+        if (isset($_GET['ajax'])) {
+            $act = $_GET['ajax'];
+        }
 
         // get the NGMessaging data and put it where it belongs
         $this->get_messages();
@@ -135,12 +140,17 @@ class PartnersFrontend extends PartnersBase  {
             $this->_objTpl->parse('PARTNER_'.$label->label_placeholder);
 
             if(Request::is_post()) {
-                $assigned = Request::POST($dropdown->dropdown_name());
-                if ($assigned) {
-                    $to_assign[] = intval($assigned);
+                #$assigned = Request::POST($dropdown->dropdown_name() . '_list');
+                #if ($assigned) {
+                #    $to_assign[] = intval($assigned);
+                #}
+                foreach ($_SESSION['newpartner_labels'][$label->id] as $entry) {
+                    $to_assign[] = $entry;
                 }
+
             }
         }
+        DBG::dump($to_assign);
 
         if (Request::is_post()) {
             $partner->active              = 0;
@@ -199,6 +209,60 @@ class PartnersFrontend extends PartnersBase  {
 
         }
 
+    }
+    function assignentry_action() {
+        $this->force_ajax();
+        // TODO: check if user is entitled to change this partner
+
+        $entry   = LabelEntry::get(Request::POST('entry_id'));
+        $label   = $entry->label();
+
+        $partner = null;
+        if(Request::POST('partner_id')) {
+            $partner = Partner::get(Request::POST('partner_id'));
+            $partner->assign_entry($entry);
+        }
+        else {
+            if (!$label->multiple_assignable || !isset($_SESSION['newpartner_labels'][$label->id])) {
+                $_SESSION['newpartner_labels'][$label->id] = array(Request::POST('entry_id'));
+            }
+            else {
+                $a = $_SESSION['newpartner_labels'][$label->id];
+                $a[] = Request::POST('entry_id');
+                $_SESSION['newpartner_labels'][$label->id] = $a;
+            }
+        }
+
+        die($this->list_labels($partner, $label));
+    }
+    function dropentry_action() {
+        $this->force_ajax();
+        // TODO: check if user is entitled to change this partner
+
+        $entry   = LabelEntry::get(Request::POST('entry_id'));
+        $label   = $entry->label();
+
+        $partner = null;
+        if(Request::POST('partner_id')) {
+            $partner = Partner::get(Request::POST('partner_id'));
+            $partner->drop_entry($entry);
+        }
+        else {
+            if (!isset($_SESSION['newpartner_labels'][$label->id])) {
+                $_SESSION['newpartner_labels'][$label->id] = array();
+            }
+            elseif(($idx = array_search(Request::POST('entry_id'), $_SESSION['newpartner_labels'][$label->id])) !== false) {
+                $a = array();
+                foreach($_SESSION['newpartner_labels'][$label->id] as $e) {
+                    if ($e != Request::POST('entry_id'))
+                        $a[] = $e;
+                }
+                $_SESSION['newpartner_labels'][$label->id] = $a;
+            }
+
+        }
+
+        die($this->list_labels($partner, $label));
     }
 
     function add_errormessage($msg) {
