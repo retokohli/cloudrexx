@@ -17,6 +17,9 @@ File Browser
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Alias Verwaltung
+- Die automatische Erstellung der .htaccess Datei per FTP funktioniert.
+
 News Manager
 - Bei der Bearbeitung einer News Meldung wird der Teaser Text mit dem richtigen
   Zeichensatz angezeigt.
