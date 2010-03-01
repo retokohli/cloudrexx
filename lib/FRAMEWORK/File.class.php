@@ -61,7 +61,7 @@ class File
         }
         if ($this->conn_id) {
             //logon with user and password
-            $this->login_result = @ftp_login($this->conn_id, $this->ftpUserName, $this->ftpUserPass);
+            $this->login_result = ftp_login($this->conn_id, $this->ftpUserName, $this->ftpUserPass);
         }
         else {
             // We can't connect to FTP, so we try
@@ -106,8 +106,8 @@ class File
         $status = $this->mkDir($newPath, $newWebPath, $newDirName);
 
         if ($status!= 'error') {
-            $openDir = @opendir($orgPath.$orgDirName);
-            $file = @readdir($openDir);
+            $openDir = opendir($orgPath.$orgDirName);
+            $file = readdir($openDir);
             while ($file) {
                 if ($file!='.' && $file!='..') {
                     if (!is_dir($orgPath.$orgDirName.'/'.$file)) {
@@ -116,7 +116,7 @@ class File
                         $this->copyDir($orgPath, $orgWebPath, $orgDirName.'/'.$file, $newPath, $newWebPath, $newDirName.'/'.$file);
                     }
                 }
-                $file = @readdir($openDir);
+                $file = readdir($openDir);
             }
             closedir($openDir);
         }
@@ -182,14 +182,14 @@ class File
 
             if ($this->is_php5 == false) {
                 $chmod_cmd='CHMOD 0777 '.$newDir;
-                @ftp_site($this->conn_id, $chmod_cmd);
+                ftp_site($this->conn_id, $chmod_cmd);
             } else {
                 ftp_chmod($this->conn_id, $this->chmodFolder, $newDir);
             }
             $status = $dirName;
         } else {
-            if (@mkdir($path.$dirName)) {
-                @chmod ($path.$dirName, $this->chmodFolder);
+            if (mkdir($path.$dirName)) {
+                chmod ($path.$dirName, $this->chmodFolder);
                 $status = $dirName;
             } else {
                 $status = 'error';
@@ -204,13 +204,13 @@ class File
     function delDir($path, $webPath, $dirName) {
         $webPath=$this->checkWebPath($webPath);
         $status = '';
-        $openDir = @opendir($path.$dirName);
-        $file = @readdir($openDir);
+        $openDir = opendir($path.$dirName);
+        $file = readdir($openDir);
         while ($file) {
             if ($file!='.' && $file!='..') {
                 if ($this->ftp_is_activated == true) {
                     if (!is_dir($path.$dirName.'/'.$file)) {
-                        @ftp_delete($this->conn_id, $this->ftpDirectory.$webPath.$dirName.'/'.$file);
+                        ftp_delete($this->conn_id, $this->ftpDirectory.$webPath.$dirName.'/'.$file);
                     } else {
                         $this->delDir($path, $webPath, $dirName.'/'.$file);
                     }
@@ -222,16 +222,16 @@ class File
                     }
                 }
             }
-            $file = @readdir($openDir);
+            $file = readdir($openDir);
         }
         closedir($openDir);
 
         if ($this->ftp_is_activated == true) {
-            if (!@ftp_rmdir($this->conn_id,  $this->ftpDirectory.$webPath.$dirName)) {
+            if (!ftp_rmdir($this->conn_id,  $this->ftpDirectory.$webPath.$dirName)) {
                 $status = 'error';
             }
         } else {
-            if (!@rmdir($path.$dirName.'/'.$file)) {
+            if (!rmdir($path.$dirName.'/'.$file)) {
                 $status = 'error';
             }
         }
@@ -246,26 +246,26 @@ class File
         $webPath = $this->checkWebPath($webPath);
         $delFile = $this->ftpDirectory.$webPath.$fileName;
         if ($this->ftp_is_activated) {
-            if (@ftp_delete($this->conn_id, $delFile)) return $delFile;
+            if (ftp_delete($this->conn_id, $delFile)) return $delFile;
             return 'error';
         } else {
             //@unlink($path.$fileName);
-            @unlink($path.$fileName);
+            unlink($path.$fileName);
             clearstatcache();
-            if (@file_exists($path.$fileName)) {
+            if (file_exists($path.$fileName)) {
                 $filesys = eregi_replace('/', '\\', $path.$fileName);
-                @system("del $filesys");
+                system("del $filesys");
                 clearstatcache();
 
                 // Doesn't work in safe mode
-                if (@file_exists($path.$fileName)) {
-                    @chmod ($path.$fileName, 0775);
-                    @unlink($path.$fileName);
-                    @system("del $filesys");
+                if (file_exists($path.$fileName)) {
+                    chmod ($path.$fileName, 0775);
+                    unlink($path.$fileName);
+                    system("del $filesys");
                 }
             }
             clearstatcache();
-            if (@file_exists($path.$fileName)) return 'error';
+            if (file_exists($path.$fileName)) return 'error';
         }
         return $fileName;
     }
@@ -390,24 +390,24 @@ class File
 
         if (!file_exists($path.$fileName)) return false;
         if (is_dir($path.$fileName)) {
-            if (@chmod($path.$fileName, $this->chmodFolder)) return true;
+            if (chmod($path.$fileName, $this->chmodFolder)) return true;
             if ($this->ftp_is_activated) {
                 if ($this->is_php5)
-                    return @ftp_chmod($this->conn_id, $this->chmodFolder, $this->ftpDirectory.$webPath.$fileName);
-                @chown($path.$fileName, $_FTPCONFIG['username']);
-                @chmod($path.$fileName, $this->chmodFolder);
+                    return ftp_chmod($this->conn_id, $this->chmodFolder, $this->ftpDirectory.$webPath.$fileName);
+                chown($path.$fileName, $_FTPCONFIG['username']);
+                chmod($path.$fileName, $this->chmodFolder);
                 $chmod_cmd = 'CHMOD '.$this->chmodFolderPHP4.' '.$this->ftpDirectory.$webPath.$fileName;
-                return @ftp_site($this->conn_id, $chmod_cmd);
+                return ftp_site($this->conn_id, $chmod_cmd);
             }
         } else {
-            if (@chmod($path.$fileName, $this->chmodFile)) return true;
+            if (chmod($path.$fileName, $this->chmodFile)) return true;
             if ($this->ftp_is_activated) {
                 if ($this->is_php5)
-                    return @ftp_chmod($this->conn_id, $this->chmodFile, $this->ftpDirectory.$webPath.$fileName);
-                @chown($path.$fileName, $_FTPCONFIG['username']);
-                @chmod($path.$fileName, $this->chmodFile);
+                    return ftp_chmod($this->conn_id, $this->chmodFile, $this->ftpDirectory.$webPath.$fileName);
+                chown($path.$fileName, $_FTPCONFIG['username']);
+                chmod($path.$fileName, $this->chmodFile);
                 $chmod_cmd = 'CHMOD '.$this->chmodFilePHP4.' '.$this->ftpDirectory.$webPath.$fileName;
-                return @ftp_site($this->conn_id, $chmod_cmd);
+                return ftp_site($this->conn_id, $chmod_cmd);
             }
         }
         return false;
