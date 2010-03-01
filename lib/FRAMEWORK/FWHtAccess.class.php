@@ -346,10 +346,10 @@ class FWHtAccess
         return (
                 file_exists(ASCMS_DOCUMENT_ROOT.$path)
                 || touch(ASCMS_DOCUMENT_ROOT.$path)
-                || $objFile->touchFile(ASCMS_DOCUMENT_ROOT.$path)
+                || $objFile->touchFile(ASCMS_PATH_OFFSET.$path)
             ) && (
                 is_writable(ASCMS_DOCUMENT_ROOT.$path)
-                || $objFile->setChmod(ASCMS_DOCUMENT_ROOT.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), '/'.basename($path))
+                || $objFile->setChmod(ASCMS_DOCUMENT_ROOT.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), ASCMS_PATH_OFFSET.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), '/'.basename($path))
         );
     }
 

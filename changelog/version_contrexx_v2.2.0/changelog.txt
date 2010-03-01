@@ -146,6 +146,7 @@ Allgemein
 Alias Verwaltung
 - Aliase welche Leerzeichen enthalten werden in der Inhalts-Navigation
   korrekt ausgegeben.
+- Die automatische Erstellung der .htaccess Datei per FTP funktioniert.
 
 Block System
 - Das Interface zur Auswahl der Frontend Seiten funktioniert korrekt.
