@@ -2054,3 +2054,24 @@ dl.data_module img {
     margin-top: 2.2em;
     border-top: 1px solid #f0f0f0;
 }
+
+
+/****************************************/
+/* CSS DEFINITIONS FOR MEDIA-MODULE     */
+/****************************************/
+#media_div div.message_ok,
+#media_div div.message_error {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#media_div div.message_error {
+	color: #ff0000;
+}
+
+#media_div div.message_ok {
+	color: #029202;
+}

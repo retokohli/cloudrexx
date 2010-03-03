@@ -42,6 +42,11 @@ class MediaManager extends MediaLibrary {
     var $webPath;                       // current web path
     var $docRoot;                       // document root
     var $archive;
+    
+    var $highlightName     = array();   // highlight added name
+    var $highlightColor    = '#d8ffca'; // highlight color for added name [#d8ffca]
+    var $_strOkMessage  = '';           // success message
+    var $_strErrorMessage  = '';        // error message
 
 
     /**
@@ -62,6 +67,7 @@ class MediaManager extends MediaLibrary {
      * @access public
      */
     function __construct($pageContent, $archive){
+        MediaLibrary::__construct();
         $this->archive = (intval(substr($archive,-1,1)) == 0) ? 'media1' : $archive;
 
         // directory variables
@@ -114,8 +120,6 @@ class MediaManager extends MediaLibrary {
     }
 
 
-
-
     /**
     * Gets the requested methods
     *
@@ -132,24 +136,31 @@ class MediaManager extends MediaLibrary {
         $this->getCmd = !empty($_GET['cmd']) ? '&amp;cmd='.htmlentities($_GET['cmd'], ENT_QUOTES, CONTREXX_CHARSET) : '';
 
         $this->_overviewMedia();
+        $this->_parseMessages();
         return $this->_objTpl->get();
     }
-
 
 
     /**
     * Overview Media Data
     *
+    * @global     array     $_CONFIG
     * @global     array     $_ARRAYLANG
     * @return    string    parsed content
     */
 
     function _overviewMedia(){
-        global $_ARRAYLANG;
+        global $_CONFIG, $_ARRAYLANG;
 
         switch($this->getAct){
             case 'download':
                 $this->_downloadMedia();
+                break;
+            case 'newDir':
+                $this->_createDirectory($_POST['media_directory_name']);
+                break;
+            case 'upload':
+                $this->_uploadFiles();
                 break;
             default:
         }
@@ -178,6 +189,10 @@ class MediaManager extends MediaLibrary {
                 }
             }
         }
+        
+        if (!empty($_GET['highlightFiles'])) {
+            $this->highlightName = array_merge($this->highlightName, array_map('basename', json_decode(contrexx_stripslashes(urldecode($_GET['highlightFiles'])))));
+        }
 
         // media directory tree
         $i       = 0;
@@ -186,8 +201,11 @@ class MediaManager extends MediaLibrary {
         foreach(array_keys($dirTree) as $key){
             if(is_array($dirTree[$key]['icon'])){
                 for($x = 0; $x < count($dirTree[$key]['icon']); $x++){
-                       $class = ($i % 2) ? 'row2' : 'row1';
-
+                    $class = ($i % 2) ? 'row2' : 'row1';
+                    if(in_array($dirTree[$key]['name'][$x], $this->highlightName)) // highlight
+                    {
+                        $class .= '" style="background-color: ' . $this->highlightColor . ';';
+                    }
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
                         'MEDIA_FILE_ICON'     => $this->iconWebPath . $dirTree[$key]['icon'][$x] . '.gif',
@@ -252,6 +270,244 @@ class MediaManager extends MediaLibrary {
             'MEDIA_PERM_ICON'           => $tmpIcon['perm'],
             'MEDIA_JAVASCRIPT'          => $this->_getJavaScriptCodePreview()
         ));
+
+        if(!$this->uploadAccessGranted()) {
+            // if user not allowed to upload files and creating folders -- hide that blocks
+            if ($this->_objTpl->blockExists('media_simple_file_upload')) {
+                $this->_objTpl->hideBlock('media_simple_file_upload');
+            }
+            if ($this->_objTpl->blockExists('media_advanced_file_upload')) {
+                $this->_objTpl->hideBlock('media_advanced_file_upload');
+            }
+            if ($this->_objTpl->blockExists('media_create_directory')) {
+                $this->_objTpl->hideBlock('media_create_directory');
+            }
+        }
+        else {
+            // forms for uploading files and creating folders
+            require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
+
+            $objModulChecker = new ModuleChecker();
+            // advanced file upload
+            if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
+                if ($this->_objTpl->blockExists('media_advanced_file_upload')) {
+                    $path = 'index.php?section=fileUploader&amp;standalone=true&amp;type=' . $this->archive . '&amp;path=' . urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1));
+                    $this->_objTpl->setVariable(array(
+                        'MEDIA_FILE_UPLOAD_BUTTON'  => '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_MEDIA_BROWSE'].'" />',
+                        'TXT_MEDIA_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_MEDIA_ADD_NEW_FILE']
+                    ));
+                    $this->_objTpl->parse('media_advanced_file_upload');
+                }
+    
+                if ($this->_objTpl->blockExists('media_simple_file_upload')) {
+                    $this->_objTpl->hideBlock('media_simple_file_upload');
+                }
+
+            }
+            else {
+                if ($this->_objTpl->blockExists('media_simple_file_upload')) {
+                    $objFWSystem = new FWSystem();
+                    // simple file upload
+                    $this->_objTpl->setVariable(array(
+                        'TXT_MEDIA_BROWSE'          => $_ARRAYLANG['TXT_MEDIA_BROWSE'],
+                        'TXT_MEDIA_UPLOAD_FILE'     => $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILE'],
+                        'TXT_MEDIA_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_MEDIA_MAX_FILE_SIZE'],
+                        'TXT_MEDIA_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_MEDIA_ADD_NEW_FILE'],
+                        'MEDIA_UPLOAD_URL'          => CONTREXX_SCRIPT_PATH . '?section=' . $this->archive . $this->getCmd . '&amp;act=upload&amp;path=' . $this->webPath,
+                        'MEDIA_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
+                    ));
+                    $this->_objTpl->parse('media_simple_file_upload');
+                }
+                
+                if ($this->_objTpl->blockExists('media_advanced_file_upload')) {
+                    $this->_objTpl->hideBlock('media_advanced_file_upload');
+                }
+            }
+            // create directory
+            $this->_objTpl->setVariable(array(
+                'TXT_MEDIA_CREATE_DIRECTORY'        => $_ARRAYLANG['TXT_MEDIA_CREATE_DIRECTORY'],
+                'TXT_MEDIA_CREATE_NEW_DIRECTORY'    => $_ARRAYLANG['TXT_MEDIA_CREATE_NEW_DIRECTORY'],
+                'MEDIA_CREATE_DIRECTORY_URL'        => CONTREXX_SCRIPT_PATH . '?section=' . $this->archive . $this->getCmd . '&amp;act=newDir&amp;path=' . $this->webPath
+            ));
+            $this->_objTpl->parse('media_create_directory');
+        }
+    }
+    
+    /**
+     * Chaeck access from settings.
+     * If setting value is number then check access using Permission
+     * If setting value is 'on' then return true
+     * Else return false
+     *
+     * @return     boolean  true if access gented and false if access denied
+     */
+    private function uploadAccessGranted()
+    {
+        $uploadAccessSetting = $this->_arrSettings[$this->archive . '_frontend_changable'];
+        if(is_numeric($uploadAccessSetting) 
+           && Permission::checkAccess(intval($uploadAccessSetting), 'dynamic', true)) { // access group
+            return true;
+        } else if($uploadAccessSetting == 'on') {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Format file size
+     *
+     * @global     array    $_ARRAYLANG
+     * @param      int      $bytes
+     * @return     string   formated size
+     */
+    private function getFormatedFileSize($bytes)
+    {
+        global $_ARRAYLANG;
+
+        if (!$bytes) {
+            return $_ARRAYLANG['TXT_MEDIA_UNKNOWN'];
+        }
+
+        $exp = log($bytes, 1024);
+
+        if ($exp < 1) {
+            return $bytes.' '.$_ARRAYLANG['TXT_MEDIA_BYTES'];
+        } elseif ($exp < 2) {
+            return round($bytes/1024, 2).' '.$_ARRAYLANG['TXT_MEDIA_KBYTE'];
+        } elseif ($exp < 3) {
+            return round($bytes/pow(1024, 2), 2).' '.$_ARRAYLANG['TXT_MEDIA_MBYTE'];
+        } else {
+            return round($bytes/pow(1024, 3), 2).' '.$_ARRAYLANG['TXT_MEDIA_GBYTE'];
+        }
+    }
+    
+    /**
+     * Create directory
+     * 
+     * @global     array    $_ARRAYLANG
+     * @param      string   $dir_name
+     */
+    function _createDirectory($dir_name)
+    {
+        global $_ARRAYLANG;
+        
+        if (empty($dir_name)) {
+            if(!isset($_GET['highlightFiles'])) {
+                $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_EMPTY_DIR_NAME'];
+            }
+            return;
+        } else {
+            $dir_name = contrexx_stripslashes($dir_name);
+        }
+        
+        if(!$this->uploadAccessGranted()) {
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
+            return;
+        }
+
+        $obj_file = new File();
+        $dir_name = $obj_file->replaceCharacters($dir_name);
+        $creationStatus = $obj_file->mkDir($this->path, $this->webPath, $dir_name);
+        if($creationStatus != "error") {
+            $this->highlightName[] = $dir_name;
+            $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR'];
+        }else{           
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR'];
+        }
+    }
+    
+    /**
+     * Adding success and error messages to template
+     */
+    private function _parseMessages()
+    {
+        $this->_objTpl->setVariable(array(
+            'MEDIA_MSG_OK'      => $this->_strOkMessage,
+            'MEDIA_MSG_ERROR'   => $this->_strErrorMessage
+        ));
+    }
+    
+    /**
+     * Upload files
+     */
+    function _uploadFiles()
+    {
+        // check permissions
+        if(!$this->uploadAccessGranted()) {
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
+            return;
+        }
+                
+        $this->processFormUpload();
+    }
+    
+    /**
+     * Process upload form
+     *
+     * @global     array    $_ARRAYLANG
+     * @return     boolean  true if file uplod successfully and false if it failed
+     */
+    private function processFormUpload()
+    {
+        global $_ARRAYLANG;
+
+        $inputField = 'media_upload_file';
+        if (!isset($_FILES[$inputField]) || !is_array($_FILES[$inputField])) {
+            return false;
+        }
+
+        $fileName = !empty($_FILES[$inputField]['name']) ? contrexx_stripslashes($_FILES[$inputField]['name']) : '';
+        $fileTmpName = !empty($_FILES[$inputField]['tmp_name']) ? $_FILES[$inputField]['tmp_name'] : '';
+
+        switch ($_FILES[$inputField]['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+                include_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
+                $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_SIZE_EXCEEDS_LIMIT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET), $this->getFormatedFileSize(FWSystem::getMaxUploadFileSize()));
+                break;
+
+            case UPLOAD_ERR_FORM_SIZE:
+                $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_TOO_LARGE'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
+                break;
+
+            case UPLOAD_ERR_PARTIAL:
+                $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_CORRUPT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
+                break;
+
+            case UPLOAD_ERR_NO_FILE:
+                $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_NO_FILE'];
+                continue;
+                break;
+
+            default:
+                if (!empty($fileTmpName)) {
+                    $suffix = '';
+                    $file = $this->path . $fileName;
+                    $arrFile = pathinfo($file);
+                    $i = 0;
+                    while (file_exists($file)) {
+                        $suffix = '-' . (time() + (++$i));
+                        $file = $this->path . $arrFile['filename'] . $suffix . '.' . $arrFile['extension'];
+                    }
+
+                    if (FWValidator::is_file_ending_harmless($fileName)) {
+                        $fileExtension = $arrFile['extension'];
+
+                        if (@move_uploaded_file($fileTmpName, $file)) {
+                            $fileName = $arrFile['filename'];
+                            $obj_file = new File();
+                            $obj_file->setChmod($this->path, $this->webPath, $fileName);
+                            $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'];
+                            return true;
+                        } else {
+                            $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
+                        }
+                    } else {
+                        $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_EXTENSION_NOT_ALLOWED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
+                    }
+                }
+                break;
+        }
+        return false;
     }
 }
 ?>
