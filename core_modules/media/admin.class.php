@@ -60,6 +60,8 @@ class MediaManager extends MediaLibrary {
     var $archive;
 
     var $_shopEnabled;
+    
+    var $_strOkMessage  = '';
 
     /**
     * Constructor
@@ -81,6 +83,7 @@ class MediaManager extends MediaLibrary {
     function __construct(){
         global  $_ARRAYLANG, $_FTPCONFIG, $objTemplate;
 
+        MediaLibrary::__construct();
         // sigma template
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/media/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -160,6 +163,7 @@ class MediaManager extends MediaLibrary {
                 <a href="index.php?cmd=media&amp;archive=archive2">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #2</a>
                 <a href="index.php?cmd=media&amp;archive=archive3">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #3</a>
                 <a href="index.php?cmd=media&amp;archive=archive4">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #4</a>
+                <a href="index.php?cmd=media&amp;archive=archive1&amp;act=settings">'    . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] .  '</a>
             ');
             break;
         }
@@ -243,12 +247,20 @@ class MediaManager extends MediaLibrary {
                 $this->_renMedia();
                 $this->_overviewMedia();
                 break;
+            case 'settings':
+                $this->_settings();
+                break;
+            case 'saveSettings':
+                $this->_saveSettings();
+                $this->_settings();
+                break;
             default:
                 $this->_overviewMedia();
         }
 
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'                => $this->pageTitle,
+            'CONTENT_OK_MESSAGE'           => $this->_strOkMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
     }
@@ -667,6 +679,126 @@ class MediaManager extends MediaLibrary {
             'TXT_MEDIA_BACK'        => $_ARRAYLANG['TXT_MEDIA_BACK'],
             'MEDIA_BACK_HREF'       => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;path=' . $this->webPath
         ));
+    }
+
+    /**
+     * Display and editing Media settings
+     *
+     * @return    string    parsed content
+     */
+    function _settings()
+    {
+        global $_CORELANG, $_ARRAYLANG;
+        
+        $objFWUser = FWUser::getFWUserObject();
+       
+        $this->_objTpl->loadTemplateFile('module_media_settings.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_SETTINGS'];
+        
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_MEDIA_SETTINGS'                    => $_ARRAYLANG['TXT_MEDIA_SETTINGS'],
+            'TXT_MEDIA_ACCESS_SETTINGS'             => $_ARRAYLANG['TXT_MEDIA_ACCESS_SETTINGS'],
+            'TXT_MEDIA_ADDING_DENIED_FOR_ALL'       => $_ARRAYLANG['TXT_MEDIA_ADDING_DENIED_FOR_ALL'],
+            'TXT_MEDIA_ADDING_ALLOWED_FOR_ALL'      => $_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_ALL'],
+            'TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP'    => $_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP'],
+            'TXT_MEDIA_AVAILABLE_USER_GROUPS'       => $_ARRAYLANG['TXT_MEDIA_AVAILABLE_USER_GROUPS'],
+            'TXT_MEDIA_ASSIGNED_USER_GROUPS'        => $_ARRAYLANG['TXT_MEDIA_ASSIGNED_USER_GROUPS'],
+            'TXT_MEDIA_CHECK_ALL'                   => $_ARRAYLANG['TXT_MEDIA_CHECK_ALL'],
+            'TXT_MEDIA_UNCHECK_ALL'                 => $_ARRAYLANG['TXT_MEDIA_UNCHECK_ALL'],
+            'TXT_BUTTON_SAVE'                       => $_CORELANG['TXT_SAVE'],
+        ));
+        
+        for($k = 1; $k <= 4; $k++)
+        {
+            $arrAssociatedGroupOptions = array();
+            $arrNotAssociatedGroupOptions = array();
+            $mediaAccessSetting = $this->_arrSettings['media' . $k . '_frontend_changable'];
+            if(!is_numeric($mediaAccessSetting))
+            {
+                // Get all groups
+                $objGroup = $objFWUser->objGroup->getGroups();
+            } else {           
+                // Get access groups
+                $objGroup = $objFWUser->objGroup->getGroups(
+                    array('dynamic' => $mediaAccessSetting)
+                );
+            }
+            $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
+    
+            $objGroup = $objFWUser->objGroup->getGroups();
+            while (!$objGroup->EOF) {
+                $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+    
+                if (in_array($objGroup->getId(), $arrAssociatedGroups)) {
+                    $arrAssociatedGroupOptions[] = $option;
+                } else {
+                    $arrNotAssociatedGroupOptions[] = $option;
+                }
+    
+                $objGroup->next();
+            }
+            
+            $this->_objTpl->setVariable(array(
+                    'MEDIA_ARCHIVE_NUMBER'                  => $k,
+                    'MEDIA_ALLOW_USER_CHANGE_ON'            => ($this->_arrSettings['media' . $k . '_frontend_changable'] == 'on') ? 'checked="checked"' : '',
+                    'MEDIA_ALLOW_USER_CHANGE_OFF'           => ($this->_arrSettings['media' . $k . '_frontend_changable'] == 'off') ? 'checked="checked"' : '',
+                    'MEDIA_ALLOW_USER_CHANGE_GROUP'         => (is_numeric($this->_arrSettings['media' . $k . '_frontend_changable'])) ? 'checked="checked"' : '',
+                    'MEDIA_ACCESS_DISPLAY'                  => (is_numeric($this->_arrSettings['media' . $k . '_frontend_changable'])) ? 'block' : 'none',
+                    'MEDIA_ACCESS_ASSOCIATED_GROUPS'        => implode("\n", $arrAssociatedGroupOptions),
+                    'MEDIA_ACCESS_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupOptions),
+                ));
+            $this->_objTpl->parse("mediaAccessSection");
+        }
+    }
+    
+    /**
+     * Validate and save settings from $_POST into the database.
+     *
+     * @global  ADONewConnection
+     * @global  array $_ARRAYLANG
+     */
+    function _saveSettings() {
+        global $objDatabase, $_ARRAYLANG;
+
+        $this->_arrSettings = $this->createSettingsArray();
+        
+        for($i = 0; $i <=4; $i++)
+        {
+            $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
+            $newMediaSetting = $_POST['mediaSettings_Media' . $i . 'FrontendChangable'];
+            
+            if(!is_numeric($newMediaSetting))
+            {
+                if(is_numeric($oldMediaSetting))
+                {
+                    // remove AccessId
+                    Permission::removeAccess($oldMediaSetting, 'dynamic');
+                }
+                // save new setting
+                $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
+                                                SET `value` = "' . contrexx_addslashes($newMediaSetting) . '"
+                                                WHERE `name` = "media' . $i . '_frontend_changable"
+                                            ');
+            } else {
+                $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
+                // get groups
+                Permission::removeAccess($oldMediaSetting, 'dynamic');
+                $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
+                // add AccessID
+                $newMediaSetting = Permission::createNewDynamicAccessId();
+                // save AccessID
+                if(count($accessGroups)) {
+                    Permission::setAccess($newMediaSetting, 'dynamic', $accessGroups);
+                }
+                $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
+                                                SET `value` = "' . intval($newMediaSetting) . '"
+                                                WHERE `name` = "media' . $i . '_frontend_changable"
+                                            ');
+            }
+        }
+
+        $this->_arrSettings = $this->createSettingsArray();
+        $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_SETTINGS_SAVE_SUCCESSFULL'];
     }
 }
 ?>

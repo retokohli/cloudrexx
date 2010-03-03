@@ -11,6 +11,7 @@
  */
 
 require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 /**
  * Media Library
  *
@@ -26,8 +27,17 @@ class MediaLibrary {
 
     protected $sortBy = 'name';
     protected $sortDesc = false;
+    var $_arrSettings           = array();
 
 
+    /**
+     * Constructor
+     */
+    function __construct()
+    {
+        $this->_arrSettings     = $this->createSettingsArray();
+    }
+    
     // act: newDir
     // creates a new directory through php or ftp
     function _createNewDir($dirName){
@@ -936,6 +946,7 @@ class MediaLibrary {
     function _getJavaScriptCodePreview(){
         $code = <<<END
                     <script language="JavaScript" type="text/javascript">
+                    /* <![CDATA[ */
                         function preview(file, width, height)
                         {
                             var f = file;
@@ -951,10 +962,35 @@ class MediaLibrary {
                             prev.document.close();
                             prev.focus();
                         }
+                    /* ]]> */
                     </script>
 END;
 
         return $code;
+    }
+    
+    /**
+     * Create an array containing all settings of the media-module.
+     * Example: $arrSettings[$strSettingName] for the content of $strSettingsName
+     * @global  ADONewConnection
+     * @return  array       $arrReturn
+     */
+    function createSettingsArray() {
+        global $objDatabase;
+
+        $arrReturn = array();
+
+        $objResult = $objDatabase->Execute('SELECT  name,
+                                                    value
+                                            FROM    '.DBPREFIX.'module_media_settings
+                                        ');
+        if($objResult !== false){
+            while (!$objResult->EOF) {
+                $arrReturn[$objResult->fields['name']] = stripslashes(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+                $objResult->MoveNext();
+            }
+        }
+        return $arrReturn;
     }
 }
 ?>
