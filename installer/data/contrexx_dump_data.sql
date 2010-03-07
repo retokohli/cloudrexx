@@ -4344,11 +4344,4 @@ INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status
 INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status`, `submit_check`, `votes`, `additional_nickname`, `additional_forename`, `additional_surname`, `additional_phone`, `additional_street`, `additional_zip`, `additional_email`, `additional_city`, `additional_comment`) VALUES (9,'2008-06-18 04:47:48','Wie finden Sie unsere neue Website?','Wie finden Sie unsere neue Website?',0,'email',10,0,1,1,0,1,0,0,0,1);
 INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status`, `submit_check`, `votes`, `additional_nickname`, `additional_forename`, `additional_surname`, `additional_phone`, `additional_street`, `additional_zip`, `additional_email`, `additional_city`, `additional_comment`) VALUES (10,'2009-02-23 07:48:17','lieblings Farbe','Was ist deine lieblings Farbe?',0,'email',1,0,0,0,0,0,0,0,0,0);
 INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status`, `submit_check`, `votes`, `additional_nickname`, `additional_forename`, `additional_surname`, `additional_phone`, `additional_street`, `additional_zip`, `additional_email`, `additional_city`, `additional_comment`) VALUES (11,'2009-03-05 06:56:33','Webprojekte','Mit wem wÃ¼rden Sie Ihr Webprojekt besprechen?',1,'cookie',4,1,1,0,0,0,0,0,1,0);
-
-	INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, 
-		      expiration, validity, last_auth, last_activity, email, email_access, 
-		      frontend_lang_id, backend_lang_id, active, profile_access, restore_key,
-		      restore_key_time, u2u_active) 
-	VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,0,0,'','nobody',
-		      0,0,1,'members_only','',0,'0'); 
-    
+INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active) VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,0,0,'','nobody', 0,0,1,'members_only','',0,'0');
