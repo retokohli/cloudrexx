@@ -214,4 +214,34 @@ $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_COMMENT_LIST'] = "Comments list";
+$_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
+$_ARRAYLANG['TXT_NEWS_COMMENT_DATE'] = "Date &amp; time";
+$_ARRAYLANG['TXT_NEWS_COMMENT_CONFIRM_DELETE'] = "Do you really want to delete this comments?";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BACK'] = "Back";
+$_ARRAYLANG['TXT_NEWS_NO_COMMENTS_FOUND'] = "There are no comments for this news yet.";
+$_ARRAYLANG['TXT_NEWS_COMMENT_EDIT_TITLE'] = "Edit comment";
+$_ARRAYLANG['TXT_NEWS_COMMENT_IP'] = "IP address";
+$_ARRAYLANG['TXT_NEWS_COMMENT_ANONYMOUS'] = "Anonymous";
+$_ARRAYLANG['TXT_NEWS_COMMENT_NOT_VALID_TITLE'] = "Not valid comment title";
+$_ARRAYLANG['TXT_NEWS_COMMENT_NOT_VALID_MESSAGE'] = "Not valid comment message";
+$_ARRAYLANG['TXT_NEWS_COMMENT_NOT_VALID_AUTHOR'] = "Not valid author name";
+$_ARRAYLANG['TXT_NEWS_COMMENT_SAVING_ERROR'] = "Comment saving error";
+$_ARRAYLANG['TXT_NEWS_COMMENT_SAVED'] = "Comment saved";
+$_ARRAYLANG['TXT_NEWS_COMMENT_AUTHOR'] = "Author";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TITLE'] = "Comments";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW'] = "Enable comments";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW_HELP'] = "If you want to give your visitor the opportunity to write comments to news you must activate this option.";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS'] = "Allow anonymous comments";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_HELP'] = "If you want to allow unregistered user to write comments to news you have to activate this option.";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE'] = "Activate new comments automatically";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_HELP'] = "By activating this option new news comments will be activated automatically. Otherwise they must be checked and activated by an administrator manually.";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION'] = "Notification about new comments";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION_HELP'] = "If this option is activated, you receive an email when receiving new news comments.";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'] = "Waiting time between two comments";
+$_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'] = "This value describes how many seconds must be elapsed between two news comments of the same user. This avoids flooding the comment function. We recommend the usage of 30 seconds.";
+$_ARRAYLANG['TXT_NEWS_COMMENTS_STATUS'] = "De-/activate comments";
+$_ARRAYLANG['TXT_NEWS_COMMENT_ACTIVATE'] = "Activete";
+$_ARRAYLANG['TXT_NEWS_COMMENT_DEACTIVATE'] = "Deactivete";
+$_ARRAYLANG['TXT_NEWS_COMMENTS'] = "Comments";
 ?>
