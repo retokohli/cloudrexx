@@ -696,6 +696,7 @@ class MediaManager extends MediaLibrary {
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_SETTINGS'];
         
         $this->_objTpl->setGlobalVariable(array(
+            'TXT_MEDIA_ARCHIVE'                     => $_ARRAYLANG['TXT_MEDIA_ARCHIVE'],
             'TXT_MEDIA_SETTINGS'                    => $_ARRAYLANG['TXT_MEDIA_SETTINGS'],
             'TXT_MEDIA_ACCESS_SETTINGS'             => $_ARRAYLANG['TXT_MEDIA_ACCESS_SETTINGS'],
             'TXT_MEDIA_ADDING_DENIED_FOR_ALL'       => $_ARRAYLANG['TXT_MEDIA_ADDING_DENIED_FOR_ALL'],
@@ -740,6 +741,7 @@ class MediaManager extends MediaLibrary {
             
             $this->_objTpl->setVariable(array(
                     'MEDIA_ARCHIVE_NUMBER'                  => $k,
+                    'MEDIA_TAB_STYLE'                       => ($k == 1) ? 'block' : 'none',
                     'MEDIA_ALLOW_USER_CHANGE_ON'            => ($this->_arrSettings['media' . $k . '_frontend_changable'] == 'on') ? 'checked="checked"' : '',
                     'MEDIA_ALLOW_USER_CHANGE_OFF'           => ($this->_arrSettings['media' . $k . '_frontend_changable'] == 'off') ? 'checked="checked"' : '',
                     'MEDIA_ALLOW_USER_CHANGE_GROUP'         => (is_numeric($this->_arrSettings['media' . $k . '_frontend_changable'])) ? 'checked="checked"' : '',
