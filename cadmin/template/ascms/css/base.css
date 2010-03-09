@@ -332,6 +332,11 @@ table.subnavbar {
 	background: #F4F7FF;
 }
 
+#tabmenu.media_settings a.active {
+	background: #F4F7FF;
+	border-bottom: 1px solid #F4F7FF;
+}
+
 .tabmenu a:hover, #tabmenu  a:hover  {
 	color: black;
 	background: #F4F7FF;

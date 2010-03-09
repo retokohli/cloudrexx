@@ -43,14 +43,29 @@ function BeforeSubmit() {
 }
 
 </script>
+<table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
+	<tr>
+		<th>{TXT_MEDIA_SETTINGS}</th>
+	</tr>
+</table>
+<br/>
+<ul id="tabmenu" class="media_settings">
+    <li><a id="messageTab_media1" class="active" href="javascript:{}" onclick="selectTab('media1')" title="{TXT_MEDIA_ARCHIVE} #1">{TXT_MEDIA_ARCHIVE} #1</a></li>
+    <li><a id="messageTab_media2" href="javascript:{}" onclick="selectTab('media2')" title="{TXT_MEDIA_ARCHIVE} #2">{TXT_MEDIA_ARCHIVE} #2</a></li>
+    <li><a id="messageTab_media3" href="javascript:{}" onclick="selectTab('media3')" title="{TXT_MEDIA_ARCHIVE} #3">{TXT_MEDIA_ARCHIVE} #3</a></li>
+    <li><a id="messageTab_media4" href="javascript:{}" onclick="selectTab('media4')" title="{TXT_MEDIA_ARCHIVE} #4">{TXT_MEDIA_ARCHIVE} #4</a></li>
+</ul>
 <form action="index.php?cmd=media&amp;archive=archive1&amp;act=saveSettings" method="post" name="settings">
     <!-- BEGIN mediaAccessSection -->
+<div id="media{MEDIA_ARCHIVE_NUMBER}" class="messageTab" style="display:{MEDIA_TAB_STYLE}">
 	<table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
+	<!--
 		<tr>
-			<th colspan="2">{TXT_MEDIA_ACCESS_SETTINGS} #{MEDIA_ARCHIVE_NUMBER}</th>
+			<th colspan="2">{TXT_MEDIA_SETTINGS}</th>
 		</tr>
+		-->
         <tr class="row1">
-            <td>
+            <td style="border-top: 1px solid #0A50A1;">
                 <input id="mediaSettings{MEDIA_ARCHIVE_NUMBER}Off" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendChangable" value="off" {MEDIA_ALLOW_USER_CHANGE_OFF} /><label for="mediaSettings{MEDIA_ARCHIVE_NUMBER}Off">{TXT_MEDIA_ADDING_DENIED_FOR_ALL}</label><br />
                 <input id="mediaSettings{MEDIA_ARCHIVE_NUMBER}On" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendChangable" value="on" {MEDIA_ALLOW_USER_CHANGE_ON} /><label for="mediaSettings{MEDIA_ARCHIVE_NUMBER}On">{TXT_MEDIA_ADDING_ALLOWED_FOR_ALL}</label><br />
                 <input id="mediaSettings{MEDIA_ARCHIVE_NUMBER}Group" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendChangable" value="1" {MEDIA_ALLOW_USER_CHANGE_GROUP} /><label for="mediaSettings{MEDIA_ARCHIVE_NUMBER}Group">{TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP}</label><br />
@@ -90,6 +105,7 @@ function BeforeSubmit() {
             </td>
         </tr>
     </table>
+</div>
     <!-- END mediaAccessSection -->
 	<br />
     <input type="submit" value="{TXT_BUTTON_SAVE}" name="save_settings" onclick="BeforeSubmit();"/>
