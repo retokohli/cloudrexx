@@ -586,7 +586,7 @@ var getTabData = function(a){
     }
     getNavMenu(a);
     if(location.href.match(/pageId=\d+/)){//fill contents from DB if we are editing or copying
-        getContentData(a);
+        getContentData(a); 
     }
 }
 
@@ -768,6 +768,10 @@ var getContentData = function(a){
     var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
     var langName = $J(a).text();
 
+	if(location.href.match(/act=new/) && (m = location.href.match(/pageId=(\d+)/))){
+		pageId = m[1]; //set lang id to copy from if we're copying
+	}
+    
     $J.ajax({
        url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputText',
        type: 'POST',
