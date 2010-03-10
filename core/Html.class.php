@@ -1605,12 +1605,12 @@ alert("change: ID mismatch: "+id);
 //echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): Entered<br />");
 
         // Match the parameter *WITH* equal sign and value (possibly empty)
-        $uri = preg_match_replace(
+        $uri = preg_replace(
             '/(\?|\&(?:amp\;)?)'.preg_quote($parameter_name, '/').'\=([^&]*)(?:\&(?:amp\;)?|$)/',
             '$1', $uri, $match
         );
         // Match the parameter *WITHOUT* equal sign and value
-        $uri = preg_match_replace(
+        $uri = preg_replace(
             '/(\?|\&(?:amp\;)?)'.preg_quote($parameter_name, '/').'(?:\&(?:amp\;)?|$)/',
             '$1', $uri
         );

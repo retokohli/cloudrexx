@@ -634,11 +634,12 @@ class ContentManager
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
         $this->pageTitle = $_CORELANG['TXT_NEW_PAGE'];
 
-        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
+        //get next highest unused page ID
+        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`', 1);
         $navHighId = $objRS->fields['nextId'];
-        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation_history`');
+        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation_history`', 1);
         $hisHighId = $objRS->fields['nextId'];
-        $pageId = $navHighId > $hisHighId ? $navHighId : $hisHighId;
+        $nextPageId = $navHighId > $hisHighId ? $navHighId : $hisHighId;
 
         $langCount = 0;
         $activeLangCount = 0;
@@ -771,7 +772,7 @@ class ContentManager
         $blocks = $this->getBlocks();
 
         $objTemplate->setVariable(array(
-            'CONTENT_CATID'                                     => $pageId,
+            'CONTENT_CATID'                                     => $nextPageId,
             'DIRECTORY_INDEX'                                   => CONTREXX_DIRECTORY_INDEX,
             'TXT_ERROR_COULD_NOT_INSERT_PAGE'                   => str_replace("'", "\\'", $_CORELANG['TXT_ERROR_COULD_NOT_INSERT_PAGE']),
             'TXT_SUCCESS_PAGE_SAVED'                            => str_replace("'", "\\'", $_CORELANG['TXT_SUCCESS_PAGE_SAVED']),
@@ -2629,17 +2630,21 @@ class ContentManager
      * @param    integer  $selectedid
      * @return   string   $result
      */
-    function _getNavigationMenu($parcat=0, $level, $selectedid)
+    function _getNavigationMenu($parcat = 0, $level, $selectedid)
     {
         $result = '';
         $list = $this->_navtable[$parcat];
         if (is_array($list)) {
             while (list($key,$val) = each($list)) {
-                $output = str_repeat('...', $level);
+        		$isCurrent = false;
+            	if($selectedid == $key){
+            		$isCurrent = true;
+            	}
+            	$output = str_repeat('...', $level);
                 $val['name'] = trim($val['name']);
                 $result .=
                     '<option value="'.$key.'"'.
-                    ($selectedid == $key ? ' selected="selected"' : '').
+                    ($isCurrent ? ' selected="selected"' : ($this->checkParcat($selectedid, $key) ? '' : ' disabled="disabled"')).
                     ($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true)
                         ? ' disabled="disabled" style="color:graytext;"' : null).
                     '>'.$output.

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Content Workflow
  * @copyright   CONTREXX CMS - COMVATION AG

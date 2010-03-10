@@ -1,5 +1,6 @@
 <?php
-    require_once('../../config/configuration.php');
+	error_reporting(0);
+	require_once('../../config/configuration.php');
     require_once('../../core/settings.class.php');
     require_once('../../lib/CSRF.php');
     require_once('../../core/API.php');
