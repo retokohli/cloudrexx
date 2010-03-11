@@ -291,6 +291,8 @@ class Text
      *
      * Either updates or inserts the object, depending on the outcome
      * of the call to {@link recordExists()}.
+     * Calling {@link recordExists()} is necessary, as there may be
+     * no record in the current language, although the Text ID is valid.
      * @return      boolean     True on success, false otherwise
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -450,6 +452,11 @@ class Text
                     $objResult->fields['key'],
                     $objResult->fields['id']
                 );
+// Optionally mark replacement Texts
+//                if (!$lang_id) {
+//                    $objText->markDifferentLanguage();
+//echo("Text::getById($text_id, $lang_id): Replacement language ID ".$objText->lang_id.", found ".$objText->getText()."<br />");
+//                }
 //echo("Text::getById($text_id, $lang_id): Got ".$objText->getText()."<br />");
             } else {
                 if ($lang_id) {
@@ -548,6 +555,8 @@ class Text
      * given language, or any other language if that is not found.
      * If the Text ID is false, but the key is valid, looks for a record
      * with the same key.
+     * Set $text_id to null or 0 (zero) to force the record to be inserted,
+     * *NOT* false!
      * If no record is found this way, a new object is created.
      * The parameters are applied, and the Text is then stored.
      * The optional arguments $module_id and $key are ignored if empty.
@@ -559,8 +568,9 @@ class Text
      * @return  integer                     The Text ID on success,
      *                                      false otherwise
      */
-    static function replace($text_id=false, $lang_id, $strText, $module_id=0, $key='')
-    {
+    static function replace(
+        $text_id=false, $lang_id, $strText, $module_id=null, $key=null
+    ) {
         if ($text_id === false) {
             $objText = self::getByKey($key, $lang_id);
 //echo("replace($text_id, $lang_id, $strText, $module_id, $key): got by key: ".$objText->getText()."<br />");
@@ -574,8 +584,8 @@ class Text
         ) $objText = new Text('', 0, 0, '', $text_id);
         $objText->setText($strText);
         $objText->setLanguageId($lang_id);
-        if ($module_id) $objText->module_id = $module_id;
-        if ($key) $objText->key = $key;
+        if (isset($module_id)) $objText->module_id = intval($module_id);
+        if (isset($key)) $objText->key = $key;
         if (!$objText->store()) return false;
         return $objText->id;
     }
@@ -690,7 +700,7 @@ class Text
             ($text_ids  !== false ? " AND `$table_alias`.`id` IN ($text_ids)"          : '');
 //echo("Text::getSqlSnippets(): got name /$field_id_name/, made ");
             // Remove table name, dot and backticks, if any
-            $field_id_name = preg_replace('/`?\w*`?\.?`?(\w+)`?/', '$1', $field_id_name);
+            $field_id_name = preg_replace('/(?:`\w*`\.`)?(\w+)`?/', '$1', $field_id_name);
 //echo("/$field_id_name/<br />");
         return array(
             'id'    => $field_id,
@@ -806,18 +816,25 @@ class Text
 
     /**
      * If the language ID given is different from the language of this
-     * Text object, the content is marked using HTML.
+     * Text object, the content may be marked here.
+     *
+     * Customize as desired.
      * @param   integer   $lang_id         The desired language ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function markDifferentLanguage($lang_id)
+    function markDifferentLanguage() //$lang_id
     {
-        if ($lang_id != $this->lang_id) {
-            $this->text = '['.$this->text.']';
 // Different formatting -- up to you.
-//            $this->text = '<font color="red">'.$this->text.'</font>';
+// None
+        return;
+//        if ($lang_id != $this->lang_id) {
+// or
+//            $this->text = '['.$this->text.']';
+// or
 //            $this->text = $this->text.' *';
-        }
+// or (not suitable for form element contents)
+//            $this->text = '<font color="red">'.$this->text.'</font>';
+//        }
     }
 
 
