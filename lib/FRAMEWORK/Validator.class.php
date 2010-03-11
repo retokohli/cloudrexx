@@ -201,6 +201,7 @@ class FWValidator
         return $result;
     }
 
+
     /**
      * Returns a file path url encoded so that it can be used
      * as a a.href or img.src attribute value.
@@ -211,6 +212,19 @@ class FWValidator
     public static function getEscapedSource($source)
     {
         return implode('/', str_replace('+', '%20', array_map('urlencode', explode('/', $source))));
+    }
+
+
+    /**
+     * Returns true if the value is part of the comma separated list
+     * @param  string    $value    The value
+     * @param  string    $list     The list
+     * @return boolean             True or false
+     */
+    static function is_value_in_comma_separated_list($value, $list)
+    {
+        $regex = '/(?:,|^)'.preg_quote($value).'(?:,|$)/';
+        return (boolean)preg_match($regex, $list);
     }
 
 }
