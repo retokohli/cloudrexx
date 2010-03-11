@@ -878,7 +878,6 @@ class Image
 //echo("Image::processPostFiles(): Failed deleting $image_src<br />");
                 } else {
 //echo("Image::processPostFiles(): Deleted $image_src<br />");
-
                 }
 //echo("Image::processPostFiles(): Uploading $image_name to $image_src<br />");
                 if (!File::uploadFileHttp(

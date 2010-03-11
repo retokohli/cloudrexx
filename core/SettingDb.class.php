@@ -26,7 +26,24 @@ require_once ASCMS_CORE_PATH.'/Html.class.php';
  */
 class SettingDb
 {
+    /**
+     * Upload path for documents
+     * Used externally only, see hotelcard module for an example.
+     */
     const FILEUPLOAD_FOLDER_PATH = 'media';
+
+    /**
+     * Setting types
+     * See {@see show()} for examples on how to extend these.
+     */
+    const TYPE_DROPDOWN = 'dropdown';
+    const TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE = 'dropdown_user_custom_attribute';
+    const TYPE_DROPDOWN_USERGROUP = 'dropdown_usergroup';
+    const TYPE_WYSIWYG = 'wysiwyg';
+    const TYPE_FILEUPLOAD = 'fileupload';
+    const TYPE_TEXT = 'text';
+    const TYPE_EMAIL = 'email';
+
 
     /**
      * The array of currently loaded settings settings, like
@@ -220,12 +237,10 @@ class SettingDb
 
 
     /**
-     * Updates or adds a setting
+     * Updates a setting
      *
-     * If the name does not exist yet, it is added, and $flagChanged
-     * is set to true.
-     * If the new value is not equal to the old one, it is updated,
-     * and $flagChanged set to true.
+     * If the setting name exists and the new value is not equal to
+     * the old one, it is updated, and $flagChanged set to true.
      * Otherwise, nothing happens, and false is returned
      * @see init(), updateAll()
      * @param   string    $name       The settings name
@@ -508,20 +523,20 @@ class SettingDb
             $value_align = (is_numeric($value) ? 'text-align: right;' : '');
             switch ($type) {
               // Dropdown menu
-              case 'dropdown':
+              case self::TYPE_DROPDOWN:
                 $element = Html::getSelect(
                     $name, self::splitValues($arrSetting['values']), $value,
                     '', '',
                     'style="width: 220px;'.$value_align.'"');
                 break;
-              case 'dropdown_user_custom_attribute':
+              case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = Html::getSelect(
                     $name,
                     User_Profile_Attribute::getCustomAttributeNameArray(),
                     $arrSetting['value'], '', '', 'style="width: 220px;"'
                 );
                 break;
-              case 'dropdown_usergroup':
+              case self::TYPE_DROPDOWN_USERGROUP:
                 $element = Html::getSelect(
                     $name,
                     UserGroup::getNameArray(),
@@ -529,7 +544,7 @@ class SettingDb
                     '', '', 'style="width: 220px;"'
                 );
                 break;
-              case 'wysiwyg':
+              case self::TYPE_WYSIWYG:
                 // These must be treated differently, as wysiwyg editors
                 // claim the full width
                 $element = get_wysiwyg_editor($name, $value);
@@ -546,7 +561,7 @@ class SettingDb
                 // Skip the part below, all is done already
                 continue 2;
 
-              case 'fileupload':
+              case self::TYPE_FILEUPLOAD:
 //echo("Setting up upload for $name, $value<br />");
                 $element =
                     Html::getInputFileupload(
@@ -568,12 +583,12 @@ class SettingDb
                 break;
 
 // More...
-//              case '':
+//              case self::TYPE_:
 //                break;
 
               // Default to text input fields
-              case 'text':
-              case 'email':
+              case self::TYPE_TEXT:
+              case self::TYPE_EMAIL:
               default:
                 $element =
                     Html::getInputText(
@@ -626,7 +641,7 @@ class SettingDb
      *
      * The content must contain the full view, including the surrounding form
      * tags and submit button.
-     * TheNote that these are always appended on the right end of the tab list.
+     * Note that these are always appended on the right end of the tab list.
      * @param   HTML_Template_Sigma $objTemplateLocal   Template object
      * @param   string              $tab_name           The tab name to add
      * @param   string              $content            The external content
@@ -639,14 +654,15 @@ class SettingDb
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
-        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+        if (   empty($objTemplateLocal)
+            || !$objTemplateLocal->blockExists('core_settingdb_row')) {
             $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
             if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
                 die("Failed to load template settingDb.html");
         }
 
         $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
-        // Set up the tab
+        // Set up the tab, if any
         if (!empty($tab_name)) {
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
@@ -685,8 +701,16 @@ class SettingDb
         unset($_POST['bsubmit']);
         $result = true;
         foreach ($_POST as $name => $value) {
-            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
+//            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
+//                continue;
+            if (empty(self::$arrSettings[$name])) {
+// Silently ignore unknown settings for the time being
+//                self::$error_message = sprintf(
+//                    $_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING_UNKNOWN_SETTING'],
+//                    $name);
+//                $result = false;
                 continue;
+            }
             if (self::$arrSettings[$name]['type'] == 'fileupload') {
                 // An empty folder path has been posted, indicating that the
                 // current file should be removed
@@ -796,6 +820,8 @@ echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
         // Use SettingDb::add(); in your module code to add missing and
         // new settings.
+//        SettingDb::init('country');
+//        SettingDb::add('core_country_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
 
         // More to come...
 

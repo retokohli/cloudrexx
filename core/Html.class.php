@@ -34,6 +34,7 @@ define('HTML_STATUS_GREEN',  'green');
 define('HTML_ATTRIBUTE_CHECKED',  ' checked="checked"');
 define('HTML_ATTRIBUTE_SELECTED', ' selected="selected"');
 define('HTML_ATTRIBUTE_DISABLED', ' disabled="disabled"');
+define('HTML_ATTRIBUTE_READONLY', ' readonly="readonly"');
 // more...?
 
 /**
@@ -203,13 +204,15 @@ class Html
      * is_numeric($value) evaluates to true, the text is right aligned
      * within the input element.
      * @param   string    $name         The element name
-     * @param   string    $value        The element value
-     * @param   string    $id           The optional element id
+     * @param   string    $value        The element value, defaults to the
+     *                                  empty string
+     * @param   string    $id           The optional element id, defaults to
+     *                                  false for none
      * @param   string    $attribute    Additional optional attributes
      * @return  string                  The HTML code for the element
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getInputText($name, $value, $id=false, $attribute='')
+    static function getInputText($name, $value='', $id=false, $attribute='')
     {
         return
             '<input type="text" name="'.$name.'"'.
@@ -624,7 +627,7 @@ class Html
      * @param   string    $name         The element name
      * @param   string    $value        The element value, defaults to 1 (one)
      * @param   string    $id           The optional element id
-     * @param   string    $checked      If true, the checkbox is checked
+     * @param   boolean   $checked      If true, the checkbox is checked
      * @param   string    $onchange     The optional onchange event script
      * @param   string    $attribute    Additional optional attributes
      * @return  string                  The HTML code for the element
@@ -1030,15 +1033,26 @@ class Html
     }
 
 
-    static function getSelectDate($name, $value='', $attribute='')
+    /**
+     * Returns a date selection element
+     *
+     * Uses and activates 'datepicker' (See {@see JS::activate()}).
+     * The ID created for the element is returned in the $id parameter.
+     * @internal  Ignore the code analyzer warning for $id.
+     * @param   string    $name       The element name
+     * @param   string    $value      The optional default value
+     * @param   string    $attribute  The optional attributes
+     * @param   string    $id         The optional ID returned by reference
+     * @return  string                The datepicker element HTML code
+     */
+    static function getSelectDate($name, $value='', $attribute='', &$id=null)
     {
         static $index = 0;
 
         JS::activate('datepicker');
+        $id = 'DPC_edit'.++$index.'_'.ASCMS_DATE_SHORT_FORMAT;
         return self::getInputText(
-            $name, $value,
-            'DPC_edit'.++$index.'_'.ASCMS_DATE_SHORT_FORMAT,
-            $attribute);
+            $name, $value, $id, $attribute);
     }
 
 
@@ -1084,7 +1098,6 @@ class Html
         global $_CORELANG;
 
         $uri = Html::getRelativeUri_entities();
-//echo("Made URI: ".htmlentities($uri)."<br />");
         $function_html = '';
         foreach ($arrFunction as $function => $action) {
             $objImage = new Image();
@@ -1605,12 +1618,12 @@ alert("change: ID mismatch: "+id);
 //echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): Entered<br />");
 
         // Match the parameter *WITH* equal sign and value (possibly empty)
-        $uri = preg_replace(
+        $uri = preg_match_replace(
             '/(\?|\&(?:amp\;)?)'.preg_quote($parameter_name, '/').'\=([^&]*)(?:\&(?:amp\;)?|$)/',
             '$1', $uri, $match
         );
         // Match the parameter *WITHOUT* equal sign and value
-        $uri = preg_replace(
+        $uri = preg_match_replace(
             '/(\?|\&(?:amp\;)?)'.preg_quote($parameter_name, '/').'(?:\&(?:amp\;)?|$)/',
             '$1', $uri
         );
