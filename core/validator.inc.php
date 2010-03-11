@@ -34,7 +34,7 @@ function contrexx_strip_tags($string)
 
 
 /**
- * addslashes wrapper to check for gpc_magic_quotes - gz
+ * addslashes wrapper to check for gpc_magic_quotes
  * @param    string    $string
  * @return   string    $string (cleaned)
  */
@@ -60,7 +60,30 @@ function contrexx_stripslashes($string)
 
 
 /**
- * Checks if the request comes from a spider
+ * Convenient match-and-replace-in-one function
+ *
+ * Parameters are those of preg_match() and preg_replace() combined.
+ * @param   string  $pattern      The regex pattern to match
+ * @param   string  $replace      The replacement string for matches
+ * @param   string  $subject      The string to be matched/replaced on
+ * @param   array   $subpatterns  The optional array for the matches found
+ * @param   integer $limit        The optional limit for replacements
+ * @param   integer $count        The optional counter for the replacements done
+ * @return  string                The resulting string
+ */
+function preg_match_replace(
+    $pattern, $replace, $subject, &$subpatterns=null, $limit=-1, &$count=null
+) {
+    if (preg_match($pattern, $subject, $subpatterns)) {
+        $subject = preg_replace($pattern, $replace, $subject, $limit, $count);
+        return $subject;
+    }
+    return $subject;
+}
+
+
+/**
+ * Checks whether the request comes from a spider
  * @return  boolean
  */
 function checkForSpider()
