@@ -224,7 +224,7 @@ class BlogLibrary
             $intLimitIndex = $this->countEntries();
         }
 
-        $objResult = $objDatabase->Execute('SELECT      blogMessages.message_id,
+        $objResultMain = $objDatabase->Execute('SELECT      blogMessages.message_id,
                                                         blogMessages.user_id,
                                                         blogMessages.time_created,
                                                         blogMessages.time_edited,
@@ -237,19 +237,19 @@ class BlogLibrary
                                             LIMIT       '.$intStartingIndex.','.$intLimitIndex.'
                                         ');
 
-        if ($objResult->RecordCount() > 0) {
+        if ($objResultMain->RecordCount() > 0) {
             $objFWUser = FWUser::getFWUserObject();
 
-            while (!$objResult->EOF) {
-                $intMessageId = $objResult->fields['message_id'];
+            while (!$objResultMain->EOF) {
+                $intMessageId = $objResultMain->fields['message_id'];
 
-                $arrReturn[$intMessageId] = array(  'user_id'           =>  $objResult->fields['user_id'],
-                                                    'user_name'         =>  $objResult->fields['user_id'] && ($objUser = $objFWUser->objUser->getUser($objResult->fields['user_id'])) !== false ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_BLOG_ANONYMOUS'],
-                                                    'time_created'      =>  date(ASCMS_DATE_FORMAT,$objResult->fields['time_created']),
-                                                    'time_created_ts'   =>  $objResult->fields['time_created'],
-                                                    'time_edited'       =>  date(ASCMS_DATE_FORMAT,$objResult->fields['time_edited']),
-                                                    'time_edited_ts'    =>  $objResult->fields['time_edited'],
-                                                    'hits'              =>  $objResult->fields['hits'],
+                $arrReturn[$intMessageId] = array(  'user_id'           =>  $objResultMain->fields['user_id'],
+                                                    'user_name'         =>  $objResultMain->fields['user_id'] && ($objUser = $objFWUser->objUser->getUser($objResultMain->fields['user_id'])) !== false ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_BLOG_ANONYMOUS'],
+                                                    'time_created'      =>  date(ASCMS_DATE_FORMAT,$objResultMain->fields['time_created']),
+                                                    'time_created_ts'   =>  $objResultMain->fields['time_created'],
+                                                    'time_edited'       =>  date(ASCMS_DATE_FORMAT,$objResultMain->fields['time_edited']),
+                                                    'time_edited_ts'    =>  $objResultMain->fields['time_edited'],
+                                                    'hits'              =>  $objResultMain->fields['hits'],
                                                     'comments'          =>  $this->countComments($intMessageId),
                                                     'comments_active'   =>  $this->countComments($intMessageId,true),
                                                     'votes'             =>  $this->countVotings($intMessageId),
@@ -316,7 +316,7 @@ class BlogLibrary
 
                     $objResult->MoveNext();
                 }
-                $objResult->MoveNext();
+                $objResultMain->MoveNext();
             }
         }
         return $arrReturn;
