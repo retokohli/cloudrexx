@@ -14,11 +14,11 @@
  * Regular Expression for e-mail addresses
  * TKaelin @ 2.0.2: wrote new regex based on http://en.wikipedia.org/wiki/E-mail_address
  * Dave V, @ 2.1.2: re-wrote regex according to http://www.regular-expressions.info/email.html
- * Reto Kohli @ 2.2.0: Fixed e-mail regex for use with standard slashes as delimiters
+ * Reto Kohli @ 2.1.4: Fixed e-mail regex for PHP by adding more backslashes for special characters
  * @since   2.0.0
  */
 define('VALIDATOR_REGEX_EMAIL',
-    '[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+    '[a-z0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+(?:\.[a-z0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
 );
 
 /**
@@ -39,7 +39,7 @@ define('VALIDATOR_REGEX_URI_PROTO',
  */
 define('VALIDATOR_REGEX_URI',
       VALIDATOR_REGEX_URI_PROTO.
-      '?((([\w\d-]{2,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)){4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
+      '?((([\w\d-]{2,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)) {4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
 //    '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
 );
 
