@@ -15,8 +15,8 @@
  */
 
 //Security-Check
-if (eregi("validator.inc.php",$_SERVER['PHP_SELF'])) {
-    Header("Location: index.php");
+if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
+    Header("Location: ../index.php");
     die();
 }
 

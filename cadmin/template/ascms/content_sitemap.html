@@ -11,19 +11,19 @@ var intExpandCatId = {SITEMAP_EXPAND_CAT_ID};
 function deletePage(pageId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&act=delete&pageId="+pageId);
+        window.location.replace("index.php?cmd=content&act=delete&pageId="+pageId+'&'+__CSRF__QSTR);
 }
 
 function repositoryPage(pageId)
 {
     if(confirm('{TXT_CONFIRM_REPOSITORY}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&act=addrepository&pageid="+pageId);
+        window.location.replace("index.php?cmd=content&act=addrepository&pageid="+pageId+'&'+__CSRF__QSTR);
 }
 
 function changeStatus(pageId)
 {
     if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
-        window.location.replace("index.php?cmd=content&act=changestatus&pageId="+pageId);
+        window.location.replace("index.php?cmd=content&act=changestatus&pageId="+pageId+'&'+__CSRF__QSTR);
 }
 
 function selectMultiAction()
@@ -77,17 +77,22 @@ function selectMultiAction()
 
         $J('#expandAllLink').click(expandAll);
         $J('#collapseAllLink').click(collapseAll);
-        if(blnExpandAll){
-            expandAll(false);
-        } else {
-            collapseAll(false);
-            if(intExpandCatId > 0){
-                expandNode.apply($J('#pageId-'+intExpandCatId+' .nodeCollapsed'));
-                resetRowClasses();
-            }
-        }
+
+        expandCats();
+        resetRowClasses();
     });
 
+    var expandCats = function(){
+    	if(blnExpandAll){
+            expandAll(false);
+        } else {
+            collapseAll(false);            
+            if(intExpandCatId > 0){
+                expandNode.apply($J('#pageId-'+intExpandCatId).get(0));
+            }
+        }
+    }
+    
     var nodeHandler = function(){
         if($J(this).is('.nodeExpanded')){
             collapseNode.apply(this);
@@ -95,7 +100,7 @@ function selectMultiAction()
         } else {
             expandNode.apply(this);
             var pageId = $J(this).closest('li').attr('id').replace(/.*?(\d+)$/, '$1');
-            $J.get('{DIRECTORY_INDEX}?cmd=content&act=expand&catId='+pageId+'&'+__CSRF__QSTR);
+            $J.get('{DIRECTORY_INDEX}?standalone=1&cmd=content&act=expand&catId='+pageId+'&'+__CSRF__QSTR);
             resetRowClasses();
         }
     }
@@ -133,7 +138,6 @@ function selectMultiAction()
                         if(this.style.display != 'none'){
                             visible++;
                         }
-
                     });
                     if(total > 0){
                         if(visible > 0){
@@ -145,6 +149,7 @@ function selectMultiAction()
                         node.addClass('hasNoChildren');
                     }
                 });
+                resetRowClasses();
             },
             onChange: function(serialized) {
                 var hash = serialized[0].hash;
@@ -159,7 +164,7 @@ function selectMultiAction()
                         }
                     }
                 });
-            resetRowClasses();
+                resetRowClasses();
             }
         });
     }
@@ -169,7 +174,11 @@ function selectMultiAction()
             return;
         }
         $J(this).closest('li').children('ul').hide();
-        $J(this).removeClass('nodeExpanded').addClass('nodeCollapsed');
+        if(this.tagName == 'LI'){            
+            $J('a.hasChildren:first', $(this)).removeClass('nodeExpanded').addClass('nodeCollapsed');
+        } else {
+            $J(this).removeClass('nodeExpanded').addClass('nodeCollapsed');
+        }
         //traverse up all nodes
         //collapseNode.apply($J(this).closest('li').parent().closest('li'));
     }
@@ -179,9 +188,13 @@ function selectMultiAction()
             return;
         }
         $J(this).closest('li').children('ul').show();
-        $J(this).removeClass('nodeCollapsed').addClass('nodeExpanded');
+        if(this.tagName == 'LI'){            
+            $J('a.hasChildren:first', $(this)).removeClass('nodeCollapsed').addClass('nodeExpanded');
+        } else {
+            $J(this).removeClass('nodeCollapsed').addClass('nodeExpanded');
+        }
         //traverse up all nodes
-        expandNode.apply($J(this).closest('li').parent().closest('li'));
+        expandNode.apply($J(this).closest('li').parent().closest('li').get());
     }
 
     var collapseAll = function(update){

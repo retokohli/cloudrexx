@@ -161,6 +161,7 @@ class ContentManager
                 $success = $this->_updateSorting();
                 die(json_encode(array('success' => $success)));
             break;
+
         case "deleteAll":
             Permission::checkAccess(53, 'static');
             $this->_deleteAll();
@@ -172,6 +173,10 @@ class ContentManager
             Permission::checkAccess(53, 'static');
             $this->_copyAll();
             $this->showCopyPage();
+            break;
+
+        case "nextPageId":
+            $this->_getNextPageId();
             break;
 
         case "new":
@@ -227,12 +232,15 @@ class ContentManager
             }
             $this->contentOverview();
             break;
+
         case 'JSON':
             $this->createJSON();
             break;
+
         case 'setPreviewContent':
             $this->_setPreviewContent();
             break;
+
         default:
             Permission::checkAccess(6, 'static');
             $this->contentOverview();
@@ -615,6 +623,21 @@ class ContentManager
 
 
     /**
+     * Generate the next unused page id and return JSON string, then exit script
+     * @global    ADONewConnection
+     */
+    function _getNextPageId(){
+        global $objDatabase;
+        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`', 1);
+        $navHighId = $objRS->fields['nextId'];
+        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation_history`', 1);
+        $hisHighId = $objRS->fields['nextId'];
+        $nextPageId = $navHighId > $hisHighId ? $navHighId : $hisHighId;
+        die(json_encode(array('pageId' => (int)$nextPageId)));
+    }
+
+
+    /**
      * Create new page
      * @global    ADONewConnection
      * @global    array      Core language
@@ -633,13 +656,6 @@ class ContentManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
         $this->pageTitle = $_CORELANG['TXT_NEW_PAGE'];
-
-        //get next highest unused page ID
-        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`', 1);
-        $navHighId = $objRS->fields['nextId'];
-        $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation_history`', 1);
-        $hisHighId = $objRS->fields['nextId'];
-        $nextPageId = $navHighId > $hisHighId ? $navHighId : $hisHighId;
 
         $langCount = 0;
         $activeLangCount = 0;
@@ -772,7 +788,7 @@ class ContentManager
         $blocks = $this->getBlocks();
 
         $objTemplate->setVariable(array(
-            'CONTENT_CATID'                                     => $nextPageId,
+            'CONTENT_CATID'                                     => $pageId,
             'DIRECTORY_INDEX'                                   => CONTREXX_DIRECTORY_INDEX,
             'TXT_ERROR_COULD_NOT_INSERT_PAGE'                   => str_replace("'", "\\'", $_CORELANG['TXT_ERROR_COULD_NOT_INSERT_PAGE']),
             'TXT_SUCCESS_PAGE_SAVED'                            => str_replace("'", "\\'", $_CORELANG['TXT_SUCCESS_PAGE_SAVED']),
@@ -851,6 +867,7 @@ class ContentManager
             'TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'            => $_CORELANG['TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'],
             'TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'            => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'],
             'TXT_SITEMAP_COPY'                                  => $_CORELANG['TXT_SITEMAP_COPY'],
+            'TXT_SITEMAP_ROOTSITE'                              => $_CORELANG['TXT_SITEMAP_ROOTSITE'],
             'CONTENT_ALIAS_DISABLE'                             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
             'TXT_ERROR_NO_TITLE'                                => $_CORELANG['TXT_ERROR_NO_TITLE'],
             'TXT_BASE_URL'                                      => self::mkurl('/'),
@@ -1016,6 +1033,7 @@ class ContentManager
         $existingGroups = '';
         $assignedGroups = '';
         $assignedBackendGroups = '';
+        $redirect = '';
 
         if (empty($pageId)) $pageId = intval($_REQUEST['pageId']);
         if ($pageId == 0) { header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); }
@@ -1177,6 +1195,7 @@ class ContentManager
             'TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'            => $_CORELANG['TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG'],
             'TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'            => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'],
             'TXT_DEFAULT_ALIAS'                                 => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'TXT_SITEMAP_ROOTSITE'                              => $_CORELANG['TXT_SITEMAP_ROOTSITE'],
             'CONTENT_ALIAS_DISABLE'                             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
             'TXT_ERROR_NO_TITLE'                                => $_CORELANG['TXT_ERROR_NO_TITLE'],
             'TXT_BASE_URL'                                      => self::mkurl('/'),
@@ -1303,8 +1322,11 @@ class ContentManager
                 $target = $objResult->fields['target'];
                 $editstatus = $objResult->fields['editstatus'];
 
+                $isLostNFound = ($moduleId == 1 && $cmd == 'lost_and_found');
+
                 $objTemplate->setVariable(array(
                     'CONTENT_MENU_NAME'         => $catname,
+                    'CONTENT_IS_LOST_AND_FOUND' => $isLostNFound ? 'true' : 'false',
                     'CONTENT_CAT_MENU'          => $this->getPageMenu($objResult->fields['catid'], $langId),
                     'CONTENT_CAT_MENU_NEW_PAGE' => !Permission::checkAccess(127, 'static', true) ? 'disabled="disabled" style="color:graytext;"' : null,
                     'CONTENT_TARGET'            => ($target ? $target : '&nbsp;'),
@@ -1629,13 +1651,14 @@ class ContentManager
             $cachingStatus = 1;
         }
         $displaystatus = "off";
-        if ($_POST['displaystatus']== "on") {
+        if (isset($_POST['displaystatus']) && $_POST['displaystatus']== "on") {
             $displaystatus = "on";
         }
         $activestatus = 0;
-        if ($_POST['activestatus'] == 'on') {
+        if (isset($_POST['activestatus']) && $_POST['activestatus'] == 'on') {
             $activestatus = 1;
         }
+
         $editstatus = 'draft';
         if (in_array($_POST['editstatus'], $this->arrEditStatus)) {
             $editstatus = $_POST['editstatus'];
@@ -1655,7 +1678,7 @@ class ContentManager
         $contentdesc = contrexx_addslashes(strip_tags($_POST['desc']));
         $contentkey = contrexx_addslashes(strip_tags($_POST['key']));
         $command = contrexx_addslashes(strip_tags($_POST['command']));
-        if ($this->checkParcat($pageId,$_POST['category'])) {
+        if ($this->checkParcat($pageId, $_POST['category'])) {
             $parcat = $_POST['category'];
         } else {
             $parcat = $pageId;
@@ -1821,8 +1844,7 @@ class ContentManager
             }
         }
 
-        $err = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
-        if ($err) $objTemplate->setVariable("ALIAS_STATUS", $err);
+        $aliasError = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
 
         $objNavbar = new ContentSitemap(0);
         $catidarray = $objNavbar->getCurrentSonArray($pageId);
@@ -1968,6 +1990,7 @@ class ContentManager
             'langName'        => $langName,
             'needsValidation' => $needsValidation,
             'lastUpdate'      => $lastUpdate,
+            'error'           => $aliasError
         )));
     }
 
@@ -2596,7 +2619,7 @@ class ContentManager
      * @param    integer  $selectedid
      * @return   string   $result
      */
-    function getPageMenu($selectedid=0, $langId=0)
+    function getPageMenu($pageId=0, $langId=0)
     {
         global $objDatabase;
 
@@ -2611,6 +2634,7 @@ class ContentManager
              ORDER BY parcat ASC, displayorder ASC");
         if (!$objResult)
             return "content::navigation() database error";
+
         while (!$objResult->EOF) {
             $this->_navtable[$objResult->fields['parcat']][$objResult->fields['catid']] = array(
                 'name'      => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -2618,7 +2642,10 @@ class ContentManager
             );
             $objResult->MoveNext();
         }
-        $result = $this->_getNavigationMenu(0, 0, $selectedid);
+        $objNav = new ContentSitemap(0);
+        //get parent of selected page, since the parent page has to be the selected entry
+        $parentId = !empty($objNav->navparentId[$pageId]) ? $objNav->navparentId[$pageId] : 0;
+        $result = $this->_getNavigationMenu(0, 0, $parentId, $pageId);
         return $result;
     }
 
@@ -2630,28 +2657,38 @@ class ContentManager
      * @param    integer  $selectedid
      * @return   string   $result
      */
-    function _getNavigationMenu($parcat = 0, $level, $selectedid)
+    function _getNavigationMenu($parcat = 0, $level, $selectedId, $pageId)
     {
         $result = '';
         $list = $this->_navtable[$parcat];
         if (is_array($list)) {
             while (list($key,$val) = each($list)) {
         		$isCurrent = false;
-            	if($selectedid == $key){
+            	if($selectedId == $key){
             		$isCurrent = true;
             	}
-            	$output = str_repeat('...', $level);
+            	$output = str_repeat('...', $level+1);
                 $val['name'] = trim($val['name']);
+
+                $selected = '';
+                $disabled = '';
+                if($isCurrent){
+                    $selected = ' selected="selected"';
+                } else if(!$this->checkParcat($selectedId, $key)
+                        || ( $val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true) )
+                        || $pageId == $key){
+                    $disabled = ' disabled="disabled" style="color:graytext;"';
+                }
+
                 $result .=
                     '<option value="'.$key.'"'.
-                    ($isCurrent ? ' selected="selected"' : ($this->checkParcat($selectedid, $key) ? '' : ' disabled="disabled"')).
-                    ($val['access_id'] && !Permission::checkAccess($val['access_id'], 'dynamic', true)
-                        ? ' disabled="disabled" style="color:graytext;"' : null).
+//                    ($isCurrent ? ' selected="selected"' : ($this->checkParcat($selectedid, $key) ? '' : ' disabled="disabled"')).
+                    $selected . $disabled .
                     '>'.$output.
                     (empty($val['name']) ? '-' : $val['name']).
                     '</option>'."\n";
                 if (isset($this->_navtable[$key])) {
-                    $result .= $this->_getNavigationMenu($key, $level+1, $selectedid);
+                    $result .= $this->_getNavigationMenu($key, $level+1, $selectedId, $pageId);
                 }
             }
         }
@@ -3178,8 +3215,9 @@ class ContentManager
      */
     function _set_default_alias($pageId, $alias, $langId=0)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $objInit;
 
+        $_ARRAYLANG = $objInit->loadLanguageData('alias');
         if ($langId == 0) { $langId = $this->langId; }
         $alias    = $this->_fix_alias($alias);
         // aliasLib has some handy stuff for us here..
@@ -3350,7 +3388,7 @@ class ContentManager
                            ON (a_s.target_id=a_t.id AND a_s.lang_id=c.lang_id)
                                AND a_s.isdefault=1
                      WHERE c.id=".$pageId.' AND c.lang_id='.$langId, 1);
-                $alias = $objRS->fields['alias_url'];
+                $alias = !empty($objRS->fields['alias_url']) ? $objRS->fields['alias_url'] : '';
                 $query = '
                     SELECT `c`.`content` AS `content`, `c`.`title`, `c`.`metatitle`,
                            `c`.`metadesc` AS `desc`, `c`.`redirect` AS `redirectUrl`,
@@ -3416,7 +3454,7 @@ class ContentManager
             case 'inputCheckbox':
                 $query = '
                     SELECT `c`.`expertmode`, `c`.`metarobots` AS `robots`,
-                           `n`.`displaystatus`, `n`.`cachingstatus`
+                           `n`.`displaystatus`, `n`.`activestatus`, `n`.`cachingstatus`
                       FROM `'.DBPREFIX.'content` AS `c`
                      INNER JOIN `'.DBPREFIX.'content_navigation` AS `n`
                            ON (`c`.`id`=`n`.`catid` AND `c`.`lang_id`=`n`.`lang`)
@@ -3424,24 +3462,29 @@ class ContentManager
                        AND `c`.`lang_id`='.$langId;
                 $objRS = $objDatabase->SelectLimit($query, 1);
                 if(isset($objRS->fields['displaystatus'])){
-                    $objRS->fields['displaystatus']   = ($objRS->fields['displaystatus'] == 'on'    ? ' checked="checked"' : '');
+                    $objRS->fields['displaystatus'] = ($objRS->fields['displaystatus'] == 'on' ? ' checked="checked"' : '');
                 } else {
-                    $objRS->fields['displaystatus']   = '';
+                    $objRS->fields['displaystatus'] = '';
+                }
+                if(isset($objRS->fields['activestatus'])){
+                    $objRS->fields['activestatus'] = ($objRS->fields['activestatus'] == 1 ? ' checked="checked"' : '');
+                } else {
+                    $objRS->fields['activestatus'] = '';
                 }
                 if(isset($objRS->fields['cachingstatus'])){
-                    $objRS->fields['cachingstatus']   = ($objRS->fields['cachingstatus'] == 1       ? ' checked="checked"' : '');
+                    $objRS->fields['cachingstatus'] = ($objRS->fields['cachingstatus'] == 1 ? ' checked="checked"' : '');
                 } else {
-                    $objRS->fields['cachingstatus']   = '';
+                    $objRS->fields['cachingstatus'] = '';
                 }
                 if(isset($objRS->fields['expertmode'])){
-                    $objRS->fields['expertmode']   = ($objRS->fields['expertmode']    == "y"     ? ' checked="checked"' : '');
+                    $objRS->fields['expertmode'] = ($objRS->fields['expertmode'] == "y" ? ' checked="checked"' : '');
                 } else {
-                    $objRS->fields['expertmode']   = '';
+                    $objRS->fields['expertmode'] = '';
                 }
                 if(isset($objRS->fields['robots'])){
-                    $objRS->fields['robots']   = ($objRS->fields['robots']        == "index" ? ' checked="checked"' : '');
+                    $objRS->fields['robots'] = ($objRS->fields['robots'] == "index" ? ' checked="checked"' : '');
                 } else {
-                    $objRS->fields['robots']   = '';
+                    $objRS->fields['robots'] = '';
                 }
                 $objRS->fields['themesRecursive'] = false;
                 $objRS->fields['backendInherit']  = false;

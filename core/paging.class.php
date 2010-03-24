@@ -16,8 +16,8 @@
 require_once ASCMS_CORE_PATH.'/Html.class.php';
 
 //Security-Check
-if (eregi("paging.class.php",$_SERVER['PHP_SELF'])) {
-    Header("Location: index.php");
+if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
+    Header("Location: ../index.php");
     die();
 }
 
