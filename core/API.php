@@ -165,13 +165,13 @@ function strcheck(&$string)
     $clean_string = rawurldecode($clean_string);
     $clean_string = html_entity_decode($clean_string);
 
-    $from = '������������������������������ ';
+    $from = 'àáâãäåçèéêëìíîïñòóôõöøšùúûüµýÿ¥ž ';
     $to   = 'aaaaaaceeeeiiiinoooooosuuuuuyyyz_';
     $clean_string = strtr($clean_string, $from, $to);
 
-    $replace = array('�' => 'th', '�' => 'th', '�' => 'dh', '�' => 'dh',
-                    '�' => 'ss', '�' => 'oe', '�' => 'oe', '�' => 'ae',
-                    '�' => 'ae', '$' => 's',  '�' => 'y');
+    $replace = array('Þ' => 'th', 'þ' => 'th', 'Ð' => 'dh', 'ð' => 'dh',
+                    'ß' => 'ss', 'Œ' => 'oe', 'œ' => 'oe', 'Æ' => 'ae',
+                    'æ' => 'ae', '$' => 's',  '¥' => 'y');
     $clean_string = strtr($clean_string, $replace);
 
     $clean_string = ereg_replace("[^a-z0-9._]", "", $clean_string);
