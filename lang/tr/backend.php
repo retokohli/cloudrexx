@@ -1216,4 +1216,5 @@ $_ARRAYLANG['TXT_FILE_ERROR_OPENING_FOR_WRITING'] = "Fehler:  Konnte Datei '%1\$
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_CONFIRM_DELETE_IMAGETYPE'] = "Wollen Sie diesen Bildtyp wirklich löschen?";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_CORE_CALENDAR_OPEN'] = "Kalender öffnen";
+$_ARRAYLANG['TXT_SITEMAP_ROOTSITE'] = "root site";
 ?>
