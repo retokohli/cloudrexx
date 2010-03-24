@@ -8,10 +8,9 @@
  * @subpackage  core
  */
 //Security-Check
-if (eregi('wysiwyg.class.php',$_SERVER['PHP_SELF']))
-{
-    header('Location: index.php');
-    exit;
+if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
+    Header("Location: ../index.php");
+    die();
 }
 
 // set wysiwyg editor

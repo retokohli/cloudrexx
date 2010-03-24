@@ -301,10 +301,19 @@ function openWindow(theURL,winName,features){
   galleryPopup.focus();
 }
 
+
+//if new page, set global gotPageId variable, indicating if a pageId already exists
+//in case none exists, one has to be generated upon submitting the form 
+if(location.href.match(/act=new/)){
+    window.gotPageId = false;
+} else {
+    window.gotPageId = true;
+}
+
 (function(){  //wrap in anonyomous function to avoid polluting the global namespace
+var $form; //the content form
 var getFrameContent = function(){
-    var $form = $J('form[name=formContent]');
-    if(_CONTREXX_EXPERT_MODE){
+        if(_CONTREXX_EXPERT_MODE){
         return $J('textarea[name=html]:visible', $form).val();
     }else{//if($J('iframe:hidden', $form).length == 1)
         return CKEDITOR.instances.html.getData();
@@ -313,8 +322,7 @@ var getFrameContent = function(){
 
 var previewContent = function(){
     var content = getFrameContent();
-    var $form = $J('form[name=formContent]');
-
+    
     if($J('input[name=TypeSelection]:checked', $form).val() == 'redirect'){
         if($J('input[name=redirectUrl]', $form).val().match(/^\w{2,6}:\/\//)){ //if is absolute uri
             previewWindow = window.open(+$J('input[name=redirectUrl]', $form).val());
@@ -371,7 +379,6 @@ waitMillisecs = function(millis){
 }
 
 var setFrameContent = function(html, lastActive){
-    var $form = $J('form[name=formContent]');
     $J('textarea[name=html]', $form).val(html);
     if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html){
         CKEDITOR.instances.html.setData(html, function(){
@@ -388,9 +395,7 @@ var addEditorLoadCallback = function(fn){
 }
 
 var setEditor = function(){
-    var $form = $J('form[name=formContent]');
     var html  = getFrameContent();
-
     if($J('input[name=expertmode]', $form).attr('checked')){
         $J('#cke_html', $form).hide();
         $J('textarea[name=html]', $form).show().css({visibility: 'visible'});
@@ -399,6 +404,28 @@ var setEditor = function(){
         $J('#cke_html', $form).show();
     }
     setFrameContent(html);
+}
+
+var submitFormHandler = function(event){
+    if(location.href.match(/act=new/) && !window.gotPageId){        
+        $J.ajax({
+            url: '{DIRECTORY_INDEX}?'+$J.param({cmd:"content", act:"nextPageId", {CSRF_KEY}:"{CSRF_CODE}"}),
+            cache: false,
+            async: false,
+            success: function(data){
+                if(!data.pageId || data.pageId < 1){
+                   return false;                         
+                }                   
+                window.gotPageId = true;
+                $J('input[name=pageId]', $form).val(data.pageId);
+                submitForm(event);
+            },
+            error: submitError,
+            dataType: 'json'
+        });
+    } else {
+        submitForm(event);
+    }    
 }
 
 var submitForm = function(event){
@@ -487,7 +514,7 @@ var submitForm = function(event){
         });
     });
     _CONTREXX_FORCE_SWAP = false;
-    if($J.browser.msie || $J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
+    if(location.href.match(/act=new/) || $J.browser.msie || $J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
         goToUrlCSRF('{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId);
         return false;
     }
@@ -517,7 +544,7 @@ var submitComplete = function(xhr, textStatus){
 var submitSuccess = function(data, textStatus){
     var pageId = data.pageId;
     var lang   = data.langName;
-    if(data.error){ //we've had an invalid value for useContentLFromLang. show error
+    if(data.error){ //we've had an invalid value for useContentFromLang or alias. show error
         if($J('.alertbox').length > 0){
             var $box = $J('.alertbox');
             var attrs = '';
@@ -527,13 +554,14 @@ var submitSuccess = function(data, textStatus){
                          class="alertbox"';
         }
         $box.append('<div '+attrs+'>'+data.error+'</div>').find(':last-child')
-            .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
+            .stop(true, true).css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
         $J('#type_useContentFromLang tr.row2').addClass('rowWarn'); //indicate wrong value
         $J('#type_useContentFromLang tr.row2').data(lang, 'warn'); //save for tab switches
-    }else if(pageId < 0){ //page wasn't inserted, DB error? show error
+    }
+    if(pageId < 0){ //page wasn't inserted, DB error? show error
         $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_INSERT_PAGE}</div>').find(':last-child')
-                                 .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
-    }else{ //everything seems fine, show confirmation
+                                 .stop(true, true).css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
+    } else { //content page was updated, show confirmation
         if($J('.okbox').length > 0){
             var $box = $J('.okbox');
             var attrs = '';
@@ -543,7 +571,7 @@ var submitSuccess = function(data, textStatus){
                          class="okbox"';
         }
         $box.append('<div '+attrs+'>{TXT_SUCCESS_PAGE_SAVED} '+lang+'</div>').find(':last-child')
-            .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
+            .stop(true, true).css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
         $J('#type_useContentFromLang tr.row2').removeClass('rowWarn');
         $J('#type_useContentFromLang tr.row2').data(lang, '');
     }
@@ -567,8 +595,7 @@ var filterInputs = function(){
 var switchTab = function(aElement, langName){
     $J('#contentLanguages li a').unbind('click');
     $J('#ajaxbusy,#ajaxwait').show();
-    var $form = $J('form[name=formContent]');
-    var $inputs = $J('input[type=checkbox],input[type=radio]', $form).filter(filterInputs);
+        var $inputs = $J('input[type=checkbox],input[type=radio]', $form).filter(filterInputs);
     $inputs.attr('disabled', 'disabled');
     swapLanguage(aElement, langName);
     makeTabActive(aElement);
@@ -579,8 +606,7 @@ var switchTab = function(aElement, langName){
 }
 
 var getTabData = function(a){
-    var $form = $J('form[name=formContent]');
-    var langName = $J(a).text();
+        var langName = $J(a).text();
     if(typeof $J('select[name=category]', $form).data(langName) != 'undefined' || $J(a).attr('title') == _CONTREXX_FIRST_ACTIVE_TAB){        //return if we have already have the data for this language
         return false;
     }
@@ -604,8 +630,7 @@ var swapLanguage = function(aElement, langName){
     }
 
     var lastActive = $J('#contentLanguages li a.active').text();
-    var $form = $J('form[name=formContent]');
-    var $iFrame    = $form.find('iframe');
+        var $iFrame    = $form.find('iframe');
     var $textarea  = $form.find('textarea[name=html]');
 
     if(typeof langName == 'undefined'){
@@ -768,9 +793,9 @@ var getContentData = function(a){
     var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
     var langName = $J(a).text();
 
-	if(location.href.match(/act=new/) && (m = location.href.match(/pageId=(\d+)/))){
-		pageId = m[1]; //set lang id to copy from if we're copying
-	}
+    if(location.href.match(/act=new/) && (m = location.href.match(/pageId=(\d+)/))){
+        pageId = m[1]; //set lang id to copy from if we're copying
+    }
     
     $J.ajax({
        url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputText',
@@ -866,21 +891,24 @@ var setInputRadio = function(data, textStatus){
 var setInputText = function(data, textStatus){
     var name;
     var langName = data.langName;
-    var $container = $J('form[name=formContent]');
     for(name in data){
         if(name == 'content'){
-            $J('form[name=formContent] textarea[name=html]').data(langName, data[name]);
+            $J('textarea[name=html]', $form).data(langName, data[name]);
             continue;
         }
         if(name == 'alias'){
-            $container.find('#aliastarget').data(langName, data[name]);
+            $J('#aliastarget', $form).data(langName, data[name]);
             continue;
         }
         if(name == 'newpage'){
-            $J('form[name=formContent] input[name=newpage]').data(langName, data[name]+' ({TXT_SITEMAP_COPY})');
+            var strCopy = '';
+            if(location.href.match(/act=new/) && location.href.match(/pageId=\d+/)){
+                strCopy = ' ({TXT_SITEMAP_COPY})';
+            }
+            $J('input[name=newpage]', $form).data(langName, data[name] + strCopy);
             continue;
         }
-        $container.find('input[name='+name+']').data(langName, data[name]);
+        $J('input[name='+name+']', $form).data(langName, data[name]);
     }
 }
 
@@ -943,7 +971,7 @@ var resetRowClasses = function(){
 $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
     $("#ajaxbusy").css({opacity: 0.75}).show();
     $('#ajaxwait').show();
-    var $form = $('form[name=formContent]');
+    $form = $('form[name=formContent]');    
     window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
     window._CONTREXX_CONTENT_READY = [];
     window._CONTREXX_FORCE_SWAP = false;
@@ -1046,7 +1074,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 //    });
 
     $('[name=preview]', $form).click(previewContent);
-    $form.submit(submitForm);
+    $form.submit(submitFormHandler);
 
     //add click eventhandler to all new tab links
     $('#contentLanguages li a').one('click', function(){
@@ -1070,8 +1098,13 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 
    var numTry = 0;
     (function(){ //poll if editor is loaded
+        var isLostAndFound = {CONTENT_IS_LOST_AND_FOUND};
+        if(isLostAndFound){
+            $J('#ajaxbusy,#ajaxwait').hide();
+            return false;
+        }
         if(typeof CKEDITOR == 'undefined' || CKEDITOR.status != 'basic_loaded' || typeof CKEDITOR.instances.html == 'undefined'){
-            if(numTry > 50){ //give up after 50 tries, something seems to be REALLY slow.
+            if(numTry++ > 50){ //give up after 50 tries, something seems to be REALLY slow.
                 $J('#ajaxbusy,#ajaxwait').hide();
                 return false;
             }
@@ -1089,10 +1122,10 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     })();//end poll
 
     //update navigation dropdown if title is changed
-    $J('input[name=newpage]').keyup(function(){
+    /*$J('input[name=newpage]').keyup(function(){
         var pageId = $J('[name=pageId]', $J('form[name=formContent]')).val();
         $J('select[name=category] option[value='+pageId+']').text($J(this).val())
-    });
+    });*/
 
     //handler to copy content from another language into the editor
     $J('#copyLangContentBtn').click(function(){
@@ -1153,7 +1186,7 @@ if(typeof console === 'undefined'){
         <select name="category" style="margin-right:5px;"
           onfocus="this.lastSelectedOption=this.selectedIndex"
           onchange="if (this.options[this.selectedIndex].disabled) {this.selectedIndex = this.lastSelectedOption;}">
-          <option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_NEW_CATEGORY}</option>
+          <option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_SITEMAP_ROOTSITE}</option>
                 {CONTENT_CAT_MENU}
         </select>
     </td>

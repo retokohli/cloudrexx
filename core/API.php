@@ -29,8 +29,8 @@
  */
 
 //Security-Check
-if (eregi("API.php",$_SERVER['PHP_SELF'])) {
-    Header("Location: index.php");
+if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
+    Header("Location: ../index.php");
     die();
 }
 
@@ -165,13 +165,13 @@ function strcheck(&$string)
     $clean_string = rawurldecode($clean_string);
     $clean_string = html_entity_decode($clean_string);
 
-    $from = 'àáâãäåçèéêëìíîïñòóôõöøšùúûüµýÿ¥ž ';
+    $from = 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ';
     $to   = 'aaaaaaceeeeiiiinoooooosuuuuuyyyz_';
     $clean_string = strtr($clean_string, $from, $to);
 
-    $replace = array('Þ' => 'th', 'þ' => 'th', 'Ð' => 'dh', 'ð' => 'dh',
-                    'ß' => 'ss', 'Œ' => 'oe', 'œ' => 'oe', 'Æ' => 'ae',
-                    'æ' => 'ae', '$' => 's',  '¥' => 'y');
+    $replace = array('ï¿½' => 'th', 'ï¿½' => 'th', 'ï¿½' => 'dh', 'ï¿½' => 'dh',
+                    'ï¿½' => 'ss', 'ï¿½' => 'oe', 'ï¿½' => 'oe', 'ï¿½' => 'ae',
+                    'ï¿½' => 'ae', '$' => 's',  'ï¿½' => 'y');
     $clean_string = strtr($clean_string, $replace);
 
     $clean_string = ereg_replace("[^a-z0-9._]", "", $clean_string);
