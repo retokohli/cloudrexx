@@ -305,7 +305,7 @@ table.subnavbar {
 	list-style-type: none;
 }
 
-.tabmenu a, #tabmenu  a, a.active  {
+.tabmenu a, #tabmenu a, a.active  {
 	color: black;
 	background: white;
 	font-weight: normal;
@@ -316,16 +316,17 @@ table.subnavbar {
 	cursor: pointer;
 }
 
-.tabmenu a {
-	border: 1px solid #B5C8DE;
+.tabmenu a.active, .tabmenu a {
+	border-left: 1px solid #B5C8DE;
+	border-right: 1px solid #B5C8DE;
+	border-top: 1px solid #B5C8DE;
+	border-bottom: 1px solid #DDE4FF;
 	margin-right: 3px;
 }
 
 .tabmenu a.active {
-	border: 1px solid #B5C8DE;
-	background-color: #B5C8DE;
+	background-color: #DDE4FF;
 	font-weight: bold;
-	margin-right: 3px;
 }
 
 #tabmenu a.active {
@@ -336,8 +337,8 @@ table.subnavbar {
 	background: #F4F7FF;
 	border-bottom: 1px solid #F4F7FF;
 }
-
-.tabmenu a:hover, #tabmenu  a:hover  {
+	
+#tabmenu a:hover  {
 	color: black;
 	background: #F4F7FF;
 }
@@ -352,7 +353,7 @@ table.subnavbar {
 }
 
 .tabmenu a.active:hover {
-    background-color: #B5C8DE;
+    background-color: #DDE4FF;
 }
 
 #tabsubmenu {

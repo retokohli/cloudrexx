@@ -314,12 +314,80 @@ class ContentSitemap
     }
 
     /**
+     * parse the global config template in the sitemap overview
+     *
+     * @param HTML_Template_Sigma $objTpl
+     *
+     * @global array $_CORELANG[]
+     * @global array $_CONFIG[]
+     * @global ADOConnection $objDatabase
+     */
+    private function _setupSiteConfig($objTpl){
+        global $_CORELANG, $_CONFIG, $objDatabase;
+
+        $arrLanguages = FWLanguage::getLanguageArray();
+        $langName = $arrLanguages[FRONTEND_LANG_ID]['name'];
+        $objTpl->setGlobalVariable(array(
+            'TXT_SYSTEM_SETTINGS'                               => $_CORELANG['TXT_SYSTEM_SETTINGS'],
+            'TXT_SETTINGS_GLOBAL_TITLE'                         => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
+            'TXT_SAVE'                                          => $_CORELANG['TXT_SAVE'],
+            'TXT_UPDATE_ALL_SITES'                              => sprintf($_CORELANG['TXT_UPDATE_ALL_SITES'], $langName),
+            'TXT_CACHING_STATUS'                                => $_CORELANG['TXT_CACHING_STATUS'],
+            'TXT_THEMES'                                        => $_CORELANG['TXT_THEMES'],
+            'TXT_PROTECTION'                                    => $_CORELANG['TXT_PROTECTION'],
+            'TXT_PROTECTION_CHANGE'                             => $_CORELANG['TXT_PROTECTION_CHANGE'],
+            'TXT_RECURSIVE_CHANGE'                              => $_CORELANG['TXT_RECURSIVE_CHANGE'],
+            'TXT_GROUPS'                                        => $_CORELANG['TXT_GROUPS'],
+            'TXT_GROUPS_DEST'                                   => $_CORELANG['TXT_GROUPS_DEST'],
+            'TXT_SELECT_ALL'                                    => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'                                  => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_ACCEPT_CHANGES'                                => $_CORELANG['TXT_ACCEPT_CHANGES'],
+            'TXT_PUBLIC_PAGE'                                   => $_CORELANG['TXT_PUBLIC_PAGE'],
+            'TXT_BACKEND_RELEASE'                               => $_CORELANG['TXT_BACKEND_RELEASE'],
+            'TXT_LIMIT_GROUP_RIGHTS'                            => $_CORELANG['TXT_LIMIT_GROUP_RIGHTS'],
+            'TXT_TARGET_BLANK'                                  => $_CORELANG['TXT_TARGET_BLANK'],
+            'TXT_TARGET_TOP'                                    => $_CORELANG['TXT_TARGET_TOP'],
+            'TXT_TARGET_PARENT'                                 => $_CORELANG['TXT_TARGET_PARENT'],
+            'TXT_TARGET_SELF'                                   => $_CORELANG['TXT_TARGET_SELF'],
+            'TXT_OPTIONAL_CSS_NAME'                             => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
+            'TXT_FRONTEND_PERMISSION'                           => $_CORELANG['TXT_FRONTEND_PERMISSION'],
+            'TXT_CONFIRM_SET_GLOBAL_THEMES_ID'                  => $_CORELANG['TXT_CONFIRM_SET_GLOBAL_THEMES_ID'],
+            'TXT_CONFIRM_SET_GLOBAL_CSSNAME'                    => $_CORELANG['TXT_CONFIRM_SET_GLOBAL_CSSNAME'],
+            'TXT_CONFIRM_SET_GLOBAL_CSSNAME_NAV'                => $_CORELANG['TXT_CONFIRM_SET_GLOBAL_CSSNAME_NAV'],
+            'TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET'            => $_CORELANG['TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET'],
+            'TXT_CONFIRM_SET_GLOBAL_ROBOTS'                     => $_CORELANG['TXT_CONFIRM_SET_GLOBAL_ROBOTS'],
+            'TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS'              => $_CORELANG['TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS'],
+            'TXT_NAVIGATION'                                    => $_CORELANG['TXT_NAVIGATION'],
+            'TXT_TARGET'                                        => $_CORELANG['TXT_TARGET'],
+            'TXT_META_ROBOTS'                                   => $_CORELANG['TXT_META_ROBOTS'],
+            'TXT_RELATEDNESS'                                   => $_CORELANG['TXT_BACKEND_RELATEDNESS'],
+
+        ));
+        $objContentManager = new ContentManager();
+        $existingFrontendGroups = $existingBackendGroups = '';
+        foreach ($objContentManager->arrAllFrontendGroups as $id => $name) {
+            $existingFrontendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
+        }
+        // Backend Groups
+        foreach ($objContentManager->arrAllBackendGroups as $id => $name) {
+            $existingBackendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
+        }
+
+        $objTpl->setVariable(array(
+            'SETTINGS_GLOBAL_TITLE'                             => $_CONFIG['coreGlobalPageTitle'],
+            'CONTENT_THEMES_MENU'                               => $objContentManager->_getThemesMenu(),
+            'CONTENT_EXISTING_GROUPS'                           => $existingFrontendGroups,
+            'CONTENT_EXISTING_BACKEND_GROUPS'                   => $existingBackendGroups,
+        ));
+    }
+
+    /**
     * Gets admin tree array
     *
     * @global   array
     * @return   string   parsed content
     */
-    function getSiteMap()
+    public function getSiteMap()
     {
         global $_CORELANG;
 
@@ -420,6 +488,8 @@ class ContentSitemap
             'CONTENT_NAME'   => FWLanguage::getLanguageParameter($this->langId, 'name'),
         ));
         $objTpl->parse('header');
+
+        $this->_setupSiteConfig($objTpl);
 
         $objTpl->setVariable('SITEMAP_NESTED_PAGES', $this->parseNestedSitemap($this->nestedNavigation, 'sortableNavigation'));
 
