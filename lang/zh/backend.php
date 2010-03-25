@@ -1218,5 +1218,14 @@ $_ARRAYLANG['TXT_FILE_ERROR_OPENING_FOR_WRITING'] = "Fehler:  Konnte Datei '%1\$
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_CONFIRM_DELETE_IMAGETYPE'] = "Wollen Sie diesen Bildtyp wirklich löschen?";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_CORE_CALENDAR_OPEN'] = "Kalender öffnen";
-$_ARRAYLANG['TXT_SITEMAP_ROOTSITE'] = "root site";
+$_ARRAYLANG['TXT_SITEMAP_ROOTSITE'] = "Seitenstamm";
+$_ARRAYLANG['TXT_UPDATE_ALL_SITES'] = "Für alle Seiten (%s) übernehmen";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_THEMES_ID'] = "Wollen Sie die Design Vorlage %s wirklich für alle Seiten (%s) übernehmen?";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CSSNAME'] = "Wollen Sie den CSS Name %s wirklich für alle Seiten (%s) übernehmen?";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CSSNAME_NAV'] = "Wollen Sie den CSS Navigation Name %s wirklich für alle Seiten (%s) übernehmen?";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET'] = "Wollen Sie das Zielfenster wirklich für alle Seiten (%s) übernehmen?";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS'] = "Wollen Sie den Cachingstatus wirklich für alle Seiten (%s) setzen?";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_ROBOTS'] = "Wollen Sie den Meta Robot Status wirklich für alle Seiten (%s) setzen?";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_FRONTEND_PERMISSION'] = "Wollen Sie die Frontend Berechtigungen wirklich für alle Seiten (%s) setzen?";
+$_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_BACKEND_PERMISSION'] = "Wollen Sie die Backend Berechtigunen wirklich für alle Seiten (%s) setzen?";
 ?>
