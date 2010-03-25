@@ -1098,8 +1098,8 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 
    var numTry = 0;
     (function(){ //poll if editor is loaded
-        var isLostAndFound = {CONTENT_IS_LOST_AND_FOUND};
-        if(isLostAndFound){
+        var isLostAndFound = "{CONTENT_IS_LOST_AND_FOUND}";
+        if(isLostAndFound == 'true'){
             $J('#ajaxbusy,#ajaxwait').hide();
             return false;
         }

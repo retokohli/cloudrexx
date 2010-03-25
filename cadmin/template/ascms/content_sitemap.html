@@ -8,6 +8,83 @@ __CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
 var blnExpandAll = {SITEMAP_EXPAND_ALL};
 var intExpandCatId = {SITEMAP_EXPAND_CAT_ID};
 
+function AddToTheList(from,dest,add,remove) {
+    if ( from.selectedIndex < 0){
+    if (from.options[0] != null)
+      from.options[0].selected = true;
+    from.focus();
+    return false;
+  }else{
+    for (var i=0; i<from.length; i++) {
+      if (from.options[i].selected)
+      {
+          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+         }
+    }
+      for (var i=from.length-1; i>=0; i--) {
+      if (from.options[i].selected)
+      {
+           from.options[i] = null;
+         }
+    }
+  }
+    disapleButtons(from,dest,add,remove);
+}
+
+function RemoveFromTheList(from,dest,add,remove) {
+  if ( dest.selectedIndex < 0){
+    if (dest.options[0] != null)
+      dest.options[0].selected = true;
+    dest.focus();
+    return false;
+  }
+  else{
+    for (var i=0; i<dest.options.length; i++)
+    {
+      if (dest.options[i].selected)
+      {
+          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+         }
+    }
+      for (var i=dest.options.length-1; i>=0; i--)
+    {
+      if (dest.options[i].selected)
+      {
+           dest.options[i] = null;
+         }
+    }
+  }
+  disapleButtons(from,dest,add,remove);
+}
+
+function disapleButtons(from,dest,add,remove) {
+  if (from.options.length > 0 )
+  {
+    add.disabled = 0;
+  }
+  else
+    add.disabled = 1;
+
+  if (dest.options.length > 0)
+    remove.disabled = 0;
+  else
+    remove.disabled = 1;
+}
+
+function SelectAllList(CONTROL) {
+  for(var i = 0;i < CONTROL.length;i++)
+  {
+    CONTROL.options[i].selected = true;
+  }
+}
+
+function DeselectAllList(CONTROL) {
+  for(var i = 0;i < CONTROL.length;i++)
+  {
+    CONTROL.options[i].selected = false;
+  }
+}
+
 function deletePage(pageId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
@@ -64,6 +141,27 @@ function selectMultiAction()
             collapseNode.apply($J('a.hasChildren,a.hasNoChildren', $J(this).closest('li')));
         });
 
+        var $tabs = $J('#tab_system,#tab_sitesettings,#tab_frontend,#tab_backend');
+        var $containers = $J('#container_system,#container_sitesettings,#container_frontend,#container_backend')
+        $tabs.click(function(){
+            $tabs.removeClass('active').addClass('inactive');
+            $J(this).addClass('active');
+            if($J(this).hasClass('inactive')){
+                var that = this;
+	            $containers.filter(function(){return $J(this).is(':visible')}).slideUp('fast', function(){
+	            	$J('#container_'+$J(that).attr('id').replace(/tab_/, '')).slideDown('fast');
+		        });
+            }            
+        });
+        
+        $J('#setGlobalPageTitle').one('click', updateGlobalPageTitle);
+        $J('#setThemesId').one('click', updateThemesId);
+        $J('#setCssName').one('click', updateCssName);
+        $J('#setCssNameNav').one('click', updateCssNameNav);
+        $J('#setRedirectTarget').one('click', updateRedirectTarget);
+        $J('#setCachingstatus').one('click', updateCachingstatus);
+        $J('#setRobots').one('click', updateRobots);
+        
         initSortable();
 
         $J('.hasChildren').live('click', function(){
@@ -80,8 +178,208 @@ function selectMultiAction()
 
         expandCats();
         resetRowClasses();
+        var $globPropContainer = $J('#globalProperties')
+        $J('#rootLink').toggle(function(){
+        	$globPropContainer.slideDown('fast');
+        },
+        function(){
+        	$globPropContainer.slideUp('fast');
+        });        
     });
 
+    var updateCachingstatus = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS}'.replace(/%s/, lang))){
+            $J(that).one('click', updateCachingstatus);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=cachingstatus&'+__CSRF__QSTR,
+	        data: {cachingstatus: $J('input[name=cachingstatus]').is(':checked') ? '0' : '1'},
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setCachingstatusMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateCachingstatus);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
+    var updateRobots = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_ROBOTS}'.replace(/%s/, lang))){
+            $J(that).one('click', updateRobots);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=robots&'+__CSRF__QSTR,
+	        data: {robots: $J('input[name=robots]').is(':checked') ? 'index' : 'noindex'},
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setRobotsMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateRobots);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
+    var updateRedirectTarget = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET}'.replace(/%s/, lang))){
+            $J(that).one('click', updateRedirectTarget);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=redirecttarget&'+__CSRF__QSTR,
+	        data: {redirectTarget: $J('input[name=redirectTarget]').val()},
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setRedirectTargetMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateRedirectTarget);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
+    var updateCssNameNav = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+	    var cssname = $J('input[name=cssNameNav]').val();
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_CSSNAME_NAV}'.replace(/%s/, cssname).replace(/%s/, lang))){
+            $J(that).one('click', updateCssNameNav);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=cssnamenav&'+__CSRF__QSTR,
+	        data: {cssNameNav: $J('input[name=cssNameNav]').val()},
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setCssNameNavMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateCssNameNav);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
+    var updateCssName = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+	    var cssname = $J('input[name=cssName]').val();
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_CSSNAME}'.replace(/%s/, cssname).replace(/%s/, lang))){
+            $J(that).one('click', updateCssName);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=cssname&'+__CSRF__QSTR,
+	        data: {cssName: $J('input[name=cssName]').val()},
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setCssNameMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateCssName);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
+    var updateThemesId = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+	    var theme = $J('select[name=themesId] option:selected').text();
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_THEMES_ID}'.replace(/%s/, theme).replace(/%s/, lang))){
+            $J(that).one('click', updateThemesId);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=themesid&'+__CSRF__QSTR,
+	        data: {themesId: $J('select[name=themesId] option:selected').val()},
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setThemesIdMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateThemesId);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
+    var updateGlobalPageTitle = function(){
+        $J(this).attr('disabled', 'disabled');
+        var that = this;
+        $J.ajax({
+            url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=globalpagetitle&'+__CSRF__QSTR,
+            data: {globalPageTitle: $J('input[name=globalPageTitle]').val()},
+            type: 'POST',
+            dataType: 'json',
+            success: function(data){
+                if(data.ok){
+                    $J('#setGlobalPageTitleMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+                        $J(this).fadeOut('slow', function(){
+                            $J(this).empty();
+                        })
+                    });
+                    $J(that).one('click', updateGlobalPageTitle);
+                    $J(that).removeAttr('disabled');
+                }
+            }
+        });
+    }
+   
     var expandCats = function(){
     	if(blnExpandAll){
             expandAll(false);
@@ -188,13 +486,13 @@ function selectMultiAction()
             return;
         }
         $J(this).closest('li').children('ul').show();
-        if(this.tagName == 'LI'){            
+        if(this.tagName == 'LI'){     
             $J('a.hasChildren:first', $(this)).removeClass('nodeCollapsed').addClass('nodeExpanded');
         } else {
             $J(this).removeClass('nodeCollapsed').addClass('nodeExpanded');
         }
         //traverse up all nodes
-        expandNode.apply($J(this).closest('li').parent().closest('li').get());
+        expandNode.apply($J(this).closest('li').parent().closest('li').get(0));
     }
 
     var collapseAll = function(update){
@@ -268,10 +566,203 @@ function selectMultiAction()
         <img class="icon" src='images/icons/pixel.gif' alt="" title="" />
     </div>
     <div class="siteMapPage row2">
-       <img class="icon" src="images/icons/root_active.gif" alt="" border="0" align="middle" />&nbsp;&nbsp;&nbsp;Frontend [<b>{CONTENT_NAME}</b>]
-    </div>
+       <img class="icon" src="images/icons/root_active.gif" alt="" border="0" align="middle" />&nbsp;&nbsp;&nbsp;
+           <a href="#" id="rootLink"> Frontend [<b>{CONTENT_NAME}</b>] </a>
+    </div>    
 </div>
 <!-- END header -->
+<div style="border-bottom: 1px solid #DCE4FF; display: none;" id="globalProperties">
+	<ul class="tabmenu">
+	    <li><a class="active" title="{TXT_SYSTEM_SETTINGS}" id="tab_system">{TXT_SYSTEM_SETTINGS}</a></li>
+	    <li><a class="inactive" title="{TXT_UPDATE_ALL_SITES}" id="tab_sitesettings">{TXT_UPDATE_ALL_SITES}</a></li>
+	    <li><a class="inactive" title="{TXT_FRONTEND_PERMISSION}" id="tab_frontend">{TXT_FRONTEND_PERMISSION}</a></li>
+	    <li><a class="inactive" title="{TXT_RELATEDNESS}" id="tab_backend">{TXT_RELATEDNESS}</a></li>
+	</ul>
+	<div id="container_system">
+	    <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
+	        <tbody><!--
+	            <tr class="row3">
+	                <td colspan="2"><b>{TXT_SYSTEM_SETTINGS}</b></td>
+	            </tr>
+	            --><tr class="row1">
+	                <td width="200">{TXT_SETTINGS_GLOBAL_TITLE}</td>
+	                <td>
+	                    <input size="40" type="text" name="globalPageTitle" value="{SETTINGS_GLOBAL_TITLE}" />
+	                    <input type="button" id="setGlobalPageTitle" value="{TXT_SAVE}" />
+	                    <span id="setGlobalPageTitleMsg"></span>
+	                </td>
+	            </tr>
+	        </tbody>
+	    </table>     
+    </div>
+    <div id="container_sitesettings" style="display:none;">       
+	    <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
+	        <tbody>
+	            <!--<tr class="row3">
+	                <td colspan="2"><b>{TXT_UPDATE_ALL_SITES}</b></td>
+	            </tr>
+	            --><tr class="row1">
+		          <td width="15%">{TXT_THEMES}</td>
+		          <td width="85%">
+		            <select style="width: 302px;" name="themesId">
+		              {CONTENT_THEMES_MENU}
+		            </select>
+	                <input type="button" id="setThemesId" value="{TXT_SAVE}" />
+	                <span id="setThemesIdMsg"></span>
+		          </td>
+		        </tr>
+		        <tr class="row2">
+		          <td>{TXT_OPTIONAL_CSS_NAME}</td>
+		          <td>
+		            <input name="cssName" type="text" id="cssName" style="width: 300px;"  maxlength="50" />
+		            <input type="button" id="setCssName" value="{TXT_SAVE}" />
+	                <span id="setCssNameMsg"></span>
+		          </td>
+		        </tr>
+	            <tr class="row1">
+	              <td width="15%">{TXT_OPTIONAL_CSS_NAME} {TXT_NAVIGATION}</td>
+	              <td width="85%">
+	                <input name="cssNameNav" type="text" id="cssNameNav" size="40" style="width: 300px;" maxlength="50" />
+	                <input type="button" id="setCssNameNav" value="{TXT_SAVE}" />
+	                <span id="setCssNameNavMsg"></span>                
+	              </td>
+	            </tr>
+	            <tr class="row2">
+	              <td>{TXT_TARGET}</td>
+	              <td>
+		              <select style="width: 302px;" name="redirectTarget">
+		                  <option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
+		                  <option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
+		                  <option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
+		                  <option value="_self">{TXT_TARGET_SELF} (_self)</option>
+		                  <option value="_top">{TXT_TARGET_TOP} (_top)</option>
+		              </select>
+		              <input type="button" id="setRedirectTarget" value="{TXT_SAVE}" />
+                      <span id="setRedirectTargetMsg"></span>             		              
+		          </td>
+	            </tr>
+	            <tr class="row1">
+		          <td>{TXT_CACHING_STATUS}</td>
+		          <td>
+		              <input type="checkbox" name="cachingstatus" value="1" />
+		              <input type="button" id="setCachingstatus" value="{TXT_SAVE}" />
+                      <span id="setCachingstatusMsg"></span>       
+		          </td>
+		        </tr>
+		        <tr class="row2">
+		          <td>{TXT_META_ROBOTS}</td>
+		          <td>
+		              <input type="checkbox" name="robots" value="index" />
+		              <input type="button" id="setRobots" value="{TXT_SAVE}" />
+                      <span id="setRobotsMsg"></span>       
+		          </td>
+		        </tr>       
+		   </tbody>
+	   </table>
+   </div>
+   <div id="container_frontend" style="display:none;">
+     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
+        <tbody>
+           <tr class="row1">	         
+	          <td style="width: 300px; vertical-align: top;">
+	            <input value="0" id="noFrontendProtection" name="protection" type="radio" /><label for="noFrontendProtection">&nbsp;{TXT_PUBLIC_PAGE}</label><br />
+	            <input value="1" id="yesFrontendProtection" name="protection" type="radio" /><label for="yesFrontendProtection">&nbsp;{TXT_PROTECTION}</label>
+	          </td>
+              <td>
+                <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="frontendGroups" style="display:{CONTENT_PROTECTION_DISPLAY};">
+			      <tbody style="vertical-align:top;">
+			        <tr class="row1">
+			          <td width="15%">{TXT_GROUPS}</td>
+			          <td width="1%">&nbsp;</td>
+			          <td>{TXT_GROUPS_DEST}</td>
+			        </tr>
+			        <tr class="row2">
+			          <td>
+			            <select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
+			            {CONTENT_EXISTING_GROUPS}
+			            </select>
+			            <br />
+			            <font size="1">
+			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=existingGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=existingGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
+			            </font>
+			          </td>
+			          <td>
+			            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList($J('[name=existingGroups[]]').get(0),$J('[name=assignedGroups[]]').get(0),adduser,removeuser);" style="margin-bottom:1px;" /><br />
+			            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList($J('[name=existingGroups[]]').get(0),$J('[name=assignedGroups[]]').get(0),adduser,removeuser);" />
+			          </td>
+			          <td>
+			            <select name="assignedGroups[]" size="10" style="width:300px;" multiple="multiple">
+			            {CONTENT_ASSIGNED_GROUPS}
+			            </select>
+			            <input style="vertical-align: top;" type="button" id="setFrontendPermissions" value="{TXT_SAVE}" />
+                        <span id="setFrontendPermissionsMsg"></span>       
+			            <br />
+			            <font size="1">
+			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=assignedGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=assignedGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
+			            </font>
+			          </td>
+			        </tr>
+			      </tbody>
+			    </table>
+              </td>
+            </tr>
+        </tbody>
+     </table>
+  </div>
+  <div id="container_backend" style="display:none;">
+     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
+        <tbody>
+            <tr class="row1">
+               <td style="width: 300px; vertical-align: top;">
+	            <input value="0" name="backendPermission" id="noBackendPermission" type="radio" /><label for="noBackendPermission">&nbsp;{TXT_BACKEND_RELEASE}</label><br />
+	            <input value="1" name="backendPermission" id="yesBackendPermission" type="radio" /><label for="yesBackendPermission">&nbsp;{TXT_LIMIT_GROUP_RIGHTS}</label>
+	          </td>
+              <td> 
+			    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="backendGroups" style="display:{CONTENT_CONTROL_BACKEND_DISPLAY};">
+			      <tbody>
+			        <tr class="row1">
+			          <td width="15%">{TXT_GROUPS}</td>
+			          <td width="1%">&nbsp;</td>
+			          <td>{TXT_GROUPS_DEST}</td>
+			        </tr>
+			        <tr class="row2">
+			          <td>
+			            <select name="existingBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
+			            {CONTENT_EXISTING_BACKEND_GROUPS}
+			            </select>
+			            <br />
+			            <font size="1">
+			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=existingBackendGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=existingBackendGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
+			            </font>
+			          </td>
+			          <td width="1%">
+			            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList($J('[name=existingBackendGroups[]]').get(0),$J('[name=assignedBackendGroups[]]').get(0),adduser,removeuser);" style="margin-bottom:1px;" /><br />
+			            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList($J('[name=existingBackendGroups[]]').get(0),$J('[name=assignedBackendGroups[]]').get(0),adduser,removeuser);" />
+			          </td>
+			          <td>
+			            <select name="assignedBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
+			            {CONTENT_ASSIGNED_BACKEND_GROUPS}
+			            </select>
+                        <input style="vertical-align: top;" type="button" id="setBackendPermissions" value="{TXT_SAVE}" />
+                        <span id="setBackendPermissionsMsg"></span>       
+    		            <br />
+			            <font size="1">
+			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=assignedBackendGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
+			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=assignedBackendGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
+			            </font>
+			          </td>
+			        </tr>
+			      </tbody>
+			    </table>
+	          </td>
+	        </tr>
+        </tbody>
+      </table>
+   </div>
+</div>
 
 {SITEMAP_NESTED_PAGES}
 

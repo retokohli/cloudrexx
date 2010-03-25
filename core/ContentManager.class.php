@@ -161,6 +161,9 @@ class ContentManager
                 $success = $this->_updateSorting();
                 die(json_encode(array('success' => $success)));
             break;
+        case "siteconfig":
+            $this->_updateSiteConfig();
+            break;
 
         case "deleteAll":
             Permission::checkAccess(53, 'static');
@@ -248,7 +251,7 @@ class ContentManager
         }
 
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'                => $this->pageTitle,
+            'CONTENT_TITLE'             => $this->pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
@@ -256,10 +259,86 @@ class ContentManager
 
 
     /**
-     * recursive function to save the new page sorting
+     * handles global changes from the sitemap global properties pane
+     * invoked by XMLHttpRequest
      *
-     * @param array $arrPageTree tree of the new sorting: array( array('id'[, 'children' => array('id'[, 'children')]]... ) )
+     * @global array $_CORELANG[]
+     * @global ADOConnection $objDatabase
      */
+    function _updateSiteConfig(){
+        global $_CORELANG, $objDatabase;
+        switch($_GET['data']){
+            case 'globalpagetitle':
+                $pageTitle = contrexx_addslashes(strip_tags($_POST['globalPageTitle']));
+                $query = 'UPDATE `'.DBPREFIX.'settings`
+                             SET `setvalue`="'.$pageTitle.'"
+                           WHERE `setname`="coreGlobalPageTitle"';
+                if($objDatabase->Execute($query)){
+                    $objSettings = new settingsManager();
+                    $objSettings->writeSettingsFile();
+                    die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                }
+                break;
+            case 'themesid':
+                $themesId = intval($_POST['themesId']);
+                $query = 'UPDATE `'.DBPREFIX."content_navigation`
+                             SET `themes_id`='".$themesId."'
+                           WHERE `lang`=".FRONTEND_LANG_ID;
+                if($objDatabase->Execute($query)){
+                    die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                }
+                break;
+            case 'cssname':
+                $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
+                $query = 'UPDATE `'.DBPREFIX."content`
+                              SET `css_name`='".$cssName."'
+                            WHERE `lang_id`=".FRONTEND_LANG_ID;
+                if($objDatabase->Execute($query)){
+                    die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                }
+                break;
+            case 'cssnamenav':
+                $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
+                $query = 'UPDATE `'.DBPREFIX."content_navigation`
+                              SET `css_name`='".$cssNameNav."'
+                            WHERE `lang`=".FRONTEND_LANG_ID;
+                if($objDatabase->Execute($query)){
+                    die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                }
+                break;
+            case 'redirecttarget':
+                $redirectTarget =
+                    (in_array($_POST['redirectTarget'], $this->_arrRedirectTargets)
+                      ? $_POST['redirectTarget'] : '');
+                $query = 'UPDATE `'.DBPREFIX."content_navigation`
+                              SET `target`='".$redirectTarget."'
+                            WHERE `lang`=".FRONTEND_LANG_ID;
+                if($objDatabase->Execute($query)){
+                    die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                }
+                break;
+            case 'cachingstatus':
+                $cachingStatus = intval($_POST['cachingstatus']) == 1 ? 1 : 0;
+                $query = 'UPDATE `'.DBPREFIX."content_navigation`
+                              SET `cachingstatus`=".$cachingStatus."
+                            WHERE `lang`=".FRONTEND_LANG_ID;
+                if($objDatabase->Execute($query)){
+                    die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                }
+                break;
+            case 'robots':
+                $robotstatus = $_POST['robots'] == 'index' ? 'index' : 'noindex';
+                $query = 'UPDATE `'.DBPREFIX."content`
+                              SET `metarobots`='".$robotstatus."'
+                            WHERE `lang_id`=".FRONTEND_LANG_ID;
+                if($objDatabase->Execute($query)){
+                    die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                }
+                break;
+            default:
+        }
+    }
+
 
     /**
      * recursive function to save the new page sorting
@@ -1196,6 +1275,7 @@ class ContentManager
             'TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'            => $_CORELANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'],
             'TXT_DEFAULT_ALIAS'                                 => $_CORELANG['TXT_DEFAULT_ALIAS'],
             'TXT_SITEMAP_ROOTSITE'                              => $_CORELANG['TXT_SITEMAP_ROOTSITE'],
+            'CONTENT_IS_LOST_AND_FOUND'                         => 'false',
             'CONTENT_ALIAS_DISABLE'                             => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
             'TXT_ERROR_NO_TITLE'                                => $_CORELANG['TXT_ERROR_NO_TITLE'],
             'TXT_BASE_URL'                                      => self::mkurl('/'),
