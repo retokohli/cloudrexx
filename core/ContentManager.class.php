@@ -335,6 +335,28 @@ class ContentManager
                     die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
                 }
                 break;
+            case 'frontendpermission':
+                $objNavbar = new ContentSitemap(0);
+                $rootPageIds = array_keys($objNavbar->navtable[0]);
+                $protect = (empty($_POST['protection']) ? false : true);
+                $assignedGroups = isset($_POST['assignedGroups']) ? $_POST['assignedGroups'] : '';
+                $recursive = true;
+                foreach ($rootPageIds as $pageId){
+                    $this->_setPageProtection($pageId, $pageId, $protect, $assignedGroups, 'frontend', $recursive, FRONTEND_LANG_ID);
+                }
+                die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                break;
+            case 'backendpermission':
+                $objNavbar = new ContentSitemap(0);
+                $rootPageIds = array_keys($objNavbar->navtable[0]);
+                $protect = (empty($_POST['backendPermission']) ? false : true);
+                $assignedBackendGroups = isset($_POST['assignedBackendGroups']) ? $_POST['assignedBackendGroups'] : '';
+                $recursive = true;
+                foreach ($rootPageIds as $pageId){
+                    $this->_setPageProtection($pageId, $pageId, $protect, $assignedBackendGroups, 'backend', $recursive, FRONTEND_LANG_ID);
+                }
+                die(json_encode(array('ok' => $_CORELANG['TXT_SETTINGS_UPDATED'])));
+                break;
             default:
         }
     }
@@ -2797,9 +2819,9 @@ class ContentManager
                 // Never used
                 //$moduleId = intval($objResult->fields["protected"]);
                 $catidarray=$objNavbar->getCurrentSonArray($pageId);
-                $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET protected = ".$newprotected." WHERE catid=".$pageId);
+                $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET protected = ".$newprotected." WHERE lang=".FRONTEND_LANG_ID." AND catid=".$pageId);
                 foreach ($catidarray as $value) {
-                    $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET protected = ".$newprotected." WHERE catid=".$value);
+                    $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET protected = ".$newprotected." WHERE lang=".FRONTEND_LANG_ID." AND catid=".$value);
                 }
                 // Login Module must be unprotected!
                 $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET protected=0 WHERE module=".$loginModuleId);
@@ -2898,7 +2920,6 @@ class ContentManager
         $pageIsProtected = false;
         $protectionString = '';
         $lastRightId = $_CONFIG['lastAccessId'];
-
         if (!$protect && $parentPageId != 0 && $parentPageId != $pageId) {
             $arrGroups = array();
             $objResult = $objDatabase->Execute('SELECT n.`'.$type.'_access_id`, a.`group_id` FROM `'.DBPREFIX.'content_navigation` AS n LEFT JOIN `'.DBPREFIX.'access_group_dynamic_ids` AS a ON a.`access_id`=n.`'.$type.'_access_id` WHERE n.`catid`='.$parentPageId.' AND `n`.`lang`='.$langId);

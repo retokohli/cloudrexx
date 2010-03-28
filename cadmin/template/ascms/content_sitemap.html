@@ -161,6 +161,8 @@ function selectMultiAction()
         $J('#setRedirectTarget').one('click', updateRedirectTarget);
         $J('#setCachingstatus').one('click', updateCachingstatus);
         $J('#setRobots').one('click', updateRobots);
+        $J('#setFrontendPermissions').one('click', updateFrontendPermissions);
+        $J('#setBackendPermissions').one('click', updateBackendPermissions);
         
         initSortable();
 
@@ -187,6 +189,64 @@ function selectMultiAction()
         });        
     });
 
+    var updateFrontendPermissions = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_FRONTEND_PERMISSION}'.replace(/%s/, lang))){
+            $J(that).one('click', updateFrontendPermissions);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+	    $J('[name=assignedGroups[]] option').attr('selected','selected');
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=frontendpermission&'+__CSRF__QSTR,
+	        data: $J('[name=assignedGroups[]]').serialize()+'&'+$J('[name=protection]').serialize(),
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setFrontendPermissionsMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateFrontendPermissions);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
+    var updateBackendPermissions = function(){
+        $J(this).attr('disabled', 'disabled');
+	    var that = this;
+        var lang = $J('#tabmenu a.active').text();
+	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_BACKEND_PERMISSION}'.replace(/%s/, lang))){
+            $J(that).one('click', updateBackendPermissions);
+            $J(that).removeAttr('disabled');
+	        return false;
+	    }
+        $J('[name=assignedBackendGroups[]] option').attr('selected','selected');
+	    $J.ajax({
+	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=backendpermission&'+__CSRF__QSTR,
+	        data: $J('[name=assignedBackendGroups[]]').serialize()+'&'+$J('[name=backendPermission]').serialize(),
+	        type: 'POST',
+	        dataType: 'json',
+	        success: function(data){
+	            if(data.ok){
+	                $J('#setBackendPermissionsMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
+	                    $J(this).fadeOut('slow', function(){
+	                        $J(this).empty();
+	                    })
+	                });
+	                $J(that).one('click', updateBackendPermissions);
+	                $J(that).removeAttr('disabled');
+	            }
+	        }
+	    }); 
+    }
+    
     var updateCachingstatus = function(){
         $J(this).attr('disabled', 'disabled');
 	    var that = this;
@@ -696,7 +756,7 @@ function selectMultiAction()
 			            {CONTENT_ASSIGNED_GROUPS}
 			            </select>
 			            <input style="vertical-align: top;" type="button" id="setFrontendPermissions" value="{TXT_SAVE}" />
-                        <span id="setFrontendPermissionsMsg"></span>       
+                        <span style="vertical-align: top;" id="setFrontendPermissionsMsg"></span>       
 			            <br />
 			            <font size="1">
 			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=assignedGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a><br />
@@ -747,7 +807,7 @@ function selectMultiAction()
 			            {CONTENT_ASSIGNED_BACKEND_GROUPS}
 			            </select>
                         <input style="vertical-align: top;" type="button" id="setBackendPermissions" value="{TXT_SAVE}" />
-                        <span id="setBackendPermissionsMsg"></span>       
+                        <span style="vertical-align: top;" id="setBackendPermissionsMsg"></span>       
     		            <br />
 			            <font size="1">
 			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=assignedBackendGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
