@@ -2241,6 +2241,18 @@ CREATE TABLE `contrexx_module_knowledge_tags_articles` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_linkchecker_history` (
+  `linkchecker_history_id` int(11) NOT NULL auto_increment,
+  `linkchecker_history_date` timestamp NOT NULL,
+  `linkchecker_history_valid` int(11) NOT NULL,
+  `linkchecker_history_invalid` int(11) NOT NULL,
+  `linkchecker_history_message` varchar(255) NOT NULL,
+  `linkchecker_history_type` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`linkchecker_history_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_livecam` (
   `id` int(10) unsigned NOT NULL default '1',
   `currentImagePath` varchar(255) NOT NULL default '/webcam/cam1/current.jpg',
