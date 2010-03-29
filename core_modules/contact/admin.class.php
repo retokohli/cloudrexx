@@ -596,6 +596,7 @@ class ContactManager extends ContactLib
             'TXT_CONTACT_NO'                                => $_ARRAYLANG['TXT_CONTACT_NO'],
             'TXT_CONTACT_CAPTCHA_PROTECTION'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
             'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
+            'TXT_CONTACT_CAPTCHA'                           => $_ARRAYLANG['TXT_CONTACT_CAPTCHA'],
             'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
             'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
             'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'          => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
@@ -1397,7 +1398,7 @@ class ContactManager extends ContactLib
                 $sourcecode[] = '<img class="captcha" src="'.$url.'" alt="'.$alt.'" /></p>';
                 $sourcecode[] = '<div style="color: red;"></div>';
                 $sourcecode[] = "<p>";
-                $sourcecode[] = '<label for="contactFormCaptcha"> CAPTCHA </label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
+                $sourcecode[] = '<label for="contactFormCaptcha">{TXT_CONTACT_CAPTCHA}</label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
                 $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="'.$offset.'" />';
                 $sourcecode[] = "</p>";
             }
@@ -1407,7 +1408,7 @@ class ContactManager extends ContactLib
             $sourcecode[] = "<p>";
             $sourcecode[] = "{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />";
             $sourcecode[] = '</p>';
-            $sourcecode[] = '<p><span>CAPTCHA</span><img class="captcha" src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
+            $sourcecode[] = '<p><span>{TXT_CONTACT_CAPTCHA}</span><img class="captcha" src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
             $sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
             $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
             $sourcecode[] = "</p>";
