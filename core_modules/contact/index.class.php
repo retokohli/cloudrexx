@@ -202,11 +202,12 @@ class Contact extends ContactLib
             $captcha = new Captcha();
 
             $this->objTemplate->setVariable(array(
-                'CONTACT_CAPTCHA_OFFSET'            => $captcha->getOffset(),
+                'CONTACT_CAPTCHA_OFFSET'             => $captcha->getOffset(),
                 'CONTACT_CAPTCHA_URL'                => $captcha->getUrl(),
                 'CONTACT_CAPTCHA_ALT'                => $captcha->getAlt(),
                 'TXT_CONTACT_CAPTCHA_DESCRIPTION'    => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
-                'CONTACT_CAPTCHA_ERROR'                => $this->captchaError
+                'TXT_CONTACT_CAPTCHA'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA'],
+                'CONTACT_CAPTCHA_ERROR'              => $this->captchaError
             ));
 
             $this->objTemplate->parse('contact_form_captcha');
