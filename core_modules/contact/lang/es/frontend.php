@@ -33,4 +33,5 @@ $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Por favor, escriba los caracte
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "\¡La cadena de caracteres introducida no es v&aacute;lida!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reiniciar";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Seleccionar direcci&oacute;n del destinatario";
+$_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
 ?>

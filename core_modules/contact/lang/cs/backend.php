@@ -143,4 +143,5 @@ $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Eigenen Stil verwenden";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 $_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "Die E-Mail Adresse '%s' ist nicht gültig!";
+$_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
 ?>
