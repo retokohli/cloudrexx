@@ -33,4 +33,5 @@ $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Для активации эт
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Указанная строка символов была неправильной!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
+$_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
 ?>
