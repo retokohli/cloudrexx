@@ -28,5 +28,5 @@ Veranstaltungskalender
 - Das Bearbeiten der Veranstaltungen funktioniert.
 
 Kontaktformular
-- Es werden neu Zeichenfolgen mit HTML Special Chars (z.B. '<' und '>') so gespeichert
-  und auch ausgeben.
+- Es werden neu Zeichenfolgen mit HTML Special Chars (z.B. '<' und '>') auch als solche
+  gespeichert und auch ausgeben.
