@@ -1225,4 +1225,6 @@ $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS'] = "Wollen Sie den Cachingsta
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_ROBOTS'] = "Wollen Sie den Meta Robot Status wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_FRONTEND_PERMISSION'] = "Wollen Sie die Frontend Berechtigungen wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_BACKEND_PERMISSION'] = "Wollen Sie die Backend Berechtigunen wirklich für alle Seiten (%s) setzen?";
+$_ARRAYLANG['TXT_LINKCHECKER'] = "Link Checker";
+$_ARRAYLANG['TXT_LINKCHECKER_MODULE_DESCRIPTION'] = "";
 ?>

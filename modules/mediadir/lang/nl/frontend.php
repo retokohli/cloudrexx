@@ -47,4 +47,5 @@ $_ARRAYLANG['TXT_MEDIADIR_VOTING_CORRUPT'] = "Bewertung fehlgeschlagen. Entweder
 $_ARRAYLANG['TXT_MEDIADIR_AT'] = "um";
 $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_SUCCESSFULL'] = "Ihr Kommentar wurde erfolgreich hinzugefügt.";
 $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_CORRUPT'] = "Beim Übermitteln der Daten ist eine Fehler aufgetreten, daher konnte ihr Kommentar nicht gespeichert werden.";
+$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = "Link zu Googe Maps";
 ?>
