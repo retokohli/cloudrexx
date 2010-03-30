@@ -616,7 +616,6 @@ class Imagetype
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
         $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
-        CSRF::add_placeholder($objTemplateLocal);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplateLocal->loadTemplateFile('imagetypes.html'))
             die("Failed to load template imagetypes.html");

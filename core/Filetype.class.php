@@ -107,7 +107,7 @@ class Filetype
                    $arrSqlName['field']."
               FROM ".DBPREFIX."core_filetype AS `filetype`".
                    $arrSqlName['join']."
-             ORDER BY `filetype`.`id` ASC";
+             ORDER BY `filetype`.`ord` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         self::$arrExtensions2Mimetypes = array();
@@ -284,7 +284,7 @@ class Filetype
     {
         global $objDatabase;
 
-//die("Filetype::errorHandler(): Disabled!<br />");
+die("Filetype::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."core_filetype", $arrTables)) {
