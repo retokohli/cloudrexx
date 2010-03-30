@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Obsolete - Use the core/Mailtemplate.class.php
+ *
  * Mail class
  * @todo        Replace by the new core/Mailtemplate.class!
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -62,6 +64,7 @@ class Mail
      */
     static function init($lang_id=0)
     {
+die("Obsolete class modules/shop/lib/Mail.class.php");
         global $objDatabase;
 
         // The array has been initialized with that language already

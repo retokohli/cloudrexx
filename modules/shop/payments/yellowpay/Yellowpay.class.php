@@ -4,9 +4,10 @@
  * Class Yellowpay
  *
  * Interface for the payment mask yellowpay
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
@@ -16,16 +17,17 @@
  * Currency: Conversion, formatting.
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
 
 /**
  * Yellowpay plugin for online payment
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo    Yellowpay must be configured and this code rewritten to return and
- * handle the follwing requests:
+ * @internal    Yellowpay must be configured to return with the follwing requests:
  * POST after payment was made:
  *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=-1
  * GET after payment has completed successfully:
@@ -43,15 +45,7 @@ class Yellowpay
      * @var     string
      * @see     getForm(), addToForm()
      */
-    private $form;
-
-    /**
-     * Enable test mode if true
-     * @access  private
-     * @var     boolean
-     * @see     getForm()
-     */
-    private $is_test = true;
+    private static $form;
 
     /**
      * Information that was handed over to the class
@@ -60,7 +54,7 @@ class Yellowpay
      * @see     Yellowpay(), __construct(), addPaymentTypeKeys(),
      *          addOtherKeys(), checkKey(), addToForm()
      */
-    private $arrShopOrder = array();
+    private static $arrShopOrder = array();
 
     /**
      * Error messages
@@ -68,7 +62,7 @@ class Yellowpay
      * @var     array
      * @see     getForm(), checkKey()
      */
-    public $arrError = array();
+    public static $arrError = array();
 
     /**
      * Warning messages
@@ -76,7 +70,7 @@ class Yellowpay
      * @var     array
      * @see     addPaymentTypeKeys(), checkKey()
      */
-    public $arrWarning = array();
+    public static $arrWarning = array();
 
     /**
      * Language codes
@@ -84,7 +78,7 @@ class Yellowpay
      * @var     array
      * @see     checkKey()
      */
-    private $arrLangVersion = array(
+    private static $arrLangVersion = array(
         'DE' => 2055,
         'US' => 2057, 'EN' => 2057,
         'IT' => 2064,
@@ -97,7 +91,7 @@ class Yellowpay
      * @var     array
      * @see     checkKey()
      */
-    private $arrArtCurrency = array(
+    private static $arrArtCurrency = array(
         'CHF',
         'USD',
         'EUR',
@@ -110,8 +104,8 @@ class Yellowpay
      * @see     checkKey()
      */
     private static $arrKnownAuthorization = array(
-        'immediate',
-        'deferred',
+        'RES',
+        'SAL',
     );
 
     /**
@@ -119,7 +113,7 @@ class Yellowpay
      * @access  private
      * @var     string
      */
-    private $strAuthorization = 'immediate';
+    private static $strAuthorization = false;
 
     /**
      * Known payment method names
@@ -150,7 +144,7 @@ class Yellowpay
      * @var     array
      * @see     addPaymentTypeKeys()
      */
-    private $arrAcceptedPaymentMethod = array(
+    private static $arrAcceptedPaymentMethod = array(
         'PostFinanceCard' => array(),
         'yellownet' => array(),
         'Master' => array(),
@@ -168,33 +162,85 @@ class Yellowpay
     );
 
 
+    private static $arrFieldMandatory = array(
+        'PSPID',
+        'orderID',
+        'amount',
+        'currency',
+        'language',
+        // check before the payment: see chapter 6.2
+        'SHASign',
+        // post payment redirection: see chapter 8.2
+        'accepturl',
+        'declineurl',
+        'exceptionurl',
+        'cancelurl',
+    );
+
+    private static $arrFieldOptional = array(
+        // optional customer details, highly recommended for fraud prevention: see chapter 5.2
+        'CN',
+        'EMAIL',
+        'ownerZIP',
+        'owneraddress',
+        'ownercty',
+        'ownertown',
+        'ownertelno',
+        'COM',
+        // payment methods/page specifics: see chapter 9.1
+        'PM',
+        'BRAND',
+        'WIN3DS',
+        'PM list type',
+        'PMListType',
+        // link to your website: see chapter 8.1
+        'homeurl',
+        'catalogurl',
+        // post payment parameters: see chapter 8.2
+        'COMPLUS',
+        'PARAMPLUS',
+        // post payment parameters: see chapter 8.3
+        'PARAMVAR',
+        // optional operation field: see chapter 9.2
+        'operation',
+        // optional extra login field: see chapter 9.3
+        'USERID',
+        // Alias details: see Alias Management documentation
+        'Alias',
+        'AliasUsage',
+        'AliasOperation',
+        'PMLIST',
+        'WIN3DS',
+        // layout information: see chapter 7.1
+        'TITLE',
+        'BGCOLOR',
+        'TXTCOLOR',
+        'TBLBGCOLOR',
+        'TBLTXTCOLOR',
+        'BUTTONBGCOLOR',
+        'BUTTONTXTCOLOR',
+        'LOGO',
+        'FONTTYPE',
+        // dynamic template page: see chapter 7.2
+        'TP',
+    );
+
     /**
-     * Constructor
-     *
-     * The optional $strAcceptedPaymentMethods argument lets you restrict
-     * the payment methods to be available.  If the string is empty, any
-     * known methods will be accepted, however.
-     * @param   string  $strAcceptedPaymentMethods  The comma separated list
-     *                                              of payment methods
-     * @return  Yellowpay                           The Yellowpay object
+     * Mandatory fields required to confirm the SHA-1-OUT hash validity
+     * @var   array
      */
-    function __construct($strAcceptedPaymentMethods='', $strAuthorization='')
-    {
-        // There needs to be at least one accepted payment method,
-        // if there is none, accept all.
-        if (!empty($strAcceptedPaymentMethods)) {
-            foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
-                // Remove payment methods not mentioned
-                if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
-                    unset ($this->arrAcceptedPaymentMethod[$strPaymentMethod]);
-                }
-            }
-//        } else {
-        }
-        if (in_array($strAuthorization, Yellowpay::$arrKnownAuthorization)) {
-            $this->strAuthorization = $strAuthorization;
-        }
-    }
+    private static $arrFieldShaOut = array(
+        'orderID',
+        'currency',
+        'amount',
+        'PM',
+        'ACCEPTANCE',
+        'STATUS',
+        'CARDNO',
+        'PAYID',
+        'NCERROR',
+        'BRAND',
+    );
 
 
     /**
@@ -204,21 +250,58 @@ class Yellowpay
      * @return  string    The HTML-Form
      * @see     addRequiredKeys(), addPaymentTypeKeys(), addOtherKeys()
      */
-    function getForm(
-        $arrShopOrder, $submitValue='send', $autopost=false, $isTest=false
+    static function getForm(
+        $arrShopOrder, $submitValue='send', $autopost=false
     ) {
-        $this->arrShopOrder = $arrShopOrder;
-        $this->form =
+        $strAcceptedPaymentMethods =
+            Settings::getValueByName('yellowpay_accepted_payment_methods');
+        self::$strAuthorization =
+            Settings::getValueByName('yellowpay_authorization_type');
+        // There needs to be at least one accepted payment method,
+        // if there is none, accept all.
+        if (!empty($strAcceptedPaymentMethods)) {
+            foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
+                // Remove payment methods not mentioned
+                if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
+                    unset(self::$arrAcceptedPaymentMethod[$strPaymentMethod]);
+                }
+            }
+        }
+
+        self::$arrShopOrder = $arrShopOrder;
+        // Build the base URI from the referrer, which also includes the
+        // protocol (http:// or https://)
+        $base_uri = $_SERVER['HTTP_REFERER'];
+        $match = array();
+        if (preg_match('/^(.+section=shop)/', $base_uri, $match)) {
+            $base_uri = $match[1];
+        } else {
+            self::$arrError[] = 'Failed to determine base URI: '.$base_uri;
+            return '';
+        }
+        $base_uri = $base_uri.'&cmd=success&handler=yellowpay&result=';
+        if (empty(self::$arrShopOrder['accepturl'])) {
+            self::$arrShopOrder['accepturl'] = $base_uri.'1';
+        }
+        if (empty(self::$arrShopOrder['declineurl'])) {
+            self::$arrShopOrder['declineurl'] = $base_uri.'2';
+        }
+        if (empty(self::$arrShopOrder['exceptionurl'])) {
+            self::$arrShopOrder['exceptionurl'] = $base_uri.'2';
+        }
+        if (empty(self::$arrShopOrder['cancelurl'])) {
+            self::$arrShopOrder['cancelurl'] = $base_uri.'0';
+        }
+        self::$form =
             // The real yellowpay server or the test server
             '<form name="yellowpay" method="post" '.
-// TODO:
-// New one?
-//            'action="https://e-payment.postfinance.ch/ncol/test/orderstandard.asp"'.
-// Old one?
-            'action="https://yellowpay'.
-            ($isTest ? 'test' : '').
-            '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
-//
+// OLD yellowpay URI
+//            'action="https://yellowpay'.($isTest ? 'test' : '').
+//            '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
+// CURRENT Postfinance E-Commerce URI
+            'action="https://e-payment.postfinance.ch/ncol/'.
+            (Settings::getValueByName('yellowpay_use_testserver') ? 'test' : 'prod').
+            '/orderstandard.asp"'.
             ">\n";
 /*
             // Yellowpay dummy
@@ -226,75 +309,281 @@ class Yellowpay
             'action="http://localhost/c_trunk/modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
             ">\n";
 */
-        $this->addRequiredKeys();
-        $this->addPaymentTypeKeys();
-        $this->addOtherKeys();
+        if (!self::addHash()) {
+            self::$arrError[] = 'ERROR: Failed to compute hash';
+            return false;
+        }
+        if (!self::verifyKeys()) {
+            self::$arrError[] = 'ERROR: Failed to verify keys';
+            return false;
+        }
+        if (!self::addKeys()) {
+            self::$arrError[] = 'ERROR: Failed to add keys';
+            return false;
+        }
         if ($autopost) {
-            $this->form .=
+            self::$form .=
                 '<script type="text/javascript">/* <![CDATA[ */ '.
                 'document.yellowpay.submit(); '.
                 '/* ]]> */</script>';
         } else {
-            $this->form .=
+            self::$form .=
                 '<input type="submit" name="go" value="'.$submitValue."\" />\n";
         }
-        $this->form .= "</form>";
-//$this->arrError[] = "Test for error handling";
-        return $this->form;
+        self::$form .= "</form>";
+//self::$arrError[] = "Test for error handling";
+        return self::$form;
+    }
+
+
+    private static function verifyKeys()
+    {
+        foreach (self::$arrFieldMandatory as $key) {
+            if (empty(self::$arrShopOrder[$key])) {
+                self::$arrError[] = "Missing mandatory key '$key'";
+            }
+        }
+        return empty(self::$arrError);
     }
 
 
     /**
-     * Checks if all head keys were set correctly.
+     * Enter description here...
      *
+     * Concatenates the values of the fields
+     *  orderID, amount, currency, PSPID
+     * plus the secret taken from the 'yellowpay_hash_seed' setting
+     * and computes the SHA1 hash.
+     * Fails if one or more of the needed values are empty.
+     * @return  boolean         True on success, false otherwise
+     */
+    private static function addHash()
+    {
+        $seed = Settings::getValueByName('yellowpay_hash_signature_in');
+        if (   empty(self::$arrShopOrder['orderID'])
+            || empty(self::$arrShopOrder['amount'])
+            || empty(self::$arrShopOrder['currency'])
+            || empty(self::$arrShopOrder['PSPID'])
+            || empty($seed)) {
+            self::$arrError[] = 'Missing mandatory parameter for computing the hash';
+            return false;
+        }
+        $hash_string =
+            self::$arrShopOrder['orderID'].
+            self::$arrShopOrder['amount'].
+            self::$arrShopOrder['currency'].
+            self::$arrShopOrder['PSPID'].
+            $seed;
+        self::$arrShopOrder['SHASign'] = sha1($hash_string);
+        return true;
+    }
+
+
+    /**
+     * Sets all accepted fields from the order array
      * @access  private
      * @see     checkKey()
      */
-    function addRequiredKeys()
+    static function addKeys()
     {
-        $this->addHash();
-        $this->addToForm('txtShopId');
-        $this->addToForm('txtLangVersion');
-        $this->addToForm('txtOrderTotal');
-        $this->addToForm('txtArtCurrency');
+        foreach (array_keys(self::$arrShopOrder) as $key) {
+            if (!self::addToForm($key)) return false;
+        }
+        return true;
     }
 
 
     /**
-     * Check payment keys
+     * Adds a key to the HTML form and removes it from the array arrShopOrder.
      *
-     * Checks if all keys for the payment type were set correctly.
-     *
-     * @access  private
-     * @see     addToForm(), checkKey()
+     * Verifies any key/value pair and only adds valid parameters.
+     * @param   string    $key    Key to be added to the HTML form
+     * @return  boolean           True on success, false otherwise
      */
-    function addPaymentTypeKeys()
+    static function addToForm($key)
     {
-        // Skip this if no payment methods are specified.
-        if (!isset($this->arrShopOrder['acceptedPaymentMethods'])) {
-            $this->arrError[] = "Missing accepted payment methods";
-            return;
-        }
-        $arrAcceptedPM = explode(',', $this->arrShopOrder['acceptedPaymentMethods']);
-        // Remove list of accepted payment methods
-        unset($this->arrShopOrder['acceptedPaymentMethods']);
-        if (empty($arrAcceptedPM)) {
-            $this->arrError[] = "Failed to decode accepted payment methods";
-            return;
-        }
+        $value = self::checkKey($key);
+        if ($value === false) return false;
+        self::$form .=
+            "<input type='hidden' name='$key' value='".
+            htmlspecialchars($value)."' />\n";
+        return true;
+    }
 
-        foreach ($arrAcceptedPM as $strPM) {
-            if (array_key_exists($strPM, $this->arrAcceptedPaymentMethod)) {
-                $this->arrShopOrder["txtPM_{$strPM}_Status"] = 'true';
-                $this->addToForm("txtPM_{$strPM}_Status");
-            } else {
-                $this->arrError[] = "Payment type '$strPM' is disabled or unknown.";
-                return;
-            }
+
+    /**
+     * Verifies a key/value pair
+     * @access  private
+     * @param   string    $key    Key to check
+     * @return  boolean           True if both key and value are valid,
+     *                            false otherwise
+     * @see     addToForm()
+     */
+    static function checkKey($key)
+    {
+        if (!array_key_exists($key, self::$arrShopOrder)) {
+            self::$arrError[] = "Missing key '$key'!";
+            return false;
         }
-        // Enable dynamic payment method selection
-        $this->arrShopOrder['txtUseDynPM'] = 'true';
-        $this->addToForm('txtUseDynPM');
+        $value = self::$arrShopOrder[$key];
+        // This one *MUST NOT* be used a second time
+        unset(self::$arrShopOrder[$key]);
+        switch ($key) {
+            // Mandatory
+            case 'orderID':
+                if (intval($value)) return intval($value);
+                break;
+            case 'amount':
+                if ($value === intval($value)) return $value;
+                break;
+            case 'currency':
+                if (preg_match('/^\w{3}$/', $value)) return $value;
+                break;
+            case 'PSPID':
+                if (preg_match('/.+/', $value)) return $value;
+                break;
+            // The above four are needed to form the hash:
+            case 'SHASign':
+                // 40 digit hexadecimal string, like
+                // 4d0a445beac3561528dc26023e9ecb2d38fadc61
+                if (preg_match('/^[0-9a-z]{40}$/i', $value)) return $value;
+            case 'language':
+                if (preg_match('/^\w{2}(?:_\w{2})?$/', $value)) return $value;
+                break;
+            case 'accepturl':
+            case 'declineurl':
+            case 'exceptionurl':
+            case 'cancelurl':
+//                if (FWValidator::isUri($value)) return $value;
+// *SHOULD* verify the URIs, but the expression is not fit
+                if ($value) return $value;
+                break;
+            // Optional
+            // optional customer details, highly recommended for fraud prevention: see chapter 5.2
+            case 'CN':
+            case 'owneraddress':
+            case 'ownercty':
+            case 'ownerZIP':
+            case 'ownertown':
+            case 'ownertelno':
+            case 'COM':
+                if (preg_match('/.*/', $value)) return $value;
+                break;
+            case 'EMAIL':
+                if (isEmail($value)) return $value;
+                break;
+            case 'PMLIST':
+                if (preg_match('/.*/', $value)) return $value;
+                break;
+            case 'WIN3DS':
+                if ($value == 'MAINW' || $value = 'POPUP') return $value;
+                break;
+            // post payment parameters: see chapter 8.2
+            case 'COMPLUS':
+                if (preg_match('/.*/', $value)) return $value;
+                break;
+            case 'PARAMPLUS':
+                if (preg_match('/.*/', $value)) return $value;
+                break;
+            // post payment parameters: see chapter 8.3
+            case 'PARAMVAR':
+                if (preg_match('/.*/', $value)) return $value;
+                break;
+            // optional operation field: see chapter 9.2
+            case 'operation':
+                if ($value == 'RES' || $value == 'SAL') return $value;
+                break;
+            // layout information: see chapter 7.1
+            case 'TITLE':
+            case 'BGCOLOR':
+            case 'TXTCOLOR':
+            case 'TBLBGCOLOR':
+            case 'TBLTXTCOLOR':
+            case 'BUTTONBGCOLOR':
+            case 'BUTTONTXTCOLOR':
+            case 'LOGO':
+            case 'FONTTYPE':
+            // dynamic template page: see chapter 7.2
+            case 'TP':
+                if (preg_match('/.+/', $value)) return $value;
+                break;
+
+            // Contrexx does neither supply nor support the following:
+            //
+            // payment methods/page specifics: see chapter 9.1
+            case 'PM':
+            case 'BRAND':
+            case 'PM list type':
+            case 'PMListType':
+            // link to your website: see chapter 8.1
+            case 'homeurl':
+            case 'catalogurl':
+            // optional extra login field: see chapter 9.3
+            case 'USERID':
+            // Alias details: see Alias Management documentation
+            case 'Alias':
+            case 'AliasUsage':
+            case 'AliasOperation':
+                break;
+        }
+        self::$arrError[] = "Invalid field '$key', value '$value'";
+        return false;
+    }
+
+
+    /**
+     * Verifies the parameters posted back by e-commerce
+     * @return  boolean           True on success, false otherwise
+     */
+    static function checkIn()
+    {
+        // If the hash is correct, so is the order ID
+        return self::checkHash();
+    }
+
+
+    /**
+     * Returns the Order ID from the GET request, if present
+     * @return  integer           The order ID, or false
+     */
+    static function getOrderId()
+    {
+        return (isset($_GET['orderID']) ? $_GET['orderID'] : false);
+    }
+
+
+    /**
+     * Validates the hash returned by the PSP
+     *
+     * Returns true both if it is correct and if it's missing, as this is not
+     * a mandatory feature.
+     * If the hash is present and wrong, however, false is returned.
+     * The fields used for the SHA-OUT value are -- in this order:
+     * orderID, currency, amount, PM, ACCEPTANCE, STATUS,
+     * CARDNO, PAYID, NCERROR, BRAND
+     * @return  boolean         True on success, false otherwise
+     */
+    static function checkHash()
+    {
+        if (empty($_GET['SHASIGN'])) {
+            self::$arrWarning[] = 'No SHASIGN value in request';
+            return true;
+        }
+        $hash_string = '';
+        foreach (self::$arrFieldShaOut as $key) {
+            // This means failure!
+            if (!isset($_GET[$key])) {
+                continue;
+            }
+            $hash_string .= $_GET[$key];
+        }
+        $hash_string .= Settings::getValueByName('yellowpay_hash_signature_out');
+        $hash = strtoupper(sha1($hash_string));
+        if ($_GET['SHASIGN'] == $hash) {
+            return true;
+        }
+        self::$arrError[] = 'Invalid SHASIGN value in request';
+        return false;
     }
 
 
@@ -306,311 +595,9 @@ class Yellowpay
      * accepted payment methods specified when calling the constructor.
      * @return  array         The payment type name strings
      */
-    function getAcceptedPaymentMethods()
+    static function getAcceptedPaymentMethods()
     {
-        return array_keys($this->arrAcceptedPaymentMethod);
-    }
-
-
-    /**
-     * Check optional keys
-     *
-     * Checks if all other (optional) keys were set correctly.
-     *
-     * @access  private
-     * @see     checkKey()
-     */
-    function addOtherKeys()
-    {
-        unset($this->arrShopOrder['txtShopId']);
-        unset($this->arrShopOrder['Hash_seed']);
-        foreach (array_keys($this->arrShopOrder) as $key) {
-            $this->addToForm($key);
-        }
-    }
-
-
-    /**
-     * Generates the txtHash hash key and adds it to the HTML form
-     *
-     * @return  void
-     */
-    function addHash()
-    {
-        if (empty($this->arrShopOrder['txtShopId'])) {
-            $this->arrError[] = "Missing the txtShopId parameter";
-        }
-        if ($this->arrShopOrder['Hash_seed'] == '') {
-            $this->arrError[] = "Missing the Hash_seed parameter";
-        }
-        $this->arrShopOrder['txtHash'] = md5(
-            $this->arrShopOrder['txtShopId'].
-            $this->arrShopOrder['txtArtCurrency'].
-            $this->arrShopOrder['txtOrderTotal'].
-            $this->arrShopOrder['Hash_seed']
-        );
-        $this->addToForm('txtHash');
-    }
-
-
-    /**
-     * Adds a key to the HTML form and removes it from the array arrShopOrder.
-     *
-     * Verifies any key/value pair and only adds valid parameters.
-     * @param   string    $key    Key to be added to the HTML form
-     * @return  boolean           True on success, false otherwise
-     */
-    function addToForm($key)
-    {
-        if ($this->checkKey($key)) {
-/*
-Hmmm...  I dunno where this came from.  Might be useful:
-            switch ($key) {
-                case 'txtShopId':
-                    $key_name = 'PSDID';
-                    break;
-                case 'txtOrderIDShop':
-                    $key_name = 'orderID';
-                    break;
-                case 'txtOrderTotal':
-                    $key_name = 'amount';
-                    break;
-                case 'txtLangVersion':
-                    $key_name = 'language';
-                    break;
-                case 'txtArtCurrency':
-                    $key_name = 'currency';
-                    break;
-                default:
-                    $key_name = $key;
-                    break;
-            }
-            if ($key == 'txtOrderTotal') {
-                $value = $this->arrShopOrder[$key]*100;
-            } else {
-                $value = $this->arrShopOrder[$key];
-            }
-            $this->form .= "<input type='hidden' name='$key_name' value='$value' />\n";
-*/
-            $this->form .= "<input type='hidden' name='$key' value='{$this->arrShopOrder[$key]}' />\n";
-            unset($this->arrShopOrder[$key]);
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * Verifies a key/value pair.
-     *
-     * @access  private
-     * @param   string    $key    Key to check
-     * @return  boolean           True if both key and value are valid,
-     *                            false otherwise
-     * @see     addToForm()
-     */
-    function checkKey($key)
-    {
-        if (!array_key_exists($key, $this->arrShopOrder)) {
-            $this->arrError[] = "Missing mandatory key '$key'!";
-            return false;
-        }
-        switch ($key) {
-            case 'txtShopId':
-                if (empty($this->arrShopOrder[$key])) {
-                    $this->arrError[] = "$key isn't valid.";
-                    return false;
-                }
-                if (strlen($this->arrShopOrder[$key]) > 30) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 30);
-                    $this->arrWarning[] = "$key was cut to 30 characters.";
-                }
-                break;
-            case 'txtLangVersion':
-                if (array_key_exists(strtoupper($this->arrShopOrder[$key]), $this->arrLangVersion)) {
-                    $this->arrShopOrder[$key] = $this->arrLangVersion[strtoupper($this->arrShopOrder[$key])];
-                } else {
-                    $this->arrShopOrder[$key] = $this->arrLangVersion['US'];
-                    $this->arrWarning[] = "$key was set to US";
-                }
-                break;
-            case 'txtOrderTotal':
-                if (   empty($this->arrShopOrder[$key])
-                    || $this->arrShopOrder[$key] <= 0) {
-                    $this->arrError[] = "$key is missing or invalid.";
-                    return false;
-                }
-                if (!ereg('^[0-9]+\.[0-9][0-9]$', $this->arrShopOrder[$key])) {
-                    $this->arrShopOrder[$key] = Currency::formatPrice($this->arrShopOrder[$key]);
-                    $this->arrWarning[] = "$key was reformatted to ".$this->arrShopOrder[$key];
-                }
-                break;
-            case 'txtArtCurrency':
-                if (empty($this->arrShopOrder[$key])) {
-                    $this->arrError[] = "$key is missing.";
-                    return false;
-                }
-                $this->arrShopOrder[$key] = strtoupper($this->arrShopOrder[$key]);
-                if (!in_array($this->arrShopOrder[$key], $this->arrArtCurrency)) {
-                    $this->arrShopOrder[$key] = $this->arrArtCurrency[0];
-                    $this->arrWarning[] = "$key was set to ".$this->arrArtCurrency[0];
-                }
-                break;
-            case 'txtOrderIDShop':
-                if (strlen($this->arrShopOrder[$key]) > 18) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 18);
-                    $this->arrWarning[] = "$key was cut to 18 characters.";
-                }
-                break;
-            case 'deliveryPaymentType':
-                if (!in_array($this->arrShopOrder[$key], Yellowpay::$arrKnownAuthorization)) {
-                    $this->arrShopOrder[$key] = Yellowpay::$arrKnownAuthorization['1'];
-                    $this->arrWarning[] = "$key was set to '".Yellowpay::$arrKnownAuthorization['1']."'.";
-                }
-                break;
-// Note:  Mandatory for the yellowbill payment method
-            case 'txtESR_Member':
-                if (!ereg('^[0-9]{1,2}-[0-9]{1,6}-[0-9]$', $this->arrShopOrder[$key])) {
-                    $this->arrError[] = "$key isn't valid.";
-                    return false;
-                }
-                break;
-// Note:  Mandatory for the yellowbill payment method
-            case 'txtESR_Ref':
-                if (!strlen($this->arrShopOrder[$key]) == 16 or !strlen($this->arrShopOrder[$key]) == 27) {
-                    $this->arrWarning[] = "$key isn't valid.";
-                }
-                break;
-            case 'txtShopPara':
-                if (strlen($this->arrShopOrder[$key]) > 255) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 255);
-                    $this->arrWarning[] = "$key was cut to 255 characters.";
-                }
-                break;
-            case 'txtBTitle':
-                if (strlen($this->arrShopOrder[$key]) > 30) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 30);
-                    $this->arrWarning[] = "$key was cut to 30 characters.";
-                }
-                break;
-            case 'txtBLastName':
-                if (strlen($this->arrShopOrder[$key]) > 40) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                    $this->arrWarning[] = "$key was cut to 40 characters.";
-                }
-                break;
-            case 'txtBFirstName':
-                if (strlen($this->arrShopOrder[$key]) > 40) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                    $this->arrWarning[] = "$key was cut to 40 characters.";
-                }
-                break;
-            case 'txtBAddr1':
-                if (strlen($this->arrShopOrder[$key]) > 40) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                    $this->arrWarning[] = "$key was cut to 40 characters.";
-                }
-                break;
-            case 'txtBZipCode':
-                if (strlen($this->arrShopOrder[$key]) > 10) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 10);
-                    $this->arrWarning[] = $key.' was cut to 10 characters.';
-                }
-                break;
-            case 'txtBCity':
-                if (strlen($this->arrShopOrder[$key]) > 40) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                    $this->arrWarning[] = "$key was cut to 40 characters.";
-                }
-                break;
-            case 'txtBCountry':
-                if (strlen($this->arrShopOrder[$key]) != 2) {
-// TODO: Only valid ISO-3166 country codes are accepted by Yellowpay!
-// This should be verified.
-                    $this->arrError[] = "$key isn't a valid 2 character ISO country code.";
-                    return false;
-                }
-                $this->arrShopOrder[$key] = strtoupper($this->arrShopOrder[$key]);
-                break;
-            case 'txtBTel':
-                if (strlen($this->arrShopOrder[$key]) > 40) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                    $this->arrWarning[] = "$key was cut to 40 characters.";
-                }
-                break;
-            case 'txtBFax':
-                if (strlen($this->arrShopOrder[$key]) > 40) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                    $this->arrWarning[] = "$key was cut to 40 characters.";
-                }
-                break;
-            case 'txtBEmail':
-                if (strlen($this->arrShopOrder[$key]) > 40) {
-                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                    $this->arrWarning[] = "$key was cut to 40 characters.";
-                }
-                break;
-
-            // Added 20080325, Reto Kohli:
-            case 'txtHash':
-                if (   empty($this->arrShopOrder[$key])
-                    || !preg_match('/^[0-9a-f]{32}$/', $this->arrShopOrder[$key])) {
-                    $this->arrError[] = "$key is invalid.";
-                    return false;
-                }
-                break;
-            case 'txtUsePopup':
-                if (   $this->arrShopOrder[$key] != 'true'
-                    && $this->arrShopOrder[$key] != 'false') {
-                    $this->arrShopOrder[$key] = 'true';
-                    $this->arrWarning[] = "$key was set to 'true'.";
-                }
-                break;
-            case 'txtUseWindow':
-                if (   $this->arrShopOrder[$key] != 'true'
-                    && $this->arrShopOrder[$key] != 'false') {
-                    $this->arrShopOrder[$key] = 'false';
-                    $this->arrWarning[] = "$key was set to 'false'.";
-                }
-                break;
-            case 'txtDestination':
-                if (   $this->arrShopOrder[$key] != 'pfpopup'
-                    && $this->arrShopOrder[$key] != 'pfwindow') {
-                    $this->arrShopOrder[$key] = 'pfpopup';
-                    $this->arrWarning[] = "$key was set to 'pfpopup'.";
-                }
-                break;
-            case 'txtHistoryBack':
-                if (   $this->arrShopOrder[$key] != 'true'
-                    && $this->arrShopOrder[$key] != 'false') {
-                    $this->arrShopOrder[$key] = 'false';
-                    $this->arrWarning[] = "$key was set to 'false'.";
-                }
-                break;
-            // Added 20080410, Reto Kohli
-            // Dynamic payment methods selection.
-            // All default to false
-            case 'txtPM_PostFinanceCard_Status':
-            case 'txtPM_yellownet_Status':
-            case 'txtPM_Master_Status':
-            case 'txtPM_Visa_Status':
-            case 'txtPM_Amex_Status':
-            case 'txtPM_Diners_Status':
-            case 'txtPM_yellowbill_Status':
-            case 'txtUseDynPM':
-                if (   $this->arrShopOrder[$key] != 'true'
-                    && $this->arrShopOrder[$key] != 'false') {
-                    $this->arrShopOrder[$key] = 'false';
-                    $this->arrWarning[] = "$key was set to 'false'.";
-                }
-                break;
-            // All unknown keys like 'acceptedPaymentMethods' should have been
-            // unset() already.
-            default:
-                $this->arrError[] = "$key is an unknown key!";
-                return false;
-        }
-        return true;
+        return array_keys(self::$arrAcceptedPaymentMethod);
     }
 
 
@@ -621,12 +608,12 @@ Hmmm...  I dunno where this came from.  Might be useful:
      *                                    method name
      * @return  string                    The HTML menu options
      */
-    function getAcceptedPaymentMethodMenuOptions($strSelected='')
+    static function getAcceptedPaymentMethodMenuOptions($strSelected='')
     {
         global $_ARRAYLANG;
 
         $strOptions = '';
-        foreach (array_keys($this->arrAcceptedPaymentMethod)
+        foreach (array_keys(self::$arrAcceptedPaymentMethod)
                   as $strPaymentMethod) {
             $strOptions .=
                 '<option value="'.$strPaymentMethod.'"'.
@@ -645,7 +632,7 @@ Hmmm...  I dunno where this came from.  Might be useful:
      * payment methods.
      * @return  string        The HTML checkboxes
      */
-    function getKnownPaymentMethodCheckboxes()
+    static function getKnownPaymentMethodCheckboxes()
     {
         global $_ARRAYLANG;
 
@@ -654,7 +641,7 @@ Hmmm...  I dunno where this came from.  Might be useful:
             $strOptions .=
                 '<input name="yellowpay_accepted_payment_methods[]" '.
                 'id="yellowpay_pm_'.$index.'" type="checkbox" '.
-                (in_array($strPaymentMethod, array_keys($this->arrAcceptedPaymentMethod))
+                (in_array($strPaymentMethod, array_keys(self::$arrAcceptedPaymentMethod))
                     ? 'checked="checked" ' : ''
                 ).
                 'value="'.$strPaymentMethod.'" />'.
@@ -666,20 +653,21 @@ Hmmm...  I dunno where this came from.  Might be useful:
     }
 
 
-    function getAuthorizationMenuoptions()
+    static function getAuthorizationMenuoptions()
     {
         global $_ARRAYLANG;
 
         return
-            '<option value="immediate" '.
-            ($this->strAuthorization == 'immediate' ? 'selected="selected"' : '').'>'.
-            $_ARRAYLANG['TXT_SHOP_YELLOWPAY_IMMEDIATE'].
+            '<option value="SAL"'.
+            (self::$strAuthorization == 'SAL' ? ' selected="selected"' : '').'>'.
+            $_ARRAYLANG['TXT_SHOP_YELLOWPAY_REQUEST_FOR_SALE'].
             '</option>'.
-            '<option value="deferred" '.
-            ($this->strAuthorization == 'deferred' ? 'selected="selected"' : '').'>'.
-            $_ARRAYLANG['TXT_SHOP_YELLOWPAY_DEFERRED'].
+            '<option value="RES"'.
+            (self::$strAuthorization == 'RES' ? ' selected="selected"' : '').'>'.
+            $_ARRAYLANG['TXT_SHOP_YELLOWPAY_REQUEST_FOR_AUTHORIZATION'].
             '</option>';
     }
+
 }
 
 ?>

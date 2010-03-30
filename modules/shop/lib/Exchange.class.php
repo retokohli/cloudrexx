@@ -112,14 +112,11 @@ class Exchange
     function __construct()
     {
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template/');
-        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->loadTemplateFile('module_shop_exchange.html', true, true);
-
         $this->arrExchangeStep = array(
                 'export' => $this->arrExchangeSteps['export'][0],
                 'import' => $this->arrExchangeSteps['import'][0]
                 );
-
         $this->strExportLink = "/modules/shop/export.php";
         $this->strImportPath = ASCMS_PATH.'/modules/shop/tmp/';
     }

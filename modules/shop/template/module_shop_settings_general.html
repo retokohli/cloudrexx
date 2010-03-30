@@ -71,6 +71,12 @@
           {SHOP_SHOW_PRODUCTS_DEFAULT_OPTIONS}
         </select>
     </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_SHOP_ORDERITEMS_AMOUNT_MAX} ({SHOP_CURRENCY_CODE})</td>
+      <td nowrap="nowrap">
+        <input type="text" align="right" name="orderitems_amount_max" size="50" maxlength='12' value="{SHOP_ORDERITEMS_AMOUNT_MAX}" />
+        {TXT_SHOP_ORDERITEMS_AMOUNT_MAX_NOTE}
+    </tr>
   </table>
   <br />
 </div>
@@ -96,7 +102,7 @@
           <table width="100%" summary="">
             <tr>
               <td width="20%">
-                {TXT_SHOP_ID}
+                {TXT_SHOP_YELLOWPAY_PSPID}
               </td>
               <td width="80%">
                 <input type="text" name="yellowpay_shop_id" value="{SHOP_YELLOWPAY_SHOP_ID}" size="15" maxlength="50" />
@@ -104,10 +110,18 @@
             </tr>
             <tr>
               <td>
-                {TXT_HASH_SEED}
+                {TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN}
               </td>
               <td>
-                <input type="text" name="yellowpay_hash_seed" value="{SHOP_YELLOWPAY_HASH_SEED}" size="15" maxlength="50" />
+                <input type="text" name="yellowpay_hash_signature_in" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_IN}" size="15" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}
+              </td>
+              <td>
+                <input type="text" name="yellowpay_hash_signature_out" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}" size="15" maxlength="50" />
               </td>
             </tr>
             <tr>
@@ -144,6 +158,46 @@
         </div>
       </td>
       <td nowrap="nowrap"><div align="center"><input type="checkbox" name="yellowpay_status" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
+    </tr>
+
+    <tr valign="top" class="row1">
+      <td width="15%" nowrap="nowrap">{TXT_SHOP_POSTFINANCE_MOBILE}</td>
+      <td nowrap="nowrap">
+        <label for="postfinance_mobile_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="postfinance_mobile_swapper" id="postfinance_mobile_swapper"
+            type="checkbox" onclick="swapBlock('postfinance_mobile');" value="1" />&nbsp;
+        <div id="postfinance_mobile" style="display: none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">
+                {TXT_SHOP_POSTFINANCE_MOBILE_WEBUSER}
+              </td>
+              <td width="80%">
+                <input type="text" name="postfinance_mobile_webuser" value="{SHOP_POSTFINANCE_MOBILE_WEBUSER}" size="15" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {TXT_SHOP_POSTFINANCE_MOBILE_SIGN}
+              </td>
+              <td>
+                <input type="text" name="postfinance_mobile_sign" value="{SHOP_POSTFINANCE_MOBILE_SIGN}" size="15" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                {TXT_SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST}
+              </td>
+              <td>
+                <input type="checkbox" id="postfinance_mobile_ijustwanttotest_yes"
+                    name="postfinance_mobile_ijustwanttotest" value="1"
+                    {SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST_CHECKED} />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="postfinance_mobile_status" value="1" {SHOP_POSTFINANCE_MOBILE_STATUS} /></div></td>
     </tr>
 
     <tr valign="top" class="row2">

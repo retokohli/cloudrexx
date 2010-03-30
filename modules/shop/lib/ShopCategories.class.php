@@ -258,18 +258,19 @@ class ShopCategories
             );
         // Has there been an error?
         if ($arrShopCategory === false) return false;
-        foreach ($arrShopCategory as $objShopCategory) {
-            $id = $objShopCategory->getId();
+        foreach ($arrShopCategory as $objCategory) {
+            $id = $objCategory->getId();
             $index = count(self::$arrShopCategory);
             self::$arrShopCategory[$index] = array(
                 'id'       => $id,
-                'name'     => $objShopCategory->getName(),
-                'parentId' => $objShopCategory->getParentId(),
-                'sorting'  => $objShopCategory->getSorting(),
-                'status'   => $objShopCategory->getStatus(),
-                'picture'  => $objShopCategory->getPicture(),
-                'flags'    => $objShopCategory->getFlags(),
-                'virtual'  => $objShopCategory->isVirtual(),
+                'name'     => $objCategory->getName(),
+                'parentId' => $objCategory->getParentId(),
+                'sorting'  => $objCategory->getSorting(),
+                'status'   => $objCategory->getStatus(),
+                'picture'  => $objCategory->getPicture(),
+                'flags'    => $objCategory->getFlags(),
+                'catdesc'  => $objCategory->getDescription(),
+                'virtual'  => $objCategory->isVirtual(),
                 'level'    => $level,
             );
             self::$arrShopCategoryIndex[$id] = $index;
@@ -279,7 +280,7 @@ class ShopCategories
             //   is an ancestor of the selected one or the selected itself.
             if (   ($maxlevel == 0 || $level < $maxlevel)
                 && ($flagFull || in_array($id, self::$arrTrail))
-                && (!$objShopCategory->isVirtual() || $flagVirtual)) {
+                && (!$objCategory->isVirtual() || $flagVirtual)) {
                 self::buildTreeArrayRecursive(
                     $flagFull, $flagActiveOnly, $flagVirtual,
                     $selected_id, $id, $maxlevel, $level+1
@@ -391,14 +392,14 @@ TODO:  For 2.2.0
     {
         self::$arrTrail = array($shopCategoryId);
         while ($shopCategoryId != 0) {
-            $objShopCategory = ShopCategory::getById($shopCategoryId, FRONTEND_LANG_ID);
-            if (!$objShopCategory) {
+            $objCategory = ShopCategory::getById($shopCategoryId, FRONTEND_LANG_ID);
+            if (!$objCategory) {
                 // Probably du to an illegal or unknown ID.
                 // Use a dummy array so the work can go on anyway.
                 self::$arrTrail = array(0, $shopCategoryId);
                 return false;
             }
-            $shopCategoryId = $objShopCategory->getParentId();
+            $shopCategoryId = $objCategory->getParentId();
             self::$arrTrail[] = $shopCategoryId;
         }
         self::$arrTrail = array_reverse(self::$arrTrail);
@@ -469,12 +470,12 @@ TODO:  For 2.2.0
      */
     static function deleteAll($flagDeleteImages=false)
     {
-        $arrChildCategoryId = ShopCategories::getChildCategoryIdArray(0, false);
+        $arrChildCategoryId = self::getChildCategoryIdArray(0, false);
         foreach ($arrChildCategoryId as $id) {
-            $objShopCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
+            $objCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
             // delete siblings and Products as well; delete images if desired.
 // TODO: Add deleteById() method
-            if (!$objShopCategory->delete($flagDeleteImages)) return false;
+            if (!$objCategory->delete($flagDeleteImages)) return false;
         }
         return true;
     }
@@ -525,7 +526,7 @@ TODO:  For 2.2.0
         }
         // Otherwise, look for images in Products within the children
         $arrChildCategoryId =
-            ShopCategories::getChildCategoryIdArray($catId, $flagActiveOnly);
+            self::getChildCategoryIdArray($catId, $flagActiveOnly);
         foreach ($arrChildCategoryId as $catId) {
             $imageName = Products::getPictureByCategoryId($catId);
             if ($imageName) return $imageName;
@@ -533,7 +534,7 @@ TODO:  For 2.2.0
 
         // No picture there either, try the subcategories
         foreach ($arrChildCategoryId as $catId) {
-            $imageName = ShopCategories::getPictureById($catId);
+            $imageName = self::getPictureById($catId);
             if ($imageName) return $imageName;
         }
         // No more subcategories, no picture -- give up
@@ -566,9 +567,9 @@ TODO:  For 2.2.0
         if (!is_array($arrChildShopCategoriesId)) return false;
         $arrShopCategories = array();
         foreach ($arrChildShopCategoriesId as $id) {
-            $objShopCategory = ShopCategory::getById($id);
-            if (!$objShopCategory) continue;
-            $arrShopCategories[] = $objShopCategory;
+            $objCategory = ShopCategory::getById($id);
+            if (!$objCategory) continue;
+            $arrShopCategories[$id] = $objCategory;
         }
         return $arrShopCategories;
     }
@@ -669,6 +670,7 @@ TODO:  For 2.2.0
 // Should be thoroughly tested.
 // Alternative: $name
                 htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET).
+                (empty($name) ? '&nbsp;' : '').
                 "</option>\n";
         }
         return $strMenu;
@@ -811,19 +813,19 @@ TODO:  For 2.2.0
     {
         // Get the parent ShopCategories ID
         $parentShopCategoryId =
-            ShopCategories::getParentCategoryId($shopCategoryId);
+            self::getParentCategoryId($shopCategoryId);
         if (!$parentShopCategoryId) {
             $parentShopCategoryId = 0;
         }
         // Get the IDs of all active children
         $arrChildShopCategoriesId =
-            ShopCategories::getChildCategoryIdArray($parentShopCategoryId, true);
+            self::getChildCategoryIdArray($parentShopCategoryId, true);
         return
             (isset($arrChildShopCategoriesId[
-                        array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
-                   ])
+                array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+             ])
                 ? $arrChildShopCategoriesId[
-                        array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+                    array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
                   ]
                 : $arrChildShopCategoriesId[0]
             );
@@ -963,7 +965,7 @@ TODO:  For 2.2.0
     static function getVirtualCategoriesSelectionForFlags($strFlags)
     {
         $arrVirtualShopCategoryName =
-            ShopCategories::getVirtualCategoryIdNameArray();
+            self::getVirtualCategoryIdNameArray();
         $strSelection = '';
         foreach ($arrVirtualShopCategoryName as $arrShopCategory) {
             $id   = $arrShopCategory['id'];
@@ -1021,11 +1023,11 @@ TODO:  For 2.2.0
         if ($id <= 0) {
             return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
         }
-        $objShopCategory = ShopCategory::getById($id, LANGID);
-        if (!$objShopCategory) {
+        $objCategory = ShopCategory::getById($id, LANGID);
+        if (!$objCategory) {
             return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
         }
-        $imageName = $objShopCategory->getPicture();
+        $imageName = $objCategory->getPicture();
         $imagePath = SHOP_CATEGORY_IMAGE_PATH.'/'.$imageName;
         // Only try to create thumbs from entries that contain a
         // plain text file name (i.e. from an import)
@@ -1045,8 +1047,9 @@ TODO:  For 2.2.0
         }
         // If the thumbnail exists and is newer than the picture,
         // don't create it again.
-        if (file_exists($imagePath.'.thumb')
-         && filemtime($imagePath.'.thumb') > filemtime($imagePath)) {
+        $thumb_name = ImageManager::getThumbnailFilename($imagePath);
+        if (file_exists($thumb_name)
+         && filemtime($thumb_name) > filemtime($imagePath)) {
             return '';
         }
         // Already included by the Shop.
@@ -1067,6 +1070,27 @@ TODO:  For 2.2.0
             );
         }
         return '';
+    }
+
+
+    /**
+     * Returns an array of Category names indexed by their respective IDs
+     * @param   boolean   $activeonly   If true, only active categories are
+     *                                  included in the array
+     * @return  array                   The array of Category names
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getNameArray($activeonly=false)
+    {
+//echo("getNameArray():  Categories:<br />".var_export(self::$arrCategory, true)."<br />");
+        if (empty(self::$arrCategory))
+            self::buildTreeArray(true, $activeonly);
+//echo("getNameArray():  Categories:<br />".var_export(self::$arrCategory, true)."<br />");
+        $arrName = array();
+        foreach (self::$arrCategory as $arrCategory) {
+            $arrName[$arrCategory['id']] = $arrCategory['name'];
+        }
+        return $arrName;
     }
 
 }

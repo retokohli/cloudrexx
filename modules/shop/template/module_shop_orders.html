@@ -4,7 +4,7 @@
 function deleteOrder(orderId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delorder&orderId="+orderId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delorder&orderId="+orderId);
 }
 
 function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
@@ -33,7 +33,7 @@ function sendForm(letter)
 function changeOrderStatus(orderId, orderStatus, newOrderStatus)
 {
   if (confirm('{TXT_CONFIRM_CHANGE_STATUS}')) {
-    var strURI = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
+    var strURI = "index.php?cmd=shop{MODULE_INDEX}&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
     if (   newOrderStatus == 1
         || newOrderStatus == 4
         || newOrderStatus == 5

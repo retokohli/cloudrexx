@@ -41,8 +41,9 @@ class Attribute
     /**
      * Attribute type constants
      *
-     * Note that you need to update methods like getAttributeDisplayTypeMenu()
-     * manually when you add another option here.
+     * Note that you need to update methods like
+     * Attributes::getDisplayTypeMenu() when you add another
+     * type here.
      */
     const TYPE_MENU_OPTIONAL    = 0;
     const TYPE_RADIOBUTTON      = 1;
@@ -59,7 +60,7 @@ class Attribute
      * The Attribute ID
      * @var integer
      */
-    private $id = 0;
+    private $attribute_id = 0;
     /**
      * The associated Product ID, if any, or false
      * @var   mixed
@@ -81,7 +82,7 @@ class Attribute
      */
     private $type = 0;
     /**
-     * The array of Product Attribute values
+     * The array of Options
      * @var array
      */
     private $arrValues = false;
@@ -101,18 +102,19 @@ class Attribute
 
     /**
      * Constructor
-     * @param   integer   $type         The type of the Attribute
-     * @param   integer   $id           The optional Attribute ID
-     * @param   integer   $product_id   The optional Product ID
+     * @param   integer   $type           The type of the Attribute
+     * @param   integer   $attribute_id   The optional Attribute ID
+     * @param   integer   $product_id     The optional Product ID
      */
-    function __construct($name, $type, $id=0, $product_id=false)
+    function __construct($name, $type, $attribute_id=0, $product_id=false)
     {
         $this->name = $name;
         $this->setType($type);
-        $this->id = $id;
+        $this->id = $attribute_id;
         $this->product_id = $product_id;
-        if ($id)
-            $this->arrValues = Attributes::getValueArrayByNameId($id);
+        if ($attribute_id)
+            $this->arrValues =
+                Attributes::getOptionArrayByAttributeId($attribute_id);
         if ($product_id)
             $this->arrRelation = Attributes::getRelationArray($product_id);
     }
@@ -161,8 +163,8 @@ class Attribute
     }
 
     /**
-     * Get the Attribute name ID
-     * @return  integer                 The Attribute name ID
+     * Get the Attribute ID
+     * @return  integer                 The Attribute ID
      */
     function getId()
     {
@@ -208,9 +210,9 @@ class Attribute
      * do so from the database.
      * The array has the form
      *  array(
-     *    value ID => array(
-     *      'id' => value ID,
-     *      'name_id' => name ID,
+     *    option ID => array(
+     *      'id' => option ID,
+     *      'attribute_id' => Attribute ID,
      *      'value' => value name,
      *      'text_value_id' => Text ID,
      *      'price' => price,
@@ -220,24 +222,24 @@ class Attribute
      * For relations to the associated Product, if any, see
      * {@link getRelationArray}.
      * @access  public
-     * @return  array                       Array of Product Attribute values
+     * @return  array                       Array of Options
      *                                      upon success, false otherwise.
      * @global  ADONewConnection
      */
-    function getValueArray()
+    function getOptionArray()
     {
         if (!is_array($this->arrValues))
-            $this->arrValues = Attribute::getValueArrayByNameId($this->id);
+            $this->arrValues = Attributes::getOptionArrayByAttributeId($this->id);
         return $this->arrValues;
     }
     /**
-     * Set the Attribute value array -- NOT ALLOWED
-     * Use addValue()/deleteValueById() instead.
+     * Set the option array -- NOT ALLOWED
+     * Use addOption()/deleteValueById() instead.
      */
 
 
     /**
-     * Add a Attribute value
+     * Add an option
      *
      * The values' ID is set when the record is stored.
      * @param   string  $value      The value description
@@ -246,7 +248,7 @@ class Attribute
      *                              associated with a Product
      * @return  boolean             True on success, false otherwise
      */
-    function addValue($value, $price, $order=0)
+    function addOption($value, $price, $order=0)
     {
         if (   $this->type == self::TYPE_UPLOAD_OPTIONAL
             || $this->type == self::TYPE_UPLOAD_MANDATORY
@@ -273,56 +275,55 @@ class Attribute
 
 
     /**
-     * Update a Attribute value.
+     * Update an option in this object
      *
-     * The value is only stored together with the object in {@link store()}
-     * @param   integer   $value_id   The Attribute value ID
+     * The option is only stored together with the object in {@link store()}
+     * @param   integer   $option_id  The option ID
      * @param   string    $value      The descriptive name
      * @param   float     $price      The price
      * @param   integer   $order      The order of the value, only applicable
      *                                when associated with a Product
      * @return  boolean               True on success, false otherwise
      */
-    function changeValue($value_id, $value, $price, $order=0)
+    function changeValue($option_id, $value, $price, $order=0)
     {
-        $this->arrValues[$value_id]['value'] = $value;
-        $this->arrValues[$value_id]['price'] = $price;
-        $this->arrValues[$value_id]['order'] = $order;
+        $this->arrValues[$option_id]['value'] = $value;
+        $this->arrValues[$option_id]['price'] = $price;
+        $this->arrValues[$option_id]['order'] = $order;
         // Insert into database, and update ID
-        //return $this->updateValue($this->arrValues[$value_id]);
+        //return $this->updateValue($this->arrValues[$option_id]);
     }
 
 
     /**
-     * Remove the Attribute value with the given ID.
-     * @param   integer     $value_id       The Product Attribute value ID
+     * Remove the option with the given ID from this Attribute
+     * @param   integer     $option_id      The option ID
      * @return  boolean                     True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function deleteValueById($value_id)
+    function deleteValueById($option_id)
     {
         global $objDatabase;
 
         // Anything to be removed?
-        if (empty($this->arrValues[$value_id])) return true;
+        if (empty($this->arrValues[$option_id])) return true;
 
         // Remove relations to Products
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-            WHERE attributes_value_id=$value_id";
+             WHERE option_id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         // Remove Text records
-        if (!Text::deleteById($this->arrValues[$value_id]['text_value_id']))
+        if (!Text::deleteById($this->arrValues[$option_id]['text_value_id']))
             return false;
         // Remove the value
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
-            WHERE id=$value_id";
+             WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        unset($this->arrValues[$value_id]);
+        unset($this->arrValues[$option_id]);
         return true;
     }
 
@@ -345,7 +346,7 @@ class Attribute
         // Delete references to products first
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-             WHERE attributes_name_id=$this->id";
+             WHERE attribute_id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
@@ -355,7 +356,7 @@ class Attribute
         // Delete values
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
-             WHERE name_id=$this->id";
+             WHERE attribute_id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
@@ -431,7 +432,7 @@ class Attribute
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
                SET text_name_id=$this->text_name_id,
-                   display_type=$this->type
+                   type=$this->type
              WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -453,7 +454,7 @@ class Attribute
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (
-                text_name_id, display_type
+                text_name_id, type
             ) VALUES (
                 $this->text_name_id, $this->type
             )";
@@ -483,13 +484,13 @@ class Attribute
                 $text_value_id, FRONTEND_LANG_ID, $arrValue['value'],
                 MODULE_ID, self::TEXT_VALUE);
             if (!$arrValue['text_value_id']) return false;
-            // Note that the array index and the value ID stored
+            // Note that the array index and the option ID stored
             // in $arrValue['id'] are only identical for value
             // records already present in the database.
             // If the value was just added to the array, the array index
             // is just that -- an array index, and its $arrValue['id'] is empty.
-            $value_id = (empty($arrValue['id']) ? 0 : $arrValue['id']);
-            if ($value_id && $this->recordExistsValue($value_id)) {
+            $option_id = (empty($arrValue['id']) ? 0 : $arrValue['id']);
+            if ($option_id && $this->recordExistsValue($option_id)) {
                 if (!$this->updateValue($arrValue)) return false;
             } else {
                 if (!$this->insertValue($arrValue)) return false;
@@ -514,7 +515,7 @@ class Attribute
 
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
-               SET name_id=$this->id,
+               SET attribute_id=$this->id,
                    text_value_id=".$arrValue['text_value_id'].",
                    price=".floatval($arrValue['price'])."
              WHERE id=".$arrValue['id'];
@@ -525,7 +526,7 @@ class Attribute
 
 
     /**
-     * Insert a new Attribute value into the database.
+     * Insert a new option into the database.
      *
      * Updates the values' ID upon success.
      * Note that associated Text records are not changed here,
@@ -541,7 +542,7 @@ class Attribute
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (
-                name_id, text_value_id, price
+                attribute_id, text_value_id, price
             ) VALUES (
                 $this->id,
                 ".$arrValue['text_value_id'].",
@@ -555,21 +556,21 @@ class Attribute
 
 
     /**
-     * Returns boolean true if the Product Attribute value record with the
+     * Returns boolean true if the option record with the
      * given ID exists in the database table, false otherwise
-     * @param   integer     $value_id       The Product Attribute value ID
+     * @param   integer     $option_id      The option ID
      * @return  boolean                     True if the record exists,
      *                                      false otherwise
      * @static
      */
-    static function recordExistsValue($value_id)
+    static function recordExistsValue($option_id)
     {
         global $objDatabase;
 
         $query = "
             SELECT 1
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
-             WHERE id=$value_id";
+             WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount()) return true;
         return false;
@@ -577,97 +578,42 @@ class Attribute
 
 
     /**
-     * Returns a new Attribute queried by its name ID from
+     * Returns a new Attribute queried by its Attribute ID from
      * the database.
-     * @param   integer     $name_id        The Attribute name ID
+     * @param   integer     $attribute_id        The Attribute ID
      * @return  Attribute            The Attribute object
      * @global  ADONewConnection
      * @static
      */
-    static function getByNameId($name_id)
+    static function getById($attribute_id)
     {
-        $arrName = Attributes::getNameArrayByNameId($name_id);
+        $arrName = Attributes::getNameArrayByNameId($attribute_id);
         if ($arrName === false) return false;
         $objAttribute = new Attribute(
-            $arrName['name'], $arrName['type'], $name_id
+            $arrName['name'], $arrName['type'], $attribute_id
         );
         return $objAttribute;
     }
 
 
     /**
-     * Returns a new Attribute queried by one of its value IDs from
+     * Returns a new Attribute queried by one of its option IDs from
      * the database.
-     * @param   integer     $value_id     the value ID
+     * @param   integer     $option_id    The option ID
      * @static
      */
-    static function getByValueId($value_id)
+    static function getByOptionId($option_id)
     {
-        // Get the associated name ID
-        $name_id = Attribute::getNameIdByValueId($value_id);
-        return Attribute::getByNameId($name_id);
-    }
-
-
-    /**
-     * Return the name of the Attribute value selected by its ID
-     * from the database.
-     *
-     * Returns false on error, or the empty string if the value cannot be
-     * found.
-     * @param   integer   $id     The Attribute value ID
-     * @return  mixed             The Attribute value name on success,
-     *                            or false otherwise.
-     * @static
-     * @global  mixed     $objDatabase  Database object
-     */
-    static function getValueNameById($id)
-    {
-        global $objDatabase;
-
-        $arrSqlValue = Text::getSqlSnippets(
-            'text_value_id', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_VALUE);
-        $query = "
-            SELECT ".$arrSqlValue['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value".
-                   $arrSqlValue['join']."
-             WHERE id=$id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) return false;
-        return $objResult->fields[$arrSqlValue['text']];
-    }
-
-
-    /**
-     * Return the price of the Attribute value selected by its ID
-     * from the database.
-     *
-     * Returns false on error, or 0 (zero) if the value cannot be found.
-     * @param   integer   $id     The Attribute value ID
-     * @return  double            The Attribute value price on success,
-     *                            or false on failure.
-     * @static
-     * @global  mixed     $objDatabase  Database object
-     */
-    static function getValuePriceById($id)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT price
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
-             WHERE id=$id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) return false;
-        return $objResult->fields['price'];
+        // Get the associated Attribute ID
+        $attribute_id = Attribute::getIdByOptionId($option_id);
+        return Attribute::getById($attribute_id);
     }
 
 
     /**
      * Return the name of the Attribute selected by its ID
      * from the database.
-     * @param   integer     $nameId         The Attribute name ID
+     * @param   integer     $nameId         The Attribute ID
      * @return  mixed                       The Attribute name on
      *                                      success, false otherwise
      * @global  ADONewConnection  $objDatabase    Database connection object
@@ -692,30 +638,30 @@ class Attribute
 
 
     /**
-     * Returns the name ID associated with the given value ID in the
+     * Returns the Attribute ID associated with the given option ID in the
      * value table.
      * @static
-     * @param   integer     $value_id       The value ID
-     * @return  integer                     The associated name ID
+     * @param   integer     $option_id      The option ID
+     * @return  integer                     The associated Attribute ID
      * @global  ADONewConnection
      */
-    static function getNameIdByValueId($value_id)
+    static function getIdByOptionId($option_id)
     {
         global $objDatabase;
 
         $query = "
-            SELECT name_id
+            SELECT attribute_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
-             WHERE id=$value_id";
+             WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() != 1)
             return false;
-        return $objResult->fields['name_id'];
+        return $objResult->fields['attribute_id'];
     }
 
 
     /**
-     * Return the value ID corresponding to the given value name,
+     * Return the option ID corresponding to the given value name,
      * if found, false otherwise.
      *
      * If there is more than one value of the same name, only the
@@ -723,8 +669,8 @@ class Attribute
      * always return the same.
      * This method is awkwardly named because of the equally awkward
      * names given to the database fields.
-     * @param   string      $value          The Attribute value name
-     * @return  integer                     The first matching value ID found,
+     * @param   string      $value          The option name
+     * @return  integer                     The first matching option ID found,
      *                                      or false.
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @static
